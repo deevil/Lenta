@@ -5,7 +5,6 @@ import com.lenta.lentabp10.models.task.TaskExciseStamp;
 import com.lenta.shared.models.core.IProduct;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 
 public class MemoryTaskExciseStampRepository implements ITaskExciseStampRepository {
@@ -17,6 +16,11 @@ public class MemoryTaskExciseStampRepository implements ITaskExciseStampReposito
 
     @Override
     public List<TaskExciseStamp> findExciseStampsOfProduct(IProduct product) {
+        if (product == null)
+        {
+            throw new NullPointerException("product");
+        }
+
         List<TaskExciseStamp> foundStamps = new ArrayList<>();
         for(int i=0; i<stamps.size(); i++) {
             if ( product.getMaterialNumber() == stamps.get(i).getMaterialNumber() ) {
@@ -50,6 +54,11 @@ public class MemoryTaskExciseStampRepository implements ITaskExciseStampReposito
 
     @Override
     public boolean deleteExciseStamp(TaskExciseStamp exciseStamp) {
+        if (exciseStamp == null)
+        {
+            throw new NullPointerException("exciseStamp");
+        }
+
         int index = -1;
         for(int i=0; i<stamps.size(); i++) {
             if ( exciseStamp.getCode() == stamps.get(i).getCode() ) {
@@ -67,6 +76,11 @@ public class MemoryTaskExciseStampRepository implements ITaskExciseStampReposito
 
     @Override
     public boolean deleteExciseStampsForProduct(IProduct product) {
+        if (product == null)
+        {
+            throw new NullPointerException("product");
+        }
+
         List<TaskExciseStamp> deleteStamps = new ArrayList<>();
         for(int i=0; i<stamps.size(); i++) {
             if ( product.getMaterialNumber() == stamps.get(i).getMaterialNumber() ) {
@@ -87,7 +101,7 @@ public class MemoryTaskExciseStampRepository implements ITaskExciseStampReposito
     public boolean addExciseStamps(List<TaskExciseStamp> exciseStamps150) {
         if (exciseStamps150 == null)
         {
-            throw new NullPointerException("exciseStamp");
+            throw new NullPointerException("exciseStamps150");
         }
 
         if ( exciseStamps150.isEmpty() )
@@ -95,12 +109,15 @@ public class MemoryTaskExciseStampRepository implements ITaskExciseStampReposito
             return false;
         }
 
-        HashSet<TaskExciseStamp> distinctStamp = new HashSet<TaskExciseStamp>();
+        List<TaskExciseStamp> distinctStamp = new ArrayList<>();
         for(int i=0; i<exciseStamps150.size(); i++) {
             /**if ( exciseStamps150.get(i).egaisVersion() != EgaisStampVersion.V3) {
                 throw new IllegalStateException("exciseStamps150 should contains only excise stamp with lenght " + String.valueOf(EgaisStampVersion.V3));
             }*/
-            distinctStamp.add(exciseStamps150.get(i));
+            //убираем дубликаты
+            if ( !distinctStamp.contains(exciseStamps150.get(i)) ) {
+                distinctStamp.add(exciseStamps150.get(i));
+            }
         }
 
         stamps.addAll(distinctStamp);
@@ -109,7 +126,18 @@ public class MemoryTaskExciseStampRepository implements ITaskExciseStampReposito
 
     @Override
     public boolean deleteExciseStamps(List<TaskExciseStamp> exciseStamps150) {
-        return false;
+        if (exciseStamps150 == null)
+        {
+            throw new NullPointerException("exciseStamps150");
+        }
+
+        if ( exciseStamps150.isEmpty() )
+        {
+            return false;
+        }
+
+        stamps.removeAll(exciseStamps150);
+        return true;
     }
 
     @Override

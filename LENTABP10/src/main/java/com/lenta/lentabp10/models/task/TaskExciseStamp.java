@@ -17,4 +17,33 @@ public class TaskExciseStamp extends ExciseStamp {
         this.isBasStamp = isBasStamp;
     }
 
+    @Override
+    public boolean equals(Object obj)
+    {
+        if (obj == null || getClass()!= obj.getClass())
+        {
+            return false;
+        }
+
+        TaskExciseStamp stamp =(TaskExciseStamp)obj;
+        if (stamp == null)
+        {
+            return false;
+        }
+        return equals(stamp);
+    }
+
+    public boolean equals(TaskExciseStamp stamp)
+    {
+        if (stamp == null)
+        {
+            return false;
+        }
+        return stamp.getMaterialNumber() == this.getMaterialNumber()
+                && stamp.getCode() == this.getCode()
+                && stamp.getSetMaterialNumber() == setMaterialNumber
+                && stamp.getWriteOffReason() == writeOffReason
+                && stamp.isBasStamp() == isBasStamp;
+    }
+
 }

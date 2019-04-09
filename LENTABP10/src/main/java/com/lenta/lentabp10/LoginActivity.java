@@ -6,11 +6,16 @@ import android.widget.TextView;
 
 import com.lenta.lentabp10.models.memory.MemoryTaskExciseStampRepository;
 import com.lenta.lentabp10.models.memory.MemoryTaskProductRepository;
+import com.lenta.lentabp10.models.memory.MemoryTaskRepository;
+import com.lenta.lentabp10.models.memory.MemoryTaskWriteOffReasonRepository;
 import com.lenta.lentabp10.models.repositories.ITaskExciseStampRepository;
 import com.lenta.lentabp10.models.repositories.ITaskProductRepository;
+import com.lenta.lentabp10.models.repositories.ITaskRepository;
+import com.lenta.lentabp10.models.repositories.ITaskWriteOffReasonRepository;
 import com.lenta.lentabp10.models.task.TaskDescription;
-import com.lenta.lentabp10.models.task.TaskExciseStamp;
 import com.lenta.lentabp10.models.task.TaskType;
+import com.lenta.lentabp10.models.task.WriteOffReason;
+import com.lenta.lentabp10.models.task.WriteOffTask;
 import com.lenta.shared.models.core.MatrixType;
 import com.lenta.shared.models.core.ProductInfo;
 import com.lenta.shared.models.core.ProductType;
@@ -39,19 +44,34 @@ public class LoginActivity extends AppCompatActivity {
                                                               new ArrayList<>(Arrays.asList("2FER", "3ROH"))
         );
 
+        ITaskProductRepository taskProductRepository = new MemoryTaskProductRepository();
+        ITaskExciseStampRepository taskExciseStampRepository = new MemoryTaskExciseStampRepository();
+        ITaskWriteOffReasonRepository taskWriteOfReasonRepository = new MemoryTaskWriteOffReasonRepository();
+        ITaskRepository taskRepository = new MemoryTaskRepository(taskProductRepository, taskExciseStampRepository, taskWriteOfReasonRepository);
+
+        WriteOffTask task = new WriteOffTask(taskDescription, taskRepository);
+
+        ProductInfo product1 = new ProductInfo("materialNumber1", "description", new Uom("ST", "шт"), ProductType.General,
+                false, 1, MatrixType.Active, "materialType");
+        ProductInfo product2 = new ProductInfo("materialNumber2", "description", new Uom("ST", "шт"), ProductType.General,
+                false, 2, MatrixType.Active, "materialType");
+        ProductInfo product3 = new ProductInfo("materialNumber2", "description", new Uom("ST", "шт"), ProductType.General,
+                false, 2, MatrixType.Active, "materialType");
+        WriteOffReason reason1 = new WriteOffReason("01", "Срок годности");
+        WriteOffReason reason2 = new WriteOffReason("02", "Срок негодности");
+
+        /**task = task
+                .processGeneralProduct(product1)
+                .add(reason1, 1)
+                .apply();*/
+
+
         TextView TextView = findViewById(R.id.TextView);
         TextView.setText(taskDescription.getTaskType().getCode());
 
         /**=============================MemoryTaskProductRepository===================================*/
-        tmpSTR = "MemoryTaskProductRepository:";
-        ProductInfo product1 = new ProductInfo("materialNumber1", "description", new Uom("ST", "шт"), ProductType.General,
-                false, 1, MatrixType.Active, "materialType");
+/**        tmpSTR = "MemoryTaskProductRepository:";
 
-        ProductInfo product2 = new ProductInfo("materialNumber2", "description", new Uom("ST", "шт"), ProductType.General,
-                false, 2, MatrixType.Active, "materialType");
-
-        ProductInfo product3 = new ProductInfo("materialNumber2", "description", new Uom("ST", "шт"), ProductType.General,
-                false, 2, MatrixType.Active, "materialType");
 
         ITaskProductRepository taskProductRepository = new MemoryTaskProductRepository();
         //addProduct
@@ -106,7 +126,7 @@ public class LoginActivity extends AppCompatActivity {
         /**===========================================================================================*/
 
         /**=============================MemoryTaskExciseStampRepository===================================*/
-        tmpSTR = tmpSTR + "\n\nMemoryTaskExciseStampRepository:";
+/**        tmpSTR = tmpSTR + "\n\nMemoryTaskExciseStampRepository:";
         TaskExciseStamp exciseStamp1 = new TaskExciseStamp("materialNumber1", "1234567890", "setMaterialNumber", "Лом/бой", false);
         TaskExciseStamp exciseStamp2 = new TaskExciseStamp("materialNumber1", "123", "setMaterialNumber", "Срок годности", false);
         TaskExciseStamp exciseStamp3 = new TaskExciseStamp("materialNumber1", "1234567890", "setMaterialNumber", "Срок годности2", false);
@@ -184,6 +204,21 @@ public class LoginActivity extends AppCompatActivity {
         }
         else {
             tmpSTR = tmpSTR + "\naddExciseStamps=FALSE";
+        }
+        tmpSTR = tmpSTR + "\n" + "lengthExciseStamp=" + String.valueOf(taskExciseStampRepository.lenght());
+
+        //deleteExciseStamps
+        List<TaskExciseStamp> delExciseStamps = new ArrayList<>();
+        delExciseStamps.add(exciseStamp1);
+        delExciseStamps.add(exciseStamp2);
+        delExciseStamps.add(exciseStamp3);
+        delExciseStamps.add(exciseStamp4);
+        delExciseStamps.add(exciseStamp5);
+        if (taskExciseStampRepository.deleteExciseStamps(delExciseStamps)) {
+            tmpSTR = tmpSTR + "\ndeleteExciseStamps=TRUE";
+        }
+        else {
+            tmpSTR = tmpSTR + "\ndeleteExciseStamps=FALSE";
         }
         tmpSTR = tmpSTR + "\n" + "lengthExciseStamp=" + String.valueOf(taskExciseStampRepository.lenght());
 

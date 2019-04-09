@@ -9,18 +9,24 @@ import java.util.List;
 
 public class MemoryTaskProductRepository implements ITaskProductRepository {
 
-    protected final List<ProductInfo> productInfo = new ArrayList<>();
+    private final List<ProductInfo> productInfo = new ArrayList<>();
 
     public MemoryTaskProductRepository() {
     }
 
     @Override
     public ProductInfo findProduct(IProduct product) {
+        if (product == null)
+        {
+            throw new NullPointerException("product");
+        }
+
         for(int i=0; i<productInfo.size(); i++) {
             if ( product.getMaterialNumber() == productInfo.get(i).getMaterialNumber() ) {
                 return productInfo.get(i);
             }
         }
+
         return null;
     }
 
@@ -49,6 +55,11 @@ public class MemoryTaskProductRepository implements ITaskProductRepository {
 
     @Override
     public boolean deleteProduct(ProductInfo product) {
+        if (product == null)
+        {
+            throw new NullPointerException("product");
+        }
+
         int index = -1;
         for(int i=0; i<productInfo.size(); i++) {
             if ( product.getMaterialNumber() == productInfo.get(i).getMaterialNumber() ) {
