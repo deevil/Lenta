@@ -1,0 +1,273 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<layout xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/MainLayot"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/colorContentBackground"
+        tools:context=".TaskCardActivity">
+
+        <android.support.constraint.ConstraintLayout
+            android:id="@+id/TopPanel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/colorTopPanelBackground"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:id="@+id/TitleTxtView"
+                style="@style/TopPanelTxtTitle"
+                android:text="@string/name_buisness_process"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/HeadTxtView"
+                style="@style/TopPanelTxtHead"
+                android:text="@string/acvtTaskCard_HeadTxtView"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/TitleTxtView" />
+
+            <ImageButton
+                style="@style/DBManagerVisib"
+                android:id="@+id/SQLiteMngBtnImg"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="0dp"
+                android:onClick="SQLiteMngBtn_onClick"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@mipmap/sqlite_manager" />
+
+        </android.support.constraint.ConstraintLayout>
+
+        <ScrollView
+            android:id="@+id/scrollView"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginTop="8dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/TopPanel">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:divider="@drawable/divider_horizontal"
+                android:orientation="vertical"
+                android:showDividers="beginning|middle|end">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:divider="@drawable/divider_vertical"
+                    android:showDividers="middle"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/TypeTaskTxtView"
+                        style="@style/TaskCardTxtView"
+                        android:text="@string/acvtTaskCard_TypeTaskTxtView" />
+
+
+                    <Spinner
+                        android:id="@+id/SpinnerTypeTask"
+                        style="@style/TaskCardSpinner"
+                        android:theme="@style/Spinner" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:divider="@drawable/divider_vertical"
+                    android:showDividers="middle"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/NameTaskTxtView"
+                        style="@style/TaskCardTxtView"
+                        android:text="@string/acvtTaskCard_NameTaskTxtView" />
+
+                    <EditText
+                        android:id="@+id/NameTaskEditTxt"
+                        style="@style/editTxt"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginLeft="20dp"
+                        android:layout_marginTop="11dp"
+                        android:layout_marginRight="20dp"
+                        android:layout_marginBottom="10dp"
+                        android:layout_weight="0.6"
+                        android:ems="10"
+                        android:inputType="textPersonName">
+
+                        <requestFocus></requestFocus>
+                    </EditText>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:divider="@drawable/divider_vertical"
+                    android:showDividers="middle"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/StockTxtView"
+                        style="@style/TaskCardTxtView"
+                        android:text="@string/acvtTaskCard_StockTxtView" />
+
+                    <Spinner
+                        android:id="@+id/SpinnerStock"
+                        style="@style/TaskCardSpinner"
+                        android:theme="@style/Spinner" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:divider="@drawable/divider_vertical"
+                    android:showDividers="middle"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/TypeMoveTxtView"
+                        style="@style/TaskCardTxtView"
+                        android:text="@string/acvtTaskCard_TypeMoveTxtView" />
+
+                    <TextView
+                        android:id="@+id/TypeMoveValTxtView"
+                        style="@style/TaskCardValTxtView" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:divider="@drawable/divider_vertical"
+                    android:showDividers="middle"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/GISTxtView"
+                        style="@style/TaskCardTxtView"
+                        android:text="@string/acvtTaskCard_GISTxtView" />
+
+                    <TextView
+                        android:id="@+id/GISValTxtView"
+                        style="@style/TaskCardValTxtView" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:divider="@drawable/divider_vertical"
+                    android:showDividers="middle"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/TypeGoodsTxtView"
+                        style="@style/TaskCardTxtView"
+                        android:text="@string/acvtTaskCard_TypeGoodsTxtView" />
+
+                    <TextView
+                        android:id="@+id/TypeGoodsValTxtView"
+                        style="@style/TaskCardValTxtView" />
+
+                </LinearLayout>
+            </LinearLayout>
+        </ScrollView>
+
+        <android.support.constraint.ConstraintLayout
+            android:id="@+id/BottomPanelThreeBtn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/colorContentBackground"
+            app:layout_constraintBottom_toTopOf="@+id/BottomPanel"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent">
+
+            <ImageButton
+                android:id="@+id/KeyOpenBtnImg"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="ThreeBtnBotPanel_onClick"
+                android:padding="0dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@mipmap/keyboard_enabled" />
+
+            <ImageButton
+                android:id="@+id/ShowBotPanelBtnImg"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="ThreeBtnBotPanel_onClick"
+                android:padding="0dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@mipmap/buttons_disabled" />
+
+            <ImageButton
+                android:id="@+id/UpDownBtnImg"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="ThreeBtnBotPanel_onClick"
+                android:padding="0dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/ShowBotPanelBtnImg"
+                app:layout_constraintStart_toEndOf="@+id/KeyOpenBtnImg"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@mipmap/arrow_down" />
+        </android.support.constraint.ConstraintLayout>
+
+        <android.support.constraint.ConstraintLayout
+            android:id="@+id/BottomPanel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/colorBottomPanelBackground"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
+
+            <ImageButton
+                android:id="@+id/NextBtnImg"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="imgBtn_onClick"
+                android:padding="0dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@mipmap/button_next" />
+
+            <ImageButton
+                android:id="@+id/BackBtnImg"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="imgBtn_onClick"
+                android:padding="0dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@mipmap/button_back" />
+
+        </android.support.constraint.ConstraintLayout>
+
+    </android.support.constraint.ConstraintLayout>
+</layout>

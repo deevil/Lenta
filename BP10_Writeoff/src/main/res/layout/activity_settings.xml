@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<layout xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/MainLayot"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/colorContentBackground"
+        tools:context=".SettingsActivity">
+
+        <android.support.constraint.ConstraintLayout
+            android:id="@+id/TopPanel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/colorTopPanelBackground"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageButton
+                android:id="@+id/BackBtnImg"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="imgBtn_onClick"
+                android:padding="0dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/ExitBtnImg"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@mipmap/button_menu_back" />
+
+            <ImageButton
+                android:id="@+id/ExitBtnImg"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="imgBtn_onClick"
+                android:padding="0dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@mipmap/button_exit" />
+
+            <TextView
+                android:id="@+id/TitleTxtView"
+                style="@style/TopPanelTxtTitle"
+                android:text="@string/name_buisness_process"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/HeadTxtView"
+                style="@style/TopPanelTxtHead"
+                android:text="@string/acvtSettings_HeadTxtView"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/TitleTxtView" />
+
+        </android.support.constraint.ConstraintLayout>
+
+        <ImageView
+            android:id="@+id/logoImgView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/TopPanel"
+            app:layout_constraintVertical_bias="0.19"
+            app:srcCompat="@mipmap/logo_box" />
+
+        <ImageButton
+            android:id="@+id/PrinterBtnImg"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:onClick="imgBtn_onClick"
+            android:padding="0dp"
+            app:layout_constraintBottom_toTopOf="@+id/WorkBtnImg"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:srcCompat="@mipmap/button_select_printer" />
+
+        <ImageButton
+            android:id="@+id/WorkBtnImg"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:onClick="imgBtn_onClick"
+            android:padding="0dp"
+            app:layout_constraintBottom_toTopOf="@+id/TechLoginBtnImg"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:srcCompat="@mipmap/button_select_working_mode" />
+
+        <ImageButton
+            android:id="@+id/TechLoginBtnImg"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:onClick="imgBtn_onClick"
+            android:padding="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:srcCompat="@mipmap/button_tech_login" />
+
+
+
+    </android.support.constraint.ConstraintLayout>
+</layout>

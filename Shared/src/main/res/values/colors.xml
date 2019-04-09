@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#284D7D</color>
+    <color name="colorPrimaryDark">#00574B</color>
+    <color name="colorAccent">#D81B60</color>
+    <color name="colorWhite">#FFFFFF</color>
+    <color name="colorTopPanelBackground">#1A4170</color>
+    <color name="colorBottomPanelBackground">#284D7D</color>
+    <color name="colorContentBackground">#00395C</color>
+    <color name="colorViewTxt">#B7D1EE</color>
+    <color name="colorTopPanelTxt">#D2DAE3</color>
+    <color name="colorDivider">#456B96</color>
+    <color name="colorTabIndicator">#FEBF54</color>
+    <color name="colorTabBackground">#204C7C</color>
+    <color name="colorNumSectionTxt">#CCD7DE</color>
+</resources>

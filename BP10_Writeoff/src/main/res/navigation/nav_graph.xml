@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/loginActivity">
+
+    <activity
+        android:id="@+id/loginActivity"
+        android:name="com.lenta.bp10writeoff.LoginActivity"
+        android:label="activity_login"
+        tools:layout="@layout/activity_login" >
+        <action
+            android:id="@+id/loginActivity_to_selectTKActivity"
+            app:destination="@id/selectTKActivity" />
+        <action
+            android:id="@+id/loginActivity_to_auxiliaryMenuActivity"
+            app:destination="@id/auxiliaryMenuActivity" />
+    </activity>
+    <activity
+        android:id="@+id/selectTKActivity"
+        android:name="com.lenta.bp10writeoff.SelectTKActivity"
+        android:label="activity_select_tk"
+        tools:layout="@layout/activity_select_tk" >
+        <action
+            android:id="@+id/selectTKActivity_to_dataLoadingActivity"
+            app:destination="@id/dataLoadingActivity" />
+    </activity>
+    <activity
+        android:id="@+id/dataLoadingActivity"
+        android:name="com.lenta.bp10writeoff.DataLoadingActivity"
+        android:label="activity_data_loading"
+        tools:layout="@layout/activity_data_loading" >
+        <action
+            android:id="@+id/dataLoadingActivity_to_definitionPerformerActivity"
+            app:destination="@id/definitionPerformerActivity" />
+    </activity>
+    <activity
+        android:id="@+id/definitionPerformerActivity"
+        android:name="com.lenta.bp10writeoff.DefinitionPerformerActivity"
+        android:label="activity_definition_performer"
+        tools:layout="@layout/activity_definition_performer"  >
+        <action
+            android:id="@+id/definitionPerformerActivity_to_mainActivity"
+            app:destination="@id/mainActivity" />
+    </activity>
+    <activity
+        android:id="@+id/mainActivity"
+        android:name="com.lenta.bp10writeoff.MainActivity"
+        android:label="activity_main"
+        tools:layout="@layout/activity_main" >
+        <action
+            android:id="@+id/mainActivity_to_taskCardActivity"
+            app:destination="@id/taskCardActivity" />
+        <action
+            android:id="@+id/mainActivity_to_auxiliaryMenuActivity"
+            app:destination="@id/auxiliaryMenuActivity" />
+    </activity>
+    <activity
+        android:id="@+id/auxiliaryMenuActivity"
+        android:name="com.lenta.bp10writeoff.AuxiliaryMenuActivity"
+        android:label="activity_auxiliary_menu"
+        tools:layout="@layout/activity_auxiliary_menu"  >
+        <action
+            android:id="@+id/auxiliaryMenuActivity_to_settingsActivity"
+            app:destination="@id/settingsActivity" />
+        <action
+            android:id="@+id/auxiliaryMenuActivity_to_supportActivity"
+            app:destination="@id/supportActivity" />
+    </activity>
+    <activity
+        android:id="@+id/taskCardActivity"
+        android:name="com.lenta.bp10writeoff.TaskCardActivity"
+        android:label="activity_task_card"
+        tools:layout="@layout/activity_task_card"  >
+        <action
+            android:id="@+id/taskCardActivity_to_goodsListActivity"
+            app:destination="@id/goodsListActivity" />
+    </activity>
+    <activity
+        android:id="@+id/goodsListActivity"
+        android:name="com.lenta.bp10writeoff.GoodsListActivity"
+        android:label="activity_goods_list"
+        tools:layout="@layout/activity_goods_list"  >
+        <action
+            android:id="@+id/goodsListActivity_to_goodsCountedTabFragm"
+            app:destination="@id/goodsCountedTabFragm" />
+        <action
+            android:id="@+id/goodsListActivity_to_goodsFilterTabFragm"
+            app:destination="@id/goodsFilterTabFragm" />
+    </activity>
+    <fragment
+        android:id="@+id/goodsCountedTabFragm"
+        android:name="com.lenta.bp10writeoff.fragment.GoodsCountedTabFragm"
+        android:label="goods_counted_tab_fragm"
+        tools:layout="@layout/goods_counted_tab_fragm" />
+    <fragment
+        android:id="@+id/goodsFilterTabFragm"
+        android:name="com.lenta.bp10writeoff.fragment.GoodsFilterTabFragm"
+        android:label="goods_filter_tab_fragm"
+        tools:layout="@layout/goods_filter_tab_fragm" />
+    <activity
+        android:id="@+id/settingsActivity"
+        android:name="com.lenta.bp10writeoff.SettingsActivity"
+        android:label="activity_settings"
+        tools:layout="@layout/activity_settings" >
+        <action
+            android:id="@+id/settingsActivity_to_printerChangeActivity"
+            app:destination="@id/printerChangeActivity" />
+        <action
+            android:id="@+id/settingsActivity_to_selectWorkingModeActivity"
+            app:destination="@id/selectWorkingModeActivity" />
+        <action
+            android:id="@+id/settingsActivity_to_techLoginActivity"
+            app:destination="@id/techLoginActivity" />
+    </activity>
+    <activity
+        android:id="@+id/supportActivity"
+        android:name="com.lenta.bp10writeoff.SupportActivity"
+        android:label="activity_support"
+        tools:layout="@layout/activity_support" />
+    <activity
+        android:id="@+id/printerChangeActivity"
+        android:name="com.lenta.bp10writeoff.PrinterChangeActivity"
+        android:label="activity_printer_change"
+        tools:layout="@layout/activity_printer_change" />
+    <activity
+        android:id="@+id/selectWorkingModeActivity"
+        android:name="com.lenta.bp10writeoff.SelectWorkingModeActivity"
+        android:label="activity_select_working_mode"
+        tools:layout="@layout/activity_select_working_mode" >
+        <action
+            android:id="@+id/selectWorkingModeActivity_to_testEnvironmentActivity"
+            app:destination="@id/testEnvironmentActivity" />
+    </activity>
+    <activity
+        android:id="@+id/techLoginActivity"
+        android:name="com.lenta.bp10writeoff.TechLoginActivity"
+        android:label="activity_tech_login"
+        tools:layout="@layout/activity_tech_login" />
+    <activity
+        android:id="@+id/testEnvironmentActivity"
+        android:name="com.lenta.bp10writeoff.TestEnvironmentActivity"
+        android:label="activity_test_environment"
+        tools:layout="@layout/activity_test_environment" />
+</navigation>

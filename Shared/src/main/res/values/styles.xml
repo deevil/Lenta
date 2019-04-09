@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
+
+    <style name="DBManagerVisib">
+        <item name="android:visibility">visible</item>
+    </style>
+
+    <style name="BaseTxt">
+        <item name="android:textSize">20sp</item>
+        <item name="android:textColor">@color/colorViewTxt</item>
+    </style>
+
+    <style name="editTxt">
+        <item name="android:textSize">24sp</item>
+        <item name="android:textColor">@color/colorWhite</item>
+        <item name="android:padding">5sp</item>
+        <item name="android:background">@drawable/frame_fields</item>
+    </style>
+
+    <style name="SearchEditTxt">
+        <item name="android:textSize">24sp</item>
+        <item name="android:textColor">@color/colorWhite</item>
+        <item name="android:paddingLeft">15sp</item>
+        <item name="android:paddingTop">5sp</item>
+        <item name="android:paddingBottom">5sp</item>
+        <item name="android:paddingRight">38sp</item>
+        <item name="android:background">@drawable/frame_fields</item>
+    </style>
+
+    <style name="TopPanelTxtTitle">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">8dp</item>
+        <item name="android:layout_marginStart">20dp</item>
+        <item name="android:textSize">24sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/colorTopPanelTxt</item>
+    </style>
+
+    <style name="TopPanelTxtHead">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">8dp</item>
+        <item name="android:layout_marginStart">20dp</item>
+        <item name="android:layout_marginBottom">8dp</item>
+        <item name="android:textSize">24sp</item>
+        <item name="android:textColor">@color/colorTopPanelTxt</item>
+    </style>
+
+    <style name="ButtonDialogBotPanel">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:minWidth">96px</item>
+        <item name="android:minHeight">96px</item>
+        <item name="android:background">@color/colorBottomPanelBackground</item>
+        <item name="android:padding">0dp</item>
+    </style>
+
+    <style name="Spinner">
+        <item name="android:textColor">@color/colorWhite</item>
+        <item name="android:textSize">24sp</item>
+        <item name="android:padding">2dp</item>
+    </style>
+
+    <style name="SpinnerItem">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">@color/colorContentBackground</item>
+        <item name="android:textSize">24sp</item>
+        <item name="android:textColor">@color/colorWhite</item>
+        <item name="android:padding">6dp</item>
+    </style>
+
+    <style name="SpinnerDropDownItem">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:background">@color/colorContentBackground</item>
+        <item name="android:padding">6dp</item>
+    </style>
+
+    <style name="ProgressBar">
+        <item name="android:indeterminateDrawable">@drawable/progress_bar</item>
+        <item name="android:indeterminateOnly">true</item>
+    </style>
+
+    <style name="divider_horz">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">2dp</item>
+        <item name="android:background">@color/colorDivider</item>
+    </style>
+
+    <style name="divider_vert">
+        <item name="android:layout_width">2dp</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:background">@color/colorDivider</item>
+    </style>
+
+    <style name="TabLayout">
+        <item name="android:background">@color/colorTabBackground</item>
+        <item name="tabGravity">center</item>
+        <item name="tabMode">scrollable</item>
+        <item name="tabIndicatorColor">@color/colorTabIndicator</item>
+        <item name="tabIndicatorHeight">5dp</item>
+        <item name="tabSelectedTextColor">@color/colorTabIndicator</item>
+        <item name="tabTextColor">@color/colorWhite</item>
+        <item name="tabTextAppearance">@style/TabTextAppearance</item>
+    </style>
+    <style name="TabTextAppearance">
+        <item name="android:textSize">20sp</item>
+    </style>
+
+    <style name="NumberSectionTxt">
+        <item name="android:textSize">20sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/colorNumSectionTxt</item>
+        <item name="android:background">@drawable/frame_number_section</item>
+    </style>
+
+</resources>

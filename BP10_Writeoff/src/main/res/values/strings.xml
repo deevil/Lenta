@@ -1,0 +1,76 @@
+<resources>
+    <string name="app_name">lentaBP10writeoff</string>
+    <string name="name_buisness_process">СПИСАНИЕ ТОВАРОВ V1.0</string>
+
+    <!-- activity_login -->
+    <string name="acvtLogin_HeadTxtView">Авторизация</string>
+    <string name="acvtLogin_LoginTxtView">SAP-логин</string>
+    <string name="acvtLogin_PassTxtView">Пароль</string>
+
+    <!-- activity_auxiliary_menu -->
+    <string name="acvtAuxMenu_HeadTxtView">Вспомогательное меню</string>
+
+    <!-- activity_data_loading -->
+    <string name="acvtDataLoad_HeadTxtView">Загрузка данных</string>
+    <string name="acvtDataLoad_MainTextTxtView">Синхронизация справочников</string>
+    <string name="acvtDataLoad_SpeedTxtView">Скорость:</string>
+    <string name="acvtDataLoad_LoadTxtView">Загружено:</string>
+    <string name="acvtDataLoad_TimeTxtView">Прошло:</string>
+
+    <!-- activity_definition_performer -->
+    <string name="acvtDefPerf_HeadTxtView">Определение исполнителя</string>
+    <string name="acvtDefPerf_MainTextTxtView">Укажите табельный номер для учёта исполнителя</string>
+    <string name="acvtDefPerf_FIOTxtView">ФИО:</string>
+    <string name="acvtDefPerf_PostTxtView">Должность:</string>
+
+    <!-- activity_main -->
+    <string name="acvtMain_HeadTxtView">Главное меню</string>
+
+    <!-- activity_printer_change -->
+    <string name="acvtPrintChange_HeadTxtView">Смена принтера</string>
+    <string name="acvtPrintChange_MainTxtView">Выберите принтер для печати с этого терминала</string>
+    <string name="acvtPrintChange_DescriptionTxtView">Описание:</string>
+
+    <!-- activity_select_tk -->
+    <string name="acvtSelectTK_HeadTxtView">Выбор ТК</string>
+    <string name="acvtSelectTK_MainTxtView">Выберите номер ТК</string>
+    <string name="acvtSelectTK_AddressTxtView">Адрес:</string>
+
+    <!-- activity_select_working_mode -->
+    <string name="acvtSelectWorkMode_HeadTxtView">Выбор режима работы</string>
+
+    <!-- activity_settings -->
+    <string name="acvtSettings_HeadTxtView">Настройки</string>
+
+    <!-- activity_tech_login -->
+    <string name="acvtTechLogin_HeadTxtView">Технический логин</string>
+    <string name="acvtTechLogin_MainTxtView">Введите данные технического логина для синхронизации справочников</string>
+    <string name="acvtTechLogin_LoginTxtView">SAP-логин</string>
+    <string name="acvtTechLogin_PassTxtView">Пароль</string>
+
+    <!-- activity_test_environment -->
+    <string name="acvtTechEnvir_HeadTxtView">Тестовая среда</string>
+    <string name="acvtTechEnvir_MainTxtView">Введите ПИН-код для перехода в тестовую среду</string>
+
+    <!-- activity_task_card -->
+    <string name="acvtTaskCard_HeadTxtView">Карточка задания</string>
+    <string name="acvtTaskCard_TypeTaskTxtView">Тип задания</string>
+    <string name="acvtTaskCard_NameTaskTxtView">Название</string>
+    <string name="acvtTaskCard_StockTxtView">Склад</string>
+    <string name="acvtTaskCard_TypeMoveTxtView">Вид движения</string>
+    <string name="acvtTaskCard_GISTxtView">ГИС-контроль</string>
+    <string name="acvtTaskCard_TypeGoodsTxtView">Тип товара</string>
+
+    <!-- activity_goods_list -->
+    <string name="acvtGoodsList_HeadTxtView">Список товаров</string>
+    <string name="acvtGoodsList_hintAddGoods">Введите SAP-код или ШК</string>
+
+    <!-- activity_goods_information -->
+    <string name="acvtGoodsInfo_HeadTxtView">Информация о товаре</string>
+    <string name="acvtGoodsInfo_Writeoff">Списание</string>
+    <string name="acvtGoodsInfo_Total">Итого</string>
+
+    <!-- activity_writeoff_details -->
+    <string name="acvtWriteDet_HeadTxtView">Детали по списанию</string>
+
+</resources>
