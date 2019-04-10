@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#284D7D</color>
-    <color name="colorPrimaryDark">#00574B</color>
-    <color name="colorAccent">#D81B60</color>
+    <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorAccent">#FF4B83BC</color>
     <color name="colorWhite">#FFFFFF</color>
     <color name="colorTopPanelBackground">#1A4170</color>
     <color name="colorBottomPanelBackground">#284D7D</color>
@@ -13,4 +13,32 @@
     <color name="colorTabIndicator">#FEBF54</color>
     <color name="colorTabBackground">#204C7C</color>
     <color name="colorNumSectionTxt">#CCD7DE</color>
+
+    <color name="color_white">#FFF</color>
+    <color name="color_background">#213e5a</color>
+    <color name="background_material_dark">@color/color_background</color>
+
+    <color name="color_normal_blue">#FF4B83BC</color>
+    <color name="color_pressed_blue">#4894d8</color>
+    <color name="color_disabled_blue">#446081</color>
+
+    <color name="color_normal_yellow">#eba93c</color>
+    <color name="color_pressed_yellow">#fdbd47</color>
+    <color name="color_disabled_yellow">#8b7241</color>
+
+    <color name="color_normal_green">#01ae53</color>
+    <color name="color_pressed_green">#FF01C759</color>
+    <color name="color_disabled_green">#38714a</color>
+
+    <color name="color_normal_red">#f32331</color>
+    <color name="color_pressed_red">#fd5159</color>
+
+    <color name="color_text_white">@color/color_white</color>
+    <color name="color_text_blue">#b1cff0</color>
+    <color name="color_text_pink">#f98499</color>
+    <color name="color_divider">#446990</color>
+    <color name="color_selected_item">#32506a</color>
+
+    <color name="color_title">@color/color_white</color>
+
 </resources>

@@ -1,9 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.MaterialComponents.NoActionBar">
+        <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:colorBackground">@color/background_material_dark</item>
+        <item name="android:textColorPrimary">@color/color_white</item>
+        <item name="editTextStyle">@style/edit_text_style</item>
+        <item name="spinnerStyle">@style/spinner_style</item>
+        <item name="android:spinnerItemStyle">@style/SpinnerItemStyle</item>
+    </style>
+
+
+    <style name="Button" parent="@android:style/TextAppearance.Widget.TextView">
+        <item name="android:layout_height">72dp</item>
+        <item name="android:maxLines">2</item>
+        <item name="android:textColor">@color/color_white</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:textSize">@dimen/text_medium</item>
+    </style>
+
+    <style name="spinner_style" parent="Widget.AppCompat.Spinner">
+        <item name="android:minHeight">40sp</item>
+        <item name="android:background">@drawable/bg_contour_blue</item>
+        <item name="android:paddingTop">8dp</item>
+        <item name="android:paddingBottom">8dp</item>
+        <item name="android:dropDownVerticalOffset">16dp</item>
+        <item name="android:spinnerMode">dropdown</item>
+    </style>
+
+    <style name="edit_text_style" parent="Widget.AppCompat.EditText">
+        <item name="android:background">@drawable/bg_contour_blue</item>
+        <item name="android:padding">8dp</item>
+        <item name="android:selectAllOnFocus">true</item>
+    </style>
+
+    <style name="SpinnerItemStyle" parent="Widget.AppCompat.TextView.SpinnerItem">
+        <item name="android:drawableRight">@drawable/spinner_arrow_down</item>
     </style>
 
     <style name="DBManagerVisib">
@@ -100,7 +137,7 @@
         <item name="android:background">@color/colorDivider</item>
     </style>
 
-    <style name="TabLayout">
+    <!--<style name="TabLayout">
         <item name="android:background">@color/colorTabBackground</item>
         <item name="tabGravity">center</item>
         <item name="tabMode">scrollable</item>
@@ -109,7 +146,7 @@
         <item name="tabSelectedTextColor">@color/colorTabIndicator</item>
         <item name="tabTextColor">@color/colorWhite</item>
         <item name="tabTextAppearance">@style/TabTextAppearance</item>
-    </style>
+    </style>-->
     <style name="TabTextAppearance">
         <item name="android:textSize">20sp</item>
     </style>

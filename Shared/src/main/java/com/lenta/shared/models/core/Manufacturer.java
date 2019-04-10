@@ -1,9 +1,9 @@
 package com.lenta.shared.models.core;
 
-import android.support.annotation.Nullable;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import androidx.annotation.Nullable;
 import lombok.Getter;
 
 public class Manufacturer {

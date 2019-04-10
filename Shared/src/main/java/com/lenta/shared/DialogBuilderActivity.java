@@ -1,18 +1,19 @@
 package com.lenta.shared;
 
 import android.content.Intent;
-import android.databinding.DataBindingUtil;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.RequiresApi;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
-import com.lenta.shared.databinding.ActivityDialogBuilderBindingImpl;
+import com.lenta.shared.databinding.ActivityDialogBuilderBinding;
+
+import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.databinding.DataBindingUtil;
 
 public class DialogBuilderActivity extends AppCompatActivity {
 
-    ActivityDialogBuilderBindingImpl binding;
+    ActivityDialogBuilderBinding binding;
     boolean lastOpenBotPanel = true; //если true, значит последней была открыта нижняя панель, иначе (false) - клавиатура
     DialogBuilder paramDialog;
 
@@ -118,8 +119,7 @@ public class DialogBuilderActivity extends AppCompatActivity {
 
     //метод обрабатывающий нажатие на кнопки "Показать клавиатуру"(KeyOpenBtnImg), "Показать нижнюю панель"(ShowBotPanelBtnImg) и "Свернуть"(UpDownBtnImg)
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-    public void ThreeBtnBotPanel_onClick(View btnClick)
-    {
+    public void ThreeBtnBotPanel_onClick(View btnClick) {
         lastOpenBotPanel = Click_ThreeBtnBotPanel.imgBtn_onClick(this,
                 this,
                 null,
