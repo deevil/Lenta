@@ -60,10 +60,10 @@ public class LoginActivity extends AppCompatActivity {
         WriteOffReason reason1 = new WriteOffReason("01", "Срок годности");
         WriteOffReason reason2 = new WriteOffReason("02", "Срок негодности");
 
-        /**task = task
+        task = task
                 .processGeneralProduct(product1)
                 .add(reason1, 1)
-                .apply();*/
+                .apply();
 
 
         TextView TextView = findViewById(R.id.TextView);

@@ -18,11 +18,13 @@ public class WriteOffTask {
 
 
     public WriteOffTask deleteProducts(List<ProductInfo> products) {
-        return null;
+        //todo удалить перечень продуктов (products) из taskRepository
+        return this;
     }
 
     public ProcessGeneralProductService processGeneralProduct(IProduct product) {
-        return null;
+        //todo search product taskRepository если есть то (проверяем, что обычный продукт - не алкоголь) create ProcessGeneralProductService
+        return new ProcessGeneralProductService(taskDescription, taskRepository, (ProductInfo) product);
     }
 
     public ProcessNonExciseAlcoProductService processNonExciseAlcoProduct(IProduct product) {

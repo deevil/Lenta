@@ -23,11 +23,16 @@ public class ProcessExciseAlcoProductService implements IProcessProductService {
 
     @Override
     public WriteOffTask apply() {
-        return null;
+        //todo сохранить текущую сессию
+        return new WriteOffTask(taskDescription, taskRepository);
     }
 
     @Override
     public WriteOffTask discard() {
+        return new WriteOffTask(taskDescription, taskRepository);
+    }
+
+    public ProcessGeneralProductService add(WriteOffReason reason, int count, TaskExciseStamp stamp) {
         return null;
     }
 }

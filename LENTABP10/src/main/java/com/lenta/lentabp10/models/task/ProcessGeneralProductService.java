@@ -18,16 +18,22 @@ public class ProcessGeneralProductService implements IProcessProductService {
 
     @Override
     public int getTotalCount() {
+        //todo по данному продукту сумма причин списания
         return 0;
     }
 
     @Override
     public WriteOffTask apply() {
-        return null;
+        return new WriteOffTask(taskDescription, taskRepository);
     }
 
     @Override
     public WriteOffTask discard() {
+        return new WriteOffTask(taskDescription, taskRepository);
+    }
+
+    public ProcessGeneralProductService add(WriteOffReason reason, int count) {
+        //todo в репозитории найти причину спичания для данного товара если есть, то увеличить count иначе создать новый
         return null;
     }
 }

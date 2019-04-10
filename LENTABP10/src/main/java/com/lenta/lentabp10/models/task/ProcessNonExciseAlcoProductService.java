@@ -23,11 +23,15 @@ public class ProcessNonExciseAlcoProductService implements IProcessProductServic
 
     @Override
     public WriteOffTask apply() {
-        return null;
+        return new WriteOffTask(taskDescription, taskRepository);
     }
 
     @Override
     public WriteOffTask discard() {
+        return new WriteOffTask(taskDescription, taskRepository);
+    }
+
+    public ProcessGeneralProductService add(WriteOffReason reason, int count) {
         return null;
     }
 }
