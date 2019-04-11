@@ -9,7 +9,7 @@ public interface ITaskWriteOffReasonRepository {
     List<TaskWriteOffReason> findWriteOffReasonsOfProduct(IProduct product);
 
     boolean addWriteOffReason(TaskWriteOffReason writeOffReason);
-    boolean deeleteWriteOffReason(TaskWriteOffReason writeOffReason);
+    boolean deleteWriteOffReason(TaskWriteOffReason writeOffReason);
     boolean deleteWriteOffReasonsForProduct(IProduct product);
     void clear();
 

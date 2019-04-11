@@ -39,7 +39,8 @@ public class MemoryTaskWriteOffReasonRepository implements ITaskWriteOffReasonRe
 
         int index = -1;
         for(int i=0; i<arrWriteOffReason.size(); i++) {
-            if ( writeOffReason.getMaterialNumber() == arrWriteOffReason.get(i).getMaterialNumber() ) {
+            if ( writeOffReason.getMaterialNumber() == arrWriteOffReason.get(i).getMaterialNumber()
+                    && writeOffReason.getWriteOffReason().getCode() == arrWriteOffReason.get(i).getWriteOffReason().getCode() ) {
                 index = i;
             }
         }
@@ -53,7 +54,7 @@ public class MemoryTaskWriteOffReasonRepository implements ITaskWriteOffReasonRe
     }
 
     @Override
-    public boolean deeleteWriteOffReason(TaskWriteOffReason writeOffReason) {
+    public boolean deleteWriteOffReason(TaskWriteOffReason writeOffReason) {
         if (writeOffReason == null)
         {
             throw new NullPointerException("writeOffReason");
@@ -61,7 +62,8 @@ public class MemoryTaskWriteOffReasonRepository implements ITaskWriteOffReasonRe
 
         int index = -1;
         for(int i=0; i<arrWriteOffReason.size(); i++) {
-            if ( writeOffReason.getMaterialNumber() == arrWriteOffReason.get(i).getMaterialNumber() ) {
+            if ( writeOffReason.getMaterialNumber() == arrWriteOffReason.get(i).getMaterialNumber()
+                    && writeOffReason.getWriteOffReason().getCode() == arrWriteOffReason.get(i).getWriteOffReason().getCode() ) {
                 index = i;
             }
         }

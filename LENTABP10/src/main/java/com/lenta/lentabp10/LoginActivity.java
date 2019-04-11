@@ -34,6 +34,8 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        TextView TextView = findViewById(R.id.TextView);
+
         List<String> typeMove = new ArrayList<>();
         typeMove.add("949ВД");
         TaskDescription taskDescription = new TaskDescription(new TaskType("СГП", "nСГП"),
@@ -55,21 +57,35 @@ public class LoginActivity extends AppCompatActivity {
                 false, 1, MatrixType.Active, "materialType");
         ProductInfo product2 = new ProductInfo("materialNumber2", "description", new Uom("ST", "шт"), ProductType.General,
                 false, 2, MatrixType.Active, "materialType");
-        ProductInfo product3 = new ProductInfo("materialNumber2", "description", new Uom("ST", "шт"), ProductType.General,
-                false, 2, MatrixType.Active, "materialType");
         WriteOffReason reason1 = new WriteOffReason("01", "Срок годности");
         WriteOffReason reason2 = new WriteOffReason("02", "Срок негодности");
 
-        task = task
-                .processGeneralProduct(product1)
+        task  = task.processGeneralProduct(product1)
+                .add(reason1,1)
+                .apply();
+
+        tmpSTR = String.valueOf("Кол-во продуктов(1)=" + task.getProcessedProducts().size());
+        tmpSTR = tmpSTR + "\nИТОГО списано по проудкту1=" + String.valueOf(task.getTotalCountOfProduct(product1));
+
+        task = task.processGeneralProduct(product2)
                 .add(reason1, 1)
+                .add(reason2, 2)
                 .apply();
 
 
-        TextView TextView = findViewById(R.id.TextView);
-        TextView.setText(taskDescription.getTaskType().getCode());
+        tmpSTR = tmpSTR + "\n\nКол-во продуктов(2)==" + String.valueOf(task.getProcessedProducts().size());
+        tmpSTR = tmpSTR + "\nИТОГО списано по проудкту2=" + String.valueOf(task.getTotalCountOfProduct(product2));
+
+        TextView.setText(tmpSTR);
 
         /**=============================MemoryTaskProductRepository===================================*/
+        /**ProductInfo product3 = new ProductInfo("materialNumber3", "description", new Uom("ST", "шт"), ProductType.General,
+         false, 2, MatrixType.Active, "materialType");
+         task  = task.processGeneralProduct(product3)
+         .add(reason1,1)
+         .apply();
+         tmpSTR = "getProcessedProducts().size()=" + String.valueOf(task.getProcessedProducts().size());*/
+
 /**        tmpSTR = "MemoryTaskProductRepository:";
 
 

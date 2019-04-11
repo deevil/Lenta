@@ -4,6 +4,8 @@ import com.lenta.lentabp10.models.repositories.IProcessProductService;
 import com.lenta.lentabp10.models.repositories.ITaskRepository;
 import com.lenta.shared.models.core.ProductInfo;
 
+import java.util.List;
+
 public class ProcessNonExciseAlcoProductService implements IProcessProductService {
 
     private TaskDescription taskDescription;
@@ -17,8 +19,15 @@ public class ProcessNonExciseAlcoProductService implements IProcessProductServic
     }
 
     @Override
-    public int getTotalCount() {
-        return 0;
+    public double getTotalCount() {
+        //todo (Артем И., 09.04.2019) по данному продукту ИТОГО причин списания
+        List<TaskWriteOffReason> arrTaskWriteOffReason = taskRepository.getWriteOffReasons().findWriteOffReasonsOfProduct(productInfo);
+        double totalCount = 0;
+        for(int i=0; i<arrTaskWriteOffReason.size(); i++) {
+            totalCount = totalCount + arrTaskWriteOffReason.get(i).getCount();
+
+        }
+        return totalCount;
     }
 
     @Override
@@ -31,7 +40,33 @@ public class ProcessNonExciseAlcoProductService implements IProcessProductServic
         return new WriteOffTask(taskDescription, taskRepository);
     }
 
-    public ProcessGeneralProductService add(WriteOffReason reason, int count) {
-        return null;
+    public ProcessNonExciseAlcoProductService add(WriteOffReason reason, double count) {
+        //todo (Артем И., 09.04.2019) добавить товар если его нету в таске товаров, в репозитории найти причину списания для данного товара, если есть, то увеличить count иначе создать новый
+        TaskWriteOffReason taskWriteOfReason = new TaskWriteOffReason(reason, productInfo.getMaterialNumber(), count);
+        if ( taskRepository.getProducts().findProduct(productInfo) == null ) {
+            taskRepository.getProducts().addProduct(productInfo);
+            taskRepository.getWriteOffReasons().addWriteOffReason(taskWriteOfReason);
+        }
+        else  {
+            List<TaskWriteOffReason> arrTaskWriteOffReason = taskRepository.getWriteOffReasons().findWriteOffReasonsOfProduct(productInfo);
+            int index = -1;
+            for(int i=0; i<arrTaskWriteOffReason.size(); i++) {
+                if ( reason == arrTaskWriteOffReason.get(i).getWriteOffReason() ) {
+                    taskRepository.getWriteOffReasons().deleteWriteOffReason(taskWriteOfReason);
+                    double newCount;
+                    newCount = arrTaskWriteOffReason.get(i).getCount() + count;
+                    taskWriteOfReason = new TaskWriteOffReason(reason, productInfo.getMaterialNumber(), newCount);
+                    taskRepository.getWriteOffReasons().addWriteOffReason(taskWriteOfReason);
+                    index = i;
+                }
+            }
+
+            if (index == -1)
+            {
+                taskRepository.getWriteOffReasons().addWriteOffReason(taskWriteOfReason);
+            }
+
+        }
+        return new ProcessNonExciseAlcoProductService(taskDescription, taskRepository, productInfo);
     }
 }
