@@ -1,5 +1,6 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-kapt'
 
 android {
     compileSdkVersion build_versions.target_sdk
@@ -28,13 +29,17 @@ android {
 
 dependencies {
     // Kotlin
-    implementation deps.kotlin.stdlib
+    api deps.kotlin.stdlib
+
+    // DI
+    kapt deps.dagger.compiler
+    api deps.dagger.runtime
 
     // Support libraries
-    implementation deps.support.app_compat
-    implementation deps.support.design
+    api deps.support.app_compat
+    api deps.support.design
 
-    implementation deps.constraint_layout
+    api deps.constraint_layout
 
     //lombok
     compileOnly 'org.projectlombok:lombok:1.18.6'

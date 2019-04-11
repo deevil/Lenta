@@ -1,5 +1,6 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-kapt'
 
 android {
     compileSdkVersion build_versions.target_sdk
@@ -20,20 +21,10 @@ android {
 }
 
 dependencies {
-
     implementation project(':Shared')
 
-    // Kotlin
-    api deps.kotlin.stdlib
-
-    // Support libraries
-    api deps.support.app_compat
-    api deps.support.design
-
-    //Constraint layout
-    implementation deps.constraint_layout
-
-
+    // Dagger2
+    kapt deps.dagger.compiler
 
     testImplementation deps.junit
     /*androidTestImplementation 'androidx.test:runner:1.2.0-alpha03'

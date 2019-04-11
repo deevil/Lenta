@@ -4,6 +4,7 @@
     package="com.lenta.bp10">
 
     <application
+        android:name=".AndroidApplication"
         android:allowBackup="true"
         android:appComponentFactory="whateverString"
         android:icon="@mipmap/ic_launcher"
