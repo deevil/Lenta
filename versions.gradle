@@ -28,6 +28,7 @@ versions.rxjava2 = "2.2.4"
 versions.rx_android = "2.0.1"
 versions.kotlin = "1.3.21"
 versions.junit = "4.12"
+versions.gson = "2.8.5"
 
 
 
@@ -88,6 +89,7 @@ deps.kotlin = kotlin
 
 
 
+deps.gson = "com.google.code.gson:gson:$versions.gson"
 deps.dexmaker = "com.linkedin.dexmaker:dexmaker-mockito:$versions.dexmaker"
 deps.constraint_layout = "androidx.constraintlayout:constraintlayout:$versions.constraint_layout"
 deps.junit = "junit:junit:$versions.junit"

@@ -47,6 +47,15 @@
         <item name="android:visibility">visible</item>
     </style>
 
+    <style name="TextMedium" parent="Base.TextAppearance.AppCompat.Medium">
+    </style>
+
+    <style name="TextTitleToolbar" parent="Base.TextAppearance.AppCompat.Body1">
+    </style>
+
+    <style name="TextDescriptionToolbar" parent="Base.TextAppearance.AppCompat.Body2">
+    </style>
+
     <style name="BaseTxt">
         <item name="android:textSize">20sp</item>
         <item name="android:textColor">@color/colorViewTxt</item>

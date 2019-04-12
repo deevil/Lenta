@@ -39,9 +39,14 @@ dependencies {
     api deps.support.app_compat
     api deps.support.design
 
+    // Architecture components
+    api deps.lifecycle.runtime
+    api deps.lifecycle.extensions
+
     api deps.constraint_layout
 
     api project(':hhive')
+    api deps.gson
 
     //lombok
     compileOnly 'org.projectlombok:lombok:1.18.6'

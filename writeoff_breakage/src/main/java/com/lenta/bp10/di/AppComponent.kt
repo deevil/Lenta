@@ -1,12 +1,12 @@
 package com.lenta.bp10.di
 
-import com.lenta.bp10.MainActivity
+import com.lenta.bp10.platform.MainActivity
 import com.lenta.shared.di.CoreComponent
-import com.lenta.shared.di.FeatureScope
+import com.lenta.shared.di.AppScope
 import dagger.Component
 
-@Component(dependencies = [CoreComponent::class])
-@FeatureScope
+@Component(modules = [AppModule::class], dependencies = [CoreComponent::class])
+@AppScope
 interface AppComponent {
     fun inject(mainActivity: MainActivity)
 }
