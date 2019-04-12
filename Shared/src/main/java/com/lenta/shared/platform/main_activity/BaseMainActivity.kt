@@ -23,8 +23,11 @@ abstract class BaseMainActivity : BaseActivity<ActivityMainBinding>() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         fragmentStack.setOnBackStackChangedListener(FragmentManager.OnBackStackChangedListener { onBackStackChanged() })
-        injectThis()
+        if (savedInstanceState == null) {
+            onNewEnter()
+        }
     }
+
 
     override fun onBackPressed() {
         super.onBackPressed()
@@ -45,7 +48,7 @@ abstract class BaseMainActivity : BaseActivity<ActivityMainBinding>() {
     }
 
 
-    abstract fun injectThis()
+    abstract fun onNewEnter()
 
 }
 
