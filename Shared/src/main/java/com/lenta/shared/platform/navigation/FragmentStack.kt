@@ -1,4 +1,4 @@
-package com.lenta.bp10.platform.navigation
+package com.lenta.shared.platform.navigation
 
 import android.os.Bundle
 import android.util.Log

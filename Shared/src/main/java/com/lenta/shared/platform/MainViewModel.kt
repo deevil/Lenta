@@ -1,7 +1,7 @@
-package com.lenta.bp10.platform
+package com.lenta.shared.platform
 
 import androidx.lifecycle.MutableLiveData
-import com.lenta.bp10.platform.top_toolbar.TopToolbarUiModel
+import com.lenta.shared.platform.top_toolbar.TopToolbarUiModel
 
 class MainViewModel : BaseViewModel() {
     val topToolbarUiModel: MutableLiveData<TopToolbarUiModel> = MutableLiveData()

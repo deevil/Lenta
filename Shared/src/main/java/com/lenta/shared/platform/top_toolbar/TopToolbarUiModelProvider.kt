@@ -1,4 +1,4 @@
-package com.lenta.bp10.platform.top_toolbar
+package com.lenta.shared.platform.top_toolbar
 
 interface TopToolbarUiModelProvider {
     fun provideTopToolbarUiModel(): TopToolbarUiModel

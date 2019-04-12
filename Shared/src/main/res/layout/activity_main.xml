@@ -8,14 +8,14 @@
 
         <variable
             name="vm"
-            type="com.lenta.bp10.platform.MainViewModel" />
+            type="com.lenta.shared.platform.MainViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
 
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".platform.MainActivity">
+        tools:context=".platform.BaseMainActivity">
 
         <include
             android:id="@+id/layout_top_toolbar"

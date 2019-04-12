@@ -7,7 +7,7 @@
 
         <variable
             name="vm"
-            type="com.lenta.bp10.platform.top_toolbar.TopToolbarUiModel" />
+            type="com.lenta.shared.platform.top_toolbar.TopToolbarUiModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

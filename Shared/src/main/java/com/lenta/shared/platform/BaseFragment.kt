@@ -1,4 +1,4 @@
-package com.lenta.bp10.platform
+package com.lenta.shared.platform
 
 import android.os.Bundle
 import android.view.*
