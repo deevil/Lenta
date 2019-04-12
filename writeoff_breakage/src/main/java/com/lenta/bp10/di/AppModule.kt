@@ -4,7 +4,10 @@ import android.content.Context
 import android.os.Handler
 import com.google.gson.GsonBuilder
 import com.lenta.bp10.BuildConfig
+import com.lenta.bp10.platform.navigation.IScreenNavigator
+import com.lenta.bp10.platform.navigation.ScreenNavigator
 import com.lenta.shared.di.AppScope
+import com.lenta.shared.platform.activity.ForegroundActivityProvider
 import com.mobrun.plugin.api.HyperHive
 import com.mobrun.plugin.api.HyperHiveState
 import com.mobrun.plugin.api.VersionAPI
@@ -46,5 +49,11 @@ class AppModule {
 
         return hyperHive
 
+    }
+
+    @Provides
+    @AppScope
+    internal fun provideScreenNavigator(foregroundActivityProvider: ForegroundActivityProvider): IScreenNavigator {
+        return ScreenNavigator(foregroundActivityProvider)
     }
 }
