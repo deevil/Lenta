@@ -1,4 +1,4 @@
-package com.lenta.shared.platform
+package com.lenta.shared.platform.activity
 
 import android.os.Bundle
 import android.view.Window

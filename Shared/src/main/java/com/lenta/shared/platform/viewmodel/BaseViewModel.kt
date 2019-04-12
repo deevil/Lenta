@@ -1,4 +1,4 @@
-package com.lenta.shared.platform
+package com.lenta.shared.platform.viewmodel
 
 import androidx.lifecycle.ViewModel
 
