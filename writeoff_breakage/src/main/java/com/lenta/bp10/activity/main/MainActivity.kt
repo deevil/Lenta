@@ -5,7 +5,6 @@ import androidx.lifecycle.ViewModelProviders
 import com.lenta.bp10.di.getAppComponent
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
 import com.lenta.shared.platform.main_activity.BaseMainActivity
-import com.lenta.shared.platform.top_toolbar.TopToolbarUiModel
 import javax.inject.Inject
 
 class MainActivity : BaseMainActivity() {
@@ -17,6 +16,7 @@ class MainActivity : BaseMainActivity() {
         getAppComponent().let {
             it.inject(this)
             foregroundActivityProvider.setActivity(this)
+
             val mainViewModel = ViewModelProviders.of(this).get(MainViewModel::class.java)
             it.inject(mainViewModel)
             return@lazy mainViewModel
@@ -26,12 +26,8 @@ class MainActivity : BaseMainActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         binding?.vm = mainViewModel
 
-        binding?.layoutTopToolbar?.bExit?.setOnClickListener {
-            binding?.vm?.topToolbarUiModel?.value = TopToolbarUiModel(title = System.currentTimeMillis().toString(), description = "Карточка задания")
-        }
 
     }
 

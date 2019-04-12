@@ -4,4 +4,6 @@
     <string name="text_dialog_close_app">Вы действительно хотите выйти из приложения?</string>
     <string name="head_dialogIncompleteData">Незавершенные данные</string>
     <string name="text_dialogIncompleteData">На устройстве обнаружены несохраненные данные. Перейти к данным?</string>
+    <string name="sap_login">SAP-логин</string>
+    <string name="password">Пароль</string>
 </resources>

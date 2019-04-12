@@ -9,7 +9,7 @@
         android:id="@+id/loginActivity"
         android:name="com.lenta.bp10writeoff.LoginActivity"
         android:label="activity_login"
-        tools:layout="@layout/activity_login" >
+        tools:layout="@layout/layout_login" >
         <action
             android:id="@+id/loginActivity_to_selectTKActivity"
             app:destination="@id/selectTKActivity" />
