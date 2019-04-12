@@ -4,6 +4,6 @@ import androidx.lifecycle.MutableLiveData
 import com.lenta.shared.platform.viewmodel.BaseViewModel
 import com.lenta.shared.platform.top_toolbar.TopToolbarUiModel
 
-class MainViewModel : BaseViewModel() {
+open class BaseMainViewModel : BaseViewModel() {
     val topToolbarUiModel: MutableLiveData<TopToolbarUiModel> = MutableLiveData()
 }

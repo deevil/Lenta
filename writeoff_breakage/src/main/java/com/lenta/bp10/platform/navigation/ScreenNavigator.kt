@@ -2,6 +2,7 @@ package com.lenta.bp10.platform.navigation
 
 import com.lenta.shared.account.IAuthenticator
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
+import com.lenta.shared.utilities.Logger
 import javax.inject.Inject
 
 class ScreenNavigator
@@ -19,6 +20,7 @@ class ScreenNavigator
     }
 
     override fun openLoginScreen() {
+        Logger.d()
         //getFragmentStack()?.push()
     }
 
