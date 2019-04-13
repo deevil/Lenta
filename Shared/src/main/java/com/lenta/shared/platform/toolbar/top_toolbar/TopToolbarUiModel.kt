@@ -1,4 +1,4 @@
-package com.lenta.shared.platform.top_toolbar
+package com.lenta.shared.platform.toolbar.top_toolbar
 
 
 class TopToolbarUiModel(val title: String? = null,

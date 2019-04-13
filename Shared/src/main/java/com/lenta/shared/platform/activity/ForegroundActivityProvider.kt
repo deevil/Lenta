@@ -1,6 +1,6 @@
 package com.lenta.shared.platform.activity
 
-import com.lenta.shared.platform.main_activity.BaseMainActivity
+import com.lenta.shared.platform.activity.main_activity.BaseMainActivity
 import java.lang.ref.WeakReference
 
 class ForegroundActivityProvider {

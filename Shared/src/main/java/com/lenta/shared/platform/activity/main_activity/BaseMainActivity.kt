@@ -1,4 +1,4 @@
-package com.lenta.shared.platform.main_activity
+package com.lenta.shared.platform.activity.main_activity
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment

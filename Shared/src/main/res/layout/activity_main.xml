@@ -8,18 +8,20 @@
 
         <variable
             name="vm"
-            type="com.lenta.shared.platform.main_activity.BaseMainViewModel" />
+            type="com.lenta.shared.platform.activity.main_activity.BaseMainViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
-
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".platform.main_activity.BaseMainActivity">
+        android:animateLayoutChanges="true"
+        tools:context=".platform.activity.main_activity.BaseMainActivity">
 
         <include
             android:id="@+id/layout_top_toolbar"
             layout="@layout/layout_top_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -30,10 +32,20 @@
             android:id="@+id/fragments"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/layout_bottom_toolbar"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/layout_top_toolbar" />
+
+        <include
+            android:id="@+id/layout_bottom_toolbar"
+            layout="@layout/layout_bottom_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:vm="@{vm.bottomToolbarUiModel}" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>
