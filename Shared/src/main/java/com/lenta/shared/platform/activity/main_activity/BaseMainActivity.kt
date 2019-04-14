@@ -51,8 +51,8 @@ abstract class BaseMainActivity : BaseActivity<ActivityMainBinding>(), ToolbarBu
         this.hideKeyboard()
     }
 
-    override fun onBottomBarButtonClick(view: View) {
-        getCurrentFragment()?.implementationOf(ToolbarButtonsClickListener::class.java)?.onBottomBarButtonClick(view)
+    override fun onToolbarButtonClick(view: View) {
+        getCurrentFragment()?.implementationOf(ToolbarButtonsClickListener::class.java)?.onToolbarButtonClick(view)
     }
 
     abstract fun getBottomToolBarUIModel(): BottomToolbarUiModel

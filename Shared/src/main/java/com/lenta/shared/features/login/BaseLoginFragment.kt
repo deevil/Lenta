@@ -9,7 +9,7 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListe
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.utilities.Logg
 
-class LoginFragment : BaseFragment<com.lenta.shared.databinding.FragmentLoginBinding>(), OnBackPresserListener, ToolbarButtonsClickListener {
+class BaseLoginFragment : BaseFragment<com.lenta.shared.databinding.FragmentLoginBinding>(), OnBackPresserListener, ToolbarButtonsClickListener {
 
 
     override fun getLayoutId(): Int = R.layout.fragment_login
@@ -19,12 +19,6 @@ class LoginFragment : BaseFragment<com.lenta.shared.databinding.FragmentLoginBin
         return true
     }
 
-    override fun onBottomBarButtonClick(view: View) {
-        when (view.id) {
-            R.id.b_5 -> Logg.d { "button 5" }
-        }
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         getBottomToolBarUIModel()?.let {
@@ -32,6 +26,24 @@ class LoginFragment : BaseFragment<com.lenta.shared.databinding.FragmentLoginBin
             it.uiModelButton5.show(ButtonDecorationInfo.enterToApp)
 
         }
+
+        binding?.layoutLogin?.vm = AuthFormUIModel()
+    }
+
+    override fun onToolbarButtonClick(view: View) {
+        Logg.d { "view.id: ${view.id}" }
+        when (view.id) {
+            R.id.b_5 -> progress()
+        }
+    }
+
+    private fun progress() {
+        binding?.let {
+            it.layoutLogin.vm?.let {
+                it.progress.value = !(it.progress.value ?: false)
+            }
+        }
+
     }
 
 }

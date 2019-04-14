@@ -1,7 +1,7 @@
 package com.lenta.bp10.platform.navigation
 
 import com.lenta.shared.account.IAuthenticator
-import com.lenta.shared.features.login.LoginFragment
+import com.lenta.shared.features.login.BaseLoginFragment
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
 import com.lenta.shared.utilities.Logg
 import javax.inject.Inject
@@ -24,7 +24,7 @@ class ScreenNavigator
         Logg.d()
         getFragmentStack()?.let {
             it.popAll()
-            it.replace(LoginFragment())
+            it.replace(BaseLoginFragment())
         }
     }
 

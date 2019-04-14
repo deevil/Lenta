@@ -32,7 +32,7 @@
             android:focusable="@{vm.uiModelButton1.enabled}"
             android:gravity="center"
             android:minWidth="70dp"
-            android:onClick="@{(v) -> toolbarButtonsClickListener.onBottomBarButtonClick(v)}"
+            android:onClick="@{(v) -> toolbarButtonsClickListener.onToolbarButtonClick(v)}"
             android:padding="8dp"
             app:buttonDecorationInfo='@{vm.uiModelButton1.buttonDecorationInfo}'
             app:invisible="@{!vm.uiModelButton1.visibility}"
@@ -54,7 +54,7 @@
             android:focusable="@{vm.uiModelButton2.enabled}"
             android:gravity="center"
             android:minWidth="70dp"
-            android:onClick="@{(v) -> toolbarButtonsClickListener.onBottomBarButtonClick(v)}"
+            android:onClick="@{(v) -> toolbarButtonsClickListener.onToolbarButtonClick(v)}"
             android:padding="8dp"
             android:textSize="12sp"
             app:buttonDecorationInfo='@{vm.uiModelButton2.buttonDecorationInfo}'
@@ -77,7 +77,7 @@
             android:focusable="@{vm.uiModelButton3.enabled}"
             android:gravity="center"
             android:minWidth="70dp"
-            android:onClick="@{(v) -> toolbarButtonsClickListener.onBottomBarButtonClick(v)}"
+            android:onClick="@{(v) -> toolbarButtonsClickListener.onToolbarButtonClick(v)}"
             android:padding="8dp"
             android:textSize="12sp"
             app:buttonDecorationInfo='@{vm.uiModelButton3.buttonDecorationInfo}'
@@ -100,7 +100,7 @@
             android:focusable="@{vm.uiModelButton4.enabled}"
             android:gravity="center"
             android:minWidth="70dp"
-            android:onClick="@{(v) -> toolbarButtonsClickListener.onBottomBarButtonClick(v)}"
+            android:onClick="@{(v) -> toolbarButtonsClickListener.onToolbarButtonClick(v)}"
             android:padding="8dp"
             android:textSize="12sp"
             app:buttonDecorationInfo='@{vm.uiModelButton4.buttonDecorationInfo}'
@@ -123,7 +123,7 @@
             android:focusable="@{vm.uiModelButton5.enabled}"
             android:gravity="center"
             android:minWidth="70dp"
-            android:onClick="@{(v) -> toolbarButtonsClickListener.onBottomBarButtonClick(v)}"
+            android:onClick="@{(v) -> toolbarButtonsClickListener.onToolbarButtonClick(v)}"
             android:padding="8dp"
             android:textSize="12sp"
             app:buttonDecorationInfo='@{vm.uiModelButton5.buttonDecorationInfo}'
