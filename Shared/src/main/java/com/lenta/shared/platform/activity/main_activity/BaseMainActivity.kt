@@ -1,6 +1,7 @@
 package com.lenta.shared.platform.activity.main_activity
 
 import android.os.Bundle
+import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import com.lenta.shared.R
@@ -9,11 +10,12 @@ import com.lenta.shared.platform.activity.BaseActivity
 import com.lenta.shared.platform.activity.OnBackPresserListener
 import com.lenta.shared.platform.navigation.FragmentStack
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
+import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.hideKeyboard
 import com.lenta.shared.utilities.extentions.implementationOf
 
-abstract class BaseMainActivity : BaseActivity<ActivityMainBinding>() {
+abstract class BaseMainActivity : BaseActivity<ActivityMainBinding>(), ToolbarButtonsClickListener {
 
     val fragmentStack: FragmentStack by lazy {
         FragmentStack(supportFragmentManager, R.id.fragments)
@@ -28,6 +30,7 @@ abstract class BaseMainActivity : BaseActivity<ActivityMainBinding>() {
         if (savedInstanceState == null) {
             onNewEnter()
         }
+        binding?.toolbarButtonsClickListener = this
     }
 
 
@@ -48,7 +51,11 @@ abstract class BaseMainActivity : BaseActivity<ActivityMainBinding>() {
         this.hideKeyboard()
     }
 
-    abstract fun getBottomToolBarUIModel() : BottomToolbarUiModel
+    override fun onBottomBarButtonClick(view: View) {
+        getCurrentFragment()?.implementationOf(ToolbarButtonsClickListener::class.java)?.onBottomBarButtonClick(view)
+    }
+
+    abstract fun getBottomToolBarUIModel(): BottomToolbarUiModel
 
 
     abstract fun onNewEnter()

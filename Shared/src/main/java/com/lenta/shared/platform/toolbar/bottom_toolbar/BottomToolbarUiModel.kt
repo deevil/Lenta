@@ -14,9 +14,9 @@ class BottomToolbarUiModel {
     val uiModelButton5: ButtonUiModel = ButtonUiModel()
     val buttonsUiModels = listOf(uiModelButton1, uiModelButton2, uiModelButton3, uiModelButton4, uiModelButton5)
 
-    fun cleanAll() {
+    fun cleanAll(visible: Boolean = true) {
         buttonsUiModels.forEach { it.clean() }
-        visibility.value = false
+        visibility.value = visible
 
     }
 }
