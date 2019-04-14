@@ -33,6 +33,7 @@ class FragmentStack(private val manager: FragmentManager, private val containerI
         if (peek() != null)
             fragment.arguments!!.putString("_before", peek()!!.arguments!!.getString("_tag"))
         transaction.replace(containerId, fragment, tag)
+        transaction.addToBackStack(null)
         transaction.commit()
         executePendingTransactions()
     }

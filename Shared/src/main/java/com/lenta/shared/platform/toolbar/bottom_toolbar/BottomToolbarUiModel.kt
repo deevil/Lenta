@@ -1,12 +1,9 @@
 package com.lenta.shared.platform.toolbar.bottom_toolbar
 
-import android.widget.TextView
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
-import androidx.databinding.BindingAdapter
 import androidx.lifecycle.MutableLiveData
 import com.lenta.shared.R
-import com.lenta.shared.utilities.extentions.setTextViewDrawableColor
 
 class BottomToolbarUiModel {
     val visibility: MutableLiveData<Boolean> = MutableLiveData()
@@ -15,36 +12,52 @@ class BottomToolbarUiModel {
     val uiModelButton3: ButtonUiModel = ButtonUiModel()
     val uiModelButton4: ButtonUiModel = ButtonUiModel()
     val uiModelButton5: ButtonUiModel = ButtonUiModel()
+    val buttonsUiModels = listOf(uiModelButton1, uiModelButton2, uiModelButton3, uiModelButton4, uiModelButton5)
+
+    fun cleanAll() {
+        buttonsUiModels.forEach { it.clean() }
+        visibility.value = false
+
+    }
 }
 
 data class ButtonUiModel(
         val buttonDecorationInfo: MutableLiveData<ButtonDecorationInfo?> = MutableLiveData(),
-        val visible: MutableLiveData<Boolean> = MutableLiveData(),
+        val visibility: MutableLiveData<Boolean> = MutableLiveData(),
         val enabled: MutableLiveData<Boolean> = MutableLiveData()
-)
+) {
+    fun clean() {
+        buttonDecorationInfo.value = ButtonDecorationInfo.clean
+        visibility.value = false
+        enabled.value = true
+    }
+
+    fun show(buttonDecorationInfo: ButtonDecorationInfo? = null, visible: Boolean = true, enabled: Boolean = true) {
+        this.visibility.value = visible
+        this.enabled.value = enabled
+        buttonDecorationInfo?.let {
+            this.buttonDecorationInfo.value = it
+        }
+
+    }
+}
 
 data class ButtonDecorationInfo(
         @DrawableRes val iconRes: Int,
         @StringRes val titleRes: Int
-)
-
-@BindingAdapter(value = ["buttonDecorationInfo", "android:enabled"], requireAll = false)
-fun setButtonDecorationInfo(textView: TextView, buttonDecorationInfo: ButtonDecorationInfo?, enabled: Boolean?) {
-    if (buttonDecorationInfo == null) {
-        textView.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0)
-        textView.text = null
-        return
-    }
-    buttonDecorationInfo.iconRes.let {
-        textView.setCompoundDrawablesWithIntrinsicBounds(0, buttonDecorationInfo.iconRes, 0, 0)
-        if (buttonDecorationInfo.titleRes != 0) {
-            textView.setText(buttonDecorationInfo.titleRes)
+) {
+    companion object {
+        val enterToApp: ButtonDecorationInfo by lazy {
+            ButtonDecorationInfo(R.drawable.ic_exit_to_app_white, R.string.enter)
         }
-    }
-    if (enabled != null) {
-        textView.isEnabled = enabled
-        textView.setTextViewDrawableColor(if (enabled) R.color.color_text_white else R.color.color_disabled_blue)
+        val clean: ButtonDecorationInfo by lazy {
+            ButtonDecorationInfo(0, 0)
+        }
+
     }
 }
+
+
+
 
 

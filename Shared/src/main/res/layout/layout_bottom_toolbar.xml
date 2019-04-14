@@ -30,9 +30,8 @@
             android:gravity="center"
             android:minWidth="70dp"
             android:padding="8dp"
-            android:visibility="@{vm.uiModelButton1.visible}"
             app:buttonDecorationInfo='@{vm.uiModelButton1.buttonDecorationInfo}'
-            app:invisible="@{!vm.uiModelButton1.visible}"
+            app:invisible="@{!vm.uiModelButton1.visibility}"
             app:layout_constraintEnd_toStartOf="@+id/b_2"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintHorizontal_chainStyle="spread_inside"
@@ -54,7 +53,7 @@
             android:padding="8dp"
             android:textSize="12sp"
             app:buttonDecorationInfo='@{vm.uiModelButton2.buttonDecorationInfo}'
-            app:invisible="@{!vm.uiModelButton2.visible}"
+            app:invisible="@{!vm.uiModelButton2.visibility}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/b_3"
             app:layout_constraintHorizontal_bias="0.5"
@@ -76,7 +75,7 @@
             android:padding="8dp"
             android:textSize="12sp"
             app:buttonDecorationInfo='@{vm.uiModelButton3.buttonDecorationInfo}'
-            app:invisible="@{!vm.uiModelButton3.visible}"
+            app:invisible="@{!vm.uiModelButton3.visibility}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/b_4"
             app:layout_constraintHorizontal_bias="0.5"
@@ -98,7 +97,7 @@
             android:padding="8dp"
             android:textSize="12sp"
             app:buttonDecorationInfo='@{vm.uiModelButton4.buttonDecorationInfo}'
-            app:invisible="@{!vm.uiModelButton4.visible}"
+            app:invisible="@{!vm.uiModelButton4.visibility}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/b_5"
             app:layout_constraintHorizontal_bias="0.5"
@@ -120,7 +119,7 @@
             android:padding="8dp"
             android:textSize="12sp"
             app:buttonDecorationInfo='@{vm.uiModelButton5.buttonDecorationInfo}'
-            app:invisible="@{!vm.uiModelButton5.visible}"
+            app:invisible="@{!vm.uiModelButton5.visibility}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"

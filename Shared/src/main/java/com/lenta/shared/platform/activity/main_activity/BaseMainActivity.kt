@@ -8,8 +8,10 @@ import com.lenta.shared.databinding.ActivityMainBinding
 import com.lenta.shared.platform.activity.BaseActivity
 import com.lenta.shared.platform.activity.OnBackPresserListener
 import com.lenta.shared.platform.navigation.FragmentStack
+import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
+import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.hideKeyboard
-import com.lenta.shared.utilities.extentions.implementation
+import com.lenta.shared.utilities.extentions.implementationOf
 
 abstract class BaseMainActivity : BaseActivity<ActivityMainBinding>() {
 
@@ -30,25 +32,27 @@ abstract class BaseMainActivity : BaseActivity<ActivityMainBinding>() {
 
 
     override fun onBackPressed() {
-        super.onBackPressed()
-
-        getCurrentFragment()?.implementation(OnBackPresserListener::class.java)?.let {
+        getCurrentFragment()?.implementationOf(OnBackPresserListener::class.java)?.let {
             if (it.onBackPressed()) {
                 super.onBackPressed()
-                return
             }
+            return
         }
         super.onBackPressed()
     }
 
     private fun getCurrentFragment(): Fragment? = fragmentStack.peek()
 
-    fun onBackStackChanged() {
+    private fun onBackStackChanged() {
+        Logg.d()
         this.hideKeyboard()
     }
 
+    abstract fun getBottomToolBarUIModel() : BottomToolbarUiModel
+
 
     abstract fun onNewEnter()
+
 
 }
 

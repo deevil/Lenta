@@ -4,7 +4,7 @@ import android.os.Build
 import android.util.Log
 import android.util.Log.*
 
-object Logger {
+object Logg {
 
     private val DEFAULT_MESSSAGE = "ಠ_ಠ"
 
