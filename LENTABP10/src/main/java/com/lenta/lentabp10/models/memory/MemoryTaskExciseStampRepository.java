@@ -39,7 +39,7 @@ public class MemoryTaskExciseStampRepository implements ITaskExciseStampReposito
 
         int index = -1;
         for(int i=0; i<stamps.size(); i++) {
-            //todo (Артем И., 05.04.2019) code (exciseStamp.getCode()) уникальный, поэтому сравнение делаем только по нему, по товару materialNumber не сравниваем
+            // (Артем И., 05.04.2019) code (exciseStamp.getCode()) уникальный, поэтому сравнение делаем только по нему, по товару materialNumber не сравниваем
             if ( exciseStamp.getCode() == stamps.get(i).getCode() ) {
                 index = i;
             }
@@ -62,7 +62,7 @@ public class MemoryTaskExciseStampRepository implements ITaskExciseStampReposito
 
         int index = -1;
         for(int i=0; i<stamps.size(); i++) {
-            //todo (Артем И., 05.04.2019) code (exciseStamp.getCode()) уникальный, поэтому сравнение делаем только по нему, по товару materialNumber не сравниваем
+            // (Артем И., 05.04.2019) code (exciseStamp.getCode()) уникальный, поэтому сравнение делаем только по нему, по товару materialNumber не сравниваем
             if ( exciseStamp.getCode() == stamps.get(i).getCode() ) {
                 index = i;
             }

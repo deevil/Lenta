@@ -20,7 +20,7 @@ public class ProcessNonExciseAlcoProductService implements IProcessProductServic
 
     @Override
     public double getTotalCount() {
-        //todo (Артем И., 09.04.2019) по данному продукту ИТОГО причин списания
+        // (Артем И., 09.04.2019) по данному продукту ИТОГО причин списания
         List<TaskWriteOffReason> arrTaskWriteOffReason = taskRepository.getWriteOffReasons().findWriteOffReasonsOfProduct(productInfo);
         double totalCount = 0;
         for(int i=0; i<arrTaskWriteOffReason.size(); i++) {
@@ -41,7 +41,7 @@ public class ProcessNonExciseAlcoProductService implements IProcessProductServic
     }
 
     public ProcessNonExciseAlcoProductService add(WriteOffReason reason, double count) {
-        //todo (Артем И., 09.04.2019) добавить товар если его нету в таске товаров, в репозитории найти причину списания для данного товара, если есть, то увеличить count иначе создать новый
+        // (Артем И., 09.04.2019) добавить товар если его нету в таске товаров, в репозитории найти причину списания для данного товара, если есть, то увеличить count иначе создать новый
         TaskWriteOffReason taskWriteOfReason = new TaskWriteOffReason(reason, productInfo.getMaterialNumber(), count);
         if ( taskRepository.getProducts().findProduct(productInfo) == null ) {
             taskRepository.getProducts().addProduct(productInfo);

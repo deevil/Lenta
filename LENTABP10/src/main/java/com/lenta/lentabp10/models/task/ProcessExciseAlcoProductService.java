@@ -20,7 +20,7 @@ public class ProcessExciseAlcoProductService implements IProcessProductService {
 
     @Override
     public double getTotalCount() {
-        //todo (Артем И., 09.04.2019) по данному продукту ИТОГО причин списания + кол-во марок
+        // (Артем И., 09.04.2019) по данному продукту ИТОГО причин списания + кол-во марок
         List<TaskWriteOffReason> arrTaskWriteOffReason = taskRepository.getWriteOffReasons().findWriteOffReasonsOfProduct(productInfo);
         List<TaskExciseStamp> arrTaskExciseStamp = taskRepository.getExciseStamps().findExciseStampsOfProduct(productInfo);
         double totalCount = 0;
@@ -36,7 +36,7 @@ public class ProcessExciseAlcoProductService implements IProcessProductService {
 
     @Override
     public WriteOffTask apply() {
-        //todo сохранить текущую сессию
+        // сохранить текущую сессию
         return new WriteOffTask(taskDescription, taskRepository);
     }
 
@@ -46,7 +46,7 @@ public class ProcessExciseAlcoProductService implements IProcessProductService {
     }
 
     public ProcessExciseAlcoProductService add(WriteOffReason reason, double count, TaskExciseStamp stamp) {
-        //todo добавить товар если его нету в таске товаров, в репозитории найти причину списания для данного товара, если есть, то увеличить count иначе создать новый, добавить марку
+        // добавить товар если его нету в таске товаров, в репозитории найти причину списания для данного товара, если есть, то увеличить count иначе создать новый, добавить марку
         TaskWriteOffReason taskWriteOfReason = new TaskWriteOffReason(reason, productInfo.getMaterialNumber(), count);
         if ( taskRepository.getProducts().findProduct(productInfo) == null ) {
             taskRepository.getProducts().addProduct(productInfo);

@@ -19,7 +19,7 @@ public class WriteOffTask {
 
 
     public WriteOffTask deleteProducts(List<ProductInfo> products) {
-        //todo (Артем И., 09.04.2019) удалить перечень продуктов (products), причины списания и марки
+        // (Артем И., 09.04.2019) удалить перечень продуктов (products), причины списания и марки
         for(int i=0; i<products.size(); i++) {
             taskRepository.getExciseStamps().deleteExciseStampsForProduct(products.get(i));
             taskRepository.getWriteOffReasons().deleteWriteOffReasonsForProduct(products.get(i));
@@ -29,8 +29,8 @@ public class WriteOffTask {
     }
 
     public ProcessGeneralProductService processGeneralProduct(IProduct product) {
-        //todo (Артем И., 09.04.2019) search product taskRepository если есть то (проверяем, что обычный продукт - не алкоголь) create ProcessGeneralProductService
-        //todo (Артем И., 10.04.2019) поиск продукта в репозитории не делать, проверять только тип товара на General и возвращать ProcessGeneralProductService
+        // (Артем И., 09.04.2019) search product taskRepository если есть то (проверяем, что обычный продукт - не алкоголь) create ProcessGeneralProductService
+        // (Артем И., 10.04.2019) поиск продукта в репозитории не делать, проверять только тип товара на General и возвращать ProcessGeneralProductService
         if (product.getType() == ProductType.General) {
             return new ProcessGeneralProductService(taskDescription, taskRepository, (ProductInfo) product);
         }
@@ -39,7 +39,7 @@ public class WriteOffTask {
     }
 
     public ProcessNonExciseAlcoProductService processNonExciseAlcoProduct(IProduct product) {
-        //todo (Артем И., 11.04.2019) тоже самое, что и в ProcessGeneralProductService
+        // (Артем И., 11.04.2019) тоже самое, что и в ProcessGeneralProductService
         if (product.getType() == ProductType.NonExciseAlcohol) {
             return new ProcessNonExciseAlcoProductService(taskDescription, taskRepository, (ProductInfo) product);
         }
@@ -48,7 +48,7 @@ public class WriteOffTask {
     }
 
     public ProcessExciseAlcoProductService processExciseAlcoProduct(IProduct product) {
-        //todo (Артем И., 11.04.2019) тоже самое, что и в ProcessGeneralProductService
+        // (Артем И., 11.04.2019) тоже самое, что и в ProcessGeneralProductService
         if (product.getType() == ProductType.ExciseAlcohol) {
             return new ProcessExciseAlcoProductService(taskDescription, taskRepository, (ProductInfo) product);
         }
@@ -61,12 +61,12 @@ public class WriteOffTask {
     }
 
     public int getProductCount(){
-        //todo (Артем И., 11.04.2019) данный метод пока оставить так
+        // (Артем И., 11.04.2019) данный метод пока оставить так
         return taskRepository.getProducts().lenght();
     }
 
     public double getTotalCountOfProduct(ProductInfo product) {
-        //todo считать ИТОГО причин списания, а для акцизного товара ИТОГО + кол-во марок
+        // считать ИТОГО причин списания, а для акцизного товара ИТОГО + кол-во марок
         double totalCount;
         switch (product.getType()) {
             case General:
@@ -90,8 +90,8 @@ public class WriteOffTask {
         return new TaskSaveModel(taskDescription, taskRepository);
     }
 
-    void clearTask() {
-        //todo (Артем И., 11.04.2019) очистить все репозитории, taskDescription не очищать
+    public void clearTask() {
+        // (Артем И., 11.04.2019) очистить все репозитории, taskDescription не очищать
         taskRepository.getProducts().clear();
         taskRepository.getWriteOffReasons().clear();
         taskRepository.getExciseStamps().clear();
