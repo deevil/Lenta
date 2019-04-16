@@ -30,6 +30,9 @@ android {
 dependencies {
     // Kotlin
     api deps.kotlin.stdlib
+    api deps.kotlin.coroutines
+    api deps.kotlin.coroutinesAndroid
+    api deps.kotlin.viewmodel_ktx
 
     // DI
     kapt deps.dagger.compiler

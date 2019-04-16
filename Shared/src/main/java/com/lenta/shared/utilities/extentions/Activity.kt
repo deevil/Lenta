@@ -6,9 +6,9 @@ import android.view.View
 import android.view.inputmethod.InputMethodManager
 
 
-fun Activity.hideKeyboard(view: View? = null) {
+fun Activity.hideKeyboard(mView: View? = null) {
     val imm = this.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-    var view = view ?: this.currentFocus
+    var view = mView ?: this.currentFocus
     if (view == null) {
         view = View(this)
     }
