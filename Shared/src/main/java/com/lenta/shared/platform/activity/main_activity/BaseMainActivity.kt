@@ -52,6 +52,7 @@ abstract class BaseMainActivity : BaseActivity<ActivityMainBinding>(), ToolbarBu
     }
 
     override fun onToolbarButtonClick(view: View) {
+        this.hideKeyboard()
         getCurrentFragment()?.implementationOf(ToolbarButtonsClickListener::class.java)?.onToolbarButtonClick(view)
     }
 

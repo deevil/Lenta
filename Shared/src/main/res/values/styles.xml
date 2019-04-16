@@ -11,6 +11,7 @@
         <item name="editTextStyle">@style/edit_text_style</item>
         <item name="spinnerStyle">@style/spinner_style</item>
         <item name="android:spinnerItemStyle">@style/SpinnerItemStyle</item>
+        <item name="android:progressBarStyle">@style/ProgressBar</item>
     </style>
 
 
@@ -129,7 +130,7 @@
         <item name="android:padding">6dp</item>
     </style>
 
-    <style name="ProgressBar">
+    <style name="ProgressBar" parent="Base.Widget.AppCompat.ProgressBar">
         <item name="android:indeterminateDrawable">@drawable/progress_bar</item>
         <item name="android:indeterminateOnly">true</item>
     </style>

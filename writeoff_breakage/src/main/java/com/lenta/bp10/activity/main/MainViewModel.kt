@@ -1,15 +1,23 @@
 package com.lenta.bp10.activity.main
 
+import com.lenta.shared.features.login.usecase.Auth
 import com.lenta.bp10.platform.navigation.IScreenNavigator
 import com.lenta.shared.platform.activity.main_activity.BaseMainViewModel
 import javax.inject.Inject
-
-class MainViewModel: BaseMainViewModel() {
+import com.lenta.shared.utilities.Logg
+class MainViewModel : BaseMainViewModel() {
     @Inject
     lateinit var screenNavigator: IScreenNavigator
+    @Inject
+    lateinit var auth: Auth
 
     fun onNewEnter() {
-        screenNavigator.openFirsctScreen()
+        screenNavigator.openFirstScreen()
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        Logg.d { "onCleared" }
     }
 
 

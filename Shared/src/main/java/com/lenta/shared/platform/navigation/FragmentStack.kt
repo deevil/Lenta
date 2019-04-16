@@ -8,10 +8,13 @@ import java.util.HashSet
 import java.util.Random
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
+import com.lenta.shared.R
 
 class FragmentStack(private val manager: FragmentManager, private val containerId: Int) {
     private val random: Random = Random(System.currentTimeMillis())
     private var listener: FragmentManager.OnBackStackChangedListener? = null
+
+    var defaultAnimation: CustomAnimation = CustomAnimation.horizontal()
 
 
     fun setOnBackStackChangedListener(listener: FragmentManager.OnBackStackChangedListener) {
@@ -23,12 +26,17 @@ class FragmentStack(private val manager: FragmentManager, private val containerI
     /**
      * Pushes a fragment to the top of the stack.
      */
-    fun push(fragment: Fragment) {
+    fun push(fragment: Fragment, customAnimation: CustomAnimation? = null, disableAnimations: Boolean = false) {
         val transaction = manager.beginTransaction()
-        /*transaction.setCustomAnimations(R.anim.card_slide_left_in,
-                R.anim.card_slide_left_out,
-                R.anim.card_slide_right_in,
-                R.anim.card_slide_right_out);*/
+        if (!disableAnimations) {
+            val animation = customAnimation ?: defaultAnimation
+            transaction.setCustomAnimations(
+                    animation.enter,
+                    animation.exit,
+                    animation.popEnter,
+                    animation.popExit)
+        }
+
         val tag = setTag(fragment)
         if (peek() != null)
             fragment.arguments!!.putString("_before", peek()!!.arguments!!.getString("_tag"))
@@ -38,20 +46,6 @@ class FragmentStack(private val manager: FragmentManager, private val containerI
         executePendingTransactions()
     }
 
-
-    /**
-     * Pushes a fragment to the top of the stack.
-     */
-    fun pushWithoutAnimation(fragment: Fragment) {
-        val transaction = manager.beginTransaction()
-        val tag = setTag(fragment)
-        if (peek() != null)
-            fragment.arguments!!.putString("_before", peek()!!.arguments!!.getString("_tag"))
-        transaction.replace(containerId, fragment, tag)
-        transaction.addToBackStack(null)
-        transaction.commit()
-        executePendingTransactions()
-    }
 
     /**
      * Replaces entire stack contents with just one fragment.
@@ -138,6 +132,31 @@ class FragmentStack(private val manager: FragmentManager, private val containerI
             if (bundle == null) return
             val keys = HashSet(bundle.keySet())
             for (key in keys) if (key.startsWith("_")) bundle.remove(key)
+        }
+    }
+}
+
+data class CustomAnimation(
+        val enter: Int,
+        val exit: Int,
+        val popEnter: Int,
+        val popExit: Int
+) {
+    companion object {
+        fun horizontal(): CustomAnimation {
+            return CustomAnimation(
+                    R.anim.card_slide_left_in,
+                    R.anim.card_slide_left_out,
+                    R.anim.card_slide_right_in,
+                    R.anim.card_slide_right_out)
+        }
+
+        fun vertical(): CustomAnimation {
+            return CustomAnimation(
+                    R.anim.card_slide_top_in,
+                    R.anim.card_slide_top_out,
+                    R.anim.card_slide_bottom_in,
+                    R.anim.card_slide_bottom_out)
         }
     }
 }

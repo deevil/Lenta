@@ -2,20 +2,25 @@ package com.lenta.bp10.activity.main
 
 import android.os.Bundle
 import androidx.lifecycle.ViewModelProviders
+import com.lenta.bp10.di.AppComponent
 import com.lenta.bp10.di.getAppComponent
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
 import com.lenta.shared.platform.activity.main_activity.BaseMainActivity
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
+import com.lenta.shared.utilities.Logg
 import javax.inject.Inject
 
 class MainActivity : BaseMainActivity() {
 
+    val appComponent: AppComponent by lazy {
+        getAppComponent()
+    }
 
     @Inject
     lateinit var foregroundActivityProvider: ForegroundActivityProvider
 
     private val mainViewModel: MainViewModel by lazy {
-        getAppComponent().let {
+        appComponent.let {
             it.inject(this)
             foregroundActivityProvider.setActivity(this)
 
@@ -36,6 +41,7 @@ class MainActivity : BaseMainActivity() {
     }
 
     override fun onNewEnter() {
+        Logg.d { "onNewEnter" }
         mainViewModel.onNewEnter()
     }
 

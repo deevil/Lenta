@@ -1,4 +1,4 @@
-package com.lenta.shared.features.login
+package com.lenta.shared.features.login.usecase
 
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.functional.Either

@@ -12,4 +12,8 @@
     <string name="add">Добавить</string>
     <string name="apply">Применить</string>
     <string name="enter">Войти</string>
+    <string name="error_server">Ошибка сервера</string>
+    <string name="error_network">Ошибка подключения</string>
+    <string name="error_auth">Ошибка авторизации</string>
+    <string name="error_unknown">Неизвестная ошибка</string>
 </resources>

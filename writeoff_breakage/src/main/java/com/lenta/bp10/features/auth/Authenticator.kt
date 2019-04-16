@@ -1,4 +1,4 @@
-package com.lenta.bp10.auth
+package com.lenta.bp10.features.auth
 
 import com.lenta.shared.account.IAuthenticator
 import com.lenta.shared.di.AppScope

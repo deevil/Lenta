@@ -2,48 +2,42 @@ package com.lenta.shared.features.login
 
 import android.os.Bundle
 import android.view.View
+import androidx.lifecycle.Observer
 import com.lenta.shared.R
 import com.lenta.shared.platform.activity.OnBackPresserListener
 import com.lenta.shared.platform.fragment.BaseFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
-import com.lenta.shared.utilities.Logg
 
-class BaseLoginFragment : BaseFragment<com.lenta.shared.databinding.FragmentLoginBinding>(), OnBackPresserListener, ToolbarButtonsClickListener {
-
+abstract class BaseLoginFragment : BaseFragment<com.lenta.shared.databinding.FragmentLoginBinding, BaseAuthViewModel>(), OnBackPresserListener, ToolbarButtonsClickListener {
 
     override fun getLayoutId(): Int = R.layout.fragment_login
 
+
     override fun onBackPressed(): Boolean {
-        Logg.d { "onBackPressed" }
+        vm.onBackPressed()
         return true
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        getBottomToolBarUIModel()?.let {
-            it.cleanAll()
-            it.uiModelButton5.show(ButtonDecorationInfo.enterToApp)
+        getBottomToolBarUIModel()?.let { bottomToolbarUiModel ->
+            bottomToolbarUiModel.cleanAll()
+            bottomToolbarUiModel.uiModelButton5.let { buttonUiModel ->
+                buttonUiModel.show(ButtonDecorationInfo.enterToApp)
+                vm.enterEnabled.observe(this, Observer { buttonUiModel.enabled.value = it })
+            }
+
 
         }
 
-        binding?.layoutLogin?.vm = AuthFormUIModel()
     }
 
     override fun onToolbarButtonClick(view: View) {
-        Logg.d { "view.id: ${view.id}" }
         when (view.id) {
-            R.id.b_5 -> progress()
+            R.id.b_5 -> vm.onClickEnter()
         }
     }
 
-    private fun progress() {
-        binding?.let {
-            it.layoutLogin.vm?.let {
-                it.progress.value = !(it.progress.value ?: false)
-            }
-        }
-
-    }
 
 }
