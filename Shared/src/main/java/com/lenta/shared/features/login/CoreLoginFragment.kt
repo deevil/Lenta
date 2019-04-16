@@ -5,11 +5,11 @@ import android.view.View
 import androidx.lifecycle.Observer
 import com.lenta.shared.R
 import com.lenta.shared.platform.activity.OnBackPresserListener
-import com.lenta.shared.platform.fragment.BaseFragment
+import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 
-abstract class BaseLoginFragment : BaseFragment<com.lenta.shared.databinding.FragmentLoginBinding, BaseAuthViewModel>(), OnBackPresserListener, ToolbarButtonsClickListener {
+abstract class CoreLoginFragment : CoreFragment<com.lenta.shared.databinding.FragmentLoginBinding, CoreAuthViewModel>(), OnBackPresserListener, ToolbarButtonsClickListener {
 
     override fun getLayoutId(): Int = R.layout.fragment_login
 

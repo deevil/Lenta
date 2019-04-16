@@ -4,7 +4,7 @@ import androidx.lifecycle.*
 import com.lenta.bp10.platform.navigation.IScreenNavigator
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.exception.IFailureInterpreter
-import com.lenta.shared.features.login.BaseAuthViewModel
+import com.lenta.shared.features.login.CoreAuthViewModel
 import com.lenta.shared.features.login.isEnterEnabled
 import com.lenta.shared.features.login.isValidLoginFields
 import com.lenta.shared.features.login.usecase.Auth
@@ -15,7 +15,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
-class AuthViewModel : BaseAuthViewModel() {
+class AuthViewModel : CoreAuthViewModel() {
 
     @Inject
     lateinit var auth: Auth

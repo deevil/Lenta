@@ -8,7 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 
-abstract class BaseActivity<T : ViewDataBinding> : AppCompatActivity() {
+abstract class CoreActivity<T : ViewDataBinding> : AppCompatActivity() {
     var binding: T? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {

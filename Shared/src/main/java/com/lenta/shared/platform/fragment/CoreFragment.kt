@@ -8,12 +8,12 @@ import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModel
 import com.lenta.shared.BR
-import com.lenta.shared.platform.activity.main_activity.BaseMainActivity
+import com.lenta.shared.platform.activity.main_activity.CoreMainActivity
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.utilities.extentions.implementationOf
 import java.lang.NullPointerException
 
-abstract class BaseFragment<T : ViewDataBinding, S: ViewModel> : Fragment() {
+abstract class CoreFragment<T : ViewDataBinding, S: ViewModel> : Fragment() {
     var binding: T? = null
     lateinit var vm: S
 
@@ -29,11 +29,11 @@ abstract class BaseFragment<T : ViewDataBinding, S: ViewModel> : Fragment() {
     }
 
     fun getBottomToolBarUIModel(): BottomToolbarUiModel? {
-        return getBaseMainActivity()?.getBottomToolBarUIModel()
+        return getCoreMainActivity()?.getBottomToolBarUIModel()
     }
 
-    private fun getBaseMainActivity(): BaseMainActivity? {
-        return activity?.implementationOf(BaseMainActivity::class.java)
+    private fun getCoreMainActivity(): CoreMainActivity? {
+        return activity?.implementationOf(CoreMainActivity::class.java)
     }
 
     override fun onDestroy() {

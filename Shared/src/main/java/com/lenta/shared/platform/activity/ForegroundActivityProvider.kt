@@ -1,13 +1,13 @@
 package com.lenta.shared.platform.activity
 
-import com.lenta.shared.platform.activity.main_activity.BaseMainActivity
+import com.lenta.shared.platform.activity.main_activity.CoreMainActivity
 import java.lang.ref.WeakReference
 
 class ForegroundActivityProvider {
 
-    private var weekReference: WeakReference<BaseMainActivity>? = null
+    private var weekReference: WeakReference<CoreMainActivity>? = null
 
-    fun setActivity(baseMainActivity: BaseMainActivity) {
+    fun setActivity(baseMainActivity: CoreMainActivity) {
         weekReference = WeakReference(baseMainActivity)
     }
 
@@ -16,7 +16,7 @@ class ForegroundActivityProvider {
         weekReference = null
     }
 
-    fun getActivity(): BaseMainActivity? {
+    fun getActivity(): CoreMainActivity? {
         return weekReference?.get()
     }
 

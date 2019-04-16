@@ -8,7 +8,7 @@
 
         <variable
             name="vm"
-            type="com.lenta.shared.platform.activity.main_activity.BaseMainViewModel" />
+            type="com.lenta.shared.platform.activity.main_activity.CoreMainViewModel" />
         <variable
             name="toolbarButtonsClickListener"
             type="com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener"/>
@@ -18,7 +18,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:animateLayoutChanges="true"
-        tools:context=".platform.activity.main_activity.BaseMainActivity">
+        tools:context=".platform.activity.main_activity.CoreMainActivity">
 
         <include
             android:id="@+id/layout_top_toolbar"

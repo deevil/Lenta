@@ -6,7 +6,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import com.lenta.shared.R
 import com.lenta.shared.databinding.ActivityMainBinding
-import com.lenta.shared.platform.activity.BaseActivity
+import com.lenta.shared.platform.activity.CoreActivity
 import com.lenta.shared.platform.activity.OnBackPresserListener
 import com.lenta.shared.platform.navigation.FragmentStack
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
@@ -15,7 +15,7 @@ import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.hideKeyboard
 import com.lenta.shared.utilities.extentions.implementationOf
 
-abstract class BaseMainActivity : BaseActivity<ActivityMainBinding>(), ToolbarButtonsClickListener {
+abstract class CoreMainActivity : CoreActivity<ActivityMainBinding>(), ToolbarButtonsClickListener {
 
     val fragmentStack: FragmentStack by lazy {
         FragmentStack(supportFragmentManager, R.id.fragments)

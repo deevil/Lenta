@@ -1,9 +1,9 @@
 package com.lenta.shared.features.login
 
 import androidx.lifecycle.MutableLiveData
-import com.lenta.shared.platform.viewmodel.BaseViewModel
+import com.lenta.shared.platform.viewmodel.CoreViewModel
 
-abstract class BaseAuthViewModel : BaseViewModel() {
+abstract class CoreAuthViewModel : CoreViewModel() {
     val login: MutableLiveData<String> = MutableLiveData()
     val password: MutableLiveData<String> = MutableLiveData()
     val progress: MutableLiveData<Boolean> = MutableLiveData()

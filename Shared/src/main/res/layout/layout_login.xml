@@ -8,7 +8,7 @@
 
         <variable
             name="vm"
-            type="com.lenta.shared.features.login.BaseAuthViewModel" />
+            type="com.lenta.shared.features.login.CoreAuthViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

@@ -4,7 +4,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.lenta.shared.exception.Failure
 
-abstract class BaseViewModel : ViewModel() {
+abstract class CoreViewModel : ViewModel() {
     var failure: MutableLiveData<Failure> = MutableLiveData()
 
     open fun handleFailure(failure: Failure) {

@@ -5,12 +5,12 @@ import androidx.lifecycle.ViewModelProviders
 import com.lenta.bp10.di.AppComponent
 import com.lenta.bp10.di.getAppComponent
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
-import com.lenta.shared.platform.activity.main_activity.BaseMainActivity
+import com.lenta.shared.platform.activity.main_activity.CoreMainActivity
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.utilities.Logg
 import javax.inject.Inject
 
-class MainActivity : BaseMainActivity() {
+class MainActivity : CoreMainActivity() {
 
     val appComponent: AppComponent by lazy {
         getAppComponent()
