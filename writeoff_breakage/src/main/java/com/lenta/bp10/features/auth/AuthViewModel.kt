@@ -25,8 +25,6 @@ class AuthViewModel : CoreAuthViewModel() {
     lateinit var failureInterpreter: IFailureInterpreter
 
     override val enterEnabled: MutableLiveData<Boolean> by lazy {
-        login.value = ""
-        password.value = ""
         login.combineLatest(password).map { isValidLoginFields(login = it?.first, password = it?.second) }
                 .combineLatest(progress).map { isEnterEnabled(isFieldsValid = it?.first, inProgress = it?.second) }
     }
@@ -43,7 +41,7 @@ class AuthViewModel : CoreAuthViewModel() {
 
     override fun handleFailure(failure: Failure) {
         super.handleFailure(failure)
-        navigator.openAllertScreen(message = failureInterpreter.getFailureDescription(failure))
+        navigator.openAlertScreen(message = failureInterpreter.getFailureDescription(failure))
     }
 
 

@@ -3,7 +3,7 @@ package com.lenta.bp10.activity.main
 import android.os.Bundle
 import androidx.lifecycle.ViewModelProviders
 import com.lenta.bp10.di.AppComponent
-import com.lenta.bp10.di.getAppComponent
+import com.lenta.bp10.platform.extentions.getAppComponent
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
 import com.lenta.shared.platform.activity.main_activity.CoreMainActivity
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel

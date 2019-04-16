@@ -13,6 +13,7 @@ import com.lenta.shared.exception.FailureInterpreter
 import com.lenta.shared.exception.IFailureInterpreter
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
 import com.lenta.shared.platform.navigation.IGoBackNavigator
+import com.lenta.shared.utilities.Logg
 import com.mobrun.plugin.api.HyperHive
 import com.mobrun.plugin.api.HyperHiveState
 import com.mobrun.plugin.api.VersionAPI
@@ -45,8 +46,8 @@ class AppModule {
                 .buildHyperHive()
 
         if (BuildConfig.DEBUG) {
-            //Easy.logD("hhive plugin version: " + hyperHive.stateAPI.versionPlugin)
-            //Easy.logD("hhive core version: " + hyperHive.stateAPI.getVersionCoreAPI(0))
+            Logg.d { "hhive plugin version: ${hyperHive.stateAPI.versionPlugin}" }
+            Logg.d { "hhive core version: ${hyperHive.stateAPI.getVersionCoreAPI(0)}" }
             hyperHive.loggingAPI.setLogLevel(0)
         } else {
             hyperHive.loggingAPI.setLogLevel(10)

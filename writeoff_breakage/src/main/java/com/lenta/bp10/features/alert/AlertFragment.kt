@@ -1,16 +1,15 @@
 package com.lenta.bp10.features.alert
 
-import androidx.lifecycle.ViewModelProviders
-import com.lenta.bp10.activity.main.MainActivity
+import com.lenta.bp10.platform.extentions.getAppComponent
 import com.lenta.shared.features.message.CoreMessageFragment
 import com.lenta.shared.features.message.MessageViewModel
-import com.lenta.shared.utilities.extentions.implementationOf
+import com.lenta.shared.utilities.extentions.provideViewModel
 
 class AlertFragment : CoreMessageFragment() {
 
     override fun getViewModel(): MessageViewModel {
-        ViewModelProviders.of(this).get(MessageViewModel::class.java).let { vm ->
-            activity.implementationOf(MainActivity::class.java)?.appComponent?.inject(vm)
+        provideViewModel(MessageViewModel::class.java).let { vm ->
+            getAppComponent()?.inject(vm)
             message?.let {
                 vm.message = it
             }

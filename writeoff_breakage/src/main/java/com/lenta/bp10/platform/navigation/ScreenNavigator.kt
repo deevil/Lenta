@@ -15,7 +15,7 @@ class ScreenNavigator
         private val foregroundActivityProvider: ForegroundActivityProvider,
         private val authenticator: IAuthenticator
 ) : IScreenNavigator {
-    override fun openAllertScreen(message: String) {
+    override fun openAlertScreen(message: String) {
         getFragmentStack()?.push(AlertFragment.create(message), CustomAnimation.vertical())
     }
 
@@ -51,5 +51,5 @@ interface IScreenNavigator : IGoBackNavigator {
     fun openFirstScreen()
     fun openLoginScreen()
     fun openSelectMarketScreen()
-    fun openAllertScreen(message: String)
+    fun openAlertScreen(message: String)
 }
