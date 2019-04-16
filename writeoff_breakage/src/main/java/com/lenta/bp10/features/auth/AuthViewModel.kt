@@ -5,7 +5,8 @@ import com.lenta.bp10.platform.navigation.IScreenNavigator
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.exception.IFailureInterpreter
 import com.lenta.shared.features.login.BaseAuthViewModel
-import com.lenta.shared.features.login.LoginFieldsValidator
+import com.lenta.shared.features.login.isEnterEnabled
+import com.lenta.shared.features.login.isValidLoginFields
 import com.lenta.shared.features.login.usecase.Auth
 import com.lenta.shared.features.login.usecase.AuthParams
 import com.lenta.shared.utilities.extentions.combineLatest
@@ -21,14 +22,13 @@ class AuthViewModel : BaseAuthViewModel() {
     @Inject
     lateinit var navigator: IScreenNavigator
     @Inject
-    lateinit var loginFieldsValidator: LoginFieldsValidator
-    @Inject
     lateinit var failureInterpreter: IFailureInterpreter
 
     override val enterEnabled: MutableLiveData<Boolean> by lazy {
         login.value = ""
         password.value = ""
-        login.combineLatest(password).map { loginFieldsValidator.isValid(it?.first, it?.second) }
+        login.combineLatest(password).map { isValidLoginFields(login = it?.first, password = it?.second) }
+                .combineLatest(progress).map { isEnterEnabled(isFieldsValid = it?.first, inProgress = it?.second) }
     }
 
 
@@ -45,7 +45,6 @@ class AuthViewModel : BaseAuthViewModel() {
         super.handleFailure(failure)
         navigator.openAllertScreen(message = failureInterpreter.getFailureDescription(failure))
     }
-
 
 
     private fun handleAuthSuccess(@Suppress("UNUSED_PARAMETER") b: Boolean) {

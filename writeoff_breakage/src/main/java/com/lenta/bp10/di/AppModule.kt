@@ -11,7 +11,6 @@ import com.lenta.shared.account.IAuthenticator
 import com.lenta.shared.di.AppScope
 import com.lenta.shared.exception.FailureInterpreter
 import com.lenta.shared.exception.IFailureInterpreter
-import com.lenta.shared.features.login.LoginFieldsValidator
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
 import com.lenta.shared.platform.navigation.IGoBackNavigator
 import com.mobrun.plugin.api.HyperHive
@@ -75,12 +74,6 @@ class AppModule {
     @AppScope
     internal fun provideGoBackNavigator(screenNavigator: IScreenNavigator): IGoBackNavigator {
         return screenNavigator
-    }
-
-    @Provides
-    @AppScope
-    internal fun provideLoginFieldsValidator(): LoginFieldsValidator {
-        return LoginFieldsValidator()
     }
 
     @Provides
