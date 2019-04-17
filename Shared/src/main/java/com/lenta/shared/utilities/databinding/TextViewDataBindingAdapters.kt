@@ -1,8 +1,9 @@
-package com.lenta.shared.platform.toolbar.bottom_toolbar
+package com.lenta.shared.utilities.databinding
 
 import android.widget.TextView
 import androidx.databinding.BindingAdapter
 import com.lenta.shared.R
+import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.utilities.extentions.setTextViewDrawableColor
 
 @BindingAdapter(value = ["buttonDecorationInfo", "android:enabled"], requireAll = false)

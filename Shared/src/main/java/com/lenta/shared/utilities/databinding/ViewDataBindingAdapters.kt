@@ -1,7 +1,6 @@
-package com.lenta.shared.utilities
+package com.lenta.shared.utilities.databinding
 
 import android.view.View
-import android.widget.Button
 import androidx.databinding.BindingAdapter
 
 @BindingAdapter("isGone")
@@ -11,11 +10,6 @@ fun bindIsGone(view: View, isGone: Boolean) {
     } else {
         View.VISIBLE
     }
-}
-
-@BindingAdapter("isDisable")
-fun bindIsGone(button: Button, isDisable: Boolean) {
-    button.isEnabled = !isDisable
 }
 
 @BindingAdapter("android:visibility")
