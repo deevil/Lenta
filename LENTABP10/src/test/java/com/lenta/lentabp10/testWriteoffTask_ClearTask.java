@@ -34,12 +34,14 @@ public class testWriteoffTask_ClearTask {
     WriteOffTask task;
 
     public void creatingObjectsForTest() {
-        taskDescription = new TaskDescription(new TaskType("СГП", "nСГП"),
+        taskDescription = new TaskDescription(
+                new TaskType("СГП", "nСГП"),
                 "Списание от 04.06 10:23",
                 "0002",
                 new ArrayList<>(Arrays.asList("949ВД")),
                 new ArrayList<>(Arrays.asList("N")),
-                new ArrayList<>(Arrays.asList("2FER", "3ROH"))
+                new ArrayList<>(Arrays.asList("2FER","3ROH")),
+                null,null,null,null
         );
 
         task = new WriteOffTask(taskDescription, taskRepository);

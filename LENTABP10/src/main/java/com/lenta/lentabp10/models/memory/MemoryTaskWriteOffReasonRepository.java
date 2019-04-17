@@ -15,6 +15,11 @@ public class MemoryTaskWriteOffReasonRepository implements ITaskWriteOffReasonRe
     }
 
     @Override
+    public List<TaskWriteOffReason> getWriteOffReasons() {
+        return arrWriteOffReason;
+    }
+
+    @Override
     public List<TaskWriteOffReason> findWriteOffReasonsOfProduct(IProduct product) {
         if (product == null)
         {

@@ -15,6 +15,11 @@ public class MemoryTaskExciseStampRepository implements ITaskExciseStampReposito
     }
 
     @Override
+    public List<TaskExciseStamp> getExciseStamps() {
+        return stamps;
+    }
+
+    @Override
     public List<TaskExciseStamp> findExciseStampsOfProduct(IProduct product) {
         if (product == null)
         {
