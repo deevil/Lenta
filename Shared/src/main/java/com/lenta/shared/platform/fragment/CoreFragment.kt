@@ -10,10 +10,11 @@ import androidx.lifecycle.ViewModel
 import com.lenta.shared.BR
 import com.lenta.shared.platform.activity.main_activity.CoreMainActivity
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
+import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.utilities.extentions.implementationOf
 import java.lang.NullPointerException
 
-abstract class CoreFragment<T : ViewDataBinding, S: ViewModel> : Fragment() {
+abstract class CoreFragment<T : ViewDataBinding, S : ViewModel> : Fragment() {
     var binding: T? = null
     lateinit var vm: S
 
@@ -28,8 +29,18 @@ abstract class CoreFragment<T : ViewDataBinding, S: ViewModel> : Fragment() {
         throw NullPointerException("DataBinding is null")
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        invalidateTopToolBar()
+        invalidateBottomToolBar()
+    }
+
     fun getBottomToolBarUIModel(): BottomToolbarUiModel? {
         return getCoreMainActivity()?.getBottomToolBarUIModel()
+    }
+
+    fun getTopToolBarUIModel(): TopToolbarUiModel? {
+        return getCoreMainActivity()?.getTopToolbarUIModel()
     }
 
     private fun getCoreMainActivity(): CoreMainActivity? {
@@ -41,10 +52,29 @@ abstract class CoreFragment<T : ViewDataBinding, S: ViewModel> : Fragment() {
         binding = null
     }
 
+    fun invalidateTopToolBar() {
+        getTopToolBarUIModel()?.let {
+            it.cleanAll()
+            setupTopToolBar(it)
+        }
+    }
+
+
+    fun invalidateBottomToolBar() {
+        getBottomToolBarUIModel()?.let {
+            it.cleanAll()
+            setupBottomToolBar(it)
+        }
+    }
+
     @LayoutRes
     abstract fun getLayoutId(): Int
 
     abstract fun getViewModel(): S
+
+    abstract fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel)
+
+    abstract fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel)
 
 
 }

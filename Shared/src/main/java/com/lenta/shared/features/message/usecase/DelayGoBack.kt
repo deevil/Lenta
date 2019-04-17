@@ -13,7 +13,6 @@ class DelayGoBack
     private val timeDelayInMillis = 3_000L
     override suspend fun run(params: Nothing?): Either<Failure, Boolean> {
         delay(timeDelayInMillis)
-        Logg.d { "Thread.currentThread(): ${Thread.currentThread()}" }
         goBackNavigator.goBack()
         return Either.Right(true)
     }

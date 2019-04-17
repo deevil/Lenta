@@ -7,6 +7,7 @@ import com.lenta.bp10.platform.extentions.getAppComponent
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
 import com.lenta.shared.platform.activity.main_activity.CoreMainActivity
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
+import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.utilities.Logg
 import javax.inject.Inject
 
@@ -32,6 +33,10 @@ class MainActivity : CoreMainActivity() {
 
     override fun getBottomToolBarUIModel(): BottomToolbarUiModel {
         return mainViewModel.bottomToolbarUiModel
+    }
+
+    override fun getTopToolbarUIModel(): TopToolbarUiModel {
+        return mainViewModel.topToolbarUiModel
     }
 
 

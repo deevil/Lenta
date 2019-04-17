@@ -6,6 +6,6 @@ import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 
 open class CoreMainViewModel : CoreViewModel() {
-    val topToolbarUiModel: MutableLiveData<TopToolbarUiModel> = MutableLiveData()
+    val topToolbarUiModel: TopToolbarUiModel = TopToolbarUiModel()
     val bottomToolbarUiModel: BottomToolbarUiModel = BottomToolbarUiModel()
 }

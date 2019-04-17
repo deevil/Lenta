@@ -8,11 +8,16 @@
         <variable
             name="vm"
             type="com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel" />
+
+        <variable
+            name="toolbarButtonsClickListener"
+            type="com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:visibility="@{vm.visibility}"
         android:background="@color/colorTopPanelBackground"
         android:orientation="vertical">
 
@@ -20,17 +25,17 @@
             android:id="@+id/tv_title"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
+            android:layout_marginStart="16dp"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
             android:ellipsize="end"
             android:maxLines="1"
             android:text="@{vm.title}"
             android:textAllCaps="true"
-            android:textSize="20sp"
+            android:textSize="16sp"
             android:textStyle="bold"
             app:layout_constraintBottom_toTopOf="@+id/tv_description"
-            app:layout_constraintEnd_toStartOf="@+id/b_settings"
+            app:layout_constraintEnd_toStartOf="@+id/b_topbar_1"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_chainStyle="packed"
@@ -40,7 +45,7 @@
             android:id="@+id/tv_description"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
+            android:layout_marginStart="16dp"
             android:layout_marginEnd="8dp"
             android:layout_marginBottom="8dp"
             android:ellipsize="end"
@@ -48,39 +53,39 @@
             android:text="@{vm.description}"
             android:textSize="16sp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/b_settings"
+            app:layout_constraintEnd_toStartOf="@+id/b_topbar_1"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tv_title"
             tools:text="Авторизация" />
 
         <androidx.appcompat.widget.AppCompatImageButton
-            android:id="@+id/b_settings"
+            android:id="@+id/b_topbar_1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginBottom="8dp"
             android:background="?selectableItemBackground"
-            android:padding="8dp"
-            android:src="@drawable/ic_settings_white"
+            android:onClick="@{(v) -> toolbarButtonsClickListener.onToolbarButtonClick(v)}"
+            android:padding="16dp"
+            android:src="@{vm.uiModelButton1.buttonDecorationInfo.iconRes}"
+            android:visibility="@{vm.uiModelButton1.visibility}"
             app:layout_constraintBottom_toBottomOf="@+id/tv_description"
-            app:layout_constraintEnd_toStartOf="@+id/b_exit"
-            app:layout_constraintTop_toTopOf="@+id/tv_title" />
+            app:layout_constraintEnd_toStartOf="@+id/b_topbar_2"
+            app:layout_constraintTop_toTopOf="@+id/tv_title"
+            tools:src="@drawable/ic_settings_white" />
 
 
         <androidx.appcompat.widget.AppCompatImageButton
-            android:id="@+id/b_exit"
+            android:id="@+id/b_topbar_2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginBottom="8dp"
             android:background="?selectableItemBackground"
-            android:padding="8dp"
-            android:src="@drawable/ic_exit_from_app_white"
+            android:onClick="@{(v) -> toolbarButtonsClickListener.onToolbarButtonClick(v)}"
+            android:padding="16dp"
+            android:src="@{vm.uiModelButton2.buttonDecorationInfo.iconRes}"
+            android:visibility="@{vm.uiModelButton2.visibility}"
             app:layout_constraintBottom_toBottomOf="@+id/tv_description"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/tv_title" />
+            app:layout_constraintTop_toTopOf="@+id/tv_title"
+            tools:src="@drawable/ic_exit_from_app_white" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

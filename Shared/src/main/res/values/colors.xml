@@ -4,8 +4,8 @@
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#99FFFFFF</color>
     <color name="colorWhite">#FFFFFF</color>
-    <color name="colorTopPanelBackground">#1A4170</color>
-    <color name="colorBottomPanelBackground">#284D7D</color>
+    <color name="colorTopPanelBackground">#FF16325C</color>
+    <color name="colorBottomPanelBackground">#1F3B68</color>
     <color name="colorContentBackground">#00395C</color>
     <color name="colorViewTxt">#B7D1EE</color>
     <color name="colorTopPanelTxt">#D2DAE3</color>

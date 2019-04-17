@@ -8,9 +8,11 @@ import com.lenta.shared.R
 import com.lenta.shared.databinding.ActivityMainBinding
 import com.lenta.shared.platform.activity.CoreActivity
 import com.lenta.shared.platform.activity.OnBackPresserListener
+import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.navigation.FragmentStack
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
+import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.hideKeyboard
 import com.lenta.shared.utilities.extentions.implementationOf
@@ -53,10 +55,13 @@ abstract class CoreMainActivity : CoreActivity<ActivityMainBinding>(), ToolbarBu
 
     override fun onToolbarButtonClick(view: View) {
         this.hideKeyboard()
+        Logg.d { "onToolbarButtonClick ${view.id}" }
         getCurrentFragment()?.implementationOf(ToolbarButtonsClickListener::class.java)?.onToolbarButtonClick(view)
     }
 
     abstract fun getBottomToolBarUIModel(): BottomToolbarUiModel
+
+    abstract fun getTopToolbarUIModel(): TopToolbarUiModel
 
 
     abstract fun onNewEnter()

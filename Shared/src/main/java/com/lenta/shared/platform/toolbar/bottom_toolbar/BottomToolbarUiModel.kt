@@ -27,7 +27,7 @@ data class ButtonUiModel(
         val enabled: MutableLiveData<Boolean> = MutableLiveData()
 ) {
     fun clean() {
-        buttonDecorationInfo.value = ButtonDecorationInfo.clean
+        buttonDecorationInfo.value = ButtonDecorationInfo.empty
         visibility.value = false
         enabled.value = true
     }
@@ -47,12 +47,13 @@ data class ButtonDecorationInfo(
         @StringRes val titleRes: Int
 ) {
     companion object {
+        val empty: ButtonDecorationInfo by lazy {
+            ButtonDecorationInfo(0, 0)
+        }
         val enterToApp: ButtonDecorationInfo by lazy {
             ButtonDecorationInfo(R.drawable.ic_exit_to_app_white, R.string.enter)
         }
-        val clean: ButtonDecorationInfo by lazy {
-            ButtonDecorationInfo(0, 0)
-        }
+
 
     }
 }
