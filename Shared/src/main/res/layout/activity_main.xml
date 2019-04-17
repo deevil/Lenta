@@ -11,7 +11,7 @@
             type="com.lenta.shared.platform.activity.main_activity.CoreMainViewModel" />
         <variable
             name="toolbarButtonsClickListener"
-            type="com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener"/>
+            type="com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -21,13 +21,23 @@
         tools:context=".platform.activity.main_activity.CoreMainActivity">
 
         <include
+            android:id="@+id/layout_status_bar"
+            layout="@layout/layout_status_bar"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:vm="@{vm.statusBarUiModel}" />
+
+        <include
             android:id="@+id/layout_top_toolbar"
             layout="@layout/layout_top_toolbar"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/layout_status_bar"
             app:toolbarButtonsClickListener='@{toolbarButtonsClickListener}'
             app:vm="@{vm.topToolbarUiModel}" />
 

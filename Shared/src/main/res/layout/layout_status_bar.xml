@@ -3,42 +3,84 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <data>
+
+        <variable
+            name="vm"
+            type="com.lenta.shared.platform.statusbar.StatusBarUiModel" />
+    </data>
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_height="wrap_content">
 
         <TextView
             android:id="@+id/tv_page_number"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="4dp"
+            android:text="@{vm.pageNumber}"
             app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintHorizontal_chainStyle="spread_inside"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:text="10/09" />
 
         <TextView
             android:id="@+id/tv_ip"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="32dp"
+            android:layout_marginStart="8dp"
             app:layout_constraintBottom_toBottomOf="@+id/tv_page_number"
             app:layout_constraintStart_toEndOf="@+id/tv_page_number"
             app:layout_constraintTop_toTopOf="@+id/tv_page_number"
+            app:layout_constraintVertical_bias="0.0"
+            app:prefix='@{"IP: "}'
+            app:setTextWithVisibilities="@{vm.ip}"
             tools:text="IP: 10.2.0.94" />
 
         <TextView
             android:id="@+id/tv_printer_tasks"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            app:layout_constraintBottom_toBottomOf="@+id/tv_ip"
-            app:layout_constraintStart_toEndOf="@+id/tv_ip"
-            app:layout_constraintTop_toTopOf="@+id/tv_ip"
+            android:layout_marginEnd="8dp"
+            android:drawableStart="@drawable/ic_print_white_16dp"
+            android:drawablePadding="4dp"
+            app:intWithVisibilities="@{vm.printerTasksCount}"
+            app:layout_constraintBottom_toBottomOf="@+id/tv_page_number"
+            app:layout_constraintEnd_toStartOf="@+id/tv_battery_status"
+            app:layout_constraintHorizontal_chainStyle="spread_inside"
+            app:layout_constraintTop_toTopOf="@+id/tv_page_number"
             tools:text="3" />
+
+        <TextView
+            android:id="@+id/tv_battery_status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:drawableStart="@drawable/ic_battery_full_white_16dp"
+            app:intWithVisibilities="@{vm.batteryLevel}"
+            app:layout_constraintBottom_toBottomOf="@+id/tv_page_number"
+            app:layout_constraintEnd_toStartOf="@+id/tv_time"
+            app:layout_constraintTop_toTopOf="@+id/tv_page_number"
+            app:postfix='@{"%"}'
+            tools:text="100%" />
+
+        <TextView
+            android:id="@+id/tv_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:drawableEnd="@drawable/ic_wifi_white_16dp"
+            android:drawablePadding="4dp"
+            app:layout_constraintBottom_toBottomOf="@+id/tv_page_number"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/tv_page_number"
+            app:setTextWithVisibilities="@{vm.time}"
+            tools:text="10:23" />
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

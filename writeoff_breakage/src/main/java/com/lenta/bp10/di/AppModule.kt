@@ -11,6 +11,8 @@ import com.lenta.shared.account.IAuthenticator
 import com.lenta.shared.di.AppScope
 import com.lenta.shared.exception.FailureInterpreter
 import com.lenta.shared.exception.IFailureInterpreter
+import com.lenta.shared.features.network_state.INetworkStateReceiver
+import com.lenta.shared.features.network_state.NetworkStateReceiver
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
 import com.lenta.shared.platform.navigation.IGoBackNavigator
 import com.lenta.shared.utilities.Logg
@@ -82,6 +84,14 @@ class AppModule {
     internal fun provideFailureInterpreter(context: Context): IFailureInterpreter {
         return FailureInterpreter(context)
     }
+
+    @Provides
+    @AppScope
+    fun provideNetworkStateReceiver() = NetworkStateReceiver()
+
+    @Provides
+    @AppScope
+    fun provideINetworkStateReceiver(networkStateReceiver: NetworkStateReceiver): INetworkStateReceiver = networkStateReceiver
 
 
 }

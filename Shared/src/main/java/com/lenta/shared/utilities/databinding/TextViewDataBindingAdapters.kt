@@ -5,6 +5,7 @@ import androidx.databinding.BindingAdapter
 import com.lenta.shared.R
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.utilities.extentions.setTextViewDrawableColor
+import com.lenta.shared.utilities.extentions.setVisible
 
 @BindingAdapter(value = ["buttonDecorationInfo", "android:enabled"], requireAll = false)
 fun setButtonDecorationInfo(textView: TextView, buttonDecorationInfo: ButtonDecorationInfo?, enabled: Boolean?) {
@@ -23,4 +24,20 @@ fun setButtonDecorationInfo(textView: TextView, buttonDecorationInfo: ButtonDeco
         textView.isEnabled = enabled
         textView.setTextViewDrawableColor(if (enabled) R.color.color_text_white else R.color.color_disabled_blue)
     }
+}
+
+@BindingAdapter(value = ["setTextWithVisibilities", "prefix", "postfix"], requireAll = false)
+fun setTextWithVisibilities(textView: TextView, text: String?, prefix: String?, postfix: String?) {
+    textView.setVisible(!text.isNullOrEmpty())
+    val resText = "${prefix ?: ""}${text ?: ""}${postfix ?: ""}"
+    textView.text = resText
+}
+
+@BindingAdapter(value = ["intWithVisibilities", "prefix", "postfix"], requireAll = false)
+fun intWithVisibilities(textView: TextView, counter: Int?, prefix: String?, postfix: String?) {
+    var resText: String = ""
+    counter?.let {
+        resText = if (it > 0) it.toString() else ""
+    }
+    setTextWithVisibilities(textView, text = resText, prefix = prefix, postfix = postfix)
 }

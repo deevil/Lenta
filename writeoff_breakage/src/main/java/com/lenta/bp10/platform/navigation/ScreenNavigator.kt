@@ -8,10 +8,8 @@ import com.lenta.shared.platform.activity.ForegroundActivityProvider
 import com.lenta.shared.platform.navigation.CustomAnimation
 import com.lenta.shared.platform.navigation.IGoBackNavigator
 import com.lenta.shared.utilities.Logg
-import javax.inject.Inject
 
-class ScreenNavigator
-@Inject constructor(
+class ScreenNavigator(
         private val foregroundActivityProvider: ForegroundActivityProvider,
         private val authenticator: IAuthenticator
 ) : IScreenNavigator {

@@ -1,6 +1,7 @@
 package com.lenta.bp10.activity.main
 
 import android.os.Bundle
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.lenta.bp10.di.AppComponent
 import com.lenta.bp10.platform.extentions.getAppComponent
@@ -43,6 +44,16 @@ class MainActivity : CoreMainActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding?.vm = mainViewModel
+        mainViewModel.statusBarUiModel.pageNumber.value = "10/01"
+
+        mainViewModel.statusBarUiModel.printerTasksCount.value = 2
+        mainViewModel.statusBarUiModel.batteryLevel.value = 100
+        mainViewModel.statusBarUiModel.time.value = "10:23"
+
+        networkStateReceiver.networkInfo.observe(this, Observer {
+            mainViewModel.statusBarUiModel.ip.value = it.ip
+            mainViewModel.statusBarUiModel.networkConnected.value = it.connected
+        })
     }
 
     override fun onNewEnter() {

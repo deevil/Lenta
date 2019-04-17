@@ -1,14 +1,16 @@
 package com.lenta.shared.platform.activity.main_activity
 
+import android.content.IntentFilter
+import android.net.ConnectivityManager
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import com.lenta.shared.R
 import com.lenta.shared.databinding.ActivityMainBinding
+import com.lenta.shared.features.network_state.NetworkStateReceiver
 import com.lenta.shared.platform.activity.CoreActivity
 import com.lenta.shared.platform.activity.OnBackPresserListener
-import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.navigation.FragmentStack
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
@@ -16,8 +18,12 @@ import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.hideKeyboard
 import com.lenta.shared.utilities.extentions.implementationOf
+import javax.inject.Inject
 
 abstract class CoreMainActivity : CoreActivity<ActivityMainBinding>(), ToolbarButtonsClickListener {
+
+    @Inject
+    lateinit var networkStateReceiver: NetworkStateReceiver
 
     val fragmentStack: FragmentStack by lazy {
         FragmentStack(supportFragmentManager, R.id.fragments)
@@ -35,6 +41,15 @@ abstract class CoreMainActivity : CoreActivity<ActivityMainBinding>(), ToolbarBu
         binding?.toolbarButtonsClickListener = this
     }
 
+    override fun onResume() {
+        super.onResume()
+        registerReceiver(networkStateReceiver, IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION))
+    }
+
+    override fun onPause() {
+        super.onPause()
+        unregisterReceiver(networkStateReceiver)
+    }
 
     override fun onBackPressed() {
         getCurrentFragment()?.implementationOf(OnBackPresserListener::class.java)?.let {
