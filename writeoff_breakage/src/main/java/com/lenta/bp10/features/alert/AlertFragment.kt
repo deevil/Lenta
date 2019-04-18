@@ -9,6 +9,9 @@ import com.lenta.shared.utilities.extentions.provideViewModel
 
 class AlertFragment : CoreMessageFragment() {
 
+    override fun getPageNumber(): String = "???"
+
+
     override fun getViewModel(): MessageViewModel {
         provideViewModel(MessageViewModel::class.java).let { vm ->
             getAppComponent()?.inject(vm)

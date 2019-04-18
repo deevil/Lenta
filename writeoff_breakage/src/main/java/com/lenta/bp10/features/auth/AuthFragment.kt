@@ -10,6 +10,8 @@ import com.lenta.shared.utilities.extentions.provideViewModel
 
 class AuthFragment : CoreLoginFragment() {
 
+    override fun getPageNumber(): String = "10/01"
+
     override fun getViewModel(): CoreAuthViewModel {
         provideViewModel(AuthViewModel::class.java).let {
             getAppComponent()?.inject(it)

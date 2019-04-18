@@ -11,6 +11,7 @@ import com.lenta.shared.platform.activity.CoreActivity
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
 import com.lenta.shared.platform.activity.OnBackPresserListener
 import com.lenta.shared.platform.battery_state.BatteryStateMonitor
+import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.navigation.FragmentStack
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
@@ -85,6 +86,13 @@ abstract class CoreMainActivity : CoreActivity<ActivityMainBinding>(), ToolbarBu
     private fun onBackStackChanged() {
         Logg.d()
         this.hideKeyboard()
+        updateNumberPage()
+    }
+
+    private fun updateNumberPage() {
+        vm.statusBarUiModel.pageNumber.postValue(getCurrentFragment()?.implementationOf(CoreFragment::class.java)
+                ?.getPageNumber() ?: "???")
+
     }
 
     override fun onToolbarButtonClick(view: View) {
