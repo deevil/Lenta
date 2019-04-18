@@ -2,9 +2,11 @@ package com.lenta.shared.di
 
 import android.content.Context
 import android.content.SharedPreferences
-import com.lenta.shared.features.network_state.INetworkStateMonitor
-import com.lenta.shared.features.network_state.NetworkStateMonitor
+import com.lenta.shared.platform.network_state.INetworkStateMonitor
+import com.lenta.shared.platform.network_state.NetworkStateMonitor
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
+import com.lenta.shared.platform.battery_state.BatteryStateMonitor
+import com.lenta.shared.platform.battery_state.IBatteryStateMonitor
 import dagger.Component
 import javax.inject.Singleton
 
@@ -17,4 +19,6 @@ interface CoreComponent {
     fun getForegroundActivityProvider(): ForegroundActivityProvider
     fun getNetworkStateMonitor(): NetworkStateMonitor
     fun getINetworkStateMonitor(): INetworkStateMonitor
+    fun getBatteryStateMonitor(): BatteryStateMonitor
+    fun getIBatteryStateMonitor(): IBatteryStateMonitor
 }

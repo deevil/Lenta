@@ -1,17 +1,16 @@
 package com.lenta.shared.platform.activity.main_activity
 
-import android.content.IntentFilter
-import android.net.ConnectivityManager
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import com.lenta.shared.R
 import com.lenta.shared.databinding.ActivityMainBinding
-import com.lenta.shared.features.network_state.NetworkStateMonitor
+import com.lenta.shared.platform.network_state.NetworkStateMonitor
 import com.lenta.shared.platform.activity.CoreActivity
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
 import com.lenta.shared.platform.activity.OnBackPresserListener
+import com.lenta.shared.platform.battery_state.BatteryStateMonitor
 import com.lenta.shared.platform.navigation.FragmentStack
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
@@ -25,6 +24,9 @@ abstract class CoreMainActivity : CoreActivity<ActivityMainBinding>(), ToolbarBu
 
     @Inject
     lateinit var networkStateMonitor: NetworkStateMonitor
+
+    @Inject
+    lateinit var batteryStateMonitor: BatteryStateMonitor
 
     @Inject
     lateinit var foregroundActivityProvider: ForegroundActivityProvider
@@ -59,14 +61,15 @@ abstract class CoreMainActivity : CoreActivity<ActivityMainBinding>(), ToolbarBu
 
     override fun onResume() {
         super.onResume()
-        @Suppress("DEPRECATION")
-        registerReceiver(networkStateMonitor, IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION))
+        networkStateMonitor.start(this)
         foregroundActivityProvider.setActivity(this)
+        batteryStateMonitor.start(this)
     }
 
     override fun onPause() {
         super.onPause()
-        unregisterReceiver(networkStateMonitor)
+        networkStateMonitor.stop(this)
+        batteryStateMonitor.stop(this)
         foregroundActivityProvider.clear()
     }
 

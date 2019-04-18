@@ -60,12 +60,13 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
-            android:drawableStart="@drawable/ic_battery_full_white_16dp"
-            app:intWithVisibilities="@{vm.batteryLevel}"
+            app:isCharging="@{vm.batteryIsCharging}"
+            app:batteryLevel="@{vm.batteryLevel}"
             app:layout_constraintBottom_toBottomOf="@+id/tv_page_number"
             app:layout_constraintEnd_toStartOf="@+id/tv_time"
             app:layout_constraintTop_toTopOf="@+id/tv_page_number"
             app:postfix='@{"%"}'
+            tools:drawableStart="@drawable/ic_battery_full_white_16dp"
             tools:text="100%" />
 
         <TextView
@@ -73,14 +74,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
-            android:drawablePadding="2dp"
             android:drawableEnd="@drawable/ic_wifi_white_16dp"
-            tools:drawablePadding="4dp"
+            android:drawablePadding="2dp"
             app:layout_constraintBottom_toBottomOf="@+id/tv_page_number"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@+id/tv_page_number"
-            app:setTextWithVisibilities="@{vm.time}"
             app:networkIsConnected="@{vm.networkConnected}"
+            app:setTextWithVisibilities="@{vm.time}"
+            tools:drawablePadding="4dp"
             tools:text="10:23" />
 
 

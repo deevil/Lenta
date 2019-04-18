@@ -1,8 +1,10 @@
-package com.lenta.shared.features.network_state
+package com.lenta.shared.platform.network_state
 
+import android.app.Activity
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.net.ConnectivityManager
 import androidx.lifecycle.MutableLiveData
 import com.lenta.shared.utilities.Logg
@@ -16,6 +18,15 @@ class NetworkStateMonitor : BroadcastReceiver(), INetworkStateMonitor {
         val noConnectivity = intent.getBooleanExtra(ConnectivityManager.EXTRA_NO_CONNECTIVITY, false)
         networkInfo.postValue(if (noConnectivity) NetworkInfo.noInternet else NetworkInfo.connected(context.getDeviceIp()))
         Logg.d { "Internet connected: ${!noConnectivity}" }
+    }
+
+    fun start(activity: Activity) {
+        @Suppress("DEPRECATION")
+        activity.registerReceiver(this, IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION))
+    }
+
+    fun stop(activity: Activity) {
+        activity.unregisterReceiver(this)
     }
 
 

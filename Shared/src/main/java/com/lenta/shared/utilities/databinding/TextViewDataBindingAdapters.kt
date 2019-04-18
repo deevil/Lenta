@@ -3,6 +3,7 @@ package com.lenta.shared.utilities.databinding
 import android.widget.TextView
 import androidx.databinding.BindingAdapter
 import com.lenta.shared.R
+import com.lenta.shared.platform.battery_state.getIconForStatus
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.utilities.extentions.setTextViewDrawableColor
 import com.lenta.shared.utilities.extentions.setVisible
@@ -27,6 +28,14 @@ fun setButtonDecorationInfo(textView: TextView, buttonDecorationInfo: ButtonDeco
 }
 
 
+@BindingAdapter(value = ["batteryLevel", "isCharging"])
+fun setNetworkIsConnected(textView: TextView, batteryLevel: Int?, isCharging: Boolean?) {
+    intWithVisibilities(textView, batteryLevel)
+    textView.setCompoundDrawablesWithIntrinsicBounds(
+            getIconForStatus(isCharging, batteryLevel),
+            0, 0, 0)
+}
+
 @BindingAdapter(value = ["networkIsConnected"])
 fun setNetworkIsConnected(textView: TextView, networkIsConnected: Boolean?) {
     textView.setCompoundDrawablesWithIntrinsicBounds(0, 0,
@@ -42,10 +51,10 @@ fun setTextWithVisibilities(textView: TextView, text: String?, prefix: String?, 
 }
 
 @BindingAdapter(value = ["intWithVisibilities", "prefix", "postfix"], requireAll = false)
-fun intWithVisibilities(textView: TextView, counter: Int?, prefix: String?, postfix: String?) {
+fun intWithVisibilities(textView: TextView, counter: Int?, prefix: String? = null, postfix: String? = null) {
     var resText: String = ""
     counter?.let {
-        resText = if (it > 0) it.toString() else ""
+        resText = if (it > -1) it.toString() else ""
     }
     setTextWithVisibilities(textView, text = resText, prefix = prefix, postfix = postfix)
 }

@@ -4,9 +4,11 @@ import android.app.Application
 import android.content.Context
 import android.content.SharedPreferences
 import android.preference.PreferenceManager
-import com.lenta.shared.features.network_state.INetworkStateMonitor
-import com.lenta.shared.features.network_state.NetworkStateMonitor
+import com.lenta.shared.platform.network_state.INetworkStateMonitor
+import com.lenta.shared.platform.network_state.NetworkStateMonitor
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
+import com.lenta.shared.platform.battery_state.BatteryStateMonitor
+import com.lenta.shared.platform.battery_state.IBatteryStateMonitor
 import dagger.Module
 import dagger.Provides
 import javax.inject.Singleton
@@ -33,5 +35,13 @@ class CoreModule(val application: Application) {
     @Provides
     @Singleton
     fun provideINetworkStateMonitor(networkStateReceiver: NetworkStateMonitor): INetworkStateMonitor = networkStateReceiver
+
+    @Provides
+    @Singleton
+    fun provideBatteryStateMonitor() = BatteryStateMonitor()
+
+    @Provides
+    @Singleton
+    fun provideIBatteryStateMonitor(batteryStateMonitor: BatteryStateMonitor): IBatteryStateMonitor = batteryStateMonitor
 
 }
