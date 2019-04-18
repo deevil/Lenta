@@ -16,4 +16,5 @@
     <string name="error_network">Ошибка подключения</string>
     <string name="error_auth">Ошибка авторизации</string>
     <string name="error_unknown">Неизвестная ошибка</string>
+    <string name="to_next">Далее</string>
 </resources>

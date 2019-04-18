@@ -12,7 +12,6 @@ class TopToolbarUiModel(val title: MutableLiveData<String> = MutableLiveData("")
                         val visibility: MutableLiveData<Boolean> = MutableLiveData(true)
 ) {
     fun cleanAll(visibility: Boolean? = true) {
-        title.value = ""
         description.value = ""
         uiModelButton1.clean()
         uiModelButton2.clean()

@@ -1,5 +1,7 @@
 <resources>
-    <string name="app_name">write-off_breakage</string>
+    <string name="app_name">Списание товаров</string>
     <string name="app_title">Списание товаров</string>
     <string name="authorization">Авторизация</string>
+    <string name="tk_selection">Выбор ТК</string>
+    <string name="select_tk_number">Выберите номер ТК</string>
 </resources>
