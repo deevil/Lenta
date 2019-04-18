@@ -15,7 +15,7 @@ fun getIconForStatus(isCharging: Boolean?, level: Int?): Int {
             level > 59 -> R.drawable.ic_battery_charging_60_white_16dp
             level > 49 -> R.drawable.ic_battery_charging_50_white_16dp
             level > 29 -> R.drawable.ic_battery_charging_30_white_16dp
-            else -> R.drawable.ic_battery_charging_20_white_16dp
+            else -> R.drawable.ic_battery_charging_20_red_16dp
         }
     }
 
@@ -26,7 +26,7 @@ fun getIconForStatus(isCharging: Boolean?, level: Int?): Int {
         level > 59 -> R.drawable.ic_battery_60_white_16dp
         level > 49 -> R.drawable.ic_battery_50_white_16dp
         level > 29 -> R.drawable.ic_battery_30_white_16dp
-        else -> R.drawable.ic_battery_20_white_16dp
+        else -> R.drawable.ic_battery_20_red_16dp
     }
 
 }
