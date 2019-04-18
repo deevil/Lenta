@@ -60,8 +60,8 @@ abstract class CoreMainActivity : CoreActivity<ActivityMainBinding>(), ToolbarBu
     override fun onResume() {
         super.onResume()
         networkStateMonitor.start(this)
-        foregroundActivityProvider.setActivity(this)
         batteryStateMonitor.start(this)
+        foregroundActivityProvider.setActivity(this)
     }
 
     override fun onPause() {

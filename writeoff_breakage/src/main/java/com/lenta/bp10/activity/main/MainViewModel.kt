@@ -1,6 +1,6 @@
 package com.lenta.bp10.activity.main
 
-import com.lenta.shared.features.login.usecase.Auth
+import com.lenta.shared.requests.Auth
 import com.lenta.bp10.platform.navigation.IScreenNavigator
 import com.lenta.shared.platform.activity.main_activity.CoreMainViewModel
 import com.lenta.shared.platform.statusbar.StatusBarUiModel

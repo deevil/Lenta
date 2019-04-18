@@ -1,4 +1,4 @@
-package com.lenta.shared.features.login.usecase
+package com.lenta.shared.requests
 
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.functional.Either
@@ -12,7 +12,7 @@ class Auth
 @Inject constructor(private val hyperHive: HyperHive) : UseCase<Boolean, AuthParams>() {
     override suspend fun run(params: AuthParams): Either<Failure, Boolean> {
         Logg.d { "Thread: ${Thread.currentThread()}" }
-        return hyperHive.authAPI.auth(params.login, params.password, false).execute().toEither()
+        return hyperHive.authAPI.auth(params.login, params.password, true).execute().toEither()
     }
 }
 

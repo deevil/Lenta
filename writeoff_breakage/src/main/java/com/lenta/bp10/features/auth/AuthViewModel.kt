@@ -2,13 +2,15 @@ package com.lenta.bp10.features.auth
 
 import androidx.lifecycle.*
 import com.lenta.bp10.platform.navigation.IScreenNavigator
+import com.lenta.bp10.requests.PermissionsParams
+import com.lenta.bp10.requests.PermissionsRequest
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.exception.IFailureInterpreter
 import com.lenta.shared.features.login.CoreAuthViewModel
 import com.lenta.shared.features.login.isEnterEnabled
 import com.lenta.shared.features.login.isValidLoginFields
-import com.lenta.shared.features.login.usecase.Auth
-import com.lenta.shared.features.login.usecase.AuthParams
+import com.lenta.shared.requests.Auth
+import com.lenta.shared.requests.AuthParams
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.map
 import kotlinx.coroutines.launch
@@ -19,6 +21,8 @@ class AuthViewModel : CoreAuthViewModel() {
 
     @Inject
     lateinit var auth: Auth
+    @Inject
+    lateinit var permissionsRequest: PermissionsRequest
     @Inject
     lateinit var navigator: IScreenNavigator
     @Inject
@@ -33,9 +37,16 @@ class AuthViewModel : CoreAuthViewModel() {
     override fun onClickEnter() {
         viewModelScope.launch {
             progress.value = true
-            auth(AuthParams(login.value!!, password.value!!)).either(::handleFailure, ::handleAuthSuccess)
+            auth(AuthParams(login.value!!, password.value!!)).either(::handleFailure, ::loadPermissions)
             progress.value = false
+        }
+    }
 
+    private fun loadPermissions(@Suppress("UNUSED_PARAMETER") boolean: Boolean) {
+        viewModelScope.launch {
+            progress.value = true
+            permissionsRequest(PermissionsParams(login = "")).either(::handleFailure, ::handleAuthSuccess)
+            progress.value = false
         }
     }
 
