@@ -52,10 +52,7 @@ abstract class CoreMainActivity : CoreActivity<ActivityMainBinding>(), ToolbarBu
 
         binding?.vm = vm
         vm.statusBarUiModel.pageNumber.value = "10/01"
-
         vm.statusBarUiModel.printerTasksCount.value = 2
-        vm.statusBarUiModel.batteryLevel.value = 100
-        vm.statusBarUiModel.time.value = "10:23"
 
     }
 

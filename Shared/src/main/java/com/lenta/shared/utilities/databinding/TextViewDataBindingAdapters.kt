@@ -5,6 +5,7 @@ import androidx.databinding.BindingAdapter
 import com.lenta.shared.R
 import com.lenta.shared.platform.battery_state.getIconForStatus
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
+import com.lenta.shared.utilities.date_time.DateTimeUtil
 import com.lenta.shared.utilities.extentions.setTextViewDrawableColor
 import com.lenta.shared.utilities.extentions.setVisible
 
@@ -57,4 +58,16 @@ fun intWithVisibilities(textView: TextView, counter: Int?, prefix: String? = nul
         resText = if (it > -1) it.toString() else ""
     }
     setTextWithVisibilities(textView, text = resText, prefix = prefix, postfix = postfix)
+}
+
+@BindingAdapter(value = ["unixTime", "timeFormat"], requireAll = true)
+fun setTimeFormatted(textView: TextView, unixTime: Long?, timeFormat: String?) {
+
+    if (unixTime == null || timeFormat == null) {
+        textView.setVisible(false)
+    } else {
+        textView.text = DateTimeUtil.formatDate(unixTime, timeFormat)
+    }
+
+
 }

@@ -9,6 +9,8 @@ import com.lenta.shared.platform.network_state.NetworkStateMonitor
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
 import com.lenta.shared.platform.battery_state.BatteryStateMonitor
 import com.lenta.shared.platform.battery_state.IBatteryStateMonitor
+import com.lenta.shared.platform.time.ITimeMonitor
+import com.lenta.shared.platform.time.TimeMonitor
 import dagger.Module
 import dagger.Provides
 import javax.inject.Singleton
@@ -43,5 +45,9 @@ class CoreModule(val application: Application) {
     @Provides
     @Singleton
     fun provideIBatteryStateMonitor(batteryStateMonitor: BatteryStateMonitor): IBatteryStateMonitor = batteryStateMonitor
+
+    @Provides
+    @Singleton
+    fun provideITimeMonitor(): ITimeMonitor = TimeMonitor(intervalInMsec = 5000)
 
 }

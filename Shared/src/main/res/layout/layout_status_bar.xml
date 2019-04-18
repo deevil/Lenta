@@ -8,6 +8,7 @@
         <variable
             name="vm"
             type="com.lenta.shared.platform.statusbar.StatusBarUiModel" />
+        <import type="com.lenta.shared.platform.constants.Constants"/>
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -80,7 +81,8 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@+id/tv_page_number"
             app:networkIsConnected="@{vm.networkConnected}"
-            app:setTextWithVisibilities="@{vm.time}"
+            app:unixTime="@{vm.time}"
+            app:timeFormat="@{Constants.TIME_FORMAT_HHmm}"
             tools:drawablePadding="4dp"
             tools:text="10:23" />
 
