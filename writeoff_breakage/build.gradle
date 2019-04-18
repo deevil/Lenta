@@ -32,6 +32,7 @@ android {
 
 dependencies {
     implementation project(':Shared')
+    testCompile "junit:junit:4.12"
 
     // Dagger2
     kapt deps.dagger.compiler
