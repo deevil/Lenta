@@ -8,8 +8,9 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import com.lenta.shared.R
 import com.lenta.shared.databinding.ActivityMainBinding
-import com.lenta.shared.features.network_state.NetworkStateReceiver
+import com.lenta.shared.features.network_state.NetworkStateMonitor
 import com.lenta.shared.platform.activity.CoreActivity
+import com.lenta.shared.platform.activity.ForegroundActivityProvider
 import com.lenta.shared.platform.activity.OnBackPresserListener
 import com.lenta.shared.platform.navigation.FragmentStack
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
@@ -23,7 +24,14 @@ import javax.inject.Inject
 abstract class CoreMainActivity : CoreActivity<ActivityMainBinding>(), ToolbarButtonsClickListener {
 
     @Inject
-    lateinit var networkStateReceiver: NetworkStateReceiver
+    lateinit var networkStateMonitor: NetworkStateMonitor
+
+    @Inject
+    lateinit var foregroundActivityProvider: ForegroundActivityProvider
+
+    private val vm: CoreMainViewModel by lazy {
+        getViewModel()
+    }
 
     val fragmentStack: FragmentStack by lazy {
         FragmentStack(supportFragmentManager, R.id.fragments)
@@ -39,16 +47,27 @@ abstract class CoreMainActivity : CoreActivity<ActivityMainBinding>(), ToolbarBu
             onNewEnter()
         }
         binding?.toolbarButtonsClickListener = this
+
+        binding?.vm = vm
+        vm.statusBarUiModel.pageNumber.value = "10/01"
+
+        vm.statusBarUiModel.printerTasksCount.value = 2
+        vm.statusBarUiModel.batteryLevel.value = 100
+        vm.statusBarUiModel.time.value = "10:23"
+
     }
 
     override fun onResume() {
         super.onResume()
-        registerReceiver(networkStateReceiver, IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION))
+        @Suppress("DEPRECATION")
+        registerReceiver(networkStateMonitor, IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION))
+        foregroundActivityProvider.setActivity(this)
     }
 
     override fun onPause() {
         super.onPause()
-        unregisterReceiver(networkStateReceiver)
+        unregisterReceiver(networkStateMonitor)
+        foregroundActivityProvider.clear()
     }
 
     override fun onBackPressed() {
@@ -74,12 +93,21 @@ abstract class CoreMainActivity : CoreActivity<ActivityMainBinding>(), ToolbarBu
         getCurrentFragment()?.implementationOf(ToolbarButtonsClickListener::class.java)?.onToolbarButtonClick(view)
     }
 
-    abstract fun getBottomToolBarUIModel(): BottomToolbarUiModel
+    fun getBottomToolBarUIModel(): BottomToolbarUiModel {
+        return vm.bottomToolbarUiModel
+    }
 
-    abstract fun getTopToolbarUIModel(): TopToolbarUiModel
+    fun getTopToolbarUIModel(): TopToolbarUiModel {
+        return vm.topToolbarUiModel
+    }
+
+    private fun onNewEnter() {
+        Logg.d { "onNewEnter" }
+        vm.onNewEnter()
+    }
 
 
-    abstract fun onNewEnter()
+    abstract fun getViewModel(): CoreMainViewModel
 
 
 }

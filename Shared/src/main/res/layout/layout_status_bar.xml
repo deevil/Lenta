@@ -73,12 +73,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
+            android:drawablePadding="2dp"
             android:drawableEnd="@drawable/ic_wifi_white_16dp"
-            android:drawablePadding="4dp"
+            tools:drawablePadding="4dp"
             app:layout_constraintBottom_toBottomOf="@+id/tv_page_number"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@+id/tv_page_number"
             app:setTextWithVisibilities="@{vm.time}"
+            app:networkIsConnected="@{vm.networkConnected}"
             tools:text="10:23" />
 
 

@@ -8,7 +8,7 @@ import androidx.lifecycle.MutableLiveData
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.getDeviceIp
 
-class NetworkStateReceiver : BroadcastReceiver(), INetworkStateReceiver {
+class NetworkStateMonitor : BroadcastReceiver(), INetworkStateMonitor {
 
     override val networkInfo: MutableLiveData<NetworkInfo> = MutableLiveData(NetworkInfo.noInternet)
 
@@ -21,7 +21,7 @@ class NetworkStateReceiver : BroadcastReceiver(), INetworkStateReceiver {
 
 }
 
-interface INetworkStateReceiver {
+interface INetworkStateMonitor {
     val networkInfo: MutableLiveData<NetworkInfo>
 }
 

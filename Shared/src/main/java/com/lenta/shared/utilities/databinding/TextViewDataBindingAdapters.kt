@@ -26,6 +26,14 @@ fun setButtonDecorationInfo(textView: TextView, buttonDecorationInfo: ButtonDeco
     }
 }
 
+
+@BindingAdapter(value = ["networkIsConnected"])
+fun setNetworkIsConnected(textView: TextView, networkIsConnected: Boolean?) {
+    textView.setCompoundDrawablesWithIntrinsicBounds(0, 0,
+            if (networkIsConnected == true) R.drawable.ic_wifi_white_16dp else R.drawable.ic_signal_wifi_off_red_16dp,
+            0)
+}
+
 @BindingAdapter(value = ["setTextWithVisibilities", "prefix", "postfix"], requireAll = false)
 fun setTextWithVisibilities(textView: TextView, text: String?, prefix: String?, postfix: String?) {
     textView.setVisible(!text.isNullOrEmpty())
