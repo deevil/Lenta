@@ -15,6 +15,11 @@ public class MemoryTaskProductRepository implements ITaskProductRepository {
     }
 
     @Override
+    public List<ProductInfo> getProducts() {
+        return productInfo;
+    }
+
+    @Override
     public ProductInfo findProduct(IProduct product) {
         if (product == null)
         {

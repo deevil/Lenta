@@ -15,6 +15,11 @@ public class MemoryTaskExciseStampRepository implements ITaskExciseStampReposito
     }
 
     @Override
+    public List<TaskExciseStamp> getExciseStamps() {
+        return stamps;
+    }
+
+    @Override
     public List<TaskExciseStamp> findExciseStampsOfProduct(IProduct product) {
         if (product == null)
         {
@@ -39,6 +44,7 @@ public class MemoryTaskExciseStampRepository implements ITaskExciseStampReposito
 
         int index = -1;
         for(int i=0; i<stamps.size(); i++) {
+            // (Артем И., 05.04.2019) code (exciseStamp.getCode()) уникальный, поэтому сравнение делаем только по нему, по товару materialNumber не сравниваем
             if ( exciseStamp.getCode() == stamps.get(i).getCode() ) {
                 index = i;
             }
@@ -61,6 +67,7 @@ public class MemoryTaskExciseStampRepository implements ITaskExciseStampReposito
 
         int index = -1;
         for(int i=0; i<stamps.size(); i++) {
+            // (Артем И., 05.04.2019) code (exciseStamp.getCode()) уникальный, поэтому сравнение делаем только по нему, по товару materialNumber не сравниваем
             if ( exciseStamp.getCode() == stamps.get(i).getCode() ) {
                 index = i;
             }
