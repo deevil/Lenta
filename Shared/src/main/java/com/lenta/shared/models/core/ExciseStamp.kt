@@ -1,6 +1,6 @@
 package com.lenta.shared.models.core
 
-class ExciseStamp(val materialNumber: String, val code: String) : IExciseStamp {
+open class ExciseStamp(val materialNumber: String, val code: String) : IExciseStamp {
     override fun egaisVersion(): Int {
         return getEgaisVersion(code)
     }
