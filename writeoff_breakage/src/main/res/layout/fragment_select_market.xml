@@ -44,14 +44,18 @@
 
         <TextView
             android:id="@+id/tv_address"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
             android:layout_marginTop="32dp"
-            android:text="@{vm.selectedAddress}"
+            android:layout_marginEnd="16dp"
+            android:gravity="center"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/spin_market"
+            app:prefix='@{@string/address + ": "}'
+            app:setTextWithVisibilities="@{vm.selectedAddress}"
             tools:text="Адрес: Санкт-Петербург, Савушкина, 102" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

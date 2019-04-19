@@ -17,4 +17,5 @@
     <string name="error_auth">Ошибка авторизации</string>
     <string name="error_unknown">Неизвестная ошибка</string>
     <string name="to_next">Далее</string>
+    <string name="address">Адрес</string>
 </resources>

@@ -2,8 +2,8 @@ package com.lenta.bp10.features.auth
 
 import androidx.lifecycle.*
 import com.lenta.bp10.platform.navigation.IScreenNavigator
-import com.lenta.bp10.requests.PermissionsParams
-import com.lenta.bp10.requests.PermissionsRequest
+import com.lenta.bp10.requests.network.PermissionsParams
+import com.lenta.bp10.requests.network.PermissionsRequest
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.exception.IFailureInterpreter
 import com.lenta.shared.features.login.CoreAuthViewModel

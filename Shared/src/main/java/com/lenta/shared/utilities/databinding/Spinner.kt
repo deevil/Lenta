@@ -24,7 +24,6 @@ fun setupSpinner(spinner: Spinner, items: List<String>?, position: Int?, onPosit
                 }
 
                 override fun onNothingSelected(adapterView: AdapterView<*>) {
-                    onPositionClickListener.onNothingSelected()
                 }
             }
         }, 100)

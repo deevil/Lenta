@@ -3,7 +3,7 @@ package com.lenta.bp10.di
 import com.lenta.bp10.activity.main.MainActivity
 import com.lenta.bp10.activity.main.MainViewModel
 import com.lenta.bp10.features.auth.AuthViewModel
-import com.lenta.bp10.features.select_market.SelectMarketFragment
+import com.lenta.bp10.features.select_market.SelectMarketViewModel
 import com.lenta.shared.di.CoreComponent
 import com.lenta.shared.di.AppScope
 import com.lenta.shared.features.message.MessageViewModel
@@ -16,6 +16,6 @@ interface AppComponent {
     fun inject(mainViewModel: MainViewModel)
     fun inject(it: AuthViewModel)
     fun inject(it: MessageViewModel)
-    fun inject(selectMarketFragment: SelectMarketFragment)
+    fun inject(it: SelectMarketViewModel)
 }
 
