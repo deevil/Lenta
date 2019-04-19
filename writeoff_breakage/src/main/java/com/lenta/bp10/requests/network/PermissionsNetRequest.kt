@@ -1,6 +1,6 @@
 package com.lenta.bp10.requests.network
 
-import com.lenta.bp10.fmp.ZfmpUtzWob01V001
+import com.lenta.bp10.fmp.resources.permissions.ZfmpUtzWob01V001
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.functional.Either
 import com.lenta.shared.interactor.UseCase

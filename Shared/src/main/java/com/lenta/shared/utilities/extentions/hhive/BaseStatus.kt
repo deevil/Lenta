@@ -2,6 +2,7 @@ package com.lenta.shared.utilities.extentions.hhive
 
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.functional.Either
+import com.lenta.shared.utilities.Logg
 import com.mobrun.plugin.models.BaseStatus
 import com.mobrun.plugin.models.Error
 
@@ -25,9 +26,10 @@ fun Error.getServerFailure(): Failure {
 }
 
 fun BaseStatus.toEither(): Either<Failure, Boolean> {
-    return if (this.isOk) {
+    return if (this.isOk || this.httpStatus?.status == 304) {
         Either.Right(true)
     } else {
+        Logg.e { "Failure FMP request: ${this}" }
         Either.Left(this.getFailure())
     }
 }

@@ -37,7 +37,7 @@ class SelectMarketFragment : CoreFragment<FragmentSelectMarketBinding, SelectMar
     }
 
     override fun onToolbarButtonClick(view: View) {
-        if (view.id == R.id.Button5) {
+        if (view.id == R.id.b_5) {
             vm.onClickNext()
         }
     }
