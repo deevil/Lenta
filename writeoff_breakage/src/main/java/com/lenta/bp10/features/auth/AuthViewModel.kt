@@ -9,8 +9,8 @@ import com.lenta.shared.exception.IFailureInterpreter
 import com.lenta.shared.features.login.CoreAuthViewModel
 import com.lenta.shared.features.login.isEnterEnabled
 import com.lenta.shared.features.login.isValidLoginFields
-import com.lenta.shared.requests.Auth
-import com.lenta.shared.requests.AuthParams
+import com.lenta.shared.requests.network.Auth
+import com.lenta.shared.requests.network.AuthParams
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.map
 import kotlinx.coroutines.launch

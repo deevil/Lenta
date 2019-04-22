@@ -1,4 +1,4 @@
-package com.lenta.shared.requests
+package com.lenta.shared.requests.network
 
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.functional.Either

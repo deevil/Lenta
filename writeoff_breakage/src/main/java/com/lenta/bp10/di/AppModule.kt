@@ -7,6 +7,9 @@ import com.lenta.bp10.BuildConfig
 import com.lenta.bp10.features.auth.Authenticator
 import com.lenta.bp10.platform.navigation.IScreenNavigator
 import com.lenta.bp10.platform.navigation.ScreenNavigator
+import com.lenta.bp10.requests.network.FastResourcesMultiRequest
+import com.lenta.bp10.requests.network.SlowResourcesMultiRequest
+import com.lenta.bp10.requests.network.loader.ResourcesLoader
 import com.lenta.shared.account.IAuthenticator
 import com.lenta.shared.di.AppScope
 import com.lenta.shared.exception.FailureInterpreter
@@ -81,6 +84,13 @@ class AppModule {
     @AppScope
     internal fun provideFailureInterpreter(context: Context): IFailureInterpreter {
         return FailureInterpreter(context)
+    }
+
+    @Provides
+    @AppScope
+    internal fun provideResourceLoader(fastResourcesNetRequest: FastResourcesMultiRequest,
+                                       slowResourcesNetRequest: SlowResourcesMultiRequest): ResourcesLoader {
+        return ResourcesLoader(fastResourcesNetRequest, slowResourcesNetRequest)
     }
 
 }
