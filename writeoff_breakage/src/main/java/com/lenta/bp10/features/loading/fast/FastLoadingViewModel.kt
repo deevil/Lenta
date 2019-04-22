@@ -4,6 +4,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp10.platform.navigation.IScreenNavigator
 import com.lenta.bp10.requests.network.FastResourcesMultiRequest
+import com.lenta.bp10.requests.network.loader.ResourcesLoader
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.exception.IFailureInterpreter
 import com.lenta.shared.features.loading.CoreLoadingViewModel
@@ -15,9 +16,10 @@ class FastLoadingViewModel : CoreLoadingViewModel() {
     lateinit var fastResourcesNetRequest: FastResourcesMultiRequest
     @Inject
     lateinit var screenNavigator: IScreenNavigator
-
     @Inject
     lateinit var failureInterpreter: IFailureInterpreter
+    @Inject
+    lateinit var resourceLoader: ResourcesLoader
 
     override val title: MutableLiveData<String> = MutableLiveData()
     override val progress: MutableLiveData<Boolean> = MutableLiveData(true)
@@ -26,7 +28,9 @@ class FastLoadingViewModel : CoreLoadingViewModel() {
 
     init {
         viewModelScope.launch {
+            progress.value = true
             fastResourcesNetRequest(null).either(::handleFailure, ::handleSuccess)
+            progress.value = false
         }
     }
 
@@ -35,6 +39,7 @@ class FastLoadingViewModel : CoreLoadingViewModel() {
     }
 
     private fun handleSuccess(@Suppress("UNUSED_PARAMETER") b: Boolean) {
+        resourceLoader.startLoadSlowResources()
         screenNavigator.openAlertScreen(message = "Все загрузилось")
     }
 

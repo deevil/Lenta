@@ -7,7 +7,6 @@ import com.lenta.bp10.BuildConfig
 import com.lenta.bp10.features.auth.Authenticator
 import com.lenta.bp10.platform.navigation.IScreenNavigator
 import com.lenta.bp10.platform.navigation.ScreenNavigator
-import com.lenta.bp10.requests.network.FastResourcesMultiRequest
 import com.lenta.bp10.requests.network.SlowResourcesMultiRequest
 import com.lenta.bp10.requests.network.loader.ResourcesLoader
 import com.lenta.shared.account.IAuthenticator
@@ -51,7 +50,7 @@ class AppModule {
         if (BuildConfig.DEBUG) {
             Logg.d { "hhive plugin version: ${hyperHive.stateAPI.versionPlugin}" }
             Logg.d { "hhive core version: ${hyperHive.stateAPI.getVersionCoreAPI(0)}" }
-            hyperHive.loggingAPI.setLogLevel(10)
+            hyperHive.loggingAPI.setLogLevel(3)
         } else {
             hyperHive.loggingAPI.setLogLevel(10)
         }
@@ -88,9 +87,8 @@ class AppModule {
 
     @Provides
     @AppScope
-    internal fun provideResourceLoader(fastResourcesNetRequest: FastResourcesMultiRequest,
-                                       slowResourcesNetRequest: SlowResourcesMultiRequest): ResourcesLoader {
-        return ResourcesLoader(fastResourcesNetRequest, slowResourcesNetRequest)
+    internal fun provideResourceLoader(slowResourcesNetRequest: SlowResourcesMultiRequest): ResourcesLoader {
+        return ResourcesLoader(slowResourcesNetRequest)
     }
 
 }

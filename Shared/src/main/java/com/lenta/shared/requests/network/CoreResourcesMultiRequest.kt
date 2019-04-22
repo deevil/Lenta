@@ -4,6 +4,7 @@ import androidx.lifecycle.MutableLiveData
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.functional.Either
 import com.lenta.shared.interactor.UseCase
+import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.hhive.toEither
 import com.lenta.shared.utilities.extentions.implementationOf
 import com.mobrun.plugin.api.request_assistant.CustomParameter
@@ -41,6 +42,7 @@ abstract class CoreResourcesMultiRequest : UseCase<Boolean, MutableLiveData<Load
     abstract fun getListOfRequests(): List<RequestBuilder<out CustomParameter, out ScalarParameter<Any>>>
 
     private fun BaseStatus.handleResult(status: MutableLiveData<LoadStatus>?): BaseStatus {
+        Logg.d { "BaseStatus: $this" }
         status?.value.implementationOf(Loading::class.java)?.let {
             val res = it.copy(loadingDataSize = it.loadingDataSize + (this.httpStatus?.bytesDownloaded
                     ?: 0))

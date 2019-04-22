@@ -3,7 +3,6 @@ package com.lenta.shared.features.loading
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.shared.platform.viewmodel.CoreViewModel
-import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.coroutine.timer
 import kotlinx.coroutines.launch
 
@@ -19,7 +18,6 @@ abstract class CoreLoadingViewModel : CoreViewModel() {
         viewModelScope.launch {
             timer(1000) {
                 val elapsedTime = System.currentTimeMillis() - startTime
-                Logg.d { "elapsedTime: $elapsedTime" }
                 timeInMsec.postValue(elapsedTime)
             }
         }
