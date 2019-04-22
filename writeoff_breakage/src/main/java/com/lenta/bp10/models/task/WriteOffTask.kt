@@ -25,4 +25,53 @@ class WriteOffTask(val taskDescription: TaskDescription, val taskRepository: ITa
 
     }
 
+    fun processNonExciseAlcoProduct(product: ProductInfo): ProcessNonExciseAlcoProductService? {
+        // (Артем И., 11.04.2019) тоже самое, что и в ProcessGeneralProductService
+        return if (product.type === ProductType.NonExciseAlcohol) {
+            ProcessNonExciseAlcoProductService(taskDescription, taskRepository, product)
+        } else null
+
+    }
+
+    fun processExciseAlcoProduct(product: ProductInfo): ProcessExciseAlcoProductService? {
+        // (Артем И., 11.04.2019) тоже самое, что и в ProcessGeneralProductService
+        return if (product.type === ProductType.ExciseAlcohol) {
+            ProcessExciseAlcoProductService(taskDescription, taskRepository, product)
+        } else null
+
+    }
+
+    fun getProcessedProducts(): List<ProductInfo> {
+        return taskRepository.getProducts().getProducts()
+    }
+
+    fun getProductCount(): Int {
+        // (Артем И., 11.04.2019) данный метод пока оставить так
+        return taskRepository.getProducts().lenght()
+    }
+
+    fun getTotalCountOfProduct(product: ProductInfo): Double {
+        // считать ИТОГО причин списания, а для акцизного товара ИТОГО + кол-во марок
+        val totalCount: Double
+        when (product.type) {
+            ProductType.General -> totalCount = processGeneralProduct(product)!!.getTotalCount()
+            ProductType.NonExciseAlcohol -> totalCount = processNonExciseAlcoProduct(product)!!.getTotalCount()
+            ProductType.ExciseAlcohol -> totalCount = processExciseAlcoProduct(product)!!.getTotalCount()
+            else -> totalCount = 0.0
+        }
+
+        return totalCount
+    }
+
+    fun getTaskSaveModel(): TaskSaveModel {
+        return TaskSaveModel(taskDescription, taskRepository)
+    }
+
+    fun clearTask() {
+        // (Артем И., 11.04.2019) очистить все репозитории, taskDescription не очищать
+        taskRepository.getProducts().clear()
+        taskRepository.getWriteOffReasons().clear()
+        taskRepository.getExciseStamps().clear()
+    }
+
 }
