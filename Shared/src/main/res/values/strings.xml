@@ -18,4 +18,11 @@
     <string name="error_unknown">Неизвестная ошибка</string>
     <string name="to_next">Далее</string>
     <string name="address">Адрес</string>
+    <string name="sync_of_dictionary">Синхронизация справочников</string>
+    <string name="passed">Прошло</string>
+    <string name="speed">Скорость</string>
+    <string name="kb_in_sec">КБ/С</string>
+    <string name="mbyte">МБ</string>
+    <string name="was_loaded">Загружено</string>
+    <string name="data_loading">Загрузка данных</string>
 </resources>

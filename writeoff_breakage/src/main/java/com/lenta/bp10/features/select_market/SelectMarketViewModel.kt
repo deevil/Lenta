@@ -3,11 +3,9 @@ package com.lenta.bp10.features.select_market
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp10.fmp.resources.permissions.ZfmpUtzWob01V001
+import com.lenta.bp10.platform.navigation.IScreenNavigator
 import com.lenta.bp10.requests.db.PermissionsDbRequest
-import com.lenta.shared.requests.network.LoadStatus
-import com.lenta.shared.exception.Failure
 import com.lenta.shared.platform.viewmodel.CoreViewModel
-import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.view.OnPositionClickListener
 import kotlinx.coroutines.launch
@@ -16,6 +14,8 @@ import javax.inject.Inject
 class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
     @Inject
     lateinit var permissionsDbRequest: PermissionsDbRequest
+    @Inject
+    lateinit var screenNavigator: IScreenNavigator
 
 
     val markets: MutableLiveData<List<MarketUi>> = MutableLiveData()
@@ -44,21 +44,9 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
     }
 
     fun onClickNext() {
-        //TODO need navigate to LoadingScreen
+        screenNavigator.openFastDataLoadingScreen()
     }
 
-    override fun handleFailure(failure: Failure) {
-        super.handleFailure(failure)
-        Logg.d { "$failure" }
-    }
-
-    private fun handleSuccessFastResources(@Suppress("UNUSED_PARAMETER") b: Boolean) {
-        Logg.d { "handleSuccessFastResources" }
-    }
-
-    private fun handleSuccessSlowResources(@Suppress("UNUSED_PARAMETER") b: Boolean) {
-        Logg.d { "handleSuccessSlowResources" }
-    }
 
     override fun onClickPosition(position: Int) {
         selectedPosition.value = position

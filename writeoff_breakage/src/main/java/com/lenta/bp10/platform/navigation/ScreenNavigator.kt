@@ -2,6 +2,7 @@ package com.lenta.bp10.platform.navigation
 
 import com.lenta.bp10.features.alert.AlertFragment
 import com.lenta.bp10.features.auth.AuthFragment
+import com.lenta.bp10.features.loading.fast.FastDataLoadingFragment
 import com.lenta.shared.account.IAuthenticator
 import com.lenta.bp10.features.select_market.SelectMarketFragment
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
@@ -22,7 +23,7 @@ class ScreenNavigator(
     }
 
     override fun openSelectMarketScreen() {
-        getFragmentStack()?.push(SelectMarketFragment())
+        getFragmentStack()?.replace(SelectMarketFragment())
     }
 
     override fun openFirstScreen() {
@@ -41,6 +42,10 @@ class ScreenNavigator(
         }
     }
 
+    override fun openFastDataLoadingScreen() {
+        getFragmentStack()?.push(FastDataLoadingFragment())
+    }
+
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 
 }
@@ -50,4 +55,5 @@ interface IScreenNavigator : IGoBackNavigator {
     fun openLoginScreen()
     fun openSelectMarketScreen()
     fun openAlertScreen(message: String)
+    fun openFastDataLoadingScreen()
 }

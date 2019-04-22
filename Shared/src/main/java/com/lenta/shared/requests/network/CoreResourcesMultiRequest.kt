@@ -11,10 +11,10 @@ import com.mobrun.plugin.api.request_assistant.RequestBuilder
 import com.mobrun.plugin.api.request_assistant.ScalarParameter
 import com.mobrun.plugin.models.BaseStatus
 
-abstract class CoreResourcesMultiRequest: UseCase<Boolean, MutableLiveData<LoadStatus>>() {
+abstract class CoreResourcesMultiRequest : UseCase<Boolean, MutableLiveData<LoadStatus>?>() {
 
 
-    override suspend fun run(params: MutableLiveData<LoadStatus>): Either<Failure, Boolean> {
+    override suspend fun run(params: MutableLiveData<LoadStatus>?): Either<Failure, Boolean> {
 
         val requests = getListOfRequests()
 
@@ -22,17 +22,17 @@ abstract class CoreResourcesMultiRequest: UseCase<Boolean, MutableLiveData<LoadS
 
         val startTime = System.currentTimeMillis()
 
-        params.postValue(Loading(startTime = startTime, loadingDataSize = 0L))
+        params?.postValue(Loading(startTime = startTime, loadingDataSize = 0L))
 
         for (request in requests) {
             either = request.streamCallDelta().execute().handleResult(status = params).toEither()
             if (either.isLeft) {
-                params.postValue(NotInit)
+                params?.postValue(NotInit)
                 return either
             }
         }
 
-        params.postValue(params.value)
+        params?.postValue(params.value)
 
         return either
 
@@ -40,10 +40,11 @@ abstract class CoreResourcesMultiRequest: UseCase<Boolean, MutableLiveData<LoadS
 
     abstract fun getListOfRequests(): List<RequestBuilder<out CustomParameter, out ScalarParameter<Any>>>
 
-    private fun BaseStatus.handleResult(status: MutableLiveData<LoadStatus>): BaseStatus {
-        status.value.implementationOf(Loading::class.java)?.let {
-            val res = it.copy(loadingDataSize = it.loadingDataSize + (this.httpStatus?.bytesDownloaded ?: 0))
-            status.postValue(res)
+    private fun BaseStatus.handleResult(status: MutableLiveData<LoadStatus>?): BaseStatus {
+        status?.value.implementationOf(Loading::class.java)?.let {
+            val res = it.copy(loadingDataSize = it.loadingDataSize + (this.httpStatus?.bytesDownloaded
+                    ?: 0))
+            status?.postValue(res)
         }
         return this
     }
