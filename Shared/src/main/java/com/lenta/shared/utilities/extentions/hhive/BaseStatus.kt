@@ -25,9 +25,13 @@ fun Error.getServerFailure(): Failure {
     return Failure.ServerError
 }
 
-fun BaseStatus.toEither(): Either<Failure, Boolean> {
-    return if (this.isOk || this.httpStatus?.status == 304) {
-        Either.Right(true)
+fun BaseStatus.toEitherBoolean(): Either<Failure, Boolean> {
+    return toEither(true)
+}
+
+fun <T> BaseStatus.toEither(data: T?): Either<Failure, T> {
+    return if ((this.isOk || this.httpStatus?.status == 304) && data != null) {
+        Either.Right(data)
     } else {
         Logg.e { "Failure FMP request: ${this}" }
         Either.Left(this.getFailure())

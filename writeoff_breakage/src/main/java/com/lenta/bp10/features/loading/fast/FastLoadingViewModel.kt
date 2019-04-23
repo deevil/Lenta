@@ -40,7 +40,7 @@ class FastLoadingViewModel : CoreLoadingViewModel() {
 
     private fun handleSuccess(@Suppress("UNUSED_PARAMETER") b: Boolean) {
         resourceLoader.startLoadSlowResources()
-        screenNavigator.openAlertScreen(message = "Все загрузилось")
+        screenNavigator.openSelectionTabNumberScreen()
     }
 
 }

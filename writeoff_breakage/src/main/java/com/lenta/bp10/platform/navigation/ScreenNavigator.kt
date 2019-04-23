@@ -5,6 +5,7 @@ import com.lenta.bp10.features.auth.AuthFragment
 import com.lenta.bp10.features.loading.fast.FastDataLoadingFragment
 import com.lenta.shared.account.IAuthenticator
 import com.lenta.bp10.features.select_market.SelectMarketFragment
+import com.lenta.bp10.features.select_tab_number.SelectTabNumberFragment
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
 import com.lenta.shared.platform.navigation.CustomAnimation
 import com.lenta.shared.platform.navigation.IGoBackNavigator
@@ -55,6 +56,10 @@ class ScreenNavigator(
         getFragmentStack()?.push(FastDataLoadingFragment())
     }
 
+    override fun openSelectionTabNumberScreen() {
+        getFragmentStack()?.push(SelectTabNumberFragment())
+    }
+
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 
 }
@@ -65,4 +70,5 @@ interface IScreenNavigator : IGoBackNavigator {
     fun openSelectMarketScreen()
     fun openAlertScreen(message: String, replace: Boolean = false)
     fun openFastDataLoadingScreen()
+    fun openSelectionTabNumberScreen()
 }

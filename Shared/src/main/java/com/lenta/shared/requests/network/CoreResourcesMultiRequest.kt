@@ -5,7 +5,7 @@ import com.lenta.shared.exception.Failure
 import com.lenta.shared.functional.Either
 import com.lenta.shared.interactor.UseCase
 import com.lenta.shared.utilities.Logg
-import com.lenta.shared.utilities.extentions.hhive.toEither
+import com.lenta.shared.utilities.extentions.hhive.toEitherBoolean
 import com.lenta.shared.utilities.extentions.implementationOf
 import com.mobrun.plugin.api.request_assistant.CustomParameter
 import com.mobrun.plugin.api.request_assistant.RequestBuilder
@@ -26,7 +26,7 @@ abstract class CoreResourcesMultiRequest : UseCase<Boolean, MutableLiveData<Load
         params?.postValue(Loading(startTime = startTime, loadingDataSize = 0L))
 
         for (request in requests) {
-            either = request.streamCallDelta().execute().handleResult(status = params).toEither()
+            either = request.streamCallDelta().execute().handleResult(status = params).toEitherBoolean()
             if (either.isLeft) {
                 params?.postValue(NotInit)
                 return either

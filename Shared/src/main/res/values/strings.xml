@@ -25,4 +25,8 @@
     <string name="mbyte">МБ</string>
     <string name="was_loaded">Загружено</string>
     <string name="data_loading">Загрузка данных</string>
+    <string name="fio">ФИО</string>
+    <string name="employees_position">Должность</string>
+    <string name="definition_performer">Определение исполнителя</string>
+    <string name="to_back">Назад</string>
 </resources>
