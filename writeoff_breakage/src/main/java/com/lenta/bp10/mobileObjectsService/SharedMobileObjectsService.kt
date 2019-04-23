@@ -62,7 +62,7 @@ class SharedMobileObjectsService protected constructor() {
         return mboService!!.getProductByMaterialNumber(material)
     }
 
-    fun getWriteOffCause(taskType: String, sectionId: String, matkl: String, ekgrp: String): MB_S_31 {
+    fun getWriteOffCause(taskType: String, sectionId: String, matkl: String, ekgrp: String): MB_S_31? {
         return mboService!!.getWriteOffCause(taskType, sectionId, matkl, ekgrp)
     }
 
@@ -78,7 +78,7 @@ class SharedMobileObjectsService protected constructor() {
         return mboService!!.getProductTypesByTaskType(taskType)
     }
 
-    fun getGisControlsByTaskCntrl(taskCntrl: String): MB_S_36 {
+    fun getGisControlsByTaskCntrl(taskCntrl: String): MB_S_36? {
         return mboService!!.getGisControlsByTaskCntrl(taskCntrl)
     }
 
