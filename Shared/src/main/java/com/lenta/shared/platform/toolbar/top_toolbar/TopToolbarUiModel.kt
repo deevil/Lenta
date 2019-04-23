@@ -47,6 +47,10 @@ data class ImageButtonDecorationInfo(
         @DrawableRes val iconRes: Int
 ) {
     companion object {
+        val home: ImageButtonDecorationInfo? by lazy {
+            //TODO нужно назначить правильную иконку
+            ImageButtonDecorationInfo(R.drawable.ic_exit_from_app_white)
+        }
         val empty: ImageButtonDecorationInfo by lazy {
             ImageButtonDecorationInfo(0)
         }

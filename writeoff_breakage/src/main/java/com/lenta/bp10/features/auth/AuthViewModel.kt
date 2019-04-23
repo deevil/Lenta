@@ -19,6 +19,7 @@ import javax.inject.Inject
 
 class AuthViewModel : CoreAuthViewModel() {
 
+
     @Inject
     lateinit var auth: Auth
     @Inject
@@ -62,5 +63,9 @@ class AuthViewModel : CoreAuthViewModel() {
     }
 
     override fun onBackPressed() {
+    }
+
+    override fun onClickSettings() {
+        navigator.openSettingsScreen()
     }
 }
