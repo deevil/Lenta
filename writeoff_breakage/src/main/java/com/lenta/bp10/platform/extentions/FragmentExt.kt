@@ -7,6 +7,6 @@ import com.lenta.bp10.di.AppComponent
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.utilities.extentions.implementationOf
 
-fun <T : ViewDataBinding, S: ViewModel> CoreFragment<T, S>.getAppComponent() : AppComponent? {
+fun <T : ViewDataBinding, S : ViewModel> CoreFragment<T, S>.getAppComponent(): AppComponent? {
     return activity.implementationOf(MainActivity::class.java)?.appComponent
 }

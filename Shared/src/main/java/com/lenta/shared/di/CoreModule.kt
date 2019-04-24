@@ -4,6 +4,8 @@ import android.app.Application
 import android.content.Context
 import android.content.SharedPreferences
 import android.preference.PreferenceManager
+import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import com.lenta.shared.platform.network_state.INetworkStateMonitor
 import com.lenta.shared.platform.network_state.NetworkStateMonitor
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
@@ -49,5 +51,11 @@ class CoreModule(val application: Application) {
     @Provides
     @Singleton
     fun provideITimeMonitor(): ITimeMonitor = TimeMonitor(intervalInMsec = 5000)
+
+    @Provides
+    @Singleton
+    internal fun provideGson(): Gson {
+        return GsonBuilder().create()
+    }
 
 }

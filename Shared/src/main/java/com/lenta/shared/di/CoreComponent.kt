@@ -2,6 +2,7 @@ package com.lenta.shared.di
 
 import android.content.Context
 import android.content.SharedPreferences
+import com.google.gson.Gson
 import com.lenta.shared.platform.network_state.INetworkStateMonitor
 import com.lenta.shared.platform.network_state.NetworkStateMonitor
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
@@ -23,4 +24,5 @@ interface CoreComponent {
     fun getBatteryStateMonitor(): BatteryStateMonitor
     fun getIBatteryStateMonitor(): IBatteryStateMonitor
     fun getTimeMonitor(): ITimeMonitor
+    fun getGson(): Gson
 }

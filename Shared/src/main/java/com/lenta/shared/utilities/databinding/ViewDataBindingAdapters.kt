@@ -6,7 +6,7 @@ import com.lenta.shared.utilities.extentions.setInvisible
 import com.lenta.shared.utilities.extentions.setVisible
 
 @BindingAdapter("isGone")
-fun bindIsGone(view: View, isGone: Boolean) {
+fun setDisable(view: View, isGone: Boolean) {
     view.setVisible(!isGone)
 }
 

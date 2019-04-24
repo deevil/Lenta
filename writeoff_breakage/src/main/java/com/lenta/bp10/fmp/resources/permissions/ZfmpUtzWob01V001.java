@@ -1,4 +1,4 @@
-package com.lenta.bp10.fmp;
+package com.lenta.bp10.fmp.resources.permissions;
 
 import com.google.gson.annotations.SerializedName;
 import com.mobrun.plugin.api.HyperHive;
@@ -8,6 +8,7 @@ import com.mobrun.plugin.api.request_assistant.RequestBuilder;
 import com.mobrun.plugin.api.helper.LocalTableResourceHelper;
 import com.mobrun.plugin.models.StatusSelectTable;
 
+@SuppressWarnings("ALL")
 public class ZfmpUtzWob01V001 {
 
     public static final String NAME_RESOURCE = "ZFMP_UTZ_WOB_01_V001";

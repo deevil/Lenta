@@ -60,14 +60,24 @@ fun intWithVisibilities(textView: TextView, counter: Int?, prefix: String? = nul
     setTextWithVisibilities(textView, text = resText, prefix = prefix, postfix = postfix)
 }
 
-@BindingAdapter(value = ["unixTime", "timeFormat"], requireAll = true)
-fun setTimeFormatted(textView: TextView, unixTime: Long?, timeFormat: String?) {
+@BindingAdapter(value = ["floatWithVisibilities", "prefix", "postfix"], requireAll = false)
+fun floatWithVisibilities(textView: TextView, value: Float?, prefix: String? = null, postfix: String? = null) {
+    var resText: String = ""
+    value?.let {
+        resText = if (it >= 0F) it.toString() else ""
+    }
+    setTextWithVisibilities(textView, text = resText, prefix = prefix, postfix = postfix)
+}
+
+@BindingAdapter(value = ["unixTime", "timeFormat", "prefix", "postfix"], requireAll = false)
+fun setTimeFormatted(textView: TextView, unixTime: Long?, timeFormat: String?,
+                     prefix: String? = null, postfix: String? = null) {
 
     if (unixTime == null || timeFormat == null) {
         textView.setVisible(false)
     } else {
-        textView.text = DateTimeUtil.formatDate(unixTime, timeFormat)
+        setTextWithVisibilities(textView,
+                DateTimeUtil.formatDate(unixTime, timeFormat), prefix, postfix)
     }
-
 
 }

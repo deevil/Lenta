@@ -12,7 +12,6 @@ class TopToolbarUiModel(val title: MutableLiveData<String> = MutableLiveData("")
                         val visibility: MutableLiveData<Boolean> = MutableLiveData(true)
 ) {
     fun cleanAll(visibility: Boolean? = true) {
-        title.value = ""
         description.value = ""
         uiModelButton1.clean()
         uiModelButton2.clean()
@@ -48,6 +47,10 @@ data class ImageButtonDecorationInfo(
         @DrawableRes val iconRes: Int
 ) {
     companion object {
+        val home: ImageButtonDecorationInfo? by lazy {
+            //TODO нужно назначить правильную иконку
+            ImageButtonDecorationInfo(R.drawable.ic_exit_from_app_white)
+        }
         val empty: ImageButtonDecorationInfo by lazy {
             ImageButtonDecorationInfo(0)
         }
