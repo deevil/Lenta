@@ -1,16 +1,39 @@
 package com.lenta.bp10.features.settings
 
 import com.lenta.bp10.platform.navigation.IScreenNavigator
-import com.lenta.shared.platform.viewmodel.CoreViewModel
+import com.lenta.shared.features.settings.CoreSettingsViewModel
 import javax.inject.Inject
 
-class SettingsViewModel : CoreViewModel() {
+class SettingsViewModel : CoreSettingsViewModel() {
     @Inject
     lateinit var screenNavigator: IScreenNavigator
 
-    fun onClick1() {
-        screenNavigator.openAlertScreen("onClick1")
+    override fun onClickHome() {
+        //TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        screenNavigator.openAlertScreen("onClickHome")
+    }
 
+    override fun onClickExit() {
+        //TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        screenNavigator.openAlertScreen("onClickExit")
+    }
+
+    override fun onClickPrinter() {
+        //TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        screenNavigator.openAlertScreen("onClickPrinter")
+    }
+
+    override fun onClickWork() {
+        //TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        screenNavigator.openAlertScreen("onClickWork")
+    }
+
+    override fun onClickTechLog() {
+        //TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        screenNavigator.openAlertScreen("onClickTechLog")
+    }
+
+    override fun onBackPressed() {
     }
 
 }

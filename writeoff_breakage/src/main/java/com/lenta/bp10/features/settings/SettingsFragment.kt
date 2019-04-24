@@ -1,20 +1,17 @@
 package com.lenta.bp10.features.settings
 
-import com.lenta.bp10.R
 import com.lenta.bp10.platform.extentions.getAppComponent
-import com.lenta.shared.platform.fragment.CoreFragment
-import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
+import com.lenta.shared.features.settings.CoreSettingsFragment
+import com.lenta.shared.features.settings.CoreSettingsViewModel
 import com.lenta.shared.platform.toolbar.top_toolbar.ImageButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.utilities.extentions.provideViewModel
 
-class SettingsFragment : CoreFragment<com.lenta.bp10.databinding.FragmentSettingsBinding, SettingsViewModel>() {
+class SettingsFragment : CoreSettingsFragment() {
 
-    override fun getLayoutId(): Int = R.layout.fragment_settings
+    override fun getPageNumber(): String  = "10/02"
 
-    override fun getPageNumber() = "10/02"
-
-    override fun getViewModel(): SettingsViewModel {
+    override fun getViewModel(): CoreSettingsViewModel {
         provideViewModel(SettingsViewModel::class.java).let {
             getAppComponent()?.inject(it)
             return it
@@ -22,12 +19,8 @@ class SettingsFragment : CoreFragment<com.lenta.bp10.databinding.FragmentSetting
     }
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
-        topToolbarUiModel.description.value = "Dsdsda"
+        topToolbarUiModel.description.value = resources.getString(com.lenta.shared.R.string.settings)
         topToolbarUiModel.uiModelButton1.show(ImageButtonDecorationInfo.home)
         topToolbarUiModel.uiModelButton2.show(ImageButtonDecorationInfo.exitFromApp)
-    }
-
-    override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
-        bottomToolbarUiModel.visibility.value = false
     }
 }
