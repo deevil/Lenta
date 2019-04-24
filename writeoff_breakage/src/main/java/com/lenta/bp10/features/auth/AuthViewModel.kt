@@ -2,15 +2,15 @@ package com.lenta.bp10.features.auth
 
 import androidx.lifecycle.*
 import com.lenta.bp10.platform.navigation.IScreenNavigator
-import com.lenta.bp10.requests.PermissionsParams
-import com.lenta.bp10.requests.PermissionsRequest
+import com.lenta.bp10.requests.network.PermissionsParams
+import com.lenta.bp10.requests.network.PermissionsRequest
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.exception.IFailureInterpreter
 import com.lenta.shared.features.login.CoreAuthViewModel
 import com.lenta.shared.features.login.isEnterEnabled
 import com.lenta.shared.features.login.isValidLoginFields
-import com.lenta.shared.requests.Auth
-import com.lenta.shared.requests.AuthParams
+import com.lenta.shared.requests.network.Auth
+import com.lenta.shared.requests.network.AuthParams
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.map
 import kotlinx.coroutines.launch
@@ -18,6 +18,7 @@ import javax.inject.Inject
 
 
 class AuthViewModel : CoreAuthViewModel() {
+
 
     @Inject
     lateinit var auth: Auth
@@ -62,5 +63,9 @@ class AuthViewModel : CoreAuthViewModel() {
     }
 
     override fun onBackPressed() {
+    }
+
+    override fun onClickSettings() {
+        navigator.openSettingsScreen()
     }
 }

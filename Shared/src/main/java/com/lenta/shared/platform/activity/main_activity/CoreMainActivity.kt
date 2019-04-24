@@ -84,7 +84,7 @@ abstract class CoreMainActivity : CoreActivity<ActivityMainBinding>(), ToolbarBu
     private fun getCurrentFragment(): Fragment? = fragmentStack.peek()
 
     private fun onBackStackChanged() {
-        Logg.d()
+        Logg.d("onBackStackChanged")
         this.hideKeyboard()
         updateNumberPage()
     }
