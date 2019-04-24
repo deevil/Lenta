@@ -52,6 +52,6 @@ class SelectTabNumberViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     }
 
     fun onClickNext() {
-        searchTabNumber()
+        screenNavigator.openMainMenuScreen()
     }
 }

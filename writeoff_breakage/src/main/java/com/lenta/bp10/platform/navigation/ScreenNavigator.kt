@@ -3,6 +3,7 @@ package com.lenta.bp10.platform.navigation
 import com.lenta.bp10.features.alert.AlertFragment
 import com.lenta.bp10.features.auth.AuthFragment
 import com.lenta.bp10.features.loading.fast.FastDataLoadingFragment
+import com.lenta.bp10.features.main_menu.MainMenuFragment
 import com.lenta.shared.account.IAuthenticator
 import com.lenta.bp10.features.select_market.SelectMarketFragment
 import com.lenta.bp10.features.select_tab_number.SelectTabNumberFragment
@@ -84,6 +85,10 @@ class ScreenNavigator(
         foregroundActivityProvider.getActivity()?.getViewModel()?.showSimpleProgress(title)
     }
 
+    override fun openMainMenuScreen() {
+        getFragmentStack()?.push(MainMenuFragment())
+    }
+
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 
 }
@@ -99,4 +104,5 @@ interface IScreenNavigator : IGoBackNavigator {
     fun openSettingsScreen()
     fun hideProgress()
     fun <Params> showProgress(useCase: UseCase<Any, Params>)
+    fun openMainMenuScreen()
 }
