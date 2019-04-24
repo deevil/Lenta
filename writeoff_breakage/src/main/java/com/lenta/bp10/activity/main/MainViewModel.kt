@@ -1,9 +1,12 @@
 package com.lenta.bp10.activity.main
 
-import com.lenta.shared.requests.network.Auth
+import androidx.lifecycle.viewModelScope
 import com.lenta.bp10.platform.navigation.IScreenNavigator
+import com.lenta.shared.features.loading.startProgressTimer
 import com.lenta.shared.platform.activity.main_activity.CoreMainViewModel
 import com.lenta.shared.platform.statusbar.StatusBarUiModel
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class MainViewModel : CoreMainViewModel() {
@@ -11,12 +14,31 @@ class MainViewModel : CoreMainViewModel() {
     override lateinit var statusBarUiModel: StatusBarUiModel
     @Inject
     lateinit var screenNavigator: IScreenNavigator
-    @Inject
-    lateinit var auth: Auth
 
     override fun onNewEnter() {
         screenNavigator.openFirstScreen()
     }
 
+    var progressJob: Job? = null
 
+    override fun showSimpleProgress(title: String) {
+        progressJob = viewModelScope.launch {
+            loadingViewModel.let {
+                it.progress.value = true
+                it.title.value = title
+                it.elapsedTime.value = null
+                startProgressTimer(
+                        coroutineScope = this,
+                        remainingTime = it.remainingTime,
+                        timeoutInSec = 60
+                )
+            }
+
+        }
+    }
+
+    override fun hideProgress() {
+        loadingViewModel.clean()
+        progressJob?.cancel()
+    }
 }

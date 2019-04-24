@@ -7,27 +7,32 @@ import com.lenta.shared.account.IAuthenticator
 import com.lenta.bp10.features.select_market.SelectMarketFragment
 import com.lenta.bp10.features.select_tab_number.SelectTabNumberFragment
 import com.lenta.bp10.features.settings.SettingsFragment
+import com.lenta.shared.exception.Failure
+import com.lenta.shared.exception.IFailureInterpreter
+import com.lenta.shared.interactor.UseCase
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
 import com.lenta.shared.platform.navigation.CustomAnimation
 import com.lenta.shared.platform.navigation.IGoBackNavigator
+import com.lenta.shared.progress.IProgressUseCaseInformator
 import com.lenta.shared.utilities.Logg
 
 class ScreenNavigator(
         private val foregroundActivityProvider: ForegroundActivityProvider,
-        private val authenticator: IAuthenticator
+        private val authenticator: IAuthenticator,
+        private val failureInterpreter: IFailureInterpreter,
+        private val progressUseCaseInformator: IProgressUseCaseInformator
 ) : IScreenNavigator {
 
-    override fun openAlertScreen(message: String, replace: Boolean) {
+    override fun openAlertScreen(message: String) {
         getFragmentStack()?.let {
             val fragment = AlertFragment.create(message)
-            if (replace) {
-                it.replace(fragment)
-            } else {
-                it.push(fragment, CustomAnimation.vertical())
-            }
+            it.push(fragment, CustomAnimation.vertical())
+
         }
+    }
 
-
+    override fun openAlertScreen(failure: Failure) {
+        openAlertScreen(failureInterpreter.getFailureDescription(failure))
     }
 
     override fun goBack() {
@@ -66,6 +71,19 @@ class ScreenNavigator(
         getFragmentStack()?.push(SettingsFragment())
     }
 
+
+    override fun hideProgress() {
+        foregroundActivityProvider.getActivity()?.getViewModel()?.hideProgress()
+    }
+
+    override fun <Params> showProgress(useCase: UseCase<Any, Params>) {
+        showProgress(progressUseCaseInformator.getTitle(useCase))
+    }
+
+    private fun showProgress(title: String) {
+        foregroundActivityProvider.getActivity()?.getViewModel()?.showSimpleProgress(title)
+    }
+
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 
 }
@@ -74,8 +92,11 @@ interface IScreenNavigator : IGoBackNavigator {
     fun openFirstScreen()
     fun openLoginScreen()
     fun openSelectMarketScreen()
-    fun openAlertScreen(message: String, replace: Boolean = false)
+    fun openAlertScreen(message: String)
+    fun openAlertScreen(failure: Failure)
     fun openFastDataLoadingScreen()
     fun openSelectionTabNumberScreen()
     fun openSettingsScreen()
+    fun hideProgress()
+    fun <Params> showProgress(useCase: UseCase<Any, Params>)
 }

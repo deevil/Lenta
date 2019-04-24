@@ -33,11 +33,16 @@ class AlertFragment : CoreMessageFragment() {
     }
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
-        topToolbarUiModel.visibility.value = false
+        topToolbarUiModel.visibility.value = true
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
         bottomToolbarUiModel.visibility.value = false
+    }
+
+    override fun cleanTopToolbar(topToolbarUiModel: TopToolbarUiModel) {
+        topToolbarUiModel.uiModelButton1.visibility.value = false
+        topToolbarUiModel.uiModelButton2.visibility.value = false
     }
 
 }

@@ -7,6 +7,7 @@ import com.lenta.bp10.BuildConfig
 import com.lenta.bp10.features.auth.Authenticator
 import com.lenta.bp10.platform.navigation.IScreenNavigator
 import com.lenta.bp10.platform.navigation.ScreenNavigator
+import com.lenta.bp10.progress.ProgressUseCaseInformator
 import com.lenta.bp10.requests.network.SlowResourcesMultiRequest
 import com.lenta.bp10.requests.network.loader.ResourcesLoader
 import com.lenta.shared.account.IAuthenticator
@@ -15,6 +16,7 @@ import com.lenta.shared.exception.FailureInterpreter
 import com.lenta.shared.exception.IFailureInterpreter
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
 import com.lenta.shared.platform.navigation.IGoBackNavigator
+import com.lenta.shared.progress.IProgressUseCaseInformator
 import com.lenta.shared.utilities.Logg
 import com.mobrun.plugin.api.HyperHive
 import com.mobrun.plugin.api.HyperHiveState
@@ -35,7 +37,7 @@ class AppModule {
                 .setProjectSlug("PR_WOB")
                 .setVersionProject("app")
                 .setHandler(Handler())
-                .setDefaultRetryCount(5)
+                .setDefaultRetryCount(6)
                 .setDefaultRetryIntervalSec(10)
                 .setGsonForParcelPacker(GsonBuilder().excludeFieldsWithoutExposeAnnotation().create())
     }
@@ -68,9 +70,11 @@ class AppModule {
     @Provides
     @AppScope
     internal fun provideScreenNavigator(foregroundActivityProvider: ForegroundActivityProvider,
-                                        authenticator: IAuthenticator
+                                        authenticator: IAuthenticator,
+                                        faultInterpreter: IFailureInterpreter,
+                                        progressUseCaseInformator: IProgressUseCaseInformator
     ): IScreenNavigator {
-        return ScreenNavigator(foregroundActivityProvider, authenticator)
+        return ScreenNavigator(foregroundActivityProvider, authenticator, faultInterpreter, progressUseCaseInformator)
     }
 
     @Provides
@@ -90,5 +94,12 @@ class AppModule {
     internal fun provideResourceLoader(slowResourcesNetRequest: SlowResourcesMultiRequest): ResourcesLoader {
         return ResourcesLoader(slowResourcesNetRequest)
     }
+
+    @Provides
+    @AppScope
+    internal fun provideProgressUseCaseInformator(context: Context): IProgressUseCaseInformator {
+        return ProgressUseCaseInformator(context)
+    }
+
 
 }

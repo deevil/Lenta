@@ -20,6 +20,7 @@
     <string name="address">Адрес</string>
     <string name="sync_of_dictionary">Синхронизация справочников</string>
     <string name="passed">Прошло</string>
+    <string name="remain">Осталось</string>
     <string name="speed">Скорость</string>
     <string name="kb_in_sec">КБ/С</string>
     <string name="mbyte">МБ</string>
@@ -29,4 +30,5 @@
     <string name="employees_position">Должность</string>
     <string name="definition_performer">Определение исполнителя</string>
     <string name="to_back">Назад</string>
+    <string name="loading_tab_number">Загрузка данных исполнителя</string>
 </resources>

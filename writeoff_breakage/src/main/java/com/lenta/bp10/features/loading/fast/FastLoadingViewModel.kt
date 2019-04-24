@@ -43,4 +43,8 @@ class FastLoadingViewModel : CoreLoadingViewModel() {
         screenNavigator.openSelectionTabNumberScreen()
     }
 
+    override fun clean() {
+        progress.postValue(false)
+    }
+
 }
