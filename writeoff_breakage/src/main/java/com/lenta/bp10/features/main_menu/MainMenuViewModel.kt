@@ -13,7 +13,7 @@ class MainMenuViewModel : CoreViewModel() {
     val fio = MutableLiveData("")
 
     fun onClickCreateTask() {
-        screenNavigator.openAlertScreen("onClickCreateTask")
+        screenNavigator.openJobCardScreen()
 
     }
 

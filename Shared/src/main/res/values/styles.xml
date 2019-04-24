@@ -67,6 +67,10 @@
 
     <style name="TextDescriptionToolbar" parent="Base.TextAppearance.AppCompat.Body2"></style>
 
+    <style name="TextTitle">
+        <item name="android:textColor">@color/color_text_title_header</item>
+    </style>
+
     <style name="BaseTxt">
         <item name="android:textSize">20sp</item>
         <item name="android:textColor">@color/colorViewTxt</item>

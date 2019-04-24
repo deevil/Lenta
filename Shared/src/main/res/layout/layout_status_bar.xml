@@ -66,7 +66,6 @@
             app:layout_constraintBottom_toBottomOf="@+id/tv_page_number"
             app:layout_constraintEnd_toStartOf="@+id/tv_time"
             app:layout_constraintTop_toTopOf="@+id/tv_page_number"
-            app:postfix='@{"%"}'
             tools:drawableStart="@drawable/ic_battery_full_white_16dp"
             tools:text="100%" />
 

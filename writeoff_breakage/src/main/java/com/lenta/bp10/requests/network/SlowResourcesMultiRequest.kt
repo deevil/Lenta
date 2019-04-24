@@ -12,9 +12,11 @@ import javax.inject.Inject
 
 class SlowResourcesMultiRequest @Inject constructor(private val hyperHive: HyperHive) : CoreResourcesMultiRequest() {
     override fun getListOfRequests(): List<RequestBuilder<out CustomParameter, out ScalarParameter<Any>>> {
-        return listOf(ZmpUtz22V001(hyperHive).newRequest(),
+        return listOf(
+                ZmpUtz22V001(hyperHive).newRequest(),
                 ZmpUtz25V001(hyperHive).newRequest(),
-                ZmpUtz30V001(hyperHive).newRequest())
+                ZmpUtz30V001(hyperHive).newRequest()
+        )
 
     }
 

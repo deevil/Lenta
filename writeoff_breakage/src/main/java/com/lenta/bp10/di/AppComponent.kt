@@ -3,6 +3,7 @@ package com.lenta.bp10.di
 import com.lenta.bp10.activity.main.MainActivity
 import com.lenta.bp10.activity.main.MainViewModel
 import com.lenta.bp10.features.auth.AuthViewModel
+import com.lenta.bp10.features.job_card.JobCardViewModel
 import com.lenta.bp10.features.loading.fast.FastLoadingViewModel
 import com.lenta.bp10.features.main_menu.MainMenuViewModel
 import com.lenta.bp10.features.select_market.SelectMarketViewModel
@@ -25,5 +26,6 @@ interface AppComponent {
     fun inject(it: SelectTabNumberViewModel)
     fun inject(it: SettingsViewModel)
     fun inject(it: MainMenuViewModel)
+    fun inject(it: JobCardViewModel)
 }
 

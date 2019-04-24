@@ -24,7 +24,7 @@ class SelectTabNumberViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     var fio = MutableLiveData<String>("")
     var employeesPosition = MutableLiveData<String>("")
 
-    fun searchTabNumber() {
+    private fun searchTabNumber() {
         Logg.d { "searchTabNumber" }
         viewModelScope.launch {
             screenNavigator.showProgress(tabNumberNetRequest)

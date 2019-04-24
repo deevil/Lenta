@@ -30,8 +30,8 @@ fun setButtonDecorationInfo(textView: TextView, buttonDecorationInfo: ButtonDeco
 
 
 @BindingAdapter(value = ["batteryLevel", "isCharging"])
-fun setNetworkIsConnected(textView: TextView, batteryLevel: Int?, isCharging: Boolean?) {
-    intWithVisibilities(textView, batteryLevel)
+fun setBatteryLevel(textView: TextView, batteryLevel: Int?, isCharging: Boolean?) {
+    intWithVisibilities(textView, batteryLevel, postfix = "%")
     textView.setCompoundDrawablesWithIntrinsicBounds(
             getIconForStatus(isCharging, batteryLevel),
             0, 0, 0)
