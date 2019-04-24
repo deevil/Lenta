@@ -47,6 +47,9 @@ data class ImageButtonDecorationInfo(
         @DrawableRes val iconRes: Int
 ) {
     companion object {
+        val back: ImageButtonDecorationInfo? by lazy {
+            ImageButtonDecorationInfo(R.drawable.ic_arrow_back_white_24dp)
+        }
         val home: ImageButtonDecorationInfo? by lazy {
             ImageButtonDecorationInfo(R.drawable.ic_home_white_24dp)
         }

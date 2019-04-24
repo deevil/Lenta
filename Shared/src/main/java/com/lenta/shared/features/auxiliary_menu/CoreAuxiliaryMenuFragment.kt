@@ -1,4 +1,4 @@
-package com.lenta.shared.features.settings
+package com.lenta.shared.features.auxiliary_menu
 
 import android.view.View
 import com.lenta.shared.R
@@ -9,9 +9,9 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListe
 import com.lenta.shared.platform.toolbar.top_toolbar.ImageButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 
-abstract class CoreSettingsFragment : CoreFragment<com.lenta.shared.databinding.FragmentSettingsBinding, CoreSettingsViewModel>(), OnBackPresserListener, ToolbarButtonsClickListener {
+abstract class CoreAuxiliaryMenuFragment : CoreFragment<com.lenta.shared.databinding.FragmentAuxiliaryMenuBindingImpl, CoreAuxiliaryMenuViewModel>(), OnBackPresserListener, ToolbarButtonsClickListener {
 
-     override fun getLayoutId(): Int = R.layout.fragment_settings
+    override fun getLayoutId(): Int = R.layout.fragment_auxiliary_menu
 
     override fun onBackPressed(): Boolean {
         vm.onBackPressed()
@@ -20,17 +20,19 @@ abstract class CoreSettingsFragment : CoreFragment<com.lenta.shared.databinding.
 
     override fun onToolbarButtonClick(view: View) {
         when (view.id) {
-            R.id.b_topbar_1 -> vm.onClickBack()
+            R.id.b_topbar_1 -> vm.onClickHome()
             R.id.b_topbar_2 -> vm.onClickExit()
         }
     }
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
-        topToolbarUiModel.description.value = resources.getString(com.lenta.shared.R.string.settings)
-        topToolbarUiModel.uiModelButton1.show(ImageButtonDecorationInfo.back)
+        topToolbarUiModel.description.value = resources.getString(com.lenta.shared.R.string.support)
+        topToolbarUiModel.uiModelButton1.show(ImageButtonDecorationInfo.home)
         topToolbarUiModel.uiModelButton2.show(ImageButtonDecorationInfo.exitFromApp)
     }
 
-     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
-     }
+    override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
+    }
+
+
 }

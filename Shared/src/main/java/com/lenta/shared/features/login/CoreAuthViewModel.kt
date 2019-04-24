@@ -10,5 +10,5 @@ abstract class CoreAuthViewModel : CoreViewModel() {
     abstract val enterEnabled: MutableLiveData<Boolean>
     abstract fun onClickEnter()
     abstract fun onBackPressed()
-    abstract fun onClickSettings()
+    abstract fun onClickAuxiliaryMenu()
 }

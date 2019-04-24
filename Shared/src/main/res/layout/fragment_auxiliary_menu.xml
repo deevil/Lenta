@@ -6,7 +6,7 @@
     <data>
         <variable
             name="vm"
-            type="com.lenta.shared.features.settings.CoreSettingsViewModel"/>
+            type="com.lenta.shared.features.auxiliary_menu.CoreAuxiliaryMenuViewModel"/>
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -14,8 +14,8 @@
         android:layout_height="match_parent">
 
         <include
-            android:id="@+id/layout_settings"
-            layout="@layout/layout_settings"
+            android:id="@+id/layout_auxiliary_menu"
+            layout="@layout/layout_auxiliary_menu"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_marginTop="8dp"

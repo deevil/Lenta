@@ -6,7 +6,7 @@
     <data>
         <variable
             name="vm"
-            type="com.lenta.shared.features.settings.CoreSettingsViewModel"/>
+            type="com.lenta.shared.features.auxiliary_menu.CoreAuxiliaryMenuViewModel"/>
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -24,25 +24,12 @@
             android:layout_marginEnd="8dp"
             android:layout_marginBottom="8dp"
             android:src="@drawable/logo_lenta"
-            app:layout_constraintBottom_toTopOf="@+id/BtnSelectPrinter"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.36"
-            tools:ignore="ContentDescription" />
-
-        <ImageButton
-            android:id="@+id/BtnSelectPrinter"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginBottom="16dp"
-            android:onClick="@{(view) -> vm.onClickPrinter()}"
             app:layout_constraintBottom_toTopOf="@+id/BtnSettings"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:srcCompat="@mipmap/button_select_printer" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.26"
+            tools:ignore="ContentDescription" />
 
         <ImageButton
             android:id="@+id/BtnSettings"
@@ -51,12 +38,12 @@
             android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp"
             android:layout_marginBottom="16dp"
-            android:onClick="@{(view) -> vm.onClickWork()}"
+            android:onClick="@{(view) -> vm.onClickSettings()}"
             app:layout_constraintBottom_toTopOf="@+id/BtnSupport"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:srcCompat="@mipmap/button_select_working_mode" />
+            app:srcCompat="@mipmap/button_settings_double" />
 
         <ImageButton
             android:id="@+id/BtnSupport"
@@ -65,11 +52,11 @@
             android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp"
             android:layout_marginBottom="16dp"
-            android:onClick="@{(view) -> vm.onClickTechLog()}"
+            android:onClick="@{(view) -> vm.onClickSupport()}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:srcCompat="@mipmap/button_tech_login" />
+            app:srcCompat="@mipmap/button_support_double" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

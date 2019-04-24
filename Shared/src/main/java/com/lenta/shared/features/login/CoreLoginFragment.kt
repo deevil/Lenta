@@ -22,7 +22,7 @@ abstract class CoreLoginFragment : CoreFragment<com.lenta.shared.databinding.Fra
     override fun onToolbarButtonClick(view: View) {
         when (view.id) {
             R.id.b_5 -> vm.onClickEnter()
-            R.id.b_topbar_1 -> vm.onClickSettings()
+            R.id.b_topbar_1 -> vm.onClickAuxiliaryMenu()
         }
     }
 

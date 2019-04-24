@@ -8,9 +8,8 @@ class SettingsViewModel : CoreSettingsViewModel() {
     @Inject
     lateinit var screenNavigator: IScreenNavigator
 
-    override fun onClickHome() {
-        //TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-        screenNavigator.openAlertScreen("onClickHome")
+    override fun onClickBack() {
+        screenNavigator.goBack()
     }
 
     override fun onClickExit() {

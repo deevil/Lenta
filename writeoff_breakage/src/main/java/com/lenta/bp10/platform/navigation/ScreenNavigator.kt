@@ -2,6 +2,7 @@ package com.lenta.bp10.platform.navigation
 
 import com.lenta.bp10.features.alert.AlertFragment
 import com.lenta.bp10.features.auth.AuthFragment
+import com.lenta.bp10.features.auxiliary_menu.AuxiliaryMenuFragment
 import com.lenta.bp10.features.loading.fast.FastDataLoadingFragment
 import com.lenta.bp10.features.select_market.SelectMarketFragment
 import com.lenta.bp10.features.select_tab_number.SelectTabNumberFragment
@@ -62,7 +63,11 @@ class ScreenNavigator(
         getFragmentStack()?.replace(SelectTabNumberFragment())
     }
 
-    override fun openSettingsScreen() {
+    override fun openAuxiliaryMenu() {
+        getFragmentStack()?.push(AuxiliaryMenuFragment())
+    }
+
+    override fun openSettings() {
         getFragmentStack()?.push(SettingsFragment())
     }
 
@@ -77,5 +82,6 @@ interface IScreenNavigator : IGoBackNavigator {
     fun openAlertScreen(message: String, replace: Boolean = false)
     fun openFastDataLoadingScreen()
     fun openSelectionTabNumberScreen()
-    fun openSettingsScreen()
+    fun openAuxiliaryMenu()
+    fun openSettings()
 }

@@ -1,6 +1,7 @@
 package com.lenta.bp10.features.auth
 
-import androidx.lifecycle.*
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import com.lenta.bp10.platform.navigation.IScreenNavigator
 import com.lenta.bp10.requests.network.PermissionsParams
 import com.lenta.bp10.requests.network.PermissionsRequest
@@ -65,7 +66,7 @@ class AuthViewModel : CoreAuthViewModel() {
     override fun onBackPressed() {
     }
 
-    override fun onClickSettings() {
-        navigator.openSettingsScreen()
+    override fun onClickAuxiliaryMenu() {
+        navigator.openAuxiliaryMenu()
     }
 }
