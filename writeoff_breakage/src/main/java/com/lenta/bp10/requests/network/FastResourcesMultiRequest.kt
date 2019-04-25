@@ -10,6 +10,8 @@ import javax.inject.Inject
 
 class FastResourcesMultiRequest @Inject constructor(val hyperHive: HyperHive) : CoreResourcesMultiRequest() {
 
+    override val isDeltaRequest = true
+
     override fun getListOfRequests(): List<RequestBuilder<out CustomParameter, out ScalarParameter<Any>>> {
         return arrayListOf(
                 ZmpUtz07V001(hyperHive).newRequest(),

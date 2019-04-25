@@ -14,4 +14,5 @@
     <string name="gis_control">ГИС-контроль</string>
     <string name="product_type">Тип товара</string>
     <string name="job_card">Карточка задания</string>
+    <string name="type_tasks_loading">Загрузка типов задания</string>
 </resources>

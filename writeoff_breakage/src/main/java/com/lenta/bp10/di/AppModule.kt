@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.Handler
 import com.google.gson.GsonBuilder
 import com.lenta.bp10.BuildConfig
+import com.lenta.bp10.account.SessionInfo
 import com.lenta.bp10.features.auth.Authenticator
 import com.lenta.bp10.platform.navigation.IScreenNavigator
 import com.lenta.bp10.platform.navigation.ScreenNavigator
@@ -11,6 +12,7 @@ import com.lenta.bp10.progress.ProgressUseCaseInformator
 import com.lenta.bp10.requests.network.SlowResourcesMultiRequest
 import com.lenta.bp10.requests.network.loader.ResourcesLoader
 import com.lenta.shared.account.IAuthenticator
+import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.di.AppScope
 import com.lenta.shared.exception.FailureInterpreter
 import com.lenta.shared.exception.IFailureInterpreter
@@ -99,6 +101,18 @@ class AppModule {
     @AppScope
     internal fun provideProgressUseCaseInformator(context: Context): IProgressUseCaseInformator {
         return ProgressUseCaseInformator(context)
+    }
+
+    @Provides
+    @AppScope
+    internal fun provideSessionInfo(): SessionInfo {
+        return SessionInfo()
+    }
+
+    @Provides
+    @AppScope
+    internal fun provideISessionInfo(sessionInfo: SessionInfo): ISessionInfo {
+        return sessionInfo
     }
 
 

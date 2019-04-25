@@ -11,6 +11,8 @@ import com.mobrun.plugin.api.request_assistant.ScalarParameter
 import javax.inject.Inject
 
 class SlowResourcesMultiRequest @Inject constructor(private val hyperHive: HyperHive) : CoreResourcesMultiRequest() {
+    override val isDeltaRequest = true
+
     override fun getListOfRequests(): List<RequestBuilder<out CustomParameter, out ScalarParameter<Any>>> {
         return listOf(
                 ZmpUtz22V001(hyperHive).newRequest(),

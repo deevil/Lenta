@@ -4,6 +4,7 @@ import androidx.lifecycle.*
 import com.lenta.bp10.platform.navigation.IScreenNavigator
 import com.lenta.bp10.requests.network.PermissionsParams
 import com.lenta.bp10.requests.network.PermissionsRequest
+import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.exception.IFailureInterpreter
 import com.lenta.shared.features.login.CoreAuthViewModel
@@ -28,6 +29,8 @@ class AuthViewModel : CoreAuthViewModel() {
     lateinit var navigator: IScreenNavigator
     @Inject
     lateinit var failureInterpreter: IFailureInterpreter
+    @Inject
+    lateinit var sessionInfo: ISessionInfo
 
     override val enterEnabled: MutableLiveData<Boolean> by lazy {
         login.combineLatest(password).map { isValidLoginFields(login = it?.first, password = it?.second) }
@@ -58,6 +61,7 @@ class AuthViewModel : CoreAuthViewModel() {
 
 
     private fun handleAuthSuccess(@Suppress("UNUSED_PARAMETER") b: Boolean) {
+        sessionInfo.userName = login.value
         navigator.openSelectMarketScreen()
 
     }

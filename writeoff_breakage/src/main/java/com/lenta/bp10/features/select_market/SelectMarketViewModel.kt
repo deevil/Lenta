@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.lenta.bp10.fmp.resources.permissions.ZfmpUtzWob01V001
 import com.lenta.bp10.platform.navigation.IScreenNavigator
 import com.lenta.bp10.requests.db.PermissionsDbRequest
+import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.view.OnPositionClickListener
@@ -16,6 +17,8 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
     lateinit var permissionsDbRequest: PermissionsDbRequest
     @Inject
     lateinit var screenNavigator: IScreenNavigator
+    @Inject
+    lateinit var sessionInfo: ISessionInfo
 
 
     val markets: MutableLiveData<List<MarketUi>> = MutableLiveData()
@@ -40,6 +43,7 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
         markets.value = list.map { MarketUi(number = it.werks, address = it.addres) }
         if (list.isNotEmpty() && selectedPosition.value == null) {
             selectedPosition.value = 0
+            sessionInfo.market = list.getOrNull(0)?.werks
         }
     }
 
@@ -50,6 +54,7 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
 
     override fun onClickPosition(position: Int) {
         selectedPosition.value = position
+        sessionInfo.market = markets.value?.getOrNull(position)?.address
     }
 
 }

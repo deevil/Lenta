@@ -14,6 +14,8 @@ import com.mobrun.plugin.models.BaseStatus
 
 abstract class CoreResourcesMultiRequest : UseCase<Boolean, MutableLiveData<LoadStatus>?>() {
 
+    abstract val isDeltaRequest: Boolean
+
 
     override suspend fun run(params: MutableLiveData<LoadStatus>?): Either<Failure, Boolean> {
 
@@ -26,7 +28,11 @@ abstract class CoreResourcesMultiRequest : UseCase<Boolean, MutableLiveData<Load
         params?.postValue(Loading(startTime = startTime, loadingDataSize = 0L))
 
         for (request in requests) {
-            either = request.streamCallDelta().execute().handleResult(status = params).toEitherBoolean()
+            either = (if (isDeltaRequest) {
+                request.streamCallDelta()
+            } else {
+                request.streamCallTable()
+            }).execute().handleResult(status = params).toEitherBoolean()
             if (either.isLeft) {
                 params?.postValue(NotInit)
                 return either
