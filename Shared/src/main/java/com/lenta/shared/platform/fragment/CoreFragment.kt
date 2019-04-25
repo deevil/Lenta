@@ -54,9 +54,13 @@ abstract class CoreFragment<T : ViewDataBinding, S : ViewModel> : Fragment() {
 
     fun invalidateTopToolBar() {
         getTopToolBarUIModel()?.let {
-            it.cleanAll()
+            cleanTopToolbar(it)
             setupTopToolBar(it)
         }
+    }
+
+    open fun cleanTopToolbar(topToolbarUiModel: TopToolbarUiModel) {
+        topToolbarUiModel.cleanAll()
     }
 
 

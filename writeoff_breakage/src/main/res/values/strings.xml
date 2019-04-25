@@ -5,4 +5,13 @@
     <string name="tk_selection">Выбор ТК</string>
     <string name="select_tk_number">Выберите номер ТК</string>
     <string name="choose_tabnumber_description">Укажите табельный номер для учёта исполнителя</string>
+    <string name="create_task">Создать задание</string>
+    <string name="main_menu">Главное меню</string>
+    <string name="type_job">Тип задания</string>
+    <string name="name">Название</string>
+    <string name="storage">Склад</string>
+    <string name="type_of_motion">Вид движения</string>
+    <string name="gis_control">ГИС-контроль</string>
+    <string name="product_type">Тип товара</string>
+    <string name="job_card">Карточка задания</string>
 </resources>

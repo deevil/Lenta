@@ -33,7 +33,7 @@ class SelectTabNumberFragment : CoreFragment<FragmentSelectTabNumberBinding, Sel
         bottomToolbarUiModel
                 .uiModelButton5.show(ButtonDecorationInfo.next)
         bottomToolbarUiModel
-                .uiModelButton1.show(ButtonDecorationInfo.back)
+                .uiModelButton1.show(ButtonDecorationInfo.back, enabled = false)
     }
 
     override fun onToolbarButtonClick(view: View) {

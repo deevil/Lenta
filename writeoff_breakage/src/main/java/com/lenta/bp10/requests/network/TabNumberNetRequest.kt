@@ -5,10 +5,9 @@ import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.fmp.ObjectRawStatus
+import com.lenta.shared.fmp.toFmpObjectRawStatusEither
 import com.lenta.shared.functional.Either
 import com.lenta.shared.interactor.UseCase
-import com.lenta.shared.utilities.Logg
-import com.lenta.shared.utilities.extentions.hhive.toEither
 import com.mobrun.plugin.api.HyperHive
 import com.mobrun.plugin.api.callparams.WebCallParams
 import javax.inject.Inject
@@ -18,9 +17,8 @@ class TabNumberNetRequest
     override suspend fun run(params: TabNumberParams): Either<Failure, TabNumberInfo> {
         val webCallParams = WebCallParams()
         webCallParams.data = "IV_PERNR = ${params.tabNumber}"
-        val status = hyperHive.requestAPI.web("ZMP_UTZ_98_V001", webCallParams, TabNumberStatus::class.java).execute()
-        Logg.d { "status: $status" }
-        return status.toEither(status.result?.raw)
+        return hyperHive.requestAPI.web("ZMP_UTZ_98_V001", webCallParams)
+                .execute().toFmpObjectRawStatusEither(TabNumberStatus::class.java, gson)
     }
 }
 

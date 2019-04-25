@@ -9,6 +9,7 @@
         <variable
             name="vm"
             type="com.lenta.shared.platform.activity.main_activity.CoreMainViewModel" />
+
         <variable
             name="toolbarButtonsClickListener"
             type="com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener" />
@@ -41,15 +42,28 @@
             app:toolbarButtonsClickListener='@{toolbarButtonsClickListener}'
             app:vm="@{vm.topToolbarUiModel}" />
 
-
         <FrameLayout
-            android:id="@+id/fragments"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             app:layout_constraintBottom_toTopOf="@+id/layout_bottom_toolbar"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/layout_top_toolbar" />
+            app:layout_constraintTop_toBottomOf="@+id/layout_top_toolbar">
+
+            <FrameLayout
+                android:id="@+id/fragments"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+            <include
+                android:id="@+id/layout_progress"
+                layout="@layout/layout_loading_data"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:vm="@{vm.loadingViewModel}" />
+
+        </FrameLayout>
+
 
         <include
             android:id="@+id/layout_bottom_toolbar"
