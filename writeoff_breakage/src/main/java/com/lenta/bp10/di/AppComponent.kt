@@ -9,7 +9,7 @@ import com.lenta.bp10.features.loading.fast.FastLoadingViewModel
 import com.lenta.bp10.features.main_menu.MainMenuViewModel
 import com.lenta.bp10.features.select_market.SelectMarketViewModel
 import com.lenta.bp10.features.select_oper_mode.SelectOperModeViewModel
-import com.lenta.bp10.features.select_tab_number.SelectTabNumberViewModel
+import com.lenta.bp10.features.select_personnel_number.SelectPersonnelNumberViewModel
 import com.lenta.bp10.features.settings.SettingsViewModel
 import com.lenta.shared.di.AppScope
 import com.lenta.shared.di.CoreComponent
@@ -25,7 +25,7 @@ interface AppComponent {
     fun inject(it: MessageViewModel)
     fun inject(it: SelectMarketViewModel)
     fun inject(it: FastLoadingViewModel)
-    fun inject(it: SelectTabNumberViewModel)
+    fun inject(it: SelectPersonnelNumberViewModel)
     fun inject(it: SettingsViewModel)
     fun inject(it: AuxiliaryMenuViewModel)
     fun inject(it: SelectOperModeViewModel)

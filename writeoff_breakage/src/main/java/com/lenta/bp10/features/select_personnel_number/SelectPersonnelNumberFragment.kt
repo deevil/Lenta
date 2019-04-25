@@ -1,4 +1,4 @@
-package com.lenta.bp10.features.select_tab_number
+package com.lenta.bp10.features.select_personnel_number
 
 import android.view.View
 import com.lenta.bp10.R
@@ -12,13 +12,13 @@ import com.lenta.shared.platform.toolbar.top_toolbar.ImageButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.utilities.extentions.provideViewModel
 
-class SelectTabNumberFragment : CoreFragment<FragmentSelectTabNumberBinding, SelectTabNumberViewModel>(), ToolbarButtonsClickListener {
-    override fun getLayoutId(): Int = R.layout.fragment_select_tab_number
+class SelectPersonnelNumberFragment : CoreFragment<FragmentSelectTabNumberBinding, SelectPersonnelNumberViewModel>(), ToolbarButtonsClickListener {
+    override fun getLayoutId(): Int = R.layout.fragment_select_personnel_number
 
     override fun getPageNumber(): String = "10/12"
 
-    override fun getViewModel(): SelectTabNumberViewModel {
-        provideViewModel(SelectTabNumberViewModel::class.java).let {
+    override fun getViewModel(): SelectPersonnelNumberViewModel {
+        provideViewModel(SelectPersonnelNumberViewModel::class.java).let {
             getAppComponent()?.inject(it)
             return it
         }
