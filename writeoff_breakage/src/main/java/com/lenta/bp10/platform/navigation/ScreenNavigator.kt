@@ -8,7 +8,7 @@ import com.lenta.bp10.features.loading.fast.FastDataLoadingFragment
 import com.lenta.bp10.features.main_menu.MainMenuFragment
 import com.lenta.shared.account.IAuthenticator
 import com.lenta.bp10.features.select_market.SelectMarketFragment
-import com.lenta.bp10.features.select_tab_number.SelectTabNumberFragment
+import com.lenta.bp10.features.select_personnel_number.SelectPersonnelNumberFragment
 import com.lenta.bp10.features.settings.SettingsFragment
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.exception.IFailureInterpreter
@@ -67,7 +67,7 @@ class ScreenNavigator(
     }
 
     override fun openSelectionTabNumberScreen() {
-        getFragmentStack()?.replace(SelectTabNumberFragment())
+        getFragmentStack()?.replace(SelectPersonnelNumberFragment())
     }
 
     override fun openAuxiliaryMenu() {

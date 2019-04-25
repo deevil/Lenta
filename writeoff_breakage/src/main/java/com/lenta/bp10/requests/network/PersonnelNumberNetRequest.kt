@@ -12,7 +12,7 @@ import com.mobrun.plugin.api.HyperHive
 import com.mobrun.plugin.api.callparams.WebCallParams
 import javax.inject.Inject
 
-class TabNumberNetRequest
+class PersonnelNumberNetRequest
 @Inject constructor(private val hyperHive: HyperHive, private val gson: Gson) : UseCase<TabNumberInfo, TabNumberParams>() {
     override suspend fun run(params: TabNumberParams): Either<Failure, TabNumberInfo> {
         val webCallParams = WebCallParams()
