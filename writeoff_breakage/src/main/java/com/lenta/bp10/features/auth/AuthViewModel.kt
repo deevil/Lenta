@@ -71,6 +71,6 @@ class AuthViewModel : CoreAuthViewModel() {
     }
 
     override fun onClickAuxiliaryMenu() {
-        navigator.openAuxiliaryMenu()
+        navigator.openAuxiliaryMenuScreen()
     }
 }

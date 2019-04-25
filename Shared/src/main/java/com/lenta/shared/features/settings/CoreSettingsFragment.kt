@@ -11,7 +11,7 @@ import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 
 abstract class CoreSettingsFragment : CoreFragment<com.lenta.shared.databinding.FragmentSettingsBinding, CoreSettingsViewModel>(), OnBackPresserListener, ToolbarButtonsClickListener {
 
-     override fun getLayoutId(): Int = R.layout.fragment_settings
+    override fun getLayoutId(): Int = R.layout.fragment_settings
 
     override fun onBackPressed(): Boolean {
         vm.onBackPressed()
@@ -31,6 +31,6 @@ abstract class CoreSettingsFragment : CoreFragment<com.lenta.shared.databinding.
         topToolbarUiModel.uiModelButton2.show(ImageButtonDecorationInfo.exitFromApp)
     }
 
-     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
+    override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
      }
 }

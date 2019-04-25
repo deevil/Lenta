@@ -1,15 +1,15 @@
-package com.lenta.bp10.features.auxiliary_menu
+package com.lenta.bp10.features.select_oper_mode
 
 import com.lenta.bp10.platform.navigation.IScreenNavigator
-import com.lenta.shared.features.auxiliary_menu.CoreAuxiliaryMenuViewModel
+import com.lenta.shared.features.select_oper_mode.CoreSelectOperModeViewModel
 import javax.inject.Inject
 
-class AuxiliaryMenuViewModel : CoreAuxiliaryMenuViewModel(){
+class SelectOperModeViewModel : CoreSelectOperModeViewModel(){
 
     @Inject
     lateinit var screenNavigator: IScreenNavigator
 
-    override fun onClickHome() {
+    override fun onClickBack() {
         screenNavigator.goBack()
     }
 
@@ -18,15 +18,17 @@ class AuxiliaryMenuViewModel : CoreAuxiliaryMenuViewModel(){
         screenNavigator.openAlertScreen("onClickExit")
     }
 
-    override fun onClickSettings() {
-        screenNavigator.openSettingsScreen()
+    override fun onClickTestEnvir() {
+        //TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        screenNavigator.openAlertScreen("onClickTestEnvir")
     }
 
-    override fun onClickSupport() {
+    override fun onClickWorkEnvir() {
         //TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-        screenNavigator.openAlertScreen("onClickSupport")
+        screenNavigator.openAlertScreen("onClickWorkEnvir")
     }
 
     override fun onBackPressed() {
     }
+
 }
