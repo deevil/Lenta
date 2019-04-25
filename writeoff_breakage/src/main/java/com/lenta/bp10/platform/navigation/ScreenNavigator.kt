@@ -2,13 +2,14 @@ package com.lenta.bp10.platform.navigation
 
 import com.lenta.bp10.features.alert.AlertFragment
 import com.lenta.bp10.features.auth.AuthFragment
+import com.lenta.bp10.features.auxiliary_menu.AuxiliaryMenuFragment
 import com.lenta.bp10.features.job_card.JobCardFragment
 import com.lenta.bp10.features.loading.fast.FastDataLoadingFragment
 import com.lenta.bp10.features.loading.tasks_settings.LoadingTaskSettingsFragment
 import com.lenta.bp10.features.main_menu.MainMenuFragment
 import com.lenta.shared.account.IAuthenticator
 import com.lenta.bp10.features.select_market.SelectMarketFragment
-import com.lenta.bp10.features.select_tab_number.SelectTabNumberFragment
+import com.lenta.bp10.features.select_personnel_number.SelectPersonnelNumberFragment
 import com.lenta.bp10.features.settings.SettingsFragment
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.exception.IFailureInterpreter
@@ -67,10 +68,14 @@ class ScreenNavigator(
     }
 
     override fun openSelectionTabNumberScreen() {
-        getFragmentStack()?.replace(SelectTabNumberFragment())
+        getFragmentStack()?.replace(SelectPersonnelNumberFragment())
     }
 
-    override fun openSettingsScreen() {
+    override fun openAuxiliaryMenu() {
+        getFragmentStack()?.push(AuxiliaryMenuFragment())
+    }
+
+    override fun openSettings() {
         getFragmentStack()?.push(SettingsFragment())
     }
 
@@ -99,6 +104,10 @@ class ScreenNavigator(
         getFragmentStack()?.push(LoadingTaskSettingsFragment())
     }
 
+    override fun openSettingsScreen() {
+        getFragmentStack()?.push(SettingsFragment())
+    }
+
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 
 }
@@ -111,6 +120,8 @@ interface IScreenNavigator : IGoBackNavigator {
     fun openAlertScreen(failure: Failure)
     fun openFastDataLoadingScreen()
     fun openSelectionTabNumberScreen()
+    fun openAuxiliaryMenu()
+    fun openSettings()
     fun openSettingsScreen()
     fun hideProgress()
     fun <Params> showProgress(useCase: UseCase<Any, Params>)
