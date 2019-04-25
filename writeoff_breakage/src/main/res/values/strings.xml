@@ -15,4 +15,5 @@
     <string name="product_type">Тип товара</string>
     <string name="job_card">Карточка задания</string>
     <string name="type_tasks_loading">Загрузка типов задания</string>
+    <string name="write_off_from">Списание от %s</string>
 </resources>

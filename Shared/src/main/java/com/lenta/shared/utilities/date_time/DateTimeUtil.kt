@@ -18,4 +18,8 @@ object DateTimeUtil {
         return getDateFormat(targetFormat).format(Date(unixTime))
     }
 
+    fun formatCurrentDate(targetFormat: String): String {
+        return getDateFormat(targetFormat).format(Date())
+    }
+
 }

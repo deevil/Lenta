@@ -6,6 +6,8 @@ import com.google.gson.GsonBuilder
 import com.lenta.bp10.BuildConfig
 import com.lenta.bp10.account.SessionInfo
 import com.lenta.bp10.features.auth.Authenticator
+import com.lenta.bp10.features.job_card.IJobCardRepo
+import com.lenta.bp10.features.job_card.JobCardRepo
 import com.lenta.bp10.platform.navigation.IScreenNavigator
 import com.lenta.bp10.platform.navigation.ScreenNavigator
 import com.lenta.bp10.progress.ProgressUseCaseInformator
@@ -113,6 +115,11 @@ class AppModule {
     @AppScope
     internal fun provideISessionInfo(sessionInfo: SessionInfo): ISessionInfo {
         return sessionInfo
+    }
+
+    @Provides
+    internal fun provideIJobCardRepo(jobCardRepo: JobCardRepo): IJobCardRepo {
+        return jobCardRepo
     }
 
 
