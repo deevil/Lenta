@@ -11,6 +11,7 @@ import com.lenta.bp10.features.select_market.SelectMarketFragment
 import com.lenta.bp10.features.select_oper_mode.SelectOperModeFragment
 import com.lenta.bp10.features.select_personnel_number.SelectPersonnelNumberFragment
 import com.lenta.bp10.features.settings.SettingsFragment
+import com.lenta.bp10.features.support.SupportFragment
 import com.lenta.shared.account.IAuthenticator
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.exception.IFailureInterpreter
@@ -110,6 +111,10 @@ class ScreenNavigator(
         getFragmentStack()?.push(SettingsFragment())
     }
 
+    override fun openSupportScreen() {
+        getFragmentStack()?.push(SupportFragment())
+    }
+
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 
 }
@@ -125,6 +130,7 @@ interface IScreenNavigator : IGoBackNavigator {
     fun openAuxiliaryMenuScreen()
     fun openSelectOperModeScreen()
     fun openSettingsScreen()
+    fun openSupportScreen()
     fun hideProgress()
     fun <Params> showProgress(useCase: UseCase<Any, Params>)
     fun openMainMenuScreen()

@@ -23,8 +23,7 @@ class AuxiliaryMenuViewModel : CoreAuxiliaryMenuViewModel(){
     }
 
     override fun onClickSupport() {
-        //TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-        screenNavigator.openAlertScreen("onClickSupport")
+        screenNavigator.openSupportScreen()
     }
 
     override fun onBackPressed() {

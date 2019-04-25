@@ -182,4 +182,25 @@
         <item name="android:background">@drawable/frame_number_section</item>
     </style>
 
+    <style name="SupportTxtKey">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_weight">0.33</item>
+        <item name="android:textSize">24sp</item>
+        <item name="android:textColor">@color/colorViewTxt</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:paddingLeft">20dp</item>
+        <item name="android:layout_gravity">center_vertical</item>
+    </style>
+
+    <style name="SupportTxtValue">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_weight">0.67</item>
+        <item name="android:textSize">24sp</item>
+        <item name="android:textColor">@color/colorViewTxt</item>
+        <item name="android:paddingRight">20dp</item>
+        <item name="android:layout_gravity">center_vertical</item>
+    </style>
+
 </resources>
