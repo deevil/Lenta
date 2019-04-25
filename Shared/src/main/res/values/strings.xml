@@ -30,7 +30,9 @@
     <string name="employees_position">Должность</string>
     <string name="definition_performer">Определение исполнителя</string>
     <string name="to_back">Назад</string>
+    <string name="auxiliary_menu">Вспомогательное меню</string>
     <string name="settings">Настройки</string>
     <string name="support">Поддержка</string>
+    <string name="select_oper_mode">Выбор режима работы</string>
     <string name="loading_tab_number">Загрузка данных исполнителя</string>
 </resources>

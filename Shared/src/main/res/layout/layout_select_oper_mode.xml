@@ -6,7 +6,7 @@
     <data>
         <variable
             name="vm"
-            type="com.lenta.shared.features.auxiliary_menu.CoreAuxiliaryMenuViewModel"/>
+            type="com.lenta.shared.features.select_oper_mode.CoreSelectOperModeViewModel"/>
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -38,12 +38,12 @@
             android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp"
             android:layout_marginBottom="16dp"
-            android:onClick="@{(view) -> vm.onClickSettings()}"
+            android:onClick="@{(view) -> vm.onClickTestEnvir()}"
             app:layout_constraintBottom_toTopOf="@+id/BtnWorkEnvir"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:srcCompat="@mipmap/button_settings_double" />
+            app:srcCompat="@mipmap/button_test_environment" />
 
         <ImageButton
             android:id="@+id/BtnWorkEnvir"
@@ -52,11 +52,11 @@
             android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp"
             android:layout_marginBottom="16dp"
-            android:onClick="@{(view) -> vm.onClickSupport()}"
+            android:onClick="@{(view) -> vm.onClickWorkEnvir()}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:srcCompat="@mipmap/button_support_double" />
+            app:srcCompat="@mipmap/button_work_environment" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

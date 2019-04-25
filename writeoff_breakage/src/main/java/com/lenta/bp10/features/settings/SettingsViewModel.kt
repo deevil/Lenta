@@ -23,8 +23,7 @@ class SettingsViewModel : CoreSettingsViewModel() {
     }
 
     override fun onClickWork() {
-        //TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-        screenNavigator.openAlertScreen("onClickWork")
+        screenNavigator.openSelectOperModeScreen()
     }
 
     override fun onClickTechLog() {
