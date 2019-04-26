@@ -25,7 +25,7 @@
         type="string"
         constraints="layout|nonempty|unique"
         default="blank_fragment"
-        suggest="${classToResource(className)}_fragment"
+        suggest="fragment_${classToResource(className)}"
         help="The name of the layout to create" />
 
     <parameter

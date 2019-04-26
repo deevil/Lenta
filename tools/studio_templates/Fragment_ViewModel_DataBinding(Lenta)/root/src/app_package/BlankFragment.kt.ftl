@@ -2,7 +2,7 @@ package ${escapeKotlinIdentifiers(packageName)}
 
 <#if applicationPackage??>
 import ${applicationPackage}.R
-import ${applicationPackage}.databinding.${className}Binding
+import ${applicationPackage}.databinding.${underscoreToCamelCase(layoutName)}Binding
 import ${applicationPackage}.platform.extentions.getAppComponent
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
@@ -10,7 +10,7 @@ import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.utilities.extentions.provideViewModel
 </#if>
 
-class ${className} : CoreFragment<${className}Binding, ${viewModelName}>() {
+class ${className} : CoreFragment<${underscoreToCamelCase(layoutName)}Binding, ${viewModelName}>() {
 
     override fun getLayoutId(): Int = R.layout.${layoutName}
 
