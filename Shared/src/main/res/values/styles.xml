@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.MaterialComponents.NoActionBar">
         <!-- Customize your theme here. -->
@@ -13,6 +13,7 @@
         <item name="spinnerStyle">@style/spinner_style</item>
         <item name="android:spinnerItemStyle">@style/SpinnerItemStyle</item>
         <item name="android:progressBarStyle">@style/ProgressBar</item>
+        <item name="android:fontFamily" tools:targetApi="jelly_bean">@font/tahoma</item>
     </style>
 
     <style name="btn" parent="Widget.MaterialComponents.Button">
@@ -49,6 +50,7 @@
 
     <style name="edit_text_style" parent="Widget.AppCompat.EditText">
         <item name="android:background">@drawable/bg_border_rectangle</item>
+        <item name="android:textSize">15sp</item>
         <item name="android:padding">8dp</item>
         <item name="android:selectAllOnFocus">true</item>
     </style>
@@ -159,6 +161,12 @@
         <item name="android:layout_width">2dp</item>
         <item name="android:layout_height">match_parent</item>
         <item name="android:background">@color/colorDivider</item>
+    </style>
+
+    <style name="TabLayoutStyle" parent="Base.Widget.Design.TabLayout">
+        <item name="android:textSize">15sp</item>
+        <item name="android:lineSpacingExtra">17sp</item>
+        <item name="android:textAllCaps">true</item>
     </style>
 
     <!--<style name="TabLayout">

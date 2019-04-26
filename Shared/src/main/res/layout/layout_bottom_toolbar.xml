@@ -121,6 +121,7 @@
             android:id="@+id/b_5"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:paddingEnd="4dp"
             android:background="?selectableItemBackground"
             android:clickable="@{vm.uiModelButton5.enabled}"
             android:enabled="@{vm.uiModelButton5.enabled}"

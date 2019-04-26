@@ -17,4 +17,6 @@
     <string name="type_tasks_loading">Загрузка типов задания</string>
     <string name="write_off_from">Списание от %s</string>
     <string name="list_of_goods">Список товаров</string>
+    <string name="counted">Посчитанные</string>
+    <string name="filter">Фильтр</string>
 </resources>
