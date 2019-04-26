@@ -2,6 +2,7 @@ package com.lenta.bp10.features.job_card
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.lenta.bp10.platform.navigation.IScreenNavigator
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.view.OnPositionClickListener
@@ -11,6 +12,8 @@ import javax.inject.Inject
 class JobCardViewModel : CoreViewModel() {
     @Inject
     lateinit var jobCardRepo: IJobCardRepo
+    @Inject
+    lateinit var screenNavigator: IScreenNavigator
 
     val taskSettingsList: MutableLiveData<List<TaskSetting>> = MutableLiveData()
     val taskName: MutableLiveData<String> = MutableLiveData()
@@ -57,6 +60,17 @@ class JobCardViewModel : CoreViewModel() {
                 taskName.value = jobCardRepo.generateNameTask()
             }
         }
+    }
+
+    fun onClickNext() {
+        screenNavigator.openGoodsListScreen()
+    }
+
+    fun onClickBack() {
+
+        //TODO (DB) нужно уточнить реализацию
+
+
     }
 
 

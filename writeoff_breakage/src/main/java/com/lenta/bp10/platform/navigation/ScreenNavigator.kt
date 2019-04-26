@@ -3,6 +3,7 @@ package com.lenta.bp10.platform.navigation
 import com.lenta.bp10.features.alert.AlertFragment
 import com.lenta.bp10.features.auth.AuthFragment
 import com.lenta.bp10.features.auxiliary_menu.AuxiliaryMenuFragment
+import com.lenta.bp10.features.goods_list.GoodsListFragment
 import com.lenta.bp10.features.job_card.JobCardFragment
 import com.lenta.bp10.features.loading.fast.FastDataLoadingFragment
 import com.lenta.bp10.features.loading.tasks_settings.LoadingTaskSettingsFragment
@@ -110,6 +111,10 @@ class ScreenNavigator(
         getFragmentStack()?.push(SettingsFragment())
     }
 
+    override fun openGoodsListScreen() {
+        getFragmentStack()?.push(GoodsListFragment())
+    }
+
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 
 }
@@ -130,4 +135,5 @@ interface IScreenNavigator : IGoBackNavigator {
     fun openMainMenuScreen()
     fun openJobCardScreen()
     fun openLoadingTaskSettingsScreen()
+    fun openGoodsListScreen()
 }
