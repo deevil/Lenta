@@ -53,7 +53,7 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
 
     override fun onClickPosition(position: Int) {
         selectedPosition.value = position
-        sessionInfo.market = markets.value?.getOrNull(position)?.address
+        sessionInfo.market = markets.value?.getOrNull(position)?.number
     }
 
 }

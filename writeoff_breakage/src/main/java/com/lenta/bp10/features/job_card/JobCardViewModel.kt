@@ -76,7 +76,7 @@ class JobCardViewModel : CoreViewModel() {
 
     private fun updateStores(taskType: String?) {
         viewModelScope.launch {
-            storesNames.value = jobCardRepo.getStores()
+            storesNames.value = jobCardRepo.getStores(taskType)
         }
     }
 
