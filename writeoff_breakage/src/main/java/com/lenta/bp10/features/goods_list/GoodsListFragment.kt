@@ -1,16 +1,22 @@
 package com.lenta.bp10.features.goods_list
 
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.databinding.DataBindingUtil
+import com.lenta.bp10.BR
 import com.lenta.bp10.R
 import com.lenta.bp10.databinding.FragmentGoodsListBinding
+import com.lenta.bp10.databinding.LayoutGoodsCountedBinding
+import com.lenta.bp10.databinding.LayoutGoodsFilterBinding
 import com.lenta.bp10.platform.extentions.getAppComponent
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.utilities.Logg
+import com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig
 import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.databinding.ViewPagerSettings
 import com.lenta.shared.utilities.extentions.provideViewModel
@@ -51,7 +57,31 @@ class GoodsListFragment :
 
     }
 
-    override fun getPagerItemView(container: ViewGroup, position: Int): View = View(context)
+    override fun getPagerItemView(container: ViewGroup, position: Int): View {
+        if (position ==0) {
+            DataBindingUtil
+                    .inflate<LayoutGoodsCountedBinding>(LayoutInflater.from(container.context),
+                            R.layout.layout_goods_counted,
+                            container,
+                            false).let {
+                        it.rvConfig = DataBindingRecyclerViewConfig(layoutId = R.layout.item_tile_goods, itemId = BR.vm)
+                        it.vm = vm
+                        return it.root
+                    }
+        }
+
+        DataBindingUtil
+                .inflate<LayoutGoodsFilterBinding>(LayoutInflater.from(container.context),
+                        R.layout.layout_goods_filter,
+                        container,
+                        false).let {
+                    it.rvConfig = DataBindingRecyclerViewConfig(layoutId = R.layout.item_tile_goods, itemId = BR.vm)
+                    it.vm = vm
+                    return it.root
+                }
+
+
+    }
 
     override fun getTextTitle(position: Int): String = getString(if (position == 0) R.string.counted else R.string.filter)
 
