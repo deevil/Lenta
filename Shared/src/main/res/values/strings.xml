@@ -38,4 +38,6 @@
     <string name="delete">Удалить</string>
     <string name="print">Печать</string>
     <string name="save">Сохранить</string>
+    <string name="number">№</string>
+    <string name="good">Товар</string>
 </resources>

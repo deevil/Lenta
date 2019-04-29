@@ -19,4 +19,5 @@
     <string name="list_of_goods">Список товаров</string>
     <string name="counted">Посчитанные</string>
     <string name="filter">Фильтр</string>
+    <string name="plan">План</string>
 </resources>
