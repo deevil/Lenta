@@ -63,6 +63,10 @@ data class ButtonDecorationInfo(
             ButtonDecorationInfo(0, 0)
         }
 
+        val apply: ButtonDecorationInfo by lazy {
+            ButtonDecorationInfo(R.drawable.ic_apply_white_24dp, R.string.apply)
+        }
+
 
     }
 }

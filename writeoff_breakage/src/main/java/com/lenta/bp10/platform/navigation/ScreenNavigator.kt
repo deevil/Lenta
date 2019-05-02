@@ -7,6 +7,7 @@ import com.lenta.bp10.features.job_card.JobCardFragment
 import com.lenta.bp10.features.loading.fast.FastDataLoadingFragment
 import com.lenta.bp10.features.loading.tasks_settings.LoadingTaskSettingsFragment
 import com.lenta.bp10.features.main_menu.MainMenuFragment
+import com.lenta.bp10.features.printer_change.PrinterChangeFragment
 import com.lenta.bp10.features.select_market.SelectMarketFragment
 import com.lenta.bp10.features.select_oper_mode.SelectOperModeFragment
 import com.lenta.bp10.features.select_personnel_number.SelectPersonnelNumberFragment
@@ -115,6 +116,10 @@ class ScreenNavigator(
         getFragmentStack()?.push(SupportFragment())
     }
 
+    override fun openPrinterChangeScreen() {
+        getFragmentStack()?.push(PrinterChangeFragment())
+    }
+
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 
 }
@@ -136,4 +141,5 @@ interface IScreenNavigator : IGoBackNavigator {
     fun openMainMenuScreen()
     fun openJobCardScreen()
     fun openLoadingTaskSettingsScreen()
+    fun openPrinterChangeScreen()
 }

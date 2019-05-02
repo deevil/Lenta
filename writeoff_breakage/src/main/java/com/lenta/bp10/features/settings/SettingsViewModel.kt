@@ -18,8 +18,8 @@ class SettingsViewModel : CoreSettingsViewModel() {
     }
 
     override fun onClickPrinter() {
-        //TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-        screenNavigator.openAlertScreen("onClickPrinter")
+        screenNavigator.openPrinterChangeScreen()
+        //screenNavigator.openSelectMarketScreen()
     }
 
     override fun onClickWork() {
