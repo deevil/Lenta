@@ -41,4 +41,5 @@
     <string name="number">№</string>
     <string name="good">Товар</string>
     <string name="quantity">Количество</string>
+    <string name="total">Итого</string>
 </resources>
