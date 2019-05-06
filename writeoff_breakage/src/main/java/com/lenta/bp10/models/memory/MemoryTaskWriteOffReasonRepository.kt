@@ -16,7 +16,7 @@ class MemoryTaskWriteOffReasonRepository : ITaskWriteOffReasonRepository {
     override fun findWriteOffReasonsOfProduct(product: ProductInfo): List<TaskWriteOffReason> {
         val foundWriteOffReason = ArrayList<TaskWriteOffReason>()
         for (i in arrWriteOffReason.indices) {
-            if (product.materialNumber === arrWriteOffReason.get(i).materialNumber) {
+            if (product.materialNumber == arrWriteOffReason[i].materialNumber) {
                 foundWriteOffReason.add(arrWriteOffReason[i])
             }
         }
@@ -26,7 +26,7 @@ class MemoryTaskWriteOffReasonRepository : ITaskWriteOffReasonRepository {
     override fun addWriteOffReason(writeOffReason: TaskWriteOffReason): Boolean {
         var index = -1
         for (i in arrWriteOffReason.indices) {
-            if (writeOffReason.materialNumber === arrWriteOffReason.get(i).materialNumber && writeOffReason.writeOffReason.code === arrWriteOffReason[i].writeOffReason.code) {
+            if (writeOffReason.materialNumber == arrWriteOffReason[i].materialNumber && writeOffReason.writeOffReason.code == arrWriteOffReason[i].writeOffReason.code) {
                 index = i
             }
         }
@@ -41,7 +41,7 @@ class MemoryTaskWriteOffReasonRepository : ITaskWriteOffReasonRepository {
     override fun deleteWriteOffReason(writeOffReason: TaskWriteOffReason): Boolean {
         var index = -1
         for (i in arrWriteOffReason.indices) {
-            if (writeOffReason.materialNumber === arrWriteOffReason.get(i).materialNumber && writeOffReason.writeOffReason.code === arrWriteOffReason[i].writeOffReason.code) {
+            if (writeOffReason.materialNumber == arrWriteOffReason[i].materialNumber && writeOffReason.writeOffReason.code == arrWriteOffReason[i].writeOffReason.code) {
                 index = i
             }
         }
@@ -56,7 +56,7 @@ class MemoryTaskWriteOffReasonRepository : ITaskWriteOffReasonRepository {
     override fun deleteWriteOffReasonsForProduct(product: ProductInfo): Boolean {
         val delWriteOffReason = ArrayList<TaskWriteOffReason>()
         for (i in arrWriteOffReason.indices) {
-            if (product.materialNumber === arrWriteOffReason.get(i).materialNumber) {
+            if (product.materialNumber == arrWriteOffReason[i].materialNumber) {
                 delWriteOffReason.add(arrWriteOffReason[i])
             }
         }
@@ -74,7 +74,7 @@ class MemoryTaskWriteOffReasonRepository : ITaskWriteOffReasonRepository {
     }
 
     override fun get(index: Int): TaskWriteOffReason {
-        return arrWriteOffReason.get(index)
+        return arrWriteOffReason[index]
     }
 
     override fun lenght(): Int {

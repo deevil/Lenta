@@ -31,7 +31,7 @@ class testWriteoffTask_TaskSaveModel {
                 "0002",
                 ArrayList(Arrays.asList("949ВД")),
                 ArrayList(Arrays.asList("N")),
-                ArrayList(Arrays.asList("2FER", "3ROH")), "0001", "printer", "tkNumber", "ipAdress"
+                ArrayList(Arrays.asList("2FER", "3ROH")), "0001", "printer", "tkNumber", "ipAddress"
         )
 
         task = WriteOffTask(taskDescription, taskRepository)

@@ -1,13 +1,7 @@
 package com.lenta.bp10
 
-import com.lenta.bp10.models.memory.MemoryTaskExciseStampRepository
-import com.lenta.bp10.models.memory.MemoryTaskProductRepository
 import com.lenta.bp10.models.memory.MemoryTaskRepository
-import com.lenta.bp10.models.memory.MemoryTaskWriteOffReasonRepository
-import com.lenta.bp10.models.repositories.ITaskExciseStampRepository
-import com.lenta.bp10.models.repositories.ITaskProductRepository
 import com.lenta.bp10.models.repositories.ITaskRepository
-import com.lenta.bp10.models.repositories.ITaskWriteOffReasonRepository
 import com.lenta.bp10.models.task.TaskDescription
 import com.lenta.bp10.models.task.TaskType
 import com.lenta.bp10.models.task.WriteOffReason
@@ -23,10 +17,7 @@ import java.util.*
 
 class testWriteoffTask_ProcessGeneralProductService {
     lateinit var taskDescription: TaskDescription
-    var taskProductRepository: ITaskProductRepository = MemoryTaskProductRepository()
-    var taskExciseStampRepository: ITaskExciseStampRepository = MemoryTaskExciseStampRepository()
-    var taskWriteOfReasonRepository: ITaskWriteOffReasonRepository = MemoryTaskWriteOffReasonRepository()
-    var taskRepository: ITaskRepository = MemoryTaskRepository(taskProductRepository, taskExciseStampRepository, taskWriteOfReasonRepository)
+    var taskRepository: ITaskRepository = MemoryTaskRepository()
     lateinit var task: WriteOffTask
 
     fun creatingObjectsForTest() {
@@ -34,9 +25,9 @@ class testWriteoffTask_ProcessGeneralProductService {
                 TaskType("СГП", "nСГП"),
                 "Списание от 04.06 10:23",
                 "0002",
-                ArrayList(Arrays.asList("949ВД")),
-                ArrayList(Arrays.asList("N")),
-                ArrayList(Arrays.asList("2FER", "3ROH")), "perNo", "printer", "tkNumber", "ipAdress"
+                listOf("949ВД"),
+                listOf("N"),
+                listOf("2FER", "3ROH"), "perNo", "printer", "tkNumber", "ipAddress"
         )
 
         task = WriteOffTask(taskDescription, taskRepository)

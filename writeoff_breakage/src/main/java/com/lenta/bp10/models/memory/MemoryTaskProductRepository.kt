@@ -14,7 +14,7 @@ class MemoryTaskProductRepository : ITaskProductRepository {
 
     override fun findProduct(product: ProductInfo): ProductInfo? {
         for (i in productInfo.indices) {
-            if (product.materialNumber === productInfo.get(i).materialNumber) {
+            if (product.materialNumber == productInfo[i].materialNumber) {
                 return productInfo[i]
             }
         }
@@ -25,7 +25,7 @@ class MemoryTaskProductRepository : ITaskProductRepository {
     override fun addProduct(product: ProductInfo): Boolean {
         var index = -1
         for (i in productInfo.indices) {
-            if (product.materialNumber === productInfo.get(i).materialNumber) {
+            if (product.materialNumber == productInfo[i].materialNumber) {
                 index = i
             }
         }
@@ -41,7 +41,7 @@ class MemoryTaskProductRepository : ITaskProductRepository {
     override fun deleteProduct(product: ProductInfo): Boolean {
         var index = -1
         for (i in productInfo.indices) {
-            if (product.materialNumber === productInfo.get(i).materialNumber) {
+            if (product.materialNumber == productInfo[i].materialNumber) {
                 index = i
             }
         }
@@ -59,7 +59,7 @@ class MemoryTaskProductRepository : ITaskProductRepository {
     }
 
     override fun get(index: Int): ProductInfo {
-        return productInfo.get(index)
+        return productInfo[index]
     }
 
     override fun lenght(): Int {

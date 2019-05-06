@@ -30,7 +30,7 @@ class TaskSaveModel(val taskDescription: TaskDescription, val taskRepository: IT
     }
 
     fun getIpAdress(): String {
-        return taskDescription.ipAdress
+        return taskDescription.ipAddress
     }
 
     fun getMoveTypes(): List<String> {

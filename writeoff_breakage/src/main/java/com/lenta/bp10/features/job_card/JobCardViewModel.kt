@@ -2,7 +2,11 @@ package com.lenta.bp10.features.job_card
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.lenta.bp10.models.repositories.IWriteOffTaskManager
+import com.lenta.bp10.models.task.TaskDescription
 import com.lenta.bp10.platform.navigation.IScreenNavigator
+import com.lenta.bp10.requests.db.TaskCreatingParams
+import com.lenta.bp10.requests.db.TaskDescriptionDbRequest
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.view.OnPositionClickListener
@@ -14,6 +18,10 @@ class JobCardViewModel : CoreViewModel() {
     lateinit var jobCardRepo: IJobCardRepo
     @Inject
     lateinit var screenNavigator: IScreenNavigator
+    @Inject
+    lateinit var processServiceManager: IWriteOffTaskManager
+    @Inject
+    lateinit var taskDescriptionDbRequest: TaskDescriptionDbRequest
 
     val taskSettingsList: MutableLiveData<List<TaskSetting>> = MutableLiveData()
     val taskName: MutableLiveData<String> = MutableLiveData()
@@ -39,7 +47,7 @@ class JobCardViewModel : CoreViewModel() {
     val onClickTaskTypes = object : OnPositionClickListener {
         override fun onClickPosition(position: Int) {
             selectedTaskTypePosition.value = position
-            val taskType = taskSettingsList.value?.getOrNull(position)?.taskType
+            val taskType = getSelectedTaskSettings()?.taskType
             updateProductTypes(taskType)
             updateGisControls(taskType)
             updateStores(taskType)
@@ -63,7 +71,31 @@ class JobCardViewModel : CoreViewModel() {
     }
 
     fun onClickNext() {
+        viewModelScope.launch {
+            getSelectedTaskSettings()?.let {
+                taskDescriptionDbRequest(
+                        TaskCreatingParams(
+                                taskName = taskName.value!!,
+                                taskSetting = it,
+                                stock = getSelectedStock() ?: ""
+                        )).either(::handleFailure, ::createNewTask)
+
+            }
+        }
+
+    }
+
+    private fun createNewTask(taskDescription: TaskDescription) {
+        processServiceManager.newWriteOffTask(taskDescription = taskDescription)
         screenNavigator.openGoodsListScreen()
+    }
+
+    private fun getSelectedTaskSettings(): TaskSetting? {
+        return taskSettingsList.value?.getOrNull(selectedTaskTypePosition.value ?: -1)
+    }
+
+    private fun getSelectedStock(): String? {
+        return storesNames.value?.getOrNull(selectedStorePosition.value ?: -1)
     }
 
     fun onClickBack() {

@@ -1,7 +1,13 @@
 package com.lenta.shared.models.core
 
-class ProductInfo(val materialNumber: String, val description: String, val uom: Uom, val type: ProductType,
-                  val isSet: Boolean, val sectionNumber: Int, val matrixType: MatrixType, val materialType: String) : IProduct {
+class ProductInfo(val materialNumber: String,
+                  val description: String,
+                  val uom: Uom,
+                  val type: ProductType,
+                  val isSet: Boolean,
+                  val sectionNumber: Int,
+                  val matrixType: MatrixType,
+                  val materialType: String) : IProduct {
 
 
     constructor(product: ProductInfo) : this(product.materialNumber,product.description,product.uom,product.type,product.isSet,product.sectionNumber,product.matrixType,product.materialType)
@@ -24,9 +30,9 @@ class ProductInfo(val materialNumber: String, val description: String, val uom: 
     fun equals(pi: ProductInfo?): Boolean {
         return if (pi == null) {
             false
-        } else pi.materialNumber === materialNumber
+        } else pi.materialNumber == materialNumber
                 && pi.uom.equals(uom)
-                && pi.type === type
+                && pi.type == type
                 && pi.isSet == isSet
     }
 

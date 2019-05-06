@@ -40,7 +40,7 @@
             android:text="@string/create_task"
             android:textAllCaps="false"
             android:onClick="@{(view) -> vm.onClickCreateTask()}"
-            app:icon="@drawable/ic_task_add_white_24dp"
+            app:icon="@drawable/ic_detail"
             app:iconGravity="start"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

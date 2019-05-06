@@ -55,6 +55,7 @@
             android:inputType="numberDecimal"
             android:paddingTop="8dp"
             android:paddingBottom="8dp"
+            app:onOkInSoftKeyboard="@{vm}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/b_scan"
             app:layout_constraintStart_toStartOf="parent" />
