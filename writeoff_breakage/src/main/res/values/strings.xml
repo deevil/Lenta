@@ -21,4 +21,5 @@
     <string name="filter">Фильтр</string>
     <string name="plan">План</string>
     <string name="enter_item_number_or_barcode">Введите SAP-код или штрихкод</string>
+    <string name="good_info">Информация о товаре</string>
 </resources>
