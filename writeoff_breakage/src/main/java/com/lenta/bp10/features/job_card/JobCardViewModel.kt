@@ -38,7 +38,7 @@ class JobCardViewModel : CoreViewModel() {
         }
     }
 
-    val productTypes: MutableLiveData<String> = MutableLiveData()
+    val materialTypes: MutableLiveData<String> = MutableLiveData()
     val gisControls: MutableLiveData<String> = MutableLiveData()
 
     val storesNames = MutableLiveData<List<String>>()
@@ -48,7 +48,7 @@ class JobCardViewModel : CoreViewModel() {
         override fun onClickPosition(position: Int) {
             selectedTaskTypePosition.value = position
             val taskType = getSelectedTaskSettings()?.taskType
-            updateProductTypes(taskType)
+            updateMaterialTypes(taskType)
             updateGisControls(taskType)
             updateStores(taskType)
         }
@@ -76,6 +76,7 @@ class JobCardViewModel : CoreViewModel() {
                 taskDescriptionDbRequest(
                         TaskCreatingParams(
                                 taskName = taskName.value!!,
+                                gisControlList = jobCardRepo.getGisControlList(getSelectedTaskSettings()?.taskType),
                                 taskSetting = it,
                                 stock = getSelectedStock() ?: ""
                         )).either(::handleFailure, ::createNewTask)
@@ -121,9 +122,10 @@ class JobCardViewModel : CoreViewModel() {
 
     }
 
-    private fun updateProductTypes(taskType: String?) {
+    private fun updateMaterialTypes(taskType: String?) {
         viewModelScope.launch {
-            productTypes.value = jobCardRepo.getProductTypes(taskType)
+            materialTypes.value = jobCardRepo
+                    .getMaterialTypes(taskType)
                     .joinToString(separator = "; ")
         }
     }

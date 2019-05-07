@@ -1,7 +1,12 @@
 package com.lenta.bp10.requests.db
 
 import android.content.Context
+import com.lenta.bp10.features.job_card.GisControl
 import com.lenta.bp10.features.job_card.TaskSetting
+import com.lenta.bp10.fmp.resources.dao_ext.getMaterialTypes
+import com.lenta.bp10.fmp.resources.dao_ext.getMotionTypes
+import com.lenta.bp10.fmp.resources.fast.ZmpUtz31V001
+import com.lenta.bp10.fmp.resources.fast.ZmpUtz34V001
 import com.lenta.bp10.models.task.TaskDescription
 import com.lenta.bp10.models.task.TaskType
 import com.lenta.shared.account.ISessionInfo
@@ -18,14 +23,14 @@ class TaskDescriptionDbRequest
                     private val context: Context) : UseCase<TaskDescription, TaskCreatingParams>() {
 
     override suspend fun run(params: TaskCreatingParams): Either<Failure, TaskDescription> {
-        val taskDescription: TaskDescription = TaskDescription(
+        val taskDescription = TaskDescription(
                 taskName = params.taskName,
                 taskType = TaskType(code = params.taskSetting.taskType, name = params.taskSetting.name),
                 stock = params.stock,
                 moveTypes = getMoveTypes(params),
-                gisControls = getGisControls(params),
+                gisControls = params.gisControlList.map { it.code },
                 materialTypes = getMaterialTypes(params),
-                perNo = sessionInfo.personnelNumber?:"",
+                perNo = sessionInfo.personnelNumber ?: "",
                 printer = sessionInfo.printer ?: "",
                 tkNumber = sessionInfo.market!!,
                 ipAddress = context.getDeviceIp())
@@ -35,16 +40,12 @@ class TaskDescriptionDbRequest
     }
 
     private fun getMaterialTypes(params: TaskCreatingParams): List<String> {
-        //TODO need to implement
-        return emptyList()
+        return ZmpUtz34V001(hyperHive).getMaterialTypes(params.taskSetting.taskType).map { it.mtart }
     }
 
-    private fun getGisControls(params: TaskCreatingParams): List<String> {
-        return emptyList()
-    }
 
     private fun getMoveTypes(params: TaskCreatingParams): List<String> {
-        return emptyList()
+        return ZmpUtz31V001(hyperHive).getMotionTypes(params.taskSetting.taskType).map { it.grtxt }
     }
 
 
@@ -52,6 +53,7 @@ class TaskDescriptionDbRequest
 
 data class TaskCreatingParams(
         var taskName: String,
+        var gisControlList: List<GisControl>,
         val taskSetting: TaskSetting,
         val stock: String
 )

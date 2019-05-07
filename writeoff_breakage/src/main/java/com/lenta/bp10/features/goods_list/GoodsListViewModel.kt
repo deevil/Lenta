@@ -1,8 +1,10 @@
 package com.lenta.bp10.features.goods_list
 
 import androidx.lifecycle.MutableLiveData
+import com.lenta.bp10.models.repositories.IWriteOffTaskManager
 import com.lenta.bp10.platform.navigation.IScreenNavigator
 import com.lenta.shared.platform.viewmodel.CoreViewModel
+import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.databinding.Evenable
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import javax.inject.Inject
@@ -11,6 +13,8 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
     @Inject
     lateinit var screenNavigator : IScreenNavigator
+    @Inject
+    lateinit var processServiceManager: IWriteOffTaskManager
 
     val countedGoods: MutableLiveData<List<GoodItem>> = MutableLiveData()
     val filteredGoods: MutableLiveData<List<GoodItem>> = MutableLiveData()
@@ -31,6 +35,7 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
     override fun onOkInSoftKeyboard(): Boolean {
         screenNavigator.openGoodInfoScreen("")
+        Logg.d { "processServiceManager taskDescription: ${processServiceManager.getWriteOffTask()?.taskDescription}" }
         return true
     }
 

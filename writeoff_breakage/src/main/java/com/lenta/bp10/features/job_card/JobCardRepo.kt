@@ -2,6 +2,7 @@ package com.lenta.bp10.features.job_card
 
 import android.content.Context
 import com.lenta.bp10.R
+import com.lenta.bp10.fmp.resources.dao_ext.getMaterialTypes
 import com.lenta.bp10.fmp.resources.fast.ZmpUtz33V001
 import com.lenta.bp10.fmp.resources.fast.ZmpUtz34V001
 import com.lenta.bp10.fmp.resources.fast.ZmpUtz36V001
@@ -30,12 +31,12 @@ class JobCardRepo @Inject constructor(val hyperHive: HyperHive,
         }
     }
 
-    override suspend fun getProductTypes(taskType: String?): List<String> {
+    override suspend fun getMaterialTypes(taskType: String?): List<String> {
         if (taskType == null) {
             return emptyList()
         }
         return withContext(Dispatchers.IO) {
-            return@withContext ZmpUtz34V001(hyperHive).localHelper_ET_MTART.getWhere("TASK_TYPE = \"$taskType\"").map {
+            return@withContext ZmpUtz34V001(hyperHive).getMaterialTypes(taskType).map {
                 it.mtart
             }
         }
@@ -89,7 +90,7 @@ class JobCardRepo @Inject constructor(val hyperHive: HyperHive,
 
 interface IJobCardRepo {
     suspend fun getAllTaskSettings(): List<TaskSetting>
-    suspend fun getProductTypes(taskType: String?): List<String>
+    suspend fun getMaterialTypes(taskType: String?): List<String>
     suspend fun getGisControlList(taskType: String?): List<GisControl>
     suspend fun getStores(taskType: String?): List<String>
     fun generateNameTask(): String

@@ -1,10 +1,18 @@
 package com.lenta.bp10.features.good_information
 
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
+import com.lenta.bp10.models.repositories.IWriteOffTaskManager
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.view.OnPositionClickListener
+import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 class GoodInfoViewModel : CoreViewModel(), OnPositionClickListener {
+
+    @Inject
+    lateinit var processServiceManager: IWriteOffTaskManager
+
     private lateinit var goodCode: String
 
     val writeOffReasonTitles: MutableLiveData<List<String>> = MutableLiveData()
@@ -22,10 +30,14 @@ class GoodInfoViewModel : CoreViewModel(), OnPositionClickListener {
     val goodTitle = MutableLiveData("")
 
     init {
-        //TODO (DB) нужно удалить фейковые данные
-        writeOffReasonTitles.value = listOf("Лом бой", "Поврежд.целост.ткани", "Температурный режим", "Нарушен тврн. вида")
-        count.value = "1 шт"
-        totalCount.value = "1 шт"
+        viewModelScope.launch {
+            writeOffReasonTitles.value = processServiceManager.getWriteOffTask()?.taskDescription?.moveTypes
+
+            //TODO remove fake data
+            count.value = "1 шт"
+            totalCount.value = "1 шт"
+        }
+
 
     }
 
