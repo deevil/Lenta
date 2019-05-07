@@ -19,7 +19,7 @@ class WriteOffTask(val taskDescription: TaskDescription, val taskRepository: ITa
     fun processGeneralProduct(product: ProductInfo): ProcessGeneralProductService? {
         // (Артем И., 09.04.2019) search product taskRepository если есть то (проверяем, что обычный продукт - не алкоголь) create ProcessGeneralProductService
         // (Артем И., 10.04.2019) поиск продукта в репозитории не делать, проверять только тип товара на General и возвращать ProcessGeneralProductService
-        return if (product.type === ProductType.General) {
+        return if (product.type == ProductType.General) {
             ProcessGeneralProductService(taskDescription, taskRepository, product)
         } else null
 
@@ -27,7 +27,7 @@ class WriteOffTask(val taskDescription: TaskDescription, val taskRepository: ITa
 
     fun processNonExciseAlcoProduct(product: ProductInfo): ProcessNonExciseAlcoProductService? {
         // (Артем И., 11.04.2019) тоже самое, что и в ProcessGeneralProductService
-        return if (product.type === ProductType.NonExciseAlcohol) {
+        return if (product.type == ProductType.NonExciseAlcohol) {
             ProcessNonExciseAlcoProductService(taskDescription, taskRepository, product)
         } else null
 
@@ -35,7 +35,7 @@ class WriteOffTask(val taskDescription: TaskDescription, val taskRepository: ITa
 
     fun processExciseAlcoProduct(product: ProductInfo): ProcessExciseAlcoProductService? {
         // (Артем И., 11.04.2019) тоже самое, что и в ProcessGeneralProductService
-        return if (product.type === ProductType.ExciseAlcohol) {
+        return if (product.type == ProductType.ExciseAlcohol) {
             ProcessExciseAlcoProductService(taskDescription, taskRepository, product)
         } else null
 
@@ -52,15 +52,12 @@ class WriteOffTask(val taskDescription: TaskDescription, val taskRepository: ITa
 
     fun getTotalCountOfProduct(product: ProductInfo): Double {
         // считать ИТОГО причин списания, а для акцизного товара ИТОГО + кол-во марок
-        val totalCount: Double
-        when (product.type) {
-            ProductType.General -> totalCount = processGeneralProduct(product)!!.getTotalCount()
-            ProductType.NonExciseAlcohol -> totalCount = processNonExciseAlcoProduct(product)!!.getTotalCount()
-            ProductType.ExciseAlcohol -> totalCount = processExciseAlcoProduct(product)!!.getTotalCount()
-            else -> totalCount = 0.0
+        return when (product.type) {
+            ProductType.General -> processGeneralProduct(product)!!.getTotalCount()
+            ProductType.NonExciseAlcohol -> processNonExciseAlcoProduct(product)!!.getTotalCount()
+            ProductType.ExciseAlcohol -> processExciseAlcoProduct(product)!!.getTotalCount()
+            else -> 0.0
         }
-
-        return totalCount
     }
 
     fun getTaskSaveModel(): TaskSaveModel {

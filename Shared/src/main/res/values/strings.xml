@@ -42,4 +42,5 @@
     <string name="good">Товар</string>
     <string name="quantity">Количество</string>
     <string name="total">Итого</string>
+    <string name="good_not_found">Товар не найден в справочниках</string>
 </resources>

@@ -1,6 +1,6 @@
 package com.lenta.shared.models.core
 
-class ProductInfo(val materialNumber: String,
+data class ProductInfo(val materialNumber: String,
                   val description: String,
                   val uom: Uom,
                   val type: ProductType,
@@ -10,7 +10,15 @@ class ProductInfo(val materialNumber: String,
                   val materialType: String) : IProduct {
 
 
-    constructor(product: ProductInfo) : this(product.materialNumber,product.description,product.uom,product.type,product.isSet,product.sectionNumber,product.matrixType,product.materialType)
+    constructor(product: ProductInfo) : this(
+            product.materialNumber,
+            product.description,
+            product.uom,
+            product.type,
+            product.isSet,
+            product.sectionNumber,
+            product.matrixType,
+            product.materialType)
 
     override fun getMaterialLastSix(): String {
         return if (materialNumber.length > 6)
