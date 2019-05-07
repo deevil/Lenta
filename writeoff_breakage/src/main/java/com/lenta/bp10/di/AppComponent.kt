@@ -14,6 +14,7 @@ import com.lenta.bp10.features.select_oper_mode.SelectOperModeViewModel
 import com.lenta.bp10.features.select_personnel_number.SelectPersonnelNumberViewModel
 import com.lenta.bp10.features.settings.SettingsViewModel
 import com.lenta.bp10.features.support.SupportViewModel
+import com.lenta.bp10.features.test_environment.TestEnvirViewModel
 import com.lenta.shared.di.AppScope
 import com.lenta.shared.di.CoreComponent
 import com.lenta.shared.features.message.MessageViewModel
@@ -37,5 +38,6 @@ interface AppComponent {
     fun inject(it: JobCardViewModel)
     fun inject(it: LoadingTaskSettingsViewModel)
     fun inject(it: PrinterChangeViewModel)
+    fun inject(it: TestEnvirViewModel)
 }
 

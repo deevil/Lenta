@@ -13,6 +13,7 @@ import com.lenta.bp10.features.select_oper_mode.SelectOperModeFragment
 import com.lenta.bp10.features.select_personnel_number.SelectPersonnelNumberFragment
 import com.lenta.bp10.features.settings.SettingsFragment
 import com.lenta.bp10.features.support.SupportFragment
+import com.lenta.bp10.features.test_environment.TestEnvirFragment
 import com.lenta.shared.account.IAuthenticator
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.exception.IFailureInterpreter
@@ -120,6 +121,10 @@ class ScreenNavigator(
         getFragmentStack()?.push(PrinterChangeFragment())
     }
 
+    override fun openTestEnvirScreen() {
+        getFragmentStack()?.push(TestEnvirFragment())
+    }
+
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 
 }
@@ -142,4 +147,5 @@ interface IScreenNavigator : IGoBackNavigator {
     fun openJobCardScreen()
     fun openLoadingTaskSettingsScreen()
     fun openPrinterChangeScreen()
+    fun openTestEnvirScreen()
 }

@@ -19,8 +19,7 @@ class SelectOperModeViewModel : CoreSelectOperModeViewModel(){
     }
 
     override fun onClickTestEnvir() {
-        //TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-        screenNavigator.openAlertScreen("onClickTestEnvir")
+        screenNavigator.openTestEnvirScreen()
     }
 
     override fun onClickWorkEnvir() {
