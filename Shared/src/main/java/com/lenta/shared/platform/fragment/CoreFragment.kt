@@ -21,9 +21,10 @@ abstract class CoreFragment<T : ViewDataBinding, S : ViewModel> : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         binding = DataBindingUtil.inflate(inflater, getLayoutId(), container, false)
         binding?.let {
-            it.lifecycleOwner = this
+            it.lifecycleOwner = viewLifecycleOwner
             vm = getViewModel()
             it.setVariable(BR.vm, vm)
+            it.executePendingBindings()
             return it.root
         }
         throw NullPointerException("DataBinding is null")
