@@ -3,6 +3,7 @@ package com.lenta.bp10.features.good_information
 import com.lenta.bp10.R
 import com.lenta.bp10.databinding.FragmentGoodInfoBinding
 import com.lenta.bp10.platform.extentions.getAppComponent
+import com.lenta.shared.models.core.ProductInfo
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
@@ -11,7 +12,7 @@ import com.lenta.shared.utilities.extentions.provideViewModel
 
 class GoodInfoFragment : CoreFragment<FragmentGoodInfoBinding, GoodInfoViewModel>() {
 
-    private lateinit var goodCode : String
+    private lateinit var productInfo: ProductInfo
 
     override fun getLayoutId(): Int = R.layout.fragment_good_info
 
@@ -20,13 +21,15 @@ class GoodInfoFragment : CoreFragment<FragmentGoodInfoBinding, GoodInfoViewModel
     override fun getViewModel(): GoodInfoViewModel {
         provideViewModel(GoodInfoViewModel::class.java).let {
             getAppComponent()?.inject(it)
-            it.setGoodCode(goodCode)
+            it.setProductInfo(productInfo)
             return it
         }
     }
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
         topToolbarUiModel.description.value = getString(R.string.good_info)
+        topToolbarUiModel.title.value = productInfo.description
+
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
@@ -36,11 +39,18 @@ class GoodInfoFragment : CoreFragment<FragmentGoodInfoBinding, GoodInfoViewModel
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.apply)
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        getTopToolBarUIModel()?.let {
+            it.title.value = getString(R.string.app_title)
+        }
+    }
+
 
     companion object {
-        fun create(goodCode: String): GoodInfoFragment {
+        fun create(productInfo: ProductInfo): GoodInfoFragment {
             GoodInfoFragment().let {
-                it.goodCode = goodCode
+                it.productInfo = productInfo
                 return it
             }
         }

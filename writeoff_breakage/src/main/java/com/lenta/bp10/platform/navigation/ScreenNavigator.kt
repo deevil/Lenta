@@ -17,6 +17,7 @@ import com.lenta.shared.account.IAuthenticator
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.exception.IFailureInterpreter
 import com.lenta.shared.interactor.UseCase
+import com.lenta.shared.models.core.ProductInfo
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
 import com.lenta.shared.platform.navigation.CustomAnimation
 import com.lenta.shared.platform.navigation.IGoBackNavigator
@@ -116,8 +117,8 @@ class ScreenNavigator(
         getFragmentStack()?.push(GoodsListFragment())
     }
 
-    override fun openGoodInfoScreen(goodCode: String) {
-        getFragmentStack()?.push(GoodInfoFragment.create(goodCode))
+    override fun openGoodInfoScreen(productInfo: ProductInfo) {
+        getFragmentStack()?.push(GoodInfoFragment.create(productInfo))
     }
 
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
@@ -141,5 +142,5 @@ interface IScreenNavigator : IGoBackNavigator {
     fun openJobCardScreen()
     fun openLoadingTaskSettingsScreen()
     fun openGoodsListScreen()
-    fun openGoodInfoScreen(goodCode: String)
+    fun openGoodInfoScreen(productInfo: ProductInfo)
 }

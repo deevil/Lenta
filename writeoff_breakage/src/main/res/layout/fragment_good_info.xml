@@ -58,7 +58,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@+id/et_write_off" />
 
-        <EditText
+        <com.lenta.shared.view.EditTextWithSuffix
             android:id="@+id/et_write_off"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -66,13 +66,14 @@
             android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
             android:ellipsize="end"
-            android:inputType="text"
+            android:inputType="numberDecimal"
             android:maxLines="1"
             android:text="@{vm.count}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/div_vert"
             app:layout_constraintTop_toTopOf="@+id/div_vert"
-            tools:text="1 шт" />
+            app:suffix="@{vm.suffix}"
+            tools:text="1" />
 
         <View
             android:id="@+id/div_hor2"
@@ -147,8 +148,6 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/spinner_write_off_type" />
-
-
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

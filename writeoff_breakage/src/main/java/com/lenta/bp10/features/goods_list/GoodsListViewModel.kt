@@ -56,7 +56,7 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
     private fun handleScanSuccess(productInfo: ProductInfo) {
         Logg.d { "productInfo: $productInfo" }
-        screenNavigator.openGoodInfoScreen(productInfo.materialNumber)
+        screenNavigator.openGoodInfoScreen(productInfo)
     }
 
     override fun handleFailure(failure: Failure) {
