@@ -24,5 +24,9 @@ class WriteOffTaskManager : IWriteOffTaskManager {
 
     }
 
+    override fun setTask(writeOffTask: WriteOffTask?) {
+        currentWriteOffTask = writeOffTask
+    }
+
 
 }

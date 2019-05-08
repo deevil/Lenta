@@ -21,6 +21,9 @@ class EditTextWithSuffix : AppCompatEditText {
 
     public override fun onDraw(c: Canvas) {
         super.onDraw(c)
+        if (text.isNullOrEmpty()) {
+            return
+        }
         val suffixXPosition = textPaint.measureText(text!!.toString()).toInt() + paddingLeft
         c.drawText(suffix, Math.max(suffixXPosition.toFloat(), suffixPadding), baseline.toFloat(), textPaint)
     }
@@ -40,6 +43,8 @@ class EditTextWithSuffix : AppCompatEditText {
 
 @BindingAdapter(value = ["suffix"])
 fun setSuffix(editText: EditTextWithSuffix, suffix: String?) {
-    editText.setSuffix(" $suffix" ?: "")
+    @Suppress("NAME_SHADOWING") val suffix = suffix ?: ""
+    editText.setSuffix(" $suffix")
+    editText.hint = suffix
 
 }

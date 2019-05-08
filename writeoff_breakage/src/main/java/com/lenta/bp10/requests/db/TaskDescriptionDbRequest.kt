@@ -5,10 +5,11 @@ import com.lenta.bp10.features.job_card.GisControl
 import com.lenta.bp10.features.job_card.TaskSetting
 import com.lenta.bp10.fmp.resources.dao_ext.getMaterialTypes
 import com.lenta.bp10.fmp.resources.dao_ext.getMotionTypes
-import com.lenta.bp10.fmp.resources.fast.ZmpUtz31V001
+import com.lenta.bp10.fmp.resources.fast.ZmpUtz32V001
 import com.lenta.bp10.fmp.resources.fast.ZmpUtz34V001
 import com.lenta.bp10.models.task.TaskDescription
 import com.lenta.bp10.models.task.TaskType
+import com.lenta.bp10.models.task.WriteOffReason
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.functional.Either
@@ -23,12 +24,13 @@ class TaskDescriptionDbRequest
                     private val context: Context) : UseCase<TaskDescription, TaskCreatingParams>() {
 
     override suspend fun run(params: TaskCreatingParams): Either<Failure, TaskDescription> {
+        val gisControls = params.gisControlList.map { it.code }
         val taskDescription = TaskDescription(
                 taskName = params.taskName,
                 taskType = TaskType(code = params.taskSetting.taskType, name = params.taskSetting.name),
                 stock = params.stock,
-                moveTypes = getMoveTypes(params),
-                gisControls = params.gisControlList.map { it.code },
+                moveTypes = getMoveTypes(params, gisControls),
+                gisControls = gisControls,
                 materialTypes = getMaterialTypes(params),
                 perNo = sessionInfo.personnelNumber ?: "",
                 printer = sessionInfo.printer ?: "",
@@ -44,8 +46,9 @@ class TaskDescriptionDbRequest
     }
 
 
-    private fun getMoveTypes(params: TaskCreatingParams): List<String> {
-        return ZmpUtz31V001(hyperHive).getMotionTypes(params.taskSetting.taskType).map { it.grtxt }
+    private fun getMoveTypes(params: TaskCreatingParams, gisControls: List<String>): List<WriteOffReason> {
+        return ZmpUtz32V001(hyperHive).getMotionTypes(params.taskSetting.taskType, gisControls)
+                .map { WriteOffReason(code = it.reason, name = it.grtxt) }
     }
 
 

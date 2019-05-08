@@ -33,7 +33,7 @@ class TaskSaveModel(val taskDescription: TaskDescription, val taskRepository: IT
         return taskDescription.ipAddress
     }
 
-    fun getMoveTypes(): List<String> {
+    fun getMoveTypes(): List<WriteOffReason> {
         return taskDescription.moveTypes
     }
 

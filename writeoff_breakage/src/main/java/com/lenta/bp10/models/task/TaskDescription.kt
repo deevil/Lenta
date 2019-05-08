@@ -4,7 +4,7 @@ data class TaskDescription(
         val taskType: TaskType,
         val taskName: String,
         val stock: String,
-        val moveTypes: List<String>,
+        val moveTypes: List<WriteOffReason>,
         val gisControls: List<String>,
         val materialTypes: List<String>,
         val perNo: String,

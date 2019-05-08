@@ -1,5 +1,6 @@
-package com.lenta.bp10.features.good_information
+package com.lenta.bp10.features.good_information.general
 
+import android.view.View
 import com.lenta.bp10.R
 import com.lenta.bp10.databinding.FragmentGoodInfoBinding
 import com.lenta.bp10.platform.extentions.getAppComponent
@@ -7,10 +8,11 @@ import com.lenta.shared.models.core.ProductInfo
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
+import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.utilities.extentions.provideViewModel
 
-class GoodInfoFragment : CoreFragment<FragmentGoodInfoBinding, GoodInfoViewModel>() {
+class GoodInfoFragment : CoreFragment<FragmentGoodInfoBinding, GoodInfoViewModel>(), ToolbarButtonsClickListener {
 
     private lateinit var productInfo: ProductInfo
 
@@ -55,6 +57,14 @@ class GoodInfoFragment : CoreFragment<FragmentGoodInfoBinding, GoodInfoViewModel
             }
         }
 
+    }
+
+    override fun onToolbarButtonClick(view: View) {
+        when (view.id) {
+            R.id.b_3 -> vm.onClickDetails()
+            R.id.b_4 -> vm.onClickAdd()
+            R.id.b_5 -> vm.onClickApply()
+        }
     }
 
 }

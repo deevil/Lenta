@@ -3,7 +3,7 @@ package com.lenta.bp10.platform.navigation
 import com.lenta.bp10.features.alert.AlertFragment
 import com.lenta.bp10.features.auth.AuthFragment
 import com.lenta.bp10.features.auxiliary_menu.AuxiliaryMenuFragment
-import com.lenta.bp10.features.good_information.GoodInfoFragment
+import com.lenta.bp10.features.good_information.general.GoodInfoFragment
 import com.lenta.bp10.features.goods_list.GoodsListFragment
 import com.lenta.bp10.features.job_card.JobCardFragment
 import com.lenta.bp10.features.loading.fast.FastDataLoadingFragment

@@ -57,6 +57,11 @@ class GoodsListFragment :
 
     }
 
+    override fun onResume() {
+        super.onResume()
+        vm.onResume()
+    }
+
     override fun getPagerItemView(container: ViewGroup, position: Int): View {
         if (position ==0) {
             DataBindingUtil
@@ -64,6 +69,7 @@ class GoodsListFragment :
                             R.layout.layout_goods_counted,
                             container,
                             false).let {
+                        it.lifecycleOwner = viewLifecycleOwner
                         it.rvConfig = DataBindingRecyclerViewConfig(layoutId = R.layout.item_tile_goods, itemId = BR.vm)
                         it.vm = vm
                         return it.root
@@ -75,6 +81,7 @@ class GoodsListFragment :
                         R.layout.layout_goods_filter,
                         container,
                         false).let {
+                    it.lifecycleOwner = viewLifecycleOwner
                     it.rvConfig = DataBindingRecyclerViewConfig(layoutId = R.layout.item_tile_goods, itemId = BR.vm)
                     it.vm = vm
                     return it.root
