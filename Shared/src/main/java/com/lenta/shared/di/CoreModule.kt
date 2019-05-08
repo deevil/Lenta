@@ -11,6 +11,8 @@ import com.lenta.shared.platform.network_state.NetworkStateMonitor
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
 import com.lenta.shared.platform.battery_state.BatteryStateMonitor
 import com.lenta.shared.platform.battery_state.IBatteryStateMonitor
+import com.lenta.shared.platform.resources.IStringResourceManager
+import com.lenta.shared.platform.resources.StringResourceManager
 import com.lenta.shared.platform.time.ITimeMonitor
 import com.lenta.shared.platform.time.TimeMonitor
 import dagger.Module
@@ -56,6 +58,12 @@ class CoreModule(val application: Application) {
     @Singleton
     internal fun provideGson(): Gson {
         return GsonBuilder().create()
+    }
+
+    @Provides
+    @Singleton
+    internal fun provideStringResourceManager(context: Context): IStringResourceManager {
+        return StringResourceManager(context)
     }
 
 }

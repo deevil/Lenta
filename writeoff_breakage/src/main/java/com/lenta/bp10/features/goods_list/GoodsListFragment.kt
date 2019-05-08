@@ -82,7 +82,7 @@ class GoodsListFragment :
                         container,
                         false).let {
                     it.lifecycleOwner = viewLifecycleOwner
-                    it.rvConfig = DataBindingRecyclerViewConfig(layoutId = R.layout.item_tile_goods, itemId = BR.vm)
+                    it.rvConfig = DataBindingRecyclerViewConfig(layoutId = R.layout.item_tile_filter, itemId = BR.vm)
                     it.vm = vm
                     return it.root
                 }

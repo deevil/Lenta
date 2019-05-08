@@ -27,7 +27,7 @@ class GoodInfoViewModel : CoreViewModel(), OnPositionClickListener {
 
     val writeOffReasonTitles: MutableLiveData<List<String>> = MutableLiveData()
 
-    val selectedPosition: MutableLiveData<Int> = MutableLiveData()
+    val selectedPosition: MutableLiveData<Int> = MutableLiveData(0)
 
     val count: MutableLiveData<String> = MutableLiveData()
 
@@ -52,7 +52,7 @@ class GoodInfoViewModel : CoreViewModel(), OnPositionClickListener {
     }
 
     override fun onClickPosition(position: Int) {
-
+        selectedPosition.postValue(position)
     }
 
     fun onClickAdd() {

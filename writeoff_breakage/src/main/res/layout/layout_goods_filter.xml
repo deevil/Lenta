@@ -4,9 +4,11 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+
         <variable
             name="vm"
             type="com.lenta.bp10.features.goods_list.GoodsListViewModel" />
+
         <variable
             name="rvConfig"
             type="com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig" />
@@ -32,32 +34,31 @@
             android:layout_height="0dp"
             android:layout_marginBottom="8dp"
             app:items="@{vm.filteredGoods}"
-            app:rv_config="@{rvConfig}"
-            app:layout_constraintBottom_toTopOf="@+id/et_search"
+            app:layout_constraintBottom_toTopOf="@+id/spinner_reasons"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/layout_titles"
+            app:rv_config="@{rvConfig}"
             tools:listitem="@layout/item_tile_goods">
 
         </androidx.recyclerview.widget.RecyclerView>
 
-        <EditText
-            android:id="@+id/et_search"
+        <com.lenta.shared.view.ClickableSpinner
+            android:id="@+id/spinner_reasons"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp"
             android:layout_marginBottom="8dp"
-            android:drawableEnd="@drawable/ic_add_white_24dp"
-            android:hint="@string/enter_item_number_or_barcode"
-            android:imeOptions="actionSearch"
-            android:inputType="numberDecimal"
             android:paddingTop="8dp"
             android:paddingBottom="8dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/b_scan"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:items="@{vm.categories}"
+            app:onPositionClickListener="@{vm.onCategoryPositionClickListener}"
+            app:position="@{vm.selectedCategoryPosition}" />
 
         <ImageButton
             android:id="@+id/b_scan"
