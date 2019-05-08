@@ -18,6 +18,7 @@
     <string name="error_unknown">Неизвестная ошибка</string>
     <string name="to_next">Далее</string>
     <string name="address">Адрес</string>
+    <string name="description">Описание</string>
     <string name="sync_of_dictionary">Синхронизация справочников</string>
     <string name="passed">Прошло</string>
     <string name="remain">Осталось</string>
