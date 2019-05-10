@@ -19,7 +19,6 @@ class SettingsViewModel : CoreSettingsViewModel() {
 
     override fun onClickPrinter() {
         screenNavigator.openPrinterChangeScreen()
-        //screenNavigator.openSelectMarketScreen()
     }
 
     override fun onClickWork() {
