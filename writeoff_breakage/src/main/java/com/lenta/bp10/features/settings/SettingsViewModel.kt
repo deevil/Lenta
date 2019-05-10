@@ -26,8 +26,7 @@ class SettingsViewModel : CoreSettingsViewModel() {
     }
 
     override fun onClickTechLog() {
-        //TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-        screenNavigator.openAlertScreen("onClickTechLog")
+        screenNavigator.openTechLoginScreen()
     }
 
     override fun onBackPressed() {
