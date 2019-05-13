@@ -47,13 +47,12 @@ class ScreenNavigator(
         openAlertScreen(failureInterpreter.getFailureDescription(failure))
     }
 
-    override fun goBack(args: Bundle?) {
-        if (args == null) {
-            getFragmentStack()?.pop()
-        } else {
-            getFragmentStack()?.popReturnArgs(args = args)
-        }
+    override fun goBackWithArgs(args: Bundle) {
+        getFragmentStack()?.popReturnArgs(args = args)
+    }
 
+    override fun goBack() {
+        getFragmentStack()?.pop()
     }
 
     override fun openSelectMarketScreen() {

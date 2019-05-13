@@ -36,7 +36,7 @@ class MessageViewModel : CoreViewModel() {
         codeConfirm?.let {
             val args = Bundle()
             args.putInt(KEY_ARGS_ID_CODE_CONFIRM, it)
-            goBackNavigator.goBack(args = args)
+            goBackNavigator.goBackWithArgs(args = args)
         }
 
 

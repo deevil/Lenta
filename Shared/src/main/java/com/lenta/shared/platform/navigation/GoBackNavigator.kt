@@ -4,5 +4,6 @@ import android.os.Bundle
 
 
 interface IGoBackNavigator {
-    fun goBack(args: Bundle? = null)
+    fun goBackWithArgs(args: Bundle)
+    fun goBack()
 }
