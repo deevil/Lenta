@@ -14,22 +14,37 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <ImageView
+            android:id="@+id/iv_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="32dp"
+            app:layout_constraintBottom_toTopOf="@+id/tv_message"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_chainStyle="packed"
+            android:visibility="@{vm.iconRes != 0}"
+            android:src="@{vm.iconRes}"
+            tools:src="@drawable/ic_delete_red_80dp" />
+
         <TextView
             android:id="@+id/tv_message"
             style="@style/TextMedium"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="32dp"
-            android:layout_marginTop="8dp"
             android:layout_marginEnd="32dp"
             android:layout_marginBottom="8dp"
             android:gravity="center"
             android:text="@{vm.message}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:text="Ошибка подключения к серверу. Восстановите связь или попробуйте позже" />
+            app:layout_constraintTop_toBottomOf="@+id/iv_icon"
+            tools:text="По заданию Списание от 04.06 10:23 будут удалены все непереданные данные" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </layout>

@@ -9,8 +9,10 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModel
 import com.lenta.shared.BR
 import com.lenta.shared.platform.activity.main_activity.CoreMainActivity
+import com.lenta.shared.platform.navigation.FragmentStack
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
+import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.implementationOf
 import java.lang.NullPointerException
 
@@ -46,6 +48,20 @@ abstract class CoreFragment<T : ViewDataBinding, S : ViewModel> : Fragment() {
 
     private fun getCoreMainActivity(): CoreMainActivity? {
         return activity?.implementationOf(CoreMainActivity::class.java)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        arguments?.let { arguments ->
+            arguments.getBundle(FragmentStack.SAVE_TAG_FOR_ARGUMENTS)?.let {
+                onFragmentResult(it)
+            }
+            arguments.remove(FragmentStack.SAVE_TAG_FOR_ARGUMENTS)
+        }
+    }
+
+    private fun onFragmentResult(arguments: Bundle) {
+        Logg.d { "onFragmentResult arguments: $arguments" }
     }
 
     override fun onDestroy() {

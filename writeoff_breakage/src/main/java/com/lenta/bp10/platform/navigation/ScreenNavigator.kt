@@ -1,5 +1,6 @@
 package com.lenta.bp10.platform.navigation
 
+import android.os.Bundle
 import com.lenta.bp10.features.alert.AlertFragment
 import com.lenta.bp10.features.auth.AuthFragment
 import com.lenta.bp10.features.auxiliary_menu.AuxiliaryMenuFragment
@@ -43,8 +44,13 @@ class ScreenNavigator(
         openAlertScreen(failureInterpreter.getFailureDescription(failure))
     }
 
-    override fun goBack() {
-        getFragmentStack()?.pop()
+    override fun goBack(args: Bundle?) {
+        if (args == null) {
+            getFragmentStack()?.pop()
+        } else {
+            getFragmentStack()?.popReturnArgs(args = args)
+        }
+
     }
 
     override fun openSelectMarketScreen() {
