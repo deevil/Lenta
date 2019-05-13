@@ -2,6 +2,7 @@ package com.lenta.shared.features.settings
 
 import android.os.Bundle
 import android.view.View
+import androidx.lifecycle.MutableLiveData
 import com.lenta.shared.R
 import com.lenta.shared.platform.activity.OnBackPresserListener
 import com.lenta.shared.platform.fragment.CoreFragment
@@ -29,7 +30,7 @@ abstract class CoreSettingsFragment : CoreFragment<com.lenta.shared.databinding.
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        vm.setIsMainMenu(vm.sessionInfo.userName)
+        vm.isMainMenu = if (vm.hyperHive.authAPI.isAuthorized) MutableLiveData(true) else MutableLiveData(false)
     }
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
