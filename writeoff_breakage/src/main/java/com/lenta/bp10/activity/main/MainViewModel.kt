@@ -41,4 +41,9 @@ class MainViewModel : CoreMainViewModel() {
         loadingViewModel.clean()
         progressJob?.cancel()
     }
+
+   fun onExitClick() {
+        screenNavigator.openExitConfirmationScreen()
+    }
+
 }

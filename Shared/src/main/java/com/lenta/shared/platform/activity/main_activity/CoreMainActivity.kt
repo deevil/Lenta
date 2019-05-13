@@ -16,6 +16,7 @@ import com.lenta.shared.platform.navigation.FragmentStack
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
+import com.lenta.shared.platform.toolbar.top_toolbar.ImageButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.hideKeyboard
@@ -102,6 +103,12 @@ abstract class CoreMainActivity : CoreActivity<ActivityMainBinding>(), ToolbarBu
             onBackPressed()
             return
         }
+
+        if(view.id == R.id.b_topbar_2 && getTopToolbarUIModel().uiModelButton2.buttonDecorationInfo.value == ImageButtonDecorationInfo.exitFromApp) {
+            onClickExit()
+            return
+        }
+
         getCurrentFragment()?.implementationOf(ToolbarButtonsClickListener::class.java)?.onToolbarButtonClick(view)
     }
 
@@ -120,6 +127,8 @@ abstract class CoreMainActivity : CoreActivity<ActivityMainBinding>(), ToolbarBu
 
 
     abstract fun getViewModel(): CoreMainViewModel
+
+    abstract fun onClickExit()
 
 
 }

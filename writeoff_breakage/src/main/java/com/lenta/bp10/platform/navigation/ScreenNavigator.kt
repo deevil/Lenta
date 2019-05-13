@@ -6,6 +6,7 @@ import com.lenta.bp10.R
 import com.lenta.bp10.features.alert.AlertFragment
 import com.lenta.bp10.features.auth.AuthFragment
 import com.lenta.bp10.features.auxiliary_menu.AuxiliaryMenuFragment
+import com.lenta.bp10.features.exit.ExitWithConfirmationFragment
 import com.lenta.bp10.features.good_information.general.GoodInfoFragment
 import com.lenta.bp10.features.goods_list.GoodsListFragment
 import com.lenta.bp10.features.job_card.JobCardFragment
@@ -156,6 +157,15 @@ class ScreenNavigator(
                 iconRes = R.drawable.ic_scan_barcode))
     }
 
+    override fun finishApp() {
+        foregroundActivityProvider.getActivity()?.finish()
+        System.exit(0)
+    }
+
+    override fun openExitConfirmationScreen() {
+        getFragmentStack()?.push(ExitWithConfirmationFragment())
+    }
+
 }
 
 interface IScreenNavigator : IGoBackNavigator {
@@ -181,4 +191,6 @@ interface IScreenNavigator : IGoBackNavigator {
     fun openGoodsListScreen()
     fun openGoodInfoScreen(productInfo: ProductInfo)
     fun openEanInfoScreen()
+    fun openExitConfirmationScreen()
+    fun finishApp()
 }

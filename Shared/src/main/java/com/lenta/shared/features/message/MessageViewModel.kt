@@ -9,7 +9,7 @@ import com.lenta.shared.platform.viewmodel.CoreViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class MessageViewModel : CoreViewModel() {
+open class MessageViewModel : CoreViewModel() {
 
 
     @Inject
@@ -32,7 +32,7 @@ class MessageViewModel : CoreViewModel() {
         }
     }
 
-    fun onClickApply() {
+    open fun onClickApply() {
         codeConfirm?.let {
             val args = Bundle()
             args.putInt(KEY_ARGS_ID_CODE_CONFIRM, it)

@@ -4,6 +4,7 @@ import com.lenta.bp10.activity.main.MainActivity
 import com.lenta.bp10.activity.main.MainViewModel
 import com.lenta.bp10.features.auth.AuthViewModel
 import com.lenta.bp10.features.auxiliary_menu.AuxiliaryMenuViewModel
+import com.lenta.bp10.features.exit.ExitFromAppViewModel
 import com.lenta.bp10.features.good_information.general.GoodInfoViewModel
 import com.lenta.bp10.features.goods_list.GoodsListViewModel
 import com.lenta.bp10.features.job_card.JobCardViewModel
@@ -30,6 +31,7 @@ interface AppComponent {
     fun inject(mainViewModel: MainViewModel)
     fun inject(it: AuthViewModel)
     fun inject(it: MessageViewModel)
+    fun inject(it: ExitFromAppViewModel)
     fun inject(it: SelectMarketViewModel)
     fun inject(it: FastLoadingViewModel)
     fun inject(it: SelectPersonnelNumberViewModel)
