@@ -11,6 +11,7 @@ class FailureInterpreter
             Failure.ServerError -> context.getString(R.string.error_server)
             Failure.AuthError -> context.getString(R.string.error_auth)
             Failure.NetworkConnection -> context.getString(R.string.error_network)
+            Failure.GoodNotFound -> context.getString(R.string.good_not_found)
             else -> context.getString(R.string.error_unknown)
         }
 

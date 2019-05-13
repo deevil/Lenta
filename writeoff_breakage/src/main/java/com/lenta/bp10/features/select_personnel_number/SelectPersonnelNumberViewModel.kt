@@ -6,6 +6,7 @@ import com.lenta.bp10.platform.navigation.IScreenNavigator
 import com.lenta.bp10.requests.network.PersonnelNumberNetRequest
 import com.lenta.bp10.requests.network.TabNumberInfo
 import com.lenta.bp10.requests.network.TabNumberParams
+import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.Logg
@@ -18,8 +19,10 @@ class SelectPersonnelNumberViewModel : CoreViewModel(), OnOkInSoftKeyboardListen
     lateinit var personnelNumberNetRequest: PersonnelNumberNetRequest
     @Inject
     lateinit var screenNavigator: IScreenNavigator
+    @Inject
+    lateinit var sessionInfo: ISessionInfo
 
-    val tabNumber = MutableLiveData<String>("")
+    val personnelNumber = MutableLiveData<String>("")
     val fio = MutableLiveData<String>("")
     val employeesPosition = MutableLiveData<String>("")
 
@@ -27,16 +30,16 @@ class SelectPersonnelNumberViewModel : CoreViewModel(), OnOkInSoftKeyboardListen
         Logg.d { "searchPersonnelNumber" }
         viewModelScope.launch {
             screenNavigator.showProgress(personnelNumberNetRequest)
-            personnelNumberNetRequest(TabNumberParams(tabNumber = tabNumber.value
+            personnelNumberNetRequest(TabNumberParams(tabNumber = personnelNumber.value
                     ?: "")).either(::handleFailure, ::handleSuccess)
             screenNavigator.hideProgress()
         }
     }
 
-    private fun handleSuccess(tabNumberInfo: TabNumberInfo) {
-        Logg.d { "handleSuccess $tabNumberInfo" }
-        fio.value = tabNumberInfo.name
-        employeesPosition.value = tabNumberInfo.jobName
+    private fun handleSuccess(personnelNumberInfo: TabNumberInfo) {
+        Logg.d { "handleSuccess $personnelNumberInfo" }
+        fio.value = personnelNumberInfo.name
+        employeesPosition.value = personnelNumberInfo.jobName
 
     }
 
@@ -51,6 +54,8 @@ class SelectPersonnelNumberViewModel : CoreViewModel(), OnOkInSoftKeyboardListen
     }
 
     fun onClickNext() {
+
+        sessionInfo.personnelNumber = if (!fio.value.isNullOrEmpty()) personnelNumber.value else null
         screenNavigator.openMainMenuScreen()
     }
 }

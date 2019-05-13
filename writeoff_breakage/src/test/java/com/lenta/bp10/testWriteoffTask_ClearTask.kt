@@ -32,7 +32,7 @@ class testWriteoffTask_ClearTask {
                 "0002",
                 ArrayList(Arrays.asList("949ВД")),
                 ArrayList(Arrays.asList("N")),
-                ArrayList(Arrays.asList("2FER", "3ROH")), "perNo", "printer", "tkNumber", "ipAdress"
+                ArrayList(Arrays.asList("2FER", "3ROH")), "perNo", "printer", "tkNumber", "ipAddress"
         )
 
         task = WriteOffTask(taskDescription, taskRepository)

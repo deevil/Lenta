@@ -9,23 +9,21 @@ class MemoryTaskProductRepository : ITaskProductRepository {
     private val productInfo = ArrayList<ProductInfo>()
 
     override fun getProducts(): List<ProductInfo> {
-        return productInfo
+        return productInfo.toList()
     }
 
     override fun findProduct(product: ProductInfo): ProductInfo? {
-        for (i in productInfo.indices) {
-            if (product.materialNumber === productInfo.get(i).materialNumber) {
-                return productInfo[i]
-            }
-        }
+        return findProduct(product.materialNumber)
+    }
 
-        return null
+    override fun findProduct(materialNumber: String): ProductInfo? {
+        return productInfo.firstOrNull { it.materialNumber == materialNumber }
     }
 
     override fun addProduct(product: ProductInfo): Boolean {
         var index = -1
         for (i in productInfo.indices) {
-            if (product.materialNumber === productInfo.get(i).materialNumber) {
+            if (product.materialNumber == productInfo[i].materialNumber) {
                 index = i
             }
         }
@@ -41,7 +39,7 @@ class MemoryTaskProductRepository : ITaskProductRepository {
     override fun deleteProduct(product: ProductInfo): Boolean {
         var index = -1
         for (i in productInfo.indices) {
-            if (product.materialNumber === productInfo.get(i).materialNumber) {
+            if (product.materialNumber == productInfo[i].materialNumber) {
                 index = i
             }
         }
@@ -59,7 +57,7 @@ class MemoryTaskProductRepository : ITaskProductRepository {
     }
 
     override fun get(index: Int): ProductInfo {
-        return productInfo.get(index)
+        return productInfo[index]
     }
 
     override fun lenght(): Int {

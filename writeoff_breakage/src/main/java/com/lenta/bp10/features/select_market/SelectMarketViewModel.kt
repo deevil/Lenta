@@ -42,8 +42,7 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
     private fun handlePermissions(list: List<ZfmpUtzWob01V001.ItemLocal_ET_WERKS>) {
         markets.value = list.map { MarketUi(number = it.werks, address = it.addres) }
         if (list.isNotEmpty() && selectedPosition.value == null) {
-            selectedPosition.value = 0
-            sessionInfo.market = list.getOrNull(0)?.werks
+            onClickPosition(0)
         }
     }
 
@@ -54,7 +53,7 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
 
     override fun onClickPosition(position: Int) {
         selectedPosition.value = position
-        sessionInfo.market = markets.value?.getOrNull(position)?.address
+        sessionInfo.market = markets.value?.getOrNull(position)?.number
     }
 
 }

@@ -1,8 +1,13 @@
 package com.lenta.bp10.platform.navigation
 
+import android.content.Context
+import android.os.Bundle
+import com.lenta.bp10.R
 import com.lenta.bp10.features.alert.AlertFragment
 import com.lenta.bp10.features.auth.AuthFragment
 import com.lenta.bp10.features.auxiliary_menu.AuxiliaryMenuFragment
+import com.lenta.bp10.features.good_information.general.GoodInfoFragment
+import com.lenta.bp10.features.goods_list.GoodsListFragment
 import com.lenta.bp10.features.job_card.JobCardFragment
 import com.lenta.bp10.features.loading.fast.FastDataLoadingFragment
 import com.lenta.bp10.features.loading.tasks_settings.LoadingTaskSettingsFragment
@@ -19,6 +24,7 @@ import com.lenta.shared.account.IAuthenticator
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.exception.IFailureInterpreter
 import com.lenta.shared.interactor.UseCase
+import com.lenta.shared.models.core.ProductInfo
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
 import com.lenta.shared.platform.navigation.CustomAnimation
 import com.lenta.shared.platform.navigation.IGoBackNavigator
@@ -26,6 +32,7 @@ import com.lenta.shared.progress.IProgressUseCaseInformator
 import com.lenta.shared.utilities.Logg
 
 class ScreenNavigator(
+        private val context: Context,
         private val foregroundActivityProvider: ForegroundActivityProvider,
         private val authenticator: IAuthenticator,
         private val failureInterpreter: IFailureInterpreter,
@@ -42,6 +49,10 @@ class ScreenNavigator(
 
     override fun openAlertScreen(failure: Failure) {
         openAlertScreen(failureInterpreter.getFailureDescription(failure))
+    }
+
+    override fun goBackWithArgs(args: Bundle) {
+        getFragmentStack()?.popReturnArgs(args = args)
     }
 
     override fun goBack() {
@@ -114,6 +125,14 @@ class ScreenNavigator(
         getFragmentStack()?.push(SettingsFragment())
     }
 
+    override fun openGoodsListScreen() {
+        getFragmentStack()?.push(GoodsListFragment())
+    }
+
+    override fun openGoodInfoScreen(productInfo: ProductInfo) {
+        getFragmentStack()?.push(GoodInfoFragment.create(productInfo))
+    }
+
     override fun openSupportScreen() {
         getFragmentStack()?.push(SupportFragment())
     }
@@ -131,6 +150,11 @@ class ScreenNavigator(
     }
 
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
+
+    override fun openEanInfoScreen() {
+        getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.ean_info),
+                iconRes = R.drawable.ic_scan_barcode))
+    }
 
 }
 
@@ -154,4 +178,7 @@ interface IScreenNavigator : IGoBackNavigator {
     fun openPrinterChangeScreen()
     fun openTestEnvirScreen()
     fun openTechLoginScreen()
+    fun openGoodsListScreen()
+    fun openGoodInfoScreen(productInfo: ProductInfo)
+    fun openEanInfoScreen()
 }

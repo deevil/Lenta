@@ -1,0 +1,4 @@
+Для установки шаблона нужно скопировать его папку в папку внутри AndroidStudio - plugins/android/lib/templates/other и перезагрузить студию 
+
+Пример использования можно посмотреть тут
+https://youtu.be/Y5mzpGYLonQ

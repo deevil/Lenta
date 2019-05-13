@@ -23,6 +23,9 @@ class ClickableSpinner : AppCompatSpinner {
 
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
+        if (!isEnabled) {
+            return true
+        }
         when (event.action) {
             MotionEvent.ACTION_DOWN -> {
                 startClickTime = System.currentTimeMillis()

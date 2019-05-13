@@ -48,13 +48,12 @@
             android:id="@+id/div_vert"
             android:layout_width="1dp"
             android:layout_height="0dp"
-            android:layout_marginTop="8dp"
             android:background="@color/color_divider"
             app:layout_constraintBottom_toBottomOf="@+id/div_hor7"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="@+id/guideline"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toBottomOf="@+id/div_hor2" />
 
         <TextView
             android:id="@+id/tv_type_task"
@@ -66,6 +65,7 @@
             android:ellipsize="end"
             android:maxLines="1"
             android:text="@string/type_job"
+            android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="@+id/spinner_job_type"
             app:layout_constraintEnd_toStartOf="@+id/guideline"
             app:layout_constraintStart_toStartOf="parent"
@@ -79,8 +79,11 @@
             android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="@+id/guideline"
-            app:layout_constraintTop_toBottomOf="@+id/div_hor1" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/div_hor1"
+            app:items="@{vm.taskTypeNames}"
+            app:onPositionClickListener="@{vm.onClickTaskTypes}"
+            app:position="@{vm.selectedTaskTypePosition}" />
 
         <TextView
             android:id="@+id/tv_name"
@@ -105,8 +108,9 @@
             android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
             android:ellipsize="end"
-            android:inputType="none"
+            android:inputType="text"
             android:maxLines="1"
+            android:text="@{vm.taskName}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@+id/guideline"
             app:layout_constraintTop_toBottomOf="@+id/div_hor2"
@@ -144,6 +148,9 @@
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
+            app:items="@{vm.storesNames}"
+            app:onPositionClickListener="@{vm.onClickStores}"
+            app:position="@{vm.selectedStorePosition}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/div_vert"
             app:layout_constraintTop_toBottomOf="@+id/div_hor3" />
@@ -182,6 +189,7 @@
             android:layout_marginEnd="8dp"
             android:ellipsize="end"
             android:maxLines="1"
+            android:text="@{vm.motionType}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@+id/guideline"
             app:layout_constraintTop_toBottomOf="@+id/div_hor4"
@@ -221,6 +229,7 @@
             android:layout_marginEnd="8dp"
             android:ellipsize="end"
             android:maxLines="1"
+            android:text="@{vm.gisControls}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/div_vert"
             app:layout_constraintTop_toBottomOf="@+id/div_hor5"
@@ -260,6 +269,7 @@
             android:layout_marginEnd="8dp"
             android:ellipsize="end"
             android:maxLines="1"
+            android:text="@{vm.materialTypes}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@+id/guideline"
             app:layout_constraintTop_toBottomOf="@+id/div_hor6"

@@ -4,13 +4,13 @@
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#99FFFFFF</color>
     <color name="colorWhite">#FFFFFF</color>
-    <color name="colorTopPanelBackground">#FF16325C</color>
-    <color name="colorBottomPanelBackground">#1F3B68</color>
-    <color name="colorContentBackground">#00395C</color>
+    <color name="colorTopPanelBackground">#1a4170</color>
+    <color name="colorBottomPanelBackground">#284d7d</color>
+    <color name="colorContentBackground">#00395c</color>
     <color name="colorViewTxt">#B7D1EE</color>
     <color name="colorTopPanelTxt">#D2DAE3</color>
     <color name="colorDivider">#456B96</color>
-    <color name="colorTabIndicator">#FEBF54</color>
+    <color name="colorTabIndicator">#ffbf56</color>
     <color name="colorTabBackground">#204C7C</color>
     <color name="colorNumSectionTxt">#CCD7DE</color>
 
@@ -22,7 +22,7 @@
     <color name="color_pressed_blue">#4894d8</color>
     <color name="color_disabled_blue">#446081</color>
 
-    <color name="color_text_title_header">#A1C0E8</color>
+    <color name="color_text_title_header">#b6d2f4</color>
 
     <color name="color_normal_yellow">#eba93c</color>
     <color name="color_pressed_yellow">#fdbd47</color>

@@ -1,5 +1,6 @@
 package com.lenta.shared.utilities.databinding
 
+import android.os.Build
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
@@ -16,7 +17,7 @@ fun setupSpinner(spinner: Spinner, items: List<String>?, position: Int?, onPosit
         adapter = ArrayAdapter(spinner.context, android.R.layout.simple_spinner_item, mutableList)
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         spinner.adapter = adapter
-        spinner.postDelayed(Runnable {
+        spinner.postDelayed({
             spinner.setSelection(position ?: 0)
             spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
                 override fun onItemSelected(adapterView: AdapterView<*>, view: View, position: Int, l: Long) {
@@ -33,6 +34,12 @@ fun setupSpinner(spinner: Spinner, items: List<String>?, position: Int?, onPosit
     adapter.clear()
     items?.let {
         adapter.addAll(it)
+        val isMoreThenOne = it.size > 1
+        spinner.isEnabled = isMoreThenOne
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            spinner.focusable = if (isMoreThenOne) View.FOCUSABLE else View.NOT_FOCUSABLE
+        }
+
     }
     adapter.notifyDataSetChanged()
 }

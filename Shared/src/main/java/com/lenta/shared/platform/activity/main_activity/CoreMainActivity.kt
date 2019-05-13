@@ -14,6 +14,7 @@ import com.lenta.shared.platform.battery_state.BatteryStateMonitor
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.navigation.FragmentStack
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
+import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.utilities.Logg
@@ -97,6 +98,10 @@ abstract class CoreMainActivity : CoreActivity<ActivityMainBinding>(), ToolbarBu
     override fun onToolbarButtonClick(view: View) {
         this.hideKeyboard()
         Logg.d { "onToolbarButtonClick ${view.id}" }
+        if(view.id == R.id.b_1 && getBottomToolBarUIModel().uiModelButton1.buttonDecorationInfo.value == ButtonDecorationInfo.back) {
+            onBackPressed()
+            return
+        }
         getCurrentFragment()?.implementationOf(ToolbarButtonsClickListener::class.java)?.onToolbarButtonClick(view)
     }
 

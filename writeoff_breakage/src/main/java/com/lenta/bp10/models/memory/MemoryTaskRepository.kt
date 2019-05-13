@@ -5,17 +5,9 @@ import com.lenta.bp10.models.repositories.ITaskProductRepository
 import com.lenta.bp10.models.repositories.ITaskRepository
 import com.lenta.bp10.models.repositories.ITaskWriteOffReasonRepository
 
-class MemoryTaskRepository(taskProductRepository: ITaskProductRepository, taskExciseStampRepository: ITaskExciseStampRepository, taskWriteOfReasonRepository: ITaskWriteOffReasonRepository) : ITaskRepository {
-
-    private val taskProductRepository: ITaskProductRepository
-    private val taskExciseStampRepository: ITaskExciseStampRepository
-    private val taskWriteOfReasonRepository: ITaskWriteOffReasonRepository
-
-    init {
-        this.taskProductRepository = taskProductRepository
-        this.taskExciseStampRepository = taskExciseStampRepository
-        this.taskWriteOfReasonRepository = taskWriteOfReasonRepository
-    }
+class MemoryTaskRepository(private val taskProductRepository: ITaskProductRepository = MemoryTaskProductRepository(),
+                           private val taskExciseStampRepository: ITaskExciseStampRepository = MemoryTaskExciseStampRepository(),
+                           private val taskWriteOfReasonRepository: ITaskWriteOffReasonRepository = MemoryTaskWriteOffReasonRepository()) : ITaskRepository {
 
     override fun getProducts(): ITaskProductRepository {
         return taskProductRepository

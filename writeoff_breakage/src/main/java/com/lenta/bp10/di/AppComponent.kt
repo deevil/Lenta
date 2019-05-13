@@ -4,6 +4,8 @@ import com.lenta.bp10.activity.main.MainActivity
 import com.lenta.bp10.activity.main.MainViewModel
 import com.lenta.bp10.features.auth.AuthViewModel
 import com.lenta.bp10.features.auxiliary_menu.AuxiliaryMenuViewModel
+import com.lenta.bp10.features.good_information.general.GoodInfoViewModel
+import com.lenta.bp10.features.goods_list.GoodsListViewModel
 import com.lenta.bp10.features.job_card.JobCardViewModel
 import com.lenta.bp10.features.loading.fast.FastLoadingViewModel
 import com.lenta.bp10.features.loading.tasks_settings.LoadingTaskSettingsViewModel
@@ -41,5 +43,7 @@ interface AppComponent {
     fun inject(it: PrinterChangeViewModel)
     fun inject(it: TestEnvirViewModel)
     fun inject(it: TechLoginViewModel)
+    fun inject(it: GoodsListViewModel)
+    fun inject(it: GoodInfoViewModel)
 }
 
