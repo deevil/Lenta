@@ -53,10 +53,10 @@
             android:layout_marginBottom="8dp"
             android:paddingTop="8dp"
             android:paddingBottom="8dp"
+            app:items="@{vm.categories}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/b_scan"
             app:layout_constraintStart_toStartOf="parent"
-            app:items="@{vm.categories}"
             app:onPositionClickListener="@{vm.onCategoryPositionClickListener}"
             app:position="@{vm.selectedCategoryPosition}" />
 
@@ -65,6 +65,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="?selectableItemBackground"
+            android:onClick="@{(v) -> vm.onEanInfoClick()}"
             android:padding="8dp"
             android:src="@drawable/ic_scan_barcode"
             app:layout_constraintBottom_toBottomOf="parent"

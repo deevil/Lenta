@@ -30,18 +30,14 @@ class AlertFragment : CoreMessageFragment() {
     }
 
 
-
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
         topToolbarUiModel.visibility.value = true
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
-        if (codeConfirm == null) {
-            bottomToolbarUiModel.visibility.value = false
-        } else {
-            bottomToolbarUiModel.visibility.value = true
+        bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
+        if (codeConfirm != null) {
             bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.apply)
-            bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
         }
 
     }
@@ -58,9 +54,10 @@ class AlertFragment : CoreMessageFragment() {
     }
 
     companion object {
-        fun create(message: String,
-                   iconRes: Int = 0,
-                   codeConfirm: Int? = null): AlertFragment {
+        fun create(
+                message: String,
+                iconRes: Int = 0,
+                codeConfirm: Int? = null): AlertFragment {
             AlertFragment().let {
                 it.message = message
                 it.iconRes = iconRes

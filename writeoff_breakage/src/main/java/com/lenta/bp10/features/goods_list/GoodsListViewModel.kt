@@ -127,6 +127,11 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
         screenNavigator.openAlertScreen(failure)
     }
 
+
+    fun onEanInfoClick() {
+        screenNavigator.openEanInfoScreen()
+    }
+
 }
 
 

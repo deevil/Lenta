@@ -75,12 +75,14 @@ class AppModule {
 
     @Provides
     @AppScope
-    internal fun provideScreenNavigator(foregroundActivityProvider: ForegroundActivityProvider,
-                                        authenticator: IAuthenticator,
-                                        faultInterpreter: IFailureInterpreter,
-                                        progressUseCaseInformator: IProgressUseCaseInformator
+    internal fun provideScreenNavigator(
+            context: Context,
+            foregroundActivityProvider: ForegroundActivityProvider,
+            authenticator: IAuthenticator,
+            faultInterpreter: IFailureInterpreter,
+            progressUseCaseInformator: IProgressUseCaseInformator
     ): IScreenNavigator {
-        return ScreenNavigator(foregroundActivityProvider, authenticator, faultInterpreter, progressUseCaseInformator)
+        return ScreenNavigator(context, foregroundActivityProvider, authenticator, faultInterpreter, progressUseCaseInformator)
     }
 
     @Provides

@@ -1,6 +1,8 @@
 package com.lenta.bp10.platform.navigation
 
+import android.content.Context
 import android.os.Bundle
+import com.lenta.bp10.R
 import com.lenta.bp10.features.alert.AlertFragment
 import com.lenta.bp10.features.auth.AuthFragment
 import com.lenta.bp10.features.auxiliary_menu.AuxiliaryMenuFragment
@@ -26,6 +28,7 @@ import com.lenta.shared.progress.IProgressUseCaseInformator
 import com.lenta.shared.utilities.Logg
 
 class ScreenNavigator(
+        private val context: Context,
         private val foregroundActivityProvider: ForegroundActivityProvider,
         private val authenticator: IAuthenticator,
         private val failureInterpreter: IFailureInterpreter,
@@ -129,6 +132,11 @@ class ScreenNavigator(
 
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 
+    override fun openEanInfoScreen() {
+        getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.ean_info),
+                iconRes = R.drawable.ic_scan_barcode))
+    }
+
 }
 
 interface IScreenNavigator : IGoBackNavigator {
@@ -149,4 +157,5 @@ interface IScreenNavigator : IGoBackNavigator {
     fun openLoadingTaskSettingsScreen()
     fun openGoodsListScreen()
     fun openGoodInfoScreen(productInfo: ProductInfo)
+    fun openEanInfoScreen()
 }
