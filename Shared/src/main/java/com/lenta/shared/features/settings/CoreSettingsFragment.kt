@@ -1,5 +1,6 @@
 package com.lenta.shared.features.settings
 
+import android.os.Bundle
 import android.view.View
 import com.lenta.shared.R
 import com.lenta.shared.platform.activity.OnBackPresserListener
@@ -23,6 +24,12 @@ abstract class CoreSettingsFragment : CoreFragment<com.lenta.shared.databinding.
             R.id.b_topbar_1 -> vm.onClickBack()
             R.id.b_topbar_2 -> vm.onClickExit()
         }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        vm.setIsMainMenu(vm.sessionInfo.userName)
     }
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {

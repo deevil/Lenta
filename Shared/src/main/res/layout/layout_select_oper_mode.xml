@@ -35,11 +35,9 @@
             android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp"
             android:layout_marginBottom="16dp"
-            android:layoutDirection="rtl"
             android:onClick="@{(view) -> vm.onClickTestEnvir()}"
             android:text="@string/test_environment"
             android:textAllCaps="false"
-            app:iconGravity="start"
             app:layout_constraintBottom_toTopOf="@+id/btn_work_envir"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
@@ -51,11 +49,9 @@
             android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp"
             android:layout_marginBottom="16dp"
-            android:layoutDirection="rtl"
             android:onClick="@{(view) -> vm.onClickWorkEnvir()}"
             android:text="@string/work_environment"
             android:textAllCaps="false"
-            app:iconGravity="start"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
