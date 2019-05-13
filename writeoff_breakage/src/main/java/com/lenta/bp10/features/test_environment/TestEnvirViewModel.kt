@@ -33,7 +33,8 @@ class TestEnvirViewModel : CoreTestEnvirViewModel() {
     private fun handleSuccess(pinCode: PinCodeInfo) {
         Logg.d { "handleSuccess $pinCode" }
         if (pinCode.pinCode == pinCode1.value+pinCode2.value+pinCode3.value+pinCode4.value) {
-            screenNavigator.openAlertScreen("Пин-код верный")
+            //todo смена среды на тестовую
+            screenNavigator.openLoginScreen()
         }
         else {
             screenNavigator.openAlertScreen("Пин-код неверный")

@@ -20,4 +20,13 @@ class MainMenuViewModel : CoreViewModel() {
     fun onClickUser() {
 
     }
+
+    fun onClickExit() {
+        //TODO To change body
+        screenNavigator.openAlertScreen("onClickExit")
+    }
+
+    fun onClickAuxiliaryMenu() {
+        screenNavigator.openAuxiliaryMenuScreen()
+    }
 }

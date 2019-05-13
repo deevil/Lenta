@@ -32,7 +32,6 @@ abstract class CoreTestEnvirFragment : CoreFragment<FragmentTestEnvironmentBindi
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
         bottomToolbarUiModel.cleanAll()
         bottomToolbarUiModel.uiModelButton1.let { buttonUiModel -> buttonUiModel.show(ButtonDecorationInfo.back) }
-        //todo исправить на кнопку "ПЕРЕЙТИ"
-        bottomToolbarUiModel.uiModelButton5.let { buttonUiModel -> buttonUiModel.show(ButtonDecorationInfo.next) }
+        bottomToolbarUiModel.uiModelButton5.let { buttonUiModel -> buttonUiModel.show(ButtonDecorationInfo.goOver) }
     }
 }
