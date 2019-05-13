@@ -26,11 +26,12 @@ abstract class CoreSettingsFragment : CoreFragment<com.lenta.shared.databinding.
     }
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
-        topToolbarUiModel.description.value = resources.getString(com.lenta.shared.R.string.settings)
+        topToolbarUiModel.description.value = resources.getString(R.string.settings)
         topToolbarUiModel.uiModelButton1.show(ImageButtonDecorationInfo.back)
         topToolbarUiModel.uiModelButton2.show(ImageButtonDecorationInfo.exitFromApp)
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
+        bottomToolbarUiModel.cleanAll(false)
      }
 }

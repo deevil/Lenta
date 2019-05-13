@@ -18,8 +18,7 @@ class SettingsViewModel : CoreSettingsViewModel() {
     }
 
     override fun onClickPrinter() {
-        //TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-        screenNavigator.openAlertScreen("onClickPrinter")
+        screenNavigator.openPrinterChangeScreen()
     }
 
     override fun onClickWork() {
@@ -27,8 +26,7 @@ class SettingsViewModel : CoreSettingsViewModel() {
     }
 
     override fun onClickTechLog() {
-        //TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-        screenNavigator.openAlertScreen("onClickTechLog")
+        screenNavigator.openTechLoginScreen()
     }
 
     override fun onBackPressed() {

@@ -12,10 +12,14 @@ import com.lenta.bp10.features.job_card.JobCardFragment
 import com.lenta.bp10.features.loading.fast.FastDataLoadingFragment
 import com.lenta.bp10.features.loading.tasks_settings.LoadingTaskSettingsFragment
 import com.lenta.bp10.features.main_menu.MainMenuFragment
+import com.lenta.bp10.features.printer_change.PrinterChangeFragment
 import com.lenta.bp10.features.select_market.SelectMarketFragment
 import com.lenta.bp10.features.select_oper_mode.SelectOperModeFragment
 import com.lenta.bp10.features.select_personnel_number.SelectPersonnelNumberFragment
 import com.lenta.bp10.features.settings.SettingsFragment
+import com.lenta.bp10.features.support.SupportFragment
+import com.lenta.bp10.features.tech_login.TechLoginFragment
+import com.lenta.bp10.features.test_environment.TestEnvirFragment
 import com.lenta.shared.account.IAuthenticator
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.exception.IFailureInterpreter
@@ -129,6 +133,22 @@ class ScreenNavigator(
         getFragmentStack()?.push(GoodInfoFragment.create(productInfo))
     }
 
+    override fun openSupportScreen() {
+        getFragmentStack()?.push(SupportFragment())
+    }
+
+    override fun openPrinterChangeScreen() {
+        getFragmentStack()?.push(PrinterChangeFragment())
+    }
+
+    override fun openTestEnvirScreen() {
+        getFragmentStack()?.push(TestEnvirFragment())
+    }
+
+    override fun openTechLoginScreen() {
+        getFragmentStack()?.push(TechLoginFragment())
+    }
+
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 
     override fun openEanInfoScreen() {
@@ -149,11 +169,15 @@ interface IScreenNavigator : IGoBackNavigator {
     fun openAuxiliaryMenuScreen()
     fun openSelectOperModeScreen()
     fun openSettingsScreen()
+    fun openSupportScreen()
     fun hideProgress()
     fun <Params> showProgress(useCase: UseCase<Any, Params>)
     fun openMainMenuScreen()
     fun openJobCardScreen()
     fun openLoadingTaskSettingsScreen()
+    fun openPrinterChangeScreen()
+    fun openTestEnvirScreen()
+    fun openTechLoginScreen()
     fun openGoodsListScreen()
     fun openGoodInfoScreen(productInfo: ProductInfo)
     fun openEanInfoScreen()

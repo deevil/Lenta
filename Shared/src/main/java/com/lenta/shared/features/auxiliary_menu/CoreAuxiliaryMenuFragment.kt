@@ -26,12 +26,13 @@ abstract class CoreAuxiliaryMenuFragment : CoreFragment<com.lenta.shared.databin
     }
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
-        topToolbarUiModel.description.value = resources.getString(com.lenta.shared.R.string.auxiliary_menu)
+        topToolbarUiModel.description.value = resources.getString(R.string.auxiliary_menu)
         topToolbarUiModel.uiModelButton1.show(ImageButtonDecorationInfo.home)
         topToolbarUiModel.uiModelButton2.show(ImageButtonDecorationInfo.exitFromApp)
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
+        bottomToolbarUiModel.cleanAll(false)
     }
 
 

@@ -26,11 +26,12 @@ abstract class CoreSelectOperModeFragment : CoreFragment<FragmentSelectOperModeB
     }
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
-        topToolbarUiModel.description.value = resources.getString(com.lenta.shared.R.string.select_oper_mode)
+        topToolbarUiModel.description.value = resources.getString(R.string.select_oper_mode)
         topToolbarUiModel.uiModelButton1.show(ImageButtonDecorationInfo.back)
         topToolbarUiModel.uiModelButton2.show(ImageButtonDecorationInfo.exitFromApp)
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
+        bottomToolbarUiModel.cleanAll(false)
     }
 }

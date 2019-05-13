@@ -22,54 +22,63 @@
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
-            android:layout_marginBottom="8dp"
             android:src="@drawable/logo_lenta"
-            app:layout_constraintBottom_toTopOf="@+id/BtnSelectPrinter"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.36"
             tools:ignore="ContentDescription" />
 
-        <ImageButton
-            android:id="@+id/BtnSelectPrinter"
-            android:layout_width="0dp"
+        <Button
+            android:id="@+id/btn_select_printer"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
             android:layout_marginBottom="16dp"
+            android:layoutDirection="rtl"
+            android:textAllCaps="false"
+            app:iconGravity="start"
+            app:icon="@drawable/ic_print_white_16dp"
             android:onClick="@{(view) -> vm.onClickPrinter()}"
-            app:layout_constraintBottom_toTopOf="@+id/BtnTestEnvir"
+            android:text="@string/printer_change"
+            app:layout_constraintBottom_toTopOf="@+id/btn_select_oper_mode"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:srcCompat="@mipmap/button_select_printer" />
+            app:layout_constraintStart_toStartOf="parent" />
 
-        <ImageButton
-            android:id="@+id/BtnTestEnvir"
-            android:layout_width="0dp"
+        <Button
+            android:id="@+id/btn_select_oper_mode"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
             android:layout_marginBottom="16dp"
+            android:layoutDirection="rtl"
+            android:textAllCaps="false"
+            app:iconGravity="start"
+            app:icon="@drawable/ic_settings_white"
             android:onClick="@{(view) -> vm.onClickWork()}"
-            app:layout_constraintBottom_toTopOf="@+id/BtnWorkEnvir"
+            android:text="@string/select_oper_mode"
+            app:layout_constraintBottom_toTopOf="@+id/btn_tach_login"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="1.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:srcCompat="@mipmap/button_select_working_mode" />
+            app:layout_constraintHorizontal_bias="0.6"
+            app:layout_constraintStart_toStartOf="parent" />
 
-        <ImageButton
-            android:id="@+id/BtnWorkEnvir"
-            android:layout_width="0dp"
+        <Button
+            android:id="@+id/btn_tach_login"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
             android:layout_marginBottom="16dp"
+            android:layoutDirection="rtl"
+            android:textAllCaps="false"
+            app:iconGravity="start"
+            app:icon="@drawable/ic_settings_white"
             android:onClick="@{(view) -> vm.onClickTechLog()}"
+            android:text="@string/tech_login"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:srcCompat="@mipmap/button_tech_login" />
+            app:layout_constraintStart_toStartOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
