@@ -168,7 +168,7 @@ class ScreenNavigator(
 
     override fun openRemoveTaskConfirmationScreen(taskDescription: String, codeConfirmation: Int) {
         getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.remove_task_confirmation, taskDescription),
-                iconRes = R.drawable.ic_delete_white_80dp, codeConfirm = codeConfirmation))
+                iconRes = R.drawable.ic_delete_red_80dp, codeConfirm = codeConfirmation))
     }
 
 }
