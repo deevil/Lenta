@@ -30,6 +30,7 @@ class JobCardViewModel : CoreViewModel() {
     val taskName: MutableLiveData<String> = MutableLiveData()
     val selectedTaskTypePosition: MutableLiveData<Int> = MutableLiveData()
     val selectedStorePosition: MutableLiveData<Int> = MutableLiveData()
+    val enabledChangeTaskSettings: MutableLiveData<Boolean> = MutableLiveData()
 
     val taskTypeNames: MutableLiveData<List<String>> = taskSettingsList.map { taskSettingsList ->
         taskSettingsList?.map { it.name }
@@ -70,7 +71,12 @@ class JobCardViewModel : CoreViewModel() {
             if (taskName.value == null) {
                 taskName.value = jobCardRepo.generateNameTask()
             }
+            updateChangesEnabledStatus()
         }
+    }
+
+    private fun updateChangesEnabledStatus() {
+        enabledChangeTaskSettings.value = processServiceManager.getWriteOffTask() == null
     }
 
     fun onClickNext() {
@@ -82,15 +88,23 @@ class JobCardViewModel : CoreViewModel() {
                                 gisControlList = jobCardRepo.getGisControlList(getSelectedTaskSettings()?.taskType),
                                 taskSetting = it,
                                 stock = getSelectedStock() ?: ""
-                        )).either(::handleFailure, ::createNewTask)
+                        )).either(::handleFailure, ::openNextScreen)
 
             }
         }
 
     }
 
-    private fun createNewTask(taskDescription: TaskDescription) {
-        processServiceManager.newWriteOffTask(taskDescription = taskDescription)
+    private fun openNextScreen(taskDescription: TaskDescription) {
+        if (processServiceManager.getWriteOffTask() == null) {
+            processServiceManager.newWriteOffTask(taskDescription = taskDescription)
+        } else {
+            processServiceManager.getWriteOffTask()?.let {
+                it.taskDescription.taskName = taskDescription.taskName
+                it.taskDescription.stock = taskDescription.stock
+            }
+        }
+        updateChangesEnabledStatus()
         screenNavigator.openGoodsListScreen()
     }
 
