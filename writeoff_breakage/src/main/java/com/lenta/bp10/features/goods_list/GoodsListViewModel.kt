@@ -110,15 +110,20 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     }
 
     override fun onOkInSoftKeyboard(): Boolean {
+
+        searchCode()
+
+        Logg.d { "processServiceManager taskDescription: ${processServiceManager.getWriteOffTask()?.taskDescription}" }
+        return true
+    }
+
+    private fun searchCode() {
         viewModelScope.launch {
             eanCode.value?.let {
                 productInfoDbRequest(ProductInfoRequestParams(ean = it)).either(::handleFailure, ::handleScanSuccess)
             }
 
         }
-
-        Logg.d { "processServiceManager taskDescription: ${processServiceManager.getWriteOffTask()?.taskDescription}" }
-        return true
     }
 
     private fun handleScanSuccess(productInfo: ProductInfo) {
@@ -137,9 +142,14 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
     fun getTitle(): String {
         processServiceManager.getWriteOffTask()?.let {
-         return "${it.taskDescription.taskType.code} - ${it.taskDescription.taskName}"
+            return "${it.taskDescription.taskType.code} - ${it.taskDescription.taskName}"
         }
         return ""
+    }
+
+    fun onScanResult(data: String) {
+        eanCode.value = data
+        searchCode()
     }
 
 }

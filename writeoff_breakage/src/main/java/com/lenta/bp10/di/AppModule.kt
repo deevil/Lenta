@@ -23,6 +23,8 @@ import com.lenta.shared.exception.IFailureInterpreter
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
 import com.lenta.shared.platform.navigation.IGoBackNavigator
 import com.lenta.shared.progress.IProgressUseCaseInformator
+import com.lenta.shared.scan.IScanHelper
+import com.lenta.shared.scan.mobilbase.MobilBaseScanHelper
 import com.lenta.shared.utilities.Logg
 import com.mobrun.plugin.api.HyperHive
 import com.mobrun.plugin.api.HyperHiveState
@@ -130,6 +132,12 @@ class AppModule {
     @AppScope
     internal fun provideProcessProductServiceManager(): IWriteOffTaskManager {
         return WriteOffTaskManager()
+    }
+
+    @Provides
+    @AppScope
+    internal fun provideScanHelper(): IScanHelper {
+        return MobilBaseScanHelper()
     }
 
 

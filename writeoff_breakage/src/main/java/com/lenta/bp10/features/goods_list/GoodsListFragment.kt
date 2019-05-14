@@ -15,6 +15,7 @@ import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
+import com.lenta.shared.scan.OnScanResultListener
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig
 import com.lenta.shared.utilities.databinding.PageSelectionListener
@@ -24,7 +25,8 @@ import com.lenta.shared.utilities.extentions.provideViewModel
 class GoodsListFragment :
         CoreFragment<FragmentGoodsListBinding, GoodsListViewModel>(),
         ViewPagerSettings,
-        PageSelectionListener {
+        PageSelectionListener,
+        OnScanResultListener {
 
     override fun getLayoutId(): Int = R.layout.fragment_goods_list
 
@@ -64,7 +66,7 @@ class GoodsListFragment :
     }
 
     override fun getPagerItemView(container: ViewGroup, position: Int): View {
-        if (position ==0) {
+        if (position == 0) {
             DataBindingUtil
                     .inflate<LayoutGoodsCountedBinding>(LayoutInflater.from(container.context),
                             R.layout.layout_goods_counted,
@@ -98,6 +100,10 @@ class GoodsListFragment :
     }
 
     override fun countTab(): Int = 2
+
+    override fun onScanResult(data: String) {
+        vm.onScanResult(data)
+    }
 
 
 }
