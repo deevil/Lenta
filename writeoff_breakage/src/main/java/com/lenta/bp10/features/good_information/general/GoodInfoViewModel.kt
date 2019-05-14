@@ -8,6 +8,7 @@ import com.lenta.bp10.models.task.WriteOffReason
 import com.lenta.bp10.platform.navigation.IScreenNavigator
 import com.lenta.shared.models.core.ProductInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
+import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.view.OnPositionClickListener
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -33,7 +34,7 @@ class GoodInfoViewModel : CoreViewModel(), OnPositionClickListener {
 
     val suffix: MutableLiveData<String> = MutableLiveData()
 
-    val totalCount: MutableLiveData<String> = MutableLiveData()
+    val totalCount: MutableLiveData<String> = count.map { (getCount() + processGeneralProductService.getTotalCount()).toString() }
 
     fun setProductInfo(productInfo: ProductInfo) {
         this.productInfo = productInfo
@@ -44,7 +45,6 @@ class GoodInfoViewModel : CoreViewModel(), OnPositionClickListener {
 
             processServiceManager.getWriteOffTask()?.let { writeOffTask ->
                 writeOffReasonTitles.value = writeOffTask.taskDescription.moveTypes.map { it.name }
-                updateTotalCount()
             }
             suffix.value = productInfo.uom.name
 
@@ -74,15 +74,11 @@ class GoodInfoViewModel : CoreViewModel(), OnPositionClickListener {
         getCount().let {
             if (it > 0.0) {
                 processGeneralProductService.add(getReason(), it)
-                updateTotalCount()
                 count.value = ""
             }
         }
     }
 
-    private fun updateTotalCount() {
-        totalCount.value = (processGeneralProductService.getTotalCount()).toString()
-    }
 
     private fun getCount(): Double {
         return count.value?.toDoubleOrNull() ?: 0.0
