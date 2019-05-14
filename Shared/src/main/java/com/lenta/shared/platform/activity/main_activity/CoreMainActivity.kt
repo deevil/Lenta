@@ -79,7 +79,9 @@ abstract class CoreMainActivity : CoreActivity<ActivityMainBinding>(), ToolbarBu
             }
             return
         }
-        super.onBackPressed()
+        if (isHaveBackButton()) {
+            super.onBackPressed()
+        }
     }
 
     private fun getCurrentFragment(): Fragment? = fragmentStack.peek()
@@ -99,17 +101,28 @@ abstract class CoreMainActivity : CoreActivity<ActivityMainBinding>(), ToolbarBu
     override fun onToolbarButtonClick(view: View) {
         this.hideKeyboard()
         Logg.d { "onToolbarButtonClick ${view.id}" }
-        if(view.id == R.id.b_1 && getBottomToolBarUIModel().uiModelButton1.buttonDecorationInfo.value == ButtonDecorationInfo.back) {
-            onBackPressed()
+
+        if(view.id == R.id.b_1 && isHaveBackButton()) {
+            super.onBackPressed()
             return
         }
 
-        if(view.id == R.id.b_topbar_2 && getTopToolbarUIModel().uiModelButton2.buttonDecorationInfo.value == ImageButtonDecorationInfo.exitFromApp) {
+        if(view.id == R.id.b_topbar_2 && isHaveExitButton()) {
             onClickExit()
             return
         }
 
         getCurrentFragment()?.implementationOf(ToolbarButtonsClickListener::class.java)?.onToolbarButtonClick(view)
+    }
+
+    private fun isHaveBackButton(): Boolean {
+        getBottomToolBarUIModel().uiModelButton1.let {
+            return it.buttonDecorationInfo.value == ButtonDecorationInfo.back && it.enabled.value == true && it.visibility.value == true
+        }
+    }
+
+    private fun isHaveExitButton(): Boolean {
+        return  getTopToolbarUIModel().uiModelButton2.buttonDecorationInfo.value == ImageButtonDecorationInfo.exitFromApp
     }
 
     fun getBottomToolBarUIModel(): BottomToolbarUiModel {
