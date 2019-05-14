@@ -103,7 +103,7 @@ abstract class CoreMainActivity : CoreActivity<ActivityMainBinding>(), ToolbarBu
         Logg.d { "onToolbarButtonClick ${view.id}" }
 
         if(view.id == R.id.b_1 && isHaveBackButton()) {
-            super.onBackPressed()
+            onBackPressed()
             return
         }
 

@@ -89,4 +89,8 @@ class GoodInfoViewModel : CoreViewModel(), OnPositionClickListener {
                 .getOrElse(selectedPosition.value ?: -1) { WriteOffReason.empty }
     }
 
+    fun onBackPressed() {
+        processGeneralProductService.discard()
+    }
+
 }
