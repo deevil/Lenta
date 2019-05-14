@@ -1,6 +1,7 @@
 package com.lenta.bp10.requests.db
 
 import com.lenta.bp10.fmp.resources.dao_ext.getEanInfo
+import com.lenta.bp10.fmp.resources.dao_ext.getEanInfoFromMaterial
 import com.lenta.bp10.fmp.resources.dao_ext.getMaterial
 import com.lenta.bp10.fmp.resources.dao_ext.getUomInfo
 import com.lenta.bp10.fmp.resources.fast.ZmpUtz07V001
@@ -35,23 +36,28 @@ class ProductInfoDbRequest
     @Suppress("FoldInitializerAndIfToElvis")
     override suspend fun run(params: ProductInfoRequestParams): Either<Failure, ProductInfo> {
 
-        var eanInfo = zmpUtz25V001.getEanInfo(params.ean)
+        var eanInfo = zmpUtz25V001.getEanInfo(params.number)
 
         Logg.d { "eanInfo.material: ${eanInfo?.material}" }
 
-        if (eanInfo == null) {
-            eanInfo = getProductInfoFromRest()
-        }
 
-        if (eanInfo == null) {
-            return Either.Left(Failure.GoodNotFound)
-        }
-
-        val materialInfo = zmpUtz30V001.getMaterial(eanInfo.material)
+        val materialInfo = zmpUtz30V001.getMaterial(if (eanInfo != null) eanInfo.material else params.number)
 
         if (materialInfo == null) {
             return Either.Left(Failure.GoodNotFound)
         }
+
+        if (eanInfo == null) {
+            eanInfo = zmpUtz25V001.getEanInfoFromMaterial(materialInfo.material)
+        }
+
+        if (eanInfo == null) {
+            return Either.Left(Failure.GoodNotFound)
+        }
+
+        //TODO (DB) Реализовать поиск через REST
+
+
 
         val uomInfo = zmpUtz07V001.getUomInfo(eanInfo.uom)
 
@@ -60,7 +66,7 @@ class ProductInfoDbRequest
         }
 
         return Either.Right(ProductInfo(
-                materialNumber = eanInfo.material,
+                materialNumber = materialInfo.material,
                 description = materialInfo.name,
                 uom = Uom(code = uomInfo.uom, name = uomInfo.name),
                 type = getProductType(materialInfo),
@@ -73,8 +79,7 @@ class ProductInfoDbRequest
     }
 
     private fun getSectionId(materialInfo: ZmpUtz30V001.ItemLocal_ET_MATERIALS): Int {
-        //TODO (DB) Реализовать после уточнения
-        return 1
+        return materialInfo.abtnr.toIntOrNull() ?: 0
     }
 
     private fun getMatrixType(materialInfo: ZmpUtz30V001.ItemLocal_ET_MATERIALS): MatrixType {
@@ -106,5 +111,5 @@ class ProductInfoDbRequest
 
 
 data class ProductInfoRequestParams(
-        var ean: String
+        var number: String
 )

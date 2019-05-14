@@ -120,7 +120,7 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     private fun searchCode() {
         viewModelScope.launch {
             eanCode.value?.let {
-                productInfoDbRequest(ProductInfoRequestParams(ean = it)).either(::handleFailure, ::handleScanSuccess)
+                productInfoDbRequest(ProductInfoRequestParams(number = it)).either(::handleFailure, ::handleScanSuccess)
             }
 
         }
