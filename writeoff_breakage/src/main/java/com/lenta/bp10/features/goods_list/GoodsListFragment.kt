@@ -38,6 +38,7 @@ class GoodsListFragment :
     }
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
+        topToolbarUiModel.title.value = vm.getTitle()
         topToolbarUiModel.description.value = getString(R.string.list_of_goods)
     }
 

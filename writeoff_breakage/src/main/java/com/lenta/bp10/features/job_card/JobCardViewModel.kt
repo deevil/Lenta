@@ -2,6 +2,7 @@ package com.lenta.bp10.features.job_card
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.lenta.bp10.account.SessionInfo
 import com.lenta.bp10.models.repositories.IWriteOffTaskManager
 import com.lenta.bp10.models.task.TaskDescription
 import com.lenta.bp10.platform.navigation.IScreenNavigator
@@ -16,6 +17,8 @@ import javax.inject.Inject
 class JobCardViewModel : CoreViewModel() {
     @Inject
     lateinit var jobCardRepo: IJobCardRepo
+    @Inject
+    lateinit var sessionInfo: SessionInfo
     @Inject
     lateinit var screenNavigator: IScreenNavigator
     @Inject
@@ -128,6 +131,10 @@ class JobCardViewModel : CoreViewModel() {
                     .getMaterialTypes(taskType)
                     .joinToString(separator = "; ")
         }
+    }
+
+    fun getMarket(): String? {
+        return sessionInfo.market
     }
 
 

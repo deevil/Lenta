@@ -24,6 +24,7 @@ class JobCardFragment : CoreFragment<FragmentJobCardBinding, JobCardViewModel>()
     }
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
+        topToolbarUiModel.title.value = "${getString(R.string.tk)} - ${vm.getMarket()}"
         topToolbarUiModel.description.value = getString(R.string.job_card)
     }
 

@@ -31,7 +31,7 @@ class GoodInfoFragment : CoreFragment<FragmentGoodInfoBinding, GoodInfoViewModel
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
         topToolbarUiModel.description.value = getString(R.string.good_info)
-        topToolbarUiModel.title.value = productInfo.description
+        topToolbarUiModel.title.value = "${productInfo.getMaterialLastSix()} ${productInfo.description}"
 
     }
 

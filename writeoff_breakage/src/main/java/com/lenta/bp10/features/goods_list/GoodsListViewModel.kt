@@ -135,6 +135,13 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
         screenNavigator.openEanInfoScreen()
     }
 
+    fun getTitle(): String {
+        processServiceManager.getWriteOffTask()?.let {
+         return "${it.taskDescription.taskType.code} - ${it.taskDescription.taskName}"
+        }
+        return ""
+    }
+
 }
 
 
