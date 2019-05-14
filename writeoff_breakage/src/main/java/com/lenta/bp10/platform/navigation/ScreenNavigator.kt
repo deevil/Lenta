@@ -166,6 +166,11 @@ class ScreenNavigator(
         getFragmentStack()?.push(ExitWithConfirmationFragment())
     }
 
+    override fun openRemoveTaskConfirmationScreen(taskDescription: String, codeConfirmation: Int) {
+        getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.remove_task_confirmation, taskDescription),
+                iconRes = R.drawable.ic_delete_white_80dp, codeConfirm = codeConfirmation))
+    }
+
 }
 
 interface IScreenNavigator : IGoBackNavigator {
@@ -193,4 +198,5 @@ interface IScreenNavigator : IGoBackNavigator {
     fun openEanInfoScreen()
     fun openExitConfirmationScreen()
     fun finishApp()
+    fun openRemoveTaskConfirmationScreen(taskDescription: String, codeConfirmation: Int)
 }

@@ -117,10 +117,11 @@ class JobCardViewModel : CoreViewModel() {
     }
 
     fun onClickBack() {
-
-        //TODO (DB) нужно уточнить реализацию
-
-
+        processServiceManager.getWriteOffTask()?.let {
+            screenNavigator.openRemoveTaskConfirmationScreen(it.taskDescription.taskName, 0)
+            return
+        }
+        screenNavigator.goBack()
     }
 
 
@@ -149,6 +150,11 @@ class JobCardViewModel : CoreViewModel() {
 
     fun getMarket(): String? {
         return sessionInfo.market
+    }
+
+    fun onConfirmRemoving() {
+        processServiceManager?.clearTask()
+        screenNavigator.goBack()
     }
 
 
