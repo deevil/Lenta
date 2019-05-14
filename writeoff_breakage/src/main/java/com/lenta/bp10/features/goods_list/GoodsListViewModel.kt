@@ -80,9 +80,12 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
                 it.writeOffReason.code to it
             }.toMap().values.toList()
 
-
-            mutableListOf(stringResourceManager.notSelected()).let {
-                it.addAll(reasons.map { it.writeOffReason.name })
+            (if (reasons.size == 1) {
+                mutableListOf()
+            } else {
+                mutableListOf(stringResourceManager.notSelected())
+            }).let {
+                it.addAll(reasons.map { taskWriteOffReason -> taskWriteOffReason.writeOffReason.name })
                 categories.postValue(it)
             }
 
