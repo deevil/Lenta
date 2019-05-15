@@ -5,6 +5,7 @@ import com.lenta.bp10.account.SessionInfo
 import com.lenta.bp10.fmp.resources.fast.ZmpUtz26V001
 import com.lenta.bp10.platform.navigation.IScreenNavigator
 import com.lenta.bp10.requests.db.PrinterChangeDBRequest
+import com.lenta.shared.exception.Failure
 import com.lenta.shared.features.printer_change.CorePrinterChangeViewModel
 import com.lenta.shared.features.printer_change.PrinterUi
 import kotlinx.coroutines.launch
@@ -23,7 +24,7 @@ class PrinterChangeViewModel : CorePrinterChangeViewModel() {
 
     init {
         viewModelScope.launch {
-            printerChangeDBRequest(null).either(::handleFailure, ::handlePermissions)
+            printerChangeDBRequest(sessionInfo.market!!).either(::handleFailure, ::handlePermissions)
         }
     }
 
@@ -32,6 +33,14 @@ class PrinterChangeViewModel : CorePrinterChangeViewModel() {
         if (list.isNotEmpty() && selectedPosition.value == null) {
             onClickPosition(0)
         }
+        else {
+            screenNavigator.openAlertScreen("Принтеров для данного ТК не найдено")
+        }
+    }
+
+    override fun handleFailure(failure: Failure) {
+        super.handleFailure(failure)
+        screenNavigator.openAlertScreen(failure)
     }
 
     override fun onClickBack() {
@@ -40,6 +49,7 @@ class PrinterChangeViewModel : CorePrinterChangeViewModel() {
 
     override fun onClickApp() {
         sessionInfo.printer = printers.value?.getOrNull(selectedPosition.value!!)?.printername
+        screenNavigator.openMainMenuScreen()
     }
 
     override fun onBackPressed() {

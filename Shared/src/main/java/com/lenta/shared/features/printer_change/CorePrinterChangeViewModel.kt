@@ -21,10 +21,6 @@ abstract class CorePrinterChangeViewModel : CoreViewModel(), OnPositionClickList
         }
     }
 
-    init {
-        selectedPosition.value = 0
-    }
-
     override fun onClickPosition(position: Int) {
         selectedPosition.value = position
     }
