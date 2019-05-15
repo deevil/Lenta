@@ -27,4 +27,6 @@
     <string name="exit_confirmation">Подтвердите выход из МП</string>
     <string name="remove_task_confirmation">По заданию \"%s\" будут удалены все непереданные данные</string>
     <string name="sending_report_data">Отправка данных отчета</string>
+    <string name="sheet">Ведомость</string>
+    <string name="designation">Название</string>
 </resources>

@@ -12,6 +12,7 @@ import com.lenta.bp10.features.loading.fast.FastLoadingViewModel
 import com.lenta.bp10.features.loading.tasks_settings.LoadingTaskSettingsViewModel
 import com.lenta.bp10.features.main_menu.MainMenuViewModel
 import com.lenta.bp10.features.printer_change.PrinterChangeViewModel
+import com.lenta.bp10.features.report_result.ReportResultViewModel
 import com.lenta.bp10.features.select_market.SelectMarketViewModel
 import com.lenta.bp10.features.select_oper_mode.SelectOperModeViewModel
 import com.lenta.bp10.features.select_personnel_number.SelectPersonnelNumberViewModel
@@ -47,5 +48,6 @@ interface AppComponent {
     fun inject(it: TechLoginViewModel)
     fun inject(it: GoodsListViewModel)
     fun inject(it: GoodInfoViewModel)
+    fun inject(it: ReportResultViewModel)
 }
 

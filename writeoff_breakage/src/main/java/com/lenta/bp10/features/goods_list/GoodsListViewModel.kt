@@ -198,12 +198,16 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
                 }
     }
 
+    fun handleSentSuccess(writeOffReportResponse: WriteOffReportResponse) {
+        Logg.d { "writeOffReportResponse: ${writeOffReportResponse}" }
+        processServiceManager.clearTask()
+        screenNavigator.openSendingReportsScreen(writeOffReportResponse)
+
+    }
+
 }
 
-fun handleSentSuccess(writeOffReportResponse: WriteOffReportResponse) {
-    Logg.d { "writeOffReportResponse: ${writeOffReportResponse}" }
 
-}
 
 
 data class GoodItem(val number: Int, val name: String, val quantity: String, val even: Boolean) : Evenable {
