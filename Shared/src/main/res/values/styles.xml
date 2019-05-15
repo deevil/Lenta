@@ -187,7 +187,7 @@
         <item name="android:textSize">20sp</item>
         <item name="android:textStyle">bold</item>
         <item name="android:textColor">@color/colorNumSectionTxt</item>
-        <item name="android:background">@drawable/frame_number_section</item>
+        <item name="android:background">@drawable/bg_white_circle</item>
     </style>
 
     <style name="SupportTxtKey">

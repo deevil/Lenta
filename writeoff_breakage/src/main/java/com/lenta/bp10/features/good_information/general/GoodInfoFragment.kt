@@ -49,17 +49,6 @@ class GoodInfoFragment : CoreFragment<FragmentGoodInfoBinding, GoodInfoViewModel
         }
     }
 
-
-    companion object {
-        fun create(productInfo: ProductInfo): GoodInfoFragment {
-            GoodInfoFragment().let {
-                it.productInfo = productInfo
-                return it
-            }
-        }
-
-    }
-
     override fun onToolbarButtonClick(view: View) {
         when (view.id) {
             R.id.b_3 -> vm.onClickDetails()
@@ -72,5 +61,18 @@ class GoodInfoFragment : CoreFragment<FragmentGoodInfoBinding, GoodInfoViewModel
         vm.onBackPressed()
         return true
     }
+
+
+    companion object {
+        fun create(productInfo: ProductInfo): GoodInfoFragment {
+            GoodInfoFragment().let {
+                it.productInfo = productInfo
+                return it
+            }
+        }
+
+    }
+
+
 
 }

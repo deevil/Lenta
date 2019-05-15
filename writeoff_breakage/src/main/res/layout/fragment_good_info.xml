@@ -150,6 +150,43 @@
             app:layout_constraintTop_toBottomOf="@+id/spinner_write_off_type" />
 
 
+        <TextView
+            android:id="@+id/tv_matrix"
+            android:layout_width="36sp"
+            android:layout_height="36sp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="24dp"
+            app:background="@drawable/bg_white_circle"
+            android:fontFamily="@font/tahoma_bold"
+            android:gravity="center"
+            android:textSize="18sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/div_hor4"
+            app:layout_constraintVertical_bias="1.0"
+            app:matrixType="@{vm.productInfo.matrixType}"
+            tools:text="A" />
+
+        <TextView
+            android:id="@+id/tv_section"
+            android:layout_width="36sp"
+            android:layout_height="36sp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="24dp"
+            android:background="@drawable/bg_white_circle"
+            android:fontFamily="@font/tahoma_bold"
+            android:gravity="center"
+            android:text='@{"" + vm.productInfo.sectionNumber}'
+            android:textSize="16sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/tv_matrix"
+            app:layout_constraintTop_toTopOf="@+id/div_hor4"
+            app:layout_constraintVertical_bias="1.0"
+            tools:text="02" />
+
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </layout>

@@ -20,11 +20,11 @@ class GoodInfoViewModel : CoreViewModel(), OnPositionClickListener {
     @Inject
     lateinit var screenNavigator: IScreenNavigator
 
-    private lateinit var productInfo: ProductInfo
-
     private val processGeneralProductService: ProcessGeneralProductService by lazy {
-        processServiceManager.getWriteOffTask()!!.processGeneralProduct(productInfo)!!
+        processServiceManager.getWriteOffTask()!!.processGeneralProduct(productInfo.value!!)!!
     }
+
+    val productInfo: MutableLiveData<ProductInfo> = MutableLiveData()
 
     val writeOffReasonTitles: MutableLiveData<List<String>> = MutableLiveData()
 
@@ -34,10 +34,10 @@ class GoodInfoViewModel : CoreViewModel(), OnPositionClickListener {
 
     val suffix: MutableLiveData<String> = MutableLiveData()
 
-    val totalCount: MutableLiveData<String> = count.map { (getCount() + processGeneralProductService.getTotalCount()).toString() }
+    val totalCount: MutableLiveData<String> = count.map { "${(getCount() + processGeneralProductService.getTotalCount())} ${productInfo.value!!.uom.name}" }
 
     fun setProductInfo(productInfo: ProductInfo) {
-        this.productInfo = productInfo
+        this.productInfo.value = productInfo
     }
 
     init {
@@ -46,7 +46,7 @@ class GoodInfoViewModel : CoreViewModel(), OnPositionClickListener {
             processServiceManager.getWriteOffTask()?.let { writeOffTask ->
                 writeOffReasonTitles.value = writeOffTask.taskDescription.moveTypes.map { it.name }
             }
-            suffix.value = productInfo.uom.name
+            suffix.value = productInfo.value?.uom?.name
 
         }
     }
