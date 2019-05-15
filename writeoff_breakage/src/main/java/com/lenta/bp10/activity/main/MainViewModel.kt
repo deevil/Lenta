@@ -35,11 +35,13 @@ class MainViewModel : CoreMainViewModel() {
             }
 
         }
+        bottomToolbarUiModel.visibility.value = false
     }
 
     override fun hideProgress() {
         loadingViewModel.clean()
         progressJob?.cancel()
+        bottomToolbarUiModel.visibility.value = true
     }
 
    fun onExitClick() {

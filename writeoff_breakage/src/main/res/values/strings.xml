@@ -26,4 +26,5 @@
     <string name="ean_info">Доступно сканирование штрихкода EAN</string>
     <string name="exit_confirmation">Подтвердите выход из МП</string>
     <string name="remove_task_confirmation">По заданию \"%s\" будут удалены все непереданные данные</string>
+    <string name="sending_report_data">Отправка данных отчета</string>
 </resources>
