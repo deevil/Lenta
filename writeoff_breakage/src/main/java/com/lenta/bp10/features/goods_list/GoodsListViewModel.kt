@@ -198,10 +198,15 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
                 }
     }
 
-    fun handleSentSuccess(writeOffReportResponse: WriteOffReportResponse) {
+    private fun handleSentSuccess(writeOffReportResponse: WriteOffReportResponse) {
         Logg.d { "writeOffReportResponse: ${writeOffReportResponse}" }
-        processServiceManager.clearTask()
-        screenNavigator.openSendingReportsScreen(writeOffReportResponse)
+        if (writeOffReportResponse.retCode.isEmpty() || writeOffReportResponse.retCode == "0") {
+            processServiceManager.clearTask()
+            screenNavigator.openSendingReportsScreen(writeOffReportResponse)
+        } else {
+            screenNavigator.openAlertScreen(writeOffReportResponse.errorText)
+        }
+
 
     }
 
