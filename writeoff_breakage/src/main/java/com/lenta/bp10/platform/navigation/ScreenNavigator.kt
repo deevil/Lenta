@@ -13,8 +13,10 @@ import com.lenta.bp10.features.job_card.JobCardFragment
 import com.lenta.bp10.features.loading.fast.FastDataLoadingFragment
 import com.lenta.bp10.features.loading.tasks_settings.LoadingTaskSettingsFragment
 import com.lenta.bp10.features.main_menu.MainMenuFragment
+import com.lenta.bp10.features.matrix_info.MatrixInfoFragment
 import com.lenta.bp10.features.printer_change.PrinterChangeFragment
 import com.lenta.bp10.features.report_result.ReportResultFragment
+import com.lenta.bp10.features.section_info.SectionInfoFragment
 import com.lenta.bp10.features.select_market.SelectMarketFragment
 import com.lenta.bp10.features.select_oper_mode.SelectOperModeFragment
 import com.lenta.bp10.features.select_personnel_number.SelectPersonnelNumberFragment
@@ -27,6 +29,7 @@ import com.lenta.shared.account.IAuthenticator
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.exception.IFailureInterpreter
 import com.lenta.shared.interactor.UseCase
+import com.lenta.shared.models.core.MatrixType
 import com.lenta.shared.models.core.ProductInfo
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
 import com.lenta.shared.platform.navigation.CustomAnimation
@@ -181,6 +184,13 @@ class ScreenNavigator(
         getFragmentStack()?.popAll()
     }
 
+    override fun openMatrixInfoScreen(matrixType: MatrixType) {
+        getFragmentStack()?.push(MatrixInfoFragment.create(matrixType))
+    }
+
+    override fun openSectionInfoScreen(section: Int) {
+        getFragmentStack()?.push(SectionInfoFragment.create(sectionNumber = "$section"))
+    }
 }
 
 interface IScreenNavigator : IGoBackNavigator {
@@ -211,4 +221,6 @@ interface IScreenNavigator : IGoBackNavigator {
     fun openRemoveTaskConfirmationScreen(taskDescription: String, codeConfirmation: Int)
     fun openSendingReportsScreen(writeOffReportResponse: WriteOffReportResponse)
     fun closeAllScreen()
+    fun openMatrixInfoScreen(matrixType: MatrixType)
+    fun openSectionInfoScreen(section: Int)
 }

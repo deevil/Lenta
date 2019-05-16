@@ -29,4 +29,9 @@
     <string name="sending_report_data">Отправка данных отчета</string>
     <string name="sheet">Ведомость</string>
     <string name="designation">Название</string>
+    <string name="active_matrix">Активная матрица</string>
+    <string name="passive_matrix">Пассивная матрица</string>
+    <string name="deleted_matrix">Удаленная матрица</string>
+    <string name="unknown_matrix">Неизвестная матрица</string>
+    <string name="section">Секция %s</string>
 </resources>
