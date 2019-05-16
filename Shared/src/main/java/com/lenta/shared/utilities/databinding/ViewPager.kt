@@ -30,7 +30,7 @@ fun setupViewPager(viewPager: ViewPager,
 
     pageSelectionListener?.let {
 
-        pageSelectionListener.onPageSelected(position ?: 0)
+        pageSelectionListener.onPageSelected(viewPager.currentItem)
 
         viewPager.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
 
