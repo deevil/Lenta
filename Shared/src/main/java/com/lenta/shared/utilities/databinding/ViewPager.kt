@@ -30,9 +30,7 @@ fun setupViewPager(viewPager: ViewPager,
     viewPager.tag = pageSelectionListener
 
     pageSelectionListener?.let {
-        viewPager.addOnAdapterChangeListener(object : ViewPager.OnPageChangeListener, ViewPager.OnAdapterChangeListener {
-            override fun onAdapterChanged(viewPager: ViewPager, oldAdapter: PagerAdapter?, newAdapter: PagerAdapter?) {
-            }
+        viewPager.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
 
             override fun onPageScrollStateChanged(state: Int) {
             }

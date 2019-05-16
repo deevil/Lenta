@@ -57,6 +57,7 @@ class GoodsListFragment :
         super.onViewCreated(view, savedInstanceState)
         binding?.let {
             it.viewPagerSettings = this
+            it.pageSelectionListener = this
 
         }
 
