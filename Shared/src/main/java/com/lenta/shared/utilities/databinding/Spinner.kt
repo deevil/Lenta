@@ -34,12 +34,15 @@ fun setupSpinner(spinner: Spinner, items: List<String>?, position: Int?, onPosit
     adapter.clear()
     items?.let {
         adapter.addAll(it)
-        val isEnabled = enabled?: (it.size > 1)
+        val isEnabled = enabled ?: (it.size > 1)
         spinner.isEnabled = isEnabled
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             spinner.focusable = if (isEnabled) View.FOCUSABLE else View.NOT_FOCUSABLE
         }
 
+    }
+    if (position != null && spinner.selectedItemPosition != position) {
+        spinner.setSelection(position)
     }
     adapter.notifyDataSetChanged()
 }

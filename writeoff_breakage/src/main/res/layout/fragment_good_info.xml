@@ -68,6 +68,7 @@
             android:ellipsize="end"
             android:inputType="numberDecimal"
             android:maxLines="1"
+            android:digits="0123456789-."
             android:text="@={vm.count}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/div_vert"

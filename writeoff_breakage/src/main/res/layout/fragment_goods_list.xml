@@ -25,6 +25,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:pageSelectionListener="@{pageSelectionListener}"
+        app:tabPosition="@{vm.selectedPage}"
         app:viewPagerSettings="@{viewPagerSettings}">
 
         <com.google.android.material.tabs.TabLayout

@@ -16,6 +16,5 @@ fun ITaskRepository.getTotalCountForProduct(productInfo: ProductInfo): Double {
         totalCount += arrTaskWriteOffReason[i].count
 
     }
-    Logg.d { "for product ${productInfo.description} total count: $totalCount" }
     return totalCount
 }

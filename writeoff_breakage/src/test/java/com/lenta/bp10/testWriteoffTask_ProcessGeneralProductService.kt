@@ -25,7 +25,7 @@ class testWriteoffTask_ProcessGeneralProductService {
                 TaskType("СГП", "nСГП"),
                 "Списание от 04.06 10:23",
                 "0002",
-                listOf("949ВД"),
+                listOf(WriteOffReason("949ВД", "Лом/Бой")),
                 listOf("N"),
                 listOf("2FER", "3ROH"), "perNo", "printer", "tkNumber", "ipAddress"
         )

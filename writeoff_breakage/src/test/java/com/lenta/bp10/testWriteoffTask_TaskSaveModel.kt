@@ -10,6 +10,7 @@ import com.lenta.bp10.models.repositories.ITaskRepository
 import com.lenta.bp10.models.repositories.ITaskWriteOffReasonRepository
 import com.lenta.bp10.models.task.TaskDescription
 import com.lenta.bp10.models.task.TaskType
+import com.lenta.bp10.models.task.WriteOffReason
 import com.lenta.bp10.models.task.WriteOffTask
 import com.lenta.bp10.rest.dataModels.SaveTaskDataToSapRestRequest
 import org.junit.Assert.assertTrue
@@ -29,7 +30,7 @@ class testWriteoffTask_TaskSaveModel {
                 TaskType("СГП", "nСГП"),
                 "Списание от 04.06 10:23",
                 "0002",
-                ArrayList(Arrays.asList("949ВД")),
+                ArrayList(Arrays.asList(WriteOffReason("949ВД", "Лом/Бой"))),
                 ArrayList(Arrays.asList("N")),
                 ArrayList(Arrays.asList("2FER", "3ROH")), "0001", "printer", "tkNumber", "ipAddress"
         )
