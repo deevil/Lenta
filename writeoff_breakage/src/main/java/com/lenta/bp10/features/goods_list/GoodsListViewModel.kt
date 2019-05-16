@@ -2,11 +2,16 @@ package com.lenta.bp10.features.goods_list
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.lenta.bp10.fmp.resources.send_report.MaterialNumber
+import com.lenta.bp10.fmp.resources.send_report.WriteOffReport
 import com.lenta.bp10.models.repositories.IWriteOffTaskManager
 import com.lenta.bp10.models.repositories.getTotalCountForProduct
+import com.lenta.bp10.models.task.WriteOffTask
 import com.lenta.bp10.platform.navigation.IScreenNavigator
 import com.lenta.bp10.requests.db.ProductInfoDbRequest
 import com.lenta.bp10.requests.db.ProductInfoRequestParams
+import com.lenta.bp10.requests.network.SendWriteOffReportRequest
+import com.lenta.bp10.requests.network.WriteOffReportResponse
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.models.core.ProductInfo
 import com.lenta.shared.platform.resources.IStringResourceManager
@@ -16,6 +21,7 @@ import com.lenta.shared.utilities.databinding.Evenable
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.view.OnPositionClickListener
 import kotlinx.coroutines.launch
+import java.lang.NullPointerException
 import javax.inject.Inject
 
 class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
@@ -28,6 +34,8 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     lateinit var productInfoDbRequest: ProductInfoDbRequest
     @Inject
     lateinit var stringResourceManager: IStringResourceManager
+    @Inject
+    lateinit var sendWriteOffReportRequest: SendWriteOffReportRequest
 
     val countedGoods: MutableLiveData<List<GoodItem>> = MutableLiveData()
     val filteredGoods: MutableLiveData<List<FilterItem>> = MutableLiveData()
@@ -80,9 +88,12 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
                 it.writeOffReason.code to it
             }.toMap().values.toList()
 
-
-            mutableListOf(stringResourceManager.notSelected()).let {
-                it.addAll(reasons.map { it.writeOffReason.name })
+            (if (reasons.size == 1) {
+                mutableListOf()
+            } else {
+                mutableListOf(stringResourceManager.notSelected())
+            }).let {
+                it.addAll(reasons.map { taskWriteOffReason -> taskWriteOffReason.writeOffReason.name })
                 categories.postValue(it)
             }
 
@@ -107,15 +118,20 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     }
 
     override fun onOkInSoftKeyboard(): Boolean {
-        viewModelScope.launch {
-            eanCode.value?.let {
-                productInfoDbRequest(ProductInfoRequestParams(ean = it)).either(::handleFailure, ::handleScanSuccess)
-            }
 
-        }
+        searchCode()
 
         Logg.d { "processServiceManager taskDescription: ${processServiceManager.getWriteOffTask()?.taskDescription}" }
         return true
+    }
+
+    private fun searchCode() {
+        viewModelScope.launch {
+            eanCode.value?.let {
+                productInfoDbRequest(ProductInfoRequestParams(number = it)).either(::handleFailure, ::handleScanSuccess)
+            }
+
+        }
     }
 
     private fun handleScanSuccess(productInfo: ProductInfo) {
@@ -128,11 +144,75 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     }
 
 
-    fun onEanInfoClick() {
-        screenNavigator.openEanInfoScreen()
+    fun getTitle(): String {
+        processServiceManager.getWriteOffTask()?.let {
+            return "${it.taskDescription.taskType.code} - ${it.taskDescription.taskName}"
+        }
+        return ""
+    }
+
+    fun onScanResult(data: String) {
+        eanCode.value = data
+        searchCode()
+    }
+
+    fun onClickSave() {
+        viewModelScope.launch {
+            screenNavigator.showProgress(sendWriteOffReportRequest)
+            sendWriteOffReportRequest(getReport()).either(::handleFailure, ::handleSentSuccess)
+            screenNavigator.hideProgress()
+        }
+
+    }
+
+    private fun getReport(): WriteOffReport {
+
+        processServiceManager.getWriteOffTask()?.let { writeOffTask ->
+            with(writeOffTask.taskDescription) {
+                return WriteOffReport(
+                        perNo = perNo,
+                        printer = printer,
+                        taskName = taskName,
+                        taskType = taskType.code,
+                        tkNumber = tkNumber,
+                        storloc = stock,
+                        ipAdress = ipAddress,
+                        materials = getMaterials(writeOffTask),
+                        exciseStamps = emptyList()
+                )
+            }
+        }
+        throw NullPointerException("WriteOffTask is null")
+    }
+
+    private fun getMaterials(writeOffTask: WriteOffTask): List<MaterialNumber> {
+
+        return writeOffTask.taskRepository.getWriteOffReasons()
+                .getWriteOffReasons().map {
+                    MaterialNumber(
+                            matnr = it.materialNumber,
+                            writeOffCause = it.writeOffReason.code,
+                            kostl = "",
+                            amount = it.count.toString()
+                    )
+                }
+    }
+
+    private fun handleSentSuccess(writeOffReportResponse: WriteOffReportResponse) {
+        Logg.d { "writeOffReportResponse: ${writeOffReportResponse}" }
+        if (writeOffReportResponse.retCode.isEmpty() || writeOffReportResponse.retCode == "0") {
+            processServiceManager.clearTask()
+            screenNavigator.openSendingReportsScreen(writeOffReportResponse)
+        } else {
+            screenNavigator.openAlertScreen(writeOffReportResponse.errorText)
+        }
+
+
     }
 
 }
+
+
 
 
 data class GoodItem(val number: Int, val name: String, val quantity: String, val even: Boolean) : Evenable {

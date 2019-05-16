@@ -60,7 +60,7 @@ abstract class CoreFragment<T : ViewDataBinding, S : ViewModel> : Fragment() {
         }
     }
 
-    private fun onFragmentResult(arguments: Bundle) {
+    open fun onFragmentResult(arguments: Bundle) {
         Logg.d { "onFragmentResult arguments: $arguments" }
     }
 

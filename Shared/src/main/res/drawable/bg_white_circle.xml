@@ -1,7 +1,6 @@
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
     <item>
         <shape android:shape="oval">
-            <solid android:color="@color/colorContentBackground"/>
             <stroke android:width="3dp" android:color="@color/colorNumSectionTxt"/>
             <padding
                 android:bottom="4dp"
