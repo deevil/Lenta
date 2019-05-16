@@ -8,7 +8,6 @@ import androidx.viewpager.widget.ViewPager
 import com.lenta.shared.utilities.extentions.implementationOf
 
 
-
 @BindingAdapter(value = ["viewPagerSettings", "position", "pageSelectionListener"], requireAll = false)
 fun setupViewPager(viewPager: ViewPager,
                    viewPagerSettings: ViewPagerSettings?,
@@ -30,6 +29,9 @@ fun setupViewPager(viewPager: ViewPager,
     viewPager.tag = pageSelectionListener
 
     pageSelectionListener?.let {
+
+        pageSelectionListener.onPageSelected(viewPager.currentItem)
+
         viewPager.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
 
             override fun onPageScrollStateChanged(state: Int) {
