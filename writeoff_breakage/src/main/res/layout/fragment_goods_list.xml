@@ -14,12 +14,17 @@
             name="viewPagerSettings"
             type="com.lenta.shared.utilities.databinding.ViewPagerSettings" />
 
+        <variable
+            name="pageSelectionListener"
+            type="com.lenta.shared.utilities.databinding.PageSelectionListener" />
+
     </data>
 
     <androidx.viewpager.widget.ViewPager
         android:id="@+id/view_pager"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        app:pageSelectionListener="@{pageSelectionListener}"
         app:viewPagerSettings="@{viewPagerSettings}">
 
         <com.google.android.material.tabs.TabLayout
