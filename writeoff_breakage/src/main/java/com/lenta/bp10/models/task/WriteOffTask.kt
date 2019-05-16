@@ -1,5 +1,7 @@
 package com.lenta.bp10.models.task
 
+import com.lenta.bp10.fmp.resources.send_report.MaterialNumber
+import com.lenta.bp10.fmp.resources.send_report.WriteOffReport
 import com.lenta.bp10.models.repositories.ITaskRepository
 import com.lenta.shared.models.core.ProductInfo
 import com.lenta.shared.models.core.ProductType
@@ -71,4 +73,33 @@ class WriteOffTask(val taskDescription: TaskDescription, val taskRepository: ITa
         taskRepository.getExciseStamps().clear()
     }
 
+}
+
+fun WriteOffTask.getReport(): WriteOffReport {
+    with(taskDescription) {
+        return WriteOffReport(
+                perNo = perNo,
+                printer = printer,
+                taskName = taskName,
+                taskType = taskType.code,
+                tkNumber = tkNumber,
+                storloc = stock,
+                ipAdress = ipAddress,
+                materials = getMaterials(),
+                exciseStamps = kotlin.collections.emptyList()
+        )
+    }
+}
+
+fun WriteOffTask.getMaterials(): List<MaterialNumber> {
+
+    return taskRepository.getWriteOffReasons()
+            .getWriteOffReasons().map {
+                MaterialNumber(
+                        matnr = it.materialNumber,
+                        writeOffCause = it.writeOffReason.code,
+                        kostl = "",
+                        amount = it.count.toString()
+                )
+            }
 }

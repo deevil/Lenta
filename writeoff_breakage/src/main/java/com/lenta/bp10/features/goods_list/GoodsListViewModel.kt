@@ -2,11 +2,9 @@ package com.lenta.bp10.features.goods_list
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.lenta.bp10.fmp.resources.send_report.MaterialNumber
-import com.lenta.bp10.fmp.resources.send_report.WriteOffReport
 import com.lenta.bp10.models.repositories.IWriteOffTaskManager
 import com.lenta.bp10.models.repositories.getTotalCountForProduct
-import com.lenta.bp10.models.task.WriteOffTask
+import com.lenta.bp10.models.task.getReport
 import com.lenta.bp10.platform.navigation.IScreenNavigator
 import com.lenta.bp10.requests.db.ProductInfoDbRequest
 import com.lenta.bp10.requests.db.ProductInfoRequestParams
@@ -159,44 +157,15 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     fun onClickSave() {
         viewModelScope.launch {
             screenNavigator.showProgress(sendWriteOffReportRequest)
-            sendWriteOffReportRequest(getReport()).either(::handleFailure, ::handleSentSuccess)
+            processServiceManager.getWriteOffTask()?.let {
+                sendWriteOffReportRequest(it.getReport()).either(::handleFailure, ::handleSentSuccess)
+            }
+
             screenNavigator.hideProgress()
         }
 
     }
 
-    private fun getReport(): WriteOffReport {
-
-        processServiceManager.getWriteOffTask()?.let { writeOffTask ->
-            with(writeOffTask.taskDescription) {
-                return WriteOffReport(
-                        perNo = perNo,
-                        printer = printer,
-                        taskName = taskName,
-                        taskType = taskType.code,
-                        tkNumber = tkNumber,
-                        storloc = stock,
-                        ipAdress = ipAddress,
-                        materials = getMaterials(writeOffTask),
-                        exciseStamps = emptyList()
-                )
-            }
-        }
-        throw NullPointerException("WriteOffTask is null")
-    }
-
-    private fun getMaterials(writeOffTask: WriteOffTask): List<MaterialNumber> {
-
-        return writeOffTask.taskRepository.getWriteOffReasons()
-                .getWriteOffReasons().map {
-                    MaterialNumber(
-                            matnr = it.materialNumber,
-                            writeOffCause = it.writeOffReason.code,
-                            kostl = "",
-                            amount = it.count.toString()
-                    )
-                }
-    }
 
     private fun handleSentSuccess(writeOffReportResponse: WriteOffReportResponse) {
         Logg.d { "writeOffReportResponse: ${writeOffReportResponse}" }
@@ -211,8 +180,6 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     }
 
 }
-
-
 
 
 data class GoodItem(val number: Int, val name: String, val quantity: String, val even: Boolean) : Evenable {
