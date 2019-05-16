@@ -4,6 +4,7 @@ import android.view.View
 import com.lenta.bp10.BR
 import com.lenta.bp10.R
 import com.lenta.bp10.databinding.FragmentReportResultBinding
+import com.lenta.bp10.databinding.ItemTaskReportBinding
 import com.lenta.bp10.platform.extentions.getAppComponent
 import com.lenta.bp10.requests.network.WriteOffReportResponse
 import com.lenta.shared.platform.activity.OnBackPresserListener
@@ -28,7 +29,7 @@ class ReportResultFragment : CoreFragment<FragmentReportResultBinding, ReportRes
         provideViewModel(ReportResultViewModel::class.java).let {
             getAppComponent()?.inject(it)
             it.setWriteOffReportResponse(writeOffReportResponse)
-            binding?.rvConfig = DataBindingRecyclerViewConfig(layoutId = R.layout.item_task_report, itemId = BR.vm)
+            binding?.rvConfig = DataBindingRecyclerViewConfig<ItemTaskReportBinding>(layoutId = R.layout.item_task_report, itemId = BR.vm)
             return it
         }
     }

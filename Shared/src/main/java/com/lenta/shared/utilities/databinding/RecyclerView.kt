@@ -17,7 +17,7 @@ import com.lenta.shared.utilities.Logg
 @BindingAdapter(value = ["items", "rv_config"])
 fun <ItemType, BindingType : ViewDataBinding> setupRecyclerView(recyclerView: RecyclerView,
                                                                 newItems: List<ItemType>?,
-                                                                dataBindingRecyclerViewConfig: DataBindingRecyclerViewConfig) {
+                                                                dataBindingRecyclerViewConfig: DataBindingRecyclerViewConfig<BindingType>) {
 
     Logg.d { "newItems: ${newItems}" }
 
@@ -25,13 +25,14 @@ fun <ItemType, BindingType : ViewDataBinding> setupRecyclerView(recyclerView: Re
     var oldItems: MutableList<ItemType>? = null
 
     recyclerView.tag?.let {
+        @Suppress("UNCHECKED_CAST")
         oldItems = it as MutableList<ItemType>
 
     }
 
     if (oldItems == null) {
         oldItems = mutableListOf()
-        recyclerView.setTag(oldItems)
+        recyclerView.tag = oldItems
     }
 
     if (oldItems !== newItems) {
@@ -51,8 +52,11 @@ fun <ItemType, BindingType : ViewDataBinding> setupRecyclerView(recyclerView: Re
         recyclerView.layoutManager = mLayoutManager
 
         dataBindingRecyclerViewConfig.let {
-            recyclerView.adapter = DataBindingRecyclerAdapter<ItemType, BindingType>(oldItems,
-                    it.layoutId, it.itemId)
+            recyclerView.adapter = DataBindingRecyclerAdapter(
+                    items = oldItems,
+                    layoutId = it.layoutId,
+                    itemId = it.itemId,
+                    realisation = dataBindingRecyclerViewConfig.realisation)
         }
 
 
@@ -62,9 +66,10 @@ fun <ItemType, BindingType : ViewDataBinding> setupRecyclerView(recyclerView: Re
 
 }
 
-data class DataBindingRecyclerViewConfig (
+data class DataBindingRecyclerViewConfig<BindingType : ViewDataBinding>(
         val layoutId: Int,
-        val itemId: Int
+        val itemId: Int,
+        val realisation: DataBindingAdapter<BindingType>? = null
 )
 
 
@@ -102,6 +107,7 @@ class DataBindingRecyclerAdapter<ItemType, BindingType : ViewDataBinding>(
         if (itemId != -1) {
             holder.binding.setVariable(itemId, items!![holder.adapterPosition])
         }
+        @Suppress("UNCHECKED_CAST")
         onBind(holder.binding as BindingType, holder.adapterPosition)
         holder.binding.executePendingBindings()
     }

@@ -7,9 +7,7 @@ import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import com.lenta.bp10.BR
 import com.lenta.bp10.R
-import com.lenta.bp10.databinding.FragmentGoodsListBinding
-import com.lenta.bp10.databinding.LayoutGoodsCountedBinding
-import com.lenta.bp10.databinding.LayoutGoodsFilterBinding
+import com.lenta.bp10.databinding.*
 import com.lenta.bp10.platform.extentions.getAppComponent
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
@@ -82,7 +80,10 @@ class GoodsListFragment :
                             container,
                             false).let {
                         it.lifecycleOwner = viewLifecycleOwner
-                        it.rvConfig = DataBindingRecyclerViewConfig(layoutId = R.layout.item_tile_goods, itemId = BR.vm)
+                        it.rvConfig = DataBindingRecyclerViewConfig<ItemTileGoodsBinding>(
+                                layoutId = R.layout.item_tile_goods,
+                                itemId = BR.vm
+                        )
                         it.vm = vm
                         return it.root
                     }
@@ -94,7 +95,10 @@ class GoodsListFragment :
                         container,
                         false).let {
                     it.lifecycleOwner = viewLifecycleOwner
-                    it.rvConfig = DataBindingRecyclerViewConfig(layoutId = R.layout.item_tile_filter, itemId = BR.vm)
+                    it.rvConfig = DataBindingRecyclerViewConfig<ItemTileFilterBinding>(
+                            layoutId = R.layout.item_tile_filter,
+                            itemId = BR.vm
+                    )
                     it.vm = vm
                     return it.root
                 }
