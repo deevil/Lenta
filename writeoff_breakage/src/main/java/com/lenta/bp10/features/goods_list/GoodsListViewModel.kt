@@ -19,7 +19,6 @@ import com.lenta.shared.utilities.databinding.Evenable
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.view.OnPositionClickListener
 import kotlinx.coroutines.launch
-import java.lang.NullPointerException
 import javax.inject.Inject
 
 class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
@@ -133,7 +132,11 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     }
 
     private fun handleScanSuccess(productInfo: ProductInfo) {
-        Logg.d { "productInfo: $productInfo" }
+        Logg.d { "productInfo: ${productInfo.isSet}" }
+        if (productInfo.isSet){
+            screenNavigator.openSetsInfoScreen()
+            return
+        }
         screenNavigator.openGoodInfoScreen(productInfo)
     }
 

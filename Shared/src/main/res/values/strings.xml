@@ -45,6 +45,7 @@
     <string name="tv_test_envir">Введите ПИН-код для перехода в тестовую среду</string>
     <string name="loading_tab_number">Загрузка данных исполнителя</string>
     <string name="delete">Удалить</string>
+    <string name="clean">Очистить</string>
     <string name="print">Печать</string>
     <string name="save">Сохранить</string>
     <string name="number">№</string>

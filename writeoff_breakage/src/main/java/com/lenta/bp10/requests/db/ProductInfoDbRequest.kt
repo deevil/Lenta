@@ -4,12 +4,11 @@ import com.lenta.bp10.fmp.resources.dao_ext.*
 import com.lenta.bp10.fmp.resources.fast.ZmpUtz07V001
 import com.lenta.bp10.fmp.resources.slow.ZmpUtz25V001
 import com.lenta.bp10.fmp.resources.slow.ZmpUtz30V001
+import com.lenta.bp10.fmp.resources.slow.ZmpUtz46V001
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.functional.Either
 import com.lenta.shared.interactor.UseCase
-import com.lenta.shared.models.core.MatrixType
 import com.lenta.shared.models.core.ProductInfo
-import com.lenta.shared.models.core.ProductType
 import com.lenta.shared.models.core.Uom
 import com.lenta.shared.utilities.Logg
 import com.mobrun.plugin.api.HyperHive
@@ -28,6 +27,10 @@ class ProductInfoDbRequest
 
     val zmpUtz07V001: ZmpUtz07V001 by lazy {
         ZmpUtz07V001(hyperHive)
+    }
+
+    val zmpUtz46V001: ZmpUtz46V001 by lazy {
+        ZmpUtz46V001(hyperHive)
     }
 
     @Suppress("FoldInitializerAndIfToElvis")
@@ -68,7 +71,7 @@ class ProductInfoDbRequest
                 description = materialInfo.name,
                 uom = Uom(code = uomInfo.uom, name = uomInfo.name),
                 type = materialInfo.getProductType(),
-                isSet = getIsSet(materialInfo),
+                isSet = getIsSet(materialInfo.material),
                 sectionNumber = materialInfo.getSectionId(),
                 matrixType = materialInfo.getMatrixType(),
                 materialType = materialInfo.matype
@@ -78,9 +81,8 @@ class ProductInfoDbRequest
 //TODO (DB) Реализовать поиск через REST
 
 
-    private fun getIsSet(materialInfo: ZmpUtz30V001.ItemLocal_ET_MATERIALS): Boolean {
-        //TODO (DB) Реализовать после уточнения
-        return false
+    private fun getIsSet(materialNumber: String): Boolean {
+        return zmpUtz46V001.isSet(materialNumber)
     }
 
 

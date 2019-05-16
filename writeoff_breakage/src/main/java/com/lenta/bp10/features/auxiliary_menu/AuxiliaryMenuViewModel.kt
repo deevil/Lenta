@@ -14,7 +14,7 @@ class AuxiliaryMenuViewModel : CoreAuxiliaryMenuViewModel(){
     }
 
     override fun onClickExit() {
-        //TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        //TODO реализовать вызов диалога по выходу их приложения
         screenNavigator.openAlertScreen("onClickExit")
     }
 
