@@ -1,6 +1,7 @@
 package com.lenta.bp10.features.good_information.general
 
 import android.view.View
+import androidx.lifecycle.Observer
 import com.lenta.bp10.R
 import com.lenta.bp10.databinding.FragmentGoodInfoBinding
 import com.lenta.bp10.platform.extentions.getAppComponent
@@ -40,6 +41,15 @@ class GoodInfoFragment : CoreFragment<FragmentGoodInfoBinding, GoodInfoViewModel
         bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.details)
         bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.add)
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.apply)
+
+        vm.enabledApplyButton.observe(viewLifecycleOwner, Observer {
+            it?.let { enabled ->
+                bottomToolbarUiModel.uiModelButton4.enabled.value = enabled
+                bottomToolbarUiModel.uiModelButton5.enabled.value = enabled
+            }
+
+        })
+
     }
 
     override fun onDestroyView() {

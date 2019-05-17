@@ -10,8 +10,7 @@ import com.lenta.shared.models.core.MatrixType
 import com.lenta.shared.models.core.ProductInfo
 import com.lenta.shared.models.core.ProductType
 import com.lenta.shared.models.core.Uom
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
+import org.junit.Assert.*
 import org.junit.Test
 import java.util.*
 
@@ -145,9 +144,24 @@ class testWriteoffTask_ProcessGeneralProductService {
         task = task.deleteProducts(arrDelProduct)
 
         assertEquals(1, task.getProcessedProducts().size.toLong())
+        assertEquals(2, task.taskRepository.getWriteOffReasons().getWriteOffReasons().size.toLong())
+
         assertEquals(0.0, task.getTotalCountOfProduct(product1), 0.0)
         assertEquals(3.0, task.getTotalCountOfProduct(product2), 0.0)
         assertEquals(0.0, task.getTotalCountOfProduct(product3), 0.0)
+
+
+
+        task = task.processGeneralProduct(product2)!!
+                .add(reason1, -1.0)
+                .add(reason2, -2.0)
+                .apply()
+
+        assertEquals(0, task.getProcessedProducts().size.toLong())
+        assertEquals(0, task.taskRepository.getWriteOffReasons().getWriteOffReasons().size.toLong())
+
+
+
     }
 
     @Test

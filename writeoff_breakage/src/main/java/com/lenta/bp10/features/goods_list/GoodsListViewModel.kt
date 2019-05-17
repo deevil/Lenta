@@ -119,24 +119,29 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
             val selectedCategory = reasons.getOrNull((selectedCategoryPosition.value ?: -1) - 1)
 
-            filteredGoods.postValue(writeOffReasons
-                    .filter {
-                        selectedCategory == null
-                                || selectedCategory.writeOffReason.code == it.writeOffReason.code
-                    }
-                    .mapIndexed { index, taskWriteOffReason ->
-                        val productInfo =
-                                writeOffTask.taskRepository.getProducts().findProduct(taskWriteOffReason.materialNumber)!!
-                        FilterItem(
-                                number = index + 1,
-                                name = "${productInfo.getMaterialLastSix()} ${productInfo.description}",
-                                reason = taskWriteOffReason.writeOffReason.name,
-                                quantity = "${taskWriteOffReason.count} ${productInfo.uom.name}",
-                                even = index % 2 == 0,
-                                taskWriteOffReason = taskWriteOffReason,
-                                productInfo = productInfo)
+            filteredGoods.postValue(
+                    mutableListOf<FilterItem>().apply {
+                        writeOffReasons
+                                .filter {
+                                    selectedCategory == null
+                                            || selectedCategory.writeOffReason.code == it.writeOffReason.code
+                                }
+                                .forEachIndexed { index, taskWriteOffReason ->
+                                    writeOffTask.taskRepository.getProducts().findProduct(taskWriteOffReason.materialNumber)?.let {
+                                        add(FilterItem(
+                                                number = index + 1,
+                                                name = "${it.getMaterialLastSix()} ${it.description}",
+                                                reason = taskWriteOffReason.writeOffReason.name,
+                                                quantity = "${taskWriteOffReason.count} ${it.uom.name}",
+                                                even = index % 2 == 0,
+                                                taskWriteOffReason = taskWriteOffReason,
+                                                productInfo = it))
+                                    }
 
-                    }.reversed())
+
+                                }
+                    }.reversed()
+            )
         }
 
         filteredSelectionsHelper.clearPositions()
