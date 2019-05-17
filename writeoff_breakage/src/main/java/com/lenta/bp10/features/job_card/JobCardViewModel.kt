@@ -28,7 +28,7 @@ class JobCardViewModel : CoreViewModel() {
 
     val taskSettingsList: MutableLiveData<List<TaskSetting>> = MutableLiveData()
     val taskName: MutableLiveData<String> = MutableLiveData()
-    val selectedTaskTypePosition: MutableLiveData<Int> = MutableLiveData()
+    val selectedTaskTypePosition: MutableLiveData<Int> = MutableLiveData(0)
     val selectedStorePosition: MutableLiveData<Int> = MutableLiveData()
     val enabledChangeTaskSettings: MutableLiveData<Boolean> = MutableLiveData()
 
@@ -51,10 +51,7 @@ class JobCardViewModel : CoreViewModel() {
     val onClickTaskTypes = object : OnPositionClickListener {
         override fun onClickPosition(position: Int) {
             selectedTaskTypePosition.value = position
-            val taskType = getSelectedTaskSettings()?.taskType
-            updateMaterialTypes(taskType)
-            updateGisControls(taskType)
-            updateStores(taskType)
+            updateDependencies()
         }
     }
 
@@ -67,11 +64,13 @@ class JobCardViewModel : CoreViewModel() {
 
     init {
         viewModelScope.launch {
-            taskSettingsList.postValue(jobCardRepo.getAllTaskSettings())
+            taskSettingsList.value = jobCardRepo.getAllTaskSettings()
             if (taskName.value == null) {
                 taskName.value = jobCardRepo.generateNameTask()
             }
+            selectedTaskTypePosition.value = 0
             updateChangesEnabledStatus()
+            updateDependencies()
         }
     }
 
@@ -122,6 +121,14 @@ class JobCardViewModel : CoreViewModel() {
             return
         }
         screenNavigator.goBack()
+    }
+
+
+    private fun updateDependencies() {
+        val taskType = getSelectedTaskSettings()?.taskType
+        updateMaterialTypes(taskType)
+        updateGisControls(taskType)
+        updateStores(taskType)
     }
 
 
