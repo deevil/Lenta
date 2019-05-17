@@ -5,6 +5,7 @@ import android.view.ViewGroup
 import androidx.databinding.BindingAdapter
 import androidx.viewpager.widget.PagerAdapter
 import androidx.viewpager.widget.ViewPager
+import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.implementationOf
 
 
@@ -13,6 +14,8 @@ fun setupViewPager(viewPager: ViewPager,
                    viewPagerSettings: ViewPagerSettings?,
                    tabPosition: Int?,
                    pageSelectionListener: PageSelectionListener?) {
+
+    Logg.d { "setupViewPager tabPosition: $tabPosition" }
 
     if (viewPagerSettings == null) {
         return

@@ -35,17 +35,6 @@ fun <ItemType, BindingType : ViewDataBinding> setupRecyclerView(recyclerView: Re
         recyclerView.tag = oldItems
     }
 
-    if (oldItems !== newItems) {
-        oldItems?.let { old ->
-            old.clear()
-            newItems?.let {
-                old.addAll(newItems)
-            }
-        }
-
-    }
-
-
     if (recyclerView.adapter == null) {
 
         val mLayoutManager = LinearLayoutManager(recyclerView.context)
@@ -60,9 +49,18 @@ fun <ItemType, BindingType : ViewDataBinding> setupRecyclerView(recyclerView: Re
         }
 
 
-    } else {
-        recyclerView.adapter?.notifyDataSetChanged()
     }
+
+    if (oldItems !== newItems) {
+        oldItems?.let { old ->
+            old.clear()
+            newItems?.let {
+                old.addAll(newItems)
+            }
+        }
+
+    }
+    recyclerView.adapter?.notifyDataSetChanged()
 
 }
 
