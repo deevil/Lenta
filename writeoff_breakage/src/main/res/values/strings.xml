@@ -34,4 +34,6 @@
     <string name="deleted_matrix">Удаленная матрица</string>
     <string name="unknown_matrix">Неизвестная матрица</string>
     <string name="section">Секция %s</string>
+    <string name="reason_writeoff">Причина списания</string>
+    <string name="write_off_details">Детали по списанию</string>
 </resources>

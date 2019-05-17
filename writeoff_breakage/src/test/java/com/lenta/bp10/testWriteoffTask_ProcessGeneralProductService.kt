@@ -161,7 +161,6 @@ class testWriteoffTask_ProcessGeneralProductService {
         assertEquals(0, task.taskRepository.getWriteOffReasons().getWriteOffReasons().size.toLong())
 
 
-
     }
 
     @Test
@@ -190,7 +189,59 @@ class testWriteoffTask_ProcessGeneralProductService {
         task.clearTask()
 
         assertEquals(0, task.getProcessedProducts().size.toLong())
+        assertEquals(0, task.taskRepository.getWriteOffReasons().getWriteOffReasons().size.toLong())
+
         assertEquals(0.0, task.getTotalCountOfProduct(product1), 0.0)
         assertEquals(0.0, task.getTotalCountOfProduct(product2), 0.0)
     }
+
+
+    @Test
+    fun testDeleteTaskWriteOffReason() {
+        creatingObjectsForTest()
+
+        val product1 = ProductInfo("materialNumber1", "description", Uom("ST", "шт"), ProductType.General,
+                false, 1, MatrixType.Active, "materialType")
+
+        val product2 = ProductInfo("materialNumber2", "description", Uom("ST", "шт"), ProductType.General,
+                false, 1, MatrixType.Active, "materialType")
+
+
+        val reason1 = WriteOffReason("01", "Срок годности")
+        val reason2 = WriteOffReason("02", "Срок негодности")
+
+        task = task.processGeneralProduct(product1)!!
+                .add(reason1, 1.0)
+                .apply()
+
+        task = task.processGeneralProduct(product2)!!
+                .add(reason1, 1.0)
+                .add(reason2, 2.0)
+                .apply()
+
+        assertEquals(3, task.taskRepository.getWriteOffReasons().getWriteOffReasons().size)
+
+        var countProduct1 = task.getTotalCountOfProduct(product1)
+        var countProduct2 = task.getTotalCountOfProduct(product2)
+
+        assertEquals(1.0, countProduct1, 0.0)
+        assertEquals(3.0, countProduct2, 0.0)
+
+        task.taskRepository.getWriteOffReasons().getWriteOffReasons().toList().forEach {
+            task.deleteTaskWriteOffReason(it)
+            if (it.materialNumber == product1.materialNumber) {
+                countProduct1 -= it.count
+                assertEquals(countProduct1, task.getTotalCountOfProduct(product1), 0.0)
+            } else if (it.materialNumber == product2.materialNumber) {
+                countProduct2 -= it.count
+                assertEquals(countProduct2, task.getTotalCountOfProduct(product2), 0.0)
+            }
+        }
+
+        assertEquals(0, task.taskRepository.getWriteOffReasons().getWriteOffReasons().size)
+        assertEquals(0, task.getProcessedProducts().size.toLong())
+        assertEquals(0.0, task.getTotalCountOfProduct(product1), 0.0)
+        assertEquals(0.0, task.getTotalCountOfProduct(product2), 0.0)
+    }
+
 }

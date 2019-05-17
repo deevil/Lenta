@@ -10,12 +10,16 @@ class WriteOffTask(val taskDescription: TaskDescription, val taskRepository: ITa
 
     fun deleteProducts(products: List<ProductInfo>): WriteOffTask {
         // (Артем И., 09.04.2019) удалить перечень продуктов (products), причины списания и марки
-        for (i in products.indices) {
-            taskRepository.getExciseStamps().deleteExciseStampsForProduct(products[i])
-            taskRepository.getWriteOffReasons().deleteWriteOffReasonsForProduct(products[i])
-            taskRepository.getProducts().deleteProduct(products[i])
+        products.forEach {
+            deleteProduct(it)
         }
         return this
+    }
+
+    private fun deleteProduct(productInfo: ProductInfo) {
+        taskRepository.getExciseStamps().deleteExciseStampsForProduct(productInfo)
+        taskRepository.getWriteOffReasons().deleteWriteOffReasonsForProduct(productInfo)
+        taskRepository.getProducts().deleteProduct(productInfo)
     }
 
     fun processGeneralProduct(product: ProductInfo): ProcessGeneralProductService? {
@@ -73,6 +77,17 @@ class WriteOffTask(val taskDescription: TaskDescription, val taskRepository: ITa
         taskRepository.getExciseStamps().clear()
     }
 
+    fun deleteTaskWriteOffReason(taskWriteOffReason: TaskWriteOffReason) {
+        taskRepository.getWriteOffReasons().deleteWriteOffReason(taskWriteOffReason)
+        taskRepository.getProducts().findProduct(taskWriteOffReason.materialNumber)?.let {
+            if (getTotalCountOfProduct(it) <= 0) {
+                deleteProduct(it)
+            }
+        }
+
+
+    }
+
 }
 
 fun WriteOffTask.getReport(): WriteOffReport {
@@ -86,7 +101,7 @@ fun WriteOffTask.getReport(): WriteOffReport {
                 storloc = stock,
                 ipAdress = ipAddress,
                 materials = getMaterials(),
-                exciseStamps = kotlin.collections.emptyList()
+                exciseStamps = emptyList()
         )
     }
 }

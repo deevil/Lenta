@@ -57,6 +57,10 @@ class GoodInfoViewModel : CoreViewModel(), OnPositionClickListener {
         enabled
     }
 
+    val enabledDetailsButton: MutableLiveData<Boolean> = totalCount.map {
+        processGeneralProductService.getTotalCount() > 0.0
+    }
+
     fun setProductInfo(productInfo: ProductInfo) {
         this.productInfo.value = productInfo
     }
@@ -88,6 +92,10 @@ class GoodInfoViewModel : CoreViewModel(), OnPositionClickListener {
     }
 
     fun onClickDetails() {
+
+        productInfo.value?.let {
+            screenNavigator.openGoodsReasonsScreen(productInfo = it)
+        }
 
     }
 

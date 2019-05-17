@@ -20,6 +20,7 @@ import com.lenta.bp10.features.settings.SettingsViewModel
 import com.lenta.bp10.features.support.SupportViewModel
 import com.lenta.bp10.features.tech_login.TechLoginViewModel
 import com.lenta.bp10.features.test_environment.TestEnvirViewModel
+import com.lenta.bp10.features.write_off_details.WriteOffDetailsViewModel
 import com.lenta.shared.di.AppScope
 import com.lenta.shared.di.CoreComponent
 import com.lenta.shared.features.message.MessageViewModel
@@ -49,5 +50,6 @@ interface AppComponent {
     fun inject(it: GoodsListViewModel)
     fun inject(it: GoodInfoViewModel)
     fun inject(it: ReportResultViewModel)
+    fun inject(it: WriteOffDetailsViewModel)
 }
 

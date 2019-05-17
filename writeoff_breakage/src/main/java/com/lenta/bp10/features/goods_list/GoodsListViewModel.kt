@@ -136,8 +136,7 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
                                                 reason = taskWriteOffReason.writeOffReason.name,
                                                 quantity = "${taskWriteOffReason.count} ${it.uom.name}",
                                                 even = index % 2 == 0,
-                                                taskWriteOffReason = taskWriteOffReason,
-                                                productInfo = it))
+                                                taskWriteOffReason = taskWriteOffReason))
                                     }
 
 
@@ -167,7 +166,7 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     }
 
     private fun handleScanSuccess(productInfo: ProductInfo) {
-        Logg.d { "productInfo: $productInfo" }
+        Logg.d { "productInfoLiveData: $productInfo" }
         screenNavigator.openGoodInfoScreen(productInfo)
     }
 
@@ -239,10 +238,7 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
                             }
                             selectedPositions.value?.map { position ->
                                 filteredGoods.value!![position].let { filterItem ->
-                                    writeOffTask.taskRepository.getWriteOffReasons().deleteWriteOffReason(filterItem.taskWriteOffReason)
-                                    if (writeOffTask.getTotalCountOfProduct(filterItem.productInfo) <= 0) {
-                                        writeOffTask.deleteProducts(listOf(filterItem.productInfo))
-                                    }
+                                    writeOffTask.deleteTaskWriteOffReason(filterItem.taskWriteOffReason)
                                 }
                             }
 
@@ -287,8 +283,7 @@ data class FilterItem(
         val reason: String,
         val quantity: String,
         val even: Boolean,
-        val taskWriteOffReason: TaskWriteOffReason,
-        val productInfo: ProductInfo
+        val taskWriteOffReason: TaskWriteOffReason
 ) : Evenable {
     override fun isEven() = even
 

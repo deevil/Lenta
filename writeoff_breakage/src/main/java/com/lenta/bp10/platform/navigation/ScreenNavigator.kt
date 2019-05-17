@@ -24,6 +24,7 @@ import com.lenta.bp10.features.settings.SettingsFragment
 import com.lenta.bp10.features.support.SupportFragment
 import com.lenta.bp10.features.tech_login.TechLoginFragment
 import com.lenta.bp10.features.test_environment.TestEnvirFragment
+import com.lenta.bp10.features.write_off_details.WriteOffDetailsFragment
 import com.lenta.bp10.requests.network.WriteOffReportResponse
 import com.lenta.shared.account.IAuthenticator
 import com.lenta.shared.exception.Failure
@@ -191,6 +192,10 @@ class ScreenNavigator(
     override fun openSectionInfoScreen(section: Int) {
         getFragmentStack()?.push(SectionInfoFragment.create(sectionNumber = "$section"))
     }
+
+    override fun openGoodsReasonsScreen(productInfo: ProductInfo) {
+        getFragmentStack()?.push(WriteOffDetailsFragment.create(productInfo))
+    }
 }
 
 interface IScreenNavigator : IGoBackNavigator {
@@ -223,4 +228,5 @@ interface IScreenNavigator : IGoBackNavigator {
     fun closeAllScreen()
     fun openMatrixInfoScreen(matrixType: MatrixType)
     fun openSectionInfoScreen(section: Int)
+    fun openGoodsReasonsScreen(productInfo: ProductInfo)
 }
