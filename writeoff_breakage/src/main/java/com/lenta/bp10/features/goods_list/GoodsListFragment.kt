@@ -5,7 +5,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.Observer
 import com.lenta.bp10.BR
 import com.lenta.bp10.R
 import com.lenta.bp10.databinding.*
@@ -21,6 +20,7 @@ import com.lenta.shared.utilities.databinding.DataBindingAdapter
 import com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig
 import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.databinding.ViewPagerSettings
+import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.provideViewModel
 
 class GoodsListFragment :
@@ -51,6 +51,12 @@ class GoodsListFragment :
         bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.delete, enabled = false)
         bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.print, enabled = false)
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.save, enabled = true)
+
+        viewLifecycleOwner.let {
+            connectLiveData(source = vm.deleteEnabled, target = bottomToolbarUiModel.uiModelButton3.enabled)
+            connectLiveData(source = vm.saveButtonEnabled, target = bottomToolbarUiModel.uiModelButton5.enabled)
+        }
+
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -60,12 +66,6 @@ class GoodsListFragment :
             it.pageSelectionListener = this
 
         }
-
-        vm.deleteEnabled.observe(viewLifecycleOwner, Observer { enabled ->
-            getBottomToolBarUIModel()?.let { bottomToolbarUiModel ->
-                bottomToolbarUiModel.uiModelButton3.enabled.value = enabled
-            }
-        })
 
     }
 

@@ -59,6 +59,8 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
                 activeSet?.isNotEmpty() ?: false || (selectedTabPos == 1 && !filteredGoods.value.isNullOrEmpty())
             }
 
+    val saveButtonEnabled = countedGoods.map { it?.isNotEmpty() == true }
+
 
     val onCategoryPositionClickListener = object : OnPositionClickListener {
         override fun onClickPosition(position: Int) {

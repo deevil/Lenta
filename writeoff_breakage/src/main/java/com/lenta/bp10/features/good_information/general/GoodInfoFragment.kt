@@ -12,6 +12,7 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
+import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.provideViewModel
 
 class GoodInfoFragment : CoreFragment<FragmentGoodInfoBinding, GoodInfoViewModel>(), ToolbarButtonsClickListener, OnBackPresserListener {
@@ -42,13 +43,10 @@ class GoodInfoFragment : CoreFragment<FragmentGoodInfoBinding, GoodInfoViewModel
         bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.add)
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.apply)
 
-        vm.enabledApplyButton.observe(viewLifecycleOwner, Observer {
-            it?.let { enabled ->
-                bottomToolbarUiModel.uiModelButton4.enabled.value = enabled
-                bottomToolbarUiModel.uiModelButton5.enabled.value = enabled
-            }
-
-        })
+        viewLifecycleOwner.let {
+            connectLiveData(vm.enabledApplyButton, bottomToolbarUiModel.uiModelButton4.enabled)
+            connectLiveData(vm.enabledApplyButton, bottomToolbarUiModel.uiModelButton5.enabled)
+        }
 
     }
 
