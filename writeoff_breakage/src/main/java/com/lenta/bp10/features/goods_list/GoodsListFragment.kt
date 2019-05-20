@@ -16,9 +16,11 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListe
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.scan.OnScanResultListener
 import com.lenta.shared.utilities.Logg
+import com.lenta.shared.utilities.databinding.DataBindingAdapter
 import com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig
 import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.databinding.ViewPagerSettings
+import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.provideViewModel
 
 class GoodsListFragment :
@@ -49,6 +51,12 @@ class GoodsListFragment :
         bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.delete, enabled = false)
         bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.print, enabled = false)
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.save, enabled = true)
+
+        viewLifecycleOwner.let {
+            connectLiveData(source = vm.deleteEnabled, target = bottomToolbarUiModel.uiModelButton3.enabled)
+            connectLiveData(source = vm.saveButtonEnabled, target = bottomToolbarUiModel.uiModelButton5.enabled)
+        }
+
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -64,6 +72,7 @@ class GoodsListFragment :
     override fun onToolbarButtonClick(view: View) {
         when (view.id) {
             R.id.b_5 -> vm.onClickSave()
+            R.id.b_3 -> vm.onClickDelete()
         }
     }
 
@@ -72,20 +81,45 @@ class GoodsListFragment :
         vm.onResume()
     }
 
+    override fun onFragmentResult(arguments: Bundle) {
+        super.onFragmentResult(arguments)
+        vm.onConfirmAllDelete()
+    }
+
     override fun getPagerItemView(container: ViewGroup, position: Int): View {
+
         if (position == 0) {
             DataBindingUtil
                     .inflate<LayoutGoodsCountedBinding>(LayoutInflater.from(container.context),
                             R.layout.layout_goods_counted,
                             container,
-                            false).let {
-                        it.lifecycleOwner = viewLifecycleOwner
-                        it.rvConfig = DataBindingRecyclerViewConfig<ItemTileGoodsBinding>(
+                            false).let { layoutBinding ->
+                        val onClickSelectionListener = View.OnClickListener {
+                            (it!!.tag as Int).let { position ->
+                                vm.countedSelectionsHelper.revert(position = position)
+                                layoutBinding.rv.adapter?.notifyItemChanged(position)
+                            }
+                        }
+
+
+                        layoutBinding.lifecycleOwner = viewLifecycleOwner
+                        layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
                                 layoutId = R.layout.item_tile_goods,
-                                itemId = BR.vm
+                                itemId = BR.vm,
+                                realisation = object : DataBindingAdapter<ItemTileGoodsBinding> {
+                                    override fun onCreate(binding: ItemTileGoodsBinding) {
+                                    }
+
+                                    override fun onBind(binding: ItemTileGoodsBinding, position: Int) {
+                                        binding.tvCounter.tag = position
+                                        binding.tvCounter.setOnClickListener(onClickSelectionListener)
+                                        binding.selectedForDelete = vm.countedSelectionsHelper.isSelected(position)
+                                    }
+
+                                }
                         )
-                        it.vm = vm
-                        return it.root
+                        layoutBinding.vm = vm
+                        return layoutBinding.root
                     }
         }
 
@@ -93,14 +127,34 @@ class GoodsListFragment :
                 .inflate<LayoutGoodsFilterBinding>(LayoutInflater.from(container.context),
                         R.layout.layout_goods_filter,
                         container,
-                        false).let {
-                    it.lifecycleOwner = viewLifecycleOwner
-                    it.rvConfig = DataBindingRecyclerViewConfig<ItemTileFilterBinding>(
+                        false).let { layoutBinding ->
+
+                    val onClickSelectionListener = View.OnClickListener {
+                        (it!!.tag as Int).let { position ->
+                            vm.filteredSelectionsHelper.revert(position = position)
+                            layoutBinding.rv.adapter?.notifyItemChanged(position)
+                        }
+                    }
+
+
+                    layoutBinding.lifecycleOwner = viewLifecycleOwner
+                    layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
                             layoutId = R.layout.item_tile_filter,
-                            itemId = BR.vm
+                            itemId = BR.vm,
+                            realisation = object : DataBindingAdapter<ItemTileFilterBinding> {
+                                override fun onCreate(binding: ItemTileFilterBinding) {
+                                }
+
+                                override fun onBind(binding: ItemTileFilterBinding, position: Int) {
+                                    binding.tvCounter.tag = position
+                                    binding.tvCounter.setOnClickListener(onClickSelectionListener)
+                                    binding.selectedForDelete = vm.filteredSelectionsHelper.isSelected(position)
+                                }
+
+                            }
                     )
-                    it.vm = vm
-                    return it.root
+                    layoutBinding.vm = vm
+                    return layoutBinding.root
                 }
 
 
@@ -110,6 +164,7 @@ class GoodsListFragment :
 
     override fun onPageSelected(position: Int) {
         Logg.d { "onPageSelected $position" }
+        vm.onPageSelected(position)
     }
 
     override fun countTab(): Int = 2

@@ -6,6 +6,7 @@ import javax.inject.Inject
 
 class SelectOperModeViewModel : CoreSelectOperModeViewModel(){
 
+
     @Inject
     lateinit var screenNavigator: IScreenNavigator
 
@@ -22,7 +23,10 @@ class SelectOperModeViewModel : CoreSelectOperModeViewModel(){
         screenNavigator.openLoginScreen()
     }
 
-    override fun onBackPressed() {
+    override fun onClickSettingsConnections() {
+        screenNavigator.openConnectionsSettingsScreen()
     }
+
+
 
 }

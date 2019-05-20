@@ -5,14 +5,17 @@ import android.view.ViewGroup
 import androidx.databinding.BindingAdapter
 import androidx.viewpager.widget.PagerAdapter
 import androidx.viewpager.widget.ViewPager
+import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.implementationOf
 
 
-@BindingAdapter(value = ["viewPagerSettings", "position", "pageSelectionListener"], requireAll = false)
+@BindingAdapter(value = ["viewPagerSettings", "tabPosition", "pageSelectionListener"], requireAll = false)
 fun setupViewPager(viewPager: ViewPager,
                    viewPagerSettings: ViewPagerSettings?,
-                   position: Int?,
+                   tabPosition: Int?,
                    pageSelectionListener: PageSelectionListener?) {
+
+    Logg.d { "setupViewPager tabPosition: $tabPosition" }
 
     if (viewPagerSettings == null) {
         return
@@ -22,33 +25,39 @@ fun setupViewPager(viewPager: ViewPager,
         viewPager.let {
             it.adapter = ViewPagerAdapter(viewPagerSettings)
             it.offscreenPageLimit = viewPagerSettings.countTab()
-            it.currentItem = position ?: 0
+            it.currentItem = tabPosition ?: 0
+        }
+
+        pageSelectionListener?.let {
+
+            pageSelectionListener.onPageSelected(viewPager.currentItem)
+
+            viewPager.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
+
+                override fun onPageScrollStateChanged(state: Int) {
+                }
+
+                override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {
+                }
+
+                override fun onPageSelected(position: Int) {
+                    viewPager
+                            .tag
+                            .implementationOf(PageSelectionListener::class.java)
+                            ?.onPageSelected(position)
+                }
+
+            })
         }
     }
 
     viewPager.tag = pageSelectionListener
 
-    pageSelectionListener?.let {
-
-        pageSelectionListener.onPageSelected(viewPager.currentItem)
-
-        viewPager.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
-
-            override fun onPageScrollStateChanged(state: Int) {
-            }
-
-            override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {
-            }
-
-            override fun onPageSelected(position: Int) {
-                viewPager
-                        .tag
-                        .implementationOf(PageSelectionListener::class.java)
-                        ?.onPageSelected(position)
-            }
-
-        })
+    if (tabPosition != null && viewPager.currentItem != tabPosition) {
+        viewPager.setCurrentItem(tabPosition, false)
     }
+
+
 
 }
 

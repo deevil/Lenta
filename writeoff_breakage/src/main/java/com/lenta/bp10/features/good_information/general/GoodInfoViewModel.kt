@@ -3,11 +3,13 @@ package com.lenta.bp10.features.good_information.general
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp10.models.repositories.IWriteOffTaskManager
+import com.lenta.bp10.models.repositories.getTotalCountForProduct
 import com.lenta.bp10.models.task.ProcessGeneralProductService
 import com.lenta.bp10.models.task.WriteOffReason
 import com.lenta.bp10.platform.navigation.IScreenNavigator
 import com.lenta.shared.models.core.ProductInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
+import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.view.OnPositionClickListener
 import kotlinx.coroutines.launch
@@ -30,11 +32,34 @@ class GoodInfoViewModel : CoreViewModel(), OnPositionClickListener {
 
     val selectedPosition: MutableLiveData<Int> = MutableLiveData(0)
 
-    val count: MutableLiveData<String> = MutableLiveData()
+    val count: MutableLiveData<String> = MutableLiveData("")
+
+    val countValue: MutableLiveData<Double> = count.map { it?.toDoubleOrNull() }
 
     val suffix: MutableLiveData<String> = MutableLiveData()
 
-    val totalCount: MutableLiveData<String> = count.map { "${(getCount() + processGeneralProductService.getTotalCount())} ${productInfo.value!!.uom.name}" }
+    val totalCount: MutableLiveData<Double> = countValue.map {
+        (it ?: 0.0) + processGeneralProductService.getTotalCount()
+    }
+
+    val totalCountWithUom: MutableLiveData<String> = totalCount.map { "$it ${productInfo.value!!.uom.name}" }
+
+    val enabledApplyButton: MutableLiveData<Boolean> = countValue.combineLatest(selectedPosition).map {
+        val count = it?.first ?: 0.0
+        var enabled = false
+        productInfo.value?.let { productInfoVal ->
+            enabled =
+                    count != 0.0
+                            &&
+                            processGeneralProductService.taskRepository.getTotalCountForProduct(productInfoVal, getReason()) + (countValue.value
+                            ?: 0.0) >= 0.0
+        }
+        enabled
+    }
+
+    val enabledDetailsButton: MutableLiveData<Boolean> = totalCount.map {
+        processGeneralProductService.getTotalCount() > 0.0
+    }
 
     fun setProductInfo(productInfo: ProductInfo) {
         this.productInfo.value = productInfo
@@ -68,21 +93,19 @@ class GoodInfoViewModel : CoreViewModel(), OnPositionClickListener {
 
     fun onClickDetails() {
 
+        productInfo.value?.let {
+            screenNavigator.openGoodsReasonsScreen(productInfo = it)
+        }
+
     }
 
     private fun addGood() {
-        getCount().let {
-            if (it > 0.0) {
-                processGeneralProductService.add(getReason(), it)
-                count.value = ""
-            }
+        countValue.value?.let {
+            processGeneralProductService.add(getReason(), it)
+            count.value = ""
         }
     }
 
-
-    private fun getCount(): Double {
-        return count.value?.toDoubleOrNull() ?: 0.0
-    }
 
     private fun getReason(): WriteOffReason {
         return processGeneralProductService.taskDescription.moveTypes

@@ -6,5 +6,5 @@ abstract class CoreSelectOperModeViewModel : CoreViewModel() {
     abstract fun onClickBack()
     abstract fun onClickTestEnvir()
     abstract fun onClickWorkEnvir()
-    abstract fun onBackPressed()
+    abstract fun onClickSettingsConnections()
 }

@@ -32,4 +32,12 @@
     <string name="sending_report_data">Отправка данных отчета</string>
     <string name="sheet">Ведомость</string>
     <string name="designation">Название</string>
+    <string name="active_matrix">Активная матрица</string>
+    <string name="passive_matrix">Пассивная матрица</string>
+    <string name="deleted_matrix">Удаленная матрица</string>
+    <string name="unknown_matrix">Неизвестная матрица</string>
+    <string name="section">Секция %s</string>
+    <string name="reason_writeoff">Причина списания</string>
+    <string name="write_off_details">Детали по списанию</string>
+    <string name="project">Проект</string>
 </resources>

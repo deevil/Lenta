@@ -1,7 +1,7 @@
 package com.lenta.bp10.models.repositories
 
+import com.lenta.bp10.models.task.WriteOffReason
 import com.lenta.shared.models.core.ProductInfo
-import com.lenta.shared.utilities.Logg
 
 interface ITaskRepository {
     fun getProducts(): ITaskProductRepository
@@ -9,13 +9,14 @@ interface ITaskRepository {
     fun getWriteOffReasons(): ITaskWriteOffReasonRepository
 }
 
-fun ITaskRepository.getTotalCountForProduct(productInfo: ProductInfo): Double {
+fun ITaskRepository.getTotalCountForProduct(productInfo: ProductInfo, writeOffReason: WriteOffReason? = null): Double {
     val arrTaskWriteOffReason = getWriteOffReasons().findWriteOffReasonsOfProduct(productInfo)
     var totalCount = 0.0
-    for (i in arrTaskWriteOffReason.indices) {
-        totalCount += arrTaskWriteOffReason[i].count
+    arrTaskWriteOffReason.forEach {
+        if (writeOffReason == null || writeOffReason.code == it.writeOffReason.code) {
+            totalCount += it.count
+        }
 
     }
-    Logg.d { "for product ${productInfo.description} total count: $totalCount" }
     return totalCount
 }

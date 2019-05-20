@@ -17,10 +17,13 @@ import com.lenta.shared.utilities.Logg
 @BindingAdapter(value = ["items", "rv_config"])
 fun <ItemType, BindingType : ViewDataBinding> setupRecyclerView(recyclerView: RecyclerView,
                                                                 newItems: List<ItemType>?,
-                                                                dataBindingRecyclerViewConfig: DataBindingRecyclerViewConfig<BindingType>) {
+                                                                dataBindingRecyclerViewConfig: DataBindingRecyclerViewConfig<BindingType>?) {
 
     Logg.d { "newItems: ${newItems}" }
 
+    if (dataBindingRecyclerViewConfig == null) {
+        return
+    }
 
     var oldItems: MutableList<ItemType>? = null
 
@@ -35,20 +38,9 @@ fun <ItemType, BindingType : ViewDataBinding> setupRecyclerView(recyclerView: Re
         recyclerView.tag = oldItems
     }
 
-    if (oldItems !== newItems) {
-        oldItems?.let { old ->
-            old.clear()
-            newItems?.let {
-                old.addAll(newItems)
-            }
-        }
-
-    }
-
-
     if (recyclerView.adapter == null) {
 
-        val mLayoutManager = LinearLayoutManager(recyclerView.context)
+        val mLayoutManager: RecyclerView.LayoutManager = LinearLayoutManager(recyclerView.context)
         recyclerView.layoutManager = mLayoutManager
 
         dataBindingRecyclerViewConfig.let {
@@ -60,9 +52,18 @@ fun <ItemType, BindingType : ViewDataBinding> setupRecyclerView(recyclerView: Re
         }
 
 
-    } else {
-        recyclerView.adapter?.notifyDataSetChanged()
     }
+
+    if (oldItems !== newItems) {
+        oldItems?.let { old ->
+            old.clear()
+            newItems?.let {
+                old.addAll(newItems)
+            }
+        }
+
+    }
+    recyclerView.adapter?.notifyDataSetChanged()
 
 }
 

@@ -4,9 +4,14 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+
         <variable
             name="vm"
             type="com.lenta.bp10.features.goods_list.FilterItem" />
+
+        <variable
+            name="selectedForDelete"
+            type="Boolean" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -60,6 +65,7 @@
             android:layout_marginBottom="8dp"
             android:background="@drawable/bg_border_circle_white"
             android:ellipsize="end"
+            android:foreground="?selectableItemBackground"
             android:gravity="center"
             android:maxLines="1"
             android:text='@{vm.number + ""}'
@@ -67,6 +73,7 @@
             app:layout_constraintEnd_toStartOf="@+id/div_vert1"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
+            app:selected="@{selectedForDelete}"
             tools:text="2" />
 
         <TextView

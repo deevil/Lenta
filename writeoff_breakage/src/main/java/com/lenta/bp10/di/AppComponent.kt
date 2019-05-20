@@ -5,6 +5,7 @@ import com.lenta.bp10.activity.main.MainViewModel
 import com.lenta.bp10.features.auth.AuthViewModel
 import com.lenta.bp10.features.auxiliary_menu.AuxiliaryMenuViewModel
 import com.lenta.bp10.features.exit.ExitFromAppViewModel
+import com.lenta.bp10.features.fmp_settings.FmpSettingsViewModel
 import com.lenta.bp10.features.good_information.general.GoodInfoViewModel
 import com.lenta.bp10.features.good_information.sets.SetsViewModel
 import com.lenta.bp10.features.goods_list.GoodsListViewModel
@@ -21,6 +22,7 @@ import com.lenta.bp10.features.settings.SettingsViewModel
 import com.lenta.bp10.features.support.SupportViewModel
 import com.lenta.bp10.features.tech_login.TechLoginViewModel
 import com.lenta.bp10.features.test_environment.TestEnvirViewModel
+import com.lenta.bp10.features.write_off_details.WriteOffDetailsViewModel
 import com.lenta.shared.di.AppScope
 import com.lenta.shared.di.CoreComponent
 import com.lenta.shared.features.message.MessageViewModel
@@ -51,5 +53,7 @@ interface AppComponent {
     fun inject(it: GoodInfoViewModel)
     fun inject(it: ReportResultViewModel)
     fun inject(it: SetsViewModel)
+    fun inject(it: WriteOffDetailsViewModel)
+    fun inject(it: FmpSettingsViewModel)
 }
 
