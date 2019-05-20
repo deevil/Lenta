@@ -21,7 +21,6 @@ abstract class CoreAuxiliaryMenuFragment : CoreFragment<com.lenta.shared.databin
     override fun onToolbarButtonClick(view: View) {
         when (view.id) {
             R.id.b_topbar_1 -> vm.onClickHome()
-            R.id.b_topbar_2 -> vm.onClickExit()
         }
     }
 

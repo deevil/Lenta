@@ -147,5 +147,54 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/spinner_write_off_type" />
 
+        <TextView
+            android:id="@+id/tv_matrix"
+            android:layout_width="36sp"
+            android:layout_height="36sp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="24dp"
+            android:fontFamily="@font/tahoma_bold"
+            android:gravity="center"
+            android:textSize="18sp"
+            tools:background="@drawable/bg_white_circle"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/div_hor4"
+            app:layout_constraintVertical_bias="1.0"
+            app:matrixType="@{vm.productInfo.matrixType}"
+            tools:text="A" />
+
+        <TextView
+            android:id="@+id/tv_section"
+            android:layout_width="36sp"
+            android:layout_height="36sp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="24dp"
+            android:background="@drawable/bg_white_circle"
+            android:fontFamily="@font/tahoma_bold"
+            android:gravity="center"
+            android:text='@{"" + vm.productInfo.sectionNumber}'
+            android:textSize="16sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/tv_matrix"
+            app:layout_constraintTop_toTopOf="@+id/div_hor4"
+            app:layout_constraintVertical_bias="1.0"
+            tools:text="02" />
+
+        <ImageButton
+            android:id="@+id/b_scan"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:background="?selectableItemBackground"
+            android:onClick="@{(v) -> vm.screenNavigator.openEanInfoScreen()}"
+            android:padding="8dp"
+            android:src="@drawable/ic_scan_barcode"
+            app:layout_constraintBottom_toBottomOf="@+id/tv_matrix"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/tv_matrix" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

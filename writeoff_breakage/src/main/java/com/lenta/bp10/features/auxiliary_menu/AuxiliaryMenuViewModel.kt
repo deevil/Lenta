@@ -13,11 +13,6 @@ class AuxiliaryMenuViewModel : CoreAuxiliaryMenuViewModel(){
         screenNavigator.goBack()
     }
 
-    override fun onClickExit() {
-        //TODO реализовать вызов диалога по выходу их приложения
-        screenNavigator.openAlertScreen("onClickExit")
-    }
-
     override fun onClickSettings() {
         screenNavigator.openSettingsScreen()
     }

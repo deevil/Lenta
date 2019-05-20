@@ -13,7 +13,6 @@ abstract class CoreSettingsViewModel : CoreViewModel(){
     var isMainMenu: MutableLiveData<Boolean> = MutableLiveData(true)
 
     abstract fun onClickBack()
-    abstract fun onClickExit()
     abstract fun onClickPrinter()
     abstract fun onClickWork()
     abstract fun onClickTechLog()

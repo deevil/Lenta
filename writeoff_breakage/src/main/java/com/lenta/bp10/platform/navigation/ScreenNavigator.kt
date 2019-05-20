@@ -137,8 +137,8 @@ class ScreenNavigator(
         getFragmentStack()?.push(GoodInfoFragment.create(productInfo))
     }
 
-    override fun openSetsInfoScreen() {
-        getFragmentStack()?.push(SetsFragment())
+    override fun openSetsInfoScreen(productInfo: ProductInfo) {
+        getFragmentStack()?.push(SetsFragment.create(productInfo))
     }
 
     override fun openSupportScreen() {
@@ -216,5 +216,5 @@ interface IScreenNavigator : IGoBackNavigator {
     fun openRemoveTaskConfirmationScreen(taskDescription: String, codeConfirmation: Int)
     fun openSendingReportsScreen(writeOffReportResponse: WriteOffReportResponse)
     fun closeAllScreen()
-    fun openSetsInfoScreen()
+    fun openSetsInfoScreen(productInfo: ProductInfo)
 }
