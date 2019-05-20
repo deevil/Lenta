@@ -6,6 +6,7 @@ import javax.inject.Inject
 
 class SelectOperModeViewModel : CoreSelectOperModeViewModel(){
 
+
     @Inject
     lateinit var screenNavigator: IScreenNavigator
 
@@ -14,7 +15,6 @@ class SelectOperModeViewModel : CoreSelectOperModeViewModel(){
     }
 
     override fun onClickExit() {
-        //TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
         screenNavigator.openAlertScreen("onClickExit")
     }
 
@@ -23,11 +23,13 @@ class SelectOperModeViewModel : CoreSelectOperModeViewModel(){
     }
 
     override fun onClickWorkEnvir() {
-        //TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
         screenNavigator.openAlertScreen("onClickWorkEnvir")
     }
 
-    override fun onBackPressed() {
+    override fun onClickSettingsConnections() {
+        screenNavigator.openConnectionsSettingsScreen()
     }
+
+
 
 }

@@ -36,4 +36,5 @@
     <string name="section">Секция %s</string>
     <string name="reason_writeoff">Причина списания</string>
     <string name="write_off_details">Детали по списанию</string>
+    <string name="project">Проект</string>
 </resources>

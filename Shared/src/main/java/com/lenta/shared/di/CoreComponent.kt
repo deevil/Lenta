@@ -10,6 +10,7 @@ import com.lenta.shared.platform.battery_state.BatteryStateMonitor
 import com.lenta.shared.platform.battery_state.IBatteryStateMonitor
 import com.lenta.shared.platform.resources.IStringResourceManager
 import com.lenta.shared.platform.time.ITimeMonitor
+import com.lenta.shared.settings.IAppSettings
 import dagger.Component
 import javax.inject.Singleton
 
@@ -27,4 +28,5 @@ interface CoreComponent {
     fun getTimeMonitor(): ITimeMonitor
     fun getGson(): Gson
     fun getIStringResourceManager(): IStringResourceManager
+    fun getIAppSettings(): IAppSettings
 }

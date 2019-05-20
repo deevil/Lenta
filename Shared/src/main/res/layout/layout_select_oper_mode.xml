@@ -29,6 +29,23 @@
             tools:ignore="ContentDescription" />
 
         <Button
+            android:id="@+id/btn_connections_settings"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="16dp"
+            android:layoutDirection="rtl"
+            android:onClick="@{(view) -> vm.onClickSettingsConnections()}"
+            android:text="@string/connection_settings"
+            android:textAllCaps="false"
+            app:icon="@drawable/ic_settings_white"
+            app:iconGravity="start"
+            app:layout_constraintBottom_toTopOf="@+id/btn_test_envir"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <Button
             android:id="@+id/btn_test_envir"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -36,11 +53,11 @@
             android:layout_marginEnd="16dp"
             android:layout_marginBottom="16dp"
             android:layoutDirection="rtl"
-            android:textAllCaps="false"
-            app:iconGravity="start"
-            app:icon="@drawable/ic_settings_white"
             android:onClick="@{(view) -> vm.onClickTestEnvir()}"
             android:text="@string/test_environment"
+            android:textAllCaps="false"
+            app:icon="@drawable/ic_settings_white"
+            app:iconGravity="start"
             app:layout_constraintBottom_toTopOf="@+id/btn_work_envir"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
@@ -53,14 +70,15 @@
             android:layout_marginEnd="16dp"
             android:layout_marginBottom="16dp"
             android:layoutDirection="rtl"
-            android:textAllCaps="false"
-            app:iconGravity="start"
-            app:icon="@drawable/ic_settings_white"
             android:onClick="@{(view) -> vm.onClickWorkEnvir()}"
             android:text="@string/work_environment"
+            android:textAllCaps="false"
+            app:icon="@drawable/ic_settings_white"
+            app:iconGravity="start"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -54,4 +54,7 @@
     <string name="not_selected">Не выбрано</string>
     <string name="tk">TK</string>
     <string name="data_saving">Сохранение данных</string>
+    <string name="connection_settings">Настройки подключения</string>
+    <string name="servers_address">Адрес сервера</string>
+    <string name="environment">Среда</string>
 </resources>

@@ -7,6 +7,7 @@ import com.lenta.bp10.features.alert.AlertFragment
 import com.lenta.bp10.features.auth.AuthFragment
 import com.lenta.bp10.features.auxiliary_menu.AuxiliaryMenuFragment
 import com.lenta.bp10.features.exit.ExitWithConfirmationFragment
+import com.lenta.bp10.features.fmp_settings.FmpSettingsFragment
 import com.lenta.bp10.features.good_information.general.GoodInfoFragment
 import com.lenta.bp10.features.goods_list.GoodsListFragment
 import com.lenta.bp10.features.job_card.JobCardFragment
@@ -196,6 +197,10 @@ class ScreenNavigator(
     override fun openGoodsReasonsScreen(productInfo: ProductInfo) {
         getFragmentStack()?.push(WriteOffDetailsFragment.create(productInfo))
     }
+
+    override fun openConnectionsSettingsScreen() {
+        getFragmentStack()?.push(FmpSettingsFragment())
+    }
 }
 
 interface IScreenNavigator : IGoBackNavigator {
@@ -229,4 +234,5 @@ interface IScreenNavigator : IGoBackNavigator {
     fun openMatrixInfoScreen(matrixType: MatrixType)
     fun openSectionInfoScreen(section: Int)
     fun openGoodsReasonsScreen(productInfo: ProductInfo)
+    fun openConnectionsSettingsScreen()
 }
