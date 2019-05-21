@@ -9,6 +9,7 @@ import com.lenta.bp10.features.auxiliary_menu.AuxiliaryMenuFragment
 import com.lenta.bp10.features.exit.ExitWithConfirmationFragment
 import com.lenta.bp10.features.fmp_settings.FmpSettingsFragment
 import com.lenta.bp10.features.good_information.general.GoodInfoFragment
+import com.lenta.bp10.features.good_information.sets.SetsFragment
 import com.lenta.bp10.features.goods_list.GoodsListFragment
 import com.lenta.bp10.features.job_card.JobCardFragment
 import com.lenta.bp10.features.loading.fast.FastDataLoadingFragment
@@ -141,6 +142,10 @@ class ScreenNavigator(
         getFragmentStack()?.push(GoodInfoFragment.create(productInfo))
     }
 
+    override fun openSetsInfoScreen(productInfo: ProductInfo) {
+        getFragmentStack()?.push(SetsFragment.create(productInfo))
+    }
+
     override fun openSupportScreen() {
         getFragmentStack()?.push(SupportFragment())
     }
@@ -231,6 +236,7 @@ interface IScreenNavigator : IGoBackNavigator {
     fun openRemoveTaskConfirmationScreen(taskDescription: String, codeConfirmation: Int)
     fun openSendingReportsScreen(writeOffReportResponse: WriteOffReportResponse)
     fun closeAllScreen()
+    fun openSetsInfoScreen(productInfo: ProductInfo)
     fun openMatrixInfoScreen(matrixType: MatrixType)
     fun openSectionInfoScreen(section: Int)
     fun openGoodsReasonsScreen(productInfo: ProductInfo)

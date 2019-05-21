@@ -32,4 +32,13 @@ class MainMenuViewModel : CoreViewModel() {
         screenNavigator.openSelectionPersonnelNumberScreen()
 
     }
+
+    fun onClickExit() {
+        //TODO To change body
+        screenNavigator.openAlertScreen("onClickExit")
+    }
+
+    fun onClickAuxiliaryMenu() {
+        screenNavigator.openAuxiliaryMenuScreen()
+    }
 }

@@ -14,8 +14,8 @@ class TechLoginViewModel : CoreTechLoginViewModel() {
     }
 
     override fun onClickApp() {
-        //TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-        screenNavigator.openAlertScreen("onClickApp")
+        //TODO смены тех.пользователя
+        screenNavigator.openLoginScreen()
     }
 
     override fun onBackPressed() {

@@ -19,9 +19,12 @@
     <string name="list_of_goods">Список товаров</string>
     <string name="counted">Посчитанные</string>
     <string name="filter">Фильтр</string>
+    <string name="quantity">Количество</string>
+    <string name="components">Компоненты</string>
     <string name="plan">План</string>
     <string name="enter_item_number_or_barcode">Введите SAP-код или штрихкод</string>
     <string name="good_info">Информация о товаре</string>
+    <string name="set_info">Информация о наборе</string>
     <string name="write_off">Списание</string>
     <string name="ean_info">Доступно сканирование штрихкода EAN</string>
     <string name="exit_confirmation">Подтвердите выход из МП</string>

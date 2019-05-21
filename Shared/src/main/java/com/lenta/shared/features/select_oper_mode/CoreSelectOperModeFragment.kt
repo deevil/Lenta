@@ -17,7 +17,6 @@ abstract class CoreSelectOperModeFragment : CoreFragment<FragmentSelectOperModeB
     override fun onToolbarButtonClick(view: View) {
         when (view.id) {
             R.id.b_topbar_1 -> vm.onClickBack()
-            R.id.b_topbar_2 -> vm.onClickExit()
         }
     }
 

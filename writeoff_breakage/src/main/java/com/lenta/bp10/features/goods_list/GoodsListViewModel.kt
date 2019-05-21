@@ -166,7 +166,11 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     }
 
     private fun handleScanSuccess(productInfo: ProductInfo) {
-        Logg.d { "productInfoLiveData: $productInfo" }
+        Logg.d { "productInfoLiveData: ${productInfo.isSet}" }
+        if (productInfo.isSet){
+            screenNavigator.openSetsInfoScreen(productInfo)
+            return
+        }
         screenNavigator.openGoodInfoScreen(productInfo)
     }
 

@@ -14,16 +14,13 @@ class SelectOperModeViewModel : CoreSelectOperModeViewModel(){
         screenNavigator.goBack()
     }
 
-    override fun onClickExit() {
-        screenNavigator.openAlertScreen("onClickExit")
-    }
-
     override fun onClickTestEnvir() {
         screenNavigator.openTestEnvirScreen()
     }
 
     override fun onClickWorkEnvir() {
-        screenNavigator.openAlertScreen("onClickWorkEnvir")
+        //TODO смена среды на рабочую
+        screenNavigator.openLoginScreen()
     }
 
     override fun onClickSettingsConnections() {

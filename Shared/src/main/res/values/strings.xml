@@ -12,6 +12,7 @@
     <string name="add">Добавить</string>
     <string name="apply">Применить</string>
     <string name="enter">Войти</string>
+    <string name="go_over">Перейти</string>
     <string name="error_server">Ошибка сервера</string>
     <string name="error_network">Ошибка подключения</string>
     <string name="error_auth">Ошибка авторизации</string>
@@ -44,6 +45,7 @@
     <string name="tv_test_envir">Введите ПИН-код для перехода в тестовую среду</string>
     <string name="loading_tab_number">Загрузка данных исполнителя</string>
     <string name="delete">Удалить</string>
+    <string name="clean">Очистить</string>
     <string name="print">Печать</string>
     <string name="save">Сохранить</string>
     <string name="number">№</string>

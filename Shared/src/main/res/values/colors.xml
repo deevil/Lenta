@@ -43,4 +43,6 @@
 
     <color name="color_title">@color/color_white</color>
 
+    <color name="color_text_btn_disabled">#8299AC</color>
+
 </resources>
