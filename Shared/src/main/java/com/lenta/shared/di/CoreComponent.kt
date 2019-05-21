@@ -14,6 +14,8 @@ import com.lenta.shared.platform.navigation.ICoreNavigator
 import com.lenta.shared.platform.resources.IStringResourceManager
 import com.lenta.shared.platform.time.ITimeMonitor
 import com.lenta.shared.settings.IAppSettings
+import com.mobrun.plugin.api.HyperHive
+import com.mobrun.plugin.api.HyperHiveState
 import dagger.Component
 import javax.inject.Singleton
 
@@ -33,6 +35,8 @@ interface CoreComponent {
     fun getIStringResourceManager(): IStringResourceManager
     fun getIAppSettings(): IAppSettings
     fun getIGoBackNavigator(): ICoreNavigator
+    fun getHyperHiveState(): HyperHiveState
+    fun getHyperHive(): HyperHive
     fun inject(it: FmpSettingsViewModel)
     fun inject(it: MessageViewModel)
 }

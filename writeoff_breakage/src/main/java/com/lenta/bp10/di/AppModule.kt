@@ -36,39 +36,9 @@ import dagger.Provides
 @Module
 class AppModule {
 
-    @Provides
-    @AppScope
-    internal fun provideHyperHiveState(appContext: Context, appSettings: IAppSettings): HyperHiveState {
-        return HyperHiveState(appContext)
-                .setHostWithSchema(appSettings.serverAddress)
-                .setApiVersion(VersionAPI.V_1)
-                .setEnvironmentSlug(appSettings.environment)
-                .setProjectSlug(appSettings.project)
-                .setVersionProject("app")
-                .setHandler(Handler())
-                .setDefaultRetryCount(6)
-                .setDefaultRetryIntervalSec(10)
-                .setGsonForParcelPacker(GsonBuilder().excludeFieldsWithoutExposeAnnotation().create())
-    }
 
 
-    @Provides
-    @AppScope
-    internal fun provideHyperHive(hyperHiveState: HyperHiveState): HyperHive {
-        val hyperHive = hyperHiveState
-                .buildHyperHive()
 
-        if (BuildConfig.DEBUG) {
-            Logg.d { "hhive plugin version: ${hyperHive.stateAPI.versionPlugin}" }
-            Logg.d { "hhive core version: ${hyperHive.stateAPI.getVersionCoreAPI(0)}" }
-            hyperHive.loggingAPI.setLogLevel(3)
-        } else {
-            hyperHive.loggingAPI.setLogLevel(10)
-        }
-
-        return hyperHive
-
-    }
 
     @Provides
     @AppScope

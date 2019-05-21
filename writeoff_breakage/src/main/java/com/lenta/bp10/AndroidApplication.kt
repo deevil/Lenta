@@ -1,22 +1,14 @@
 package com.lenta.bp10
 
-import android.app.Application
-import com.lenta.shared.di.CoreComponent
-import com.lenta.shared.di.CoreComponentProvider
-import com.lenta.shared.di.CoreModule
-import com.lenta.shared.di.DaggerCoreComponent
+import com.lenta.shared.CoreApplication
+import com.lenta.shared.settings.DefaultConnectionSettings
 
-class AndroidApplication : Application(), CoreComponentProvider {
-
-    private lateinit var coreComponent: CoreComponent
-
-
-    override fun provideCoreComponent(): CoreComponent {
-        if (!this::coreComponent.isInitialized) {
-            coreComponent = DaggerCoreComponent.builder()
-                    .coreModule(CoreModule(this))
-                    .build()
-        }
-        return coreComponent
+class AndroidApplication : CoreApplication() {
+    override fun getDefaultConnectionSettings(): DefaultConnectionSettings {
+        return DefaultConnectionSettings(
+                serverAddress = "http://9.6.24.110",
+                environment = "Lenta_LRQ",
+                project = "PR_WOB"
+        )
     }
 }
