@@ -1,5 +1,6 @@
 package com.lenta.bp10.features.printer_change
 
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp10.account.SessionInfo
 import com.lenta.bp10.fmp.resources.fast.ZmpUtz26V001
@@ -22,6 +23,12 @@ class PrinterChangeViewModel : CorePrinterChangeViewModel() {
     @Inject
     lateinit var sessionInfo: SessionInfo
 
+    private val txtNotFoundPrinter: MutableLiveData<String> = MutableLiveData()
+
+    fun setTxtNotFoundPrinter(string: String) {
+        this.txtNotFoundPrinter.value = string
+    }
+
     init {
         viewModelScope.launch {
             printerChangeDBRequest(sessionInfo.market!!).either(::handleFailure, ::handlePermissions)
@@ -29,12 +36,12 @@ class PrinterChangeViewModel : CorePrinterChangeViewModel() {
     }
 
     private fun handlePermissions(list: List<ZmpUtz26V001.ItemLocal_ET_PRINTERS>) {
-        printers.value = list.map { PrinterUi(number = it.werks, printername = it.printername, printerinfo = it.printerinfo) }
+        printers.value = list.map { PrinterUi(number = it.werks, printerName = it.printername, printerInfo = it.printerinfo) }
         if (list.isNotEmpty() && selectedPosition.value == null) {
             onClickPosition(0)
         }
         else {
-            screenNavigator.openAlertScreen("Принтеров для данного ТК не найдено")
+            screenNavigator.openAlertScreen(txtNotFoundPrinter.value!!)
         }
     }
 
@@ -48,7 +55,7 @@ class PrinterChangeViewModel : CorePrinterChangeViewModel() {
     }
 
     override fun onClickApp() {
-        sessionInfo.printer = printers.value?.getOrNull(selectedPosition.value!!)?.printername
+        sessionInfo.printer = printers.value?.getOrNull(selectedPosition.value!!)?.printerName
         screenNavigator.openMainMenuScreen()
     }
 

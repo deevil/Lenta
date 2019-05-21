@@ -12,12 +12,12 @@ abstract class CorePrinterChangeViewModel : CoreViewModel(), OnPositionClickList
 
     val printers: MutableLiveData<List<PrinterUi>> = MutableLiveData()
     val printersNames: MutableLiveData<List<String>> = printers.map { printers ->
-        printers?.map { it.printername }
+        printers?.map { it.printerName }
     }
     val selectedPosition: MutableLiveData<Int> = MutableLiveData()
     val selectedDescription: MutableLiveData<String> = selectedPosition.map {
         it?.let { position ->
-            printers.value?.getOrNull(position)?.printerinfo
+            printers.value?.getOrNull(position)?.printerInfo
         }
     }
 
@@ -28,7 +28,7 @@ abstract class CorePrinterChangeViewModel : CoreViewModel(), OnPositionClickList
 
 data class PrinterUi(
         val number: String,
-        val printername: String,
-        val printerinfo: String
+        val printerName: String,
+        val printerInfo: String
 
 )

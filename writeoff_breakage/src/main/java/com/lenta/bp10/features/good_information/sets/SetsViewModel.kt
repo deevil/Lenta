@@ -130,6 +130,11 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
         }
     }
 
+    private fun getReason(): WriteOffReason {
+        return processNonExciseAlcoProductService.taskDescription.moveTypes
+                .getOrElse(selectedPosition.value ?: -1) { WriteOffReason.empty }
+    }
+
     override fun onClickPosition(position: Int) {
         selectedPosition.value = position
     }
@@ -164,11 +169,6 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
 
     override fun handleFailure(failure: Failure) {
         screenNavigator.openAlertScreen(failure)
-    }
-
-    private fun getReason(): WriteOffReason {
-        return processNonExciseAlcoProductService.taskDescription.moveTypes
-                .getOrElse(selectedPosition.value ?: -1) { WriteOffReason.empty }
     }
 
     fun onBackPressed() {
