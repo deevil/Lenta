@@ -57,4 +57,5 @@
     <string name="connection_settings">Настройки подключения</string>
     <string name="servers_address">Адрес сервера</string>
     <string name="environment">Среда</string>
+    <string name="project">Проект</string>
 </resources>

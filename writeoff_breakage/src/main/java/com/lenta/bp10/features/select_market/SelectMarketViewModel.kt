@@ -44,6 +44,9 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
         if (list.isNotEmpty() && selectedPosition.value == null) {
             onClickPosition(0)
         }
+        if (list.size == 1) {
+            onClickNext()
+        }
     }
 
     fun onClickNext() {
