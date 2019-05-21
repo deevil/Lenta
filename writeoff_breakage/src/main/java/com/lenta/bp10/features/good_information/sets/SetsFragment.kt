@@ -13,6 +13,7 @@ import com.lenta.bp10.databinding.LayoutSetsComponentsBinding
 import com.lenta.bp10.databinding.LayoutSetsQuantityBinding
 import com.lenta.bp10.platform.extentions.getAppComponent
 import com.lenta.shared.models.core.ProductInfo
+import com.lenta.shared.platform.activity.OnBackPresserListener
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
@@ -22,13 +23,15 @@ import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig
 import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.databinding.ViewPagerSettings
+import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.provideViewModel
 
 class SetsFragment :
         CoreFragment<FragmentSetsBinding, SetsViewModel>(),
         ViewPagerSettings,
         PageSelectionListener,
-        ToolbarButtonsClickListener {
+        ToolbarButtonsClickListener,
+        OnBackPresserListener {
 
     private lateinit var productInfo: ProductInfo
 
@@ -48,22 +51,24 @@ class SetsFragment :
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
         topToolbarUiModel.description.value = getString(R.string.set_info)
-        /**topToolbarUiModel.title.value = productInfo.description*/
+        topToolbarUiModel.title.value = "${productInfo.getMaterialLastSix()} ${productInfo.description}"
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
-            bottomToolbarUiModel.cleanAll()
-            if (vpTabPosition == 0) {
-                bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
-                bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.details)
-                bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.add, enabled = false)
-                bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.apply, enabled = false)
-            } else {
-                bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
-                bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.clean, enabled = false)
-                bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.add, enabled = false)
-                bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.apply, enabled = false)
-            }
+        bottomToolbarUiModel.cleanAll()
+
+        if (vpTabPosition == 0) bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.details, enabled = false)
+        else bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.clean, enabled = false)
+
+        bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
+        bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.add, enabled = false)
+        bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.apply, enabled = false)
+
+        viewLifecycleOwner.let {
+            connectLiveData(vm.enabledApplyButton, bottomToolbarUiModel.uiModelButton4.enabled)
+            connectLiveData(vm.enabledApplyButton, bottomToolbarUiModel.uiModelButton5.enabled)
+            connectLiveData(vm.enabledDetailsButton, bottomToolbarUiModel.uiModelButton3.enabled)
+        }
     }
 
     override fun onToolbarButtonClick(view: View) {
@@ -129,10 +134,15 @@ class SetsFragment :
 
     }
 
-    /**override fun onResume() {
+    override fun onResume() {
     super.onResume()
     vm.onResume()
-    }*/
+    }
+
+    override fun onBackPressed(): Boolean {
+        vm.onBackPressed()
+        return true
+    }
 
     /**override fun onDestroyView() {
         super.onDestroyView()
