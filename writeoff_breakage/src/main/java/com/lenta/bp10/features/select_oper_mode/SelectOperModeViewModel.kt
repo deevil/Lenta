@@ -6,16 +6,12 @@ import javax.inject.Inject
 
 class SelectOperModeViewModel : CoreSelectOperModeViewModel(){
 
+
     @Inject
     lateinit var screenNavigator: IScreenNavigator
 
     override fun onClickBack() {
         screenNavigator.goBack()
-    }
-
-    override fun onClickExit() {
-        //TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-        screenNavigator.openAlertScreen("onClickExit")
     }
 
     override fun onClickTestEnvir() {
@@ -27,7 +23,10 @@ class SelectOperModeViewModel : CoreSelectOperModeViewModel(){
         screenNavigator.openLoginScreen()
     }
 
-    override fun onBackPressed() {
+    override fun onClickSettingsConnections() {
+        screenNavigator.openConnectionsSettingsScreen()
     }
+
+
 
 }

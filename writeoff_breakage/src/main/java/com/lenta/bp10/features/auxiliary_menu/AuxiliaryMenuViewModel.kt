@@ -13,11 +13,6 @@ class AuxiliaryMenuViewModel : CoreAuxiliaryMenuViewModel(){
         screenNavigator.goBack()
     }
 
-    override fun onClickExit() {
-        //TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-        screenNavigator.openAlertScreen("onClickExit")
-    }
-
     override fun onClickSettings() {
         screenNavigator.openSettingsScreen()
     }

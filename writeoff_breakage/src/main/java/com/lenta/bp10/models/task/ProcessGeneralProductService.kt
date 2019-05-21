@@ -32,12 +32,13 @@ class ProcessGeneralProductService(val taskDescription: TaskDescription,
             val arrTaskWriteOffReason = taskRepository.getWriteOffReasons().findWriteOffReasonsOfProduct(productInfo)
             var index = -1
             for (i in arrTaskWriteOffReason.indices) {
-                if (reason === arrTaskWriteOffReason[i].writeOffReason) {
+                if (reason == arrTaskWriteOffReason[i].writeOffReason) {
                     taskRepository.getWriteOffReasons().deleteWriteOffReason(taskWriteOfReason)
-                    val newCount: Double
-                    newCount = arrTaskWriteOffReason[i].count + count
-                    taskWriteOfReason = TaskWriteOffReason(reason, productInfo.materialNumber, newCount)
-                    taskRepository.getWriteOffReasons().addWriteOffReason(taskWriteOfReason)
+                    val newCount = arrTaskWriteOffReason[i].count + count
+                    if (newCount > 0.0) {
+                        taskWriteOfReason = TaskWriteOffReason(reason, productInfo.materialNumber, newCount)
+                        taskRepository.getWriteOffReasons().addWriteOffReason(taskWriteOfReason)
+                    }
                     index = i
                 }
             }
@@ -47,6 +48,11 @@ class ProcessGeneralProductService(val taskDescription: TaskDescription,
             }
 
         }
+
+        if (getTotalCount() <= 0.0) {
+            taskRepository.getProducts().deleteProduct(productInfo)
+        }
+
         return ProcessGeneralProductService(taskDescription, taskRepository, productInfo)
     }
 }

@@ -10,18 +10,13 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListe
 import com.lenta.shared.platform.toolbar.top_toolbar.ImageButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 
-abstract class CoreSelectOperModeFragment : CoreFragment<FragmentSelectOperModeBinding, CoreSelectOperModeViewModel>(), OnBackPresserListener, ToolbarButtonsClickListener {
+abstract class CoreSelectOperModeFragment : CoreFragment<FragmentSelectOperModeBinding, CoreSelectOperModeViewModel>(), ToolbarButtonsClickListener {
     override fun getLayoutId(): Int = R.layout.fragment_select_oper_mode
 
-    override fun onBackPressed(): Boolean {
-        vm.onBackPressed()
-        return true
-    }
 
     override fun onToolbarButtonClick(view: View) {
         when (view.id) {
             R.id.b_topbar_1 -> vm.onClickBack()
-            R.id.b_topbar_2 -> vm.onClickExit()
         }
     }
 

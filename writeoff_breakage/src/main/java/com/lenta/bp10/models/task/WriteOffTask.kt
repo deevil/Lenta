@@ -1,5 +1,7 @@
 package com.lenta.bp10.models.task
 
+import com.lenta.bp10.fmp.resources.send_report.MaterialNumber
+import com.lenta.bp10.fmp.resources.send_report.WriteOffReport
 import com.lenta.bp10.models.repositories.ITaskRepository
 import com.lenta.shared.models.core.ProductInfo
 import com.lenta.shared.models.core.ProductType
@@ -8,12 +10,16 @@ class WriteOffTask(val taskDescription: TaskDescription, val taskRepository: ITa
 
     fun deleteProducts(products: List<ProductInfo>): WriteOffTask {
         // (Артем И., 09.04.2019) удалить перечень продуктов (products), причины списания и марки
-        for (i in products.indices) {
-            taskRepository.getExciseStamps().deleteExciseStampsForProduct(products[i])
-            taskRepository.getWriteOffReasons().deleteWriteOffReasonsForProduct(products[i])
-            taskRepository.getProducts().deleteProduct(products[i])
+        products.forEach {
+            deleteProduct(it)
         }
         return this
+    }
+
+    private fun deleteProduct(productInfo: ProductInfo) {
+        taskRepository.getExciseStamps().deleteExciseStampsForProduct(productInfo)
+        taskRepository.getWriteOffReasons().deleteWriteOffReasonsForProduct(productInfo)
+        taskRepository.getProducts().deleteProduct(productInfo)
     }
 
     fun processGeneralProduct(product: ProductInfo): ProcessGeneralProductService? {
@@ -71,4 +77,44 @@ class WriteOffTask(val taskDescription: TaskDescription, val taskRepository: ITa
         taskRepository.getExciseStamps().clear()
     }
 
+    fun deleteTaskWriteOffReason(taskWriteOffReason: TaskWriteOffReason) {
+        taskRepository.getWriteOffReasons().deleteWriteOffReason(taskWriteOffReason)
+        taskRepository.getProducts().findProduct(taskWriteOffReason.materialNumber)?.let {
+            if (getTotalCountOfProduct(it) <= 0) {
+                deleteProduct(it)
+            }
+        }
+
+
+    }
+
+}
+
+fun WriteOffTask.getReport(): WriteOffReport {
+    with(taskDescription) {
+        return WriteOffReport(
+                perNo = perNo,
+                printer = printer,
+                taskName = taskName,
+                taskType = taskType.code,
+                tkNumber = tkNumber,
+                storloc = stock,
+                ipAdress = ipAddress,
+                materials = getMaterials(),
+                exciseStamps = emptyList()
+        )
+    }
+}
+
+fun WriteOffTask.getMaterials(): List<MaterialNumber> {
+
+    return taskRepository.getWriteOffReasons()
+            .getWriteOffReasons().map {
+                MaterialNumber(
+                        matnr = it.materialNumber,
+                        writeOffCause = it.writeOffReason.code,
+                        kostl = "",
+                        amount = it.count.toString()
+                )
+            }
 }

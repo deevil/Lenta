@@ -65,6 +65,7 @@
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
+            android:digits="0123456789-."
             android:ellipsize="end"
             android:inputType="numberDecimal"
             android:maxLines="1"
@@ -109,7 +110,7 @@
             android:layout_marginEnd="8dp"
             android:ellipsize="end"
             android:maxLines="1"
-            android:text="@{vm.totalCount}"
+            android:text="@{vm.totalCountWithUom}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@+id/guideline"
             app:layout_constraintTop_toBottomOf="@+id/div_hor2"
@@ -148,6 +149,64 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/spinner_write_off_type" />
+
+
+        <TextView
+            android:id="@+id/tv_matrix"
+            android:layout_width="36sp"
+            android:layout_height="36sp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="24dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:fontFamily="@font/tahoma_bold"
+            android:foreground="?selectableItemBackground"
+            android:gravity="center"
+            android:onClick="@{(v) -> vm.screenNavigator.openMatrixInfoScreen(vm.productInfo.matrixType)}"
+            android:textSize="18sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/div_hor4"
+            app:layout_constraintVertical_bias="1.0"
+            app:matrixType="@{vm.productInfo.matrixType}"
+            tools:background="@drawable/bg_white_circle"
+            tools:text="A" />
+
+        <TextView
+            android:id="@+id/tv_section"
+            android:layout_width="36sp"
+            android:layout_height="36sp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="24dp"
+            android:background="@drawable/bg_white_circle"
+            android:clickable="true"
+            android:focusable="true"
+            android:fontFamily="@font/tahoma_bold"
+            android:foreground="?selectableItemBackground"
+            android:gravity="center"
+            android:onClick="@{(v) -> vm.screenNavigator.openSectionInfoScreen(vm.productInfo.sectionNumber)}"
+            android:text='@{"" + vm.productInfo.sectionNumber}'
+            android:textSize="16sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/tv_matrix"
+            app:layout_constraintTop_toTopOf="@+id/div_hor4"
+            app:layout_constraintVertical_bias="1.0"
+            tools:text="02" />
+
+        <ImageButton
+            android:id="@+id/b_scan"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:background="?selectableItemBackground"
+            android:onClick="@{(v) -> vm.screenNavigator.openEanInfoScreen()}"
+            android:padding="8dp"
+            android:src="@drawable/ic_scan_barcode"
+            app:layout_constraintBottom_toBottomOf="@+id/tv_matrix"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/tv_matrix" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
+import androidx.lifecycle.Observer
 import com.lenta.shared.R
 import com.lenta.shared.databinding.ActivityMainBinding
 import com.lenta.shared.platform.network_state.NetworkStateMonitor
@@ -16,7 +17,10 @@ import com.lenta.shared.platform.navigation.FragmentStack
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
+import com.lenta.shared.platform.toolbar.top_toolbar.ImageButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
+import com.lenta.shared.scan.IScanHelper
+import com.lenta.shared.scan.OnScanResultListener
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.hideKeyboard
 import com.lenta.shared.utilities.extentions.implementationOf
@@ -32,6 +36,9 @@ abstract class CoreMainActivity : CoreActivity<ActivityMainBinding>(), ToolbarBu
 
     @Inject
     lateinit var foregroundActivityProvider: ForegroundActivityProvider
+
+    @Inject
+    lateinit var scanHelper: IScanHelper
 
     private val vm: CoreMainViewModel by lazy {
         getViewModel()
@@ -55,6 +62,14 @@ abstract class CoreMainActivity : CoreActivity<ActivityMainBinding>(), ToolbarBu
         binding?.vm = vm
         vm.statusBarUiModel.printerTasksCount.value = -1
 
+        scanHelper.scanResult.observe(this, Observer<String> {
+            Logg.d { "scan result: $it" }
+            it?.let { code ->
+                getCurrentFragment()?.implementationOf(OnScanResultListener::class.java)?.onScanResult(code)
+            }
+
+        })
+
     }
 
     override fun onResume() {
@@ -62,6 +77,7 @@ abstract class CoreMainActivity : CoreActivity<ActivityMainBinding>(), ToolbarBu
         networkStateMonitor.start(this)
         batteryStateMonitor.start(this)
         foregroundActivityProvider.setActivity(this)
+        scanHelper.startListen(this)
     }
 
     override fun onPause() {
@@ -69,6 +85,7 @@ abstract class CoreMainActivity : CoreActivity<ActivityMainBinding>(), ToolbarBu
         networkStateMonitor.stop(this)
         batteryStateMonitor.stop(this)
         foregroundActivityProvider.clear()
+        scanHelper.stopListen(this)
     }
 
     override fun onBackPressed() {
@@ -78,7 +95,9 @@ abstract class CoreMainActivity : CoreActivity<ActivityMainBinding>(), ToolbarBu
             }
             return
         }
-        super.onBackPressed()
+        if (isHaveBackButton()) {
+            super.onBackPressed()
+        }
     }
 
     private fun getCurrentFragment(): Fragment? = fragmentStack.peek()
@@ -98,11 +117,28 @@ abstract class CoreMainActivity : CoreActivity<ActivityMainBinding>(), ToolbarBu
     override fun onToolbarButtonClick(view: View) {
         this.hideKeyboard()
         Logg.d { "onToolbarButtonClick ${view.id}" }
-        if(view.id == R.id.b_1 && getBottomToolBarUIModel().uiModelButton1.buttonDecorationInfo.value == ButtonDecorationInfo.back) {
+
+        if (view.id == R.id.b_1 && isHaveBackButton()) {
             onBackPressed()
             return
         }
+
+        if (view.id == R.id.b_topbar_2 && isHaveExitButton()) {
+            onClickExit()
+            return
+        }
+
         getCurrentFragment()?.implementationOf(ToolbarButtonsClickListener::class.java)?.onToolbarButtonClick(view)
+    }
+
+    private fun isHaveBackButton(): Boolean {
+        getBottomToolBarUIModel().uiModelButton1.let {
+            return it.buttonDecorationInfo.value == ButtonDecorationInfo.back && it.enabled.value == true && it.visibility.value == true
+        }
+    }
+
+    private fun isHaveExitButton(): Boolean {
+        return getTopToolbarUIModel().uiModelButton2.buttonDecorationInfo.value == ImageButtonDecorationInfo.exitFromApp
     }
 
     fun getBottomToolBarUIModel(): BottomToolbarUiModel {
@@ -120,6 +156,8 @@ abstract class CoreMainActivity : CoreActivity<ActivityMainBinding>(), ToolbarBu
 
 
     abstract fun getViewModel(): CoreMainViewModel
+
+    abstract fun onClickExit()
 
 
 }

@@ -1,9 +1,11 @@
 package com.lenta.bp10.features.job_card
 
+import android.os.Bundle
 import android.view.View
 import com.lenta.bp10.R
 import com.lenta.bp10.databinding.FragmentJobCardBinding
 import com.lenta.bp10.platform.extentions.getAppComponent
+import com.lenta.shared.platform.activity.OnBackPresserListener
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
@@ -11,7 +13,7 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListe
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.utilities.extentions.provideViewModel
 
-class JobCardFragment : CoreFragment<FragmentJobCardBinding, JobCardViewModel>(), ToolbarButtonsClickListener {
+class JobCardFragment : CoreFragment<FragmentJobCardBinding, JobCardViewModel>(), ToolbarButtonsClickListener, OnBackPresserListener {
     override fun getLayoutId() = R.layout.fragment_job_card
 
     override fun getPageNumber() = "10/05"
@@ -24,6 +26,7 @@ class JobCardFragment : CoreFragment<FragmentJobCardBinding, JobCardViewModel>()
     }
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
+        topToolbarUiModel.title.value = "${getString(R.string.tk)} - ${vm.getMarket()}"
         topToolbarUiModel.description.value = getString(R.string.job_card)
     }
 
@@ -35,7 +38,18 @@ class JobCardFragment : CoreFragment<FragmentJobCardBinding, JobCardViewModel>()
     override fun onToolbarButtonClick(view: View) {
         when (view.id) {
             R.id.b_5 -> vm.onClickNext()
-            R.id.b_1 -> vm.onClickBack()
         }
     }
+
+    override fun onBackPressed(): Boolean {
+        vm.onClickBack()
+        return false
+    }
+
+    override fun onFragmentResult(arguments: Bundle) {
+        super.onFragmentResult(arguments)
+        vm.onConfirmRemoving()
+    }
+
+
 }

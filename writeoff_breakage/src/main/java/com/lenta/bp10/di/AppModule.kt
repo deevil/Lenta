@@ -23,6 +23,9 @@ import com.lenta.shared.exception.IFailureInterpreter
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
 import com.lenta.shared.platform.navigation.IGoBackNavigator
 import com.lenta.shared.progress.IProgressUseCaseInformator
+import com.lenta.shared.scan.IScanHelper
+import com.lenta.shared.scan.mobilbase.MobilBaseScanHelper
+import com.lenta.shared.settings.IAppSettings
 import com.lenta.shared.utilities.Logg
 import com.mobrun.plugin.api.HyperHive
 import com.mobrun.plugin.api.HyperHiveState
@@ -35,12 +38,12 @@ class AppModule {
 
     @Provides
     @AppScope
-    internal fun provideHyperHiveState(appContext: Context): HyperHiveState {
+    internal fun provideHyperHiveState(appContext: Context, appSettings: IAppSettings): HyperHiveState {
         return HyperHiveState(appContext)
-                .setHostWithSchema("http://9.6.24.110")
+                .setHostWithSchema(appSettings.serverAddress)
                 .setApiVersion(VersionAPI.V_1)
-                .setEnvironmentSlug("Lenta_LRQ")
-                .setProjectSlug("PR_WOB")
+                .setEnvironmentSlug(appSettings.environment)
+                .setProjectSlug(appSettings.project)
                 .setVersionProject("app")
                 .setHandler(Handler())
                 .setDefaultRetryCount(6)
@@ -130,6 +133,12 @@ class AppModule {
     @AppScope
     internal fun provideProcessProductServiceManager(): IWriteOffTaskManager {
         return WriteOffTaskManager()
+    }
+
+    @Provides
+    @AppScope
+    internal fun provideScanHelper(): IScanHelper {
+        return MobilBaseScanHelper()
     }
 
 

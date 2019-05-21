@@ -50,7 +50,6 @@ data class ButtonDecorationInfo(
         val goOver: ButtonDecorationInfo by lazy {
             ButtonDecorationInfo(R.drawable.ic_send_white_24dp, R.string.go_over)
         }
-
         val apply: ButtonDecorationInfo by lazy {
             ButtonDecorationInfo(R.drawable.ic_done_white_24dp, R.string.apply)
         }
@@ -69,6 +68,9 @@ data class ButtonDecorationInfo(
         }
         val delete: ButtonDecorationInfo by lazy {
             ButtonDecorationInfo(R.drawable.ic_delete_white_24dp, R.string.delete)
+        }
+        val clean: ButtonDecorationInfo by lazy {
+            ButtonDecorationInfo(R.drawable.ic_delete_white_24dp, R.string.clean)
         }
         val next: ButtonDecorationInfo by lazy {
             ButtonDecorationInfo(R.drawable.ic_arrow_forward_white_24dp, R.string.to_next)
