@@ -34,7 +34,7 @@ class GoodInfoViewModel : CoreViewModel(), OnPositionClickListener {
 
     val count: MutableLiveData<String> = MutableLiveData("")
 
-    val countValue: MutableLiveData<Double> = count.map { it?.toDoubleOrNull() }
+    val countValue: MutableLiveData<Double> = count.map { it?.toDoubleOrNull()?: 0.0 }
 
     val suffix: MutableLiveData<String> = MutableLiveData()
 
