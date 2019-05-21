@@ -4,7 +4,7 @@ import android.os.Bundle
 import androidx.annotation.DrawableRes
 import androidx.lifecycle.viewModelScope
 import com.lenta.shared.features.message.usecase.DelayGoBack
-import com.lenta.shared.platform.navigation.IGoBackNavigator
+import com.lenta.shared.platform.navigation.ICoreNavigator
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -16,7 +16,7 @@ open class MessageViewModel : CoreViewModel() {
     lateinit var goBackWithDelay: DelayGoBack
 
     @Inject
-    lateinit var goBackNavigator: IGoBackNavigator
+    lateinit var coreNavigator: ICoreNavigator
 
     lateinit var message: String
 
@@ -36,7 +36,7 @@ open class MessageViewModel : CoreViewModel() {
         codeConfirm?.let {
             val args = Bundle()
             args.putInt(KEY_ARGS_ID_CODE_CONFIRM, it)
-            goBackNavigator.goBackWithArgs(args = args)
+            coreNavigator.goBackWithArgs(args = args)
         }
 
 

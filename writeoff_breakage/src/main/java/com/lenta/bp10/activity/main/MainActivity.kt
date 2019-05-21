@@ -10,7 +10,7 @@ class MainActivity : CoreMainActivity() {
     var mainViewModel: MainViewModel? = null
 
     val appComponent: AppComponent by lazy {
-        getAppComponent()
+        getAppComponent(coreComponent)
     }
 
     override fun getViewModel(): MainViewModel {

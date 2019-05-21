@@ -1,13 +1,12 @@
 package com.lenta.bp10.platform.navigation
 
 import android.content.Context
-import android.os.Bundle
 import com.lenta.bp10.R
 import com.lenta.bp10.features.alert.AlertFragment
 import com.lenta.bp10.features.auth.AuthFragment
 import com.lenta.bp10.features.auxiliary_menu.AuxiliaryMenuFragment
 import com.lenta.bp10.features.exit.ExitWithConfirmationFragment
-import com.lenta.bp10.features.fmp_settings.FmpSettingsFragment
+import com.lenta.shared.features.fmp_settings.FmpSettingsFragment
 import com.lenta.bp10.features.good_information.general.GoodInfoFragment
 import com.lenta.bp10.features.good_information.sets.SetsFragment
 import com.lenta.bp10.features.goods_list.GoodsListFragment
@@ -36,17 +35,18 @@ import com.lenta.shared.models.core.MatrixType
 import com.lenta.shared.models.core.ProductInfo
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
 import com.lenta.shared.platform.navigation.CustomAnimation
-import com.lenta.shared.platform.navigation.IGoBackNavigator
+import com.lenta.shared.platform.navigation.ICoreNavigator
 import com.lenta.shared.progress.IProgressUseCaseInformator
 import com.lenta.shared.utilities.Logg
 
 class ScreenNavigator(
         private val context: Context,
+        private val coreNavigator: ICoreNavigator,
         private val foregroundActivityProvider: ForegroundActivityProvider,
         private val authenticator: IAuthenticator,
         private val failureInterpreter: IFailureInterpreter,
         private val progressUseCaseInformator: IProgressUseCaseInformator
-) : IScreenNavigator {
+) : IScreenNavigator, ICoreNavigator by coreNavigator {
 
     override fun openAlertScreen(message: String) {
         getFragmentStack()?.let {
@@ -60,13 +60,6 @@ class ScreenNavigator(
         openAlertScreen(failureInterpreter.getFailureDescription(failure))
     }
 
-    override fun goBackWithArgs(args: Bundle) {
-        getFragmentStack()?.popReturnArgs(args = args)
-    }
-
-    override fun goBack() {
-        getFragmentStack()?.pop()
-    }
 
     override fun openSelectMarketScreen() {
         getFragmentStack()?.replace(SelectMarketFragment())
@@ -169,11 +162,6 @@ class ScreenNavigator(
                 iconRes = R.drawable.ic_scan_barcode))
     }
 
-    override fun finishApp() {
-        foregroundActivityProvider.getActivity()?.finish()
-        System.exit(0)
-    }
-
     override fun openExitConfirmationScreen() {
         getFragmentStack()?.push(ExitWithConfirmationFragment())
     }
@@ -208,7 +196,7 @@ class ScreenNavigator(
     }
 }
 
-interface IScreenNavigator : IGoBackNavigator {
+interface IScreenNavigator : ICoreNavigator {
     fun openFirstScreen()
     fun openLoginScreen()
     fun openSelectMarketScreen()
@@ -232,7 +220,6 @@ interface IScreenNavigator : IGoBackNavigator {
     fun openGoodInfoScreen(productInfo: ProductInfo)
     fun openEanInfoScreen()
     fun openExitConfirmationScreen()
-    fun finishApp()
     fun openRemoveTaskConfirmationScreen(taskDescription: String, codeConfirmation: Int)
     fun openSendingReportsScreen(writeOffReportResponse: WriteOffReportResponse)
     fun closeAllScreen()

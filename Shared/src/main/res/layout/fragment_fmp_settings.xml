@@ -8,7 +8,7 @@
 
         <variable
             name="vm"
-            type="com.lenta.bp10.features.fmp_settings.FmpSettingsViewModel" />
+            type="com.lenta.shared.features.fmp_settings.FmpSettingsViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

@@ -21,7 +21,7 @@ import com.lenta.shared.di.AppScope
 import com.lenta.shared.exception.FailureInterpreter
 import com.lenta.shared.exception.IFailureInterpreter
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
-import com.lenta.shared.platform.navigation.IGoBackNavigator
+import com.lenta.shared.platform.navigation.ICoreNavigator
 import com.lenta.shared.progress.IProgressUseCaseInformator
 import com.lenta.shared.scan.IScanHelper
 import com.lenta.shared.scan.mobilbase.MobilBaseScanHelper
@@ -80,19 +80,15 @@ class AppModule {
     @AppScope
     internal fun provideScreenNavigator(
             context: Context,
+            iCoreNavigator: ICoreNavigator,
             foregroundActivityProvider: ForegroundActivityProvider,
             authenticator: IAuthenticator,
             faultInterpreter: IFailureInterpreter,
             progressUseCaseInformator: IProgressUseCaseInformator
     ): IScreenNavigator {
-        return ScreenNavigator(context, foregroundActivityProvider, authenticator, faultInterpreter, progressUseCaseInformator)
+        return ScreenNavigator(context, iCoreNavigator, foregroundActivityProvider, authenticator, faultInterpreter, progressUseCaseInformator)
     }
 
-    @Provides
-    @AppScope
-    internal fun provideGoBackNavigator(screenNavigator: IScreenNavigator): IGoBackNavigator {
-        return screenNavigator
-    }
 
     @Provides
     @AppScope
