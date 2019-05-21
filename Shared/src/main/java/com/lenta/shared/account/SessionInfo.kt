@@ -1,6 +1,5 @@
-package com.lenta.bp10.account
+package com.lenta.shared.account
 
-import com.lenta.shared.account.ISessionInfo
 
 data class SessionInfo(
         override var userName: String? = null,
@@ -9,3 +8,11 @@ data class SessionInfo(
         override var printer: String? = null,
         override var market: String? = null
 ) : ISessionInfo
+
+interface ISessionInfo {
+    var userName: String?
+    var personnelNumber: String?
+    var personnelFullName: String?
+    var printer: String?
+    var market: String?
+}

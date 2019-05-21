@@ -3,8 +3,11 @@ package com.lenta.shared.di
 import android.content.Context
 import android.content.SharedPreferences
 import com.google.gson.Gson
+import com.lenta.shared.account.ISessionInfo
+import com.lenta.shared.exception.IFailureInterpreter
 import com.lenta.shared.features.fmp_settings.FmpSettingsViewModel
 import com.lenta.shared.features.message.MessageViewModel
+import com.lenta.shared.features.printer_change.PrinterChangeViewModel
 import com.lenta.shared.platform.network_state.INetworkStateMonitor
 import com.lenta.shared.platform.network_state.NetworkStateMonitor
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
@@ -37,6 +40,11 @@ interface CoreComponent {
     fun getIGoBackNavigator(): ICoreNavigator
     fun getHyperHiveState(): HyperHiveState
     fun getHyperHive(): HyperHive
+    fun getIFailureInterpreter(): IFailureInterpreter
+    fun getISessionInfo(): ISessionInfo
+
+
     fun inject(it: FmpSettingsViewModel)
     fun inject(it: MessageViewModel)
+    fun inject(it: PrinterChangeViewModel)
 }

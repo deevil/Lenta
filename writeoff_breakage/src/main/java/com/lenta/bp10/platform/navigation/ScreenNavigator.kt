@@ -2,6 +2,7 @@ package com.lenta.bp10.platform.navigation
 
 import android.content.Context
 import com.lenta.bp10.R
+import com.lenta.bp10.exception.IWriteOffFailureInterpretator
 import com.lenta.shared.features.alert.AlertFragment
 import com.lenta.bp10.features.auth.AuthFragment
 import com.lenta.bp10.features.auxiliary_menu.AuxiliaryMenuFragment
@@ -15,7 +16,7 @@ import com.lenta.bp10.features.loading.fast.FastDataLoadingFragment
 import com.lenta.bp10.features.loading.tasks_settings.LoadingTaskSettingsFragment
 import com.lenta.bp10.features.main_menu.MainMenuFragment
 import com.lenta.bp10.features.matrix_info.MatrixInfoFragment
-import com.lenta.bp10.features.printer_change.PrinterChangeFragment
+import com.lenta.shared.features.printer_change.PrinterChangeFragment
 import com.lenta.bp10.features.report_result.ReportResultFragment
 import com.lenta.bp10.features.section_info.SectionInfoFragment
 import com.lenta.bp10.features.select_market.SelectMarketFragment
@@ -29,12 +30,10 @@ import com.lenta.bp10.features.write_off_details.WriteOffDetailsFragment
 import com.lenta.bp10.requests.network.WriteOffReportResponse
 import com.lenta.shared.account.IAuthenticator
 import com.lenta.shared.exception.Failure
-import com.lenta.shared.exception.IFailureInterpreter
 import com.lenta.shared.interactor.UseCase
 import com.lenta.shared.models.core.MatrixType
 import com.lenta.shared.models.core.ProductInfo
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
-import com.lenta.shared.platform.navigation.CustomAnimation
 import com.lenta.shared.platform.navigation.ICoreNavigator
 import com.lenta.shared.progress.IProgressUseCaseInformator
 import com.lenta.shared.utilities.Logg
@@ -44,7 +43,7 @@ class ScreenNavigator(
         private val coreNavigator: ICoreNavigator,
         private val foregroundActivityProvider: ForegroundActivityProvider,
         private val authenticator: IAuthenticator,
-        private val failureInterpreter: IFailureInterpreter,
+        private val failureInterpreter: IWriteOffFailureInterpretator,
         private val progressUseCaseInformator: IProgressUseCaseInformator
 ) : IScreenNavigator, ICoreNavigator by coreNavigator {
 
@@ -192,7 +191,6 @@ interface IScreenNavigator : ICoreNavigator {
     fun openFirstScreen()
     fun openLoginScreen()
     fun openSelectMarketScreen()
-    fun openAlertScreen(failure: Failure)
     fun openFastDataLoadingScreen()
     fun openSelectionPersonnelNumberScreen()
     fun openAuxiliaryMenuScreen()

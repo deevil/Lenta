@@ -8,6 +8,10 @@ import android.preference.PreferenceManager
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.lenta.shared.BuildConfig
+import com.lenta.shared.account.ISessionInfo
+import com.lenta.shared.account.SessionInfo
+import com.lenta.shared.exception.CoreFailureInterpreter
+import com.lenta.shared.exception.IFailureInterpreter
 import com.lenta.shared.platform.network_state.INetworkStateMonitor
 import com.lenta.shared.platform.network_state.NetworkStateMonitor
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
@@ -75,7 +79,6 @@ class CoreModule(val application: Application, val defaultConnectionSettings: De
     }
 
 
-
     @Provides
     fun provideSharedPreferences(context: Context): SharedPreferences {
         return PreferenceManager.getDefaultSharedPreferences(context)
@@ -117,11 +120,24 @@ class CoreModule(val application: Application, val defaultConnectionSettings: De
         return StringResourceManager(context)
     }
 
+    @Provides
+    @Singleton
+    internal fun provideCoreFailureInterpreter(context: Context): IFailureInterpreter {
+        return CoreFailureInterpreter(context)
+    }
+
 
     @Provides
     @Singleton
-    internal fun provideIGoBackNavigator(foregroundActivityProvider: ForegroundActivityProvider): ICoreNavigator {
-        return CoreNavigator(foregroundActivityProvider)
+    internal fun provideIGoBackNavigator(foregroundActivityProvider: ForegroundActivityProvider,
+                                         failureInterpreter: IFailureInterpreter): ICoreNavigator {
+        return CoreNavigator(foregroundActivityProvider, failureInterpreter)
+    }
+
+    @Provides
+    @Singleton
+    internal fun provideISessionInfo(): ISessionInfo {
+        return SessionInfo()
     }
 
 }

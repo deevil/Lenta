@@ -1,11 +1,13 @@
 package com.lenta.shared.platform.navigation
 
 import android.os.Bundle
+import com.lenta.shared.exception.Failure
+import com.lenta.shared.exception.IFailureInterpreter
 import com.lenta.shared.features.alert.AlertFragment
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
 
 
-class CoreNavigator constructor(private val foregroundActivityProvider: ForegroundActivityProvider) : ICoreNavigator {
+class CoreNavigator constructor(private val foregroundActivityProvider: ForegroundActivityProvider, private val failureInterpreter: IFailureInterpreter) : ICoreNavigator {
     override fun goBackWithArgs(args: Bundle) {
         getFragmentStack()?.popReturnArgs(args = args)
     }
@@ -27,6 +29,10 @@ class CoreNavigator constructor(private val foregroundActivityProvider: Foregrou
         }
     }
 
+    override fun openAlertScreen(failure: Failure) {
+        openAlertScreen(failureInterpreter.getFailureDescription(failure))
+    }
+
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 
 }
@@ -36,4 +42,5 @@ interface ICoreNavigator {
     fun goBack()
     fun finishApp()
     fun openAlertScreen(message: String)
+    fun openAlertScreen(failure: Failure)
 }

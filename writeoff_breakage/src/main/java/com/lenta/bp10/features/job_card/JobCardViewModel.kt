@@ -2,12 +2,12 @@ package com.lenta.bp10.features.job_card
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.lenta.bp10.account.SessionInfo
 import com.lenta.bp10.models.repositories.IWriteOffTaskManager
 import com.lenta.bp10.models.task.TaskDescription
 import com.lenta.bp10.platform.navigation.IScreenNavigator
 import com.lenta.bp10.requests.db.TaskCreatingParams
 import com.lenta.bp10.requests.db.TaskDescriptionDbRequest
+import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.view.OnPositionClickListener
@@ -18,7 +18,7 @@ class JobCardViewModel : CoreViewModel() {
     @Inject
     lateinit var jobCardRepo: IJobCardRepo
     @Inject
-    lateinit var sessionInfo: SessionInfo
+    lateinit var sessionInfo: ISessionInfo
     @Inject
     lateinit var screenNavigator: IScreenNavigator
     @Inject
@@ -160,7 +160,7 @@ class JobCardViewModel : CoreViewModel() {
     }
 
     fun onConfirmRemoving() {
-        processServiceManager?.clearTask()
+        processServiceManager.clearTask()
         screenNavigator.goBack()
     }
 
