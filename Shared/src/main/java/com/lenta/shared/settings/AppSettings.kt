@@ -1,8 +1,11 @@
 package com.lenta.shared.settings
 
+import android.annotation.SuppressLint
 import android.content.SharedPreferences
 import javax.inject.Inject
 
+@Suppress("NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
+@SuppressLint("ApplySharedPref")
 class AppSettings @Inject constructor(
         val sharedPrefferences: SharedPreferences
 ) : IAppSettings {
@@ -24,12 +27,40 @@ class AppSettings @Inject constructor(
             sharedPrefferences.edit().putString("project", value).commit()
         }
 
+    override var lastLogin: String?
+        get() = sharedPrefferences.getString("lastLogin", null)
+        set(value) {
+            sharedPrefferences.edit().putString("lastLogin", value).commit()
+        }
+
+    override var lastTK: String?
+        get() = sharedPrefferences.getString("lastTK", null)
+        set(value) {
+            sharedPrefferences.edit().putString("lastTK", value).commit()
+        }
+
+    override var lastPersonnelNumber: String?
+        get() = sharedPrefferences.getString("lastPersonnelNumber", null)
+        set(value) {
+            sharedPrefferences.edit().putString("lastPersonnelNumber", value).commit()
+        }
+
+    override var lastPersonnelFullName: String?
+        get() = sharedPrefferences.getString("lastPersonnelFullName", null)
+        set(value) {
+            sharedPrefferences.edit().putString("lastPersonnelFullName", value).commit()
+        }
+
 
 }
 
-interface IAppSettings{
+interface IAppSettings {
     var serverAddress: String
     var environment: String
     var project: String
+    var lastLogin: String?
+    var lastTK: String?
+    var lastPersonnelNumber: String?
+    var lastPersonnelFullName: String?
 
 }

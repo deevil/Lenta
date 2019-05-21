@@ -15,8 +15,7 @@ abstract class CoreLoginFragment : CoreFragment<com.lenta.shared.databinding.Fra
 
 
     override fun onBackPressed(): Boolean {
-        vm.onBackPressed()
-        return true
+        return false
     }
 
     override fun onToolbarButtonClick(view: View) {

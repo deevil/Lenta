@@ -9,6 +9,7 @@ import com.lenta.bp10.requests.network.TabNumberParams
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.platform.viewmodel.CoreViewModel
+import com.lenta.shared.settings.IAppSettings
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import kotlinx.coroutines.launch
@@ -21,6 +22,8 @@ class SelectPersonnelNumberViewModel : CoreViewModel(), OnOkInSoftKeyboardListen
     lateinit var screenNavigator: IScreenNavigator
     @Inject
     lateinit var sessionInfo: ISessionInfo
+    @Inject
+    lateinit var appSettings: IAppSettings
 
     val personnelNumber = MutableLiveData<String>("")
     val fullName = MutableLiveData<String>("")
@@ -28,8 +31,14 @@ class SelectPersonnelNumberViewModel : CoreViewModel(), OnOkInSoftKeyboardListen
 
     init {
         viewModelScope.launch {
-            personnelNumber.value = sessionInfo.personnelNumber
-            fullName.value = sessionInfo.personnelFullName
+            if (sessionInfo.personnelNumber != null) {
+                personnelNumber.value = sessionInfo.personnelNumber
+                fullName.value = sessionInfo.personnelFullName
+            } else {
+                personnelNumber.value = appSettings.lastPersonnelNumber
+                fullName.value = appSettings.lastPersonnelFullName
+            }
+
         }
     }
 
@@ -61,8 +70,16 @@ class SelectPersonnelNumberViewModel : CoreViewModel(), OnOkInSoftKeyboardListen
     }
 
     fun onClickNext() {
-        sessionInfo.personnelNumber = if (!fullName.value.isNullOrEmpty()) personnelNumber.value else null
-        sessionInfo.personnelFullName = fullName.value
+        (if (!fullName.value.isNullOrEmpty()) personnelNumber.value else null).let {
+            sessionInfo.personnelNumber = it
+            sessionInfo.personnelFullName = fullName.value
+
+            appSettings.lastPersonnelNumber = it
+            appSettings.lastPersonnelFullName = fullName.value
+        }
+
+
+
         screenNavigator.openMainMenuScreen()
     }
 }
