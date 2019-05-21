@@ -1,6 +1,7 @@
 package com.lenta.shared.platform.navigation
 
 import android.os.Bundle
+import com.lenta.shared.features.alert.AlertFragment
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
 
 
@@ -18,6 +19,14 @@ class CoreNavigator constructor(private val foregroundActivityProvider: Foregrou
         System.exit(0)
     }
 
+    override fun openAlertScreen(message: String) {
+        getFragmentStack()?.let {
+            val fragment = AlertFragment.create(message)
+            it.push(fragment, CustomAnimation.vertical())
+
+        }
+    }
+
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 
 }
@@ -26,4 +35,5 @@ interface ICoreNavigator {
     fun goBackWithArgs(args: Bundle)
     fun goBack()
     fun finishApp()
+    fun openAlertScreen(message: String)
 }

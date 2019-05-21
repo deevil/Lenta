@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import com.google.gson.Gson
 import com.lenta.shared.features.fmp_settings.FmpSettingsViewModel
+import com.lenta.shared.features.message.MessageViewModel
 import com.lenta.shared.platform.network_state.INetworkStateMonitor
 import com.lenta.shared.platform.network_state.NetworkStateMonitor
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
@@ -33,4 +34,5 @@ interface CoreComponent {
     fun getIAppSettings(): IAppSettings
     fun getIGoBackNavigator(): ICoreNavigator
     fun inject(it: FmpSettingsViewModel)
+    fun inject(it: MessageViewModel)
 }

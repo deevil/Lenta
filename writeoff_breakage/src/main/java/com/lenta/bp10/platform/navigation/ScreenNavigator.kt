@@ -2,7 +2,7 @@ package com.lenta.bp10.platform.navigation
 
 import android.content.Context
 import com.lenta.bp10.R
-import com.lenta.bp10.features.alert.AlertFragment
+import com.lenta.shared.features.alert.AlertFragment
 import com.lenta.bp10.features.auth.AuthFragment
 import com.lenta.bp10.features.auxiliary_menu.AuxiliaryMenuFragment
 import com.lenta.bp10.features.exit.ExitWithConfirmationFragment
@@ -47,14 +47,6 @@ class ScreenNavigator(
         private val failureInterpreter: IFailureInterpreter,
         private val progressUseCaseInformator: IProgressUseCaseInformator
 ) : IScreenNavigator, ICoreNavigator by coreNavigator {
-
-    override fun openAlertScreen(message: String) {
-        getFragmentStack()?.let {
-            val fragment = AlertFragment.create(message)
-            it.push(fragment, CustomAnimation.vertical())
-
-        }
-    }
 
     override fun openAlertScreen(failure: Failure) {
         openAlertScreen(failureInterpreter.getFailureDescription(failure))
@@ -200,7 +192,6 @@ interface IScreenNavigator : ICoreNavigator {
     fun openFirstScreen()
     fun openLoginScreen()
     fun openSelectMarketScreen()
-    fun openAlertScreen(message: String)
     fun openAlertScreen(failure: Failure)
     fun openFastDataLoadingScreen()
     fun openSelectionPersonnelNumberScreen()

@@ -8,6 +8,8 @@ import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModel
 import com.lenta.shared.BR
+import com.lenta.shared.di.CoreComponent
+import com.lenta.shared.platform.activity.CoreActivity
 import com.lenta.shared.platform.activity.main_activity.CoreMainActivity
 import com.lenta.shared.platform.navigation.FragmentStack
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
@@ -19,6 +21,12 @@ import java.lang.NullPointerException
 abstract class CoreFragment<T : ViewDataBinding, S : ViewModel> : Fragment() {
     var binding: T? = null
     lateinit var vm: S
+
+    val coreComponent: CoreComponent by lazy {
+        (activity as CoreActivity<*>).coreComponent
+    }
+
+
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         binding = DataBindingUtil.inflate(inflater, getLayoutId(), container, false)

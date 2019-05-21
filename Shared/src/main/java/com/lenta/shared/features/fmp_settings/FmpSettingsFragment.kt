@@ -3,7 +3,6 @@ package com.lenta.shared.features.fmp_settings
 import android.view.View
 import com.lenta.shared.R
 import com.lenta.shared.databinding.FragmentFmpSettingsBinding
-import com.lenta.shared.platform.activity.CoreActivity
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
@@ -21,7 +20,7 @@ class FmpSettingsFragment : CoreFragment<FragmentFmpSettingsBinding, FmpSettings
 
     override fun getViewModel(): FmpSettingsViewModel {
         provideViewModel(FmpSettingsViewModel::class.java).let {
-            (activity as CoreActivity<*>).coreComponent.inject(it)
+            coreComponent.inject(it)
             return it
         }
     }
