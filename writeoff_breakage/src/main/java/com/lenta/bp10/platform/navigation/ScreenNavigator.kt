@@ -91,7 +91,7 @@ class ScreenNavigator(
         getFragmentStack()?.push(FastDataLoadingFragment())
     }
 
-    override fun openSelectionTabNumberScreen() {
+    override fun openSelectionPersonnelNumberScreen() {
         getFragmentStack()?.replace(SelectPersonnelNumberFragment())
     }
 
@@ -118,7 +118,7 @@ class ScreenNavigator(
     }
 
     override fun openMainMenuScreen() {
-        getFragmentStack()?.push(MainMenuFragment())
+        getFragmentStack()?.replace(MainMenuFragment())
     }
 
     override fun openJobCardScreen() {
@@ -210,7 +210,7 @@ interface IScreenNavigator : IGoBackNavigator {
     fun openAlertScreen(message: String)
     fun openAlertScreen(failure: Failure)
     fun openFastDataLoadingScreen()
-    fun openSelectionTabNumberScreen()
+    fun openSelectionPersonnelNumberScreen()
     fun openAuxiliaryMenuScreen()
     fun openSelectOperModeScreen()
     fun openSettingsScreen()

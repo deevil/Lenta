@@ -23,8 +23,15 @@ class SelectPersonnelNumberViewModel : CoreViewModel(), OnOkInSoftKeyboardListen
     lateinit var sessionInfo: ISessionInfo
 
     val personnelNumber = MutableLiveData<String>("")
-    val fio = MutableLiveData<String>("")
+    val fullName = MutableLiveData<String>("")
     val employeesPosition = MutableLiveData<String>("")
+
+    init {
+        viewModelScope.launch {
+            personnelNumber.value = sessionInfo.personnelNumber
+            fullName.value = sessionInfo.personnelFullName
+        }
+    }
 
     private fun searchPersonnelNumber() {
         Logg.d { "searchPersonnelNumber" }
@@ -38,7 +45,7 @@ class SelectPersonnelNumberViewModel : CoreViewModel(), OnOkInSoftKeyboardListen
 
     private fun handleSuccess(personnelNumberInfo: TabNumberInfo) {
         Logg.d { "handleSuccess $personnelNumberInfo" }
-        fio.value = personnelNumberInfo.name
+        fullName.value = personnelNumberInfo.name
         employeesPosition.value = personnelNumberInfo.jobName
 
     }
@@ -54,8 +61,8 @@ class SelectPersonnelNumberViewModel : CoreViewModel(), OnOkInSoftKeyboardListen
     }
 
     fun onClickNext() {
-
-        sessionInfo.personnelNumber = if (!fio.value.isNullOrEmpty()) personnelNumber.value else null
+        sessionInfo.personnelNumber = if (!fullName.value.isNullOrEmpty()) personnelNumber.value else null
+        sessionInfo.personnelFullName = fullName.value
         screenNavigator.openMainMenuScreen()
     }
 }

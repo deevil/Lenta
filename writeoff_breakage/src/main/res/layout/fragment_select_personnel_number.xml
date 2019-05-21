@@ -62,7 +62,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/et_search"
             app:prefix='@{@string/fio + ": "}'
-            app:setTextWithVisibilities="@{vm.fio}"
+            app:setTextWithVisibilities="@{vm.fullName}"
             tools:text="ФИО: Петров А.А." />
 
         <TextView
