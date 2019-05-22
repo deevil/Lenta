@@ -1,41 +1,41 @@
 package com.lenta.bp10.mobileObjectsService.models
 
-import com.fasterxml.jackson.annotation.JsonProperty
+import com.google.gson.annotations.SerializedName
 
 class MB_S_29(
         /// Аббревиатура типа задания на списание
-        @JsonProperty("TASK_TYPE")
+        @SerializedName("TASK_TYPE")
         val taskType: String,
 
         /// Вид движения (управление запасами)
-        @JsonProperty("BWART")
+        @SerializedName("BWART")
         val bwart: String,
 
         /// Место возникновения затрат
-        @JsonProperty("KOSTL")
+        @SerializedName("KOSTL")
         val kostl: String,
 
         /// Склад
-        @JsonProperty("LGORTTO")
+        @SerializedName("LGORTTO")
         val lgortto: String,
 
         /// Требуется отправка в ГИС
-        @JsonProperty("SEND_GIS")
+        @SerializedName("SEND_GIS")
         val sendGis: String,
 
         /// Признак, что для данного типа задания выбирать причину списания не нужно
-        @JsonProperty("NO_GRUND")
+        @SerializedName("NO_GRUND")
         val noGrund: String,
 
         /// Полное название типа задания на списание
-        @JsonProperty("LONG_NAME")
+        @SerializedName("LONG_NAME")
         val longName: String,
 
         /// Лимит количества товаров в задании
-        @JsonProperty("LIMIT")
+        @SerializedName("LIMIT")
         val limit: Double,
 
         /// Используется в производстве
-        @JsonProperty("CHK_OWNPR")
+        @SerializedName("CHK_OWNPR")
         val chkOwnpr: String
 )

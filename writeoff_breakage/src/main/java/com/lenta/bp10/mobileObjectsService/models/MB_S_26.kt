@@ -1,18 +1,18 @@
 package com.lenta.bp10.mobileObjectsService.models
 
-import com.fasterxml.jackson.annotation.JsonProperty
+import com.google.gson.annotations.SerializedName
 
 // модель справочника принтеров
 class MB_S_26(
         /// Номер ТК
-        @JsonProperty("WERKS")
+        @SerializedName("WERKS")
         val tkNumber: String,
 
         /// Наименование принтера
-        @JsonProperty("PRINTERNAME")
+        @SerializedName("PRINTERNAME")
         val printerName: String,
 
         /// Информация о принтере
-        @JsonProperty("PRINTERINFO")
+        @SerializedName("PRINTERINFO")
         val printerInfo: String
 )

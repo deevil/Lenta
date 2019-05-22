@@ -1,8 +1,8 @@
 package com.lenta.shared.models.core
 
-import com.fasterxml.jackson.annotation.JsonProperty
+import com.google.gson.annotations.SerializedName
 
-class Supplier(@JsonProperty("LIFNR") val code: String?, @JsonProperty("LIFNR_NAME") val name: String) {
+class Supplier(@SerializedName("LIFNR") val code: String?, @SerializedName("LIFNR_NAME") val name: String) {
 
     companion object {
         val DEFAULT = Supplier(null, "Нет поставщика")

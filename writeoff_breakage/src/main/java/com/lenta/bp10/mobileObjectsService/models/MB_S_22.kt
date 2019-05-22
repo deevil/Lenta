@@ -1,22 +1,22 @@
 package com.lenta.bp10.mobileObjectsService.models
 
-import com.fasterxml.jackson.annotation.JsonProperty
+import com.google.gson.annotations.SerializedName
 
 // Модель справочника списка наборов
 class MB_S_22(
         /// Номер товара
-        @JsonProperty("MATNR_OSN")
+        @SerializedName("MATNR_OSN")
         val matnr_osn: String,
 
         /// Компонент спецификации
-        @JsonProperty("MATNR")
+        @SerializedName("MATNR")
         val matnr: String,
 
         /// Количество вложенного
-        @JsonProperty("MENGE")
+        @SerializedName("MENGE")
         val menge: Double,
 
         /// Базисная единица измерения
-        @JsonProperty("MEINS")
+        @SerializedName("MEINS")
         val meins: String
 )

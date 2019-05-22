@@ -1,25 +1,25 @@
 package com.lenta.bp10.mobileObjectsService.models
 
-import com.fasterxml.jackson.annotation.JsonProperty
+import com.google.gson.annotations.SerializedName
 
 // модель справочника штрих-кодов единиц измерения товаров
 class MB_S_25(
         /// Глобальный номер товара (GTIN)
-        @JsonProperty("EAN")
+        @SerializedName("EAN")
         val ean: String,
 
         /// Номер товара
-        @JsonProperty("MATERIAL")
+        @SerializedName("MATERIAL")
         val material: String,
 
         /// Единица измерения
-        @JsonProperty("UOM")
+        @SerializedName("UOM")
         val uom: String,
 
-        @JsonProperty("UMREZ")
+        @SerializedName("UMREZ")
         val umrez: Double,
 
-        @JsonProperty("UMREN")
+        @SerializedName("UMREN")
         val umren: Double
 ) {
     fun getUomMultiplier(): Double {

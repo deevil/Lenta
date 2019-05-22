@@ -1,9 +1,10 @@
 package com.lenta.bp10.rest.dataModels
 
-import com.fasterxml.jackson.annotation.JsonProperty
+//import com.fasterxml.jackson.annotation.SerializedName
+import com.google.gson.annotations.SerializedName
 
 open class BaseSapRequest(
-        @JsonProperty("format")
+        @SerializedName("format")
         val format: String,
-        @JsonProperty("sap-client")
+        @SerializedName("sap-client")
         var sapClient: String?)

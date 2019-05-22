@@ -1,48 +1,48 @@
 package com.lenta.bp10.mobileObjectsService.models
 
-import com.fasterxml.jackson.annotation.JsonProperty
+import com.google.gson.annotations.SerializedName
 
 // Модель справочника товаров
 class MB_S_30(
         /// Номер товара
-        @JsonProperty("MATERIAL")
+        @SerializedName("MATERIAL")
         val material: String,
 
         /// Длинное наименование
-        @JsonProperty("NAME")
+        @SerializedName("NAME")
         val name: String,
 
         /// Вид товара
-        @JsonProperty("MATYPE")
+        @SerializedName("MATYPE")
         val matype: String,
 
         /// Базисная единица измерения
-        @JsonProperty("BUOM")
+        @SerializedName("BUOM")
         val buom: String,
 
-        @JsonProperty("MATR_TYPE")
+        @SerializedName("MATR_TYPE")
         val matrType: String,
 
         /// Номер секции товара
-        @JsonProperty("ABTNR")
+        @SerializedName("ABTNR")
         val abtnr: String,
 
         /// Признак возвратности товара
-        @JsonProperty("IS_RETURN")
+        @SerializedName("IS_RETURN")
         val isReturn: String,
 
         /// Флаг "Акцизный товар"
-        @JsonProperty("IS_EXC")
+        @SerializedName("IS_EXC")
         val exc: String,
 
         /// Флаг "Алкоголь"
-        @JsonProperty("IS_ALCO")
+        @SerializedName("IS_ALCO")
         val alco: String,
 
-        @JsonProperty("MATKL")
+        @SerializedName("MATKL")
         val matkl: String?,
 
-        @JsonProperty("EKGRP")
+        @SerializedName("EKGRP")
         val ekgrp: String?
 ) {
     fun isAlco(): Boolean {

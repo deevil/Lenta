@@ -1,14 +1,14 @@
 package com.lenta.bp10.mobileObjectsService.models
 
-import com.fasterxml.jackson.annotation.JsonProperty
+import com.google.gson.annotations.SerializedName
 
 // модель значений параметров настройки
 class MB_S_14(
         /// Название параметра
-        @JsonProperty("PARAMNAME")
+        @SerializedName("PARAMNAME")
         val paramname: String,
 
         /// Значение параметра
-        @JsonProperty("PARAMVALUE")
+        @SerializedName("PARAMVALUE")
         val paramvalue: String
 )
