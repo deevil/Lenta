@@ -7,7 +7,9 @@ import com.lenta.shared.exception.Failure
 import com.lenta.shared.exception.IFailureInterpreter
 import com.lenta.shared.features.alert.AlertFragment
 import com.lenta.shared.features.fmp_settings.FmpSettingsFragment
+import com.lenta.shared.features.printer_change.PrinterChangeFragment
 import com.lenta.shared.features.select_oper_mode.SelectOperModeFragment
+import com.lenta.shared.features.settings.SettingsFragment
 import com.lenta.shared.features.support.SupportFragment
 import com.lenta.shared.features.tech_login.TechLoginFragment
 import com.lenta.shared.features.test_environment.TestEnvirFragment
@@ -75,6 +77,14 @@ class CoreNavigator constructor(private val context: Context,
         getFragmentStack()?.push(SelectOperModeFragment())
     }
 
+    override fun openPrinterChangeScreen() {
+        getFragmentStack()?.push(PrinterChangeFragment())
+    }
+
+    override fun openSettingsScreen() {
+        getFragmentStack()?.push(SettingsFragment())
+    }
+
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 
 }
@@ -93,4 +103,6 @@ interface ICoreNavigator {
     fun openConnectionsSettingsScreen()
     fun openTestEnvirScreen()
     fun openSelectOperModeScreen()
+    fun openPrinterChangeScreen()
+    fun openSettingsScreen()
 }

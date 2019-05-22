@@ -24,4 +24,8 @@ class SelectOperModeViewModel : CoreViewModel() {
         screenNavigator.openConnectionsSettingsScreen()
     }
 
+    fun oClickBack() {
+        screenNavigator.goBack()
+    }
+
 }

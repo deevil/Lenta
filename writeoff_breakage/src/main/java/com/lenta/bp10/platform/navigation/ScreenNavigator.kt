@@ -7,7 +7,6 @@ import com.lenta.shared.features.alert.AlertFragment
 import com.lenta.bp10.features.auth.AuthFragment
 import com.lenta.bp10.features.auxiliary_menu.AuxiliaryMenuFragment
 import com.lenta.bp10.features.exit.ExitWithConfirmationFragment
-import com.lenta.shared.features.fmp_settings.FmpSettingsFragment
 import com.lenta.bp10.features.good_information.general.GoodInfoFragment
 import com.lenta.bp10.features.good_information.sets.SetsFragment
 import com.lenta.bp10.features.goods_list.GoodsListFragment
@@ -21,7 +20,7 @@ import com.lenta.bp10.features.report_result.ReportResultFragment
 import com.lenta.bp10.features.section_info.SectionInfoFragment
 import com.lenta.bp10.features.select_market.SelectMarketFragment
 import com.lenta.bp10.features.select_personnel_number.SelectPersonnelNumberFragment
-import com.lenta.bp10.features.settings.SettingsFragment
+import com.lenta.shared.features.settings.SettingsFragment
 import com.lenta.shared.features.test_environment.TestEnvirFragment
 import com.lenta.bp10.features.write_off_details.WriteOffDetailsFragment
 import com.lenta.bp10.requests.network.WriteOffReportResponse
@@ -98,10 +97,6 @@ class ScreenNavigator(
         getFragmentStack()?.push(LoadingTaskSettingsFragment())
     }
 
-    override fun openSettingsScreen() {
-        getFragmentStack()?.push(SettingsFragment())
-    }
-
     override fun openGoodsListScreen() {
         getFragmentStack()?.push(GoodsListFragment())
     }
@@ -170,11 +165,9 @@ interface IScreenNavigator : ICoreNavigator {
     fun openFastDataLoadingScreen()
     fun openSelectionPersonnelNumberScreen()
     fun openAuxiliaryMenuScreen()
-    fun openSettingsScreen()
     fun openMainMenuScreen()
     fun openJobCardScreen()
     fun openLoadingTaskSettingsScreen()
-    fun openPrinterChangeScreen()
     fun openGoodsListScreen()
     fun openGoodInfoScreen(productInfo: ProductInfo)
     fun openEanInfoScreen()
