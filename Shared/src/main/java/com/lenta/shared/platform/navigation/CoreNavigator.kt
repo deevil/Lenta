@@ -1,14 +1,19 @@
 package com.lenta.shared.platform.navigation
 
+import android.content.Context
 import android.os.Bundle
+import com.lenta.shared.R
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.exception.IFailureInterpreter
 import com.lenta.shared.features.alert.AlertFragment
 import com.lenta.shared.features.support.SupportFragment
+import com.lenta.shared.interactor.UseCase
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
 
 
-class CoreNavigator constructor(private val foregroundActivityProvider: ForegroundActivityProvider, private val failureInterpreter: IFailureInterpreter) : ICoreNavigator {
+class CoreNavigator constructor(private val context: Context,
+                                private val foregroundActivityProvider: ForegroundActivityProvider,
+                                private val failureInterpreter: IFailureInterpreter) : ICoreNavigator {
     override fun goBackWithArgs(args: Bundle) {
         getFragmentStack()?.popReturnArgs(args = args)
     }
@@ -38,6 +43,18 @@ class CoreNavigator constructor(private val foregroundActivityProvider: Foregrou
         getFragmentStack()?.push(SupportFragment())
     }
 
+    override fun <Params> showProgress(useCase: UseCase<Any, Params>) {
+        showProgress(context.getString(R.string.data_loading))
+    }
+
+    override fun showProgress(title: String) {
+        foregroundActivityProvider.getActivity()?.getViewModel()?.showSimpleProgress(title)
+    }
+
+    override fun hideProgress() {
+        foregroundActivityProvider.getActivity()?.getViewModel()?.hideProgress()
+    }
+
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 
 }
@@ -49,4 +66,7 @@ interface ICoreNavigator {
     fun openAlertScreen(message: String)
     fun openAlertScreen(failure: Failure)
     fun openSupportScreen()
+    fun <Params> showProgress(useCase: UseCase<Any, Params>)
+    fun showProgress(title: String)
+    fun hideProgress()
 }

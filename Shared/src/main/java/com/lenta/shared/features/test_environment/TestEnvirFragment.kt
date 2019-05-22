@@ -9,18 +9,14 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
+import com.lenta.shared.utilities.extentions.provideViewModel
 
-abstract class CoreTestEnvirFragment : CoreFragment<FragmentTestEnvironmentBinding, CoreTestEnvirViewModel>(), OnBackPresserListener, ToolbarButtonsClickListener {
+class TestEnvirFragment : CoreFragment<FragmentTestEnvironmentBinding, TestEnvirViewModel>(), ToolbarButtonsClickListener {
     override fun getLayoutId(): Int = R.layout.fragment_test_environment
 
-    override fun onBackPressed(): Boolean {
-        vm.onBackPressed()
-        return true
-    }
 
     override fun onToolbarButtonClick(view: View) {
         when (view.id) {
-            R.id.b_1 -> vm.onClickBack()
             R.id.b_5 -> vm.onClickGoOver()
         }
     }
@@ -33,5 +29,14 @@ abstract class CoreTestEnvirFragment : CoreFragment<FragmentTestEnvironmentBindi
         bottomToolbarUiModel.cleanAll()
         bottomToolbarUiModel.uiModelButton1.let { buttonUiModel -> buttonUiModel.show(ButtonDecorationInfo.back) }
         bottomToolbarUiModel.uiModelButton5.let { buttonUiModel -> buttonUiModel.show(ButtonDecorationInfo.goOver) }
+    }
+
+    override fun getPageNumber(): String = "10/56"
+
+    override fun getViewModel(): TestEnvirViewModel {
+        provideViewModel(TestEnvirViewModel::class.java).let {
+            coreComponent.inject(it)
+            return it
+        }
     }
 }

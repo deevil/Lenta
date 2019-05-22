@@ -129,9 +129,10 @@ class CoreModule(val application: Application, val defaultConnectionSettings: De
 
     @Provides
     @Singleton
-    internal fun provideIGoBackNavigator(foregroundActivityProvider: ForegroundActivityProvider,
+    internal fun provideICoreNavigator(context: Context,
+                                         foregroundActivityProvider: ForegroundActivityProvider,
                                          failureInterpreter: IFailureInterpreter): ICoreNavigator {
-        return CoreNavigator(foregroundActivityProvider, failureInterpreter)
+        return CoreNavigator(context, foregroundActivityProvider, failureInterpreter)
     }
 
     @Provides

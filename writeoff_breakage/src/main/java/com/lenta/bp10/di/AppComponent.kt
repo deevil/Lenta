@@ -20,7 +20,7 @@ import com.lenta.bp10.features.select_personnel_number.SelectPersonnelNumberView
 import com.lenta.bp10.features.settings.SettingsViewModel
 import com.lenta.shared.features.support.SupportViewModel
 import com.lenta.bp10.features.tech_login.TechLoginViewModel
-import com.lenta.bp10.features.test_environment.TestEnvirViewModel
+import com.lenta.shared.features.test_environment.TestEnvirViewModel
 import com.lenta.bp10.features.write_off_details.WriteOffDetailsViewModel
 import com.lenta.shared.di.AppScope
 import com.lenta.shared.di.CoreComponent

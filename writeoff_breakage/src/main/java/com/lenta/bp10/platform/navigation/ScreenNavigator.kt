@@ -24,7 +24,7 @@ import com.lenta.bp10.features.select_oper_mode.SelectOperModeFragment
 import com.lenta.bp10.features.select_personnel_number.SelectPersonnelNumberFragment
 import com.lenta.bp10.features.settings.SettingsFragment
 import com.lenta.bp10.features.tech_login.TechLoginFragment
-import com.lenta.bp10.features.test_environment.TestEnvirFragment
+import com.lenta.shared.features.test_environment.TestEnvirFragment
 import com.lenta.bp10.features.write_off_details.WriteOffDetailsFragment
 import com.lenta.bp10.requests.network.WriteOffReportResponse
 import com.lenta.shared.account.IAuthenticator
@@ -88,17 +88,8 @@ class ScreenNavigator(
         getFragmentStack()?.push(SelectOperModeFragment())
     }
 
-
-    override fun hideProgress() {
-        foregroundActivityProvider.getActivity()?.getViewModel()?.hideProgress()
-    }
-
     override fun <Params> showProgress(useCase: UseCase<Any, Params>) {
         showProgress(progressUseCaseInformator.getTitle(useCase))
-    }
-
-    private fun showProgress(title: String) {
-        foregroundActivityProvider.getActivity()?.getViewModel()?.showSimpleProgress(title)
     }
 
     override fun openMainMenuScreen() {
@@ -193,8 +184,6 @@ interface IScreenNavigator : ICoreNavigator {
     fun openAuxiliaryMenuScreen()
     fun openSelectOperModeScreen()
     fun openSettingsScreen()
-    fun hideProgress()
-    fun <Params> showProgress(useCase: UseCase<Any, Params>)
     fun openMainMenuScreen()
     fun openJobCardScreen()
     fun openLoadingTaskSettingsScreen()

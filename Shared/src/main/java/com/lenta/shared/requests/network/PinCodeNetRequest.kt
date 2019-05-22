@@ -1,4 +1,4 @@
-package com.lenta.bp10.requests.network
+package com.lenta.shared.requests.network
 
 import com.google.gson.Gson
 import com.google.gson.annotations.Expose
