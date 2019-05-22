@@ -6,6 +6,7 @@ import com.lenta.shared.R
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.exception.IFailureInterpreter
 import com.lenta.shared.features.alert.AlertFragment
+import com.lenta.shared.features.auxiliary_menu.AuxiliaryMenuFragment
 import com.lenta.shared.features.fmp_settings.FmpSettingsFragment
 import com.lenta.shared.features.printer_change.PrinterChangeFragment
 import com.lenta.shared.features.select_oper_mode.SelectOperModeFragment
@@ -85,6 +86,10 @@ class CoreNavigator constructor(private val context: Context,
         getFragmentStack()?.push(SettingsFragment())
     }
 
+    override fun openAuxiliaryMenuScreen() {
+        getFragmentStack()?.push(AuxiliaryMenuFragment())
+    }
+
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 
 }
@@ -105,4 +110,5 @@ interface ICoreNavigator {
     fun openSelectOperModeScreen()
     fun openPrinterChangeScreen()
     fun openSettingsScreen()
+    fun openAuxiliaryMenuScreen()
 }

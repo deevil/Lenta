@@ -5,6 +5,7 @@ import android.content.SharedPreferences
 import com.google.gson.Gson
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.IFailureInterpreter
+import com.lenta.shared.features.auxiliary_menu.AuxiliaryMenuViewModel
 import com.lenta.shared.features.fmp_settings.FmpSettingsViewModel
 import com.lenta.shared.features.message.MessageViewModel
 import com.lenta.shared.features.printer_change.PrinterChangeViewModel
@@ -57,4 +58,5 @@ interface CoreComponent {
     fun inject(it: TechLoginViewModel)
     fun inject(it: SelectOperModeViewModel)
     fun inject(it: SettingsViewModel)
+    fun inject(it: AuxiliaryMenuViewModel)
 }
