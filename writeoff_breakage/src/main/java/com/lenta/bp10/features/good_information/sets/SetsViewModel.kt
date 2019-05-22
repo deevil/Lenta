@@ -2,6 +2,10 @@ package com.lenta.bp10.features.good_information.sets
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.lenta.bp10.fmp.resources.dao_ext.getComponentsForSet
+import com.lenta.bp10.fmp.resources.dao_ext.getComponentsInfoForSet
+import com.lenta.bp10.fmp.resources.slow.ZmpUtz30V001
+import com.lenta.bp10.fmp.resources.slow.ZmpUtz46V001
 import com.lenta.bp10.models.repositories.IWriteOffTaskManager
 import com.lenta.bp10.models.repositories.getTotalCountForProduct
 import com.lenta.bp10.models.task.ProcessExciseAlcoProductService
@@ -20,10 +24,20 @@ import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.view.OnPositionClickListener
+import com.mobrun.plugin.api.HyperHive
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboardListener {
+
+    @Inject
+    lateinit var hyperHive: HyperHive
+    val zmpUtz46V001: ZmpUtz46V001 by lazy {
+        ZmpUtz46V001(hyperHive)
+    }
+    val zmpUtz30V001: ZmpUtz30V001 by lazy {
+        ZmpUtz30V001(hyperHive)
+    }
 
     @Inject
     lateinit var processServiceManager: IWriteOffTaskManager
@@ -38,12 +52,14 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
         processServiceManager.getWriteOffTask()!!.processExciseAlcoProduct(productInfo.value!!)!!
     }
 
+    private val msgBrandNotSet: MutableLiveData<String> = MutableLiveData()
+
     val productInfo: MutableLiveData<ProductInfo> = MutableLiveData()
     val writeOffReasonTitles: MutableLiveData<List<String>> = MutableLiveData()
     val selectedPosition: MutableLiveData<Int> = MutableLiveData(0)
     val count: MutableLiveData<String> = MutableLiveData("")
     val countValue: MutableLiveData<Double> = count.map { it?.toDoubleOrNull() }
-    val totalCount: MutableLiveData<Double> = countValue.map { (it ?: 0.0) + processExciseAlcoProductService.getTotalCount()}
+    val totalCount: MutableLiveData<Double> = countValue.map { (it ?: 0.0) + processExciseAlcoProductService.taskRepository.getTotalCountForProduct(productInfo.value!!)} //processExciseAlcoProductService.getTotalCount()
     val totalCountWithUom: MutableLiveData<String> = totalCount.map { "$it ${productInfo.value!!.uom.name}" }
     val suffix: MutableLiveData<String> = MutableLiveData()
     val componentsSets: MutableLiveData<List<ComponentItem>> = MutableLiveData()
@@ -64,11 +80,16 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
     }
 
     val enabledDetailsButton: MutableLiveData<Boolean> = totalCount.map {
-        processExciseAlcoProductService.getTotalCount() > 0.0
+        //processExciseAlcoProductService.getTotalCount() > 0.0
+        processExciseAlcoProductService.taskRepository.getTotalCountForProduct(productInfo.value!!) > 0.0
     }
 
     fun setProductInfo(productInfo: ProductInfo) {
         this.productInfo.value = productInfo
+    }
+
+    fun setMsgBrandNotSet(string: String) {
+        this.msgBrandNotSet.value = string
     }
 
     init {
@@ -86,23 +107,36 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
     }
 
     private fun updateComponents() {
-        processServiceManager.getWriteOffTask()?.let {
+        val components =  zmpUtz46V001.getComponentsForSet(productInfo.value!!.materialNumber)
+        //Logg.d { "testrest ${test46.map { it!!.matnr }}"}
+
+        val componentsInfo = zmpUtz30V001.getComponentsInfoForSet(components.map { it.matnr })
+
+        processServiceManager.getWriteOffTask()?.let { writeOffTask ->
             componentsSets.postValue(
-                    it.getProcessedProducts()
-                            .mapIndexed { index, productInfo ->
-                                ComponentItem(
-                                        number = index + 1,
-                                        name = "${productInfo.getMaterialLastSix()} ${productInfo.description}",
-                                        quantity = "0 из ${it.taskRepository.getTotalCountForProduct(productInfo)}",
-                                        /**quantity = "${processExciseAlcoProductService.getTotalCount()} ${productInfo.uom.name}",*/
-                                        even = index % 2 == 0,
-                                        productInfo = productInfo)
-                            }
-                            .reversed())
+                    mutableListOf<ComponentItem>().apply {
+                        componentsInfo.forEachIndexed { indComp, itemComp ->
+                            add(ComponentItem(
+                                    number = indComp + 1,
+                                    name = "${componentsInfo.get(indComp).material.substring(componentsInfo.get(indComp).material.length - 6)} ${componentsInfo.get(indComp).name}",
+                                    quantity = "${getCountExciseStampsForComponent(componentsInfo.get(indComp).material)} из ${components.get(indComp).menge}",
+                                    even = indComp % 2 == 0,
+                                    materialNumber = componentsInfo.get(indComp).material))
+                        }
+                    }
+            )
         }
-
         componentsSelectionsHelper.clearPositions()
+    }
 
+    private fun getCountExciseStampsForComponent(materialComponent: String) : Double {
+        var countExciseStamp: Double = 0.0
+        processServiceManager.getWriteOffTask().let { writeOffTask ->
+            writeOffTask!!.taskRepository.getExciseStamps().findExciseStampsOfProduct(productInfo.value!!).forEachIndexed { indES, taskExciseStamp ->
+                countExciseStamp = if (taskExciseStamp.materialNumber == materialComponent) +1.0 else 0.0
+            }
+        }
+        return countExciseStamp
     }
 
     fun onClickClean() {
@@ -114,7 +148,6 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
             screenNavigator.openGoodsReasonsScreen(productInfo = it)
         }
     }
-
 
     fun onClickAdd() {
         addSet()
@@ -144,31 +177,29 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
     }
 
     override fun onOkInSoftKeyboard(): Boolean {
-        //TODO редактировать
-
-        searchCode()
-
+        searchEANCode()
         Logg.d { "processServiceManager taskDescription: ${processServiceManager.getWriteOffTask()?.taskDescription}" }
         return true
     }
 
-    private fun searchCode() {
+    private fun searchEANCode() {
         viewModelScope.launch {
             eanCode.value?.let {
-                productInfoDbRequest(ProductInfoRequestParams(number = it)).either(::handleFailure, ::handleScanSuccess)
+                productInfoDbRequest(ProductInfoRequestParams(number = it)).either(::handleFailure, ::handleSearchSuccess)
             }
 
         }
     }
 
-    private fun handleScanSuccess(productInfo: ProductInfo) {
+    private fun handleSearchSuccess(componentInfo: ProductInfo) {
         //TODO редактировать
-        Logg.d { "productInfo: ${productInfo.isSet}" }
-        if (productInfo.isSet){
-            screenNavigator.openSetsInfoScreen(productInfo)
-            return
+        componentsSets.value!!.forEachIndexed { index, componentItem ->
+            if (componentItem.materialNumber == componentInfo.materialNumber) {
+                screenNavigator.openComponentSetScreen()
+                return
+            }
         }
-        screenNavigator.openGoodInfoScreen(productInfo)
+        screenNavigator.openAlertScreen(msgBrandNotSet.value!!)
     }
 
     override fun handleFailure(failure: Failure) {
@@ -186,7 +217,7 @@ data class ComponentItem(
         val name: String,
         val quantity: String,
         val even: Boolean,
-        val productInfo: ProductInfo
+        val materialNumber: String
 ) : Evenable {
     override fun isEven() = even
 

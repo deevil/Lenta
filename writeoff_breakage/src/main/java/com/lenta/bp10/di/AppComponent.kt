@@ -7,12 +7,12 @@ import com.lenta.bp10.features.auxiliary_menu.AuxiliaryMenuViewModel
 import com.lenta.bp10.features.exit.ExitFromAppViewModel
 import com.lenta.bp10.features.good_information.general.GoodInfoViewModel
 import com.lenta.bp10.features.good_information.sets.SetsViewModel
+import com.lenta.bp10.features.good_information.sets.component.ComponentViewModel
 import com.lenta.bp10.features.goods_list.GoodsListViewModel
 import com.lenta.bp10.features.job_card.JobCardViewModel
 import com.lenta.bp10.features.loading.fast.FastLoadingViewModel
 import com.lenta.bp10.features.loading.tasks_settings.LoadingTaskSettingsViewModel
 import com.lenta.bp10.features.main_menu.MainMenuViewModel
-import com.lenta.shared.features.printer_change.PrinterChangeViewModel
 import com.lenta.bp10.features.report_result.ReportResultViewModel
 import com.lenta.bp10.features.select_market.SelectMarketViewModel
 import com.lenta.bp10.features.select_oper_mode.SelectOperModeViewModel
@@ -25,6 +25,7 @@ import com.lenta.bp10.features.write_off_details.WriteOffDetailsViewModel
 import com.lenta.shared.di.AppScope
 import com.lenta.shared.di.CoreComponent
 import com.lenta.shared.features.message.MessageViewModel
+import com.lenta.shared.features.printer_change.PrinterChangeViewModel
 import dagger.Component
 
 @Component(modules = [AppModule::class], dependencies = [CoreComponent::class])
@@ -53,5 +54,6 @@ interface AppComponent {
     fun inject(it: ReportResultViewModel)
     fun inject(it: SetsViewModel)
     fun inject(it: WriteOffDetailsViewModel)
+    fun inject(it: ComponentViewModel)
 }
 

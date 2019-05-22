@@ -46,6 +46,7 @@ class SetsFragment :
         provideViewModel(SetsViewModel::class.java).let {
             getAppComponent()?.inject(it)
             it.setProductInfo(productInfo)
+            it.setMsgBrandNotSet(getString(R.string.brand_not_set))
             return it
         }
     }
@@ -58,11 +59,13 @@ class SetsFragment :
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
         bottomToolbarUiModel.cleanAll()
 
-        if (vpTabPosition == 0) bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.details, enabled = false)
+        if (vpTabPosition == 0) {
+            bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.details, enabled = false)
+            bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.add, enabled = false)
+        }
         else bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.clean, enabled = false)
 
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
-        bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.add, enabled = false)
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.apply, enabled = false)
 
         viewLifecycleOwner.let {
