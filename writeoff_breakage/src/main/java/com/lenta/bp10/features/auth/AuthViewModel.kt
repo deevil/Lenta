@@ -44,10 +44,10 @@ class AuthViewModel : CoreAuthViewModel() {
             }
             runIfDebug {
                 if (login.value.isNullOrEmpty()) {
-                    login.value = "borisenko"
+                    login.value = "MAKAROV"
                 }
-                if (login.value == "borisenko") {
-                    password.value = "123456"
+                if (login.value == "MAKAROV") {
+                    password.value = "1q2w3e4r"
                 }
 
             }

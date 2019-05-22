@@ -23,20 +23,17 @@ public class ZmpUtz35V001Rfc {
 
         this.hyperHive = hyperHive;
 
-        localHelper_ET_CNTRL =
-                new LocalTableResourceHelper<ItemLocal_ET_CNTRL, Status_ET_CNTRL>(NAME_RESOURCE,
-                        NAME_OUT_PARAM_ET_CNTRL,
-                        hyperHive,
-                        Status_ET_CNTRL.class);
+        localHelper_ET_CNTRL = 
+                 new LocalTableResourceHelper<ItemLocal_ET_CNTRL, Status_ET_CNTRL>(NAME_RESOURCE, 
+                         NAME_OUT_PARAM_ET_CNTRL, 
+                         hyperHive,
+                         Status_ET_CNTRL.class);
 
     }
 
-    public RequestBuilder<Params, LimitedScalarParameter> newRequest() {
-        return new RequestBuilder<Params, LimitedScalarParameter>(hyperHive, NAME_RESOURCE, false);
-    }
+    public RequestBuilder<Params, LimitedScalarParameter> newRequest() { return new RequestBuilder<Params, LimitedScalarParameter>(hyperHive, NAME_RESOURCE, false);}
 
-    static final class Status_ET_CNTRL extends StatusSelectTable<ItemLocal_ET_CNTRL> {
-    }
+    static final class Status_ET_CNTRL extends StatusSelectTable<ItemLocal_ET_CNTRL> {}
 
     public static class ItemLocal_ET_CNTRL {
         //  type: TEXT, source: {'name': 'SAP', 'type': 'C'}
@@ -51,8 +48,7 @@ public class ZmpUtz35V001Rfc {
     }
 
 
-    public interface Params extends CustomParameter {
-    }
+    public interface Params extends CustomParameter {}
 
 
     public static class LimitedScalarParameter extends ScalarParameter {
@@ -63,6 +59,10 @@ public class ZmpUtz35V001Rfc {
 
         public static LimitedScalarParameter IV_NODEPLOY(String value) {
             return new LimitedScalarParameter("IV_NODEPLOY", value);
+        }
+
+        public static LimitedScalarParameter IV_USER(String value) {
+            return new LimitedScalarParameter("IV_USER", value);
         }
 
     }

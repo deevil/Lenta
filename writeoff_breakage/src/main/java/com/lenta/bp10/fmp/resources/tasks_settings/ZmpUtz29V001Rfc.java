@@ -89,6 +89,10 @@ public class ZmpUtz29V001Rfc {
             return new LimitedScalarParameter("IV_NODEPLOY", value);
         }
 
+        public static LimitedScalarParameter IV_USER(String value) {
+            return new LimitedScalarParameter("IV_USER", value);
+        }
+
     }
 }
 
