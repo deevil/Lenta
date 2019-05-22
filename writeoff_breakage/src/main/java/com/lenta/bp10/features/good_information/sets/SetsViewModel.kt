@@ -4,7 +4,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp10.models.repositories.IWriteOffTaskManager
 import com.lenta.bp10.models.repositories.getTotalCountForProduct
-import com.lenta.bp10.models.task.ProcessNonExciseAlcoProductService
+import com.lenta.bp10.models.task.ProcessExciseAlcoProductService
+import com.lenta.bp10.models.task.TaskExciseStamp
 import com.lenta.bp10.models.task.WriteOffReason
 import com.lenta.bp10.platform.navigation.IScreenNavigator
 import com.lenta.bp10.requests.db.ProductInfoDbRequest
@@ -33,8 +34,8 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
     @Inject
     lateinit var productInfoDbRequest: ProductInfoDbRequest
 
-    private val processNonExciseAlcoProductService: ProcessNonExciseAlcoProductService by lazy {
-        processServiceManager.getWriteOffTask()!!.processNonExciseAlcoProduct(productInfo.value!!)!!
+    private val processExciseAlcoProductService: ProcessExciseAlcoProductService by lazy {
+        processServiceManager.getWriteOffTask()!!.processExciseAlcoProduct(productInfo.value!!)!!
     }
 
     val productInfo: MutableLiveData<ProductInfo> = MutableLiveData()
@@ -42,7 +43,7 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
     val selectedPosition: MutableLiveData<Int> = MutableLiveData(0)
     val count: MutableLiveData<String> = MutableLiveData("")
     val countValue: MutableLiveData<Double> = count.map { it?.toDoubleOrNull() }
-    val totalCount: MutableLiveData<Double> = countValue.map { (it ?: 0.0) + processNonExciseAlcoProductService.getTotalCount()}
+    val totalCount: MutableLiveData<Double> = countValue.map { (it ?: 0.0) + processExciseAlcoProductService.getTotalCount()}
     val totalCountWithUom: MutableLiveData<String> = totalCount.map { "$it ${productInfo.value!!.uom.name}" }
     val suffix: MutableLiveData<String> = MutableLiveData()
     val componentsSets: MutableLiveData<List<ComponentItem>> = MutableLiveData()
@@ -56,14 +57,14 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
             enabled =
                     count != 0.0
                             &&
-                            processNonExciseAlcoProductService.taskRepository.getTotalCountForProduct(productInfoVal, getReason()) + (countValue.value
+                            processExciseAlcoProductService.taskRepository.getTotalCountForProduct(productInfoVal, getReason()) + (countValue.value
                             ?: 0.0) >= 0.0
         }
         enabled
     }
 
     val enabledDetailsButton: MutableLiveData<Boolean> = totalCount.map {
-        processNonExciseAlcoProductService.getTotalCount() > 0.0
+        processExciseAlcoProductService.getTotalCount() > 0.0
     }
 
     fun setProductInfo(productInfo: ProductInfo) {
@@ -76,12 +77,12 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
                 writeOffReasonTitles.value = writeOffTask.taskDescription.moveTypes.map { it.name }
             }
             suffix.value = productInfo.value?.uom?.name
-            //updateComponents()
+            updateComponents()
         }
     }
 
     fun onResume() {
-        //updateComponents()
+        updateComponents()
     }
 
     private fun updateComponents() {
@@ -92,7 +93,8 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
                                 ComponentItem(
                                         number = index + 1,
                                         name = "${productInfo.getMaterialLastSix()} ${productInfo.description}",
-                                        quantity = "${it.taskRepository.getTotalCountForProduct(productInfo)} ${productInfo.uom.name}",
+                                        quantity = "0 из ${it.taskRepository.getTotalCountForProduct(productInfo)}",
+                                        /**quantity = "${processExciseAlcoProductService.getTotalCount()} ${productInfo.uom.name}",*/
                                         even = index % 2 == 0,
                                         productInfo = productInfo)
                             }
@@ -113,25 +115,27 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
         }
     }
 
+
     fun onClickAdd() {
-        addGood()
+        addSet()
     }
 
     fun onClickApply() {
-        addGood()
-        processNonExciseAlcoProductService.apply()
+        addSet()
+        processExciseAlcoProductService.apply()
         screenNavigator.goBack()
     }
 
-    private fun addGood() {
+    private fun addSet() {
         countValue.value?.let {
-            processNonExciseAlcoProductService.add(getReason(), it)
+            processExciseAlcoProductService.add(getReason(), it, TaskExciseStamp.empty)
             count.value = ""
         }
+        updateComponents()
     }
 
     private fun getReason(): WriteOffReason {
-        return processNonExciseAlcoProductService.taskDescription.moveTypes
+        return processExciseAlcoProductService.taskDescription.moveTypes
                 .getOrElse(selectedPosition.value ?: -1) { WriteOffReason.empty }
     }
 
@@ -172,7 +176,7 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
     }
 
     fun onBackPressed() {
-        processNonExciseAlcoProductService.discard()
+        processExciseAlcoProductService.discard()
     }
 
 }

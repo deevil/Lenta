@@ -7,6 +7,17 @@ class TaskExciseStamp(materialNumber: String, code: String, val setMaterialNumbe
     //writeOffReason - причина списания
     //isBasStamp - признак "плохой" марки
 
+    companion object {
+        val empty by lazy {
+            TaskExciseStamp(
+                    materialNumber = "",
+                    code = "",
+                    setMaterialNumber = "",
+                    writeOffReason = "",
+                    isBasStamp = false)
+        }
+    }
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other?.javaClass != javaClass) return false

@@ -33,12 +33,12 @@
             android:layout_height="0dp"
             android:layout_marginBottom="8dp"
             app:items="@{vm.componentsSets}"
-            app:layout_constraintBottom_toTopOf="@+id/spinner_reasons"
+            app:rv_config="@{rvConfig}"
+            app:layout_constraintBottom_toTopOf="@+id/et_search"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/layout_titles"
-            app:rv_config="@{rvConfig}"
-            tools:listitem="@layout/item_tile_goods">
+            tools:listitem="@layout/item_tile_sets">
 
         </androidx.recyclerview.widget.RecyclerView>
 

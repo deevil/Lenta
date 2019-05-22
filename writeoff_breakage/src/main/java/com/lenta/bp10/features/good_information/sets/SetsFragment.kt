@@ -8,7 +8,7 @@ import androidx.databinding.DataBindingUtil
 import com.lenta.bp10.BR
 import com.lenta.bp10.R
 import com.lenta.bp10.databinding.FragmentSetsBinding
-import com.lenta.bp10.databinding.ItemTileGoodsBinding
+import com.lenta.bp10.databinding.ItemTileSetsBinding
 import com.lenta.bp10.databinding.LayoutSetsComponentsBinding
 import com.lenta.bp10.databinding.LayoutSetsQuantityBinding
 import com.lenta.bp10.platform.extentions.getAppComponent
@@ -20,6 +20,7 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.utilities.Logg
+import com.lenta.shared.utilities.databinding.DataBindingAdapter
 import com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig
 import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.databinding.ViewPagerSettings
@@ -103,15 +104,35 @@ class SetsFragment :
                 .inflate<LayoutSetsComponentsBinding>(LayoutInflater.from(container.context),
                         R.layout.layout_sets_components,
                         container,
-                        false).let {
-                    it.lifecycleOwner = viewLifecycleOwner
-                    it.rvConfig = DataBindingRecyclerViewConfig<ItemTileGoodsBinding>(
-                            layoutId = R.layout.item_tile_goods,
-                            itemId = BR.vm
+                        false).let { layoutBinding ->
+
+                    val onClickSelectionListener = View.OnClickListener {
+                        (it!!.tag as Int).let { position ->
+                            vm.componentsSelectionsHelper.revert(position = position)
+                            layoutBinding.rv.adapter?.notifyItemChanged(position)
+                        }
+                    }
+
+                    layoutBinding.lifecycleOwner = viewLifecycleOwner
+                    layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
+                            layoutId = R.layout.item_tile_sets,
+                            itemId = BR.vm,
+                            realisation = object : DataBindingAdapter<ItemTileSetsBinding> {
+                                override fun onCreate(binding: ItemTileSetsBinding) {
+                                }
+
+                                override fun onBind(binding: ItemTileSetsBinding, position: Int) {
+                                    binding.tvCounter.tag = position
+                                    binding.tvCounter.setOnClickListener(onClickSelectionListener)
+                                    binding.selectedForDelete = vm.componentsSelectionsHelper.isSelected(position)
+                                }
+
+                            }
                     )
-                    it.vm = vm
-                    return it.root
+                    layoutBinding.vm = vm
+                    return layoutBinding.root
                 }
+
     }
 
     override fun getTextTitle(position: Int): String = getString(if (position == 0) R.string.quantity else R.string.components)
