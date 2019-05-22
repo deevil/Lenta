@@ -9,19 +9,16 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
+import com.lenta.shared.utilities.extentions.provideViewModel
 
-abstract class CoreTechLoginFragment : CoreFragment<FragmentTechLoginBinding, CoreTechLoginViewModel>(), OnBackPresserListener, ToolbarButtonsClickListener {
+class TechLoginFragment : CoreFragment<FragmentTechLoginBinding, TechLoginViewModel>(), ToolbarButtonsClickListener {
 
     override fun getLayoutId(): Int = R.layout.fragment_tech_login
 
-    override fun onBackPressed(): Boolean {
-        vm.onBackPressed()
-        return true
-    }
+
 
     override fun onToolbarButtonClick(view: View) {
         when (view.id) {
-            R.id.b_1 -> vm.onClickBack()
             R.id.b_5 -> vm.onClickApp()
         }
     }
@@ -32,8 +29,17 @@ abstract class CoreTechLoginFragment : CoreFragment<FragmentTechLoginBinding, Co
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
         bottomToolbarUiModel.cleanAll()
-        bottomToolbarUiModel.uiModelButton1.let { buttonUiModel -> buttonUiModel.show(ButtonDecorationInfo.back) }
-        bottomToolbarUiModel.uiModelButton5.let { buttonUiModel -> buttonUiModel.show(ButtonDecorationInfo.apply) }
+        bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
+        bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.apply)
+    }
+
+    override fun getPageNumber(): String = "10/55"
+
+    override fun getViewModel(): TechLoginViewModel {
+        provideViewModel(TechLoginViewModel::class.java).let {
+            coreComponent.inject(it)
+            return it
+        }
     }
 
 

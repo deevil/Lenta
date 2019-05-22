@@ -23,7 +23,6 @@ import com.lenta.bp10.features.select_market.SelectMarketFragment
 import com.lenta.bp10.features.select_oper_mode.SelectOperModeFragment
 import com.lenta.bp10.features.select_personnel_number.SelectPersonnelNumberFragment
 import com.lenta.bp10.features.settings.SettingsFragment
-import com.lenta.bp10.features.tech_login.TechLoginFragment
 import com.lenta.shared.features.test_environment.TestEnvirFragment
 import com.lenta.bp10.features.write_off_details.WriteOffDetailsFragment
 import com.lenta.bp10.requests.network.WriteOffReportResponse
@@ -130,10 +129,6 @@ class ScreenNavigator(
         getFragmentStack()?.push(TestEnvirFragment())
     }
 
-    override fun openTechLoginScreen() {
-        getFragmentStack()?.push(TechLoginFragment())
-    }
-
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 
     override fun openEanInfoScreen() {
@@ -189,7 +184,6 @@ interface IScreenNavigator : ICoreNavigator {
     fun openLoadingTaskSettingsScreen()
     fun openPrinterChangeScreen()
     fun openTestEnvirScreen()
-    fun openTechLoginScreen()
     fun openGoodsListScreen()
     fun openGoodInfoScreen(productInfo: ProductInfo)
     fun openEanInfoScreen()

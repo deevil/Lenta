@@ -7,6 +7,7 @@ import com.lenta.shared.exception.Failure
 import com.lenta.shared.exception.IFailureInterpreter
 import com.lenta.shared.features.alert.AlertFragment
 import com.lenta.shared.features.support.SupportFragment
+import com.lenta.shared.features.tech_login.TechLoginFragment
 import com.lenta.shared.interactor.UseCase
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
 
@@ -55,6 +56,11 @@ class CoreNavigator constructor(private val context: Context,
         foregroundActivityProvider.getActivity()?.getViewModel()?.hideProgress()
     }
 
+    override fun openTechLoginScreen() {
+        getFragmentStack()?.push(TechLoginFragment())
+    }
+
+
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 
 }
@@ -69,4 +75,5 @@ interface ICoreNavigator {
     fun <Params> showProgress(useCase: UseCase<Any, Params>)
     fun showProgress(title: String)
     fun hideProgress()
+    fun openTechLoginScreen()
 }
