@@ -42,6 +42,7 @@
             app:layout_constraintHorizontal_chainStyle="spread_inside"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
+            app:requestFocus="@{vm.uiModelButton1.requestFocus}"
             tools:drawableTop="@drawable/ic_arrow_back_white_24dp"
             tools:text="@string/back" />
 
@@ -66,6 +67,7 @@
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toEndOf="@+id/b_1"
             app:layout_constraintTop_toTopOf="parent"
+            app:requestFocus="@{vm.uiModelButton2.requestFocus}"
             tools:drawableTop="@drawable/ic_restore_white_24dp"
             tools:text="@string/revert" />
 
@@ -90,6 +92,7 @@
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toEndOf="@+id/b_2"
             app:layout_constraintTop_toTopOf="parent"
+            app:requestFocus="@{vm.uiModelButton3.requestFocus}"
             tools:drawableTop="@drawable/ic_description_white_24dp"
             tools:text="@string/details" />
 
@@ -114,6 +117,7 @@
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toEndOf="@+id/b_3"
             app:layout_constraintTop_toTopOf="parent"
+            app:requestFocus="@{vm.uiModelButton4.requestFocus}"
             tools:drawableTop="@drawable/ic_add_white_24dp"
             tools:text="@string/add" />
 
@@ -121,7 +125,6 @@
             android:id="@+id/b_5"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingEnd="4dp"
             android:background="?selectableItemBackground"
             android:clickable="@{vm.uiModelButton5.enabled}"
             android:enabled="@{vm.uiModelButton5.enabled}"
@@ -130,6 +133,7 @@
             android:minWidth="60dp"
             android:onClick="@{(v) -> toolbarButtonsClickListener.onToolbarButtonClick(v)}"
             android:paddingTop="8dp"
+            android:paddingEnd="4dp"
             android:paddingBottom="8dp"
             android:textSize="12sp"
             app:buttonDecorationInfo='@{vm.uiModelButton5.buttonDecorationInfo}'
@@ -139,6 +143,7 @@
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toEndOf="@+id/b_4"
             app:layout_constraintTop_toTopOf="parent"
+            app:requestFocus="@{vm.uiModelButton5.requestFocus}"
             tools:drawableTop="@drawable/ic_done_white_24dp"
             tools:text="@string/apply" />
 

@@ -52,6 +52,7 @@ class PrinterChangeViewModel : CoreViewModel(), OnPositionClickListener {
         if (list.isNotEmpty() && selectedPosition.value == null) {
             onClickPosition(0)
         } else {
+            screenNavigator.goBack()
             screenNavigator.openAlertScreen(txtNotFoundPrinter.value!!)
         }
     }

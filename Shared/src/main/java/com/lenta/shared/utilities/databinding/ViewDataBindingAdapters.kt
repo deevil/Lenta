@@ -24,3 +24,8 @@ fun setInvisible(view: View, invisible: Boolean?) {
 fun setSelected(view: View, selected: Boolean?) {
     view.isSelected = selected ?: false
 }
+
+@BindingAdapter("requestFocus")
+fun requestFocus(view: View, requestFocus: Any?) {
+    view.requestFocus()
+}

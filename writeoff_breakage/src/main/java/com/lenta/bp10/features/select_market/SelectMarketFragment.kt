@@ -1,6 +1,7 @@
 package com.lenta.bp10.features.select_market
 
 import android.view.View
+import androidx.lifecycle.Observer
 import com.lenta.bp10.R
 import com.lenta.bp10.databinding.FragmentSelectMarketBinding
 import com.lenta.bp10.platform.extentions.getAppComponent
@@ -34,6 +35,10 @@ class SelectMarketFragment : CoreFragment<FragmentSelectMarketBinding, SelectMar
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
         bottomToolbarUiModel
                 .uiModelButton5.show(ButtonDecorationInfo.next)
+        vm.selectedPosition.observe(viewLifecycleOwner, Observer {
+            bottomToolbarUiModel
+                    .uiModelButton5.requestFocus()
+        })
     }
 
     override fun onToolbarButtonClick(view: View) {
