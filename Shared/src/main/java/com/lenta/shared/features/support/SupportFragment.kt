@@ -1,28 +1,16 @@
 package com.lenta.shared.features.support
 
-import android.view.View
 import com.lenta.shared.R
 import com.lenta.shared.databinding.FragmentSupportBinding
-import com.lenta.shared.platform.activity.OnBackPresserListener
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
-import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
+import com.lenta.shared.utilities.extentions.provideViewModel
 
-abstract class CoreSupportFragment : CoreFragment<FragmentSupportBinding, CoreSupportViewModel>(), OnBackPresserListener, ToolbarButtonsClickListener {
+class SupportFragment : CoreFragment<FragmentSupportBinding, SupportViewModel>() {
     override fun getLayoutId(): Int = R.layout.fragment_support
 
-    override fun onBackPressed(): Boolean {
-        vm.onBackPressed()
-        return true
-    }
-
-    override fun onToolbarButtonClick(view: View) {
-        when (view.id) {
-            R.id.b_1 -> vm.onClickBack()
-        }
-    }
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
         topToolbarUiModel.description.value = resources.getString(R.string.support)
@@ -30,6 +18,15 @@ abstract class CoreSupportFragment : CoreFragment<FragmentSupportBinding, CoreSu
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
         bottomToolbarUiModel.cleanAll()
-        bottomToolbarUiModel.uiModelButton1.let { buttonUiModel -> buttonUiModel.show(ButtonDecorationInfo.back) }
+        bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
+    }
+
+    override fun getPageNumber(): String = "10/52"
+
+    override fun getViewModel(): SupportViewModel {
+        provideViewModel(SupportViewModel::class.java).let {
+            coreComponent.inject(it)
+            return it
+        }
     }
 }

@@ -8,6 +8,7 @@ import com.lenta.shared.exception.IFailureInterpreter
 import com.lenta.shared.features.fmp_settings.FmpSettingsViewModel
 import com.lenta.shared.features.message.MessageViewModel
 import com.lenta.shared.features.printer_change.PrinterChangeViewModel
+import com.lenta.shared.features.support.SupportViewModel
 import com.lenta.shared.platform.network_state.INetworkStateMonitor
 import com.lenta.shared.platform.network_state.NetworkStateMonitor
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
@@ -47,4 +48,5 @@ interface CoreComponent {
     fun inject(it: FmpSettingsViewModel)
     fun inject(it: MessageViewModel)
     fun inject(it: PrinterChangeViewModel)
+    fun inject(it: SupportViewModel)
 }

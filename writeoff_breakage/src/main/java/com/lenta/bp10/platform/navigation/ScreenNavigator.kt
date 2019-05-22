@@ -23,7 +23,6 @@ import com.lenta.bp10.features.select_market.SelectMarketFragment
 import com.lenta.bp10.features.select_oper_mode.SelectOperModeFragment
 import com.lenta.bp10.features.select_personnel_number.SelectPersonnelNumberFragment
 import com.lenta.bp10.features.settings.SettingsFragment
-import com.lenta.bp10.features.support.SupportFragment
 import com.lenta.bp10.features.tech_login.TechLoginFragment
 import com.lenta.bp10.features.test_environment.TestEnvirFragment
 import com.lenta.bp10.features.write_off_details.WriteOffDetailsFragment
@@ -130,9 +129,7 @@ class ScreenNavigator(
         getFragmentStack()?.push(SetsFragment.create(productInfo))
     }
 
-    override fun openSupportScreen() {
-        getFragmentStack()?.push(SupportFragment())
-    }
+
 
     override fun openPrinterChangeScreen() {
         getFragmentStack()?.push(PrinterChangeFragment())
@@ -196,7 +193,6 @@ interface IScreenNavigator : ICoreNavigator {
     fun openAuxiliaryMenuScreen()
     fun openSelectOperModeScreen()
     fun openSettingsScreen()
-    fun openSupportScreen()
     fun hideProgress()
     fun <Params> showProgress(useCase: UseCase<Any, Params>)
     fun openMainMenuScreen()

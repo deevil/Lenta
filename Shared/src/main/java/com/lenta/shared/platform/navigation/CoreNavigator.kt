@@ -4,6 +4,7 @@ import android.os.Bundle
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.exception.IFailureInterpreter
 import com.lenta.shared.features.alert.AlertFragment
+import com.lenta.shared.features.support.SupportFragment
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
 
 
@@ -33,6 +34,10 @@ class CoreNavigator constructor(private val foregroundActivityProvider: Foregrou
         openAlertScreen(failureInterpreter.getFailureDescription(failure))
     }
 
+    override fun openSupportScreen() {
+        getFragmentStack()?.push(SupportFragment())
+    }
+
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 
 }
@@ -43,4 +48,5 @@ interface ICoreNavigator {
     fun finishApp()
     fun openAlertScreen(message: String)
     fun openAlertScreen(failure: Failure)
+    fun openSupportScreen()
 }

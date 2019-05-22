@@ -18,7 +18,7 @@ import com.lenta.bp10.features.select_market.SelectMarketViewModel
 import com.lenta.bp10.features.select_oper_mode.SelectOperModeViewModel
 import com.lenta.bp10.features.select_personnel_number.SelectPersonnelNumberViewModel
 import com.lenta.bp10.features.settings.SettingsViewModel
-import com.lenta.bp10.features.support.SupportViewModel
+import com.lenta.shared.features.support.SupportViewModel
 import com.lenta.bp10.features.tech_login.TechLoginViewModel
 import com.lenta.bp10.features.test_environment.TestEnvirViewModel
 import com.lenta.bp10.features.write_off_details.WriteOffDetailsViewModel
