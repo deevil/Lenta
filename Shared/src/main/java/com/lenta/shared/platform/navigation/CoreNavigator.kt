@@ -6,8 +6,11 @@ import com.lenta.shared.R
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.exception.IFailureInterpreter
 import com.lenta.shared.features.alert.AlertFragment
+import com.lenta.shared.features.fmp_settings.FmpSettingsFragment
+import com.lenta.shared.features.select_oper_mode.SelectOperModeFragment
 import com.lenta.shared.features.support.SupportFragment
 import com.lenta.shared.features.tech_login.TechLoginFragment
+import com.lenta.shared.features.test_environment.TestEnvirFragment
 import com.lenta.shared.interactor.UseCase
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
 
@@ -60,6 +63,17 @@ class CoreNavigator constructor(private val context: Context,
         getFragmentStack()?.push(TechLoginFragment())
     }
 
+    override fun openConnectionsSettingsScreen() {
+        getFragmentStack()?.push(FmpSettingsFragment())
+    }
+
+    override fun openTestEnvirScreen() {
+        getFragmentStack()?.push(TestEnvirFragment())
+    }
+
+    override fun openSelectOperModeScreen() {
+        getFragmentStack()?.push(SelectOperModeFragment())
+    }
 
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 
@@ -76,4 +90,7 @@ interface ICoreNavigator {
     fun showProgress(title: String)
     fun hideProgress()
     fun openTechLoginScreen()
+    fun openConnectionsSettingsScreen()
+    fun openTestEnvirScreen()
+    fun openSelectOperModeScreen()
 }

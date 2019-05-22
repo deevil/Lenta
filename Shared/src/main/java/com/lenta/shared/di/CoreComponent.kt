@@ -8,6 +8,7 @@ import com.lenta.shared.exception.IFailureInterpreter
 import com.lenta.shared.features.fmp_settings.FmpSettingsViewModel
 import com.lenta.shared.features.message.MessageViewModel
 import com.lenta.shared.features.printer_change.PrinterChangeViewModel
+import com.lenta.shared.features.select_oper_mode.SelectOperModeViewModel
 import com.lenta.shared.features.support.SupportViewModel
 import com.lenta.shared.features.tech_login.TechLoginViewModel
 import com.lenta.shared.features.test_environment.TestEnvirViewModel
@@ -53,4 +54,5 @@ interface CoreComponent {
     fun inject(it: SupportViewModel)
     fun inject(it: TestEnvirViewModel)
     fun inject(it: TechLoginViewModel)
+    fun inject(it: SelectOperModeViewModel)
 }

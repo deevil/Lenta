@@ -20,7 +20,6 @@ import com.lenta.shared.features.printer_change.PrinterChangeFragment
 import com.lenta.bp10.features.report_result.ReportResultFragment
 import com.lenta.bp10.features.section_info.SectionInfoFragment
 import com.lenta.bp10.features.select_market.SelectMarketFragment
-import com.lenta.bp10.features.select_oper_mode.SelectOperModeFragment
 import com.lenta.bp10.features.select_personnel_number.SelectPersonnelNumberFragment
 import com.lenta.bp10.features.settings.SettingsFragment
 import com.lenta.shared.features.test_environment.TestEnvirFragment
@@ -82,10 +81,6 @@ class ScreenNavigator(
         getFragmentStack()?.push(AuxiliaryMenuFragment())
     }
 
-
-    override fun openSelectOperModeScreen() {
-        getFragmentStack()?.push(SelectOperModeFragment())
-    }
 
     override fun <Params> showProgress(useCase: UseCase<Any, Params>) {
         showProgress(progressUseCaseInformator.getTitle(useCase))
@@ -165,9 +160,7 @@ class ScreenNavigator(
         getFragmentStack()?.push(WriteOffDetailsFragment.create(productInfo))
     }
 
-    override fun openConnectionsSettingsScreen() {
-        getFragmentStack()?.push(FmpSettingsFragment())
-    }
+
 }
 
 interface IScreenNavigator : ICoreNavigator {
@@ -177,13 +170,11 @@ interface IScreenNavigator : ICoreNavigator {
     fun openFastDataLoadingScreen()
     fun openSelectionPersonnelNumberScreen()
     fun openAuxiliaryMenuScreen()
-    fun openSelectOperModeScreen()
     fun openSettingsScreen()
     fun openMainMenuScreen()
     fun openJobCardScreen()
     fun openLoadingTaskSettingsScreen()
     fun openPrinterChangeScreen()
-    fun openTestEnvirScreen()
     fun openGoodsListScreen()
     fun openGoodInfoScreen(productInfo: ProductInfo)
     fun openEanInfoScreen()
@@ -195,5 +186,4 @@ interface IScreenNavigator : ICoreNavigator {
     fun openMatrixInfoScreen(matrixType: MatrixType)
     fun openSectionInfoScreen(section: Int)
     fun openGoodsReasonsScreen(productInfo: ProductInfo)
-    fun openConnectionsSettingsScreen()
 }
