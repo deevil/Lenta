@@ -1,5 +1,7 @@
 package com.lenta.bp10.activity.main
 
+import android.content.Intent
+import android.content.Intent.*
 import androidx.lifecycle.ViewModelProviders
 import com.lenta.bp10.di.AppComponent
 import com.lenta.bp10.platform.extentions.getAppComponent
@@ -28,6 +30,13 @@ class MainActivity : CoreMainActivity() {
 
     override fun onClickExit() {
         mainViewModel?.onExitClick()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        startActivity(Intent(applicationContext, this::class.java).apply {
+            flags = FLAG_ACTIVITY_REORDER_TO_FRONT
+        })
     }
 
 }

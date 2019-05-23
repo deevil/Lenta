@@ -26,7 +26,7 @@ class FragmentStack(private val manager: FragmentManager, private val containerI
     /**
      * Pushes a fragment to the top of the stack.
      */
-    fun push(fragment: Fragment, customAnimation: CustomAnimation? = null, disableAnimations: Boolean = true) {
+    fun push(fragment: Fragment, customAnimation: CustomAnimation? = null, disableAnimations: Boolean = false) {
         val transaction = manager.beginTransaction()
         if (!disableAnimations) {
             val animation = customAnimation ?: defaultAnimation
