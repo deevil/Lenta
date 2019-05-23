@@ -3,7 +3,6 @@ package com.lenta.shared.features.tech_login
 import android.view.View
 import com.lenta.shared.R
 import com.lenta.shared.databinding.FragmentTechLoginBinding
-import com.lenta.shared.platform.activity.OnBackPresserListener
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
@@ -19,7 +18,7 @@ class TechLoginFragment : CoreFragment<FragmentTechLoginBinding, TechLoginViewMo
 
     override fun onToolbarButtonClick(view: View) {
         when (view.id) {
-            R.id.b_5 -> vm.onClickApp()
+            R.id.b_5 -> vm.onClickApply()
         }
     }
 

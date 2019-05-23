@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:tools="http://schemas.android.com/tools"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+
         <variable
             name="vm"
-            type="com.lenta.shared.features.select_oper_mode.SelectOperModeViewModel"/>
+            type="com.lenta.shared.features.select_oper_mode.SelectOperModeViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -35,6 +36,7 @@
             android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp"
             android:layout_marginBottom="16dp"
+            android:enabled="@{vm.buttonNetworkSettingsEnabled}"
             android:layoutDirection="rtl"
             android:onClick="@{(view) -> vm.onClickSettingsConnections()}"
             android:text="@string/connection_settings"
@@ -51,6 +53,7 @@
             android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp"
             android:layout_marginBottom="16dp"
+            android:enabled="@{vm.buttonTestEnvEnabled}"
             android:onClick="@{(view) -> vm.onClickTestEnvir()}"
             android:text="@string/test_environment"
             android:textAllCaps="false"
@@ -65,6 +68,7 @@
             android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp"
             android:layout_marginBottom="16dp"
+            android:enabled="@{vm.buttonWorkEnvEnabled}"
             android:onClick="@{(view) -> vm.onClickWorkEnvir()}"
             android:text="@string/work_environment"
             android:textAllCaps="false"

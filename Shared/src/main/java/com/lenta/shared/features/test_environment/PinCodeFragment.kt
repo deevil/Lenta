@@ -2,8 +2,6 @@ package com.lenta.shared.features.test_environment
 
 import android.view.View
 import com.lenta.shared.R
-import com.lenta.shared.databinding.FragmentTestEnvironmentBinding
-import com.lenta.shared.platform.activity.OnBackPresserListener
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
@@ -11,8 +9,12 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListe
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.utilities.extentions.provideViewModel
 
-class TestEnvirFragment : CoreFragment<FragmentTestEnvironmentBinding, TestEnvirViewModel>(), ToolbarButtonsClickListener {
-    override fun getLayoutId(): Int = R.layout.fragment_test_environment
+class PinCodeFragment : CoreFragment<com.lenta.shared.databinding.FragmentPinCodeBinding, PinCodeViewModel>(), ToolbarButtonsClickListener {
+
+    private var requestCode: Int? = null
+    private var message: String? = null
+
+    override fun getLayoutId(): Int = R.layout.fragment_pin_code
 
 
     override fun onToolbarButtonClick(view: View) {
@@ -33,10 +35,28 @@ class TestEnvirFragment : CoreFragment<FragmentTestEnvironmentBinding, TestEnvir
 
     override fun getPageNumber(): String = "10/56"
 
-    override fun getViewModel(): TestEnvirViewModel {
-        provideViewModel(TestEnvirViewModel::class.java).let {
-            coreComponent.inject(it)
-            return it
+    override fun getViewModel(): PinCodeViewModel {
+        provideViewModel(PinCodeViewModel::class.java).let { viewModel ->
+            coreComponent.inject(viewModel)
+
+            requestCode?.let {
+                viewModel.requestCode = it
+            }
+
+            message?.let {
+                viewModel.message.value = it
+            }
+
+            return viewModel
+        }
+    }
+
+    companion object {
+        fun create(requestCode: Int, message: String): PinCodeFragment {
+            return PinCodeFragment().apply {
+                this.requestCode = requestCode
+                this.message = message
+            }
         }
     }
 }

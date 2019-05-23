@@ -6,7 +6,7 @@
     <data>
         <variable
             name="vm"
-            type="com.lenta.shared.features.test_environment.TestEnvirViewModel"/>
+            type="com.lenta.shared.features.test_environment.PinCodeViewModel"/>
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -15,10 +15,13 @@
 
         <TextView
             android:id="@+id/tv_test_envir"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
             android:layout_marginBottom="32dp"
-            android:text="@string/tv_test_envir"
+            android:gravity="center"
+            android:text="@{vm.message}"
             app:layout_constraintBottom_toTopOf="@+id/linearLayout"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />

@@ -19,7 +19,6 @@ import com.lenta.bp10.features.report_result.ReportResultFragment
 import com.lenta.bp10.features.section_info.SectionInfoFragment
 import com.lenta.bp10.features.select_market.SelectMarketFragment
 import com.lenta.bp10.features.select_personnel_number.SelectPersonnelNumberFragment
-import com.lenta.shared.features.test_environment.TestEnvirFragment
 import com.lenta.bp10.features.write_off_details.WriteOffDetailsFragment
 import com.lenta.bp10.requests.network.WriteOffReportResponse
 import com.lenta.shared.account.IAuthenticator
@@ -107,10 +106,6 @@ class ScreenNavigator(
 
     override fun openPrinterChangeScreen() {
         getFragmentStack()?.push(PrinterChangeFragment())
-    }
-
-    override fun openTestEnvirScreen() {
-        getFragmentStack()?.push(TestEnvirFragment())
     }
 
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack

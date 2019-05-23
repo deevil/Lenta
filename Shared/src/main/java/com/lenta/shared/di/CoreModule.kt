@@ -50,10 +50,10 @@ class CoreModule(val application: Application, val defaultConnectionSettings: De
     @Singleton
     internal fun provideHyperHiveState(appContext: Context, appSettings: IAppSettings): HyperHiveState {
         return HyperHiveState(appContext)
-                .setHostWithSchema(appSettings.serverAddress)
+                .setHostWithSchema(appSettings.getCurrentServerAddress())
                 .setApiVersion(VersionAPI.V_1)
-                .setEnvironmentSlug(appSettings.environment)
-                .setProjectSlug(appSettings.project)
+                .setEnvironmentSlug(appSettings.getCurrentEnvironment())
+                .setProjectSlug(appSettings.getCurrentProject())
                 .setVersionProject("app")
                 .setHandler(Handler())
                 .setDefaultRetryCount(6)
@@ -130,8 +130,8 @@ class CoreModule(val application: Application, val defaultConnectionSettings: De
     @Provides
     @Singleton
     internal fun provideICoreNavigator(context: Context,
-                                         foregroundActivityProvider: ForegroundActivityProvider,
-                                         failureInterpreter: IFailureInterpreter): ICoreNavigator {
+                                       foregroundActivityProvider: ForegroundActivityProvider,
+                                       failureInterpreter: IFailureInterpreter): ICoreNavigator {
         return CoreNavigator(context, foregroundActivityProvider, failureInterpreter)
     }
 

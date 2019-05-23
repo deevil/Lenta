@@ -1,5 +1,6 @@
 package com.lenta.shared.features.test_environment
 
+import android.os.Bundle
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.shared.exception.Failure
@@ -12,12 +13,13 @@ import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class TestEnvirViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
+class PinCodeViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
+    var requestCode: Int? = null
+    val message: MutableLiveData<String> = MutableLiveData("")
     val pinCode1: MutableLiveData<String> = MutableLiveData("")
     val pinCode2: MutableLiveData<String> = MutableLiveData("")
     val pinCode3: MutableLiveData<String> = MutableLiveData("")
     val pinCode4: MutableLiveData<String> = MutableLiveData("")
-
 
 
     @Inject
@@ -25,7 +27,6 @@ class TestEnvirViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
     @Inject
     lateinit var screenNavigator: ICoreNavigator
-
 
 
     fun onClickGoOver() {
@@ -38,11 +39,11 @@ class TestEnvirViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
     private fun handleSuccess(pinCode: PinCodeInfo) {
         Logg.d { "handleSuccess $pinCode" }
-        if (pinCode.pinCode == pinCode1.value+pinCode2.value+pinCode3.value+pinCode4.value) {
-            //todo смена среды на тестовую
-            screenNavigator.goBack()
-        }
-        else {
+        if (pinCode.pinCode == pinCode1.value + pinCode2.value + pinCode3.value + pinCode4.value) {
+            screenNavigator.goBackWithArgs(Bundle().apply {
+                putInt(KEY_ARGS_ID_CODE_CONFIRM, requestCode ?: 0)
+            })
+        } else {
             screenNavigator.openAlertScreen("Пин-код неверный")
         }
     }
@@ -53,10 +54,12 @@ class TestEnvirViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     }
 
 
-
-
     override fun onOkInSoftKeyboard(): Boolean {
         onClickGoOver()
         return true
+    }
+
+    companion object {
+        val KEY_ARGS_ID_CODE_CONFIRM by lazy { "KEY_ARGS_ID_CODE_CONFIRM" }
     }
 }

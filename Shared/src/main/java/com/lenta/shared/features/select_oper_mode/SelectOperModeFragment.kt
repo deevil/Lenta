@@ -1,5 +1,6 @@
 package com.lenta.shared.features.select_oper_mode
 
+import android.os.Bundle
 import android.view.View
 import com.lenta.shared.R
 import com.lenta.shared.databinding.FragmentSelectOperModeBinding
@@ -10,7 +11,8 @@ import com.lenta.shared.platform.toolbar.top_toolbar.ImageButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.utilities.extentions.provideViewModel
 
-class SelectOperModeFragment : CoreFragment<FragmentSelectOperModeBinding, SelectOperModeViewModel>(), ToolbarButtonsClickListener {
+class SelectOperModeFragment : CoreFragment<FragmentSelectOperModeBinding, SelectOperModeViewModel>(),
+        ToolbarButtonsClickListener {
     override fun getLayoutId(): Int = R.layout.fragment_select_oper_mode
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
@@ -37,5 +39,9 @@ class SelectOperModeFragment : CoreFragment<FragmentSelectOperModeBinding, Selec
             coreComponent.inject(it)
             return it
         }
+    }
+
+    override fun onFragmentResult(arguments: Bundle) {
+        vm.onPinCodeSuccess(arguments)
     }
 }
