@@ -2,6 +2,7 @@ package com.lenta.shared.settings
 
 import android.annotation.SuppressLint
 import android.content.SharedPreferences
+import androidx.lifecycle.MutableLiveData
 import javax.inject.Inject
 
 @Suppress("NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
@@ -62,6 +63,14 @@ class AppSettings @Inject constructor(
         }
 
 
+    override var printer: String?
+        get() = sharedPrefferences.getString("printer", null)
+        set(value) {
+            sharedPrefferences.edit().putString("printer", value).commit()
+            printerLiveData.value = value
+        }
+
+
     override var lastLogin: String?
         get() = sharedPrefferences.getString("lastLogin", null)
         set(value) {
@@ -98,6 +107,8 @@ class AppSettings @Inject constructor(
         return if (isTest) testProject else project
     }
 
+    override val printerLiveData: MutableLiveData<String?> = MutableLiveData(printer)
+
 
 }
 
@@ -110,6 +121,9 @@ interface IAppSettings {
     var testEnvironment: String
     var testProject: String
     var lastLogin: String?
+
+    var printer: String?
+    val printerLiveData: MutableLiveData<String?>
 
     var techLogin: String
     var techPassword: String

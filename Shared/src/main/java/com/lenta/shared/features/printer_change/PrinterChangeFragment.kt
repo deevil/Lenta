@@ -28,7 +28,7 @@ class PrinterChangeFragment : CoreFragment<FragmentPrinterChangeBinding, Printer
 
     override fun onToolbarButtonClick(view: View) {
         when (view.id) {
-            R.id.b_5 -> vm.onClickApp()
+            R.id.b_5 -> vm.onClickApply()
         }
     }
 

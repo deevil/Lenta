@@ -63,7 +63,6 @@ abstract class CoreMainActivity : CoreActivity<ActivityMainBinding>(), ToolbarBu
         binding?.toolbarButtonsClickListener = this
 
         binding?.vm = vm
-        vm.statusBarUiModel.printerTasksCount.value = -1
 
         scanHelper.scanResult.observe(this, Observer<String> {
             Logg.d { "scan result: $it" }
