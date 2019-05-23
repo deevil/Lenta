@@ -43,6 +43,7 @@ class FmpSettingsViewModel : CoreViewModel() {
             appSettings.project = project.value ?: ""
         }
 
+        appSettings.isTest = true
         coreNavigator.finishApp()
 
     }

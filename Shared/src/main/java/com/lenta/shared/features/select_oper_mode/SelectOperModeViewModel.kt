@@ -17,16 +17,12 @@ class SelectOperModeViewModel : CoreViewModel() {
     @Inject
     lateinit var appSettings: IAppSettings
 
-    val buttonNetworkSettingsEnabled = MutableLiveData(false)
-    val buttonTestEnvEnabled = MutableLiveData(false)
     val buttonWorkEnvEnabled = MutableLiveData(false)
 
     init {
         viewModelScope.launch {
             appSettings.isTest.let {
-                buttonTestEnvEnabled.value = !appSettings.isTest
                 buttonWorkEnvEnabled.value = appSettings.isTest
-                buttonNetworkSettingsEnabled.value = appSettings.isTest
             }
 
         }
@@ -43,18 +39,10 @@ class SelectOperModeViewModel : CoreViewModel() {
         screenNavigator.finishApp()
     }
 
-    fun onClickSettingsConnections() {
-        screenNavigator.openPinCodeForNetworkSettings()
-    }
-
     fun onPinCodeSuccess(bundle: Bundle) {
         bundle.getInt(PinCodeViewModel.KEY_ARGS_ID_CODE_CONFIRM).let {
             when (it) {
-                REQUEST_CODE_NETWORK_SETTINGS -> screenNavigator.openConnectionsSettingsScreen()
-                REQUEST_CODE_TEST_ENVIRONMENT -> {
-                    appSettings.isTest = true
-                    screenNavigator.finishApp()
-                }
+                REQUEST_CODE_TEST_ENVIRONMENT -> screenNavigator.openConnectionsSettingsScreen()
             }
         }
     }
@@ -64,7 +52,6 @@ class SelectOperModeViewModel : CoreViewModel() {
     }
 
     companion object {
-        const val REQUEST_CODE_NETWORK_SETTINGS = 10
         const val REQUEST_CODE_TEST_ENVIRONMENT = 11
     }
 

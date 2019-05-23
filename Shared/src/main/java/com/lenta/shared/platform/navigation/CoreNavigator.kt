@@ -82,13 +82,6 @@ class CoreNavigator constructor(private val context: Context,
                         context.getString(R.string.tv_test_envir)))
     }
 
-    override fun openPinCodeForNetworkSettings() {
-        getFragmentStack()?.push(
-                PinCodeFragment.create(
-                        SelectOperModeViewModel.REQUEST_CODE_NETWORK_SETTINGS,
-                        context.getString(R.string.pin_change_net_settings_info)))
-    }
-
     override fun openSelectOperModeScreen() {
         getFragmentStack()?.push(SelectOperModeFragment())
     }
@@ -123,7 +116,6 @@ interface ICoreNavigator {
     fun openConnectionsSettingsScreen()
     fun openPinCodeScreen(requestCode: Int, message: String)
     fun openPinCodeForTestEnvironment()
-    fun openPinCodeForNetworkSettings()
     fun openSelectOperModeScreen()
     fun openPrinterChangeScreen()
     fun openSettingsScreen()
