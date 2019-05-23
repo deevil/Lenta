@@ -152,6 +152,9 @@ class RecyclerViewKeyHandler<T>(private val rv: RecyclerView,
             rv.adapter?.notifyItemChanged(info.currentPos)
             rv.scrollToPosition(info.currentPos)
         })
+        items.observe(lifecycleOwner, Observer {
+            clearPositions()
+        })
     }
 
     fun onKeyDown(keyCode: KeyCode): Boolean {
@@ -178,6 +181,10 @@ class RecyclerViewKeyHandler<T>(private val rv: RecyclerView,
 
     fun isSelected(pos: Int): Boolean {
         return pos == posInfo.value!!.currentPos
+    }
+
+    fun clearPositions() {
+        posInfo.value = PosInfo(-1, -1)
     }
 
 

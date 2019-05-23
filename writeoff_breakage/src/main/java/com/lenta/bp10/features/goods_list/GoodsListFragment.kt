@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.Observer
 import com.lenta.bp10.BR
 import com.lenta.bp10.R
 import com.lenta.bp10.databinding.*
