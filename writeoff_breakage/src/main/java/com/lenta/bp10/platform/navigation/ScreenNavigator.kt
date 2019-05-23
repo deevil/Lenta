@@ -7,6 +7,7 @@ import com.lenta.bp10.features.auth.AuthFragment
 import com.lenta.bp10.features.auxiliary_menu.AuxiliaryMenuFragment
 import com.lenta.bp10.features.exit.ExitWithConfirmationFragment
 import com.lenta.bp10.features.good_information.general.GoodInfoFragment
+import com.lenta.bp10.features.good_information.sets.ComponentItem
 import com.lenta.bp10.features.good_information.sets.SetsFragment
 import com.lenta.bp10.features.good_information.sets.component.ComponentFragment
 import com.lenta.bp10.features.goods_list.GoodsListFragment
@@ -147,8 +148,8 @@ class ScreenNavigator(
         getFragmentStack()?.push(TechLoginFragment())
     }
 
-    override fun openComponentSetScreen() {
-        getFragmentStack()?.push(ComponentFragment())
+    override fun openComponentSetScreen(productInfo: ProductInfo, componentItem: ComponentItem) {
+        getFragmentStack()?.push(ComponentFragment.create(productInfo,componentItem))
     }
 
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
@@ -156,6 +157,11 @@ class ScreenNavigator(
     override fun openEanInfoScreen() {
         getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.ean_info),
                 iconRes = R.drawable.ic_scan_barcode))
+    }
+
+    override fun openESInfoScreen() {
+        getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.es_info),
+                iconRes = R.drawable.is_scan_barcode_es))
     }
 
     override fun openExitConfirmationScreen() {
@@ -213,6 +219,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openGoodsListScreen()
     fun openGoodInfoScreen(productInfo: ProductInfo)
     fun openEanInfoScreen()
+    fun openESInfoScreen()
     fun openExitConfirmationScreen()
     fun openRemoveTaskConfirmationScreen(taskDescription: String, codeConfirmation: Int)
     fun openSendingReportsScreen(writeOffReportResponse: WriteOffReportResponse)
@@ -222,5 +229,5 @@ interface IScreenNavigator : ICoreNavigator {
     fun openSectionInfoScreen(section: Int)
     fun openGoodsReasonsScreen(productInfo: ProductInfo)
     fun openConnectionsSettingsScreen()
-    fun openComponentSetScreen()
+    fun openComponentSetScreen(productInfo: ProductInfo, componentItem: ComponentItem)
 }

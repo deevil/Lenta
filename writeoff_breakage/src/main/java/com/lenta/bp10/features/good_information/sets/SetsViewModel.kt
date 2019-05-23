@@ -104,14 +104,17 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
 
     fun onResume() {
         updateComponents()
+        Logg.d { "updateComponents"}
     }
 
     private fun updateComponents() {
+
         val components =  zmpUtz46V001.getComponentsForSet(productInfo.value!!.materialNumber)
         //Logg.d { "testrest ${test46.map { it!!.matnr }}"}
 
         val componentsInfo = zmpUtz30V001.getComponentsInfoForSet(components.map { it.matnr })
 
+        count.value = count.value
         processServiceManager.getWriteOffTask()?.let { writeOffTask ->
             componentsSets.postValue(
                     mutableListOf<ComponentItem>().apply {
@@ -120,7 +123,9 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
                                     number = indComp + 1,
                                     name = "${componentsInfo.get(indComp).material.substring(componentsInfo.get(indComp).material.length - 6)} ${componentsInfo.get(indComp).name}",
                                     quantity = "${getCountExciseStampsForComponent(componentsInfo.get(indComp).material)} из ${components.get(indComp).menge}",
+                                    menge = components.get(indComp).menge.toString(),
                                     even = indComp % 2 == 0,
+                                    selectedPosition = selectedPosition.value!!,
                                     materialNumber = componentsInfo.get(indComp).material))
                         }
                     }
@@ -174,6 +179,7 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
 
     override fun onClickPosition(position: Int) {
         selectedPosition.value = position
+        updateComponents()
     }
 
     override fun onOkInSoftKeyboard(): Boolean {
@@ -185,17 +191,16 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
     private fun searchEANCode() {
         viewModelScope.launch {
             eanCode.value?.let {
-                productInfoDbRequest(ProductInfoRequestParams(number = it)).either(::handleFailure, ::handleSearchSuccess)
+                productInfoDbRequest(ProductInfoRequestParams(number = it)).either(::handleFailure, ::handleSearchEANSuccess)
             }
 
         }
     }
 
-    private fun handleSearchSuccess(componentInfo: ProductInfo) {
-        //TODO редактировать
+    private fun handleSearchEANSuccess(componentInfo: ProductInfo) {
         componentsSets.value!!.forEachIndexed { index, componentItem ->
             if (componentItem.materialNumber == componentInfo.materialNumber) {
-                screenNavigator.openComponentSetScreen()
+                screenNavigator.openComponentSetScreen(productInfo.value!!, componentItem)
                 return
             }
         }
@@ -216,7 +221,9 @@ data class ComponentItem(
         val number: Int,
         val name: String,
         val quantity: String,
+        val menge: String,
         val even: Boolean,
+        val selectedPosition: Int,
         val materialNumber: String
 ) : Evenable {
     override fun isEven() = even
