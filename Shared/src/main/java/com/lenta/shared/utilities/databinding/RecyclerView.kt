@@ -9,8 +9,12 @@ import androidx.annotation.NonNull
 import androidx.databinding.BindingAdapter
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.lenta.shared.keys.KeyCode
 import com.lenta.shared.utilities.Logg
 
 
@@ -42,6 +46,7 @@ fun <ItemType, BindingType : ViewDataBinding> setupRecyclerView(recyclerView: Re
 
         val mLayoutManager: RecyclerView.LayoutManager = LinearLayoutManager(recyclerView.context)
         recyclerView.layoutManager = mLayoutManager
+        recyclerView.itemAnimator = null
 
         dataBindingRecyclerViewConfig.let {
             recyclerView.adapter = DataBindingRecyclerAdapter(
@@ -133,3 +138,49 @@ interface DataBindingAdapter<BindingType : ViewDataBinding> {
 interface Evenable {
     fun isEven(): Boolean
 }
+
+class RecyclerViewKeyHandler<T>(private val rv: RecyclerView,
+                                private val items: MutableLiveData<List<T>>,
+                                lifecycleOwner: LifecycleOwner) {
+
+    val posInfo = MutableLiveData(PosInfo(-1, -1))
+
+    init {
+        posInfo.observe(lifecycleOwner, Observer { info ->
+            Logg.d { "new pos: $info" }
+            rv.adapter?.notifyItemChanged(info.lastPos)
+            rv.adapter?.notifyItemChanged(info.currentPos)
+            rv.scrollToPosition(info.currentPos)
+        })
+    }
+
+    fun onKeyDown(keyCode: KeyCode): Boolean {
+
+        var pos = posInfo.value!!.currentPos
+
+        when (keyCode) {
+            KeyCode.KEYCODE_DPAD_DOWN -> pos++
+            KeyCode.KEYCODE_DPAD_UP -> pos--
+            else -> return false
+        }
+        if (pos < -1) {
+            return false
+        }
+        val itemsSize = items.value?.size ?: 0
+        if (pos > itemsSize) {
+            return false
+        }
+
+        posInfo.value = PosInfo(currentPos = pos, lastPos = posInfo.value!!.currentPos)
+
+        return true
+    }
+
+    fun isSelected(pos: Int): Boolean {
+        return pos == posInfo.value!!.currentPos
+    }
+
+
+}
+
+data class PosInfo(val currentPos: Int, val lastPos: Int)

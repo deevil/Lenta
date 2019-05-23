@@ -26,7 +26,7 @@ class JobCardViewModel : CoreViewModel() {
     @Inject
     lateinit var taskDescriptionDbRequest: TaskDescriptionDbRequest
 
-    val taskSettingsList: MutableLiveData<List<TaskSetting>> = MutableLiveData()
+    private val taskSettingsList: MutableLiveData<List<TaskSetting>> = MutableLiveData()
     val taskName: MutableLiveData<String> = MutableLiveData()
     val selectedTaskTypePosition: MutableLiveData<Int> = MutableLiveData(0)
     val selectedStorePosition: MutableLiveData<Int> = MutableLiveData()
@@ -117,6 +117,7 @@ class JobCardViewModel : CoreViewModel() {
 
     fun onClickBack() {
         processServiceManager.getWriteOffTask()?.let {
+            it.taskDescription.taskName = taskName.value!!
             screenNavigator.openRemoveTaskConfirmationScreen(it.taskDescription.taskName, 0)
             return
         }
