@@ -3,7 +3,6 @@ package com.lenta.shared.requests.network
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.functional.Either
 import com.lenta.shared.interactor.UseCase
-import com.lenta.shared.utilities.extentions.hhive.toEither
 import com.lenta.shared.utilities.extentions.hhive.toEitherBoolean
 import com.mobrun.plugin.api.HyperHive
 import javax.inject.Inject

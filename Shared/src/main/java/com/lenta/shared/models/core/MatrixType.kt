@@ -6,3 +6,12 @@ enum class MatrixType {
     Passive,
     Deleted
 }
+
+fun getMatrixType(code: String): MatrixType {
+    return when (code) {
+        "A" -> MatrixType.Active
+        "P" -> MatrixType.Passive
+        "D" -> MatrixType.Deleted
+        else -> MatrixType.Unknown
+    }
+}

@@ -9,6 +9,7 @@ import com.lenta.bp10.models.task.getReport
 import com.lenta.bp10.platform.navigation.IScreenNavigator
 import com.lenta.bp10.requests.db.ProductInfoDbRequest
 import com.lenta.bp10.requests.db.ProductInfoRequestParams
+import com.lenta.bp10.requests.network.ProductInfoNetRequest
 import com.lenta.bp10.requests.network.SendWriteOffReportRequest
 import com.lenta.bp10.requests.network.WriteOffReportResponse
 import com.lenta.shared.exception.Failure
@@ -33,6 +34,8 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     lateinit var processServiceManager: IWriteOffTaskManager
     @Inject
     lateinit var productInfoDbRequest: ProductInfoDbRequest
+    @Inject
+    lateinit var productInfoNetRequest: ProductInfoNetRequest
     @Inject
     lateinit var stringResourceManager: IStringResourceManager
     @Inject
@@ -150,31 +153,50 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
     override fun onOkInSoftKeyboard(): Boolean {
 
-        searchCode()
+        searchCodeFromDb()
 
         Logg.d { "processServiceManager taskDescription: ${processServiceManager.getWriteOffTask()?.taskDescription}" }
         return true
     }
 
-    private fun searchCode() {
+    private fun searchCodeFromDb() {
         viewModelScope.launch {
             eanCode.value?.let {
-                productInfoDbRequest(ProductInfoRequestParams(number = it)).either(::handleFailure, ::handleScanSuccess)
+                productInfoDbRequest(ProductInfoRequestParams(number = it)).either(::handleFailureSearchFromDb, ::handleSearchProductSuccess)
             }
 
         }
     }
 
-    private fun handleScanSuccess(productInfo: ProductInfo) {
-        Logg.d { "productInfoLiveData: ${productInfo.isSet}" }
-        if (productInfo.isSet){
+    private fun searchCodeFromServer() {
+        viewModelScope.launch {
+            eanCode.value?.let {
+                screenNavigator.showProgress(productInfoNetRequest)
+                productInfoNetRequest(ProductInfoRequestParams(number = it)).either(::handleFailureSearchFromServer, ::handleSearchProductSuccess)
+                screenNavigator.hideProgress()
+            }
+
+        }
+    }
+
+
+    private fun handleSearchProductSuccess(productInfo: ProductInfo) {
+        if (productInfo.isSet) {
             screenNavigator.openSetsInfoScreen(productInfo)
             return
         }
         screenNavigator.openGoodInfoScreen(productInfo)
     }
 
-    override fun handleFailure(failure: Failure) {
+    private fun handleFailureSearchFromDb(failure: Failure) {
+        if (failure is Failure.GoodNotFound) {
+            searchCodeFromServer()
+            return
+        }
+        screenNavigator.openAlertScreen(failure)
+    }
+
+    private fun handleFailureSearchFromServer(failure: Failure) {
         screenNavigator.openAlertScreen(failure)
     }
 
@@ -188,14 +210,14 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
     fun onScanResult(data: String) {
         eanCode.value = data
-        searchCode()
+        searchCodeFromDb()
     }
 
     fun onClickSave() {
         viewModelScope.launch {
             screenNavigator.showProgress(sendWriteOffReportRequest)
             processServiceManager.getWriteOffTask()?.let {
-                sendWriteOffReportRequest(it.getReport()).either(::handleFailure, ::handleSentSuccess)
+                sendWriteOffReportRequest(it.getReport()).either(::handleFailureSearchFromDb, ::handleSentSuccess)
             }
 
             screenNavigator.hideProgress()
