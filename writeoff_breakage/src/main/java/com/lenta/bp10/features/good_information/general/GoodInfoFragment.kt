@@ -13,26 +13,32 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListe
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.provideViewModel
+import com.lenta.shared.utilities.state.state
+
 
 class GoodInfoFragment : CoreFragment<FragmentGoodInfoBinding, GoodInfoViewModel>(), ToolbarButtonsClickListener, OnBackPresserListener {
 
-    private lateinit var productInfo: ProductInfo
+    private var productInfo by state<ProductInfo?>(null)
 
     override fun getLayoutId(): Int = R.layout.fragment_good_info
 
     override fun getPageNumber(): String = "10/07"
 
     override fun getViewModel(): GoodInfoViewModel {
-        provideViewModel(GoodInfoViewModel::class.java).let {
-            getAppComponent()?.inject(it)
-            it.setProductInfo(productInfo)
-            return it
+        provideViewModel(GoodInfoViewModel::class.java).let { viewModel ->
+            getAppComponent()?.inject(viewModel)
+            productInfo?.let {
+                viewModel.setProductInfo(it)
+            }
+            return viewModel
         }
     }
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
         topToolbarUiModel.description.value = getString(R.string.good_info)
-        topToolbarUiModel.title.value = "${productInfo.getMaterialLastSix()} ${productInfo.description}"
+        productInfo?.let {
+            topToolbarUiModel.title.value = "${it.getMaterialLastSix()} ${it.description}"
+        }
 
     }
 

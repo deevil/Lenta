@@ -5,7 +5,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.Observer
 import com.lenta.bp10.BR
 import com.lenta.bp10.R
 import com.lenta.bp10.databinding.*
@@ -68,7 +67,6 @@ class GoodsListFragment :
         binding?.let {
             it.viewPagerSettings = this
             it.pageSelectionListener = this
-
         }
 
     }
@@ -105,8 +103,6 @@ class GoodsListFragment :
                             }
                         }
 
-
-                        layoutBinding.lifecycleOwner = viewLifecycleOwner
                         layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
                                 layoutId = R.layout.item_tile_goods,
                                 itemId = BR.vm,
@@ -125,12 +121,14 @@ class GoodsListFragment :
 
                                 }
                         )
+
+                        layoutBinding.vm = vm
+                        layoutBinding.lifecycleOwner = viewLifecycleOwner
                         countedRecyclerViewKeyHandler = RecyclerViewKeyHandler(
                                 rv = layoutBinding.rv,
                                 items = vm.countedGoods,
                                 lifecycleOwner = layoutBinding.lifecycleOwner!!
                         )
-                        layoutBinding.vm = vm
                         return layoutBinding.root
                     }
         }
@@ -149,7 +147,6 @@ class GoodsListFragment :
                     }
 
 
-                    layoutBinding.lifecycleOwner = viewLifecycleOwner
                     layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
                             layoutId = R.layout.item_tile_filter,
                             itemId = BR.vm,
@@ -170,13 +167,13 @@ class GoodsListFragment :
                             }
                     )
 
+                    layoutBinding.vm = vm
+                    layoutBinding.lifecycleOwner = viewLifecycleOwner
                     filterRecyclerViewKeyHandler = RecyclerViewKeyHandler(
                             rv = layoutBinding.rv,
                             items = vm.filteredGoods,
                             lifecycleOwner = layoutBinding.lifecycleOwner!!
                     )
-
-                    layoutBinding.vm = vm
                     return layoutBinding.root
                 }
 

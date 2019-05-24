@@ -148,9 +148,14 @@ class RecyclerViewKeyHandler<T>(private val rv: RecyclerView,
     init {
         posInfo.observe(lifecycleOwner, Observer { info ->
             Logg.d { "new pos: $info" }
-            rv.adapter?.notifyItemChanged(info.lastPos)
-            rv.adapter?.notifyItemChanged(info.currentPos)
-            rv.scrollToPosition(info.currentPos)
+            info.currentPos.let { currentPos ->
+                rv.adapter?.notifyItemChanged(info.lastPos)
+                rv.adapter?.notifyItemChanged(info.currentPos)
+                if (currentPos > -1 && currentPos < items.value?.size ?: 0) {
+                    rv.scrollToPosition(info.currentPos)
+                }
+            }
+
         })
         items.observe(lifecycleOwner, Observer {
             clearPositions()
