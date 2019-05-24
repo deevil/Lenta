@@ -26,7 +26,8 @@ sealed class Failure {
     object ServerError : Failure()
     object AuthError : Failure()
     object GoodNotFound : Failure()
+    class SapError(val message: String) : Failure()
 
     /** * Extend this class for feature specific failures.*/
-    abstract class FeatureFailure: Failure()
+    abstract class FeatureFailure : Failure()
 }

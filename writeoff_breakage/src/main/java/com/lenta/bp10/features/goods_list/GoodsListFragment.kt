@@ -57,6 +57,7 @@ class GoodsListFragment :
 
         viewLifecycleOwner.let {
             connectLiveData(source = vm.deleteEnabled, target = bottomToolbarUiModel.uiModelButton3.enabled)
+            connectLiveData(source = vm.printButtonEnabled, target = bottomToolbarUiModel.uiModelButton4.enabled)
             connectLiveData(source = vm.saveButtonEnabled, target = bottomToolbarUiModel.uiModelButton5.enabled)
         }
 
@@ -73,8 +74,9 @@ class GoodsListFragment :
 
     override fun onToolbarButtonClick(view: View) {
         when (view.id) {
-            R.id.b_5 -> vm.onClickSave()
             R.id.b_3 -> vm.onClickDelete()
+            R.id.b_4 -> vm.onClickPrint()
+            R.id.b_5 -> vm.onClickSave()
         }
     }
 

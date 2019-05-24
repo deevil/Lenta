@@ -144,6 +144,10 @@ class ScreenNavigator(
         getFragmentStack()?.push(WriteOffDetailsFragment.create(productInfo))
     }
 
+    override fun openSuccessPrintMessage() {
+        openAlertScreen(context.getString(R.string.print_success))
+    }
+
 
 }
 
@@ -167,4 +171,5 @@ interface IScreenNavigator : ICoreNavigator {
     fun openMatrixInfoScreen(matrixType: MatrixType)
     fun openSectionInfoScreen(section: Int)
     fun openGoodsReasonsScreen(productInfo: ProductInfo)
+    fun openSuccessPrintMessage()
 }

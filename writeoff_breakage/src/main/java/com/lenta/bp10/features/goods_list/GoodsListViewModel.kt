@@ -5,10 +5,12 @@ import androidx.lifecycle.viewModelScope
 import com.lenta.bp10.models.repositories.IWriteOffTaskManager
 import com.lenta.bp10.models.repositories.getTotalCountForProduct
 import com.lenta.bp10.models.task.TaskWriteOffReason
+import com.lenta.bp10.models.task.getPrinterTask
 import com.lenta.bp10.models.task.getReport
 import com.lenta.bp10.platform.navigation.IScreenNavigator
 import com.lenta.bp10.requests.db.ProductInfoDbRequest
 import com.lenta.bp10.requests.db.ProductInfoRequestParams
+import com.lenta.bp10.requests.network.PrintTaskNetRequest
 import com.lenta.bp10.requests.network.ProductInfoNetRequest
 import com.lenta.bp10.requests.network.SendWriteOffReportRequest
 import com.lenta.bp10.requests.network.WriteOffReportResponse
@@ -40,6 +42,8 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     lateinit var stringResourceManager: IStringResourceManager
     @Inject
     lateinit var sendWriteOffReportRequest: SendWriteOffReportRequest
+    @Inject
+    lateinit var printTaskNetRequest: PrintTaskNetRequest
 
     var selectedPage = MutableLiveData(0)
     val countedGoods: MutableLiveData<List<GoodItem>> = MutableLiveData()
@@ -63,6 +67,11 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
             }
 
     val saveButtonEnabled = countedGoods.map { it?.isNotEmpty() == true }
+
+    val printButtonEnabled: MutableLiveData<Boolean> = countedGoods.map {
+        !it.isNullOrEmpty() && (processServiceManager.getWriteOffTask()?.taskDescription?.printer?.isNotEmpty()
+                ?: false)
+    }
 
 
     val onCategoryPositionClickListener = object : OnPositionClickListener {
@@ -172,7 +181,7 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
         viewModelScope.launch {
             eanCode.value?.let {
                 screenNavigator.showProgress(productInfoNetRequest)
-                productInfoNetRequest(ProductInfoRequestParams(number = it)).either(::handleFailureSearchFromServer, ::handleSearchProductSuccess)
+                productInfoNetRequest(ProductInfoRequestParams(number = it)).either(::handleFailureNetRequest, ::handleSearchProductSuccess)
                 screenNavigator.hideProgress()
             }
 
@@ -196,7 +205,7 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
         screenNavigator.openAlertScreen(failure)
     }
 
-    private fun handleFailureSearchFromServer(failure: Failure) {
+    private fun handleFailureNetRequest(failure: Failure) {
         screenNavigator.openAlertScreen(failure)
     }
 
@@ -288,6 +297,22 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
         processServiceManager.getWriteOffTask()?.clearTask()
         updateFilter()
         updateCounted()
+    }
+
+    fun onClickPrint() {
+        processServiceManager.getWriteOffTask()?.let {
+            viewModelScope.launch {
+                screenNavigator.showProgress(printTaskNetRequest)
+                printTaskNetRequest(it.getPrinterTask()).either(::handleFailureNetRequest, ::handleSuccessPrint)
+                screenNavigator.hideProgress()
+            }
+        }
+
+    }
+
+    private fun handleSuccessPrint(b: Boolean) {
+        screenNavigator.openSuccessPrintMessage()
+
     }
 
 }
