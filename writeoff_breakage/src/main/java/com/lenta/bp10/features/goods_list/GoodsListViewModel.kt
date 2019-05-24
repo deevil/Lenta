@@ -310,7 +310,7 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
     }
 
-    private fun handleSuccessPrint(b: Boolean) {
+    private fun handleSuccessPrint(@Suppress("UNUSED_PARAMETER") b: Boolean) {
         screenNavigator.openSuccessPrintMessage()
 
     }

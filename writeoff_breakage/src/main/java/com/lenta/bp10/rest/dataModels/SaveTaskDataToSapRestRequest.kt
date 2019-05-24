@@ -93,7 +93,7 @@ class SaveTaskDataToSapRestRequest: BaseSapRequest {
     constructor(sapClient: String) : super("json", sapClient)
 
     fun setSapClient(sapClient: String): SaveTaskDataToSapRestRequest {
-        var request: SaveTaskDataToSapRestRequest = SaveTaskDataToSapRestRequest(sapClient)
+        var request = SaveTaskDataToSapRestRequest(sapClient)
         request.perNo = perNo
         request.printer = printer
         request.taskName = taskName

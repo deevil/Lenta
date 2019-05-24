@@ -14,11 +14,9 @@ class AlertFragment : CoreMessageFragment() {
     override fun getViewModel(): MessageViewModel {
         provideViewModel(MessageViewModel::class.java).let { vm ->
             coreComponent.inject(vm)
-            message?.let {
-                vm.message = it
-                vm.iconRes = iconRes
-                vm.codeConfirm = codeConfirm
-            }
+            vm.message = message
+            vm.iconRes = iconRes
+            vm.codeConfirm = codeConfirm
 
             return vm
         }

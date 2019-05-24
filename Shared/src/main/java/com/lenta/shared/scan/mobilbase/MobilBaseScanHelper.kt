@@ -44,7 +44,7 @@ class MobilBaseScanHelper : IScanHelper {
                         intent.getIntExtra("EXTRA_BARCODE_DECODED_SYMBOLE", -1))
                 if (symbology_ident !== BarcodeDeclaration.SYMBOLOGY_IDENT.NOT_READ) {
                     val data = intent.getStringExtra("EXTRA_BARCODE_DECODED_DATA")
-                    val type = symbology_ident.toString()
+                    //val type = symbology_ident.toString()
                     scanResult.value = data
                     scanResult.value = null
 

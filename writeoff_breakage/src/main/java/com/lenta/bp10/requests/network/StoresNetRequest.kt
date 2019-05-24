@@ -16,7 +16,6 @@ class StoresNetRequest
         val res = ZmpUtz02V001(hyperHive).newRequest()
                 .addScalar(ZmpUtz02V001.LimitedScalarParameter.IV_PLANT(sessionInfo.market))
                 .streamCallTable().execute()
-        Logg.d { "ZmpUtz02V001 size: ${ZmpUtz02V001(hyperHive).localHelper_ET_STORLOCS.all.size}" }
         return res.toEitherBoolean()
     }
 }

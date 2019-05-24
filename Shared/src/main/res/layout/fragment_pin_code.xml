@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:tools="http://schemas.android.com/tools"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
+
         <variable
             name="vm"
-            type="com.lenta.shared.features.test_environment.PinCodeViewModel"/>
+            type="com.lenta.shared.features.test_environment.PinCodeViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -42,60 +42,60 @@
 
             <EditText
                 android:id="@+id/et_pin1"
-                android:textSize="24sp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="40dp"
                 android:layout_weight="1"
                 android:ems="10"
-                android:text="@={vm.pinCode1}"
                 android:inputType="number"
                 android:maxLength="1"
-                android:textAlignment="center">
+                android:text="@={vm.pinCode1}"
+                android:textAlignment="center"
+                android:textSize="24sp">
 
-                <requestFocus></requestFocus>
+                <requestFocus />
             </EditText>
 
             <EditText
                 android:id="@+id/et_pin2"
-                android:textSize="24sp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="20dp"
                 android:layout_weight="1"
                 android:ems="10"
-                android:text="@={vm.pinCode2}"
                 android:inputType="number"
                 android:maxLength="1"
-                android:textAlignment="center" />
+                android:text="@={vm.pinCode2}"
+                android:textAlignment="center"
+                android:textSize="24sp" />
 
             <EditText
                 android:id="@+id/et_pin3"
-                android:textSize="24sp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="20dp"
                 android:layout_weight="1"
                 android:ems="10"
-                android:text="@={vm.pinCode3}"
                 android:inputType="number"
                 android:maxLength="1"
-                android:textAlignment="center" />
+                android:text="@={vm.pinCode3}"
+                android:textAlignment="center"
+                android:textSize="24sp" />
 
             <EditText
                 android:id="@+id/et_pin4"
-                android:textSize="24sp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="20dp"
                 android:layout_marginRight="40dp"
                 android:layout_weight="1"
                 android:ems="10"
-                android:text="@={vm.pinCode4}"
-                app:onOkInSoftKeyboard="@{vm}"
                 android:inputType="number"
                 android:maxLength="1"
-                android:textAlignment="center" />
+                android:text="@={vm.pinCode4}"
+                android:textAlignment="center"
+                android:textSize="24sp"
+                app:onOkInSoftKeyboard="@{vm}" />
         </LinearLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>

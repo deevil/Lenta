@@ -29,3 +29,11 @@ fun setSelected(view: View, selected: Boolean?) {
 fun requestFocus(view: View, requestFocus: Any?) {
     view.requestFocus()
 }
+
+@BindingAdapter("android:enabled")
+fun setEnabled(view: View, enabled: Boolean?) {
+    enabled?.let {
+        view.isEnabled = it
+        view.isClickable = it
+    }
+}

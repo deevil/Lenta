@@ -30,7 +30,7 @@ class GsonBundleDelegate : GsonBundle {
 
     companion object {
         const val PREFIX_NAME = "jsbndle:"
-        val gsonInstance = GsonBuilder().create()
+        val gsonInstance: Gson = GsonBuilder().create()
     }
 }
 
