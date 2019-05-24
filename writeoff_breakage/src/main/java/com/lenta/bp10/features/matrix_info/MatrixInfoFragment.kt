@@ -9,10 +9,11 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.utilities.extentions.provideViewModel
+import com.lenta.shared.utilities.state.state
 
 class MatrixInfoFragment : CoreFragment<FragmentMatrixInfoBinding, MatrixInfoViewModel>() {
 
-    lateinit var matrixType: MatrixType
+    var matrixType by state<MatrixType?>(null)
 
     override fun getLayoutId(): Int = R.layout.fragment_matrix_info
 
@@ -24,7 +25,7 @@ class MatrixInfoFragment : CoreFragment<FragmentMatrixInfoBinding, MatrixInfoVie
         provideViewModel(MatrixInfoViewModel::class.java).let {
             getAppComponent()?.inject(it)
             it.matrixType.value = matrixType
-            it.message = getString(matrixType.getMessageRes())
+            it.message = getString(matrixType!!.getMessageRes())
             return it
         }
     }
