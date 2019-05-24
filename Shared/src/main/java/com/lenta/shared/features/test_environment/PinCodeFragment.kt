@@ -8,11 +8,12 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.utilities.extentions.provideViewModel
+import com.lenta.shared.utilities.state.state
 
 class PinCodeFragment : CoreFragment<com.lenta.shared.databinding.FragmentPinCodeBinding, PinCodeViewModel>(), ToolbarButtonsClickListener {
 
-    private var requestCode: Int? = null
-    private var message: String? = null
+    private var requestCode by state<Int?>(null)
+    private var message by state<String?>(null)
 
     override fun getLayoutId(): Int = R.layout.fragment_pin_code
 

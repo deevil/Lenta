@@ -8,11 +8,12 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
+import com.lenta.shared.utilities.state.state
 
 abstract class CoreMessageFragment : CoreFragment<LayoutMessageBinding, MessageViewModel>(), ToolbarButtonsClickListener {
-    protected var message: String? = null
-    protected var iconRes: Int = 0
-    protected var codeConfirm: Int? = null
+    protected var message by state("")
+    protected var iconRes by state(0)
+    protected var codeConfirm by state<Int?>(null)
     override fun getLayoutId(): Int = R.layout.layout_message
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
