@@ -4,18 +4,22 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp10.features.good_information.sets.ComponentItem
 import com.lenta.bp10.models.repositories.IWriteOffTaskManager
-import com.lenta.bp10.models.repositories.getTotalCountForProduct
 import com.lenta.bp10.models.task.ProcessExciseAlcoProductService
+import com.lenta.bp10.models.task.TaskExciseStamp
 import com.lenta.bp10.platform.navigation.IScreenNavigator
+import com.lenta.bp10.requests.db.ProductInfoDbRequest
+import com.lenta.bp10.requests.db.ProductInfoRequestParams
+import com.lenta.shared.exception.Failure
 import com.lenta.shared.models.core.ProductInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
-import com.lenta.shared.utilities.extentions.combineLatest
+import com.lenta.shared.utilities.Logg
+import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.view.OnPositionClickListener
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class ComponentViewModel : CoreViewModel(), OnPositionClickListener {
+class ComponentViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboardListener {
 
     @Inject
     lateinit var screenNavigator: IScreenNavigator
@@ -23,37 +27,28 @@ class ComponentViewModel : CoreViewModel(), OnPositionClickListener {
     @Inject
     lateinit var processServiceManager: IWriteOffTaskManager
 
+    @Inject
+    lateinit var productInfoDbRequest: ProductInfoDbRequest
+
     val spinnerEnabled: MutableLiveData<Boolean> = MutableLiveData(false)
     val productInfo: MutableLiveData<ProductInfo> = MutableLiveData()
     val componentItem: MutableLiveData<ComponentItem> = MutableLiveData()
     val writeOffReasonTitles: MutableLiveData<List<String>> = MutableLiveData()
     val selectedPosition: MutableLiveData<Int> = componentItem.map { it!!.selectedPosition }
-    val count: MutableLiveData<String> = MutableLiveData("")
+    val count: MutableLiveData<String> = MutableLiveData("0")
     val countValue: MutableLiveData<Double> = count.map { it?.toDoubleOrNull() }
-    val totalCount: MutableLiveData<Double> = countValue.map { (it ?: 0.0) }
-    val totalCountWithUom: MutableLiveData<String> = totalCount.map { "$it из ${componentItem.value!!.menge}" }
+    val totalCount: MutableLiveData<Double> = countValue.map { (it ?: 0.0) + processServiceManager.getWriteOffTask()!!.taskRepository.getExciseStamps().findExciseStampsOfProduct(productInfo.value!!).size}
+    val totalCountWithUom: MutableLiveData<String> = totalCount.map { "$it из ${componentItem.value!!.menge.toDouble() * componentItem.value!!.countSets}" }
     val suffix: MutableLiveData<String> = MutableLiveData()
+    val eanCode: MutableLiveData<String> = MutableLiveData()
+    private val exciseStamp = mutableListOf<TaskExciseStamp>()
 
     private val processExciseAlcoProductService: ProcessExciseAlcoProductService by lazy {
         processServiceManager.getWriteOffTask()!!.processExciseAlcoProduct(productInfo.value!!)!!
     }
 
-    val enabledApplyButton: MutableLiveData<Boolean> = countValue.combineLatest(selectedPosition).map {
-        val count = it?.first ?: 0.0
-        var enabled = false
-        productInfo.value?.let { productInfoVal ->
-            enabled =
-                    count != 0.0
-                            &&
-                            processExciseAlcoProductService.taskRepository.getTotalCountForProduct(productInfoVal) + (countValue.value
-                            ?: 0.0) >= 0.0
-        }
-        enabled
-    }
-
-    val enabledRollbackButton: MutableLiveData<Boolean> = totalCount.map {
-        //processExciseAlcoProductService.getTotalCount() > 0.0
-        processExciseAlcoProductService.taskRepository.getTotalCountForProduct(productInfo.value!!) > 0.0
+    val enabledButton: MutableLiveData<Boolean> = countValue.map {
+        it!! > 0.0
     }
 
     fun setProductInfo(productInfo: ProductInfo) {
@@ -74,23 +69,73 @@ class ComponentViewModel : CoreViewModel(), OnPositionClickListener {
     }
 
     fun onClickRollback() {
-        screenNavigator.openAlertScreen("onClickRollback")
+        if (exciseStamp.size > 0) {
+            exciseStamp.removeAt(exciseStamp.lastIndex)
+            count.value = exciseStamp.size.toString()
+        }
     }
 
     fun onClickAdd() {
-        screenNavigator.openAlertScreen("onClickAdd")
+        exciseStamp.forEachIndexed { index, taskExciseStamp ->
+            processExciseAlcoProductService.add(componentItem.value!!.writeOffReason, 1.0, taskExciseStamp)
+        }
+
+        exciseStamp.clear()
+        count.value = "0"
+
+        Logg.d { "exiseStampsForProduct ${processServiceManager.getWriteOffTask()!!.taskRepository.getExciseStamps().findExciseStampsOfProduct(productInfo.value!!).map { it.code }}" }
+        Logg.d { "exiseStampsAll ${processServiceManager.getWriteOffTask()!!.taskRepository.getExciseStamps().getExciseStamps().size}" }
     }
 
     fun onClickApply() {
-        screenNavigator.openAlertScreen("onClickApply")
-    }
-
-    fun onBackPressed() {
-        //processExciseAlcoProductService.discard()
+        onClickAdd()
+        screenNavigator.goBack()
     }
 
     override fun onClickPosition(position: Int) {
         selectedPosition.value = position
     }
+
+    //TODO тестовый код, для проверки сканирования, потом переписать
+    override fun onOkInSoftKeyboard(): Boolean {
+        searchCode()
+        return true
+    }
+
+    private fun searchCode() {
+        viewModelScope.launch {
+            eanCode.value?.let {
+                productInfoDbRequest(ProductInfoRequestParams(number = it)).either(::handleFailure, ::handleSearchSuccess)
+            }
+
+        }
+    }
+
+    private fun handleSearchSuccess(componentInfo: ProductInfo) {
+        if (totalCount.value!! >= componentItem.value!!.menge.toDouble() * componentItem.value!!.countSets) {
+            screenNavigator.openAlertScreen("Превышен лимит")
+            return
+        }
+
+        if (componentItem.value!!.materialNumber == componentInfo.materialNumber) {
+            count.value = (count.value!!.toInt() + 1).toString()
+            exciseStamp.add(TaskExciseStamp(
+                    materialNumber = componentItem.value!!.materialNumber,
+                    code = eanCode.value!!,
+                    setMaterialNumber = productInfo.value!!.materialNumber,
+                    writeOffReason = componentItem.value!!.writeOffReason.name,
+                    isBasStamp = true
+            ))
+
+            countValue.value = exciseStamp.size.toDouble()
+            return
+        }
+        screenNavigator.openAlertScreen("Акцизная марка не найдена")
+    }
+
+    override fun handleFailure(failure: Failure) {
+        screenNavigator.openAlertScreen(failure)
+    }
+    //TODO тестовый код==================================================
 
 }

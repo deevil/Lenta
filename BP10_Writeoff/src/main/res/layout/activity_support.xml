@@ -4,14 +4,14 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <android.support.constraint.ConstraintLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/MainLayot"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/colorContentBackground"
         tools:context=".SupportActivity">
 
-        <android.support.constraint.ConstraintLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/TopPanel"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -35,7 +35,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/TitleTxtView" />
 
-        </android.support.constraint.ConstraintLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <ScrollView
             android:id="@+id/scrollView"
@@ -154,7 +154,7 @@
             </LinearLayout>
         </ScrollView>
 
-        <android.support.constraint.ConstraintLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/BottomPanelThreeBtn"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -197,9 +197,9 @@
                 app:layout_constraintStart_toEndOf="@+id/KeyOpenBtnImg"
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@mipmap/arrow_down" />
-        </android.support.constraint.ConstraintLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <android.support.constraint.ConstraintLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/BottomPanel"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -219,8 +219,8 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@mipmap/button_back" />
 
-        </android.support.constraint.ConstraintLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
-    </android.support.constraint.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </layout>

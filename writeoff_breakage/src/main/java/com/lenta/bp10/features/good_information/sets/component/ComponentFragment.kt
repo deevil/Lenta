@@ -46,7 +46,7 @@ class ComponentFragment : CoreFragment<FragmentComponentBinding, ComponentViewMo
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
         topToolbarUiModel.description.value = getString(R.string.set_component)
-        topToolbarUiModel.title.value = "${componentItem.name}"
+        topToolbarUiModel.title.value = componentItem.name
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
@@ -56,9 +56,9 @@ class ComponentFragment : CoreFragment<FragmentComponentBinding, ComponentViewMo
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.apply, enabled = false)
 
         viewLifecycleOwner.let {
-            connectLiveData(vm.enabledApplyButton, bottomToolbarUiModel.uiModelButton4.enabled)
-            connectLiveData(vm.enabledApplyButton, bottomToolbarUiModel.uiModelButton5.enabled)
-            connectLiveData(vm.enabledRollbackButton, bottomToolbarUiModel.uiModelButton2.enabled)
+            connectLiveData(vm.enabledButton, bottomToolbarUiModel.uiModelButton4.enabled)
+            connectLiveData(vm.enabledButton, bottomToolbarUiModel.uiModelButton5.enabled)
+            connectLiveData(vm.enabledButton, bottomToolbarUiModel.uiModelButton2.enabled)
         }
     }
 

@@ -17,7 +17,6 @@ import com.lenta.bp10.requests.db.ProductInfoRequestParams
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.models.core.ProductInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
-import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.Evenable
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
@@ -30,6 +29,7 @@ import javax.inject.Inject
 
 class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboardListener {
 
+    //TODO надо реализовать асинхронный запрос
     @Inject
     lateinit var hyperHive: HyperHive
     val zmpUtz46V001: ZmpUtz46V001 by lazy {
@@ -48,9 +48,11 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
     @Inject
     lateinit var productInfoDbRequest: ProductInfoDbRequest
 
+    //TODO уточнить, надо ли добавлять набо в списание, если да, то к какому виду товаров принадлежит набор, обычный или акцизный, если акцизный, тогда проблема с маркой, невозможно пустое поле добавить
     private val processExciseAlcoProductService: ProcessExciseAlcoProductService by lazy {
         processServiceManager.getWriteOffTask()!!.processExciseAlcoProduct(productInfo.value!!)!!
     }
+
 
     private val msgBrandNotSet: MutableLiveData<String> = MutableLiveData()
 
@@ -104,38 +106,38 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
 
     fun onResume() {
         updateComponents()
-        Logg.d { "updateComponents"}
     }
 
     private fun updateComponents() {
+        if (totalCount.value ?: 0.0 > 0.0) {
+            val components =  zmpUtz46V001.getComponentsForSet(productInfo.value!!.materialNumber)
+            //Logg.d { "testrest ${test46.map { it!!.matnr }}"}
 
-        val components =  zmpUtz46V001.getComponentsForSet(productInfo.value!!.materialNumber)
-        //Logg.d { "testrest ${test46.map { it!!.matnr }}"}
+            val componentsInfo = zmpUtz30V001.getComponentsInfoForSet(components.map { it.matnr })
 
-        val componentsInfo = zmpUtz30V001.getComponentsInfoForSet(components.map { it.matnr })
-
-        count.value = count.value
-        processServiceManager.getWriteOffTask()?.let { writeOffTask ->
+            count.value = count.value
             componentsSets.postValue(
                     mutableListOf<ComponentItem>().apply {
                         componentsInfo.forEachIndexed { indComp, itemComp ->
                             add(ComponentItem(
                                     number = indComp + 1,
                                     name = "${componentsInfo.get(indComp).material.substring(componentsInfo.get(indComp).material.length - 6)} ${componentsInfo.get(indComp).name}",
-                                    quantity = "${getCountExciseStampsForComponent(componentsInfo.get(indComp).material)} из ${components.get(indComp).menge}",
+                                    quantity = "${getCountExciseStampsForComponent(componentsInfo.get(indComp).material)} из ${components.get(indComp).menge * totalCount.value!!}",
                                     menge = components.get(indComp).menge.toString(),
                                     even = indComp % 2 == 0,
+                                    countSets = totalCount.value!!,
                                     selectedPosition = selectedPosition.value!!,
+                                    writeOffReason = getReason(),
                                     materialNumber = componentsInfo.get(indComp).material))
                         }
                     }
             )
+            componentsSelectionsHelper.clearPositions()
         }
-        componentsSelectionsHelper.clearPositions()
     }
 
     private fun getCountExciseStampsForComponent(materialComponent: String) : Double {
-        var countExciseStamp: Double = 0.0
+        var countExciseStamp = 0.0
         processServiceManager.getWriteOffTask().let { writeOffTask ->
             writeOffTask!!.taskRepository.getExciseStamps().findExciseStampsOfProduct(productInfo.value!!).forEachIndexed { indES, taskExciseStamp ->
                 countExciseStamp = if (taskExciseStamp.materialNumber == materialComponent) +1.0 else 0.0
@@ -156,17 +158,24 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
 
     fun onClickAdd() {
         addSet()
+        processExciseAlcoProductService.apply()
     }
 
     fun onClickApply() {
-        addSet()
-        processExciseAlcoProductService.apply()
+        onClickAdd()
         screenNavigator.goBack()
     }
 
     private fun addSet() {
         countValue.value?.let {
-            processExciseAlcoProductService.add(getReason(), it, TaskExciseStamp.empty)
+            //TODO уточнить, надо ли добавлять набо в списание, если да, то к какому виду товаров принадлежит набор, обычный или акцизный, если акцизный, тогда проблема с маркой, невозможно пустое поле добавить
+            processExciseAlcoProductService.add(getReason(), it, TaskExciseStamp(
+                                                                    materialNumber = "",
+                                                                    code = "",
+                                                                    setMaterialNumber = "",
+                                                                    writeOffReason = "",
+                                                                    isBasStamp = false)
+            )
             count.value = ""
         }
         updateComponents()
@@ -184,7 +193,6 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
 
     override fun onOkInSoftKeyboard(): Boolean {
         searchEANCode()
-        Logg.d { "processServiceManager taskDescription: ${processServiceManager.getWriteOffTask()?.taskDescription}" }
         return true
     }
 
@@ -198,12 +206,12 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
     }
 
     private fun handleSearchEANSuccess(componentInfo: ProductInfo) {
-        componentsSets.value!!.forEachIndexed { index, componentItem ->
+        componentsSets.value?.let { list ->  list.forEachIndexed { index, componentItem ->
             if (componentItem.materialNumber == componentInfo.materialNumber) {
-                screenNavigator.openComponentSetScreen(productInfo.value!!, componentItem)
+                screenNavigator.openComponentSetScreen(componentInfo, componentItem)
                 return
             }
-        }
+        }}
         screenNavigator.openAlertScreen(msgBrandNotSet.value!!)
     }
 
@@ -223,7 +231,9 @@ data class ComponentItem(
         val quantity: String,
         val menge: String,
         val even: Boolean,
+        val countSets: Double,
         val selectedPosition: Int,
+        val writeOffReason: WriteOffReason,
         val materialNumber: String
 ) : Evenable {
     override fun isEven() = even
