@@ -3,7 +3,6 @@ package com.lenta.bp10.features.good_information.sets
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp10.fmp.resources.dao_ext.getComponentsForSet
-import com.lenta.bp10.fmp.resources.dao_ext.getComponentsInfoForSet
 import com.lenta.bp10.fmp.resources.slow.ZmpUtz30V001
 import com.lenta.bp10.fmp.resources.slow.ZmpUtz46V001
 import com.lenta.bp10.models.repositories.IWriteOffTaskManager
@@ -17,6 +16,7 @@ import com.lenta.bp10.requests.db.ProductInfoRequestParams
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.models.core.ProductInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
+import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.Evenable
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
@@ -64,9 +64,11 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
     val totalCount: MutableLiveData<Double> = countValue.map { (it ?: 0.0) + processExciseAlcoProductService.taskRepository.getTotalCountForProduct(productInfo.value!!)} //processExciseAlcoProductService.getTotalCount()
     val totalCountWithUom: MutableLiveData<String> = totalCount.map { "$it ${productInfo.value!!.uom.name}" }
     val suffix: MutableLiveData<String> = MutableLiveData()
-    val componentsSets: MutableLiveData<List<ComponentItem>> = MutableLiveData()
+    private val componentsInfo = mutableListOf<ProductInfo>() //: MutableLiveData<List<ProductInfo>> = MutableLiveData()
+    val componentsItem: MutableLiveData<List<ComponentItem>> = MutableLiveData()
     val componentsSelectionsHelper = SelectionItemsHelper()
     val eanCode: MutableLiveData<String> = MutableLiveData()
+    private val components = mutableListOf<ZmpUtz46V001.ItemLocal_ET_SET_LIST>()
 
     val enabledApplyButton: MutableLiveData<Boolean> = countValue.combineLatest(selectedPosition).map {
         val count = it?.first ?: 0.0
@@ -99,9 +101,19 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
             processServiceManager.getWriteOffTask()?.let { writeOffTask ->
                 writeOffReasonTitles.value = writeOffTask.taskDescription.moveTypes.map { it.name }
             }
+
+            components.addAll(zmpUtz46V001.getComponentsForSet(productInfo.value!!.materialNumber))
+            components.forEachIndexed { index, itemLocal_ET_SET_LIST ->
+                productInfoDbRequest(ProductInfoRequestParams(components[index].matnr)).either(::handleFailure, ::handleComponentInfoSuccess)
+            }
             suffix.value = productInfo.value?.uom?.name
             updateComponents()
+            Logg.d { "componentsInfo ${componentsInfo}" }
         }
+    }
+
+    private fun handleComponentInfoSuccess(componentInfo: ProductInfo) {
+        componentsInfo.add(componentInfo)
     }
 
     fun onResume() {
@@ -110,25 +122,20 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
 
     private fun updateComponents() {
         if (totalCount.value ?: 0.0 > 0.0) {
-            val components =  zmpUtz46V001.getComponentsForSet(productInfo.value!!.materialNumber)
-            //Logg.d { "testrest ${test46.map { it!!.matnr }}"}
-
-            val componentsInfo = zmpUtz30V001.getComponentsInfoForSet(components.map { it.matnr })
-
             count.value = count.value
-            componentsSets.postValue(
+            componentsItem.postValue(
                     mutableListOf<ComponentItem>().apply {
                         componentsInfo.forEachIndexed { indComp, itemComp ->
                             add(ComponentItem(
                                     number = indComp + 1,
-                                    name = "${componentsInfo.get(indComp).material.substring(componentsInfo.get(indComp).material.length - 6)} ${componentsInfo.get(indComp).name}",
-                                    quantity = "${getCountExciseStampsForComponent(componentsInfo.get(indComp).material)} из ${components.get(indComp).menge * totalCount.value!!}",
-                                    menge = components.get(indComp).menge.toString(),
+                                    name = "${componentsInfo[indComp].materialNumber.substring(componentsInfo[indComp].materialNumber.length - 6)} ${componentsInfo[indComp].description}",
+                                    quantity = "${getCountExciseStampsForComponent(componentsInfo[indComp])} из ${components[indComp].menge * totalCount.value!!}",
+                                    menge = components[indComp].menge.toString(),
                                     even = indComp % 2 == 0,
                                     countSets = totalCount.value!!,
                                     selectedPosition = selectedPosition.value!!,
                                     writeOffReason = getReason(),
-                                    materialNumber = componentsInfo.get(indComp).material))
+                                    materialNumber = componentsInfo[indComp].materialNumber))
                         }
                     }
             )
@@ -136,11 +143,11 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
         }
     }
 
-    private fun getCountExciseStampsForComponent(materialComponent: String) : Double {
+    private fun getCountExciseStampsForComponent(componentInfo: ProductInfo) : Double {
         var countExciseStamp = 0.0
         processServiceManager.getWriteOffTask().let { writeOffTask ->
-            writeOffTask!!.taskRepository.getExciseStamps().findExciseStampsOfProduct(productInfo.value!!).forEachIndexed { indES, taskExciseStamp ->
-                countExciseStamp = if (taskExciseStamp.materialNumber == materialComponent) +1.0 else 0.0
+            writeOffTask!!.taskRepository.getExciseStamps().findExciseStampsOfProduct(componentInfo).forEachIndexed { indES, taskExciseStamp ->
+                countExciseStamp = if (taskExciseStamp.materialNumber == componentInfo.materialNumber) +1.0 else 0.0
             }
         }
         return countExciseStamp
@@ -201,12 +208,11 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
             eanCode.value?.let {
                 productInfoDbRequest(ProductInfoRequestParams(number = it)).either(::handleFailure, ::handleSearchEANSuccess)
             }
-
         }
     }
 
     private fun handleSearchEANSuccess(componentInfo: ProductInfo) {
-        componentsSets.value?.let { list ->  list.forEachIndexed { index, componentItem ->
+        componentsItem.value?.let { list ->  list.forEachIndexed { index, componentItem ->
             if (componentItem.materialNumber == componentInfo.materialNumber) {
                 screenNavigator.openComponentSetScreen(componentInfo, componentItem)
                 return
