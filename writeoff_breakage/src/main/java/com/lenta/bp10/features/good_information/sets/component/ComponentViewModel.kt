@@ -3,12 +3,15 @@ package com.lenta.bp10.features.good_information.sets.component
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp10.features.good_information.sets.ComponentItem
+import com.lenta.bp10.models.ExciseStampRestInfo
 import com.lenta.bp10.models.repositories.IWriteOffTaskManager
 import com.lenta.bp10.models.task.ProcessExciseAlcoProductService
 import com.lenta.bp10.models.task.TaskExciseStamp
 import com.lenta.bp10.platform.navigation.IScreenNavigator
 import com.lenta.bp10.requests.db.ProductInfoDbRequest
-import com.lenta.bp10.requests.db.ProductInfoRequestParams
+import com.lenta.bp10.requests.network.ExciseStampNetRequest
+import com.lenta.bp10.requests.network.ExciseStampParams
+import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.models.core.ProductInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
@@ -29,6 +32,12 @@ class ComponentViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftK
 
     @Inject
     lateinit var productInfoDbRequest: ProductInfoDbRequest
+
+    @Inject
+    lateinit var exciseStampNetRequest: ExciseStampNetRequest
+
+    @Inject
+    lateinit var sessionInfo: ISessionInfo
 
     val spinnerEnabled: MutableLiveData<Boolean> = MutableLiveData(false)
     val productInfo: MutableLiveData<ProductInfo> = MutableLiveData()
@@ -99,31 +108,38 @@ class ComponentViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftK
 
     //TODO тестовый код, для проверки сканирования, потом переписать
     override fun onOkInSoftKeyboard(): Boolean {
-        searchCode()
+        searchExciseStamp()
         return true
     }
 
-    private fun searchCode() {
+    private fun searchExciseStamp() {
         viewModelScope.launch {
             eanCode.value?.let {
-                productInfoDbRequest(ProductInfoRequestParams(number = it)).either(::handleFailure, ::handleSearchSuccess)
+                /**productInfoDbRequest(ProductInfoRequestParams(number = it)).either(::handleFailure, ::handleSearchSuccess)*/
+                exciseStampNetRequest(ExciseStampParams(pdf417 = it, werks = sessionInfo.market!!, matnr = productInfo.value!!.materialNumber)).either(::handleFailure, ::handleExciseStampSuccess)
             }
 
         }
     }
 
-    private fun handleSearchSuccess(componentInfo: ProductInfo) {
+    private fun handleExciseStampSuccess(exciseStampRestInfo: ExciseStampRestInfo) {
+        Logg.d { "handleSuccess ${exciseStampRestInfo}" }
+    }
+
+    override fun handleFailure(failure: Failure) {
+        //screenNavigator.openAlertScreen(failure)
+        //TODO т.к. макри не находились, временно поставил принудитльную запись здесь
         if (totalCount.value!! >= componentItem.value!!.menge.toDouble() * componentItem.value!!.countSets) {
             screenNavigator.openAlertScreen("Превышен лимит")
             return
         }
 
-        if (componentItem.value!!.materialNumber == componentInfo.materialNumber) {
+        //if (productInfo.value!!.materialNumber == searchComponentInfo.materialNumber) { должна быть проверка марки
             count.value = (count.value!!.toInt() + 1).toString()
             exciseStamp.add(TaskExciseStamp(
-                    materialNumber = componentItem.value!!.materialNumber,
-                    code = eanCode.value!!,
-                    setMaterialNumber = productInfo.value!!.materialNumber,
+                    materialNumber = productInfo.value!!.materialNumber,
+                    code = eanCode.value!!, //todo вставиь код после скана марки
+                    setMaterialNumber = componentItem.value!!.setMaterialNumber,
                     writeOffReason = componentItem.value!!.writeOffReason.name,
                     isBasStamp = true
             ))
@@ -135,12 +151,8 @@ class ComponentViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftK
 
             countValue.value = exciseStamp.size.toDouble()
             return
-        }
+        //}
         screenNavigator.openAlertScreen("Акцизная марка не найдена")
-    }
-
-    override fun handleFailure(failure: Failure) {
-        screenNavigator.openAlertScreen(failure)
     }
     //TODO тестовый код==================================================
 

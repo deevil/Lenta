@@ -3,7 +3,6 @@ package com.lenta.bp10.features.good_information.sets
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp10.fmp.resources.dao_ext.getComponentsForSet
-import com.lenta.bp10.fmp.resources.slow.ZmpUtz30V001
 import com.lenta.bp10.fmp.resources.slow.ZmpUtz46V001
 import com.lenta.bp10.models.repositories.IWriteOffTaskManager
 import com.lenta.bp10.models.repositories.getTotalCountForProduct
@@ -29,14 +28,10 @@ import javax.inject.Inject
 
 class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboardListener {
 
-    //TODO надо реализовать асинхронный запрос
     @Inject
     lateinit var hyperHive: HyperHive
     val zmpUtz46V001: ZmpUtz46V001 by lazy {
         ZmpUtz46V001(hyperHive)
-    }
-    val zmpUtz30V001: ZmpUtz30V001 by lazy {
-        ZmpUtz30V001(hyperHive)
     }
 
     @Inject
@@ -48,7 +43,7 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
     @Inject
     lateinit var productInfoDbRequest: ProductInfoDbRequest
 
-    //TODO уточнить, надо ли добавлять набо в списание, если да, то к какому виду товаров принадлежит набор, обычный или акцизный, если акцизный, тогда проблема с маркой, невозможно пустое поле добавить
+    //TODO уточнить, надо ли добавлять набор в списание, если да, то к какому виду товаров принадлежит набор, обычный или акцизный, если акцизный, тогда проблема с маркой, невозможно пустое поле добавить
     private val processExciseAlcoProductService: ProcessExciseAlcoProductService by lazy {
         processServiceManager.getWriteOffTask()!!.processExciseAlcoProduct(productInfo.value!!)!!
     }
@@ -118,6 +113,7 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
 
     fun onResume() {
         updateComponents()
+        Logg.d { "onResume" }
     }
 
     private fun updateComponents() {
@@ -135,7 +131,7 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
                                     countSets = totalCount.value!!,
                                     selectedPosition = selectedPosition.value!!,
                                     writeOffReason = getReason(),
-                                    materialNumber = compInfo.materialNumber))
+                                    setMaterialNumber = productInfo.value!!.materialNumber))
                         }
                     }
             )
@@ -176,7 +172,7 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
 
     private fun addSet() {
         countValue.value?.let {
-            //TODO уточнить, надо ли добавлять набо в списание, если да, то к какому виду товаров принадлежит набор, обычный или акцизный, если акцизный, тогда проблема с маркой, невозможно пустое поле добавить
+            //TODO уточнить, надо ли добавлять набоh в списание, если да, то к какому виду товаров принадлежит набор, обычный или акцизный, если акцизный, тогда проблема с маркой, невозможно пустое поле добавить
             processExciseAlcoProductService.add(getReason(), it, TaskExciseStamp(
                                                                     materialNumber = "",
                                                                     code = "",
@@ -212,13 +208,13 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
         }
     }
 
-    private fun handleSearchEANSuccess(componentInfo: ProductInfo) {
-        componentsItem.value?.let { list ->  list.forEachIndexed { index, componentItem ->
-            if (componentItem.materialNumber == componentInfo.materialNumber) {
-                screenNavigator.openComponentSetScreen(componentInfo, componentItem)
+    private fun handleSearchEANSuccess(searchComponentInfo: ProductInfo) {
+        componentsInfo.forEachIndexed { index, componentInfo ->
+            if (componentInfo.materialNumber == searchComponentInfo.materialNumber) {
+                screenNavigator.openComponentSetScreen(componentInfo, componentsItem.value!![index])
                 return
             }
-        }}
+        }
         screenNavigator.openAlertScreen(msgBrandNotSet.value!!)
     }
 
@@ -241,7 +237,7 @@ data class ComponentItem(
         val countSets: Double,
         val selectedPosition: Int,
         val writeOffReason: WriteOffReason,
-        val materialNumber: String
+        val setMaterialNumber: String
 ) : Evenable {
     override fun isEven() = even
 
