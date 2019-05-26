@@ -19,7 +19,6 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
-import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.databinding.DataBindingAdapter
 import com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig
 import com.lenta.shared.utilities.databinding.PageSelectionListener
@@ -63,7 +62,9 @@ class SetsFragment :
             bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.details, enabled = false)
             bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.add, enabled = false)
         }
-        else bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.clean, enabled = false)
+        else {
+            bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.clean, enabled = false)
+        }
 
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.apply, enabled = false)
@@ -71,7 +72,7 @@ class SetsFragment :
         viewLifecycleOwner.let {
             connectLiveData(vm.enabledApplyButton, bottomToolbarUiModel.uiModelButton4.enabled)
             connectLiveData(vm.enabledApplyButton, bottomToolbarUiModel.uiModelButton5.enabled)
-            connectLiveData(vm.enabledDetailsButton, bottomToolbarUiModel.uiModelButton3.enabled)
+            connectLiveData(vm.enabledDetailsCleanBtn, bottomToolbarUiModel.uiModelButton3.enabled)
         }
     }
 
@@ -143,7 +144,7 @@ class SetsFragment :
     override fun countTab(): Int = 2
 
     override fun onPageSelected(position: Int) {
-        Logg.d { "onPageSelected $position" }
+        vm.onPageSelected(position)
         vpTabPosition = position
         setupBottomToolBar(this.getBottomToolBarUIModel()!!)
     }

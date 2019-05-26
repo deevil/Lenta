@@ -50,6 +50,7 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
 
 
     private val msgBrandNotSet: MutableLiveData<String> = MutableLiveData()
+    var selectedPage = MutableLiveData(0)
 
     val productInfo: MutableLiveData<ProductInfo> = MutableLiveData()
     val writeOffReasonTitles: MutableLiveData<List<String>> = MutableLiveData()
@@ -78,10 +79,13 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
         enabled
     }
 
-    val enabledDetailsButton: MutableLiveData<Boolean> = totalCount.map {
-        //processExciseAlcoProductService.getTotalCount() > 0.0
-        processExciseAlcoProductService.taskRepository.getTotalCountForProduct(productInfo.value!!) > 0.0
-    }
+    val enabledDetailsCleanBtn: MutableLiveData<Boolean> = selectedPage
+            .combineLatest(componentsSelectionsHelper.selectedPositions)
+            .map {
+                val selectedTabPos = it?.first ?: 0
+                val selectedComponentsPositions = it?.second
+                if (selectedTabPos == 0) processExciseAlcoProductService.taskRepository.getTotalCountForProduct(productInfo.value!!) > 0.0 else !selectedComponentsPositions.isNullOrEmpty()
+            }
 
     fun setProductInfo(productInfo: ProductInfo) {
         this.productInfo.value = productInfo
@@ -113,11 +117,11 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
 
     fun onResume() {
         updateComponents()
-        Logg.d { "onResume" }
     }
 
     private fun updateComponents() {
         if (totalCount.value ?: 0.0 > 0.0) {
+            Logg.d { "updateComponents" }
             count.value = count.value
             componentsItem.postValue(
                     mutableListOf<ComponentItem>().apply {
@@ -151,7 +155,14 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
     }
 
     fun onClickClean() {
-        screenNavigator.openAlertScreen("onClickClean")
+        processServiceManager.getWriteOffTask()?.let { writeOffTask ->
+            componentsSelectionsHelper.selectedPositions.value?.map { position ->
+                componentsInfo[position]
+            }?.let {
+                writeOffTask.deleteProducts(it)
+            }
+            updateComponents()
+        }
     }
 
     fun onClickDetails() {
@@ -220,6 +231,10 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
 
     override fun handleFailure(failure: Failure) {
         screenNavigator.openAlertScreen(failure)
+    }
+
+    fun onPageSelected(position: Int) {
+        selectedPage.value = position
     }
 
     fun onBackPressed() {
