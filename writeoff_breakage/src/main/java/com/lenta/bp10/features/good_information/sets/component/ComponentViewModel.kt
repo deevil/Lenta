@@ -85,6 +85,7 @@ class ComponentViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftK
 
         Logg.d { "exiseStampsForProduct ${processServiceManager.getWriteOffTask()!!.taskRepository.getExciseStamps().findExciseStampsOfProduct(productInfo.value!!).map { it.code }}" }
         Logg.d { "exiseStampsAll ${processServiceManager.getWriteOffTask()!!.taskRepository.getExciseStamps().getExciseStamps().size}" }
+
     }
 
     fun onClickApply() {
@@ -126,6 +127,11 @@ class ComponentViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftK
                     writeOffReason = componentItem.value!!.writeOffReason.name,
                     isBasStamp = true
             ))
+
+            Logg.d { "taskExciseStamp_size ${exciseStamp.size}" }
+            Logg.d { "taskExciseStamp_setMaterialNumber ${exciseStamp[exciseStamp.size-1].setMaterialNumber}" }
+            Logg.d { "taskExciseStamp_materialNumber ${exciseStamp[exciseStamp.size-1].materialNumber}" }
+            Logg.d { "taskExciseStamp_code ${exciseStamp[exciseStamp.size-1].code}" }
 
             countValue.value = exciseStamp.size.toDouble()
             return

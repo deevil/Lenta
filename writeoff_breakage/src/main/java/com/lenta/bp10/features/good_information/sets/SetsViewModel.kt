@@ -125,17 +125,17 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
             count.value = count.value
             componentsItem.postValue(
                     mutableListOf<ComponentItem>().apply {
-                        componentsInfo.forEachIndexed { indComp, itemComp ->
+                        componentsInfo.forEachIndexed { index, compInfo ->
                             add(ComponentItem(
-                                    number = indComp + 1,
-                                    name = "${componentsInfo[indComp].materialNumber.substring(componentsInfo[indComp].materialNumber.length - 6)} ${componentsInfo[indComp].description}",
-                                    quantity = "${getCountExciseStampsForComponent(componentsInfo[indComp])} из ${components[indComp].menge * totalCount.value!!}",
-                                    menge = components[indComp].menge.toString(),
-                                    even = indComp % 2 == 0,
+                                    number = index + 1,
+                                    name = "${compInfo.materialNumber.substring(compInfo.materialNumber.length - 6)} ${compInfo.description}",
+                                    quantity = "${getCountExciseStampsForComponent(compInfo)} из ${components[index].menge * totalCount.value!!}",
+                                    menge = components[index].menge.toString(),
+                                    even = index % 2 == 0,
                                     countSets = totalCount.value!!,
                                     selectedPosition = selectedPosition.value!!,
                                     writeOffReason = getReason(),
-                                    materialNumber = componentsInfo[indComp].materialNumber))
+                                    materialNumber = compInfo.materialNumber))
                         }
                     }
             )
@@ -144,13 +144,14 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
     }
 
     private fun getCountExciseStampsForComponent(componentInfo: ProductInfo) : Double {
-        var countExciseStamp = 0.0
-        processServiceManager.getWriteOffTask().let { writeOffTask ->
-            writeOffTask!!.taskRepository.getExciseStamps().findExciseStampsOfProduct(componentInfo).forEachIndexed { indES, taskExciseStamp ->
-                countExciseStamp = if (taskExciseStamp.materialNumber == componentInfo.materialNumber) +1.0 else 0.0
-            }
-        }
-        return countExciseStamp
+
+        return processServiceManager
+                .getWriteOffTask()!!
+                .taskRepository
+                .getExciseStamps()
+                .findExciseStampsOfProduct(componentInfo)
+                .size
+                .toDouble()
     }
 
     fun onClickClean() {
