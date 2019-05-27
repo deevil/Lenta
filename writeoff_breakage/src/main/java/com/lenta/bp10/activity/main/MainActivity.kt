@@ -8,6 +8,7 @@ import com.lenta.bp10.di.AppComponent
 import com.lenta.bp10.platform.extentions.getAppComponent
 import com.lenta.shared.platform.activity.main_activity.CoreMainActivity
 import com.crashlytics.android.Crashlytics
+import com.lenta.bp10.platform.runIfRelease
 import io.fabric.sdk.android.Fabric
 
 
@@ -22,8 +23,9 @@ class MainActivity : CoreMainActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        Fabric.with(this, Crashlytics())
+        runIfRelease{
+            Fabric.with(this, Crashlytics())
+        }
     }
 
     override fun getViewModel(): MainViewModel {
