@@ -1,7 +1,6 @@
 package com.lenta.bp10.activity.main
 
 import android.content.Intent
-import android.content.Intent.*
 import android.os.Bundle
 import androidx.lifecycle.ViewModelProviders
 import com.lenta.bp10.di.AppComponent
@@ -9,8 +8,10 @@ import com.lenta.bp10.platform.extentions.getAppComponent
 import com.lenta.shared.platform.activity.main_activity.CoreMainActivity
 import com.crashlytics.android.Crashlytics
 import com.lenta.bp10.platform.runIfRelease
+import com.lenta.shared.scan.OnScanResultListener
+import com.lenta.shared.utilities.Logg
+import com.lenta.shared.utilities.extentions.implementationOf
 import io.fabric.sdk.android.Fabric
-
 
 
 class MainActivity : CoreMainActivity() {
@@ -23,7 +24,7 @@ class MainActivity : CoreMainActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        runIfRelease{
+        runIfRelease {
             Fabric.with(this, Crashlytics())
         }
     }
@@ -39,6 +40,31 @@ class MainActivity : CoreMainActivity() {
             }
             return mainViewModel!!
         }
+    }
+
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        intent?.let { intent1 ->
+            intent1.action?.let { action ->
+                Logg.d("onNewIntent action: ${action}")
+                Logg.d("extras: ")
+                /*intent1.extras.keySet().forEach {
+                    Logg.d("${it}:${intent1.extras.get(it)}")
+                }*/
+
+                if (action == "com.symbol.datawedge.krittest") {
+                    intent1.getStringExtra("com.motorolasolutions.emdk.datawedge.data_string")?.let {
+                        fragmentStack.peek()?.implementationOf(OnScanResultListener::class.java)?.onScanResult(it)
+                    }
+
+                }
+
+
+            }
+
+
+        }
+
     }
 
     override fun onClickExit() {
