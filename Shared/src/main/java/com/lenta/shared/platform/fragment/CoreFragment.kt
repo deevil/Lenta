@@ -16,9 +16,11 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.implementationOf
+import com.lenta.shared.utilities.state.GsonBundle
+import com.lenta.shared.utilities.state.GsonBundleDelegate
 import java.lang.NullPointerException
 
-abstract class CoreFragment<T : ViewDataBinding, S : ViewModel> : Fragment() {
+abstract class CoreFragment<T : ViewDataBinding, S : ViewModel> : Fragment(), GsonBundle by GsonBundleDelegate() {
     var binding: T? = null
     lateinit var vm: S
 
@@ -26,14 +28,23 @@ abstract class CoreFragment<T : ViewDataBinding, S : ViewModel> : Fragment() {
         (activity as CoreActivity<*>).coreComponent
     }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        restoreInstanceStateGsonBundle(savedInstanceState)
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        saveInstanceStateGsonBundle(outState)
+    }
 
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         binding = DataBindingUtil.inflate(inflater, getLayoutId(), container, false)
         binding?.let {
-            it.lifecycleOwner = viewLifecycleOwner
             vm = getViewModel()
             it.setVariable(BR.vm, vm)
+            it.lifecycleOwner = viewLifecycleOwner
             it.executePendingBindings()
             return it.root
         }

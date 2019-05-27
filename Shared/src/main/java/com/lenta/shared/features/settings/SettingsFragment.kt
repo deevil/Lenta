@@ -10,13 +10,13 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.ImageButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
+import com.lenta.shared.utilities.extentions.provideViewModel
 
-abstract class CoreSettingsFragment : CoreFragment<com.lenta.shared.databinding.FragmentSettingsBinding, CoreSettingsViewModel>(), OnBackPresserListener, ToolbarButtonsClickListener {
+class SettingsFragment : CoreFragment<com.lenta.shared.databinding.FragmentSettingsBinding, SettingsViewModel>(), OnBackPresserListener, ToolbarButtonsClickListener {
 
     override fun getLayoutId(): Int = R.layout.fragment_settings
 
     override fun onBackPressed(): Boolean {
-        vm.onBackPressed()
         return true
     }
 
@@ -40,5 +40,15 @@ abstract class CoreSettingsFragment : CoreFragment<com.lenta.shared.databinding.
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
         bottomToolbarUiModel.cleanAll(false)
-     }
+    }
+
+    override fun getPageNumber(): String = "10/02"
+
+    override fun getViewModel(): SettingsViewModel {
+        provideViewModel(SettingsViewModel::class.java).let {
+            coreComponent.inject(it)
+            return it
+        }
+    }
+
 }

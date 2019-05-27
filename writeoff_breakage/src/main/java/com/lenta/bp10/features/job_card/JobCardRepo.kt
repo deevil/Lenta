@@ -21,6 +21,7 @@ class JobCardRepo @Inject constructor(val hyperHive: HyperHive,
                                       val sessionInfo: ISessionInfo) : IJobCardRepo {
     override suspend fun getAllTaskSettings(): List<TaskSetting> {
         return withContext(Dispatchers.IO) {
+            @Suppress("INACCESSIBLE_TYPE")
             return@withContext ZmpUtz29V001Rfc(hyperHive).localHelper_ET_TASK_TPS.all.map {
                 TaskSetting(
                         name = it.longName,
@@ -48,6 +49,7 @@ class JobCardRepo @Inject constructor(val hyperHive: HyperHive,
         }
         return withContext(Dispatchers.IO) {
 
+            @Suppress("INACCESSIBLE_TYPE")
             return@withContext ZmpUtz35V001Rfc(hyperHive).localHelper_ET_CNTRL
                     .getWhere("TASK_TYPE = \"$taskType\"").map {
                         GisControl(
@@ -68,10 +70,11 @@ class JobCardRepo @Inject constructor(val hyperHive: HyperHive,
         }
         return withContext(Dispatchers.IO) {
 
-            var lgortList = ZmpUtz33V001(hyperHive).localHelper_ET_LGORT
+            @Suppress("INACCESSIBLE_TYPE") var lgortList = ZmpUtz33V001(hyperHive).localHelper_ET_LGORT
                     .getWhere("TASK_TYPE = \"$taskType\" and (WERKS = \"*\" OR WERKS = \"${sessionInfo.market}\")")
 
             if (lgortList.size == 1 && lgortList[0].lgort == "*") {
+                @Suppress("INACCESSIBLE_TYPE")
                 return@withContext ZmpUtz02V001(hyperHive).localHelper_ET_STORLOCS
                         .getWhere("LOCKED = \"\"").map { it.storloc }
             }

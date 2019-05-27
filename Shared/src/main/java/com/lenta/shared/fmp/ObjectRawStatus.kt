@@ -17,3 +17,11 @@ open class ObjectRawStatus<T> : BaseStatus() {
 open class ResultObject<T>(
         val raw: T?
 )
+
+open class BaseRestSapStatus(
+        @SerializedName("EV_RETCODE")
+        val retCode: String,
+
+        @SerializedName("EV_ERROR_TEXT")
+        val errorText: String
+)

@@ -1,4 +1,4 @@
-package com.lenta.bp10.requests.network
+package com.lenta.shared.requests.network
 
 import com.google.gson.Gson
 import com.google.gson.annotations.Expose
@@ -8,17 +8,21 @@ import com.lenta.shared.fmp.ObjectRawStatus
 import com.lenta.shared.fmp.toFmpObjectRawStatusEither
 import com.lenta.shared.functional.Either
 import com.lenta.shared.interactor.UseCase
+import com.lenta.shared.settings.IAppSettings
 import com.mobrun.plugin.api.HyperHive
 import javax.inject.Inject
 
 class PinCodeNetRequest
-@Inject constructor(private val hyperHive: HyperHive, private val gson: Gson) : UseCase<PinCodeInfo, Nothing?>(){
-    override suspend fun run(params: Nothing?): Either<Failure, PinCodeInfo> {
+@Inject constructor(private val hyperHive: HyperHive,
+                    private val gson: Gson,
+                    private val appSettings: IAppSettings) : UseCase<PinCodeInfo, PinCodeRequestParams?>() {
+    override suspend fun run(params: PinCodeRequestParams?): Either<Failure, PinCodeInfo> {
         val isAuthorized = hyperHive.authAPI.isAuthorized
 
         if (!isAuthorized) {
             hyperHive.authAPI.unAuth().execute()
-            hyperHive.authAPI.auth("tech_user", "123456",true).execute()
+            hyperHive.authAPI.auth(params?.login ?: appSettings.techLogin,
+                    params?.password ?: appSettings.techPassword, true).execute()
         }
 
         /**val resString = hyperHive.requestAPI.web("ZMP_UTZ_90_V001").execute()
@@ -33,6 +37,9 @@ class PinCodeNetRequest
     }
 
 }
+
+
+data class PinCodeRequestParams(val login: String, val password: String)
 
 class PinCodeStatus : ObjectRawStatus<PinCodeInfo>()
 

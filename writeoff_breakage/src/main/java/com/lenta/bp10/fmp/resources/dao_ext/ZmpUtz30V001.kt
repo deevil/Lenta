@@ -9,12 +9,7 @@ fun ZmpUtz30V001.getMaterial(material: String): ZmpUtz30V001.ItemLocal_ET_MATERI
 }
 
 fun ZmpUtz30V001.ItemLocal_ET_MATERIALS.getMatrixType(): MatrixType {
-    return when (matrType) {
-        "A" -> MatrixType.Active
-        "P" -> MatrixType.Passive
-        "D" -> MatrixType.Deleted
-        else -> MatrixType.Unknown
-    }
+    return com.lenta.shared.models.core.getMatrixType(matrType)
 }
 
 fun ZmpUtz30V001.ItemLocal_ET_MATERIALS.getSectionId(): Int {
@@ -22,8 +17,5 @@ fun ZmpUtz30V001.ItemLocal_ET_MATERIALS.getSectionId(): Int {
 }
 
 fun ZmpUtz30V001.ItemLocal_ET_MATERIALS.getProductType(): ProductType {
-    if (isAlco.isNotEmpty()) {
-        return if (isExc.isNotEmpty()) ProductType.ExciseAlcohol else ProductType.NonExciseAlcohol
-    }
-    return ProductType.General
+    return com.lenta.shared.models.core.getProductType(isAlco.isNotEmpty(), isExc.isNotEmpty())
 }

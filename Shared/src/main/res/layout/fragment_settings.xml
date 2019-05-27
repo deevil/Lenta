@@ -6,26 +6,75 @@
     <data>
         <variable
             name="vm"
-            type="com.lenta.shared.features.settings.CoreSettingsViewModel"/>
+            type="com.lenta.shared.features.settings.SettingsViewModel"/>
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <include
-            android:id="@+id/layout_settings"
-            layout="@layout/layout_settings"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
+        <ImageView
+            android:id="@+id/iv_logo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
-            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginEnd="8dp"
+            android:src="@drawable/logo_lenta"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:vm="@{vm}" />
+            tools:ignore="ContentDescription" />
 
+        <Button
+            android:id="@+id/btn_select_printer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="16dp"
+            android:onClick="@{(view) -> vm.onClickPrinter()}"
+            android:text="@string/printer_change"
+            android:enabled="@{vm.isMainMenu}"
+            android:focusable="@{vm.isMainMenu}"
+            android:textAllCaps="false"
+            app:layout_constraintBottom_toTopOf="@+id/btn_select_oper_mode"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <Button
+            android:id="@+id/btn_select_oper_mode"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="16dp"
+            android:onClick="@{(view) -> vm.onClickWork()}"
+            android:text="@string/select_oper_mode"
+            android:enabled="@{!vm.isMainMenu}"
+            android:focusable="@{!vm.isMainMenu}"
+            app:layout_constraintBottom_toTopOf="@+id/btn_tach_login"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.6"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <Button
+            android:id="@+id/btn_tach_login"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="16dp"
+            android:onClick="@{(view) -> vm.onClickTechLog()}"
+            android:text="@string/tech_login"
+            android:enabled="@{!vm.isMainMenu}"
+            android:focusable="@{!vm.isMainMenu}"
+            android:textAllCaps="false"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -8,8 +8,9 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.ImageButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
+import com.lenta.shared.utilities.extentions.provideViewModel
 
-abstract class CoreAuxiliaryMenuFragment : CoreFragment<com.lenta.shared.databinding.FragmentAuxiliaryMenuBindingImpl, CoreAuxiliaryMenuViewModel>(), OnBackPresserListener, ToolbarButtonsClickListener {
+class AuxiliaryMenuFragment : CoreFragment<com.lenta.shared.databinding.FragmentAuxiliaryMenuBindingImpl, AuxiliaryMenuViewModel>(), OnBackPresserListener, ToolbarButtonsClickListener {
 
     override fun getLayoutId(): Int = R.layout.fragment_auxiliary_menu
 
@@ -32,6 +33,15 @@ abstract class CoreAuxiliaryMenuFragment : CoreFragment<com.lenta.shared.databin
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
         bottomToolbarUiModel.cleanAll(false)
+    }
+
+    override fun getPageNumber(): String = "10/50"
+
+    override fun getViewModel(): AuxiliaryMenuViewModel {
+        provideViewModel(AuxiliaryMenuViewModel::class.java).let {
+            coreComponent.inject(it)
+            return it
+        }
     }
 
 

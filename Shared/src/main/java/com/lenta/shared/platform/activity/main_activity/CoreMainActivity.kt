@@ -1,12 +1,15 @@
 package com.lenta.shared.platform.activity.main_activity
 
 import android.os.Bundle
+import android.view.KeyEvent
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Observer
 import com.lenta.shared.R
 import com.lenta.shared.databinding.ActivityMainBinding
+import com.lenta.shared.keys.KeyCode
+import com.lenta.shared.keys.OnKeyDownListener
 import com.lenta.shared.platform.network_state.NetworkStateMonitor
 import com.lenta.shared.platform.activity.CoreActivity
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
@@ -60,7 +63,6 @@ abstract class CoreMainActivity : CoreActivity<ActivityMainBinding>(), ToolbarBu
         binding?.toolbarButtonsClickListener = this
 
         binding?.vm = vm
-        vm.statusBarUiModel.printerTasksCount.value = -1
 
         scanHelper.scanResult.observe(this, Observer<String> {
             Logg.d { "scan result: $it" }
@@ -129,6 +131,24 @@ abstract class CoreMainActivity : CoreActivity<ActivityMainBinding>(), ToolbarBu
         }
 
         getCurrentFragment()?.implementationOf(ToolbarButtonsClickListener::class.java)?.onToolbarButtonClick(view)
+    }
+
+    override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
+        val onKeyDownListener = getCurrentFragment()?.implementationOf(OnKeyDownListener::class.java)
+        var handled = false
+        val detectedKeyCode = KeyCode.detectKeyCode(event.keyCode)
+        if (onKeyDownListener != null) {
+            handled = onKeyDownListener.onKeyDown(detectedKeyCode)
+        }
+        if (!handled && detectedKeyCode === KeyCode.KEYCODE_ESCAPE) {
+            onBackPressed()
+            handled = true
+        }
+
+        return if (!handled) {
+            super.onKeyDown(keyCode, event)
+        } else true
+
     }
 
     private fun isHaveBackButton(): Boolean {

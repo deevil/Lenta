@@ -52,7 +52,7 @@
             android:textSize="14sp"
             android:drawableStart="@drawable/ic_print_white_16dp"
             android:drawablePadding="4dp"
-            app:intWithVisibilities="@{vm.printerTasksCount}"
+            app:setTextWithVisibilities="@{vm.printer}"
             app:layout_constraintBottom_toBottomOf="@+id/tv_page_number"
             app:layout_constraintEnd_toStartOf="@+id/tv_battery_status"
             app:layout_constraintHorizontal_chainStyle="spread_inside"

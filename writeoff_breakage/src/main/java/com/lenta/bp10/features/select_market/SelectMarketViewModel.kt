@@ -65,16 +65,25 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
     }
 
     fun onClickNext() {
+        markets.value?.getOrNull(selectedPosition.value ?: -1)?.number?.let {
+            if (appSettings.lastTK != it) {
+                clearPrinters()
+            }
+            sessionInfo.printer = appSettings.printer
+            sessionInfo.market = it
+            appSettings.lastTK = it
+        }
         screenNavigator.openFastDataLoadingScreen()
+    }
+
+    private fun clearPrinters() {
+        appSettings.printer = null
+        sessionInfo.printer = null
     }
 
 
     override fun onClickPosition(position: Int) {
         selectedPosition.value = position
-        markets.value?.getOrNull(position)?.number?.let {
-            sessionInfo.market = it
-            appSettings.lastTK = it
-        }
     }
 
 }

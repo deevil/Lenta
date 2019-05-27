@@ -61,4 +61,5 @@
     <string name="servers_address">Адрес сервера</string>
     <string name="environment">Среда</string>
     <string name="project">Проект</string>
+    <string name="pin_change_net_settings_info">Введите ПИН-код для перехода в настройки подключения</string>
 </resources>

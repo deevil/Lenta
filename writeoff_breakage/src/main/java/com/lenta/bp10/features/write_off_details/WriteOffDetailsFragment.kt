@@ -17,10 +17,11 @@ import com.lenta.shared.utilities.databinding.DataBindingAdapter
 import com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig
 import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.provideViewModel
+import com.lenta.shared.utilities.state.state
 
 class WriteOffDetailsFragment : CoreFragment<FragmentWriteOffDetailsBinding, WriteOffDetailsViewModel>(), ToolbarButtonsClickListener {
 
-    private var productInfo: ProductInfo? = null
+    private var productInfo by state<ProductInfo?>(null)
 
     override fun getLayoutId(): Int = R.layout.fragment_write_off_details
 

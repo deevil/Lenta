@@ -3,6 +3,8 @@ package com.lenta.bp10.models.task
 import com.lenta.bp10.fmp.resources.send_report.MaterialNumber
 import com.lenta.bp10.fmp.resources.send_report.WriteOffReport
 import com.lenta.bp10.models.repositories.ITaskRepository
+import com.lenta.bp10.requests.network.PrintProduct
+import com.lenta.bp10.requests.network.PrintTask
 import com.lenta.shared.models.core.ProductInfo
 import com.lenta.shared.models.core.ProductType
 
@@ -88,7 +90,35 @@ class WriteOffTask(val taskDescription: TaskDescription, val taskRepository: ITa
 
     }
 
+
 }
+
+
+fun WriteOffTask.getPrinterTask(): PrintTask {
+    with(taskDescription) {
+        return PrintTask(
+                typeTask = taskType.code,
+                tkNumber = tkNumber,
+                storloc = stock,
+                printerName = printer,
+                products = getProductsPrint()
+        )
+    }
+}
+
+private fun WriteOffTask.getProductsPrint(): List<PrintProduct> {
+    return taskRepository.getWriteOffReasons()
+            .getWriteOffReasons().map {
+                PrintProduct(
+                        materialNumber = it.materialNumber,
+                        quantity = it.count,
+                        uomCode = taskRepository.getProducts().findProduct(it.materialNumber)?.uom?.code
+                                ?: "",
+                        reasonCode = it.writeOffReason.code
+                )
+            }
+}
+
 
 fun WriteOffTask.getReport(): WriteOffReport {
     with(taskDescription) {
