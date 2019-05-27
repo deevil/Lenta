@@ -57,10 +57,22 @@
             android:paddingTop="8dp"
             android:paddingBottom="8dp"
             android:text="@={vm.eanCode}"
-            app:onOkInSoftKeyboard="@{vm}"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/b_scan"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintEnd_toStartOf="@+id/b_scan_es"
+            app:layout_constraintStart_toStartOf="parent"
+            app:onOkInSoftKeyboard="@{vm}" />
+
+        <ImageButton
+            android:id="@+id/b_scan_es"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="7dp"
+            android:background="?selectableItemBackground"
+            android:onClick="@{(v) -> vm.screenNavigator.openESInfoScreen()}"
+            android:src="@drawable/is_scan_barcode_es"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/b_scan" />
 
         <ImageButton
             android:id="@+id/b_scan"

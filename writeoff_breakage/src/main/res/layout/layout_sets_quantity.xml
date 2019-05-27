@@ -209,19 +209,5 @@
             app:srcCompat="@drawable/ic_excise_white_48dp"
             tools:ignore="VectorDrawableCompat" />
 
-        <ImageButton
-            android:id="@+id/imageButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:layout_marginBottom="14dp"
-            android:onClick="@{(v) -> vm.screenNavigator.openESInfoScreen()}"
-            android:background="?selectableItemBackground"
-            android:padding="8dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/b_scan"
-            app:srcCompat="@drawable/is_scan_barcode_es"
-            tools:ignore="VectorDrawableCompat" />
-
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
