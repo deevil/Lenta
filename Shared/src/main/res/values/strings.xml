@@ -35,6 +35,7 @@
     <string name="auxiliary_menu">Вспомогательное меню</string>
     <string name="settings">Настройки</string>
     <string name="support">Поддержка</string>
+    <string name="rollback">Откатить</string>
     <string name="tech_login">Технический логин</string>
     <string name="tv_tech_login">Введите данные технического логина для синхронизации справочников</string>
     <string name="select_oper_mode">Выбор режима работы</string>
@@ -53,11 +54,11 @@
     <string name="good">Товар</string>
     <string name="quantity">Количество</string>
     <string name="total">Итого</string>
-    <string name="good_not_found">Товар не найден в справочниках</string>
     <string name="not_selected">Не выбрано</string>
     <string name="tk">TK</string>
     <string name="data_saving">Сохранение данных</string>
     <string name="connection_settings">Настройки подключения</string>
     <string name="servers_address">Адрес сервера</string>
     <string name="environment">Среда</string>
+    <string name="project">Проект</string>
 </resources>

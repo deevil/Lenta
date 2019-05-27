@@ -1,4 +1,4 @@
-package com.lenta.bp10.fmp.resources.fast;
+package com.lenta.shared.fmp.resources;
 
 import com.google.gson.annotations.SerializedName;
 import com.mobrun.plugin.api.HyperHive;

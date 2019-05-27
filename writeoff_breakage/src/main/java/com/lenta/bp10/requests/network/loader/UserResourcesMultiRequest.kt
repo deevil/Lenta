@@ -2,6 +2,8 @@ package com.lenta.bp10.requests.network.loader
 
 import com.lenta.bp10.fmp.resources.gis_control.ZmpUtz35V001Rfc
 import com.lenta.bp10.fmp.resources.tasks_settings.ZmpUtz29V001Rfc
+import com.lenta.bp10.fmp.resources.tasks_settings.ZmpUtz29V001Rfc.LimitedScalarParameter.IV_NODEPLOY
+import com.lenta.bp10.fmp.resources.tasks_settings.ZmpUtz29V001Rfc.LimitedScalarParameter.IV_USER
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.requests.network.CoreResourcesMultiRequest
 import com.mobrun.plugin.api.HyperHive
@@ -18,9 +20,14 @@ class UserResourcesMultiRequest @Inject constructor(private val hyperHive: Hyper
 
         //TODO (DB) - нужно отправлять пользователя в эти ФМники после доработки
 
+        val user = sessionInfo.userName
+
         return listOf(
-                ZmpUtz29V001Rfc(hyperHive).newRequest(),
-                ZmpUtz35V001Rfc(hyperHive).newRequest()
+                ZmpUtz29V001Rfc(hyperHive).newRequest()
+                        .addScalar(IV_USER(user)),
+                ZmpUtz35V001Rfc(hyperHive)
+                        .newRequest()
+                        .addScalar(ZmpUtz35V001Rfc.LimitedScalarParameter.IV_USER(user))
         )
 
     }

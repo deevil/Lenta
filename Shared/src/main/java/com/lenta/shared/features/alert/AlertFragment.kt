@@ -1,7 +1,6 @@
-package com.lenta.bp10.features.alert
+package com.lenta.shared.features.alert
 
 
-import com.lenta.bp10.platform.extentions.getAppComponent
 import com.lenta.shared.features.message.CoreMessageFragment
 import com.lenta.shared.features.message.MessageViewModel
 import com.lenta.shared.utilities.extentions.provideViewModel
@@ -14,7 +13,7 @@ class AlertFragment : CoreMessageFragment() {
 
     override fun getViewModel(): MessageViewModel {
         provideViewModel(MessageViewModel::class.java).let { vm ->
-            getAppComponent()?.inject(vm)
+            coreComponent.inject(vm)
             message?.let {
                 vm.message = it
                 vm.iconRes = iconRes

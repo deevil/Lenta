@@ -7,6 +7,7 @@ import com.lenta.bp10.platform.navigation.IScreenNavigator
 import com.lenta.bp10.requests.db.PermissionsDbRequest
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
+import com.lenta.shared.settings.IAppSettings
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.view.OnPositionClickListener
 import kotlinx.coroutines.launch
@@ -19,9 +20,11 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
     lateinit var screenNavigator: IScreenNavigator
     @Inject
     lateinit var sessionInfo: ISessionInfo
+    @Inject
+    lateinit var appSettings: IAppSettings
 
 
-    val markets: MutableLiveData<List<MarketUi>> = MutableLiveData()
+    private val markets: MutableLiveData<List<MarketUi>> = MutableLiveData()
     val marketsNames: MutableLiveData<List<String>> = markets.map { markets ->
         markets?.map { it.number }
     }
@@ -41,8 +44,23 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
 
     private fun handlePermissions(list: List<ZfmpUtzWob01V001.ItemLocal_ET_WERKS>) {
         markets.value = list.map { MarketUi(number = it.werks, address = it.addres) }
-        if (list.isNotEmpty() && selectedPosition.value == null) {
-            onClickPosition(0)
+
+        if (selectedPosition.value == null) {
+            if (appSettings.lastTK != null) {
+                list.forEachIndexed { index, itemLocal_ET_WERKS ->
+                    if (itemLocal_ET_WERKS.werks == appSettings.lastTK) {
+                        onClickPosition(index)
+                    }
+                }
+            } else {
+                onClickPosition(0)
+            }
+        }
+
+
+
+        if (list.size == 1) {
+            onClickNext()
         }
     }
 
@@ -53,7 +71,10 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
 
     override fun onClickPosition(position: Int) {
         selectedPosition.value = position
-        sessionInfo.market = markets.value?.getOrNull(position)?.number
+        markets.value?.getOrNull(position)?.number?.let {
+            sessionInfo.market = it
+            appSettings.lastTK = it
+        }
     }
 
 }

@@ -7,9 +7,14 @@ import androidx.annotation.LayoutRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
+import com.lenta.shared.di.CoreComponent
+import com.lenta.shared.di.CoreInjectHelper
 
 abstract class CoreActivity<T : ViewDataBinding> : AppCompatActivity() {
     var binding: T? = null
+    val coreComponent: CoreComponent by lazy {
+        CoreInjectHelper.provideCoreComponent(this.applicationContext)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

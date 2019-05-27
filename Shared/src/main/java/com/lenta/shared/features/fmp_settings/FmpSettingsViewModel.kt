@@ -1,8 +1,8 @@
-package com.lenta.bp10.features.fmp_settings
+package com.lenta.shared.features.fmp_settings
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.lenta.bp10.platform.navigation.IScreenNavigator
+import com.lenta.shared.platform.navigation.ICoreNavigator
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.settings.IAppSettings
 import kotlinx.coroutines.launch
@@ -14,7 +14,7 @@ class FmpSettingsViewModel : CoreViewModel() {
     lateinit var appSettings: IAppSettings
 
     @Inject
-    lateinit var screenNavigator: IScreenNavigator
+    lateinit var coreNavigator: ICoreNavigator
 
     val serverAddress = MutableLiveData<String>()
     val environment = MutableLiveData<String>()
@@ -36,8 +36,7 @@ class FmpSettingsViewModel : CoreViewModel() {
         appSettings.serverAddress = serverAddress.value?: ""
         appSettings.environment = environment.value?: ""
         appSettings.project = project.value?: ""
-        screenNavigator.goBack()
-        screenNavigator.finishApp()
+        coreNavigator.finishApp()
 
     }
 }

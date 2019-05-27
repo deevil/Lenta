@@ -1,25 +1,25 @@
 package com.lenta.bp10.models
 
-import com.fasterxml.jackson.annotation.JsonProperty
+import com.google.gson.annotations.SerializedName
 
 class ExciseStampRestInfo(
         /// Номер набора (null для ненабора)
-        @JsonProperty("MATNR_OSN")
+        @SerializedName("MATNR_OSN")
         val matnrOsn: String,
 
         /// Номер товара
-        @JsonProperty("MATNR")
+        @SerializedName("MATNR")
         val matnr: String,
 
         /// Причина движения
-        @JsonProperty("GRUND")
+        @SerializedName("GRUND")
         val writeOffCause: String,
 
         /// Код акцизной марки
-        @JsonProperty("PDF417")
+        @SerializedName("PDF417")
         val stamp: String,
 
         /// Признак bad mark
-        @JsonProperty("REG")
+        @SerializedName("REG")
         val reg: String
 )

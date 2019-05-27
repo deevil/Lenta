@@ -1,21 +1,21 @@
 package com.lenta.bp10.models
 
-import com.fasterxml.jackson.annotation.JsonProperty
+import com.google.gson.annotations.SerializedName
 
 class WriteOffReasonRestInfo(
         /// Номер товара
-        @JsonProperty("MATNR")
+        @SerializedName("MATNR")
         val matnr: String,
 
         /// Причина движения
-        @JsonProperty("GRUND")
+        @SerializedName("GRUND")
         val writeOffCause: String,
 
         /// Место возникновения затрат
-        @JsonProperty("KOSTL")
+        @SerializedName("KOSTL")
         val kostl: String,
 
         /// Введенное количество
-        @JsonProperty("FIRST_QNT")
+        @SerializedName("FIRST_QNT")
         val amount: String
 )

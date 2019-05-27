@@ -1,18 +1,18 @@
 package com.lenta.bp10.mobileObjectsService.models
 
-import com.fasterxml.jackson.annotation.JsonProperty
+import com.google.gson.annotations.SerializedName
 
 // Модель справочника настроек заданий на списание WOB (справочник складов)
 class MB_S_33(
         /// Тип задания на списание
-        @JsonProperty("TASK_TYPE")
+        @SerializedName("TASK_TYPE")
         val taskType: String,
 
         /// ТК
-        @JsonProperty("WERKS")
+        @SerializedName("WERKS")
         val werks: String,
 
         /// Склад
-        @JsonProperty("LGORT")
+        @SerializedName("LGORT")
         val lgort: String
 )

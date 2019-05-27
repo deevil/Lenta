@@ -1,22 +1,21 @@
 package com.lenta.bp10.platform.navigation
 
 import android.content.Context
-import android.os.Bundle
 import com.lenta.bp10.R
-import com.lenta.bp10.features.alert.AlertFragment
+import com.lenta.bp10.exception.IWriteOffFailureInterpretator
 import com.lenta.bp10.features.auth.AuthFragment
 import com.lenta.bp10.features.auxiliary_menu.AuxiliaryMenuFragment
 import com.lenta.bp10.features.exit.ExitWithConfirmationFragment
-import com.lenta.bp10.features.fmp_settings.FmpSettingsFragment
 import com.lenta.bp10.features.good_information.general.GoodInfoFragment
+import com.lenta.bp10.features.good_information.sets.ComponentItem
 import com.lenta.bp10.features.good_information.sets.SetsFragment
+import com.lenta.bp10.features.good_information.sets.component.ComponentFragment
 import com.lenta.bp10.features.goods_list.GoodsListFragment
 import com.lenta.bp10.features.job_card.JobCardFragment
 import com.lenta.bp10.features.loading.fast.FastDataLoadingFragment
 import com.lenta.bp10.features.loading.tasks_settings.LoadingTaskSettingsFragment
 import com.lenta.bp10.features.main_menu.MainMenuFragment
 import com.lenta.bp10.features.matrix_info.MatrixInfoFragment
-import com.lenta.bp10.features.printer_change.PrinterChangeFragment
 import com.lenta.bp10.features.report_result.ReportResultFragment
 import com.lenta.bp10.features.section_info.SectionInfoFragment
 import com.lenta.bp10.features.select_market.SelectMarketFragment
@@ -30,43 +29,30 @@ import com.lenta.bp10.features.write_off_details.WriteOffDetailsFragment
 import com.lenta.bp10.requests.network.WriteOffReportResponse
 import com.lenta.shared.account.IAuthenticator
 import com.lenta.shared.exception.Failure
-import com.lenta.shared.exception.IFailureInterpreter
+import com.lenta.shared.features.alert.AlertFragment
+import com.lenta.shared.features.fmp_settings.FmpSettingsFragment
+import com.lenta.shared.features.printer_change.PrinterChangeFragment
 import com.lenta.shared.interactor.UseCase
 import com.lenta.shared.models.core.MatrixType
 import com.lenta.shared.models.core.ProductInfo
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
-import com.lenta.shared.platform.navigation.CustomAnimation
-import com.lenta.shared.platform.navigation.IGoBackNavigator
+import com.lenta.shared.platform.navigation.ICoreNavigator
 import com.lenta.shared.progress.IProgressUseCaseInformator
 import com.lenta.shared.utilities.Logg
 
 class ScreenNavigator(
         private val context: Context,
+        private val coreNavigator: ICoreNavigator,
         private val foregroundActivityProvider: ForegroundActivityProvider,
         private val authenticator: IAuthenticator,
-        private val failureInterpreter: IFailureInterpreter,
+        private val failureInterpreter: IWriteOffFailureInterpretator,
         private val progressUseCaseInformator: IProgressUseCaseInformator
-) : IScreenNavigator {
-
-    override fun openAlertScreen(message: String) {
-        getFragmentStack()?.let {
-            val fragment = AlertFragment.create(message)
-            it.push(fragment, CustomAnimation.vertical())
-
-        }
-    }
+) : IScreenNavigator, ICoreNavigator by coreNavigator {
 
     override fun openAlertScreen(failure: Failure) {
         openAlertScreen(failureInterpreter.getFailureDescription(failure))
     }
 
-    override fun goBackWithArgs(args: Bundle) {
-        getFragmentStack()?.popReturnArgs(args = args)
-    }
-
-    override fun goBack() {
-        getFragmentStack()?.pop()
-    }
 
     override fun openSelectMarketScreen() {
         getFragmentStack()?.replace(SelectMarketFragment())
@@ -92,7 +78,7 @@ class ScreenNavigator(
         getFragmentStack()?.push(FastDataLoadingFragment())
     }
 
-    override fun openSelectionTabNumberScreen() {
+    override fun openSelectionPersonnelNumberScreen() {
         getFragmentStack()?.replace(SelectPersonnelNumberFragment())
     }
 
@@ -119,7 +105,7 @@ class ScreenNavigator(
     }
 
     override fun openMainMenuScreen() {
-        getFragmentStack()?.push(MainMenuFragment())
+        getFragmentStack()?.replace(MainMenuFragment())
     }
 
     override fun openJobCardScreen() {
@@ -162,6 +148,10 @@ class ScreenNavigator(
         getFragmentStack()?.push(TechLoginFragment())
     }
 
+    override fun openComponentSetScreen(productInfo: ProductInfo, componentItem: ComponentItem) {
+        getFragmentStack()?.push(ComponentFragment.create(productInfo,componentItem))
+    }
+
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 
     override fun openEanInfoScreen() {
@@ -169,9 +159,9 @@ class ScreenNavigator(
                 iconRes = R.drawable.ic_scan_barcode))
     }
 
-    override fun finishApp() {
-        foregroundActivityProvider.getActivity()?.finish()
-        System.exit(0)
+    override fun openESInfoScreen() {
+        getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.es_info),
+                iconRes = R.drawable.is_scan_barcode_es))
     }
 
     override fun openExitConfirmationScreen() {
@@ -208,14 +198,12 @@ class ScreenNavigator(
     }
 }
 
-interface IScreenNavigator : IGoBackNavigator {
+interface IScreenNavigator : ICoreNavigator {
     fun openFirstScreen()
     fun openLoginScreen()
     fun openSelectMarketScreen()
-    fun openAlertScreen(message: String)
-    fun openAlertScreen(failure: Failure)
     fun openFastDataLoadingScreen()
-    fun openSelectionTabNumberScreen()
+    fun openSelectionPersonnelNumberScreen()
     fun openAuxiliaryMenuScreen()
     fun openSelectOperModeScreen()
     fun openSettingsScreen()
@@ -231,8 +219,8 @@ interface IScreenNavigator : IGoBackNavigator {
     fun openGoodsListScreen()
     fun openGoodInfoScreen(productInfo: ProductInfo)
     fun openEanInfoScreen()
+    fun openESInfoScreen()
     fun openExitConfirmationScreen()
-    fun finishApp()
     fun openRemoveTaskConfirmationScreen(taskDescription: String, codeConfirmation: Int)
     fun openSendingReportsScreen(writeOffReportResponse: WriteOffReportResponse)
     fun closeAllScreen()
@@ -241,4 +229,5 @@ interface IScreenNavigator : IGoBackNavigator {
     fun openSectionInfoScreen(section: Int)
     fun openGoodsReasonsScreen(productInfo: ProductInfo)
     fun openConnectionsSettingsScreen()
+    fun openComponentSetScreen(productInfo: ProductInfo, componentItem: ComponentItem)
 }
