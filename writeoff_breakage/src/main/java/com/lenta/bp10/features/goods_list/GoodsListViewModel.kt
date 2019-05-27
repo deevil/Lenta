@@ -16,6 +16,7 @@ import com.lenta.bp10.requests.network.SendWriteOffReportRequest
 import com.lenta.bp10.requests.network.WriteOffReportResponse
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.models.core.ProductInfo
+import com.lenta.shared.models.core.ProductType
 import com.lenta.shared.platform.resources.IStringResourceManager
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.Logg
@@ -190,11 +191,19 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
 
     private fun handleSearchProductSuccess(productInfo: ProductInfo) {
-        if (productInfo.isSet) {
-            screenNavigator.openSetsInfoScreen(productInfo)
-            return
+
+        when (productInfo.type) {
+            ProductType.General -> {
+                if (productInfo.isSet) {
+                    screenNavigator.openSetsInfoScreen(productInfo)
+                    return
+                } else
+                    screenNavigator.openGoodInfoScreen(productInfo)
+            }
+            else -> screenNavigator.openAlertScreen("Поддержка данного типа товара в процессе разработки")
         }
-        screenNavigator.openGoodInfoScreen(productInfo)
+
+
     }
 
     private fun handleFailureSearchFromDb(failure: Failure) {
