@@ -40,6 +40,7 @@ class ComponentFragment : CoreFragment<FragmentComponentBinding, ComponentViewMo
             getAppComponent()?.inject(it)
             it.setProductInfo(productInfo)
             it.setComponentItem(componentItem)
+            it.setLimitExceeded(getString(R.string.limit_exceeded))
             return it
         }
     }
