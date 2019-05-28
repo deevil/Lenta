@@ -3,18 +3,18 @@ package com.lenta.bp10.platform.navigation
 import android.content.Context
 import com.lenta.bp10.R
 import com.lenta.bp10.exception.IWriteOffFailureInterpretator
-import com.lenta.shared.features.alert.AlertFragment
 import com.lenta.bp10.features.auth.AuthFragment
 import com.lenta.bp10.features.exit.ExitWithConfirmationFragment
 import com.lenta.bp10.features.good_information.general.GoodInfoFragment
+import com.lenta.bp10.features.good_information.sets.ComponentItem
 import com.lenta.bp10.features.good_information.sets.SetsFragment
+import com.lenta.bp10.features.good_information.sets.component.ComponentFragment
 import com.lenta.bp10.features.goods_list.GoodsListFragment
 import com.lenta.bp10.features.job_card.JobCardFragment
 import com.lenta.bp10.features.loading.fast.FastDataLoadingFragment
 import com.lenta.bp10.features.loading.tasks_settings.LoadingTaskSettingsFragment
 import com.lenta.bp10.features.main_menu.MainMenuFragment
 import com.lenta.bp10.features.matrix_info.MatrixInfoFragment
-import com.lenta.shared.features.printer_change.PrinterChangeFragment
 import com.lenta.bp10.features.report_result.ReportResultFragment
 import com.lenta.bp10.features.section_info.SectionInfoFragment
 import com.lenta.bp10.features.select_market.SelectMarketFragment
@@ -23,6 +23,8 @@ import com.lenta.bp10.features.write_off_details.WriteOffDetailsFragment
 import com.lenta.bp10.requests.network.WriteOffReportResponse
 import com.lenta.shared.account.IAuthenticator
 import com.lenta.shared.exception.Failure
+import com.lenta.shared.features.alert.AlertFragment
+import com.lenta.shared.features.printer_change.PrinterChangeFragment
 import com.lenta.shared.interactor.UseCase
 import com.lenta.shared.models.core.MatrixType
 import com.lenta.shared.models.core.ProductInfo
@@ -115,6 +117,15 @@ class ScreenNavigator(
                 iconRes = R.drawable.ic_scan_barcode))
     }
 
+    override fun openComponentSetScreen(productInfo: ProductInfo, componentItem: ComponentItem) {
+        getFragmentStack()?.push(ComponentFragment.create(productInfo = productInfo, componentItem = componentItem))
+    }
+
+    override fun openESInfoScreen() {
+        getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.es_info),
+                iconRes = R.drawable.is_scan_barcode_es))
+    }
+
     override fun openExitConfirmationScreen() {
         getFragmentStack()?.push(ExitWithConfirmationFragment())
     }
@@ -163,6 +174,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openGoodsListScreen()
     fun openGoodInfoScreen(productInfo: ProductInfo)
     fun openEanInfoScreen()
+    fun openESInfoScreen()
     fun openExitConfirmationScreen()
     fun openRemoveTaskConfirmationScreen(taskDescription: String, codeConfirmation: Int)
     fun openSendingReportsScreen(writeOffReportResponse: WriteOffReportResponse)
@@ -171,5 +183,6 @@ interface IScreenNavigator : ICoreNavigator {
     fun openMatrixInfoScreen(matrixType: MatrixType)
     fun openSectionInfoScreen(section: Int)
     fun openGoodsReasonsScreen(productInfo: ProductInfo)
+    fun openComponentSetScreen(productInfo: ProductInfo, componentItem: ComponentItem)
     fun openSuccessPrintMessage()
 }

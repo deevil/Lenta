@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools">
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".features.good_information.sets.component.ComponentFragment">
 
     <data>
+
         <variable
             name="vm"
-            type="com.lenta.bp10.features.good_information.sets.SetsViewModel" />
+            type="com.lenta.bp10.features.good_information.sets.component.ComponentViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -65,9 +67,10 @@
             android:layout_marginEnd="8dp"
             android:digits="0123456789-."
             android:ellipsize="end"
+            android:enabled="false"
             android:inputType="numberDecimal"
             android:maxLines="1"
-            android:text="@={vm.count}"
+            android:text="@{vm.count}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/div_vert"
             app:layout_constraintTop_toTopOf="@+id/div_vert"
@@ -131,6 +134,7 @@
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
+            android:enabled="@{vm.spinnerEnabled}"
             app:items="@{vm.writeOffReasonTitles}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -148,6 +152,26 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/spinner_write_off_type" />
 
+        <EditText
+            android:id="@+id/et_search"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="32dp"
+            android:layout_marginEnd="8dp"
+            android:drawableEnd="@drawable/ic_add_white_24dp"
+            android:hint="Введите код АМ (тест)"
+            android:imeOptions="actionSearch"
+            android:inputType="numberDecimal"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:text="@={vm.eanCode}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/div_hor4"
+            app:onOkInSoftKeyboard="@{vm}" />
+
         <TextView
             android:id="@+id/tv_matrix"
             android:layout_width="36sp"
@@ -158,12 +182,12 @@
             android:fontFamily="@font/tahoma_bold"
             android:gravity="center"
             android:textSize="18sp"
-            tools:background="@drawable/bg_white_circle"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/div_hor4"
             app:layout_constraintVertical_bias="1.0"
             app:matrixType="@{vm.productInfo.matrixType}"
+            tools:background="@drawable/bg_white_circle"
             tools:text="A" />
 
         <TextView
@@ -198,16 +222,28 @@
             app:layout_constraintEnd_toEndOf="parent" />
 
         <ImageView
-            android:id="@+id/imageView4"
+            android:id="@+id/imageView3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginBottom="18dp"
-            android:background="?selectableItemBackground"
+            android:src="@drawable/ic_excise_white_48dp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/tv_section"
-            app:srcCompat="@drawable/ic_excise_white_48dp"
-            tools:ignore="VectorDrawableCompat" />
+            app:layout_constraintStart_toEndOf="@+id/tv_section" />
+
+        <ImageButton
+            android:id="@+id/imageButton2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="14dp"
+            android:background="?selectableItemBackground"
+            android:onClick="@{(v) -> vm.screenNavigator.openESInfoScreen()}"
+            android:padding="8dp"
+            android:src="@drawable/is_scan_barcode_es"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/b_scan" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
+
 </layout>

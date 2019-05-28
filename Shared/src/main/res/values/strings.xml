@@ -35,6 +35,7 @@
     <string name="auxiliary_menu">Вспомогательное меню</string>
     <string name="settings">Настройки</string>
     <string name="support">Поддержка</string>
+    <string name="rollback">Откатить</string>
     <string name="tech_login">Технический логин</string>
     <string name="tv_tech_login">Введите данные технического логина для синхронизации справочников</string>
     <string name="select_oper_mode">Выбор режима работы</string>

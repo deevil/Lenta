@@ -27,7 +27,7 @@ class MemoryTaskExciseStampRepository : ITaskExciseStampRepository {
         var index = -1
         for (i in stamps.indices) {
             // (Артем И., 05.04.2019) code (exciseStamp.getCode()) уникальный, поэтому сравнение делаем только по нему, по товару materialNumber не сравниваем
-            if (exciseStamp.code === stamps[i].code) {
+            if (exciseStamp.code == stamps[i].code) {
                 index = i
             }
         }
@@ -43,7 +43,7 @@ class MemoryTaskExciseStampRepository : ITaskExciseStampRepository {
         var index = -1
         for (i in stamps.indices) {
             // (Артем И., 05.04.2019) code (exciseStamp.getCode()) уникальный, поэтому сравнение делаем только по нему, по товару materialNumber не сравниваем
-            if (exciseStamp.code === stamps[i].code) {
+            if (exciseStamp.code == stamps[i].code) {
                 index = i
             }
         }
@@ -58,7 +58,7 @@ class MemoryTaskExciseStampRepository : ITaskExciseStampRepository {
     override fun deleteExciseStampsForProduct(product: ProductInfo): Boolean {
         val deleteStamps = ArrayList<TaskExciseStamp>()
         for (i in stamps.indices) {
-            if (product.materialNumber === stamps[i].materialNumber) {
+            if (product.materialNumber == stamps[i].materialNumber) {
                 deleteStamps.add(stamps[i])
             }
         }
