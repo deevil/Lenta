@@ -10,6 +10,8 @@ import com.google.gson.GsonBuilder
 import com.lenta.shared.BuildConfig
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.account.SessionInfo
+import com.lenta.shared.analytics.FmpAnalytics
+import com.lenta.shared.analytics.IAnalytics
 import com.lenta.shared.exception.CoreFailureInterpreter
 import com.lenta.shared.exception.IFailureInterpreter
 import com.lenta.shared.platform.network_state.INetworkStateMonitor
@@ -70,10 +72,8 @@ class CoreModule(val application: Application, val defaultConnectionSettings: De
         if (BuildConfig.DEBUG) {
             Logg.d { "hhive plugin version: ${hyperHive.stateAPI.versionPlugin}" }
             Logg.d { "hhive core version: ${hyperHive.stateAPI.getVersionCoreAPI(0)}" }
-            hyperHive.loggingAPI.setLogLevel(3)
-        } else {
-            hyperHive.loggingAPI.setLogLevel(10)
         }
+        hyperHive.loggingAPI.setLogLevel(10)
 
         return hyperHive
     }
@@ -131,14 +131,21 @@ class CoreModule(val application: Application, val defaultConnectionSettings: De
     @Singleton
     internal fun provideICoreNavigator(context: Context,
                                        foregroundActivityProvider: ForegroundActivityProvider,
-                                       failureInterpreter: IFailureInterpreter): ICoreNavigator {
-        return CoreNavigator(context, foregroundActivityProvider, failureInterpreter)
+                                       failureInterpreter: IFailureInterpreter,
+                                       analytics: IAnalytics): ICoreNavigator {
+        return CoreNavigator(context, foregroundActivityProvider, failureInterpreter, analytics)
     }
 
     @Provides
     @Singleton
     internal fun provideISessionInfo(): ISessionInfo {
         return SessionInfo()
+    }
+
+    @Provides
+    @Singleton
+    internal fun provideIAnalitycs(hyperHive: HyperHive): IAnalytics {
+        return FmpAnalytics(hyperHive)
     }
 
 }

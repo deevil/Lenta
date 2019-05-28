@@ -27,6 +27,10 @@ android {
 
 }
 
+configurations {
+    all*.exclude group: 'com.google.guava', module: 'listenablefuture'
+}
+
 dependencies {
     // Kotlin
     api deps.kotlin.stdlib
@@ -49,6 +53,7 @@ dependencies {
     api deps.constraint_layout
 
     api project(':hhive')
+    api 'com.cronutils:cron-utils:4.1.3'
     api deps.gson
 
 

@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import com.google.gson.Gson
 import com.lenta.shared.account.ISessionInfo
+import com.lenta.shared.analytics.IAnalytics
 import com.lenta.shared.exception.IFailureInterpreter
 import com.lenta.shared.features.auxiliary_menu.AuxiliaryMenuViewModel
 import com.lenta.shared.features.fmp_settings.FmpSettingsViewModel
@@ -48,6 +49,7 @@ interface CoreComponent {
     fun getHyperHive(): HyperHive
     fun getIFailureInterpreter(): IFailureInterpreter
     fun getISessionInfo(): ISessionInfo
+    fun getIAnalytics(): IAnalytics
 
 
     fun inject(it: FmpSettingsViewModel)
