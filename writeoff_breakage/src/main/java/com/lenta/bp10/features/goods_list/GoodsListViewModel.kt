@@ -189,21 +189,18 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
         }
     }
 
-
     private fun handleSearchProductSuccess(productInfo: ProductInfo) {
-
         when (productInfo.type) {
-            ProductType.General -> {
+            ProductType.General -> screenNavigator.openGoodInfoScreen(productInfo)
+            ProductType.ExciseAlcohol -> {
                 if (productInfo.isSet) {
                     screenNavigator.openSetsInfoScreen(productInfo)
                     return
                 } else
-                    screenNavigator.openGoodInfoScreen(productInfo)
+                    screenNavigator.openAlertScreen("Поддержка данного типа товара в процессе разработки")
             }
             else -> screenNavigator.openAlertScreen("Поддержка данного типа товара в процессе разработки")
         }
-
-
     }
 
     private fun handleFailureSearchFromDb(failure: Failure) {

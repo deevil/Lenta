@@ -3,7 +3,6 @@ package com.lenta.bp10.features.good_information.sets.component
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp10.features.good_information.sets.ComponentItem
-import com.lenta.bp10.models.ExciseStampRestInfo
 import com.lenta.bp10.models.repositories.IWriteOffTaskManager
 import com.lenta.bp10.models.task.ProcessExciseAlcoProductService
 import com.lenta.bp10.models.task.TaskExciseStamp
@@ -11,6 +10,7 @@ import com.lenta.bp10.platform.navigation.IScreenNavigator
 import com.lenta.bp10.requests.db.ProductInfoDbRequest
 import com.lenta.bp10.requests.network.ExciseStampNetRequest
 import com.lenta.bp10.requests.network.ExciseStampParams
+import com.lenta.bp10.requests.network.ExciseStampRestInfo
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.models.core.ProductInfo
@@ -49,7 +49,7 @@ class ComponentViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftK
     val totalCount: MutableLiveData<Double> = countValue.map { (it ?: 0.0) + processServiceManager.getWriteOffTask()!!.taskRepository.getExciseStamps().findExciseStampsOfProduct(productInfo.value!!).size}
     val totalCountWithUom: MutableLiveData<String> = totalCount.map { "$it из ${componentItem.value!!.menge.toDouble() * componentItem.value!!.countSets}" }
     val suffix: MutableLiveData<String> = MutableLiveData()
-    val eanCode: MutableLiveData<String> = MutableLiveData()
+    val exciseStampCode: MutableLiveData<String> = MutableLiveData()
     private val exciseStamp = mutableListOf<TaskExciseStamp>()
 
     private val processExciseAlcoProductService: ProcessExciseAlcoProductService by lazy {
@@ -114,45 +114,45 @@ class ComponentViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftK
 
     private fun searchExciseStamp() {
         viewModelScope.launch {
-            eanCode.value?.let {
-                /**productInfoDbRequest(ProductInfoRequestParams(number = it)).either(::handleFailure, ::handleSearchSuccess)*/
+            exciseStampCode.value?.let {
                 exciseStampNetRequest(ExciseStampParams(pdf417 = it, werks = sessionInfo.market!!, matnr = productInfo.value!!.materialNumber)).either(::handleFailure, ::handleExciseStampSuccess)
             }
-
         }
     }
 
-    private fun handleExciseStampSuccess(exciseStampRestInfo: ExciseStampRestInfo) {
-        Logg.d { "handleSuccess ${exciseStampRestInfo}" }
-    }
-
-    override fun handleFailure(failure: Failure) {
-        //screenNavigator.openAlertScreen(failure)
-        //TODO т.к. макри не находились, временно поставил принудитльную запись здесь
+    private fun handleExciseStampSuccess(exciseStampRestInfo: List<ExciseStampRestInfo>) {
+        //Logg.d { "handleSuccess ${exciseStampRestInfo}" }
         if (totalCount.value!! >= componentItem.value!!.menge.toDouble() * componentItem.value!!.countSets) {
             screenNavigator.openAlertScreen("Превышен лимит")
             return
         }
 
-        //if (productInfo.value!!.materialNumber == searchComponentInfo.materialNumber) { должна быть проверка марки
-            count.value = (count.value!!.toInt() + 1).toString()
-            exciseStamp.add(TaskExciseStamp(
-                    materialNumber = productInfo.value!!.materialNumber,
-                    code = eanCode.value!!, //todo вставиь код после скана марки
-                    setMaterialNumber = componentItem.value!!.setMaterialNumber,
-                    writeOffReason = componentItem.value!!.writeOffReason.name,
-                    isBasStamp = true
-            ))
+        val retcodeCode = exciseStampRestInfo[1].data[0][0].toInt()
+        val retcodeName = exciseStampRestInfo[1].data[0][1]
 
-            Logg.d { "taskExciseStamp_size ${exciseStamp.size}" }
-            Logg.d { "taskExciseStamp_setMaterialNumber ${exciseStamp[exciseStamp.size-1].setMaterialNumber}" }
-            Logg.d { "taskExciseStamp_materialNumber ${exciseStamp[exciseStamp.size-1].materialNumber}" }
-            Logg.d { "taskExciseStamp_code ${exciseStamp[exciseStamp.size-1].code}" }
+        when (retcodeCode) {
+            0 -> addExciseStamp()
+            1 -> screenNavigator.openAlertScreen(retcodeName)
+            2 -> screenNavigator.openAlertScreen(retcodeName)
+            3 -> screenNavigator.openAlertScreen(retcodeName)
+            4 -> screenNavigator.openAlertScreen(retcodeName)
+        }
+    }
 
-            countValue.value = exciseStamp.size.toDouble()
-            return
-        //}
-        screenNavigator.openAlertScreen("Акцизная марка не найдена")
+    fun addExciseStamp(){
+        count.value = (count.value!!.toInt() + 1).toString()
+        exciseStamp.add(TaskExciseStamp(
+                materialNumber = productInfo.value!!.materialNumber,
+                code = exciseStampCode.value!!,
+                setMaterialNumber = componentItem.value!!.setMaterialNumber,
+                writeOffReason = componentItem.value!!.writeOffReason.name,
+                isBasStamp = true
+        ))
+        countValue.value = exciseStamp.size.toDouble()
+    }
+
+    override fun handleFailure(failure: Failure) {
+        screenNavigator.openAlertScreen(failure)
     }
     //TODO тестовый код==================================================
 

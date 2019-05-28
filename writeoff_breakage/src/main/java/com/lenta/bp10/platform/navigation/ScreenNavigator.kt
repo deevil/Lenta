@@ -104,10 +104,12 @@ class ScreenNavigator(
         getFragmentStack()?.push(SetsFragment.create(productInfo))
     }
 
-
-
     override fun openPrinterChangeScreen() {
         getFragmentStack()?.push(PrinterChangeFragment())
+    }
+
+    override fun openComponentSetScreen(productInfo: ProductInfo, componentItem: ComponentItem) {
+        getFragmentStack()?.push(ComponentFragment.create(productInfo,componentItem))
     }
 
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
@@ -115,10 +117,6 @@ class ScreenNavigator(
     override fun openEanInfoScreen() {
         getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.ean_info),
                 iconRes = R.drawable.ic_scan_barcode))
-    }
-
-    override fun openComponentSetScreen(productInfo: ProductInfo, componentItem: ComponentItem) {
-        getFragmentStack()?.push(ComponentFragment.create(productInfo = productInfo, componentItem = componentItem))
     }
 
     override fun openESInfoScreen() {
@@ -183,6 +181,6 @@ interface IScreenNavigator : ICoreNavigator {
     fun openMatrixInfoScreen(matrixType: MatrixType)
     fun openSectionInfoScreen(section: Int)
     fun openGoodsReasonsScreen(productInfo: ProductInfo)
-    fun openComponentSetScreen(productInfo: ProductInfo, componentItem: ComponentItem)
     fun openSuccessPrintMessage()
+    fun openComponentSetScreen(productInfo: ProductInfo, componentItem: ComponentItem)
 }

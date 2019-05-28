@@ -43,7 +43,6 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
     @Inject
     lateinit var productInfoDbRequest: ProductInfoDbRequest
 
-    //TODO уточнить, надо ли добавлять набор в списание, если да, то к какому виду товаров принадлежит набор, обычный или акцизный, если акцизный, тогда проблема с маркой, невозможно пустое поле добавить
     private val processExciseAlcoProductService: ProcessExciseAlcoProductService by lazy {
         processServiceManager.getWriteOffTask()!!.processExciseAlcoProduct(productInfo.value!!)!!
     }
@@ -183,7 +182,6 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
 
     private fun addSet() {
         countValue.value?.let {
-            //TODO уточнить, надо ли добавлять набоh в списание, если да, то к какому виду товаров принадлежит набор, обычный или акцизный, если акцизный, тогда проблема с маркой, невозможно пустое поле добавить
             processExciseAlcoProductService.add(getReason(), it, TaskExciseStamp(
                                                                     materialNumber = "",
                                                                     code = "",
