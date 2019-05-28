@@ -8,6 +8,7 @@ import com.lenta.shared.requests.db.PrinterChangeDBRequest
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.platform.navigation.ICoreNavigator
 import com.lenta.shared.platform.viewmodel.CoreViewModel
+import com.lenta.shared.settings.IAppSettings
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.view.OnPositionClickListener
 import kotlinx.coroutines.launch
@@ -23,6 +24,9 @@ class PrinterChangeViewModel : CoreViewModel(), OnPositionClickListener {
 
     @Inject
     lateinit var sessionInfo: ISessionInfo
+
+    @Inject
+    lateinit var appSettings: IAppSettings
 
     private val printers: MutableLiveData<List<PrinterUi>> = MutableLiveData()
     val printersNames: MutableLiveData<List<String>> = printers.map { printers ->
@@ -43,15 +47,23 @@ class PrinterChangeViewModel : CoreViewModel(), OnPositionClickListener {
 
     init {
         viewModelScope.launch {
-            printerChangeDBRequest(sessionInfo.market!!).either(::handleFailure, ::handlePermissions)
+            printerChangeDBRequest(sessionInfo.market!!).either(::handleFailure, ::handlePrinters)
         }
     }
 
-    private fun handlePermissions(list: List<ZmpUtz26V001.ItemLocal_ET_PRINTERS>) {
+    private fun handlePrinters(list: List<ZmpUtz26V001.ItemLocal_ET_PRINTERS>) {
         printers.value = list.map { PrinterUi(number = it.werks, printerName = it.printername, printerInfo = it.printerinfo) }
         if (list.isNotEmpty() && selectedPosition.value == null) {
-            onClickPosition(0)
+            var pos = 0
+            for ((i, item) in list.withIndex()) {
+                if (item.printername == appSettings.printer) {
+                    pos = i
+                    break
+                }
+            }
+            onClickPosition(pos)
         } else {
+            screenNavigator.goBack()
             screenNavigator.openAlertScreen(txtNotFoundPrinter.value!!)
         }
     }
@@ -62,8 +74,10 @@ class PrinterChangeViewModel : CoreViewModel(), OnPositionClickListener {
     }
 
 
-    fun onClickApp() {
+    fun onClickApply() {
         sessionInfo.printer = printers.value?.getOrNull(selectedPosition.value!!)?.printerName
+        appSettings.printer = sessionInfo.printer
+        screenNavigator.goBack()
     }
 
 

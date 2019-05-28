@@ -15,22 +15,25 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListe
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig
 import com.lenta.shared.utilities.extentions.provideViewModel
+import com.lenta.shared.utilities.state.state
 
 class ReportResultFragment : CoreFragment<FragmentReportResultBinding, ReportResultViewModel>(),
         OnBackPresserListener, ToolbarButtonsClickListener {
 
-    lateinit var writeOffReportResponse: WriteOffReportResponse
+    var writeOffReportResponse by state<WriteOffReportResponse?>(null)
 
     override fun getLayoutId(): Int = R.layout.fragment_report_result
 
     override fun getPageNumber() = "10/09"
 
     override fun getViewModel(): ReportResultViewModel {
-        provideViewModel(ReportResultViewModel::class.java).let {
-            getAppComponent()?.inject(it)
-            it.setWriteOffReportResponse(writeOffReportResponse)
+        provideViewModel(ReportResultViewModel::class.java).let { viewModel ->
+            getAppComponent()?.inject(viewModel)
+            writeOffReportResponse?.let {
+                viewModel.setWriteOffReportResponse(it)
+            }
             binding?.rvConfig = DataBindingRecyclerViewConfig<ItemTaskReportBinding>(layoutId = R.layout.item_task_report, itemId = BR.vm)
-            return it
+            return viewModel
         }
     }
 

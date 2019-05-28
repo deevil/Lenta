@@ -23,19 +23,27 @@ class FmpSettingsViewModel : CoreViewModel() {
     init {
 
         viewModelScope.launch {
-            serverAddress.value = appSettings.serverAddress
-            environment.value = appSettings.environment
-            project.value = appSettings.project
-
+            serverAddress.value = appSettings.getCurrentServerAddress()
+            environment.value = appSettings.getCurrentEnvironment()
+            project.value = appSettings.getCurrentProject()
         }
 
     }
 
 
     fun onClickApply() {
-        appSettings.serverAddress = serverAddress.value?: ""
-        appSettings.environment = environment.value?: ""
-        appSettings.project = project.value?: ""
+        if (appSettings.isTest) {
+            appSettings.testServerAddress = serverAddress.value ?: ""
+            appSettings.testEnvironment = environment.value ?: ""
+            appSettings.testProject = project.value ?: ""
+
+        } else {
+            appSettings.serverAddress = serverAddress.value ?: ""
+            appSettings.environment = environment.value ?: ""
+            appSettings.project = project.value ?: ""
+        }
+
+        appSettings.isTest = true
         coreNavigator.finishApp()
 
     }

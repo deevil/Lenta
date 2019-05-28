@@ -65,7 +65,6 @@ class AuthViewModel : CoreAuthViewModel() {
         viewModelScope.launch {
             progress.value = true
             auth(AuthParams(login.value!!, password.value!!)).either(::handleFailure, ::loadPermissions)
-            progress.value = false
         }
     }
 
@@ -79,6 +78,7 @@ class AuthViewModel : CoreAuthViewModel() {
 
     override fun handleFailure(failure: Failure) {
         super.handleFailure(failure)
+        progress.value = false
         navigator.openAlertScreen(message = failureInterpreter.getFailureDescription(failure))
     }
 

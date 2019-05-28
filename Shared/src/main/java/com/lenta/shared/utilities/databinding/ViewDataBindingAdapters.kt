@@ -24,3 +24,16 @@ fun setInvisible(view: View, invisible: Boolean?) {
 fun setSelected(view: View, selected: Boolean?) {
     view.isSelected = selected ?: false
 }
+
+@BindingAdapter("requestFocus")
+fun requestFocus(view: View, @Suppress("UNUSED_PARAMETER") requestFocus: Any?) {
+    view.requestFocus()
+}
+
+@BindingAdapter("android:enabled")
+fun setEnabled(view: View, enabled: Boolean?) {
+    enabled?.let {
+        view.isEnabled = it
+        view.isClickable = it
+    }
+}

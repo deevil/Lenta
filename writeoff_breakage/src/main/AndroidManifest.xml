@@ -5,21 +5,31 @@
 
     <application
         android:name=".AndroidApplication"
-        android:allowBackup="true"
+        android:allowBackup="false"
         android:appComponentFactory="whateverString"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:largeHeap="true"
         android:roundIcon="@mipmap/ic_launcher_round"
-        android:supportsRtl="true"
+        android:supportsRtl="false"
         android:theme="@style/AppTheme"
-        tools:replace="android:appComponentFactory">
+        tools:ignore="GoogleAppIndexingWarning"
+        tools:replace="android:appComponentFactory, android:allowBackup, android:supportsRtl"
+        tools:targetApi="p">
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="c9e0b6b582d5dcd9003ee56a70c75fa689ef0939" />
         <activity
             android:name=".activity.main.MainActivity"
+            android:launchMode="singleInstance"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="com.symbol.datawedge.krittest" />
+                <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
     </application>

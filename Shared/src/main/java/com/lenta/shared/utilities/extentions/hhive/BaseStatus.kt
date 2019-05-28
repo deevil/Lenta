@@ -19,7 +19,7 @@ fun BaseStatus.getFailure(): Failure {
 }
 
 fun Error.getServerFailure(): Failure {
-    if (this.code!=null && this.code == 401) {
+    if (this.code != null && this.code == 401) {
         return Failure.AuthError
     }
     return Failure.ServerError
@@ -30,10 +30,14 @@ fun BaseStatus.toEitherBoolean(): Either<Failure, Boolean> {
 }
 
 fun <T> BaseStatus.toEither(data: T?): Either<Failure, T> {
-    return if ((this.isOk || this.httpStatus?.status == 304) && data != null) {
+    return if (this.isNotBad() && data != null) {
         Either.Right(data)
     } else {
         Logg.e { "Failure FMP request: ${this}" }
         Either.Left(this.getFailure())
     }
+}
+
+fun BaseStatus.isNotBad(): Boolean {
+    return this.isOk || this.httpStatus?.status == 304
 }

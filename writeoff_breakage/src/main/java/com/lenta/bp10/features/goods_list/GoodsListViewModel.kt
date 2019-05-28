@@ -5,14 +5,18 @@ import androidx.lifecycle.viewModelScope
 import com.lenta.bp10.models.repositories.IWriteOffTaskManager
 import com.lenta.bp10.models.repositories.getTotalCountForProduct
 import com.lenta.bp10.models.task.TaskWriteOffReason
+import com.lenta.bp10.models.task.getPrinterTask
 import com.lenta.bp10.models.task.getReport
 import com.lenta.bp10.platform.navigation.IScreenNavigator
 import com.lenta.bp10.requests.db.ProductInfoDbRequest
 import com.lenta.bp10.requests.db.ProductInfoRequestParams
+import com.lenta.bp10.requests.network.PrintTaskNetRequest
+import com.lenta.bp10.requests.network.ProductInfoNetRequest
 import com.lenta.bp10.requests.network.SendWriteOffReportRequest
 import com.lenta.bp10.requests.network.WriteOffReportResponse
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.models.core.ProductInfo
+import com.lenta.shared.models.core.ProductType
 import com.lenta.shared.platform.resources.IStringResourceManager
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.Logg
@@ -34,9 +38,13 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     @Inject
     lateinit var productInfoDbRequest: ProductInfoDbRequest
     @Inject
+    lateinit var productInfoNetRequest: ProductInfoNetRequest
+    @Inject
     lateinit var stringResourceManager: IStringResourceManager
     @Inject
     lateinit var sendWriteOffReportRequest: SendWriteOffReportRequest
+    @Inject
+    lateinit var printTaskNetRequest: PrintTaskNetRequest
 
     var selectedPage = MutableLiveData(0)
     val countedGoods: MutableLiveData<List<GoodItem>> = MutableLiveData()
@@ -60,6 +68,11 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
             }
 
     val saveButtonEnabled = countedGoods.map { it?.isNotEmpty() == true }
+
+    val printButtonEnabled: MutableLiveData<Boolean> = countedGoods.map {
+        !it.isNullOrEmpty() && (processServiceManager.getWriteOffTask()?.taskDescription?.printer?.isNotEmpty()
+                ?: false)
+    }
 
 
     val onCategoryPositionClickListener = object : OnPositionClickListener {
@@ -150,31 +163,58 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
     override fun onOkInSoftKeyboard(): Boolean {
 
-        searchCode()
+        searchCodeFromDb()
 
         Logg.d { "processServiceManager taskDescription: ${processServiceManager.getWriteOffTask()?.taskDescription}" }
         return true
     }
 
-    private fun searchCode() {
+    private fun searchCodeFromDb() {
         viewModelScope.launch {
             eanCode.value?.let {
-                productInfoDbRequest(ProductInfoRequestParams(number = it)).either(::handleFailure, ::handleScanSuccess)
+                productInfoDbRequest(ProductInfoRequestParams(number = it)).either(::handleFailureSearchFromDb, ::handleSearchProductSuccess)
             }
 
         }
     }
 
-    private fun handleScanSuccess(productInfo: ProductInfo) {
-        Logg.d { "productInfoLiveData: ${productInfo.isSet}" }
-        if (productInfo.isSet){
-            screenNavigator.openSetsInfoScreen(productInfo)
-            return
+    private fun searchCodeFromServer() {
+        viewModelScope.launch {
+            eanCode.value?.let {
+                screenNavigator.showProgress(productInfoNetRequest)
+                productInfoNetRequest(ProductInfoRequestParams(number = it)).either(::handleFailureNetRequest, ::handleSearchProductSuccess)
+                screenNavigator.hideProgress()
+            }
+
         }
-        screenNavigator.openGoodInfoScreen(productInfo)
     }
 
-    override fun handleFailure(failure: Failure) {
+
+    private fun handleSearchProductSuccess(productInfo: ProductInfo) {
+
+        when (productInfo.type) {
+            ProductType.General -> {
+                if (productInfo.isSet) {
+                    screenNavigator.openSetsInfoScreen(productInfo)
+                    return
+                } else
+                    screenNavigator.openGoodInfoScreen(productInfo)
+            }
+            else -> screenNavigator.openAlertScreen("Поддержка данного типа товара в процессе разработки")
+        }
+
+
+    }
+
+    private fun handleFailureSearchFromDb(failure: Failure) {
+        if (failure is Failure.GoodNotFound) {
+            searchCodeFromServer()
+            return
+        }
+        screenNavigator.openAlertScreen(failure)
+    }
+
+    private fun handleFailureNetRequest(failure: Failure) {
         screenNavigator.openAlertScreen(failure)
     }
 
@@ -188,14 +228,14 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
     fun onScanResult(data: String) {
         eanCode.value = data
-        searchCode()
+        searchCodeFromDb()
     }
 
     fun onClickSave() {
         viewModelScope.launch {
             screenNavigator.showProgress(sendWriteOffReportRequest)
             processServiceManager.getWriteOffTask()?.let {
-                sendWriteOffReportRequest(it.getReport()).either(::handleFailure, ::handleSentSuccess)
+                sendWriteOffReportRequest(it.getReport()).either(::handleFailureSearchFromDb, ::handleSentSuccess)
             }
 
             screenNavigator.hideProgress()
@@ -266,6 +306,22 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
         processServiceManager.getWriteOffTask()?.clearTask()
         updateFilter()
         updateCounted()
+    }
+
+    fun onClickPrint() {
+        processServiceManager.getWriteOffTask()?.let {
+            viewModelScope.launch {
+                screenNavigator.showProgress(printTaskNetRequest)
+                printTaskNetRequest(it.getPrinterTask()).either(::handleFailureNetRequest, ::handleSuccessPrint)
+                screenNavigator.hideProgress()
+            }
+        }
+
+    }
+
+    private fun handleSuccessPrint(@Suppress("UNUSED_PARAMETER") b: Boolean) {
+        screenNavigator.openSuccessPrintMessage()
+
     }
 
 }

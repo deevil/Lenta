@@ -2,7 +2,6 @@ package com.lenta.bp10.requests.network.loader
 
 import com.lenta.bp10.fmp.resources.gis_control.ZmpUtz35V001Rfc
 import com.lenta.bp10.fmp.resources.tasks_settings.ZmpUtz29V001Rfc
-import com.lenta.bp10.fmp.resources.tasks_settings.ZmpUtz29V001Rfc.LimitedScalarParameter.IV_NODEPLOY
 import com.lenta.bp10.fmp.resources.tasks_settings.ZmpUtz29V001Rfc.LimitedScalarParameter.IV_USER
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.requests.network.CoreResourcesMultiRequest
@@ -17,8 +16,6 @@ class UserResourcesMultiRequest @Inject constructor(private val hyperHive: Hyper
     override val isDeltaRequest = false
 
     override fun getListOfRequests(): List<RequestBuilder<out CustomParameter, out ScalarParameter<Any>>> {
-
-        //TODO (DB) - нужно отправлять пользователя в эти ФМники после доработки
 
         val user = sessionInfo.userName
 

@@ -24,7 +24,9 @@ class BottomToolbarUiModel {
 data class ButtonUiModel(
         val buttonDecorationInfo: MutableLiveData<ButtonDecorationInfo?> = MutableLiveData(),
         val visibility: MutableLiveData<Boolean> = MutableLiveData(),
-        val enabled: MutableLiveData<Boolean> = MutableLiveData()
+        val enabled: MutableLiveData<Boolean> = MutableLiveData(),
+        val requestFocus: MutableLiveData<Any> = MutableLiveData()
+
 ) {
     fun clean() {
         buttonDecorationInfo.value = ButtonDecorationInfo.empty
@@ -39,6 +41,10 @@ data class ButtonUiModel(
             this.buttonDecorationInfo.value = it
         }
 
+    }
+
+    fun requestFocus() {
+        requestFocus.postValue(true)
     }
 }
 

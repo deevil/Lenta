@@ -9,7 +9,7 @@ import com.lenta.shared.utilities.date_time.DateTimeUtil
 import com.lenta.shared.utilities.extentions.setTextViewDrawableColor
 import com.lenta.shared.utilities.extentions.setVisible
 
-@BindingAdapter(value = ["buttonDecorationInfo", "android:enabled"], requireAll = false)
+@BindingAdapter(value = ["buttonDecorationInfo", "enabled"], requireAll = false)
 fun setButtonDecorationInfo(textView: TextView, buttonDecorationInfo: ButtonDecorationInfo?, enabled: Boolean?) {
     if (buttonDecorationInfo == null) {
         textView.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0)

@@ -18,10 +18,10 @@ class TaskExciseStamp(materialNumber: String, code: String, val setMaterialNumbe
     fun equals(stamp: TaskExciseStamp?): Boolean {
         return if (stamp == null) {
             false
-        } else stamp!!.materialNumber === materialNumber
-                && stamp!!.code === code
-                && stamp!!.setMaterialNumber === setMaterialNumber
-                && stamp!!.writeOffReason === writeOffReason
-                && stamp!!.isBasStamp == isBasStamp
+        } else stamp.materialNumber === materialNumber
+                && stamp.code === code
+                && stamp.setMaterialNumber === setMaterialNumber
+                && stamp.writeOffReason === writeOffReason
+                && stamp.isBasStamp == isBasStamp
     }
 }

@@ -21,6 +21,7 @@ class WriteOffFailureInterpretator @Inject constructor(
     private fun getCustomFailureDescription(failure: Failure): String {
         return when (failure) {
             Failure.GoodNotFound -> context.getString(R.string.good_not_found)
+            is Failure.SapError -> failure.message
             else -> context.getString(com.lenta.shared.R.string.error_unknown)
         }
     }

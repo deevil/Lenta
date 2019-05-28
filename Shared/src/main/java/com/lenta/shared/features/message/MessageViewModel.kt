@@ -20,7 +20,8 @@ open class MessageViewModel : CoreViewModel() {
 
     lateinit var message: String
 
-    @DrawableRes var iconRes: Int = 0
+    @DrawableRes
+    var iconRes: Int = 0
     var codeConfirm: Int? = null
 
     init {
@@ -34,11 +35,11 @@ open class MessageViewModel : CoreViewModel() {
 
     open fun onClickApply() {
         codeConfirm?.let {
-            val args = Bundle()
-            args.putInt(KEY_ARGS_ID_CODE_CONFIRM, it)
-            coreNavigator.goBackWithArgs(args = args)
+            coreNavigator.goBackWithArgs(
+                    args = Bundle().apply {
+                        putInt(KEY_ARGS_ID_CODE_CONFIRM, it)
+                    })
         }
-
 
 
     }

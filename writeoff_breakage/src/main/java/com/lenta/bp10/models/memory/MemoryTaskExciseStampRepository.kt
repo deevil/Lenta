@@ -14,10 +14,6 @@ class MemoryTaskExciseStampRepository : ITaskExciseStampRepository {
     }
 
     override fun findExciseStampsOfProduct(product: ProductInfo): List<TaskExciseStamp> {
-        if (product == null) {
-            throw NullPointerException("product")
-        }
-
         val foundStamps = ArrayList<TaskExciseStamp>()
         for (i in stamps.indices) {
             if (product.materialNumber == stamps[i].materialNumber) {

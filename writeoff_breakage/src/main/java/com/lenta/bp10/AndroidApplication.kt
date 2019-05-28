@@ -8,7 +8,12 @@ class AndroidApplication : CoreApplication() {
         return DefaultConnectionSettings(
                 serverAddress = "http://9.6.24.110",
                 environment = "Lenta_LRQ",
-                project = "PR_WOB"
+                project = "PR_WOB",
+                testServerAddress = "http://9.6.24.110",
+                testEnvironment = "Lenta_LRQ",
+                testProject = "PR_WOB",
+                techLogin = "tech_user",
+                techPassword = "123456"
         )
     }
 }

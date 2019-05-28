@@ -9,6 +9,8 @@ import com.lenta.bp10.BR
 import com.lenta.bp10.R
 import com.lenta.bp10.databinding.*
 import com.lenta.bp10.platform.extentions.getAppComponent
+import com.lenta.shared.keys.KeyCode
+import com.lenta.shared.keys.OnKeyDownListener
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
@@ -16,10 +18,7 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListe
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.scan.OnScanResultListener
 import com.lenta.shared.utilities.Logg
-import com.lenta.shared.utilities.databinding.DataBindingAdapter
-import com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig
-import com.lenta.shared.utilities.databinding.PageSelectionListener
-import com.lenta.shared.utilities.databinding.ViewPagerSettings
+import com.lenta.shared.utilities.databinding.*
 import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.provideViewModel
 
@@ -28,7 +27,11 @@ class GoodsListFragment :
         ViewPagerSettings,
         PageSelectionListener,
         OnScanResultListener,
-        ToolbarButtonsClickListener {
+        ToolbarButtonsClickListener,
+        OnKeyDownListener {
+
+    private var countedRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
+    private var filterRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
 
     override fun getLayoutId(): Int = R.layout.fragment_goods_list
 
@@ -54,6 +57,7 @@ class GoodsListFragment :
 
         viewLifecycleOwner.let {
             connectLiveData(source = vm.deleteEnabled, target = bottomToolbarUiModel.uiModelButton3.enabled)
+            connectLiveData(source = vm.printButtonEnabled, target = bottomToolbarUiModel.uiModelButton4.enabled)
             connectLiveData(source = vm.saveButtonEnabled, target = bottomToolbarUiModel.uiModelButton5.enabled)
         }
 
@@ -64,15 +68,15 @@ class GoodsListFragment :
         binding?.let {
             it.viewPagerSettings = this
             it.pageSelectionListener = this
-
         }
 
     }
 
     override fun onToolbarButtonClick(view: View) {
         when (view.id) {
-            R.id.b_5 -> vm.onClickSave()
             R.id.b_3 -> vm.onClickDelete()
+            R.id.b_4 -> vm.onClickPrint()
+            R.id.b_5 -> vm.onClickSave()
         }
     }
 
@@ -101,8 +105,6 @@ class GoodsListFragment :
                             }
                         }
 
-
-                        layoutBinding.lifecycleOwner = viewLifecycleOwner
                         layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
                                 layoutId = R.layout.item_tile_goods,
                                 itemId = BR.vm,
@@ -114,11 +116,21 @@ class GoodsListFragment :
                                         binding.tvCounter.tag = position
                                         binding.tvCounter.setOnClickListener(onClickSelectionListener)
                                         binding.selectedForDelete = vm.countedSelectionsHelper.isSelected(position)
+                                        countedRecyclerViewKeyHandler?.let {
+                                            binding.root.isSelected = it.isSelected(position)
+                                        }
                                     }
 
                                 }
                         )
+
                         layoutBinding.vm = vm
+                        layoutBinding.lifecycleOwner = viewLifecycleOwner
+                        countedRecyclerViewKeyHandler = RecyclerViewKeyHandler(
+                                rv = layoutBinding.rv,
+                                items = vm.countedGoods,
+                                lifecycleOwner = layoutBinding.lifecycleOwner!!
+                        )
                         return layoutBinding.root
                     }
         }
@@ -137,7 +149,6 @@ class GoodsListFragment :
                     }
 
 
-                    layoutBinding.lifecycleOwner = viewLifecycleOwner
                     layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
                             layoutId = R.layout.item_tile_filter,
                             itemId = BR.vm,
@@ -149,11 +160,22 @@ class GoodsListFragment :
                                     binding.tvCounter.tag = position
                                     binding.tvCounter.setOnClickListener(onClickSelectionListener)
                                     binding.selectedForDelete = vm.filteredSelectionsHelper.isSelected(position)
+                                    filterRecyclerViewKeyHandler?.let {
+                                        binding.root.isSelected = it.isSelected(position)
+                                    }
+
                                 }
 
                             }
                     )
+
                     layoutBinding.vm = vm
+                    layoutBinding.lifecycleOwner = viewLifecycleOwner
+                    filterRecyclerViewKeyHandler = RecyclerViewKeyHandler(
+                            rv = layoutBinding.rv,
+                            items = vm.filteredGoods,
+                            lifecycleOwner = layoutBinding.lifecycleOwner!!
+                    )
                     return layoutBinding.root
                 }
 
@@ -171,6 +193,18 @@ class GoodsListFragment :
 
     override fun onScanResult(data: String) {
         vm.onScanResult(data)
+    }
+
+
+    override fun onKeyDown(keyCode: KeyCode): Boolean {
+        (if (vm.selectedPage.value == 0) {
+            countedRecyclerViewKeyHandler
+        } else {
+            filterRecyclerViewKeyHandler
+        })?.let {
+            return it.onKeyDown(keyCode)
+        }
+        return false
     }
 
 

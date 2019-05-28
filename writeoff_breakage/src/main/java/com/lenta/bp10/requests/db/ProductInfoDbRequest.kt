@@ -17,19 +17,19 @@ import javax.inject.Inject
 class ProductInfoDbRequest
 @Inject constructor(private val hyperHive: HyperHive) : UseCase<ProductInfo, ProductInfoRequestParams>() {
 
-    val zmpUtz25V001: ZmpUtz25V001 by lazy {
+    private val zmpUtz25V001: ZmpUtz25V001 by lazy {
         ZmpUtz25V001(hyperHive)
     }
 
-    val zmpUtz30V001: ZmpUtz30V001 by lazy {
+    private val zmpUtz30V001: ZmpUtz30V001 by lazy {
         ZmpUtz30V001(hyperHive)
     }
 
-    val zmpUtz07V001: ZmpUtz07V001 by lazy {
+    private val zmpUtz07V001: ZmpUtz07V001 by lazy {
         ZmpUtz07V001(hyperHive)
     }
 
-    val zmpUtz46V001: ZmpUtz46V001 by lazy {
+    private val zmpUtz46V001: ZmpUtz46V001 by lazy {
         ZmpUtz46V001(hyperHive)
     }
 
@@ -49,10 +49,6 @@ class ProductInfoDbRequest
 
         if (eanInfo == null) {
             eanInfo = zmpUtz25V001.getEanInfoFromMaterial(materialInfo.material)
-        }
-
-        if (eanInfo == null) {
-            eanInfo = getProductInfoFromRest()
         }
 
         if (eanInfo == null) {
@@ -78,20 +74,10 @@ class ProductInfoDbRequest
         ))
 
     }
-//TODO (DB) Реализовать поиск через REST
-
 
     private fun getIsSet(materialNumber: String): Boolean {
         return zmpUtz46V001.isSet(materialNumber)
     }
-
-
-
-    private fun getProductInfoFromRest(): ZmpUtz25V001.ItemLocal_ET_EANS? {
-        //TODO (DB) нужно реализовать получение товара через рест
-        return null
-    }
-
 
 }
 
