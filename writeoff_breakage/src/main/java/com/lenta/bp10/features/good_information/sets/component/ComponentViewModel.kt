@@ -39,6 +39,7 @@ class ComponentViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftK
     @Inject
     lateinit var sessionInfo: ISessionInfo
 
+    val limitExceeded: MutableLiveData<String> = MutableLiveData()
     val spinnerEnabled: MutableLiveData<Boolean> = MutableLiveData(false)
     val productInfo: MutableLiveData<ProductInfo> = MutableLiveData()
     val componentItem: MutableLiveData<ComponentItem> = MutableLiveData()
@@ -66,6 +67,10 @@ class ComponentViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftK
 
     fun setComponentItem(componentItem: ComponentItem) {
         this.componentItem.value = componentItem
+    }
+
+    fun setLimitExceeded(limitExceeded: String) {
+        this.limitExceeded.value = limitExceeded
     }
 
     init {
@@ -123,7 +128,7 @@ class ComponentViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftK
     private fun handleExciseStampSuccess(exciseStampRestInfo: List<ExciseStampRestInfo>) {
         //Logg.d { "handleSuccess ${exciseStampRestInfo}" }
         if (totalCount.value!! >= componentItem.value!!.menge.toDouble() * componentItem.value!!.countSets) {
-            screenNavigator.openAlertScreen("Превышен лимит")
+            screenNavigator.openAlertScreen(limitExceeded.value!!)
             return
         }
 
