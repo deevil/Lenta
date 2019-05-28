@@ -26,7 +26,7 @@ fun setSelected(view: View, selected: Boolean?) {
 }
 
 @BindingAdapter("requestFocus")
-fun requestFocus(view: View, requestFocus: Any?) {
+fun requestFocus(view: View, @Suppress("UNUSED_PARAMETER") requestFocus: Any?) {
     view.requestFocus()
 }
 

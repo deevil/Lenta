@@ -42,8 +42,8 @@
     <string name="reason_writeoff">Причина списания</string>
     <string name="write_off_details">Детали по списанию</string>
     <string name="good_not_found">Товар не найден в справочниках</string>
-    <string name="brand_not_set">Марка не принадлежит этому набору</string>
     <string name="loading_material_info">Загрузка данных о товаре</string>
     <string name="print_success">Задание на печать успешно отправлено</string>
     <string name="sending_data_to_print">Отправка данных на печать</string>
+    <string name="brand_not_set">Марка не принадлежит этому набору</string>
 </resources>

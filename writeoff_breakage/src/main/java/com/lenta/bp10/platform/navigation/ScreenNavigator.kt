@@ -24,7 +24,6 @@ import com.lenta.bp10.requests.network.WriteOffReportResponse
 import com.lenta.shared.account.IAuthenticator
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.features.alert.AlertFragment
-import com.lenta.shared.features.fmp_settings.FmpSettingsFragment
 import com.lenta.shared.features.printer_change.PrinterChangeFragment
 import com.lenta.shared.interactor.UseCase
 import com.lenta.shared.models.core.MatrixType
@@ -111,23 +110,15 @@ class ScreenNavigator(
         getFragmentStack()?.push(PrinterChangeFragment())
     }
 
-    override fun openTestEnvirScreen() {
-        getFragmentStack()?.push(TestEnvirFragment())
-    }
-
-    override fun openTechLoginScreen() {
-        getFragmentStack()?.push(TechLoginFragment())
-    }
-
-    override fun openComponentSetScreen(productInfo: ProductInfo, componentItem: ComponentItem) {
-        getFragmentStack()?.push(ComponentFragment.create(productInfo,componentItem))
-    }
-
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 
     override fun openEanInfoScreen() {
         getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.ean_info),
                 iconRes = R.drawable.ic_scan_barcode))
+    }
+
+    override fun openComponentSetScreen(productInfo: ProductInfo, componentItem: ComponentItem) {
+        getFragmentStack()?.push(ComponentFragment.create(productInfo = productInfo, componentItem = componentItem))
     }
 
     override fun openESInfoScreen() {
@@ -192,6 +183,6 @@ interface IScreenNavigator : ICoreNavigator {
     fun openMatrixInfoScreen(matrixType: MatrixType)
     fun openSectionInfoScreen(section: Int)
     fun openGoodsReasonsScreen(productInfo: ProductInfo)
-    fun openSuccessPrintMessage()
     fun openComponentSetScreen(productInfo: ProductInfo, componentItem: ComponentItem)
+    fun openSuccessPrintMessage()
 }
