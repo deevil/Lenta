@@ -2,6 +2,8 @@ package com.lenta.bp10.features.goods_list
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.lenta.bp10.fmp.resources.dao_ext.isChkOwnpr
+import com.lenta.bp10.fmp.resources.tasks_settings.ZmpUtz29V001Rfc
 import com.lenta.bp10.models.repositories.IWriteOffTaskManager
 import com.lenta.bp10.models.repositories.getTotalCountForProduct
 import com.lenta.bp10.models.task.TaskWriteOffReason
@@ -10,10 +12,8 @@ import com.lenta.bp10.models.task.getReport
 import com.lenta.bp10.platform.navigation.IScreenNavigator
 import com.lenta.bp10.requests.db.ProductInfoDbRequest
 import com.lenta.bp10.requests.db.ProductInfoRequestParams
-import com.lenta.bp10.requests.network.PrintTaskNetRequest
-import com.lenta.bp10.requests.network.ProductInfoNetRequest
-import com.lenta.bp10.requests.network.SendWriteOffReportRequest
-import com.lenta.bp10.requests.network.WriteOffReportResponse
+import com.lenta.bp10.requests.network.*
+import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.models.core.ProductInfo
 import com.lenta.shared.models.core.ProductType
@@ -26,10 +26,17 @@ import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.view.OnPositionClickListener
+import com.mobrun.plugin.api.HyperHive
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
+
+    @Inject
+    lateinit var hyperHive: HyperHive
+    val zmpUtz29V001: ZmpUtz29V001Rfc by lazy {
+        ZmpUtz29V001Rfc(hyperHive)
+    }
 
     @Inject
     lateinit var screenNavigator: IScreenNavigator
@@ -45,7 +52,13 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     lateinit var sendWriteOffReportRequest: SendWriteOffReportRequest
     @Inject
     lateinit var printTaskNetRequest: PrintTaskNetRequest
+    @Inject
+    lateinit var permissionToWriteoffNetRequest: PermissionToWriteoffNetRequest
+    @Inject
+    lateinit var sessionInfo: ISessionInfo
 
+    private val productInfo: MutableLiveData<ProductInfo> = MutableLiveData()
+    private val isChkOwnpr: MutableLiveData<Boolean> = MutableLiveData()
     var selectedPage = MutableLiveData(0)
     val countedGoods: MutableLiveData<List<GoodItem>> = MutableLiveData()
     val filteredGoods: MutableLiveData<List<FilterItem>> = MutableLiveData()
@@ -80,6 +93,11 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
             selectedCategoryPosition.value = position
             updateFilter()
         }
+    }
+
+    private val msgGoodsNotForTask: MutableLiveData<String> = MutableLiveData()
+    fun setMsgGoodsNotForTask(string: String) {
+        this.msgGoodsNotForTask.value = string
     }
 
     init {
@@ -172,7 +190,7 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     private fun searchCodeFromDb() {
         viewModelScope.launch {
             eanCode.value?.let {
-                productInfoDbRequest(ProductInfoRequestParams(number = it)).either(::handleFailureSearchFromDb, ::handleSearchProductSuccess)
+                productInfoDbRequest(ProductInfoRequestParams(number = it)).either(::handleFailureSearchFromDb, ::handlPermissionToWriteoffSuccess)
             }
 
         }
@@ -182,19 +200,61 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
         viewModelScope.launch {
             eanCode.value?.let {
                 screenNavigator.showProgress(productInfoNetRequest)
-                productInfoNetRequest(ProductInfoRequestParams(number = it)).either(::handleFailureNetRequest, ::handleSearchProductSuccess)
+                productInfoNetRequest(ProductInfoRequestParams(number = it)).either(::handleFailureNetRequest, ::handlPermissionToWriteoffSuccess)
                 screenNavigator.hideProgress()
             }
 
         }
     }
 
-    private fun handleSearchProductSuccess(productInfo: ProductInfo) {
-        when (productInfo.type) {
-            ProductType.General -> screenNavigator.openGoodInfoScreen(productInfo)
+    private fun handlPermissionToWriteoffSuccess(productInfo: ProductInfo) {
+        this.productInfo.value = productInfo
+        viewModelScope.launch {
+            if (zmpUtz29V001.isChkOwnpr(processServiceManager.getWriteOffTask()?.taskDescription!!.taskType.code)) {
+                screenNavigator.showProgress(permissionToWriteoffNetRequest)
+                permissionToWriteoffNetRequest(PermissionToWriteoffPrams(matnr = productInfo.materialNumber, werks = sessionInfo.market!!)).either(::handleFailure, ::handleSearchProductSuccess)
+                screenNavigator.hideProgress()
+            }
+            else {
+                searchProduct()
+            }
+        }
+    }
+    private fun handleSearchProductSuccess(permissionToWriteoff: PermissionToWriteoffRestInfo) {
+        if (permissionToWriteoff.ownr.isNullOrEmpty()) {
+            screenNavigator.openAlertScreen("Не разрешено списание в производство")
+        }
+        else searchProduct()
+    }
+
+    private fun searchProduct() {
+
+        val goodsForTask: MutableLiveData<Boolean> = MutableLiveData(false)
+        processServiceManager.getWriteOffTask()?.taskDescription!!.materialTypes.forEachIndexed { index, taskMatType ->
+            if (taskMatType == productInfo.value!!.materialType) goodsForTask.value = true
+        }
+
+        if (!goodsForTask.value!!) {
+            screenNavigator.openAlertScreen(msgGoodsNotForTask.value!!)
+            return
+        }
+
+        goodsForTask.value = false
+        if (productInfo.value!!.type == ProductType.ExciseAlcohol || productInfo.value!!.type == ProductType.NonExciseAlcohol) {
+            processServiceManager.getWriteOffTask()?.taskDescription!!.gisControls.forEach {
+                if ( it == "A" ) goodsForTask.value = true
+            }
+            if (!goodsForTask.value!!) {
+                screenNavigator.openAlertScreen(msgGoodsNotForTask.value!!)
+                return
+            }
+        }
+
+        when (productInfo.value!!.type) {
+            ProductType.General -> screenNavigator.openGoodInfoScreen(productInfo.value!!)
             ProductType.ExciseAlcohol -> {
-                if (productInfo.isSet) {
-                    screenNavigator.openSetsInfoScreen(productInfo)
+                if (productInfo.value!!.isSet) {
+                    screenNavigator.openSetsInfoScreen(productInfo.value!!)
                     return
                 } else
                     screenNavigator.openAlertScreen("Поддержка данного типа товара в процессе разработки")
