@@ -39,6 +39,7 @@ abstract class CoreApplication : Application(), CoreComponentProvider {
                             message = "${printableString(throwable)}\n" +
                                     "IP: ${coreComponent.getINetworkStateMonitor().networkInfo.value?.ip}\n" +
                                     "Thread:${thread.name}")
+                    sendLogs()
                 }
                 Thread(Runnable {
                     Thread.sleep(200)
