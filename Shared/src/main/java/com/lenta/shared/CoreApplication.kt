@@ -6,6 +6,7 @@ import com.lenta.shared.di.CoreComponentProvider
 import com.lenta.shared.di.CoreModule
 import com.lenta.shared.di.DaggerCoreComponent
 import com.lenta.shared.settings.DefaultConnectionSettings
+import com.lenta.shared.utilities.runIfRelease
 import java.io.PrintWriter
 import java.io.StringWriter
 
@@ -30,21 +31,23 @@ abstract class CoreApplication : Application(), CoreComponentProvider {
 
 
     private fun setDefaultUncaughtExceptionHandler(coreComponent: CoreComponent) {
-        Thread.setDefaultUncaughtExceptionHandler { thread, throwable ->
-            coreComponent.getIAnalytics().apply {
-                logFatal(tag = "UncaughtAndroidException",
-                        message = "${printableString(throwable)}\n" +
-                                "IP: ${coreComponent.getINetworkStateMonitor().networkInfo.value?.ip}\n" +
-                                "Thread:${thread.name}")
 
-                sendLogs()
+        runIfRelease {
+            Thread.setDefaultUncaughtExceptionHandler { thread, throwable ->
+                coreComponent.getIAnalytics().apply {
+                    logFatal(tag = "UncaughtAndroidException",
+                            message = "${printableString(throwable)}\n" +
+                                    "IP: ${coreComponent.getINetworkStateMonitor().networkInfo.value?.ip}\n" +
+                                    "Thread:${thread.name}")
+                }
+                Thread(Runnable {
+                    Thread.sleep(200)
+                    System.exit(1)
+                }).run()
+
             }
-            Thread(Runnable {
-                Thread.sleep(200)
-                System.exit(1)
-            }).run()
-
         }
+
     }
 
 
