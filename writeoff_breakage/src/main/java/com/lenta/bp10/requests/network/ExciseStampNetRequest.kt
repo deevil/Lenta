@@ -2,21 +2,18 @@ package com.lenta.bp10.requests.network
 
 import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
-import com.lenta.bp10.models.ExciseStampRestInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.fmp.ObjectRawStatus
 import com.lenta.shared.fmp.toFmpObjectRawStatusEither
 import com.lenta.shared.functional.Either
 import com.lenta.shared.interactor.UseCase
-import com.lenta.shared.utilities.Logg
 import com.mobrun.plugin.api.HyperHive
 import com.mobrun.plugin.api.callparams.WebCallParams
 import javax.inject.Inject
 
 class ExciseStampNetRequest
-@Inject constructor(private val hyperHive: HyperHive, private val gson: Gson) : UseCase<ExciseStampRestInfo, ExciseStampParams>(){
-    override suspend fun run(params: ExciseStampParams): Either<Failure, ExciseStampRestInfo> {
-
+@Inject constructor(private val hyperHive: HyperHive, private val gson: Gson) : UseCase<List<ExciseStampRestInfo>, ExciseStampParams>(){
+    override suspend fun run(params: ExciseStampParams): Either<Failure, List<ExciseStampRestInfo>> {
 
         val webCallParams = WebCallParams().apply {
             data = gson.toJson(params)
@@ -26,8 +23,8 @@ class ExciseStampNetRequest
             )
         }
 
-        val resString = hyperHive.requestAPI.web("ZFMP_UTZ_WOB_03_V001", webCallParams). execute()
-        Logg.d { "resString: $resString" }
+        /**val resString = hyperHive.requestAPI.web("ZFMP_UTZ_WOB_03_V001", webCallParams). execute()
+        Logg.d { "resString: $resString" }*/
         val res = hyperHive.requestAPI.web("ZFMP_UTZ_WOB_03_V001", webCallParams).execute().toFmpObjectRawStatusEither(ExciseStampStatus::class.java, gson)
 
         return res
@@ -42,4 +39,11 @@ data class ExciseStampParams(
         @SerializedName("IV_MATNR")
         val matnr: String)
 
-class ExciseStampStatus : ObjectRawStatus<ExciseStampRestInfo>()
+class ExciseStampStatus : ObjectRawStatus<List<ExciseStampRestInfo>>()
+
+data class ExciseStampRestInfo(
+        @SerializedName("name")
+        val name: String,
+        @SerializedName("data")
+        val data: List<List<String>>
+)
