@@ -13,6 +13,7 @@ android {
         versionCode 2
         versionName "1.0.1"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        multiDexEnabled true
     }
     buildTypes {
         release {
@@ -34,6 +35,7 @@ android {
 
 dependencies {
     implementation project(':Shared')
+    implementation 'com.android.support:multidex:1.0.3'
     testImplementation "junit:junit:4.12"
 
     // Dagger2
