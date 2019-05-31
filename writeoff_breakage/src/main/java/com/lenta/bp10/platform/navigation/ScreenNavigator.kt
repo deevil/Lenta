@@ -42,7 +42,7 @@ class ScreenNavigator(
         private val progressUseCaseInformator: IProgressUseCaseInformator
 ) : IScreenNavigator, ICoreNavigator by coreNavigator {
 
-    override fun openAlertScreen(failure: Failure) {
+    override fun openAlertScreen(failure: Failure, pageNumber: String) {
         openAlertScreen(failureInterpreter.getFailureDescription(failure))
     }
 

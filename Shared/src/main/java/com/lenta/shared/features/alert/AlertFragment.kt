@@ -4,15 +4,8 @@ package com.lenta.shared.features.alert
 import com.lenta.shared.features.message.CoreMessageFragment
 import com.lenta.shared.features.message.MessageViewModel
 import com.lenta.shared.utilities.extentions.provideViewModel
-import com.lenta.shared.utilities.state.state
 
 class AlertFragment : CoreMessageFragment() {
-
-    var pageNumb by state("")
-
-
-    override fun getPageNumber(): String = pageNumb
-
 
     override fun getViewModel(): MessageViewModel {
         provideViewModel(MessageViewModel::class.java).let { vm ->

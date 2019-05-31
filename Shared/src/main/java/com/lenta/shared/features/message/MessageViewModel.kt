@@ -2,11 +2,9 @@ package com.lenta.shared.features.message
 
 import android.os.Bundle
 import androidx.annotation.DrawableRes
-import androidx.lifecycle.viewModelScope
 import com.lenta.shared.features.message.usecase.DelayGoBack
 import com.lenta.shared.platform.navigation.ICoreNavigator
 import com.lenta.shared.platform.viewmodel.CoreViewModel
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 open class MessageViewModel : CoreViewModel() {
@@ -25,12 +23,12 @@ open class MessageViewModel : CoreViewModel() {
     var codeConfirm: Int? = null
 
     init {
-        viewModelScope.launch {
+        /*viewModelScope.launch {
             if (codeConfirm == null) {
                 goBackWithDelay(params = null)
             }
 
-        }
+        }*/
     }
 
     open fun onClickApply() {

@@ -14,6 +14,8 @@ abstract class CoreMessageFragment : CoreFragment<LayoutMessageBinding, MessageV
     protected var message by state("")
     protected var iconRes by state(0)
     protected var codeConfirm by state<Int?>(null)
+    protected var pageNumb by state("")
+
     override fun getLayoutId(): Int = R.layout.layout_message
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
@@ -38,4 +40,6 @@ abstract class CoreMessageFragment : CoreFragment<LayoutMessageBinding, MessageV
             vm.onClickApply()
         }
     }
+
+    override fun getPageNumber(): String = pageNumb
 }
