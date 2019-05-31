@@ -18,9 +18,9 @@
 
     <style name="btn" parent="Widget.MaterialComponents.Button">
         <item name="android:minHeight">72dp</item>
-        <item name="backgroundTint">@color/colorBottomPanelBackground</item>
+        <item name="backgroundTint">@color/button_bg_color</item>
         <item name="android:maxLines">2</item>
-        <item name="android:textColor">@color/color_white</item>
+        <item name="android:textColor">@color/button_text_color</item>
         <item name="android:textAppearance">@style/TextMedium</item>
         <item name="android:textStyle">normal</item>
         <item name="android:gravity">center</item>
