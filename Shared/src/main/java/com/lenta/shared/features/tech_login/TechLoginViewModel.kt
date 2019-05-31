@@ -9,6 +9,8 @@ import com.lenta.shared.requests.network.PinCodeInfo
 import com.lenta.shared.requests.network.PinCodeNetRequest
 import com.lenta.shared.requests.network.PinCodeRequestParams
 import com.lenta.shared.settings.IAppSettings
+import com.lenta.shared.utilities.extentions.combineLatest
+import com.lenta.shared.utilities.extentions.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -24,6 +26,11 @@ class TechLoginViewModel : CoreViewModel() {
 
     val login: MutableLiveData<String> = MutableLiveData("")
     val password: MutableLiveData<String> = MutableLiveData("")
+    val applyButtonEnabled: MutableLiveData<Boolean> = login.combineLatest(password).map { pair ->
+        pair?.let {
+            return@map !it.first.isNullOrBlank() && !it.second.isNotBlank()
+        }
+    }
 
 
     fun onClickApply() {
