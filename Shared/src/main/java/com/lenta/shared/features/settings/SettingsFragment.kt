@@ -42,7 +42,7 @@ class SettingsFragment : CoreFragment<com.lenta.shared.databinding.FragmentSetti
         bottomToolbarUiModel.cleanAll(false)
     }
 
-    override fun getPageNumber(): String = "10/02"
+    override fun getPageNumber(): String = "10/51"
 
     override fun getViewModel(): SettingsViewModel {
         provideViewModel(SettingsViewModel::class.java).let {
