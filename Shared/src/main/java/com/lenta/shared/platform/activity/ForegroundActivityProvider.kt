@@ -6,7 +6,7 @@ import java.lang.ref.WeakReference
 
 class ForegroundActivityProvider {
 
-    val onPauseStateLiveData = MutableLiveData(true)
+    val onPauseStateLiveData = MutableLiveData(false)
 
     private var weekReference: WeakReference<CoreMainActivity>? = null
 
