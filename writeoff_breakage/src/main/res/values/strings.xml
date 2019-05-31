@@ -47,4 +47,6 @@
     <string name="sending_data_to_print">Отправка данных на печать</string>
     <string name="brand_not_set">Марка не принадлежит этому набору</string>
     <string name="limit_exceeded">Превышен лимит</string>
+    <string name="goods_not_for_task">Вид\\тип товара не соответствует настройкам задания</string>
+
 </resources>
