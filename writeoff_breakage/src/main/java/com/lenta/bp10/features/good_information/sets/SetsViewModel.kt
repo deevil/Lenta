@@ -100,10 +100,12 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
                 writeOffReasonTitles.value = writeOffTask.taskDescription.moveTypes.map { it.name }
             }
 
+            screenNavigator.showProgress(productInfoDbRequest)
             components.addAll(zmpUtz46V001.getComponentsForSet(productInfo.value!!.materialNumber))
             components.forEachIndexed { index, itemLocal_ET_SET_LIST ->
                 productInfoDbRequest(ProductInfoRequestParams(components[index].matnr)).either(::handleFailure, ::handleComponentInfoSuccess)
             }
+            screenNavigator.hideProgress()
             suffix.value = productInfo.value?.uom?.name
             updateComponents()
             Logg.d { "componentsInfo ${componentsInfo}" }

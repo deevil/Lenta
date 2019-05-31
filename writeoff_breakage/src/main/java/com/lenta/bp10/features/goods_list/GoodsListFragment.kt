@@ -40,6 +40,7 @@ class GoodsListFragment :
     override fun getViewModel(): GoodsListViewModel {
         provideViewModel(GoodsListViewModel::class.java).let {
             getAppComponent()?.inject(it)
+            it.setMsgGoodsNotForTask(getString(R.string.goods_not_for_task))
             return it
         }
     }
