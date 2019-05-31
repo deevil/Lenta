@@ -58,7 +58,6 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     lateinit var sessionInfo: ISessionInfo
 
     private val productInfo: MutableLiveData<ProductInfo> = MutableLiveData()
-    private val isChkOwnpr: MutableLiveData<Boolean> = MutableLiveData()
     var selectedPage = MutableLiveData(0)
     val countedGoods: MutableLiveData<List<GoodItem>> = MutableLiveData()
     val filteredGoods: MutableLiveData<List<FilterItem>> = MutableLiveData()
