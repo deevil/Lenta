@@ -28,7 +28,7 @@ class TechLoginViewModel : CoreViewModel() {
     val password: MutableLiveData<String> = MutableLiveData("")
     val applyButtonEnabled: MutableLiveData<Boolean> = login.combineLatest(password).map { pair ->
         pair?.let {
-            return@map !it.first.isNullOrBlank() && !it.second.isNotBlank()
+            return@map !it.first.isNullOrBlank() && !it.second.isNullOrBlank()
         }
     }
 
