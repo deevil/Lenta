@@ -82,4 +82,9 @@ class SelectPersonnelNumberViewModel : CoreViewModel(), OnOkInSoftKeyboardListen
 
         screenNavigator.openMainMenuScreen()
     }
+
+    fun onScanResult(data: String) {
+        personnelNumber.value = data
+        searchPersonnelNumber()
+    }
 }
