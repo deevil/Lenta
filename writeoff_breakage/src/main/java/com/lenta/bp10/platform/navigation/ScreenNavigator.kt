@@ -4,6 +4,7 @@ import android.content.Context
 import com.lenta.bp10.R
 import com.lenta.bp10.exception.IWriteOffFailureInterpretator
 import com.lenta.bp10.features.auth.AuthFragment
+import com.lenta.bp10.features.detection_saved_data.DetectionSavedDataFragment
 import com.lenta.bp10.features.exit.ExitWithConfirmationFragment
 import com.lenta.bp10.features.good_information.general.GoodInfoFragment
 import com.lenta.bp10.features.good_information.sets.ComponentItem
@@ -199,8 +200,12 @@ class ScreenNavigator(
     }
 
     override fun openSuccessPrintMessage() {
+        openAlertScreen(context.getString(R.string.print_success))
+    }
+
+    override fun openDetectionSavedDataScreen() {
         runOrPostpone {
-            openAlertScreen(context.getString(R.string.print_success))
+            getFragmentStack()?.push(DetectionSavedDataFragment())
         }
     }
 
@@ -230,4 +235,5 @@ interface IScreenNavigator : ICoreNavigator {
     fun openGoodsReasonsScreen(productInfo: ProductInfo)
     fun openSuccessPrintMessage()
     fun openComponentSetScreen(productInfo: ProductInfo, componentItem: ComponentItem)
+    fun openDetectionSavedDataScreen()
 }

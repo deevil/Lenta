@@ -4,9 +4,7 @@ import com.lenta.bp10.models.repositories.ITaskProductRepository
 import com.lenta.shared.models.core.ProductInfo
 import java.util.*
 
-class MemoryTaskProductRepository : ITaskProductRepository {
-
-    private val productInfo = ArrayList<ProductInfo>()
+class MemoryTaskProductRepository(private val productInfo: ArrayList<ProductInfo> = ArrayList()) : ITaskProductRepository {
 
     override fun getProducts(): List<ProductInfo> {
         return productInfo.toList()

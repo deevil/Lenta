@@ -48,5 +48,6 @@
     <string name="brand_not_set">Марка не принадлежит этому набору</string>
     <string name="limit_exceeded">Превышен лимит</string>
     <string name="goods_not_for_task">Вид\\тип товара не соответствует настройкам задания</string>
+    <string name="saved_data_detect_message">На устройстве обнаружены несохраненные данные. Перейти к данным?</string>
 
 </resources>

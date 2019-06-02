@@ -2,6 +2,7 @@ package com.lenta.bp10.features.job_card
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.lenta.bp10.models.IPersistWriteOffTask
 import com.lenta.bp10.models.repositories.IWriteOffTaskManager
 import com.lenta.bp10.models.task.TaskDescription
 import com.lenta.bp10.platform.navigation.IScreenNavigator
@@ -25,6 +26,8 @@ class JobCardViewModel : CoreViewModel() {
     lateinit var processServiceManager: IWriteOffTaskManager
     @Inject
     lateinit var taskDescriptionDbRequest: TaskDescriptionDbRequest
+    @Inject
+    lateinit var persistWriteOffTask: IPersistWriteOffTask
 
     private val taskSettingsList: MutableLiveData<List<TaskSetting>> = MutableLiveData()
     val taskName: MutableLiveData<String> = MutableLiveData()
@@ -65,12 +68,24 @@ class JobCardViewModel : CoreViewModel() {
     init {
         viewModelScope.launch {
             taskSettingsList.value = jobCardRepo.getAllTaskSettings()
-            if (taskName.value == null) {
-                taskName.value = jobCardRepo.generateNameTask()
+
+            processServiceManager.getWriteOffTask().let { writeOffTask ->
+                if (writeOffTask != null) {
+                    taskName.value = writeOffTask.taskDescription.taskName
+                    taskSettingsList.value?.let { list ->
+                        selectedTaskTypePosition.value = list.indexOfFirst { it.taskType == writeOffTask.taskDescription.taskType.code }
+                    }
+                } else {
+                    if (taskName.value == null) {
+                        taskName.value = jobCardRepo.generateNameTask()
+                    }
+                    selectedTaskTypePosition.value = 0
+                }
+                updateChangesEnabledStatus()
+                updateDependencies()
             }
-            selectedTaskTypePosition.value = 0
-            updateChangesEnabledStatus()
-            updateDependencies()
+
+
         }
     }
 
@@ -136,6 +151,12 @@ class JobCardViewModel : CoreViewModel() {
     private fun updateStores(taskType: String?) {
         viewModelScope.launch {
             storesNames.value = jobCardRepo.getStores(taskType)
+            processServiceManager.getWriteOffTask()?.let { writeOffTask ->
+                storesNames.value?.let { list ->
+                    selectedStorePosition.value = list.indexOfFirst { it == writeOffTask.taskDescription.stock }
+                }
+            }
+
         }
     }
 
@@ -163,6 +184,7 @@ class JobCardViewModel : CoreViewModel() {
     fun onConfirmRemoving() {
         processServiceManager.clearTask()
         screenNavigator.goBack()
+        persistWriteOffTask.saveWriteOffTask(null)
     }
 
 

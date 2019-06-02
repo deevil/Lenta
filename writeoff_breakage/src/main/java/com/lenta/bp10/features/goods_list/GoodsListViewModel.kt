@@ -189,7 +189,7 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     private fun searchCodeFromDb() {
         viewModelScope.launch {
             eanCode.value?.let {
-                productInfoDbRequest(ProductInfoRequestParams(number = it)).either(::handleFailureSearchFromDb, ::handlPermissionToWriteoffSuccess)
+                productInfoDbRequest(ProductInfoRequestParams(number = it)).either(::handleFailureSearchFromDb, ::handlePermissionToWriteOffSuccess)
             }
 
         }
@@ -199,14 +199,14 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
         viewModelScope.launch {
             eanCode.value?.let {
                 screenNavigator.showProgress(productInfoNetRequest)
-                productInfoNetRequest(ProductInfoRequestParams(number = it)).either(::handleFailureNetRequest, ::handlPermissionToWriteoffSuccess)
+                productInfoNetRequest(ProductInfoRequestParams(number = it)).either(::handleFailureNetRequest, ::handlePermissionToWriteOffSuccess)
                 screenNavigator.hideProgress()
             }
 
         }
     }
 
-    private fun handlPermissionToWriteoffSuccess(productInfo: ProductInfo) {
+    private fun handlePermissionToWriteOffSuccess(productInfo: ProductInfo) {
         this.productInfo.value = productInfo
         viewModelScope.launch {
             if (zmpUtz29V001.isChkOwnpr(processServiceManager.getWriteOffTask()?.taskDescription!!.taskType.code)) {

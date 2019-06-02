@@ -8,7 +8,7 @@ import com.lenta.bp10.requests.network.PrintTask
 import com.lenta.shared.models.core.ProductInfo
 import com.lenta.shared.models.core.ProductType
 
-class WriteOffTask(val taskDescription: TaskDescription, val taskRepository: ITaskRepository) {
+class WriteOffTask(val taskDescription: TaskDescription, internal val taskRepository: ITaskRepository) {
 
     fun deleteProducts(products: List<ProductInfo>): WriteOffTask {
         // (Артем И., 09.04.2019) удалить перечень продуктов (products), причины списания и марки
