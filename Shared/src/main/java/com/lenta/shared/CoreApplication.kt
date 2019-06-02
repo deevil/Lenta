@@ -12,7 +12,7 @@ import java.io.StringWriter
 
 abstract class CoreApplication : Application(), CoreComponentProvider {
 
-    private lateinit var coreComponent: CoreComponent
+    protected lateinit var coreComponent: CoreComponent
 
 
     override fun provideCoreComponent(): CoreComponent {
@@ -42,6 +42,7 @@ abstract class CoreApplication : Application(), CoreComponentProvider {
                     sendLogs()
                 }
                 Thread(Runnable {
+                    onHandleException()
                     Thread.sleep(200)
                     System.exit(1)
                 }).run()
@@ -50,6 +51,8 @@ abstract class CoreApplication : Application(), CoreComponentProvider {
         }
 
     }
+
+    abstract fun onHandleException()
 
 
     private fun printableString(throwable: Throwable): String {
