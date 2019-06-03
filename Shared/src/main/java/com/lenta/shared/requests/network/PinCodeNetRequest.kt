@@ -9,6 +9,7 @@ import com.lenta.shared.fmp.toFmpObjectRawStatusEither
 import com.lenta.shared.functional.Either
 import com.lenta.shared.interactor.UseCase
 import com.lenta.shared.settings.IAppSettings
+import com.lenta.shared.utilities.extentions.hhive.toEither
 import com.mobrun.plugin.api.HyperHive
 import javax.inject.Inject
 
@@ -21,12 +22,13 @@ class PinCodeNetRequest
 
         if (!isAuthorized) {
             hyperHive.authAPI.unAuth().execute()
-            hyperHive.authAPI.auth(params?.login ?: appSettings.techLogin,
+            val status = hyperHive.authAPI.auth(params?.login ?: appSettings.techLogin,
                     params?.password ?: appSettings.techPassword, true).execute()
+            if (!status.isOk) {
+                return status.toEither(null)
+            }
         }
 
-        /**val resString = hyperHive.requestAPI.web("ZMP_UTZ_90_V001").execute()
-        Logg.d { "resString: $resString" }*/
         val res = hyperHive.requestAPI.web("ZMP_UTZ_90_V001").execute().toFmpObjectRawStatusEither(PinCodeStatus::class.java, gson)
 
         if (!isAuthorized) {

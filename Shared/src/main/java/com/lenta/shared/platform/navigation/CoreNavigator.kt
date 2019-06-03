@@ -145,9 +145,9 @@ class CoreNavigator constructor(private val context: Context,
         }
     }
 
-    override fun openFailurePinCodeScreen(failure: Failure) {
+    override fun openFailurePinCodeScreen(message: String) {
         runOrPostpone {
-            getFragmentStack()?.push(FailurePinCodeFragment())
+            getFragmentStack()?.push(FailurePinCodeFragment.create(message = message))
         }
     }
 
@@ -179,7 +179,7 @@ interface ICoreNavigator {
     fun openPrinterChangeScreen()
     fun openSettingsScreen()
     fun openAuxiliaryMenuScreen()
-    fun openFailurePinCodeScreen(failure: Failure)
+    fun openFailurePinCodeScreen(message: String)
 }
 
 class FunctionsCollector(private val needCollectLiveData: LiveData<Boolean>) {

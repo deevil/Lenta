@@ -8,10 +8,7 @@ class FailurePinCodeViewModel : MessageViewModel() {
 
     init {
         viewModelScope.launch {
-            if (codeConfirm == null) {
-                goBackWithDelay(params = null)
-            }
-
+            goBackWithDelay(params = null)
         }
     }
 }

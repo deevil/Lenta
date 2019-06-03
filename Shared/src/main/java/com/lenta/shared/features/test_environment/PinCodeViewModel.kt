@@ -35,11 +35,9 @@ class PinCodeViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
     fun onClickGoOver() {
         viewModelScope.launch {
-            //screenNavigator.showProgress(pinCodeNetRequest)
             progress.value = true
             pinCodeNetRequest(null).either(::handleFailure, ::handleSuccess)
             progress.value = false
-            //screenNavigator.hideProgress()
         }
     }
 
@@ -56,8 +54,7 @@ class PinCodeViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
     override fun handleFailure(failure: Failure) {
         super.handleFailure(failure)
-        screenNavigator.openFailurePinCodeScreen(failure)
-        //screenNavigator.openAlertScreen(failure, pageNumber = "10/96")
+        screenNavigator.openFailurePinCodeScreen(failureInterpreter.getFailureDescription(failure))
     }
 
 
