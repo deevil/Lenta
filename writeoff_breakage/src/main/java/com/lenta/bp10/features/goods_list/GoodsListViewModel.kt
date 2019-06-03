@@ -25,6 +25,7 @@ import com.lenta.shared.utilities.databinding.Evenable
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.map
+import com.lenta.shared.utilities.extentions.toStringFormatted
 import com.lenta.shared.view.OnPositionClickListener
 import com.mobrun.plugin.api.HyperHive
 import kotlinx.coroutines.launch
@@ -120,7 +121,7 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
                                 GoodItem(
                                         number = index + 1,
                                         name = "${productInfo.getMaterialLastSix()} ${productInfo.description}",
-                                        quantity = "${it.taskRepository.getTotalCountForProduct(productInfo)} ${productInfo.uom.name}",
+                                        quantity = "${it.taskRepository.getTotalCountForProduct(productInfo).toStringFormatted()} ${productInfo.uom.name}",
                                         even = index % 2 == 0,
                                         productInfo = productInfo)
                             }
@@ -164,7 +165,7 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
                                                 number = index + 1,
                                                 name = "${it.getMaterialLastSix()} ${it.description}",
                                                 reason = taskWriteOffReason.writeOffReason.name,
-                                                quantity = "${taskWriteOffReason.count} ${it.uom.name}",
+                                                quantity = "${taskWriteOffReason.count.toStringFormatted()} ${it.uom.name}",
                                                 even = index % 2 == 0,
                                                 taskWriteOffReason = taskWriteOffReason))
                                     }

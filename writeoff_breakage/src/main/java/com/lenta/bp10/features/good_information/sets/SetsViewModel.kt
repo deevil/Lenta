@@ -21,6 +21,7 @@ import com.lenta.shared.utilities.databinding.Evenable
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.map
+import com.lenta.shared.utilities.extentions.toStringFormatted
 import com.lenta.shared.view.OnPositionClickListener
 import com.mobrun.plugin.api.HyperHive
 import kotlinx.coroutines.launch
@@ -57,7 +58,7 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
     val count: MutableLiveData<String> = MutableLiveData("")
     val countValue: MutableLiveData<Double> = count.map { it?.toDoubleOrNull() }
     val totalCount: MutableLiveData<Double> = countValue.map { (it ?: 0.0) + processExciseAlcoProductService.taskRepository.getTotalCountForProduct(productInfo.value!!)} //processExciseAlcoProductService.getTotalCount()
-    val totalCountWithUom: MutableLiveData<String> = totalCount.map { "$it ${productInfo.value!!.uom.name}" }
+    val totalCountWithUom: MutableLiveData<String> = totalCount.map { "${it.toStringFormatted()} ${productInfo.value!!.uom.name}" }
     val suffix: MutableLiveData<String> = MutableLiveData()
     private val componentsInfo = mutableListOf<ProductInfo>() //: MutableLiveData<List<ProductInfo>> = MutableLiveData()
     val componentsItem: MutableLiveData<List<ComponentItem>> = MutableLiveData()
@@ -130,7 +131,8 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
                             add(ComponentItem(
                                     number = index + 1,
                                     name = "${compInfo.materialNumber.substring(compInfo.materialNumber.length - 6)} ${compInfo.description}",
-                                    quantity = "${getCountExciseStampsForComponent(compInfo)} из ${components[index].menge * totalCount.value!!}",
+                                    quantity = "${getCountExciseStampsForComponent(compInfo)
+                                            .toStringFormatted()} из ${(components[index].menge * totalCount.value!!).toStringFormatted()}",
                                     menge = components[index].menge.toString(),
                                     even = index % 2 == 0,
                                     countSets = totalCount.value!!,

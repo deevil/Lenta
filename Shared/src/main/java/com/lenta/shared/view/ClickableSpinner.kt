@@ -50,16 +50,13 @@ class ClickableSpinner : AppCompatSpinner, GestureDetector.OnGestureListener {
         this.onClickListener = onClickListener
     }
 
-    companion object {
-        private val MAX_CLICK_DURATION = 200
-    }
 
     override fun onShowPress(p0: MotionEvent?) {
 
     }
 
     override fun onSingleTapUp(p0: MotionEvent?): Boolean {
-        onClickListener!!.onClick(this)
+        onClickListener?.onClick(this)
         return true
     }
 

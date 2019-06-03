@@ -18,6 +18,7 @@ import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.extentions.map
+import com.lenta.shared.utilities.extentions.toStringFormatted
 import com.lenta.shared.view.OnPositionClickListener
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -48,7 +49,7 @@ class ComponentViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftK
     val count: MutableLiveData<String> = MutableLiveData("0")
     val countValue: MutableLiveData<Double> = count.map { it?.toDoubleOrNull() }
     val totalCount: MutableLiveData<Double> = countValue.map { (it ?: 0.0) + processServiceManager.getWriteOffTask()!!.taskRepository.getExciseStamps().findExciseStampsOfProduct(productInfo.value!!).size}
-    val totalCountWithUom: MutableLiveData<String> = totalCount.map { "$it из ${componentItem.value!!.menge.toDouble() * componentItem.value!!.countSets}" }
+    val totalCountWithUom: MutableLiveData<String> = totalCount.map { "${it.toStringFormatted()} из ${(componentItem.value!!.menge.toDouble() * componentItem.value!!.countSets).toStringFormatted()}" }
     val suffix: MutableLiveData<String> = MutableLiveData()
     val exciseStampCode: MutableLiveData<String> = MutableLiveData()
     private val exciseStamp = mutableListOf<TaskExciseStamp>()
