@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.shared.exception.Failure
+import com.lenta.shared.exception.IFailureInterpreter
 import com.lenta.shared.platform.navigation.ICoreNavigator
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.network.PinCodeInfo
@@ -20,6 +21,7 @@ class PinCodeViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     val pinCode2: MutableLiveData<String> = MutableLiveData("")
     val pinCode3: MutableLiveData<String> = MutableLiveData("")
     val pinCode4: MutableLiveData<String> = MutableLiveData("")
+    val progress: MutableLiveData<Boolean> = MutableLiveData(false)
 
 
     @Inject
@@ -28,12 +30,16 @@ class PinCodeViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     @Inject
     lateinit var screenNavigator: ICoreNavigator
 
+    @Inject
+    lateinit var failureInterpreter: IFailureInterpreter
 
     fun onClickGoOver() {
         viewModelScope.launch {
-            screenNavigator.showProgress(pinCodeNetRequest)
+            //screenNavigator.showProgress(pinCodeNetRequest)
+            progress.value = true
             pinCodeNetRequest(null).either(::handleFailure, ::handleSuccess)
-            screenNavigator.hideProgress()
+            progress.value = false
+            //screenNavigator.hideProgress()
         }
     }
 
@@ -50,7 +56,8 @@ class PinCodeViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
     override fun handleFailure(failure: Failure) {
         super.handleFailure(failure)
-        screenNavigator.openAlertScreen(failure)
+        screenNavigator.openFailurePinCodeScreen(failure)
+        //screenNavigator.openAlertScreen(failure, pageNumber = "10/96")
     }
 
 

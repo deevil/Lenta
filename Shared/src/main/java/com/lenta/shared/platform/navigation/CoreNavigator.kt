@@ -17,6 +17,7 @@ import com.lenta.shared.features.settings.SettingsFragment
 import com.lenta.shared.features.support.SupportFragment
 import com.lenta.shared.features.tech_login.TechLoginFragment
 import com.lenta.shared.features.test_environment.PinCodeFragment
+import com.lenta.shared.features.test_environment.failure.FailurePinCodeFragment
 import com.lenta.shared.interactor.UseCase
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
 
@@ -144,6 +145,13 @@ class CoreNavigator constructor(private val context: Context,
         }
     }
 
+    override fun openFailurePinCodeScreen(failure: Failure) {
+        runOrPostpone {
+            getFragmentStack()?.push(FailurePinCodeFragment())
+        }
+    }
+
+
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 
 }
@@ -171,6 +179,7 @@ interface ICoreNavigator {
     fun openPrinterChangeScreen()
     fun openSettingsScreen()
     fun openAuxiliaryMenuScreen()
+    fun openFailurePinCodeScreen(failure: Failure)
 }
 
 class FunctionsCollector(private val needCollectLiveData: LiveData<Boolean>) {
