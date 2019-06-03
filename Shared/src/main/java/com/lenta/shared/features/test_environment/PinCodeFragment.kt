@@ -1,6 +1,9 @@
 package com.lenta.shared.features.test_environment
 
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.View
+import android.widget.EditText
 import com.lenta.shared.R
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
@@ -48,6 +51,10 @@ class PinCodeFragment : CoreFragment<com.lenta.shared.databinding.FragmentPinCod
                 viewModel.message.value = it
             }
 
+            binding?.let { it.etPin1.addTextChangedListener(EnterCodeTextWatcher(binding?.etPin2)) }
+            binding?.let { it.etPin2.addTextChangedListener(EnterCodeTextWatcher(binding?.etPin3)) }
+            binding?.let { it.etPin3.addTextChangedListener(EnterCodeTextWatcher(binding?.etPin4)) }
+
             return viewModel
         }
     }
@@ -60,4 +67,17 @@ class PinCodeFragment : CoreFragment<com.lenta.shared.databinding.FragmentPinCod
             }
         }
     }
+}
+
+class EnterCodeTextWatcher (private var nextFocus: EditText?) : TextWatcher {
+    override fun afterTextChanged(s: Editable?) {
+    }
+
+    override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+    }
+
+    override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+        nextFocus?.let { it.requestFocus() }
+    }
+
 }
