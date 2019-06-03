@@ -51,13 +51,13 @@ class AppSettings @Inject constructor(
         }
 
     override var techLogin: String
-        get() = sharedPrefferences.getString("techLogin", defaultConnectionSettings.testEnvironment)
+        get() = sharedPrefferences.getString("techLogin", defaultConnectionSettings.techLogin)
         set(value) {
             sharedPrefferences.edit().putString("techLogin", value).commit()
         }
 
     override var techPassword: String
-        get() = sharedPrefferences.getString("techPassword", defaultConnectionSettings.testEnvironment)
+        get() = sharedPrefferences.getString("techPassword", defaultConnectionSettings.techPassword)
         set(value) {
             sharedPrefferences.edit().putString("techPassword", value).commit()
         }
