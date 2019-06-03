@@ -10,8 +10,9 @@ android {
         applicationId "com.lenta.bp10"
         minSdkVersion build_versions.min_sdk
         targetSdkVersion build_versions.target_sdk
-        versionCode 3
-        versionName "1.0.2"
+        versionCode getCodeVersion()
+        versionName getNameVersion()
+        println 'version:' + getNameVersion()
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
     }
@@ -23,6 +24,15 @@ android {
     }
     dataBinding {
         enabled = true
+    }
+
+    applicationVariants.all { variant ->
+        if (variant.buildType.name == "release") {
+            variant.outputs.all {
+                def name = outputFileName.replace("app-", "LentaWriteOff-")
+                outputFileName = name.replace(".apk", "-${variant.versionName}-${variant.versionCode}.apk")
+            }
+        }
     }
 
     packagingOptions {
@@ -49,4 +59,62 @@ dependencies {
         transitive = true
     }
 
+
+
+}
+
+// Returns last tag on current branch
+String getLastTag() {
+    try {
+        def stdout = new ByteArrayOutputStream()
+        exec {
+            commandLine 'git', 'describe', '--tags', '--abbrev=0'
+            standardOutput = stdout
+        }
+        return stdout.toString().trim()
+    }
+    catch (ignored) {
+        logger.error('getLastTag() error, ' + ignored)
+        return null
+    }
+}
+
+// Returns commits' count since tag
+def gitCommitsSinceTag(tag) {
+    try {
+        def stdout = new ByteArrayOutputStream()
+        exec {
+            //                             master - remote branch
+            commandLine 'git', 'rev-list', 'HEAD', '--count', "${tag}...HEAD"
+            standardOutput = stdout
+        }
+        return stdout.toString().trim()
+    }
+    catch (ignored) {
+        logger.error('gitCommitsSinceTag() error, ' + ignored);
+        return null
+    }
+}
+
+
+def getCodeVersion() {
+    try {
+        def stdout = new ByteArrayOutputStream()
+        exec {
+            commandLine 'git', 'rev-list', 'HEAD', '--count'
+            standardOutput = stdout
+        }
+        return Integer.parseInt(stdout.toString().trim())
+    }
+    catch (ignored) {
+        return 1
+    }
+}
+
+String getNameVersion() {
+    String lastTag = getLastTag()
+    if (lastTag == null) {
+        return "10.0." + getCodeVersion()
+    }
+    return lastTag + "." + gitCommitsSinceTag(lastTag)
 }
