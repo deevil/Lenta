@@ -1,11 +1,14 @@
 package com.lenta.bp10.di
 
 import android.content.Context
+import com.google.gson.Gson
 import com.lenta.bp10.exception.IWriteOffFailureInterpretator
 import com.lenta.bp10.exception.WriteOffFailureInterpretator
 import com.lenta.bp10.features.auth.Authenticator
 import com.lenta.bp10.features.job_card.IJobCardRepo
 import com.lenta.bp10.features.job_card.JobCardRepo
+import com.lenta.bp10.models.IPersistWriteOffTask
+import com.lenta.bp10.models.PersistWriteOffTask
 import com.lenta.bp10.models.WriteOffTaskManager
 import com.lenta.bp10.models.repositories.IWriteOffTaskManager
 import com.lenta.bp10.platform.navigation.IScreenNavigator
@@ -83,6 +86,12 @@ class AppModule {
     @AppScope
     internal fun provideScanHelper(): IScanHelper {
         return MobilBaseScanHelper()
+    }
+
+    @Provides
+    @AppScope
+    internal fun provideIPersistWriteOffTask(hyperHive: HyperHive, gson: Gson): IPersistWriteOffTask {
+        return PersistWriteOffTask(hyperHive, gson)
     }
 
 

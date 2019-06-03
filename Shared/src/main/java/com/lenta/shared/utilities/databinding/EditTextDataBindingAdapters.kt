@@ -1,6 +1,7 @@
 package com.lenta.shared.utilities.databinding
 
 import android.content.Context
+import android.text.InputFilter
 import android.view.KeyEvent
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
@@ -22,6 +23,16 @@ fun setOnOkInSoftKeyboardListener(editText: EditText, onOkInSoftKeyboardListener
             imm.hideSoftInputFromWindow(view.windowToken, 0)
         }
         onOkInSoftKeyboardListener.onOkInSoftKeyboard()
+    }
+
+}
+
+@BindingAdapter(value = ["textAllCaps"])
+fun setTextAllCaps(editText: EditText, textAllCaps: Boolean?) {
+    if (textAllCaps == true) {
+        editText.filters = editText.filters + InputFilter.AllCaps()
+    } else {
+        editText.filters = editText.filters.filter { it != InputFilter.AllCaps() }.toTypedArray()
     }
 
 }

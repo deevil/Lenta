@@ -9,6 +9,8 @@ class MemoryTaskRepository(private val taskProductRepository: ITaskProductReposi
                            private val taskExciseStampRepository: ITaskExciseStampRepository = MemoryTaskExciseStampRepository(),
                            private val taskWriteOfReasonRepository: ITaskWriteOffReasonRepository = MemoryTaskWriteOffReasonRepository()) : ITaskRepository {
 
+
+
     override fun getProducts(): ITaskProductRepository {
         return taskProductRepository
     }

@@ -5,9 +5,8 @@ import com.lenta.bp10.models.task.TaskWriteOffReason
 import com.lenta.shared.models.core.ProductInfo
 import java.util.*
 
-class MemoryTaskWriteOffReasonRepository : ITaskWriteOffReasonRepository {
-
-    private val arrWriteOffReason = ArrayList<TaskWriteOffReason>()
+class MemoryTaskWriteOffReasonRepository(
+        private val arrWriteOffReason: ArrayList<TaskWriteOffReason> = ArrayList()) : ITaskWriteOffReasonRepository {
 
     override fun getWriteOffReasons(): List<TaskWriteOffReason> {
         return arrWriteOffReason

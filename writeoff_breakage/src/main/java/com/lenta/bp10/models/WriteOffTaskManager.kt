@@ -6,10 +6,7 @@ import com.lenta.bp10.models.repositories.IWriteOffTaskManager
 import com.lenta.bp10.models.task.TaskDescription
 import com.lenta.bp10.models.task.WriteOffTask
 
-class WriteOffTaskManager : IWriteOffTaskManager {
-
-    var currentWriteOffTask: WriteOffTask? = null
-
+class WriteOffTaskManager(private var currentWriteOffTask: WriteOffTask? = null) : IWriteOffTaskManager {
 
     override fun getWriteOffTask(): WriteOffTask? {
         return currentWriteOffTask

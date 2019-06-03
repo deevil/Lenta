@@ -11,9 +11,11 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.ImageButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
+import com.lenta.shared.scan.OnScanResultListener
 import com.lenta.shared.utilities.extentions.provideViewModel
 
-class SelectPersonnelNumberFragment : CoreFragment<FragmentSelectPersonnelNumberBinding, SelectPersonnelNumberViewModel>(), ToolbarButtonsClickListener {
+class SelectPersonnelNumberFragment : CoreFragment<FragmentSelectPersonnelNumberBinding, SelectPersonnelNumberViewModel>(),
+        ToolbarButtonsClickListener, OnScanResultListener {
     override fun getLayoutId(): Int = R.layout.fragment_select_personnel_number
 
     override fun getPageNumber(): String = "10/12"
@@ -45,5 +47,9 @@ class SelectPersonnelNumberFragment : CoreFragment<FragmentSelectPersonnelNumber
         if (view.id == R.id.b_5) {
             vm.onClickNext()
         }
+    }
+
+    override fun onScanResult(data: String) {
+        vm.onScanResult(data)
     }
 }

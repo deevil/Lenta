@@ -7,6 +7,7 @@
     <color name="colorTopPanelBackground">#1a4170</color>
     <color name="colorBottomPanelBackground">#284d7d</color>
     <color name="colorContentBackground">#00395c</color>
+    <color name="colorButtonDisabled">#103053</color>
     <color name="colorViewTxt">#B7D1EE</color>
     <color name="colorTopPanelTxt">#D2DAE3</color>
     <color name="colorDivider">#456B96</color>

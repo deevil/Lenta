@@ -11,7 +11,7 @@ interface IWriteOffTaskManager {
 
     fun clearTask()
 
-    fun setTask(apply: WriteOffTask?)
+    fun setTask(writeOffTask: WriteOffTask?)
 
 
 }

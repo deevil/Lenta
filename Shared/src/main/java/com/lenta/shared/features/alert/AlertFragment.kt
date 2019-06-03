@@ -7,10 +7,6 @@ import com.lenta.shared.utilities.extentions.provideViewModel
 
 class AlertFragment : CoreMessageFragment() {
 
-
-    override fun getPageNumber(): String = "???"
-
-
     override fun getViewModel(): MessageViewModel {
         provideViewModel(MessageViewModel::class.java).let { vm ->
             coreComponent.inject(vm)
@@ -23,17 +19,17 @@ class AlertFragment : CoreMessageFragment() {
     }
 
 
-
-
     companion object {
         fun create(
                 message: String,
                 iconRes: Int = 0,
+                pageNumber: String = "???",
                 codeConfirm: Int? = null): AlertFragment {
             AlertFragment().let {
                 it.message = message
                 it.iconRes = iconRes
                 it.codeConfirm = codeConfirm
+                it.pageNumb = pageNumber
                 return it
             }
         }

@@ -19,7 +19,7 @@
             android:id="@+id/tv_page_number"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
+            android:layout_marginStart="4dp"
             android:layout_marginTop="4dp"
             android:layout_marginBottom="4dp"
             android:textSize="14sp"
@@ -40,9 +40,9 @@
             app:layout_constraintStart_toEndOf="@+id/tv_page_number"
             app:layout_constraintTop_toTopOf="@+id/tv_page_number"
             app:layout_constraintVertical_bias="0.0"
-            app:prefix='@{"IP: "}'
+            app:prefix='@{"IP:"}'
             app:setTextWithVisibilities="@{vm.ip}"
-            tools:text="IP: 10.2.0.94" />
+            tools:text="IP:10.2.0.94" />
 
         <TextView
             android:id="@+id/tv_printer_tasks"

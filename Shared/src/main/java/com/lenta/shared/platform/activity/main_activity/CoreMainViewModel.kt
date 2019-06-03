@@ -15,4 +15,5 @@ abstract class CoreMainViewModel : CoreViewModel() {
     abstract fun onNewEnter()
     abstract fun showSimpleProgress(title: String)
     abstract fun hideProgress()
+    abstract fun onPause()
 }

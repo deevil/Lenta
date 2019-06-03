@@ -25,6 +25,7 @@ import com.lenta.shared.utilities.databinding.Evenable
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.map
+import com.lenta.shared.utilities.extentions.toStringFormatted
 import com.lenta.shared.view.OnPositionClickListener
 import com.mobrun.plugin.api.HyperHive
 import kotlinx.coroutines.launch
@@ -120,7 +121,7 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
                                 GoodItem(
                                         number = index + 1,
                                         name = "${productInfo.getMaterialLastSix()} ${productInfo.description}",
-                                        quantity = "${it.taskRepository.getTotalCountForProduct(productInfo)} ${productInfo.uom.name}",
+                                        quantity = "${it.taskRepository.getTotalCountForProduct(productInfo).toStringFormatted()} ${productInfo.uom.name}",
                                         even = index % 2 == 0,
                                         productInfo = productInfo)
                             }
@@ -164,7 +165,7 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
                                                 number = index + 1,
                                                 name = "${it.getMaterialLastSix()} ${it.description}",
                                                 reason = taskWriteOffReason.writeOffReason.name,
-                                                quantity = "${taskWriteOffReason.count} ${it.uom.name}",
+                                                quantity = "${taskWriteOffReason.count.toStringFormatted()} ${it.uom.name}",
                                                 even = index % 2 == 0,
                                                 taskWriteOffReason = taskWriteOffReason))
                                     }
@@ -189,7 +190,7 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     private fun searchCodeFromDb() {
         viewModelScope.launch {
             eanCode.value?.let {
-                productInfoDbRequest(ProductInfoRequestParams(number = it)).either(::handleFailureSearchFromDb, ::handlPermissionToWriteoffSuccess)
+                productInfoDbRequest(ProductInfoRequestParams(number = it)).either(::handleFailureSearchFromDb, ::handlePermissionToWriteOffSuccess)
             }
 
         }
@@ -199,14 +200,14 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
         viewModelScope.launch {
             eanCode.value?.let {
                 screenNavigator.showProgress(productInfoNetRequest)
-                productInfoNetRequest(ProductInfoRequestParams(number = it)).either(::handleFailureNetRequest, ::handlPermissionToWriteoffSuccess)
+                productInfoNetRequest(ProductInfoRequestParams(number = it)).either(::handleFailureNetRequest, ::handlePermissionToWriteOffSuccess)
                 screenNavigator.hideProgress()
             }
 
         }
     }
 
-    private fun handlPermissionToWriteoffSuccess(productInfo: ProductInfo) {
+    private fun handlePermissionToWriteOffSuccess(productInfo: ProductInfo) {
         this.productInfo.value = productInfo
         viewModelScope.launch {
             if (zmpUtz29V001.isChkOwnpr(processServiceManager.getWriteOffTask()?.taskDescription!!.taskType.code)) {

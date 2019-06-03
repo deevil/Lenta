@@ -1,6 +1,8 @@
 package com.lenta.bp10.activity.main
 
 import androidx.lifecycle.viewModelScope
+import com.lenta.bp10.models.IPersistWriteOffTask
+import com.lenta.bp10.models.repositories.IWriteOffTaskManager
 import com.lenta.bp10.platform.navigation.IScreenNavigator
 import com.lenta.shared.features.loading.startProgressTimer
 import com.lenta.shared.platform.activity.main_activity.CoreMainViewModel
@@ -14,6 +16,12 @@ class MainViewModel : CoreMainViewModel() {
     override lateinit var statusBarUiModel: StatusBarUiModel
     @Inject
     lateinit var screenNavigator: IScreenNavigator
+    @Inject
+    lateinit var writeOffTaskManager: IWriteOffTaskManager
+    @Inject
+    lateinit var persistWriteOffTask: IPersistWriteOffTask
+
+
 
     override fun onNewEnter() {
         screenNavigator.openFirstScreen()
@@ -44,8 +52,12 @@ class MainViewModel : CoreMainViewModel() {
         bottomToolbarUiModel.visibility.value = true
     }
 
-   fun onExitClick() {
+    fun onExitClick() {
         screenNavigator.openExitConfirmationScreen()
+    }
+
+    override fun onPause() {
+        persistWriteOffTask.saveWriteOffTask(writeOffTaskManager.getWriteOffTask())
     }
 
 }

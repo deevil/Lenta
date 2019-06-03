@@ -16,7 +16,7 @@ class StatusBarUiModel @Inject constructor(
 ) {
     val pageNumber: MutableLiveData<String> = MutableLiveData("")
     var ip: MutableLiveData<String> = networkStateMonitor.networkInfo.map { it?.ip }
-    val printer = appSettings.printerLiveData
+    val printer = appSettings.printerLiveData.map { if (it.isNullOrBlank()) "?" else it }
     val batteryLevel: MutableLiveData<Int> = batteryStateMonitor.batteryState.map { it?.level }
     val batteryIsCharging: MutableLiveData<Boolean> = batteryStateMonitor.batteryState.map { it?.isCharging }
     val time: MutableLiveData<Long> = timeMonitor.observeUnixTime().map { it }

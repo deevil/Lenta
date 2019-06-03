@@ -2,7 +2,9 @@ package com.lenta.shared.platform.navigation
 
 import android.content.Context
 import android.os.Bundle
+import androidx.lifecycle.LiveData
 import com.lenta.shared.R
+import com.lenta.shared.analytics.IAnalytics
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.exception.IFailureInterpreter
 import com.lenta.shared.features.alert.AlertFragment
@@ -21,93 +23,142 @@ import com.lenta.shared.platform.activity.ForegroundActivityProvider
 
 class CoreNavigator constructor(private val context: Context,
                                 private val foregroundActivityProvider: ForegroundActivityProvider,
-                                private val failureInterpreter: IFailureInterpreter) : ICoreNavigator {
+                                private val failureInterpreter: IFailureInterpreter,
+                                private val analytics: IAnalytics) : ICoreNavigator {
+
+    override val functionsCollector: FunctionsCollector by lazy {
+        FunctionsCollector(foregroundActivityProvider.onPauseStateLiveData)
+    }
+
+
     override fun goBackWithArgs(args: Bundle) {
-        getFragmentStack()?.popReturnArgs(args = args)
-    }
-
-    override fun goBack() {
-        getFragmentStack()?.pop()
-    }
-
-    override fun finishApp() {
-        foregroundActivityProvider.getActivity()?.finish()
-        System.exit(0)
-    }
-
-    override fun openAlertScreen(message: String) {
-        getFragmentStack()?.let {
-            val fragment = AlertFragment.create(message)
-            it.push(fragment, CustomAnimation.vertical())
-
+        runOrPostpone {
+            getFragmentStack()?.popReturnArgs(args = args)
         }
     }
 
-    override fun openAlertScreen(failure: Failure) {
-        openAlertScreen(failureInterpreter.getFailureDescription(failure))
+    override fun goBack() {
+        runOrPostpone {
+            getFragmentStack()?.pop()
+        }
+    }
+
+    override fun finishApp() {
+        runOrPostpone {
+            foregroundActivityProvider.getActivity()?.finish()
+            analytics.cleanLogs()
+            System.exit(0)
+        }
+
+    }
+
+
+    override fun openAlertScreen(message: String, pageNumber: String) {
+        runOrPostpone {
+            getFragmentStack()?.let {
+                val fragment = AlertFragment.create(message = message, pageNumber = pageNumber)
+                it.push(fragment, CustomAnimation.vertical())
+
+            }
+        }
+    }
+
+    override fun openAlertScreen(failure: Failure, pageNumber: String) {
+        runOrPostpone {
+            openAlertScreen(message = failureInterpreter.getFailureDescription(failure), pageNumber = pageNumber)
+        }
     }
 
     override fun openSupportScreen() {
-        getFragmentStack()?.push(SupportFragment())
+        runOrPostpone {
+            getFragmentStack()?.push(SupportFragment())
+        }
     }
 
     override fun <Params> showProgress(useCase: UseCase<Any, Params>) {
-        showProgress(context.getString(R.string.data_loading))
+        runOrPostpone {
+            showProgress(context.getString(R.string.data_loading))
+        }
     }
 
     override fun showProgress(title: String) {
-        foregroundActivityProvider.getActivity()?.getViewModel()?.showSimpleProgress(title)
+        runOrPostpone {
+            foregroundActivityProvider.getActivity()?.getViewModel()?.showSimpleProgress(title)
+        }
     }
 
     override fun hideProgress() {
-        foregroundActivityProvider.getActivity()?.getViewModel()?.hideProgress()
+        runOrPostpone {
+            foregroundActivityProvider.getActivity()?.getViewModel()?.hideProgress()
+        }
     }
 
     override fun openTechLoginScreen() {
-        getFragmentStack()?.push(TechLoginFragment())
+        runOrPostpone {
+            getFragmentStack()?.push(TechLoginFragment())
+        }
     }
 
     override fun openConnectionsSettingsScreen() {
-        getFragmentStack()?.push(FmpSettingsFragment())
+        runOrPostpone {
+            getFragmentStack()?.push(FmpSettingsFragment())
+        }
     }
 
     override fun openPinCodeScreen(requestCode: Int, message: String) {
-        getFragmentStack()?.push(PinCodeFragment.create(requestCode, message))
+        runOrPostpone {
+            getFragmentStack()?.push(PinCodeFragment.create(requestCode, message))
+        }
     }
 
     override fun openPinCodeForTestEnvironment() {
-        getFragmentStack()?.push(
-                PinCodeFragment.create(
-                        SelectOperModeViewModel.REQUEST_CODE_TEST_ENVIRONMENT,
-                        context.getString(R.string.tv_test_envir)))
+        runOrPostpone {
+            getFragmentStack()?.push(
+                    PinCodeFragment.create(
+                            SelectOperModeViewModel.REQUEST_CODE_TEST_ENVIRONMENT,
+                            context.getString(R.string.tv_test_envir)))
+        }
     }
 
     override fun openSelectOperModeScreen() {
-        getFragmentStack()?.push(SelectOperModeFragment())
+        runOrPostpone {
+            getFragmentStack()?.push(SelectOperModeFragment())
+        }
     }
 
     override fun openPrinterChangeScreen() {
-        getFragmentStack()?.push(PrinterChangeFragment())
+        runOrPostpone {
+            getFragmentStack()?.push(PrinterChangeFragment())
+        }
     }
 
     override fun openSettingsScreen() {
-        getFragmentStack()?.push(SettingsFragment())
+        runOrPostpone {
+            getFragmentStack()?.push(SettingsFragment())
+        }
     }
 
     override fun openAuxiliaryMenuScreen() {
-        getFragmentStack()?.push(AuxiliaryMenuFragment())
+        runOrPostpone {
+            getFragmentStack()?.push(AuxiliaryMenuFragment())
+        }
     }
 
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 
 }
 
+fun ICoreNavigator.runOrPostpone(function: () -> Unit) {
+    functionsCollector.executeFunction(function)
+}
+
 interface ICoreNavigator {
+    val functionsCollector: FunctionsCollector
     fun goBackWithArgs(args: Bundle)
     fun goBack()
     fun finishApp()
-    fun openAlertScreen(message: String)
-    fun openAlertScreen(failure: Failure)
+    fun openAlertScreen(message: String, pageNumber: String = "?")
+    fun openAlertScreen(failure: Failure, pageNumber: String = "?")
     fun openSupportScreen()
     fun <Params> showProgress(useCase: UseCase<Any, Params>)
     fun showProgress(title: String)
@@ -120,4 +171,30 @@ interface ICoreNavigator {
     fun openPrinterChangeScreen()
     fun openSettingsScreen()
     fun openAuxiliaryMenuScreen()
+}
+
+class FunctionsCollector(private val needCollectLiveData: LiveData<Boolean>) {
+
+    private val functions: MutableList<() -> Unit> = mutableListOf()
+
+    init {
+        needCollectLiveData.observeForever { needCollect ->
+            if (!needCollect) {
+                functions.map { it }.forEach {
+                    it()
+                    functions.remove(it)
+                }
+            }
+        }
+    }
+
+    fun executeFunction(func: () -> Unit) {
+        if (needCollectLiveData.value == true) {
+            functions.add(func)
+        } else {
+            func()
+        }
+    }
+
+
 }

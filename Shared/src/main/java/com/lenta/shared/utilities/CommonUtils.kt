@@ -1,6 +1,7 @@
-package com.lenta.bp10.platform
+package com.lenta.shared.utilities
 
-import com.lenta.bp10.BuildConfig
+import com.lenta.shared.BuildConfig
+
 
 inline fun runIfDebug(function: () -> Unit) {
     if (BuildConfig.DEBUG) {

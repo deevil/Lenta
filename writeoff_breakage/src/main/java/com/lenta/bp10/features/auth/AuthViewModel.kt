@@ -3,7 +3,7 @@ package com.lenta.bp10.features.auth
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp10.platform.navigation.IScreenNavigator
-import com.lenta.bp10.platform.runIfDebug
+import com.lenta.shared.utilities.runIfDebug
 import com.lenta.bp10.requests.network.PermissionsParams
 import com.lenta.bp10.requests.network.PermissionsRequest
 import com.lenta.shared.account.ISessionInfo
@@ -79,7 +79,7 @@ class AuthViewModel : CoreAuthViewModel() {
     override fun handleFailure(failure: Failure) {
         super.handleFailure(failure)
         progress.value = false
-        navigator.openAlertScreen(message = failureInterpreter.getFailureDescription(failure))
+        navigator.openAlertScreen(message = failureInterpreter.getFailureDescription(failure), pageNumber = "10/97")
     }
 
 

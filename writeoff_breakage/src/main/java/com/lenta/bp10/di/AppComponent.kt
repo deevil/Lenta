@@ -1,8 +1,10 @@
 package com.lenta.bp10.di
 
+import com.lenta.bp10.ExceptionHandler
 import com.lenta.bp10.activity.main.MainActivity
 import com.lenta.bp10.activity.main.MainViewModel
 import com.lenta.bp10.features.auth.AuthViewModel
+import com.lenta.bp10.features.detection_saved_data.DetectionSavedDataViewModel
 import com.lenta.shared.features.auxiliary_menu.AuxiliaryMenuViewModel
 import com.lenta.bp10.features.exit.ExitFromAppViewModel
 import com.lenta.bp10.features.good_information.general.GoodInfoViewModel
@@ -49,5 +51,7 @@ interface AppComponent {
     fun inject(it: SetsViewModel)
     fun inject(it: WriteOffDetailsViewModel)
     fun inject(it: ComponentViewModel)
+    fun inject(it: DetectionSavedDataViewModel)
+    fun inject(it: ExceptionHandler)
 }
 

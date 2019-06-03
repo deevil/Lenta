@@ -5,9 +5,7 @@ import com.lenta.bp10.models.task.TaskExciseStamp
 import com.lenta.shared.models.core.ProductInfo
 import java.util.*
 
-class MemoryTaskExciseStampRepository : ITaskExciseStampRepository {
-
-    private val stamps = ArrayList<TaskExciseStamp>()
+class MemoryTaskExciseStampRepository(private val stamps : ArrayList<TaskExciseStamp> = ArrayList()) : ITaskExciseStampRepository {
 
     override fun getExciseStamps(): List<TaskExciseStamp> {
         return stamps

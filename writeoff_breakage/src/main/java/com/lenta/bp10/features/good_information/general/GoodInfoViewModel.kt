@@ -11,6 +11,7 @@ import com.lenta.shared.models.core.ProductInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.map
+import com.lenta.shared.utilities.extentions.toStringFormatted
 import com.lenta.shared.view.OnPositionClickListener
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -42,7 +43,7 @@ class GoodInfoViewModel : CoreViewModel(), OnPositionClickListener {
         (it ?: 0.0) + processGeneralProductService.getTotalCount()
     }
 
-    val totalCountWithUom: MutableLiveData<String> = totalCount.map { "$it ${productInfo.value!!.uom.name}" }
+    val totalCountWithUom: MutableLiveData<String> = totalCount.map { "${it.toStringFormatted()} ${productInfo.value!!.uom.name}" }
 
     val enabledApplyButton: MutableLiveData<Boolean> = countValue.combineLatest(selectedPosition).map {
         val count = it?.first ?: 0.0

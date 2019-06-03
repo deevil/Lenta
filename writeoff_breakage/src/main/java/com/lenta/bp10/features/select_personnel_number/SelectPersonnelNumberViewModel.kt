@@ -2,6 +2,8 @@ package com.lenta.bp10.features.select_personnel_number
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.lenta.bp10.models.IPersistWriteOffTask
+import com.lenta.bp10.models.repositories.IWriteOffTaskManager
 import com.lenta.bp10.platform.navigation.IScreenNavigator
 import com.lenta.bp10.requests.network.PersonnelNumberNetRequest
 import com.lenta.bp10.requests.network.TabNumberInfo
@@ -24,6 +26,8 @@ class SelectPersonnelNumberViewModel : CoreViewModel(), OnOkInSoftKeyboardListen
     lateinit var sessionInfo: ISessionInfo
     @Inject
     lateinit var appSettings: IAppSettings
+    @Inject
+    lateinit var persistWriteOffTask: IPersistWriteOffTask
 
     val personnelNumber = MutableLiveData<String>("")
     val fullName = MutableLiveData<String>("")
@@ -78,8 +82,18 @@ class SelectPersonnelNumberViewModel : CoreViewModel(), OnOkInSoftKeyboardListen
             appSettings.lastPersonnelFullName = fullName.value
         }
 
+        persistWriteOffTask.getSavedWriteOffTask().let {
+            if (it == null || it.taskDescription.tkNumber != sessionInfo.market) {
+                screenNavigator.openMainMenuScreen()
+            } else {
+                screenNavigator.openDetectionSavedDataScreen()
+            }
+        }
 
+    }
 
-        screenNavigator.openMainMenuScreen()
+    fun onScanResult(data: String) {
+        personnelNumber.value = data
+        searchPersonnelNumber()
     }
 }

@@ -4,6 +4,7 @@ import android.content.Context
 import com.lenta.bp10.R
 import com.lenta.bp10.exception.IWriteOffFailureInterpretator
 import com.lenta.bp10.features.auth.AuthFragment
+import com.lenta.bp10.features.detection_saved_data.DetectionSavedDataFragment
 import com.lenta.bp10.features.exit.ExitWithConfirmationFragment
 import com.lenta.bp10.features.good_information.general.GoodInfoFragment
 import com.lenta.bp10.features.good_information.sets.ComponentItem
@@ -30,8 +31,8 @@ import com.lenta.shared.models.core.MatrixType
 import com.lenta.shared.models.core.ProductInfo
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
 import com.lenta.shared.platform.navigation.ICoreNavigator
+import com.lenta.shared.platform.navigation.runOrPostpone
 import com.lenta.shared.progress.IProgressUseCaseInformator
-import com.lenta.shared.utilities.Logg
 
 class ScreenNavigator(
         private val context: Context,
@@ -42,13 +43,15 @@ class ScreenNavigator(
         private val progressUseCaseInformator: IProgressUseCaseInformator
 ) : IScreenNavigator, ICoreNavigator by coreNavigator {
 
-    override fun openAlertScreen(failure: Failure) {
+    override fun openAlertScreen(failure: Failure, pageNumber: String) {
         openAlertScreen(failureInterpreter.getFailureDescription(failure))
     }
 
 
     override fun openSelectMarketScreen() {
-        getFragmentStack()?.replace(SelectMarketFragment())
+        runOrPostpone {
+            getFragmentStack()?.replace(SelectMarketFragment())
+        }
     }
 
     override fun openFirstScreen() {
@@ -60,101 +63,150 @@ class ScreenNavigator(
     }
 
     override fun openLoginScreen() {
-        Logg.d()
-        getFragmentStack()?.let {
-            it.popAll()
-            it.replace(AuthFragment())
+        runOrPostpone {
+            getFragmentStack()?.let {
+                it.popAll()
+                it.replace(AuthFragment())
+            }
         }
+
     }
 
     override fun openFastDataLoadingScreen() {
-        getFragmentStack()?.push(FastDataLoadingFragment())
+        runOrPostpone {
+            getFragmentStack()?.push(FastDataLoadingFragment())
+        }
+
     }
 
     override fun openSelectionPersonnelNumberScreen() {
-        getFragmentStack()?.replace(SelectPersonnelNumberFragment())
+        runOrPostpone {
+            getFragmentStack()?.replace(SelectPersonnelNumberFragment())
+        }
     }
 
 
     override fun <Params> showProgress(useCase: UseCase<Any, Params>) {
-        showProgress(progressUseCaseInformator.getTitle(useCase))
+        runOrPostpone {
+            showProgress(progressUseCaseInformator.getTitle(useCase))
+        }
     }
 
     override fun openMainMenuScreen() {
-        getFragmentStack()?.replace(MainMenuFragment())
+        runOrPostpone {
+            getFragmentStack()?.replace(MainMenuFragment())
+        }
     }
 
     override fun openJobCardScreen() {
-        getFragmentStack()?.push(JobCardFragment())
+        runOrPostpone {
+            getFragmentStack()?.push(JobCardFragment())
+        }
     }
 
     override fun openLoadingTaskSettingsScreen() {
-        getFragmentStack()?.push(LoadingTaskSettingsFragment())
+        runOrPostpone {
+            getFragmentStack()?.push(LoadingTaskSettingsFragment())
+        }
     }
 
     override fun openGoodsListScreen() {
-        getFragmentStack()?.push(GoodsListFragment())
+        runOrPostpone {
+            getFragmentStack()?.push(GoodsListFragment())
+        }
     }
 
     override fun openGoodInfoScreen(productInfo: ProductInfo) {
-        getFragmentStack()?.push(GoodInfoFragment.create(productInfo))
+        runOrPostpone {
+            getFragmentStack()?.push(GoodInfoFragment.create(productInfo))
+        }
     }
 
     override fun openSetsInfoScreen(productInfo: ProductInfo) {
-        getFragmentStack()?.push(SetsFragment.create(productInfo))
+        runOrPostpone {
+            getFragmentStack()?.push(SetsFragment.create(productInfo))
+        }
     }
 
     override fun openPrinterChangeScreen() {
-        getFragmentStack()?.push(PrinterChangeFragment())
+        runOrPostpone {
+            getFragmentStack()?.push(PrinterChangeFragment())
+        }
     }
 
     override fun openComponentSetScreen(productInfo: ProductInfo, componentItem: ComponentItem) {
-        getFragmentStack()?.push(ComponentFragment.create(productInfo,componentItem))
+        runOrPostpone {
+            getFragmentStack()?.push(ComponentFragment.create(productInfo, componentItem))
+        }
     }
 
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 
     override fun openEanInfoScreen() {
-        getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.ean_info),
-                iconRes = R.drawable.ic_scan_barcode))
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.ean_info),
+                    iconRes = R.drawable.ic_scan_barcode))
+        }
     }
 
     override fun openESInfoScreen() {
-        getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.es_info),
-                iconRes = R.drawable.is_scan_barcode_es))
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.es_info),
+                    iconRes = R.drawable.is_scan_barcode_es))
+        }
     }
 
     override fun openExitConfirmationScreen() {
-        getFragmentStack()?.push(ExitWithConfirmationFragment())
+        runOrPostpone {
+            getFragmentStack()?.push(ExitWithConfirmationFragment())
+        }
     }
 
     override fun openRemoveTaskConfirmationScreen(taskDescription: String, codeConfirmation: Int) {
-        getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.remove_task_confirmation, taskDescription),
-                iconRes = R.drawable.ic_delete_red_80dp, codeConfirm = codeConfirmation))
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.remove_task_confirmation, taskDescription),
+                    iconRes = R.drawable.ic_delete_red_80dp, codeConfirm = codeConfirmation, pageNumber = "10/88"))
+        }
     }
 
     override fun openSendingReportsScreen(writeOffReportResponse: WriteOffReportResponse) {
-        getFragmentStack()?.replace(ReportResultFragment.create(writeOffReportResponse))
+        runOrPostpone {
+            getFragmentStack()?.replace(ReportResultFragment.create(writeOffReportResponse))
+        }
     }
 
     override fun closeAllScreen() {
-        getFragmentStack()?.popAll()
+        runOrPostpone {
+            getFragmentStack()?.popAll()
+        }
     }
 
     override fun openMatrixInfoScreen(matrixType: MatrixType) {
-        getFragmentStack()?.push(MatrixInfoFragment.create(matrixType))
+        runOrPostpone {
+            getFragmentStack()?.push(MatrixInfoFragment.create(matrixType))
+        }
     }
 
     override fun openSectionInfoScreen(section: Int) {
-        getFragmentStack()?.push(SectionInfoFragment.create(sectionNumber = "$section"))
+        runOrPostpone {
+            getFragmentStack()?.push(SectionInfoFragment.create(sectionNumber = "$section"))
+        }
     }
 
     override fun openGoodsReasonsScreen(productInfo: ProductInfo) {
-        getFragmentStack()?.push(WriteOffDetailsFragment.create(productInfo))
+        runOrPostpone {
+            getFragmentStack()?.push(WriteOffDetailsFragment.create(productInfo))
+        }
     }
 
     override fun openSuccessPrintMessage() {
         openAlertScreen(context.getString(R.string.print_success))
+    }
+
+    override fun openDetectionSavedDataScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(DetectionSavedDataFragment())
+        }
     }
 
 
@@ -183,4 +235,5 @@ interface IScreenNavigator : ICoreNavigator {
     fun openGoodsReasonsScreen(productInfo: ProductInfo)
     fun openSuccessPrintMessage()
     fun openComponentSetScreen(productInfo: ProductInfo, componentItem: ComponentItem)
+    fun openDetectionSavedDataScreen()
 }
