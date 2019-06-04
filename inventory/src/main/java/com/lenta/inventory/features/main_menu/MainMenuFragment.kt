@@ -1,8 +1,7 @@
-package com.lenta.bp10.features.main_menu
+package com.lenta.inventory.features.main_menu
 
 import android.view.View
 import com.lenta.inventory.R
-import com.lenta.inventory.features.main_menu.MainMenuViewModel
 import com.lenta.inventory.platform.extentions.getAppComponent
 import com.lenta.inventory.platform.extentions.getAppTitle
 import com.lenta.shared.platform.fragment.CoreFragment

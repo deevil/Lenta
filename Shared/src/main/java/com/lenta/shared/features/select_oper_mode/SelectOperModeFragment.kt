@@ -9,6 +9,7 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.ImageButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
+import com.lenta.shared.utilities.extentions.generateScreenNumber
 import com.lenta.shared.utilities.extentions.provideViewModel
 
 class SelectOperModeFragment : CoreFragment<FragmentSelectOperModeBinding, SelectOperModeViewModel>(),
@@ -32,7 +33,7 @@ class SelectOperModeFragment : CoreFragment<FragmentSelectOperModeBinding, Selec
 
     }
 
-    override fun getPageNumber(): String = "10/54"
+    override fun getPageNumber(): String = generateScreenNumber()
 
     override fun getViewModel(): SelectOperModeViewModel {
         provideViewModel(SelectOperModeViewModel::class.java).let {

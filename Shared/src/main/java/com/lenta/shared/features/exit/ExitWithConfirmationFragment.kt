@@ -4,13 +4,14 @@ import com.lenta.shared.features.message.CoreMessageFragment
 import com.lenta.shared.features.message.MessageViewModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
+import com.lenta.shared.utilities.extentions.generateScreenNumber
 import com.lenta.shared.utilities.extentions.provideViewModel
 
 class ExitWithConfirmationFragment : CoreMessageFragment() {
 
 
     override fun getPageNumber(): String {
-        return "???"
+        return generateScreenNumber()
     }
 
     override fun getViewModel(): MessageViewModel {

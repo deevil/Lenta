@@ -1,7 +1,7 @@
 package com.lenta.inventory.platform.navigation
 
 import android.content.Context
-import com.lenta.bp10.features.main_menu.MainMenuFragment
+import com.lenta.inventory.features.main_menu.MainMenuFragment
 import com.lenta.inventory.exception.IInventoryFailureInterpretator
 import com.lenta.inventory.features.auth.AuthFragment
 import com.lenta.inventory.features.loading.fast.FastDataLoadingFragment

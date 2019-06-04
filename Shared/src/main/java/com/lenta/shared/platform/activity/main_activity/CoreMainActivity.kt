@@ -13,6 +13,7 @@ import com.lenta.shared.keys.OnKeyDownListener
 import com.lenta.shared.platform.network_state.NetworkStateMonitor
 import com.lenta.shared.platform.activity.CoreActivity
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
+import com.lenta.shared.platform.activity.INumberScreenGenerator
 import com.lenta.shared.platform.activity.OnBackPresserListener
 import com.lenta.shared.platform.battery_state.BatteryStateMonitor
 import com.lenta.shared.platform.fragment.CoreFragment
@@ -29,7 +30,7 @@ import com.lenta.shared.utilities.extentions.hideKeyboard
 import com.lenta.shared.utilities.extentions.implementationOf
 import javax.inject.Inject
 
-abstract class CoreMainActivity : CoreActivity<ActivityMainBinding>(), ToolbarButtonsClickListener {
+abstract class CoreMainActivity : CoreActivity<ActivityMainBinding>(), ToolbarButtonsClickListener, INumberScreenGenerator {
 
     @Inject
     lateinit var networkStateMonitor: NetworkStateMonitor

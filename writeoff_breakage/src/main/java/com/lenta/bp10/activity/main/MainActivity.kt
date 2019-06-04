@@ -7,6 +7,7 @@ import com.lenta.bp10.di.AppComponent
 import com.lenta.bp10.platform.extentions.getAppComponent
 import com.lenta.shared.platform.activity.main_activity.CoreMainActivity
 import com.crashlytics.android.Crashlytics
+import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.utilities.runIfRelease
 import com.lenta.shared.scan.OnScanResultListener
 import com.lenta.shared.utilities.Logg
@@ -17,6 +18,8 @@ import io.fabric.sdk.android.Fabric
 class MainActivity : CoreMainActivity() {
 
     var mainViewModel: MainViewModel? = null
+
+    private val numberScreenGenerator = NumberScreenGenerator()
 
     val appComponent: AppComponent by lazy {
         getAppComponent(coreComponent)
@@ -78,5 +81,11 @@ class MainActivity : CoreMainActivity() {
             flags = FLAG_ACTIVITY_REORDER_TO_FRONT
         })*/
     }
+
+    override fun generateNumberScreen(fragment: CoreFragment<*, *>): String {
+        return numberScreenGenerator.generateNumberScreen(fragment)
+    }
+
+
 
 }

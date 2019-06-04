@@ -10,6 +10,7 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
+import com.lenta.shared.utilities.extentions.generateScreenNumber
 import com.lenta.shared.utilities.extentions.provideViewModel
 import com.lenta.shared.utilities.state.state
 
@@ -37,7 +38,7 @@ class PinCodeFragment : CoreFragment<com.lenta.shared.databinding.FragmentPinCod
         bottomToolbarUiModel.uiModelButton5.let { buttonUiModel -> buttonUiModel.show(ButtonDecorationInfo.goOver) }
     }
 
-    override fun getPageNumber(): String = "10/56"
+    override fun getPageNumber(): String = generateScreenNumber()
 
     override fun getViewModel(): PinCodeViewModel {
         provideViewModel(PinCodeViewModel::class.java).let { viewModel ->
