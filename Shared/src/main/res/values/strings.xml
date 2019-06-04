@@ -62,4 +62,6 @@
     <string name="environment">Среда</string>
     <string name="project">Проект</string>
     <string name="pin_change_net_settings_info">Введите ПИН-код для перехода в настройки подключения</string>
+    <string name="msg_incorrect_pin_code">Пин-код неверный</string>
+
 </resources>

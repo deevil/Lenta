@@ -33,6 +33,12 @@ class PinCodeViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     @Inject
     lateinit var failureInterpreter: IFailureInterpreter
 
+    private val msgIncorrectPinCode: MutableLiveData<String> = MutableLiveData()
+
+    fun setMsgIncorrectPinCode(string: String) {
+        this.msgIncorrectPinCode.value = string
+    }
+
     fun onClickGoOver() {
         viewModelScope.launch {
             progress.value = true
@@ -48,7 +54,7 @@ class PinCodeViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
                 putInt(KEY_ARGS_ID_CODE_CONFIRM, requestCode ?: 0)
             })
         } else {
-            screenNavigator.openAlertScreen("Пин-код неверный")
+            screenNavigator.openAlertScreen(message = msgIncorrectPinCode.value!!, pageNumber = "10/95")
         }
     }
 

@@ -10,9 +10,7 @@ import com.lenta.shared.utilities.extentions.provideViewModel
 class ExitWithConfirmationFragment : CoreMessageFragment() {
 
 
-    override fun getPageNumber(): String {
-        return "???"
-    }
+    override fun getPageNumber(): String = "10/93"
 
     override fun getViewModel(): MessageViewModel {
         provideViewModel(ExitFromAppViewModel::class.java).let { vm ->
