@@ -5,6 +5,7 @@ import com.lenta.inventory.exception.IInventoryFailureInterpretator
 import com.lenta.inventory.features.auth.AuthFragment
 import com.lenta.inventory.features.loading.fast.FastDataLoadingFragment
 import com.lenta.inventory.features.select_market.SelectMarketFragment
+import com.lenta.inventory.features.select_personnel_number.SelectPersonnelNumberFragment
 import com.lenta.shared.account.IAuthenticator
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
 import com.lenta.shared.platform.navigation.ICoreNavigator
@@ -50,6 +51,12 @@ class ScreenNavigator(
         }
     }
 
+    override fun openSelectionPersonnelNumberScreen() {
+        runOrPostpone {
+            getFragmentStack()?.replace(SelectPersonnelNumberFragment())
+        }
+    }
+
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 
 }
@@ -59,4 +66,5 @@ interface IScreenNavigator : ICoreNavigator {
     fun openLoginScreen()
     fun openSelectMarketScreen()
     fun openFastDataLoadingScreen()
+    fun openSelectionPersonnelNumberScreen()
 }

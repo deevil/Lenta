@@ -4,6 +4,7 @@ import com.lenta.inventory.ExceptionHandler
 import com.lenta.inventory.features.auth.AuthViewModel
 import com.lenta.inventory.features.loading.fast.FastLoadingViewModel
 import com.lenta.inventory.features.select_market.SelectMarketViewModel
+import com.lenta.inventory.features.select_personnel_number.SelectPersonnelNumberViewModel
 import com.lenta.inventory.main.MainActivity
 import com.lenta.inventory.main.MainViewModel
 import com.lenta.shared.di.AppScope
@@ -19,6 +20,7 @@ interface AppComponent {
     fun inject(it: AuthViewModel)
     fun inject(it: SelectMarketViewModel)
     fun inject(it: FastLoadingViewModel)
+    fun inject(it: SelectPersonnelNumberViewModel)
 
 }
 

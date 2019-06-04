@@ -1,15 +1,14 @@
-package com.lenta.bp10.features.select_personnel_number
+package com.lenta.inventory.features.select_personnel_number
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.lenta.bp10.models.IPersistWriteOffTask
-import com.lenta.bp10.platform.navigation.IScreenNavigator
-import com.lenta.shared.requests.network.PersonnelNumberNetRequest
-import com.lenta.shared.requests.network.TabNumberInfo
-import com.lenta.shared.requests.network.TabNumberParams
+import com.lenta.inventory.platform.navigation.IScreenNavigator
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.platform.viewmodel.CoreViewModel
+import com.lenta.shared.requests.network.PersonnelNumberNetRequest
+import com.lenta.shared.requests.network.TabNumberInfo
+import com.lenta.shared.requests.network.TabNumberParams
 import com.lenta.shared.settings.IAppSettings
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
@@ -25,8 +24,8 @@ class SelectPersonnelNumberViewModel : CoreViewModel(), OnOkInSoftKeyboardListen
     lateinit var sessionInfo: ISessionInfo
     @Inject
     lateinit var appSettings: IAppSettings
-    @Inject
-    lateinit var persistWriteOffTask: IPersistWriteOffTask
+    /*@Inject
+    lateinit var persistWriteOffTask: IPersistWriteOffTask*/
 
     val personnelNumber = MutableLiveData<String>("")
     val fullName = MutableLiveData<String>("")
@@ -81,13 +80,15 @@ class SelectPersonnelNumberViewModel : CoreViewModel(), OnOkInSoftKeyboardListen
             appSettings.lastPersonnelFullName = fullName.value
         }
 
-        persistWriteOffTask.getSavedWriteOffTask().let {
+        //TODO need implement restore task
+
+        /*persistWriteOffTask.getSavedWriteOffTask().let {
             if (it == null || it.taskDescription.tkNumber != sessionInfo.market) {
                 screenNavigator.openMainMenuScreen()
             } else {
                 screenNavigator.openDetectionSavedDataScreen()
             }
-        }
+        }*/
 
     }
 

@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Инвентаризация</string>
+    <string name="choose_tabnumber_description">Укажите табельный номер для учёта исполнителя</string>
 </resources>

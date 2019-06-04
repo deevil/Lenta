@@ -41,7 +41,7 @@ class FastLoadingViewModel : CoreLoadingViewModel() {
 
     private fun handleSuccess(@Suppress("UNUSED_PARAMETER") b: Boolean) {
         //resourceLoader.startLoadSlowResources()
-        screenNavigator.openAlertScreen("Загрузка завершена!")
+        screenNavigator.openSelectionPersonnelNumberScreen()
     }
 
     override fun clean() {
