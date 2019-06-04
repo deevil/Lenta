@@ -1,6 +1,7 @@
 package com.lenta.inventory.main
 
 import androidx.lifecycle.viewModelScope
+import com.lenta.bp10.platform.navigation.IScreenNavigator
 import com.lenta.shared.features.loading.startProgressTimer
 import com.lenta.shared.platform.activity.main_activity.CoreMainViewModel
 import com.lenta.shared.platform.statusbar.StatusBarUiModel
@@ -12,13 +13,13 @@ class MainViewModel : CoreMainViewModel() {
 
     @Inject
     override lateinit var statusBarUiModel: StatusBarUiModel
-    /*@Inject
-    lateinit var screenNavigator: IScreenNavigator*/
+    @Inject
+    lateinit var screenNavigator: IScreenNavigator
 
 
 
     override fun onNewEnter() {
-        //screenNavigator.openFirstScreen()
+        screenNavigator.openFirstScreen()
     }
 
     var progressJob: Job? = null
