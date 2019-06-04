@@ -1,8 +1,8 @@
-package com.lenta.bp10.platform.navigation
+package com.lenta.inventory.platform.navigation
 
 import android.content.Context
-import com.lenta.bp10.features.auth.AuthFragment
 import com.lenta.inventory.exception.IInventoryFailureInterpretator
+import com.lenta.inventory.features.auth.AuthFragment
 import com.lenta.shared.account.IAuthenticator
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
 import com.lenta.shared.platform.navigation.ICoreNavigator

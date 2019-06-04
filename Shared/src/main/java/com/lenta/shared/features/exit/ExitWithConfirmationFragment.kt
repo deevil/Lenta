@@ -1,6 +1,5 @@
-package com.lenta.bp10.features.exit
-import com.lenta.bp10.R
-import com.lenta.bp10.platform.extentions.getAppComponent
+package com.lenta.shared.features.exit
+import com.lenta.shared.R
 import com.lenta.shared.features.message.CoreMessageFragment
 import com.lenta.shared.features.message.MessageViewModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
@@ -15,11 +14,11 @@ class ExitWithConfirmationFragment : CoreMessageFragment() {
     }
 
     override fun getViewModel(): MessageViewModel {
-        provideViewModel(ExitFromAppViewModel::class.java).let { vm ->
-            getAppComponent()?.inject(vm)
-            vm.message = getString(R.string.exit_confirmation)
-            vm.codeConfirm = 1
-            return vm
+        provideViewModel(ExitFromAppViewModel::class.java).let {
+            coreComponent.inject(it)
+            it.message = getString(R.string.exit_confirmation)
+            it.codeConfirm = 1
+            return it
         }
     }
 

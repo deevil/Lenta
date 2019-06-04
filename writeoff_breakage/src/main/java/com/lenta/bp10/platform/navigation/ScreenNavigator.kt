@@ -5,7 +5,6 @@ import com.lenta.bp10.R
 import com.lenta.bp10.exception.IWriteOffFailureInterpretator
 import com.lenta.bp10.features.auth.AuthFragment
 import com.lenta.bp10.features.detection_saved_data.DetectionSavedDataFragment
-import com.lenta.bp10.features.exit.ExitWithConfirmationFragment
 import com.lenta.bp10.features.good_information.general.GoodInfoFragment
 import com.lenta.bp10.features.good_information.sets.ComponentItem
 import com.lenta.bp10.features.good_information.sets.SetsFragment
@@ -156,12 +155,6 @@ class ScreenNavigator(
         }
     }
 
-    override fun openExitConfirmationScreen() {
-        runOrPostpone {
-            getFragmentStack()?.push(ExitWithConfirmationFragment())
-        }
-    }
-
     override fun openRemoveTaskConfirmationScreen(taskDescription: String, codeConfirmation: Int) {
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.remove_task_confirmation, taskDescription),
@@ -225,7 +218,6 @@ interface IScreenNavigator : ICoreNavigator {
     fun openGoodInfoScreen(productInfo: ProductInfo)
     fun openEanInfoScreen()
     fun openESInfoScreen()
-    fun openExitConfirmationScreen()
     fun openRemoveTaskConfirmationScreen(taskDescription: String, codeConfirmation: Int)
     fun openSendingReportsScreen(writeOffReportResponse: WriteOffReportResponse)
     fun closeAllScreen()

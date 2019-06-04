@@ -1,4 +1,4 @@
-package com.lenta.bp10.platform.extentions
+package com.lenta.inventory.platform.extentions
 
 import androidx.databinding.ViewDataBinding
 import androidx.lifecycle.ViewModel
@@ -12,7 +12,7 @@ fun <T : ViewDataBinding, S : ViewModel> CoreFragment<T, S>.getAppComponent(): A
     return activity.implementationOf(MainActivity::class.java)?.appComponent
 }
 
-fun <T : ViewDataBinding, S : ViewModel> CoreFragment<T, S>.getAppTtitle(): String {
+fun <T : ViewDataBinding, S : ViewModel> CoreFragment<T, S>.getAppTitle(): String {
     context?.let {
         return "${getString(R.string.app_name)} v${it.packageManager?.getPackageInfo(it.packageName, 0)?.versionName}"
     }

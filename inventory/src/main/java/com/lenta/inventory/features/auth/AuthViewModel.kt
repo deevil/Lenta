@@ -1,8 +1,8 @@
-package com.lenta.bp10.features.auth
+package com.lenta.inventory.features.auth
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.lenta.bp10.platform.navigation.IScreenNavigator
+import com.lenta.inventory.platform.navigation.IScreenNavigator
 import com.lenta.shared.utilities.runIfDebug
 import com.lenta.inventory.requests.network.PermissionsRequest
 import com.lenta.shared.account.ISessionInfo

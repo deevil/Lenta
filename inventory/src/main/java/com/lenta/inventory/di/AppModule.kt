@@ -1,11 +1,11 @@
 package com.lenta.inventory.di
 
 import android.content.Context
-import com.lenta.bp10.features.auth.Authenticator
-import com.lenta.bp10.platform.navigation.IScreenNavigator
-import com.lenta.bp10.platform.navigation.ScreenNavigator
 import com.lenta.inventory.exception.IInventoryFailureInterpretator
 import com.lenta.inventory.exception.InventoryFailureInterpretator
+import com.lenta.inventory.features.auth.Authenticator
+import com.lenta.inventory.platform.navigation.IScreenNavigator
+import com.lenta.inventory.platform.navigation.ScreenNavigator
 import com.lenta.inventory.progress.ProgressUseCaseInformator
 import com.lenta.shared.account.IAuthenticator
 import com.lenta.shared.di.AppScope
