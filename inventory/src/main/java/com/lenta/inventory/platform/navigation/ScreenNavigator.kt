@@ -3,6 +3,7 @@ package com.lenta.inventory.platform.navigation
 import android.content.Context
 import com.lenta.inventory.exception.IInventoryFailureInterpretator
 import com.lenta.inventory.features.auth.AuthFragment
+import com.lenta.inventory.features.select_market.SelectMarketFragment
 import com.lenta.shared.account.IAuthenticator
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
 import com.lenta.shared.platform.navigation.ICoreNavigator
@@ -36,6 +37,12 @@ class ScreenNavigator(
 
     }
 
+    override fun openSelectMarketScreen() {
+        runOrPostpone {
+            getFragmentStack()?.replace(SelectMarketFragment())
+        }
+    }
+
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 
 }
@@ -43,4 +50,5 @@ class ScreenNavigator(
 interface IScreenNavigator : ICoreNavigator {
     fun openFirstScreen()
     fun openLoginScreen()
+    fun openSelectMarketScreen()
 }

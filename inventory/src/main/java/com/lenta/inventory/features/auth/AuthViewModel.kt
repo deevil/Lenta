@@ -89,13 +89,13 @@ class AuthViewModel : CoreAuthViewModel() {
             appSettings.lastLogin = it
         }
 
-        navigator.openAlertScreen("Auth success!")
+        navigator.openSelectMarketScreen()
     }
 
     override fun handleFailure(failure: Failure) {
         super.handleFailure(failure)
         progress.value = false
-        navigator.openAlertScreen(message = failureInterpreter.getFailureDescription(failure), pageNumber = "10/97")
+        navigator.openAlertScreen(message = failureInterpreter.getFailureDescription(failure), pageNumber = "11/97")
     }
 
 
