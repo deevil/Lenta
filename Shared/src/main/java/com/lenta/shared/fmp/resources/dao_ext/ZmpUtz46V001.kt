@@ -1,6 +1,6 @@
-package com.lenta.bp10.fmp.resources.dao_ext
+package com.lenta.shared.fmp.resources.dao_ext
 
-import com.lenta.bp10.fmp.resources.slow.ZmpUtz46V001
+import com.lenta.shared.fmp.resources.slow.ZmpUtz46V001
 
 fun ZmpUtz46V001.isSet(material: String): Boolean {
     @Suppress("INACCESSIBLE_TYPE")

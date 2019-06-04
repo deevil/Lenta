@@ -76,8 +76,7 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
             appSettings.lastTK = it
         }
 
-        //TODO
-        //screenNavigator.openFastDataLoadingScreen()
+        screenNavigator.openFastDataLoadingScreen()
     }
 
     private fun clearPrinters() {

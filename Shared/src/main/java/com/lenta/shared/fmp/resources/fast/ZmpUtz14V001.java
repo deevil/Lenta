@@ -1,4 +1,4 @@
-package com.lenta.bp10.fmp.resources.slow;
+package com.lenta.shared.fmp.resources.fast;
 
 import com.google.gson.annotations.SerializedName;
 import com.mobrun.plugin.api.HyperHive;
@@ -9,53 +9,41 @@ import com.mobrun.plugin.api.helper.LocalTableResourceHelper;
 import com.mobrun.plugin.models.StatusSelectTable;
 
 @SuppressWarnings("ALL")
-public class ZmpUtz25V001 {
+public class ZmpUtz14V001 {
 
-    public static final String NAME_RESOURCE = "ZMP_UTZ_25_V001";
-    public static final String NAME_OUT_PARAM_ET_EANS = "ET_EANS";
+    public static final String NAME_RESOURCE = "ZMP_UTZ_14_V001";
+    public static final String NAME_OUT_PARAM_ET_PARAMS = "ET_PARAMS";
     public static final String LIFE_TIME = "1 day, 0:00:00";
 
     private final HyperHive hyperHive;
 
-    public final LocalTableResourceHelper<ItemLocal_ET_EANS, Status_ET_EANS> localHelper_ET_EANS;
+    public final LocalTableResourceHelper<ItemLocal_ET_PARAMS, Status_ET_PARAMS> localHelper_ET_PARAMS;
 
 
-    public ZmpUtz25V001(HyperHive hyperHive) {
+    public ZmpUtz14V001(HyperHive hyperHive) {
 
         this.hyperHive = hyperHive;
 
-        localHelper_ET_EANS = 
-                 new LocalTableResourceHelper<ItemLocal_ET_EANS, Status_ET_EANS>(NAME_RESOURCE, 
-                         NAME_OUT_PARAM_ET_EANS, 
+        localHelper_ET_PARAMS = 
+                 new LocalTableResourceHelper<ItemLocal_ET_PARAMS, Status_ET_PARAMS>(NAME_RESOURCE, 
+                         NAME_OUT_PARAM_ET_PARAMS, 
                          hyperHive,
-                         Status_ET_EANS.class);
+                         Status_ET_PARAMS.class);
 
     }
 
     public RequestBuilder<Params, LimitedScalarParameter> newRequest() { return new RequestBuilder<Params, LimitedScalarParameter>(hyperHive, NAME_RESOURCE, true);}
 
-    static final class Status_ET_EANS extends StatusSelectTable<ItemLocal_ET_EANS> {}
+    static final class Status_ET_PARAMS extends StatusSelectTable<ItemLocal_ET_PARAMS> {}
 
-    public static class ItemLocal_ET_EANS {
+    public static class ItemLocal_ET_PARAMS {
         //  type: TEXT, source: {'name': 'SAP', 'type': 'C'}
-        @SerializedName("EAN")
-        public String ean;
-
-        //  type: TEXT, source: {'name': 'SAP', 'type': 'C'}
-        @SerializedName("MATERIAL")
-        public String material;
+        @SerializedName("PARAMNAME")
+        public String paramname;
 
         //  type: TEXT, source: {'name': 'SAP', 'type': 'C'}
-        @SerializedName("UOM")
-        public String uom;
-
-        //  type: DOUBLE, source: {'name': 'SAP', 'type': 'P'}
-        @SerializedName("UMREZ")
-        public Double umrez;
-
-        //  type: DOUBLE, source: {'name': 'SAP', 'type': 'P'}
-        @SerializedName("UMREN")
-        public Double umren;
+        @SerializedName("PARAMVALUE")
+        public String paramvalue;
 
 
     }

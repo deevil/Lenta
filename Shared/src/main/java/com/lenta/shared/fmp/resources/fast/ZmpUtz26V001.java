@@ -1,4 +1,4 @@
-package com.lenta.bp10.fmp.resources.fast;
+package com.lenta.shared.fmp.resources.fast;
 
 import com.google.gson.annotations.SerializedName;
 import com.mobrun.plugin.api.HyperHive;
@@ -9,45 +9,45 @@ import com.mobrun.plugin.api.helper.LocalTableResourceHelper;
 import com.mobrun.plugin.models.StatusSelectTable;
 
 @SuppressWarnings("ALL")
-public class ZmpUtz07V001 {
+public class ZmpUtz26V001 {
 
-    public static final String NAME_RESOURCE = "ZMP_UTZ_07_V001";
-    public static final String NAME_OUT_PARAM_ET_UOMS = "ET_UOMS";
+    public static final String NAME_RESOURCE = "ZMP_UTZ_26_V001";
+    public static final String NAME_OUT_PARAM_ET_PRINTERS = "ET_PRINTERS";
     public static final String LIFE_TIME = "1 day, 0:00:00";
 
     private final HyperHive hyperHive;
 
-    public final LocalTableResourceHelper<ItemLocal_ET_UOMS, Status_ET_UOMS> localHelper_ET_UOMS;
+    public final LocalTableResourceHelper<ItemLocal_ET_PRINTERS, Status_ET_PRINTERS> localHelper_ET_PRINTERS;
 
 
-    public ZmpUtz07V001(HyperHive hyperHive) {
+    public ZmpUtz26V001(HyperHive hyperHive) {
 
         this.hyperHive = hyperHive;
 
-        localHelper_ET_UOMS = 
-                 new LocalTableResourceHelper<ItemLocal_ET_UOMS, Status_ET_UOMS>(NAME_RESOURCE, 
-                         NAME_OUT_PARAM_ET_UOMS, 
+        localHelper_ET_PRINTERS = 
+                 new LocalTableResourceHelper<ItemLocal_ET_PRINTERS, Status_ET_PRINTERS>(NAME_RESOURCE, 
+                         NAME_OUT_PARAM_ET_PRINTERS, 
                          hyperHive,
-                         Status_ET_UOMS.class);
+                         Status_ET_PRINTERS.class);
 
     }
 
     public RequestBuilder<Params, LimitedScalarParameter> newRequest() { return new RequestBuilder<Params, LimitedScalarParameter>(hyperHive, NAME_RESOURCE, true);}
 
-    static final class Status_ET_UOMS extends StatusSelectTable<ItemLocal_ET_UOMS> {}
+    static final class Status_ET_PRINTERS extends StatusSelectTable<ItemLocal_ET_PRINTERS> {}
 
-    public static class ItemLocal_ET_UOMS {
+    public static class ItemLocal_ET_PRINTERS {
         //  type: TEXT, source: {'name': 'SAP', 'type': 'C'}
-        @SerializedName("UOM")
-        public String uom;
+        @SerializedName("WERKS")
+        public String werks;
 
         //  type: TEXT, source: {'name': 'SAP', 'type': 'C'}
-        @SerializedName("NAME")
-        public String name;
+        @SerializedName("PRINTERNAME")
+        public String printername;
 
-        //  type: BIGINT, source: {'name': 'SAP', 'type': 's'}
-        @SerializedName("DECAN")
-        public Integer decan;
+        //  type: TEXT, source: {'name': 'SAP', 'type': 'C'}
+        @SerializedName("PRINTERINFO")
+        public String printerinfo;
 
 
     }
