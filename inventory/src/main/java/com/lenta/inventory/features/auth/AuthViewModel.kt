@@ -3,8 +3,11 @@ package com.lenta.inventory.features.auth
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.inventory.platform.navigation.IScreenNavigator
+import com.lenta.inventory.repos.IRepoInMemoryHolder
+import com.lenta.inventory.requests.network.PermissionsParams
 import com.lenta.shared.utilities.runIfDebug
 import com.lenta.inventory.requests.network.PermissionsRequest
+import com.lenta.inventory.requests.network.PermissionsResult
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.exception.IFailureInterpreter
@@ -35,6 +38,8 @@ class AuthViewModel : CoreAuthViewModel() {
     lateinit var sessionInfo: ISessionInfo
     @Inject
     lateinit var appSettings: IAppSettings
+    @Inject
+    lateinit var repoInMemoryHolder: IRepoInMemoryHolder
 
     init {
         viewModelScope.launch {
@@ -70,9 +75,21 @@ class AuthViewModel : CoreAuthViewModel() {
     private fun loadPermissions(@Suppress("UNUSED_PARAMETER") boolean: Boolean) {
         viewModelScope.launch {
             progress.value = true
-            //permissionsRequest(PermissionsParams(login = "")).either(::handleFailure, ::handleAuthSuccess)
+            permissionsRequest(PermissionsParams(login = "")).either(::handleFailure, ::handleAuthSuccess)
             progress.value = false
         }
+    }
+
+    private fun handleAuthSuccess(permissionsResult: PermissionsResult) {
+
+        repoInMemoryHolder.permissionsResult = permissionsResult
+
+        login.value.let {
+            sessionInfo.userName = it
+            appSettings.lastLogin = it
+        }
+
+        navigator.openAlertScreen("Auth success!")
     }
 
     override fun handleFailure(failure: Failure) {
@@ -81,16 +98,6 @@ class AuthViewModel : CoreAuthViewModel() {
         navigator.openAlertScreen(message = failureInterpreter.getFailureDescription(failure), pageNumber = "10/97")
     }
 
-
-    private fun handleAuthSuccess(@Suppress("UNUSED_PARAMETER") b: Boolean) {
-        login.value.let {
-            sessionInfo.userName = it
-            appSettings.lastLogin = it
-        }
-
-        //navigator.openSelectMarketScreen()
-
-    }
 
     override fun onClickAuxiliaryMenu() {
         navigator.openAuxiliaryMenuScreen()

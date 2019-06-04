@@ -7,6 +7,8 @@ import com.lenta.inventory.features.auth.Authenticator
 import com.lenta.inventory.platform.navigation.IScreenNavigator
 import com.lenta.inventory.platform.navigation.ScreenNavigator
 import com.lenta.inventory.progress.ProgressUseCaseInformator
+import com.lenta.inventory.repos.IRepoInMemoryHolder
+import com.lenta.inventory.repos.RepoInMemoryHolder
 import com.lenta.shared.account.IAuthenticator
 import com.lenta.shared.di.AppScope
 import com.lenta.shared.exception.IFailureInterpreter
@@ -48,6 +50,12 @@ class AppModule {
             progressUseCaseInformator: IProgressUseCaseInformator
     ): IScreenNavigator {
         return ScreenNavigator(context, iCoreNavigator, foregroundActivityProvider, authenticator, faultInterpreter, progressUseCaseInformator)
+    }
+
+    @Provides
+    @AppScope
+    internal fun provideIRepoInMemoryHolder(): IRepoInMemoryHolder {
+        return RepoInMemoryHolder()
     }
 
 
