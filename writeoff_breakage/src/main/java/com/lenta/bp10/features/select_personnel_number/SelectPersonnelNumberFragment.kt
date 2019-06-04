@@ -5,6 +5,7 @@ import androidx.lifecycle.Observer
 import com.lenta.bp10.R
 import com.lenta.bp10.databinding.FragmentSelectPersonnelNumberBinding
 import com.lenta.bp10.platform.extentions.getAppComponent
+import com.lenta.bp10.requests.network.WriteOffReportResponse
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
@@ -12,10 +13,22 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListe
 import com.lenta.shared.platform.toolbar.top_toolbar.ImageButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.scan.OnScanResultListener
+import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.provideViewModel
+import com.lenta.shared.utilities.state.state
 
 class SelectPersonnelNumberFragment : CoreFragment<FragmentSelectPersonnelNumberBinding, SelectPersonnelNumberViewModel>(),
         ToolbarButtonsClickListener, OnScanResultListener {
+
+    private var writeOffReportResponse by state<WriteOffReportResponse?>(null)
+    companion object {
+        fun create(writeOffReportResponse: WriteOffReportResponse): SelectPersonnelNumberFragment {
+            return SelectPersonnelNumberFragment().apply {
+                this.writeOffReportResponse = writeOffReportResponse
+            }
+        }
+    }
+
     override fun getLayoutId(): Int = R.layout.fragment_select_personnel_number
 
     override fun getPageNumber(): String = "10/12"
@@ -23,6 +36,7 @@ class SelectPersonnelNumberFragment : CoreFragment<FragmentSelectPersonnelNumber
     override fun getViewModel(): SelectPersonnelNumberViewModel {
         provideViewModel(SelectPersonnelNumberViewModel::class.java).let {
             getAppComponent()?.inject(it)
+            writeOffReportResponse?.let { it1 -> it.setWriteOffReportResponse(it1) }
             return it
         }
     }
@@ -41,6 +55,10 @@ class SelectPersonnelNumberFragment : CoreFragment<FragmentSelectPersonnelNumber
             bottomToolbarUiModel
                     .uiModelButton5.requestFocus()
         })
+
+        viewLifecycleOwner.let {
+            connectLiveData(vm.enabledBtnNext, bottomToolbarUiModel.uiModelButton5.enabled)
+        }
     }
 
     override fun onToolbarButtonClick(view: View) {
@@ -52,4 +70,5 @@ class SelectPersonnelNumberFragment : CoreFragment<FragmentSelectPersonnelNumber
     override fun onScanResult(data: String) {
         vm.onScanResult(data)
     }
+
 }

@@ -3,11 +3,11 @@ package com.lenta.bp10.features.select_personnel_number
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp10.models.IPersistWriteOffTask
-import com.lenta.bp10.models.repositories.IWriteOffTaskManager
 import com.lenta.bp10.platform.navigation.IScreenNavigator
 import com.lenta.bp10.requests.network.PersonnelNumberNetRequest
 import com.lenta.bp10.requests.network.TabNumberInfo
 import com.lenta.bp10.requests.network.TabNumberParams
+import com.lenta.bp10.requests.network.WriteOffReportResponse
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.platform.viewmodel.CoreViewModel
@@ -32,9 +32,18 @@ class SelectPersonnelNumberViewModel : CoreViewModel(), OnOkInSoftKeyboardListen
     val personnelNumber = MutableLiveData<String>("")
     val fullName = MutableLiveData<String>("")
     val employeesPosition = MutableLiveData<String>("")
+    private val writeOffReportResponse = MutableLiveData<WriteOffReportResponse?>(null)
+    val enabledBtnNext = MutableLiveData(true)
+
+    fun setWriteOffReportResponse(writeOffReportResponse: WriteOffReportResponse){
+        this.writeOffReportResponse.value = writeOffReportResponse
+    }
 
     init {
         viewModelScope.launch {
+            if (writeOffReportResponse.value != null) {
+                enabledBtnNext.value = false
+            }
             if (sessionInfo.personnelNumber != null) {
                 personnelNumber.value = sessionInfo.personnelNumber
                 fullName.value = sessionInfo.personnelFullName
@@ -60,7 +69,7 @@ class SelectPersonnelNumberViewModel : CoreViewModel(), OnOkInSoftKeyboardListen
         Logg.d { "handleSuccess $personnelNumberInfo" }
         fullName.value = personnelNumberInfo.name
         employeesPosition.value = personnelNumberInfo.jobName
-
+        if (writeOffReportResponse.value != null) enabledBtnNext.value = !fullName.value.isNullOrEmpty()
     }
 
     override fun handleFailure(failure: Failure) {
@@ -82,12 +91,15 @@ class SelectPersonnelNumberViewModel : CoreViewModel(), OnOkInSoftKeyboardListen
             appSettings.lastPersonnelFullName = fullName.value
         }
 
+        if (writeOffReportResponse.value != null) {
+            screenNavigator.openSendingReportsScreen(writeOffReportResponse.value!!)
+            return
+        }
+
         persistWriteOffTask.getSavedWriteOffTask().let {
-            if (it == null || it.taskDescription.tkNumber != sessionInfo.market) {
-                screenNavigator.openMainMenuScreen()
-            } else {
-                screenNavigator.openDetectionSavedDataScreen()
-            }
+            if (it == null || it.taskDescription.tkNumber != sessionInfo.market)
+                 screenNavigator.openMainMenuScreen()
+            else screenNavigator.openDetectionSavedDataScreen()
         }
 
     }
@@ -96,4 +108,5 @@ class SelectPersonnelNumberViewModel : CoreViewModel(), OnOkInSoftKeyboardListen
         personnelNumber.value = data
         searchPersonnelNumber()
     }
+
 }

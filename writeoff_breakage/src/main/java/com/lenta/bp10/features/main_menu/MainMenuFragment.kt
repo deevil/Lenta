@@ -15,7 +15,6 @@ class MainMenuFragment : CoreFragment<com.lenta.bp10.databinding.FragmentMainMen
     override fun onToolbarButtonClick(view: View) {
         when (view.id) {
             com.lenta.shared.R.id.b_topbar_1 -> vm.onClickAuxiliaryMenu()
-            com.lenta.shared.R.id.b_topbar_2 -> vm.onClickExit()
         }
     }
 

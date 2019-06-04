@@ -300,12 +300,15 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
     }
 
-
     private fun handleSentSuccess(writeOffReportResponse: WriteOffReportResponse) {
         Logg.d { "writeOffReportResponse: ${writeOffReportResponse}" }
         if (writeOffReportResponse.retCode.isEmpty() || writeOffReportResponse.retCode == "0") {
             processServiceManager.clearTask()
-            screenNavigator.openSendingReportsScreen(writeOffReportResponse)
+            if (sessionInfo.personnelNumber.isNullOrEmpty()) {
+                screenNavigator.openSelectionPersonnelNumberScreen(writeOffReportResponse)
+            } else {
+                screenNavigator.openSendingReportsScreen(writeOffReportResponse)
+            }
         } else {
             screenNavigator.openAlertScreen(writeOffReportResponse.errorText)
         }
