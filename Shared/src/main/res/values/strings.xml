@@ -66,4 +66,5 @@
     <string name="exit_confirmation">Подтвердите выход из МП</string>
     <string name="select_tk_number">Выберите номер ТК</string>
     <string name="tk_selection">Выбор ТК</string>
+    <string name="main_menu">Главное меню</string>
 </resources>

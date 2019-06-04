@@ -1,6 +1,7 @@
 package com.lenta.inventory.platform.navigation
 
 import android.content.Context
+import com.lenta.bp10.features.main_menu.MainMenuFragment
 import com.lenta.inventory.exception.IInventoryFailureInterpretator
 import com.lenta.inventory.features.auth.AuthFragment
 import com.lenta.inventory.features.loading.fast.FastDataLoadingFragment
@@ -57,6 +58,12 @@ class ScreenNavigator(
         }
     }
 
+    override fun openMainMenuScreen() {
+        runOrPostpone {
+            getFragmentStack()?.replace(MainMenuFragment())
+        }
+    }
+
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 
 }
@@ -67,4 +74,5 @@ interface IScreenNavigator : ICoreNavigator {
     fun openSelectMarketScreen()
     fun openFastDataLoadingScreen()
     fun openSelectionPersonnelNumberScreen()
+    fun openMainMenuScreen()
 }

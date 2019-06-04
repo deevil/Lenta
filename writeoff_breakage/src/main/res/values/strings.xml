@@ -3,7 +3,6 @@
     <string name="app_title">Списание товаров</string>
     <string name="choose_tabnumber_description">Укажите табельный номер для учёта исполнителя</string>
     <string name="create_task">Создать задание</string>
-    <string name="main_menu">Главное меню</string>
     <string name="type_job">Тип задания</string>
     <string name="name">Название</string>
     <string name="storage">Склад</string>

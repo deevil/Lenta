@@ -1,9 +1,10 @@
 package com.lenta.bp10.features.main_menu
 
 import android.view.View
-import com.lenta.bp10.R
-import com.lenta.bp10.platform.extentions.getAppComponent
-import com.lenta.bp10.platform.extentions.getAppTitle
+import com.lenta.inventory.R
+import com.lenta.inventory.features.main_menu.MainMenuViewModel
+import com.lenta.inventory.platform.extentions.getAppComponent
+import com.lenta.inventory.platform.extentions.getAppTitle
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
@@ -11,7 +12,7 @@ import com.lenta.shared.platform.toolbar.top_toolbar.ImageButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.utilities.extentions.provideViewModel
 
-class MainMenuFragment : CoreFragment<com.lenta.bp10.databinding.FragmentMainMenuBinding, MainMenuViewModel>(), ToolbarButtonsClickListener {
+class MainMenuFragment : CoreFragment<com.lenta.inventory.databinding.FragmentMainMenuBinding, MainMenuViewModel>(), ToolbarButtonsClickListener {
     override fun onToolbarButtonClick(view: View) {
         when (view.id) {
             com.lenta.shared.R.id.b_topbar_1 -> vm.onClickAuxiliaryMenu()

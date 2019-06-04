@@ -82,6 +82,8 @@ class SelectPersonnelNumberViewModel : CoreViewModel(), OnOkInSoftKeyboardListen
 
         //TODO need implement restore task
 
+        screenNavigator.openMainMenuScreen()
+
         /*persistWriteOffTask.getSavedWriteOffTask().let {
             if (it == null || it.taskDescription.tkNumber != sessionInfo.market) {
                 screenNavigator.openMainMenuScreen()

@@ -17,7 +17,7 @@ class SelectPersonnelNumberFragment : CoreFragment<com.lenta.inventory.databindi
         ToolbarButtonsClickListener, OnScanResultListener {
     override fun getLayoutId(): Int = R.layout.fragment_select_personnel_number
 
-    override fun getPageNumber(): String = "10/12"
+    override fun getPageNumber(): String = "11/12"
 
     override fun getViewModel(): SelectPersonnelNumberViewModel {
         provideViewModel(SelectPersonnelNumberViewModel::class.java).let {
