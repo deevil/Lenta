@@ -6,7 +6,7 @@ import com.lenta.bp10.activity.main.MainViewModel
 import com.lenta.bp10.features.auth.AuthViewModel
 import com.lenta.bp10.features.detection_saved_data.DetectionSavedDataViewModel
 import com.lenta.shared.features.auxiliary_menu.AuxiliaryMenuViewModel
-import com.lenta.bp10.features.exit.ExitFromAppViewModel
+import com.lenta.shared.features.exit.ExitFromAppViewModel
 import com.lenta.bp10.features.good_information.general.GoodInfoViewModel
 import com.lenta.bp10.features.good_information.sets.SetsViewModel
 import com.lenta.bp10.features.good_information.sets.component.ComponentViewModel

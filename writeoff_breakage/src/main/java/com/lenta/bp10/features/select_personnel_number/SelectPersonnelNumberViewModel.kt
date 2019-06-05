@@ -4,9 +4,9 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp10.models.IPersistWriteOffTask
 import com.lenta.bp10.platform.navigation.IScreenNavigator
-import com.lenta.bp10.requests.network.PersonnelNumberNetRequest
-import com.lenta.bp10.requests.network.TabNumberInfo
-import com.lenta.bp10.requests.network.TabNumberParams
+import com.lenta.shared.requests.network.PersonnelNumberNetRequest
+import com.lenta.shared.requests.network.TabNumberInfo
+import com.lenta.shared.requests.network.TabNumberParams
 import com.lenta.bp10.requests.network.WriteOffReportResponse
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure

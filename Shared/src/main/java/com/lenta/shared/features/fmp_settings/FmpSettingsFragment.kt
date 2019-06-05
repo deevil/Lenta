@@ -8,6 +8,7 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
+import com.lenta.shared.utilities.extentions.generateScreenNumber
 import com.lenta.shared.utilities.extentions.provideViewModel
 
 class FmpSettingsFragment : CoreFragment<FragmentFmpSettingsBinding, FmpSettingsViewModel>(), ToolbarButtonsClickListener {
@@ -15,7 +16,7 @@ class FmpSettingsFragment : CoreFragment<FragmentFmpSettingsBinding, FmpSettings
     override fun getLayoutId(): Int = R.layout.fragment_fmp_settings
 
     override fun getPageNumber(): String {
-        return ""
+        return generateScreenNumber()
     }
 
     override fun getViewModel(): FmpSettingsViewModel {

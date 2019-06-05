@@ -84,12 +84,6 @@ class AppModule {
 
     @Provides
     @AppScope
-    internal fun provideScanHelper(): IScanHelper {
-        return MobilBaseScanHelper()
-    }
-
-    @Provides
-    @AppScope
     internal fun provideIPersistWriteOffTask(hyperHive: HyperHive, gson: Gson): IPersistWriteOffTask {
         return PersistWriteOffTask(hyperHive, gson)
     }

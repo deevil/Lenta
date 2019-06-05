@@ -1,10 +1,12 @@
 package com.lenta.bp10.requests.network
 
 import com.lenta.bp10.fmp.resources.fast.*
-import com.lenta.bp10.fmp.resources.slow.ZmpUtz25V001
-import com.lenta.bp10.fmp.resources.slow.ZmpUtz30V001
-import com.lenta.bp10.fmp.resources.slow.ZmpUtz46V001
-import com.lenta.shared.fmp.resources.ZmpUtz26V001
+import com.lenta.shared.fmp.resources.fast.ZmpUtz26V001
+import com.lenta.shared.fmp.resources.fast.ZmpUtz07V001
+import com.lenta.shared.fmp.resources.fast.ZmpUtz14V001
+import com.lenta.shared.fmp.resources.slow.ZmpUtz25V001
+import com.lenta.shared.fmp.resources.slow.ZmpUtz30V001
+import com.lenta.shared.fmp.resources.slow.ZmpUtz46V001
 import com.lenta.shared.requests.network.CoreResourcesMultiRequest
 import com.mobrun.plugin.api.HyperHive
 import com.mobrun.plugin.api.request_assistant.CustomParameter
@@ -20,7 +22,6 @@ class FastResourcesMultiRequest @Inject constructor(val hyperHive: HyperHive) : 
         return arrayListOf(
                 ZmpUtz07V001(hyperHive).newRequest(),
                 ZmpUtz14V001(hyperHive).newRequest(),
-                ZmpUtz26V001(hyperHive).newRequest(),
                 ZmpUtz26V001(hyperHive).newRequest(),
                 ZmpUtz31V001(hyperHive).newRequest(),
                 ZmpUtz32V001(hyperHive).newRequest(),

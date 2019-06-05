@@ -14,6 +14,12 @@ class MainMenuViewModel : CoreViewModel() {
 
     fun onClickCreateTask() {
         screenNavigator.openLoadingTaskSettingsScreen()
+
+    }
+
+    fun onClickUser() {
+        screenNavigator.openSelectionPersonnelNumberScreen()
+
     }
 
     fun onClickAuxiliaryMenu() {
