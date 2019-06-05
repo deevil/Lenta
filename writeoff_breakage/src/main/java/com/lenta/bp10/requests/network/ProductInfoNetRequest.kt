@@ -2,12 +2,12 @@ package com.lenta.bp10.requests.network
 
 import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
-import com.lenta.bp10.fmp.resources.dao_ext.getUomInfo
-import com.lenta.bp10.fmp.resources.fast.ZmpUtz07V001
+import com.lenta.shared.fmp.resources.fast.ZmpUtz07V001
 import com.lenta.bp10.models.repositories.IWriteOffTaskManager
 import com.lenta.bp10.requests.db.ProductInfoRequestParams
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.fmp.ObjectRawStatus
+import com.lenta.shared.fmp.resources.dao_ext.getUomInfo
 import com.lenta.shared.functional.Either
 import com.lenta.shared.interactor.UseCase
 import com.lenta.shared.models.core.ProductInfo

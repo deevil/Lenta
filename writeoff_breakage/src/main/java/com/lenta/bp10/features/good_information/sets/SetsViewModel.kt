@@ -2,8 +2,7 @@ package com.lenta.bp10.features.good_information.sets
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.lenta.bp10.fmp.resources.dao_ext.getComponentsForSet
-import com.lenta.bp10.fmp.resources.slow.ZmpUtz46V001
+import com.lenta.shared.fmp.resources.dao_ext.getComponentsForSet
 import com.lenta.bp10.models.repositories.IWriteOffTaskManager
 import com.lenta.bp10.models.repositories.getTotalCountForProduct
 import com.lenta.bp10.models.task.ProcessExciseAlcoProductService
@@ -13,6 +12,7 @@ import com.lenta.bp10.platform.navigation.IScreenNavigator
 import com.lenta.bp10.requests.db.ProductInfoDbRequest
 import com.lenta.bp10.requests.db.ProductInfoRequestParams
 import com.lenta.shared.exception.Failure
+import com.lenta.shared.fmp.resources.slow.ZmpUtz46V001
 import com.lenta.shared.models.core.ProductInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.Logg

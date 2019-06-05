@@ -25,6 +25,8 @@ import com.lenta.shared.platform.resources.IStringResourceManager
 import com.lenta.shared.platform.resources.StringResourceManager
 import com.lenta.shared.platform.time.ITimeMonitor
 import com.lenta.shared.platform.time.TimeMonitor
+import com.lenta.shared.scan.IScanHelper
+import com.lenta.shared.scan.mobilbase.MobilBaseScanHelper
 import com.lenta.shared.settings.AppSettings
 import com.lenta.shared.settings.DefaultConnectionSettings
 import com.lenta.shared.settings.IAppSettings
@@ -146,6 +148,12 @@ class CoreModule(val application: Application, val defaultConnectionSettings: De
     @Singleton
     internal fun provideIAnalitycs(hyperHive: HyperHive): IAnalytics {
         return FmpAnalytics(hyperHive)
+    }
+
+    @Provides
+    @Singleton
+    internal fun provideScanHelper(): IScanHelper {
+        return MobilBaseScanHelper()
     }
 
 }

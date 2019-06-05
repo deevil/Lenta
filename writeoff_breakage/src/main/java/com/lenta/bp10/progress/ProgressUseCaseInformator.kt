@@ -2,7 +2,7 @@ package com.lenta.bp10.progress
 
 import android.content.Context
 import com.lenta.bp10.R
-import com.lenta.bp10.requests.network.PersonnelNumberNetRequest
+import com.lenta.shared.requests.network.PersonnelNumberNetRequest
 import com.lenta.bp10.requests.network.PrintTaskNetRequest
 import com.lenta.bp10.requests.network.ProductInfoNetRequest
 import com.lenta.bp10.requests.network.SendWriteOffReportRequest
