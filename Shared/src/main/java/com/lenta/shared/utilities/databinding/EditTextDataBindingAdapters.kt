@@ -2,11 +2,14 @@ package com.lenta.shared.utilities.databinding
 
 import android.content.Context
 import android.text.InputFilter
+import android.text.method.DigitsKeyListener
 import android.view.KeyEvent
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.TextView
 import androidx.databinding.BindingAdapter
+import com.lenta.shared.models.core.Uom
+import com.lenta.shared.models.core.isOnlyInt
 
 
 @BindingAdapter(value = ["onOkInSoftKeyboard"])
@@ -33,6 +36,14 @@ fun setTextAllCaps(editText: EditText, textAllCaps: Boolean?) {
         editText.filters = editText.filters + InputFilter.AllCaps()
     } else {
         editText.filters = editText.filters.filter { it != InputFilter.AllCaps() }.toTypedArray()
+    }
+
+}
+
+@BindingAdapter(value = ["digitsForUom"])
+fun setDigitsForUom(editText: EditText, uom: Uom?) {
+    uom?.let {
+        editText.keyListener = DigitsKeyListener.getInstance(if (uom.isOnlyInt()) "0123456789-" else "0123456789.-")
     }
 
 }
