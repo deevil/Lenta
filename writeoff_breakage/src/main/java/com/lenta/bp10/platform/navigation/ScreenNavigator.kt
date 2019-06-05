@@ -55,7 +55,7 @@ class ScreenNavigator(
 
     override fun openFirstScreen() {
         if (authenticator.isAuthorized()) {
-
+            openMainMenuScreen()
         } else {
             openLoginScreen()
         }
