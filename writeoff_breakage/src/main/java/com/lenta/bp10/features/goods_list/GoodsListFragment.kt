@@ -88,7 +88,10 @@ class GoodsListFragment :
 
     override fun onFragmentResult(arguments: Bundle) {
         super.onFragmentResult(arguments)
-        vm.onConfirmAllDelete()
+        when (arguments.getInt("KEY_ARGS_ID_CODE_CONFIRM")) {
+            0 -> vm.onConfirmAllDelete()
+            1 -> vm.onSave()
+        }
     }
 
     override fun getPagerItemView(container: ViewGroup, position: Int): View {

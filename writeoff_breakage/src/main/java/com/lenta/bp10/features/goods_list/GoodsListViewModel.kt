@@ -288,7 +288,15 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
         searchCodeFromDb()
     }
 
-    fun onClickSave() {
+    fun onClickSave(){
+        if (sessionInfo.personnelNumber.isNullOrEmpty()) {
+            screenNavigator.openSelectionPersonnelNumberScreen(codeConfirmation = 1)
+        } else {
+            onSave()
+        }
+    }
+
+    fun onSave() {
         viewModelScope.launch {
             screenNavigator.showProgress(sendWriteOffReportRequest)
             processServiceManager.getWriteOffTask()?.let {
@@ -300,15 +308,12 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
     }
 
+
     private fun handleSentSuccess(writeOffReportResponse: WriteOffReportResponse) {
         Logg.d { "writeOffReportResponse: ${writeOffReportResponse}" }
         if (writeOffReportResponse.retCode.isEmpty() || writeOffReportResponse.retCode == "0") {
             processServiceManager.clearTask()
-            if (sessionInfo.personnelNumber.isNullOrEmpty()) {
-                screenNavigator.openSelectionPersonnelNumberScreen(writeOffReportResponse)
-            } else {
-                screenNavigator.openSendingReportsScreen(writeOffReportResponse)
-            }
+            screenNavigator.openSendingReportsScreen(writeOffReportResponse)
         } else {
             screenNavigator.openAlertScreen(writeOffReportResponse.errorText)
         }
