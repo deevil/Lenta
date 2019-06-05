@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
 import androidx.databinding.DataBindingUtil
 import com.lenta.bp10.BR
 import com.lenta.bp10.R
@@ -122,6 +123,9 @@ class GoodsListFragment :
                                         }
                                     }
 
+                                },
+                                onItemDoubleClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
+                                    vm.onDoubleClickPosition(position)
                                 }
                         )
 
@@ -167,6 +171,9 @@ class GoodsListFragment :
 
                                 }
 
+                            },
+                            onItemDoubleClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
+                                vm.onDoubleClickPosition(position)
                             }
                     )
 

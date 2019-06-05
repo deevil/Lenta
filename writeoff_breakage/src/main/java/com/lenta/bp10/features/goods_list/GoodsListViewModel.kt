@@ -167,7 +167,10 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
                                                 reason = taskWriteOffReason.writeOffReason.name,
                                                 quantity = "${taskWriteOffReason.count.toStringFormatted()} ${it.uom.name}",
                                                 even = index % 2 == 0,
-                                                taskWriteOffReason = taskWriteOffReason))
+                                                taskWriteOffReason = taskWriteOffReason,
+                                                productInfo = it
+                                        )
+                                        )
                                     }
 
 
@@ -214,17 +217,16 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
                 screenNavigator.showProgress(permissionToWriteoffNetRequest)
                 permissionToWriteoffNetRequest(PermissionToWriteoffPrams(matnr = productInfo.materialNumber, werks = sessionInfo.market!!)).either(::handleFailure, ::handleSearchProductSuccess)
                 screenNavigator.hideProgress()
-            }
-            else {
+            } else {
                 searchProduct()
             }
         }
     }
+
     private fun handleSearchProductSuccess(permissionToWriteoff: PermissionToWriteoffRestInfo) {
         if (permissionToWriteoff.ownr.isNullOrEmpty()) {
             screenNavigator.openAlertScreen("Не разрешено списание в производство")
-        }
-        else searchProduct()
+        } else searchProduct()
     }
 
     private fun searchProduct() {
@@ -242,7 +244,7 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
         goodsForTask.value = false
         if (productInfo.value!!.type == ProductType.ExciseAlcohol || productInfo.value!!.type == ProductType.NonExciseAlcohol) {
             processServiceManager.getWriteOffTask()?.taskDescription!!.gisControls.forEach {
-                if ( it == "A" ) goodsForTask.value = true
+                if (it == "A") goodsForTask.value = true
             }
             if (!goodsForTask.value!!) {
                 screenNavigator.openAlertScreen(msgGoodsNotForTask.value!!)
@@ -381,6 +383,16 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
     }
 
+    fun onDoubleClickPosition(position: Int) {
+        if (selectedPage.value == 0) {
+            countedGoods.value?.getOrNull(position)?.productInfo
+        } else {
+            filteredGoods.value?.getOrNull(position)?.productInfo
+        }?.let {
+            screenNavigator.openGoodInfoScreen(it)
+        }
+    }
+
 }
 
 
@@ -400,7 +412,8 @@ data class FilterItem(
         val reason: String,
         val quantity: String,
         val even: Boolean,
-        val taskWriteOffReason: TaskWriteOffReason
+        val taskWriteOffReason: TaskWriteOffReason,
+        val productInfo: ProductInfo
 ) : Evenable {
     override fun isEven() = even
 
