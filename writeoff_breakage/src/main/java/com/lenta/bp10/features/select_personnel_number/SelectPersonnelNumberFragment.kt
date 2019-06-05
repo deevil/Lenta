@@ -14,11 +14,13 @@ import com.lenta.shared.platform.toolbar.top_toolbar.ImageButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.scan.OnScanResultListener
 import com.lenta.shared.utilities.extentions.provideViewModel
+import com.lenta.shared.utilities.state.state
 
 class SelectPersonnelNumberFragment : CoreFragment<FragmentSelectPersonnelNumberBinding, SelectPersonnelNumberViewModel>(),
         ToolbarButtonsClickListener, OnScanResultListener {
 
-    private var codeConfirmation: Int?= null
+    private var codeConfirmation: Int? by state<Int?>(null)
+
     companion object {
         fun create(codeConfirmation: Int): SelectPersonnelNumberFragment {
             SelectPersonnelNumberFragment().let {
@@ -50,7 +52,7 @@ class SelectPersonnelNumberFragment : CoreFragment<FragmentSelectPersonnelNumber
         bottomToolbarUiModel
                 .uiModelButton5.show(ButtonDecorationInfo.next)
         bottomToolbarUiModel
-                .uiModelButton1.show(ButtonDecorationInfo.back, enabled = false)
+                .uiModelButton1.show(ButtonDecorationInfo.back, enabled = codeConfirmation != null)
         vm.fullName.observe(viewLifecycleOwner, Observer {
             bottomToolbarUiModel
                     .uiModelButton5.requestFocus()

@@ -21,6 +21,7 @@ import com.lenta.shared.features.test_environment.PinCodeFragment
 import com.lenta.shared.features.test_environment.failure.FailurePinCodeFragment
 import com.lenta.shared.interactor.UseCase
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
+import com.lenta.shared.utilities.extentions.setFragmentResultCode
 
 
 class CoreNavigator constructor(private val context: Context,
@@ -37,6 +38,13 @@ class CoreNavigator constructor(private val context: Context,
         runOrPostpone {
             getFragmentStack()?.popReturnArgs(args = args)
         }
+    }
+
+    override fun goBackWithResultCode(code: Int) {
+        goBackWithArgs(
+                args = Bundle().apply {
+                    setFragmentResultCode(code)
+                })
     }
 
     override fun goBack() {
@@ -159,7 +167,6 @@ class CoreNavigator constructor(private val context: Context,
     }
 
 
-
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 
 }
@@ -171,6 +178,7 @@ fun ICoreNavigator.runOrPostpone(function: () -> Unit) {
 interface ICoreNavigator {
     val functionsCollector: FunctionsCollector
     fun goBackWithArgs(args: Bundle)
+    fun goBackWithResultCode(code: Int)
     fun goBack()
     fun finishApp()
     fun openAlertScreen(message: String, pageNumber: String = "?")

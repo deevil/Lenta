@@ -17,7 +17,8 @@ import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.models.core.ProductInfo
 import com.lenta.shared.models.core.ProductType
-import com.lenta.shared.platform.resources.IStringResourceManager
+import com.lenta.shared.models.core.isNormal
+import com.lenta.shared.platform.resources.ISharedStringResourceManager
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.SelectionItemsHelper
@@ -48,7 +49,7 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     @Inject
     lateinit var productInfoNetRequest: ProductInfoNetRequest
     @Inject
-    lateinit var stringResourceManager: IStringResourceManager
+    lateinit var sharedStringResourceManager: ISharedStringResourceManager
     @Inject
     lateinit var sendWriteOffReportRequest: SendWriteOffReportRequest
     @Inject
@@ -144,7 +145,7 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
             (if (reasons.size == 1) {
                 mutableListOf()
             } else {
-                mutableListOf(stringResourceManager.notSelected())
+                mutableListOf(sharedStringResourceManager.notSelected())
             }).let {
                 it.addAll(reasons.map { taskWriteOffReason -> taskWriteOffReason.writeOffReason.name })
                 categories.postValue(it)
@@ -167,7 +168,10 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
                                                 reason = taskWriteOffReason.writeOffReason.name,
                                                 quantity = "${taskWriteOffReason.count.toStringFormatted()} ${it.uom.name}",
                                                 even = index % 2 == 0,
-                                                taskWriteOffReason = taskWriteOffReason))
+                                                taskWriteOffReason = taskWriteOffReason,
+                                                productInfo = it
+                                        )
+                                        )
                                     }
 
 
@@ -214,17 +218,16 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
                 screenNavigator.showProgress(permissionToWriteoffNetRequest)
                 permissionToWriteoffNetRequest(PermissionToWriteoffPrams(matnr = productInfo.materialNumber, werks = sessionInfo.market!!)).either(::handleFailure, ::handleSearchProductSuccess)
                 screenNavigator.hideProgress()
-            }
-            else {
+            } else {
                 searchProduct()
             }
         }
     }
+
     private fun handleSearchProductSuccess(permissionToWriteoff: PermissionToWriteoffRestInfo) {
         if (permissionToWriteoff.ownr.isNullOrEmpty()) {
             screenNavigator.openAlertScreen("Не разрешено списание в производство")
-        }
-        else searchProduct()
+        } else searchProduct()
     }
 
     private fun searchProduct() {
@@ -242,7 +245,7 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
         goodsForTask.value = false
         if (productInfo.value!!.type == ProductType.ExciseAlcohol || productInfo.value!!.type == ProductType.NonExciseAlcohol) {
             processServiceManager.getWriteOffTask()?.taskDescription!!.gisControls.forEach {
-                if ( it == "A" ) goodsForTask.value = true
+                if (it == "A") goodsForTask.value = true
             }
             if (!goodsForTask.value!!) {
                 screenNavigator.openAlertScreen(msgGoodsNotForTask.value!!)
@@ -250,6 +253,18 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
             }
         }
 
+        productInfo.value?.matrixType?.let { matrixType ->
+            if (!matrixType.isNormal()) {
+                screenNavigator.openMatrixAlertScreen(matrixType = matrixType, codeConfirmation = requestCodeAddProduct)
+                return
+            }
+        }
+
+        openGoodInfoScreen()
+
+    }
+
+    private fun openGoodInfoScreen() {
         when (productInfo.value!!.type) {
             ProductType.General -> screenNavigator.openGoodInfoScreen(productInfo.value!!)
             ProductType.ExciseAlcohol -> {
@@ -288,37 +303,12 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
         searchCodeFromDb()
     }
 
-    fun onClickSave(){
+    fun onClickSave() {
         if (sessionInfo.personnelNumber.isNullOrEmpty()) {
-            screenNavigator.openSelectionPersonnelNumberScreen(codeConfirmation = 1)
+            screenNavigator.openSelectionPersonnelNumberScreen(codeConfirmation = requestCodeSelectPersonnelNumber)
         } else {
-            onSave()
+            saveData()
         }
-    }
-
-    fun onSave() {
-        viewModelScope.launch {
-            screenNavigator.showProgress(sendWriteOffReportRequest)
-            processServiceManager.getWriteOffTask()?.let {
-                sendWriteOffReportRequest(it.getReport()).either(::handleFailureSearchFromDb, ::handleSentSuccess)
-            }
-
-            screenNavigator.hideProgress()
-        }
-
-    }
-
-
-    private fun handleSentSuccess(writeOffReportResponse: WriteOffReportResponse) {
-        Logg.d { "writeOffReportResponse: ${writeOffReportResponse}" }
-        if (writeOffReportResponse.retCode.isEmpty() || writeOffReportResponse.retCode == "0") {
-            processServiceManager.clearTask()
-            screenNavigator.openSendingReportsScreen(writeOffReportResponse)
-        } else {
-            screenNavigator.openAlertScreen(writeOffReportResponse.errorText)
-        }
-
-
     }
 
     fun onPageSelected(position: Int) {
@@ -338,7 +328,11 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
                 else -> {
                     with(filteredSelectionsHelper) {
                         if (isSelectedEmpty() && selectedCategoryPosition.value == 0) {
-                            screenNavigator.openRemoveTaskConfirmationScreen(writeOffTask.taskDescription.taskName, 0)
+                            screenNavigator
+                                    .openRemoveLinesConfirmationScreen(
+                                            taskDescription = writeOffTask.taskDescription.taskName,
+                                            count = filteredGoods.value?.size ?: 0,
+                                            codeConfirmation = requestCodeDelete)
                         } else {
                             if (isSelectedEmpty()) {
                                 filteredGoods.value?.let {
@@ -367,11 +361,14 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
     }
 
-    fun onConfirmAllDelete() {
-        processServiceManager.getWriteOffTask()?.clearTask()
-        updateFilter()
-        updateCounted()
+    fun onResult(code: Int?) {
+        when (code) {
+            requestCodeDelete -> onConfirmAllDelete()
+            requestCodeAddProduct -> openGoodInfoScreen()
+            requestCodeSelectPersonnelNumber -> saveData()
+        }
     }
+
 
     fun onClickPrint() {
         processServiceManager.getWriteOffTask()?.let {
@@ -384,8 +381,58 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
     }
 
+    fun onDoubleClickPosition(position: Int) {
+        if (selectedPage.value == 0) {
+            countedGoods.value?.getOrNull(position)?.productInfo
+        } else {
+            filteredGoods.value?.getOrNull(position)?.productInfo
+        }?.let {
+            screenNavigator.openGoodInfoScreen(it)
+        }
+    }
+
+    private fun saveData() {
+        viewModelScope.launch {
+            screenNavigator.showProgress(sendWriteOffReportRequest)
+            processServiceManager.getWriteOffTask()?.let {
+                sendWriteOffReportRequest(it.getReport()).either(::handleFailureSearchFromDb, ::handleSentSuccess)
+            }
+
+            screenNavigator.hideProgress()
+        }
+
+    }
+
+
+    private fun handleSentSuccess(writeOffReportResponse: WriteOffReportResponse) {
+        Logg.d { "writeOffReportResponse: $writeOffReportResponse" }
+        if (writeOffReportResponse.retCode.isEmpty() || writeOffReportResponse.retCode == "0") {
+            processServiceManager.clearTask()
+            screenNavigator.openSendingReportsScreen(writeOffReportResponse)
+        } else {
+            screenNavigator.openAlertScreen(writeOffReportResponse.errorText)
+        }
+
+
+    }
+
+    private fun onConfirmAllDelete() {
+        processServiceManager.getWriteOffTask()?.clearTask()
+        updateFilter()
+        updateCounted()
+    }
+
     private fun handleSuccessPrint(@Suppress("UNUSED_PARAMETER") b: Boolean) {
         screenNavigator.openSuccessPrintMessage()
+
+    }
+
+
+
+    companion object {
+        const val requestCodeDelete = 100
+        const val requestCodeAddProduct = 101
+        const val requestCodeSelectPersonnelNumber = 102
 
     }
 
@@ -408,7 +455,8 @@ data class FilterItem(
         val reason: String,
         val quantity: String,
         val even: Boolean,
-        val taskWriteOffReason: TaskWriteOffReason
+        val taskWriteOffReason: TaskWriteOffReason,
+        val productInfo: ProductInfo
 ) : Evenable {
     override fun isEven() = even
 

@@ -53,6 +53,12 @@ data class ButtonDecorationInfo(
         @StringRes val titleRes: Int
 ) {
     companion object {
+        val yes: ButtonDecorationInfo by lazy {
+            ButtonDecorationInfo(R.drawable.ic_done_white_24dp, R.string.yes)
+        }
+        val no: ButtonDecorationInfo by lazy {
+            ButtonDecorationInfo(R.drawable.ic_close_white_24dp, R.string.no)
+        }
         val goOver: ButtonDecorationInfo by lazy {
             ButtonDecorationInfo(R.drawable.ic_send_white_24dp, R.string.go_over)
         }

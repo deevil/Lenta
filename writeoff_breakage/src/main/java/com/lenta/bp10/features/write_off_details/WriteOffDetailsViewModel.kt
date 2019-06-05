@@ -9,6 +9,7 @@ import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.Evenable
 import com.lenta.shared.utilities.extentions.map
+import com.lenta.shared.utilities.extentions.toStringFormatted
 import javax.inject.Inject
 
 class WriteOffDetailsViewModel : CoreViewModel() {
@@ -42,7 +43,7 @@ class WriteOffDetailsViewModel : CoreViewModel() {
                                     ReasonItem(
                                             number = index + 1,
                                             name = taskWriteOffReason.writeOffReason.name,
-                                            quantity = "${taskWriteOffReason.count} ${productInfo.uom.name}",
+                                            quantity = "${taskWriteOffReason.count.toStringFormatted()} ${productInfo.uom.name}",
                                             even = index % 2 == 0,
                                             taskWriteOffReason = taskWriteOffReason
                                     )

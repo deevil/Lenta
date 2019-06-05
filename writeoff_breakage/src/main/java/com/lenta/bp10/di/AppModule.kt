@@ -13,6 +13,8 @@ import com.lenta.bp10.models.WriteOffTaskManager
 import com.lenta.bp10.models.repositories.IWriteOffTaskManager
 import com.lenta.bp10.platform.navigation.IScreenNavigator
 import com.lenta.bp10.platform.navigation.ScreenNavigator
+import com.lenta.bp10.platform.resources.IStringResourceManager
+import com.lenta.bp10.platform.resources.StringResourceManager
 import com.lenta.bp10.progress.ProgressUseCaseInformator
 import com.lenta.bp10.requests.network.SlowResourcesMultiRequest
 import com.lenta.bp10.requests.network.loader.ResourcesLoader
@@ -21,9 +23,8 @@ import com.lenta.shared.di.AppScope
 import com.lenta.shared.exception.IFailureInterpreter
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
 import com.lenta.shared.platform.navigation.ICoreNavigator
+import com.lenta.shared.platform.resources.ISharedStringResourceManager
 import com.lenta.shared.progress.IProgressUseCaseInformator
-import com.lenta.shared.scan.IScanHelper
-import com.lenta.shared.scan.mobilbase.MobilBaseScanHelper
 import com.mobrun.plugin.api.HyperHive
 import dagger.Module
 import dagger.Provides
@@ -86,6 +87,12 @@ class AppModule {
     @AppScope
     internal fun provideIPersistWriteOffTask(hyperHive: HyperHive, gson: Gson): IPersistWriteOffTask {
         return PersistWriteOffTask(hyperHive, gson)
+    }
+
+    @Provides
+    @AppScope
+    internal fun provideSharedStringResourceManager(context: Context, resourceManager: ISharedStringResourceManager): IStringResourceManager {
+        return StringResourceManager(context, resourceManager)
     }
 
 

@@ -1,6 +1,5 @@
 package com.lenta.bp10.features.select_personnel_number
 
-import android.os.Bundle
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp10.models.IPersistWriteOffTask
@@ -34,6 +33,7 @@ class SelectPersonnelNumberViewModel : CoreViewModel(), OnOkInSoftKeyboardListen
     val employeesPosition = MutableLiveData<String>("")
 
     private var codeConfirm: Int? = null
+
     fun setCodeConfirm(codeConfirm: Int?){
         this.codeConfirm = codeConfirm
     }
@@ -88,10 +88,7 @@ class SelectPersonnelNumberViewModel : CoreViewModel(), OnOkInSoftKeyboardListen
         }
 
         codeConfirm?.let {
-            screenNavigator.goBackWithArgs(
-                    args = Bundle().apply {
-                        putInt(KEY_ARGS_ID_CODE_CONFIRM, it)
-                    })
+            screenNavigator.goBackWithResultCode(it)
             return
         }
 
@@ -110,7 +107,4 @@ class SelectPersonnelNumberViewModel : CoreViewModel(), OnOkInSoftKeyboardListen
         searchPersonnelNumber()
     }
 
-    companion object {
-        val KEY_ARGS_ID_CODE_CONFIRM by lazy { "KEY_ARGS_ID_CODE_CONFIRM" }
-    }
 }

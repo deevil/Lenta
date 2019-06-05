@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
 import androidx.databinding.DataBindingUtil
 import com.lenta.bp10.BR
 import com.lenta.bp10.R
@@ -20,6 +21,7 @@ import com.lenta.shared.scan.OnScanResultListener
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.databinding.*
 import com.lenta.shared.utilities.extentions.connectLiveData
+import com.lenta.shared.utilities.extentions.getFragmentResultCode
 import com.lenta.shared.utilities.extentions.provideViewModel
 
 class GoodsListFragment :
@@ -88,10 +90,7 @@ class GoodsListFragment :
 
     override fun onFragmentResult(arguments: Bundle) {
         super.onFragmentResult(arguments)
-        when (arguments.getInt("KEY_ARGS_ID_CODE_CONFIRM")) {
-            0 -> vm.onConfirmAllDelete()
-            1 -> vm.onSave()
-        }
+        vm.onResult(arguments.getFragmentResultCode())
     }
 
     override fun getPagerItemView(container: ViewGroup, position: Int): View {
@@ -125,6 +124,9 @@ class GoodsListFragment :
                                         }
                                     }
 
+                                },
+                                onItemDoubleClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
+                                    vm.onDoubleClickPosition(position)
                                 }
                         )
 
@@ -170,6 +172,9 @@ class GoodsListFragment :
 
                                 }
 
+                            },
+                            onItemDoubleClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
+                                vm.onDoubleClickPosition(position)
                             }
                     )
 
@@ -213,3 +218,5 @@ class GoodsListFragment :
 
 
 }
+
+

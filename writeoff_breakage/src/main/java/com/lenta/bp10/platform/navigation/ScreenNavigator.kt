@@ -31,6 +31,7 @@ import com.lenta.shared.models.core.ProductInfo
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
 import com.lenta.shared.platform.navigation.ICoreNavigator
 import com.lenta.shared.platform.navigation.runOrPostpone
+import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.progress.IProgressUseCaseInformator
 
 class ScreenNavigator(
@@ -166,6 +167,26 @@ class ScreenNavigator(
         }
     }
 
+    override fun openMatrixAlertScreen(matrixType: MatrixType, codeConfirmation: Int) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(if (matrixType == MatrixType.Deleted) R.string.allert_deleted_matrix_message else R.string.allert_unknown_matrix_message),
+                    iconRes = 0,
+                    codeConfirm = codeConfirmation,
+                    pageNumber = "10/94",
+                    leftButtonDecorationInfo = ButtonDecorationInfo.no,
+                    rightButtonDecorationInfo = ButtonDecorationInfo.yes)
+            )
+        }
+    }
+
+    override fun openRemoveLinesConfirmationScreen(taskDescription: String, count: Int, codeConfirmation: Int) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.remove_lines_confirmation, count),
+                    iconRes = R.drawable.ic_delete_red_80dp, codeConfirm = codeConfirmation, pageNumber = "10/89"))
+        }
+    }
+
     override fun openSendingReportsScreen(writeOffReportResponse: WriteOffReportResponse) {
         runOrPostpone {
             getFragmentStack()?.replace(ReportResultFragment.create(writeOffReportResponse))
@@ -232,4 +253,6 @@ interface IScreenNavigator : ICoreNavigator {
     fun openSuccessPrintMessage()
     fun openComponentSetScreen(productInfo: ProductInfo, componentItem: ComponentItem)
     fun openDetectionSavedDataScreen()
+    fun openRemoveLinesConfirmationScreen(taskDescription: String, count: Int, codeConfirmation: Int)
+    fun openMatrixAlertScreen(matrixType: MatrixType, codeConfirmation: Int)
 }

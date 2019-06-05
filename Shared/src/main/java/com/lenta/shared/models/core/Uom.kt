@@ -26,3 +26,7 @@ fun equals(uom: Uom?): Boolean {
     return if (uom == null) false else code == uom.code
 }*/
 }
+
+fun Uom.isOnlyInt(): Boolean {
+    return this.code != "KG"
+}

@@ -21,7 +21,7 @@ import com.lenta.shared.platform.battery_state.IBatteryStateMonitor
 import com.lenta.shared.platform.navigation.ICoreNavigator
 import com.lenta.shared.platform.network_state.INetworkStateMonitor
 import com.lenta.shared.platform.network_state.NetworkStateMonitor
-import com.lenta.shared.platform.resources.IStringResourceManager
+import com.lenta.shared.platform.resources.ISharedStringResourceManager
 import com.lenta.shared.platform.time.ITimeMonitor
 import com.lenta.shared.scan.IScanHelper
 import com.lenta.shared.settings.IAppSettings
@@ -43,7 +43,7 @@ interface CoreComponent {
     fun getIBatteryStateMonitor(): IBatteryStateMonitor
     fun getTimeMonitor(): ITimeMonitor
     fun getGson(): Gson
-    fun getIStringResourceManager(): IStringResourceManager
+    fun getISharedStringResourceManager(): ISharedStringResourceManager
     fun getIAppSettings(): IAppSettings
     fun getIGoBackNavigator(): ICoreNavigator
     fun getHyperHiveState(): HyperHiveState

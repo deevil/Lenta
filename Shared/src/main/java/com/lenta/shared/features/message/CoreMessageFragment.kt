@@ -15,6 +15,8 @@ abstract class CoreMessageFragment : CoreFragment<LayoutMessageBinding, MessageV
     protected var iconRes by state(0)
     protected var codeConfirm by state<Int?>(null)
     protected var pageNumb by state("")
+    protected var leftButtonDecorationInfo by state(ButtonDecorationInfo.back)
+    protected var rightButtonDecorationInfo by state(ButtonDecorationInfo.apply)
 
     override fun getLayoutId(): Int = R.layout.layout_message
 
@@ -23,9 +25,9 @@ abstract class CoreMessageFragment : CoreFragment<LayoutMessageBinding, MessageV
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
-        bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
+        bottomToolbarUiModel.uiModelButton1.show(leftButtonDecorationInfo)
         if (codeConfirm != null) {
-            bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.apply)
+            bottomToolbarUiModel.uiModelButton5.show(rightButtonDecorationInfo)
         }
 
     }
@@ -36,8 +38,9 @@ abstract class CoreMessageFragment : CoreFragment<LayoutMessageBinding, MessageV
     }
 
     override fun onToolbarButtonClick(view: View) {
-        if (view.id == R.id.b_5) {
-            vm.onClickApply()
+        when (view.id) {
+            R.id.b_1 -> vm.onClickLeftButton()
+            R.id.b_5 -> vm.onClickApply()
         }
     }
 
