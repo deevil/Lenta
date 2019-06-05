@@ -3,7 +3,7 @@ package com.lenta.shared.features.printer_change
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.shared.account.ISessionInfo
-import com.lenta.shared.fmp.resources.ZmpUtz26V001
+import com.lenta.shared.fmp.resources.fast.ZmpUtz26V001
 import com.lenta.shared.requests.db.PrinterChangeDBRequest
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.platform.navigation.ICoreNavigator

@@ -6,6 +6,7 @@ import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
+import com.lenta.shared.utilities.extentions.generateScreenNumber
 import com.lenta.shared.utilities.extentions.provideViewModel
 
 class SupportFragment : CoreFragment<FragmentSupportBinding, SupportViewModel>() {
@@ -21,7 +22,7 @@ class SupportFragment : CoreFragment<FragmentSupportBinding, SupportViewModel>()
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
     }
 
-    override fun getPageNumber(): String = "10/52"
+    override fun getPageNumber(): String = generateScreenNumber()
 
     override fun getViewModel(): SupportViewModel {
         provideViewModel(SupportViewModel::class.java).let {

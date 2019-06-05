@@ -9,6 +9,7 @@ import com.lenta.shared.exception.Failure
 import com.lenta.shared.exception.IFailureInterpreter
 import com.lenta.shared.features.alert.AlertFragment
 import com.lenta.shared.features.auxiliary_menu.AuxiliaryMenuFragment
+import com.lenta.shared.features.exit.ExitWithConfirmationFragment
 import com.lenta.shared.features.fmp_settings.FmpSettingsFragment
 import com.lenta.shared.features.printer_change.PrinterChangeFragment
 import com.lenta.shared.features.select_oper_mode.SelectOperModeFragment
@@ -151,6 +152,13 @@ class CoreNavigator constructor(private val context: Context,
         }
     }
 
+    override fun openExitConfirmationScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(ExitWithConfirmationFragment())
+        }
+    }
+
+
 
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 
@@ -180,6 +188,7 @@ interface ICoreNavigator {
     fun openSettingsScreen()
     fun openAuxiliaryMenuScreen()
     fun openFailurePinCodeScreen(message: String)
+    fun openExitConfirmationScreen()
 }
 
 class FunctionsCollector(private val needCollectLiveData: LiveData<Boolean>) {

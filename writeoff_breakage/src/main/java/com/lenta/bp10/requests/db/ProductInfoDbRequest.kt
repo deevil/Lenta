@@ -1,11 +1,11 @@
 package com.lenta.bp10.requests.db
 
-import com.lenta.bp10.fmp.resources.dao_ext.*
-import com.lenta.bp10.fmp.resources.fast.ZmpUtz07V001
-import com.lenta.bp10.fmp.resources.slow.ZmpUtz25V001
-import com.lenta.bp10.fmp.resources.slow.ZmpUtz30V001
-import com.lenta.bp10.fmp.resources.slow.ZmpUtz46V001
+import com.lenta.shared.fmp.resources.fast.ZmpUtz07V001
 import com.lenta.shared.exception.Failure
+import com.lenta.shared.fmp.resources.dao_ext.*
+import com.lenta.shared.fmp.resources.slow.ZmpUtz25V001
+import com.lenta.shared.fmp.resources.slow.ZmpUtz30V001
+import com.lenta.shared.fmp.resources.slow.ZmpUtz46V001
 import com.lenta.shared.functional.Either
 import com.lenta.shared.interactor.UseCase
 import com.lenta.shared.models.core.ProductInfo

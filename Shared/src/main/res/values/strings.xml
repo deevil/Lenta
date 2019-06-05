@@ -62,6 +62,11 @@
     <string name="environment">Среда</string>
     <string name="project">Проект</string>
     <string name="pin_change_net_settings_info">Введите ПИН-код для перехода в настройки подключения</string>
+    <string name="authorization">Авторизация</string>
+    <string name="exit_confirmation">Подтвердите выход из МП</string>
+    <string name="select_tk_number">Выберите номер ТК</string>
+    <string name="tk_selection">Выбор ТК</string>
+    <string name="main_menu">Главное меню</string>
     <string name="msg_incorrect_pin_code">Пин-код неверный</string>
 
 </resources>

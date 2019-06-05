@@ -1,1 +1,1 @@
-include ':writeoff_breakage', ':BP10_Writeoff', ':Shared', ':hhive'
+include ':writeoff_breakage', ':BP10_Writeoff', ':Shared', ':hhive', ':inventory'

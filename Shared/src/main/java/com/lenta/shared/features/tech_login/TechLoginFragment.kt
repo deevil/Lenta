@@ -9,6 +9,7 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.utilities.extentions.connectLiveData
+import com.lenta.shared.utilities.extentions.generateScreenNumber
 import com.lenta.shared.utilities.extentions.provideViewModel
 
 class TechLoginFragment : CoreFragment<FragmentTechLoginBinding, TechLoginViewModel>(), ToolbarButtonsClickListener {
@@ -34,7 +35,7 @@ class TechLoginFragment : CoreFragment<FragmentTechLoginBinding, TechLoginViewMo
         connectLiveData(vm.applyButtonEnabled, bottomToolbarUiModel.uiModelButton5.enabled)
     }
 
-    override fun getPageNumber(): String = "10/55"
+    override fun getPageNumber(): String = generateScreenNumber()
 
     override fun getViewModel(): TechLoginViewModel {
         provideViewModel(TechLoginViewModel::class.java).let {

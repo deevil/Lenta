@@ -23,6 +23,7 @@ import com.lenta.shared.platform.network_state.INetworkStateMonitor
 import com.lenta.shared.platform.network_state.NetworkStateMonitor
 import com.lenta.shared.platform.resources.IStringResourceManager
 import com.lenta.shared.platform.time.ITimeMonitor
+import com.lenta.shared.scan.IScanHelper
 import com.lenta.shared.settings.IAppSettings
 import com.mobrun.plugin.api.HyperHive
 import com.mobrun.plugin.api.HyperHiveState
@@ -50,6 +51,7 @@ interface CoreComponent {
     fun getIFailureInterpreter(): IFailureInterpreter
     fun getISessionInfo(): ISessionInfo
     fun getIAnalytics(): IAnalytics
+    fun getIScanHelper(): IScanHelper
 
 
     fun inject(it: FmpSettingsViewModel)

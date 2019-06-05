@@ -2,7 +2,7 @@ package com.lenta.bp10.features.auth
 
 import com.lenta.bp10.R
 import com.lenta.bp10.platform.extentions.getAppComponent
-import com.lenta.bp10.platform.extentions.getAppTtitle
+import com.lenta.bp10.platform.extentions.getAppTitle
 import com.lenta.shared.features.login.CoreAuthViewModel
 import com.lenta.shared.features.login.CoreLoginFragment
 import com.lenta.shared.platform.toolbar.top_toolbar.ImageButtonDecorationInfo
@@ -21,7 +21,7 @@ class AuthFragment : CoreLoginFragment() {
     }
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
-        topToolbarUiModel.title.value = getAppTtitle()
+        topToolbarUiModel.title.value = getAppTitle()
         topToolbarUiModel.description.value = getString(R.string.authorization)
         topToolbarUiModel.uiModelButton1.show(ImageButtonDecorationInfo.settings)
         topToolbarUiModel.uiModelButton2.show(ImageButtonDecorationInfo.exitFromApp)
