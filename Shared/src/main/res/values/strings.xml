@@ -67,4 +67,6 @@
     <string name="select_tk_number">Выберите номер ТК</string>
     <string name="tk_selection">Выбор ТК</string>
     <string name="main_menu">Главное меню</string>
+    <string name="msg_incorrect_pin_code">Пин-код неверный</string>
+
 </resources>
