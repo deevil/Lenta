@@ -288,7 +288,15 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
         searchCodeFromDb()
     }
 
-    fun onClickSave() {
+    fun onClickSave(){
+        if (sessionInfo.personnelNumber.isNullOrEmpty()) {
+            screenNavigator.openSelectionPersonnelNumberScreen(codeConfirmation = 1)
+        } else {
+            onSave()
+        }
+    }
+
+    fun onSave() {
         viewModelScope.launch {
             screenNavigator.showProgress(sendWriteOffReportRequest)
             processServiceManager.getWriteOffTask()?.let {

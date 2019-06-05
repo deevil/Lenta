@@ -1,6 +1,7 @@
 package com.lenta.bp10.features.select_personnel_number
 
 import android.view.View
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import com.lenta.bp10.R
 import com.lenta.bp10.databinding.FragmentSelectPersonnelNumberBinding
@@ -16,6 +17,18 @@ import com.lenta.shared.utilities.extentions.provideViewModel
 
 class SelectPersonnelNumberFragment : CoreFragment<FragmentSelectPersonnelNumberBinding, SelectPersonnelNumberViewModel>(),
         ToolbarButtonsClickListener, OnScanResultListener {
+
+    private var codeConfirmation: Int?= null
+    companion object {
+        fun create(codeConfirmation: Int): SelectPersonnelNumberFragment {
+            SelectPersonnelNumberFragment().let {
+                it.codeConfirmation = codeConfirmation
+                return it
+            }
+        }
+
+    }
+
     override fun getLayoutId(): Int = R.layout.fragment_select_personnel_number
 
     override fun getPageNumber(): String = "10/12"
@@ -23,6 +36,7 @@ class SelectPersonnelNumberFragment : CoreFragment<FragmentSelectPersonnelNumber
     override fun getViewModel(): SelectPersonnelNumberViewModel {
         provideViewModel(SelectPersonnelNumberViewModel::class.java).let {
             getAppComponent()?.inject(it)
+            it.setCodeConfirm(codeConfirmation)
             return it
         }
     }

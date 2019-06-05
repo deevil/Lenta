@@ -78,9 +78,13 @@ class ScreenNavigator(
 
     }
 
-    override fun openSelectionPersonnelNumberScreen() {
+    override fun openSelectionPersonnelNumberScreen(codeConfirmation: Int?) {
         runOrPostpone {
-            getFragmentStack()?.replace(SelectPersonnelNumberFragment())
+            if (codeConfirmation == null){
+                getFragmentStack()?.replace(SelectPersonnelNumberFragment())
+            } else {
+                getFragmentStack()?.push(SelectPersonnelNumberFragment.create(codeConfirmation =  codeConfirmation))
+            }
         }
     }
 
@@ -210,7 +214,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openLoginScreen()
     fun openSelectMarketScreen()
     fun openFastDataLoadingScreen()
-    fun openSelectionPersonnelNumberScreen()
+    fun openSelectionPersonnelNumberScreen(codeConfirmation: Int?)
     fun openMainMenuScreen()
     fun openJobCardScreen()
     fun openLoadingTaskSettingsScreen()
