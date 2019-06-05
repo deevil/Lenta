@@ -303,37 +303,12 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
         searchCodeFromDb()
     }
 
-    fun onClickSave(){
+    fun onClickSave() {
         if (sessionInfo.personnelNumber.isNullOrEmpty()) {
-            screenNavigator.openSelectionPersonnelNumberScreen(codeConfirmation = 1)
+            screenNavigator.openSelectionPersonnelNumberScreen(codeConfirmation = requestCodeSelectPersonnelNumber)
         } else {
-            onSave()
+            saveData()
         }
-    }
-
-    fun onSave() {
-        viewModelScope.launch {
-            screenNavigator.showProgress(sendWriteOffReportRequest)
-            processServiceManager.getWriteOffTask()?.let {
-                sendWriteOffReportRequest(it.getReport()).either(::handleFailureSearchFromDb, ::handleSentSuccess)
-            }
-
-            screenNavigator.hideProgress()
-        }
-
-    }
-
-
-    private fun handleSentSuccess(writeOffReportResponse: WriteOffReportResponse) {
-        Logg.d { "writeOffReportResponse: ${writeOffReportResponse}" }
-        if (writeOffReportResponse.retCode.isEmpty() || writeOffReportResponse.retCode == "0") {
-            processServiceManager.clearTask()
-            screenNavigator.openSendingReportsScreen(writeOffReportResponse)
-        } else {
-            screenNavigator.openAlertScreen(writeOffReportResponse.errorText)
-        }
-
-
     }
 
     fun onPageSelected(position: Int) {
@@ -390,14 +365,10 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
         when (code) {
             requestCodeDelete -> onConfirmAllDelete()
             requestCodeAddProduct -> openGoodInfoScreen()
+            requestCodeSelectPersonnelNumber -> saveData()
         }
     }
 
-    private fun onConfirmAllDelete() {
-        processServiceManager.getWriteOffTask()?.clearTask()
-        updateFilter()
-        updateCounted()
-    }
 
     fun onClickPrint() {
         processServiceManager.getWriteOffTask()?.let {
@@ -407,11 +378,6 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
                 screenNavigator.hideProgress()
             }
         }
-
-    }
-
-    private fun handleSuccessPrint(@Suppress("UNUSED_PARAMETER") b: Boolean) {
-        screenNavigator.openSuccessPrintMessage()
 
     }
 
@@ -425,9 +391,48 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
         }
     }
 
+    private fun saveData() {
+        viewModelScope.launch {
+            screenNavigator.showProgress(sendWriteOffReportRequest)
+            processServiceManager.getWriteOffTask()?.let {
+                sendWriteOffReportRequest(it.getReport()).either(::handleFailureSearchFromDb, ::handleSentSuccess)
+            }
+
+            screenNavigator.hideProgress()
+        }
+
+    }
+
+
+    private fun handleSentSuccess(writeOffReportResponse: WriteOffReportResponse) {
+        Logg.d { "writeOffReportResponse: $writeOffReportResponse" }
+        if (writeOffReportResponse.retCode.isEmpty() || writeOffReportResponse.retCode == "0") {
+            processServiceManager.clearTask()
+            screenNavigator.openSendingReportsScreen(writeOffReportResponse)
+        } else {
+            screenNavigator.openAlertScreen(writeOffReportResponse.errorText)
+        }
+
+
+    }
+
+    private fun onConfirmAllDelete() {
+        processServiceManager.getWriteOffTask()?.clearTask()
+        updateFilter()
+        updateCounted()
+    }
+
+    private fun handleSuccessPrint(@Suppress("UNUSED_PARAMETER") b: Boolean) {
+        screenNavigator.openSuccessPrintMessage()
+
+    }
+
+
+
     companion object {
         const val requestCodeDelete = 100
         const val requestCodeAddProduct = 101
+        const val requestCodeSelectPersonnelNumber = 102
 
     }
 
