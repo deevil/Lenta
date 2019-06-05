@@ -34,8 +34,8 @@ class PinCodeFragment : CoreFragment<com.lenta.shared.databinding.FragmentPinCod
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
         bottomToolbarUiModel.cleanAll()
-        bottomToolbarUiModel.uiModelButton1.let { buttonUiModel -> buttonUiModel.show(ButtonDecorationInfo.back) }
-        bottomToolbarUiModel.uiModelButton5.let { buttonUiModel -> buttonUiModel.show(ButtonDecorationInfo.goOver) }
+        bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
+        bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.goOver)
     }
 
     override fun getPageNumber(): String = generateScreenNumber()
@@ -43,6 +43,8 @@ class PinCodeFragment : CoreFragment<com.lenta.shared.databinding.FragmentPinCod
     override fun getViewModel(): PinCodeViewModel {
         provideViewModel(PinCodeViewModel::class.java).let { viewModel ->
             coreComponent.inject(viewModel)
+
+            viewModel.setMsgIncorrectPinCode(getString(R.string.msg_incorrect_pin_code))
 
             requestCode?.let {
                 viewModel.requestCode = it

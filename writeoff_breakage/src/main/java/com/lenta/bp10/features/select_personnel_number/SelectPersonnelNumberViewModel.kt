@@ -1,15 +1,16 @@
 package com.lenta.bp10.features.select_personnel_number
 
+import android.os.Bundle
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp10.models.IPersistWriteOffTask
 import com.lenta.bp10.platform.navigation.IScreenNavigator
-import com.lenta.shared.requests.network.PersonnelNumberNetRequest
-import com.lenta.shared.requests.network.TabNumberInfo
-import com.lenta.shared.requests.network.TabNumberParams
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.platform.viewmodel.CoreViewModel
+import com.lenta.shared.requests.network.PersonnelNumberNetRequest
+import com.lenta.shared.requests.network.TabNumberInfo
+import com.lenta.shared.requests.network.TabNumberParams
 import com.lenta.shared.settings.IAppSettings
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
@@ -31,6 +32,11 @@ class SelectPersonnelNumberViewModel : CoreViewModel(), OnOkInSoftKeyboardListen
     val personnelNumber = MutableLiveData<String>("")
     val fullName = MutableLiveData<String>("")
     val employeesPosition = MutableLiveData<String>("")
+
+    private var codeConfirm: Int? = null
+    fun setCodeConfirm(codeConfirm: Int?){
+        this.codeConfirm = codeConfirm
+    }
 
     init {
         viewModelScope.launch {
@@ -81,6 +87,14 @@ class SelectPersonnelNumberViewModel : CoreViewModel(), OnOkInSoftKeyboardListen
             appSettings.lastPersonnelFullName = fullName.value
         }
 
+        codeConfirm?.let {
+            screenNavigator.goBackWithArgs(
+                    args = Bundle().apply {
+                        putInt(KEY_ARGS_ID_CODE_CONFIRM, it)
+                    })
+            return
+        }
+
         persistWriteOffTask.getSavedWriteOffTask().let {
             if (it == null || it.taskDescription.tkNumber != sessionInfo.market) {
                 screenNavigator.openMainMenuScreen()
@@ -94,5 +108,9 @@ class SelectPersonnelNumberViewModel : CoreViewModel(), OnOkInSoftKeyboardListen
     fun onScanResult(data: String) {
         personnelNumber.value = data
         searchPersonnelNumber()
+    }
+
+    companion object {
+        val KEY_ARGS_ID_CODE_CONFIRM by lazy { "KEY_ARGS_ID_CODE_CONFIRM" }
     }
 }
