@@ -17,6 +17,7 @@ import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.models.core.ProductInfo
 import com.lenta.shared.models.core.ProductType
+import com.lenta.shared.models.core.isNormal
 import com.lenta.shared.platform.resources.IStringResourceManager
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.Logg
@@ -252,6 +253,18 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
             }
         }
 
+        productInfo.value?.matrixType?.let { matrixType ->
+            if (!matrixType.isNormal()) {
+                screenNavigator.openMatrixAlertScreen(matrixType = matrixType, codeConfirmation = requestCodeAddProduct)
+                return
+            }
+        }
+
+        openGoodInfoScreen()
+
+    }
+
+    private fun openGoodInfoScreen() {
         when (productInfo.value!!.type) {
             ProductType.General -> screenNavigator.openGoodInfoScreen(productInfo.value!!)
             ProductType.ExciseAlcohol -> {
@@ -336,7 +349,7 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
                                     .openRemoveLinesConfirmationScreen(
                                             taskDescription = writeOffTask.taskDescription.taskName,
                                             count = filteredGoods.value?.size ?: 0,
-                                            codeConfirmation = 0)
+                                            codeConfirmation = requestCodeDelete)
                         } else {
                             if (isSelectedEmpty()) {
                                 filteredGoods.value?.let {
@@ -365,7 +378,14 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
     }
 
-    fun onConfirmAllDelete() {
+    fun onResult(code: Int?) {
+        when (code) {
+            requestCodeDelete -> onConfirmAllDelete()
+            requestCodeAddProduct -> openGoodInfoScreen()
+        }
+    }
+
+    private fun onConfirmAllDelete() {
         processServiceManager.getWriteOffTask()?.clearTask()
         updateFilter()
         updateCounted()
@@ -395,6 +415,12 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
         }?.let {
             screenNavigator.openGoodInfoScreen(it)
         }
+    }
+
+    companion object {
+        const val requestCodeDelete = 100
+        const val requestCodeAddProduct = 101
+
     }
 
 }

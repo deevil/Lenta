@@ -15,3 +15,7 @@ fun getMatrixType(code: String): MatrixType {
         else -> MatrixType.Unknown
     }
 }
+
+fun MatrixType?.isNormal(): Boolean {
+    return this == MatrixType.Active || this == MatrixType.Passive
+}

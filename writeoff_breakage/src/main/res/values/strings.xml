@@ -27,6 +27,8 @@
     <string name="es_info">Доступно сканирование АМ</string>
     <string name="remove_task_confirmation">По заданию \"%s\" будут удалены все непереданные данные</string>
     <string name="remove_lines_confirmation">Подтвердите удаление всех (%d) строк</string>
+    <string name="allert_deleted_matrix_message">Товар находится в «удаленной» матрице, подтвердите добавление товара в список</string>
+    <string name="allert_unknown_matrix_message">Товар находится в «неизвестной» матрице, подтвердите добавление товара в список</string>
     <string name="sending_report_data">Отправка данных отчета</string>
     <string name="sheet">Ведомость</string>
     <string name="designation">Название</string>

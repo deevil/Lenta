@@ -1,6 +1,5 @@
 package com.lenta.shared.features.message
 
-import android.os.Bundle
 import androidx.annotation.DrawableRes
 import com.lenta.shared.features.message.usecase.DelayGoBack
 import com.lenta.shared.platform.navigation.ICoreNavigator
@@ -33,16 +32,15 @@ open class MessageViewModel : CoreViewModel() {
 
     open fun onClickApply() {
         codeConfirm?.let {
-            coreNavigator.goBackWithArgs(
-                    args = Bundle().apply {
-                        putInt(KEY_ARGS_ID_CODE_CONFIRM, it)
-                    })
+            coreNavigator.goBackWithResultCode(it)
         }
-
-
     }
 
-    companion object {
-        val KEY_ARGS_ID_CODE_CONFIRM by lazy { "KEY_ARGS_ID_CODE_CONFIRM" }
+    fun onClickLeftButton() {
+        coreNavigator.goBack()
     }
+
+
 }
+
+

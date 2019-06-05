@@ -3,6 +3,7 @@ package com.lenta.shared.features.alert
 
 import com.lenta.shared.features.message.CoreMessageFragment
 import com.lenta.shared.features.message.MessageViewModel
+import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.utilities.extentions.provideViewModel
 
 class AlertFragment : CoreMessageFragment() {
@@ -24,13 +25,23 @@ class AlertFragment : CoreMessageFragment() {
                 message: String,
                 iconRes: Int = 0,
                 pageNumber: String = "???",
-                codeConfirm: Int? = null): AlertFragment {
-            AlertFragment().let {
-                it.message = message
-                it.iconRes = iconRes
-                it.codeConfirm = codeConfirm
-                it.pageNumb = pageNumber
-                return it
+                codeConfirm: Int? = null,
+                leftButtonDecorationInfo: ButtonDecorationInfo? = null,
+                rightButtonDecorationInfo: ButtonDecorationInfo? = null
+        ): AlertFragment {
+            AlertFragment().let { alertFragment ->
+                alertFragment.message = message
+                alertFragment.iconRes = iconRes
+                alertFragment.codeConfirm = codeConfirm
+                alertFragment.pageNumb = pageNumber
+                leftButtonDecorationInfo?.let {
+                    alertFragment.leftButtonDecorationInfo = it
+                }
+                rightButtonDecorationInfo?.let {
+                    alertFragment.rightButtonDecorationInfo = it
+                }
+
+                return alertFragment
             }
         }
     }

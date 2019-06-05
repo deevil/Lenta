@@ -21,6 +21,7 @@ import com.lenta.shared.scan.OnScanResultListener
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.databinding.*
 import com.lenta.shared.utilities.extentions.connectLiveData
+import com.lenta.shared.utilities.extentions.getFragmentResultCode
 import com.lenta.shared.utilities.extentions.provideViewModel
 
 class GoodsListFragment :
@@ -89,7 +90,7 @@ class GoodsListFragment :
 
     override fun onFragmentResult(arguments: Bundle) {
         super.onFragmentResult(arguments)
-        vm.onConfirmAllDelete()
+        vm.onResult(arguments.getFragmentResultCode())
     }
 
     override fun getPagerItemView(container: ViewGroup, position: Int): View {
@@ -217,3 +218,5 @@ class GoodsListFragment :
 
 
 }
+
+
