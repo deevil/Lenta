@@ -77,22 +77,28 @@ class AppSettings @Inject constructor(
             sharedPrefferences.edit().putString("lastLogin", value).commit()
         }
 
-    override var lastTK: String?
-        get() = sharedPrefferences.getString("lastTK", null)
+    override var lastJobType: String?
+        get() = sharedPrefferences.getString("lastJobType$lastLogin", null)
         set(value) {
-            sharedPrefferences.edit().putString("lastTK", value).commit()
+            sharedPrefferences.edit().putString("lastJobType$lastLogin", value).commit()
+        }
+
+    override var lastTK: String?
+        get() = sharedPrefferences.getString("lastTK$lastLogin", null)
+        set(value) {
+            sharedPrefferences.edit().putString("lastTK$lastLogin", value).commit()
         }
 
     override var lastPersonnelNumber: String?
-        get() = sharedPrefferences.getString("lastPersonnelNumber", null)
+        get() = sharedPrefferences.getString("lastPersonnelNumber$lastLogin", null)
         set(value) {
-            sharedPrefferences.edit().putString("lastPersonnelNumber", value).commit()
+            sharedPrefferences.edit().putString("lastPersonnelNumber$lastLogin", value).commit()
         }
 
     override var lastPersonnelFullName: String?
-        get() = sharedPrefferences.getString("lastPersonnelFullName", null)
+        get() = sharedPrefferences.getString("lastPersonnelFullName$lastLogin", null)
         set(value) {
-            sharedPrefferences.edit().putString("lastPersonnelFullName", value).commit()
+            sharedPrefferences.edit().putString("lastPersonnelFullName$lastLogin", value).commit()
         }
 
     override fun getCurrentServerAddress(): String {
@@ -121,6 +127,7 @@ interface IAppSettings {
     var testEnvironment: String
     var testProject: String
     var lastLogin: String?
+    var lastJobType: String?
 
     var printer: String?
     val printerLiveData: MutableLiveData<String?>

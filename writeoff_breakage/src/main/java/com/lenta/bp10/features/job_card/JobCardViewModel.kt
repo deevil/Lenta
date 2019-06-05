@@ -6,10 +6,12 @@ import com.lenta.bp10.models.IPersistWriteOffTask
 import com.lenta.bp10.models.repositories.IWriteOffTaskManager
 import com.lenta.bp10.models.task.TaskDescription
 import com.lenta.bp10.platform.navigation.IScreenNavigator
+import com.lenta.bp10.platform.resources.IStringResourceManager
 import com.lenta.bp10.requests.db.TaskCreatingParams
 import com.lenta.bp10.requests.db.TaskDescriptionDbRequest
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
+import com.lenta.shared.settings.IAppSettings
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.view.OnPositionClickListener
 import kotlinx.coroutines.launch
@@ -28,12 +30,17 @@ class JobCardViewModel : CoreViewModel() {
     lateinit var taskDescriptionDbRequest: TaskDescriptionDbRequest
     @Inject
     lateinit var persistWriteOffTask: IPersistWriteOffTask
+    @Inject
+    lateinit var appSettings: IAppSettings
+    @Inject
+    lateinit var stringResourceManager: IStringResourceManager
 
     private val taskSettingsList: MutableLiveData<List<TaskSetting>> = MutableLiveData()
     val taskName: MutableLiveData<String> = MutableLiveData()
     val selectedTaskTypePosition: MutableLiveData<Int> = MutableLiveData(0)
     val selectedStorePosition: MutableLiveData<Int> = MutableLiveData()
     val enabledChangeTaskSettings: MutableLiveData<Boolean> = MutableLiveData()
+    val enabledNextButton: MutableLiveData<Boolean> = selectedTaskTypePosition.map { it!! > 0 }
 
     val taskTypeNames: MutableLiveData<List<String>> = taskSettingsList.map { taskSettingsList ->
         taskSettingsList?.map { it.name }
@@ -67,20 +74,35 @@ class JobCardViewModel : CoreViewModel() {
 
     init {
         viewModelScope.launch {
-            taskSettingsList.value = jobCardRepo.getAllTaskSettings()
+            taskSettingsList.value =
+                    mutableListOf(TaskSetting(name = stringResourceManager.selectTaskType(),
+                            motionType = "",
+                            taskType = ""))
+                            .apply {
+                                addAll(jobCardRepo.getAllTaskSettings())
+                            }
+
 
             processServiceManager.getWriteOffTask().let { writeOffTask ->
                 if (writeOffTask != null) {
                     taskName.value = writeOffTask.taskDescription.taskName
-                    taskSettingsList.value?.let { list ->
-                        selectedTaskTypePosition.value = list.indexOfFirst { it.taskType == writeOffTask.taskDescription.taskType.code }
-                    }
-                } else {
-                    if (taskName.value == null) {
-                        taskName.value = jobCardRepo.generateNameTask()
-                    }
+                } else if (taskName.value == null) {
+                    taskName.value = jobCardRepo.generateNameTask()
+                }
+
+                val taskType = writeOffTask?.taskDescription?.taskType?.code
+                        ?: appSettings.lastJobType
+
+                taskSettingsList.value?.let { list ->
+                    selectedTaskTypePosition.value = list.indexOfFirst { it.taskType == taskType }
+                }
+
+                if (selectedTaskTypePosition.value!! < 0) {
                     selectedTaskTypePosition.value = 0
                 }
+
+
+
                 updateChangesEnabledStatus()
                 updateDependencies()
             }
@@ -96,6 +118,7 @@ class JobCardViewModel : CoreViewModel() {
     fun onClickNext() {
         viewModelScope.launch {
             getSelectedTaskSettings()?.let {
+                appSettings.lastJobType = it.taskType
                 taskDescriptionDbRequest(
                         TaskCreatingParams(
                                 taskName = taskName.value!!,

@@ -18,7 +18,7 @@ import com.lenta.shared.exception.Failure
 import com.lenta.shared.models.core.ProductInfo
 import com.lenta.shared.models.core.ProductType
 import com.lenta.shared.models.core.isNormal
-import com.lenta.shared.platform.resources.IStringResourceManager
+import com.lenta.shared.platform.resources.ISharedStringResourceManager
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.SelectionItemsHelper
@@ -49,7 +49,7 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     @Inject
     lateinit var productInfoNetRequest: ProductInfoNetRequest
     @Inject
-    lateinit var stringResourceManager: IStringResourceManager
+    lateinit var sharedStringResourceManager: ISharedStringResourceManager
     @Inject
     lateinit var sendWriteOffReportRequest: SendWriteOffReportRequest
     @Inject
@@ -145,7 +145,7 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
             (if (reasons.size == 1) {
                 mutableListOf()
             } else {
-                mutableListOf(stringResourceManager.notSelected())
+                mutableListOf(sharedStringResourceManager.notSelected())
             }).let {
                 it.addAll(reasons.map { taskWriteOffReason -> taskWriteOffReason.writeOffReason.name })
                 categories.postValue(it)
