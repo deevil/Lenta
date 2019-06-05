@@ -162,6 +162,13 @@ class ScreenNavigator(
         }
     }
 
+    override fun openRemoveLinesConfirmationScreen(taskDescription: String, count: Int, codeConfirmation: Int) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.remove_lines_confirmation, count),
+                    iconRes = R.drawable.ic_delete_red_80dp, codeConfirm = codeConfirmation, pageNumber = "10/89"))
+        }
+    }
+
     override fun openSendingReportsScreen(writeOffReportResponse: WriteOffReportResponse) {
         runOrPostpone {
             getFragmentStack()?.replace(ReportResultFragment.create(writeOffReportResponse))
@@ -228,4 +235,5 @@ interface IScreenNavigator : ICoreNavigator {
     fun openSuccessPrintMessage()
     fun openComponentSetScreen(productInfo: ProductInfo, componentItem: ComponentItem)
     fun openDetectionSavedDataScreen()
+    fun openRemoveLinesConfirmationScreen(taskDescription: String, count: Int, codeConfirmation: Int)
 }

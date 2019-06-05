@@ -332,7 +332,11 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
                 else -> {
                     with(filteredSelectionsHelper) {
                         if (isSelectedEmpty() && selectedCategoryPosition.value == 0) {
-                            screenNavigator.openRemoveTaskConfirmationScreen(writeOffTask.taskDescription.taskName, 0)
+                            screenNavigator
+                                    .openRemoveLinesConfirmationScreen(
+                                            taskDescription = writeOffTask.taskDescription.taskName,
+                                            count = filteredGoods.value?.size ?: 0,
+                                            codeConfirmation = 0)
                         } else {
                             if (isSelectedEmpty()) {
                                 filteredGoods.value?.let {
