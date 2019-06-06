@@ -99,7 +99,7 @@ class GoodInfoViewModel : CoreViewModel(), OnPositionClickListener {
                                 onClickPosition(
                                         writeOffTask
                                                 .taskDescription
-                                                .moveTypes.indexOfFirst { reason -> reason.code == defaultReason })
+                                                .moveTypes.indexOfFirst { reason -> reason.code == defaultReason } + 1)
                             }
                         }
                     }
