@@ -9,6 +9,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import com.lenta.shared.di.CoreComponent
 import com.lenta.shared.di.CoreInjectHelper
+import com.lenta.shared.utilities.databinding.dataBindingHelpHolder
 
 abstract class CoreActivity<T : ViewDataBinding> : AppCompatActivity() {
     var binding: T? = null
@@ -21,6 +22,7 @@ abstract class CoreActivity<T : ViewDataBinding> : AppCompatActivity() {
         setupFullScreenContent()
         binding = DataBindingUtil.setContentView(this, getLayoutId())
         binding?.lifecycleOwner = this
+        coreComponent.inject(dataBindingHelpHolder)
     }
 
     override fun onDestroy() {
