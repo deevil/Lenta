@@ -46,13 +46,13 @@ class testWriteoffTask_ProcessNonExciseAlcoProductService {
     fun testProcessNonExciseAlcoProduct() {
         var test = false
         val product1 = ProductInfo("materialNumber1", "description", Uom("ST", "шт"), ProductType.General,
-                false, 1, MatrixType.Active, "materialType")
+                false, "1", MatrixType.Active, "materialType")
 
         val product2 = ProductInfo("materialNumber1", "description", Uom("ST", "шт"), ProductType.NonExciseAlcohol,
-                false, 1, MatrixType.Active, "materialType")
+                false, "1", MatrixType.Active, "materialType")
 
         val product3 = ProductInfo("materialNumber1", "description", Uom("ST", "шт"), ProductType.ExciseAlcohol,
-                false, 1, MatrixType.Active, "materialType")
+                false, "1", MatrixType.Active, "materialType")
 
         creatingObjectsForTest()
 
@@ -80,14 +80,14 @@ class testWriteoffTask_ProcessNonExciseAlcoProductService {
         creatingObjectsForTest()
 
         val product1 = ProductInfo("materialNumber1", "description", Uom("ST", "шт"), ProductType.NonExciseAlcohol,
-                false, 1, MatrixType.Active, "materialType")
+                false, "1", MatrixType.Active, "materialType")
 
         val product2 = ProductInfo("materialNumber2", "description", Uom("ST", "шт"), ProductType.NonExciseAlcohol,
-                false, 1, MatrixType.Active, "materialType")
+                false, "1", MatrixType.Active, "materialType")
 
         //дублирует продукт2, который не должен добавляться
         val product3 = ProductInfo("materialNumber2", "description", Uom("ST", "шт"), ProductType.NonExciseAlcohol,
-                false, 1, MatrixType.Active, "materialType")
+                false, "1", MatrixType.Active, "materialType")
 
         val reason1 = WriteOffReason("01", "Срок годности")
         val reason2 = WriteOffReason("02", "Срок негодности")
@@ -121,13 +121,13 @@ class testWriteoffTask_ProcessNonExciseAlcoProductService {
         creatingObjectsForTest()
 
         val product1 = ProductInfo("materialNumber1", "description", Uom("ST", "шт"), ProductType.NonExciseAlcohol,
-                false, 1, MatrixType.Active, "materialType")
+                false, "1", MatrixType.Active, "materialType")
 
         val product2 = ProductInfo("materialNumber2", "description", Uom("ST", "шт"), ProductType.NonExciseAlcohol,
-                false, 1, MatrixType.Active, "materialType")
+                false, "1", MatrixType.Active, "materialType")
 
         val product3 = ProductInfo("materialNumber3", "description", Uom("ST", "шт"), ProductType.NonExciseAlcohol,
-                false, 1, MatrixType.Active, "materialType")
+                false, "1", MatrixType.Active, "materialType")
 
 
         val reason1 = WriteOffReason("01", "Срок годности")
