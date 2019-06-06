@@ -12,7 +12,7 @@ fun ZmpUtz30V001.ItemLocal_ET_MATERIALS.getMatrixType(): MatrixType {
     return com.lenta.shared.models.core.getMatrixType(matrType)
 }
 
-fun ZmpUtz30V001.ItemLocal_ET_MATERIALS.getSectionId(): Int {
+fun ZmpUtz30V001.ItemLocal_ET_MATERIALS.getSectionNumber(): Int {
     return abtnr.toIntOrNull() ?: 0
 }
 

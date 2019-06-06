@@ -205,9 +205,9 @@ class ScreenNavigator(
         }
     }
 
-    override fun openSectionInfoScreen(section: Int) {
+    override fun openSectionInfoScreen(section: String) {
         runOrPostpone {
-            getFragmentStack()?.push(SectionInfoFragment.create(sectionNumber = "$section"))
+            getFragmentStack()?.push(SectionInfoFragment.create(sectionNumber = section))
         }
     }
 
@@ -248,7 +248,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun closeAllScreen()
     fun openSetsInfoScreen(productInfo: ProductInfo)
     fun openMatrixInfoScreen(matrixType: MatrixType)
-    fun openSectionInfoScreen(section: Int)
+    fun openSectionInfoScreen(section: String)
     fun openGoodsReasonsScreen(productInfo: ProductInfo)
     fun openSuccessPrintMessage()
     fun openComponentSetScreen(productInfo: ProductInfo, componentItem: ComponentItem)

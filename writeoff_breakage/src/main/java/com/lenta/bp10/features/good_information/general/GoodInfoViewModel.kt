@@ -2,6 +2,7 @@ package com.lenta.bp10.features.good_information.general
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.lenta.bp10.features.good_information.IGoodInformationRepo
 import com.lenta.bp10.models.repositories.IWriteOffTaskManager
 import com.lenta.bp10.models.repositories.getTotalCountForProduct
 import com.lenta.bp10.models.task.ProcessGeneralProductService
@@ -25,6 +26,8 @@ class GoodInfoViewModel : CoreViewModel(), OnPositionClickListener {
     lateinit var screenNavigator: IScreenNavigator
     @Inject
     lateinit var resourceManager: IStringResourceManager
+    @Inject
+    lateinit var goodInformationRepo: IGoodInformationRepo
 
     private val processGeneralProductService: ProcessGeneralProductService by lazy {
         processServiceManager.getWriteOffTask()!!.processGeneralProduct(productInfo.value!!)!!
@@ -52,8 +55,11 @@ class GoodInfoViewModel : CoreViewModel(), OnPositionClickListener {
         val count = it?.first ?: 0.0
         var enabled = false
         productInfo.value?.let { productInfoVal ->
+            val reason = getReason()
             enabled =
                     count != 0.0
+                            &&
+                            reason != WriteOffReason.empty
                             &&
                             processGeneralProductService.taskRepository.getTotalCountForProduct(productInfoVal, getReason()) + (countValue.value
                             ?: 0.0) >= 0.0
@@ -73,11 +79,33 @@ class GoodInfoViewModel : CoreViewModel(), OnPositionClickListener {
         viewModelScope.launch {
 
             processServiceManager.getWriteOffTask()?.let { writeOffTask ->
-                writeOffReasonTitles.value = writeOffTask.taskDescription.moveTypes.map { it.name }
+                writeOffTask.taskDescription.moveTypes.let { reasons ->
+                    if (reasons.isEmpty()) {
+                        writeOffReasonTitles.value = listOf(resourceManager.emptyCategory())
+                    } else {
+
+                        productInfo.value?.let { it ->
+                            val defaultReason = goodInformationRepo.getDefaultReason(
+                                    taskType = processServiceManager.getWriteOffTask()!!.taskDescription.taskType.code,
+                                    sectionId = it.sectionId,
+                                    materialNumber = it.materialNumber
+                            )
+
+                            writeOffReasonTitles.value = mutableListOf("").apply {
+                                addAll(writeOffTask.taskDescription.moveTypes.map { it.name })
+                            }
+
+                            processServiceManager.getWriteOffTask()?.let { writeOffTask ->
+                                onClickPosition(
+                                        writeOffTask
+                                                .taskDescription
+                                                .moveTypes.indexOfFirst { reason -> reason.code == defaultReason })
+                            }
+                        }
+                    }
+                }
             }
-            if (writeOffReasonTitles.value.isNullOrEmpty()) {
-                writeOffReasonTitles.value = listOf(resourceManager.emptyCategory())
-            }
+
             suffix.value = productInfo.value?.uom?.name
 
         }
@@ -119,7 +147,7 @@ class GoodInfoViewModel : CoreViewModel(), OnPositionClickListener {
             return WriteOffReason(code = "", name = resourceManager.emptyCategory())
         }
         return processGeneralProductService.taskDescription.moveTypes
-                .getOrElse(selectedPosition.value ?: -1) { WriteOffReason.empty }
+                .getOrElse((selectedPosition.value ?: 0) - 1) { WriteOffReason.empty }
     }
 
     fun onBackPressed() {
