@@ -7,6 +7,7 @@ import com.lenta.bp10.models.repositories.getTotalCountForProduct
 import com.lenta.bp10.models.task.ProcessGeneralProductService
 import com.lenta.bp10.models.task.WriteOffReason
 import com.lenta.bp10.platform.navigation.IScreenNavigator
+import com.lenta.bp10.platform.resources.IStringResourceManager
 import com.lenta.shared.models.core.ProductInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.extentions.combineLatest
@@ -22,6 +23,8 @@ class GoodInfoViewModel : CoreViewModel(), OnPositionClickListener {
     lateinit var processServiceManager: IWriteOffTaskManager
     @Inject
     lateinit var screenNavigator: IScreenNavigator
+    @Inject
+    lateinit var resourceManager: IStringResourceManager
 
     private val processGeneralProductService: ProcessGeneralProductService by lazy {
         processServiceManager.getWriteOffTask()!!.processGeneralProduct(productInfo.value!!)!!
@@ -35,7 +38,7 @@ class GoodInfoViewModel : CoreViewModel(), OnPositionClickListener {
 
     val count: MutableLiveData<String> = MutableLiveData("")
 
-    val countValue: MutableLiveData<Double> = count.map { it?.toDoubleOrNull()?: 0.0 }
+    val countValue: MutableLiveData<Double> = count.map { it?.toDoubleOrNull() ?: 0.0 }
 
     val suffix: MutableLiveData<String> = MutableLiveData()
 
@@ -71,6 +74,9 @@ class GoodInfoViewModel : CoreViewModel(), OnPositionClickListener {
 
             processServiceManager.getWriteOffTask()?.let { writeOffTask ->
                 writeOffReasonTitles.value = writeOffTask.taskDescription.moveTypes.map { it.name }
+            }
+            if (writeOffReasonTitles.value.isNullOrEmpty()) {
+                writeOffReasonTitles.value = listOf(resourceManager.emptyCategory())
             }
             suffix.value = productInfo.value?.uom?.name
 
@@ -109,6 +115,9 @@ class GoodInfoViewModel : CoreViewModel(), OnPositionClickListener {
 
 
     private fun getReason(): WriteOffReason {
+        if (processGeneralProductService.taskDescription.moveTypes.isEmpty()) {
+            return WriteOffReason(code = "", name = resourceManager.emptyCategory())
+        }
         return processGeneralProductService.taskDescription.moveTypes
                 .getOrElse(selectedPosition.value ?: -1) { WriteOffReason.empty }
     }
