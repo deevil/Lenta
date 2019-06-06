@@ -64,6 +64,7 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     val countedGoods: MutableLiveData<List<GoodItem>> = MutableLiveData()
     val filteredGoods: MutableLiveData<List<FilterItem>> = MutableLiveData()
     val categories: MutableLiveData<List<String>> = MutableLiveData()
+    val requestFocusToEan: MutableLiveData<Boolean> = MutableLiveData()
     val selectedCategoryPosition: MutableLiveData<Int> = MutableLiveData(0)
     val eanCode: MutableLiveData<String> = MutableLiveData()
     val countedSelectionsHelper = SelectionItemsHelper()
@@ -391,6 +392,11 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
         }
     }
 
+    fun onDigitPressed(digit: Int) {
+        requestFocusToEan.value = true
+        eanCode.value = eanCode.value ?: "" + digit
+    }
+
     private fun saveData() {
         viewModelScope.launch {
             screenNavigator.showProgress(sendWriteOffReportRequest)
@@ -426,8 +432,6 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
         screenNavigator.openSuccessPrintMessage()
 
     }
-
-
 
     companion object {
         const val requestCodeDelete = 100
