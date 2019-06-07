@@ -68,7 +68,7 @@ class ProductInfoDbRequest
                 uom = Uom(code = uomInfo.uom, name = uomInfo.name),
                 type = materialInfo.getProductType(),
                 isSet = getIsSet(materialInfo.material),
-                sectionNumber = materialInfo.getSectionId(),
+                sectionId = materialInfo.abtnr,
                 matrixType = materialInfo.getMatrixType(),
                 materialType = materialInfo.matype
         ))

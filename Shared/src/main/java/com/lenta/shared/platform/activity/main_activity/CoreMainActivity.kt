@@ -175,11 +175,17 @@ abstract class CoreMainActivity : CoreActivity<ActivityMainBinding>(), ToolbarBu
         vm.onNewEnter()
     }
 
+    fun showSimpleProgress(title: String) {
+        vm.showSimpleProgress(title)
+    }
 
-    abstract fun getViewModel(): CoreMainViewModel
+    fun hideProgress() {
+        vm.hideProgress()
+    }
+
+    protected abstract fun getViewModel(): CoreMainViewModel
 
     abstract fun onClickExit()
-
 
 }
 

@@ -201,7 +201,7 @@
             android:background="@drawable/bg_white_circle"
             android:fontFamily="@font/tahoma_bold"
             android:gravity="center"
-            android:text='@{"" + vm.productInfo.sectionNumber}'
+            android:text='@{"" + vm.productInfo.sectionId}'
             android:onClick="@{(v) -> vm.screenNavigator.openSectionInfoScreen(vm.productInfo.sectionNumber)}"
             android:textSize="16sp"
             app:layout_constraintBottom_toBottomOf="parent"

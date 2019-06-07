@@ -4,6 +4,7 @@ import android.content.Context
 import android.text.InputFilter
 import android.text.method.DigitsKeyListener
 import android.view.KeyEvent
+import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.TextView
@@ -44,6 +45,17 @@ fun setTextAllCaps(editText: EditText, textAllCaps: Boolean?) {
 fun setDigitsForUom(editText: EditText, uom: Uom?) {
     uom?.let {
         editText.keyListener = DigitsKeyListener.getInstance(if (uom.isOnlyInt()) "0123456789-" else "0123456789.-")
+    }
+
+}
+
+@BindingAdapter("requestFocus", "cursorToLastPos")
+fun requestFocus(editText: EditText, @Suppress("UNUSED_PARAMETER") requestFocus: Any?, cursorToLastPos: Boolean?) {
+    requestFocus?.let {
+        editText.requestFocus()
+        if (cursorToLastPos == true) {
+            editText.setSelection(editText.text.length)
+        }
     }
 
 }

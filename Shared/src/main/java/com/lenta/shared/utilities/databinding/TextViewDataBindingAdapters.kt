@@ -11,6 +11,8 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.utilities.date_time.DateTimeUtil
 import com.lenta.shared.utilities.extentions.setTextViewDrawableColor
 import com.lenta.shared.utilities.extentions.setVisible
+import com.lenta.shared.utilities.extentions.selectableItemBackgroundResId
+
 
 @BindingAdapter(value = ["buttonDecorationInfo", "enabled"], requireAll = false)
 fun setButtonDecorationInfo(textView: TextView, buttonDecorationInfo: ButtonDecorationInfo?, enabled: Boolean?) {
@@ -102,3 +104,16 @@ fun setMatrixType(textView: TextView, matrixType: MatrixType?) {
     }
 
 }
+
+@BindingAdapter(value = ["zoom"], requireAll = false)
+fun setTextWithVisibilities(textView: TextView, @Suppress("UNUSED_PARAMETER") screenNavigatorForZoom: Boolean) {
+    textView.setOnClickListener {
+        dataBindingHelpHolder.coreNavigator.openAlertScreen(message = textView.text.toString())
+    }
+    textView.setBackgroundResource(textView.context.selectableItemBackgroundResId())
+}
+
+
+
+
+

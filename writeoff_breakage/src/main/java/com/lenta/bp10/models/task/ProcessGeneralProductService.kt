@@ -25,8 +25,8 @@ class ProcessGeneralProductService(val taskDescription: TaskDescription,
     fun add(reason: WriteOffReason, count: Double): ProcessGeneralProductService {
         // (Артем И., 09.04.2019) добавить товар если его нету в таске товаров, в репозитории найти причину списания для данного товара, если есть, то увеличить count иначе создать новый
         var taskWriteOfReason = TaskWriteOffReason(reason, productInfo.materialNumber, count)
+        taskRepository.getProducts().addProduct(productInfo)
         if (taskRepository.getProducts().findProduct(productInfo) == null) {
-            taskRepository.getProducts().addProduct(productInfo)
             taskRepository.getWriteOffReasons().addWriteOffReason(taskWriteOfReason)
         } else {
             val arrTaskWriteOffReason = taskRepository.getWriteOffReasons().findWriteOffReasonsOfProduct(productInfo)
