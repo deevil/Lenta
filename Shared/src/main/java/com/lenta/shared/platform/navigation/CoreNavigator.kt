@@ -175,12 +175,11 @@ class CoreNavigator constructor(private val context: Context,
         }
     }
 
-    override fun openSectionInfoScreen(section: Int) {
+    override fun openSectionInfoScreen(section: String) {
         runOrPostpone {
-            getFragmentStack()?.push(SectionInfoFragment.create(sectionNumber = "$section"))
+            getFragmentStack()?.push(SectionInfoFragment.create(sectionNumber = section))
         }
     }
-
     override fun openEanInfoScreen() {
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.ean_info),
@@ -226,7 +225,7 @@ interface ICoreNavigator {
     fun openFailurePinCodeScreen(message: String)
     fun openExitConfirmationScreen()
     fun openMatrixInfoScreen(matrixType: MatrixType)
-    fun openSectionInfoScreen(section: Int)
+    fun openSectionInfoScreen(section: String)
     fun openEanInfoScreen()
     fun openESInfoScreen()
 }

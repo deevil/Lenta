@@ -205,8 +205,8 @@
             android:fontFamily="@font/tahoma_bold"
             android:foreground="?selectableItemBackground"
             android:gravity="center"
-            android:onClick="@{(v) -> vm.screenNavigator.openSectionInfoScreen(vm.productInfo.sectionNumber)}"
-            android:text='@{"" + vm.productInfo.sectionNumber}'
+            android:onClick="@{(v) -> vm.screenNavigator.openSectionInfoScreen(vm.productInfo.sectionId)}"
+            android:text='@{"" + vm.productInfo.sectionId}'
             android:textSize="16sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@+id/tv_matrix"

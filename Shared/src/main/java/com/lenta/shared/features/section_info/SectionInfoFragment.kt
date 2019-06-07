@@ -6,6 +6,7 @@ import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
+import com.lenta.shared.utilities.extentions.generateScreenNumber
 import com.lenta.shared.utilities.extentions.provideViewModel
 import com.lenta.shared.utilities.state.state
 
@@ -15,7 +16,7 @@ class SectionInfoFragment : CoreFragment<FragmentSectionInfoBinding, SectionInfo
 
     override fun getLayoutId(): Int = R.layout.fragment_section_info
 
-    override fun getPageNumber() = "10/12"
+    override fun getPageNumber() : String = generateScreenNumber()
 
     override fun getViewModel(): SectionInfoViewModel {
         provideViewModel(SectionInfoViewModel::class.java).let {

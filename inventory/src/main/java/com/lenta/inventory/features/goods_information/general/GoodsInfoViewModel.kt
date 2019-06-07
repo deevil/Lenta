@@ -21,7 +21,7 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
 
     //val productInfo: MutableLiveData<ProductInfo> = MutableLiveData()
     val productInfo: MutableLiveData<ProductInfo> = MutableLiveData(ProductInfo("materialNumber1", "description", Uom("ST", "шт"), ProductType.General,
-            false, 1, MatrixType.Active, "materialType"))
+            false, "1", MatrixType.Active, "materialType"))
 
     val storagePlace: MutableLiveData<String> = MutableLiveData("123456789")
     val spinList: MutableLiveData<List<String>> = MutableLiveData()

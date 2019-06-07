@@ -30,7 +30,7 @@ class GoodsInfoFragment : CoreFragment<FragmentGoodsInfoBinding, GoodsInfoViewMo
 
     override fun getLayoutId(): Int = R.layout.fragment_goods_info
 
-    override fun getPageNumber(): String = "???"
+    override fun getPageNumber(): String = "11/10"
 
     override fun getViewModel(): GoodsInfoViewModel {
         provideViewModel(GoodsInfoViewModel::class.java).let { vm ->

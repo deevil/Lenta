@@ -60,7 +60,7 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
     val totalCount: MutableLiveData<Double> = countValue.map { (it ?: 0.0) + processExciseAlcoProductService.taskRepository.getTotalCountForProduct(productInfo.value!!)} //processExciseAlcoProductService.getTotalCount()
     val totalCountWithUom: MutableLiveData<String> = totalCount.map { "${it.toStringFormatted()} ${productInfo.value!!.uom.name}" }
     val suffix: MutableLiveData<String> = MutableLiveData()
-    private val componentsInfo = mutableListOf<ProductInfo>() //: MutableLiveData<List<ProductInfo>> = MutableLiveData()
+    private val componentsInfo = mutableListOf<ProductInfo>()
     val componentsItem: MutableLiveData<List<ComponentItem>> = MutableLiveData()
     val componentsSelectionsHelper = SelectionItemsHelper()
     val eanCode: MutableLiveData<String> = MutableLiveData()
