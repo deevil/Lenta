@@ -11,6 +11,8 @@ import com.lenta.shared.requests.network.PinCodeInfo
 import com.lenta.shared.requests.network.PinCodeNetRequest
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
+import com.lenta.shared.utilities.extentions.combineLatest
+import com.lenta.shared.utilities.extentions.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -34,6 +36,18 @@ class PinCodeViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     lateinit var failureInterpreter: IFailureInterpreter
 
     private val msgIncorrectPinCode: MutableLiveData<String> = MutableLiveData()
+
+    val enabledGoOverBtn: MutableLiveData<Boolean> = pinCode1
+            .combineLatest(pinCode2)
+            .combineLatest(pinCode3)
+            .combineLatest(pinCode4)
+            .map {
+                val pin1 = it?.first?.first?.first
+                val pin2 = it?.first?.first?.second
+                val pin3 = it?.first?.second
+                val pin4 = it?.second
+                !(pin1.isNullOrEmpty() || pin2.isNullOrEmpty() || pin3.isNullOrEmpty() || pin4.isNullOrEmpty())
+            }
 
     fun setMsgIncorrectPinCode(string: String) {
         this.msgIncorrectPinCode.value = string
