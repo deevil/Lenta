@@ -100,6 +100,10 @@ data class ButtonDecorationInfo(
             ButtonDecorationInfo(R.drawable.ic_rollback_white_24dp, R.string.rollback)
         }
 
+        val missing: ButtonDecorationInfo by lazy {
+            ButtonDecorationInfo(R.drawable.ic_close_white_24dp, R.string.missing)
+        }
+
         val empty: ButtonDecorationInfo by lazy {
             ButtonDecorationInfo(0, 0)
         }

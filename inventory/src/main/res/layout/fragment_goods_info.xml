@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools">
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".features.goods_information.general.GoodsInfoFragment">
 
     <data>
+
         <variable
             name="vm"
-            type="com.lenta.bp10.features.good_information.sets.SetsViewModel" />
+            type="com.lenta.inventory.features.goods_information.general.GoodsInfoViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -35,35 +37,35 @@
             android:layout_width="1dp"
             android:layout_height="0dp"
             android:background="@color/color_divider"
-            app:layout_constraintBottom_toBottomOf="@+id/div_hor3"
+            app:layout_constraintBottom_toBottomOf="@+id/div_hor4"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="@+id/guideline"
             app:layout_constraintTop_toBottomOf="@+id/div_hor1" />
 
-        <TextView
-            android:id="@+id/tv_write_off"
-            style="@style/TextTitle"
+        <com.lenta.shared.view.ClickableSpinner
+            android:id="@+id/spinner_inventory"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp"
-            android:ellipsize="end"
-            android:maxLines="1"
-            android:text="@string/write_off"
-            app:layout_constraintBottom_toBottomOf="@+id/et_write_off"
+            android:enabled="false"
+            app:items="@{vm.spinList}"
+            app:layout_constraintBottom_toBottomOf="@+id/et_inventory"
             app:layout_constraintEnd_toStartOf="@+id/div_vert"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/et_write_off" />
+            app:layout_constraintTop_toTopOf="@+id/et_inventory"
+            app:onPositionClickListener="@{vm}"
+            app:position="@{vm.selectedPosition}" />
 
         <com.lenta.shared.view.EditTextWithSuffix
-            android:id="@+id/et_write_off"
+            android:id="@+id/et_inventory"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
-            android:digits="0123456789-."
+            app:digitsForUom="@{vm.productInfo.uom}"
             android:ellipsize="end"
             android:inputType="numberDecimal"
             android:maxLines="1"
@@ -82,7 +84,7 @@
             android:background="@color/color_divider"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/et_write_off" />
+            app:layout_constraintTop_toBottomOf="@+id/et_inventory" />
 
         <TextView
             android:id="@+id/tv_total_title"
@@ -95,7 +97,7 @@
             android:maxLines="1"
             android:text="@string/total"
             app:layout_constraintBottom_toBottomOf="@+id/tv_total_value"
-            app:layout_constraintEnd_toStartOf="@+id/guideline"
+            app:layout_constraintEnd_toStartOf="@+id/div_vert"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@+id/tv_total_value" />
 
@@ -124,19 +126,37 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tv_total_value" />
 
-        <com.lenta.shared.view.ClickableSpinner
-            android:id="@+id/spinner_write_off_type"
+        <TextView
+            android:id="@+id/tv_storage_place"
+            style="@style/TextTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:text="@string/storage_place"
+            app:layout_constraintBottom_toBottomOf="@+id/tv_storage_place_value"
+            app:layout_constraintEnd_toStartOf="@+id/guideline"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/tv_storage_place_value" />
+
+        <TextView
+            android:id="@+id/tv_storage_place_value"
+            style="@style/TextTitle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
-            app:items="@{vm.writeOffReasonTitles}"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:text="@{vm.storagePlace}"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/div_vert"
-            app:onPositionClickListener="@{vm}"
-            app:position="@{vm.selectedPosition}" />
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="@+id/guideline"
+            app:layout_constraintTop_toBottomOf="@+id/div_hor3"
+            tools:text="123456789"/>
 
         <View
             android:id="@+id/div_hor4"
@@ -145,8 +165,10 @@
             android:layout_marginTop="8dp"
             android:background="@color/color_divider"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/spinner_write_off_type" />
+            app:layout_constraintTop_toBottomOf="@+id/tv_storage_place" />
+
 
         <TextView
             android:id="@+id/tv_matrix"
@@ -155,16 +177,19 @@
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
             android:layout_marginBottom="24dp"
+            android:clickable="true"
+            android:focusable="true"
             android:fontFamily="@font/tahoma_bold"
+            android:foreground="?selectableItemBackground"
             android:gravity="center"
-            android:textSize="18sp"
             android:onClick="@{(v) -> vm.screenNavigator.openMatrixInfoScreen(vm.productInfo.matrixType)}"
-            tools:background="@drawable/bg_white_circle"
+            android:textSize="18sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/div_hor4"
             app:layout_constraintVertical_bias="1.0"
             app:matrixType="@{vm.productInfo.matrixType}"
+            tools:background="@drawable/bg_white_circle"
             tools:text="A" />
 
         <TextView
@@ -175,10 +200,13 @@
             android:layout_marginTop="8dp"
             android:layout_marginBottom="24dp"
             android:background="@drawable/bg_white_circle"
+            android:clickable="true"
+            android:focusable="true"
             android:fontFamily="@font/tahoma_bold"
+            android:foreground="?selectableItemBackground"
             android:gravity="center"
-            android:text='@{"" + vm.productInfo.sectionNumber}'
             android:onClick="@{(v) -> vm.screenNavigator.openSectionInfoScreen(vm.productInfo.sectionNumber)}"
+            android:text='@{"" + vm.productInfo.sectionNumber}'
             android:textSize="16sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@+id/tv_matrix"
@@ -191,25 +219,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
-            android:layout_marginBottom="16dp"
             android:background="?selectableItemBackground"
             android:onClick="@{(v) -> vm.screenNavigator.openEanInfoScreen()}"
             android:padding="8dp"
             android:src="@drawable/ic_scan_barcode"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
-
-        <ImageView
-            android:id="@+id/imageView4"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginBottom="18dp"
-            android:background="?selectableItemBackground"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/tv_section"
-            app:srcCompat="@drawable/ic_excise_white_48dp"
-            tools:ignore="VectorDrawableCompat" />
+            app:layout_constraintBottom_toBottomOf="@+id/tv_matrix"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/tv_matrix" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
+
 </layout>
