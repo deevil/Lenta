@@ -7,7 +7,7 @@
     <data>
         <variable
             name="vm"
-            type="com.lenta.bp10.features.matrix_info.MatrixInfoViewModel" />
+            type="com.lenta.shared.features.matrix_info.MatrixInfoViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

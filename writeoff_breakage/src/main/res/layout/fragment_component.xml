@@ -182,6 +182,7 @@
             android:fontFamily="@font/tahoma_bold"
             android:gravity="center"
             android:textSize="18sp"
+            android:onClick="@{(v) -> vm.screenNavigator.openMatrixInfoScreen(vm.productInfo.matrixType)}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/div_hor4"
@@ -201,25 +202,13 @@
             android:fontFamily="@font/tahoma_bold"
             android:gravity="center"
             android:text='@{"" + vm.productInfo.sectionNumber}'
+            android:onClick="@{(v) -> vm.screenNavigator.openSectionInfoScreen(vm.productInfo.sectionNumber)}"
             android:textSize="16sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@+id/tv_matrix"
             app:layout_constraintTop_toTopOf="@+id/div_hor4"
             app:layout_constraintVertical_bias="1.0"
             tools:text="02" />
-
-        <ImageButton
-            android:id="@+id/b_scan"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:layout_marginBottom="16dp"
-            android:background="?selectableItemBackground"
-            android:onClick="@{(v) -> vm.screenNavigator.openEanInfoScreen()}"
-            android:padding="8dp"
-            android:src="@drawable/ic_scan_barcode"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
 
         <ImageView
             android:id="@+id/imageView3"
@@ -232,7 +221,7 @@
             app:layout_constraintStart_toEndOf="@+id/tv_section" />
 
         <ImageButton
-            android:id="@+id/imageButton2"
+            android:id="@+id/b_scan_es"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
@@ -242,7 +231,20 @@
             android:padding="8dp"
             android:src="@drawable/is_scan_barcode_es"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/b_scan" />
+            app:layout_constraintEnd_toStartOf="@+id/b_scan_ean" />
+
+        <ImageButton
+            android:id="@+id/b_scan_ean"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="16dp"
+            android:background="?selectableItemBackground"
+            android:onClick="@{(v) -> vm.screenNavigator.openEanInfoScreen()}"
+            android:padding="8dp"
+            android:src="@drawable/ic_scan_barcode"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

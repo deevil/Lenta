@@ -8,7 +8,7 @@
 
         <variable
             name="vm"
-            type="com.lenta.bp10.features.section_info.SectionInfoViewModel" />
+            type="com.lenta.shared.features.section_info.SectionInfoViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

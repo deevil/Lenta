@@ -1,4 +1,4 @@
-package com.lenta.bp10.features.matrix_info
+package com.lenta.shared.features.matrix_info
 
 import androidx.lifecycle.MutableLiveData
 import com.lenta.shared.features.message.MessageViewModel

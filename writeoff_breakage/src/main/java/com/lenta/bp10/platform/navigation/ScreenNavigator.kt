@@ -14,9 +14,7 @@ import com.lenta.bp10.features.job_card.JobCardFragment
 import com.lenta.bp10.features.loading.fast.FastDataLoadingFragment
 import com.lenta.bp10.features.loading.tasks_settings.LoadingTaskSettingsFragment
 import com.lenta.bp10.features.main_menu.MainMenuFragment
-import com.lenta.bp10.features.matrix_info.MatrixInfoFragment
 import com.lenta.bp10.features.report_result.ReportResultFragment
-import com.lenta.bp10.features.section_info.SectionInfoFragment
 import com.lenta.bp10.features.select_market.SelectMarketFragment
 import com.lenta.bp10.features.select_personnel_number.SelectPersonnelNumberFragment
 import com.lenta.bp10.features.write_off_details.WriteOffDetailsFragment
@@ -146,20 +144,6 @@ class ScreenNavigator(
 
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 
-    override fun openEanInfoScreen() {
-        runOrPostpone {
-            getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.ean_info),
-                    iconRes = R.drawable.ic_scan_barcode))
-        }
-    }
-
-    override fun openESInfoScreen() {
-        runOrPostpone {
-            getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.es_info),
-                    iconRes = R.drawable.is_scan_barcode_es))
-        }
-    }
-
     override fun openRemoveTaskConfirmationScreen(taskDescription: String, codeConfirmation: Int) {
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.remove_task_confirmation, taskDescription),
@@ -199,18 +183,6 @@ class ScreenNavigator(
         }
     }
 
-    override fun openMatrixInfoScreen(matrixType: MatrixType) {
-        runOrPostpone {
-            getFragmentStack()?.push(MatrixInfoFragment.create(matrixType))
-        }
-    }
-
-    override fun openSectionInfoScreen(section: Int) {
-        runOrPostpone {
-            getFragmentStack()?.push(SectionInfoFragment.create(sectionNumber = "$section"))
-        }
-    }
-
     override fun openGoodsReasonsScreen(productInfo: ProductInfo) {
         runOrPostpone {
             getFragmentStack()?.push(WriteOffDetailsFragment.create(productInfo))
@@ -241,14 +213,10 @@ interface IScreenNavigator : ICoreNavigator {
     fun openLoadingTaskSettingsScreen()
     fun openGoodsListScreen()
     fun openGoodInfoScreen(productInfo: ProductInfo)
-    fun openEanInfoScreen()
-    fun openESInfoScreen()
     fun openRemoveTaskConfirmationScreen(taskDescription: String, codeConfirmation: Int)
     fun openSendingReportsScreen(writeOffReportResponse: WriteOffReportResponse)
     fun closeAllScreen()
     fun openSetsInfoScreen(productInfo: ProductInfo)
-    fun openMatrixInfoScreen(matrixType: MatrixType)
-    fun openSectionInfoScreen(section: Int)
     fun openGoodsReasonsScreen(productInfo: ProductInfo)
     fun openSuccessPrintMessage()
     fun openComponentSetScreen(productInfo: ProductInfo, componentItem: ComponentItem)
