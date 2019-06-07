@@ -1,12 +1,12 @@
-package com.lenta.bp10.features.section_info
+package com.lenta.shared.features.section_info
 
-import com.lenta.bp10.R
-import com.lenta.bp10.databinding.FragmentSectionInfoBinding
-import com.lenta.bp10.platform.extentions.getAppComponent
+import com.lenta.shared.R
+import com.lenta.shared.databinding.FragmentSectionInfoBinding
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
+import com.lenta.shared.utilities.extentions.generateScreenNumber
 import com.lenta.shared.utilities.extentions.provideViewModel
 import com.lenta.shared.utilities.state.state
 
@@ -16,11 +16,11 @@ class SectionInfoFragment : CoreFragment<FragmentSectionInfoBinding, SectionInfo
 
     override fun getLayoutId(): Int = R.layout.fragment_section_info
 
-    override fun getPageNumber() = "10/12"
+    override fun getPageNumber() : String = generateScreenNumber()
 
     override fun getViewModel(): SectionInfoViewModel {
         provideViewModel(SectionInfoViewModel::class.java).let {
-            getAppComponent()?.inject(it)
+            coreComponent.inject(it)
             it.sectionNumber.value = sectionNumber
             it.message = getString(R.string.section, sectionNumber)
             return it
