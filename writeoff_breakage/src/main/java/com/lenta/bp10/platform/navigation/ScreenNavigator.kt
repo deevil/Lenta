@@ -2,7 +2,6 @@ package com.lenta.bp10.platform.navigation
 
 import android.content.Context
 import com.lenta.bp10.R
-import com.lenta.bp10.exception.IWriteOffFailureInterpretator
 import com.lenta.bp10.features.auth.AuthFragment
 import com.lenta.bp10.features.detection_saved_data.DetectionSavedDataFragment
 import com.lenta.bp10.features.good_information.general.GoodInfoFragment
@@ -20,9 +19,11 @@ import com.lenta.bp10.features.section_info.SectionInfoFragment
 import com.lenta.bp10.features.select_market.SelectMarketFragment
 import com.lenta.bp10.features.select_personnel_number.SelectPersonnelNumberFragment
 import com.lenta.bp10.features.write_off_details.WriteOffDetailsFragment
+import com.lenta.bp10.progress.IWriteOffProgressUseCaseInformator
 import com.lenta.bp10.requests.network.WriteOffReportResponse
 import com.lenta.shared.account.IAuthenticator
 import com.lenta.shared.exception.Failure
+import com.lenta.shared.exception.IFailureInterpreter
 import com.lenta.shared.features.alert.AlertFragment
 import com.lenta.shared.features.printer_change.PrinterChangeFragment
 import com.lenta.shared.interactor.UseCase
@@ -32,15 +33,14 @@ import com.lenta.shared.platform.activity.ForegroundActivityProvider
 import com.lenta.shared.platform.navigation.ICoreNavigator
 import com.lenta.shared.platform.navigation.runOrPostpone
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
-import com.lenta.shared.progress.IProgressUseCaseInformator
 
 class ScreenNavigator(
         private val context: Context,
         private val coreNavigator: ICoreNavigator,
         private val foregroundActivityProvider: ForegroundActivityProvider,
         private val authenticator: IAuthenticator,
-        private val failureInterpreter: IWriteOffFailureInterpretator,
-        private val progressUseCaseInformator: IProgressUseCaseInformator
+        private val failureInterpreter: IFailureInterpreter,
+        private val progressUseCaseInformator: IWriteOffProgressUseCaseInformator
 ) : IScreenNavigator, ICoreNavigator by coreNavigator {
 
     override fun openAlertScreen(failure: Failure, pageNumber: String) {

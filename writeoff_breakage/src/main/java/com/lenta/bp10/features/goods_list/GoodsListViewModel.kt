@@ -10,8 +10,6 @@ import com.lenta.bp10.models.task.TaskWriteOffReason
 import com.lenta.bp10.models.task.getPrinterTask
 import com.lenta.bp10.models.task.getReport
 import com.lenta.bp10.platform.navigation.IScreenNavigator
-import com.lenta.bp10.requests.db.ProductInfoDbRequest
-import com.lenta.bp10.requests.db.ProductInfoRequestParams
 import com.lenta.bp10.requests.network.*
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
@@ -20,6 +18,9 @@ import com.lenta.shared.models.core.ProductType
 import com.lenta.shared.models.core.isNormal
 import com.lenta.shared.platform.resources.ISharedStringResourceManager
 import com.lenta.shared.platform.viewmodel.CoreViewModel
+import com.lenta.shared.requests.combined.scan_info.ScanInfoRequest
+import com.lenta.shared.requests.combined.scan_info.ScanInfoRequestParams
+import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.Evenable
@@ -45,9 +46,7 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     @Inject
     lateinit var processServiceManager: IWriteOffTaskManager
     @Inject
-    lateinit var productInfoDbRequest: ProductInfoDbRequest
-    @Inject
-    lateinit var productInfoNetRequest: ProductInfoNetRequest
+    lateinit var scanInfoRequest: ScanInfoRequest
     @Inject
     lateinit var sharedStringResourceManager: ISharedStringResourceManager
     @Inject
@@ -185,39 +184,36 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     }
 
     override fun onOkInSoftKeyboard(): Boolean {
-
-        searchCodeFromDb()
-
-        Logg.d { "processServiceManager taskDescription: ${processServiceManager.getWriteOffTask()?.taskDescription}" }
+        searchCode()
         return true
     }
 
-    private fun searchCodeFromDb() {
+    private fun searchCode() {
         viewModelScope.launch {
             eanCode.value?.let {
-                productInfoDbRequest(ProductInfoRequestParams(number = it)).either(::handleFailureSearchFromDb, ::handlePermissionToWriteOffSuccess)
-            }
-
-        }
-    }
-
-    private fun searchCodeFromServer() {
-        viewModelScope.launch {
-            eanCode.value?.let {
-                screenNavigator.showProgress(productInfoNetRequest)
-                productInfoNetRequest(ProductInfoRequestParams(number = it)).either(::handleFailureNetRequest, ::handlePermissionToWriteOffSuccess)
+                screenNavigator.showProgress(scanInfoRequest)
+                scanInfoRequest(ScanInfoRequestParams(
+                        number = it,
+                        tkNumber = processServiceManager.getWriteOffTask()!!.taskDescription.tkNumber))
+                        .either(::handleFailure, ::handleSearchSuccess)
                 screenNavigator.hideProgress()
             }
 
         }
     }
 
-    private fun handlePermissionToWriteOffSuccess(productInfo: ProductInfo) {
-        this.productInfo.value = productInfo
+
+    private fun handleSearchSuccess(scanInfoResult: ScanInfoResult) {
+        Logg.d { "scanInfoResult: $scanInfoResult" }
+        this.productInfo.value = scanInfoResult.productInfo
         viewModelScope.launch {
             if (zmpUtz29V001.isChkOwnpr(processServiceManager.getWriteOffTask()?.taskDescription!!.taskType.code)) {
                 screenNavigator.showProgress(permissionToWriteoffNetRequest)
-                permissionToWriteoffNetRequest(PermissionToWriteoffPrams(matnr = productInfo.materialNumber, werks = sessionInfo.market!!)).either(::handleFailure, ::handleSearchProductSuccess)
+                permissionToWriteoffNetRequest(
+                        PermissionToWriteoffPrams(
+                                matnr = scanInfoResult.productInfo.materialNumber,
+                                werks = sessionInfo.market!!))
+                        .either(::handleFailure, ::handlePermissionsSuccess)
                 screenNavigator.hideProgress()
             } else {
                 searchProduct()
@@ -225,8 +221,8 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
         }
     }
 
-    private fun handleSearchProductSuccess(permissionToWriteoff: PermissionToWriteoffRestInfo) {
-        if (permissionToWriteoff.ownr.isNullOrEmpty()) {
+    private fun handlePermissionsSuccess(permissionToWriteoff: PermissionToWriteoffRestInfo) {
+        if (permissionToWriteoff.ownr.isEmpty()) {
             screenNavigator.openAlertScreen("Не разрешено списание в производство")
         } else searchProduct()
     }
@@ -279,15 +275,8 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
         }
     }
 
-    private fun handleFailureSearchFromDb(failure: Failure) {
-        if (failure is Failure.GoodNotFound) {
-            searchCodeFromServer()
-            return
-        }
-        screenNavigator.openAlertScreen(failure)
-    }
-
-    private fun handleFailureNetRequest(failure: Failure) {
+    override fun handleFailure(failure: Failure) {
+        super.handleFailure(failure)
         screenNavigator.openAlertScreen(failure)
     }
 
@@ -301,12 +290,14 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
     fun onScanResult(data: String) {
         eanCode.value = data
-        searchCodeFromDb()
+        searchCode()
     }
 
     fun onClickSave() {
         if (sessionInfo.personnelNumber.isNullOrEmpty()) {
-            screenNavigator.openSelectionPersonnelNumberScreen(codeConfirmation = requestCodeSelectPersonnelNumber)
+            screenNavigator.openSelectionPersonnelNumberScreen(
+                    codeConfirmation = requestCodeSelectPersonnelNumber
+            )
         } else {
             saveData()
         }
@@ -375,7 +366,7 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
         processServiceManager.getWriteOffTask()?.let {
             viewModelScope.launch {
                 screenNavigator.showProgress(printTaskNetRequest)
-                printTaskNetRequest(it.getPrinterTask()).either(::handleFailureNetRequest, ::handleSuccessPrint)
+                printTaskNetRequest(it.getPrinterTask()).either(::handleFailure, ::handleSuccessPrint)
                 screenNavigator.hideProgress()
             }
         }
@@ -401,7 +392,7 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
         viewModelScope.launch {
             screenNavigator.showProgress(sendWriteOffReportRequest)
             processServiceManager.getWriteOffTask()?.let {
-                sendWriteOffReportRequest(it.getReport()).either(::handleFailureSearchFromDb, ::handleSentSuccess)
+                sendWriteOffReportRequest(it.getReport()).either(::handleFailure, ::handleSentSuccess)
             }
 
             screenNavigator.hideProgress()

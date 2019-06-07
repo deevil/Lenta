@@ -2,8 +2,6 @@ package com.lenta.bp10.di
 
 import android.content.Context
 import com.google.gson.Gson
-import com.lenta.bp10.exception.IWriteOffFailureInterpretator
-import com.lenta.bp10.exception.WriteOffFailureInterpretator
 import com.lenta.bp10.features.auth.Authenticator
 import com.lenta.bp10.features.good_information.GoodInformationRepo
 import com.lenta.bp10.features.good_information.IGoodInformationRepo
@@ -17,6 +15,7 @@ import com.lenta.bp10.platform.navigation.IScreenNavigator
 import com.lenta.bp10.platform.navigation.ScreenNavigator
 import com.lenta.bp10.platform.resources.IStringResourceManager
 import com.lenta.bp10.platform.resources.StringResourceManager
+import com.lenta.bp10.progress.IWriteOffProgressUseCaseInformator
 import com.lenta.bp10.progress.ProgressUseCaseInformator
 import com.lenta.bp10.requests.network.SlowResourcesMultiRequest
 import com.lenta.bp10.requests.network.loader.ResourcesLoader
@@ -48,18 +47,13 @@ class AppModule {
             iCoreNavigator: ICoreNavigator,
             foregroundActivityProvider: ForegroundActivityProvider,
             authenticator: IAuthenticator,
-            faultInterpreter: IWriteOffFailureInterpretator,
-            progressUseCaseInformator: IProgressUseCaseInformator
+            faultInterpreter: IFailureInterpreter,
+            progressUseCaseInformator: IWriteOffProgressUseCaseInformator
     ): IScreenNavigator {
         return ScreenNavigator(context, iCoreNavigator, foregroundActivityProvider, authenticator, faultInterpreter, progressUseCaseInformator)
     }
 
 
-    @Provides
-    @AppScope
-    internal fun provideFailureInterpreter(context: Context, coreFailureInterpreter: IFailureInterpreter): IWriteOffFailureInterpretator {
-        return WriteOffFailureInterpretator(context, coreFailureInterpreter)
-    }
 
     @Provides
     @AppScope
@@ -69,8 +63,8 @@ class AppModule {
 
     @Provides
     @AppScope
-    internal fun provideProgressUseCaseInformator(context: Context): IProgressUseCaseInformator {
-        return ProgressUseCaseInformator(context)
+    internal fun provideProgressUseCaseInformator(coreProgressUseCaseInformator: IProgressUseCaseInformator, context: Context): IWriteOffProgressUseCaseInformator {
+        return ProgressUseCaseInformator(coreProgressUseCaseInformator, context)
     }
 
 
@@ -102,9 +96,6 @@ class AppModule {
     internal fun provideIGoodInformationRepo(hyperHive: HyperHive): IGoodInformationRepo {
         return GoodInformationRepo(hyperHive)
     }
-
-
-
 
 
 }

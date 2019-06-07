@@ -1,17 +1,15 @@
 package com.lenta.inventory.di
 
 import android.content.Context
-import com.lenta.inventory.exception.IInventoryFailureInterpretator
-import com.lenta.inventory.exception.InventoryFailureInterpretator
 import com.lenta.inventory.features.auth.Authenticator
 import com.lenta.inventory.platform.navigation.IScreenNavigator
 import com.lenta.inventory.platform.navigation.ScreenNavigator
+import com.lenta.inventory.progress.IInventoryProgressUseCaseInformator
 import com.lenta.inventory.progress.ProgressUseCaseInformator
 import com.lenta.inventory.repos.IRepoInMemoryHolder
 import com.lenta.inventory.repos.RepoInMemoryHolder
 import com.lenta.shared.account.IAuthenticator
 import com.lenta.shared.di.AppScope
-import com.lenta.shared.exception.IFailureInterpreter
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
 import com.lenta.shared.platform.navigation.ICoreNavigator
 import com.lenta.shared.progress.IProgressUseCaseInformator
@@ -27,16 +25,13 @@ class AppModule {
         return Authenticator(hyperHive)
     }
 
-    @Provides
-    @AppScope
-    internal fun provideFailureInterpreter(context: Context, coreFailureInterpreter: IFailureInterpreter): IInventoryFailureInterpretator {
-        return InventoryFailureInterpretator(context, coreFailureInterpreter)
-    }
 
     @Provides
     @AppScope
-    internal fun provideProgressUseCaseInformator(context: Context): IProgressUseCaseInformator {
-        return ProgressUseCaseInformator(context)
+    internal fun provideProgressUseCaseInformator(
+            progressUseCaseInformator: IProgressUseCaseInformator,
+            context: Context): IInventoryProgressUseCaseInformator {
+        return ProgressUseCaseInformator(progressUseCaseInformator, context)
     }
 
     @Provides
@@ -46,10 +41,9 @@ class AppModule {
             iCoreNavigator: ICoreNavigator,
             foregroundActivityProvider: ForegroundActivityProvider,
             authenticator: IAuthenticator,
-            faultInterpreter: IInventoryFailureInterpretator,
             progressUseCaseInformator: IProgressUseCaseInformator
     ): IScreenNavigator {
-        return ScreenNavigator(context, iCoreNavigator, foregroundActivityProvider, authenticator, faultInterpreter, progressUseCaseInformator)
+        return ScreenNavigator(context, iCoreNavigator, foregroundActivityProvider, authenticator, progressUseCaseInformator)
     }
 
     @Provides
