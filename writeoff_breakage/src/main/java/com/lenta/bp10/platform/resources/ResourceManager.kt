@@ -12,5 +12,4 @@ class StringResourceManager (val context: Context, sharedStringResourceManager: 
 
 interface IStringResourceManager : ISharedStringResourceManager {
     fun selectTaskType(): String
-
 }

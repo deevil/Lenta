@@ -211,7 +211,12 @@ class GoodsListFragment :
         } else {
             filterRecyclerViewKeyHandler
         })?.let {
-            return it.onKeyDown(keyCode)
+            if (!it.onKeyDown(keyCode)) {
+                keyCode.digit?.let { digit ->
+                    vm.onDigitPressed(digit)
+                }
+                return true
+            }
         }
         return false
     }

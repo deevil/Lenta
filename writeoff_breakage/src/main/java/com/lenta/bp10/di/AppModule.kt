@@ -5,6 +5,8 @@ import com.google.gson.Gson
 import com.lenta.bp10.exception.IWriteOffFailureInterpretator
 import com.lenta.bp10.exception.WriteOffFailureInterpretator
 import com.lenta.bp10.features.auth.Authenticator
+import com.lenta.bp10.features.good_information.GoodInformationRepo
+import com.lenta.bp10.features.good_information.IGoodInformationRepo
 import com.lenta.bp10.features.job_card.IJobCardRepo
 import com.lenta.bp10.features.job_card.JobCardRepo
 import com.lenta.bp10.models.IPersistWriteOffTask
@@ -94,6 +96,15 @@ class AppModule {
     internal fun provideSharedStringResourceManager(context: Context, resourceManager: ISharedStringResourceManager): IStringResourceManager {
         return StringResourceManager(context, resourceManager)
     }
+
+    @Provides
+    @AppScope
+    internal fun provideIGoodInformationRepo(hyperHive: HyperHive): IGoodInformationRepo {
+        return GoodInformationRepo(hyperHive)
+    }
+
+
+
 
 
 }

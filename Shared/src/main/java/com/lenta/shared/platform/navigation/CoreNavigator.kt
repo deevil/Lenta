@@ -93,13 +93,13 @@ class CoreNavigator constructor(private val context: Context,
 
     override fun showProgress(title: String) {
         runOrPostpone {
-            foregroundActivityProvider.getActivity()?.getViewModel()?.showSimpleProgress(title)
+            foregroundActivityProvider.getActivity()?.showSimpleProgress(title)
         }
     }
 
     override fun hideProgress() {
         runOrPostpone {
-            foregroundActivityProvider.getActivity()?.getViewModel()?.hideProgress()
+            foregroundActivityProvider.getActivity()?.hideProgress()
         }
     }
 

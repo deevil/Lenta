@@ -25,6 +25,7 @@ import com.lenta.shared.platform.resources.ISharedStringResourceManager
 import com.lenta.shared.platform.time.ITimeMonitor
 import com.lenta.shared.scan.IScanHelper
 import com.lenta.shared.settings.IAppSettings
+import com.lenta.shared.utilities.databinding.DataBindingExtHolder
 import com.mobrun.plugin.api.HyperHive
 import com.mobrun.plugin.api.HyperHiveState
 import dagger.Component
@@ -63,4 +64,5 @@ interface CoreComponent {
     fun inject(it: SelectOperModeViewModel)
     fun inject(it: SettingsViewModel)
     fun inject(it: AuxiliaryMenuViewModel)
+    fun inject(dataBindingHelpHolder: DataBindingExtHolder)
 }

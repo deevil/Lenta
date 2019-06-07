@@ -70,4 +70,5 @@
     <string name="msg_incorrect_pin_code">Пин-код неверный</string>
     <string name="yes">Да</string>
     <string name="no">Нет</string>
+    <string name="empty_category">Пустая категория</string>
 </resources>

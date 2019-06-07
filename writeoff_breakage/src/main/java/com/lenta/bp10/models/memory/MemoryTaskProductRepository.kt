@@ -29,6 +29,12 @@ class MemoryTaskProductRepository(private val productInfo: ArrayList<ProductInfo
         if (index == -1) {
             productInfo.add(product)
             return true
+        } else if (index !=  productInfo.size - 1) {
+            productInfo.getOrNull(index)?.let {
+                productInfo.removeAt(index)
+                productInfo.add(it)
+            }
+
         }
 
         return false
