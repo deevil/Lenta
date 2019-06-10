@@ -1,0 +1,147 @@
+package com.lenta.bp10.features.goods_list
+
+import com.lenta.bp10.fmp.resources.dao_ext.isChkOwnpr
+import com.lenta.bp10.fmp.resources.tasks_settings.ZmpUtz29V001Rfc
+import com.lenta.bp10.models.repositories.IWriteOffTaskManager
+import com.lenta.bp10.platform.navigation.IScreenNavigator
+import com.lenta.bp10.requests.network.PermissionToWriteoffNetRequest
+import com.lenta.bp10.requests.network.PermissionToWriteoffPrams
+import com.lenta.bp10.requests.network.PermissionToWriteoffRestInfo
+import com.lenta.shared.account.ISessionInfo
+import com.lenta.shared.di.AppScope
+import com.lenta.shared.exception.Failure
+import com.lenta.shared.models.core.ProductType
+import com.lenta.shared.models.core.isNormal
+import com.lenta.shared.requests.combined.scan_info.ScanInfoRequest
+import com.lenta.shared.requests.combined.scan_info.ScanInfoRequestParams
+import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
+import com.lenta.shared.utilities.Logg
+import com.mobrun.plugin.api.HyperHive
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
+import javax.inject.Inject
+
+@AppScope
+class SearchProductDelegate @Inject constructor(
+        private val hyperHive: HyperHive,
+        private val screenNavigator: IScreenNavigator,
+        private val scanInfoRequest: ScanInfoRequest,
+        private val processServiceManager: IWriteOffTaskManager,
+        private val sessionInfo: ISessionInfo,
+        private var permissionToWriteoffNetRequest: PermissionToWriteoffNetRequest
+) {
+
+    private val zmpUtz29V001: ZmpUtz29V001Rfc by lazy {
+        ZmpUtz29V001Rfc(hyperHive)
+    }
+
+    private var scanInfoResult: ScanInfoResult? = null
+
+    lateinit var viewModelScope: () -> CoroutineScope
+
+    fun searchCode(code: String, fromScan: Boolean) {
+        viewModelScope().launch {
+            screenNavigator.showProgress(scanInfoRequest)
+            scanInfoRequest(
+                    ScanInfoRequestParams(
+                            number = code,
+                            tkNumber = processServiceManager.getWriteOffTask()!!.taskDescription.tkNumber,
+                            fromScan = fromScan
+                    )
+            )
+                    .either(::handleFailure, ::handleSearchSuccess)
+            screenNavigator.hideProgress()
+
+        }
+    }
+
+    private fun handleSearchSuccess(scanInfoResult: ScanInfoResult) {
+        Logg.d { "scanInfoResult: $scanInfoResult" }
+        this.scanInfoResult = scanInfoResult
+        viewModelScope().launch {
+            if (zmpUtz29V001.isChkOwnpr(processServiceManager.getWriteOffTask()?.taskDescription!!.taskType.code)) {
+                screenNavigator.showProgress(permissionToWriteoffNetRequest)
+                permissionToWriteoffNetRequest(
+                        PermissionToWriteoffPrams(
+                                matnr = scanInfoResult.productInfo.materialNumber,
+                                werks = sessionInfo.market!!))
+                        .either(::handleFailure, ::handlePermissionsSuccess)
+                screenNavigator.hideProgress()
+            } else {
+                searchProduct()
+            }
+        }
+    }
+
+    private fun handlePermissionsSuccess(permissionToWriteoff: PermissionToWriteoffRestInfo) {
+        if (permissionToWriteoff.ownr.isEmpty()) {
+            screenNavigator.openAlertNotAllowWriteOffToWorkScreen()
+        } else searchProduct()
+    }
+
+    private fun searchProduct() {
+
+        scanInfoResult?.let {
+            var goodsForTask = false
+
+            processServiceManager.getWriteOffTask()?.taskDescription!!.materialTypes.firstOrNull { taskMatType ->
+                taskMatType == it.productInfo.materialType
+            }?.let {
+                goodsForTask = true
+            }
+
+
+            if (!goodsForTask) {
+                screenNavigator.openAlertGoodsNotForTaskScreen()
+                return
+            }
+
+            goodsForTask = false
+
+            if (it.productInfo.type == ProductType.ExciseAlcohol || it.productInfo.type == ProductType.NonExciseAlcohol) {
+                processServiceManager.getWriteOffTask()?.taskDescription!!.gisControls.forEach { gis ->
+                    if (gis == "A") goodsForTask = true
+                }
+                if (!goodsForTask) {
+                    screenNavigator.openAlertGoodsNotForTaskScreen()
+                    return
+                }
+            }
+
+            it.productInfo.matrixType.let { matrixType ->
+                if (!matrixType.isNormal()) {
+                    screenNavigator.openMatrixAlertScreen(matrixType = matrixType, codeConfirmation = GoodsListViewModel.requestCodeAddProduct)
+                    return
+                }
+            }
+        }
+
+        openGoodInfoScreen()
+
+    }
+
+    fun handleFailure(failure: Failure) {
+        screenNavigator.openAlertScreen(failure)
+    }
+
+    fun openGoodInfoScreen() {
+        scanInfoResult?.let {
+            when (it.productInfo.type) {
+                ProductType.General -> screenNavigator.openGoodInfoScreen(it.productInfo, it.quantity)
+                ProductType.ExciseAlcohol -> {
+                    if (scanInfoResult!!.productInfo.isSet) {
+                        screenNavigator.openSetsInfoScreen(it.productInfo)
+                        return
+                    } else
+                        //TODO (Борисенко) реализовать логику для алкоголя и убрать хардкод
+                        screenNavigator.openAlertScreen("Поддержка данного типа товара в процессе разработки")
+                }
+                else -> screenNavigator.openAlertScreen("Поддержка данного типа товара в процессе разработки")
+            }
+        }
+
+
+    }
+
+
+}

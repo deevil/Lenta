@@ -40,5 +40,6 @@
     <string name="goods_not_for_task">Вид\\тип товара не соответствует настройкам задания</string>
     <string name="saved_data_detect_message">На устройстве обнаружены несохраненные данные. Перейти к данным?</string>
     <string name="select_task_type">Выберите тип задания</string>
+    <string name="not_allow_writeoff_to_work">Не разрешено списание в производство</string>
 
 </resources>

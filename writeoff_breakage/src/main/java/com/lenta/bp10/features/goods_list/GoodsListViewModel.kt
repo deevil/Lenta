@@ -2,8 +2,6 @@ package com.lenta.bp10.features.goods_list
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.lenta.bp10.fmp.resources.dao_ext.isChkOwnpr
-import com.lenta.bp10.fmp.resources.tasks_settings.ZmpUtz29V001Rfc
 import com.lenta.bp10.models.repositories.IWriteOffTaskManager
 import com.lenta.bp10.models.repositories.getTotalCountForProduct
 import com.lenta.bp10.models.task.TaskWriteOffReason
@@ -14,13 +12,8 @@ import com.lenta.bp10.requests.network.*
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.models.core.ProductInfo
-import com.lenta.shared.models.core.ProductType
-import com.lenta.shared.models.core.isNormal
 import com.lenta.shared.platform.resources.ISharedStringResourceManager
 import com.lenta.shared.platform.viewmodel.CoreViewModel
-import com.lenta.shared.requests.combined.scan_info.ScanInfoRequest
-import com.lenta.shared.requests.combined.scan_info.ScanInfoRequestParams
-import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.Evenable
@@ -37,16 +30,11 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
     @Inject
     lateinit var hyperHive: HyperHive
-    val zmpUtz29V001: ZmpUtz29V001Rfc by lazy {
-        ZmpUtz29V001Rfc(hyperHive)
-    }
 
     @Inject
     lateinit var screenNavigator: IScreenNavigator
     @Inject
     lateinit var processServiceManager: IWriteOffTaskManager
-    @Inject
-    lateinit var scanInfoRequest: ScanInfoRequest
     @Inject
     lateinit var sharedStringResourceManager: ISharedStringResourceManager
     @Inject
@@ -54,11 +42,10 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     @Inject
     lateinit var printTaskNetRequest: PrintTaskNetRequest
     @Inject
-    lateinit var permissionToWriteoffNetRequest: PermissionToWriteoffNetRequest
-    @Inject
     lateinit var sessionInfo: ISessionInfo
+    @Inject
+    lateinit var searchProductDelegate: SearchProductDelegate
 
-    private val scanInfoResult: MutableLiveData<ScanInfoResult> = MutableLiveData()
     var selectedPage = MutableLiveData(0)
     val countedGoods: MutableLiveData<List<GoodItem>> = MutableLiveData()
     val filteredGoods: MutableLiveData<List<FilterItem>> = MutableLiveData()
@@ -96,13 +83,9 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
         }
     }
 
-    private val msgGoodsNotForTask: MutableLiveData<String> = MutableLiveData()
-    fun setMsgGoodsNotForTask(string: String) {
-        this.msgGoodsNotForTask.value = string
-    }
-
     init {
         viewModelScope.launch {
+            searchProductDelegate.viewModelScope = this@GoodsListViewModel::viewModelScope
             updateCounted()
             updateFilter()
         }
@@ -184,99 +167,12 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     }
 
     override fun onOkInSoftKeyboard(): Boolean {
-        searchCode(fromScan = false)
+        eanCode.value?.let {
+            searchProductDelegate.searchCode(it, fromScan = false)
+        }
         return true
     }
 
-    private fun searchCode(fromScan: Boolean) {
-        viewModelScope.launch {
-            eanCode.value?.let {
-                screenNavigator.showProgress(scanInfoRequest)
-                scanInfoRequest(ScanInfoRequestParams(
-                        number = it,
-                        tkNumber = processServiceManager.getWriteOffTask()!!.taskDescription.tkNumber,
-                        fromScan = fromScan
-                )
-                )
-                        .either(::handleFailure, ::handleSearchSuccess)
-                screenNavigator.hideProgress()
-            }
-
-        }
-    }
-
-
-    private fun handleSearchSuccess(scanInfoResult: ScanInfoResult) {
-        Logg.d { "scanInfoResult: $scanInfoResult" }
-        this.scanInfoResult.value = scanInfoResult
-        viewModelScope.launch {
-            if (zmpUtz29V001.isChkOwnpr(processServiceManager.getWriteOffTask()?.taskDescription!!.taskType.code)) {
-                screenNavigator.showProgress(permissionToWriteoffNetRequest)
-                permissionToWriteoffNetRequest(
-                        PermissionToWriteoffPrams(
-                                matnr = scanInfoResult.productInfo.materialNumber,
-                                werks = sessionInfo.market!!))
-                        .either(::handleFailure, ::handlePermissionsSuccess)
-                screenNavigator.hideProgress()
-            } else {
-                searchProduct()
-            }
-        }
-    }
-
-    private fun handlePermissionsSuccess(permissionToWriteoff: PermissionToWriteoffRestInfo) {
-        if (permissionToWriteoff.ownr.isEmpty()) {
-            screenNavigator.openAlertScreen("Не разрешено списание в производство")
-        } else searchProduct()
-    }
-
-    private fun searchProduct() {
-
-        val goodsForTask: MutableLiveData<Boolean> = MutableLiveData(false)
-        processServiceManager.getWriteOffTask()?.taskDescription!!.materialTypes.forEachIndexed { index, taskMatType ->
-            if (taskMatType == scanInfoResult.value!!.productInfo.materialType) goodsForTask.value = true
-        }
-
-        if (!goodsForTask.value!!) {
-            screenNavigator.openAlertScreen(msgGoodsNotForTask.value!!)
-            return
-        }
-
-        goodsForTask.value = false
-        if (scanInfoResult.value!!.productInfo.type == ProductType.ExciseAlcohol || scanInfoResult.value!!.productInfo.type == ProductType.NonExciseAlcohol) {
-            processServiceManager.getWriteOffTask()?.taskDescription!!.gisControls.forEach {
-                if (it == "A") goodsForTask.value = true
-            }
-            if (!goodsForTask.value!!) {
-                screenNavigator.openAlertScreen(msgGoodsNotForTask.value!!)
-                return
-            }
-        }
-
-        scanInfoResult.value!!.productInfo.matrixType?.let { matrixType ->
-            if (!matrixType.isNormal()) {
-                screenNavigator.openMatrixAlertScreen(matrixType = matrixType, codeConfirmation = requestCodeAddProduct)
-                return
-            }
-        }
-
-        openGoodInfoScreen()
-
-    }
-
-    private fun openGoodInfoScreen() {
-        when (scanInfoResult.value!!.productInfo.type) {
-            ProductType.General -> screenNavigator.openGoodInfoScreen(scanInfoResult.value!!.productInfo, scanInfoResult.value!!.quantity)
-            ProductType.ExciseAlcohol -> {
-                if (scanInfoResult.value!!.productInfo.isSet) {
-                    screenNavigator.openSetsInfoScreen(scanInfoResult.value!!.productInfo)
-                    return
-                } else
-                    screenNavigator.openAlertScreen("Поддержка данного типа товара в процессе разработки")
-            }
-            else -> screenNavigator.openAlertScreen("Поддержка данного типа товара в процессе разработки")
-        }
-    }
 
     override fun handleFailure(failure: Failure) {
         super.handleFailure(failure)
@@ -293,7 +189,7 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
     fun onScanResult(data: String) {
         eanCode.value = data
-        searchCode(fromScan = true)
+        searchProductDelegate.searchCode(code = data, fromScan = true)
     }
 
     fun onClickSave() {
@@ -359,7 +255,7 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     fun onResult(code: Int?) {
         when (code) {
             requestCodeDelete -> onConfirmAllDelete()
-            requestCodeAddProduct -> openGoodInfoScreen()
+            requestCodeAddProduct -> searchProductDelegate.openGoodInfoScreen()
             requestCodeSelectPersonnelNumber -> saveData()
         }
     }

@@ -199,6 +199,14 @@ class ScreenNavigator(
         }
     }
 
+    override fun openAlertGoodsNotForTaskScreen() {
+        openAlertScreen(context.getString(R.string.goods_not_for_task))
+    }
+
+    override fun openAlertNotAllowWriteOffToWorkScreen() {
+        openAlertScreen(context.getString(R.string.not_allow_writeoff_to_work))
+    }
+
 
 }
 
@@ -223,4 +231,6 @@ interface IScreenNavigator : ICoreNavigator {
     fun openDetectionSavedDataScreen()
     fun openRemoveLinesConfirmationScreen(taskDescription: String, count: Int, codeConfirmation: Int)
     fun openMatrixAlertScreen(matrixType: MatrixType, codeConfirmation: Int)
+    fun openAlertGoodsNotForTaskScreen()
+    fun openAlertNotAllowWriteOffToWorkScreen()
 }
