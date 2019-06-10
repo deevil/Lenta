@@ -1,0 +1,61 @@
+// Returns last tag on current branch
+String getLastTag(String prefixAppVersion) {
+    try {
+        def stdout = new ByteArrayOutputStream()
+        exec {
+            commandLine 'git', 'tag', '-l', prefixAppVersion + ".*"
+            standardOutput = stdout
+        }
+        return stdout.toString().trim()
+    }
+    catch (ignored) {
+        logger.error('getLastTag() error, ' + ignored)
+        return null
+    }
+}
+
+// Returns commits' count since tag
+def gitCommitsSinceTag(tag) {
+    try {
+        def stdout = new ByteArrayOutputStream()
+        exec {
+            //                             master - remote branch
+            commandLine 'git', 'rev-list', 'HEAD', '--count', "${tag}...HEAD"
+            standardOutput = stdout
+        }
+        return stdout.toString().trim()
+    }
+    catch (ignored) {
+        logger.error('gitCommitsSinceTag() error, ' + ignored)
+        return null
+    }
+}
+
+
+def getCodeVersion() {
+    try {
+        def stdout = new ByteArrayOutputStream()
+        exec {
+            commandLine 'git', 'rev-list', 'HEAD', '--count'
+            standardOutput = stdout
+        }
+        return Integer.parseInt(stdout.toString().trim())
+    }
+    catch (ignored) {
+        return 1
+    }
+}
+
+String getNameVersion(String prefixAppVersion) {
+    String lastTag = getLastTag(prefixAppVersion)
+    if (lastTag == null) {
+        return prefixAppVersion + ".0." + getCodeVersion()
+    }
+    return lastTag + "." + gitCommitsSinceTag(lastTag)
+}
+
+ext {
+    getCodeVersion = this.&getCodeVersion
+    getNameVersion = this.&getNameVersion
+}
+

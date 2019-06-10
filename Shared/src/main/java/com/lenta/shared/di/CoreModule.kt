@@ -25,6 +25,8 @@ import com.lenta.shared.platform.resources.ISharedStringResourceManager
 import com.lenta.shared.platform.resources.SharedStringResourceManager
 import com.lenta.shared.platform.time.ITimeMonitor
 import com.lenta.shared.platform.time.TimeMonitor
+import com.lenta.shared.progress.CoreProgressUseCaseInformator
+import com.lenta.shared.progress.IProgressUseCaseInformator
 import com.lenta.shared.scan.IScanHelper
 import com.lenta.shared.scan.mobilbase.MobilBaseScanHelper
 import com.lenta.shared.settings.AppSettings
@@ -154,6 +156,12 @@ class CoreModule(val application: Application, val defaultConnectionSettings: De
     @Singleton
     internal fun provideScanHelper(): IScanHelper {
         return MobilBaseScanHelper()
+    }
+
+    @Provides
+    @Singleton
+    internal fun provideIProgressUseCaseInformator(context: Context): IProgressUseCaseInformator {
+        return CoreProgressUseCaseInformator(context)
     }
 
 }

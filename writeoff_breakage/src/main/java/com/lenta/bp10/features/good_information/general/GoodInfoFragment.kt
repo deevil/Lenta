@@ -13,12 +13,15 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListe
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.provideViewModel
+import com.lenta.shared.utilities.extentions.toStringFormatted
 import com.lenta.shared.utilities.state.state
 
 
 class GoodInfoFragment : CoreFragment<FragmentGoodInfoBinding, GoodInfoViewModel>(), ToolbarButtonsClickListener, OnBackPresserListener {
 
     private var productInfo by state<ProductInfo?>(null)
+
+    private var initCount by state<Double?>(null)
 
     override fun getLayoutId(): Int = R.layout.fragment_good_info
 
@@ -29,6 +32,9 @@ class GoodInfoFragment : CoreFragment<FragmentGoodInfoBinding, GoodInfoViewModel
             getAppComponent()?.inject(viewModel)
             productInfo?.let {
                 viewModel.setProductInfo(it)
+            }
+            initCount?.let {
+                viewModel.count.value = it.toStringFormatted()
             }
             return viewModel
         }
@@ -79,9 +85,10 @@ class GoodInfoFragment : CoreFragment<FragmentGoodInfoBinding, GoodInfoViewModel
 
 
     companion object {
-        fun create(productInfo: ProductInfo): GoodInfoFragment {
+        fun create(productInfo: ProductInfo, initCount: Double): GoodInfoFragment {
             GoodInfoFragment().let {
                 it.productInfo = productInfo
+                it.initCount = initCount
                 return it
             }
         }

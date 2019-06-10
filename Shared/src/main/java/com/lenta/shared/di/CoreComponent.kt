@@ -23,6 +23,7 @@ import com.lenta.shared.platform.network_state.INetworkStateMonitor
 import com.lenta.shared.platform.network_state.NetworkStateMonitor
 import com.lenta.shared.platform.resources.ISharedStringResourceManager
 import com.lenta.shared.platform.time.ITimeMonitor
+import com.lenta.shared.progress.IProgressUseCaseInformator
 import com.lenta.shared.scan.IScanHelper
 import com.lenta.shared.settings.IAppSettings
 import com.lenta.shared.utilities.databinding.DataBindingExtHolder
@@ -53,6 +54,7 @@ interface CoreComponent {
     fun getISessionInfo(): ISessionInfo
     fun getIAnalytics(): IAnalytics
     fun getIScanHelper(): IScanHelper
+    fun getIProgressUseCaseInformator(): IProgressUseCaseInformator
 
 
     fun inject(it: FmpSettingsViewModel)
