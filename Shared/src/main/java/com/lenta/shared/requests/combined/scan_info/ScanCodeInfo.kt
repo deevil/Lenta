@@ -3,7 +3,7 @@ package com.lenta.shared.requests.combined.scan_info
 import com.lenta.shared.requests.combined.scan_info.pojo.EanInfo
 import java.util.*
 
-class ScanCodeInfo(val originalNumber: String) {
+class ScanCodeInfo(val originalNumber: String, val fixedQuantity: Double?) {
 
     val codeWithoutQuantity by lazy {
         "${originalNumber.dropLast(6)}000000"
@@ -58,6 +58,9 @@ class ScanCodeInfo(val originalNumber: String) {
     }
 
     fun extractQuantityFromEan(eanInfo: EanInfo): Double {
+        fixedQuantity?.let {
+            return it
+        }
         var quantity = 1.0
         if (eanInfo.ean != originalNumber) {
             quantity = originalNumber.takeLast(6).dropLast(1).toDoubleOrNull() ?: 0.0

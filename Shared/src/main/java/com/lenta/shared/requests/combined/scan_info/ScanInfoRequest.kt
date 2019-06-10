@@ -43,7 +43,7 @@ class ScanInfoRequest @Inject constructor(private val hyperHive: HyperHive, priv
 
     override suspend fun run(params: ScanInfoRequestParams): Either<Failure, ScanInfoResult> {
 
-        val scanCodeInfo = ScanCodeInfo(params.number)
+        val scanCodeInfo = ScanCodeInfo(params.number, if(params.fromScan) null else 0.0)
 
         if (!scanCodeInfo.isEnterCodeValid) {
             return Either.Left(Failure.NotValidEnterNumber)
@@ -59,7 +59,7 @@ class ScanInfoRequest @Inject constructor(private val hyperHive: HyperHive, priv
             if (materialInfo != null) {
                 eanInfo = zmpUtz25V001.getEanInfoFromMaterial(materialInfo.material)?.toEanInfo()
                         ?: return Either.Left(Failure.GoodNotFound)
-                return getResult(eanInfo, materialInfo, 1.0)
+                return getResult(eanInfo, materialInfo, scanCodeInfo.extractQuantityFromEan(eanInfo))
             } else {
                 return searchMaterialFromServer(scanCodeInfo, params.tkNumber)
             }
@@ -166,7 +166,8 @@ data class ScanInfoResult(
 
 data class ScanInfoRequestParams(
         var number: String,
-        val tkNumber: String
+        val tkNumber: String,
+        val fromScan: Boolean
 )
 
 

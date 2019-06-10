@@ -184,17 +184,20 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     }
 
     override fun onOkInSoftKeyboard(): Boolean {
-        searchCode()
+        searchCode(fromScan = false)
         return true
     }
 
-    private fun searchCode() {
+    private fun searchCode(fromScan: Boolean) {
         viewModelScope.launch {
             eanCode.value?.let {
                 screenNavigator.showProgress(scanInfoRequest)
                 scanInfoRequest(ScanInfoRequestParams(
                         number = it,
-                        tkNumber = processServiceManager.getWriteOffTask()!!.taskDescription.tkNumber))
+                        tkNumber = processServiceManager.getWriteOffTask()!!.taskDescription.tkNumber,
+                        fromScan = fromScan
+                )
+                )
                         .either(::handleFailure, ::handleSearchSuccess)
                 screenNavigator.hideProgress()
             }
@@ -290,7 +293,7 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
     fun onScanResult(data: String) {
         eanCode.value = data
-        searchCode()
+        searchCode(fromScan = true)
     }
 
     fun onClickSave() {
