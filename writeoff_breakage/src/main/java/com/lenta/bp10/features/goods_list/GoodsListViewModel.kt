@@ -58,7 +58,7 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     @Inject
     lateinit var sessionInfo: ISessionInfo
 
-    private val productInfo: MutableLiveData<ProductInfo> = MutableLiveData()
+    private val scanInfoResult: MutableLiveData<ScanInfoResult> = MutableLiveData()
     var selectedPage = MutableLiveData(0)
     val countedGoods: MutableLiveData<List<GoodItem>> = MutableLiveData()
     val filteredGoods: MutableLiveData<List<FilterItem>> = MutableLiveData()
@@ -205,7 +205,7 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
     private fun handleSearchSuccess(scanInfoResult: ScanInfoResult) {
         Logg.d { "scanInfoResult: $scanInfoResult" }
-        this.productInfo.value = scanInfoResult.productInfo
+        this.scanInfoResult.value = scanInfoResult
         viewModelScope.launch {
             if (zmpUtz29V001.isChkOwnpr(processServiceManager.getWriteOffTask()?.taskDescription!!.taskType.code)) {
                 screenNavigator.showProgress(permissionToWriteoffNetRequest)
@@ -231,7 +231,7 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
         val goodsForTask: MutableLiveData<Boolean> = MutableLiveData(false)
         processServiceManager.getWriteOffTask()?.taskDescription!!.materialTypes.forEachIndexed { index, taskMatType ->
-            if (taskMatType == productInfo.value!!.materialType) goodsForTask.value = true
+            if (taskMatType == scanInfoResult.value!!.productInfo.materialType) goodsForTask.value = true
         }
 
         if (!goodsForTask.value!!) {
@@ -240,7 +240,7 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
         }
 
         goodsForTask.value = false
-        if (productInfo.value!!.type == ProductType.ExciseAlcohol || productInfo.value!!.type == ProductType.NonExciseAlcohol) {
+        if (scanInfoResult.value!!.productInfo.type == ProductType.ExciseAlcohol || scanInfoResult.value!!.productInfo.type == ProductType.NonExciseAlcohol) {
             processServiceManager.getWriteOffTask()?.taskDescription!!.gisControls.forEach {
                 if (it == "A") goodsForTask.value = true
             }
@@ -250,7 +250,7 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
             }
         }
 
-        productInfo.value?.matrixType?.let { matrixType ->
+        scanInfoResult.value!!.productInfo.matrixType?.let { matrixType ->
             if (!matrixType.isNormal()) {
                 screenNavigator.openMatrixAlertScreen(matrixType = matrixType, codeConfirmation = requestCodeAddProduct)
                 return
@@ -262,11 +262,11 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     }
 
     private fun openGoodInfoScreen() {
-        when (productInfo.value!!.type) {
-            ProductType.General -> screenNavigator.openGoodInfoScreen(productInfo.value!!)
+        when (scanInfoResult.value!!.productInfo.type) {
+            ProductType.General -> screenNavigator.openGoodInfoScreen(scanInfoResult.value!!.productInfo, scanInfoResult.value!!.quantity)
             ProductType.ExciseAlcohol -> {
-                if (productInfo.value!!.isSet) {
-                    screenNavigator.openSetsInfoScreen(productInfo.value!!)
+                if (scanInfoResult.value!!.productInfo.isSet) {
+                    screenNavigator.openSetsInfoScreen(scanInfoResult.value!!.productInfo)
                     return
                 } else
                     screenNavigator.openAlertScreen("Поддержка данного типа товара в процессе разработки")

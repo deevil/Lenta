@@ -81,10 +81,10 @@ class ScreenNavigator(
 
     override fun openSelectionPersonnelNumberScreen(codeConfirmation: Int?) {
         runOrPostpone {
-            if (codeConfirmation == null){
+            if (codeConfirmation == null) {
                 getFragmentStack()?.replace(SelectPersonnelNumberFragment())
             } else {
-                getFragmentStack()?.push(SelectPersonnelNumberFragment.create(codeConfirmation =  codeConfirmation))
+                getFragmentStack()?.push(SelectPersonnelNumberFragment.create(codeConfirmation = codeConfirmation))
             }
         }
     }
@@ -120,9 +120,9 @@ class ScreenNavigator(
         }
     }
 
-    override fun openGoodInfoScreen(productInfo: ProductInfo) {
+    override fun openGoodInfoScreen(productInfo: ProductInfo, quantity: Double) {
         runOrPostpone {
-            getFragmentStack()?.push(GoodInfoFragment.create(productInfo))
+            getFragmentStack()?.push(GoodInfoFragment.create(productInfo, quantity))
         }
     }
 
@@ -240,7 +240,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openJobCardScreen()
     fun openLoadingTaskSettingsScreen()
     fun openGoodsListScreen()
-    fun openGoodInfoScreen(productInfo: ProductInfo)
+    fun openGoodInfoScreen(productInfo: ProductInfo, quantity: Double = 0.0)
     fun openEanInfoScreen()
     fun openESInfoScreen()
     fun openRemoveTaskConfirmationScreen(taskDescription: String, codeConfirmation: Int)
