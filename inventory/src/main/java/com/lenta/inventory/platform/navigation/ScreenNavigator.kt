@@ -3,10 +3,13 @@ package com.lenta.inventory.platform.navigation
 import android.content.Context
 import com.lenta.inventory.features.main_menu.MainMenuFragment
 import com.lenta.inventory.features.auth.AuthFragment
+import com.lenta.inventory.features.goods_information.general.GoodsInfoFragment
 import com.lenta.inventory.features.loading.fast.FastDataLoadingFragment
 import com.lenta.inventory.features.select_market.SelectMarketFragment
 import com.lenta.inventory.features.select_personnel_number.SelectPersonnelNumberFragment
 import com.lenta.shared.account.IAuthenticator
+import com.lenta.shared.features.matrix_info.MatrixInfoFragment
+import com.lenta.shared.models.core.MatrixType
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
 import com.lenta.shared.platform.navigation.ICoreNavigator
 import com.lenta.shared.platform.navigation.runOrPostpone
@@ -62,6 +65,12 @@ class ScreenNavigator(
         }
     }
 
+    override fun openGoodsInfoScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(GoodsInfoFragment())
+        }
+    }
+
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 
 }
@@ -73,4 +82,5 @@ interface IScreenNavigator : ICoreNavigator {
     fun openFastDataLoadingScreen()
     fun openSelectionPersonnelNumberScreen()
     fun openMainMenuScreen()
+    fun openGoodsInfoScreen()
 }

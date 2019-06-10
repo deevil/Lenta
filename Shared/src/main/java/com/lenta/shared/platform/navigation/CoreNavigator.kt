@@ -11,7 +11,9 @@ import com.lenta.shared.features.alert.AlertFragment
 import com.lenta.shared.features.auxiliary_menu.AuxiliaryMenuFragment
 import com.lenta.shared.features.exit.ExitWithConfirmationFragment
 import com.lenta.shared.features.fmp_settings.FmpSettingsFragment
+import com.lenta.shared.features.matrix_info.MatrixInfoFragment
 import com.lenta.shared.features.printer_change.PrinterChangeFragment
+import com.lenta.shared.features.section_info.SectionInfoFragment
 import com.lenta.shared.features.select_oper_mode.SelectOperModeFragment
 import com.lenta.shared.features.select_oper_mode.SelectOperModeViewModel
 import com.lenta.shared.features.settings.SettingsFragment
@@ -20,6 +22,7 @@ import com.lenta.shared.features.tech_login.TechLoginFragment
 import com.lenta.shared.features.test_environment.PinCodeFragment
 import com.lenta.shared.features.test_environment.failure.FailurePinCodeFragment
 import com.lenta.shared.interactor.UseCase
+import com.lenta.shared.models.core.MatrixType
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
 import com.lenta.shared.utilities.extentions.setFragmentResultCode
 
@@ -166,6 +169,30 @@ class CoreNavigator constructor(private val context: Context,
         }
     }
 
+    override fun openMatrixInfoScreen(matrixType: MatrixType) {
+        runOrPostpone {
+            getFragmentStack()?.push(MatrixInfoFragment.create(matrixType))
+        }
+    }
+
+    override fun openSectionInfoScreen(section: String) {
+        runOrPostpone {
+            getFragmentStack()?.push(SectionInfoFragment.create(sectionNumber = section))
+        }
+    }
+    override fun openEanInfoScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.ean_info),
+                    iconRes = R.drawable.ic_scan_barcode))
+        }
+    }
+
+    override fun openESInfoScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.es_info),
+                    iconRes = R.drawable.is_scan_barcode_es))
+        }
+    }
 
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 
@@ -197,6 +224,10 @@ interface ICoreNavigator {
     fun openAuxiliaryMenuScreen()
     fun openFailurePinCodeScreen(message: String)
     fun openExitConfirmationScreen()
+    fun openMatrixInfoScreen(matrixType: MatrixType)
+    fun openSectionInfoScreen(section: String)
+    fun openEanInfoScreen()
+    fun openESInfoScreen()
 }
 
 class FunctionsCollector(private val needCollectLiveData: LiveData<Boolean>) {
