@@ -218,7 +218,8 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
                 }
                 else -> {
                     with(filteredSelectionsHelper) {
-                        if (isSelectedEmpty() && selectedCategoryPosition.value == 0) {
+                        if (isSelectedEmpty() && (selectedCategoryPosition.value == 0 &&
+                                        (categories.value?.size ?: 0) > 1)) {
                             screenNavigator
                                     .openRemoveLinesConfirmationScreen(
                                             taskDescription = writeOffTask.taskDescription.taskName,
