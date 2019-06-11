@@ -5,4 +5,6 @@
     <string name="storage_place">Место хранения</string>
     <string name="goods_info">Информация о товаре</string>
     <string name="quantity">Количество</string>
+    <string name="categories">Категории</string>
+    <string name="goods_of_details">Детали по товару</string>
 </resources>
