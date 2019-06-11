@@ -8,7 +8,6 @@ import com.lenta.bp10.requests.network.PermissionToWriteoffNetRequest
 import com.lenta.bp10.requests.network.PermissionToWriteoffPrams
 import com.lenta.bp10.requests.network.PermissionToWriteoffRestInfo
 import com.lenta.shared.account.ISessionInfo
-import com.lenta.shared.di.AppScope
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.models.core.ProductType
 import com.lenta.shared.models.core.isNormal
@@ -21,7 +20,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-@AppScope
 class SearchProductDelegate @Inject constructor(
         private val hyperHive: HyperHive,
         private val screenNavigator: IScreenNavigator,
@@ -37,9 +35,17 @@ class SearchProductDelegate @Inject constructor(
 
     private var scanInfoResult: ScanInfoResult? = null
 
-    lateinit var viewModelScope: () -> CoroutineScope
+    private lateinit var viewModelScope: () -> CoroutineScope
+
+    private var scanResultHandler: ((ScanInfoResult?) -> Boolean)? = null
+
+    fun init(viewModelScope: () -> CoroutineScope, scanResultHandler: ((ScanInfoResult?) -> Boolean)? = null) {
+        this.viewModelScope = viewModelScope
+        this.scanResultHandler = scanResultHandler
+    }
 
     fun searchCode(code: String, fromScan: Boolean) {
+        Logg.d { "hashCode: ${this.hashCode()}" }
         viewModelScope().launch {
             screenNavigator.showProgress(scanInfoRequest)
             scanInfoRequest(
@@ -53,6 +59,44 @@ class SearchProductDelegate @Inject constructor(
             screenNavigator.hideProgress()
 
         }
+    }
+
+    fun handleResultCode(code: Int?): Boolean {
+        return when (code) {
+            GoodsListViewModel.requestCodeAddProduct -> {
+                openGoodInfoScreen()
+                true
+            }
+            else -> false
+        }
+
+    }
+
+
+    private fun openGoodInfoScreen() {
+        scanInfoResult?.let { infoResult ->
+            scanResultHandler?.let { handle ->
+                if (handle(infoResult)) {
+                    return
+                }
+            }
+            when (infoResult.productInfo.type) {
+                ProductType.General -> screenNavigator.openGoodInfoScreen(infoResult.productInfo, infoResult.quantity)
+                ProductType.ExciseAlcohol -> {
+                    if (scanInfoResult!!.productInfo.isSet) {
+                        screenNavigator.openSetsInfoScreen(infoResult.productInfo)
+                        return
+                    } else
+                    //TODO (Борисенко) реализовать логику для алкоголя и убрать хардкод
+                        openNotSupportedMessageScreen()
+                }
+                else -> openNotSupportedMessageScreen()
+            }
+        }
+    }
+
+    private fun handleFailure(failure: Failure) {
+        screenNavigator.openAlertScreen(failure)
     }
 
     private fun handleSearchSuccess(scanInfoResult: ScanInfoResult) {
@@ -120,27 +164,9 @@ class SearchProductDelegate @Inject constructor(
 
     }
 
-    fun handleFailure(failure: Failure) {
-        screenNavigator.openAlertScreen(failure)
-    }
 
-    fun openGoodInfoScreen() {
-        scanInfoResult?.let {
-            when (it.productInfo.type) {
-                ProductType.General -> screenNavigator.openGoodInfoScreen(it.productInfo, it.quantity)
-                ProductType.ExciseAlcohol -> {
-                    if (scanInfoResult!!.productInfo.isSet) {
-                        screenNavigator.openSetsInfoScreen(it.productInfo)
-                        return
-                    } else
-                        //TODO (Борисенко) реализовать логику для алкоголя и убрать хардкод
-                        screenNavigator.openAlertScreen("Поддержка данного типа товара в процессе разработки")
-                }
-                else -> screenNavigator.openAlertScreen("Поддержка данного типа товара в процессе разработки")
-            }
-        }
-
-
+    private fun openNotSupportedMessageScreen() {
+        screenNavigator.openAlertScreen("Поддержка данного типа товара в процессе разработки")
     }
 
 

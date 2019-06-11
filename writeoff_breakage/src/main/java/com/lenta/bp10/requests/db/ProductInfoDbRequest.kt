@@ -56,7 +56,7 @@ class ProductInfoDbRequest
         }
 
 
-        val uomInfo = zmpUtz07V001.getUomInfo(eanInfo.uom)
+        val uomInfo = zmpUtz07V001.getUomInfo(materialInfo.buom)
 
         if (uomInfo == null) {
             return Either.Left(Failure.GoodNotFound)

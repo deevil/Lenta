@@ -96,7 +96,7 @@ class ScanInfoRequest @Inject constructor(private val hyperHive: HyperHive, priv
             )
 
             productInfoStatus.result?.raw?.let {
-                val productInfo = it.getProductInfo(zmpUtz07V001.getUomInfo(it.ean?.uom))
+                val productInfo = it.getProductInfo(zmpUtz07V001.getUomInfo(it.material?.buom))
                 productInfo?.let { info ->
                     return Either.Right(ScanInfoResult(info, quantity))
                 }
@@ -119,7 +119,7 @@ class ScanInfoRequest @Inject constructor(private val hyperHive: HyperHive, priv
     }
 
     private fun getResult(eanInfo: EanInfo, materialInfo: ZmpUtz30V001.ItemLocal_ET_MATERIALS, quantity: Double): Either<Failure, ScanInfoResult> {
-        val uomInfo = zmpUtz07V001.getUomInfo(eanInfo.uom)
+        val uomInfo = zmpUtz07V001.getUomInfo(materialInfo.buom)
                 ?: return Either.Left(Failure.GoodNotFound)
 
         return Either.Right(

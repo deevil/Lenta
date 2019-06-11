@@ -53,7 +53,7 @@ class ProductInfoNetRequest
 
         if (productInfoStatus.isNotBad()) {
             productInfoStatus.result?.raw?.let {
-                val productInfo = it.getProductInfo(zmpUtz07V001.getUomInfo(it.ean?.uom))
+                val productInfo = it.getProductInfo(zmpUtz07V001.getUomInfo(it.material?.buom))
                 productInfo?.let { info ->
                     return Either.Right(info)
                 }

@@ -85,7 +85,7 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
     init {
         viewModelScope.launch {
-            searchProductDelegate.viewModelScope = this@GoodsListViewModel::viewModelScope
+            searchProductDelegate.init(viewModelScope = this@GoodsListViewModel::viewModelScope)
             updateCounted()
             updateFilter()
         }
@@ -253,9 +253,11 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     }
 
     fun onResult(code: Int?) {
+        if (searchProductDelegate.handleResultCode(code)) {
+            return
+        }
         when (code) {
             requestCodeDelete -> onConfirmAllDelete()
-            requestCodeAddProduct -> searchProductDelegate.openGoodInfoScreen()
             requestCodeSelectPersonnelNumber -> saveData()
         }
     }
