@@ -143,13 +143,21 @@ class GoodInfoViewModel : CoreViewModel(), OnPositionClickListener {
 
     }
 
-    private fun addGood() {
+    private fun addGood(): Boolean {
         countValue.value?.let {
-            if (it > 0.0) {
+
+            if (enabledApplyButton.value != true && it != 0.0) {
+                screenNavigator.openNotPossibleSaveNegativeQuantityScreen()
+                return false
+            }
+
+            if (it != 0.0) {
                 processGeneralProductService.add(getReason(), it)
             }
             count.value = ""
+            return true
         }
+        return false
     }
 
 
@@ -177,8 +185,9 @@ class GoodInfoViewModel : CoreViewModel(), OnPositionClickListener {
     }
 
     fun onScanResult(data: String) {
-        addGood()
-        searchProductDelegate.searchCode(code = data, fromScan = true)
+        if (addGood()) {
+            searchProductDelegate.searchCode(code = data, fromScan = true)
+        }
     }
 
     fun onResult(code: Int?) {

@@ -207,6 +207,10 @@ class ScreenNavigator(
         openAlertScreen(context.getString(R.string.not_allow_writeoff_to_work))
     }
 
+    override fun openNotPossibleSaveNegativeQuantityScreen() {
+        openAlertScreen(message = context.getString(R.string.cannot_save_negative_quantity))
+    }
+
 
 }
 
@@ -233,4 +237,5 @@ interface IScreenNavigator : ICoreNavigator {
     fun openMatrixAlertScreen(matrixType: MatrixType, codeConfirmation: Int)
     fun openAlertGoodsNotForTaskScreen()
     fun openAlertNotAllowWriteOffToWorkScreen()
+    fun openNotPossibleSaveNegativeQuantityScreen()
 }
