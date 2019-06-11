@@ -1,5 +1,7 @@
 package com.lenta.inventory.main
 
+import com.lenta.inventory.features.goods_details.GoodsDetailsFragment
+import com.lenta.inventory.features.goods_information.general.GoodsInfoFragment
 import com.lenta.shared.features.auxiliary_menu.AuxiliaryMenuFragment
 import com.lenta.shared.features.exit.ExitWithConfirmationFragment
 import com.lenta.shared.features.fmp_settings.FmpSettingsFragment
@@ -32,6 +34,8 @@ class NumberScreenGenerator @Inject constructor() : INumberScreenGenerator {
             is FailurePinCodeFragment -> "$prefix/96"
             is MatrixInfoFragment -> "$prefix/12"
             is SectionInfoFragment -> "$prefix/12"
+            is GoodsInfoFragment -> "$prefix/10"
+            is GoodsDetailsFragment -> "$prefix/11"
             else -> ""
         }
     }
