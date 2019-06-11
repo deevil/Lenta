@@ -4,6 +4,9 @@ import com.lenta.bp10.fmp.resources.dao_ext.isChkOwnpr
 import com.lenta.bp10.fmp.resources.tasks_settings.ZmpUtz29V001Rfc
 import com.lenta.bp10.models.repositories.IWriteOffTaskManager
 import com.lenta.bp10.platform.navigation.IScreenNavigator
+import com.lenta.bp10.platform.requestCodeAddProduct
+import com.lenta.bp10.platform.requestCodeTypeBarCode
+import com.lenta.bp10.platform.requestCodeTypeSap
 import com.lenta.bp10.requests.network.PermissionToWriteoffNetRequest
 import com.lenta.bp10.requests.network.PermissionToWriteoffPrams
 import com.lenta.bp10.requests.network.PermissionToWriteoffRestInfo
@@ -39,20 +42,31 @@ class SearchProductDelegate @Inject constructor(
 
     private var scanResultHandler: ((ScanInfoResult?) -> Boolean)? = null
 
+    private var codeWith12Digits: String? = null
+
     fun init(viewModelScope: () -> CoroutineScope, scanResultHandler: ((ScanInfoResult?) -> Boolean)? = null) {
         this.viewModelScope = viewModelScope
         this.scanResultHandler = scanResultHandler
     }
 
-    fun searchCode(code: String, fromScan: Boolean) {
-        Logg.d { "hashCode: ${this.hashCode()}" }
+    fun searchCode(code: String, fromScan: Boolean, isBarCode :Boolean? = null) {
+
+        Logg.d { "hashCode: ${hashCode()}" }
+
+        if (isBarCode == null && code.length == 12) {
+            codeWith12Digits = code
+            screenNavigator.openSelectTypeCodeScreen(requestCodeTypeSap, requestCodeTypeBarCode)
+            return
+        }
+
         viewModelScope().launch {
             screenNavigator.showProgress(scanInfoRequest)
             scanInfoRequest(
                     ScanInfoRequestParams(
                             number = code,
                             tkNumber = processServiceManager.getWriteOffTask()!!.taskDescription.tkNumber,
-                            fromScan = fromScan
+                            fromScan = fromScan,
+                            isBarCode = isBarCode
                     )
             )
                     .either(::handleFailure, ::handleSearchSuccess)
@@ -63,8 +77,18 @@ class SearchProductDelegate @Inject constructor(
 
     fun handleResultCode(code: Int?): Boolean {
         return when (code) {
-            GoodsListViewModel.requestCodeAddProduct -> {
+            requestCodeAddProduct -> {
                 openGoodInfoScreen()
+                true
+            }
+            requestCodeTypeSap -> {
+                searchCode("000000$codeWith12Digits", fromScan = false, isBarCode = false)
+                codeWith12Digits = null
+                true
+            }
+            requestCodeTypeBarCode -> {
+                searchCode(code = codeWith12Digits ?: "", fromScan = false, isBarCode = true)
+                codeWith12Digits = null
                 true
             }
             else -> false
@@ -154,7 +178,7 @@ class SearchProductDelegate @Inject constructor(
 
             it.productInfo.matrixType.let { matrixType ->
                 if (!matrixType.isNormal()) {
-                    screenNavigator.openMatrixAlertScreen(matrixType = matrixType, codeConfirmation = GoodsListViewModel.requestCodeAddProduct)
+                    screenNavigator.openMatrixAlertScreen(matrixType = matrixType, codeConfirmation = requestCodeAddProduct)
                     return
                 }
             }

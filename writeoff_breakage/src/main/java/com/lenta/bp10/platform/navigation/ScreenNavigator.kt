@@ -211,6 +211,21 @@ class ScreenNavigator(
         openAlertScreen(message = context.getString(R.string.cannot_save_negative_quantity))
     }
 
+    override fun openSelectTypeCodeScreen(codeConfirmationForSap: Int, codeConfirmationForBarCode: Int) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.select_type_code_description),
+                    iconRes = 0,
+                    codeConfirm = codeConfirmationForBarCode,
+                    codeConfirmForLeft = codeConfirmationForSap,
+                    pageNumber = "10/90",
+                    leftButtonDecorationInfo = ButtonDecorationInfo.sap,
+                    rightButtonDecorationInfo = ButtonDecorationInfo.barcode)
+            )
+        }
+
+    }
+
 
 }
 
@@ -238,4 +253,5 @@ interface IScreenNavigator : ICoreNavigator {
     fun openAlertGoodsNotForTaskScreen()
     fun openAlertNotAllowWriteOffToWorkScreen()
     fun openNotPossibleSaveNegativeQuantityScreen()
+    fun openSelectTypeCodeScreen(codeConfirmationForSap: Int, codeConfirmationForBarCode: Int)
 }

@@ -8,6 +8,8 @@ import com.lenta.bp10.models.task.TaskWriteOffReason
 import com.lenta.bp10.models.task.getPrinterTask
 import com.lenta.bp10.models.task.getReport
 import com.lenta.bp10.platform.navigation.IScreenNavigator
+import com.lenta.bp10.platform.requestCodeDelete
+import com.lenta.bp10.platform.requestCodeSelectPersonnelNumber
 import com.lenta.bp10.requests.network.*
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
@@ -326,12 +328,7 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
     }
 
-    companion object {
-        const val requestCodeDelete = 100
-        const val requestCodeAddProduct = 101
-        const val requestCodeSelectPersonnelNumber = 102
 
-    }
 
 }
 

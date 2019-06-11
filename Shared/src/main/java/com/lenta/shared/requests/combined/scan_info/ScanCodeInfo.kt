@@ -57,16 +57,17 @@ class ScanCodeInfo(val originalNumber: String, val fixedQuantity: Double?) {
         res
     }
 
-    fun extractQuantityFromEan(eanInfo: EanInfo): Double {
+    fun extractQuantityFromEan(eanInfo: EanInfo?): Double {
         fixedQuantity?.let {
             return it
         }
         var quantity = 1.0
-        if (eanInfo.ean != originalNumber) {
-            quantity = originalNumber.takeLast(6).dropLast(1).toDoubleOrNull() ?: 0.0
-
+        eanInfo?.let {
+            if (it.ean != originalNumber) {
+                quantity = originalNumber.takeLast(6).dropLast(1).toDoubleOrNull() ?: 0.0
+            }
+            quantity = quantity * it.umrez / it.umren
         }
-        quantity = quantity * eanInfo.umrez / eanInfo.umren
         return quantity
     }
 

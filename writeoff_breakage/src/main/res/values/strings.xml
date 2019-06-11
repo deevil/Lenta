@@ -42,5 +42,6 @@
     <string name="select_task_type">Выберите тип задания</string>
     <string name="not_allow_writeoff_to_work">Не разрешено списание в производство</string>
     <string name="cannot_save_negative_quantity">Невозможно сохранить отрицательные количества</string>
+    <string name="select_type_code_description">Введено 12 знаков. Какой код вы ввели?</string>
 
 </resources>
