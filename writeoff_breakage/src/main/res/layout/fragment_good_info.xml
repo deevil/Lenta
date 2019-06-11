@@ -65,16 +65,19 @@
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
-            app:digitsForUom="@{vm.productInfo.uom}"
             android:ellipsize="end"
             android:inputType="numberDecimal"
             android:maxLines="1"
             android:text="@={vm.count}"
+            app:digitsForUom="@{vm.productInfo.uom}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/div_vert"
             app:layout_constraintTop_toTopOf="@+id/div_vert"
             app:suffix="@{vm.suffix}"
-            tools:text="1" />
+            tools:text="1">
+
+            <requestFocus />
+        </com.lenta.shared.view.EditTextWithSuffix>
 
         <View
             android:id="@+id/div_hor2"
