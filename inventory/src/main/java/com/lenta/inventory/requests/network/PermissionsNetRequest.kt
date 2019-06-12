@@ -23,8 +23,7 @@ class PermissionsRequest
                     "Content-Type" to "application/json"
             )
         }
-        val stringStatus = hyperHive.requestAPI.web("ZMP_UTZ_99_V001", webCallParams).execute()
-        val status = gson.fromJson(stringStatus, PermissionInventoryStatus::class.java)
+        val status = hyperHive.requestAPI.web("ZMP_UTZ_99_V001", webCallParams, PermissionInventoryStatus::class.java).execute()
         if (status.isNotBad()) {
             val errorText = status.result?.raw?.errorText
             return if (errorText.isNullOrEmpty()) {

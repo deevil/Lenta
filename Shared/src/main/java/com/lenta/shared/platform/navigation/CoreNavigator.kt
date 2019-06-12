@@ -73,7 +73,8 @@ class CoreNavigator constructor(private val context: Context,
                         message = message,
                         iconRes = iconRes,
                         textColor = textColor,
-                        pageNumber = pageNumber)
+                        pageNumber = pageNumber
+                )
                 it.push(fragment, CustomAnimation.vertical())
 
             }
@@ -184,6 +185,7 @@ class CoreNavigator constructor(private val context: Context,
             getFragmentStack()?.push(SectionInfoFragment.create(sectionNumber = section))
         }
     }
+
     override fun openEanInfoScreen() {
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.ean_info),

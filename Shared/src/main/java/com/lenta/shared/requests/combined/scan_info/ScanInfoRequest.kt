@@ -43,7 +43,7 @@ class ScanInfoRequest @Inject constructor(private val hyperHive: HyperHive, priv
 
     override suspend fun run(params: ScanInfoRequestParams): Either<Failure, ScanInfoResult> {
 
-        val scanCodeInfo = ScanCodeInfo(params.number)
+        val scanCodeInfo = ScanCodeInfo(params.number, if (params.fromScan) null else 0.0)
 
         if (!scanCodeInfo.isEnterCodeValid) {
             return Either.Left(Failure.NotValidEnterNumber)
@@ -51,17 +51,24 @@ class ScanInfoRequest @Inject constructor(private val hyperHive: HyperHive, priv
 
         var eanInfo = zmpUtz25V001.getEanInfo(scanCodeInfo.eanNumberForSearch)?.toEanInfo()
 
-        if (eanInfo != null) {
-            return searchMaterialFromDb(scanCodeInfo, eanInfo)
+        return if (eanInfo != null && params.isBarCode != true) {
+            searchMaterialFromDb(scanCodeInfo, eanInfo)
                     ?: searchMaterialFromServer(scanCodeInfo, params.tkNumber)
         } else {
-            val materialInfo = zmpUtz30V001.getMaterial(params.number)
+            val materialInfo = if (params.isBarCode == true) {
+                return Either.Left(Failure.GoodNotFound)
+            } else {
+                zmpUtz30V001.getMaterial(params.number)
+            }
             if (materialInfo != null) {
                 eanInfo = zmpUtz25V001.getEanInfoFromMaterial(materialInfo.material)?.toEanInfo()
-                        ?: return Either.Left(Failure.GoodNotFound)
-                return getResult(eanInfo, materialInfo, 1.0)
+                getResult(materialInfo, scanCodeInfo.extractQuantityFromEan(eanInfo))
             } else {
-                return searchMaterialFromServer(scanCodeInfo, params.tkNumber)
+                if (params.isBarCode == true) {
+                    Either.Left(Failure.GoodNotFound)
+                } else {
+                    searchMaterialFromServer(scanCodeInfo, params.tkNumber)
+                }
             }
         }
     }
@@ -75,19 +82,16 @@ class ScanInfoRequest @Inject constructor(private val hyperHive: HyperHive, priv
 
         Logg.d { "searchParams: $productInfoNetRequestParams" }
 
-        val stringRes = hyperHive.requestAPI.web("ZMP_UTZ_WOB_02_V001",
+        val productInfoStatus = hyperHive.requestAPI.web("ZMP_UTZ_WOB_02_V001",
                 WebCallParams().apply {
                     data = gson.toJson(productInfoNetRequestParams)
                     headers = mapOf(
                             "X-SUP-DOMAIN" to "DM-MAIN",
                             "Content-Type" to "application/json"
                     )
-                })
+                }, ProductInfoStatus::class.java)
                 .execute()
 
-        Logg.d { "searchRes: $stringRes" }
-
-        val productInfoStatus: ProductInfoStatus = gson.fromJson(stringRes, ProductInfoStatus::class.java)
 
         if (productInfoStatus.isNotBad()) {
 
@@ -96,7 +100,7 @@ class ScanInfoRequest @Inject constructor(private val hyperHive: HyperHive, priv
             )
 
             productInfoStatus.result?.raw?.let {
-                val productInfo = it.getProductInfo(zmpUtz07V001.getUomInfo(it.ean?.uom))
+                val productInfo = it.getProductInfo(zmpUtz07V001.getUomInfo(it.material?.buom))
                 productInfo?.let { info ->
                     return Either.Right(ScanInfoResult(info, quantity))
                 }
@@ -115,11 +119,11 @@ class ScanInfoRequest @Inject constructor(private val hyperHive: HyperHive, priv
         val materialInfo = zmpUtz30V001.getMaterial(eanInfo.materialNumber)
                 ?: return null
 
-        return getResult(eanInfo, materialInfo, quantity)
+        return getResult(materialInfo, quantity)
     }
 
-    private fun getResult(eanInfo: EanInfo, materialInfo: ZmpUtz30V001.ItemLocal_ET_MATERIALS, quantity: Double): Either<Failure, ScanInfoResult> {
-        val uomInfo = zmpUtz07V001.getUomInfo(eanInfo.uom)
+    private fun getResult(materialInfo: ZmpUtz30V001.ItemLocal_ET_MATERIALS, quantity: Double): Either<Failure, ScanInfoResult> {
+        val uomInfo = zmpUtz07V001.getUomInfo(materialInfo.buom)
                 ?: return Either.Left(Failure.GoodNotFound)
 
         return Either.Right(
@@ -166,7 +170,9 @@ data class ScanInfoResult(
 
 data class ScanInfoRequestParams(
         var number: String,
-        val tkNumber: String
+        val tkNumber: String,
+        val fromScan: Boolean,
+        val isBarCode: Boolean? = null
 )
 
 

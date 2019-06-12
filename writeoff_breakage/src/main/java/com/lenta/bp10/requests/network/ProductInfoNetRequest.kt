@@ -39,21 +39,21 @@ class ProductInfoNetRequest
                 matNr = ""
         )
 
-        val stringRes = hyperHive.requestAPI.web("ZMP_UTZ_WOB_02_V001",
+        val productInfoStatus = hyperHive.requestAPI.web("ZMP_UTZ_WOB_02_V001",
                 WebCallParams().apply {
                     data = gson.toJson(productInfoNetRequestParams)
                     headers = mapOf(
                             "X-SUP-DOMAIN" to "DM-MAIN",
                             "Content-Type" to "application/json"
                     )
-                })
+                },
+                ProductInfoStatus::class.java)
                 .execute()
 
-        val productInfoStatus: ProductInfoStatus = gson.fromJson(stringRes, ProductInfoStatus::class.java)
 
         if (productInfoStatus.isNotBad()) {
             productInfoStatus.result?.raw?.let {
-                val productInfo = it.getProductInfo(zmpUtz07V001.getUomInfo(it.ean?.uom))
+                val productInfo = it.getProductInfo(zmpUtz07V001.getUomInfo(it.material?.buom))
                 productInfo?.let { info ->
                     return Either.Right(info)
                 }

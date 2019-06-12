@@ -82,4 +82,6 @@
     <string name="good_not_found">Товар не найден в справочниках</string>
     <string name="not_valid_format_ean">Неверный формат штрихкода</string>
     <string name="product_search">Поиск товара</string>
+    <string name="sap_code">SAP-код</string>
+    <string name="barcode">Штрихкод</string>
 </resources>

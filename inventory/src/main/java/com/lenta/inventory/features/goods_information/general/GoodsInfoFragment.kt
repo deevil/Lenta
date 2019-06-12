@@ -12,6 +12,7 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.utilities.extentions.connectLiveData
+import com.lenta.shared.utilities.extentions.generateScreenNumber
 import com.lenta.shared.utilities.extentions.provideViewModel
 import com.lenta.shared.utilities.state.state
 
@@ -30,7 +31,7 @@ class GoodsInfoFragment : CoreFragment<FragmentGoodsInfoBinding, GoodsInfoViewMo
 
     override fun getLayoutId(): Int = R.layout.fragment_goods_info
 
-    override fun getPageNumber(): String = "11/10"
+    override fun getPageNumber(): String = generateScreenNumber()
 
     override fun getViewModel(): GoodsInfoViewModel {
         provideViewModel(GoodsInfoViewModel::class.java).let { vm ->

@@ -15,6 +15,7 @@ abstract class CoreMessageFragment : CoreFragment<LayoutMessageBinding, MessageV
     protected var iconRes by state(0)
     protected var textColor by state<Int?>(null)
     protected var codeConfirm by state<Int?>(null)
+    protected var codeConfirmForLeft by state<Int?>(null)
     protected var pageNumb by state("")
     protected var leftButtonDecorationInfo by state(ButtonDecorationInfo.back)
     protected var rightButtonDecorationInfo by state(ButtonDecorationInfo.apply)
@@ -40,7 +41,7 @@ abstract class CoreMessageFragment : CoreFragment<LayoutMessageBinding, MessageV
     override fun onToolbarButtonClick(view: View) {
         when (view.id) {
             R.id.b_1 -> vm.onClickLeftButton()
-            R.id.b_5 -> vm.onClickApply()
+            R.id.b_5 -> vm.onClickRightButton()
         }
     }
 
