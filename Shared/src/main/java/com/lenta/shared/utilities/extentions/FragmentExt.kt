@@ -14,3 +14,7 @@ fun <T : ViewModel> Fragment.provideViewModel(clazz: Class<T>): T {
 fun <T : ViewDataBinding, S : ViewModel> CoreFragment<T, S>.generateScreenNumber(): String {
     return activity.implementationOf(CoreMainActivity::class.java)?.generateNumberScreen(this) ?: ""
 }
+
+fun <T : ViewDataBinding, S : ViewModel> CoreFragment<T, S>.getScreenPrefix(): String {
+    return activity.implementationOf(CoreMainActivity::class.java)?.getPrefixScreen(this) ?: ""
+}

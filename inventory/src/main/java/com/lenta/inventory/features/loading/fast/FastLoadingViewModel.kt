@@ -36,7 +36,7 @@ class FastLoadingViewModel : CoreLoadingViewModel() {
 
 
     override fun handleFailure(failure: Failure) {
-        screenNavigator.openAlertScreen(failureInterpreter.getFailureDescription(failure))
+        screenNavigator.openAlertScreen(failureInterpreter.getFailureDescription(failure).message)
     }
 
     private fun handleSuccess(@Suppress("UNUSED_PARAMETER") b: Boolean) {

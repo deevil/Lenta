@@ -84,4 +84,8 @@ class MainActivity : CoreMainActivity() {
         return numberScreenGenerator.generateNumberScreen(fragment)
     }
 
+    override fun getPrefixScreen(fragment: CoreFragment<*, *>): String {
+        return numberScreenGenerator.getPrefixScreen(fragment)
+    }
+
 }

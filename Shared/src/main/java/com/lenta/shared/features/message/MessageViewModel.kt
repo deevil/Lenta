@@ -21,6 +21,7 @@ open class MessageViewModel : CoreViewModel() {
     var iconRes: Int = 0
     var codeConfirm: Int? = null
     var codeConfirmForLeft: Int? = null
+    var textColor: Int? = null
 
     init {
         /*viewModelScope.launch {

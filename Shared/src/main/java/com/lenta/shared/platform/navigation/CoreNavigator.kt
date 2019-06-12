@@ -66,13 +66,14 @@ class CoreNavigator constructor(private val context: Context,
     }
 
 
-    override fun openAlertScreen(message: String, pageNumber: String, iconRes: Int) {
+    override fun openAlertScreen(message: String, iconRes: Int, textColor: Int?, pageNumber: String) {
         runOrPostpone {
             getFragmentStack()?.let {
                 val fragment = AlertFragment.create(
                         message = message,
-                        pageNumber = pageNumber,
-                        iconRes = iconRes
+                        iconRes = iconRes,
+                        textColor = textColor,
+                        pageNumber = pageNumber
                 )
                 it.push(fragment, CustomAnimation.vertical())
 
@@ -82,7 +83,7 @@ class CoreNavigator constructor(private val context: Context,
 
     override fun openAlertScreen(failure: Failure, pageNumber: String) {
         runOrPostpone {
-            openAlertScreen(message = failureInterpreter.getFailureDescription(failure), pageNumber = pageNumber)
+            openAlertScreen(message = failureInterpreter.getFailureDescription(failure).message, iconRes = failureInterpreter.getFailureDescription(failure).iconRes, textColor = failureInterpreter.getFailureDescription(failure).textColor, pageNumber = pageNumber)
         }
     }
 
@@ -213,7 +214,7 @@ interface ICoreNavigator {
     fun goBackWithResultCode(code: Int)
     fun goBack()
     fun finishApp()
-    fun openAlertScreen(message: String, pageNumber: String = "?", iconRes: Int = 0)
+    fun openAlertScreen(message: String, iconRes: Int = 0,  textColor: Int? = null, pageNumber: String = "?")
     fun openAlertScreen(failure: Failure, pageNumber: String = "?")
     fun openSupportScreen()
     fun <Params> showProgress(useCase: UseCase<Any, Params>)

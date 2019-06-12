@@ -36,4 +36,8 @@ class NumberScreenGenerator @Inject constructor() : INumberScreenGenerator {
         }
     }
 
+    override fun getPrefixScreen(fragment: CoreFragment<*, *>): String {
+        return  prefix
+    }
+
 }

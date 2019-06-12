@@ -41,11 +41,6 @@ class ScreenNavigator(
         private val progressUseCaseInformator: IWriteOffProgressUseCaseInformator
 ) : IScreenNavigator, ICoreNavigator by coreNavigator {
 
-    override fun openAlertScreen(failure: Failure, pageNumber: String) {
-        openAlertScreen(failureInterpreter.getFailureDescription(failure))
-    }
-
-
     override fun openSelectMarketScreen() {
         runOrPostpone {
             getFragmentStack()?.replace(SelectMarketFragment())

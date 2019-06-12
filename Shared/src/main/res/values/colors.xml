@@ -47,4 +47,6 @@
     <color name="color_text_btn_disabled">#8299AC</color>
     <color name="color_transparent_selected">#22FFFFFF</color>
 
+    <color name="color_text_dialogWarning">#FF6578</color>
+
 </resources>
