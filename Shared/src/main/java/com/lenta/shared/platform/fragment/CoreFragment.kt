@@ -1,5 +1,6 @@
 package com.lenta.shared.platform.fragment
 
+import android.content.Context
 import android.os.Bundle
 import android.view.*
 import androidx.annotation.LayoutRes
@@ -38,11 +39,15 @@ abstract class CoreFragment<T : ViewDataBinding, S : ViewModel> : Fragment(), Gs
         saveInstanceStateGsonBundle(outState)
     }
 
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        vm = getViewModel()
+    }
+
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         binding = DataBindingUtil.inflate(inflater, getLayoutId(), container, false)
         binding?.let {
-            vm = getViewModel()
             it.setVariable(BR.vm, vm)
             it.lifecycleOwner = viewLifecycleOwner
             it.executePendingBindings()

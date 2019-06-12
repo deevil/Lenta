@@ -53,6 +53,12 @@ data class ButtonDecorationInfo(
         @StringRes val titleRes: Int
 ) {
     companion object {
+        val sap: ButtonDecorationInfo by lazy {
+            ButtonDecorationInfo(R.drawable.ic_sap, R.string.sap_code)
+        }
+        val barcode: ButtonDecorationInfo by lazy {
+            ButtonDecorationInfo(R.drawable.ic_barcode, R.string.barcode)
+        }
         val yes: ButtonDecorationInfo by lazy {
             ButtonDecorationInfo(R.drawable.ic_done_white_24dp, R.string.yes)
         }

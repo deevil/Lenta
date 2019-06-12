@@ -20,6 +20,7 @@ open class MessageViewModel : CoreViewModel() {
     @DrawableRes
     var iconRes: Int = 0
     var codeConfirm: Int? = null
+    var codeConfirmForLeft: Int? = null
 
     init {
         /*viewModelScope.launch {
@@ -30,13 +31,17 @@ open class MessageViewModel : CoreViewModel() {
         }*/
     }
 
-    open fun onClickApply() {
+    open fun onClickRightButton() {
         codeConfirm?.let {
             coreNavigator.goBackWithResultCode(it)
         }
     }
 
     fun onClickLeftButton() {
+        codeConfirmForLeft?.let {
+            coreNavigator.goBackWithResultCode(it)
+            return
+        }
         coreNavigator.goBack()
     }
 

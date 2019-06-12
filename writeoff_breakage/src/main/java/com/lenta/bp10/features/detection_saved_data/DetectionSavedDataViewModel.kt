@@ -21,7 +21,7 @@ class DetectionSavedDataViewModel : MessageViewModel() {
 
     }
 
-    override fun onClickApply() {
+    override fun onClickRightButton() {
         writeOffTaskManager.setTask(persistWriteOffTask.getSavedWriteOffTask())
         screenNavigator.goBack()
         screenNavigator.openJobCardScreen()

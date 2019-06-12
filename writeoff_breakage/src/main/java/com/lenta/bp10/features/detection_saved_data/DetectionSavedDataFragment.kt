@@ -28,7 +28,7 @@ class DetectionSavedDataFragment : CoreMessageFragment() {
         (vm as DetectionSavedDataViewModel).let {
             when (view.id) {
                 R.id.b_3 -> it.onClickDelete()
-                R.id.b_5 -> it.onClickApply()
+                R.id.b_5 -> it.onClickRightButton()
             }
         }
 

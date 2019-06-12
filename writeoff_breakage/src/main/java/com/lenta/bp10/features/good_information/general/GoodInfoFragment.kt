@@ -1,5 +1,6 @@
 package com.lenta.bp10.features.good_information.general
 
+import android.os.Bundle
 import android.view.View
 import com.lenta.bp10.R
 import com.lenta.bp10.databinding.FragmentGoodInfoBinding
@@ -11,13 +12,18 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
+import com.lenta.shared.scan.OnScanResultListener
 import com.lenta.shared.utilities.extentions.connectLiveData
+import com.lenta.shared.utilities.extentions.getFragmentResultCode
 import com.lenta.shared.utilities.extentions.provideViewModel
 import com.lenta.shared.utilities.extentions.toStringFormatted
 import com.lenta.shared.utilities.state.state
 
 
-class GoodInfoFragment : CoreFragment<FragmentGoodInfoBinding, GoodInfoViewModel>(), ToolbarButtonsClickListener, OnBackPresserListener {
+class GoodInfoFragment : CoreFragment<FragmentGoodInfoBinding, GoodInfoViewModel>(),
+        ToolbarButtonsClickListener,
+        OnBackPresserListener,
+        OnScanResultListener {
 
     private var productInfo by state<ProductInfo?>(null)
 
@@ -83,6 +89,14 @@ class GoodInfoFragment : CoreFragment<FragmentGoodInfoBinding, GoodInfoViewModel
         return true
     }
 
+    override fun onScanResult(data: String) {
+        vm.onScanResult(data)
+    }
+
+    override fun onFragmentResult(arguments: Bundle) {
+        vm.onResult(arguments.getFragmentResultCode())
+
+    }
 
     companion object {
         fun create(productInfo: ProductInfo, initCount: Double): GoodInfoFragment {

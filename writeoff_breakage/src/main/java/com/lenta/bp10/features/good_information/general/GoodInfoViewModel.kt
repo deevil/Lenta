@@ -3,6 +3,7 @@ package com.lenta.bp10.features.good_information.general
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp10.features.good_information.IGoodInformationRepo
+import com.lenta.bp10.features.goods_list.SearchProductDelegate
 import com.lenta.bp10.models.repositories.IWriteOffTaskManager
 import com.lenta.bp10.models.repositories.getTotalCountForProduct
 import com.lenta.bp10.models.task.ProcessGeneralProductService
@@ -11,6 +12,7 @@ import com.lenta.bp10.platform.navigation.IScreenNavigator
 import com.lenta.bp10.platform.resources.IStringResourceManager
 import com.lenta.shared.models.core.ProductInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
+import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.toStringFormatted
@@ -28,6 +30,9 @@ class GoodInfoViewModel : CoreViewModel(), OnPositionClickListener {
     lateinit var resourceManager: IStringResourceManager
     @Inject
     lateinit var goodInformationRepo: IGoodInformationRepo
+    @Inject
+    lateinit var searchProductDelegate: SearchProductDelegate
+
 
     private val processGeneralProductService: ProcessGeneralProductService by lazy {
         processServiceManager.getWriteOffTask()!!.processGeneralProduct(productInfo.value!!)!!
@@ -41,11 +46,11 @@ class GoodInfoViewModel : CoreViewModel(), OnPositionClickListener {
 
     val count: MutableLiveData<String> = MutableLiveData("")
 
-    val countValue: MutableLiveData<Double> = count.map { it?.toDoubleOrNull() ?: 0.0 }
+    private val countValue: MutableLiveData<Double> = count.map { it?.toDoubleOrNull() ?: 0.0 }
 
     val suffix: MutableLiveData<String> = MutableLiveData()
 
-    val totalCount: MutableLiveData<Double> = countValue.map {
+    private val totalCount: MutableLiveData<Double> = countValue.map {
         (it ?: 0.0) + processGeneralProductService.getTotalCount()
     }
 
@@ -77,6 +82,11 @@ class GoodInfoViewModel : CoreViewModel(), OnPositionClickListener {
 
     init {
         viewModelScope.launch {
+
+            searchProductDelegate.init(
+                    viewModelScope = this@GoodInfoViewModel::viewModelScope,
+                    scanResultHandler = this@GoodInfoViewModel::handleProductSearchResult
+            )
 
             processServiceManager.getWriteOffTask()?.let { writeOffTask ->
                 writeOffTask.taskDescription.moveTypes.let { reasons ->
@@ -127,18 +137,27 @@ class GoodInfoViewModel : CoreViewModel(), OnPositionClickListener {
     }
 
     fun onClickDetails() {
-
         productInfo.value?.let {
             screenNavigator.openGoodsReasonsScreen(productInfo = it)
         }
 
     }
 
-    private fun addGood() {
+    private fun addGood(): Boolean {
         countValue.value?.let {
-            processGeneralProductService.add(getReason(), it)
+
+            if (enabledApplyButton.value != true && it != 0.0) {
+                screenNavigator.openNotPossibleSaveNegativeQuantityScreen()
+                return false
+            }
+
+            if (it != 0.0) {
+                processGeneralProductService.add(getReason(), it)
+            }
             count.value = ""
+            return true
         }
+        return false
     }
 
 
@@ -152,6 +171,28 @@ class GoodInfoViewModel : CoreViewModel(), OnPositionClickListener {
 
     fun onBackPressed() {
         processGeneralProductService.discard()
+    }
+
+    private fun handleProductSearchResult(scanInfoResult: ScanInfoResult?): Boolean {
+        scanInfoResult?.let {
+            if (it.productInfo.materialNumber == productInfo.value?.materialNumber) {
+                count.value = it.quantity.toStringFormatted()
+                return true
+            }
+        }
+        onClickApply()
+        return false
+    }
+
+    fun onScanResult(data: String) {
+        if (addGood()) {
+            searchProductDelegate.searchCode(code = data, fromScan = true)
+        }
+    }
+
+    fun onResult(code: Int?) {
+        searchProductDelegate.handleResultCode(code)
+
     }
 
 }
