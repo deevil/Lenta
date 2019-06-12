@@ -95,7 +95,7 @@ class AuthViewModel : CoreAuthViewModel() {
     override fun handleFailure(failure: Failure) {
         super.handleFailure(failure)
         progress.value = false
-        navigator.openAlertScreen(message = failureInterpreter.getFailureDescription(failure), pageNumber = "11/97")
+        navigator.openAlertScreen(failure, pageNumber = "11/97")
     }
 
 

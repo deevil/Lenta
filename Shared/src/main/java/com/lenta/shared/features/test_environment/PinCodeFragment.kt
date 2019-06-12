@@ -12,6 +12,7 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListe
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.generateScreenNumber
+import com.lenta.shared.utilities.extentions.getScreenPrefix
 import com.lenta.shared.utilities.extentions.provideViewModel
 import com.lenta.shared.utilities.state.state
 
@@ -48,6 +49,8 @@ class PinCodeFragment : CoreFragment<com.lenta.shared.databinding.FragmentPinCod
     override fun getViewModel(): PinCodeViewModel {
         provideViewModel(PinCodeViewModel::class.java).let { viewModel ->
             coreComponent.inject(viewModel)
+
+            viewModel.setPrefixScreen(getScreenPrefix())
 
             viewModel.setMsgIncorrectPinCode(getString(R.string.msg_incorrect_pin_code))
 

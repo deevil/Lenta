@@ -13,6 +13,7 @@ import com.lenta.shared.utilities.state.state
 abstract class CoreMessageFragment : CoreFragment<LayoutMessageBinding, MessageViewModel>(), ToolbarButtonsClickListener {
     protected var message by state("")
     protected var iconRes by state(0)
+    protected var textColor by state<Int?>(null)
     protected var codeConfirm by state<Int?>(null)
     protected var pageNumb by state("")
     protected var leftButtonDecorationInfo by state(ButtonDecorationInfo.back)
@@ -29,7 +30,6 @@ abstract class CoreMessageFragment : CoreFragment<LayoutMessageBinding, MessageV
         if (codeConfirm != null) {
             bottomToolbarUiModel.uiModelButton5.show(rightButtonDecorationInfo)
         }
-
     }
 
     override fun cleanTopToolbar(topToolbarUiModel: TopToolbarUiModel) {

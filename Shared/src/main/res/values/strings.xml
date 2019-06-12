@@ -15,7 +15,7 @@
     <string name="go_over">Перейти</string>
     <string name="error_server">Ошибка сервера</string>
     <string name="error_network">Ошибка подключения</string>
-    <string name="error_auth">Ошибка авторизации</string>
+    <string name="error_auth">Неправильно введен пользователь или пароль SAP</string>
     <string name="error_unknown">Неизвестная ошибка</string>
     <string name="to_next">Далее</string>
     <string name="address">Адрес</string>
@@ -80,6 +80,6 @@
     <string name="es_info">Доступно сканирование АМ</string>
     <string name="empty_category">Пустая категория</string>
     <string name="good_not_found">Товар не найден в справочниках</string>
-    <string name="not_valid_format_ean">Не верный формат штрихкода</string>
+    <string name="not_valid_format_ean">Неверный формат штрихкода</string>
     <string name="product_search">Поиск товара</string>
 </resources>

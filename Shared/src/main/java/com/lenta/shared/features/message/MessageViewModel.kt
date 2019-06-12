@@ -20,6 +20,7 @@ open class MessageViewModel : CoreViewModel() {
     @DrawableRes
     var iconRes: Int = 0
     var codeConfirm: Int? = null
+    var textColor: Int? = null
 
     init {
         /*viewModelScope.launch {

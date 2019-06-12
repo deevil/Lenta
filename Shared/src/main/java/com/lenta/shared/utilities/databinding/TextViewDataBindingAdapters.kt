@@ -49,6 +49,13 @@ fun setNetworkIsConnected(textView: TextView, networkIsConnected: Boolean?) {
             0)
 }
 
+@BindingAdapter(value = ["textColorCustom"])
+fun setTextColor(textView: TextView, textColorCustom: Int?) {
+    textColorCustom?.let {
+        textView.setTextColor(it)
+    }
+}
+
 @BindingAdapter(value = ["setTextWithVisibilities", "prefix", "postfix"], requireAll = false)
 fun setTextWithVisibilities(textView: TextView, text: String?, prefix: String?, postfix: String?) {
     textView.setVisible(!text.isNullOrEmpty())

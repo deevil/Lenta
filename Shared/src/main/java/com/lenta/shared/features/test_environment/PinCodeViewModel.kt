@@ -53,6 +53,11 @@ class PinCodeViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
         this.msgIncorrectPinCode.value = string
     }
 
+    private lateinit var prefixScreen: String
+    fun setPrefixScreen(prefixScreen: String){
+        this.prefixScreen = prefixScreen
+    }
+
     fun onClickGoOver() {
         viewModelScope.launch {
             progress.value = true
@@ -68,13 +73,13 @@ class PinCodeViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
                 putInt(KEY_ARGS_ID_CODE_CONFIRM, requestCode ?: 0)
             })
         } else {
-            screenNavigator.openAlertScreen(message = msgIncorrectPinCode.value!!, pageNumber = "10/95")
+            screenNavigator.openAlertScreen(message = msgIncorrectPinCode.value!!, pageNumber = "$prefixScreen/95")
         }
     }
 
     override fun handleFailure(failure: Failure) {
         super.handleFailure(failure)
-        screenNavigator.openFailurePinCodeScreen(failureInterpreter.getFailureDescription(failure))
+        screenNavigator.openFailurePinCodeScreen(failureInterpreter.getFailureDescription(failure).message)
     }
 
 

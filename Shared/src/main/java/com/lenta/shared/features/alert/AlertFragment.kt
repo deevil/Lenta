@@ -14,6 +14,7 @@ class AlertFragment : CoreMessageFragment() {
             vm.message = message
             vm.iconRes = iconRes
             vm.codeConfirm = codeConfirm
+            vm.textColor = textColor
 
             return vm
         }
@@ -24,6 +25,7 @@ class AlertFragment : CoreMessageFragment() {
         fun create(
                 message: String,
                 iconRes: Int = 0,
+                textColor: Int? = null,
                 pageNumber: String = "???",
                 codeConfirm: Int? = null,
                 leftButtonDecorationInfo: ButtonDecorationInfo? = null,
@@ -32,6 +34,7 @@ class AlertFragment : CoreMessageFragment() {
             AlertFragment().let { alertFragment ->
                 alertFragment.message = message
                 alertFragment.iconRes = iconRes
+                alertFragment.textColor = textColor
                 alertFragment.codeConfirm = codeConfirm
                 alertFragment.pageNumb = pageNumber
                 leftButtonDecorationInfo?.let {

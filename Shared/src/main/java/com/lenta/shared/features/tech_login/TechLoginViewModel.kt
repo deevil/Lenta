@@ -32,6 +32,11 @@ class TechLoginViewModel : CoreViewModel() {
         }
     }
 
+    private lateinit var prefixScreen: String
+    fun setPrefixScreen(prefixScreen: String){
+        this.prefixScreen = prefixScreen
+    }
+
 
     fun onClickApply() {
 
@@ -47,7 +52,7 @@ class TechLoginViewModel : CoreViewModel() {
 
     override fun handleFailure(failure: Failure) {
         super.handleFailure(failure)
-        screenNavigator.openAlertScreen(failure)
+        screenNavigator.openAlertScreen(failure, pageNumber = "$prefixScreen/97")
     }
 
     private fun handlePinCodeSuccess(pinCodeInfo: PinCodeInfo) {
