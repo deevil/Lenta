@@ -198,6 +198,17 @@
             app:layout_constraintVertical_bias="1.0"
             tools:text="02" />
 
+        <ImageView
+            android:id="@+id/iv_alco_icon"
+            android:layout_width="36sp"
+            android:layout_height="36sp"
+            android:layout_marginStart="16dp"
+            app:alcoIcon="@{vm.productInfo.type}"
+            app:layout_constraintBottom_toBottomOf="@+id/tv_section"
+            app:layout_constraintStart_toEndOf="@+id/tv_section"
+            app:layout_constraintTop_toTopOf="@+id/tv_section"
+            tools:src="@drawable/ic_no_excise_alco" />
+
         <ImageButton
             android:id="@+id/b_scan"
             android:layout_width="wrap_content"

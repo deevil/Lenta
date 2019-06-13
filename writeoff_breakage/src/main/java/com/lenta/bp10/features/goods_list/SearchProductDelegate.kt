@@ -114,7 +114,7 @@ class SearchProductDelegate @Inject constructor(
                     //TODO (Борисенко) реализовать логику для алкоголя и убрать хардкод
                         openNotSupportedMessageScreen()
                 }
-                else -> openNotSupportedMessageScreen()
+                else -> screenNavigator.openGoodInfoScreen(infoResult.productInfo, infoResult.quantity)
             }
         }
     }

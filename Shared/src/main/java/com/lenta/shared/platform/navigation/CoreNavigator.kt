@@ -75,7 +75,7 @@ class CoreNavigator constructor(private val context: Context,
                         textColor = textColor,
                         pageNumber = pageNumber
                 )
-                it.push(fragment, CustomAnimation.vertical())
+                it.push(fragment, CustomAnimation.vertical)
 
             }
         }
@@ -176,27 +176,27 @@ class CoreNavigator constructor(private val context: Context,
 
     override fun openMatrixInfoScreen(matrixType: MatrixType) {
         runOrPostpone {
-            getFragmentStack()?.push(MatrixInfoFragment.create(matrixType))
+            getFragmentStack()?.push(MatrixInfoFragment.create(matrixType), CustomAnimation.vertical)
         }
     }
 
     override fun openSectionInfoScreen(section: String) {
         runOrPostpone {
-            getFragmentStack()?.push(SectionInfoFragment.create(sectionNumber = section))
+            getFragmentStack()?.push(SectionInfoFragment.create(sectionNumber = section), CustomAnimation.vertical)
         }
     }
 
     override fun openEanInfoScreen() {
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.ean_info),
-                    iconRes = R.drawable.ic_scan_barcode))
+                    iconRes = R.drawable.ic_scan_barcode), CustomAnimation.vertical)
         }
     }
 
     override fun openESInfoScreen() {
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.es_info),
-                    iconRes = R.drawable.is_scan_barcode_es))
+                    iconRes = R.drawable.is_scan_barcode_es), CustomAnimation.vertical)
         }
     }
 

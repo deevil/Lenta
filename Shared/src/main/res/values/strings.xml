@@ -84,4 +84,7 @@
     <string name="product_search">Поиск товара</string>
     <string name="sap_code">SAP-код</string>
     <string name="barcode">Штрихкод</string>
+    <string name="general_product">Обычный товар</string>
+    <string name="excise_alco">Акцизный алкоголь</string>
+    <string name="non_excise_alco">Не акцизный алкоголь</string>
 </resources>
