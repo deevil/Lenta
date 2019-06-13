@@ -39,9 +39,10 @@ class ReportResultFragment : CoreFragment<FragmentReportResultBinding, ReportRes
         }
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         binding?.rvConfig = DataBindingRecyclerViewConfig<ItemTaskReportBinding>(layoutId = R.layout.item_task_report, itemId = BR.vm)
-        return super.onCreateView(inflater, container, savedInstanceState)
+
     }
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
