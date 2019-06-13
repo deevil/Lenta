@@ -47,10 +47,9 @@ class AppModule {
             iCoreNavigator: ICoreNavigator,
             foregroundActivityProvider: ForegroundActivityProvider,
             authenticator: IAuthenticator,
-            faultInterpreter: IFailureInterpreter,
             progressUseCaseInformator: IWriteOffProgressUseCaseInformator
     ): IScreenNavigator {
-        return ScreenNavigator(context, iCoreNavigator, foregroundActivityProvider, authenticator, faultInterpreter, progressUseCaseInformator)
+        return ScreenNavigator(context, iCoreNavigator, foregroundActivityProvider, authenticator, progressUseCaseInformator)
     }
 
 

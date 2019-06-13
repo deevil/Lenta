@@ -167,4 +167,8 @@ abstract class BaseProductInfoViewModel : CoreViewModel(), OnPositionClickListen
         Logg.d { "onClickPosition $position" }
         selectedPosition.postValue(position)
     }
+
+    abstract fun onBackPressed()
+
+    abstract fun onScanResult(data: String)
 }

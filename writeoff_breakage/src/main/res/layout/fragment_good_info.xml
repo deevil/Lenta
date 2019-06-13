@@ -8,7 +8,7 @@
 
         <variable
             name="vm"
-            type="com.lenta.bp10.features.good_information.general.GoodInfoViewModel" />
+            type="com.lenta.bp10.features.good_information.base.BaseProductInfoViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -208,6 +208,21 @@
             app:layout_constraintStart_toEndOf="@+id/tv_section"
             app:layout_constraintTop_toTopOf="@+id/tv_section"
             tools:src="@drawable/ic_no_excise_alco" />
+
+        <ImageButton
+            android:id="@+id/b_scan_es"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:background="?selectableItemBackground"
+            android:onClick="@{(v) -> vm.screenNavigator.openESInfoScreen()}"
+            android:padding="8dp"
+            android:src="@drawable/is_scan_barcode_es"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@+id/b_scan"
+            app:layout_constraintEnd_toStartOf="@+id/b_scan"
+            app:layout_constraintTop_toTopOf="@+id/b_scan"
+            tools:visibility="visible" />
 
         <ImageButton
             android:id="@+id/b_scan"
