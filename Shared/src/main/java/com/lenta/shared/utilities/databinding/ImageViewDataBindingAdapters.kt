@@ -14,9 +14,10 @@ fun setImageSrc(imageView: ImageView, imageRes: Int) {
 }
 
 @BindingAdapter("alcoIcon")
-fun setImageSrc(imageView: ImageView, productType: ProductType?) {
+fun setAlcoIcon(imageView: ImageView, productType: ProductType?) {
     (when (productType) {
         ProductType.NonExciseAlcohol -> R.drawable.ic_no_excise_alco
+        ProductType.ExciseAlcohol -> R.drawable.ic_excise_white_48dp
         else -> 0
     }).let {
         imageView.setImageResource(it)
