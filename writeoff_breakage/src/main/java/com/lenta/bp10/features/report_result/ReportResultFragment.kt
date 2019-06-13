@@ -1,6 +1,9 @@
 package com.lenta.bp10.features.report_result
 
+import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import com.lenta.bp10.BR
 import com.lenta.bp10.R
 import com.lenta.bp10.databinding.FragmentReportResultBinding
@@ -32,9 +35,13 @@ class ReportResultFragment : CoreFragment<FragmentReportResultBinding, ReportRes
             writeOffReportResponse?.let {
                 viewModel.setWriteOffReportResponse(it)
             }
-            binding?.rvConfig = DataBindingRecyclerViewConfig<ItemTaskReportBinding>(layoutId = R.layout.item_task_report, itemId = BR.vm)
             return viewModel
         }
+    }
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        binding?.rvConfig = DataBindingRecyclerViewConfig<ItemTaskReportBinding>(layoutId = R.layout.item_task_report, itemId = BR.vm)
+        return super.onCreateView(inflater, container, savedInstanceState)
     }
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
