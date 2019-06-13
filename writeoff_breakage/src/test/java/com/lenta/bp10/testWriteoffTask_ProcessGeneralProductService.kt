@@ -53,7 +53,7 @@ class testWriteoffTask_ProcessGeneralProductService {
         assertTrue(test)
 
         test = false
-        if (task.processGeneralProduct(product2) == null) {
+        if (task.processGeneralProduct(product2) != null) {
             test = true
         }
         assertTrue(test)
