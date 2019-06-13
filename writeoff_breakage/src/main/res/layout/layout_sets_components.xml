@@ -33,11 +33,11 @@
             android:layout_height="0dp"
             android:layout_marginBottom="8dp"
             app:items="@{vm.componentsItem}"
-            app:rv_config="@{rvConfig}"
             app:layout_constraintBottom_toTopOf="@+id/et_search"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/layout_titles"
+            app:rv_config="@{rvConfig}"
             tools:listitem="@layout/item_tile_sets">
 
         </androidx.recyclerview.widget.RecyclerView>
@@ -50,10 +50,13 @@
             android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp"
             android:layout_marginBottom="8dp"
+            android:digits="0123456789"
             android:drawableEnd="@drawable/ic_add_white_24dp"
+            android:ellipsize="end"
             android:hint="@string/enter_item_number_or_barcode"
             android:imeOptions="actionSearch"
             android:inputType="numberDecimal"
+            android:maxLines="1"
             android:paddingTop="8dp"
             android:paddingBottom="8dp"
             android:text="@={vm.eanCode}"
