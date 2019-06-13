@@ -1,5 +1,6 @@
 package com.lenta.shared.features.test_environment
 
+import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
@@ -62,12 +63,15 @@ class PinCodeFragment : CoreFragment<com.lenta.shared.databinding.FragmentPinCod
                 viewModel.message.value = it
             }
 
-            binding?.let { it.etPin1.addTextChangedListener(EnterCodeTextWatcher(binding?.etPin2)) }
-            binding?.let { it.etPin2.addTextChangedListener(EnterCodeTextWatcher(binding?.etPin3)) }
-            binding?.let { it.etPin3.addTextChangedListener(EnterCodeTextWatcher(binding?.etPin4)) }
-
             return viewModel
         }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        binding?.let { it.etPin1.addTextChangedListener(EnterCodeTextWatcher(binding?.etPin2)) }
+        binding?.let { it.etPin2.addTextChangedListener(EnterCodeTextWatcher(binding?.etPin3)) }
+        binding?.let { it.etPin3.addTextChangedListener(EnterCodeTextWatcher(binding?.etPin4)) }
     }
 
     companion object {
