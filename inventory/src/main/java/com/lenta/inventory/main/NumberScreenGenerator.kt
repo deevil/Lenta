@@ -1,6 +1,7 @@
 package com.lenta.inventory.main
 
 import com.lenta.inventory.features.goods_details.GoodsDetailsFragment
+import com.lenta.inventory.features.goods_details_mx.GoodsDetailsMXFragment
 import com.lenta.inventory.features.goods_information.general.GoodsInfoFragment
 import com.lenta.shared.features.auxiliary_menu.AuxiliaryMenuFragment
 import com.lenta.shared.features.exit.ExitWithConfirmationFragment
@@ -37,6 +38,7 @@ class NumberScreenGenerator @Inject constructor() : INumberScreenGenerator {
             is SectionInfoFragment -> "$prefix/12"
             is GoodsInfoFragment -> "$prefix/10"
             is GoodsDetailsFragment -> "$prefix/11"
+            is GoodsDetailsMXFragment -> "$prefix/22"
             else -> ""
         }
     }

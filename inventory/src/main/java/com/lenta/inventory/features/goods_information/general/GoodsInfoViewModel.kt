@@ -52,7 +52,7 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
     }
 
     fun onClickMissing() {
-        return
+        screenNavigator.openGoodsDetailsMXScreen()
     }
 
     fun onClickApply() {

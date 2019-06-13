@@ -4,25 +4,26 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView
 import androidx.databinding.DataBindingUtil
 import com.lenta.inventory.BR
 import com.lenta.inventory.R
 import com.lenta.inventory.databinding.FragmentGoodsDetailsBinding
 import com.lenta.inventory.databinding.ItemTileGoodsDetailsBinding
 import com.lenta.inventory.databinding.LayoutGoodsDetailsBinding
-import com.lenta.inventory.features.goods_information.general.GoodsInfoFragment
 import com.lenta.inventory.platform.extentions.getAppComponent
+import com.lenta.shared.models.core.MatrixType
 import com.lenta.shared.models.core.ProductInfo
+import com.lenta.shared.models.core.ProductType
+import com.lenta.shared.models.core.Uom
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.utilities.databinding.*
+import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.generateScreenNumber
 import com.lenta.shared.utilities.extentions.provideViewModel
-import com.lenta.shared.utilities.state.state
 
 class GoodsDetailsFragment : CoreFragment<FragmentGoodsDetailsBinding, GoodsDetailsViewModel>(),
         ToolbarButtonsClickListener,
@@ -38,7 +39,9 @@ class GoodsDetailsFragment : CoreFragment<FragmentGoodsDetailsBinding, GoodsDeta
         }
     }
 
-    private var productInfo by state<ProductInfo?>(null)
+    //private var productInfo by state<ProductInfo?>(null)
+    private var productInfo = ProductInfo("000021", "Виски для киски", Uom("ST", "шт"), ProductType.General,
+            false, "1", MatrixType.Active, "materialType")
 
     private var countedRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
 
@@ -66,7 +69,7 @@ class GoodsDetailsFragment : CoreFragment<FragmentGoodsDetailsBinding, GoodsDeta
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
         bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.delete, enabled = false)
-        //viewLifecycleOwner.connectLiveData(vm.deleteButtonEnabled, bottomToolbarUiModel.uiModelButton3.enabled)
+        viewLifecycleOwner.connectLiveData(vm.deleteButtonEnabled, bottomToolbarUiModel.uiModelButton3.enabled)
     }
 
     override fun onToolbarButtonClick(view: View) {
@@ -117,9 +120,6 @@ class GoodsDetailsFragment : CoreFragment<FragmentGoodsDetailsBinding, GoodsDeta
 
                                 }
 
-                            },
-                            onItemDoubleClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
-                                vm.onDoubleClickPosition(position)
                             }
                     )
 
@@ -127,7 +127,7 @@ class GoodsDetailsFragment : CoreFragment<FragmentGoodsDetailsBinding, GoodsDeta
                     layoutBinding.lifecycleOwner = viewLifecycleOwner
                     countedRecyclerViewKeyHandler = RecyclerViewKeyHandler(
                             rv = layoutBinding.rv,
-                            items = vm.countedGoods,
+                            items = vm.countedCategories,
                             lifecycleOwner = layoutBinding.lifecycleOwner!!
                     )
                     return layoutBinding.root
@@ -140,6 +140,11 @@ class GoodsDetailsFragment : CoreFragment<FragmentGoodsDetailsBinding, GoodsDeta
 
     override fun onPageSelected(position: Int) {
         return
+    }
+
+    override fun onResume() {
+        super.onResume()
+        vm.onResume()
     }
 
 

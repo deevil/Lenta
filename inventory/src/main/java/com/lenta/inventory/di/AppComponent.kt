@@ -3,6 +3,8 @@ package com.lenta.inventory.di
 import com.lenta.inventory.ExceptionHandler
 import com.lenta.inventory.features.auth.AuthViewModel
 import com.lenta.inventory.features.goods_details.GoodsDetailsViewModel
+import com.lenta.inventory.features.goods_details_mx.GoodsDetailsMXFragment
+import com.lenta.inventory.features.goods_details_mx.GoodsDetailsMXViewModel
 import com.lenta.inventory.features.goods_information.general.GoodsInfoViewModel
 import com.lenta.inventory.features.loading.fast.FastLoadingViewModel
 import com.lenta.inventory.features.main_menu.MainMenuViewModel
@@ -27,6 +29,6 @@ interface AppComponent {
     fun inject(it: MainMenuViewModel)
     fun inject(it: GoodsInfoViewModel)
     fun inject(it: GoodsDetailsViewModel)
-
+    fun inject(it: GoodsDetailsMXViewModel)
 }
 
