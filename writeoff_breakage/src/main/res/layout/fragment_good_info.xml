@@ -74,10 +74,7 @@
             app:layout_constraintStart_toEndOf="@+id/div_vert"
             app:layout_constraintTop_toTopOf="@+id/div_vert"
             app:suffix="@{vm.suffix}"
-            tools:text="1">
-
-            <requestFocus />
-        </com.lenta.shared.view.EditTextWithSuffix>
+            tools:text="1"/>
 
         <View
             android:id="@+id/div_hor2"

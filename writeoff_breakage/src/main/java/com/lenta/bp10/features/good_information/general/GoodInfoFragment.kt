@@ -47,6 +47,17 @@ open class GoodInfoFragment : CoreFragment<FragmentGoodInfoBinding, BaseProductI
         }
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        onRequestFocus()
+    }
+
+    open fun onRequestFocus() {
+        binding?.apply {
+            etWriteOff.requestFocus()
+        }
+    }
+
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
         topToolbarUiModel.description.value = getString(R.string.good_info)
         productInfo?.let {

@@ -8,3 +8,18 @@ fun EditText.showKeyboard() {
     val imm = this.context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
     imm.showSoftInput(this, InputMethodManager.SHOW_FORCED)
 }
+
+
+fun EditText.disable() {
+    isFocusable = false
+    isEnabled = false
+    isFocusableInTouchMode = false
+    isCursorVisible = false
+    isClickable = false
+    isActivated = false
+    isCursorVisible = false
+    setSelectAllOnFocus(false)
+    setTextIsSelectable(false)
+    keyListener = null
+    clearFocus()
+}

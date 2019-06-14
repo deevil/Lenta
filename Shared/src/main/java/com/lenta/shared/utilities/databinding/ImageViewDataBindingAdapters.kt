@@ -21,15 +21,20 @@ fun setAlcoIcon(imageView: ImageView, productType: ProductType?) {
         else -> 0
     }).let {
         imageView.setImageResource(it)
-        imageView.setVisible(it != 0)
-        if (it == 0) {
-            imageView.setOnClickListener(null)
-        } else {
-            imageView.setOnClickListener {
-                dataBindingHelpHolder.coreNavigator.openAlertScreen(message = imageView.context.getString(productType.getDescriptionResId()))
+        (it != 0).let { hasIcon ->
+            imageView.setVisible(hasIcon)
+            imageView.isFocusable = hasIcon
+            if (hasIcon) {
+                imageView.setOnClickListener {
+                    dataBindingHelpHolder.coreNavigator.openAlertScreen(message = imageView.context.getString(productType.getDescriptionResId()))
+                }
+                imageView.setBackgroundResource(imageView.context.selectableItemBackgroundResId())
+            } else {
+                imageView.setOnClickListener(null)
             }
+
         }
-        imageView.setBackgroundResource(imageView.context.selectableItemBackgroundResId())
+
     }
 
 

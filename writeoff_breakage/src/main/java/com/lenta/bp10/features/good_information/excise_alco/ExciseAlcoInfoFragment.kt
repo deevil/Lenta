@@ -6,6 +6,7 @@ import com.lenta.bp10.features.good_information.base.BaseProductInfoViewModel
 import com.lenta.bp10.features.good_information.general.GoodInfoFragment
 import com.lenta.bp10.platform.extentions.getAppComponent
 import com.lenta.shared.models.core.ProductInfo
+import com.lenta.shared.utilities.extentions.disable
 import com.lenta.shared.utilities.extentions.provideViewModel
 import com.lenta.shared.utilities.extentions.setVisible
 import com.lenta.shared.utilities.extentions.toStringFormatted
@@ -28,7 +29,17 @@ class ExciseAlcoInfoFragment : GoodInfoFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding?.apply { bScanEs.setVisible(true) }
+        binding?.apply {
+            bScanEs.setVisible(true)
+            etWriteOff.disable()
+            spinnerWriteOffType.requestFocus()
+        }
+    }
+
+    override fun onRequestFocus() {
+        binding?.apply {
+            spinnerWriteOffType.requestFocus()
+        }
     }
 
     companion object {

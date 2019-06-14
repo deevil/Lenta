@@ -216,6 +216,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginBottom="18dp"
+            app:alcoIcon="@{vm.productInfo.type}"
             android:src="@drawable/ic_excise_white_48dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@+id/tv_section" />
