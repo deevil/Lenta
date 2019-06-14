@@ -20,7 +20,7 @@ class GoodsDetailsViewModel : CoreViewModel() {
     val productInfo: MutableLiveData<ProductInfo> = MutableLiveData()
 
     val selectedPage = MutableLiveData(0)
-    val countedCategories: MutableLiveData<List<GoodsDetailsItem>> = MutableLiveData()
+    val countedCategories: MutableLiveData<List<GoodsDetailsCategoriesItem>> = MutableLiveData()
     val countedSelectionsHelper = SelectionItemsHelper()
 
     val deleteButtonEnabled: MutableLiveData<Boolean> = countedSelectionsHelper.selectedPositions.map {
@@ -44,13 +44,13 @@ class GoodsDetailsViewModel : CoreViewModel() {
     }
 
     private fun updateCategories() {
-        countedCategories.postValue(listOf(GoodsDetailsItem(
+        countedCategories.postValue(listOf(GoodsDetailsCategoriesItem(
                     number = 2,
                     name = "Марочно",
                     quantity = "12 ${productInfo.value!!.uom.name}",
                     even = 2 % 2 == 0,
                     productInfo = productInfo.value!!),
-                    GoodsDetailsItem(
+                GoodsDetailsCategoriesItem(
                             number = 1,
                             name = "Партионно",
                             quantity = "15 ${productInfo.value!!.uom.name}",
@@ -67,16 +67,5 @@ class GoodsDetailsViewModel : CoreViewModel() {
     fun onClickDelete() {
         return
     }
-
-}
-
-data class GoodsDetailsItem(
-        val number: Int,
-        val name: String,
-        val quantity: String,
-        val even: Boolean,
-        val productInfo: ProductInfo
-) : Evenable {
-    override fun isEven() = even
 
 }

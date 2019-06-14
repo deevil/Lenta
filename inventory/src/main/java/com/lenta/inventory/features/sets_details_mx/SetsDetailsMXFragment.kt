@@ -1,4 +1,4 @@
-package com.lenta.inventory.features.goods_details_mx
+package com.lenta.inventory.features.sets_details_mx
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -16,41 +16,38 @@ import com.lenta.shared.models.core.Uom
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
-import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
-import com.lenta.shared.utilities.databinding.*
-import com.lenta.shared.utilities.extentions.connectLiveData
+import com.lenta.shared.utilities.databinding.DataBindingAdapter
+import com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig
+import com.lenta.shared.utilities.databinding.PageSelectionListener
+import com.lenta.shared.utilities.databinding.ViewPagerSettings
 import com.lenta.shared.utilities.extentions.generateScreenNumber
 import com.lenta.shared.utilities.extentions.provideViewModel
 
-class GoodsDetailsMXFragment : CoreFragment<FragmentGoodsDetailsMxBinding, GoodsDetailsMXViewModel>(),
-        ToolbarButtonsClickListener,
+class SetsDetailsMXFragment : CoreFragment<FragmentSetsDetailsMxBinding, SetsDetailsMXViewModel>(),
         ViewPagerSettings,
         PageSelectionListener {
 
     companion object {
-        fun create(productInfo: ProductInfo): GoodsDetailsMXFragment {
-            GoodsDetailsMXFragment().let {
+        fun create(productInfo: ProductInfo): SetsDetailsMXFragment {
+            SetsDetailsMXFragment().let {
                 it.productInfo = productInfo
                 return it
             }
         }
     }
 
-    var vpTabPosition: Int = 0
-
     //private var productInfo by state<ProductInfo?>(null)
     private var productInfo = ProductInfo("000021", "Виски для киски", Uom("ST", "шт"), ProductType.General,
             false, "1", MatrixType.Active, "materialType")
 
-    private var countedRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
 
-    override fun getLayoutId(): Int = R.layout.fragment_goods_details_mx
+    override fun getLayoutId(): Int = R.layout.fragment_sets_details_mx
 
     override fun getPageNumber(): String = generateScreenNumber()
 
-    override fun getViewModel(): GoodsDetailsMXViewModel {
-        provideViewModel(GoodsDetailsMXViewModel::class.java).let { vm ->
+    override fun getViewModel(): SetsDetailsMXViewModel {
+        provideViewModel(SetsDetailsMXViewModel::class.java).let {vm ->
             getAppComponent()?.inject(vm)
             productInfo?.let {
                 vm.setProductInfo(it)
@@ -67,27 +64,11 @@ class GoodsDetailsMXFragment : CoreFragment<FragmentGoodsDetailsMxBinding, Goods
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
-        bottomToolbarUiModel.cleanAll()
-
-        if (vpTabPosition == 0) {
-            bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.delete, enabled = false)
-        }
-
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
-
-        viewLifecycleOwner.connectLiveData(vm.deleteButtonEnabled, bottomToolbarUiModel.uiModelButton3.enabled)
     }
 
     override fun onPageSelected(position: Int) {
         vm.onPageSelected(position)
-        vpTabPosition = position
-        setupBottomToolBar(this.getBottomToolBarUIModel()!!)
-    }
-
-    override fun onToolbarButtonClick(view: View) {
-        if (view.id == R.id.b_3) {
-            vm.onClickDelete()
-        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -104,52 +85,8 @@ class GoodsDetailsMXFragment : CoreFragment<FragmentGoodsDetailsMxBinding, Goods
         when (position) {
             0 -> {
                 DataBindingUtil
-                        .inflate<LayoutGoodsDetailsCategoriesMxBinding>(LayoutInflater.from(container.context),
-                                R.layout.layout_goods_details_categories_mx,
-                                container,
-                                false).let {layoutBinding ->
-
-                            val onClickSelectionListener = View.OnClickListener {
-                                (it!!.tag as Int).let { position ->
-                                    vm.countedSelectionsHelper.revert(position = position)
-                                    layoutBinding.rv.adapter?.notifyItemChanged(position)
-                                }
-                            }
-
-                            layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
-                                    layoutId = R.layout.item_tile_goods_details_categories,
-                                    itemId = BR.vm,
-                                    realisation = object : DataBindingAdapter<ItemTileGoodsDetailsCategoriesBinding> {
-                                        override fun onCreate(binding: ItemTileGoodsDetailsCategoriesBinding) {
-                                        }
-
-                                        override fun onBind(binding: ItemTileGoodsDetailsCategoriesBinding, position: Int) {
-                                            binding.tvCounter.tag = position
-                                            binding.tvCounter.setOnClickListener(onClickSelectionListener)
-                                            binding.selectedForDelete = vm.countedSelectionsHelper.isSelected(position)
-                                            countedRecyclerViewKeyHandler?.let {
-                                                binding.root.isSelected = it.isSelected(position)
-                                            }
-                                        }
-
-                                    }
-                            )
-
-                            layoutBinding.vm = vm
-                            layoutBinding.lifecycleOwner = viewLifecycleOwner
-                            countedRecyclerViewKeyHandler = RecyclerViewKeyHandler(
-                                    rv = layoutBinding.rv,
-                                    items = vm.countedCategories,
-                                    lifecycleOwner = layoutBinding.lifecycleOwner!!
-                            )
-                            return layoutBinding.root
-                        }
-            }
-
-            1 -> {
-                DataBindingUtil
-                        .inflate<LayoutGoodsDetailsNotProssedMxBinding>(LayoutInflater.from(container.context),
-                                R.layout.layout_goods_details_not_prossed_mx,
+                        .inflate<LayoutSetsDetailsNotProssedBinding>(LayoutInflater.from(container.context),
+                                R.layout.layout_sets_details_not_prossed,
                                 container,
                                 false).let { layoutBinding ->
 
@@ -175,8 +112,8 @@ class GoodsDetailsMXFragment : CoreFragment<FragmentGoodsDetailsMxBinding, Goods
             }
             else -> {
                 DataBindingUtil
-                        .inflate<LayoutGoodsDetailsProssedMxBinding>(LayoutInflater.from(container.context),
-                                R.layout.layout_goods_details_prossed_mx,
+                        .inflate<LayoutSetsDetailsProssedBinding>(LayoutInflater.from(container.context),
+                                R.layout.layout_sets_details_prossed,
                                 container,
                                 false).let { layoutBinding ->
 
@@ -205,12 +142,11 @@ class GoodsDetailsMXFragment : CoreFragment<FragmentGoodsDetailsMxBinding, Goods
 
     override fun getTextTitle(position: Int): String = getString(
             when (position) {
-                0 -> R.string.categories
-                1 -> R.string.not_processed
+                0 -> R.string.not_processed
                 else -> R.string.processed
             })
 
-    override fun countTab(): Int = 3
+    override fun countTab(): Int = 2
 
     override fun onResume() {
         super.onResume()

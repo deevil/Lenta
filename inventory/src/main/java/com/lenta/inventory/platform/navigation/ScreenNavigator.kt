@@ -9,6 +9,7 @@ import com.lenta.inventory.features.goods_information.general.GoodsInfoFragment
 import com.lenta.inventory.features.loading.fast.FastDataLoadingFragment
 import com.lenta.inventory.features.select_market.SelectMarketFragment
 import com.lenta.inventory.features.select_personnel_number.SelectPersonnelNumberFragment
+import com.lenta.inventory.features.sets_details_mx.SetsDetailsMXFragment
 import com.lenta.shared.account.IAuthenticator
 import com.lenta.shared.features.matrix_info.MatrixInfoFragment
 import com.lenta.shared.models.core.MatrixType
@@ -85,6 +86,12 @@ class ScreenNavigator(
         }
     }
 
+    override fun openSetsDetailsMXScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(SetsDetailsMXFragment())
+        }
+    }
+
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 
 }
@@ -99,4 +106,5 @@ interface IScreenNavigator : ICoreNavigator {
     fun openGoodsInfoScreen()
     fun openGoodsDetailsScreen()
     fun openGoodsDetailsMXScreen()
+    fun openSetsDetailsMXScreen()
 }

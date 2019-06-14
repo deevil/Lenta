@@ -10,6 +10,7 @@ import com.lenta.inventory.features.loading.fast.FastLoadingViewModel
 import com.lenta.inventory.features.main_menu.MainMenuViewModel
 import com.lenta.inventory.features.select_market.SelectMarketViewModel
 import com.lenta.inventory.features.select_personnel_number.SelectPersonnelNumberViewModel
+import com.lenta.inventory.features.sets_details_mx.SetsDetailsMXViewModel
 import com.lenta.inventory.main.MainActivity
 import com.lenta.inventory.main.MainViewModel
 import com.lenta.shared.di.AppScope
@@ -30,5 +31,6 @@ interface AppComponent {
     fun inject(it: GoodsInfoViewModel)
     fun inject(it: GoodsDetailsViewModel)
     fun inject(it: GoodsDetailsMXViewModel)
+    fun inject(it: SetsDetailsMXViewModel)
 }
 

@@ -8,7 +8,7 @@ import androidx.databinding.DataBindingUtil
 import com.lenta.inventory.BR
 import com.lenta.inventory.R
 import com.lenta.inventory.databinding.FragmentGoodsDetailsBinding
-import com.lenta.inventory.databinding.ItemTileGoodsDetailsBinding
+import com.lenta.inventory.databinding.ItemTileGoodsDetailsCategoriesBinding
 import com.lenta.inventory.databinding.LayoutGoodsDetailsBinding
 import com.lenta.inventory.platform.extentions.getAppComponent
 import com.lenta.shared.models.core.MatrixType
@@ -104,13 +104,13 @@ class GoodsDetailsFragment : CoreFragment<FragmentGoodsDetailsBinding, GoodsDeta
 
 
                     layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
-                            layoutId = R.layout.item_tile_goods_details,
+                            layoutId = R.layout.item_tile_goods_details_categories,
                             itemId = BR.vm,
-                            realisation = object : DataBindingAdapter<ItemTileGoodsDetailsBinding> {
-                                override fun onCreate(binding: ItemTileGoodsDetailsBinding) {
+                            realisation = object : DataBindingAdapter<ItemTileGoodsDetailsCategoriesBinding> {
+                                override fun onCreate(binding: ItemTileGoodsDetailsCategoriesBinding) {
                                 }
 
-                                override fun onBind(binding: ItemTileGoodsDetailsBinding, position: Int) {
+                                override fun onBind(binding: ItemTileGoodsDetailsCategoriesBinding, position: Int) {
                                     binding.tvCounter.tag = position
                                     binding.tvCounter.setOnClickListener(onClickSelectionListener)
                                     binding.selectedForDelete = vm.countedSelectionsHelper.isSelected(position)
