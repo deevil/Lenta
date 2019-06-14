@@ -50,7 +50,7 @@ class SearchProductDelegate @Inject constructor(
         this.scanResultHandler = scanResultHandler
     }
 
-    fun searchCode(code: String, fromScan: Boolean, isBarCode :Boolean? = null) {
+    fun searchCode(code: String, fromScan: Boolean, isBarCode: Boolean? = null) {
 
         Logg.d { "hashCode: ${hashCode()}" }
 
@@ -83,7 +83,7 @@ class SearchProductDelegate @Inject constructor(
                 true
             }
             requestCodeTypeSap -> {
-                searchCode("000000$codeWith12Digits", fromScan = false, isBarCode = false)
+                searchCode("000000000000${codeWith12Digits?.takeLast(6)}", fromScan = false, isBarCode = false)
                 codeWith12Digits = null
                 true
             }
@@ -110,7 +110,7 @@ class SearchProductDelegate @Inject constructor(
     }
 
     private fun handleFailure(failure: Failure) {
-        screenNavigator.openAlertScreen(failure)
+        screenNavigator.openAlertScreen(failure, "10/97")
     }
 
     private fun handleSearchSuccess(scanInfoResult: ScanInfoResult) {
@@ -177,7 +177,6 @@ class SearchProductDelegate @Inject constructor(
         openInfoScreenOrAllert()
 
     }
-
 
 
     fun openProductScreen(productInfo: ProductInfo, quantity: Double) {
