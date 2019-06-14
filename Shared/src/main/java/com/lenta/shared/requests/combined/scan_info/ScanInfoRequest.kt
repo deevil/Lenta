@@ -49,28 +49,17 @@ class ScanInfoRequest @Inject constructor(private val hyperHive: HyperHive, priv
             return Either.Left(Failure.NotValidEnterNumber)
         }
 
-        var eanInfo = zmpUtz25V001.getEanInfo(scanCodeInfo.eanNumberForSearch)?.toEanInfo()
-
-        return if (eanInfo != null && params.isBarCode != true) {
-            searchMaterialFromDb(scanCodeInfo, eanInfo)
-                    ?: searchMaterialFromServer(scanCodeInfo, params.tkNumber)
+        var eanInfo = if (params.isBarCode == false) {
+            null
         } else {
-            val materialInfo = if (params.isBarCode == true) {
-                return Either.Left(Failure.GoodNotFound)
-            } else {
-                zmpUtz30V001.getMaterial(params.number)
-            }
-            if (materialInfo != null) {
-                eanInfo = zmpUtz25V001.getEanInfoFromMaterial(materialInfo.material)?.toEanInfo()
-                getResult(materialInfo, scanCodeInfo.extractQuantityFromEan(eanInfo))
-            } else {
-                if (params.isBarCode == true) {
-                    Either.Left(Failure.GoodNotFound)
-                } else {
-                    searchMaterialFromServer(scanCodeInfo, params.tkNumber)
-                }
-            }
+            zmpUtz25V001.getEanInfo(scanCodeInfo.eanNumberForSearch)?.toEanInfo()
         }
+
+        Logg.d { "eanInfo $eanInfo" }
+
+        return searchMaterialFromDb(scanCodeInfo, eanInfo)
+                ?: searchMaterialFromServer(scanCodeInfo, params.tkNumber)
+
     }
 
     private fun searchMaterialFromServer(scanCodeInfo: ScanCodeInfo, tk: String): Either<Failure, ScanInfoResult> {
@@ -92,6 +81,8 @@ class ScanInfoRequest @Inject constructor(private val hyperHive: HyperHive, priv
                 }, ProductInfoStatus::class.java)
                 .execute()
 
+        Logg.d { "productInfoStatus: $productInfoStatus" }
+
 
         if (productInfoStatus.isNotBad()) {
 
@@ -112,11 +103,12 @@ class ScanInfoRequest @Inject constructor(private val hyperHive: HyperHive, priv
 
     }
 
-    private fun searchMaterialFromDb(scanCodeInfo: ScanCodeInfo, eanInfo: EanInfo): Either<Failure, ScanInfoResult>? {
+    private fun searchMaterialFromDb(scanCodeInfo: ScanCodeInfo, eanInfo: EanInfo?): Either<Failure, ScanInfoResult>? {
 
         val quantity = scanCodeInfo.extractQuantityFromEan(eanInfo = eanInfo)
 
-        val materialInfo = zmpUtz30V001.getMaterial(eanInfo.materialNumber)
+        val materialInfo = zmpUtz30V001.getMaterial(eanInfo?.materialNumber
+                ?: scanCodeInfo.materialNumberForSearch ?: return null)
                 ?: return null
 
         return getResult(materialInfo, quantity)

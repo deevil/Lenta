@@ -283,7 +283,7 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
         } else {
             filteredGoods.value?.getOrNull(position)?.productInfo
         }?.let {
-            screenNavigator.openGoodInfoScreen(it)
+            searchProductDelegate.openProductScreen(it, 0.0)
         }
     }
 

@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.View
 import com.lenta.bp10.R
 import com.lenta.bp10.databinding.FragmentGoodInfoBinding
+import com.lenta.bp10.features.good_information.base.BaseProductInfoViewModel
 import com.lenta.bp10.platform.extentions.getAppComponent
 import com.lenta.shared.models.core.ProductInfo
 import com.lenta.shared.platform.activity.OnBackPresserListener
@@ -20,20 +21,20 @@ import com.lenta.shared.utilities.extentions.toStringFormatted
 import com.lenta.shared.utilities.state.state
 
 
-class GoodInfoFragment : CoreFragment<FragmentGoodInfoBinding, GoodInfoViewModel>(),
+open class GoodInfoFragment : CoreFragment<FragmentGoodInfoBinding, BaseProductInfoViewModel>(),
         ToolbarButtonsClickListener,
         OnBackPresserListener,
         OnScanResultListener {
 
-    private var productInfo by state<ProductInfo?>(null)
+    protected var productInfo by state<ProductInfo?>(null)
 
-    private var initCount by state<Double?>(null)
+    protected var initCount by state<Double?>(null)
 
     override fun getLayoutId(): Int = R.layout.fragment_good_info
 
     override fun getPageNumber(): String = "10/07"
 
-    override fun getViewModel(): GoodInfoViewModel {
+    override fun getViewModel(): BaseProductInfoViewModel {
         provideViewModel(GoodInfoViewModel::class.java).let { viewModel ->
             getAppComponent()?.inject(viewModel)
             productInfo?.let {
@@ -43,6 +44,17 @@ class GoodInfoFragment : CoreFragment<FragmentGoodInfoBinding, GoodInfoViewModel
                 viewModel.count.value = it.toStringFormatted()
             }
             return viewModel
+        }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        onRequestFocus()
+    }
+
+    open fun onRequestFocus() {
+        binding?.apply {
+            etWriteOff.requestFocus()
         }
     }
 

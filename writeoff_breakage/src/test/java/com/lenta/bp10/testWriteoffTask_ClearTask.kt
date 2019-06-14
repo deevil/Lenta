@@ -62,7 +62,7 @@ class testWriteoffTask_ClearTask {
                 .add(reason1, 1.0)
                 .apply()
 
-        task = task.processNonExciseAlcoProduct(product2)!!
+        task = task.processGeneralProduct(product2)!!
                 .add(reason1, 1.0)
                 .add(reason2, 2.0)
                 .apply()

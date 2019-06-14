@@ -14,7 +14,7 @@ class FragmentStack(private val manager: FragmentManager, private val containerI
     private val random: Random = Random(System.currentTimeMillis())
     private var listener: FragmentManager.OnBackStackChangedListener? = null
 
-    var defaultAnimation: CustomAnimation = CustomAnimation.horizontal()
+    var defaultAnimation: CustomAnimation = CustomAnimation.horizontal
 
 
     fun setOnBackStackChangedListener(listener: FragmentManager.OnBackStackChangedListener) {
@@ -143,16 +143,16 @@ data class CustomAnimation(
         val popExit: Int
 ) {
     companion object {
-        fun horizontal(): CustomAnimation {
-            return CustomAnimation(
+        val horizontal: CustomAnimation by lazy {
+            CustomAnimation(
                     R.anim.card_slide_left_in,
                     R.anim.card_slide_left_out,
                     R.anim.card_slide_right_in,
                     R.anim.card_slide_right_out)
         }
 
-        fun vertical(): CustomAnimation {
-            return CustomAnimation(
+        val vertical: CustomAnimation by lazy {
+            CustomAnimation(
                     R.anim.card_slide_top_in,
                     R.anim.card_slide_top_out,
                     R.anim.card_slide_bottom_in,

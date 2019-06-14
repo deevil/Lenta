@@ -4,6 +4,7 @@ import android.content.Context
 import com.lenta.bp10.R
 import com.lenta.bp10.features.auth.AuthFragment
 import com.lenta.bp10.features.detection_saved_data.DetectionSavedDataFragment
+import com.lenta.bp10.features.good_information.excise_alco.ExciseAlcoInfoFragment
 import com.lenta.bp10.features.good_information.general.GoodInfoFragment
 import com.lenta.bp10.features.good_information.sets.ComponentItem
 import com.lenta.bp10.features.good_information.sets.SetsFragment
@@ -20,7 +21,6 @@ import com.lenta.bp10.features.write_off_details.WriteOffDetailsFragment
 import com.lenta.bp10.progress.IWriteOffProgressUseCaseInformator
 import com.lenta.bp10.requests.network.WriteOffReportResponse
 import com.lenta.shared.account.IAuthenticator
-import com.lenta.shared.exception.Failure
 import com.lenta.shared.exception.IFailureInterpreter
 import com.lenta.shared.features.alert.AlertFragment
 import com.lenta.shared.features.printer_change.PrinterChangeFragment
@@ -37,7 +37,6 @@ class ScreenNavigator(
         private val coreNavigator: ICoreNavigator,
         private val foregroundActivityProvider: ForegroundActivityProvider,
         private val authenticator: IAuthenticator,
-        private val failureInterpreter: IFailureInterpreter,
         private val progressUseCaseInformator: IWriteOffProgressUseCaseInformator
 ) : IScreenNavigator, ICoreNavigator by coreNavigator {
 
@@ -116,6 +115,12 @@ class ScreenNavigator(
     override fun openGoodInfoScreen(productInfo: ProductInfo, quantity: Double) {
         runOrPostpone {
             getFragmentStack()?.push(GoodInfoFragment.create(productInfo, quantity))
+        }
+    }
+
+    override fun openExciseAlcoScreen(productInfo: ProductInfo) {
+        runOrPostpone {
+            getFragmentStack()?.push(ExciseAlcoInfoFragment.create(productInfo))
         }
     }
 
@@ -235,6 +240,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openLoadingTaskSettingsScreen()
     fun openGoodsListScreen()
     fun openGoodInfoScreen(productInfo: ProductInfo, quantity: Double = 0.0)
+    fun openExciseAlcoScreen(productInfo: ProductInfo)
     fun openRemoveTaskConfirmationScreen(taskDescription: String, codeConfirmation: Int)
     fun openSendingReportsScreen(writeOffReportResponse: WriteOffReportResponse)
     fun closeAllScreen()

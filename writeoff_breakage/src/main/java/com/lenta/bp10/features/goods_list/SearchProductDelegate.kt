@@ -12,6 +12,7 @@ import com.lenta.bp10.requests.network.PermissionToWriteoffPrams
 import com.lenta.bp10.requests.network.PermissionToWriteoffRestInfo
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
+import com.lenta.shared.models.core.ProductInfo
 import com.lenta.shared.models.core.ProductType
 import com.lenta.shared.models.core.isNormal
 import com.lenta.shared.requests.combined.scan_info.ScanInfoRequest
@@ -49,7 +50,7 @@ class SearchProductDelegate @Inject constructor(
         this.scanResultHandler = scanResultHandler
     }
 
-    fun searchCode(code: String, fromScan: Boolean, isBarCode :Boolean? = null) {
+    fun searchCode(code: String, fromScan: Boolean, isBarCode: Boolean? = null) {
 
         Logg.d { "hashCode: ${hashCode()}" }
 
@@ -78,11 +79,11 @@ class SearchProductDelegate @Inject constructor(
     fun handleResultCode(code: Int?): Boolean {
         return when (code) {
             requestCodeAddProduct -> {
-                openGoodInfoScreen()
+                openInfoScreenOrAllert()
                 true
             }
             requestCodeTypeSap -> {
-                searchCode("000000$codeWith12Digits", fromScan = false, isBarCode = false)
+                searchCode("000000000000${codeWith12Digits?.takeLast(6)}", fromScan = false, isBarCode = false)
                 codeWith12Digits = null
                 true
             }
@@ -97,30 +98,19 @@ class SearchProductDelegate @Inject constructor(
     }
 
 
-    private fun openGoodInfoScreen() {
+    private fun openInfoScreenOrAllert() {
         scanInfoResult?.let { infoResult ->
             scanResultHandler?.let { handle ->
                 if (handle(infoResult)) {
                     return
                 }
             }
-            when (infoResult.productInfo.type) {
-                ProductType.General -> screenNavigator.openGoodInfoScreen(infoResult.productInfo, infoResult.quantity)
-                ProductType.ExciseAlcohol -> {
-                    if (scanInfoResult!!.productInfo.isSet) {
-                        screenNavigator.openSetsInfoScreen(infoResult.productInfo)
-                        return
-                    } else
-                    //TODO (Борисенко) реализовать логику для алкоголя и убрать хардкод
-                        openNotSupportedMessageScreen()
-                }
-                else -> openNotSupportedMessageScreen()
-            }
+            openProductScreen(infoResult.productInfo, infoResult.quantity)
         }
     }
 
     private fun handleFailure(failure: Failure) {
-        screenNavigator.openAlertScreen(failure)
+        screenNavigator.openAlertScreen(failure, "10/97")
     }
 
     private fun handleSearchSuccess(scanInfoResult: ScanInfoResult) {
@@ -184,13 +174,23 @@ class SearchProductDelegate @Inject constructor(
             }
         }
 
-        openGoodInfoScreen()
+        openInfoScreenOrAllert()
 
     }
 
 
-    private fun openNotSupportedMessageScreen() {
-        screenNavigator.openAlertScreen("Поддержка данного типа товара в процессе разработки")
+    fun openProductScreen(productInfo: ProductInfo, quantity: Double) {
+        when (productInfo.type) {
+            ProductType.General -> screenNavigator.openGoodInfoScreen(productInfo, quantity)
+            ProductType.ExciseAlcohol -> {
+                if (scanInfoResult!!.productInfo.isSet) {
+                    screenNavigator.openSetsInfoScreen(productInfo)
+                    return
+                } else
+                    screenNavigator.openExciseAlcoScreen(productInfo)
+            }
+            else -> screenNavigator.openGoodInfoScreen(productInfo, quantity)
+        }
     }
 
 

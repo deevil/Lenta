@@ -1,15 +1,15 @@
-package com.lenta.bp10.features.good_information.general
+package com.lenta.bp10.features.good_information.excise_alco
 
 import com.lenta.bp10.features.good_information.base.BaseProductInfoViewModel
 import com.lenta.bp10.models.repositories.ITaskRepository
-import com.lenta.bp10.models.task.ProcessGeneralProductService
+import com.lenta.bp10.models.task.ProcessExciseAlcoProductService
 import com.lenta.bp10.models.task.TaskDescription
 
-class GoodInfoViewModel : BaseProductInfoViewModel() {
+class ExciseAlcoInfoViewModel : BaseProductInfoViewModel() {
 
 
-    private val processGeneralProductService: ProcessGeneralProductService by lazy {
-        processServiceManager.getWriteOffTask()!!.processGeneralProduct(productInfo.value!!)!!
+    private val processGeneralProductService: ProcessExciseAlcoProductService by lazy {
+        processServiceManager.getWriteOffTask()!!.processExciseAlcoProduct(productInfo.value!!)!!
     }
 
     override fun getProcessTotalCount(): Double {
@@ -44,7 +44,8 @@ class GoodInfoViewModel : BaseProductInfoViewModel() {
             }
 
             if (it != 0.0) {
-                processGeneralProductService.add(getSelectedReason(), it)
+                //TODO need to implement
+                //processGeneralProductService.add(getSelectedReason(), it)
             }
 
             count.value = ""
@@ -55,14 +56,15 @@ class GoodInfoViewModel : BaseProductInfoViewModel() {
     }
 
 
+
     override fun onBackPressed() {
         processGeneralProductService.discard()
     }
 
     override fun onScanResult(data: String) {
-        if (addGood()) {
+        /*if (addGood()) {
             searchProductDelegate.searchCode(code = data, fromScan = true)
-        }
+        }*/
     }
 
 }
