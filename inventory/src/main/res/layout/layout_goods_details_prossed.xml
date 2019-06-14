@@ -7,7 +7,7 @@
 
         <variable
             name="vm"
-            type="com.lenta.inventory.features.goods_details.GoodsDetailsViewModel" />
+            type="com.lenta.inventory.features.goods_details_storage.GoodsDetailsStorageViewModel" />
 
         <variable
             name="rvConfig"
@@ -20,7 +20,7 @@
 
         <include
             android:id="@+id/layout_titles"
-            layout="@layout/item_title_goods_details_categories"
+            layout="@layout/item_title_goods_details_storage"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:layout_constraintEnd_toEndOf="parent"
@@ -31,13 +31,13 @@
             android:id="@+id/rv"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            app:items="@{vm.countedCategories}"
+            app:items="@{vm.countedProssed}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/layout_titles"
             app:rv_config="@{rvConfig}"
-            tools:listitem="@layout/item_tile_goods_details_categories" />
+            tools:listitem="@layout/item_tile_goods_details_storage" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

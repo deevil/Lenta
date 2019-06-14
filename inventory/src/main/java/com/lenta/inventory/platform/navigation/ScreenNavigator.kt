@@ -4,13 +4,13 @@ import android.content.Context
 import com.lenta.inventory.features.main_menu.MainMenuFragment
 import com.lenta.inventory.features.auth.AuthFragment
 import com.lenta.inventory.features.goods_details.GoodsDetailsFragment
+import com.lenta.inventory.features.goods_details_storage.GoodsDetailsStorageFragment
 import com.lenta.inventory.features.goods_information.general.GoodsInfoFragment
 import com.lenta.inventory.features.loading.fast.FastDataLoadingFragment
 import com.lenta.inventory.features.select_market.SelectMarketFragment
 import com.lenta.inventory.features.select_personnel_number.SelectPersonnelNumberFragment
+import com.lenta.inventory.features.sets_details_storage.SetsDetailsStorageFragment
 import com.lenta.shared.account.IAuthenticator
-import com.lenta.shared.features.matrix_info.MatrixInfoFragment
-import com.lenta.shared.models.core.MatrixType
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
 import com.lenta.shared.platform.navigation.ICoreNavigator
 import com.lenta.shared.platform.navigation.runOrPostpone
@@ -78,6 +78,18 @@ class ScreenNavigator(
         }
     }
 
+    override fun openGoodsDetailsStorageScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(GoodsDetailsStorageFragment())
+        }
+    }
+
+    override fun openSetsDetailsStorageScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(SetsDetailsStorageFragment())
+        }
+    }
+
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 
 }
@@ -91,4 +103,6 @@ interface IScreenNavigator : ICoreNavigator {
     fun openMainMenuScreen()
     fun openGoodsInfoScreen()
     fun openGoodsDetailsScreen()
+    fun openGoodsDetailsStorageScreen()
+    fun openSetsDetailsStorageScreen()
 }
