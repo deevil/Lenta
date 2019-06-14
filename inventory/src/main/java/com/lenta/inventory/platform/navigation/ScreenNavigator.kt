@@ -4,15 +4,13 @@ import android.content.Context
 import com.lenta.inventory.features.main_menu.MainMenuFragment
 import com.lenta.inventory.features.auth.AuthFragment
 import com.lenta.inventory.features.goods_details.GoodsDetailsFragment
-import com.lenta.inventory.features.goods_details_mx.GoodsDetailsMXFragment
+import com.lenta.inventory.features.goods_details_storage.GoodsDetailsStorageFragment
 import com.lenta.inventory.features.goods_information.general.GoodsInfoFragment
 import com.lenta.inventory.features.loading.fast.FastDataLoadingFragment
 import com.lenta.inventory.features.select_market.SelectMarketFragment
 import com.lenta.inventory.features.select_personnel_number.SelectPersonnelNumberFragment
-import com.lenta.inventory.features.sets_details_mx.SetsDetailsMXFragment
+import com.lenta.inventory.features.sets_details_storage.SetsDetailsStorageFragment
 import com.lenta.shared.account.IAuthenticator
-import com.lenta.shared.features.matrix_info.MatrixInfoFragment
-import com.lenta.shared.models.core.MatrixType
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
 import com.lenta.shared.platform.navigation.ICoreNavigator
 import com.lenta.shared.platform.navigation.runOrPostpone
@@ -80,15 +78,15 @@ class ScreenNavigator(
         }
     }
 
-    override fun openGoodsDetailsMXScreen() {
+    override fun openGoodsDetailsStorageScreen() {
         runOrPostpone {
-            getFragmentStack()?.push(GoodsDetailsMXFragment())
+            getFragmentStack()?.push(GoodsDetailsStorageFragment())
         }
     }
 
-    override fun openSetsDetailsMXScreen() {
+    override fun openSetsDetailsStorageScreen() {
         runOrPostpone {
-            getFragmentStack()?.push(SetsDetailsMXFragment())
+            getFragmentStack()?.push(SetsDetailsStorageFragment())
         }
     }
 
@@ -105,6 +103,6 @@ interface IScreenNavigator : ICoreNavigator {
     fun openMainMenuScreen()
     fun openGoodsInfoScreen()
     fun openGoodsDetailsScreen()
-    fun openGoodsDetailsMXScreen()
-    fun openSetsDetailsMXScreen()
+    fun openGoodsDetailsStorageScreen()
+    fun openSetsDetailsStorageScreen()
 }

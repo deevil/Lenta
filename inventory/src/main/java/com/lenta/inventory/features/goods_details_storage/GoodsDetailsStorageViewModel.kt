@@ -1,9 +1,9 @@
-package com.lenta.inventory.features.goods_details_mx
+package com.lenta.inventory.features.goods_details_storage
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.inventory.features.goods_details.GoodsDetailsCategoriesItem
-import com.lenta.inventory.features.goods_details.GoodsDetailsMXItem
+import com.lenta.inventory.features.goods_details.GoodsDetailsStorageItem
 import com.lenta.inventory.platform.navigation.IScreenNavigator
 import com.lenta.shared.models.core.ProductInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
@@ -12,15 +12,15 @@ import com.lenta.shared.utilities.extentions.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class GoodsDetailsMXViewModel : CoreViewModel() {
+class GoodsDetailsStorageViewModel : CoreViewModel() {
     @Inject
     lateinit var screenNavigator: IScreenNavigator
 
     val productInfo: MutableLiveData<ProductInfo> = MutableLiveData()
     val selectedPage = MutableLiveData(0)
     val countedCategories: MutableLiveData<List<GoodsDetailsCategoriesItem>> = MutableLiveData()
-    val countedProssed: MutableLiveData<List<GoodsDetailsMXItem>> = MutableLiveData()
-    val countedNotProssed: MutableLiveData<List<GoodsDetailsMXItem>> = MutableLiveData()
+    val countedProssed: MutableLiveData<List<GoodsDetailsStorageItem>> = MutableLiveData()
+    val countedNotProssed: MutableLiveData<List<GoodsDetailsStorageItem>> = MutableLiveData()
     val countedSelectionsHelper = SelectionItemsHelper()
 
     val deleteButtonEnabled: MutableLiveData<Boolean> = countedSelectionsHelper.selectedPositions.map {
@@ -66,13 +66,13 @@ class GoodsDetailsMXViewModel : CoreViewModel() {
     }
 
     private fun updateProcessed() {
-        countedProssed.postValue(listOf(GoodsDetailsMXItem(
+        countedProssed.postValue(listOf(GoodsDetailsStorageItem(
                 number = 2,
                 name = "123456789",
                 quantity = "12 ${productInfo.value!!.uom.name}",
                 even = 2 % 2 == 0,
                 productInfo = productInfo.value!!),
-                GoodsDetailsMXItem(
+                GoodsDetailsStorageItem(
                         number = 1,
                         name = "987654321",
                         quantity = "15 ${productInfo.value!!.uom.name}",
@@ -84,7 +84,7 @@ class GoodsDetailsMXViewModel : CoreViewModel() {
 
     private fun updateNotProcessed() {
         countedNotProssed.postValue(listOf(
-                GoodsDetailsMXItem(
+                GoodsDetailsStorageItem(
                         number = 1,
                         name = "000000",
                         quantity = "100 ${productInfo.value!!.uom.name}",

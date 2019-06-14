@@ -1,22 +1,22 @@
-package com.lenta.inventory.features.sets_details_mx
+package com.lenta.inventory.features.sets_details_storage
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.lenta.inventory.features.goods_details.GoodsDetailsMXItem
+import com.lenta.inventory.features.goods_details.GoodsDetailsStorageItem
 import com.lenta.inventory.platform.navigation.IScreenNavigator
 import com.lenta.shared.models.core.ProductInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class SetsDetailsMXViewModel : CoreViewModel() {
+class SetsDetailsStorageViewModel : CoreViewModel() {
     @Inject
     lateinit var screenNavigator: IScreenNavigator
 
     val productInfo: MutableLiveData<ProductInfo> = MutableLiveData()
     val selectedPage = MutableLiveData(0)
-    val countedProssed: MutableLiveData<List<GoodsDetailsMXItem>> = MutableLiveData()
-    val countedNotProssed: MutableLiveData<List<GoodsDetailsMXItem>> = MutableLiveData()
+    val countedProssed: MutableLiveData<List<GoodsDetailsStorageItem>> = MutableLiveData()
+    val countedNotProssed: MutableLiveData<List<GoodsDetailsStorageItem>> = MutableLiveData()
 
     fun setProductInfo(productInfo: ProductInfo) {
         this.productInfo.value = productInfo
@@ -37,13 +37,13 @@ class SetsDetailsMXViewModel : CoreViewModel() {
     }
 
     private fun updateProcessed() {
-        countedProssed.postValue(listOf(GoodsDetailsMXItem(
+        countedProssed.postValue(listOf(GoodsDetailsStorageItem(
                 number = 2,
                 name = "123456789",
                 quantity = "12 ${productInfo.value!!.uom.name}",
                 even = 2 % 2 == 0,
                 productInfo = productInfo.value!!),
-                GoodsDetailsMXItem(
+                GoodsDetailsStorageItem(
                         number = 1,
                         name = "987654321",
                         quantity = "15 ${productInfo.value!!.uom.name}",
@@ -55,7 +55,7 @@ class SetsDetailsMXViewModel : CoreViewModel() {
 
     private fun updateNotProcessed() {
         countedNotProssed.postValue(listOf(
-                GoodsDetailsMXItem(
+                GoodsDetailsStorageItem(
                         number = 1,
                         name = "000000",
                         quantity = "100 ${productInfo.value!!.uom.name}",

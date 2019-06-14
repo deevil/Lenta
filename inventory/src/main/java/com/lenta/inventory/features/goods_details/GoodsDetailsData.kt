@@ -14,7 +14,7 @@ data class GoodsDetailsCategoriesItem(
 
 }
 
-data class GoodsDetailsMXItem(
+data class GoodsDetailsStorageItem(
         val number: Int,
         val name: String,
         val quantity: String,

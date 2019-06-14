@@ -1,4 +1,4 @@
-package com.lenta.inventory.features.sets_details_mx
+package com.lenta.inventory.features.sets_details_storage
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -24,13 +24,13 @@ import com.lenta.shared.utilities.databinding.ViewPagerSettings
 import com.lenta.shared.utilities.extentions.generateScreenNumber
 import com.lenta.shared.utilities.extentions.provideViewModel
 
-class SetsDetailsMXFragment : CoreFragment<FragmentSetsDetailsMxBinding, SetsDetailsMXViewModel>(),
+class SetsDetailsStorageFragment : CoreFragment<FragmentSetsDetailsStorageBinding, SetsDetailsStorageViewModel>(),
         ViewPagerSettings,
         PageSelectionListener {
 
     companion object {
-        fun create(productInfo: ProductInfo): SetsDetailsMXFragment {
-            SetsDetailsMXFragment().let {
+        fun create(productInfo: ProductInfo): SetsDetailsStorageFragment {
+            SetsDetailsStorageFragment().let {
                 it.productInfo = productInfo
                 return it
             }
@@ -42,12 +42,12 @@ class SetsDetailsMXFragment : CoreFragment<FragmentSetsDetailsMxBinding, SetsDet
             false, "1", MatrixType.Active, "materialType")
 
 
-    override fun getLayoutId(): Int = R.layout.fragment_sets_details_mx
+    override fun getLayoutId(): Int = R.layout.fragment_sets_details_storage
 
     override fun getPageNumber(): String = generateScreenNumber()
 
-    override fun getViewModel(): SetsDetailsMXViewModel {
-        provideViewModel(SetsDetailsMXViewModel::class.java).let {vm ->
+    override fun getViewModel(): SetsDetailsStorageViewModel {
+        provideViewModel(SetsDetailsStorageViewModel::class.java).let { vm ->
             getAppComponent()?.inject(vm)
             productInfo?.let {
                 vm.setProductInfo(it)
@@ -91,13 +91,13 @@ class SetsDetailsMXFragment : CoreFragment<FragmentSetsDetailsMxBinding, SetsDet
                                 false).let { layoutBinding ->
 
                             layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
-                                    layoutId = R.layout.item_tile_goods_details_mx,
+                                    layoutId = R.layout.item_tile_goods_details_storage,
                                     itemId = BR.vm,
-                                    realisation = object : DataBindingAdapter<ItemTileGoodsDetailsMxBinding> {
-                                        override fun onCreate(binding: ItemTileGoodsDetailsMxBinding) {
+                                    realisation = object : DataBindingAdapter<ItemTileGoodsDetailsStorageBinding> {
+                                        override fun onCreate(binding: ItemTileGoodsDetailsStorageBinding) {
                                         }
 
-                                        override fun onBind(binding: ItemTileGoodsDetailsMxBinding, position: Int) {
+                                        override fun onBind(binding: ItemTileGoodsDetailsStorageBinding, position: Int) {
                                             binding.tvCounter.tag = position
                                         }
 
@@ -118,13 +118,13 @@ class SetsDetailsMXFragment : CoreFragment<FragmentSetsDetailsMxBinding, SetsDet
                                 false).let { layoutBinding ->
 
                             layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
-                                    layoutId = R.layout.item_tile_goods_details_mx,
+                                    layoutId = R.layout.item_tile_goods_details_storage,
                                     itemId = BR.vm,
-                                    realisation = object : DataBindingAdapter<ItemTileGoodsDetailsMxBinding> {
-                                        override fun onCreate(binding: ItemTileGoodsDetailsMxBinding) {
+                                    realisation = object : DataBindingAdapter<ItemTileGoodsDetailsStorageBinding> {
+                                        override fun onCreate(binding: ItemTileGoodsDetailsStorageBinding) {
                                         }
 
-                                        override fun onBind(binding: ItemTileGoodsDetailsMxBinding, position: Int) {
+                                        override fun onBind(binding: ItemTileGoodsDetailsStorageBinding, position: Int) {
                                             binding.tvCounter.tag = position
                                         }
 

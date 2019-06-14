@@ -1,4 +1,4 @@
-package com.lenta.inventory.features.goods_details_mx
+package com.lenta.inventory.features.goods_details_storage
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -23,14 +23,14 @@ import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.generateScreenNumber
 import com.lenta.shared.utilities.extentions.provideViewModel
 
-class GoodsDetailsMXFragment : CoreFragment<FragmentGoodsDetailsMxBinding, GoodsDetailsMXViewModel>(),
+class GoodsDetailsStorageFragment : CoreFragment<FragmentGoodsDetailsStorageBinding, GoodsDetailsStorageViewModel>(),
         ToolbarButtonsClickListener,
         ViewPagerSettings,
         PageSelectionListener {
 
     companion object {
-        fun create(productInfo: ProductInfo): GoodsDetailsMXFragment {
-            GoodsDetailsMXFragment().let {
+        fun create(productInfo: ProductInfo): GoodsDetailsStorageFragment {
+            GoodsDetailsStorageFragment().let {
                 it.productInfo = productInfo
                 return it
             }
@@ -45,12 +45,12 @@ class GoodsDetailsMXFragment : CoreFragment<FragmentGoodsDetailsMxBinding, Goods
 
     private var countedRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
 
-    override fun getLayoutId(): Int = R.layout.fragment_goods_details_mx
+    override fun getLayoutId(): Int = R.layout.fragment_goods_details_storage
 
     override fun getPageNumber(): String = generateScreenNumber()
 
-    override fun getViewModel(): GoodsDetailsMXViewModel {
-        provideViewModel(GoodsDetailsMXViewModel::class.java).let { vm ->
+    override fun getViewModel(): GoodsDetailsStorageViewModel {
+        provideViewModel(GoodsDetailsStorageViewModel::class.java).let { vm ->
             getAppComponent()?.inject(vm)
             productInfo?.let {
                 vm.setProductInfo(it)
@@ -104,8 +104,8 @@ class GoodsDetailsMXFragment : CoreFragment<FragmentGoodsDetailsMxBinding, Goods
         when (position) {
             0 -> {
                 DataBindingUtil
-                        .inflate<LayoutGoodsDetailsCategoriesMxBinding>(LayoutInflater.from(container.context),
-                                R.layout.layout_goods_details_categories_mx,
+                        .inflate<LayoutGoodsDetailsCategoriesBinding>(LayoutInflater.from(container.context),
+                                R.layout.layout_goods_details_categories,
                                 container,
                                 false).let {layoutBinding ->
 
@@ -148,19 +148,19 @@ class GoodsDetailsMXFragment : CoreFragment<FragmentGoodsDetailsMxBinding, Goods
 
             1 -> {
                 DataBindingUtil
-                        .inflate<LayoutGoodsDetailsNotProssedMxBinding>(LayoutInflater.from(container.context),
-                                R.layout.layout_goods_details_not_prossed_mx,
+                        .inflate<LayoutGoodsDetailsNotProssedBinding>(LayoutInflater.from(container.context),
+                                R.layout.layout_goods_details_not_prossed,
                                 container,
                                 false).let { layoutBinding ->
 
                             layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
-                                    layoutId = R.layout.item_tile_goods_details_mx,
+                                    layoutId = R.layout.item_tile_goods_details_storage,
                                     itemId = BR.vm,
-                                    realisation = object : DataBindingAdapter<ItemTileGoodsDetailsMxBinding> {
-                                        override fun onCreate(binding: ItemTileGoodsDetailsMxBinding) {
+                                    realisation = object : DataBindingAdapter<ItemTileGoodsDetailsStorageBinding> {
+                                        override fun onCreate(binding: ItemTileGoodsDetailsStorageBinding) {
                                         }
 
-                                        override fun onBind(binding: ItemTileGoodsDetailsMxBinding, position: Int) {
+                                        override fun onBind(binding: ItemTileGoodsDetailsStorageBinding, position: Int) {
                                             binding.tvCounter.tag = position
                                         }
 
@@ -175,19 +175,19 @@ class GoodsDetailsMXFragment : CoreFragment<FragmentGoodsDetailsMxBinding, Goods
             }
             else -> {
                 DataBindingUtil
-                        .inflate<LayoutGoodsDetailsProssedMxBinding>(LayoutInflater.from(container.context),
-                                R.layout.layout_goods_details_prossed_mx,
+                        .inflate<LayoutGoodsDetailsProssedBinding>(LayoutInflater.from(container.context),
+                                R.layout.layout_goods_details_prossed,
                                 container,
                                 false).let { layoutBinding ->
 
                             layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
-                                    layoutId = R.layout.item_tile_goods_details_mx,
+                                    layoutId = R.layout.item_tile_goods_details_storage,
                                     itemId = BR.vm,
-                                    realisation = object : DataBindingAdapter<ItemTileGoodsDetailsMxBinding> {
-                                        override fun onCreate(binding: ItemTileGoodsDetailsMxBinding) {
+                                    realisation = object : DataBindingAdapter<ItemTileGoodsDetailsStorageBinding> {
+                                        override fun onCreate(binding: ItemTileGoodsDetailsStorageBinding) {
                                         }
 
-                                        override fun onBind(binding: ItemTileGoodsDetailsMxBinding, position: Int) {
+                                        override fun onBind(binding: ItemTileGoodsDetailsStorageBinding, position: Int) {
                                             binding.tvCounter.tag = position
                                         }
 
