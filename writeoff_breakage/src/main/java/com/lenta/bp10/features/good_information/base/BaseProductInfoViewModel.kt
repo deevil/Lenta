@@ -19,7 +19,6 @@ import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.map
-import com.lenta.shared.utilities.extentions.toStringFormatted
 import com.lenta.shared.view.OnPositionClickListener
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -123,17 +122,6 @@ abstract class BaseProductInfoViewModel : CoreViewModel(), OnPositionClickListen
 
     }
 
-    protected fun handleProductSearchResult(scanInfoResult: ScanInfoResult?): Boolean {
-        scanInfoResult?.let {
-            if (it.productInfo.materialNumber == productInfo.value?.materialNumber) {
-                count.value = it.quantity.toStringFormatted()
-                return true
-            }
-        }
-        onClickApply()
-        return false
-    }
-
     protected fun getSelectedReason(): WriteOffReason {
         getTaskDescription().moveTypes.let { moveTypes ->
             return if (moveTypes.isEmpty()) {
@@ -144,6 +132,8 @@ abstract class BaseProductInfoViewModel : CoreViewModel(), OnPositionClickListen
         }
 
     }
+
+    abstract fun handleProductSearchResult(scanInfoResult: ScanInfoResult?): Boolean
 
     abstract fun getTaskDescription(): TaskDescription
 
@@ -171,4 +161,5 @@ abstract class BaseProductInfoViewModel : CoreViewModel(), OnPositionClickListen
     abstract fun onBackPressed()
 
     abstract fun onScanResult(data: String)
+
 }

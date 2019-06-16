@@ -92,10 +92,10 @@ data class MaterialNumber(
 // </summary>
 data class ExciseStamp(
         // <summary>
-        // Номер набора (null для ненабора)
+        // Номер набора ("" для ненабора)
         // </summary>
         @SerializedName("MATNR_OSN")
-        val matnrOsn: String?,
+        val matnrOsn: String,
 
         // <summary>
         // Номер товара

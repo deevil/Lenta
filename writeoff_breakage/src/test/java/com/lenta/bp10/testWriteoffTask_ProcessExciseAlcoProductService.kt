@@ -99,7 +99,9 @@ class testWriteoffTask_ProcessExciseAlcoProductService {
                 .apply()
 
         assertEquals(1, task.getProcessedProducts().size.toLong())
-        assertEquals(2.0, task.getTotalCountOfProduct(product1), 0.0)
+        assertEquals(1.0, task.getTotalCountOfProduct(product1), 0.0)
+
+        assertEquals(1, task.taskRepository.getExciseStamps().lenght())
 
         //марка exciseStamp3 не должна добавляться
         task = task.processExciseAlcoProduct(product2)!!
@@ -108,15 +110,18 @@ class testWriteoffTask_ProcessExciseAlcoProductService {
                 .apply()
 
         assertEquals(2, task.getProcessedProducts().size.toLong())
-        assertEquals(4.0, task.getTotalCountOfProduct(product2), 0.0)
+        assertEquals(1.0, task.getTotalCountOfProduct(product2), 0.0)
 
+        assertEquals(2, task.taskRepository.getExciseStamps().lenght())
+
+        //TODO (Borisenko) Нужно обсудить необходимость поведения, указанного в комментарии
         ////продукт product3 и марка exciseStamp1 не должены добавляться, а TotalCount (итого списано) у продукта product2 должен быть увеличен до 6
         task = task.processExciseAlcoProduct(product3)!!
                 .add(reason1, 2.0, exciseStamp1)
                 .apply()
 
         assertEquals(2, task.getProcessedProducts().size.toLong())
-        assertEquals(6.0, task.getTotalCountOfProduct(product2), 0.0)
+        assertEquals(1.0, task.getTotalCountOfProduct(product2), 0.0)
     }
 
     @Test
@@ -161,7 +166,62 @@ class testWriteoffTask_ProcessExciseAlcoProductService {
 
         assertEquals(1, task.getProcessedProducts().size.toLong())
         assertEquals(0.0, task.getTotalCountOfProduct(product1), 0.0)
-        assertEquals(5.0, task.getTotalCountOfProduct(product2), 0.0)
+        assertEquals(3.0, task.getTotalCountOfProduct(product2), 0.0)
         assertEquals(0.0, task.getTotalCountOfProduct(product3), 0.0)
+
+
+
+        assertEquals(2, task.taskRepository.getExciseStamps().lenght())
     }
+
+    @Test
+    fun testDelReason() {
+        creatingObjectsForTest()
+
+        val product1 = ProductInfo("materialNumber1", "description", Uom("ST", "шт"), ProductType.ExciseAlcohol,
+                false, "1", MatrixType.Active, "materialType")
+
+        val reason1 = WriteOffReason("01", "Срок годности")
+        val reason2 = WriteOffReason("02", "Срок негодности")
+
+        val exciseStamp1 = TaskExciseStamp("materialNumber1", "1", "материал набора", "Срок годности", false)
+        val exciseStamp2 = TaskExciseStamp("materialNumber1", "2", "материал набора", "Срок негодности", false)
+
+
+        task = task.processExciseAlcoProduct(product1)!!
+                .add(reason1, 1.0, exciseStamp1)
+                .add(reason2, 1.0, exciseStamp2)
+                .apply()
+
+        assertEquals(1, task.getProcessedProducts().size.toLong())
+        assertEquals(1.0, task.getTotalCountOfProduct(product1), 1.0)
+
+        assertEquals(2, task.taskRepository.getExciseStamps().lenght())
+
+        taskWriteOfReasonRepository.get(0).let {
+
+            assertEquals(reason1.code, it.writeOffReason.code)
+
+            task.deleteTaskWriteOffReason(it)
+
+            assertEquals(1, task.getProcessedProducts().size.toLong())
+            assertEquals(1.0, task.getTotalCountOfProduct(product1), 1.0)
+            assertEquals(1, task.taskRepository.getExciseStamps().lenght())
+
+        }
+
+        taskWriteOfReasonRepository.get(0).let {
+
+            assertEquals(reason2.code, it.writeOffReason.code)
+
+            task.deleteTaskWriteOffReason(it)
+
+            assertEquals(0, task.getProcessedProducts().size.toLong())
+            assertEquals(0.0, task.getTotalCountOfProduct(product1), 1.0)
+            assertEquals(0, task.taskRepository.getExciseStamps().lenght())
+
+        }
+
+    }
+
 }

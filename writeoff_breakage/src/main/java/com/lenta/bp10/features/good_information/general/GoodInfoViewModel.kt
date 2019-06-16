@@ -4,6 +4,8 @@ import com.lenta.bp10.features.good_information.base.BaseProductInfoViewModel
 import com.lenta.bp10.models.repositories.ITaskRepository
 import com.lenta.bp10.models.task.ProcessGeneralProductService
 import com.lenta.bp10.models.task.TaskDescription
+import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
+import com.lenta.shared.utilities.extentions.toStringFormatted
 
 class GoodInfoViewModel : BaseProductInfoViewModel() {
 
@@ -18,6 +20,17 @@ class GoodInfoViewModel : BaseProductInfoViewModel() {
 
     override fun getTaskRepo(): ITaskRepository {
         return processGeneralProductService.taskRepository
+    }
+
+    override fun handleProductSearchResult(scanInfoResult: ScanInfoResult?): Boolean {
+        scanInfoResult?.let {
+            if (it.productInfo.materialNumber == productInfo.value?.materialNumber) {
+                count.value = it.quantity.toStringFormatted()
+                return true
+            }
+        }
+        onClickApply()
+        return false
     }
 
     override fun getTaskDescription(): TaskDescription {

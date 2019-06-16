@@ -226,6 +226,10 @@ class ScreenNavigator(
 
     }
 
+    override fun openAlertDoubleScanStamp() {
+        openAlertScreen(message = context.getString(R.string.alert_double_scan_stamp))
+    }
+
 
 }
 
@@ -255,4 +259,5 @@ interface IScreenNavigator : ICoreNavigator {
     fun openAlertNotAllowWriteOffToWorkScreen()
     fun openNotPossibleSaveNegativeQuantityScreen()
     fun openSelectTypeCodeScreen(codeConfirmationForSap: Int, codeConfirmationForBarCode: Int)
+    fun openAlertDoubleScanStamp()
 }
