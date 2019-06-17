@@ -25,6 +25,7 @@ import com.lenta.shared.platform.toolbar.top_toolbar.ImageButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.scan.IScanHelper
 import com.lenta.shared.scan.OnScanResultListener
+import com.lenta.shared.scan.honeywell.HoneywellScanHelper
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.hideKeyboard
 import com.lenta.shared.utilities.extentions.implementationOf
@@ -43,6 +44,8 @@ abstract class CoreMainActivity : CoreActivity<ActivityMainBinding>(), ToolbarBu
 
     @Inject
     lateinit var scanHelper: IScanHelper
+
+    val honeywellScanHelper = HoneywellScanHelper()
 
     private val vm: CoreMainViewModel by lazy {
         getViewModel()
@@ -73,6 +76,16 @@ abstract class CoreMainActivity : CoreActivity<ActivityMainBinding>(), ToolbarBu
 
         })
 
+        honeywellScanHelper.scanResult.observe(this, Observer<String> {
+            Logg.d { "scan result: $it" }
+            it?.let { code ->
+                getCurrentFragment()?.implementationOf(OnScanResultListener::class.java)?.onScanResult(code)
+            }
+
+        })
+
+        honeywellScanHelper.init(this)
+
     }
 
     override fun onResume() {
@@ -81,6 +94,7 @@ abstract class CoreMainActivity : CoreActivity<ActivityMainBinding>(), ToolbarBu
         batteryStateMonitor.start(this)
         scanHelper.startListen(this)
         foregroundActivityProvider.setActivity(this)
+        honeywellScanHelper.startListen(this)
     }
 
     override fun onPause() {
@@ -89,6 +103,7 @@ abstract class CoreMainActivity : CoreActivity<ActivityMainBinding>(), ToolbarBu
         networkStateMonitor.stop(this)
         batteryStateMonitor.stop(this)
         scanHelper.stopListen(this)
+        honeywellScanHelper.stopListen(this)
     }
 
     override fun onBackPressed() {
