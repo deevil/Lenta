@@ -72,7 +72,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="?selectableItemBackground"
-            android:onClick="@{(v) -> vm.screenNavigator.openEanInfoScreen()}"
+            android:onClick="@{(v) -> vm.screenNavigator.openAlertScreen(vm.failureEanInfo, vm.numScreen)}"
             android:padding="8dp"
             android:src="@drawable/ic_scan_barcode"
             app:layout_constraintBottom_toBottomOf="parent"

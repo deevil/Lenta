@@ -21,6 +21,7 @@ import com.lenta.shared.scan.OnScanResultListener
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.databinding.*
 import com.lenta.shared.utilities.extentions.connectLiveData
+import com.lenta.shared.utilities.extentions.generateScreenNumber
 import com.lenta.shared.utilities.extentions.getFragmentResultCode
 import com.lenta.shared.utilities.extentions.provideViewModel
 
@@ -37,11 +38,12 @@ class GoodsListFragment :
 
     override fun getLayoutId(): Int = R.layout.fragment_goods_list
 
-    override fun getPageNumber() = "10/06"
+    override fun getPageNumber() = generateScreenNumber()
 
     override fun getViewModel(): GoodsListViewModel {
         provideViewModel(GoodsListViewModel::class.java).let {
             getAppComponent()?.inject(it)
+            it.setNumberScreens(generateScreenNumber())
             return it
         }
     }

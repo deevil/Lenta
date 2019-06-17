@@ -53,6 +53,10 @@ class ComponentViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftK
     val suffix: MutableLiveData<String> = MutableLiveData()
     val exciseStampCode: MutableLiveData<String> = MutableLiveData()
     private val exciseStamp = mutableListOf<TaskExciseStamp>()
+    val failureExciseAlco: Failure = Failure.ExciseAlcoInfoScreen
+    val failureEanInfo: Failure = Failure.EanInfoScreen
+    val failureESInfo: Failure = Failure.ESInfoScreen
+    val numScreen: MutableLiveData<String> = MutableLiveData()
 
     private val processExciseAlcoProductService: ProcessExciseAlcoProductService by lazy {
         processServiceManager.getWriteOffTask()!!.processExciseAlcoProduct(productInfo.value!!)!!
@@ -74,6 +78,10 @@ class ComponentViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftK
         this.limitExceeded.value = limitExceeded
     }
 
+    fun setNumberScreens(numberScreen: String) {
+        numScreen.value = numberScreen
+    }
+
     init {
         viewModelScope.launch {
             processServiceManager.getWriteOffTask()?.let { writeOffTask ->
@@ -91,9 +99,7 @@ class ComponentViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftK
     }
 
     fun onClickAdd() {
-        exciseStamp.forEachIndexed { index, taskExciseStamp ->
-            processExciseAlcoProductService.add(componentItem.value!!.writeOffReason, 1.0, taskExciseStamp)
-        }
+        processServiceManager.getWriteOffTask()!!.taskRepository.getExciseStamps().addExciseStamps(exciseStamp)
 
         exciseStamp.clear()
         count.value = "0"
@@ -138,10 +144,10 @@ class ComponentViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftK
 
         when (retcodeCode) {
             0 -> addExciseStamp()
-            1 -> screenNavigator.openAlertScreen(retcodeName)
-            2 -> screenNavigator.openAlertScreen(retcodeName)
-            3 -> screenNavigator.openAlertScreen(retcodeName)
-            4 -> screenNavigator.openAlertScreen(retcodeName)
+            1 -> screenNavigator.openAlertScreen(message = retcodeName, pageNumber = numScreen.value!!)
+            2 -> screenNavigator.openAlertScreen(message = retcodeName, pageNumber = numScreen.value!!)
+            3 -> screenNavigator.openAlertScreen(message = retcodeName, pageNumber = numScreen.value!!)
+            4 -> screenNavigator.openAlertScreen(message = retcodeName, pageNumber = numScreen.value!!)
         }
     }
 

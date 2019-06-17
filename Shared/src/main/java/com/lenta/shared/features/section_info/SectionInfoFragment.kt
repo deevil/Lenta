@@ -13,10 +13,11 @@ import com.lenta.shared.utilities.state.state
 class SectionInfoFragment : CoreFragment<FragmentSectionInfoBinding, SectionInfoViewModel>() {
 
     var sectionNumber by state("")
+    var pageNum by state<String?>(null)
 
     override fun getLayoutId(): Int = R.layout.fragment_section_info
 
-    override fun getPageNumber() : String = generateScreenNumber()
+    override fun getPageNumber() : String = pageNum!!
 
     override fun getViewModel(): SectionInfoViewModel {
         provideViewModel(SectionInfoViewModel::class.java).let {
@@ -36,9 +37,10 @@ class SectionInfoFragment : CoreFragment<FragmentSectionInfoBinding, SectionInfo
     }
 
     companion object {
-        fun create(sectionNumber: String): SectionInfoFragment {
+        fun create(sectionNumber: String, pageNumber: String): SectionInfoFragment {
             return SectionInfoFragment().apply {
                 this.sectionNumber = sectionNumber
+                this.pageNum = pageNumber
             }
         }
     }
