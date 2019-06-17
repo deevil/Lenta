@@ -1,6 +1,7 @@
 package com.lenta.bp10.platform.navigation
 
 import android.content.Context
+import androidx.core.content.ContextCompat
 import com.lenta.bp10.R
 import com.lenta.bp10.features.auth.AuthFragment
 import com.lenta.bp10.features.detection_saved_data.DetectionSavedDataFragment
@@ -208,7 +209,10 @@ class ScreenNavigator(
     }
 
     override fun openNotPossibleSaveNegativeQuantityScreen() {
-        openAlertScreen(message = context.getString(R.string.cannot_save_negative_quantity))
+        openAlertScreen(
+                message = context.getString(R.string.cannot_save_negative_quantity),
+                iconRes = R.drawable.ic_info_pink,
+                textColor = ContextCompat.getColor(context, com.lenta.shared.R.color.color_text_dialogWarning))
     }
 
     override fun openSelectTypeCodeScreen(codeConfirmationForSap: Int, codeConfirmationForBarCode: Int) {

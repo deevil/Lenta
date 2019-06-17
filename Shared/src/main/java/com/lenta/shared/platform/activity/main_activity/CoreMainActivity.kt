@@ -79,15 +79,15 @@ abstract class CoreMainActivity : CoreActivity<ActivityMainBinding>(), ToolbarBu
         super.onResume()
         networkStateMonitor.start(this)
         batteryStateMonitor.start(this)
-        foregroundActivityProvider.setActivity(this)
         scanHelper.startListen(this)
+        foregroundActivityProvider.setActivity(this)
     }
 
     override fun onPause() {
+        foregroundActivityProvider.clear()
         super.onPause()
         networkStateMonitor.stop(this)
         batteryStateMonitor.stop(this)
-        foregroundActivityProvider.clear()
         scanHelper.stopListen(this)
     }
 
