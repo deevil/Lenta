@@ -59,6 +59,7 @@ class HoneywellScanHelper : IScanHelper {
                 properties[BarcodeReader.PROPERTY_DATAMATRIX_ENABLED] = true
                 properties[BarcodeReader.PROPERTY_UPC_A_ENABLE] = true
                 properties[BarcodeReader.PROPERTY_EAN_13_ENABLED] = true
+                properties[BarcodeReader.PROPERTY_EAN_13_CHECK_DIGIT_TRANSMIT_ENABLED] = true
                 properties[BarcodeReader.PROPERTY_AZTEC_ENABLED] = true
                 properties[BarcodeReader.PROPERTY_CODABAR_ENABLED] = false
                 properties[BarcodeReader.PROPERTY_INTERLEAVED_25_ENABLED] = false
@@ -71,6 +72,12 @@ class HoneywellScanHelper : IScanHelper {
                 properties[BarcodeReader.PROPERTY_NOTIFICATION_BAD_READ_ENABLED] = false
                 // Apply the settings
                 it.setProperties(properties)
+
+                if (resumed) {
+                    stopListen(activity)
+                    startListen(activity)
+                }
+
 
             }
 
@@ -113,7 +120,13 @@ class HoneywellScanHelper : IScanHelper {
 
     override val scanResult: MutableLiveData<String> = MutableLiveData()
 
+
+    var resumed = false
+
+
     override fun startListen(activity: Activity) {
+
+        resumed = true
 
         barcodeReader?.let {
             try {
@@ -126,6 +139,9 @@ class HoneywellScanHelper : IScanHelper {
     }
 
     override fun stopListen(activity: Activity) {
+
+        resumed = false
+
         barcodeReader?.release()
     }
 
