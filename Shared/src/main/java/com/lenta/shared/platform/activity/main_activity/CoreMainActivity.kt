@@ -26,6 +26,7 @@ import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.scan.IScanHelper
 import com.lenta.shared.scan.OnScanResultListener
 import com.lenta.shared.scan.honeywell.HoneywellScanHelper
+import com.lenta.shared.scan.newland.NewLandScanHelper
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.hideKeyboard
 import com.lenta.shared.utilities.extentions.implementationOf
@@ -46,6 +47,7 @@ abstract class CoreMainActivity : CoreActivity<ActivityMainBinding>(), ToolbarBu
     lateinit var scanHelper: IScanHelper
 
     val honeywellScanHelper = HoneywellScanHelper()
+    val newLandScanHelper = NewLandScanHelper()
 
     private val vm: CoreMainViewModel by lazy {
         getViewModel()
@@ -86,6 +88,13 @@ abstract class CoreMainActivity : CoreActivity<ActivityMainBinding>(), ToolbarBu
 
         honeywellScanHelper.init(this)
 
+        newLandScanHelper.scanResult.observe(this, Observer<String> {
+            Logg.d { "scan result: $it" }
+            it?.let { code ->
+                getCurrentFragment()?.implementationOf(OnScanResultListener::class.java)?.onScanResult(code)
+            }
+        })
+
     }
 
     override fun onResume() {
@@ -95,6 +104,7 @@ abstract class CoreMainActivity : CoreActivity<ActivityMainBinding>(), ToolbarBu
         scanHelper.startListen(this)
         foregroundActivityProvider.setActivity(this)
         honeywellScanHelper.startListen(this)
+        newLandScanHelper.startListen(this)
     }
 
     override fun onPause() {
@@ -104,6 +114,7 @@ abstract class CoreMainActivity : CoreActivity<ActivityMainBinding>(), ToolbarBu
         batteryStateMonitor.stop(this)
         scanHelper.stopListen(this)
         honeywellScanHelper.stopListen(this)
+        newLandScanHelper.stopListen(this)
     }
 
     override fun onBackPressed() {
