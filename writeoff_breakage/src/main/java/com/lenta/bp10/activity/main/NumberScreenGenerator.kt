@@ -17,7 +17,7 @@ import com.lenta.shared.platform.fragment.CoreFragment
 import javax.inject.Inject
 
 class NumberScreenGenerator @Inject constructor() : INumberScreenGenerator {
-    private val prefix = "10"
+
     override fun generateNumberScreen(fragment: CoreFragment<*, *>): String {
         return when (fragment) {
             is ExitWithConfirmationFragment -> "$prefix/93"
@@ -38,6 +38,10 @@ class NumberScreenGenerator @Inject constructor() : INumberScreenGenerator {
 
     override fun getPrefixScreen(fragment: CoreFragment<*, *>): String {
         return  prefix
+    }
+
+    companion object {
+        const val prefix = "10"
     }
 
 }
