@@ -35,8 +35,6 @@ class NumberScreenGenerator @Inject constructor() : INumberScreenGenerator {
             is TechLoginFragment -> "$prefix/55"
             is PinCodeFragment -> "$prefix/56"
             is FailurePinCodeFragment -> "$prefix/96"
-            is MatrixInfoFragment -> "$prefix/12"
-            is SectionInfoFragment -> "$prefix/12"
             is GoodsInfoFragment -> "$prefix/10"
             is GoodsDetailsFragment -> "$prefix/11"
             is GoodsDetailsStorageFragment -> "$prefix/22"

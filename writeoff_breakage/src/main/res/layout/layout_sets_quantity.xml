@@ -63,11 +63,11 @@
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
-            android:digits="0123456789-."
             android:ellipsize="end"
             android:inputType="numberDecimal"
             android:maxLines="1"
             android:text="@={vm.count}"
+            app:digitsForUom="@{vm.productInfo.uom}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/div_vert"
             app:layout_constraintTop_toTopOf="@+id/div_vert"
@@ -158,7 +158,7 @@
             android:fontFamily="@font/tahoma_bold"
             android:gravity="center"
             android:textSize="18sp"
-            android:onClick="@{(v) -> vm.screenNavigator.openMatrixInfoScreen(vm.productInfo.matrixType)}"
+            android:onClick="@{(v) -> vm.screenNavigator.openMatrixInfoScreen(vm.productInfo.matrixType, vm.numScreen)}"
             tools:background="@drawable/bg_white_circle"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -178,7 +178,7 @@
             android:fontFamily="@font/tahoma_bold"
             android:gravity="center"
             android:text='@{"" + vm.productInfo.sectionId}'
-            android:onClick="@{(v) -> vm.screenNavigator.openSectionInfoScreen(vm.productInfo.sectionId)}"
+            android:onClick="@{(v) -> vm.screenNavigator.openSectionInfoScreen(vm.productInfo.sectionId, vm.numScreen)}"
             android:textSize="16sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@+id/tv_matrix"
@@ -187,29 +187,30 @@
             tools:text="02" />
 
         <ImageButton
+            android:id="@+id/b_excise_alco"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginBottom="18dp"
+            android:background="?selectableItemBackground"
+            android:onClick="@{(v) -> vm.screenNavigator.openAlertScreen(vm.failureExciseAlco, vm.numScreen)}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/tv_section"
+            android:src="@drawable/ic_excise_white_48dp"
+            tools:ignore="VectorDrawableCompat" />
+
+        <ImageButton
             android:id="@+id/b_scan"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
             android:layout_marginBottom="16dp"
             android:background="?selectableItemBackground"
-            android:onClick="@{(v) -> vm.screenNavigator.openEanInfoScreen()}"
+            android:onClick="@{(v) -> vm.screenNavigator.openAlertScreen(vm.failureEanInfo, vm.numScreen)}"
             android:padding="8dp"
             android:src="@drawable/ic_scan_barcode"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
-
-        <ImageView
-            android:id="@+id/imageView4"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginBottom="18dp"
-            android:background="?selectableItemBackground"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/tv_section"
-            app:srcCompat="@drawable/ic_excise_white_48dp"
-            tools:ignore="VectorDrawableCompat" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

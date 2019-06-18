@@ -13,6 +13,7 @@ import com.lenta.bp10.models.task.TaskDescription
 import com.lenta.bp10.models.task.WriteOffReason
 import com.lenta.bp10.platform.navigation.IScreenNavigator
 import com.lenta.bp10.platform.resources.IStringResourceManager
+import com.lenta.shared.exception.Failure
 import com.lenta.shared.models.core.ProductInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
@@ -66,6 +67,14 @@ abstract class BaseProductInfoViewModel : CoreViewModel(), OnPositionClickListen
         )
     }
 
+    val failureExciseAlco: Failure = Failure.ExciseAlcoInfoScreen
+    val failureEanInfo: Failure = Failure.EanInfoScreen
+    val failureESInfo: Failure = Failure.ESInfoScreen
+    val numScreen: MutableLiveData<String> = MutableLiveData()
+
+    fun setNumberScreens(numberScreen: String) {
+        numScreen.value = numberScreen
+    }
 
     init {
         viewModelScope.launch {

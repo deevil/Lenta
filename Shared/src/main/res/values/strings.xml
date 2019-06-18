@@ -77,7 +77,7 @@
     <string name="unknown_matrix">Неизвестная матрица</string>
     <string name="section">Секция %s</string>
     <string name="ean_info">Доступно сканирование штрихкода EAN</string>
-    <string name="es_info">Доступно сканирование АМ</string>
+    <string name="es_info">Доступно сканирование акцизной марки</string>
     <string name="empty_category">Пустая категория</string>
     <string name="good_not_found">Товар не найден в справочниках</string>
     <string name="not_valid_format_ean">Неверный формат штрихкода</string>
@@ -87,4 +87,6 @@
     <string name="general_product">Обычный товар</string>
     <string name="excise_alco">Акцизный алкоголь</string>
     <string name="non_excise_alco">Не акцизный алкоголь</string>
+    <string name="marks_comp_already_scanned">Требуемое количество марок по этому компоненту уже отсканировано</string>
+
 </resources>

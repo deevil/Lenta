@@ -182,7 +182,7 @@
             android:fontFamily="@font/tahoma_bold"
             android:gravity="center"
             android:textSize="18sp"
-            android:onClick="@{(v) -> vm.screenNavigator.openMatrixInfoScreen(vm.productInfo.matrixType)}"
+            android:onClick="@{(v) -> vm.screenNavigator.openMatrixInfoScreen(vm.productInfo.matrixType, vm.numScreen)}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/div_hor4"
@@ -202,7 +202,7 @@
             android:fontFamily="@font/tahoma_bold"
             android:gravity="center"
             android:text='@{"" + vm.productInfo.sectionId}'
-            android:onClick="@{(v) -> vm.screenNavigator.openSectionInfoScreen(vm.productInfo.sectionId)}"
+            android:onClick="@{(v) -> vm.screenNavigator.openSectionInfoScreen(vm.productInfo.sectionId, vm.numScreen)}"
             android:textSize="16sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@+id/tv_matrix"
@@ -210,16 +210,18 @@
             app:layout_constraintVertical_bias="1.0"
             tools:text="02" />
 
-        <ImageView
-            android:id="@+id/imageView3"
+        <ImageButton
+            android:id="@+id/b_excise_alco"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginBottom="18dp"
-            app:alcoIcon="@{vm.productInfo.type}"
-            android:src="@drawable/ic_excise_white_48dp"
+            android:background="?selectableItemBackground"
+            android:onClick="@{(v) -> vm.screenNavigator.openAlertScreen(vm.failureExciseAlco, vm.numScreen)}"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/tv_section" />
+            app:layout_constraintStart_toEndOf="@+id/tv_section"
+            android:src="@drawable/ic_excise_white_48dp"
+            tools:ignore="VectorDrawableCompat" />
 
         <ImageButton
             android:id="@+id/b_scan_es"
@@ -228,7 +230,7 @@
             android:layout_marginEnd="8dp"
             android:layout_marginBottom="14dp"
             android:background="?selectableItemBackground"
-            android:onClick="@{(v) -> vm.screenNavigator.openESInfoScreen()}"
+            android:onClick="@{(v) -> vm.screenNavigator.openAlertScreen(vm.failureESInfo, vm.numScreen)}"
             android:padding="8dp"
             android:src="@drawable/is_scan_barcode_es"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -241,7 +243,7 @@
             android:layout_marginEnd="8dp"
             android:layout_marginBottom="16dp"
             android:background="?selectableItemBackground"
-            android:onClick="@{(v) -> vm.screenNavigator.openEanInfoScreen()}"
+            android:onClick="@{(v) -> vm.screenNavigator.openAlertScreen(vm.failureEanInfo, vm.numScreen)}"
             android:padding="8dp"
             android:src="@drawable/ic_scan_barcode"
             app:layout_constraintBottom_toBottomOf="parent"

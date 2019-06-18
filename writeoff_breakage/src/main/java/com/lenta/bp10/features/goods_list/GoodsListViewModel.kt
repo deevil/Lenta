@@ -86,6 +86,15 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
         }
     }
 
+    val failureExciseAlco: Failure = Failure.ExciseAlcoInfoScreen
+    val failureEanInfo: Failure = Failure.EanInfoScreen
+    val failureESInfo: Failure = Failure.ESInfoScreen
+    val numScreen: MutableLiveData<String> = MutableLiveData()
+
+    fun setNumberScreens(numberScreen: String) {
+        numScreen.value = numberScreen
+    }
+
     init {
         viewModelScope.launch {
             searchProductDelegate.init(viewModelScope = this@GoodsListViewModel::viewModelScope,

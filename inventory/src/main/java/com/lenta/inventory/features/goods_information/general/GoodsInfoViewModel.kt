@@ -3,6 +3,7 @@ package com.lenta.inventory.features.goods_information.general
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.inventory.platform.navigation.IScreenNavigator
+import com.lenta.shared.exception.Failure
 import com.lenta.shared.models.core.MatrixType
 import com.lenta.shared.models.core.ProductInfo
 import com.lenta.shared.models.core.ProductType
@@ -39,6 +40,13 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
     }
 
     val totalCountWithUom: MutableLiveData<String> = totalCount.map { "${it.toStringFormatted()} ${productInfo.value!!.uom.name}" }
+
+    val failureEanInfo: Failure = Failure.EanInfoScreen
+    val numScreen: MutableLiveData<String> = MutableLiveData()
+
+    fun setNumberScreens(numberScreen: String) {
+        numScreen.value = numberScreen
+    }
 
     fun setProductInfo(productInfo: ProductInfo) {
         this.productInfo.value = productInfo
