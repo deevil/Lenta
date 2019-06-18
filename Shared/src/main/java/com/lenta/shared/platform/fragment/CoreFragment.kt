@@ -115,7 +115,7 @@ abstract class CoreFragment<T : ViewDataBinding, S : ViewModel> : Fragment(), Gs
     @LayoutRes
     abstract fun getLayoutId(): Int
 
-    abstract fun getPageNumber(): String
+    abstract fun getPageNumber(): String?
 
     abstract fun getViewModel(): S
 

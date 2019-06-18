@@ -83,7 +83,7 @@ class MainActivity : CoreMainActivity() {
         })*/
     }
 
-    override fun generateNumberScreen(fragment: CoreFragment<*, *>): String {
+    override fun generateNumberScreen(fragment: CoreFragment<*, *>): String? {
         return numberScreenGenerator.generateNumberScreen(fragment)
     }
 

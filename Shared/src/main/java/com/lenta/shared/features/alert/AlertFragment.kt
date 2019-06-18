@@ -27,7 +27,7 @@ class AlertFragment : CoreMessageFragment() {
                 message: String,
                 iconRes: Int = 0,
                 textColor: Int? = null,
-                pageNumber: String = "???",
+                pageNumber: String? = null,
                 codeConfirm: Int? = null,
                 codeConfirmForLeft: Int? = null,
                 leftButtonDecorationInfo: ButtonDecorationInfo? = null,

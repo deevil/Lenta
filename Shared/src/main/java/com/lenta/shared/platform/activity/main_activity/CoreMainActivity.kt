@@ -138,8 +138,10 @@ abstract class CoreMainActivity : CoreActivity<ActivityMainBinding>(), ToolbarBu
     }
 
     private fun updateNumberPage() {
-        vm.statusBarUiModel.pageNumber.postValue(getCurrentFragment()?.implementationOf(CoreFragment::class.java)
-                ?.getPageNumber() ?: "???")
+        getCurrentFragment()?.implementationOf(CoreFragment::class.java)?.getPageNumber()?.let {
+            vm.statusBarUiModel.pageNumber.postValue(it)
+        }
+
 
     }
 

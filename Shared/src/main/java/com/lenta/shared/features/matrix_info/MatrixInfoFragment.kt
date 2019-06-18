@@ -7,7 +7,6 @@ import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
-import com.lenta.shared.utilities.extentions.generateScreenNumber
 import com.lenta.shared.utilities.extentions.provideViewModel
 import com.lenta.shared.utilities.state.state
 
@@ -17,7 +16,7 @@ class MatrixInfoFragment : CoreFragment<FragmentMatrixInfoBinding, MatrixInfoVie
 
     override fun getLayoutId(): Int = R.layout.fragment_matrix_info
 
-    override fun getPageNumber(): String = generateScreenNumber()
+    override fun getPageNumber(): String? = null
 
     override fun getViewModel(): MatrixInfoViewModel {
         provideViewModel(MatrixInfoViewModel::class.java).let {
