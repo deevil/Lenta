@@ -32,8 +32,6 @@ class AuthViewModel : CoreAuthViewModel() {
     @Inject
     lateinit var navigator: IScreenNavigator
     @Inject
-    lateinit var failureInterpreter: IFailureInterpreter
-    @Inject
     lateinit var sessionInfo: ISessionInfo
     @Inject
     lateinit var appSettings: IAppSettings
