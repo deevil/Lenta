@@ -16,7 +16,7 @@ abstract class CoreMessageFragment : CoreFragment<LayoutMessageBinding, MessageV
     protected var textColor by state<Int?>(null)
     protected var codeConfirm by state<Int?>(null)
     protected var codeConfirmForLeft by state<Int?>(null)
-    protected var pageNumb by state("")
+    protected var pageNumb by state<String?>(null)
     protected var leftButtonDecorationInfo by state(ButtonDecorationInfo.back)
     protected var rightButtonDecorationInfo by state(ButtonDecorationInfo.apply)
 
@@ -34,6 +34,7 @@ abstract class CoreMessageFragment : CoreFragment<LayoutMessageBinding, MessageV
     }
 
     override fun cleanTopToolbar(topToolbarUiModel: TopToolbarUiModel) {
+
         topToolbarUiModel.uiModelButton1.visibility.value = false
         topToolbarUiModel.uiModelButton2.visibility.value = false
     }
@@ -45,5 +46,5 @@ abstract class CoreMessageFragment : CoreFragment<LayoutMessageBinding, MessageV
         }
     }
 
-    override fun getPageNumber(): String = pageNumb
+    override fun getPageNumber(): String? = pageNumb
 }

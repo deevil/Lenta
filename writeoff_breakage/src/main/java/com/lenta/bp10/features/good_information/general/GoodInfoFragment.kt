@@ -81,13 +81,6 @@ open class GoodInfoFragment : CoreFragment<FragmentGoodInfoBinding, BaseProductI
 
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        getTopToolBarUIModel()?.let {
-            it.title.value = getString(R.string.app_title)
-        }
-    }
-
     override fun onToolbarButtonClick(view: View) {
         when (view.id) {
             R.id.b_3 -> vm.onClickDetails()

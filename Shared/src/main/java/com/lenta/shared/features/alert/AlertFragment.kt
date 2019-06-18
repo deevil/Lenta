@@ -4,6 +4,7 @@ package com.lenta.shared.features.alert
 import com.lenta.shared.features.message.CoreMessageFragment
 import com.lenta.shared.features.message.MessageViewModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
+import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.utilities.extentions.provideViewModel
 
 class AlertFragment : CoreMessageFragment() {
@@ -21,13 +22,18 @@ class AlertFragment : CoreMessageFragment() {
         }
     }
 
+    override fun cleanTopToolbar(topToolbarUiModel: TopToolbarUiModel) {
+        topToolbarUiModel.uiModelButton1.visibility.value = false
+        topToolbarUiModel.uiModelButton2.visibility.value = false
+    }
+
 
     companion object {
         fun create(
                 message: String,
                 iconRes: Int = 0,
                 textColor: Int? = null,
-                pageNumber: String = "???",
+                pageNumber: String? = null,
                 codeConfirm: Int? = null,
                 codeConfirmForLeft: Int? = null,
                 leftButtonDecorationInfo: ButtonDecorationInfo? = null,
