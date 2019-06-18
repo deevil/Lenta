@@ -29,6 +29,11 @@ class SectionInfoFragment : CoreFragment<FragmentSectionInfoBinding, SectionInfo
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
     }
 
+    override fun cleanTopToolbar(topToolbarUiModel: TopToolbarUiModel) {
+        topToolbarUiModel.uiModelButton1.visibility.value = false
+        topToolbarUiModel.uiModelButton2.visibility.value = false
+    }
+
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)

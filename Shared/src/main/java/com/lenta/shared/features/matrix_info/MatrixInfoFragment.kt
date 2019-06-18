@@ -27,6 +27,11 @@ class MatrixInfoFragment : CoreFragment<FragmentMatrixInfoBinding, MatrixInfoVie
         }
     }
 
+    override fun cleanTopToolbar(topToolbarUiModel: TopToolbarUiModel) {
+        topToolbarUiModel.uiModelButton1.visibility.value = false
+        topToolbarUiModel.uiModelButton2.visibility.value = false
+    }
+
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
 
     }
