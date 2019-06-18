@@ -17,6 +17,7 @@ import com.lenta.shared.requests.network.AuthParams
 import com.lenta.shared.settings.IAppSettings
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.map
+import com.lenta.shared.utilities.getBaseAuth
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -86,6 +87,7 @@ class AuthViewModel : CoreAuthViewModel() {
     private fun handleAuthSuccess(@Suppress("UNUSED_PARAMETER") b: Boolean) {
         login.value.let {
             sessionInfo.userName = it
+            sessionInfo.basicAuth = getBaseAuth(it, password.value)
             appSettings.lastLogin = it
         }
 

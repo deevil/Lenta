@@ -5,6 +5,7 @@ import com.google.gson.annotations.SerializedName
 import com.lenta.shared.fmp.resources.fast.ZmpUtz07V001
 import com.lenta.bp10.models.repositories.IWriteOffTaskManager
 import com.lenta.bp10.requests.db.ProductInfoRequestParams
+import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.fmp.ObjectRawStatus
 import com.lenta.shared.fmp.resources.dao_ext.getUomInfo
@@ -23,7 +24,8 @@ import javax.inject.Inject
 class ProductInfoNetRequest
 @Inject constructor(private val hyperHive: HyperHive,
                     private val gson: Gson,
-                    private val processServiceManager: IWriteOffTaskManager) :
+                    private val processServiceManager: IWriteOffTaskManager,
+                    private val sessionInfo: ISessionInfo) :
         UseCase<ProductInfo, ProductInfoRequestParams>() {
 
     private val zmpUtz07V001: ZmpUtz07V001 by lazy {
@@ -44,7 +46,8 @@ class ProductInfoNetRequest
                     data = gson.toJson(productInfoNetRequestParams)
                     headers = mapOf(
                             "X-SUP-DOMAIN" to "DM-MAIN",
-                            "Content-Type" to "application/json"
+                            "Content-Type" to "application/json",
+                            "Web-Authorization" to sessionInfo.basicAuth
                     )
                 },
                 ProductInfoStatus::class.java)

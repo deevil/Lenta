@@ -1,6 +1,7 @@
 package com.lenta.shared.requests.combined.scan_info
 
 import com.google.gson.Gson
+import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.di.AppScope
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.fmp.resources.dao_ext.*
@@ -23,7 +24,7 @@ import com.mobrun.plugin.api.callparams.WebCallParams
 import javax.inject.Inject
 
 @AppScope
-class ScanInfoRequest @Inject constructor(private val hyperHive: HyperHive, private val gson: Gson) : UseCase<ScanInfoResult, ScanInfoRequestParams>() {
+class ScanInfoRequest @Inject constructor(private val hyperHive: HyperHive, private val gson: Gson, private val sessionInfo: ISessionInfo) : UseCase<ScanInfoResult, ScanInfoRequestParams>() {
 
     private val zmpUtz25V001: ZmpUtz25V001 by lazy {
         ZmpUtz25V001(hyperHive)
@@ -49,7 +50,7 @@ class ScanInfoRequest @Inject constructor(private val hyperHive: HyperHive, priv
             return Either.Left(Failure.NotValidEnterNumber)
         }
 
-        var eanInfo = if (params.isBarCode == false) {
+        val eanInfo = if (params.isBarCode == false) {
             null
         } else {
             zmpUtz25V001.getEanInfo(scanCodeInfo.eanNumberForSearch)?.toEanInfo()
@@ -76,7 +77,8 @@ class ScanInfoRequest @Inject constructor(private val hyperHive: HyperHive, priv
                     data = gson.toJson(productInfoNetRequestParams)
                     headers = mapOf(
                             "X-SUP-DOMAIN" to "DM-MAIN",
-                            "Content-Type" to "application/json"
+                            "Content-Type" to "application/json",
+                            "Web-Authorization" to sessionInfo.basicAuth
                     )
                 }, ProductInfoStatus::class.java)
                 .execute()

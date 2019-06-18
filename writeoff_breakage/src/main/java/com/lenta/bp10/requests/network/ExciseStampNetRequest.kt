@@ -2,6 +2,7 @@ package com.lenta.bp10.requests.network
 
 import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
+import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.fmp.ObjectRawStatus
 import com.lenta.shared.fmp.toFmpObjectRawStatusEither
@@ -12,14 +13,15 @@ import com.mobrun.plugin.api.callparams.WebCallParams
 import javax.inject.Inject
 
 class ExciseStampNetRequest
-@Inject constructor(private val hyperHive: HyperHive, private val gson: Gson) : UseCase<List<ExciseStampRestInfo>, ExciseStampParams>(){
+@Inject constructor(private val hyperHive: HyperHive, private val gson: Gson, private val sessionInfo: ISessionInfo) : UseCase<List<ExciseStampRestInfo>, ExciseStampParams>(){
     override suspend fun run(params: ExciseStampParams): Either<Failure, List<ExciseStampRestInfo>> {
 
         val webCallParams = WebCallParams().apply {
             data = gson.toJson(params)
             headers = mapOf(
                     "X-SUP-DOMAIN" to "DM-MAIN",
-                    "Content-Type" to "application/json"
+                    "Content-Type" to "application/json",
+                    "Web-Authorization" to sessionInfo.basicAuth
             )
         }
 

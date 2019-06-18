@@ -6,7 +6,8 @@ data class SessionInfo(
         override var personnelNumber: String? = null,
         override var personnelFullName: String? = null,
         override var printer: String? = null,
-        override var market: String? = null
+        override var market: String? = null,
+        override var basicAuth: String? = null
 ) : ISessionInfo
 
 interface ISessionInfo {
@@ -15,4 +16,5 @@ interface ISessionInfo {
     var personnelFullName: String?
     var printer: String?
     var market: String?
+    var basicAuth: String?
 }
