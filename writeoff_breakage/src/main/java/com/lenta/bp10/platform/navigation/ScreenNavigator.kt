@@ -235,11 +235,11 @@ class ScreenNavigator(
                 message = context.getString(R.string.alert_double_scan_stamp),
                 iconRes = R.drawable.ic_info_pink,
                 textColor = ContextCompat.getColor(context, com.lenta.shared.R.color.color_text_dialogWarning),
-                pageNumber = getFullManberScreen("97")
+                pageNumber = getFullNumberScreen("97")
         )
     }
 
-    private fun getFullManberScreen(number: String): String {
+    private fun getFullNumberScreen(number: String): String {
         return "${NumberScreenGenerator.prefix}/$number"
     }
 
