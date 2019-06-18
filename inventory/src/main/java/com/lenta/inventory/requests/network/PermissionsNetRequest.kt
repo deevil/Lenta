@@ -2,6 +2,7 @@ package com.lenta.inventory.requests.network
 
 import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
+import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.fmp.ObjectRawStatus
 import com.lenta.shared.functional.Either
@@ -13,14 +14,15 @@ import com.mobrun.plugin.api.callparams.WebCallParams
 import javax.inject.Inject
 
 class PermissionsRequest
-@Inject constructor(private val hyperHive: HyperHive, private val gson: Gson) : UseCase<PermissionsResult, PermissionsParams>() {
+@Inject constructor(private val hyperHive: HyperHive, private val gson: Gson, private val sessionInfo: ISessionInfo) : UseCase<PermissionsResult, PermissionsParams>() {
     override suspend fun run(params: PermissionsParams): Either<Failure, PermissionsResult> {
         //TODO (DB) нужно добавить поддержку логина пользователя когда доработают ФМ модуль
         val webCallParams = WebCallParams().apply {
             data = gson.toJson(params)
             headers = mapOf(
                     "X-SUP-DOMAIN" to "DM-MAIN",
-                    "Content-Type" to "application/json"
+                    "Content-Type" to "application/json",
+                    "Web-Authorization" to sessionInfo.basicAuth
             )
         }
         val status = hyperHive.requestAPI.web("ZMP_UTZ_99_V001", webCallParams, PermissionInventoryStatus::class.java).execute()

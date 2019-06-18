@@ -3,6 +3,7 @@ package com.lenta.shared.requests.network
 import com.google.gson.Gson
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
+import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.fmp.ObjectRawStatus
 import com.lenta.shared.fmp.toFmpObjectRawStatusEither
@@ -10,17 +11,23 @@ import com.lenta.shared.functional.Either
 import com.lenta.shared.interactor.UseCase
 import com.lenta.shared.settings.IAppSettings
 import com.lenta.shared.utilities.extentions.hhive.toEither
+import com.lenta.shared.utilities.getBaseAuth
 import com.mobrun.plugin.api.HyperHive
+import com.mobrun.plugin.api.callparams.WebCallParams
 import javax.inject.Inject
 
 class PinCodeNetRequest
 @Inject constructor(private val hyperHive: HyperHive,
                     private val gson: Gson,
-                    private val appSettings: IAppSettings) : UseCase<PinCodeInfo, PinCodeRequestParams?>() {
+                    private val appSettings: IAppSettings,
+                    private val sessionInfo: ISessionInfo) : UseCase<PinCodeInfo, PinCodeRequestParams?>() {
     override suspend fun run(params: PinCodeRequestParams?): Either<Failure, PinCodeInfo> {
         val isAuthorized = hyperHive.authAPI.isAuthorized
 
+        var basicAuth = sessionInfo.basicAuth
+
         if (!isAuthorized) {
+            basicAuth = getBaseAuth(params?.login, params?.password)
             hyperHive.authAPI.unAuth().execute()
             val status = hyperHive.authAPI.auth(params?.login ?: appSettings.techLogin,
                     params?.password ?: appSettings.techPassword, true).execute()
@@ -29,7 +36,11 @@ class PinCodeNetRequest
             }
         }
 
-        val res = hyperHive.requestAPI.web("ZMP_UTZ_90_V001").execute().toFmpObjectRawStatusEither(PinCodeStatus::class.java, gson)
+        val res = hyperHive.requestAPI.web("ZMP_UTZ_90_V001", WebCallParams().apply {
+            headers = mapOf(
+                    "Web-Authorization" to basicAuth
+            )
+        }).execute().toFmpObjectRawStatusEither(PinCodeStatus::class.java, gson)
 
         if (!isAuthorized) {
             hyperHive.authAPI.unAuth().execute()

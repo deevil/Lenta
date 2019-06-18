@@ -76,6 +76,7 @@ class CoreModule(val application: Application, val defaultConnectionSettings: De
         if (BuildConfig.DEBUG) {
             Logg.d { "hhive plugin version: ${hyperHive.stateAPI.versionPlugin}" }
             Logg.d { "hhive core version: ${hyperHive.stateAPI.getVersionCoreAPI(0)}" }
+            hyperHive.loggingAPI.setLogLevel(0)
         }
         hyperHive.loggingAPI.setLogLevel(10)
 

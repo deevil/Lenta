@@ -1,5 +1,6 @@
 package com.lenta.bp10.models.task
 
+import com.lenta.bp10.fmp.resources.send_report.ExciseStamp
 import com.lenta.bp10.fmp.resources.send_report.MaterialNumber
 import com.lenta.bp10.fmp.resources.send_report.WriteOffReport
 import com.lenta.bp10.models.repositories.ITaskRepository
@@ -80,7 +81,12 @@ class WriteOffTask(val taskDescription: TaskDescription, internal val taskReposi
             }
         }
 
-
+        taskRepository.getExciseStamps()
+                .findExciseStampsOfProduct(taskWriteOffReason.materialNumber)
+                .filter { it.writeOffReason == taskWriteOffReason.writeOffReason.code }
+                .forEach {
+                    taskRepository.getExciseStamps().deleteExciseStamp(it)
+                }
     }
 
 
@@ -124,7 +130,19 @@ fun WriteOffTask.getReport(): WriteOffReport {
                 storloc = stock,
                 ipAdress = ipAddress,
                 materials = getMaterials(),
-                exciseStamps = emptyList()
+                exciseStamps = getStamps()
+        )
+    }
+}
+
+fun WriteOffTask.getStamps(): List<ExciseStamp> {
+    return taskRepository.getExciseStamps().getExciseStamps().map {
+        ExciseStamp(
+                matnr = it.materialNumber,
+                stamp = it.code,
+                matnrOsn = it.setMaterialNumber,
+                writeOffCause = it.writeOffReason,
+                reg = if (it.isBasStamp) "X" else ""
         )
     }
 }

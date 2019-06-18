@@ -38,7 +38,7 @@ class JobCardViewModel : CoreViewModel() {
     private val taskSettingsList: MutableLiveData<List<TaskSetting>> = MutableLiveData()
     val taskName: MutableLiveData<String> = MutableLiveData()
     val selectedTaskTypePosition: MutableLiveData<Int> = MutableLiveData(0)
-    val selectedStorePosition: MutableLiveData<Int> = MutableLiveData()
+    val selectedStorePosition: MutableLiveData<Int> = MutableLiveData(0)
     val enabledChangeTaskSettings: MutableLiveData<Boolean> = MutableLiveData()
     val enabledNextButton: MutableLiveData<Boolean> = selectedTaskTypePosition.map { it!! > 0 }
 

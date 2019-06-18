@@ -5,20 +5,18 @@ import com.lenta.bp10.models.task.TaskExciseStamp
 import com.lenta.shared.models.core.ProductInfo
 import java.util.*
 
-class MemoryTaskExciseStampRepository(private val stamps : ArrayList<TaskExciseStamp> = ArrayList()) : ITaskExciseStampRepository {
+class MemoryTaskExciseStampRepository(private val stamps: ArrayList<TaskExciseStamp> = ArrayList()) : ITaskExciseStampRepository {
 
     override fun getExciseStamps(): List<TaskExciseStamp> {
         return stamps
     }
 
     override fun findExciseStampsOfProduct(product: ProductInfo): List<TaskExciseStamp> {
-        val foundStamps = ArrayList<TaskExciseStamp>()
-        for (i in stamps.indices) {
-            if (product.materialNumber == stamps[i].materialNumber) {
-                foundStamps.add(stamps[i])
-            }
-        }
-        return foundStamps
+        return findExciseStampsOfProduct(product.materialNumber)
+    }
+
+    override fun findExciseStampsOfProduct(materialNumber: String): List<TaskExciseStamp> {
+        return stamps.filter { it.materialNumber == materialNumber }
     }
 
     override fun addExciseStamp(exciseStamp: TaskExciseStamp): Boolean {
@@ -54,19 +52,17 @@ class MemoryTaskExciseStampRepository(private val stamps : ArrayList<TaskExciseS
     }
 
     override fun deleteExciseStampsForProduct(product: ProductInfo): Boolean {
-        val deleteStamps = ArrayList<TaskExciseStamp>()
-        for (i in stamps.indices) {
-            if (product.materialNumber == stamps[i].materialNumber) {
-                deleteStamps.add(stamps[i])
+
+        (stamps.map { it.materialNumber }.filterIndexed { index, materialNumber ->
+            if (materialNumber == product.materialNumber) {
+                stamps.removeAt(index)
+                return true
             }
-        }
-
-        if (deleteStamps.isEmpty()) {
             return false
-        }
 
-        stamps.removeAll(deleteStamps)
-        return true
+        }).let {
+            return it.isNotEmpty()
+        }
     }
 
     override fun addExciseStamps(exciseStamps150: List<TaskExciseStamp>): Boolean {
@@ -109,4 +105,8 @@ class MemoryTaskExciseStampRepository(private val stamps : ArrayList<TaskExciseS
     override fun lenght(): Int {
         return stamps.size
     }
+}
+
+fun ITaskExciseStampRepository.containsStamp(code: String): Boolean {
+    return getExciseStamps().firstOrNull { it.code == code } != null
 }

@@ -16,6 +16,7 @@ import com.lenta.shared.exception.Failure
 import com.lenta.shared.models.core.ProductInfo
 import com.lenta.shared.platform.resources.ISharedStringResourceManager
 import com.lenta.shared.platform.viewmodel.CoreViewModel
+import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.Evenable
@@ -87,7 +88,8 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
     init {
         viewModelScope.launch {
-            searchProductDelegate.init(viewModelScope = this@GoodsListViewModel::viewModelScope)
+            searchProductDelegate.init(viewModelScope = this@GoodsListViewModel::viewModelScope,
+                    scanResultHandler = this@GoodsListViewModel::handleProductSearchResult)
             updateCounted()
             updateFilter()
         }
@@ -97,75 +99,6 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     fun onResume() {
         updateCounted()
         updateFilter()
-    }
-
-    private fun updateCounted() {
-        processServiceManager.getWriteOffTask()?.let {
-            countedGoods.postValue(
-                    it.getProcessedProducts()
-                            .mapIndexed { index, productInfo ->
-                                GoodItem(
-                                        number = index + 1,
-                                        name = "${productInfo.getMaterialLastSix()} ${productInfo.description}",
-                                        quantity = "${it.taskRepository.getTotalCountForProduct(productInfo).toStringFormatted()} ${productInfo.uom.name}",
-                                        even = index % 2 == 0,
-                                        productInfo = productInfo)
-                            }
-                            .reversed())
-        }
-
-        countedSelectionsHelper.clearPositions()
-
-    }
-
-    private fun updateFilter() {
-        processServiceManager.getWriteOffTask()?.let { writeOffTask ->
-
-            val writeOffReasons = writeOffTask.taskRepository.getWriteOffReasons().getWriteOffReasons()
-
-            val reasons = writeOffReasons.map {
-                it.writeOffReason.code to it
-            }.toMap().values.toList()
-
-            (if (reasons.size == 1) {
-                mutableListOf()
-            } else {
-                mutableListOf(sharedStringResourceManager.notSelected())
-            }).let {
-                it.addAll(reasons.map { taskWriteOffReason -> taskWriteOffReason.writeOffReason.name })
-                categories.postValue(it)
-            }
-
-            val selectedCategory = reasons.getOrNull((selectedCategoryPosition.value ?: -1) - 1)
-
-            filteredGoods.postValue(
-                    mutableListOf<FilterItem>().apply {
-                        writeOffReasons
-                                .filter {
-                                    selectedCategory == null
-                                            || selectedCategory.writeOffReason.code == it.writeOffReason.code
-                                }
-                                .forEachIndexed { index, taskWriteOffReason ->
-                                    writeOffTask.taskRepository.getProducts().findProduct(taskWriteOffReason.materialNumber)?.let {
-                                        add(FilterItem(
-                                                number = index + 1,
-                                                name = "${it.getMaterialLastSix()} ${it.description}",
-                                                reason = taskWriteOffReason.writeOffReason.name,
-                                                quantity = "${taskWriteOffReason.count.toStringFormatted()} ${it.uom.name}",
-                                                even = index % 2 == 0,
-                                                taskWriteOffReason = taskWriteOffReason,
-                                                productInfo = it
-                                        )
-                                        )
-                                    }
-
-
-                                }
-                    }.reversed()
-            )
-        }
-
-        filteredSelectionsHelper.clearPositions()
     }
 
     override fun onOkInSoftKeyboard(): Boolean {
@@ -192,6 +125,7 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     fun onScanResult(data: String) {
         eanCode.value = data
         searchProductDelegate.searchCode(code = data, fromScan = true)
+        eanCode.postValue("")
     }
 
     fun onClickSave() {
@@ -328,6 +262,79 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
     }
 
+    private fun handleProductSearchResult(@Suppress("UNUSED_PARAMETER") scanInfoResult: ScanInfoResult?): Boolean {
+        eanCode.postValue("")
+        return false
+    }
+
+    private fun updateCounted() {
+        processServiceManager.getWriteOffTask()?.let {
+            countedGoods.postValue(
+                    it.getProcessedProducts()
+                            .mapIndexed { index, productInfo ->
+                                GoodItem(
+                                        number = index + 1,
+                                        name = "${productInfo.getMaterialLastSix()} ${productInfo.description}",
+                                        quantity = "${it.taskRepository.getTotalCountForProduct(productInfo).toStringFormatted()} ${productInfo.uom.name}",
+                                        even = index % 2 == 0,
+                                        productInfo = productInfo)
+                            }
+                            .reversed())
+        }
+
+        countedSelectionsHelper.clearPositions()
+
+    }
+
+    private fun updateFilter() {
+        processServiceManager.getWriteOffTask()?.let { writeOffTask ->
+
+            val writeOffReasons = writeOffTask.taskRepository.getWriteOffReasons().getWriteOffReasons()
+
+            val reasons = writeOffReasons.map {
+                it.writeOffReason.code to it
+            }.toMap().values.toList()
+
+            (if (reasons.size == 1) {
+                mutableListOf()
+            } else {
+                mutableListOf(sharedStringResourceManager.notSelected())
+            }).let {
+                it.addAll(reasons.map { taskWriteOffReason -> taskWriteOffReason.writeOffReason.name })
+                categories.postValue(it)
+            }
+
+            val selectedCategory = reasons.getOrNull((selectedCategoryPosition.value ?: -1) - 1)
+
+            filteredGoods.postValue(
+                    mutableListOf<FilterItem>().apply {
+                        writeOffReasons
+                                .filter {
+                                    selectedCategory == null
+                                            || selectedCategory.writeOffReason.code == it.writeOffReason.code
+                                }
+                                .forEachIndexed { index, taskWriteOffReason ->
+                                    writeOffTask.taskRepository.getProducts().findProduct(taskWriteOffReason.materialNumber)?.let {
+                                        add(FilterItem(
+                                                number = index + 1,
+                                                name = "${it.getMaterialLastSix()} ${it.description}",
+                                                reason = taskWriteOffReason.writeOffReason.name,
+                                                quantity = "${taskWriteOffReason.count.toStringFormatted()} ${it.uom.name}",
+                                                even = index % 2 == 0,
+                                                taskWriteOffReason = taskWriteOffReason,
+                                                productInfo = it
+                                        )
+                                        )
+                                    }
+
+
+                                }
+                    }.reversed()
+            )
+        }
+
+        filteredSelectionsHelper.clearPositions()
+    }
 
 
 }

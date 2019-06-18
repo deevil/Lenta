@@ -55,6 +55,7 @@ dependencies {
     api project(':hhive')
     api 'com.cronutils:cron-utils:4.1.3'
     api deps.gson
+    implementation project(path: ':HoneywellDataCollection')
 
 
 }

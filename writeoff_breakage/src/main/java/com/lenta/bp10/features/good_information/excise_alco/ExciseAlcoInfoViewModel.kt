@@ -1,15 +1,32 @@
 package com.lenta.bp10.features.good_information.excise_alco
 
+import androidx.lifecycle.viewModelScope
 import com.lenta.bp10.features.good_information.base.BaseProductInfoViewModel
 import com.lenta.bp10.models.repositories.ITaskRepository
 import com.lenta.bp10.models.task.ProcessExciseAlcoProductService
 import com.lenta.bp10.models.task.TaskDescription
+import com.lenta.bp10.requests.network.ExciseStampNetRequest
+import com.lenta.bp10.requests.network.ExciseStampParams
+import com.lenta.bp10.requests.network.ExciseStampRestInfo
+import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
+import com.lenta.shared.utilities.extentions.map
+import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 class ExciseAlcoInfoViewModel : BaseProductInfoViewModel() {
+
+    @Inject
+    lateinit var exciseStampNetRequest: ExciseStampNetRequest
+
+    val rollBackEnabled = countValue.map { it ?: 0.0 > 0.0 }
 
 
     private val processGeneralProductService: ProcessExciseAlcoProductService by lazy {
         processServiceManager.getWriteOffTask()!!.processExciseAlcoProduct(productInfo.value!!)!!
+    }
+
+    private val stampCollector: StampCollector by lazy {
+        StampCollector(processGeneralProductService, count)
     }
 
     override fun getProcessTotalCount(): Double {
@@ -35,6 +52,40 @@ class ExciseAlcoInfoViewModel : BaseProductInfoViewModel() {
         screenNavigator.goBack()
     }
 
+    private fun searchExciseStamp(code: String) {
+        viewModelScope.launch {
+            screenNavigator.showProgress(exciseStampNetRequest)
+
+            exciseStampNetRequest(ExciseStampParams(
+                    pdf417 = code,
+                    werks = getTaskDescription().tkNumber,
+                    matnr = productInfo.value!!.materialNumber))
+                    .either(::handleFailure, ::handleExciseStampSuccess)
+
+            screenNavigator.hideProgress()
+        }
+    }
+
+    private fun handleExciseStampSuccess(exciseStampRestInfo: List<ExciseStampRestInfo>) {
+
+        val retcodeCode = exciseStampRestInfo[1].data[0][0].toInt()
+        val retcodeName = exciseStampRestInfo[1].data[0][1]
+
+        when (retcodeCode) {
+            0 -> {
+                if (!stampCollector.add(
+                                materialNumber = productInfo.value!!.materialNumber,
+                                setMaterialNumber = "",
+                                writeOffReason = getSelectedReason().code,
+                                isBasStamp = false
+                        )) {
+                    screenNavigator.openAlertDoubleScanStamp()
+                }
+            }
+            else -> screenNavigator.openAlertScreen(retcodeName)
+        }
+    }
+
     private fun addGood(): Boolean {
         countValue.value?.let {
 
@@ -44,8 +95,7 @@ class ExciseAlcoInfoViewModel : BaseProductInfoViewModel() {
             }
 
             if (it != 0.0) {
-                //TODO need to implement
-                //processGeneralProductService.add(getSelectedReason(), it)
+                stampCollector.processAll(getSelectedReason())
             }
 
             count.value = ""
@@ -56,15 +106,37 @@ class ExciseAlcoInfoViewModel : BaseProductInfoViewModel() {
     }
 
 
-
     override fun onBackPressed() {
         processGeneralProductService.discard()
     }
 
     override fun onScanResult(data: String) {
-        /*if (addGood()) {
-            searchProductDelegate.searchCode(code = data, fromScan = true)
-        }*/
+        if (data.length > 18) {
+            if (stampCollector.prepare(stampCode = data)) {
+                searchExciseStamp(data)
+            } else {
+                screenNavigator.openAlertDoubleScanStamp()
+            }
+
+        } else {
+            if (addGood()) {
+                searchProductDelegate.searchCode(data, fromScan = true)
+            }
+        }
+    }
+
+    override fun handleProductSearchResult(scanInfoResult: ScanInfoResult?): Boolean {
+        scanInfoResult?.let {
+            if (it.productInfo.materialNumber == productInfo.value?.materialNumber) {
+                return true
+            }
+        }
+        onClickApply()
+        return false
+    }
+
+    fun onClickRollBack() {
+        stampCollector.rollback()
     }
 
 }

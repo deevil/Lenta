@@ -7,8 +7,6 @@ import android.content.Intent
 import android.content.IntentFilter
 import androidx.lifecycle.MutableLiveData
 import android.os.BatteryManager
-import com.lenta.shared.utilities.Logg
-
 
 class BatteryStateMonitor : BroadcastReceiver(), IBatteryStateMonitor {
 
@@ -24,7 +22,6 @@ class BatteryStateMonitor : BroadcastReceiver(), IBatteryStateMonitor {
         val batteryLevel = ((level / scale.toFloat()) * 100).toInt()
 
         BatteryState(isCharging = isCharging, level = batteryLevel).let {
-            Logg.d { "BatteryState: $it" }
             batteryState.postValue(it)
         }
     }

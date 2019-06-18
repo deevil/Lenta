@@ -12,13 +12,13 @@ class ForegroundActivityProvider {
 
     fun setActivity(baseMainActivity: CoreMainActivity) {
         weekReference = WeakReference(baseMainActivity)
-        onPauseStateLiveData.postValue(false)
+        onPauseStateLiveData.value = false
     }
 
     fun clear() {
+        onPauseStateLiveData.value = true
         weekReference?.clear()
         weekReference = null
-        onPauseStateLiveData.postValue(true)
     }
 
     fun getActivity(): CoreMainActivity? {

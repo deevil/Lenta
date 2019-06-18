@@ -1,7 +1,9 @@
 package com.lenta.bp10.platform.navigation
 
 import android.content.Context
+import androidx.core.content.ContextCompat
 import com.lenta.bp10.R
+import com.lenta.bp10.activity.main.NumberScreenGenerator
 import com.lenta.bp10.features.auth.AuthFragment
 import com.lenta.bp10.features.detection_saved_data.DetectionSavedDataFragment
 import com.lenta.bp10.features.good_information.excise_alco.ExciseAlcoInfoFragment
@@ -21,7 +23,6 @@ import com.lenta.bp10.features.write_off_details.WriteOffDetailsFragment
 import com.lenta.bp10.progress.IWriteOffProgressUseCaseInformator
 import com.lenta.bp10.requests.network.WriteOffReportResponse
 import com.lenta.shared.account.IAuthenticator
-import com.lenta.shared.exception.IFailureInterpreter
 import com.lenta.shared.features.alert.AlertFragment
 import com.lenta.shared.features.printer_change.PrinterChangeFragment
 import com.lenta.shared.interactor.UseCase
@@ -208,7 +209,10 @@ class ScreenNavigator(
     }
 
     override fun openNotPossibleSaveNegativeQuantityScreen() {
-        openAlertScreen(message = context.getString(R.string.cannot_save_negative_quantity))
+        openAlertScreen(
+                message = context.getString(R.string.cannot_save_negative_quantity),
+                iconRes = R.drawable.ic_info_pink,
+                textColor = ContextCompat.getColor(context, com.lenta.shared.R.color.color_text_dialogWarning))
     }
 
     override fun openSelectTypeCodeScreen(codeConfirmationForSap: Int, codeConfirmationForBarCode: Int) {
@@ -224,6 +228,19 @@ class ScreenNavigator(
             )
         }
 
+    }
+
+    override fun openAlertDoubleScanStamp() {
+        openAlertScreen(
+                message = context.getString(R.string.alert_double_scan_stamp),
+                iconRes = R.drawable.ic_info_pink,
+                textColor = ContextCompat.getColor(context, com.lenta.shared.R.color.color_text_dialogWarning),
+                pageNumber = getFullNumberScreen("97")
+        )
+    }
+
+    private fun getFullNumberScreen(number: String): String {
+        return "${NumberScreenGenerator.prefix}/$number"
     }
 
 
@@ -255,4 +272,5 @@ interface IScreenNavigator : ICoreNavigator {
     fun openAlertNotAllowWriteOffToWorkScreen()
     fun openNotPossibleSaveNegativeQuantityScreen()
     fun openSelectTypeCodeScreen(codeConfirmationForSap: Int, codeConfirmationForBarCode: Int)
+    fun openAlertDoubleScanStamp()
 }

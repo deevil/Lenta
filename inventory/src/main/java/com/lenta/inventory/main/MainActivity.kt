@@ -55,6 +55,7 @@ class MainActivity : CoreMainActivity() {
 
                 if (action == "com.symbol.datawedge.krittest") {
                     intent1.getStringExtra("com.motorolasolutions.emdk.datawedge.data_string")?.let {
+                        Logg.d { "scan data: $it" }
                         fragmentStack.peek()?.implementationOf(OnScanResultListener::class.java)?.onScanResult(it)
                     }
 
