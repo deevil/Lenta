@@ -13,9 +13,10 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.utilities.extentions.connectLiveData
+import com.lenta.shared.utilities.extentions.generateScreenNumber
 import com.lenta.shared.utilities.extentions.provideViewModel
 
-class ComponentFragment : CoreFragment<FragmentComponentBinding, ComponentViewModel>(), ToolbarButtonsClickListener, OnBackPresserListener {
+class ComponentFragment : CoreFragment<FragmentComponentBinding, ComponentViewModel>(), ToolbarButtonsClickListener {
 
     private lateinit var productInfo: ProductInfo
     private lateinit var componentItem: ComponentItem
@@ -33,15 +34,15 @@ class ComponentFragment : CoreFragment<FragmentComponentBinding, ComponentViewMo
 
     override fun getLayoutId(): Int = R.layout.fragment_component
 
-    override fun getPageNumber(): String = "10/11"
+    override fun getPageNumber(): String = generateScreenNumber()
 
     override fun getViewModel(): ComponentViewModel {
-        provideViewModel(ComponentViewModel::class.java).let {
-            getAppComponent()?.inject(it)
-            it.setProductInfo(productInfo)
-            it.setComponentItem(componentItem)
-            it.setLimitExceeded(getString(R.string.limit_exceeded))
-            return it
+        provideViewModel(ComponentViewModel::class.java).let {vm ->
+            getAppComponent()?.inject(vm)
+            vm.setProductInfo(productInfo)
+            vm.setComponentItem(componentItem)
+            vm.setLimitExceeded(getString(R.string.limit_exceeded))
+            return vm
         }
     }
 
@@ -69,11 +70,6 @@ class ComponentFragment : CoreFragment<FragmentComponentBinding, ComponentViewMo
             R.id.b_4 -> vm.onClickAdd()
             R.id.b_5 -> vm.onClickApply()
         }
-    }
-
-    override fun onBackPressed(): Boolean {
-        //TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-        return true
     }
 
 }

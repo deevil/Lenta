@@ -210,16 +210,18 @@
             app:layout_constraintVertical_bias="1.0"
             tools:text="02" />
 
-        <ImageView
-            android:id="@+id/imageView3"
+        <ImageButton
+            android:id="@+id/b_excise_alco"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:layout_marginBottom="18dp"
+            android:background="?selectableItemBackground"
             app:alcoIcon="@{vm.productInfo.type}"
-            android:src="@drawable/ic_excise_white_48dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/tv_section" />
+            app:layout_constraintBottom_toBottomOf="@+id/tv_section"
+            app:layout_constraintStart_toEndOf="@+id/tv_section"
+            app:layout_constraintTop_toTopOf="@+id/tv_section"
+            tools:ignore="VectorDrawableCompat"
+            tools:src="@drawable/ic_excise_white_48dp" />
 
         <ImageButton
             android:id="@+id/b_scan_es"

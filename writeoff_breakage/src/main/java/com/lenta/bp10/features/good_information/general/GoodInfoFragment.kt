@@ -14,10 +14,7 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.scan.OnScanResultListener
-import com.lenta.shared.utilities.extentions.connectLiveData
-import com.lenta.shared.utilities.extentions.getFragmentResultCode
-import com.lenta.shared.utilities.extentions.provideViewModel
-import com.lenta.shared.utilities.extentions.toStringFormatted
+import com.lenta.shared.utilities.extentions.*
 import com.lenta.shared.utilities.state.state
 
 
@@ -32,7 +29,7 @@ open class GoodInfoFragment : CoreFragment<FragmentGoodInfoBinding, BaseProductI
 
     override fun getLayoutId(): Int = R.layout.fragment_good_info
 
-    override fun getPageNumber(): String = "10/07"
+    override fun getPageNumber(): String = generateScreenNumber()
 
     override fun getViewModel(): BaseProductInfoViewModel {
         provideViewModel(GoodInfoViewModel::class.java).let { viewModel ->

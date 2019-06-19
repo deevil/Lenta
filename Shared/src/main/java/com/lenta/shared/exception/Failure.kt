@@ -27,6 +27,7 @@ sealed class Failure {
     object AuthError : Failure()
     object GoodNotFound : Failure()
     object NotValidEnterNumber : Failure()
+    object MarksComponentAlreadyScanned : Failure()
     class SapError(val message: String) : Failure()
 
     /** * Extend this class for feature specific failures.*/
