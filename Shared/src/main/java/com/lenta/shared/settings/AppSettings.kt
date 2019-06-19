@@ -67,7 +67,13 @@ class AppSettings @Inject constructor(
         get() = sharedPrefferences.getString("printer", null)
         set(value) {
             sharedPrefferences.edit().putString("printer", value).commit()
-            printerLiveData.value = value
+        }
+
+    override var printerNumber: String?
+        get() = sharedPrefferences.getString("printerNumber", null)
+        set(value) {
+            sharedPrefferences.edit().putString("printerNumber", value).commit()
+            printerNumberLiveData.value = value
         }
 
 
@@ -113,7 +119,7 @@ class AppSettings @Inject constructor(
         return if (isTest) testProject else project
     }
 
-    override val printerLiveData: MutableLiveData<String?> = MutableLiveData(printer)
+    override val printerNumberLiveData: MutableLiveData<String?> = MutableLiveData(printerNumber)
 
 
 }
@@ -130,7 +136,8 @@ interface IAppSettings {
     var lastJobType: String?
 
     var printer: String?
-    val printerLiveData: MutableLiveData<String?>
+    var printerNumber: String?
+    val printerNumberLiveData: MutableLiveData<String?>
 
     var techLogin: String
     var techPassword: String
