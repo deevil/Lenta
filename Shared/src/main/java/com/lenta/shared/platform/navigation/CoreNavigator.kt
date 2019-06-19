@@ -2,6 +2,7 @@ package com.lenta.shared.platform.navigation
 
 import android.content.Context
 import android.os.Bundle
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.LiveData
 import com.lenta.shared.R
 import com.lenta.shared.analytics.IAnalytics
@@ -205,7 +206,7 @@ class CoreNavigator constructor(private val context: Context,
     override fun openInfoScreen(message: String) {
         openAlertScreen(message = message,
                 iconRes = R.drawable.ic_info_pink,
-                textColor = R.color.color_text_dialogWarning,
+                textColor = ContextCompat.getColor(context, R.color.color_text_dialogWarning),
                 pageNumber = "97"
         )
     }

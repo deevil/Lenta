@@ -9,6 +9,7 @@ import com.lenta.bp10.requests.network.ExciseStampNetRequest
 import com.lenta.bp10.requests.network.ExciseStampParams
 import com.lenta.bp10.requests.network.ExciseStampRestInfo
 import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
+import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -68,10 +69,10 @@ class ExciseAlcoInfoViewModel : BaseProductInfoViewModel() {
 
     private fun handleExciseStampSuccess(exciseStampRestInfo: List<ExciseStampRestInfo>) {
 
-        val retcodeCode = exciseStampRestInfo[1].data[0][0].toInt()
-        val retcodeName = exciseStampRestInfo[1].data[0][1]
+        val retCode = exciseStampRestInfo[1].data[0][0].toInt()
+        val serverDescription = exciseStampRestInfo[1].data[0][1]
 
-        when (retcodeCode) {
+        when (retCode) {
             0 -> {
                 if (!stampCollector.add(
                                 materialNumber = productInfo.value!!.materialNumber,
@@ -82,7 +83,7 @@ class ExciseAlcoInfoViewModel : BaseProductInfoViewModel() {
                     screenNavigator.openAlertDoubleScanStamp()
                 }
             }
-            else -> screenNavigator.openAlertScreen(retcodeName)
+            else -> screenNavigator.openInfoScreen(serverDescription)
         }
     }
 

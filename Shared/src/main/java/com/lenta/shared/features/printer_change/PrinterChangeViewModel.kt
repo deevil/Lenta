@@ -30,7 +30,7 @@ class PrinterChangeViewModel : CoreViewModel(), OnPositionClickListener {
 
     private val printers: MutableLiveData<List<PrinterUi>> = MutableLiveData()
     val printersNames: MutableLiveData<List<String>> = printers.map { printers ->
-        printers?.mapIndexed { index, printerUi -> "${printerUi.number}-${printerUi.printerName}" }
+        printers?.map { "${it.number}-${it.printerName}" }
     }
     val selectedPosition: MutableLiveData<Int> = MutableLiveData()
     val selectedDescription: MutableLiveData<String> = selectedPosition.map {
