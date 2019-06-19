@@ -42,6 +42,7 @@
             android:paddingTop="8dp"
             android:paddingBottom="8dp"
             android:text="@={vm.personnelNumber}"
+            app:requestFocus="@{vm.editTextFocus}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
