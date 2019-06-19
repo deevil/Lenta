@@ -6,10 +6,14 @@ import com.lenta.bp10.models.repositories.ITaskRepository
 import com.lenta.bp10.models.task.ProcessExciseAlcoProductService
 import com.lenta.bp10.models.task.TaskDescription
 import com.lenta.bp10.platform.requestCodeAddBadStamp
+import com.lenta.bp10.requests.db.ProductInfoDbRequest
+import com.lenta.bp10.requests.db.ProductInfoRequestParams
 import com.lenta.bp10.requests.network.ExciseStampNetRequest
 import com.lenta.bp10.requests.network.ExciseStampParams
 import com.lenta.bp10.requests.network.ExciseStampRestInfo
+import com.lenta.shared.models.core.ProductInfo
 import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
+import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -18,6 +22,9 @@ class ExciseAlcoInfoViewModel : BaseProductInfoViewModel() {
 
     @Inject
     lateinit var exciseStampNetRequest: ExciseStampNetRequest
+
+    @Inject
+    lateinit var productInfoDbRequest: ProductInfoDbRequest
 
     val rollBackEnabled = countValue.map { it ?: 0.0 > 0.0 }
 
@@ -79,8 +86,22 @@ class ExciseAlcoInfoViewModel : BaseProductInfoViewModel() {
             2 -> {
                 screenNavigator.openStampAnotherMarketAlert(requestCodeAddBadStamp)
             }
+            1 -> {
+                viewModelScope.launch {
+                    screenNavigator.showProgress(productInfoDbRequest)
+                    productInfoDbRequest(ProductInfoRequestParams(number = exciseStampRestInfo[0].data[0][0]))
+                            .either(::handleFailure, ::openAlertForAnotherProductStamp)
+                    screenNavigator.hideProgress()
+
+                }
+
+            }
             else -> screenNavigator.openInfoScreen(serverDescription)
         }
+    }
+
+    private fun openAlertForAnotherProductStamp(productInfo: ProductInfo) {
+        screenNavigator.openAnotherProductStampAlert(productName = productInfo.description)
     }
 
 
