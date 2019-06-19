@@ -200,12 +200,6 @@ class CoreNavigator constructor(private val context: Context,
         }
     }
 
-    override fun openExicesAlcoInfoScreen() {
-        runOrPostpone {
-            getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.excise_alco),
-                    iconRes = R.drawable.ic_excise_white_48dp), CustomAnimation.vertical)
-        }
-    }
 
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 
@@ -241,7 +235,6 @@ interface ICoreNavigator {
     fun openSectionInfoScreen(section: String)
     fun openEanInfoScreen()
     fun openESInfoScreen()
-    fun openExicesAlcoInfoScreen()
 }
 
 class FunctionsCollector(private val needCollectLiveData: LiveData<Boolean>) {

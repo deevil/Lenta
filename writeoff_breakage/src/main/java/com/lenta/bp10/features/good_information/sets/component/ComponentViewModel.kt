@@ -32,9 +32,6 @@ class ComponentViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftK
     lateinit var processServiceManager: IWriteOffTaskManager
 
     @Inject
-    lateinit var productInfoDbRequest: ProductInfoDbRequest
-
-    @Inject
     lateinit var exciseStampNetRequest: ExciseStampNetRequest
 
     @Inject
@@ -53,10 +50,6 @@ class ComponentViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftK
     val suffix: MutableLiveData<String> = MutableLiveData()
     val exciseStampCode: MutableLiveData<String> = MutableLiveData()
     private val exciseStamp = mutableListOf<TaskExciseStamp>()
-
-    private val processExciseAlcoProductService: ProcessExciseAlcoProductService by lazy {
-        processServiceManager.getWriteOffTask()!!.processExciseAlcoProduct(productInfo.value!!)!!
-    }
 
     val enabledButton: MutableLiveData<Boolean> = countValue.map {
         it!! > 0.0
