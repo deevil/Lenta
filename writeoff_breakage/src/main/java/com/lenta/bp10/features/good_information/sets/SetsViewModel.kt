@@ -65,9 +65,6 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
     val eanCode: MutableLiveData<String> = MutableLiveData()
     private val components = mutableListOf<ZmpUtz46V001.ItemLocal_ET_SET_LIST>()
 
-    val prefixScreen: MutableLiveData<String> = MutableLiveData()
-
-
     val enabledApplyButton: MutableLiveData<Boolean> = MutableLiveData(false)
 
     val enabledDetailsCleanBtn: MutableLiveData<Boolean> = selectedPage
@@ -86,9 +83,6 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
         this.msgBrandNotSet.value = string
     }
 
-    fun setNumberScreens(prefixScreen:String) {
-        this.prefixScreen.value = prefixScreen
-    }
 
     init {
         viewModelScope.launch {
@@ -116,13 +110,12 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
     }
 
     private fun updateComponents() {
-        var countExciseStampForComponent = 0.0
         var countExciseStampAll = 0.0
         var mengeTotalCount = 0.0
         componentsItem.postValue(
                 mutableListOf<ComponentItem>().apply {
                     componentsInfo.forEachIndexed { index, compInfo ->
-                        countExciseStampForComponent = getCountExciseStampsForComponent(compInfo)
+                        val countExciseStampForComponent = getCountExciseStampsForComponent(compInfo)
                         mengeTotalCount = components[index].menge * totalCount.value!!
                         add(ComponentItem(
                                 number = index + 1,
@@ -224,7 +217,7 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
         componentsInfo.forEachIndexed { index, componentInfo ->
             if (componentInfo.materialNumber == searchComponentInfo.materialNumber) {
                 if ( getCountExciseStampsForComponent(componentInfo) == components[index].menge * totalCount.value!!) {
-                    screenNavigator.openAlertScreen(Failure.MarksComponentAlreadyScanned, pageNumber = "${prefixScreen.value}/96")
+                    screenNavigator.openAlertScreen(Failure.MarksComponentAlreadyScanned, pageNumber = "96")
                     return
                 } else {
                     screenNavigator.openComponentSetScreen(componentInfo, componentsItem.value!![index])

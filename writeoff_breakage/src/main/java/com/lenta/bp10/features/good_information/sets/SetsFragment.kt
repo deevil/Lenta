@@ -47,7 +47,6 @@ class SetsFragment :
             getAppComponent()?.inject(vm)
             vm.setProductInfo(productInfo)
             vm.setMsgBrandNotSet(getString(R.string.brand_not_set))
-            vm.setNumberScreens(getScreenPrefix())
             return vm
         }
     }

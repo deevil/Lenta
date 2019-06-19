@@ -148,7 +148,7 @@ class ScreenNavigator(
     override fun openRemoveTaskConfirmationScreen(taskDescription: String, codeConfirmation: Int) {
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.remove_task_confirmation, taskDescription),
-                    iconRes = R.drawable.ic_delete_red_80dp, codeConfirm = codeConfirmation, pageNumber = "10/88"))
+                    iconRes = R.drawable.ic_delete_red_80dp, codeConfirm = codeConfirmation, pageNumber = "88"))
         }
     }
 
@@ -166,7 +166,7 @@ class ScreenNavigator(
     override fun openRemoveLinesConfirmationScreen(taskDescription: String, count: Int, codeConfirmation: Int) {
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.remove_lines_confirmation, count),
-                    iconRes = R.drawable.ic_delete_red_80dp, codeConfirm = codeConfirmation, pageNumber = "10/89"))
+                    iconRes = R.drawable.ic_delete_red_80dp, codeConfirm = codeConfirmation, pageNumber = "89"))
         }
     }
 
@@ -220,7 +220,7 @@ class ScreenNavigator(
                     iconRes = 0,
                     codeConfirm = codeConfirmationForBarCode,
                     codeConfirmForLeft = codeConfirmationForSap,
-                    pageNumber = "10/90",
+                    pageNumber = "90",
                     leftButtonDecorationInfo = ButtonDecorationInfo.sap,
                     rightButtonDecorationInfo = ButtonDecorationInfo.barcode)
             )
@@ -233,14 +233,9 @@ class ScreenNavigator(
                 message = context.getString(R.string.alert_double_scan_stamp),
                 iconRes = R.drawable.ic_info_pink,
                 textColor = ContextCompat.getColor(context, com.lenta.shared.R.color.color_text_dialogWarning),
-                pageNumber = getFullNumberScreen("97")
+                pageNumber = "97"
         )
     }
-
-    private fun getFullNumberScreen(number: String): String {
-        return "${NumberScreenGenerator.prefix}/$number"
-    }
-
 
 }
 

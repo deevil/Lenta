@@ -8,6 +8,7 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
+import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
 import com.lenta.shared.utilities.state.state
 
 abstract class CoreMessageFragment : CoreFragment<LayoutMessageBinding, MessageViewModel>(), ToolbarButtonsClickListener {
@@ -46,5 +47,5 @@ abstract class CoreMessageFragment : CoreFragment<LayoutMessageBinding, MessageV
         }
     }
 
-    override fun getPageNumber(): String? = pageNumb
+    override fun getPageNumber(): String? = if (pageNumb != null) "" else generateScreenNumberFromPostfix(pageNumb)
 }

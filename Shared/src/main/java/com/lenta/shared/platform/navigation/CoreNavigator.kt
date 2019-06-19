@@ -82,9 +82,11 @@ class CoreNavigator constructor(private val context: Context,
     }
 
     override fun openAlertScreen(failure: Failure, pageNumber: String) {
-        runOrPostpone {
-            openAlertScreen(message = failureInterpreter.getFailureDescription(failure).message, iconRes = failureInterpreter.getFailureDescription(failure).iconRes, textColor = failureInterpreter.getFailureDescription(failure).textColor, pageNumber = pageNumber)
-        }
+        openAlertScreen(
+                message = failureInterpreter.getFailureDescription(failure).message,
+                iconRes = failureInterpreter.getFailureDescription(failure).iconRes,
+                textColor = failureInterpreter.getFailureDescription(failure).textColor,
+                pageNumber = pageNumber)
     }
 
     override fun openSupportScreen() {
@@ -200,6 +202,14 @@ class CoreNavigator constructor(private val context: Context,
         }
     }
 
+    override fun openInfoScreen(message: String) {
+        openAlertScreen(message = message,
+                iconRes = R.drawable.ic_info_pink,
+                textColor = R.color.color_text_dialogWarning,
+                pageNumber = "97"
+        )
+    }
+
 
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 
@@ -215,7 +225,7 @@ interface ICoreNavigator {
     fun goBackWithResultCode(code: Int)
     fun goBack()
     fun finishApp()
-    fun openAlertScreen(message: String, iconRes: Int = 0,  textColor: Int? = null, pageNumber: String = "?")
+    fun openAlertScreen(message: String, iconRes: Int = 0, textColor: Int? = null, pageNumber: String = "?")
     fun openAlertScreen(failure: Failure, pageNumber: String = "?")
     fun openSupportScreen()
     fun <Params> showProgress(useCase: UseCase<Any, Params>)
@@ -235,6 +245,7 @@ interface ICoreNavigator {
     fun openSectionInfoScreen(section: String)
     fun openEanInfoScreen()
     fun openESInfoScreen()
+    fun openInfoScreen(message: String)
 }
 
 class FunctionsCollector(private val needCollectLiveData: LiveData<Boolean>) {

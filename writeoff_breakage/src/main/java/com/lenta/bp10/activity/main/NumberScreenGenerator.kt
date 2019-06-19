@@ -20,28 +20,32 @@ import javax.inject.Inject
 
 class NumberScreenGenerator @Inject constructor() : INumberScreenGenerator {
 
+    override fun generateNumberScreenFromPostfix(postfix: String?): String? {
+        return if (postfix == null) null else "$prefix/$postfix"
+    }
+
     override fun generateNumberScreen(fragment: CoreFragment<*, *>): String? {
-        return when (fragment) {
-            is ExitWithConfirmationFragment -> "$prefix/93"
-            is AuxiliaryMenuFragment -> "$prefix/50"
-            is FmpSettingsFragment -> "$prefix/100"
-            is PrinterChangeFragment -> "$prefix/53"
-            is SelectOperModeFragment -> "$prefix/54"
-            is SettingsFragment -> "$prefix/51"
-            is SupportFragment -> "$prefix/52"
-            is TechLoginFragment -> "$prefix/55"
-            is PinCodeFragment -> "$prefix/56"
-            is FailurePinCodeFragment -> "$prefix/96"
-            is SetsFragment -> "$prefix/10"
-            is GoodsListFragment -> "$prefix/06"
-            is GoodInfoFragment -> "$prefix/07"
-            is ComponentFragment -> "$prefix/11"
+        return generateNumberScreenFromPostfix(when (fragment) {
+            is ExitWithConfirmationFragment -> "93"
+            is AuxiliaryMenuFragment -> "50"
+            is FmpSettingsFragment -> "100"
+            is PrinterChangeFragment -> "53"
+            is SelectOperModeFragment -> "54"
+            is SettingsFragment -> "51"
+            is SupportFragment -> "52"
+            is TechLoginFragment -> "55"
+            is PinCodeFragment -> "56"
+            is FailurePinCodeFragment -> "96"
+            is SetsFragment -> "10"
+            is GoodsListFragment -> "06"
+            is GoodInfoFragment -> "07"
+            is ComponentFragment -> "11"
             else -> null
-        }
+        })
     }
 
     override fun getPrefixScreen(fragment: CoreFragment<*, *>): String {
-        return  prefix
+        return prefix
     }
 
     companion object {

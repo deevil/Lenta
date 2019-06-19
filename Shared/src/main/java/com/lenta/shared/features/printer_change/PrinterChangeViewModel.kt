@@ -70,7 +70,7 @@ class PrinterChangeViewModel : CoreViewModel(), OnPositionClickListener {
             onClickPosition(pos)
         } else {
             screenNavigator.goBack()
-            screenNavigator.openAlertScreen(message = txtNotFoundPrinter.value!!, pageNumber = "10/95")
+            screenNavigator.openAlertScreen(message = txtNotFoundPrinter.value!!, pageNumber = "95")
         }
     }
 
