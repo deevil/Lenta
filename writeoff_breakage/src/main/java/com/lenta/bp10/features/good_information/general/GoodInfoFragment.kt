@@ -40,7 +40,6 @@ open class GoodInfoFragment : CoreFragment<FragmentGoodInfoBinding, BaseProductI
             initCount?.let {
                 viewModel.count.value = it.toStringFormatted()
             }
-            viewModel.setNumberScreens(generateScreenNumber())
             return viewModel
         }
     }

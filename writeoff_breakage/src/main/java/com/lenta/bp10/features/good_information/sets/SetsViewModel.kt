@@ -15,7 +15,6 @@ import com.lenta.shared.fmp.resources.dao_ext.getComponentsForSet
 import com.lenta.shared.fmp.resources.slow.ZmpUtz46V001
 import com.lenta.shared.models.core.ProductInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
-import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.Evenable
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
@@ -65,24 +64,11 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
     val componentsSelectionsHelper = SelectionItemsHelper()
     val eanCode: MutableLiveData<String> = MutableLiveData()
     private val components = mutableListOf<ZmpUtz46V001.ItemLocal_ET_SET_LIST>()
-    val failureExciseAlco: Failure = Failure.ExciseAlcoInfoScreen
-    val failureEanInfo: Failure = Failure.EanInfoScreen
-    val failureESInfo: Failure = Failure.ESInfoScreen
-    val prefixScreen: MutableLiveData<String> = MutableLiveData()
-    val numScreen: MutableLiveData<String> = MutableLiveData()
 
-    val enabledApplyButton: MutableLiveData<Boolean> = MutableLiveData(false) /**countValue.combineLatest(selectedPosition).map {
-        val count = it?.first ?: 0.0
-        var enabled = false
-        productInfo.value?.let { productInfoVal ->
-            enabled =
-                    count != 0.0
-                            &&
-                            processExciseAlcoProductService.taskRepository.getTotalCountForProduct(productInfoVal, getReason()) + (countValue.value
-                            ?: 0.0) >= 0.0
-        }
-        enabled
-    }*/
+    val prefixScreen: MutableLiveData<String> = MutableLiveData()
+
+
+    val enabledApplyButton: MutableLiveData<Boolean> = MutableLiveData(false)
 
     val enabledDetailsCleanBtn: MutableLiveData<Boolean> = selectedPage
             .combineLatest(componentsSelectionsHelper.selectedPositions)
@@ -100,9 +86,8 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
         this.msgBrandNotSet.value = string
     }
 
-    fun setNumberScreens(prefixScreen:String, numberScreen: String) {
+    fun setNumberScreens(prefixScreen:String) {
         this.prefixScreen.value = prefixScreen
-        numScreen.value = numberScreen
     }
 
     init {
@@ -247,7 +232,7 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
                 }
             }
         }
-        screenNavigator.openAlertScreen(message = msgBrandNotSet.value!!, pageNumber = numScreen.value!!)
+        screenNavigator.openAlertScreen(message = msgBrandNotSet.value!!)
     }
 
     override fun handleFailure(failure: Failure) {

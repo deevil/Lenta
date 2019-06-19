@@ -41,13 +41,6 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
 
     val totalCountWithUom: MutableLiveData<String> = totalCount.map { "${it.toStringFormatted()} ${productInfo.value!!.uom.name}" }
 
-    val failureEanInfo: Failure = Failure.EanInfoScreen
-    val numScreen: MutableLiveData<String> = MutableLiveData()
-
-    fun setNumberScreens(numberScreen: String) {
-        numScreen.value = numberScreen
-    }
-
     fun setProductInfo(productInfo: ProductInfo) {
         this.productInfo.value = productInfo
     }

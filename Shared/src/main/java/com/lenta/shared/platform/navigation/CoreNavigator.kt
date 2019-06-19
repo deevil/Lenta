@@ -174,15 +174,36 @@ class CoreNavigator constructor(private val context: Context,
         }
     }
 
-    override fun openMatrixInfoScreen(matrixType: MatrixType, pageNumber: String) {
+    override fun openMatrixInfoScreen(matrixType: MatrixType) {
         runOrPostpone {
-            getFragmentStack()?.push(MatrixInfoFragment.create(matrixType, pageNumber), CustomAnimation.vertical)
+            getFragmentStack()?.push(MatrixInfoFragment.create(matrixType), CustomAnimation.vertical)
         }
     }
 
-    override fun openSectionInfoScreen(section: String, pageNumber: String) {
+    override fun openSectionInfoScreen(section: String) {
         runOrPostpone {
-            getFragmentStack()?.push(SectionInfoFragment.create(sectionNumber = section, pageNumber = pageNumber), CustomAnimation.vertical)
+            getFragmentStack()?.push(SectionInfoFragment.create(sectionNumber = section), CustomAnimation.vertical)
+        }
+    }
+
+    override fun openEanInfoScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.ean_info),
+                    iconRes = R.drawable.ic_scan_barcode), CustomAnimation.vertical)
+        }
+    }
+
+    override fun openESInfoScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.es_info),
+                    iconRes = R.drawable.is_scan_barcode_es), CustomAnimation.vertical)
+        }
+    }
+
+    override fun openExicesAlcoInfoScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.excise_alco),
+                    iconRes = R.drawable.ic_excise_white_48dp), CustomAnimation.vertical)
         }
     }
 
@@ -216,8 +237,11 @@ interface ICoreNavigator {
     fun openAuxiliaryMenuScreen()
     fun openFailurePinCodeScreen(message: String)
     fun openExitConfirmationScreen()
-    fun openMatrixInfoScreen(matrixType: MatrixType, pageNumber: String)
-    fun openSectionInfoScreen(section: String, pageNumber: String)
+    fun openMatrixInfoScreen(matrixType: MatrixType)
+    fun openSectionInfoScreen(section: String)
+    fun openEanInfoScreen()
+    fun openESInfoScreen()
+    fun openExicesAlcoInfoScreen()
 }
 
 class FunctionsCollector(private val needCollectLiveData: LiveData<Boolean>) {

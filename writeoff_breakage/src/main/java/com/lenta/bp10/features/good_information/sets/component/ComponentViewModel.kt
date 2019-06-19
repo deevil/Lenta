@@ -53,10 +53,6 @@ class ComponentViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftK
     val suffix: MutableLiveData<String> = MutableLiveData()
     val exciseStampCode: MutableLiveData<String> = MutableLiveData()
     private val exciseStamp = mutableListOf<TaskExciseStamp>()
-    val failureExciseAlco: Failure = Failure.ExciseAlcoInfoScreen
-    val failureEanInfo: Failure = Failure.EanInfoScreen
-    val failureESInfo: Failure = Failure.ESInfoScreen
-    val numScreen: MutableLiveData<String> = MutableLiveData()
 
     private val processExciseAlcoProductService: ProcessExciseAlcoProductService by lazy {
         processServiceManager.getWriteOffTask()!!.processExciseAlcoProduct(productInfo.value!!)!!
@@ -76,10 +72,6 @@ class ComponentViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftK
 
     fun setLimitExceeded(limitExceeded: String) {
         this.limitExceeded.value = limitExceeded
-    }
-
-    fun setNumberScreens(numberScreen: String) {
-        numScreen.value = numberScreen
     }
 
     init {
@@ -144,10 +136,10 @@ class ComponentViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftK
 
         when (retcodeCode) {
             0 -> addExciseStamp()
-            1 -> screenNavigator.openAlertScreen(message = retcodeName, pageNumber = numScreen.value!!)
-            2 -> screenNavigator.openAlertScreen(message = retcodeName, pageNumber = numScreen.value!!)
-            3 -> screenNavigator.openAlertScreen(message = retcodeName, pageNumber = numScreen.value!!)
-            4 -> screenNavigator.openAlertScreen(message = retcodeName, pageNumber = numScreen.value!!)
+            1 -> screenNavigator.openAlertScreen(message = retcodeName)
+            2 -> screenNavigator.openAlertScreen(message = retcodeName)
+            3 -> screenNavigator.openAlertScreen(message = retcodeName)
+            4 -> screenNavigator.openAlertScreen(message = retcodeName)
         }
     }
 

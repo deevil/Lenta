@@ -43,7 +43,6 @@ class GoodsListFragment :
     override fun getViewModel(): GoodsListViewModel {
         provideViewModel(GoodsListViewModel::class.java).let {
             getAppComponent()?.inject(it)
-            it.setNumberScreens(generateScreenNumber())
             return it
         }
     }

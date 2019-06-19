@@ -27,9 +27,6 @@ sealed class Failure {
     object AuthError : Failure()
     object GoodNotFound : Failure()
     object NotValidEnterNumber : Failure()
-    object ExciseAlcoInfoScreen : Failure()
-    object EanInfoScreen : Failure()
-    object ESInfoScreen : Failure()
     object MarksComponentAlreadyScanned : Failure()
     class SapError(val message: String) : Failure()
 

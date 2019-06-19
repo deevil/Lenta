@@ -42,7 +42,6 @@ class ComponentFragment : CoreFragment<FragmentComponentBinding, ComponentViewMo
             vm.setProductInfo(productInfo)
             vm.setComponentItem(componentItem)
             vm.setLimitExceeded(getString(R.string.limit_exceeded))
-            vm.setNumberScreens(generateScreenNumber())
             return vm
         }
     }

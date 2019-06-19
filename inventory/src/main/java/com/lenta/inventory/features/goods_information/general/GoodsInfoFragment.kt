@@ -41,7 +41,6 @@ class GoodsInfoFragment : CoreFragment<FragmentGoodsInfoBinding, GoodsInfoViewMo
                 vm.setProductInfo(it)
             }
             vm.spinList.value = listOf(getString(R.string.quantity))
-            vm.setNumberScreens(generateScreenNumber())
             return vm
         }
     }
