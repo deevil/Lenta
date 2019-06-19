@@ -25,6 +25,7 @@ import com.lenta.shared.features.test_environment.failure.FailurePinCodeFragment
 import com.lenta.shared.interactor.UseCase
 import com.lenta.shared.models.core.MatrixType
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
+import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.utilities.extentions.setFragmentResultCode
 
 
@@ -211,6 +212,19 @@ class CoreNavigator constructor(private val context: Context,
         )
     }
 
+    override fun openStampAnotherMarketAlert(codeConfirm: Int) {
+        runOrPostpone {
+            getFragmentStack()?.push(
+                    AlertFragment.create(
+                            message = context.getString(R.string.another_market_stamp),
+                            pageNumber = "93",
+                            codeConfirm = codeConfirm,
+                            rightButtonDecorationInfo = ButtonDecorationInfo.next
+                    )
+            )
+        }
+    }
+
 
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 
@@ -247,6 +261,7 @@ interface ICoreNavigator {
     fun openEanInfoScreen()
     fun openESInfoScreen()
     fun openInfoScreen(message: String)
+    fun openStampAnotherMarketAlert(codeConfirm: Int)
 }
 
 class FunctionsCollector(private val needCollectLiveData: LiveData<Boolean>) {

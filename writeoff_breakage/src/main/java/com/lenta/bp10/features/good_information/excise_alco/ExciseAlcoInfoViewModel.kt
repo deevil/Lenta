@@ -5,11 +5,11 @@ import com.lenta.bp10.features.good_information.base.BaseProductInfoViewModel
 import com.lenta.bp10.models.repositories.ITaskRepository
 import com.lenta.bp10.models.task.ProcessExciseAlcoProductService
 import com.lenta.bp10.models.task.TaskDescription
+import com.lenta.bp10.platform.requestCodeAddBadStamp
 import com.lenta.bp10.requests.network.ExciseStampNetRequest
 import com.lenta.bp10.requests.network.ExciseStampParams
 import com.lenta.bp10.requests.network.ExciseStampRestInfo
 import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
-import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -74,17 +74,21 @@ class ExciseAlcoInfoViewModel : BaseProductInfoViewModel() {
 
         when (retCode) {
             0 -> {
-                if (!stampCollector.add(
-                                materialNumber = productInfo.value!!.materialNumber,
-                                setMaterialNumber = "",
-                                writeOffReason = getSelectedReason().code,
-                                isBasStamp = false
-                        )) {
-                    screenNavigator.openAlertDoubleScanStamp()
-                }
+                addStamp(isBadStamp = false)
+            }
+            2 -> {
+                screenNavigator.openStampAnotherMarketAlert(requestCodeAddBadStamp)
             }
             else -> screenNavigator.openInfoScreen(serverDescription)
         }
+    }
+
+
+    override fun onResult(code: Int?) {
+        if (code == requestCodeAddBadStamp) {
+            addStamp(isBadStamp = true)
+        }
+        super.onResult(code)
     }
 
     private fun addGood(): Boolean {
@@ -104,6 +108,17 @@ class ExciseAlcoInfoViewModel : BaseProductInfoViewModel() {
             return true
         }
         return false
+    }
+
+    private fun addStamp(isBadStamp: Boolean) {
+        if (!stampCollector.add(
+                        materialNumber = productInfo.value!!.materialNumber,
+                        setMaterialNumber = "",
+                        writeOffReason = getSelectedReason().code,
+                        isBadStamp = isBadStamp
+                )) {
+            screenNavigator.openAlertDoubleScanStamp()
+        }
     }
 
 

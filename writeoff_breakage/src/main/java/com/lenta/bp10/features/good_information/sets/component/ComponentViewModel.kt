@@ -4,10 +4,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp10.features.good_information.sets.ComponentItem
 import com.lenta.bp10.models.repositories.IWriteOffTaskManager
-import com.lenta.bp10.models.task.ProcessExciseAlcoProductService
 import com.lenta.bp10.models.task.TaskExciseStamp
 import com.lenta.bp10.platform.navigation.IScreenNavigator
-import com.lenta.bp10.requests.db.ProductInfoDbRequest
 import com.lenta.bp10.requests.network.ExciseStampNetRequest
 import com.lenta.bp10.requests.network.ExciseStampParams
 import com.lenta.bp10.requests.network.ExciseStampRestInfo
@@ -143,7 +141,7 @@ class ComponentViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftK
                 code = exciseStampCode.value!!,
                 setMaterialNumber = componentItem.value!!.setMaterialNumber,
                 writeOffReason = componentItem.value!!.writeOffReason.name,
-                isBasStamp = true
+                isBadStamp = true
         ))
         countValue.value = exciseStamp.size.toDouble()
     }

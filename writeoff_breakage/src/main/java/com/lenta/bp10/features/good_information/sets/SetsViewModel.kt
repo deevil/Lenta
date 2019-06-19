@@ -184,7 +184,7 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
                                                                     code = "",
                                                                     setMaterialNumber = "",
                                                                     writeOffReason = "",
-                                                                    isBasStamp = false)
+                                                                    isBadStamp = false)
             )
             count.value = ""
         }
