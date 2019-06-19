@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.databinding.DataBindingUtil
 import com.lenta.bp10.BR
 import com.lenta.bp10.R
@@ -19,11 +20,11 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
-import com.lenta.shared.utilities.databinding.DataBindingAdapter
-import com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig
-import com.lenta.shared.utilities.databinding.PageSelectionListener
-import com.lenta.shared.utilities.databinding.ViewPagerSettings
+import com.lenta.shared.utilities.Logg
+import com.lenta.shared.utilities.databinding.*
 import com.lenta.shared.utilities.extentions.connectLiveData
+import com.lenta.shared.utilities.extentions.generateScreenNumber
+import com.lenta.shared.utilities.extentions.getScreenPrefix
 import com.lenta.shared.utilities.extentions.provideViewModel
 
 class SetsFragment :
@@ -39,14 +40,15 @@ class SetsFragment :
 
     override fun getLayoutId(): Int = R.layout.fragment_sets
 
-    override fun getPageNumber(): String = "10/10"
+    override fun getPageNumber(): String = generateScreenNumber()
 
     override fun getViewModel(): SetsViewModel {
-        provideViewModel(SetsViewModel::class.java).let {
-            getAppComponent()?.inject(it)
-            it.setProductInfo(productInfo)
-            it.setMsgBrandNotSet(getString(R.string.brand_not_set))
-            return it
+        provideViewModel(SetsViewModel::class.java).let {vm ->
+            getAppComponent()?.inject(vm)
+            vm.setProductInfo(productInfo)
+            vm.setMsgBrandNotSet(getString(R.string.brand_not_set))
+            vm.setNumberScreens(getScreenPrefix())
+            return vm
         }
     }
 
@@ -60,13 +62,13 @@ class SetsFragment :
 
         if (vpTabPosition == 0) {
             bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.details, enabled = false)
-            bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.add, enabled = false)
         }
         else {
             bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.clean, enabled = false)
         }
 
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
+        bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.add, enabled = false)
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.apply, enabled = false)
 
         viewLifecycleOwner.let {
@@ -117,6 +119,12 @@ class SetsFragment :
                         }
                     }
 
+                    val onClickGoodTitle = View.OnClickListener {v ->
+                        Logg.d { "onClickListener ${(v as TextView).text.substring(0,6)}" }
+                        vm.eanCode.value = (v as TextView).text.substring(0,6)
+                        vm.onOkInSoftKeyboard()
+                    }
+
                     layoutBinding.lifecycleOwner = viewLifecycleOwner
                     layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
                             layoutId = R.layout.item_tile_sets,
@@ -128,6 +136,7 @@ class SetsFragment :
                                 override fun onBind(binding: ItemTileSetsBinding, position: Int) {
                                     binding.tvCounter.tag = position
                                     binding.tvCounter.setOnClickListener(onClickSelectionListener)
+                                    binding.tvGoodTitle.setOnClickListener(onClickGoodTitle)
                                     binding.selectedForDelete = vm.componentsSelectionsHelper.isSelected(position)
                                 }
 
@@ -160,20 +169,13 @@ class SetsFragment :
     }
 
     override fun onResume() {
-    super.onResume()
-    vm.onResume()
+        super.onResume()
+        vm.onResume()
     }
 
     override fun onBackPressed(): Boolean {
         vm.onBackPressed()
         return true
     }
-
-    /**override fun onDestroyView() {
-        super.onDestroyView()
-        getTopToolBarUIModel()?.let {
-            it.title.value = getString(R.string.app_title)
-        }
-    }*/
 
 }

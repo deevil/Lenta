@@ -32,9 +32,6 @@ class ComponentViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftK
     lateinit var processServiceManager: IWriteOffTaskManager
 
     @Inject
-    lateinit var productInfoDbRequest: ProductInfoDbRequest
-
-    @Inject
     lateinit var exciseStampNetRequest: ExciseStampNetRequest
 
     @Inject
@@ -53,10 +50,6 @@ class ComponentViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftK
     val suffix: MutableLiveData<String> = MutableLiveData()
     val exciseStampCode: MutableLiveData<String> = MutableLiveData()
     private val exciseStamp = mutableListOf<TaskExciseStamp>()
-
-    private val processExciseAlcoProductService: ProcessExciseAlcoProductService by lazy {
-        processServiceManager.getWriteOffTask()!!.processExciseAlcoProduct(productInfo.value!!)!!
-    }
 
     val enabledButton: MutableLiveData<Boolean> = countValue.map {
         it!! > 0.0
@@ -91,9 +84,7 @@ class ComponentViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftK
     }
 
     fun onClickAdd() {
-        exciseStamp.forEachIndexed { index, taskExciseStamp ->
-            processExciseAlcoProductService.add(componentItem.value!!.writeOffReason, 1.0, taskExciseStamp)
-        }
+        processServiceManager.getWriteOffTask()!!.taskRepository.getExciseStamps().addExciseStamps(exciseStamp)
 
         exciseStamp.clear()
         count.value = "0"
@@ -138,10 +129,10 @@ class ComponentViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftK
 
         when (retcodeCode) {
             0 -> addExciseStamp()
-            1 -> screenNavigator.openAlertScreen(retcodeName)
-            2 -> screenNavigator.openAlertScreen(retcodeName)
-            3 -> screenNavigator.openAlertScreen(retcodeName)
-            4 -> screenNavigator.openAlertScreen(retcodeName)
+            1 -> screenNavigator.openAlertScreen(message = retcodeName)
+            2 -> screenNavigator.openAlertScreen(message = retcodeName)
+            3 -> screenNavigator.openAlertScreen(message = retcodeName)
+            4 -> screenNavigator.openAlertScreen(message = retcodeName)
         }
     }
 

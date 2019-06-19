@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+
         <variable
             name="vm"
             type="com.lenta.bp10.features.good_information.sets.SetsViewModel" />
@@ -63,11 +64,11 @@
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
-            android:digits="0123456789-."
             android:ellipsize="end"
             android:inputType="numberDecimal"
             android:maxLines="1"
             android:text="@={vm.count}"
+            app:digitsForUom="@{vm.productInfo.uom}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/div_vert"
             app:layout_constraintTop_toTopOf="@+id/div_vert"
@@ -157,14 +158,14 @@
             android:layout_marginBottom="24dp"
             android:fontFamily="@font/tahoma_bold"
             android:gravity="center"
-            android:textSize="18sp"
             android:onClick="@{(v) -> vm.screenNavigator.openMatrixInfoScreen(vm.productInfo.matrixType)}"
-            tools:background="@drawable/bg_white_circle"
+            android:textSize="18sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/div_hor4"
             app:layout_constraintVertical_bias="1.0"
             app:matrixType="@{vm.productInfo.matrixType}"
+            tools:background="@drawable/bg_white_circle"
             tools:text="A" />
 
         <TextView
@@ -187,6 +188,18 @@
             tools:text="02" />
 
         <ImageButton
+            android:id="@+id/b_excise_alco"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginBottom="18dp"
+            android:background="?selectableItemBackground"
+            app:alcoIcon="@{vm.productInfo.type}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/tv_section"
+            tools:src="@drawable/ic_excise_white_48dp" />
+
+        <ImageButton
             android:id="@+id/b_scan"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -198,18 +211,6 @@
             android:src="@drawable/ic_scan_barcode"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
-
-        <ImageView
-            android:id="@+id/imageView4"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginBottom="18dp"
-            android:background="?selectableItemBackground"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/tv_section"
-            app:srcCompat="@drawable/ic_excise_white_48dp"
-            tools:ignore="VectorDrawableCompat" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

@@ -200,6 +200,7 @@ class CoreNavigator constructor(private val context: Context,
         }
     }
 
+
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 
 }

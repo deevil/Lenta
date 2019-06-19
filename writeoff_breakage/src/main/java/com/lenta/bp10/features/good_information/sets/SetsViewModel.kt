@@ -2,7 +2,6 @@ package com.lenta.bp10.features.good_information.sets
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.lenta.shared.fmp.resources.dao_ext.getComponentsForSet
 import com.lenta.bp10.models.repositories.IWriteOffTaskManager
 import com.lenta.bp10.models.repositories.getTotalCountForProduct
 import com.lenta.bp10.models.task.ProcessExciseAlcoProductService
@@ -12,10 +11,10 @@ import com.lenta.bp10.platform.navigation.IScreenNavigator
 import com.lenta.bp10.requests.db.ProductInfoDbRequest
 import com.lenta.bp10.requests.db.ProductInfoRequestParams
 import com.lenta.shared.exception.Failure
+import com.lenta.shared.fmp.resources.dao_ext.getComponentsForSet
 import com.lenta.shared.fmp.resources.slow.ZmpUtz46V001
 import com.lenta.shared.models.core.ProductInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
-import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.Evenable
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
@@ -56,8 +55,8 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
     val writeOffReasonTitles: MutableLiveData<List<String>> = MutableLiveData()
     val selectedPosition: MutableLiveData<Int> = MutableLiveData(0)
     val count: MutableLiveData<String> = MutableLiveData("")
-    val countValue: MutableLiveData<Double> = count.map { it?.toDoubleOrNull() }
-    val totalCount: MutableLiveData<Double> = countValue.map { (it ?: 0.0) + processExciseAlcoProductService.taskRepository.getTotalCountForProduct(productInfo.value!!)} //processExciseAlcoProductService.getTotalCount()
+    val countValue: MutableLiveData<Double> = count.map { it?.toDoubleOrNull() ?: 0.0 }
+    val totalCount: MutableLiveData<Double> = countValue.map { (it ?: 0.0) + processExciseAlcoProductService.taskRepository.getTotalCountForProduct(productInfo.value!!) }
     val totalCountWithUom: MutableLiveData<String> = totalCount.map { "${it.toStringFormatted()} ${productInfo.value!!.uom.name}" }
     val suffix: MutableLiveData<String> = MutableLiveData()
     private val componentsInfo = mutableListOf<ProductInfo>()
@@ -66,18 +65,10 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
     val eanCode: MutableLiveData<String> = MutableLiveData()
     private val components = mutableListOf<ZmpUtz46V001.ItemLocal_ET_SET_LIST>()
 
-    val enabledApplyButton: MutableLiveData<Boolean> = countValue.combineLatest(selectedPosition).map {
-        val count = it?.first ?: 0.0
-        var enabled = false
-        productInfo.value?.let { productInfoVal ->
-            enabled =
-                    count != 0.0
-                            &&
-                            processExciseAlcoProductService.taskRepository.getTotalCountForProduct(productInfoVal, getReason()) + (countValue.value
-                            ?: 0.0) >= 0.0
-        }
-        enabled
-    }
+    val prefixScreen: MutableLiveData<String> = MutableLiveData()
+
+
+    val enabledApplyButton: MutableLiveData<Boolean> = MutableLiveData(false)
 
     val enabledDetailsCleanBtn: MutableLiveData<Boolean> = selectedPage
             .combineLatest(componentsSelectionsHelper.selectedPositions)
@@ -95,6 +86,10 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
         this.msgBrandNotSet.value = string
     }
 
+    fun setNumberScreens(prefixScreen:String) {
+        this.prefixScreen.value = prefixScreen
+    }
+
     init {
         viewModelScope.launch {
             processServiceManager.getWriteOffTask()?.let { writeOffTask ->
@@ -109,7 +104,6 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
             screenNavigator.hideProgress()
             suffix.value = productInfo.value?.uom?.name
             updateComponents()
-            Logg.d { "componentsInfo ${componentsInfo}" }
         }
     }
 
@@ -122,28 +116,33 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
     }
 
     private fun updateComponents() {
-        if (totalCount.value ?: 0.0 > 0.0) {
-            Logg.d { "updateComponents" }
-            count.value = count.value
-            componentsItem.postValue(
-                    mutableListOf<ComponentItem>().apply {
-                        componentsInfo.forEachIndexed { index, compInfo ->
-                            add(ComponentItem(
-                                    number = index + 1,
-                                    name = "${compInfo.materialNumber.substring(compInfo.materialNumber.length - 6)} ${compInfo.description}",
-                                    quantity = "${getCountExciseStampsForComponent(compInfo)
-                                            .toStringFormatted()} из ${(components[index].menge * totalCount.value!!).toStringFormatted()}",
-                                    menge = components[index].menge.toString(),
-                                    even = index % 2 == 0,
-                                    countSets = totalCount.value!!,
-                                    selectedPosition = selectedPosition.value!!,
-                                    writeOffReason = getReason(),
-                                    setMaterialNumber = productInfo.value!!.materialNumber))
-                        }
+        var countExciseStampForComponent = 0.0
+        var countExciseStampAll = 0.0
+        var mengeTotalCount = 0.0
+        componentsItem.postValue(
+                mutableListOf<ComponentItem>().apply {
+                    componentsInfo.forEachIndexed { index, compInfo ->
+                        countExciseStampForComponent = getCountExciseStampsForComponent(compInfo)
+                        mengeTotalCount = components[index].menge * totalCount.value!!
+                        add(ComponentItem(
+                                number = index + 1,
+                                name = "${compInfo.materialNumber.substring(compInfo.materialNumber.length - 6)} ${compInfo.description}",
+                                quantity = "${countExciseStampForComponent
+                                        .toStringFormatted()} из ${(mengeTotalCount).toStringFormatted()}",
+                                menge = components[index].menge.toString(),
+                                even = index % 2 == 0,
+                                countSets = totalCount.value!!,
+                                selectedPosition = selectedPosition.value!!,
+                                writeOffReason = getReason(),
+                                setMaterialNumber = productInfo.value!!.materialNumber)
+                        )
+
+                        countExciseStampAll += countExciseStampForComponent
                     }
-            )
-            componentsSelectionsHelper.clearPositions()
-        }
+                }
+        )
+        enabledApplyButton.value = countExciseStampAll == mengeTotalCount && countValue.value != 0.0
+        componentsSelectionsHelper.clearPositions()
     }
 
     private fun getCountExciseStampsForComponent(componentInfo: ProductInfo) : Double {
@@ -186,6 +185,7 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
 
     private fun addSet() {
         countValue.value?.let {
+            //todo добавить марку для набора
             processExciseAlcoProductService.add(getReason(), it, TaskExciseStamp(
                                                                     materialNumber = "",
                                                                     code = "",
@@ -205,7 +205,6 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
 
     override fun onClickPosition(position: Int) {
         selectedPosition.value = position
-        updateComponents()
     }
 
     override fun onOkInSoftKeyboard(): Boolean {
@@ -224,11 +223,16 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
     private fun handleSearchEANSuccess(searchComponentInfo: ProductInfo) {
         componentsInfo.forEachIndexed { index, componentInfo ->
             if (componentInfo.materialNumber == searchComponentInfo.materialNumber) {
-                screenNavigator.openComponentSetScreen(componentInfo, componentsItem.value!![index])
-                return
+                if ( getCountExciseStampsForComponent(componentInfo) == components[index].menge * totalCount.value!!) {
+                    screenNavigator.openAlertScreen(Failure.MarksComponentAlreadyScanned, pageNumber = "${prefixScreen.value}/96")
+                    return
+                } else {
+                    screenNavigator.openComponentSetScreen(componentInfo, componentsItem.value!![index])
+                    return
+                }
             }
         }
-        screenNavigator.openAlertScreen(msgBrandNotSet.value!!)
+        screenNavigator.openAlertScreen(message = msgBrandNotSet.value!!)
     }
 
     override fun handleFailure(failure: Failure) {
@@ -237,6 +241,7 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
 
     fun onPageSelected(position: Int) {
         selectedPage.value = position
+        updateComponents()
     }
 
     fun onBackPressed() {

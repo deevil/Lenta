@@ -1,5 +1,9 @@
 package com.lenta.bp10.activity.main
 
+import com.lenta.bp10.features.good_information.general.GoodInfoFragment
+import com.lenta.bp10.features.good_information.sets.SetsFragment
+import com.lenta.bp10.features.good_information.sets.component.ComponentFragment
+import com.lenta.bp10.features.goods_list.GoodsListFragment
 import com.lenta.shared.features.auxiliary_menu.AuxiliaryMenuFragment
 import com.lenta.shared.features.exit.ExitWithConfirmationFragment
 import com.lenta.shared.features.fmp_settings.FmpSettingsFragment
@@ -28,6 +32,10 @@ class NumberScreenGenerator @Inject constructor() : INumberScreenGenerator {
             is TechLoginFragment -> "$prefix/55"
             is PinCodeFragment -> "$prefix/56"
             is FailurePinCodeFragment -> "$prefix/96"
+            is SetsFragment -> "$prefix/10"
+            is GoodsListFragment -> "$prefix/06"
+            is GoodInfoFragment -> "$prefix/07"
+            is ComponentFragment -> "$prefix/11"
             else -> null
         }
     }
