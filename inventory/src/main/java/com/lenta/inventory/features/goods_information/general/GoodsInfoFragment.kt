@@ -5,15 +5,12 @@ import com.lenta.inventory.R
 import com.lenta.inventory.databinding.FragmentGoodsInfoBinding
 import com.lenta.inventory.platform.extentions.getAppComponent
 import com.lenta.shared.models.core.ProductInfo
-import com.lenta.shared.platform.activity.OnBackPresserListener
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
-import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.generateScreenNumber
-import com.lenta.shared.utilities.extentions.getScreenPrefix
 import com.lenta.shared.utilities.extentions.provideViewModel
 import com.lenta.shared.utilities.state.state
 
@@ -58,7 +55,7 @@ class GoodsInfoFragment : CoreFragment<FragmentGoodsInfoBinding, GoodsInfoViewMo
         bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.missing)
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.apply)
 
-        /**viewLifecycleOwner.let {
+        /**viewLifecycleOwner.apply {
             connectLiveData(vm.enabledApplyButton, bottomToolbarUiModel.uiModelButton4.enabled)
             connectLiveData(vm.enabledApplyButton, bottomToolbarUiModel.uiModelButton5.enabled)
             connectLiveData(vm.enabledDetailsButton, bottomToolbarUiModel.uiModelButton3.enabled)

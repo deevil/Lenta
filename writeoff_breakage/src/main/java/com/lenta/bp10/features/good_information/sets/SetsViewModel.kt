@@ -56,7 +56,10 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
     val selectedPosition: MutableLiveData<Int> = MutableLiveData(0)
     val count: MutableLiveData<String> = MutableLiveData("")
     val countValue: MutableLiveData<Double> = count.map { it?.toDoubleOrNull() ?: 0.0 }
-    val totalCount: MutableLiveData<Double> = countValue.map { (it ?: 0.0) + processExciseAlcoProductService.taskRepository.getTotalCountForProduct(productInfo.value!!) }
+    val totalCount: MutableLiveData<Double> = countValue.map {
+        (it
+                ?: 0.0) + processExciseAlcoProductService.taskRepository.getTotalCountForProduct(productInfo.value!!)
+    }
     val totalCountWithUom: MutableLiveData<String> = totalCount.map { "${it.toStringFormatted()} ${productInfo.value!!.uom.name}" }
     val suffix: MutableLiveData<String> = MutableLiveData()
     private val componentsInfo = mutableListOf<ProductInfo>()
@@ -138,7 +141,7 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
         componentsSelectionsHelper.clearPositions()
     }
 
-    private fun getCountExciseStampsForComponent(componentInfo: ProductInfo) : Double {
+    private fun getCountExciseStampsForComponent(componentInfo: ProductInfo): Double {
 
         return processServiceManager
                 .getWriteOffTask()!!
@@ -149,22 +152,7 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
                 .toDouble()
     }
 
-    fun onClickClean() {
-        processServiceManager.getWriteOffTask()?.let { writeOffTask ->
-            componentsSelectionsHelper.selectedPositions.value?.map { position ->
-                componentsInfo[position]
-            }?.let {
-                writeOffTask.deleteProducts(it)
-            }
-            updateComponents()
-        }
-    }
 
-    fun onClickDetails() {
-        productInfo.value?.let {
-            screenNavigator.openGoodsReasonsScreen(productInfo = it)
-        }
-    }
 
     fun onClickAdd() {
         addSet()
@@ -180,11 +168,11 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
         countValue.value?.let {
             //todo добавить марку для набора
             processExciseAlcoProductService.add(getReason(), it, TaskExciseStamp(
-                                                                    materialNumber = "",
-                                                                    code = "",
-                                                                    setMaterialNumber = "",
-                                                                    writeOffReason = "",
-                                                                    isBadStamp = false)
+                    materialNumber = "",
+                    code = "",
+                    setMaterialNumber = "",
+                    writeOffReason = "",
+                    isBadStamp = false)
             )
             count.value = ""
         }
@@ -216,7 +204,7 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
     private fun handleSearchEANSuccess(searchComponentInfo: ProductInfo) {
         componentsInfo.forEachIndexed { index, componentInfo ->
             if (componentInfo.materialNumber == searchComponentInfo.materialNumber) {
-                if ( getCountExciseStampsForComponent(componentInfo) == components[index].menge * totalCount.value!!) {
+                if (getCountExciseStampsForComponent(componentInfo) == components[index].menge * totalCount.value!!) {
                     screenNavigator.openAlertScreen(Failure.MarksComponentAlreadyScanned, pageNumber = "96")
                     return
                 } else {
@@ -239,6 +227,27 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
 
     fun onBackPressed() {
         processExciseAlcoProductService.discard()
+    }
+
+    fun onClickButton3() {
+        if (selectedPage.value == 0) onClickDetails() else onClickClean()
+    }
+
+    private fun onClickClean() {
+        processServiceManager.getWriteOffTask()?.let { writeOffTask ->
+            componentsSelectionsHelper.selectedPositions.value?.map { position ->
+                componentsInfo[position]
+            }?.let {
+                writeOffTask.deleteProducts(it)
+            }
+            updateComponents()
+        }
+    }
+
+    private fun onClickDetails() {
+        productInfo.value?.let {
+            screenNavigator.openGoodsReasonsScreen(productInfo = it)
+        }
     }
 
 }

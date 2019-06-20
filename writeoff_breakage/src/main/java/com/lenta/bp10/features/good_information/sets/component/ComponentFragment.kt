@@ -57,7 +57,7 @@ class ComponentFragment : CoreFragment<FragmentComponentBinding, ComponentViewMo
         bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.add, enabled = false)
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.apply, enabled = false)
 
-        viewLifecycleOwner.let {
+        viewLifecycleOwner.apply {
             connectLiveData(vm.enabledButton, bottomToolbarUiModel.uiModelButton4.enabled)
             connectLiveData(vm.enabledButton, bottomToolbarUiModel.uiModelButton5.enabled)
             connectLiveData(vm.enabledButton, bottomToolbarUiModel.uiModelButton2.enabled)

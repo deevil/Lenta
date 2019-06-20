@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.Observer
 import com.lenta.bp10.BR
 import com.lenta.bp10.R
 import com.lenta.bp10.databinding.FragmentSetsBinding
@@ -24,7 +25,6 @@ import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.databinding.*
 import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.generateScreenNumber
-import com.lenta.shared.utilities.extentions.getScreenPrefix
 import com.lenta.shared.utilities.extentions.provideViewModel
 
 class SetsFragment :
@@ -36,14 +36,12 @@ class SetsFragment :
 
     private lateinit var productInfo: ProductInfo
 
-    var vpTabPosition: Int = 0
-
     override fun getLayoutId(): Int = R.layout.fragment_sets
 
     override fun getPageNumber(): String = generateScreenNumber()
 
     override fun getViewModel(): SetsViewModel {
-        provideViewModel(SetsViewModel::class.java).let {vm ->
+        provideViewModel(SetsViewModel::class.java).let { vm ->
             getAppComponent()?.inject(vm)
             vm.setProductInfo(productInfo)
             vm.setMsgBrandNotSet(getString(R.string.brand_not_set))
@@ -59,27 +57,25 @@ class SetsFragment :
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
         bottomToolbarUiModel.cleanAll()
 
-        if (vpTabPosition == 0) {
-            bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.details, enabled = false)
-        }
-        else {
-            bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.clean, enabled = false)
-        }
-
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
         bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.add, enabled = false)
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.apply, enabled = false)
 
-        viewLifecycleOwner.let {
+        viewLifecycleOwner.apply {
             connectLiveData(vm.enabledApplyButton, bottomToolbarUiModel.uiModelButton4.enabled)
             connectLiveData(vm.enabledApplyButton, bottomToolbarUiModel.uiModelButton5.enabled)
             connectLiveData(vm.enabledDetailsCleanBtn, bottomToolbarUiModel.uiModelButton3.enabled)
+            vm.selectedPage.observe(this, Observer { pos ->
+                bottomToolbarUiModel.uiModelButton3.show(
+                        if (pos == 0) ButtonDecorationInfo.details else ButtonDecorationInfo.clean,
+                        enabled = false)
+            })
         }
     }
 
     override fun onToolbarButtonClick(view: View) {
         when (view.id) {
-            R.id.b_3 -> if (vpTabPosition == 0) vm.onClickDetails() else vm.onClickClean()
+            R.id.b_3 -> vm.onClickButton3()
             R.id.b_4 -> vm.onClickAdd()
             R.id.b_5 -> vm.onClickApply()
         }
@@ -89,11 +85,12 @@ class SetsFragment :
         super.onViewCreated(view, savedInstanceState)
         binding?.let {
             it.viewPagerSettings = this
-            it.pageSelectionListener=this}
+            it.pageSelectionListener = this
+        }
     }
 
     override fun getPagerItemView(container: ViewGroup, position: Int): View {
-        if (position ==0) {
+        if (position == 0) {
             DataBindingUtil
                     .inflate<LayoutSetsQuantityBinding>(LayoutInflater.from(container.context),
                             R.layout.layout_sets_quantity,
@@ -118,9 +115,9 @@ class SetsFragment :
                         }
                     }
 
-                    val onClickGoodTitle = View.OnClickListener {v ->
-                        Logg.d { "onClickListener ${(v as TextView).text.substring(0,6)}" }
-                        vm.eanCode.value = (v as TextView).text.substring(0,6)
+                    val onClickGoodTitle = View.OnClickListener { v ->
+                        Logg.d { "onClickListener ${(v as TextView).text.substring(0, 6)}" }
+                        vm.eanCode.value = (v as TextView).text.substring(0, 6)
                         vm.onOkInSoftKeyboard()
                     }
 
@@ -153,8 +150,6 @@ class SetsFragment :
 
     override fun onPageSelected(position: Int) {
         vm.onPageSelected(position)
-        vpTabPosition = position
-        setupBottomToolBar(this.getBottomToolBarUIModel()!!)
     }
 
     companion object {

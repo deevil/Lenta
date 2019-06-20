@@ -58,7 +58,7 @@ class GoodsListFragment :
         bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.print, enabled = false)
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.save, enabled = true)
 
-        viewLifecycleOwner.let {
+        viewLifecycleOwner.apply {
             connectLiveData(source = vm.deleteEnabled, target = bottomToolbarUiModel.uiModelButton3.enabled)
             connectLiveData(source = vm.printButtonEnabled, target = bottomToolbarUiModel.uiModelButton4.enabled)
             connectLiveData(source = vm.saveButtonEnabled, target = bottomToolbarUiModel.uiModelButton5.enabled)

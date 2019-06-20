@@ -32,7 +32,7 @@ class TechLoginFragment : CoreFragment<FragmentTechLoginBinding, TechLoginViewMo
         bottomToolbarUiModel.cleanAll()
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.apply)
-        connectLiveData(vm.applyButtonEnabled, bottomToolbarUiModel.uiModelButton5.enabled)
+        viewLifecycleOwner.connectLiveData(vm.applyButtonEnabled, bottomToolbarUiModel.uiModelButton5.enabled)
     }
 
     override fun getPageNumber(): String =  generateScreenNumber()

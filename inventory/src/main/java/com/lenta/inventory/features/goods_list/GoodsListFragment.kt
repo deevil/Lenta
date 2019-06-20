@@ -50,7 +50,7 @@ class GoodsListFragment : CoreFragment<FragmentGoodsListBinding, GoodsListViewMo
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
         bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.clean)
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.complete)
-        viewLifecycleOwner.let {
+        viewLifecycleOwner.apply {
             connectLiveData(source = vm.deleteEnabled, target = bottomToolbarUiModel.uiModelButton3.enabled)
         }
     }

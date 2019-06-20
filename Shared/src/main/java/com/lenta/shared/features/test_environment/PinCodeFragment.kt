@@ -40,9 +40,7 @@ class PinCodeFragment : CoreFragment<com.lenta.shared.databinding.FragmentPinCod
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.goOver, enabled = false)
 
-        viewLifecycleOwner.let {
-            connectLiveData(vm.enabledGoOverBtn, bottomToolbarUiModel.uiModelButton5.enabled)
-        }
+        viewLifecycleOwner.connectLiveData(vm.enabledGoOverBtn, bottomToolbarUiModel.uiModelButton5.enabled)
     }
 
     override fun getPageNumber(): String = generateScreenNumber()
@@ -69,9 +67,11 @@ class PinCodeFragment : CoreFragment<com.lenta.shared.databinding.FragmentPinCod
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding?.let { it.etPin1.addTextChangedListener(EnterCodeTextWatcher(binding?.etPin2)) }
-        binding?.let { it.etPin2.addTextChangedListener(EnterCodeTextWatcher(binding?.etPin3)) }
-        binding?.let { it.etPin3.addTextChangedListener(EnterCodeTextWatcher(binding?.etPin4)) }
+        binding?.apply {
+            etPin1.addTextChangedListener(EnterCodeTextWatcher(binding?.etPin2))
+            etPin2.addTextChangedListener(EnterCodeTextWatcher(binding?.etPin3))
+            etPin3.addTextChangedListener(EnterCodeTextWatcher(binding?.etPin4))
+        }
     }
 
     companion object {
@@ -84,7 +84,7 @@ class PinCodeFragment : CoreFragment<com.lenta.shared.databinding.FragmentPinCod
     }
 }
 
-class EnterCodeTextWatcher (private var nextFocus: EditText?) : TextWatcher {
+class EnterCodeTextWatcher(private var nextFocus: EditText?) : TextWatcher {
     override fun afterTextChanged(s: Editable?) {
     }
 
