@@ -50,6 +50,8 @@
     <string name="clean">Очистить</string>
     <string name="print">Печать</string>
     <string name="save">Сохранить</string>
+    <string name="complete">Завершить</string>
+    <string name="skip">Пропустить</string>
     <string name="number">№</string>
     <string name="good">Товар</string>
     <string name="quantity">Количество</string>

@@ -6,6 +6,7 @@ import com.lenta.inventory.features.auth.AuthFragment
 import com.lenta.inventory.features.goods_details.GoodsDetailsFragment
 import com.lenta.inventory.features.goods_details_storage.GoodsDetailsStorageFragment
 import com.lenta.inventory.features.goods_information.general.GoodsInfoFragment
+import com.lenta.inventory.features.goods_list.GoodsListFragment
 import com.lenta.inventory.features.loading.fast.FastDataLoadingFragment
 import com.lenta.inventory.features.select_market.SelectMarketFragment
 import com.lenta.inventory.features.select_personnel_number.SelectPersonnelNumberFragment
@@ -90,6 +91,12 @@ class ScreenNavigator(
         }
     }
 
+    override fun openGoodsListScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(GoodsListFragment())
+        }
+    }
+
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 
 }
@@ -105,4 +112,5 @@ interface IScreenNavigator : ICoreNavigator {
     fun openGoodsDetailsScreen()
     fun openGoodsDetailsStorageScreen()
     fun openSetsDetailsStorageScreen()
+    fun openGoodsListScreen()
 }

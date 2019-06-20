@@ -11,4 +11,6 @@
     <string name="not_processed">Не обработанные</string>
     <string name="goods_of_details">Детали по товару</string>
     <string name="goods_of_details_mx">Детали по товару и местам хранения</string>
+    <string name="list_of_goods">Список товаров</string>
+    <string name="enter_item_number_or_barcode">Введите SAP-код или штрихкод</string>
 </resources>
