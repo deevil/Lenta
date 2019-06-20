@@ -54,7 +54,7 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
     val productInfo: MutableLiveData<ProductInfo> = MutableLiveData()
     val writeOffReasonTitles: MutableLiveData<List<String>> = MutableLiveData()
     val selectedPosition: MutableLiveData<Int> = MutableLiveData(0)
-    val count: MutableLiveData<String> = MutableLiveData("")
+    val count: MutableLiveData<String> = MutableLiveData("1")
     val countValue: MutableLiveData<Double> = count.map { it?.toDoubleOrNull() ?: 0.0 }
     val totalCount: MutableLiveData<Double> = countValue.map {
         (it
@@ -95,7 +95,7 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
 
             screenNavigator.showProgress(productInfoDbRequest)
             components.addAll(zmpUtz46V001.getComponentsForSet(productInfo.value!!.materialNumber))
-            components.forEachIndexed { index, itemLocal_ET_SET_LIST ->
+            components.forEachIndexed { index, _ ->
                 productInfoDbRequest(ProductInfoRequestParams(components[index].matnr)).either(::handleFailure, ::handleComponentInfoSuccess)
             }
             screenNavigator.hideProgress()
@@ -153,7 +153,6 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
     }
 
 
-
     fun onClickAdd() {
         addSet()
         processExciseAlcoProductService.apply()
@@ -209,6 +208,7 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
                     return
                 } else {
                     screenNavigator.openComponentSetScreen(componentInfo, componentsItem.value!![index])
+                    eanCode.value = ""
                     return
                 }
             }
@@ -248,6 +248,11 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
         productInfo.value?.let {
             screenNavigator.openGoodsReasonsScreen(productInfo = it)
         }
+    }
+
+    fun onScanResult(data: String) {
+        eanCode.value = data
+        searchEANCode()
     }
 
 }

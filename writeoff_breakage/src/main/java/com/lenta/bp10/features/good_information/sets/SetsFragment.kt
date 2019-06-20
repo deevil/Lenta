@@ -21,6 +21,7 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
+import com.lenta.shared.scan.OnScanResultListener
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.databinding.*
 import com.lenta.shared.utilities.extentions.connectLiveData
@@ -32,7 +33,8 @@ class SetsFragment :
         ViewPagerSettings,
         PageSelectionListener,
         ToolbarButtonsClickListener,
-        OnBackPresserListener {
+        OnBackPresserListener,
+        OnScanResultListener {
 
     private lateinit var productInfo: ProductInfo
 
@@ -150,6 +152,10 @@ class SetsFragment :
 
     override fun onPageSelected(position: Int) {
         vm.onPageSelected(position)
+    }
+
+    override fun onScanResult(data: String) {
+        vm.onScanResult(data)
     }
 
     companion object {

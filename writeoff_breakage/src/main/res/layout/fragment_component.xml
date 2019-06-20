@@ -67,10 +67,10 @@
             android:layout_marginEnd="8dp"
             android:digits="0123456789-"
             android:ellipsize="end"
-            android:enabled="false"
             android:inputType="numberDecimal"
             android:maxLines="1"
             android:text="@{vm.count}"
+            app:disabled="@{true}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/div_vert"
             app:layout_constraintTop_toTopOf="@+id/div_vert"
@@ -167,10 +167,12 @@
             android:paddingTop="8dp"
             android:paddingBottom="8dp"
             android:text="@={vm.exciseStampCode}"
+            android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/div_hor4"
-            app:onOkInSoftKeyboard="@{vm}" />
+            app:onOkInSoftKeyboard="@{vm}"
+            tools:ignore="Autofill,HardcodedText" />
 
         <TextView
             android:id="@+id/tv_matrix"
@@ -181,8 +183,8 @@
             android:layout_marginBottom="24dp"
             android:fontFamily="@font/tahoma_bold"
             android:gravity="center"
-            android:textSize="18sp"
             android:onClick="@{(v) -> vm.screenNavigator.openMatrixInfoScreen(vm.productInfo.matrixType)}"
+            android:textSize="18sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/div_hor4"
@@ -201,8 +203,8 @@
             android:background="@drawable/bg_white_circle"
             android:fontFamily="@font/tahoma_bold"
             android:gravity="center"
-            android:text='@{"" + vm.productInfo.sectionId}'
             android:onClick="@{(v) -> vm.screenNavigator.openSectionInfoScreen(vm.productInfo.sectionId)}"
+            android:text='@{"" + vm.productInfo.sectionId}'
             android:textSize="16sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@+id/tv_matrix"
@@ -220,7 +222,7 @@
             app:layout_constraintBottom_toBottomOf="@+id/tv_section"
             app:layout_constraintStart_toEndOf="@+id/tv_section"
             app:layout_constraintTop_toTopOf="@+id/tv_section"
-            tools:ignore="VectorDrawableCompat"
+            tools:ignore="ContentDescription,VectorDrawableCompat"
             tools:src="@drawable/ic_excise_white_48dp" />
 
         <ImageButton
@@ -234,7 +236,8 @@
             android:padding="8dp"
             android:src="@drawable/is_scan_barcode_es"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/b_scan_ean" />
+            app:layout_constraintEnd_toStartOf="@+id/b_scan_ean"
+            tools:ignore="ContentDescription,VectorDrawableCompat" />
 
         <ImageButton
             android:id="@+id/b_scan_ean"
@@ -247,7 +250,8 @@
             android:padding="8dp"
             android:src="@drawable/ic_scan_barcode"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            app:layout_constraintEnd_toEndOf="parent"
+            tools:ignore="ContentDescription,VectorDrawableCompat" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

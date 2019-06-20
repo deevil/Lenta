@@ -11,11 +11,13 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
+import com.lenta.shared.scan.OnScanResultListener
 import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.generateScreenNumber
 import com.lenta.shared.utilities.extentions.provideViewModel
 
-class ComponentFragment : CoreFragment<FragmentComponentBinding, ComponentViewModel>(), ToolbarButtonsClickListener {
+class ComponentFragment : CoreFragment<FragmentComponentBinding, ComponentViewModel>(),
+        ToolbarButtonsClickListener, OnScanResultListener {
 
     private lateinit var productInfo: ProductInfo
     private lateinit var componentItem: ComponentItem
@@ -36,7 +38,7 @@ class ComponentFragment : CoreFragment<FragmentComponentBinding, ComponentViewMo
     override fun getPageNumber(): String = generateScreenNumber()
 
     override fun getViewModel(): ComponentViewModel {
-        provideViewModel(ComponentViewModel::class.java).let {vm ->
+        provideViewModel(ComponentViewModel::class.java).let { vm ->
             getAppComponent()?.inject(vm)
             vm.setProductInfo(productInfo)
             vm.setComponentItem(componentItem)
@@ -61,6 +63,10 @@ class ComponentFragment : CoreFragment<FragmentComponentBinding, ComponentViewMo
             connectLiveData(vm.enabledButton, bottomToolbarUiModel.uiModelButton5.enabled)
             connectLiveData(vm.enabledButton, bottomToolbarUiModel.uiModelButton2.enabled)
         }
+    }
+
+    override fun onScanResult(data: String) {
+        vm.onScanResult(data)
     }
 
     override fun onToolbarButtonClick(view: View) {

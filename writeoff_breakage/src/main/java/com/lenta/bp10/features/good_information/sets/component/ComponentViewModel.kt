@@ -43,7 +43,11 @@ class ComponentViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftK
     val selectedPosition: MutableLiveData<Int> = componentItem.map { it!!.selectedPosition }
     val count: MutableLiveData<String> = MutableLiveData("0")
     val countValue: MutableLiveData<Double> = count.map { it?.toDoubleOrNull() }
-    val totalCount: MutableLiveData<Double> = countValue.map { (it ?: 0.0) + processServiceManager.getWriteOffTask()!!.taskRepository.getExciseStamps().findExciseStampsOfProduct(productInfo.value!!).size}
+    val totalCount: MutableLiveData<Double> = countValue.map {
+        (it
+                ?: 0.0) + processServiceManager.getWriteOffTask()!!.taskRepository.getExciseStamps()
+                .findExciseStampsOfProduct(productInfo.value!!).size
+    }
     val totalCountWithUom: MutableLiveData<String> = totalCount.map { "${it.toStringFormatted()} из ${(componentItem.value!!.menge.toDouble() * componentItem.value!!.countSets).toStringFormatted()}" }
     val suffix: MutableLiveData<String> = MutableLiveData()
     val exciseStampCode: MutableLiveData<String> = MutableLiveData()
@@ -134,7 +138,7 @@ class ComponentViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftK
         }
     }
 
-    fun addExciseStamp(){
+    fun addExciseStamp() {
         count.value = (count.value!!.toInt() + 1).toString()
         exciseStamp.add(TaskExciseStamp(
                 materialNumber = productInfo.value!!.materialNumber,
@@ -149,6 +153,10 @@ class ComponentViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftK
     override fun handleFailure(failure: Failure) {
         screenNavigator.openAlertScreen(failure)
     }
-    //TODO тестовый код==================================================
+
+    fun onScanResult(data: String) {
+        exciseStampCode.value = data
+        searchExciseStamp()
+    }
 
 }
