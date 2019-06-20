@@ -35,7 +35,7 @@
     <string name="loading_material_info">Загрузка данных о товаре</string>
     <string name="print_success">Задание на печать успешно отправлено</string>
     <string name="sending_data_to_print">Отправка данных на печать</string>
-    <string name="brand_not_set">Марка не принадлежит этому набору</string>
+    <string name="product_not_set">Продукт не принадлежит этому набору</string>
     <string name="limit_exceeded">Превышен лимит</string>
     <string name="goods_not_for_task">Вид\\тип товара не соответствует настройкам задания</string>
     <string name="saved_data_detect_message">На устройстве обнаружены несохраненные данные. Перейти к данным?</string>

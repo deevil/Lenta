@@ -46,7 +46,6 @@ class SetsFragment :
         provideViewModel(SetsViewModel::class.java).let { vm ->
             getAppComponent()?.inject(vm)
             vm.setProductInfo(productInfo)
-            vm.setMsgBrandNotSet(getString(R.string.brand_not_set))
             return vm
         }
     }

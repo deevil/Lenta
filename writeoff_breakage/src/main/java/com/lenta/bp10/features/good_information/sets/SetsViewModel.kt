@@ -2,19 +2,19 @@ package com.lenta.bp10.features.good_information.sets
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.lenta.bp10.features.goods_list.SearchProductDelegate
 import com.lenta.bp10.models.repositories.IWriteOffTaskManager
 import com.lenta.bp10.models.repositories.getTotalCountForProduct
 import com.lenta.bp10.models.task.ProcessExciseAlcoProductService
 import com.lenta.bp10.models.task.TaskExciseStamp
 import com.lenta.bp10.models.task.WriteOffReason
 import com.lenta.bp10.platform.navigation.IScreenNavigator
-import com.lenta.bp10.requests.db.ProductInfoDbRequest
-import com.lenta.bp10.requests.db.ProductInfoRequestParams
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.fmp.resources.dao_ext.getComponentsForSet
 import com.lenta.shared.fmp.resources.slow.ZmpUtz46V001
 import com.lenta.shared.models.core.ProductInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
+import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.Evenable
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
@@ -41,14 +41,17 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
     lateinit var screenNavigator: IScreenNavigator
 
     @Inject
-    lateinit var productInfoDbRequest: ProductInfoDbRequest
+    lateinit var searchComponentDelegate: SearchProductDelegate
+
+    @Inject
+    lateinit var searchProductDelegate: SearchProductDelegate
+
 
     private val processExciseAlcoProductService: ProcessExciseAlcoProductService by lazy {
         processServiceManager.getWriteOffTask()!!.processExciseAlcoProduct(productInfo.value!!)!!
     }
 
 
-    private val msgBrandNotSet: MutableLiveData<String> = MutableLiveData()
     var selectedPage = MutableLiveData(0)
 
     val productInfo: MutableLiveData<ProductInfo> = MutableLiveData()
@@ -62,13 +65,13 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
     }
     val totalCountWithUom: MutableLiveData<String> = totalCount.map { "${it.toStringFormatted()} ${productInfo.value!!.uom.name}" }
     val suffix: MutableLiveData<String> = MutableLiveData()
-    private val componentsInfo = mutableListOf<ProductInfo>()
     val componentsItem: MutableLiveData<List<ComponentItem>> = MutableLiveData()
     val componentsSelectionsHelper = SelectionItemsHelper()
     val eanCode: MutableLiveData<String> = MutableLiveData()
-    private val components = mutableListOf<ZmpUtz46V001.ItemLocal_ET_SET_LIST>()
-
     val enabledApplyButton: MutableLiveData<Boolean> = MutableLiveData(false)
+
+    private lateinit var components: List<ZmpUtz46V001.ItemLocal_ET_SET_LIST>
+    private val componentsInfo = mutableListOf<ProductInfo>()
 
     val enabledDetailsCleanBtn: MutableLiveData<Boolean> = selectedPage
             .combineLatest(componentsSelectionsHelper.selectedPositions)
@@ -82,10 +85,6 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
         this.productInfo.value = productInfo
     }
 
-    fun setMsgBrandNotSet(string: String) {
-        this.msgBrandNotSet.value = string
-    }
-
 
     init {
         viewModelScope.launch {
@@ -93,10 +92,15 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
                 writeOffReasonTitles.value = writeOffTask.taskDescription.moveTypes.map { it.name }
             }
 
-            screenNavigator.showProgress(productInfoDbRequest)
-            components.addAll(zmpUtz46V001.getComponentsForSet(productInfo.value!!.materialNumber))
+            searchComponentDelegate.init(viewModelScope = this@SetsViewModel::viewModelScope,
+                    scanResultHandler = this@SetsViewModel::handleComponentSearchResult)
+
+            searchProductDelegate.init(viewModelScope = this@SetsViewModel::viewModelScope,
+                    scanResultHandler = this@SetsViewModel::handleProductSearchSuccess)
+
+            components = zmpUtz46V001.getComponentsForSet(productInfo.value!!.materialNumber)
             components.forEachIndexed { index, _ ->
-                productInfoDbRequest(ProductInfoRequestParams(components[index].matnr)).either(::handleFailure, ::handleComponentInfoSuccess)
+                searchComponentDelegate.searchCode(components[index].matnr, fromScan = false, isBarCode = false)
             }
             screenNavigator.hideProgress()
             suffix.value = productInfo.value?.uom?.name
@@ -104,12 +108,68 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
         }
     }
 
-    private fun handleComponentInfoSuccess(componentInfo: ProductInfo) {
-        componentsInfo.add(componentInfo)
-    }
 
     fun onResume() {
         updateComponents()
+    }
+
+    fun onClickAdd() {
+        addSet()
+        processExciseAlcoProductService.apply()
+    }
+
+    fun onClickApply() {
+        onClickAdd()
+        screenNavigator.goBack()
+    }
+
+    private fun addSet() {
+        countValue.value?.let {
+            processExciseAlcoProductService.add(getReason(), it, TaskExciseStamp(
+                    materialNumber = "",
+                    code = "",
+                    setMaterialNumber = "",
+                    writeOffReason = "",
+                    isBadStamp = false)
+            )
+            count.value = ""
+        }
+        updateComponents()
+    }
+
+    private fun getReason(): WriteOffReason {
+        return processExciseAlcoProductService.taskDescription.moveTypes
+                .getOrElse(selectedPosition.value ?: -1) { WriteOffReason.empty }
+    }
+
+    private fun handleComponentSearchResult(scanInfoResult: ScanInfoResult?): Boolean {
+        scanInfoResult?.let {
+            componentsInfo.add(it.productInfo)
+            updateComponents()
+        }
+
+        return true
+    }
+
+    private fun handleProductSearchSuccess(scanInfoResult: ScanInfoResult?): Boolean {
+        eanCode.value = ""
+        scanInfoResult?.productInfo?.let { info ->
+            componentsInfo.forEachIndexed { index, componentInfo ->
+                if (componentInfo.materialNumber == info.materialNumber) {
+                    if (getCountExciseStampsForComponent(componentInfo) == components[index].menge * totalCount.value!!) {
+                        screenNavigator.openAlertScreen(Failure.MarksComponentAlreadyScanned, pageNumber = "96")
+                        return true
+                    } else {
+                        screenNavigator.openComponentSetScreen(componentInfo, componentsItem.value!![index])
+                        return true
+                    }
+                }
+            }
+            screenNavigator.openProductNotSetAlertScreen()
+        }
+
+        return true
+
     }
 
     private fun updateComponents() {
@@ -152,69 +212,22 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
                 .toDouble()
     }
 
-
-    fun onClickAdd() {
-        addSet()
-        processExciseAlcoProductService.apply()
-    }
-
-    fun onClickApply() {
-        onClickAdd()
-        screenNavigator.goBack()
-    }
-
-    private fun addSet() {
-        countValue.value?.let {
-            //todo добавить марку для набора
-            processExciseAlcoProductService.add(getReason(), it, TaskExciseStamp(
-                    materialNumber = "",
-                    code = "",
-                    setMaterialNumber = "",
-                    writeOffReason = "",
-                    isBadStamp = false)
-            )
-            count.value = ""
-        }
-        updateComponents()
-    }
-
-    private fun getReason(): WriteOffReason {
-        return processExciseAlcoProductService.taskDescription.moveTypes
-                .getOrElse(selectedPosition.value ?: -1) { WriteOffReason.empty }
-    }
-
     override fun onClickPosition(position: Int) {
         selectedPosition.value = position
     }
 
     override fun onOkInSoftKeyboard(): Boolean {
-        searchEANCode()
+        eanCode.value?.let {
+            searchEANCode(it)
+        }
+
         return true
     }
 
-    private fun searchEANCode() {
-        viewModelScope.launch {
-            eanCode.value?.let {
-                productInfoDbRequest(ProductInfoRequestParams(number = it)).either(::handleFailure, ::handleSearchEANSuccess)
-            }
-        }
+    private fun searchEANCode(code: String) {
+        searchProductDelegate.searchCode(code, fromScan = true)
     }
 
-    private fun handleSearchEANSuccess(searchComponentInfo: ProductInfo) {
-        componentsInfo.forEachIndexed { index, componentInfo ->
-            if (componentInfo.materialNumber == searchComponentInfo.materialNumber) {
-                if (getCountExciseStampsForComponent(componentInfo) == components[index].menge * totalCount.value!!) {
-                    screenNavigator.openAlertScreen(Failure.MarksComponentAlreadyScanned, pageNumber = "96")
-                    return
-                } else {
-                    screenNavigator.openComponentSetScreen(componentInfo, componentsItem.value!![index])
-                    eanCode.value = ""
-                    return
-                }
-            }
-        }
-        screenNavigator.openAlertScreen(message = msgBrandNotSet.value!!)
-    }
 
     override fun handleFailure(failure: Failure) {
         screenNavigator.openAlertScreen(failure)
@@ -251,8 +264,7 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
     }
 
     fun onScanResult(data: String) {
-        eanCode.value = data
-        searchEANCode()
+        searchEANCode(data)
     }
 
 }

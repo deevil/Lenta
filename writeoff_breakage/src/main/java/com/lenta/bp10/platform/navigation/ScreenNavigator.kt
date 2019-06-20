@@ -3,7 +3,6 @@ package com.lenta.bp10.platform.navigation
 import android.content.Context
 import androidx.core.content.ContextCompat
 import com.lenta.bp10.R
-import com.lenta.bp10.activity.main.NumberScreenGenerator
 import com.lenta.bp10.features.auth.AuthFragment
 import com.lenta.bp10.features.detection_saved_data.DetectionSavedDataFragment
 import com.lenta.bp10.features.good_information.excise_alco.ExciseAlcoInfoFragment
@@ -235,6 +234,10 @@ class ScreenNavigator(
         )
     }
 
+    override fun openProductNotSetAlertScreen() {
+        openInfoScreen(context.getString(R.string.product_not_set))
+    }
+
 }
 
 interface IScreenNavigator : ICoreNavigator {
@@ -263,4 +266,5 @@ interface IScreenNavigator : ICoreNavigator {
     fun openNotPossibleSaveNegativeQuantityScreen()
     fun openSelectTypeCodeScreen(codeConfirmationForSap: Int, codeConfirmationForBarCode: Int)
     fun openAlertDoubleScanStamp()
+    fun openProductNotSetAlertScreen()
 }
