@@ -13,7 +13,6 @@ import com.lenta.bp10.requests.network.ExciseStampParams
 import com.lenta.bp10.requests.network.ExciseStampRestInfo
 import com.lenta.shared.models.core.ProductInfo
 import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
-import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject

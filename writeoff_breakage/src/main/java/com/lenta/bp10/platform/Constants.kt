@@ -6,3 +6,4 @@ const val requestCodeSelectPersonnelNumber = 102
 const val requestCodeTypeSap = 103
 const val requestCodeTypeBarCode = 104
 const val requestCodeAddBadStamp = 105
+const val requestCodeAddAddToProduction = 106

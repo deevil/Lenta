@@ -225,6 +225,21 @@ class CoreNavigator constructor(private val context: Context,
         }
     }
 
+    override fun openWriteOffToProductionConfirmationScreen(codeConfirm: Int) {
+        runOrPostpone {
+            getFragmentStack()?.push(
+                    AlertFragment.create(
+                            message = context.getString(R.string.writeoff_to_production_confirmation),
+                            pageNumber = "95",
+                            codeConfirm = codeConfirm,
+                            rightButtonDecorationInfo = ButtonDecorationInfo.apply
+                    )
+            )
+        }
+    }
+
+
+
     override fun openAnotherProductStampAlert(productName: String) {
         openInfoScreen(message = context.getString(R.string.another_product_stamp, productName))
     }
@@ -267,6 +282,7 @@ interface ICoreNavigator {
     fun openInfoScreen(message: String)
     fun openStampAnotherMarketAlert(codeConfirm: Int)
     fun openAnotherProductStampAlert(productName: String)
+    fun openWriteOffToProductionConfirmationScreen(codeConfirm: Int)
 }
 
 class FunctionsCollector(private val needCollectLiveData: LiveData<Boolean>) {

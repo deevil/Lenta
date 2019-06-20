@@ -202,9 +202,7 @@ class ScreenNavigator(
         openAlertScreen(context.getString(R.string.goods_not_for_task))
     }
 
-    override fun openAlertNotAllowWriteOffToWorkScreen() {
-        openAlertScreen(context.getString(R.string.not_allow_writeoff_to_work))
-    }
+
 
     override fun openNotPossibleSaveNegativeQuantityScreen() {
         openAlertScreen(
@@ -262,7 +260,6 @@ interface IScreenNavigator : ICoreNavigator {
     fun openRemoveLinesConfirmationScreen(taskDescription: String, count: Int, codeConfirmation: Int)
     fun openMatrixAlertScreen(matrixType: MatrixType, codeConfirmation: Int)
     fun openAlertGoodsNotForTaskScreen()
-    fun openAlertNotAllowWriteOffToWorkScreen()
     fun openNotPossibleSaveNegativeQuantityScreen()
     fun openSelectTypeCodeScreen(codeConfirmationForSap: Int, codeConfirmationForBarCode: Int)
     fun openAlertDoubleScanStamp()
