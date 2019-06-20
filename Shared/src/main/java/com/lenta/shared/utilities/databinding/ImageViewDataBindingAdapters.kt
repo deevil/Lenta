@@ -19,14 +19,17 @@ fun setAlcoIcon(imageView: ImageView, productType: ProductType?) {
         ProductType.NonExciseAlcohol -> R.drawable.ic_no_excise_alco
         ProductType.ExciseAlcohol -> R.drawable.ic_excise_white_48dp
         else -> 0
-    }).let {
-        imageView.setImageResource(it)
-        (it != 0).let { hasIcon ->
+    }).let { iconRes ->
+        imageView.setImageResource(iconRes)
+        (iconRes != 0).let { hasIcon ->
             imageView.setVisible(hasIcon)
             imageView.isFocusable = hasIcon
             if (hasIcon) {
                 imageView.setOnClickListener {
-                    dataBindingHelpHolder.coreNavigator.openAlertScreen(message = imageView.context.getString(productType.getDescriptionResId()))
+                    dataBindingHelpHolder.coreNavigator.openAlertScreen(
+                            message = imageView.context.getString(productType.getDescriptionResId()),
+                            iconRes = iconRes
+                    )
                 }
                 imageView.setBackgroundResource(imageView.context.selectableItemBackgroundResId())
             } else {
