@@ -32,20 +32,28 @@ class SelectPersonnelNumberViewModel : CoreViewModel(), OnOkInSoftKeyboardListen
     val fullName = MutableLiveData<String>("")
     val employeesPosition = MutableLiveData<String>("")
 
+    val editTextFocus = MutableLiveData<Boolean>()
+    val nextButtonFocus = MutableLiveData<Boolean>()
+
     private var codeConfirm: Int? = null
 
-    fun setCodeConfirm(codeConfirm: Int?){
+    fun setCodeConfirm(codeConfirm: Int?) {
         this.codeConfirm = codeConfirm
     }
 
     init {
         viewModelScope.launch {
-            if (sessionInfo.personnelNumber != null) {
-                personnelNumber.value = sessionInfo.personnelNumber
-                fullName.value = sessionInfo.personnelFullName
-            } else {
-                personnelNumber.value = appSettings.lastPersonnelNumber
-                fullName.value = appSettings.lastPersonnelFullName
+            when {
+                sessionInfo.personnelNumber != null -> {
+                    personnelNumber.value = sessionInfo.personnelNumber
+                    fullName.value = sessionInfo.personnelFullName
+                    searchPersonnelNumber()
+                }
+                appSettings.lastPersonnelNumber != null -> {
+                    personnelNumber.value = appSettings.lastPersonnelNumber
+                    searchPersonnelNumber()
+                }
+                else -> editTextFocus.postValue(true)
             }
 
         }
@@ -65,6 +73,7 @@ class SelectPersonnelNumberViewModel : CoreViewModel(), OnOkInSoftKeyboardListen
         Logg.d { "handleSuccess $personnelNumberInfo" }
         fullName.value = personnelNumberInfo.name
         employeesPosition.value = personnelNumberInfo.jobName
+        nextButtonFocus.postValue(true)
 
     }
 

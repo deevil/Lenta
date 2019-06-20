@@ -83,6 +83,10 @@ class MainActivity : CoreMainActivity() {
         })*/
     }
 
+    override fun generateNumberScreenFromPostfix(postfix: String?): String? {
+        return numberScreenGenerator.generateNumberScreenFromPostfix(postfix)
+    }
+
     override fun generateNumberScreen(fragment: CoreFragment<*, *>): String? {
         return numberScreenGenerator.generateNumberScreen(fragment)
     }

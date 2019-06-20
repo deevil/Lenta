@@ -4,6 +4,7 @@ import com.lenta.bp10.fmp.resources.dao_ext.isChkOwnpr
 import com.lenta.bp10.fmp.resources.tasks_settings.ZmpUtz29V001Rfc
 import com.lenta.bp10.models.repositories.IWriteOffTaskManager
 import com.lenta.bp10.platform.navigation.IScreenNavigator
+import com.lenta.bp10.platform.requestCodeAddAddToProduction
 import com.lenta.bp10.platform.requestCodeAddProduct
 import com.lenta.bp10.platform.requestCodeTypeBarCode
 import com.lenta.bp10.platform.requestCodeTypeSap
@@ -92,6 +93,10 @@ class SearchProductDelegate @Inject constructor(
                 codeWith12Digits = null
                 true
             }
+            requestCodeAddAddToProduction -> {
+                searchProduct()
+                true
+            }
             else -> false
         }
 
@@ -114,7 +119,7 @@ class SearchProductDelegate @Inject constructor(
     }
 
     private fun handleFailure(failure: Failure) {
-        screenNavigator.openAlertScreen(failure, "10/97")
+        screenNavigator.openAlertScreen(failure, "97")
     }
 
     private fun handleSearchSuccess(scanInfoResult: ScanInfoResult) {
@@ -137,7 +142,7 @@ class SearchProductDelegate @Inject constructor(
 
     private fun handlePermissionsSuccess(permissionToWriteoff: PermissionToWriteoffRestInfo) {
         if (permissionToWriteoff.ownr.isEmpty()) {
-            screenNavigator.openAlertNotAllowWriteOffToWorkScreen()
+            screenNavigator.openWriteOffToProductionConfirmationScreen(requestCodeAddAddToProduction)
         } else searchProduct()
     }
 

@@ -106,7 +106,7 @@ abstract class BaseProductInfoViewModel : CoreViewModel(), OnPositionClickListen
         this.productInfo.value = productInfo
     }
 
-    fun onResult(code: Int?) {
+    open fun onResult(code: Int?) {
         searchProductDelegate.handleResultCode(code)
 
     }

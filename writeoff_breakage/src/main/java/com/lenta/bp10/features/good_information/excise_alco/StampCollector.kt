@@ -2,7 +2,6 @@ package com.lenta.bp10.features.good_information.excise_alco
 
 import androidx.lifecycle.MutableLiveData
 import com.lenta.bp10.models.memory.containsStamp
-import com.lenta.bp10.models.repositories.ITaskExciseStampRepository
 import com.lenta.bp10.models.task.ProcessExciseAlcoProductService
 import com.lenta.bp10.models.task.TaskExciseStamp
 import com.lenta.bp10.models.task.WriteOffReason
@@ -25,7 +24,7 @@ class StampCollector(
     }
 
 
-    fun add(materialNumber: String, setMaterialNumber: String, writeOffReason: String, isBasStamp: Boolean): Boolean {
+    fun add(materialNumber: String, setMaterialNumber: String, writeOffReason: String, isBadStamp: Boolean): Boolean {
         if (preparedStampCode.isEmpty()) {
             throw UnsupportedOperationException("preparedStampCode was be set before executing this method")
         }
@@ -35,7 +34,7 @@ class StampCollector(
                 code = preparedStampCode,
                 setMaterialNumber = setMaterialNumber,
                 writeOffReason = writeOffReason,
-                isBasStamp = isBasStamp
+                isBadStamp = isBadStamp
         )
 
         if (stamps.contains(stamp)) {

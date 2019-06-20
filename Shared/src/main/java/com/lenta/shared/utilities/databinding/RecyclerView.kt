@@ -235,9 +235,9 @@ abstract class DoubleClickListener : View.OnClickListener {
         lastClickTime = clickTime
     }
 
-    abstract fun onSingleClick(v: View)
+    abstract fun onSingleClick(view: View)
 
-    abstract fun onDoubleClick(v: View)
+    abstract fun onDoubleClick(view: View)
 
     companion object {
 

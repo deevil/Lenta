@@ -5,9 +5,13 @@ import com.lenta.bp10.features.good_information.base.BaseProductInfoViewModel
 import com.lenta.bp10.models.repositories.ITaskRepository
 import com.lenta.bp10.models.task.ProcessExciseAlcoProductService
 import com.lenta.bp10.models.task.TaskDescription
+import com.lenta.bp10.platform.requestCodeAddBadStamp
+import com.lenta.bp10.requests.db.ProductInfoDbRequest
+import com.lenta.bp10.requests.db.ProductInfoRequestParams
 import com.lenta.bp10.requests.network.ExciseStampNetRequest
 import com.lenta.bp10.requests.network.ExciseStampParams
 import com.lenta.bp10.requests.network.ExciseStampRestInfo
+import com.lenta.shared.models.core.ProductInfo
 import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
 import com.lenta.shared.utilities.extentions.map
 import kotlinx.coroutines.launch
@@ -17,6 +21,9 @@ class ExciseAlcoInfoViewModel : BaseProductInfoViewModel() {
 
     @Inject
     lateinit var exciseStampNetRequest: ExciseStampNetRequest
+
+    @Inject
+    lateinit var productInfoDbRequest: ProductInfoDbRequest
 
     val rollBackEnabled = countValue.map { it ?: 0.0 > 0.0 }
 
@@ -68,22 +75,40 @@ class ExciseAlcoInfoViewModel : BaseProductInfoViewModel() {
 
     private fun handleExciseStampSuccess(exciseStampRestInfo: List<ExciseStampRestInfo>) {
 
-        val retcodeCode = exciseStampRestInfo[1].data[0][0].toInt()
-        val retcodeName = exciseStampRestInfo[1].data[0][1]
+        val retCode = exciseStampRestInfo[1].data[0][0].toInt()
+        val serverDescription = exciseStampRestInfo[1].data[0][1]
 
-        when (retcodeCode) {
+        when (retCode) {
             0 -> {
-                if (!stampCollector.add(
-                                materialNumber = productInfo.value!!.materialNumber,
-                                setMaterialNumber = "",
-                                writeOffReason = getSelectedReason().code,
-                                isBasStamp = false
-                        )) {
-                    screenNavigator.openAlertDoubleScanStamp()
-                }
+                addStamp(isBadStamp = false)
             }
-            else -> screenNavigator.openAlertScreen(retcodeName)
+            2 -> {
+                screenNavigator.openStampAnotherMarketAlert(requestCodeAddBadStamp)
+            }
+            1 -> {
+                viewModelScope.launch {
+                    screenNavigator.showProgress(productInfoDbRequest)
+                    productInfoDbRequest(ProductInfoRequestParams(number = exciseStampRestInfo[0].data[0][0]))
+                            .either(::handleFailure, ::openAlertForAnotherProductStamp)
+                    screenNavigator.hideProgress()
+
+                }
+
+            }
+            else -> screenNavigator.openInfoScreen(serverDescription)
         }
+    }
+
+    private fun openAlertForAnotherProductStamp(productInfo: ProductInfo) {
+        screenNavigator.openAnotherProductStampAlert(productName = productInfo.description)
+    }
+
+
+    override fun onResult(code: Int?) {
+        if (code == requestCodeAddBadStamp) {
+            addStamp(isBadStamp = true)
+        }
+        super.onResult(code)
     }
 
     private fun addGood(): Boolean {
@@ -103,6 +128,17 @@ class ExciseAlcoInfoViewModel : BaseProductInfoViewModel() {
             return true
         }
         return false
+    }
+
+    private fun addStamp(isBadStamp: Boolean) {
+        if (!stampCollector.add(
+                        materialNumber = productInfo.value!!.materialNumber,
+                        setMaterialNumber = "",
+                        writeOffReason = getSelectedReason().code,
+                        isBadStamp = isBadStamp
+                )) {
+            screenNavigator.openAlertDoubleScanStamp()
+        }
     }
 
 

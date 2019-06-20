@@ -15,6 +15,10 @@ fun <T : ViewDataBinding, S : ViewModel> CoreFragment<T, S>.generateScreenNumber
     return activity.implementationOf(CoreMainActivity::class.java)?.generateNumberScreen(this) ?: ""
 }
 
+fun CoreFragment<*, *>.generateScreenNumberFromPostfix(postfix: String?): String? {
+    return activity.implementationOf(CoreMainActivity::class.java)?.generateNumberScreenFromPostfix(postfix)
+}
+
 fun <T : ViewDataBinding, S : ViewModel> CoreFragment<T, S>.getScreenPrefix(): String {
     return activity.implementationOf(CoreMainActivity::class.java)?.getPrefixScreen(this) ?: ""
 }

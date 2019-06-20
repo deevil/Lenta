@@ -13,6 +13,7 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListe
 import com.lenta.shared.platform.toolbar.top_toolbar.ImageButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.scan.OnScanResultListener
+import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.provideViewModel
 import com.lenta.shared.utilities.state.state
 
@@ -53,10 +54,8 @@ class SelectPersonnelNumberFragment : CoreFragment<FragmentSelectPersonnelNumber
                 .uiModelButton5.show(ButtonDecorationInfo.next)
         bottomToolbarUiModel
                 .uiModelButton1.show(ButtonDecorationInfo.back, enabled = codeConfirmation != null)
-        vm.fullName.observe(viewLifecycleOwner, Observer {
-            bottomToolbarUiModel
-                    .uiModelButton5.requestFocus()
-        })
+
+        viewLifecycleOwner.connectLiveData(vm.nextButtonFocus, bottomToolbarUiModel.uiModelButton5.requestFocus)
     }
 
     override fun onToolbarButtonClick(view: View) {

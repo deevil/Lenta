@@ -48,7 +48,6 @@ android {
 dependencies {
     implementation project(':Shared')
     implementation 'com.android.support:multidex:1.0.3'
-    testImplementation "junit:junit:4.12"
 
     // Dagger2
     kapt deps.dagger.compiler

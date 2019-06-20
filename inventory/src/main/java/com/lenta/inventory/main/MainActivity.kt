@@ -81,7 +81,11 @@ class MainActivity : CoreMainActivity() {
         })*/
     }
 
-    override fun generateNumberScreen(fragment: CoreFragment<*, *>): String {
+    override fun generateNumberScreenFromPostfix(postfix: String?): String? {
+        return generateNumberScreenFromPostfix(postfix)
+    }
+
+    override fun generateNumberScreen(fragment: CoreFragment<*, *>): String? {
         return numberScreenGenerator.generateNumberScreen(fragment)
     }
 

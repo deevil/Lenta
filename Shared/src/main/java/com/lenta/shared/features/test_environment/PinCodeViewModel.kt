@@ -73,7 +73,7 @@ class PinCodeViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
                 putInt(KEY_ARGS_ID_CODE_CONFIRM, requestCode ?: 0)
             })
         } else {
-            screenNavigator.openAlertScreen(message = msgIncorrectPinCode.value!!, pageNumber = "$prefixScreen/95")
+            screenNavigator.openAlertScreen(message = msgIncorrectPinCode.value!!, pageNumber = "95")
         }
     }
 

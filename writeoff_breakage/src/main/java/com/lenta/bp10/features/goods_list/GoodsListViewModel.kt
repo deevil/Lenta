@@ -111,7 +111,7 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
     override fun handleFailure(failure: Failure) {
         super.handleFailure(failure)
-        screenNavigator.openAlertScreen(failure, pageNumber = "10/97")
+        screenNavigator.openAlertScreen(failure, pageNumber = "97")
     }
 
 

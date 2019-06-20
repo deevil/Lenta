@@ -142,7 +142,7 @@ fun WriteOffTask.getStamps(): List<ExciseStamp> {
                 stamp = it.code,
                 matnrOsn = it.setMaterialNumber,
                 writeOffCause = it.writeOffReason,
-                reg = if (it.isBasStamp) "X" else ""
+                reg = if (it.isBadStamp) "X" else ""
         )
     }
 }

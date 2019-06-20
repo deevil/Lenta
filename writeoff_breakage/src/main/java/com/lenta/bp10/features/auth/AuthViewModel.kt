@@ -32,8 +32,6 @@ class AuthViewModel : CoreAuthViewModel() {
     @Inject
     lateinit var navigator: IScreenNavigator
     @Inject
-    lateinit var failureInterpreter: IFailureInterpreter
-    @Inject
     lateinit var sessionInfo: ISessionInfo
     @Inject
     lateinit var appSettings: IAppSettings
@@ -80,7 +78,7 @@ class AuthViewModel : CoreAuthViewModel() {
     override fun handleFailure(failure: Failure) {
         super.handleFailure(failure)
         progress.value = false
-        navigator.openAlertScreen(failure, pageNumber = "10/97")
+        navigator.openAlertScreen(failure, pageNumber = "97")
     }
 
 
