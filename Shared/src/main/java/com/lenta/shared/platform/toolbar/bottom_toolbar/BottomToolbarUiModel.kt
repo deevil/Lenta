@@ -81,6 +81,12 @@ data class ButtonDecorationInfo(
         val save: ButtonDecorationInfo by lazy {
             ButtonDecorationInfo(R.drawable.ic_send_white_24dp, R.string.save)
         }
+        val complete: ButtonDecorationInfo by lazy {
+            ButtonDecorationInfo(R.drawable.ic_send_white_24dp, R.string.complete)
+        }
+        val skip: ButtonDecorationInfo by lazy {
+            ButtonDecorationInfo(R.drawable.ic_send_white_24dp, R.string.skip)
+        }
         val print: ButtonDecorationInfo by lazy {
             ButtonDecorationInfo(R.drawable.ic_print_white_24dp, R.string.print)
         }
