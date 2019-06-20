@@ -11,8 +11,9 @@ import javax.inject.Inject
 class PermissionsRequest
 @Inject constructor(private val hyperHive: HyperHive) : UseCase<Boolean, PermissionsParams>() {
     override suspend fun run(params: PermissionsParams): Either<Failure, Boolean> {
-        //TODO (DB) нужно добавить поддержку логина пользователя когда доработают ФМ модуль
-        return ZfmpUtzWob01V001(hyperHive).newRequest().streamCallAuto().execute().toEitherBoolean()
+        return ZfmpUtzWob01V001(hyperHive).newRequest()
+                .addScalar(ZfmpUtzWob01V001.LimitedScalarParameter.IV_USER(params.login))
+                .streamCallAuto().execute().toEitherBoolean()
     }
 }
 

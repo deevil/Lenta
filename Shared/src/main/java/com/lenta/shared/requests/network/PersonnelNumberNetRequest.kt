@@ -21,7 +21,6 @@ class PersonnelNumberNetRequest
             headers = mapOf(
                     "X-SUP-DOMAIN" to "DM-MAIN",
                     "Content-Type" to "application/json",
-                    //"Web-Authorization" to "Basic TUFLQVJPVjoxcTJ3M2U0cg=="
                     "Web-Authorization" to sessionInfo.basicAuth
             )
         }

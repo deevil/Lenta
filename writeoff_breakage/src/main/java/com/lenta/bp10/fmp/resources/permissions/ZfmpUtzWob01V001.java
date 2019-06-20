@@ -3,12 +3,11 @@ package com.lenta.bp10.fmp.resources.permissions;
 import com.google.gson.annotations.SerializedName;
 import com.mobrun.plugin.api.HyperHive;
 import com.mobrun.plugin.api.request_assistant.CustomParameter;
-import com.mobrun.plugin.api.request_assistant.ForbiddenScalarParameter;
+import com.mobrun.plugin.api.request_assistant.ScalarParameter;
 import com.mobrun.plugin.api.request_assistant.RequestBuilder;
 import com.mobrun.plugin.api.helper.LocalTableResourceHelper;
 import com.mobrun.plugin.models.StatusSelectTable;
 
-@SuppressWarnings("ALL")
 public class ZfmpUtzWob01V001 {
 
     public static final String NAME_RESOURCE = "ZFMP_UTZ_WOB_01_V001";
@@ -40,7 +39,7 @@ public class ZfmpUtzWob01V001 {
 
     }
 
-    public RequestBuilder<Params, ForbiddenScalarParameter> newRequest() { return new RequestBuilder<Params, ForbiddenScalarParameter>(hyperHive, NAME_RESOURCE, false);}
+    public RequestBuilder<Params, LimitedScalarParameter> newRequest() { return new RequestBuilder<Params, LimitedScalarParameter>(hyperHive, NAME_RESOURCE, false);}
 
     static final class Status_ET_RETCODE extends StatusSelectTable<ItemLocal_ET_RETCODE> {}
     static final class Status_ET_WERKS extends StatusSelectTable<ItemLocal_ET_WERKS> {}
@@ -77,5 +76,16 @@ public class ZfmpUtzWob01V001 {
     public interface Params extends CustomParameter {}
 
 
+    public static class LimitedScalarParameter extends ScalarParameter {
+        @SuppressWarnings("unchecked")
+        public LimitedScalarParameter(String name, Object value) {
+            super(name, value);
+        }
+
+        public static LimitedScalarParameter IV_USER(String value) {
+            return new LimitedScalarParameter("IV_USER", value);
+        }
+
+    }
 }
 

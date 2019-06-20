@@ -6,7 +6,6 @@ import com.lenta.bp10.databinding.FragmentComponentBinding
 import com.lenta.bp10.features.good_information.sets.ComponentItem
 import com.lenta.bp10.platform.extentions.getAppComponent
 import com.lenta.shared.models.core.ProductInfo
-import com.lenta.shared.platform.activity.OnBackPresserListener
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
