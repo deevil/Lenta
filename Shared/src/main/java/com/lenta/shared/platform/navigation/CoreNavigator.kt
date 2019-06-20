@@ -68,7 +68,7 @@ class CoreNavigator constructor(private val context: Context,
     }
 
 
-    override fun openAlertScreen(message: String, iconRes: Int, textColor: Int?, pageNumber: String) {
+    override fun openAlertScreen(message: String, iconRes: Int, textColor: Int?, pageNumber: String?) {
         runOrPostpone {
             getFragmentStack()?.let {
                 val fragment = AlertFragment.create(
@@ -259,7 +259,7 @@ interface ICoreNavigator {
     fun goBackWithResultCode(code: Int)
     fun goBack()
     fun finishApp()
-    fun openAlertScreen(message: String, iconRes: Int = 0, textColor: Int? = null, pageNumber: String = "?")
+    fun openAlertScreen(message: String, iconRes: Int = 0, textColor: Int? = null, pageNumber: String? = null)
     fun openAlertScreen(failure: Failure, pageNumber: String = "?")
     fun openSupportScreen()
     fun <Params> showProgress(useCase: UseCase<Any, Params>)
