@@ -87,9 +87,11 @@ abstract class BaseProductInfoViewModel : CoreViewModel(), OnPositionClickListen
                                     materialNumber = it.materialNumber
                             )
 
-                            writeOffReasonTitles.value = mutableListOf("").apply {
-                                addAll(reasons.map { it.name })
-                            }
+                            writeOffReasonTitles.value = mutableListOf("").filter { filterReason(it) }
+                                    .toMutableList()
+                                    .apply {
+                                        addAll(reasons.filter { filterReason(it.code) }.map { it.name })
+                                    }
 
                             onClickPosition(reasons.indexOfFirst { reason -> reason.code == defaultReason } + 1)
                         }
@@ -102,6 +104,10 @@ abstract class BaseProductInfoViewModel : CoreViewModel(), OnPositionClickListen
         }
     }
 
+    open fun filterReason(code: String): Boolean {
+        return true
+    }
+
     fun setProductInfo(productInfo: ProductInfo) {
         this.productInfo.value = productInfo
     }
@@ -111,7 +117,7 @@ abstract class BaseProductInfoViewModel : CoreViewModel(), OnPositionClickListen
 
     }
 
-    private fun getReason(): WriteOffReason {
+    open fun getReason(): WriteOffReason {
         getTaskDescription().moveTypes.let { moveTypes ->
             if (moveTypes.isEmpty()) {
                 return WriteOffReason(code = "", name = resourceManager.emptyCategory())

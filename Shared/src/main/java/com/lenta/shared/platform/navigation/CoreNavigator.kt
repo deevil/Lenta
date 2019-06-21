@@ -232,7 +232,7 @@ class CoreNavigator constructor(private val context: Context,
                             message = context.getString(R.string.writeoff_to_production_confirmation),
                             pageNumber = "95",
                             codeConfirm = codeConfirm,
-                            rightButtonDecorationInfo = ButtonDecorationInfo.apply
+                            rightButtonDecorationInfo = ButtonDecorationInfo.nextAlternate
                     )
             )
         }
