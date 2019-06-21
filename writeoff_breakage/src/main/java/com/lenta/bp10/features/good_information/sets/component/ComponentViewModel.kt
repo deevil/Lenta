@@ -1,27 +1,118 @@
 package com.lenta.bp10.features.good_information.sets.component
 
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.lenta.bp10.features.good_information.base.BaseProductInfoViewModel
+import com.lenta.bp10.features.good_information.excise_alco.ExciseAlcoDelegate
+import com.lenta.bp10.features.good_information.excise_alco.StampCollector
 import com.lenta.bp10.features.good_information.sets.ComponentItem
-import com.lenta.bp10.models.repositories.IWriteOffTaskManager
-import com.lenta.bp10.models.task.TaskExciseStamp
-import com.lenta.bp10.platform.navigation.IScreenNavigator
-import com.lenta.bp10.requests.network.ExciseStampNetRequest
-import com.lenta.bp10.requests.network.ExciseStampParams
-import com.lenta.bp10.requests.network.ExciseStampRestInfo
-import com.lenta.shared.account.ISessionInfo
-import com.lenta.shared.exception.Failure
-import com.lenta.shared.models.core.ProductInfo
-import com.lenta.shared.platform.viewmodel.CoreViewModel
-import com.lenta.shared.utilities.Logg
-import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
-import com.lenta.shared.utilities.extentions.map
-import com.lenta.shared.utilities.extentions.toStringFormatted
-import com.lenta.shared.view.OnPositionClickListener
+import com.lenta.bp10.models.repositories.ITaskRepository
+import com.lenta.bp10.models.task.ProcessExciseAlcoProductService
+import com.lenta.bp10.models.task.TaskDescription
+import com.lenta.bp10.models.task.WriteOffReason
+import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class ComponentViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboardListener {
+class ComponentViewModel : BaseProductInfoViewModel() {
+
+    private lateinit var componentItem: ComponentItem
+
+    @Inject
+    lateinit var exciseAlcoDelegate: ExciseAlcoDelegate
+
+    private val processExciseAlcoProductService: ProcessExciseAlcoProductService by lazy {
+        processServiceManager.getWriteOffTask()!!.processExciseAlcoProduct(productInfo.value!!)!!
+    }
+
+    private val stampCollector: StampCollector by lazy {
+        StampCollector(processExciseAlcoProductService, count)
+    }
+
+    init {
+        viewModelScope.launch {
+            exciseAlcoDelegate.init(
+                    viewModelScope = this@ComponentViewModel::viewModelScope,
+                    handleNewStamp = this@ComponentViewModel::handleNewStamp,
+                    tkNumber = getTaskDescription().tkNumber,
+                    materialNumber = productInfo.value!!.materialNumber
+            )
+        }
+
+    }
+
+    fun setComponentItem(componentItem: ComponentItem) {
+        this.componentItem = componentItem
+    }
+
+
+    override fun handleProductSearchResult(scanInfoResult: ScanInfoResult?): Boolean {
+        //not used search product for this screen
+        return true
+
+    }
+
+    override fun getTaskDescription(): TaskDescription {
+        return processServiceManager.getWriteOffTask()!!.taskDescription
+    }
+
+    override fun getTaskRepo(): ITaskRepository {
+        return processServiceManager.getWriteOffTask()!!.taskRepository
+    }
+
+    override fun getProcessTotalCount(): Double {
+        return processExciseAlcoProductService.getTotalCount()
+    }
+
+    override fun onClickAdd() {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun onClickApply() {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun onBackPressed() {
+    }
+
+    override fun onScanResult(data: String) {
+        if (stampCollector.prepare(stampCode = data)) {
+            exciseAlcoDelegate.searchExciseStamp(data)
+        } else {
+            screenNavigator.openAlertDoubleScanStamp()
+        }
+    }
+
+    override fun getReason(): WriteOffReason {
+        getTaskDescription().moveTypes.let { moveTypes ->
+            return moveTypes.filter { filterReason(it.code) }
+                    .getOrElse((selectedPosition.value ?: -1)) { WriteOffReason.empty }
+        }
+    }
+
+    private fun handleNewStamp(isBadStamp: Boolean) {
+        if (!stampCollector.add(
+                        materialNumber = productInfo.value!!.materialNumber,
+                        setMaterialNumber = "",
+                        writeOffReason = getSelectedReason().code,
+                        isBadStamp = isBadStamp
+                )) {
+            screenNavigator.openAlertDoubleScanStamp()
+        }
+    }
+
+    fun onClickRollBack() {
+        stampCollector.rollback()
+    }
+
+    override fun filterReason(code: String): Boolean {
+        return code == componentItem.writeOffReason.code
+    }
+
+
+}
+
+
+/*class ComponentViewModelDeprecated : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboardListener {
 
     @Inject
     lateinit var screenNavigator: IScreenNavigator
@@ -35,39 +126,13 @@ class ComponentViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftK
     @Inject
     lateinit var sessionInfo: ISessionInfo
 
-    val limitExceeded: MutableLiveData<String> = MutableLiveData()
-    val spinnerEnabled: MutableLiveData<Boolean> = MutableLiveData(false)
-    val productInfo: MutableLiveData<ProductInfo> = MutableLiveData()
-    val componentItem: MutableLiveData<ComponentItem> = MutableLiveData()
-    val writeOffReasonTitles: MutableLiveData<List<String>> = MutableLiveData()
-    val selectedPosition: MutableLiveData<Int> = componentItem.map { it!!.selectedPosition }
-    val count: MutableLiveData<String> = MutableLiveData("0")
-    val countValue: MutableLiveData<Double> = count.map { it?.toDoubleOrNull() }
-    val totalCount: MutableLiveData<Double> = countValue.map {
-        (it
-                ?: 0.0) + processServiceManager.getWriteOffTask()!!.taskRepository.getExciseStamps()
-                .findExciseStampsOfProduct(productInfo.value!!).size
-    }
-    val totalCountWithUom: MutableLiveData<String> = totalCount.map { "${it.toStringFormatted()} из ${(componentItem.value!!.menge.toDouble() * componentItem.value!!.countSets).toStringFormatted()}" }
-    val suffix: MutableLiveData<String> = MutableLiveData()
-    val exciseStampCode: MutableLiveData<String> = MutableLiveData()
-    private val exciseStamp = mutableListOf<TaskExciseStamp>()
+    @Inject
+    lateinit var exciseAlcoDelegate: ExciseAlcoDelegate
 
-    val enabledButton: MutableLiveData<Boolean> = countValue.map {
-        it!! > 0.0
+    private val stampCollector: StampCollector by lazy {
+        StampCollector(processServiceManager.getWriteOffTask()!!.processExciseAlcoProduct(productInfo.value!!)!!, count)
     }
 
-    fun setProductInfo(productInfo: ProductInfo) {
-        this.productInfo.value = productInfo
-    }
-
-    fun setComponentItem(componentItem: ComponentItem) {
-        this.componentItem.value = componentItem
-    }
-
-    fun setLimitExceeded(limitExceeded: String) {
-        this.limitExceeded.value = limitExceeded
-    }
 
     init {
         viewModelScope.launch {
@@ -75,6 +140,13 @@ class ComponentViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftK
                 writeOffReasonTitles.value = writeOffTask.taskDescription.moveTypes.map { it.name }
             }
             suffix.value = productInfo.value?.uom?.name
+
+            *//*exciseAlcoDelegate.init(
+                    viewModelScope = this@ComponentViewModelDeprecated::viewModelScope,
+                    handleNewStamp = this@ComponentViewModelDeprecated::handleNewStamp,
+                    tkNumber = processServiceManager.getWriteOffTask()!!.taskDescription.tkNumber,
+                    materialNumber = productInfo.value!!.materialNumber
+            )*//*
         }
     }
 
@@ -138,6 +210,18 @@ class ComponentViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftK
         }
     }
 
+    *//*private fun handleNewStamp(isBadStamp: Boolean) {
+        count.value = (count.value!!.toInt() + 1).toString()
+        exciseStamp.add(TaskExciseStamp(
+                materialNumber = productInfo.value!!.materialNumber,
+                code = exciseStamp.setMaterialNumber = componentItem.value!!.setMaterialNumber,
+                writeOffReason = componentItem.value!!.writeOffReason.code,
+                isBadStamp = isBadStamp
+        ))
+
+
+    }*//*
+
     fun addExciseStamp() {
         count.value = (count.value!!.toInt() + 1).toString()
         exciseStamp.add(TaskExciseStamp(
@@ -159,4 +243,4 @@ class ComponentViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftK
         searchExciseStamp()
     }
 
-}
+}*/
