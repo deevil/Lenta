@@ -136,9 +136,14 @@ class ScreenNavigator(
         }
     }
 
-    override fun openComponentSetScreen(productInfo: ProductInfo, componentItem: ComponentItem) {
+    override fun openComponentSetScreen(productInfo: ProductInfo, componentItem: ComponentItem, mengeTotalCount: Double) {
         runOrPostpone {
-            getFragmentStack()?.push(ComponentFragment.create(productInfo, componentItem))
+            getFragmentStack()?.push(ComponentFragment.create(
+                    productInfo = productInfo,
+                    componentItem = componentItem,
+                    mengeTotalCount = mengeTotalCount
+            )
+            )
         }
     }
 
@@ -202,7 +207,6 @@ class ScreenNavigator(
     }
 
 
-
     override fun openNotPossibleSaveNegativeQuantityScreen() {
         openAlertScreen(
                 message = context.getString(R.string.cannot_save_negative_quantity),
@@ -238,6 +242,13 @@ class ScreenNavigator(
         openInfoScreen(context.getString(R.string.product_not_set))
     }
 
+    override fun openStampsCountAlreadyScannedScreen() {
+        openAlertScreen(
+                message = context.getString(R.string.marks_comp_already_scanned),
+                iconRes = R.drawable.is_warning_yellow,
+                pageNumber = "96"
+        )
+    }
 }
 
 interface IScreenNavigator : ICoreNavigator {
@@ -258,7 +269,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openSetsInfoScreen(productInfo: ProductInfo)
     fun openGoodsReasonsScreen(productInfo: ProductInfo)
     fun openSuccessPrintMessage()
-    fun openComponentSetScreen(productInfo: ProductInfo, componentItem: ComponentItem)
+    fun openComponentSetScreen(productInfo: ProductInfo, componentItem: ComponentItem, mengeTotalCount: Double)
     fun openDetectionSavedDataScreen()
     fun openRemoveLinesConfirmationScreen(taskDescription: String, count: Int, codeConfirmation: Int)
     fun openMatrixAlertScreen(matrixType: MatrixType, codeConfirmation: Int)
@@ -267,4 +278,5 @@ interface IScreenNavigator : ICoreNavigator {
     fun openSelectTypeCodeScreen(codeConfirmationForSap: Int, codeConfirmationForBarCode: Int)
     fun openAlertDoubleScanStamp()
     fun openProductNotSetAlertScreen()
+    fun openStampsCountAlreadyScannedScreen()
 }

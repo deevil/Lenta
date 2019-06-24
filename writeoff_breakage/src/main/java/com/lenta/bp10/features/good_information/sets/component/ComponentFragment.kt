@@ -11,17 +11,21 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.utilities.extentions.provideViewModel
 import com.lenta.shared.utilities.extentions.setVisible
+import com.lenta.shared.utilities.state.state
 
 class ComponentFragment : ExciseAlcoInfoFragment() {
 
-    private lateinit var componentItem: ComponentItem
+    private var componentItem by state<ComponentItem?>(null)
+    private var mengeTotalCount by state<Double?>(null)
+
     private var componentViewModel: ComponentViewModel? = null
 
     companion object {
-        fun create(productInfo: ProductInfo, componentItem: ComponentItem): ComponentFragment {
+        fun create(productInfo: ProductInfo, componentItem: ComponentItem, mengeTotalCount: Double): ComponentFragment {
             ComponentFragment().let {
                 it.productInfo = productInfo
                 it.componentItem = componentItem
+                it.mengeTotalCount = mengeTotalCount
                 return it
             }
         }
@@ -32,8 +36,17 @@ class ComponentFragment : ExciseAlcoInfoFragment() {
     override fun getViewModel(): ComponentViewModel {
         provideViewModel(ComponentViewModel::class.java).let { vm ->
             getAppComponent()?.inject(vm)
-            vm.setProductInfo(productInfo!!)
-            vm.setComponentItem(componentItem)
+            productInfo?.let {
+                vm.setProductInfo(it)
+            }
+            componentItem?.let {
+                vm.setComponentItem(it)
+            }
+
+            mengeTotalCount?.let {
+                vm.setMengeTotalCount(it)
+            }
+
             componentViewModel = vm
             return vm
         }

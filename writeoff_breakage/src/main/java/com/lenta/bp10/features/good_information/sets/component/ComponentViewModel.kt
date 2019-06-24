@@ -19,6 +19,8 @@ import javax.inject.Inject
 class ComponentViewModel : BaseProductInfoViewModel() {
 
 
+    private var mengeTotalCount: Double = 0.0
+
     private lateinit var componentItem: ComponentItem
 
     @Inject
@@ -82,6 +84,10 @@ class ComponentViewModel : BaseProductInfoViewModel() {
 
 
     override fun onScanResult(data: String) {
+        if (stampsCollectorManager.getComponentsStampCollector()!!.getCount(productInfo.value!!.materialNumber) >= mengeTotalCount) {
+            screenNavigator.openStampsCountAlreadyScannedScreen()
+            return
+        }
         if (stampsCollectorManager.getComponentsStampCollector()!!.prepare(stampCode = data)) {
             exciseAlcoDelegate.searchExciseStamp(data)
         } else {
@@ -117,6 +123,10 @@ class ComponentViewModel : BaseProductInfoViewModel() {
 
     override fun initCountLiveData(): MutableLiveData<String> {
         return stampsCollectorManager.getComponentsStampCollector()!!.observeCount().map { it.toStringFormatted() }
+    }
+
+    fun setMengeTotalCount(mengeTotalCount: Double) {
+        this.mengeTotalCount = mengeTotalCount
     }
 
 }

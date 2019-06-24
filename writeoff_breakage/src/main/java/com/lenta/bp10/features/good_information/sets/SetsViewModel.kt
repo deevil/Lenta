@@ -157,10 +157,13 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
             componentsInfo.forEachIndexed { index, componentInfo ->
                 if (componentInfo.materialNumber == info.materialNumber) {
                     if (getCountExciseStampsForComponent(componentInfo) == components[index].menge * totalCount.value!!) {
-                        screenNavigator.openAlertScreen(Failure.MarksComponentAlreadyScanned, pageNumber = "96")
+                        screenNavigator.openStampsCountAlreadyScannedScreen()
                         return true
                     } else {
-                        screenNavigator.openComponentSetScreen(componentInfo, componentsLiveData.value!![index])
+                        screenNavigator.openComponentSetScreen(
+                                componentInfo,
+                                componentsLiveData.value!![index],
+                                componentsLiveData.value!![index].mengeTotalCount)
                         return true
                     }
                 }
@@ -172,9 +175,12 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
 
     }
 
+
     private fun updateComponents() {
         var countExciseStampAll = 0.0
         var mengeTotalCount = 0.0
+
+
         componentsLiveData.postValue(
                 mutableListOf<ComponentItem>().apply {
                     componentsInfo.forEachIndexed { index, compInfo ->
@@ -190,14 +196,18 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
                                 countSets = totalCount.value!!,
                                 selectedPosition = selectedPosition.value!!,
                                 writeOffReason = getReason(),
-                                setMaterialNumber = productInfo.value!!.materialNumber)
+                                setMaterialNumber = productInfo.value!!.materialNumber,
+                                mengeTotalCount = mengeTotalCount)
                         )
 
                         countExciseStampAll += countExciseStampForComponent
                     }
                 }
         )
+
+
         enabledApplyButton.value = countExciseStampAll == mengeTotalCount && countValue.value != 0.0
+
         componentsSelectionsHelper.clearPositions()
     }
 
@@ -244,7 +254,7 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
             componentsSelectionsHelper.selectedPositions.value?.map { position ->
                 componentsInfo[position]
             }?.let {
-                writeOffTask.deleteProducts(it)
+                stampsCollectorManager.clearAllStampsCollectors()
             }
             updateComponents()
         }
@@ -271,7 +281,9 @@ data class ComponentItem(
         val countSets: Double,
         val selectedPosition: Int,
         val writeOffReason: WriteOffReason,
-        val setMaterialNumber: String
+        val setMaterialNumber: String,
+        val mengeTotalCount: Double
+
 ) : Evenable {
     override fun isEven() = even
 

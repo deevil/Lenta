@@ -23,9 +23,6 @@ class CoreFailureInterpreter
 
             Failure.NotValidEnterNumber -> FailureDescription(message = context.getString(R.string.not_valid_format_ean))
 
-            Failure.MarksComponentAlreadyScanned -> FailureDescription(message = context.getString(R.string.marks_comp_already_scanned),
-                    iconRes = R.drawable.is_warning_yellow)
-
             is Failure.SapError -> FailureDescription(message = failure.message)
 
             else -> FailureDescription(message = context.getString(R.string.error_unknown))

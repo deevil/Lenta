@@ -23,9 +23,7 @@ class StampsCollectorManager @Inject constructor() {
 
     fun clearAllStampsCollectors() {
         setsStampCollector?.clear()
-        setsStampCollector = null
         componentsStampCollector?.clear()
-        componentsStampCollector = null
 
     }
 
