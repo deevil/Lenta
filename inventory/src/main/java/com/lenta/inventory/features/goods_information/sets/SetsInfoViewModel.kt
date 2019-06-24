@@ -50,6 +50,9 @@ class SetsInfoViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKe
 
     val totalCountWithUom: MutableLiveData<String> = totalCount.map { "${it.toStringFormatted()} ${productInfo.value!!.uom.name}" }
 
+    val enabledApplyButton: MutableLiveData<Boolean> = MutableLiveData(true)
+    val enabledDetailsCleanBtn: MutableLiveData<Boolean> = MutableLiveData(true)
+
     fun setProductInfo(productInfo: ProductInfo) {
         this.productInfo.value = productInfo
     }
@@ -73,6 +76,10 @@ class SetsInfoViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKe
     fun onClickApply() {
         //todo
         screenNavigator.openAlertScreen("onClickApply")
+    }
+
+    fun onClickButton3() {
+        if (selectedPage.value == 0) onClickDetails() else onClickClean()
     }
 
     fun onClickDetails() {

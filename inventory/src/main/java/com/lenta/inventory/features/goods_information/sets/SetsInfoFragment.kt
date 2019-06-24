@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.Observer
 import com.lenta.inventory.BR
 import com.lenta.inventory.R
 import com.lenta.inventory.databinding.FragmentSetsInfoBinding
@@ -24,6 +25,7 @@ import com.lenta.shared.utilities.databinding.DataBindingAdapter
 import com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig
 import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.databinding.ViewPagerSettings
+import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.generateScreenNumber
 import com.lenta.shared.utilities.extentions.provideViewModel
 import com.lenta.shared.utilities.state.state
@@ -36,7 +38,7 @@ class SetsInfoFragment : CoreFragment<FragmentSetsInfoBinding, SetsInfoViewModel
 
     private var productInfo by state<ProductInfo?>(null)
 
-    var vpTabPosition: Int = 0
+    //var vpTabPosition: Int = 0
 
     companion object {
         fun create(productInfo: ProductInfo): SetsInfoFragment {
@@ -73,27 +75,28 @@ class SetsInfoFragment : CoreFragment<FragmentSetsInfoBinding, SetsInfoViewModel
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
         bottomToolbarUiModel.cleanAll()
 
-        if (vpTabPosition == 0) {
-            bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.details)
-            bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.missing)
-        }
-        else {
-            bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.clean)
-        }
-
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.apply)
 
-        /**viewLifecycleOwner.let {
+        viewLifecycleOwner.apply {
             connectLiveData(vm.enabledApplyButton, bottomToolbarUiModel.uiModelButton4.enabled)
             connectLiveData(vm.enabledApplyButton, bottomToolbarUiModel.uiModelButton5.enabled)
             connectLiveData(vm.enabledDetailsCleanBtn, bottomToolbarUiModel.uiModelButton3.enabled)
-        }*/
+            vm.selectedPage.observe(this, Observer { pos ->
+                if (pos == 0) {
+                    bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.details)
+                    bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.missing)
+                } else {
+                    bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.clean)
+                    bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.missing, visible = false)
+                }
+            })
+        }
     }
 
     override fun onToolbarButtonClick(view: View) {
         when (view.id) {
-            R.id.b_3 -> if (vpTabPosition == 0) vm.onClickDetails() else vm.onClickClean()
+            R.id.b_3 -> vm.onClickButton3()
             R.id.b_4 -> vm.onClickMissing()
             R.id.b_5 -> vm.onClickApply()
         }
@@ -118,28 +121,6 @@ class SetsInfoFragment : CoreFragment<FragmentSetsInfoBinding, SetsInfoViewModel
                         return it.root
                     }
         }
-
-        /**DataBindingUtil
-                .inflate<LayoutSetsInfoQuantityBinding>(LayoutInflater.from(container.context),
-                        R.layout.layout_sets_info_quantity,
-                        container,
-                        false).let {
-                    it.lifecycleOwner = viewLifecycleOwner
-                    it.vm = vm
-                    return it.root
-                }*/
-
-        /**if (position ==0) {
-            DataBindingUtil
-                    .inflate<LayoutSetsQuantityBinding>(LayoutInflater.from(container.context),
-                            R.layout.layout_sets_quantity,
-                            container,
-                            false).let {
-                        it.lifecycleOwner = viewLifecycleOwner
-                        it.vm = vm
-                        return it.root
-                    }
-        }*/
 
         DataBindingUtil
                 .inflate<LayoutSetsInfoComponentsBinding>(LayoutInflater.from(container.context),
@@ -189,8 +170,6 @@ class SetsInfoFragment : CoreFragment<FragmentSetsInfoBinding, SetsInfoViewModel
 
     override fun onPageSelected(position: Int) {
         vm.onPageSelected(position)
-        vpTabPosition = position
-        setupBottomToolBar(this.getBottomToolBarUIModel()!!)
     }
 
     override fun onResume() {
