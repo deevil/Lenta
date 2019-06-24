@@ -38,8 +38,6 @@ class SetsInfoFragment : CoreFragment<FragmentSetsInfoBinding, SetsInfoViewModel
 
     private var productInfo by state<ProductInfo?>(null)
 
-    //var vpTabPosition: Int = 0
-
     companion object {
         fun create(productInfo: ProductInfo): SetsInfoFragment {
             SetsInfoFragment().let {
@@ -82,7 +80,7 @@ class SetsInfoFragment : CoreFragment<FragmentSetsInfoBinding, SetsInfoViewModel
             connectLiveData(vm.enabledApplyButton, bottomToolbarUiModel.uiModelButton4.enabled)
             connectLiveData(vm.enabledApplyButton, bottomToolbarUiModel.uiModelButton5.enabled)
             connectLiveData(vm.enabledDetailsCleanBtn, bottomToolbarUiModel.uiModelButton3.enabled)
-            vm.selectedPage.observe(this, Observer { pos ->
+            vm.selectedPage.observe(viewLifecycleOwner, Observer { pos ->
                 if (pos == 0) {
                     bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.details)
                     bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.missing)
