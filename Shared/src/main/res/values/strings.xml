@@ -55,6 +55,7 @@
     <string name="number">№</string>
     <string name="good">Товар</string>
     <string name="quantity">Количество</string>
+    <string name="components">Компоненты</string>
     <string name="total">Итого</string>
     <string name="not_selected">Не выбрано</string>
     <string name="tk">TK</string>
@@ -93,5 +94,8 @@
     <string name="another_market_stamp">Отсканированная марка не обнаружена на остатках магазина, отложите товар. Добавить эту марку в проблемные?</string>
     <string name="another_product_stamp">Марка принадлежит товару «%s», отложите бутылку и проведите расследование</string>
     <string name="writeoff_to_production_confirmation">Товар не используется в производстве, точно хотите добавить?</string>
+    <string name="goods_info">Информация о товаре</string>
+    <string name="set_info">Информация о наборе</string>
+    <string name="set_component">Компонент набора</string>
 
 </resources>
