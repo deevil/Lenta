@@ -41,29 +41,41 @@ abstract class BaseProductInfoViewModel : CoreViewModel(), OnPositionClickListen
 
     val selectedPosition: MutableLiveData<Int> = MutableLiveData(0)
 
-    val count: MutableLiveData<String> = MutableLiveData("")
+    val count: MutableLiveData<String> by lazy { initCountLiveData() }
 
     val suffix: MutableLiveData<String> = MutableLiveData()
 
-    protected val countValue: MutableLiveData<Double> = count.map { it?.toDoubleOrNull() ?: 0.0 }
-
-    protected val totalCount: MutableLiveData<Double> = countValue.map {
-        (it ?: 0.0) + getProcessTotalCount()
+    protected val countValue: MutableLiveData<Double> by lazy {
+        count.map {
+            it?.toDoubleOrNull() ?: 0.0
+        }
     }
 
-    val enabledDetailsButton: MutableLiveData<Boolean> = totalCount.map {
-        isEnabledDetailsButton(getProcessTotalCount())
+    val totalCount: MutableLiveData<Double> by lazy {
+        countValue.map {
+            (it ?: 0.0) + getProcessTotalCount()
+        }
     }
 
-    val totalCountWithUom: MutableLiveData<String> = totalCount.map { getCountWithUom(count = it, productInfo = productInfo) }
+    val enabledDetailsButton: MutableLiveData<Boolean>  by lazy {
+        totalCount.map {
+            isEnabledDetailsButton(getProcessTotalCount())
+        }
+    }
 
-    val enabledApplyButton: MutableLiveData<Boolean> = countValue.combineLatest(selectedPosition).map {
-        isEnabledApplyButtons(
-                count = it?.first,
-                productInfo = productInfo.value,
-                reason = getReason(),
-                taskRepository = getTaskRepo()
-        )
+    val totalCountWithUom: MutableLiveData<String> by lazy {
+        totalCount.map { getCountWithUom(count = it, productInfo = productInfo) }
+    }
+
+    val enabledApplyButton: MutableLiveData<Boolean> by lazy {
+        countValue.combineLatest(selectedPosition).map {
+            isEnabledApplyButtons(
+                    count = it?.first,
+                    productInfo = productInfo.value,
+                    reason = getReason(),
+                    taskRepository = getTaskRepo()
+            )
+        }
     }
 
 
@@ -150,6 +162,8 @@ abstract class BaseProductInfoViewModel : CoreViewModel(), OnPositionClickListen
     abstract fun onClickAdd()
 
     abstract fun onClickApply()
+
+    abstract fun initCountLiveData(): MutableLiveData<String>
 
     fun onClickDetails() {
         productInfo.value?.let {

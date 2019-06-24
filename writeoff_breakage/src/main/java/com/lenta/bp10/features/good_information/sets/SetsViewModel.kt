@@ -3,10 +3,10 @@ package com.lenta.bp10.features.good_information.sets
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp10.features.goods_list.SearchProductDelegate
+import com.lenta.bp10.models.StampsCollectorManager
 import com.lenta.bp10.models.repositories.IWriteOffTaskManager
 import com.lenta.bp10.models.repositories.getTotalCountForProduct
 import com.lenta.bp10.models.task.ProcessExciseAlcoProductService
-import com.lenta.bp10.models.task.TaskExciseStamp
 import com.lenta.bp10.models.task.WriteOffReason
 import com.lenta.bp10.platform.navigation.IScreenNavigator
 import com.lenta.shared.exception.Failure
@@ -46,6 +46,9 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
     @Inject
     lateinit var searchProductDelegate: SearchProductDelegate
 
+    @Inject
+    lateinit var stampsCollectorManager: StampsCollectorManager
+
 
     private val processExciseAlcoProductService: ProcessExciseAlcoProductService by lazy {
         processServiceManager.getWriteOffTask()!!.processExciseAlcoProduct(productInfo.value!!)!!
@@ -65,7 +68,7 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
     }
     val totalCountWithUom: MutableLiveData<String> = totalCount.map { "${it.toStringFormatted()} ${productInfo.value!!.uom.name}" }
     val suffix: MutableLiveData<String> = MutableLiveData()
-    val componentsItem: MutableLiveData<List<ComponentItem>> = MutableLiveData()
+    val componentsLiveData: MutableLiveData<List<ComponentItem>> = MutableLiveData()
     val componentsSelectionsHelper = SelectionItemsHelper()
     val eanCode: MutableLiveData<String> = MutableLiveData()
     val enabledApplyButton: MutableLiveData<Boolean> = MutableLiveData(false)
@@ -88,6 +91,9 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
 
     init {
         viewModelScope.launch {
+
+            stampsCollectorManager.newStampCollector(processExciseAlcoProductService)
+
             processServiceManager.getWriteOffTask()?.let { writeOffTask ->
                 writeOffReasonTitles.value = writeOffTask.taskDescription.moveTypes.map { it.name }
             }
@@ -125,13 +131,7 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
 
     private fun addSet() {
         countValue.value?.let {
-            processExciseAlcoProductService.add(getReason(), it, TaskExciseStamp(
-                    materialNumber = "",
-                    code = "",
-                    setMaterialNumber = "",
-                    writeOffReason = "",
-                    isBadStamp = false)
-            )
+            stampsCollectorManager.getSetsStampCollector()!!.processAllForSet(getReason(), countValue.value!!)
             count.value = ""
         }
         updateComponents()
@@ -160,7 +160,7 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
                         screenNavigator.openAlertScreen(Failure.MarksComponentAlreadyScanned, pageNumber = "96")
                         return true
                     } else {
-                        screenNavigator.openComponentSetScreen(componentInfo, componentsItem.value!![index])
+                        screenNavigator.openComponentSetScreen(componentInfo, componentsLiveData.value!![index])
                         return true
                     }
                 }
@@ -175,11 +175,11 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
     private fun updateComponents() {
         var countExciseStampAll = 0.0
         var mengeTotalCount = 0.0
-        componentsItem.postValue(
+        componentsLiveData.postValue(
                 mutableListOf<ComponentItem>().apply {
                     componentsInfo.forEachIndexed { index, compInfo ->
                         val countExciseStampForComponent = getCountExciseStampsForComponent(compInfo)
-                        mengeTotalCount = components[index].menge * totalCount.value!!
+                        mengeTotalCount = components[index].menge * countValue.value!!
                         add(ComponentItem(
                                 number = index + 1,
                                 name = "${compInfo.materialNumber.substring(compInfo.materialNumber.length - 6)} ${compInfo.description}",
@@ -202,14 +202,7 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
     }
 
     private fun getCountExciseStampsForComponent(componentInfo: ProductInfo): Double {
-
-        return processServiceManager
-                .getWriteOffTask()!!
-                .taskRepository
-                .getExciseStamps()
-                .findExciseStampsOfProduct(componentInfo)
-                .size
-                .toDouble()
+        return stampsCollectorManager.getSetsStampCollector()!!.getCount(componentInfo.materialNumber)
     }
 
     override fun onClickPosition(position: Int) {

@@ -1,31 +1,34 @@
 package com.lenta.bp10.features.good_information.sets.component
 
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp10.features.good_information.base.BaseProductInfoViewModel
 import com.lenta.bp10.features.good_information.excise_alco.ExciseAlcoDelegate
-import com.lenta.bp10.features.good_information.excise_alco.StampCollector
 import com.lenta.bp10.features.good_information.sets.ComponentItem
+import com.lenta.bp10.models.StampsCollectorManager
 import com.lenta.bp10.models.repositories.ITaskRepository
 import com.lenta.bp10.models.task.ProcessExciseAlcoProductService
 import com.lenta.bp10.models.task.TaskDescription
 import com.lenta.bp10.models.task.WriteOffReason
 import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
+import com.lenta.shared.utilities.extentions.map
+import com.lenta.shared.utilities.extentions.toStringFormatted
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class ComponentViewModel : BaseProductInfoViewModel() {
+
 
     private lateinit var componentItem: ComponentItem
 
     @Inject
     lateinit var exciseAlcoDelegate: ExciseAlcoDelegate
 
+    @Inject
+    lateinit var stampsCollectorManager: StampsCollectorManager
+
     private val processExciseAlcoProductService: ProcessExciseAlcoProductService by lazy {
         processServiceManager.getWriteOffTask()!!.processExciseAlcoProduct(productInfo.value!!)!!
-    }
-
-    private val stampCollector: StampCollector by lazy {
-        StampCollector(processExciseAlcoProductService, count)
     }
 
     init {
@@ -36,6 +39,7 @@ class ComponentViewModel : BaseProductInfoViewModel() {
                     tkNumber = getTaskDescription().tkNumber,
                     materialNumber = productInfo.value!!.materialNumber
             )
+            stampsCollectorManager.clearComponentsStampCollector()
         }
 
     }
@@ -64,18 +68,21 @@ class ComponentViewModel : BaseProductInfoViewModel() {
     }
 
     override fun onClickAdd() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        stampsCollectorManager.saveStampsToSet()
     }
 
     override fun onClickApply() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        onClickAdd()
+        screenNavigator.goBack()
     }
 
     override fun onBackPressed() {
+        // not used
     }
 
+
     override fun onScanResult(data: String) {
-        if (stampCollector.prepare(stampCode = data)) {
+        if (stampsCollectorManager.getComponentsStampCollector()!!.prepare(stampCode = data)) {
             exciseAlcoDelegate.searchExciseStamp(data)
         } else {
             screenNavigator.openAlertDoubleScanStamp()
@@ -90,9 +97,9 @@ class ComponentViewModel : BaseProductInfoViewModel() {
     }
 
     private fun handleNewStamp(isBadStamp: Boolean) {
-        if (!stampCollector.add(
+        if (!stampsCollectorManager.add(
                         materialNumber = productInfo.value!!.materialNumber,
-                        setMaterialNumber = "",
+                        setMaterialNumber = componentItem.setMaterialNumber,
                         writeOffReason = getSelectedReason().code,
                         isBadStamp = isBadStamp
                 )) {
@@ -101,13 +108,16 @@ class ComponentViewModel : BaseProductInfoViewModel() {
     }
 
     fun onClickRollBack() {
-        stampCollector.rollback()
+        stampsCollectorManager.getComponentsStampCollector()!!.rollback()
     }
 
     override fun filterReason(code: String): Boolean {
         return code == componentItem.writeOffReason.code
     }
 
+    override fun initCountLiveData(): MutableLiveData<String> {
+        return stampsCollectorManager.getComponentsStampCollector()!!.observeCount().map { it.toStringFormatted() }
+    }
 
 }
 

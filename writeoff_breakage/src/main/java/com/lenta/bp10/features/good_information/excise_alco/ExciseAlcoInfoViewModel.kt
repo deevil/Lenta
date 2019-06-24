@@ -1,12 +1,16 @@
 package com.lenta.bp10.features.good_information.excise_alco
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp10.features.good_information.base.BaseProductInfoViewModel
+import com.lenta.bp10.models.StampCollector
 import com.lenta.bp10.models.repositories.ITaskRepository
 import com.lenta.bp10.models.task.ProcessExciseAlcoProductService
 import com.lenta.bp10.models.task.TaskDescription
 import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
 import com.lenta.shared.utilities.extentions.map
+import com.lenta.shared.utilities.extentions.toStringFormatted
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -15,14 +19,16 @@ class ExciseAlcoInfoViewModel : BaseProductInfoViewModel() {
     @Inject
     lateinit var exciseAlcoDelegate: ExciseAlcoDelegate
 
-    val rollBackEnabled = countValue.map { it ?: 0.0 > 0.0 }
+    val rollBackEnabled: LiveData<Boolean> by lazy {
+        countValue.map { it ?: 0.0 > 0.0 }
+    }
 
     private val processExciseAlcoProductService: ProcessExciseAlcoProductService by lazy {
         processServiceManager.getWriteOffTask()!!.processExciseAlcoProduct(productInfo.value!!)!!
     }
 
     private val stampCollector: StampCollector by lazy {
-        StampCollector(processExciseAlcoProductService, count)
+        StampCollector(processExciseAlcoProductService)
     }
 
     init {
@@ -125,6 +131,10 @@ class ExciseAlcoInfoViewModel : BaseProductInfoViewModel() {
         }
         onClickApply()
         return false
+    }
+
+    override fun initCountLiveData(): MutableLiveData<String> {
+        return stampCollector.observeCount().map { it.toStringFormatted() }
     }
 
     fun onClickRollBack() {

@@ -1,5 +1,6 @@
 package com.lenta.bp10.features.good_information.general
 
+import androidx.lifecycle.MutableLiveData
 import com.lenta.bp10.features.good_information.base.BaseProductInfoViewModel
 import com.lenta.bp10.models.repositories.ITaskRepository
 import com.lenta.bp10.models.task.ProcessGeneralProductService
@@ -76,6 +77,10 @@ class GoodInfoViewModel : BaseProductInfoViewModel() {
         if (addGood()) {
             searchProductDelegate.searchCode(code = data, fromScan = true)
         }
+    }
+
+    override fun initCountLiveData(): MutableLiveData<String> {
+        return MutableLiveData()
     }
 
 }

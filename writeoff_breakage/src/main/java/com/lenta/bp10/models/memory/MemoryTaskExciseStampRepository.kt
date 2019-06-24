@@ -52,13 +52,12 @@ class MemoryTaskExciseStampRepository(private val stamps: ArrayList<TaskExciseSt
     }
 
     override fun deleteExciseStampsForProduct(product: ProductInfo): Boolean {
-
-        (stamps.map { it.materialNumber }.filterIndexed { index, materialNumber ->
-            if (materialNumber == product.materialNumber) {
-                stamps.removeAt(index)
-                return true
+        (stamps.map { it.copy(writeOffReason = it.writeOffReason) }.filter { stamp ->
+            if (stamp.materialNumber == product.materialNumber || (product.isSet && stamp.setMaterialNumber == product.materialNumber)) {
+                stamps.remove(stamp)
+                return@filter true
             }
-            return false
+            return@filter false
 
         }).let {
             return it.isNotEmpty()
