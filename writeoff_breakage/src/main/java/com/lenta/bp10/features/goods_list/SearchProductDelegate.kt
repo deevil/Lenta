@@ -46,7 +46,21 @@ class SearchProductDelegate @Inject constructor(
 
     private var codeWith12Digits: String? = null
 
+    fun copy(): SearchProductDelegate {
+        val searchProductDelegate = SearchProductDelegate(
+                hyperHive,
+                screenNavigator,
+                scanInfoRequest,
+                processServiceManager,
+                sessionInfo,
+                permissionToWriteoffNetRequest
+        )
+        searchProductDelegate.init(viewModelScope, scanResultHandler)
+        return searchProductDelegate
+    }
+
     fun init(viewModelScope: () -> CoroutineScope, scanResultHandler: ((ScanInfoResult?) -> Boolean)? = null) {
+        Logg.d { "viewModelScope hash: ${viewModelScope.hashCode()}" }
         this.viewModelScope = viewModelScope
         this.scanResultHandler = scanResultHandler
     }

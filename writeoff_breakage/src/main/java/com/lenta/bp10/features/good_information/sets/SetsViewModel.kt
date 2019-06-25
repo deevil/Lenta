@@ -16,6 +16,7 @@ import com.lenta.shared.fmp.resources.slow.ZmpUtz46V001
 import com.lenta.shared.models.core.ProductInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
+import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.Evenable
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
@@ -45,7 +46,7 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
     lateinit var searchComponentDelegate: SearchProductDelegate
 
     @Inject
-    lateinit var searchProductDelegate: SearchProductDelegate
+    lateinit var searchSetDelegate: SearchProductDelegate
 
     @Inject
     lateinit var stampsCollectorManager: StampsCollectorManager
@@ -139,15 +140,21 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
                 writeOffReasonTitles.value = writeOffTask.taskDescription.moveTypes.map { it.name }
             }
 
-            searchComponentDelegate.init(viewModelScope = this@SetsViewModel::viewModelScope,
-                    scanResultHandler = this@SetsViewModel::handleComponentSearchResult)
 
-            searchProductDelegate.init(viewModelScope = this@SetsViewModel::viewModelScope,
-                    scanResultHandler = this@SetsViewModel::handleProductSearchSuccess)
+
+            searchSetDelegate.init(
+                    viewModelScope = this@SetsViewModel::viewModelScope,
+                    scanResultHandler = this@SetsViewModel::handleSetSearchResult
+            )
+
+            searchComponentDelegate.init(
+                    viewModelScope = this@SetsViewModel::viewModelScope,
+                    scanResultHandler = this@SetsViewModel::handleComponentSearchResult
+            )
 
             componentsDataList = zmpUtz46V001.getComponentsForSet(setProductInfo.value!!.materialNumber)
             componentsDataList.forEachIndexed { index, _ ->
-                searchComponentDelegate.searchCode(componentsDataList[index].matnr, fromScan = false, isBarCode = false)
+                searchComponentDelegate.copy().searchCode(componentsDataList[index].matnr, fromScan = false, isBarCode = false)
             }
             screenNavigator.hideProgress()
             suffix.value = setProductInfo.value?.uom?.name
@@ -202,16 +209,7 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
                 .getOrElse(selectedPosition.value ?: -1) { WriteOffReason.empty }
     }
 
-    private fun handleComponentSearchResult(scanInfoResult: ScanInfoResult?): Boolean {
-        scanInfoResult?.let {
-            components.add(it.productInfo)
-            updateComponents()
-        }
-
-        return true
-    }
-
-    private fun handleProductSearchSuccess(scanInfoResult: ScanInfoResult?): Boolean {
+    private fun handleSetSearchResult(scanInfoResult: ScanInfoResult?): Boolean {
         eanCode.value = ""
         scanInfoResult?.productInfo?.let { info ->
             stampsCollectorManager.clearComponentsStampCollector()
@@ -220,6 +218,16 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
 
         return true
 
+    }
+
+    private fun handleComponentSearchResult(scanInfoResult: ScanInfoResult?): Boolean {
+        Logg.d { "scanInfoResult: $scanInfoResult" }
+        scanInfoResult?.let {
+            components.add(it.productInfo)
+            updateComponents()
+        }
+
+        return true
     }
 
     private fun openComponentScreen(materialNumber: String) {
@@ -270,7 +278,7 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
                 screenNavigator.openAlertDoubleScanStamp()
             }
         } else {
-            searchProductDelegate.searchCode(code, fromScan = true)
+            searchSetDelegate.searchCode(code, fromScan = true)
         }
     }
 
