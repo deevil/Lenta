@@ -208,10 +208,7 @@ class ScreenNavigator(
 
 
     override fun openNotPossibleSaveNegativeQuantityScreen() {
-        openAlertScreen(
-                message = context.getString(R.string.cannot_save_negative_quantity),
-                iconRes = R.drawable.ic_info_pink,
-                textColor = ContextCompat.getColor(context, com.lenta.shared.R.color.color_text_dialogWarning))
+        openInfoScreen(message = context.getString(R.string.cannot_save_negative_quantity))
     }
 
     override fun openSelectTypeCodeScreen(codeConfirmationForSap: Int, codeConfirmationForBarCode: Int) {
