@@ -24,3 +24,17 @@ data class GoodsDetailsStorageItem(
     override fun isEven() = even
 
 }
+
+data class ComponentItem(
+        val number: Int,
+        val name: String,
+        val quantity: String,
+        val menge: String,
+        val even: Boolean,
+        val countSets: Double,
+        val selectedPosition: Int,
+        val setMaterialNumber: String
+) : Evenable {
+    override fun isEven() = even
+
+}

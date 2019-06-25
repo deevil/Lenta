@@ -15,13 +15,8 @@
     <string name="list_of_goods">Список товаров</string>
     <string name="counted">Посчитанные</string>
     <string name="filter">Фильтр</string>
-    <string name="quantity">Количество</string>
-    <string name="components">Компоненты</string>
     <string name="plan">План</string>
     <string name="enter_item_number_or_barcode">Введите SAP-код или штрихкод</string>
-    <string name="good_info">Информация о товаре</string>
-    <string name="set_info">Информация о наборе</string>
-    <string name="set_component">Компонент набора</string>
     <string name="write_off">Списание</string>
     <string name="remove_task_confirmation">По заданию \"%s\" будут удалены все непереданные данные</string>
     <string name="remove_lines_confirmation">Подтвердите удаление всех (%d) строк</string>
