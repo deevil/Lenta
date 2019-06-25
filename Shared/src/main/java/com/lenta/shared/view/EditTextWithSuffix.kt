@@ -25,6 +25,7 @@ class EditTextWithSuffix : AppCompatEditText {
             return
         }
         val suffixXPosition = textPaint.measureText(text!!.toString()).toInt() + paddingLeft
+        textPaint.color = currentTextColor
         c.drawText(suffix, Math.max(suffixXPosition.toFloat(), suffixPadding), baseline.toFloat(), textPaint)
     }
 
