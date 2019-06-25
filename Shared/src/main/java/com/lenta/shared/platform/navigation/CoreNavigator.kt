@@ -260,7 +260,7 @@ interface ICoreNavigator {
     fun goBack()
     fun finishApp()
     fun openAlertScreen(message: String, iconRes: Int = 0, textColor: Int? = null, pageNumber: String? = null)
-    fun openAlertScreen(failure: Failure, pageNumber: String = "?")
+    fun openAlertScreen(failure: Failure, pageNumber: String = "96")
     fun openSupportScreen()
     fun <Params> showProgress(useCase: UseCase<Any, Params>)
     fun showProgress(title: String)
