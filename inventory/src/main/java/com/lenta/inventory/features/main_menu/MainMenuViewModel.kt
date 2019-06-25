@@ -25,10 +25,7 @@ class MainMenuViewModel : CoreViewModel() {
 
     fun onClickWorkWithTask() {
         //TODO need to open next screen
-        screenNavigator.openSetsInfoScreen()
-        //screenNavigator.openGoodsInfoScreen()
-
-        //screenNavigator.openGoodsListScreen()
+        screenNavigator.openGoodsListScreen()
         //screenNavigator.openLoadingTaskSettingsScreen()
     }
 
