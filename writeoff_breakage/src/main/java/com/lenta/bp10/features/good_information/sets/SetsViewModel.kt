@@ -1,5 +1,6 @@
 package com.lenta.bp10.features.good_information.sets
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp10.features.goods_list.SearchProductDelegate
@@ -68,19 +69,54 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
     }
     val totalCountWithUom: MutableLiveData<String> = totalCount.map { "${it.toStringFormatted()} ${productInfo.value!!.uom.name}" }
     val suffix: MutableLiveData<String> = MutableLiveData()
-    val componentsLiveData: MutableLiveData<List<ComponentItem>> = MutableLiveData()
+    val componentsLiveData: LiveData<List<ComponentItem>> = countValue.map {
+        mutableListOf<ComponentItem>().apply {
+            componentsInfo.forEachIndexed { index, compInfo ->
+                val countExciseStampForComponent = getCountExciseStampsForComponent(compInfo)
+                val rightCount = components[index].menge * countValue.value!!
+                add(ComponentItem(
+                        number = index + 1,
+                        name = "${compInfo.materialNumber.substring(compInfo.materialNumber.length - 6)} ${compInfo.description}",
+                        quantity = "${countExciseStampForComponent.toStringFormatted()} из ${(rightCount).toStringFormatted()}",
+                        menge = components[index].menge.toString(),
+                        even = index % 2 == 0,
+                        countSets = totalCount.value!!,
+                        selectedPosition = selectedPosition.value!!,
+                        writeOffReason = getReason(),
+                        setMaterialNumber = productInfo.value!!.materialNumber,
+                        rightCount = rightCount,
+                        processedStampsCount = countExciseStampForComponent
+                )
+                )
+            }
+        }.toList()
+    }
     val componentsSelectionsHelper = SelectionItemsHelper()
     val eanCode: MutableLiveData<String> = MutableLiveData()
-    val enabledApplyButton: MutableLiveData<Boolean> = MutableLiveData(false)
+    val enabledApplyButton: LiveData<Boolean> = selectedPosition.combineLatest(componentsLiveData).map {
+
+        var totalProcessedStampsCount = 0.0
+        var totalRightStampsCount = 0.0
+
+        componentsLiveData.value?.let {
+            it.forEach { componentItem ->
+                totalProcessedStampsCount += componentItem.processedStampsCount
+                totalRightStampsCount += componentItem.rightCount
+            }
+        }
+
+        totalProcessedStampsCount == totalRightStampsCount && countValue.value != 0.0
+    }
 
     private lateinit var components: List<ZmpUtz46V001.ItemLocal_ET_SET_LIST>
     private val componentsInfo = mutableListOf<ProductInfo>()
 
-    val enabledDetailsCleanBtn: MutableLiveData<Boolean> = selectedPage
+    val enabledDetailsCleanBtn: LiveData<Boolean> = selectedPage
             .combineLatest(componentsSelectionsHelper.selectedPositions)
+            .combineLatest(countValue)
             .map {
-                val selectedTabPos = it?.first ?: 0
-                val selectedComponentsPositions = it?.second
+                val selectedTabPos = selectedPage.value ?: 0
+                val selectedComponentsPositions = componentsSelectionsHelper.selectedPositions.value
                 if (selectedTabPos == 0) processExciseAlcoProductService.taskRepository.getTotalCountForProduct(productInfo.value!!) > 0.0 else !selectedComponentsPositions.isNullOrEmpty()
             }
 
@@ -134,7 +170,6 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
             stampsCollectorManager.getSetsStampCollector()!!.processAllForSet(getReason(), countValue.value!!)
             count.value = ""
         }
-        updateComponents()
     }
 
     private fun getReason(): WriteOffReason {
@@ -163,7 +198,7 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
                         screenNavigator.openComponentSetScreen(
                                 componentInfo,
                                 componentsLiveData.value!![index],
-                                componentsLiveData.value!![index].mengeTotalCount)
+                                componentsLiveData.value!![index].rightCount)
                         return true
                     }
                 }
@@ -177,37 +212,7 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
 
 
     private fun updateComponents() {
-        var countExciseStampAll = 0.0
-        var mengeTotalCount = 0.0
-
-
-        componentsLiveData.postValue(
-                mutableListOf<ComponentItem>().apply {
-                    componentsInfo.forEachIndexed { index, compInfo ->
-                        val countExciseStampForComponent = getCountExciseStampsForComponent(compInfo)
-                        mengeTotalCount = components[index].menge * countValue.value!!
-                        add(ComponentItem(
-                                number = index + 1,
-                                name = "${compInfo.materialNumber.substring(compInfo.materialNumber.length - 6)} ${compInfo.description}",
-                                quantity = "${countExciseStampForComponent
-                                        .toStringFormatted()} из ${(mengeTotalCount).toStringFormatted()}",
-                                menge = components[index].menge.toString(),
-                                even = index % 2 == 0,
-                                countSets = totalCount.value!!,
-                                selectedPosition = selectedPosition.value!!,
-                                writeOffReason = getReason(),
-                                setMaterialNumber = productInfo.value!!.materialNumber,
-                                mengeTotalCount = mengeTotalCount)
-                        )
-
-                        countExciseStampAll += countExciseStampForComponent
-                    }
-                }
-        )
-
-
-        enabledApplyButton.value = countExciseStampAll == mengeTotalCount && countValue.value != 0.0
-
+        count.value = count.value
         componentsSelectionsHelper.clearPositions()
     }
 
@@ -282,7 +287,8 @@ data class ComponentItem(
         val selectedPosition: Int,
         val writeOffReason: WriteOffReason,
         val setMaterialNumber: String,
-        val mengeTotalCount: Double
+        val rightCount: Double,
+        val processedStampsCount: Double
 
 ) : Evenable {
     override fun isEven() = even
