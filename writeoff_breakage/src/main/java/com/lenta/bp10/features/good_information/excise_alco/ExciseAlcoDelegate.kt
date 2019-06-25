@@ -38,6 +38,12 @@ class ExciseAlcoDelegate @Inject constructor(
 
 
     fun searchExciseStamp(code: String) {
+
+        if (!(code.length == 68 || code.length == 150)) {
+            screenNavigator.openAlertNotValidFormatStamp()
+            return
+        }
+
         viewModelScope().launch {
             screenNavigator.showProgress(exciseStampNetRequest)
 

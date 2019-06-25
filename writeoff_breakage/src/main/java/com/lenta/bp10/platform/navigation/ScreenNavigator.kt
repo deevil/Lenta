@@ -249,6 +249,14 @@ class ScreenNavigator(
                 pageNumber = "96"
         )
     }
+
+    override fun openAlertNotValidFormatStamp() {
+        openAlertScreen(
+                message = context.getString(R.string.not_valid_format_stamp),
+                iconRes = R.drawable.is_warning_yellow,
+                pageNumber = "96"
+        )
+    }
 }
 
 interface IScreenNavigator : ICoreNavigator {
@@ -279,4 +287,5 @@ interface IScreenNavigator : ICoreNavigator {
     fun openAlertDoubleScanStamp()
     fun openProductNotSetAlertScreen()
     fun openStampsCountAlreadyScannedScreen()
+    fun openAlertNotValidFormatStamp()
 }
