@@ -16,7 +16,7 @@ class MemoryTaskExciseStampRepository(private val stamps: ArrayList<TaskExciseSt
     }
 
     override fun findExciseStampsOfProduct(materialNumber: String): List<TaskExciseStamp> {
-        return stamps.filter { it.materialNumber == materialNumber }
+        return stamps.filter { it.materialNumber == materialNumber || it.setMaterialNumber == materialNumber}
     }
 
     override fun addExciseStamp(exciseStamp: TaskExciseStamp): Boolean {
