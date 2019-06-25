@@ -128,4 +128,10 @@ class ComponentViewModel : BaseProductInfoViewModel() {
         this.mengeTotalCount = mengeTotalCount
     }
 
+    override fun onResult(code: Int?) {
+        if (!exciseAlcoDelegate.handleResult(code)) {
+            super.onResult(code)
+        }
+    }
+
 }
