@@ -1,5 +1,6 @@
 package com.lenta.bp10.features.good_information.base
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp10.features.good_information.IGoodInformationRepo
@@ -14,6 +15,7 @@ import com.lenta.bp10.models.task.WriteOffReason
 import com.lenta.bp10.platform.navigation.IScreenNavigator
 import com.lenta.bp10.platform.resources.IStringResourceManager
 import com.lenta.shared.models.core.ProductInfo
+import com.lenta.shared.models.core.ProductType
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
 import com.lenta.shared.utilities.Logg
@@ -37,7 +39,8 @@ abstract class BaseProductInfoViewModel : CoreViewModel(), OnPositionClickListen
 
     val productInfo: MutableLiveData<ProductInfo> = MutableLiveData()
 
-    val writeOffReasonTitles: MutableLiveData<List<String>> = MutableLiveData()
+    val writeOffReasons: MutableLiveData<List<WriteOffReason>> = MutableLiveData()
+    val writeOffReasonTitles: LiveData<List<String>> = writeOffReasons.map { it?.map { reason -> reason.name } }
 
     val selectedPosition: MutableLiveData<Int> = MutableLiveData(0)
 
@@ -67,12 +70,13 @@ abstract class BaseProductInfoViewModel : CoreViewModel(), OnPositionClickListen
         totalCount.map { getCountWithUom(count = it, productInfo = productInfo) }
     }
 
-    val enabledApplyButton: MutableLiveData<Boolean> by lazy {
+    open val enabledApplyButton: MutableLiveData<Boolean> by lazy {
         countValue.combineLatest(selectedPosition).map {
             isEnabledApplyButtons(
                     count = it?.first,
                     productInfo = productInfo.value,
-                    reason = getReason(),
+                    isSetComponent = false,
+                    reason = getSelectedReason(),
                     taskRepository = getTaskRepo()
             )
         }
@@ -90,7 +94,7 @@ abstract class BaseProductInfoViewModel : CoreViewModel(), OnPositionClickListen
             processServiceManager.getWriteOffTask()?.let { writeOffTask ->
                 getTaskDescription().moveTypes.let { reasons ->
                     if (reasons.isEmpty()) {
-                        writeOffReasonTitles.value = listOf(resourceManager.emptyCategory())
+                        writeOffReasons.value = listOf(WriteOffReason.emptyWithTitle(resourceManager.emptyCategory()))
                     } else {
                         productInfo.value?.let { it ->
                             val defaultReason = goodInformationRepo.getDefaultReason(
@@ -99,13 +103,12 @@ abstract class BaseProductInfoViewModel : CoreViewModel(), OnPositionClickListen
                                     materialNumber = it.materialNumber
                             )
 
-                            writeOffReasonTitles.value = mutableListOf("").filter { filterReason(it) }
-                                    .toMutableList()
+                            writeOffReasons.value = mutableListOf(WriteOffReason.empty)
                                     .apply {
-                                        addAll(reasons.filter { filterReason(it.code) }.map { it.name })
-                                    }
+                                        addAll(reasons)
+                                    }.filter { filterReason(it) }
 
-                            onClickPosition(reasons.indexOfFirst { reason -> reason.code == defaultReason } + 1)
+                            onClickPosition(writeOffReasons.value!!.indexOfFirst { reason -> reason.code == defaultReason })
                         }
                     }
                 }
@@ -116,8 +119,8 @@ abstract class BaseProductInfoViewModel : CoreViewModel(), OnPositionClickListen
         }
     }
 
-    open fun filterReason(code: String): Boolean {
-        return true
+    open fun filterReason(writeOffReason: WriteOffReason): Boolean {
+        return writeOffReason === WriteOffReason.empty || writeOffReason.gisControl == (if (productInfo.value!!.type == ProductType.General) "N" else "A")
     }
 
     fun setProductInfo(productInfo: ProductInfo) {
@@ -129,26 +132,9 @@ abstract class BaseProductInfoViewModel : CoreViewModel(), OnPositionClickListen
 
     }
 
-    open fun getReason(): WriteOffReason {
-        getTaskDescription().moveTypes.let { moveTypes ->
-            if (moveTypes.isEmpty()) {
-                return WriteOffReason(code = "", name = resourceManager.emptyCategory())
-            }
-            return moveTypes
-                    .getOrElse((selectedPosition.value ?: 0) - 1) { WriteOffReason.empty }
-        }
-
-    }
-
     protected fun getSelectedReason(): WriteOffReason {
-        getTaskDescription().moveTypes.let { moveTypes ->
-            return if (moveTypes.isEmpty()) {
-                WriteOffReason(code = "", name = resourceManager.emptyCategory())
-            } else {
-                moveTypes.getOrElse((selectedPosition.value ?: 0) - 1) { WriteOffReason.empty }
-            }
-        }
-
+        return writeOffReasons.value?.getOrNull((selectedPosition.value ?: -1))
+                ?: WriteOffReason.empty
     }
 
     abstract fun handleProductSearchResult(scanInfoResult: ScanInfoResult?): Boolean

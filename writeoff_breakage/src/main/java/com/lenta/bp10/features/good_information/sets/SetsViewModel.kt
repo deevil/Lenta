@@ -3,6 +3,7 @@ package com.lenta.bp10.features.good_information.sets
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.lenta.bp10.features.good_information.IGoodInformationRepo
 import com.lenta.bp10.features.goods_list.SearchProductDelegate
 import com.lenta.bp10.models.StampsCollectorManager
 import com.lenta.bp10.models.repositories.IWriteOffTaskManager
@@ -11,10 +12,12 @@ import com.lenta.bp10.models.task.ProcessExciseAlcoProductService
 import com.lenta.bp10.models.task.WriteOffReason
 import com.lenta.bp10.platform.navigation.IScreenNavigator
 import com.lenta.bp10.platform.requestCodeNotSaveComponents
+import com.lenta.bp10.platform.resources.IStringResourceManager
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.fmp.resources.dao_ext.getComponentsForSet
 import com.lenta.shared.fmp.resources.slow.ZmpUtz46V001
 import com.lenta.shared.models.core.ProductInfo
+import com.lenta.shared.models.core.ProductType
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
 import com.lenta.shared.utilities.Logg
@@ -55,6 +58,12 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
     @Inject
     lateinit var stampsCollectorManager: StampsCollectorManager
 
+    @Inject
+    lateinit var resourceManager: IStringResourceManager
+
+    @Inject
+    lateinit var goodInformationRepo: IGoodInformationRepo
+
     val zmpUtz46V001: ZmpUtz46V001 by lazy {
         ZmpUtz46V001(hyperHive)
     }
@@ -68,7 +77,8 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
     var selectedPage = MutableLiveData(0)
 
     val setProductInfo: MutableLiveData<ProductInfo> = MutableLiveData()
-    val writeOffReasonTitles: MutableLiveData<List<String>> = MutableLiveData()
+    val writeOffReasons: MutableLiveData<List<WriteOffReason>> = MutableLiveData()
+    val writeOffReasonTitles: LiveData<List<String>> = writeOffReasons.map { it?.map { reason -> reason.name } }
     val selectedPosition: MutableLiveData<Int> = MutableLiveData(0)
     val count: MutableLiveData<String> = MutableLiveData("1")
     val countValue: MutableLiveData<Double> = count.map { it?.toDoubleOrNull() ?: 0.0 }
@@ -114,7 +124,7 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
             }
         }
 
-        totalProcessedStampsCount == totalRightStampsCount && countValue.value != 0.0
+        totalProcessedStampsCount == totalRightStampsCount && countValue.value != 0.0 && getReason() !== WriteOffReason.empty
     }
 
     private lateinit var componentsDataList: List<ZmpUtz46V001.ItemLocal_ET_SET_LIST>
@@ -142,8 +152,25 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
 
             stampsCollectorManager.newStampCollector(processExciseAlcoProductService)
 
-            processServiceManager.getWriteOffTask()?.let { writeOffTask ->
-                writeOffReasonTitles.value = writeOffTask.taskDescription.moveTypes.map { it.name }
+            processServiceManager.getWriteOffTask()!!.taskDescription.moveTypes.let { reasons ->
+                if (reasons.isEmpty()) {
+                    writeOffReasons.value = listOf(WriteOffReason.emptyWithTitle(resourceManager.emptyCategory()))
+                } else {
+                    setProductInfo.value?.let { it ->
+                        val defaultReason = goodInformationRepo.getDefaultReason(
+                                taskType = processServiceManager.getWriteOffTask()!!.taskDescription.taskType.code,
+                                sectionId = it.sectionId,
+                                materialNumber = it.materialNumber
+                        )
+
+                        writeOffReasons.value = mutableListOf(WriteOffReason.empty)
+                                .apply {
+                                    addAll(reasons)
+                                }.filter { filterReason(it) }
+
+                        onClickPosition(writeOffReasons.value!!.indexOfFirst { reason -> reason.code == defaultReason })
+                    }
+                }
             }
 
 
@@ -179,6 +206,10 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
             )
 
         }
+    }
+
+    private fun filterReason(writeOffReason: WriteOffReason): Boolean {
+        return writeOffReason === WriteOffReason.empty || writeOffReason.gisControl == if (setProductInfo.value!!.type == ProductType.General) "N" else "A"
     }
 
 
@@ -217,8 +248,8 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
     }
 
     private fun getReason(): WriteOffReason {
-        return processExciseAlcoProductService.taskDescription.moveTypes
-                .getOrElse(selectedPosition.value ?: -1) { WriteOffReason.empty }
+        return writeOffReasons.value?.getOrNull(selectedPosition.value
+                ?: -1) ?: WriteOffReason.empty
     }
 
     private fun handleSetSearchResult(scanInfoResult: ScanInfoResult?): Boolean {

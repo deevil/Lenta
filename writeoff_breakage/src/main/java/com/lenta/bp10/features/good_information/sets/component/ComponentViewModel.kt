@@ -4,13 +4,16 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp10.features.good_information.base.BaseProductInfoViewModel
 import com.lenta.bp10.features.good_information.excise_alco.ExciseAlcoDelegate
+import com.lenta.bp10.features.good_information.isEnabledApplyButtons
 import com.lenta.bp10.features.good_information.sets.ComponentItem
 import com.lenta.bp10.models.StampsCollectorManager
 import com.lenta.bp10.models.repositories.ITaskRepository
 import com.lenta.bp10.models.task.ProcessExciseAlcoProductService
 import com.lenta.bp10.models.task.TaskDescription
 import com.lenta.bp10.models.task.WriteOffReason
+import com.lenta.shared.models.core.ProductType
 import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
+import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.toStringFormatted
 import kotlinx.coroutines.launch
@@ -28,6 +31,18 @@ class ComponentViewModel : BaseProductInfoViewModel() {
 
     @Inject
     lateinit var stampsCollectorManager: StampsCollectorManager
+
+    override val enabledApplyButton: MutableLiveData<Boolean> by lazy {
+        countValue.combineLatest(selectedPosition).map {
+            isEnabledApplyButtons(
+                    count = it?.first,
+                    productInfo = productInfo.value,
+                    isSetComponent = true,
+                    reason = getSelectedReason(),
+                    taskRepository = getTaskRepo()
+            )
+        }
+    }
 
     private val processExciseAlcoProductService: ProcessExciseAlcoProductService by lazy {
         processServiceManager.getWriteOffTask()!!.processExciseAlcoProduct(productInfo.value!!)!!
@@ -94,13 +109,6 @@ class ComponentViewModel : BaseProductInfoViewModel() {
         }
     }
 
-    override fun getReason(): WriteOffReason {
-        getTaskDescription().moveTypes.let { moveTypes ->
-            return moveTypes.filter { filterReason(it.code) }
-                    .getOrElse((selectedPosition.value ?: -1)) { WriteOffReason.empty }
-        }
-    }
-
     private fun handleNewStamp(isBadStamp: Boolean) {
         if (!stampsCollectorManager.add(
                         materialNumber = productInfo.value!!.materialNumber,
@@ -116,8 +124,8 @@ class ComponentViewModel : BaseProductInfoViewModel() {
         stampsCollectorManager.getComponentsStampCollector()!!.rollback()
     }
 
-    override fun filterReason(code: String): Boolean {
-        return code == componentItem.writeOffReason.code
+    override fun filterReason(writeOffReason: WriteOffReason): Boolean {
+        return writeOffReason.gisControl == (if (productInfo.value!!.type == ProductType.General) "N" else "A") && writeOffReason.code == componentItem.writeOffReason.code
     }
 
     override fun initCountLiveData(): MutableLiveData<String> {

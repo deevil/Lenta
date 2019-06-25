@@ -19,9 +19,10 @@ fun getCountWithUom(count: Double?, productInfo: MutableLiveData<ProductInfo>): 
 fun isEnabledApplyButtons(count: Double?,
                           productInfo: ProductInfo?,
                           reason: WriteOffReason,
-                          taskRepository: ITaskRepository): Boolean {
+                          taskRepository: ITaskRepository,
+                          isSetComponent: Boolean): Boolean {
     return count != 0.0 &&
-            reason != WriteOffReason.empty &&
+            (isSetComponent || reason !== WriteOffReason.empty) &&
             productInfo != null &&
             taskRepository.getTotalCountForProduct(productInfo, reason) + (count ?: 0.0) >= 0.0
 }

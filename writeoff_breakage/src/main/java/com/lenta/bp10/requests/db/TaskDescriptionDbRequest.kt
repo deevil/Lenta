@@ -48,15 +48,15 @@ class TaskDescriptionDbRequest
 
     private fun getMoveTypes(params: TaskCreatingParams, gisControls: List<String>): List<WriteOffReason> {
         return ZmpUtz32V001(hyperHive).getMotionTypes(params.taskSetting.taskType, gisControls)
-                .map { WriteOffReason(code = it.reason, name = it.grtxt) }
+                .map { WriteOffReason(code = it.reason, name = it.grtxt, gisControl = it.taskCntrl) }
     }
 
 
 }
 
 data class TaskCreatingParams(
-        var taskName: String,
-        var gisControlList: List<GisControl>,
+        val taskName: String,
+        val gisControlList: List<GisControl>,
         val taskSetting: TaskSetting,
         val stock: String
 )
