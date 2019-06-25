@@ -31,9 +31,9 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
 
     @Inject
     lateinit var hyperHive: HyperHive
-    val zmpUtz46V001: ZmpUtz46V001 by lazy {
-        ZmpUtz46V001(hyperHive)
-    }
+
+    @Inject
+    lateinit var setsAlcoStampSearchDelegate: SetsAlcoStampSearchDelegate
 
     @Inject
     lateinit var processServiceManager: IWriteOffTaskManager
@@ -50,40 +50,44 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
     @Inject
     lateinit var stampsCollectorManager: StampsCollectorManager
 
+    val zmpUtz46V001: ZmpUtz46V001 by lazy {
+        ZmpUtz46V001(hyperHive)
+    }
+
 
     private val processExciseAlcoProductService: ProcessExciseAlcoProductService by lazy {
-        processServiceManager.getWriteOffTask()!!.processExciseAlcoProduct(productInfo.value!!)!!
+        processServiceManager.getWriteOffTask()!!.processExciseAlcoProduct(setProductInfo.value!!)!!
     }
 
 
     var selectedPage = MutableLiveData(0)
 
-    val productInfo: MutableLiveData<ProductInfo> = MutableLiveData()
+    val setProductInfo: MutableLiveData<ProductInfo> = MutableLiveData()
     val writeOffReasonTitles: MutableLiveData<List<String>> = MutableLiveData()
     val selectedPosition: MutableLiveData<Int> = MutableLiveData(0)
     val count: MutableLiveData<String> = MutableLiveData("1")
     val countValue: MutableLiveData<Double> = count.map { it?.toDoubleOrNull() ?: 0.0 }
     val totalCount: MutableLiveData<Double> = countValue.map {
         (it
-                ?: 0.0) + processExciseAlcoProductService.taskRepository.getTotalCountForProduct(productInfo.value!!)
+                ?: 0.0) + processExciseAlcoProductService.taskRepository.getTotalCountForProduct(setProductInfo.value!!)
     }
-    val totalCountWithUom: MutableLiveData<String> = totalCount.map { "${it.toStringFormatted()} ${productInfo.value!!.uom.name}" }
+    val totalCountWithUom: MutableLiveData<String> = totalCount.map { "${it.toStringFormatted()} ${setProductInfo.value!!.uom.name}" }
     val suffix: MutableLiveData<String> = MutableLiveData()
     val componentsLiveData: LiveData<List<ComponentItem>> = countValue.map {
         mutableListOf<ComponentItem>().apply {
-            componentsInfo.forEachIndexed { index, compInfo ->
+            components.forEachIndexed { index, compInfo ->
                 val countExciseStampForComponent = getCountExciseStampsForComponent(compInfo)
-                val rightCount = components[index].menge * countValue.value!!
+                val rightCount = componentsDataList[index].menge * countValue.value!!
                 add(ComponentItem(
                         number = index + 1,
                         name = "${compInfo.materialNumber.substring(compInfo.materialNumber.length - 6)} ${compInfo.description}",
                         quantity = "${countExciseStampForComponent.toStringFormatted()} из ${(rightCount).toStringFormatted()}",
-                        menge = components[index].menge.toString(),
+                        menge = componentsDataList[index].menge.toString(),
                         even = index % 2 == 0,
                         countSets = totalCount.value!!,
                         selectedPosition = selectedPosition.value!!,
                         writeOffReason = getReason(),
-                        setMaterialNumber = productInfo.value!!.materialNumber,
+                        setMaterialNumber = setProductInfo.value!!.materialNumber,
                         rightCount = rightCount,
                         processedStampsCount = countExciseStampForComponent
                 )
@@ -108,8 +112,9 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
         totalProcessedStampsCount == totalRightStampsCount && countValue.value != 0.0
     }
 
-    private lateinit var components: List<ZmpUtz46V001.ItemLocal_ET_SET_LIST>
-    private val componentsInfo = mutableListOf<ProductInfo>()
+    private lateinit var componentsDataList: List<ZmpUtz46V001.ItemLocal_ET_SET_LIST>
+
+    private val components = mutableListOf<ProductInfo>()
 
     val enabledDetailsCleanBtn: LiveData<Boolean> = selectedPage
             .combineLatest(componentsSelectionsHelper.selectedPositions)
@@ -117,11 +122,11 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
             .map {
                 val selectedTabPos = selectedPage.value ?: 0
                 val selectedComponentsPositions = componentsSelectionsHelper.selectedPositions.value
-                if (selectedTabPos == 0) processExciseAlcoProductService.taskRepository.getTotalCountForProduct(productInfo.value!!) > 0.0 else !selectedComponentsPositions.isNullOrEmpty()
+                if (selectedTabPos == 0) processExciseAlcoProductService.taskRepository.getTotalCountForProduct(setProductInfo.value!!) > 0.0 else !selectedComponentsPositions.isNullOrEmpty()
             }
 
     fun setProductInfo(productInfo: ProductInfo) {
-        this.productInfo.value = productInfo
+        this.setProductInfo.value = productInfo
     }
 
 
@@ -140,14 +145,34 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
             searchProductDelegate.init(viewModelScope = this@SetsViewModel::viewModelScope,
                     scanResultHandler = this@SetsViewModel::handleProductSearchSuccess)
 
-            components = zmpUtz46V001.getComponentsForSet(productInfo.value!!.materialNumber)
-            components.forEachIndexed { index, _ ->
-                searchComponentDelegate.searchCode(components[index].matnr, fromScan = false, isBarCode = false)
+            componentsDataList = zmpUtz46V001.getComponentsForSet(setProductInfo.value!!.materialNumber)
+            componentsDataList.forEachIndexed { index, _ ->
+                searchComponentDelegate.searchCode(componentsDataList[index].matnr, fromScan = false, isBarCode = false)
             }
             screenNavigator.hideProgress()
-            suffix.value = productInfo.value?.uom?.name
-            updateComponents()
+            suffix.value = setProductInfo.value?.uom?.name
+
+            setsAlcoStampSearchDelegate.init(
+                    viewModelScope = this@SetsViewModel::viewModelScope,
+                    handleNewStamp = this@SetsViewModel::handleStampSearchResult,
+                    materialNumber = setProductInfo.value!!.materialNumber,
+                    tkNumber = processServiceManager.getWriteOffTask()!!.taskDescription.tkNumber,
+                    components = components
+            )
+
         }
+    }
+
+
+    private fun handleStampSearchResult(isBadStamp: Boolean, productInfo: ProductInfo) {
+        stampsCollectorManager.clearComponentsStampCollector()
+        stampsCollectorManager.getComponentsStampCollector()!!.add(
+                materialNumber = productInfo.materialNumber,
+                setMaterialNumber = setProductInfo.value!!.materialNumber,
+                writeOffReason = "",
+                isBadStamp = isBadStamp
+        )
+        openComponentScreen(productInfo.materialNumber)
     }
 
 
@@ -179,7 +204,7 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
 
     private fun handleComponentSearchResult(scanInfoResult: ScanInfoResult?): Boolean {
         scanInfoResult?.let {
-            componentsInfo.add(it.productInfo)
+            components.add(it.productInfo)
             updateComponents()
         }
 
@@ -189,25 +214,30 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
     private fun handleProductSearchSuccess(scanInfoResult: ScanInfoResult?): Boolean {
         eanCode.value = ""
         scanInfoResult?.productInfo?.let { info ->
-            componentsInfo.forEachIndexed { index, componentInfo ->
-                if (componentInfo.materialNumber == info.materialNumber) {
-                    if (getCountExciseStampsForComponent(componentInfo) == components[index].menge * totalCount.value!!) {
-                        screenNavigator.openStampsCountAlreadyScannedScreen()
-                        return true
-                    } else {
-                        screenNavigator.openComponentSetScreen(
-                                componentInfo,
-                                componentsLiveData.value!![index],
-                                componentsLiveData.value!![index].rightCount)
-                        return true
-                    }
-                }
-            }
-            screenNavigator.openProductNotSetAlertScreen()
+            stampsCollectorManager.clearComponentsStampCollector()
+            openComponentScreen(info.materialNumber)
         }
 
         return true
 
+    }
+
+    private fun openComponentScreen(materialNumber: String) {
+        components.forEachIndexed { index, componentInfo ->
+            if (componentInfo.materialNumber == materialNumber) {
+                if (getCountExciseStampsForComponent(componentInfo) == componentsDataList[index].menge * totalCount.value!!) {
+                    screenNavigator.openStampsCountAlreadyScannedScreen()
+                    return
+                } else {
+                    screenNavigator.openComponentSetScreen(
+                            componentInfo,
+                            componentsLiveData.value!![index],
+                            componentsLiveData.value!![index].rightCount)
+                    return
+                }
+            }
+        }
+        screenNavigator.openProductNotSetAlertScreen()
     }
 
 
@@ -233,7 +263,15 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
     }
 
     private fun searchEANCode(code: String) {
-        searchProductDelegate.searchCode(code, fromScan = true)
+        if (code.length > 60) {
+            if (stampsCollectorManager.getComponentsStampCollector()!!.prepare(stampCode = code)) {
+                setsAlcoStampSearchDelegate.searchExciseStamp(code)
+            } else {
+                screenNavigator.openAlertDoubleScanStamp()
+            }
+        } else {
+            searchProductDelegate.searchCode(code, fromScan = true)
+        }
     }
 
 
@@ -257,7 +295,7 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
     private fun onClickClean() {
         processServiceManager.getWriteOffTask()?.let { writeOffTask ->
             componentsSelectionsHelper.selectedPositions.value?.map { position ->
-                componentsInfo[position]
+                components[position]
             }?.let {
                 stampsCollectorManager.clearAllStampsCollectors()
             }
@@ -266,13 +304,17 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
     }
 
     private fun onClickDetails() {
-        productInfo.value?.let {
+        setProductInfo.value?.let {
             screenNavigator.openGoodsReasonsScreen(productInfo = it)
         }
     }
 
     fun onScanResult(data: String) {
         searchEANCode(data)
+    }
+
+    fun onResult(fragmentResultCode: Int?) {
+        setsAlcoStampSearchDelegate.handleResult(fragmentResultCode)
     }
 
 }

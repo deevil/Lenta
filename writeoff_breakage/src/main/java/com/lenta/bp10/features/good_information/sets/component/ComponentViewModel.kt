@@ -41,7 +41,6 @@ class ComponentViewModel : BaseProductInfoViewModel() {
                     tkNumber = getTaskDescription().tkNumber,
                     materialNumber = productInfo.value!!.materialNumber
             )
-            stampsCollectorManager.clearComponentsStampCollector()
         }
 
     }
@@ -79,7 +78,7 @@ class ComponentViewModel : BaseProductInfoViewModel() {
     }
 
     override fun onBackPressed() {
-        // not used
+        stampsCollectorManager.clearComponentsStampCollector()
     }
 
 
@@ -130,137 +129,3 @@ class ComponentViewModel : BaseProductInfoViewModel() {
     }
 
 }
-
-
-/*class ComponentViewModelDeprecated : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboardListener {
-
-    @Inject
-    lateinit var screenNavigator: IScreenNavigator
-
-    @Inject
-    lateinit var processServiceManager: IWriteOffTaskManager
-
-    @Inject
-    lateinit var exciseStampNetRequest: ExciseStampNetRequest
-
-    @Inject
-    lateinit var sessionInfo: ISessionInfo
-
-    @Inject
-    lateinit var exciseAlcoDelegate: ExciseAlcoDelegate
-
-    private val stampCollector: StampCollector by lazy {
-        StampCollector(processServiceManager.getWriteOffTask()!!.processExciseAlcoProduct(productInfo.value!!)!!, count)
-    }
-
-
-    init {
-        viewModelScope.launch {
-            processServiceManager.getWriteOffTask()?.let { writeOffTask ->
-                writeOffReasonTitles.value = writeOffTask.taskDescription.moveTypes.map { it.name }
-            }
-            suffix.value = productInfo.value?.uom?.name
-
-            *//*exciseAlcoDelegate.init(
-                    viewModelScope = this@ComponentViewModelDeprecated::viewModelScope,
-                    handleNewStamp = this@ComponentViewModelDeprecated::handleNewStamp,
-                    tkNumber = processServiceManager.getWriteOffTask()!!.taskDescription.tkNumber,
-                    materialNumber = productInfo.value!!.materialNumber
-            )*//*
-        }
-    }
-
-    fun onClickRollback() {
-        if (exciseStamp.size > 0) {
-            exciseStamp.removeAt(exciseStamp.lastIndex)
-            count.value = exciseStamp.size.toString()
-        }
-    }
-
-    fun onClickAdd() {
-        processServiceManager.getWriteOffTask()!!.taskRepository.getExciseStamps().addExciseStamps(exciseStamp)
-
-        exciseStamp.clear()
-        count.value = "0"
-
-        Logg.d { "exiseStampsForProduct ${processServiceManager.getWriteOffTask()!!.taskRepository.getExciseStamps().findExciseStampsOfProduct(productInfo.value!!).map { it.code }}" }
-        Logg.d { "exiseStampsAll ${processServiceManager.getWriteOffTask()!!.taskRepository.getExciseStamps().getExciseStamps().size}" }
-
-    }
-
-    fun onClickApply() {
-        onClickAdd()
-        screenNavigator.goBack()
-    }
-
-    override fun onClickPosition(position: Int) {
-        selectedPosition.value = position
-    }
-
-    //TODO тестовый код, для проверки сканирования, потом переписать
-    override fun onOkInSoftKeyboard(): Boolean {
-        searchExciseStamp()
-        return true
-    }
-
-    private fun searchExciseStamp() {
-        viewModelScope.launch {
-            exciseStampCode.value?.let {
-                exciseStampNetRequest(ExciseStampParams(pdf417 = it, werks = sessionInfo.market!!, matnr = productInfo.value!!.materialNumber)).either(::handleFailure, ::handleExciseStampSuccess)
-            }
-        }
-    }
-
-    private fun handleExciseStampSuccess(exciseStampRestInfo: List<ExciseStampRestInfo>) {
-        //Logg.d { "handleSuccess ${exciseStampRestInfo}" }
-        if (totalCount.value!! >= componentItem.value!!.menge.toDouble() * componentItem.value!!.countSets) {
-            screenNavigator.openAlertScreen(limitExceeded.value!!)
-            return
-        }
-
-        val retcodeCode = exciseStampRestInfo[1].data[0][0].toInt()
-        val retcodeName = exciseStampRestInfo[1].data[0][1]
-
-        when (retcodeCode) {
-            0 -> addExciseStamp()
-            1 -> screenNavigator.openAlertScreen(message = retcodeName)
-            2 -> screenNavigator.openAlertScreen(message = retcodeName)
-            3 -> screenNavigator.openAlertScreen(message = retcodeName)
-            4 -> screenNavigator.openAlertScreen(message = retcodeName)
-        }
-    }
-
-    *//*private fun handleNewStamp(isBadStamp: Boolean) {
-        count.value = (count.value!!.toInt() + 1).toString()
-        exciseStamp.add(TaskExciseStamp(
-                materialNumber = productInfo.value!!.materialNumber,
-                code = exciseStamp.setMaterialNumber = componentItem.value!!.setMaterialNumber,
-                writeOffReason = componentItem.value!!.writeOffReason.code,
-                isBadStamp = isBadStamp
-        ))
-
-
-    }*//*
-
-    fun addExciseStamp() {
-        count.value = (count.value!!.toInt() + 1).toString()
-        exciseStamp.add(TaskExciseStamp(
-                materialNumber = productInfo.value!!.materialNumber,
-                code = exciseStampCode.value!!,
-                setMaterialNumber = componentItem.value!!.setMaterialNumber,
-                writeOffReason = componentItem.value!!.writeOffReason.name,
-                isBadStamp = true
-        ))
-        countValue.value = exciseStamp.size.toDouble()
-    }
-
-    override fun handleFailure(failure: Failure) {
-        screenNavigator.openAlertScreen(failure)
-    }
-
-    fun onScanResult(data: String) {
-        exciseStampCode.value = data
-        searchExciseStamp()
-    }
-
-}*/

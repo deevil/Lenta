@@ -257,6 +257,15 @@ class ScreenNavigator(
                 pageNumber = "96"
         )
     }
+
+    override fun openFailDetectComponentForStampScreen() {
+        openAlertScreen(
+                message = context.getString(R.string.fail_detect_product_for_stamp),
+                iconRes = R.drawable.ic_info_pink,
+                textColor = ContextCompat.getColor(context, com.lenta.shared.R.color.color_text_dialogWarning),
+                pageNumber = "97"
+        )
+    }
 }
 
 interface IScreenNavigator : ICoreNavigator {
@@ -288,4 +297,5 @@ interface IScreenNavigator : ICoreNavigator {
     fun openProductNotSetAlertScreen()
     fun openStampsCountAlreadyScannedScreen()
     fun openAlertNotValidFormatStamp()
+    fun openFailDetectComponentForStampScreen()
 }

@@ -45,5 +45,6 @@
     <string name="alert_double_scan_stamp">Эта АМ уже была отсканирована</string>
     <string name="scan_barcode_or_enter_sapcode">Отсканируйте штрихкод или введите SAP-код</string>
     <string name="not_valid_format_stamp">Отсканированный ШК не соответствует формату марки</string>
+    <string name="fail_detect_product_for_stamp">Не удалось определить принадлежность марки к компоненту. Отсканируйте EAN компонента из списка и попробуйте снова</string>
 
 </resources>

@@ -26,6 +26,7 @@ import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.databinding.*
 import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.generateScreenNumber
+import com.lenta.shared.utilities.extentions.getFragmentResultCode
 import com.lenta.shared.utilities.extentions.provideViewModel
 
 class SetsFragment :
@@ -37,6 +38,17 @@ class SetsFragment :
         OnScanResultListener {
 
     private lateinit var productInfo: ProductInfo
+
+
+    companion object {
+        fun create(productInfo: ProductInfo): SetsFragment {
+            SetsFragment().let {
+                it.productInfo = productInfo
+                return it
+            }
+        }
+
+    }
 
     override fun getLayoutId(): Int = R.layout.fragment_sets
 
@@ -157,16 +169,6 @@ class SetsFragment :
         vm.onScanResult(data)
     }
 
-    companion object {
-        fun create(productInfo: ProductInfo): SetsFragment {
-            SetsFragment().let {
-                it.productInfo = productInfo
-                return it
-            }
-        }
-
-    }
-
     override fun onResume() {
         super.onResume()
         vm.onResume()
@@ -175,6 +177,10 @@ class SetsFragment :
     override fun onBackPressed(): Boolean {
         vm.onBackPressed()
         return true
+    }
+
+    override fun onFragmentResult(arguments: Bundle) {
+        vm.onResult(arguments.getFragmentResultCode())
     }
 
 }

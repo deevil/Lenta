@@ -109,7 +109,7 @@ class ExciseAlcoInfoViewModel : BaseProductInfoViewModel() {
     }
 
     override fun onScanResult(data: String) {
-        if (data.length > 18) {
+        if (data.length > 60) {
             if (stampCollector.prepare(stampCode = data)) {
                 exciseAlcoDelegate.searchExciseStamp(data)
             } else {
