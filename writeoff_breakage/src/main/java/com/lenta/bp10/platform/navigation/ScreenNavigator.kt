@@ -238,15 +238,21 @@ class ScreenNavigator(
         )
     }
 
-    override fun openProductNotSetAlertScreen() {
-        openInfoScreen(context.getString(R.string.product_not_set))
+    override fun openNotAllComponentProcessedScreen(codeConfirmation: Int) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.not_all_component_processed),
+                    codeConfirm = codeConfirmation,
+                    pageNumber = "95",
+                    leftButtonDecorationInfo = ButtonDecorationInfo.back,
+                    rightButtonDecorationInfo = ButtonDecorationInfo.nextAlternate)
+            )
+        }
     }
 
     override fun openStampsCountAlreadyScannedScreen() {
-        openAlertScreen(
-                message = context.getString(R.string.marks_comp_already_scanned),
-                iconRes = R.drawable.is_warning_yellow,
-                pageNumber = "96"
+        openInfoScreen(
+                message = context.getString(R.string.marks_comp_already_scanned)
         )
     }
 
@@ -294,7 +300,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openNotPossibleSaveNegativeQuantityScreen()
     fun openSelectTypeCodeScreen(codeConfirmationForSap: Int, codeConfirmationForBarCode: Int)
     fun openAlertDoubleScanStamp()
-    fun openProductNotSetAlertScreen()
+    fun openNotAllComponentProcessedScreen(codeConfirmation: Int)
     fun openStampsCountAlreadyScannedScreen()
     fun openAlertNotValidFormatStamp()
     fun openFailDetectComponentForStampScreen()

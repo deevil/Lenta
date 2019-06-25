@@ -89,7 +89,7 @@
     <string name="general_product">Обычный товар</string>
     <string name="excise_alco">Акцизный алкоголь</string>
     <string name="non_excise_alco">Не акцизный алкоголь</string>
-    <string name="marks_comp_already_scanned">Требуемое количество марок по этому компоненту уже отсканировано</string>
+    <string name="marks_comp_already_scanned">Требуемое количество АМ для этой причины списания уже отсканировано</string>
     <string name="another_market_stamp">Отсканированная марка не обнаружена на остатках магазина, отложите товар. Добавить эту марку в проблемные?</string>
     <string name="another_product_stamp">Марка принадлежит товару «%s», отложите бутылку и проведите расследование</string>
     <string name="writeoff_to_production_confirmation">Товар не используется в производстве, точно хотите добавить?</string>

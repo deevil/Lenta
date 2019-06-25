@@ -10,6 +10,7 @@ import com.lenta.bp10.models.repositories.getTotalCountForProduct
 import com.lenta.bp10.models.task.ProcessExciseAlcoProductService
 import com.lenta.bp10.models.task.WriteOffReason
 import com.lenta.bp10.platform.navigation.IScreenNavigator
+import com.lenta.bp10.platform.requestCodeNotSaveComponents
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.fmp.resources.dao_ext.getComponentsForSet
 import com.lenta.shared.fmp.resources.slow.ZmpUtz46V001
@@ -47,6 +48,9 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
 
     @Inject
     lateinit var searchSetDelegate: SearchProductDelegate
+
+    @Inject
+    lateinit var searchProductDelegate: SearchProductDelegate
 
     @Inject
     lateinit var stampsCollectorManager: StampsCollectorManager
@@ -117,6 +121,8 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
 
     private val components = mutableListOf<ProductInfo>()
 
+    private var anotherProductMaterialNumber: String? = null
+
     val enabledDetailsCleanBtn: LiveData<Boolean> = selectedPage
             .combineLatest(componentsSelectionsHelper.selectedPositions)
             .combineLatest(countValue)
@@ -150,6 +156,11 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
             searchComponentDelegate.init(
                     viewModelScope = this@SetsViewModel::viewModelScope,
                     scanResultHandler = this@SetsViewModel::handleComponentSearchResult
+            )
+
+            searchProductDelegate.init(
+                    viewModelScope = this@SetsViewModel::viewModelScope,
+                    scanResultHandler = this@SetsViewModel::handleProductSearchResult
             )
 
             componentsDataList = zmpUtz46V001.getComponentsForSet(setProductInfo.value!!.materialNumber)
@@ -189,7 +200,6 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
 
     fun onClickAdd() {
         addSet()
-        processExciseAlcoProductService.apply()
     }
 
     fun onClickApply() {
@@ -199,7 +209,9 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
 
     private fun addSet() {
         countValue.value?.let {
-            stampsCollectorManager.getSetsStampCollector()!!.processAllForSet(getReason(), countValue.value!!)
+            if (countValue.value!! > 0.0) {
+                stampsCollectorManager.getSetsStampCollector()!!.processAllForSet(getReason(), countValue.value!!)
+            }
             count.value = ""
         }
     }
@@ -230,6 +242,12 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
         return true
     }
 
+    private fun handleProductSearchResult(scanInfoResult: ScanInfoResult?): Boolean {
+        Logg.d { "scanInfoResult: $scanInfoResult" }
+        onClickApply()
+        return false
+    }
+
     private fun openComponentScreen(materialNumber: String) {
         components.forEachIndexed { index, componentInfo ->
             if (componentInfo.materialNumber == materialNumber) {
@@ -245,7 +263,13 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
                 }
             }
         }
-        screenNavigator.openProductNotSetAlertScreen()
+        if (enabledApplyButton.value == true || countValue.value == 0.0) {
+            searchProductDelegate.searchCode(code = materialNumber, fromScan = false, isBarCode = false)
+        } else {
+            anotherProductMaterialNumber = materialNumber
+            screenNavigator.openNotAllComponentProcessedScreen(requestCodeNotSaveComponents)
+        }
+
     }
 
 
@@ -322,6 +346,15 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
     }
 
     fun onResult(fragmentResultCode: Int?) {
+        if (fragmentResultCode == requestCodeNotSaveComponents) {
+            stampsCollectorManager.clearAllStampsCollectors()
+            count.value = "0"
+            anotherProductMaterialNumber?.let {
+                searchProductDelegate.searchCode(it, fromScan = true, isBarCode = false)
+            }
+
+            return
+        }
         setsAlcoStampSearchDelegate.handleResult(fragmentResultCode)
     }
 
