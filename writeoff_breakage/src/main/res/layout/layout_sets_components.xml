@@ -53,7 +53,7 @@
             android:digits="0123456789"
             android:drawableEnd="@drawable/ic_add_white_24dp"
             android:ellipsize="end"
-            android:hint="@string/enter_item_number_or_barcode"
+            android:hint="@string/scan_barcode_or_enter_sapcode"
             android:imeOptions="actionSearch"
             android:inputType="numberDecimal"
             android:maxLines="1"
