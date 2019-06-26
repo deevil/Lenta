@@ -17,7 +17,7 @@ class AlertFragment : CoreMessageFragment() {
             vm.codeConfirm = codeConfirm
             vm.codeConfirmForLeft = codeConfirmForLeft
             vm.textColor = textColor
-
+            vm.timeAutoExitInMillis = timeAutoExitInMillis
             return vm
         }
     }
@@ -37,7 +37,8 @@ class AlertFragment : CoreMessageFragment() {
                 codeConfirm: Int? = null,
                 codeConfirmForLeft: Int? = null,
                 leftButtonDecorationInfo: ButtonDecorationInfo? = null,
-                rightButtonDecorationInfo: ButtonDecorationInfo? = null
+                rightButtonDecorationInfo: ButtonDecorationInfo? = null,
+                timeAutoExitInMillis: Int? = null
         ): AlertFragment {
             return AlertFragment().apply {
                 this.message = message
@@ -46,6 +47,7 @@ class AlertFragment : CoreMessageFragment() {
                 this.codeConfirm = codeConfirm
                 this.codeConfirmForLeft = codeConfirmForLeft
                 this.pageNumb = pageNumber
+                this.timeAutoExitInMillis = timeAutoExitInMillis
                 leftButtonDecorationInfo?.let {
                     this.leftButtonDecorationInfo = it
                 }

@@ -3,10 +3,7 @@ package com.lenta.bp10.features.good_information.base
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.lenta.bp10.features.good_information.IGoodInformationRepo
-import com.lenta.bp10.features.good_information.getCountWithUom
-import com.lenta.bp10.features.good_information.isEnabledApplyButtons
-import com.lenta.bp10.features.good_information.isEnabledDetailsButton
+import com.lenta.bp10.features.good_information.*
 import com.lenta.bp10.features.goods_list.SearchProductDelegate
 import com.lenta.bp10.models.repositories.ITaskRepository
 import com.lenta.bp10.models.repositories.IWriteOffTaskManager
@@ -48,9 +45,13 @@ abstract class BaseProductInfoViewModel : CoreViewModel(), OnPositionClickListen
 
     val suffix: MutableLiveData<String> = MutableLiveData()
 
+    private var limitsChecker: LimitsChecker? = null
+
     protected val countValue: MutableLiveData<Double> by lazy {
         count.map {
-            it?.toDoubleOrNull() ?: 0.0
+            (it?.toDoubleOrNull() ?: 0.0).apply {
+                limitsChecker?.check(this)
+            }
         }
     }
 
@@ -92,6 +93,12 @@ abstract class BaseProductInfoViewModel : CoreViewModel(), OnPositionClickListen
             )
 
             processServiceManager.getWriteOffTask()?.let { writeOffTask ->
+
+                limitsChecker = LimitsChecker(
+                        limit = goodInformationRepo.getLimit(getTaskDescription().taskType.code, productInfo.value!!.type),
+                        observer = { screenNavigator.openLimitExceededScreen() }
+                )
+
                 getTaskDescription().moveTypes.let { reasons ->
                     if (reasons.isEmpty()) {
                         writeOffReasons.value = listOf(WriteOffReason.emptyWithTitle(resourceManager.emptyCategory()))

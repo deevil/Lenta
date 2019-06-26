@@ -269,6 +269,15 @@ class ScreenNavigator(
                 pageNumber = "97"
         )
     }
+
+    override fun openLimitExceededScreen() {
+        openAlertScreen(
+                message = context.getString(R.string.limit_exceeded_alco_product),
+                iconRes = R.drawable.is_warning_yellow,
+                pageNumber = "96",
+                timeAutoExitInMillis = 2000
+        )
+    }
 }
 
 interface IScreenNavigator : ICoreNavigator {
@@ -301,4 +310,5 @@ interface IScreenNavigator : ICoreNavigator {
     fun openStampsCountAlreadyScannedScreen()
     fun openAlertNotValidFormatStamp()
     fun openFailDetectComponentForStampScreen()
+    fun openLimitExceededScreen()
 }

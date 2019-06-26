@@ -30,7 +30,7 @@ class testWriteoffTask_TaskSaveModel {
                 TaskType("СГП", "nСГП"),
                 "Списание от 04.06 10:23",
                 "0002",
-                ArrayList(Arrays.asList(WriteOffReason("949ВД", "Лом/Бой"))),
+                ArrayList(Arrays.asList(WriteOffReason("949ВД", "Лом/Бой", "A"))),
                 ArrayList(Arrays.asList("N")),
                 ArrayList(Arrays.asList("2FER", "3ROH")), "0001", "printer", "tkNumber", "ipAddress"
         )
