@@ -5,7 +5,7 @@ import com.lenta.shared.fmp.resources.fast.ZmpUtz14V001
 
 fun ZmpUtz14V001.getAllowedWobAppVersion(): String? {
     @Suppress("INACCESSIBLE_TYPE")
-    return getParams("WOB_ALLOWED_VERSION").firstOrNull()
+    return getParams("WOB_ANDR_ALLOWED_V").firstOrNull()
 }
 
 private fun ZmpUtz14V001.getParams(paramName: String): List<String> {
