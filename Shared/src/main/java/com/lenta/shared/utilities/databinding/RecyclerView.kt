@@ -166,17 +166,16 @@ class RecyclerViewKeyHandler<T>(private val rv: RecyclerView,
                                 private val items: MutableLiveData<List<T>>,
                                 lifecycleOwner: LifecycleOwner) {
 
-    val posInfo = MutableLiveData(PosInfo(-1, -1))
+    val posInfo = MutableLiveData(PosInfo(0, -1))
 
     init {
         posInfo.observe(lifecycleOwner, Observer { info ->
             Logg.d { "new pos: $info" }
-            info.currentPos.let { currentPos ->
-                rv.adapter?.notifyItemChanged(info.lastPos)
-                rv.adapter?.notifyItemChanged(info.currentPos)
-                if (currentPos > -1 && currentPos < items.value?.size ?: 0) {
-                    rv.scrollToPosition(info.currentPos)
-                }
+            //rv.adapter?.notifyItemChanged(info.lastPos)
+            //rv.adapter?.notifyItemChanged(info.currentPos)
+            rv.adapter?.notifyDataSetChanged()
+            if (!info.isManualClick && info.currentPos > -1 && info.currentPos < items.value?.size ?: 0) {
+                rv.scrollToPosition(info.currentPos)
             }
 
         })
@@ -207,12 +206,16 @@ class RecyclerViewKeyHandler<T>(private val rv: RecyclerView,
         return true
     }
 
+    fun selectPosition(position: Int) {
+        posInfo.value = PosInfo(currentPos = position, lastPos = posInfo.value!!.currentPos, isManualClick = true)
+    }
+
     fun isSelected(pos: Int): Boolean {
         return pos == posInfo.value!!.currentPos
     }
 
     fun clearPositions() {
-        posInfo.value = PosInfo(-1, -1)
+        posInfo.value = PosInfo(0, -1)
     }
 
 
@@ -245,4 +248,4 @@ abstract class DoubleClickListener : View.OnClickListener {
     }
 }
 
-data class PosInfo(val currentPos: Int, val lastPos: Int)
+data class PosInfo(val currentPos: Int, val lastPos: Int, val isManualClick: Boolean = false)

@@ -125,8 +125,15 @@ class GoodsListFragment :
                                     }
 
                                 },
-                                onItemDoubleClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
-                                    vm.onDoubleClickPosition(position)
+                                onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
+                                    countedRecyclerViewKeyHandler?.let {
+                                        if (it.isSelected(position)) {
+                                            vm.onClickItemPosition(position)
+                                        } else {
+                                            it.selectPosition(position)
+                                        }
+                                    }
+
                                 }
                         )
 
@@ -173,8 +180,15 @@ class GoodsListFragment :
                                 }
 
                             },
-                            onItemDoubleClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
-                                vm.onDoubleClickPosition(position)
+                            onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
+                                filterRecyclerViewKeyHandler?.let {
+                                    if (it.isSelected(position)) {
+                                        vm.onClickItemPosition(position)
+                                    } else {
+                                        it.selectPosition(position)
+                                    }
+                                }
+
                             }
                     )
 

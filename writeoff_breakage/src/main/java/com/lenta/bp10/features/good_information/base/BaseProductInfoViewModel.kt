@@ -167,7 +167,7 @@ abstract class BaseProductInfoViewModel : CoreViewModel(), OnPositionClickListen
 
 
     override fun onClickPosition(position: Int) {
-        Logg.d { "onClickPosition $position" }
+        Logg.d { "selectPosition $position" }
         selectedPosition.postValue(position)
     }
 
