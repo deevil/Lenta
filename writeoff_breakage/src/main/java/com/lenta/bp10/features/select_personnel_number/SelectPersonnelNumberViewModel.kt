@@ -111,6 +111,18 @@ class SelectPersonnelNumberViewModel : CoreViewModel(), OnOkInSoftKeyboardListen
 
     }
 
+
+    fun onResume() {
+        viewModelScope.launch {
+            if (personnelNumber.value.isNullOrBlank()) {
+                editTextFocus.value = true
+            } else {
+                nextButtonFocus.value = true
+            }
+        }
+    }
+
+
     fun onScanResult(data: String) {
         personnelNumber.value = data
         searchPersonnelNumber()

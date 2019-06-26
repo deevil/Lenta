@@ -67,4 +67,9 @@ class SelectPersonnelNumberFragment : CoreFragment<FragmentSelectPersonnelNumber
     override fun onScanResult(data: String) {
         vm.onScanResult(data)
     }
+
+    override fun onResume() {
+        super.onResume()
+        vm.onResume()
+    }
 }
