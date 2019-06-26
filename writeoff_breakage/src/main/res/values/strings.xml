@@ -43,5 +43,6 @@
     <string name="not_valid_format_stamp">Отсканированный ШК не соответствует формату марки</string>
     <string name="fail_detect_product_for_stamp">Не удалось определить принадлежность марки к компоненту. Отсканируйте EAN компонента из списка и попробуйте снова</string>
     <string name="not_all_component_processed">Не все компоненты набора обработаны. При переходе к отсканированному товару данные не будут сохранены</string>
+    <string name="not_possible_save_without_reason">Не возможно сохранить, выберите причину списания</string>
 
 </resources>

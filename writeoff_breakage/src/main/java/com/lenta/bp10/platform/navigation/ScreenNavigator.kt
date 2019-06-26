@@ -278,6 +278,10 @@ class ScreenNavigator(
                 timeAutoExitInMillis = 2000
         )
     }
+
+    override fun openNotPossibleSaveWithoutReasonScreen() {
+        openInfoScreen(message = context.getString(R.string.not_possible_save_without_reason))
+    }
 }
 
 interface IScreenNavigator : ICoreNavigator {
@@ -311,4 +315,5 @@ interface IScreenNavigator : ICoreNavigator {
     fun openAlertNotValidFormatStamp()
     fun openFailDetectComponentForStampScreen()
     fun openLimitExceededScreen()
+    fun openNotPossibleSaveWithoutReasonScreen()
 }
