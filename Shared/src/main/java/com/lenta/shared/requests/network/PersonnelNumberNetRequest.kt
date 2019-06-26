@@ -18,14 +18,22 @@ class PersonnelNumberNetRequest
 @Inject constructor(private val hyperHive: HyperHive, private val sessionInfo: ISessionInfo) : UseCase<TabNumberInfo, TabNumberParams>() {
     override suspend fun run(params: TabNumberParams): Either<Failure, TabNumberInfo> {
         Logg.d { "searchPersonnelNumber TabNumberParams: [${params.tabNumber}]" }
+
+        val personnelNumber = params.tabNumber.filter { it.isDigit() }
+
+        if (personnelNumber.isEmpty()) {
+            return Either.Right(TabNumberInfo(retCode = 0))
+        }
+
         val webCallParams = WebCallParams().apply {
-            data = "{\"IV_PERNR\":\"${params.tabNumber.filter { it.isDigit() }}\"}"
+            data = "{\"IV_PERNR\":\"$personnelNumber\"}"
             headers = mapOf(
                     "X-SUP-DOMAIN" to "DM-MAIN",
                     "Content-Type" to "application/json",
                     "Web-Authorization" to sessionInfo.basicAuth
             )
         }
+
 
         val status = hyperHive.requestAPI.web("ZMP_UTZ_98_V001", webCallParams, TabNumberStatus::class.java)
                 .execute()
