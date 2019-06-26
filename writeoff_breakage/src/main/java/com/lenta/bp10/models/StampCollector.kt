@@ -1,17 +1,16 @@
-package com.lenta.bp10.features.good_information.excise_alco
+package com.lenta.bp10.models
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.lenta.bp10.models.memory.containsStamp
 import com.lenta.bp10.models.task.ProcessExciseAlcoProductService
 import com.lenta.bp10.models.task.TaskExciseStamp
 import com.lenta.bp10.models.task.WriteOffReason
-import com.lenta.shared.utilities.extentions.toStringFormatted
+import com.lenta.shared.utilities.extentions.map
 import java.lang.UnsupportedOperationException
 
-class StampCollector(
-        private val processExciseAlcoProductService: ProcessExciseAlcoProductService,
-        private val countLiveData: MutableLiveData<String>) {
-
+class StampCollector(private val processExciseAlcoProductService: ProcessExciseAlcoProductService) {
+    private val countLiveData: MutableLiveData<Double> = MutableLiveData()
     private val stamps = mutableListOf<TaskExciseStamp>()
     private var preparedStampCode: String = ""
 
@@ -63,20 +62,57 @@ class StampCollector(
         clear()
     }
 
-    private fun containsStamp(code: String): Boolean {
+    fun processAllForSet(reason: WriteOffReason, count: Double) {
+        processExciseAlcoProductService.add(
+                reason = reason,
+                count = count,
+                stamp = null
+        )
+        stamps.forEach { processExciseAlcoProductService.addStamp(reason = reason, stamp = it) }
+        clear()
+    }
+
+    fun containsStamp(code: String): Boolean {
         return stamps.firstOrNull { it.code == code } != null ||
                 processExciseAlcoProductService.taskRepository.getExciseStamps().containsStamp(code)
     }
 
 
-    private fun clear() {
+    fun clear() {
         stamps.clear()
         onDataChanged()
     }
 
 
     private fun onDataChanged() {
-        countLiveData.postValue(stamps.size.toDouble().toStringFormatted())
+        countLiveData.postValue(stamps.size.toDouble())
+    }
+
+    fun observeCount(): LiveData<Double> {
+        return countLiveData.map { it }
+    }
+
+    fun getCount(materialNumber: String): Double {
+        return stamps.filter { it.materialNumber == materialNumber }.count().toDouble()
+    }
+
+    fun clear(materialNumber: String?) {
+        val otherStamps = stamps.filter { it.materialNumber != materialNumber }
+        stamps.clear()
+        stamps.addAll(otherStamps)
+        onDataChanged()
+    }
+
+    fun addStampsFrom(componentsStampCollector: StampCollector?) {
+        componentsStampCollector?.stamps?.let {
+            stamps.addAll(componentsStampCollector.stamps)
+            componentsStampCollector.clear()
+        }
+
+    }
+
+    fun getPreparedStampCode(): String? {
+        return preparedStampCode
     }
 
 

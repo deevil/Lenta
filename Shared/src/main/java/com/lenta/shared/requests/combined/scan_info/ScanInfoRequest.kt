@@ -2,7 +2,6 @@ package com.lenta.shared.requests.combined.scan_info
 
 import com.google.gson.Gson
 import com.lenta.shared.account.ISessionInfo
-import com.lenta.shared.di.AppScope
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.fmp.resources.dao_ext.*
 import com.lenta.shared.fmp.resources.fast.ZmpUtz07V001
@@ -21,10 +20,8 @@ import com.lenta.shared.utilities.extentions.hhive.getFailure
 import com.lenta.shared.utilities.extentions.hhive.isNotBad
 import com.mobrun.plugin.api.HyperHive
 import com.mobrun.plugin.api.callparams.WebCallParams
-import javax.inject.Inject
 
-@AppScope
-class ScanInfoRequest @Inject constructor(private val hyperHive: HyperHive, private val gson: Gson, private val sessionInfo: ISessionInfo) : UseCase<ScanInfoResult, ScanInfoRequestParams>() {
+class ScanInfoRequest (private val hyperHive: HyperHive, private val gson: Gson, private val sessionInfo: ISessionInfo) : UseCase<ScanInfoResult, ScanInfoRequestParams>() {
 
     private val zmpUtz25V001: ZmpUtz25V001 by lazy {
         ZmpUtz25V001(hyperHive)

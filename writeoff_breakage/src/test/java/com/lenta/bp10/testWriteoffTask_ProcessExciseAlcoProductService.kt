@@ -31,7 +31,7 @@ class testWriteoffTask_ProcessExciseAlcoProductService {
                 TaskType("СГП", "nСГП"),
                 "Списание от 04.06 10:23",
                 "0002",
-                ArrayList(Arrays.asList(WriteOffReason("949ВД", "Лом/Бой"))),
+                ArrayList(Arrays.asList(WriteOffReason("949ВД", "Лом/Бой", "A"))),
                 ArrayList(Arrays.asList("N")),
                 ArrayList(Arrays.asList("2FER", "3ROH")), "perNo", "printer", "tkNumber", "ipAddress"
         )
@@ -86,8 +86,8 @@ class testWriteoffTask_ProcessExciseAlcoProductService {
         val product3 = ProductInfo("materialNumber2", "description", Uom("ST", "шт"), ProductType.ExciseAlcohol,
                 false, "1", MatrixType.Active, "materialType")
 
-        val reason1 = WriteOffReason("01", "Срок годности")
-        val reason2 = WriteOffReason("02", "Срок негодности")
+        val reason1 = WriteOffReason("01", "Срок годности", "A")
+        val reason2 = WriteOffReason("02", "Срок негодности", "A")
 
         val exciseStamp1 = TaskExciseStamp("materialNumber1", "1", "материал набора", "Срок годности", false)
         val exciseStamp2 = TaskExciseStamp("materialNumber2", "2", "материал набора", "Срок негодности", false)
@@ -137,8 +137,8 @@ class testWriteoffTask_ProcessExciseAlcoProductService {
         val product3 = ProductInfo("materialNumber3", "description", Uom("ST", "шт"), ProductType.ExciseAlcohol,
                 false, "1", MatrixType.Active, "materialType")
 
-        val reason1 = WriteOffReason("01", "Срок годности")
-        val reason2 = WriteOffReason("02", "Срок негодности")
+        val reason1 = WriteOffReason("01", "Срок годности", "A")
+        val reason2 = WriteOffReason("02", "Срок негодности", "A")
 
         val exciseStamp1 = TaskExciseStamp("materialNumber1", "1", "материал набора", "Срок годности", false)
         val exciseStamp2 = TaskExciseStamp("materialNumber2", "2", "материал набора", "Срок негодности", false)
@@ -181,8 +181,8 @@ class testWriteoffTask_ProcessExciseAlcoProductService {
         val product1 = ProductInfo("materialNumber1", "description", Uom("ST", "шт"), ProductType.ExciseAlcohol,
                 false, "1", MatrixType.Active, "materialType")
 
-        val reason1 = WriteOffReason("01", "Срок годности")
-        val reason2 = WriteOffReason("02", "Срок негодности")
+        val reason1 = WriteOffReason("01", "Срок годности", "A")
+        val reason2 = WriteOffReason("02", "Срок негодности", "A")
 
         val exciseStamp1 = TaskExciseStamp("materialNumber1", "1", "материал набора", "Срок годности", false)
         val exciseStamp2 = TaskExciseStamp("materialNumber1", "2", "материал набора", "Срок негодности", false)

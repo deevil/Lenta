@@ -68,14 +68,15 @@ class CoreNavigator constructor(private val context: Context,
     }
 
 
-    override fun openAlertScreen(message: String, iconRes: Int, textColor: Int?, pageNumber: String?) {
+    override fun openAlertScreen(message: String, iconRes: Int, textColor: Int?, pageNumber: String?, timeAutoExitInMillis: Int?) {
         runOrPostpone {
             getFragmentStack()?.let {
                 val fragment = AlertFragment.create(
                         message = message,
                         iconRes = iconRes,
                         textColor = textColor,
-                        pageNumber = pageNumber
+                        pageNumber = pageNumber,
+                        timeAutoExitInMillis = timeAutoExitInMillis
                 )
                 it.push(fragment, CustomAnimation.vertical)
 
@@ -232,18 +233,20 @@ class CoreNavigator constructor(private val context: Context,
                             message = context.getString(R.string.writeoff_to_production_confirmation),
                             pageNumber = "95",
                             codeConfirm = codeConfirm,
-                            rightButtonDecorationInfo = ButtonDecorationInfo.apply
+                            rightButtonDecorationInfo = ButtonDecorationInfo.nextAlternate
                     )
             )
         }
     }
 
 
-
     override fun openAnotherProductStampAlert(productName: String) {
         openInfoScreen(message = context.getString(R.string.another_product_stamp, productName))
     }
 
+    override fun openNeedUpdateScreen() {
+        openInfoScreen(context.getString(R.string.need_update))
+    }
 
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 
@@ -259,8 +262,8 @@ interface ICoreNavigator {
     fun goBackWithResultCode(code: Int)
     fun goBack()
     fun finishApp()
-    fun openAlertScreen(message: String, iconRes: Int = 0, textColor: Int? = null, pageNumber: String? = null)
-    fun openAlertScreen(failure: Failure, pageNumber: String = "?")
+    fun openAlertScreen(message: String, iconRes: Int = 0, textColor: Int? = null, pageNumber: String? = null, timeAutoExitInMillis: Int? = null)
+    fun openAlertScreen(failure: Failure, pageNumber: String = "96")
     fun openSupportScreen()
     fun <Params> showProgress(useCase: UseCase<Any, Params>)
     fun showProgress(title: String)
@@ -283,6 +286,7 @@ interface ICoreNavigator {
     fun openStampAnotherMarketAlert(codeConfirm: Int)
     fun openAnotherProductStampAlert(productName: String)
     fun openWriteOffToProductionConfirmationScreen(codeConfirm: Int)
+    fun openNeedUpdateScreen()
 }
 
 class FunctionsCollector(private val needCollectLiveData: LiveData<Boolean>) {

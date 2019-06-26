@@ -1,11 +1,9 @@
 package com.lenta.bp10.features.good_information.base
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.lenta.bp10.features.good_information.IGoodInformationRepo
-import com.lenta.bp10.features.good_information.getCountWithUom
-import com.lenta.bp10.features.good_information.isEnabledApplyButtons
-import com.lenta.bp10.features.good_information.isEnabledDetailsButton
+import com.lenta.bp10.features.good_information.*
 import com.lenta.bp10.features.goods_list.SearchProductDelegate
 import com.lenta.bp10.models.repositories.ITaskRepository
 import com.lenta.bp10.models.repositories.IWriteOffTaskManager
@@ -14,6 +12,7 @@ import com.lenta.bp10.models.task.WriteOffReason
 import com.lenta.bp10.platform.navigation.IScreenNavigator
 import com.lenta.bp10.platform.resources.IStringResourceManager
 import com.lenta.shared.models.core.ProductInfo
+import com.lenta.shared.models.core.ProductType
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
 import com.lenta.shared.utilities.Logg
@@ -37,33 +36,51 @@ abstract class BaseProductInfoViewModel : CoreViewModel(), OnPositionClickListen
 
     val productInfo: MutableLiveData<ProductInfo> = MutableLiveData()
 
-    val writeOffReasonTitles: MutableLiveData<List<String>> = MutableLiveData()
+    val writeOffReasons: MutableLiveData<List<WriteOffReason>> = MutableLiveData()
+    val writeOffReasonTitles: LiveData<List<String>> = writeOffReasons.map { it?.map { reason -> reason.name } }
 
     val selectedPosition: MutableLiveData<Int> = MutableLiveData(0)
 
-    val count: MutableLiveData<String> = MutableLiveData("")
+    val count: MutableLiveData<String> by lazy { initCountLiveData() }
 
     val suffix: MutableLiveData<String> = MutableLiveData()
 
-    protected val countValue: MutableLiveData<Double> = count.map { it?.toDoubleOrNull() ?: 0.0 }
+    private var limitsChecker: LimitsChecker? = null
 
-    protected val totalCount: MutableLiveData<Double> = countValue.map {
-        (it ?: 0.0) + getProcessTotalCount()
+    protected val countValue: MutableLiveData<Double> by lazy {
+        count.map {
+            (it?.toDoubleOrNull() ?: 0.0).apply {
+                limitsChecker?.check(this)
+            }
+        }
     }
 
-    val enabledDetailsButton: MutableLiveData<Boolean> = totalCount.map {
-        isEnabledDetailsButton(getProcessTotalCount())
+    val totalCount: MutableLiveData<Double> by lazy {
+        countValue.map {
+            (it ?: 0.0) + getProcessTotalCount()
+        }
     }
 
-    val totalCountWithUom: MutableLiveData<String> = totalCount.map { getCountWithUom(count = it, productInfo = productInfo) }
+    val enabledDetailsButton: MutableLiveData<Boolean>  by lazy {
+        totalCount.map {
+            isEnabledDetailsButton(getProcessTotalCount())
+        }
+    }
 
-    val enabledApplyButton: MutableLiveData<Boolean> = countValue.combineLatest(selectedPosition).map {
-        isEnabledApplyButtons(
-                count = it?.first,
-                productInfo = productInfo.value,
-                reason = getReason(),
-                taskRepository = getTaskRepo()
-        )
+    val totalCountWithUom: MutableLiveData<String> by lazy {
+        totalCount.map { getCountWithUom(count = it, productInfo = productInfo) }
+    }
+
+    open val enabledApplyButton: MutableLiveData<Boolean> by lazy {
+        countValue.combineLatest(selectedPosition).map {
+            isEnabledApplyButtons(
+                    count = it?.first,
+                    productInfo = productInfo.value,
+                    isSetComponent = false,
+                    reason = getSelectedReason(),
+                    taskRepository = getTaskRepo()
+            )
+        }
     }
 
 
@@ -76,9 +93,15 @@ abstract class BaseProductInfoViewModel : CoreViewModel(), OnPositionClickListen
             )
 
             processServiceManager.getWriteOffTask()?.let { writeOffTask ->
+
+                limitsChecker = LimitsChecker(
+                        limit = goodInformationRepo.getLimit(getTaskDescription().taskType.code, productInfo.value!!.type),
+                        observer = { screenNavigator.openLimitExceededScreen() }
+                )
+
                 getTaskDescription().moveTypes.let { reasons ->
                     if (reasons.isEmpty()) {
-                        writeOffReasonTitles.value = listOf(resourceManager.emptyCategory())
+                        writeOffReasons.value = listOf(WriteOffReason.emptyWithTitle(resourceManager.emptyCategory()))
                     } else {
                         productInfo.value?.let { it ->
                             val defaultReason = goodInformationRepo.getDefaultReason(
@@ -87,11 +110,12 @@ abstract class BaseProductInfoViewModel : CoreViewModel(), OnPositionClickListen
                                     materialNumber = it.materialNumber
                             )
 
-                            writeOffReasonTitles.value = mutableListOf("").apply {
-                                addAll(reasons.map { it.name })
-                            }
+                            writeOffReasons.value = mutableListOf(WriteOffReason.empty)
+                                    .apply {
+                                        addAll(reasons)
+                                    }.filter { filterReason(it) }
 
-                            onClickPosition(reasons.indexOfFirst { reason -> reason.code == defaultReason } + 1)
+                            onClickPosition(writeOffReasons.value!!.indexOfFirst { reason -> reason.code == defaultReason })
                         }
                     }
                 }
@@ -100,6 +124,10 @@ abstract class BaseProductInfoViewModel : CoreViewModel(), OnPositionClickListen
             suffix.value = productInfo.value?.uom?.name
 
         }
+    }
+
+    open fun filterReason(writeOffReason: WriteOffReason): Boolean {
+        return writeOffReason === WriteOffReason.empty || writeOffReason.gisControl == (if (productInfo.value!!.type == ProductType.General) "N" else "A")
     }
 
     fun setProductInfo(productInfo: ProductInfo) {
@@ -111,26 +139,9 @@ abstract class BaseProductInfoViewModel : CoreViewModel(), OnPositionClickListen
 
     }
 
-    private fun getReason(): WriteOffReason {
-        getTaskDescription().moveTypes.let { moveTypes ->
-            if (moveTypes.isEmpty()) {
-                return WriteOffReason(code = "", name = resourceManager.emptyCategory())
-            }
-            return moveTypes
-                    .getOrElse((selectedPosition.value ?: 0) - 1) { WriteOffReason.empty }
-        }
-
-    }
-
     protected fun getSelectedReason(): WriteOffReason {
-        getTaskDescription().moveTypes.let { moveTypes ->
-            return if (moveTypes.isEmpty()) {
-                WriteOffReason(code = "", name = resourceManager.emptyCategory())
-            } else {
-                moveTypes.getOrElse((selectedPosition.value ?: 0) - 1) { WriteOffReason.empty }
-            }
-        }
-
+        return writeOffReasons.value?.getOrNull((selectedPosition.value ?: -1))
+                ?: WriteOffReason.empty
     }
 
     abstract fun handleProductSearchResult(scanInfoResult: ScanInfoResult?): Boolean
@@ -145,6 +156,8 @@ abstract class BaseProductInfoViewModel : CoreViewModel(), OnPositionClickListen
 
     abstract fun onClickApply()
 
+    abstract fun initCountLiveData(): MutableLiveData<String>
+
     fun onClickDetails() {
         productInfo.value?.let {
             screenNavigator.openGoodsReasonsScreen(productInfo = it)
@@ -154,7 +167,7 @@ abstract class BaseProductInfoViewModel : CoreViewModel(), OnPositionClickListen
 
 
     override fun onClickPosition(position: Int) {
-        Logg.d { "onClickPosition $position" }
+        Logg.d { "selectPosition $position" }
         selectedPosition.postValue(position)
     }
 

@@ -1,9 +1,11 @@
 package com.lenta.bp10.features.good_information.general
 
+import androidx.lifecycle.MutableLiveData
 import com.lenta.bp10.features.good_information.base.BaseProductInfoViewModel
 import com.lenta.bp10.models.repositories.ITaskRepository
 import com.lenta.bp10.models.task.ProcessGeneralProductService
 import com.lenta.bp10.models.task.TaskDescription
+import com.lenta.bp10.models.task.WriteOffReason
 import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
 import com.lenta.shared.utilities.extentions.toStringFormatted
 
@@ -52,7 +54,11 @@ class GoodInfoViewModel : BaseProductInfoViewModel() {
         countValue.value?.let {
 
             if (enabledApplyButton.value != true && it != 0.0) {
-                screenNavigator.openNotPossibleSaveNegativeQuantityScreen()
+                if (getSelectedReason() === WriteOffReason.empty) {
+                    screenNavigator.openNotPossibleSaveWithoutReasonScreen()
+                } else {
+                    screenNavigator.openNotPossibleSaveNegativeQuantityScreen()
+                }
                 return false
             }
 
@@ -76,6 +82,10 @@ class GoodInfoViewModel : BaseProductInfoViewModel() {
         if (addGood()) {
             searchProductDelegate.searchCode(code = data, fromScan = true)
         }
+    }
+
+    override fun initCountLiveData(): MutableLiveData<String> {
+        return MutableLiveData()
     }
 
 }

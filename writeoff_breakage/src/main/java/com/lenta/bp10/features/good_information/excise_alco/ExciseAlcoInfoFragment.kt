@@ -12,7 +12,7 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.utilities.extentions.*
 
 
-class ExciseAlcoInfoFragment : GoodInfoFragment() {
+open class ExciseAlcoInfoFragment : GoodInfoFragment() {
     var exciseAlcoInfoViewModel: ExciseAlcoInfoViewModel? = null
 
     override fun getViewModel(): BaseProductInfoViewModel {

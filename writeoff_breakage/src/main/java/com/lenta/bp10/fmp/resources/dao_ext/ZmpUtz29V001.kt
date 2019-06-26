@@ -6,3 +6,9 @@ fun ZmpUtz29V001Rfc.isChkOwnpr(taskTypeCode: String): Boolean {
     @Suppress("INACCESSIBLE_TYPE")
     return localHelper_ET_TASK_TPS.getWhere("TASK_TYPE = \"$taskTypeCode\" AND CHK_OWNPR=\"X\"").isNotEmpty()
 }
+
+fun ZmpUtz29V001Rfc.getLimit(taskTypeCode: String): Double {
+    @Suppress("INACCESSIBLE_TYPE")
+    return localHelper_ET_TASK_TPS.getWhere("TASK_TYPE = \"$taskTypeCode\"").firstOrNull()?.limit
+            ?: 0.0
+}

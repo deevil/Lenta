@@ -3,7 +3,6 @@ package com.lenta.bp10.platform.navigation
 import android.content.Context
 import androidx.core.content.ContextCompat
 import com.lenta.bp10.R
-import com.lenta.bp10.activity.main.NumberScreenGenerator
 import com.lenta.bp10.features.auth.AuthFragment
 import com.lenta.bp10.features.detection_saved_data.DetectionSavedDataFragment
 import com.lenta.bp10.features.good_information.excise_alco.ExciseAlcoInfoFragment
@@ -137,9 +136,14 @@ class ScreenNavigator(
         }
     }
 
-    override fun openComponentSetScreen(productInfo: ProductInfo, componentItem: ComponentItem) {
+    override fun openComponentSetScreen(productInfo: ProductInfo, componentItem: ComponentItem, mengeTotalCount: Double) {
         runOrPostpone {
-            getFragmentStack()?.push(ComponentFragment.create(productInfo, componentItem))
+            getFragmentStack()?.push(ComponentFragment.create(
+                    productInfo = productInfo,
+                    componentItem = componentItem,
+                    mengeTotalCount = mengeTotalCount
+            )
+            )
         }
     }
 
@@ -203,12 +207,8 @@ class ScreenNavigator(
     }
 
 
-
     override fun openNotPossibleSaveNegativeQuantityScreen() {
-        openAlertScreen(
-                message = context.getString(R.string.cannot_save_negative_quantity),
-                iconRes = R.drawable.ic_info_pink,
-                textColor = ContextCompat.getColor(context, com.lenta.shared.R.color.color_text_dialogWarning))
+        openInfoScreen(message = context.getString(R.string.cannot_save_negative_quantity))
     }
 
     override fun openSelectTypeCodeScreen(codeConfirmationForSap: Int, codeConfirmationForBarCode: Int) {
@@ -235,6 +235,53 @@ class ScreenNavigator(
         )
     }
 
+    override fun openNotAllComponentProcessedScreen(codeConfirmation: Int) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.not_all_component_processed),
+                    codeConfirm = codeConfirmation,
+                    pageNumber = "95",
+                    leftButtonDecorationInfo = ButtonDecorationInfo.back,
+                    rightButtonDecorationInfo = ButtonDecorationInfo.nextAlternate)
+            )
+        }
+    }
+
+    override fun openStampsCountAlreadyScannedScreen() {
+        openInfoScreen(
+                message = context.getString(R.string.marks_comp_already_scanned)
+        )
+    }
+
+    override fun openAlertNotValidFormatStamp() {
+        openAlertScreen(
+                message = context.getString(R.string.not_valid_format_stamp),
+                iconRes = R.drawable.is_warning_yellow,
+                pageNumber = "96"
+        )
+    }
+
+    override fun openFailDetectComponentForStampScreen() {
+        openAlertScreen(
+                message = context.getString(R.string.fail_detect_product_for_stamp),
+                iconRes = R.drawable.ic_info_pink,
+                textColor = ContextCompat.getColor(context, com.lenta.shared.R.color.color_text_dialogWarning),
+                pageNumber = "97"
+        )
+    }
+
+    override fun openLimitExceededScreen() {
+        openAlertScreen(
+                message = context.getString(R.string.limit_exceeded_alco_product),
+                iconRes = R.drawable.is_warning_yellow,
+                pageNumber = "96",
+                timeAutoExitInMillis = 2000
+        )
+    }
+
+    override fun openNotPossibleSaveWithoutReasonScreen() {
+        openInfoScreen(message = context.getString(R.string.not_possible_save_without_reason))
+    }
 }
 
 interface IScreenNavigator : ICoreNavigator {
@@ -242,7 +289,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openLoginScreen()
     fun openSelectMarketScreen()
     fun openFastDataLoadingScreen()
-    fun openSelectionPersonnelNumberScreen(codeConfirmation: Int?)
+    fun openSelectionPersonnelNumberScreen(codeConfirmation: Int? = null)
     fun openMainMenuScreen()
     fun openJobCardScreen()
     fun openLoadingTaskSettingsScreen()
@@ -255,7 +302,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openSetsInfoScreen(productInfo: ProductInfo)
     fun openGoodsReasonsScreen(productInfo: ProductInfo)
     fun openSuccessPrintMessage()
-    fun openComponentSetScreen(productInfo: ProductInfo, componentItem: ComponentItem)
+    fun openComponentSetScreen(productInfo: ProductInfo, componentItem: ComponentItem, mengeTotalCount: Double)
     fun openDetectionSavedDataScreen()
     fun openRemoveLinesConfirmationScreen(taskDescription: String, count: Int, codeConfirmation: Int)
     fun openMatrixAlertScreen(matrixType: MatrixType, codeConfirmation: Int)
@@ -263,4 +310,10 @@ interface IScreenNavigator : ICoreNavigator {
     fun openNotPossibleSaveNegativeQuantityScreen()
     fun openSelectTypeCodeScreen(codeConfirmationForSap: Int, codeConfirmationForBarCode: Int)
     fun openAlertDoubleScanStamp()
+    fun openNotAllComponentProcessedScreen(codeConfirmation: Int)
+    fun openStampsCountAlreadyScannedScreen()
+    fun openAlertNotValidFormatStamp()
+    fun openFailDetectComponentForStampScreen()
+    fun openLimitExceededScreen()
+    fun openNotPossibleSaveWithoutReasonScreen()
 }

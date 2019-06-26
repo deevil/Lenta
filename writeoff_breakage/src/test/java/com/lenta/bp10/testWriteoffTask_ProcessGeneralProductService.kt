@@ -24,7 +24,7 @@ class testWriteoffTask_ProcessGeneralProductService {
                 TaskType("СГП", "nСГП"),
                 "Списание от 04.06 10:23",
                 "0002",
-                listOf(WriteOffReason("949ВД", "Лом/Бой")),
+                listOf(WriteOffReason("949ВД", "Лом/Бой", "A")),
                 listOf("N"),
                 listOf("2FER", "3ROH"), "perNo", "printer", "tkNumber", "ipAddress"
         )
@@ -81,8 +81,8 @@ class testWriteoffTask_ProcessGeneralProductService {
                 false, "1", MatrixType.Active, "materialType")
 
 
-        val reason1 = WriteOffReason("01", "Срок годности")
-        val reason2 = WriteOffReason("02", "Срок негодности")
+        val reason1 = WriteOffReason("01", "Срок годности", "A")
+        val reason2 = WriteOffReason("02", "Срок негодности", "A")
 
         task = task.processGeneralProduct(product1)!!
                 .add(reason1, 1.0)
@@ -122,8 +122,8 @@ class testWriteoffTask_ProcessGeneralProductService {
                 false, "1", MatrixType.Active, "materialType")
 
 
-        val reason1 = WriteOffReason("01", "Срок годности")
-        val reason2 = WriteOffReason("02", "Срок негодности")
+        val reason1 = WriteOffReason("01", "Срок годности", "A")
+        val reason2 = WriteOffReason("02", "Срок негодности", "A")
 
         task = task.processGeneralProduct(product1)!!
                 .add(reason1, 1.0)
@@ -175,8 +175,8 @@ class testWriteoffTask_ProcessGeneralProductService {
                 false, "1", MatrixType.Active, "materialType")
 
 
-        val reason1 = WriteOffReason("01", "Срок годности")
-        val reason2 = WriteOffReason("02", "Срок негодности")
+        val reason1 = WriteOffReason("01", "Срок годности", "A")
+        val reason2 = WriteOffReason("02", "Срок негодности", "A")
 
         task = task.processGeneralProduct(product1)!!
                 .add(reason1, 1.0)
@@ -208,8 +208,8 @@ class testWriteoffTask_ProcessGeneralProductService {
                 false, "1", MatrixType.Active, "materialType")
 
 
-        val reason1 = WriteOffReason("01", "Срок годности")
-        val reason2 = WriteOffReason("02", "Срок негодности")
+        val reason1 = WriteOffReason("01", "Срок годности", "A")
+        val reason2 = WriteOffReason("02", "Срок негодности", "A")
 
         task = task.processGeneralProduct(product1)!!
                 .add(reason1, 1.0)
@@ -256,8 +256,8 @@ class testWriteoffTask_ProcessGeneralProductService {
                 false, "1", MatrixType.Active, "materialType")
 
 
-        val reason1 = WriteOffReason("01", "Срок годности")
-        val reason2 = WriteOffReason("02", "Срок негодности")
+        val reason1 = WriteOffReason("01", "Срок годности", "A")
+        val reason2 = WriteOffReason("02", "Срок негодности", "A")
 
         task = task.processGeneralProduct(product1)!!
                 .add(reason1, 1.0)

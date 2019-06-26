@@ -58,7 +58,7 @@ class GoodsListFragment :
         bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.print, enabled = false)
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.save, enabled = true)
 
-        viewLifecycleOwner.let {
+        viewLifecycleOwner.apply {
             connectLiveData(source = vm.deleteEnabled, target = bottomToolbarUiModel.uiModelButton3.enabled)
             connectLiveData(source = vm.printButtonEnabled, target = bottomToolbarUiModel.uiModelButton4.enabled)
             connectLiveData(source = vm.saveButtonEnabled, target = bottomToolbarUiModel.uiModelButton5.enabled)
@@ -125,8 +125,15 @@ class GoodsListFragment :
                                     }
 
                                 },
-                                onItemDoubleClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
-                                    vm.onDoubleClickPosition(position)
+                                onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
+                                    countedRecyclerViewKeyHandler?.let {
+                                        if (it.isSelected(position)) {
+                                            vm.onClickItemPosition(position)
+                                        } else {
+                                            it.selectPosition(position)
+                                        }
+                                    }
+
                                 }
                         )
 
@@ -173,8 +180,15 @@ class GoodsListFragment :
                                 }
 
                             },
-                            onItemDoubleClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
-                                vm.onDoubleClickPosition(position)
+                            onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
+                                filterRecyclerViewKeyHandler?.let {
+                                    if (it.isSelected(position)) {
+                                        vm.onClickItemPosition(position)
+                                    } else {
+                                        it.selectPosition(position)
+                                    }
+                                }
+
                             }
                     )
 

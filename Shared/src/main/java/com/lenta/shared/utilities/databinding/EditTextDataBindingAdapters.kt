@@ -4,13 +4,13 @@ import android.content.Context
 import android.text.InputFilter
 import android.text.method.DigitsKeyListener
 import android.view.KeyEvent
-import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.TextView
 import androidx.databinding.BindingAdapter
 import com.lenta.shared.models.core.Uom
 import com.lenta.shared.models.core.isOnlyInt
+import com.lenta.shared.utilities.extentions.enable
 
 
 @BindingAdapter(value = ["onOkInSoftKeyboard"])
@@ -56,6 +56,14 @@ fun requestFocus(editText: EditText, @Suppress("UNUSED_PARAMETER") requestFocus:
         if (cursorToLastPos == true) {
             editText.setSelection(editText.text.length)
         }
+    }
+
+}
+
+@BindingAdapter(value = ["disabled"])
+fun setDisabled(editText: EditText, disabled: Boolean?) {
+    if (disabled == null) {
+        editText.enable(disabled == false)
     }
 
 }

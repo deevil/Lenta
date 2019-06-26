@@ -11,15 +11,21 @@ fun EditText.showKeyboard() {
 
 
 fun EditText.disable() {
-    isFocusable = false
-    isEnabled = false
-    isFocusableInTouchMode = false
-    isCursorVisible = false
-    isClickable = false
-    isActivated = false
-    isCursorVisible = false
-    setSelectAllOnFocus(false)
-    setTextIsSelectable(false)
-    keyListener = null
-    clearFocus()
+    enable(false)
+}
+
+fun EditText.enable() {
+    enable(true)
+}
+
+fun EditText.enable(enabled: Boolean) {
+    isFocusable = enabled
+    isEnabled = enabled
+    isFocusableInTouchMode = enabled
+    isCursorVisible = enabled
+    isClickable = enabled
+    isActivated = enabled
+    isCursorVisible = enabled
+    setSelectAllOnFocus(enabled)
+    setTextIsSelectable(enabled)
 }

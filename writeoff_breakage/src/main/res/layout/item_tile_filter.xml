@@ -61,9 +61,9 @@
             android:layout_width="32dp"
             android:layout_height="32dp"
             android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="16dp"
             android:layout_marginEnd="8dp"
-            android:layout_marginBottom="8dp"
+            android:layout_marginBottom="16dp"
             android:background="@drawable/bg_border_circle_white"
             android:ellipsize="end"
             android:foreground="?selectableItemBackground"
@@ -93,7 +93,6 @@
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toEndOf="@+id/div_vert1"
             app:layout_constraintTop_toTopOf="parent"
-            app:zoom="@{true}"
             tools:text="000363 Салака" />
 
         <TextView

@@ -9,10 +9,19 @@ import com.lenta.bp10.requests.network.loader.ResourcesLoader
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.exception.IFailureInterpreter
 import com.lenta.shared.features.loading.CoreLoadingViewModel
+import com.lenta.shared.fmp.resources.dao_ext.getAllowedWobAppVersion
+import com.lenta.shared.fmp.resources.fast.ZmpUtz14V001
+import com.lenta.shared.platform.app_update.AppUpdateChecker
+import com.mobrun.plugin.api.HyperHive
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class FastLoadingViewModel : CoreLoadingViewModel() {
+
+    @Inject
+    lateinit var hyperHive: HyperHive
     @Inject
     lateinit var fastResourcesNetRequest: FastResourcesMultiRequest
     @Inject
@@ -23,6 +32,10 @@ class FastLoadingViewModel : CoreLoadingViewModel() {
     lateinit var resourceLoader: ResourcesLoader
     @Inject
     lateinit var storesNetRequest: StoresNetRequest
+    @Inject
+    lateinit var appUpdateChecker: AppUpdateChecker
+
+    val zmpUtz14V001: ZmpUtz14V001 by lazy { ZmpUtz14V001(hyperHive) }
 
     override val title: MutableLiveData<String> = MutableLiveData()
     override val progress: MutableLiveData<Boolean> = MutableLiveData(true)
@@ -34,6 +47,7 @@ class FastLoadingViewModel : CoreLoadingViewModel() {
             progress.value = true
             fastResourcesNetRequest(null).either(::handleFailure, ::loadStores)
             progress.value = false
+
         }
     }
 
@@ -45,12 +59,26 @@ class FastLoadingViewModel : CoreLoadingViewModel() {
     }
 
     override fun handleFailure(failure: Failure) {
+        screenNavigator.openLoginScreen()
         screenNavigator.openAlertScreen(failureInterpreter.getFailureDescription(failure).message)
     }
 
     private fun handleSuccess(@Suppress("UNUSED_PARAMETER") b: Boolean) {
-        resourceLoader.startLoadSlowResources()
-        screenNavigator.openSelectionPersonnelNumberScreen(null)
+        viewModelScope.launch {
+            if (appUpdateChecker.isNeedUpdate(withContext(Dispatchers.IO) {
+                        return@withContext zmpUtz14V001.getAllowedWobAppVersion()
+                    })) {
+
+                hyperHive.authAPI.unAuth()
+                screenNavigator.closeAllScreen()
+                screenNavigator.openLoginScreen()
+                screenNavigator.openNeedUpdateScreen()
+            } else {
+                resourceLoader.startLoadSlowResources()
+                screenNavigator.openSelectionPersonnelNumberScreen()
+            }
+        }
+
     }
 
     override fun clean() {

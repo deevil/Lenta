@@ -85,7 +85,6 @@
             app:layout_constraintEnd_toStartOf="@+id/imageView2"
             app:layout_constraintStart_toEndOf="@+id/div_vert1"
             app:layout_constraintTop_toTopOf="@+id/tv_counter"
-            app:zoom="@{true}"
             tools:text="000363 Салака" />
 
         <ImageView

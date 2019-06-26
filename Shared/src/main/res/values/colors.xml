@@ -29,6 +29,8 @@
     <color name="color_pressed_yellow">#fdbd47</color>
     <color name="color_disabled_yellow">#8b7241</color>
 
+    <color name="color_disabled_edit_text">#808081</color>
+
     <color name="color_normal_green">#01ae53</color>
     <color name="color_pressed_green">#FF01C759</color>
     <color name="color_disabled_green">#38714a</color>
@@ -46,6 +48,7 @@
 
     <color name="color_text_btn_disabled">#8299AC</color>
     <color name="color_transparent_selected">#22FFFFFF</color>
+    <color name="color_item_selected">#2f5f9d</color>
 
     <color name="color_text_dialogWarning">#FF6578</color>
 

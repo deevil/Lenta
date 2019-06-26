@@ -34,9 +34,9 @@ class ProcessExciseAlcoProductService(val taskDescription: TaskDescription,
         return WriteOffTask(taskDescription, taskRepository)
     }
 
-    fun add(reason: WriteOffReason, count: Double, stamp: TaskExciseStamp): ProcessExciseAlcoProductService {
+    fun add(reason: WriteOffReason, count: Double, stamp: TaskExciseStamp? = null): ProcessExciseAlcoProductService {
         // добавить товар если его нету в таске товаров, в репозитории найти причину списания для данного товара, если есть, то увеличить count иначе создать новый, добавить марку
-        if (taskRepository.getExciseStamps().containsStamp(stamp.code)) {
+        if (stamp != null && taskRepository.getExciseStamps().containsStamp(stamp.code)) {
             return ProcessExciseAlcoProductService(taskDescription, taskRepository, productInfo)
         }
         var taskWriteOfReason = TaskWriteOffReason(reason, productInfo.materialNumber, count)
@@ -62,7 +62,20 @@ class ProcessExciseAlcoProductService(val taskDescription: TaskDescription,
             }
 
         }
-        taskRepository.getExciseStamps().addExciseStamp(stamp.copy(reason.code))
+        addStamp(reason, stamp)
         return ProcessExciseAlcoProductService(taskDescription, taskRepository, productInfo)
     }
+
+    fun addStamp(reason: WriteOffReason, stamp: TaskExciseStamp?): Boolean {
+
+        if (stamp == null || taskRepository.getExciseStamps().containsStamp(stamp.code)) {
+            return false
+        }
+
+        taskRepository.getExciseStamps().addExciseStamp(stamp.copy(reason.code))
+
+        return true
+    }
+
+
 }

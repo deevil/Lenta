@@ -100,6 +100,10 @@ data class ButtonDecorationInfo(
             ButtonDecorationInfo(R.drawable.ic_arrow_forward_white_24dp, R.string.to_next)
         }
 
+        val nextAlternate: ButtonDecorationInfo by lazy {
+            ButtonDecorationInfo(R.drawable.ic_send_white_24dp, R.string.to_next)
+        }
+
         val back: ButtonDecorationInfo by lazy {
             ButtonDecorationInfo(R.drawable.ic_arrow_back_white_24dp, R.string.to_back)
         }

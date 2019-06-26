@@ -211,7 +211,7 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
     }
 
-    fun onDoubleClickPosition(position: Int) {
+    fun onClickItemPosition(position: Int) {
         if (selectedPage.value == 0) {
             countedGoods.value?.getOrNull(position)?.productInfo
         } else {
