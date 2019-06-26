@@ -30,7 +30,9 @@ import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.toStringFormatted
 import com.lenta.shared.view.OnPositionClickListener
 import com.mobrun.plugin.api.HyperHive
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboardListener {
@@ -201,7 +203,10 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
                     scanResultHandler = this@SetsViewModel::handleProductSearchResult
             )
 
-            componentsDataList = zmpUtz46V001.getComponentsForSet(setProductInfo.value!!.materialNumber)
+            componentsDataList = withContext(Dispatchers.IO) {
+                return@withContext zmpUtz46V001.getComponentsForSet(setProductInfo.value!!.materialNumber)
+            }
+
             componentsDataList.forEachIndexed { index, _ ->
                 searchComponentDelegate.copy().searchCode(componentsDataList[index].matnr, fromScan = false, isBarCode = false)
             }

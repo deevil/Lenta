@@ -33,5 +33,10 @@ abstract class CoreLoginFragment : CoreFragment<com.lenta.shared.databinding.Fra
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        vm.onResume()
+    }
+
 
 }

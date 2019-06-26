@@ -97,5 +97,6 @@
     <string name="goods_info">Информация о товаре</string>
     <string name="set_info">Информация о наборе</string>
     <string name="set_component">Компонент набора</string>
+    <string name="need_update">Версия мобильного приложения устарела. Необходимо выполнить обновление</string>
 
 </resources>

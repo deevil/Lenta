@@ -244,6 +244,9 @@ class CoreNavigator constructor(private val context: Context,
         openInfoScreen(message = context.getString(R.string.another_product_stamp, productName))
     }
 
+    override fun openNeedUpdateScreen() {
+        openInfoScreen(context.getString(R.string.need_update))
+    }
 
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 
@@ -283,6 +286,7 @@ interface ICoreNavigator {
     fun openStampAnotherMarketAlert(codeConfirm: Int)
     fun openAnotherProductStampAlert(productName: String)
     fun openWriteOffToProductionConfirmationScreen(codeConfirm: Int)
+    fun openNeedUpdateScreen()
 }
 
 class FunctionsCollector(private val needCollectLiveData: LiveData<Boolean>) {

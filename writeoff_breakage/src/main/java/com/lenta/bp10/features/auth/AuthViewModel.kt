@@ -14,6 +14,7 @@ import com.lenta.shared.features.login.isValidLoginFields
 import com.lenta.shared.requests.network.Auth
 import com.lenta.shared.requests.network.AuthParams
 import com.lenta.shared.settings.IAppSettings
+import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.getBaseAuth
@@ -34,23 +35,6 @@ class AuthViewModel : CoreAuthViewModel() {
     lateinit var sessionInfo: ISessionInfo
     @Inject
     lateinit var appSettings: IAppSettings
-
-    init {
-        viewModelScope.launch {
-            if (!appSettings.lastLogin.isNullOrEmpty()) {
-                login.value = appSettings.lastLogin
-            }
-            runIfDebug {
-                if (login.value.isNullOrEmpty()) {
-                    login.value = "MAKAROV"
-                }
-                if (login.value == "MAKAROV") {
-                    password.value = "1q2w3e4r"
-                }
-
-            }
-        }
-    }
 
 
     override val enterEnabled: MutableLiveData<Boolean> by lazy {
@@ -102,5 +86,23 @@ class AuthViewModel : CoreAuthViewModel() {
 
     private fun getPassword(): String {
         return password.value?.trim() ?: ""
+    }
+
+    override fun onResume() {
+        viewModelScope.launch {
+            if (!appSettings.lastLogin.isNullOrEmpty()) {
+                login.value = appSettings.lastLogin
+            }
+            runIfDebug {
+                Logg.d { "login.value ${login.value}" }
+                if (login.value.isNullOrEmpty()) {
+                    login.value = "MAKAROV"
+                }
+                if (login.value == "MAKAROV" && getPassword().isEmpty()) {
+                    password.value = "1q2w3e4r"
+                }
+
+            }
+        }
     }
 }

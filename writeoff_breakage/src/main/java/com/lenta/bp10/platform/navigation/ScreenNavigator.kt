@@ -289,7 +289,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openLoginScreen()
     fun openSelectMarketScreen()
     fun openFastDataLoadingScreen()
-    fun openSelectionPersonnelNumberScreen(codeConfirmation: Int?)
+    fun openSelectionPersonnelNumberScreen(codeConfirmation: Int? = null)
     fun openMainMenuScreen()
     fun openJobCardScreen()
     fun openLoadingTaskSettingsScreen()
