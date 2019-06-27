@@ -5,6 +5,8 @@
     <string name="storage_place">Место хранения</string>
     <string name="storage_place_abbr">МХ</string>
     <string name="quantity">Количество</string>
+    <string name="goods">Товаров</string>
+    <string name="status">Статус</string>
     <string name="categories">Категории</string>
     <string name="processed">Обработанные</string>
     <string name="not_processed">Не обработанные</string>
@@ -12,5 +14,7 @@
     <string name="goods_of_details_mx">Детали по товару и местам хранения</string>
     <string name="list_of_goods">Список товаров</string>
     <string name="enter_item_number_or_barcode">Введите SAP-код или штрихкод</string>
+    <string name="enter_storage_place_number">Введите номер МХ</string>
     <string name="limit_exceeded">Превышен лимит</string>
+    <string name="list_of_storages">Список МХ</string>
 </resources>
