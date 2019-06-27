@@ -22,7 +22,7 @@ class AppUpdateCheckerTest {
     fun setUp() = MockKAnnotations.init(this, relaxUnitFun = true)
 
     @Test
-    fun appUpdateCheckerTest() {
+    fun `определение необходимости обновления приложения`() {
 
         val appUpdateChecker = AppUpdateChecker(context)
 
