@@ -232,6 +232,7 @@ class GoodsListFragment :
                 }
                 return false
             }
+            return true
         }
         return false
     }
