@@ -10,5 +10,4 @@ interface ITaskProductRepository {
     fun deleteProduct(product: ProductInfo): Boolean
     fun clear()
     operator fun get(index: Int): ProductInfo
-    fun lenght(): Int
 }

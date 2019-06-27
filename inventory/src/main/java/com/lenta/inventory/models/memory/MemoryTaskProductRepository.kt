@@ -63,7 +63,4 @@ class MemoryTaskProductRepository(private val productInfo: ArrayList<ProductInfo
         return productInfo[index]
     }
 
-    override fun lenght(): Int {
-        return productInfo.size
-    }
 }
