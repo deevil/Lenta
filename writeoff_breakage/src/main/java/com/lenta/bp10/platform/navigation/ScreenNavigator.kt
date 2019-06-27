@@ -124,9 +124,9 @@ class ScreenNavigator(
         }
     }
 
-    override fun openSetsInfoScreen(productInfo: ProductInfo) {
+    override fun openSetsInfoScreen(productInfo: ProductInfo, quantity: Double) {
         runOrPostpone {
-            getFragmentStack()?.push(SetsFragment.create(productInfo))
+            getFragmentStack()?.push(SetsFragment.create(productInfo, quantity))
         }
     }
 
@@ -299,7 +299,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openRemoveTaskConfirmationScreen(taskDescription: String, codeConfirmation: Int)
     fun openSendingReportsScreen(writeOffReportResponse: WriteOffReportResponse)
     fun closeAllScreen()
-    fun openSetsInfoScreen(productInfo: ProductInfo)
+    fun openSetsInfoScreen(productInfo: ProductInfo, quantity: Double)
     fun openGoodsReasonsScreen(productInfo: ProductInfo)
     fun openSuccessPrintMessage()
     fun openComponentSetScreen(productInfo: ProductInfo, componentItem: ComponentItem, mengeTotalCount: Double)

@@ -24,10 +24,8 @@ import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.scan.OnScanResultListener
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.databinding.*
-import com.lenta.shared.utilities.extentions.connectLiveData
-import com.lenta.shared.utilities.extentions.generateScreenNumber
-import com.lenta.shared.utilities.extentions.getFragmentResultCode
-import com.lenta.shared.utilities.extentions.provideViewModel
+import com.lenta.shared.utilities.extentions.*
+import com.lenta.shared.utilities.state.state
 
 class SetsFragment :
         CoreFragment<FragmentSetsBinding, SetsViewModel>(),
@@ -37,13 +35,16 @@ class SetsFragment :
         OnBackPresserListener,
         OnScanResultListener {
 
-    private lateinit var productInfo: ProductInfo
+    private var productInfo: ProductInfo? by state(null)
+
+    private var quantity by state(0.0)
 
 
     companion object {
-        fun create(productInfo: ProductInfo): SetsFragment {
+        fun create(productInfo: ProductInfo, quantity: Double): SetsFragment {
             SetsFragment().let {
                 it.productInfo = productInfo
+                it.quantity = quantity
                 return it
             }
         }
@@ -57,14 +58,21 @@ class SetsFragment :
     override fun getViewModel(): SetsViewModel {
         provideViewModel(SetsViewModel::class.java).let { vm ->
             getAppComponent()?.inject(vm)
-            vm.setProductInfo(productInfo)
+            if (vm.setProductInfo.value == null) {
+                vm.setProductInfo.value = productInfo
+            }
+
+            if (vm.count.value == null) {
+                vm.count.value = quantity.toStringFormatted()
+            }
+
             return vm
         }
     }
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
         topToolbarUiModel.description.value = getString(R.string.set_info)
-        topToolbarUiModel.title.value = "${productInfo.getMaterialLastSix()} ${productInfo.description}"
+        connectLiveData(vm.title, topToolbarUiModel.title)
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {

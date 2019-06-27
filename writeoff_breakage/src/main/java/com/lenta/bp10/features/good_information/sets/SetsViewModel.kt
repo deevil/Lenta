@@ -83,7 +83,7 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
     val writeOffReasons: MutableLiveData<List<WriteOffReason>> = MutableLiveData()
     val writeOffReasonTitles: LiveData<List<String>> = writeOffReasons.map { it?.map { reason -> reason.name } }
     val selectedPosition: MutableLiveData<Int> = MutableLiveData(0)
-    val count: MutableLiveData<String> = MutableLiveData("1")
+    val count: MutableLiveData<String> = MutableLiveData()
     private var limitsChecker: LimitsChecker? = null
     val countValue: MutableLiveData<Double> = count.map {
         (it?.toDoubleOrNull() ?: 0.0).apply {
@@ -132,6 +132,10 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
         totalProcessedStampsCount == totalRightStampsCount && countValue.value != 0.0 && getReason() !== WriteOffReason.empty
     }
 
+    val title: LiveData<String> by lazy {
+        MutableLiveData("${setProductInfo.value!!.getMaterialLastSix()} ${setProductInfo.value!!.description}")
+    }
+
     private lateinit var componentsDataList: List<ZmpUtz46V001.ItemLocal_ET_SET_LIST>
 
     private val components = mutableListOf<ProductInfo>()
@@ -146,10 +150,6 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
                 val selectedComponentsPositions = componentsSelectionsHelper.selectedPositions.value
                 if (selectedTabPos == 0) processExciseAlcoProductService.taskRepository.getTotalCountForProduct(setProductInfo.value!!) > 0.0 else !selectedComponentsPositions.isNullOrEmpty()
             }
-
-    fun setProductInfo(productInfo: ProductInfo) {
-        this.setProductInfo.value = productInfo
-    }
 
 
     init {
@@ -371,14 +371,12 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
     }
 
     private fun onClickClean() {
-        processServiceManager.getWriteOffTask()?.let { writeOffTask ->
-            componentsSelectionsHelper.selectedPositions.value?.map { position ->
-                components[position]
-            }?.let {
-                stampsCollectorManager.clearAllStampsCollectors()
-            }
-            updateComponents()
+        componentsSelectionsHelper.selectedPositions.value?.map { position ->
+            components[position]
+        }?.let {
+            stampsCollectorManager.clearAllStampsCollectors()
         }
+        updateComponents()
     }
 
     private fun onClickDetails() {

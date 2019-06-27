@@ -130,7 +130,7 @@ class SearchProductDelegate @Inject constructor(
             }
             with(infoResult) {
                 openProductScreen(productInfo,
-                        if (productInfo.type == ProductType.ExciseAlcohol) 0.0 else quantity)
+                        if (productInfo.type == ProductType.ExciseAlcohol && !productInfo.isSet) 0.0 else quantity)
             }
 
         }
@@ -216,7 +216,7 @@ class SearchProductDelegate @Inject constructor(
             ProductType.General -> screenNavigator.openGoodInfoScreen(productInfo, quantity)
             ProductType.ExciseAlcohol -> {
                 if (productInfo.isSet) {
-                    screenNavigator.openSetsInfoScreen(productInfo)
+                    screenNavigator.openSetsInfoScreen(productInfo, quantity)
                     return
                 } else
                     screenNavigator.openExciseAlcoScreen(productInfo)
