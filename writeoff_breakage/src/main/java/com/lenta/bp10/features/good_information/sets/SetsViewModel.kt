@@ -187,12 +187,14 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
 
             searchSetDelegate.init(
                     viewModelScope = this@SetsViewModel::viewModelScope,
-                    scanResultHandler = this@SetsViewModel::handleSetSearchResult
+                    scanResultHandler = this@SetsViewModel::handleSetSearchResult,
+                    checksEnabled = false
             )
 
             searchComponentDelegate.init(
                     viewModelScope = this@SetsViewModel::viewModelScope,
-                    scanResultHandler = this@SetsViewModel::handleComponentSearchResult
+                    scanResultHandler = this@SetsViewModel::handleComponentSearchResult,
+                    checksEnabled = false
             )
 
             searchProductDelegate.init(
@@ -399,7 +401,9 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
 
             return
         }
-        setsAlcoStampSearchDelegate.handleResult(fragmentResultCode)
+        if (!setsAlcoStampSearchDelegate.handleResult(fragmentResultCode)) {
+            searchProductDelegate.handleResultCode(fragmentResultCode)
+        }
     }
 
 }

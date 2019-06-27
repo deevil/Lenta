@@ -34,11 +34,14 @@ class SearchProductDelegate @Inject constructor(
         private var permissionToWriteoffNetRequest: PermissionToWriteoffNetRequest
 ) {
 
+
     private val zmpUtz29V001: ZmpUtz29V001Rfc by lazy {
         ZmpUtz29V001Rfc(hyperHive)
     }
 
     private var scanInfoResult: ScanInfoResult? = null
+
+    private var checksEnabled: Boolean = true
 
     private lateinit var viewModelScope: () -> CoroutineScope
 
@@ -55,21 +58,22 @@ class SearchProductDelegate @Inject constructor(
                 sessionInfo,
                 permissionToWriteoffNetRequest
         )
-        searchProductDelegate.init(viewModelScope, scanResultHandler)
+        searchProductDelegate.init(viewModelScope, scanResultHandler, checksEnabled)
         return searchProductDelegate
     }
 
-    fun init(viewModelScope: () -> CoroutineScope, scanResultHandler: ((ScanInfoResult?) -> Boolean)? = null) {
+    fun init(viewModelScope: () -> CoroutineScope, scanResultHandler: ((ScanInfoResult?) -> Boolean)? = null, checksEnabled: Boolean = true) {
         Logg.d { "viewModelScope hash: ${viewModelScope.hashCode()}" }
         this.viewModelScope = viewModelScope
         this.scanResultHandler = scanResultHandler
+        this.checksEnabled = checksEnabled
     }
 
     fun searchCode(code: String, fromScan: Boolean, isBarCode: Boolean? = null) {
 
         Logg.d { "hashCode: ${hashCode()}" }
 
-        if (isBarCode == null && code.length == 12) {
+        if (checksEnabled && isBarCode == null && code.length == 12) {
             codeWith12Digits = code
             screenNavigator.openSelectTypeCodeScreen(requestCodeTypeSap, requestCodeTypeBarCode)
             return
@@ -94,7 +98,7 @@ class SearchProductDelegate @Inject constructor(
     fun handleResultCode(code: Int?): Boolean {
         return when (code) {
             requestCodeAddProduct -> {
-                openInfoScreenOrAllert()
+                handleInfoResultOrOpenInfoScreen()
                 true
             }
             requestCodeTypeSap -> {
@@ -117,7 +121,7 @@ class SearchProductDelegate @Inject constructor(
     }
 
 
-    private fun openInfoScreenOrAllert() {
+    private fun handleInfoResultOrOpenInfoScreen() {
         scanInfoResult?.let { infoResult ->
             scanResultHandler?.let { handle ->
                 if (handle(infoResult)) {
@@ -140,7 +144,7 @@ class SearchProductDelegate @Inject constructor(
         Logg.d { "scanInfoResult: $scanInfoResult" }
         this.scanInfoResult = scanInfoResult
         viewModelScope().launch {
-            if (zmpUtz29V001.isChkOwnpr(processServiceManager.getWriteOffTask()?.taskDescription!!.taskType.code)) {
+            if (checksEnabled && zmpUtz29V001.isChkOwnpr(processServiceManager.getWriteOffTask()?.taskDescription!!.taskType.code)) {
                 screenNavigator.showProgress(permissionToWriteoffNetRequest)
                 permissionToWriteoffNetRequest(
                         PermissionToWriteoffPrams(
@@ -161,6 +165,11 @@ class SearchProductDelegate @Inject constructor(
     }
 
     private fun searchProduct() {
+
+        if (!checksEnabled) {
+            handleInfoResultOrOpenInfoScreen()
+            return
+        }
 
         scanInfoResult?.let {
             var goodsForTask = false
@@ -190,14 +199,14 @@ class SearchProductDelegate @Inject constructor(
             }
 
             it.productInfo.matrixType.let { matrixType ->
-                if (!matrixType.isNormal()) {
+                if (checksEnabled && !matrixType.isNormal()) {
                     screenNavigator.openMatrixAlertScreen(matrixType = matrixType, codeConfirmation = requestCodeAddProduct)
                     return
                 }
             }
         }
 
-        openInfoScreenOrAllert()
+        handleInfoResultOrOpenInfoScreen()
 
     }
 
