@@ -120,6 +120,11 @@ data class ButtonDecorationInfo(
             ButtonDecorationInfo(R.drawable.ic_close_white_24dp, R.string.missing)
         }
 
+        //TODO: Добавить правильную иконку
+        val refresh: ButtonDecorationInfo by lazy {
+            ButtonDecorationInfo(R.drawable.ic_print_white_24dp, R.string.refresh)
+        }
+
         val empty: ButtonDecorationInfo by lazy {
             ButtonDecorationInfo(0, 0)
         }

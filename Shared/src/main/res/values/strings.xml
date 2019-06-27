@@ -52,6 +52,7 @@
     <string name="save">Сохранить</string>
     <string name="complete">Завершить</string>
     <string name="skip">Пропустить</string>
+    <string name="refresh">Обновить</string>
     <string name="number">№</string>
     <string name="good">Товар</string>
     <string name="quantity">Количество</string>
