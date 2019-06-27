@@ -102,7 +102,7 @@ class SetsAlcoStampSearchDelegate @Inject constructor(
         viewModelScope().launch {
             screenNavigator.showProgress(productInfoDbRequest)
             productInfoDbRequest(ProductInfoRequestParams(number = matNumber))
-                    .either(::handleFailure, ::onSearchProductSucces)
+                    .either(::handleFailure, ::onSearchProductSuccess)
             screenNavigator.hideProgress()
 
         }
@@ -115,7 +115,7 @@ class SetsAlcoStampSearchDelegate @Inject constructor(
     }
 
 
-    private fun onSearchProductSucces(productInfo: ProductInfo) {
+    private fun onSearchProductSuccess(productInfo: ProductInfo) {
         handleNewStamp(isBadStamp, productInfo)
     }
 
