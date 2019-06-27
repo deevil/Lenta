@@ -97,26 +97,23 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
     val totalCountWithUom: MutableLiveData<String> = totalCount.map { "${it.toStringFormatted()} ${setProductInfo.value!!.uom.name}" }
     val suffix: MutableLiveData<String> = MutableLiveData()
     val componentsLiveData: LiveData<List<ComponentItem>> = countValue.map {
-        mutableListOf<ComponentItem>().apply {
-            components.forEachIndexed { index, compInfo ->
-                val countExciseStampForComponent = getCountExciseStampsForComponent(compInfo)
-                val rightCount = componentsDataList[index].menge * countValue.value!!
-                add(ComponentItem(
-                        number = index + 1,
-                        name = "${compInfo.materialNumber.substring(compInfo.materialNumber.length - 6)} ${compInfo.description}",
-                        quantity = "${countExciseStampForComponent.toStringFormatted()} из ${(rightCount).toStringFormatted()}",
-                        menge = componentsDataList[index].menge.toString(),
-                        even = index % 2 == 0,
-                        countSets = totalCount.value!!,
-                        selectedPosition = selectedPosition.value!!,
-                        writeOffReason = getReason(),
-                        setMaterialNumber = setProductInfo.value!!.materialNumber,
-                        rightCount = rightCount,
-                        processedStampsCount = countExciseStampForComponent
-                )
-                )
-            }
-        }.toList()
+        components.mapIndexed { index, compInfo ->
+            val countExciseStampForComponent = getCountExciseStampsForComponent(compInfo)
+            val rightCount = componentsDataList[index].menge * countValue.value!!
+            ComponentItem(
+                    number = index + 1,
+                    name = "${compInfo.materialNumber.substring(compInfo.materialNumber.length - 6)} ${compInfo.description}",
+                    quantity = "${countExciseStampForComponent.toStringFormatted()} из ${(rightCount).toStringFormatted()}",
+                    menge = componentsDataList[index].menge.toString(),
+                    even = index % 2 == 0,
+                    countSets = totalCount.value!!,
+                    selectedPosition = selectedPosition.value!!,
+                    writeOffReason = getReason(),
+                    setMaterialNumber = setProductInfo.value!!.materialNumber,
+                    rightCount = rightCount,
+                    processedStampsCount = countExciseStampForComponent
+            )
+        }
     }
     val componentsSelectionsHelper = SelectionItemsHelper()
     val eanCode: MutableLiveData<String> = MutableLiveData()

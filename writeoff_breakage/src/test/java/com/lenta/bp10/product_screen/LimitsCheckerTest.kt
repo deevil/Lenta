@@ -11,7 +11,7 @@ class LimitsCheckerTest {
 
 
     @Test
-    fun limitsCheckerTest() {
+    fun `Лимиты на алкоголь`() {
 
         var observeFuncWasExecuted = false
 
@@ -40,7 +40,7 @@ class LimitsCheckerTest {
     }
 
     @Test
-    fun limitsZeroCheckerTest() {
+    fun `Нулевой лимит`() {
 
         var observeFuncWasExecuted = false
 

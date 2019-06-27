@@ -228,9 +228,11 @@ class GoodsListFragment :
             if (!it.onKeyDown(keyCode)) {
                 keyCode.digit?.let { digit ->
                     vm.onDigitPressed(digit)
+                    return true
                 }
-                return true
+                return false
             }
+            return true
         }
         return false
     }

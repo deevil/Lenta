@@ -8,7 +8,6 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
-            <option value="$PROJECT_DIR$/BP10_Writeoff" />
             <option value="$PROJECT_DIR$/HoneywellDataCollection" />
             <option value="$PROJECT_DIR$/Shared" />
             <option value="$PROJECT_DIR$/hhive" />

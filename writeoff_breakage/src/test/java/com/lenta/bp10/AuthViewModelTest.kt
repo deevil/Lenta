@@ -2,13 +2,15 @@ package com.lenta.bp10
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.lenta.bp10.features.auth.AuthViewModel
+import com.lenta.shared.functional.Either
+import com.lenta.shared.requests.network.AuthParams
 import com.lenta.shared.utilities.tests_utils.observeOnce
 import com.nhaarman.mockitokotlin2.*
+import io.mockk.every
+import io.mockk.mockkObject
 import junit.framework.TestCase.*
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.ObsoleteCoroutinesApi
-import kotlinx.coroutines.newSingleThreadContext
+import kotlinx.coroutines.*
+import kotlinx.coroutines.test.TestCoroutineDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
 import org.junit.After
@@ -16,7 +18,6 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.Mockito
 import org.mockito.junit.MockitoJUnitRunner
 
 @ObsoleteCoroutinesApi
@@ -24,7 +25,6 @@ import org.mockito.junit.MockitoJUnitRunner
 @RunWith(MockitoJUnitRunner::class)
 class AuthViewModelTest {
 
-    private val mainThreadSurrogate = newSingleThreadContext("UI thread")
 
     lateinit var authViewModel: AuthViewModel
 
@@ -35,9 +35,10 @@ class AuthViewModelTest {
     @Before
     fun setUp() {
 
-        Dispatchers.setMain(mainThreadSurrogate)
+        Dispatchers.setMain(TestCoroutineDispatcher())
 
         authViewModel = AuthViewModel()
+        authViewModel.auth = mock()
         authViewModel.appSettings = mock()
         authViewModel.sessionInfo = mock()
         authViewModel.permissionsRequest = mock()
@@ -56,21 +57,61 @@ class AuthViewModelTest {
     @After
     fun tearDown() {
         Dispatchers.resetMain() // reset main dispatcher to the original Main dispatcher
-        mainThreadSurrogate.close()
     }
 
 
     @Test(expected = NoSuchMethodError::class)
-    fun onClickAuxiliaryMenuTest() {
+    fun `Нажатие кнопки настройки`() {
 
-        Mockito.`when`(authViewModel.navigator.openAuxiliaryMenuScreen()).thenThrow(NoSuchMethodError())
+        mockkObject(authViewModel.navigator)
+
+        every { authViewModel.navigator.openAuxiliaryMenuScreen() } throws NoSuchMethodError()
 
         authViewModel.onClickAuxiliaryMenu()
 
     }
 
     @Test
-    fun enterEnabledTest() {
+    fun `Восстановление последнего логина`() {
+
+        mockkObject(authViewModel.appSettings)
+        every { authViewModel.appSettings.lastLogin } returns ("JACK LONDON")
+
+
+        assertEquals("", authViewModel.login.value)
+        authViewModel.onResume()
+        assertEquals("JACK LONDON", authViewModel.login.value)
+
+
+    }
+
+    @Test
+    fun `Обрезка пробелов логина и пароля`() = runBlocking {
+
+        var handleFuncFlag = false
+
+        whenever(authViewModel.auth.invoke(AuthParams("JACK LONDON", "123456"))).thenReturn(Either.Left({
+            handleFuncFlag = true
+            com.lenta.shared.exception.Failure.AuthError
+        }()))
+
+
+        authViewModel.login.value = " JACK LONDON "
+        authViewModel.password.value = " 123456 "
+        authViewModel.onClickEnter()
+
+        assertTrue(handleFuncFlag)
+
+        handleFuncFlag = false
+        authViewModel.login.value = " Hemingway "
+        authViewModel.password.value = " 123456 "
+        authViewModel.onClickEnter()
+        assertFalse(handleFuncFlag)
+
+    }
+
+    @Test
+    fun `Активация кнопки входа`() {
 
         assertTrue(authViewModel.enterEnabled.value != true)
 
