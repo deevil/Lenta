@@ -6,7 +6,7 @@ import com.lenta.bp10.fmp.resources.tasks_settings.ZmpUtz29V001Rfc
 import com.lenta.bp10.models.repositories.IWriteOffTaskManager
 import com.lenta.bp10.platform.navigation.IScreenNavigator
 import com.lenta.bp10.platform.requestCodeAddAddToProduction
-import com.lenta.bp10.platform.requestCodeAddProduct
+import com.lenta.bp10.platform.requestCodeAddProductWithBadStamp
 import com.lenta.bp10.platform.requestCodeTypeBarCode
 import com.lenta.bp10.platform.requestCodeTypeSap
 import com.lenta.bp10.requests.network.PermissionToWriteoffNetRequest
@@ -101,8 +101,8 @@ class SearchProductDelegate @Inject constructor(
 
     fun handleResultCode(code: Int?): Boolean {
         return when (code) {
-            requestCodeAddProduct -> {
-                handleInfoResultOrOpenInfoScreen()
+            requestCodeAddProductWithBadStamp -> {
+                checkPermissions()
                 true
             }
             requestCodeTypeSap -> {
@@ -116,7 +116,7 @@ class SearchProductDelegate @Inject constructor(
                 true
             }
             requestCodeAddAddToProduction -> {
-                searchProduct()
+                handleSearchResultOrOpenProductScreen()
                 true
             }
             else -> false
@@ -125,7 +125,30 @@ class SearchProductDelegate @Inject constructor(
     }
 
 
-    private fun handleInfoResultOrOpenInfoScreen() {
+    private fun checkPermissions() {
+
+        if (checksEnabled && zmpUtz29V001.isChkOwnpr(processServiceManager.getWriteOffTask()?.taskDescription!!.taskType.code)) {
+
+            screenNavigator.showProgress(permissionToWriteoffNetRequest)
+
+            viewModelScope().launch {
+                permissionToWriteoffNetRequest(
+                        PermissionToWriteoffPrams(
+                                matnr = scanInfoResult!!.productInfo.materialNumber,
+                                werks = sessionInfo.market!!))
+                        .either(::handleFailure, ::handlePermissionsSuccess)
+            }
+
+            screenNavigator.hideProgress()
+
+            return
+        }
+
+        handleSearchResultOrOpenProductScreen()
+
+    }
+
+    private fun handleSearchResultOrOpenProductScreen() {
         scanInfoResult?.let { infoResult ->
             scanResultHandler?.let { handle ->
                 if (handle(infoResult)) {
@@ -138,6 +161,7 @@ class SearchProductDelegate @Inject constructor(
             }
 
         }
+
     }
 
     private fun handleFailure(failure: Failure) {
@@ -147,19 +171,7 @@ class SearchProductDelegate @Inject constructor(
     private fun handleSearchSuccess(scanInfoResult: ScanInfoResult) {
         Logg.d { "scanInfoResult: $scanInfoResult" }
         this.scanInfoResult = scanInfoResult
-        viewModelScope().launch {
-            if (checksEnabled && zmpUtz29V001.isChkOwnpr(processServiceManager.getWriteOffTask()?.taskDescription!!.taskType.code)) {
-                screenNavigator.showProgress(permissionToWriteoffNetRequest)
-                permissionToWriteoffNetRequest(
-                        PermissionToWriteoffPrams(
-                                matnr = scanInfoResult.productInfo.materialNumber,
-                                werks = sessionInfo.market!!))
-                        .either(::handleFailure, ::handlePermissionsSuccess)
-                screenNavigator.hideProgress()
-            } else {
-                searchProduct()
-            }
-        }
+        searchProduct()
     }
 
     private fun handlePermissionsSuccess(permissionToWriteoff: PermissionToWriteoffRestInfo) {
@@ -171,7 +183,7 @@ class SearchProductDelegate @Inject constructor(
     private fun searchProduct() {
 
         if (!checksEnabled) {
-            handleInfoResultOrOpenInfoScreen()
+            handleSearchResultOrOpenProductScreen()
             return
         }
 
@@ -204,13 +216,13 @@ class SearchProductDelegate @Inject constructor(
 
             it.productInfo.matrixType.let { matrixType ->
                 if (checksEnabled && !matrixType.isNormal()) {
-                    screenNavigator.openMatrixAlertScreen(matrixType = matrixType, codeConfirmation = requestCodeAddProduct)
+                    screenNavigator.openMatrixAlertScreen(matrixType = matrixType, codeConfirmation = requestCodeAddProductWithBadStamp)
                     return
                 }
             }
         }
 
-        handleInfoResultOrOpenInfoScreen()
+        checkPermissions()
 
     }
 
