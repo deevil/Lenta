@@ -151,6 +151,8 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
                 if (selectedTabPos == 0) processExciseAlcoProductService.taskRepository.getTotalCountForProduct(setProductInfo.value!!) > 0.0 else !selectedComponentsPositions.isNullOrEmpty()
             }
 
+    val editTextFocus: MutableLiveData<Boolean> = MutableLiveData()
+
 
     init {
         viewModelScope.launch {
@@ -219,6 +221,8 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
                     tkNumber = processServiceManager.getWriteOffTask()!!.taskDescription.tkNumber,
                     components = components
             )
+
+            editTextFocus.postValue(true)
 
         }
     }
