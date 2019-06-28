@@ -4,7 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
+import android.widget.AdapterView
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import com.lenta.bp10.BR
@@ -14,6 +14,8 @@ import com.lenta.bp10.databinding.ItemTileSetsBinding
 import com.lenta.bp10.databinding.LayoutSetsComponentsBinding
 import com.lenta.bp10.databinding.LayoutSetsQuantityBinding
 import com.lenta.bp10.platform.extentions.getAppComponent
+import com.lenta.shared.keys.KeyCode
+import com.lenta.shared.keys.OnKeyDownListener
 import com.lenta.shared.models.core.ProductInfo
 import com.lenta.shared.platform.activity.OnBackPresserListener
 import com.lenta.shared.platform.fragment.CoreFragment
@@ -22,7 +24,6 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.scan.OnScanResultListener
-import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.databinding.*
 import com.lenta.shared.utilities.extentions.*
 import com.lenta.shared.utilities.state.state
@@ -33,7 +34,10 @@ class SetsFragment :
         PageSelectionListener,
         ToolbarButtonsClickListener,
         OnBackPresserListener,
-        OnScanResultListener {
+        OnScanResultListener,
+        OnKeyDownListener {
+
+    private var recyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
 
     private var productInfo: ProductInfo? by state(null)
 
@@ -136,13 +140,6 @@ class SetsFragment :
                         }
                     }
 
-                    val onClickGoodTitle = View.OnClickListener { v ->
-                        Logg.d { "onClickListener ${(v as TextView).text.substring(0, 6)}" }
-                        vm.eanCode.value = (v as TextView).text.substring(0, 6)
-                        vm.onOkInSoftKeyboard()
-                    }
-
-                    layoutBinding.lifecycleOwner = viewLifecycleOwner
                     layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
                             layoutId = R.layout.item_tile_sets,
                             itemId = BR.vm,
@@ -153,13 +150,31 @@ class SetsFragment :
                                 override fun onBind(binding: ItemTileSetsBinding, position: Int) {
                                     binding.tvCounter.tag = position
                                     binding.tvCounter.setOnClickListener(onClickSelectionListener)
-                                    binding.tvGoodTitle.setOnClickListener(onClickGoodTitle)
                                     binding.selectedForDelete = vm.componentsSelectionsHelper.isSelected(position)
+                                    recyclerViewKeyHandler?.let {
+                                        binding.root.isSelected = it.isSelected(position)
+                                    }
+                                }
+
+                            },
+                            onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
+                                recyclerViewKeyHandler?.let {
+                                    if (it.isSelected(position)) {
+                                        vm.onClickItemPosition(position)
+                                    } else {
+                                        it.selectPosition(position)
+                                    }
                                 }
 
                             }
                     )
                     layoutBinding.vm = vm
+                    layoutBinding.lifecycleOwner = viewLifecycleOwner
+                    recyclerViewKeyHandler = RecyclerViewKeyHandler(
+                            rv = layoutBinding.rv,
+                            items = vm.componentsLiveData,
+                            lifecycleOwner = layoutBinding.lifecycleOwner!!
+                    )
                     return layoutBinding.root
                 }
 
@@ -189,6 +204,13 @@ class SetsFragment :
 
     override fun onFragmentResult(arguments: Bundle) {
         vm.onResult(arguments.getFragmentResultCode())
+    }
+
+    override fun onKeyDown(keyCode: KeyCode): Boolean {
+        if (vm.selectedPage.value == 1) {
+            return recyclerViewKeyHandler?.onKeyDown(keyCode) ?: false
+        }
+        return false
     }
 
 }

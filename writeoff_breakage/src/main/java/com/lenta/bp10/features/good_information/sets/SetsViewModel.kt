@@ -408,6 +408,12 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
         }
     }
 
+    fun onClickItemPosition(position: Int) {
+        components.getOrNull(position)?.let {
+            searchEANCode(it.materialNumber)
+        }
+    }
+
 }
 
 data class ComponentItem(
