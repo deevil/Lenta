@@ -1,5 +1,6 @@
 package com.lenta.bp10.features.goods_list
 
+import com.lenta.bp10.features.good_information.LimitsChecker
 import com.lenta.bp10.fmp.resources.dao_ext.isChkOwnpr
 import com.lenta.bp10.fmp.resources.tasks_settings.ZmpUtz29V001Rfc
 import com.lenta.bp10.models.repositories.IWriteOffTaskManager
@@ -43,6 +44,8 @@ class SearchProductDelegate @Inject constructor(
 
     private var checksEnabled: Boolean = true
 
+    private var limitsChecker: LimitsChecker? = null
+
     private lateinit var viewModelScope: () -> CoroutineScope
 
     private var scanResultHandler: ((ScanInfoResult?) -> Boolean)? = null
@@ -58,15 +61,16 @@ class SearchProductDelegate @Inject constructor(
                 sessionInfo,
                 permissionToWriteoffNetRequest
         )
-        searchProductDelegate.init(viewModelScope, scanResultHandler, checksEnabled)
+        searchProductDelegate.init(viewModelScope, scanResultHandler, checksEnabled, limitsChecker)
         return searchProductDelegate
     }
 
-    fun init(viewModelScope: () -> CoroutineScope, scanResultHandler: ((ScanInfoResult?) -> Boolean)? = null, checksEnabled: Boolean = true) {
+    fun init(viewModelScope: () -> CoroutineScope, scanResultHandler: ((ScanInfoResult?) -> Boolean)? = null, checksEnabled: Boolean = true, limitsChecker: LimitsChecker? = null) {
         Logg.d { "viewModelScope hash: ${viewModelScope.hashCode()}" }
         this.viewModelScope = viewModelScope
         this.scanResultHandler = scanResultHandler
         this.checksEnabled = checksEnabled
+        this.limitsChecker = limitsChecker
     }
 
     fun searchCode(code: String, fromScan: Boolean, isBarCode: Boolean? = null) {
@@ -223,6 +227,8 @@ class SearchProductDelegate @Inject constructor(
             }
             else -> screenNavigator.openGoodInfoScreen(productInfo, quantity)
         }
+
+        limitsChecker?.check()
     }
 
 

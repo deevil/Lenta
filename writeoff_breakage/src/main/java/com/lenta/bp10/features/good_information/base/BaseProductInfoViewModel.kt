@@ -45,13 +45,11 @@ abstract class BaseProductInfoViewModel : CoreViewModel(), OnPositionClickListen
 
     val suffix: MutableLiveData<String> = MutableLiveData()
 
-    private var limitsChecker: LimitsChecker? = null
+    internal var limitsChecker: LimitsChecker? = null
 
     protected val countValue: MutableLiveData<Double> by lazy {
         count.map {
-            (it?.toDoubleOrNull() ?: 0.0).apply {
-                limitsChecker?.check(this)
-            }
+            (it?.toDoubleOrNull() ?: 0.0)
         }
     }
 
@@ -87,17 +85,22 @@ abstract class BaseProductInfoViewModel : CoreViewModel(), OnPositionClickListen
     init {
         viewModelScope.launch {
 
+            limitsChecker = LimitsChecker(
+                    limit = goodInformationRepo.getLimit(getTaskDescription().taskType.code, productInfo.value!!.type),
+                    observer = { screenNavigator.openLimitExceededScreen() },
+                    countLiveData = totalCount,
+                    viewModelScope = this@BaseProductInfoViewModel::viewModelScope
+
+            )
+
             searchProductDelegate.init(
                     viewModelScope = this@BaseProductInfoViewModel::viewModelScope,
-                    scanResultHandler = this@BaseProductInfoViewModel::handleProductSearchResult
+                    scanResultHandler = this@BaseProductInfoViewModel::handleProductSearchResult,
+                    limitsChecker = limitsChecker
             )
 
             processServiceManager.getWriteOffTask()?.let { writeOffTask ->
 
-                limitsChecker = LimitsChecker(
-                        limit = goodInformationRepo.getLimit(getTaskDescription().taskType.code, productInfo.value!!.type),
-                        observer = { screenNavigator.openLimitExceededScreen() }
-                )
 
                 getTaskDescription().moveTypes.let { reasons ->
                     if (reasons.isEmpty()) {

@@ -1,19 +1,23 @@
 package com.lenta.bp10.features.good_information
 
-class LimitsChecker(private val limit: Double, private val observer: () -> Unit) {
+import androidx.lifecycle.LiveData
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
-    private var _wasExceeded = false
+class LimitsChecker(private val limit: Double, private val observer: () -> Unit, private val countLiveData: LiveData<Double>, private val viewModelScope: () -> CoroutineScope) {
 
-
-    fun check(value: Double) {
-        if (limit != 0.0 && !_wasExceeded && value > limit) {
-            _wasExceeded = true
-            observer()
+    fun check() {
+        val value = countLiveData.value ?: 0.0
+        if (limit != 0.0 && value > limit) {
+            viewModelScope().launch {
+                delay(200)
+                observer()
+            }
         }
+
     }
-
-    fun wasExceeded() = _wasExceeded
-
-
 }
+
+
 

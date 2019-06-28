@@ -4,7 +4,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp10.features.good_information.IGoodInformationRepo
-import com.lenta.bp10.features.good_information.LimitsChecker
 import com.lenta.bp10.features.goods_list.SearchProductDelegate
 import com.lenta.bp10.models.StampsCollectorManager
 import com.lenta.bp10.models.repositories.IWriteOffTaskManager
@@ -84,11 +83,8 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
     val writeOffReasonTitles: LiveData<List<String>> = writeOffReasons.map { it?.map { reason -> reason.name } }
     val selectedPosition: MutableLiveData<Int> = MutableLiveData(0)
     val count: MutableLiveData<String> = MutableLiveData()
-    private var limitsChecker: LimitsChecker? = null
     val countValue: MutableLiveData<Double> = count.map {
-        (it?.toDoubleOrNull() ?: 0.0).apply {
-            limitsChecker?.check(this)
-        }
+        it?.toDoubleOrNull() ?: 0.0
     }
     val totalCount: MutableLiveData<Double> = countValue.map {
         (it
@@ -158,11 +154,6 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
         viewModelScope.launch {
 
             stampsCollectorManager.newStampCollector(processExciseAlcoProductService)
-
-            limitsChecker = LimitsChecker(
-                    limit = goodInformationRepo.getLimit(processServiceManager.getWriteOffTask()!!.taskDescription.taskType.code, setProductInfo.value!!.type),
-                    observer = { screenNavigator.openLimitExceededScreen() }
-            )
 
             processServiceManager.getWriteOffTask()!!.taskDescription.moveTypes.let { reasons ->
                 if (reasons.isEmpty()) {
