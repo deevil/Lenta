@@ -7,11 +7,7 @@
 
         <variable
             name="vm"
-            type="com.lenta.bp10.features.good_information.sets.ComponentItem" />
-
-        <variable
-            name="selectedForDelete"
-            type="Boolean" />
+            type="com.lenta.inventory.features.task_list.TaskItem" />
 
     </data>
 
@@ -26,14 +22,21 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            app:layout_constraintGuide_percent="0.15" />
+            app:layout_constraintGuide_percent="0.12" />
 
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/vertical_guidline_2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            app:layout_constraintGuide_percent="0.70" />
+            app:layout_constraintGuide_percent="0.52" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/vertical_guidline_3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.78" />
 
         <View
             android:id="@+id/div_vert1"
@@ -57,6 +60,17 @@
             app:layout_constraintStart_toStartOf="@+id/vertical_guidline_2"
             app:layout_constraintTop_toTopOf="parent" />
 
+        <View
+            android:id="@+id/div_vert3"
+            android:layout_width="1dp"
+            android:layout_height="0dp"
+            android:background="@color/color_divider"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="@+id/vertical_guidline_3"
+            app:layout_constraintTop_toTopOf="parent" />
+
         <TextView
             android:id="@+id/tv_counter"
             android:layout_width="32dp"
@@ -65,46 +79,52 @@
             android:layout_marginTop="16dp"
             android:layout_marginEnd="8dp"
             android:layout_marginBottom="16dp"
-            android:background="@drawable/bg_border_circle_white"
             android:ellipsize="end"
             android:foreground="?selectableItemBackground"
             android:gravity="center"
             android:maxLines="1"
-            android:text='@{vm.number + ""}'
+            android:text='@{vm.number}'
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/div_vert1"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:selected="@{selectedForDelete}"
-            tools:text="1" />
+            tools:text="2"
+            tools:ignore="UnusedAttribute" />
 
         <TextView
-            android:id="@+id/tv_good_title"
+            android:id="@+id/tv_name"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp"
             android:ellipsize="end"
             android:gravity="start|center_vertical"
-            android:maxLines="2"
-            android:text="@{vm.name}"
-            app:layout_constraintBottom_toBottomOf="@+id/tv_counter"
-            app:layout_constraintEnd_toStartOf="@+id/imageView2"
+            android:maxLines="1"
+            android:text="@{vm.title}"
+            app:layout_constraintBottom_toTopOf="@+id/tv_stock"
+            app:layout_constraintEnd_toStartOf="@+id/div_vert2"
+            app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toEndOf="@+id/div_vert1"
-            app:layout_constraintTop_toTopOf="@+id/tv_counter"
-            tools:text="353979 Набор" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_chainStyle="packed"
+            tools:text="ВИ-304-Акционка" />
 
-        <ImageView
-            android:id="@+id/imageView2"
-            android:layout_width="wrap_content"
+        <TextView
+            android:id="@+id/tv_stock"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
+            android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp"
-            android:layout_marginBottom="8dp"
-            android:src="@drawable/ic_keyboard_arrow_right_white_16dp"
-            app:layout_constraintBottom_toBottomOf="parent"
+            android:ellipsize="end"
+            android:gravity="start|center_vertical"
+            android:maxLines="1"
+            android:text="@{vm.stock}"
+            app:layout_constraintBottom_toTopOf="@+id/div_hor_bottom"
             app:layout_constraintEnd_toStartOf="@+id/vertical_guidline_2"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="@+id/vertical_guidline_1"
+            app:layout_constraintTop_toBottomOf="@+id/tv_name"
+            tools:text="Склад 0001" />
 
         <View
             android:id="@+id/div_hor_bottom"
@@ -115,8 +135,41 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
 
+        <ImageView
+            android:id="@+id/imageView2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:src="@drawable/ic_people_white_32"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/imageView3"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/vertical_guidline_2"
+            app:layout_constraintStart_toStartOf="@+id/vertical_guidline_2"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_goneMarginEnd="8dp"
+            tools:visibility="visible" />
+
+
+        <ImageView
+            android:id="@+id/imageView3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="8dp"
+            android:src="@drawable/ic_lock_close_white_32"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/vertical_guidline_3"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/imageView2"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_goneMarginStart="8dp" />
+
         <TextView
-            android:id="@+id/tv_plan"
+            android:id="@+id/tv_quantity"
             android:layout_width="0dp"
             android:layout_height="32dp"
             android:layout_marginStart="8dp"
@@ -124,12 +177,12 @@
             android:ellipsize="end"
             android:gravity="start|center_vertical"
             android:maxLines="1"
-            android:text='@{vm.quantity}'
+            android:text='@{vm.count}'
             app:layout_constraintBottom_toBottomOf="@+id/tv_counter"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/div_vert2"
+            app:layout_constraintStart_toEndOf="@+id/div_vert3"
             app:layout_constraintTop_toTopOf="@+id/tv_counter"
-            tools:text="10 кор" />
+            tools:text="897" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -12,6 +12,7 @@ import androidx.databinding.BindingAdapter
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.RecyclerView
@@ -163,7 +164,7 @@ interface Evenable {
 }
 
 class RecyclerViewKeyHandler<T>(private val rv: RecyclerView,
-                                private val items: MutableLiveData<List<T>>,
+                                private val items: LiveData<List<T>>,
                                 lifecycleOwner: LifecycleOwner) {
 
     val posInfo = MutableLiveData(PosInfo(0, -1))

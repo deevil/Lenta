@@ -21,4 +21,7 @@
     <string name="byGoods">По товару</string>
     <string name="byStorage">По МХ</string>
     <string name="place">Место</string>
+    <string name="task">Задание</string>
+    <string name="tags">Признаки</string>
+    <string name="task_list_count">Список заданий (%d)</string>
 </resources>

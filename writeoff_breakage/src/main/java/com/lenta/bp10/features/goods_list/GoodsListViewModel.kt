@@ -123,9 +123,7 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     }
 
     fun onScanResult(data: String) {
-        eanCode.value = data
         searchProductDelegate.searchCode(code = data, fromScan = true)
-        eanCode.postValue("")
     }
 
     fun onClickSave() {

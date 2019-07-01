@@ -15,6 +15,7 @@ import com.lenta.inventory.features.select_market.SelectMarketViewModel
 import com.lenta.inventory.features.select_personnel_number.SelectPersonnelNumberViewModel
 import com.lenta.inventory.features.sets_details_storage.SetsDetailsStorageViewModel
 import com.lenta.inventory.features.storages_list.StoragesListViewModel
+import com.lenta.inventory.features.task_list.TaskListViewModel
 import com.lenta.inventory.main.MainActivity
 import com.lenta.inventory.main.MainViewModel
 import com.lenta.shared.di.AppScope
@@ -40,6 +41,7 @@ interface AppComponent {
     fun inject(it: GoodsListViewModel)
     fun inject(it: SetComponentsViewModel)
     fun inject(it: StoragesListViewModel)
+    fun inject(it: TaskListViewModel)
     fun inject(it: DiscrepanciesFoundViewModel)
 }
 

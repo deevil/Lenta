@@ -15,6 +15,7 @@ import com.lenta.inventory.features.select_market.SelectMarketFragment
 import com.lenta.inventory.features.select_personnel_number.SelectPersonnelNumberFragment
 import com.lenta.inventory.features.sets_details_storage.SetsDetailsStorageFragment
 import com.lenta.inventory.features.storages_list.StoragesListFragment
+import com.lenta.inventory.features.task_list.TaskListFragment
 import com.lenta.shared.account.IAuthenticator
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
 import com.lenta.shared.platform.navigation.ICoreNavigator
@@ -119,6 +120,12 @@ class ScreenNavigator(
         }
     }
 
+    override fun openTasksList() {
+        runOrPostpone {
+            getFragmentStack()?.push(TaskListFragment())
+        }
+    }
+
     override fun openDiscrepanciesScreen() {
         runOrPostpone {
             getFragmentStack()?.push(DiscrepanciesFoundFragment())
@@ -145,4 +152,5 @@ interface IScreenNavigator : ICoreNavigator {
     fun openSetComponentsScreen()
     fun openStoragesList()
     fun openDiscrepanciesScreen()
+    fun openTasksList()
 }
