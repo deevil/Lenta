@@ -41,10 +41,10 @@ class StampsCollectorManager @Inject constructor() {
     }
 
     fun saveStampsToSet() {
-        setsStampCollector?.addStampsFrom(componentsStampCollector)
+        setsStampCollector?.moveStampsFrom(componentsStampCollector)
     }
 
-    fun add(materialNumber: String, setMaterialNumber: String, writeOffReason: String, isBadStamp: Boolean): Boolean {
+    fun addStampToComponentsStampCollector(materialNumber: String, setMaterialNumber: String, writeOffReason: String, isBadStamp: Boolean): Boolean {
         if (setsStampCollector!!.containsStamp(componentsStampCollector?.getPreparedStampCode()
                         ?: "")) {
             return false

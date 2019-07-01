@@ -4,7 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
+import android.widget.AdapterView
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import com.lenta.bp10.BR
@@ -14,6 +14,8 @@ import com.lenta.bp10.databinding.ItemTileSetsBinding
 import com.lenta.bp10.databinding.LayoutSetsComponentsBinding
 import com.lenta.bp10.databinding.LayoutSetsQuantityBinding
 import com.lenta.bp10.platform.extentions.getAppComponent
+import com.lenta.shared.keys.KeyCode
+import com.lenta.shared.keys.OnKeyDownListener
 import com.lenta.shared.models.core.ProductInfo
 import com.lenta.shared.platform.activity.OnBackPresserListener
 import com.lenta.shared.platform.fragment.CoreFragment
@@ -22,12 +24,9 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.scan.OnScanResultListener
-import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.databinding.*
-import com.lenta.shared.utilities.extentions.connectLiveData
-import com.lenta.shared.utilities.extentions.generateScreenNumber
-import com.lenta.shared.utilities.extentions.getFragmentResultCode
-import com.lenta.shared.utilities.extentions.provideViewModel
+import com.lenta.shared.utilities.extentions.*
+import com.lenta.shared.utilities.state.state
 
 class SetsFragment :
         CoreFragment<FragmentSetsBinding, SetsViewModel>(),
@@ -35,15 +34,21 @@ class SetsFragment :
         PageSelectionListener,
         ToolbarButtonsClickListener,
         OnBackPresserListener,
-        OnScanResultListener {
+        OnScanResultListener,
+        OnKeyDownListener {
 
-    private lateinit var productInfo: ProductInfo
+    private var recyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
+
+    private var productInfo: ProductInfo? by state(null)
+
+    private var quantity by state(0.0)
 
 
     companion object {
-        fun create(productInfo: ProductInfo): SetsFragment {
+        fun create(productInfo: ProductInfo, quantity: Double): SetsFragment {
             SetsFragment().let {
                 it.productInfo = productInfo
+                it.quantity = quantity
                 return it
             }
         }
@@ -57,14 +62,21 @@ class SetsFragment :
     override fun getViewModel(): SetsViewModel {
         provideViewModel(SetsViewModel::class.java).let { vm ->
             getAppComponent()?.inject(vm)
-            vm.setProductInfo(productInfo)
+            if (vm.setProductInfo.value == null) {
+                vm.setProductInfo.value = productInfo
+            }
+
+            if (vm.count.value == null) {
+                vm.count.value = quantity.toStringFormatted()
+            }
+
             return vm
         }
     }
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
         topToolbarUiModel.description.value = getString(R.string.set_info)
-        topToolbarUiModel.title.value = "${productInfo.getMaterialLastSix()} ${productInfo.description}"
+        connectLiveData(vm.title, topToolbarUiModel.title)
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
@@ -128,13 +140,6 @@ class SetsFragment :
                         }
                     }
 
-                    val onClickGoodTitle = View.OnClickListener { v ->
-                        Logg.d { "onClickListener ${(v as TextView).text.substring(0, 6)}" }
-                        vm.eanCode.value = (v as TextView).text.substring(0, 6)
-                        vm.onOkInSoftKeyboard()
-                    }
-
-                    layoutBinding.lifecycleOwner = viewLifecycleOwner
                     layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
                             layoutId = R.layout.item_tile_sets,
                             itemId = BR.vm,
@@ -145,13 +150,31 @@ class SetsFragment :
                                 override fun onBind(binding: ItemTileSetsBinding, position: Int) {
                                     binding.tvCounter.tag = position
                                     binding.tvCounter.setOnClickListener(onClickSelectionListener)
-                                    binding.tvGoodTitle.setOnClickListener(onClickGoodTitle)
                                     binding.selectedForDelete = vm.componentsSelectionsHelper.isSelected(position)
+                                    recyclerViewKeyHandler?.let {
+                                        binding.root.isSelected = it.isSelected(position)
+                                    }
+                                }
+
+                            },
+                            onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
+                                recyclerViewKeyHandler?.let {
+                                    if (it.isSelected(position)) {
+                                        vm.onClickItemPosition(position)
+                                    } else {
+                                        it.selectPosition(position)
+                                    }
                                 }
 
                             }
                     )
                     layoutBinding.vm = vm
+                    layoutBinding.lifecycleOwner = viewLifecycleOwner
+                    recyclerViewKeyHandler = RecyclerViewKeyHandler(
+                            rv = layoutBinding.rv,
+                            items = vm.componentsLiveData,
+                            lifecycleOwner = layoutBinding.lifecycleOwner!!
+                    )
                     return layoutBinding.root
                 }
 
@@ -181,6 +204,13 @@ class SetsFragment :
 
     override fun onFragmentResult(arguments: Bundle) {
         vm.onResult(arguments.getFragmentResultCode())
+    }
+
+    override fun onKeyDown(keyCode: KeyCode): Boolean {
+        if (vm.selectedPage.value == 1) {
+            return recyclerViewKeyHandler?.onKeyDown(keyCode) ?: false
+        }
+        return false
     }
 
 }

@@ -110,7 +110,7 @@ class ComponentViewModel : BaseProductInfoViewModel() {
     }
 
     private fun handleNewStamp(isBadStamp: Boolean) {
-        if (!stampsCollectorManager.add(
+        if (!stampsCollectorManager.addStampToComponentsStampCollector(
                         materialNumber = productInfo.value!!.materialNumber,
                         setMaterialNumber = componentItem.setMaterialNumber,
                         writeOffReason = getSelectedReason().code,

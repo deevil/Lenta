@@ -53,6 +53,12 @@ data class ButtonDecorationInfo(
         @StringRes val titleRes: Int
 ) {
     companion object {
+        val update: ButtonDecorationInfo by lazy {
+            ButtonDecorationInfo(R.drawable.ic_sync_white_24dp, R.string.update)
+        }
+        val menu: ButtonDecorationInfo by lazy {
+            ButtonDecorationInfo(R.drawable.ic_home_white_24dp, R.string.menu)
+        }
         val sap: ButtonDecorationInfo by lazy {
             ButtonDecorationInfo(R.drawable.ic_sap, R.string.sap_code)
         }
@@ -83,9 +89,6 @@ data class ButtonDecorationInfo(
         }
         val complete: ButtonDecorationInfo by lazy {
             ButtonDecorationInfo(R.drawable.ic_send_white_24dp, R.string.complete)
-        }
-        val skip: ButtonDecorationInfo by lazy {
-            ButtonDecorationInfo(R.drawable.ic_send_white_24dp, R.string.skip)
         }
         val print: ButtonDecorationInfo by lazy {
             ButtonDecorationInfo(R.drawable.ic_print_white_24dp, R.string.print)

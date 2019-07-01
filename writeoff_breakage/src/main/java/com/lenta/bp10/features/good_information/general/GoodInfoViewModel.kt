@@ -1,6 +1,7 @@
 package com.lenta.bp10.features.good_information.general
 
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import com.lenta.bp10.features.good_information.base.BaseProductInfoViewModel
 import com.lenta.bp10.models.repositories.ITaskRepository
 import com.lenta.bp10.models.task.ProcessGeneralProductService
@@ -8,6 +9,7 @@ import com.lenta.bp10.models.task.TaskDescription
 import com.lenta.bp10.models.task.WriteOffReason
 import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
 import com.lenta.shared.utilities.extentions.toStringFormatted
+import kotlinx.coroutines.launch
 
 class GoodInfoViewModel : BaseProductInfoViewModel() {
 
@@ -40,14 +42,23 @@ class GoodInfoViewModel : BaseProductInfoViewModel() {
     }
 
     override fun onClickAdd() {
-        addGood()
+        if (addGood()) {
+            viewModelScope.launch {
+                limitsChecker?.check()
+            }
+        }
     }
 
 
     override fun onClickApply() {
-        addGood()
-        processGeneralProductService.apply()
-        screenNavigator.goBack()
+        addGood().let { wasAdded ->
+            if (wasAdded) {
+                processGeneralProductService.apply()
+                screenNavigator.goBack()
+                limitsChecker?.check()
+            }
+        }
+
     }
 
     private fun addGood(): Boolean {

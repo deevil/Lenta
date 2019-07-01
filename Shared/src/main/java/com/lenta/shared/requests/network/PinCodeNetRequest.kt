@@ -27,10 +27,12 @@ class PinCodeNetRequest
         var basicAuth = sessionInfo.basicAuth
 
         if (!isAuthorized) {
-            basicAuth = getBaseAuth(params?.login, params?.password)
+            val login = params?.login ?: appSettings.techLogin
+            val password = params?.password ?: appSettings.techPassword
+            basicAuth = getBaseAuth(login, password)
             hyperHive.authAPI.unAuth().execute()
-            val status = hyperHive.authAPI.auth(params?.login ?: appSettings.techLogin,
-                    params?.password ?: appSettings.techPassword, true).execute()
+            val status = hyperHive.authAPI.auth(login,
+                    password, true).execute()
             if (!status.isOk) {
                 return status.toEither(null)
             }

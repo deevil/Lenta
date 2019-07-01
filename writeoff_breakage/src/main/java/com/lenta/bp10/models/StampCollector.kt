@@ -103,10 +103,10 @@ class StampCollector(private val processExciseAlcoProductService: ProcessExciseA
         onDataChanged()
     }
 
-    fun addStampsFrom(componentsStampCollector: StampCollector?) {
-        componentsStampCollector?.stamps?.let {
-            stamps.addAll(componentsStampCollector.stamps)
-            componentsStampCollector.clear()
+    fun moveStampsFrom(anotherStampCollector: StampCollector?) {
+        anotherStampCollector?.stamps?.let {
+            stamps.addAll(anotherStampCollector.stamps)
+            anotherStampCollector.clear()
         }
 
     }

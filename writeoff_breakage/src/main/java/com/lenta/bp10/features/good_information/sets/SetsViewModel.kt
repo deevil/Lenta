@@ -4,7 +4,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp10.features.good_information.IGoodInformationRepo
-import com.lenta.bp10.features.good_information.LimitsChecker
 import com.lenta.bp10.features.goods_list.SearchProductDelegate
 import com.lenta.bp10.models.StampsCollectorManager
 import com.lenta.bp10.models.repositories.IWriteOffTaskManager
@@ -83,12 +82,9 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
     val writeOffReasons: MutableLiveData<List<WriteOffReason>> = MutableLiveData()
     val writeOffReasonTitles: LiveData<List<String>> = writeOffReasons.map { it?.map { reason -> reason.name } }
     val selectedPosition: MutableLiveData<Int> = MutableLiveData(0)
-    val count: MutableLiveData<String> = MutableLiveData("1")
-    private var limitsChecker: LimitsChecker? = null
+    val count: MutableLiveData<String> = MutableLiveData()
     val countValue: MutableLiveData<Double> = count.map {
-        (it?.toDoubleOrNull() ?: 0.0).apply {
-            limitsChecker?.check(this)
-        }
+        it?.toDoubleOrNull() ?: 0.0
     }
     val totalCount: MutableLiveData<Double> = countValue.map {
         (it
@@ -132,6 +128,10 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
         totalProcessedStampsCount == totalRightStampsCount && countValue.value != 0.0 && getReason() !== WriteOffReason.empty
     }
 
+    val title: LiveData<String> by lazy {
+        MutableLiveData("${setProductInfo.value!!.getMaterialLastSix()} ${setProductInfo.value!!.description}")
+    }
+
     private lateinit var componentsDataList: List<ZmpUtz46V001.ItemLocal_ET_SET_LIST>
 
     private val components = mutableListOf<ProductInfo>()
@@ -147,20 +147,13 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
                 if (selectedTabPos == 0) processExciseAlcoProductService.taskRepository.getTotalCountForProduct(setProductInfo.value!!) > 0.0 else !selectedComponentsPositions.isNullOrEmpty()
             }
 
-    fun setProductInfo(productInfo: ProductInfo) {
-        this.setProductInfo.value = productInfo
-    }
+    val editTextFocus: MutableLiveData<Boolean> = MutableLiveData()
 
 
     init {
         viewModelScope.launch {
 
             stampsCollectorManager.newStampCollector(processExciseAlcoProductService)
-
-            limitsChecker = LimitsChecker(
-                    limit = goodInformationRepo.getLimit(processServiceManager.getWriteOffTask()!!.taskDescription.taskType.code, setProductInfo.value!!.type),
-                    observer = { screenNavigator.openLimitExceededScreen() }
-            )
 
             processServiceManager.getWriteOffTask()!!.taskDescription.moveTypes.let { reasons ->
                 if (reasons.isEmpty()) {
@@ -187,12 +180,14 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
 
             searchSetDelegate.init(
                     viewModelScope = this@SetsViewModel::viewModelScope,
-                    scanResultHandler = this@SetsViewModel::handleSetSearchResult
+                    scanResultHandler = this@SetsViewModel::handleSetSearchResult,
+                    checksEnabled = false
             )
 
             searchComponentDelegate.init(
                     viewModelScope = this@SetsViewModel::viewModelScope,
-                    scanResultHandler = this@SetsViewModel::handleComponentSearchResult
+                    scanResultHandler = this@SetsViewModel::handleComponentSearchResult,
+                    checksEnabled = false
             )
 
             searchProductDelegate.init(
@@ -217,6 +212,8 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
                     tkNumber = processServiceManager.getWriteOffTask()!!.taskDescription.tkNumber,
                     components = components
             )
+
+            editTextFocus.postValue(true)
 
         }
     }
@@ -369,14 +366,12 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
     }
 
     private fun onClickClean() {
-        processServiceManager.getWriteOffTask()?.let { writeOffTask ->
-            componentsSelectionsHelper.selectedPositions.value?.map { position ->
-                components[position]
-            }?.let {
-                stampsCollectorManager.clearAllStampsCollectors()
-            }
-            updateComponents()
+        componentsSelectionsHelper.selectedPositions.value?.map { position ->
+            components[position]
+        }?.let {
+            stampsCollectorManager.clearAllStampsCollectors()
         }
+        updateComponents()
     }
 
     private fun onClickDetails() {
@@ -399,7 +394,15 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
 
             return
         }
-        setsAlcoStampSearchDelegate.handleResult(fragmentResultCode)
+        if (!setsAlcoStampSearchDelegate.handleResult(fragmentResultCode)) {
+            searchProductDelegate.handleResultCode(fragmentResultCode)
+        }
+    }
+
+    fun onClickItemPosition(position: Int) {
+        components.getOrNull(position)?.let {
+            searchEANCode(it.materialNumber)
+        }
     }
 
 }
