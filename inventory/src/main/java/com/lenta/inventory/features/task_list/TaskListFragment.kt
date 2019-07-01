@@ -11,9 +11,9 @@ import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
-import com.lenta.shared.utilities.databinding.DataBindingAdapter
 import com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig
 import com.lenta.shared.utilities.extentions.connectLiveData
+import com.lenta.shared.utilities.extentions.generateScreenNumber
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.provideViewModel
 
@@ -21,7 +21,7 @@ class TaskListFragment : CoreFragment<FragmentTaskListBinding, TaskListViewModel
 
     override fun getLayoutId(): Int = R.layout.fragment_task_list
 
-    override fun getPageNumber() = "11/04"
+    override fun getPageNumber() = generateScreenNumber()
 
     override fun getViewModel(): TaskListViewModel {
         provideViewModel(TaskListViewModel::class.java).let {
