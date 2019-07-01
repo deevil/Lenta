@@ -2,13 +2,13 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".features.goods_list.GoodsListFragment">
+    tools:context=".features.discrepancies_found.DiscrepanciesFoundFragment">
 
     <data>
 
         <variable
             name="vm"
-            type="com.lenta.inventory.features.goods_list.GoodsListViewModel" />
+            type="com.lenta.inventory.features.discrepancies_found.DiscrepanciesFoundViewModel" />
 
         <variable
             name="viewPagerSettings"
