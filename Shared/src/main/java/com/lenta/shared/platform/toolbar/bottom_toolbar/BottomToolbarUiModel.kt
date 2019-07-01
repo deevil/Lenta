@@ -132,6 +132,10 @@ data class ButtonDecorationInfo(
             ButtonDecorationInfo(0, 0)
         }
 
+        val skip: ButtonDecorationInfo by lazy {
+            ButtonDecorationInfo(R.drawable.ic_send_white_24dp, R.string.skip)
+        }
+
 
     }
 }

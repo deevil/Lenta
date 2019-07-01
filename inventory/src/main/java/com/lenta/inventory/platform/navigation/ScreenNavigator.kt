@@ -3,6 +3,7 @@ package com.lenta.inventory.platform.navigation
 import android.content.Context
 import com.lenta.inventory.features.main_menu.MainMenuFragment
 import com.lenta.inventory.features.auth.AuthFragment
+import com.lenta.inventory.features.discrepancies_found.DiscrepanciesFoundFragment
 import com.lenta.inventory.features.goods_details.GoodsDetailsFragment
 import com.lenta.inventory.features.goods_details_storage.GoodsDetailsStorageFragment
 import com.lenta.inventory.features.goods_information.general.GoodsInfoFragment
@@ -125,6 +126,12 @@ class ScreenNavigator(
         }
     }
 
+    override fun openDiscrepanciesScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(DiscrepanciesFoundFragment())
+        }
+    }
+
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 
 }
@@ -144,5 +151,6 @@ interface IScreenNavigator : ICoreNavigator {
     fun openSetsInfoScreen()
     fun openSetComponentsScreen()
     fun openStoragesList()
+    fun openDiscrepanciesScreen()
     fun openTasksList()
 }

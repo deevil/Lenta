@@ -2,6 +2,7 @@ package com.lenta.inventory.di
 
 import com.lenta.inventory.ExceptionHandler
 import com.lenta.inventory.features.auth.AuthViewModel
+import com.lenta.inventory.features.discrepancies_found.DiscrepanciesFoundViewModel
 import com.lenta.inventory.features.goods_details.GoodsDetailsViewModel
 import com.lenta.inventory.features.goods_details_storage.GoodsDetailsStorageViewModel
 import com.lenta.inventory.features.goods_information.general.GoodsInfoViewModel
@@ -41,5 +42,6 @@ interface AppComponent {
     fun inject(it: SetComponentsViewModel)
     fun inject(it: StoragesListViewModel)
     fun inject(it: TaskListViewModel)
+    fun inject(it: DiscrepanciesFoundViewModel)
 }
 
