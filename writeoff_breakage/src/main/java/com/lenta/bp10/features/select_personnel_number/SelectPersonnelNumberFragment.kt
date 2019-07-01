@@ -1,6 +1,7 @@
 package com.lenta.bp10.features.select_personnel_number
 
 import android.view.View
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import com.lenta.bp10.R
 import com.lenta.bp10.databinding.FragmentSelectPersonnelNumberBinding
@@ -12,10 +13,25 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListe
 import com.lenta.shared.platform.toolbar.top_toolbar.ImageButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.scan.OnScanResultListener
+import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.provideViewModel
+import com.lenta.shared.utilities.state.state
 
 class SelectPersonnelNumberFragment : CoreFragment<FragmentSelectPersonnelNumberBinding, SelectPersonnelNumberViewModel>(),
         ToolbarButtonsClickListener, OnScanResultListener {
+
+    private var codeConfirmation: Int? by state<Int?>(null)
+
+    companion object {
+        fun create(codeConfirmation: Int): SelectPersonnelNumberFragment {
+            SelectPersonnelNumberFragment().let {
+                it.codeConfirmation = codeConfirmation
+                return it
+            }
+        }
+
+    }
+
     override fun getLayoutId(): Int = R.layout.fragment_select_personnel_number
 
     override fun getPageNumber(): String = "10/12"
@@ -23,6 +39,7 @@ class SelectPersonnelNumberFragment : CoreFragment<FragmentSelectPersonnelNumber
     override fun getViewModel(): SelectPersonnelNumberViewModel {
         provideViewModel(SelectPersonnelNumberViewModel::class.java).let {
             getAppComponent()?.inject(it)
+            it.setCodeConfirm(codeConfirmation)
             return it
         }
     }
@@ -36,11 +53,9 @@ class SelectPersonnelNumberFragment : CoreFragment<FragmentSelectPersonnelNumber
         bottomToolbarUiModel
                 .uiModelButton5.show(ButtonDecorationInfo.next)
         bottomToolbarUiModel
-                .uiModelButton1.show(ButtonDecorationInfo.back, enabled = false)
-        vm.fullName.observe(viewLifecycleOwner, Observer {
-            bottomToolbarUiModel
-                    .uiModelButton5.requestFocus()
-        })
+                .uiModelButton1.show(ButtonDecorationInfo.back, enabled = codeConfirmation != null)
+
+        viewLifecycleOwner.connectLiveData(vm.nextButtonFocus, bottomToolbarUiModel.uiModelButton5.requestFocus)
     }
 
     override fun onToolbarButtonClick(view: View) {
@@ -51,5 +66,10 @@ class SelectPersonnelNumberFragment : CoreFragment<FragmentSelectPersonnelNumber
 
     override fun onScanResult(data: String) {
         vm.onScanResult(data)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        vm.onResume()
     }
 }

@@ -21,10 +21,15 @@ import com.lenta.shared.platform.battery_state.BatteryStateMonitor
 import com.lenta.shared.platform.battery_state.IBatteryStateMonitor
 import com.lenta.shared.platform.navigation.CoreNavigator
 import com.lenta.shared.platform.navigation.ICoreNavigator
-import com.lenta.shared.platform.resources.IStringResourceManager
-import com.lenta.shared.platform.resources.StringResourceManager
+import com.lenta.shared.platform.resources.ISharedStringResourceManager
+import com.lenta.shared.platform.resources.SharedStringResourceManager
 import com.lenta.shared.platform.time.ITimeMonitor
 import com.lenta.shared.platform.time.TimeMonitor
+import com.lenta.shared.progress.CoreProgressUseCaseInformator
+import com.lenta.shared.progress.IProgressUseCaseInformator
+import com.lenta.shared.requests.combined.scan_info.ScanInfoRequest
+import com.lenta.shared.scan.IScanHelper
+import com.lenta.shared.scan.mobilbase.MobilBaseScanHelper
 import com.lenta.shared.settings.AppSettings
 import com.lenta.shared.settings.DefaultConnectionSettings
 import com.lenta.shared.settings.IAppSettings
@@ -72,6 +77,7 @@ class CoreModule(val application: Application, val defaultConnectionSettings: De
         if (BuildConfig.DEBUG) {
             Logg.d { "hhive plugin version: ${hyperHive.stateAPI.versionPlugin}" }
             Logg.d { "hhive core version: ${hyperHive.stateAPI.getVersionCoreAPI(0)}" }
+            hyperHive.loggingAPI.setLogLevel(0)
         }
         hyperHive.loggingAPI.setLogLevel(10)
 
@@ -116,8 +122,8 @@ class CoreModule(val application: Application, val defaultConnectionSettings: De
 
     @Provides
     @Singleton
-    internal fun provideStringResourceManager(context: Context): IStringResourceManager {
-        return StringResourceManager(context)
+    internal fun provideSharedStringResourceManager(context: Context): ISharedStringResourceManager {
+        return SharedStringResourceManager(context)
     }
 
     @Provides
@@ -146,6 +152,23 @@ class CoreModule(val application: Application, val defaultConnectionSettings: De
     @Singleton
     internal fun provideIAnalitycs(hyperHive: HyperHive): IAnalytics {
         return FmpAnalytics(hyperHive)
+    }
+
+    @Provides
+    @Singleton
+    internal fun provideScanHelper(): IScanHelper {
+        return MobilBaseScanHelper()
+    }
+
+    @Provides
+    @Singleton
+    internal fun provideIProgressUseCaseInformator(context: Context): IProgressUseCaseInformator {
+        return CoreProgressUseCaseInformator(context)
+    }
+
+    @Provides
+    fun provideScanInfoRequest(hyperHive: HyperHive, gson: Gson, sessionInfo: ISessionInfo): ScanInfoRequest {
+        return ScanInfoRequest(hyperHive, gson, sessionInfo)
     }
 
 }

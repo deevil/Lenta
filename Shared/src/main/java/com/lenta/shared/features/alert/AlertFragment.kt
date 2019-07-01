@@ -3,6 +3,8 @@ package com.lenta.shared.features.alert
 
 import com.lenta.shared.features.message.CoreMessageFragment
 import com.lenta.shared.features.message.MessageViewModel
+import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
+import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.utilities.extentions.provideViewModel
 
 class AlertFragment : CoreMessageFragment() {
@@ -13,9 +15,16 @@ class AlertFragment : CoreMessageFragment() {
             vm.message = message
             vm.iconRes = iconRes
             vm.codeConfirm = codeConfirm
-
+            vm.codeConfirmForLeft = codeConfirmForLeft
+            vm.textColor = textColor
+            vm.timeAutoExitInMillis = timeAutoExitInMillis
             return vm
         }
+    }
+
+    override fun cleanTopToolbar(topToolbarUiModel: TopToolbarUiModel) {
+        topToolbarUiModel.uiModelButton1.visibility.value = false
+        topToolbarUiModel.uiModelButton2.visibility.value = false
     }
 
 
@@ -23,14 +32,29 @@ class AlertFragment : CoreMessageFragment() {
         fun create(
                 message: String,
                 iconRes: Int = 0,
-                pageNumber: String = "???",
-                codeConfirm: Int? = null): AlertFragment {
-            AlertFragment().let {
-                it.message = message
-                it.iconRes = iconRes
-                it.codeConfirm = codeConfirm
-                it.pageNumb = pageNumber
-                return it
+                textColor: Int? = null,
+                pageNumber: String? = null,
+                codeConfirm: Int? = null,
+                codeConfirmForLeft: Int? = null,
+                leftButtonDecorationInfo: ButtonDecorationInfo? = null,
+                rightButtonDecorationInfo: ButtonDecorationInfo? = null,
+                timeAutoExitInMillis: Int? = null
+        ): AlertFragment {
+            return AlertFragment().apply {
+                this.message = message
+                this.iconRes = iconRes
+                this.textColor = textColor
+                this.codeConfirm = codeConfirm
+                this.codeConfirmForLeft = codeConfirmForLeft
+                this.pageNumb = pageNumber
+                this.timeAutoExitInMillis = timeAutoExitInMillis
+                leftButtonDecorationInfo?.let {
+                    this.leftButtonDecorationInfo = it
+                }
+                rightButtonDecorationInfo?.let {
+                    this.rightButtonDecorationInfo = it
+                }
+
             }
         }
     }

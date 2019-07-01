@@ -1,13 +1,18 @@
 package com.lenta.shared.utilities.databinding
 
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.databinding.BindingAdapter
 import com.lenta.shared.R
+import com.lenta.shared.models.core.MatrixType
+import com.lenta.shared.models.core.isNormal
 import com.lenta.shared.platform.battery_state.getIconForStatus
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.utilities.date_time.DateTimeUtil
 import com.lenta.shared.utilities.extentions.setTextViewDrawableColor
 import com.lenta.shared.utilities.extentions.setVisible
+import com.lenta.shared.utilities.extentions.selectableItemBackgroundResId
+
 
 @BindingAdapter(value = ["buttonDecorationInfo", "enabled"], requireAll = false)
 fun setButtonDecorationInfo(textView: TextView, buttonDecorationInfo: ButtonDecorationInfo?, enabled: Boolean?) {
@@ -42,6 +47,13 @@ fun setNetworkIsConnected(textView: TextView, networkIsConnected: Boolean?) {
     textView.setCompoundDrawablesWithIntrinsicBounds(0, 0,
             if (networkIsConnected == true) R.drawable.ic_wifi_white_16dp else R.drawable.ic_signal_wifi_off_red_16dp,
             0)
+}
+
+@BindingAdapter(value = ["textColorCustom"])
+fun setTextColor(textView: TextView, textColorCustom: Int?) {
+    textColorCustom?.let {
+        textView.setTextColor(it)
+    }
 }
 
 @BindingAdapter(value = ["setTextWithVisibilities", "prefix", "postfix"], requireAll = false)
@@ -81,3 +93,34 @@ fun setTimeFormatted(textView: TextView, unixTime: Long?, timeFormat: String?,
     }
 
 }
+
+@BindingAdapter(value = ["matrixType"])
+fun setMatrixType(textView: TextView, matrixType: MatrixType?) {
+    val text = when (matrixType) {
+        MatrixType.Active -> "A"
+        MatrixType.Passive -> "P"
+        MatrixType.Deleted -> "D"
+        else -> "N"
+    }
+    textView.text = text
+    (matrixType.isNormal()).let { normalType ->
+        textView.setTextColor(ContextCompat.getColor(textView.context,
+                if (normalType) R.color.colorNumSectionTxt else R.color.color_text_pink
+        ))
+        textView.setBackgroundResource(if (normalType) R.drawable.bg_white_circle else R.drawable.bg_pink_circle)
+    }
+
+}
+
+@BindingAdapter(value = ["zoom"], requireAll = false)
+fun setTextWithVisibilities(textView: TextView, @Suppress("UNUSED_PARAMETER") screenNavigatorForZoom: Boolean) {
+    textView.setOnClickListener {
+        dataBindingHelpHolder.coreNavigator.openAlertScreen(message = textView.text.toString())
+    }
+    textView.setBackgroundResource(textView.context.selectableItemBackgroundResId())
+}
+
+
+
+
+

@@ -1,5 +1,6 @@
 package com.lenta.bp10.models.task
 
+import com.lenta.bp10.fmp.resources.send_report.ExciseStamp
 import com.lenta.bp10.fmp.resources.send_report.MaterialNumber
 import com.lenta.bp10.fmp.resources.send_report.WriteOffReport
 import com.lenta.bp10.models.repositories.ITaskRepository
@@ -27,19 +28,12 @@ class WriteOffTask(val taskDescription: TaskDescription, internal val taskReposi
     fun processGeneralProduct(product: ProductInfo): ProcessGeneralProductService? {
         // (Артем И., 09.04.2019) search product taskRepository если есть то (проверяем, что обычный продукт - не алкоголь) create ProcessGeneralProductService
         // (Артем И., 10.04.2019) поиск продукта в репозитории не делать, проверять только тип товара на General и возвращать ProcessGeneralProductService
-        return if (product.type == ProductType.General) {
+        return if (product.type == ProductType.General || product.type == ProductType.NonExciseAlcohol) {
             ProcessGeneralProductService(taskDescription, taskRepository, product)
         } else null
 
     }
 
-    fun processNonExciseAlcoProduct(product: ProductInfo): ProcessNonExciseAlcoProductService? {
-        // (Артем И., 11.04.2019) тоже самое, что и в ProcessGeneralProductService
-        return if (product.type == ProductType.NonExciseAlcohol) {
-            ProcessNonExciseAlcoProductService(taskDescription, taskRepository, product)
-        } else null
-
-    }
 
     fun processExciseAlcoProduct(product: ProductInfo): ProcessExciseAlcoProductService? {
         // (Артем И., 11.04.2019) тоже самое, что и в ProcessGeneralProductService
@@ -62,7 +56,7 @@ class WriteOffTask(val taskDescription: TaskDescription, internal val taskReposi
         // считать ИТОГО причин списания, а для акцизного товара ИТОГО + кол-во марок
         return when (product.type) {
             ProductType.General -> processGeneralProduct(product)!!.getTotalCount()
-            ProductType.NonExciseAlcohol -> processNonExciseAlcoProduct(product)!!.getTotalCount()
+            ProductType.NonExciseAlcohol -> processGeneralProduct(product)!!.getTotalCount()
             ProductType.ExciseAlcohol -> processExciseAlcoProduct(product)!!.getTotalCount()
             else -> 0.0
         }
@@ -87,7 +81,12 @@ class WriteOffTask(val taskDescription: TaskDescription, internal val taskReposi
             }
         }
 
-
+        taskRepository.getExciseStamps()
+                .findExciseStampsOfProduct(taskWriteOffReason.materialNumber)
+                .filter { it.writeOffReason == taskWriteOffReason.writeOffReason.code }
+                .forEach {
+                    taskRepository.getExciseStamps().deleteExciseStamp(it)
+                }
     }
 
 
@@ -131,7 +130,19 @@ fun WriteOffTask.getReport(): WriteOffReport {
                 storloc = stock,
                 ipAdress = ipAddress,
                 materials = getMaterials(),
-                exciseStamps = emptyList()
+                exciseStamps = getStamps()
+        )
+    }
+}
+
+fun WriteOffTask.getStamps(): List<ExciseStamp> {
+    return taskRepository.getExciseStamps().getExciseStamps().map {
+        ExciseStamp(
+                matnr = it.materialNumber,
+                stamp = it.code,
+                matnrOsn = it.setMaterialNumber,
+                writeOffCause = it.writeOffReason,
+                reg = if (it.isBadStamp) "X" else ""
         )
     }
 }

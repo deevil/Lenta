@@ -3,6 +3,8 @@ package com.lenta.shared.utilities.databinding
 
 import android.annotation.SuppressLint
 import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewConfiguration
 import android.view.ViewGroup
 import android.widget.AdapterView
 import androidx.annotation.NonNull
@@ -10,6 +12,7 @@ import androidx.databinding.BindingAdapter
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.RecyclerView
@@ -53,7 +56,12 @@ fun <ItemType, BindingType : ViewDataBinding> setupRecyclerView(recyclerView: Re
                     items = oldItems,
                     layoutId = it.layoutId,
                     itemId = it.itemId,
-                    realisation = dataBindingRecyclerViewConfig.realisation)
+                    realisation = dataBindingRecyclerViewConfig.realisation,
+                    onItemClickListener = dataBindingRecyclerViewConfig.onItemClickListener,
+                    onItemDoubleClickListener = dataBindingRecyclerViewConfig.onItemDoubleClickListener,
+                    onItemLongClickListener = dataBindingRecyclerViewConfig.onItemLongClickListener
+            )
+
         }
 
 
@@ -75,7 +83,10 @@ fun <ItemType, BindingType : ViewDataBinding> setupRecyclerView(recyclerView: Re
 data class DataBindingRecyclerViewConfig<BindingType : ViewDataBinding>(
         val layoutId: Int,
         val itemId: Int,
-        val realisation: DataBindingAdapter<BindingType>? = null
+        val realisation: DataBindingAdapter<BindingType>? = null,
+        val onItemClickListener: AdapterView.OnItemClickListener? = null,
+        val onItemLongClickListener: AdapterView.OnItemLongClickListener? = null,
+        val onItemDoubleClickListener: AdapterView.OnItemClickListener? = null
 )
 
 
@@ -85,7 +96,8 @@ class DataBindingRecyclerAdapter<ItemType, BindingType : ViewDataBinding>(
         private val itemId: Int,
         private val realisation: DataBindingAdapter<BindingType>? = null,
         private val onItemClickListener: AdapterView.OnItemClickListener? = null,
-        private val onItemLongClickListener: AdapterView.OnItemLongClickListener? = null
+        private val onItemLongClickListener: AdapterView.OnItemLongClickListener? = null,
+        private val onItemDoubleClickListener: AdapterView.OnItemClickListener? = null
 ) :
         RecyclerView.Adapter<DataBindingRecyclerAdapter.BindingViewHolder>(), DataBindingAdapter<BindingType> {
 
@@ -99,13 +111,25 @@ class DataBindingRecyclerAdapter<ItemType, BindingType : ViewDataBinding>(
         val binding = DataBindingUtil.inflate<BindingType>(LayoutInflater.from(parent.context), layoutId, parent, false)
         onCreate(binding)
         val result = BindingViewHolder(binding)
-        binding.root.setOnClickListener { view ->
-            onItemClickListener?.onItemClick(null, view, result.adapterPosition, view.id.toLong())
+        if (onItemClickListener != null || onItemDoubleClickListener != null) {
+            binding.root.setOnClickListener(object : DoubleClickListener() {
+                override fun onSingleClick(view: View) {
+                    onItemClickListener?.onItemClick(null, view, result.adapterPosition, view.id.toLong())
+                }
+
+                override fun onDoubleClick(view: View) {
+                    onItemDoubleClickListener?.onItemClick(null, view, result.adapterPosition, view.id.toLong())
+                }
+            })
         }
-        binding.root.setOnLongClickListener { view ->
-            onItemLongClickListener?.onItemLongClick(null, view, result.adapterPosition, view.id.toLong())
-            false
+
+        onItemLongClickListener?.let {
+            binding.root.setOnLongClickListener { view ->
+                it.onItemLongClick(null, view, result.adapterPosition, view.id.toLong())
+                false
+            }
         }
+
         return result
     }
 
@@ -140,20 +164,19 @@ interface Evenable {
 }
 
 class RecyclerViewKeyHandler<T>(private val rv: RecyclerView,
-                                private val items: MutableLiveData<List<T>>,
+                                private val items: LiveData<List<T>>,
                                 lifecycleOwner: LifecycleOwner) {
 
-    val posInfo = MutableLiveData(PosInfo(-1, -1))
+    val posInfo = MutableLiveData(PosInfo(0, -1))
 
     init {
         posInfo.observe(lifecycleOwner, Observer { info ->
             Logg.d { "new pos: $info" }
-            info.currentPos.let { currentPos ->
-                rv.adapter?.notifyItemChanged(info.lastPos)
-                rv.adapter?.notifyItemChanged(info.currentPos)
-                if (currentPos > -1 && currentPos < items.value?.size ?: 0) {
-                    rv.scrollToPosition(info.currentPos)
-                }
+            //rv.adapter?.notifyItemChanged(info.lastPos)
+            //rv.adapter?.notifyItemChanged(info.currentPos)
+            rv.adapter?.notifyDataSetChanged()
+            if (!info.isManualClick && info.currentPos > -1 && info.currentPos < items.value?.size ?: 0) {
+                rv.scrollToPosition(info.currentPos)
             }
 
         })
@@ -184,15 +207,46 @@ class RecyclerViewKeyHandler<T>(private val rv: RecyclerView,
         return true
     }
 
+    fun selectPosition(position: Int) {
+        posInfo.value = PosInfo(currentPos = position, lastPos = posInfo.value!!.currentPos, isManualClick = true)
+    }
+
     fun isSelected(pos: Int): Boolean {
         return pos == posInfo.value!!.currentPos
     }
 
     fun clearPositions() {
-        posInfo.value = PosInfo(-1, -1)
+        posInfo.value = PosInfo(0, -1)
     }
 
 
 }
 
-data class PosInfo(val currentPos: Int, val lastPos: Int)
+abstract class DoubleClickListener : View.OnClickListener {
+
+    private var lastClickTime: Long = 0
+
+    override fun onClick(v: View) {
+        val clickTime = System.currentTimeMillis()
+
+        if (clickTime - lastClickTime < DOUBLE_CLICK_TIME_DELTA) {
+            onDoubleClick(v)
+            lastClickTime = 0
+        } else {
+            onSingleClick(v)
+        }
+
+        lastClickTime = clickTime
+    }
+
+    abstract fun onSingleClick(view: View)
+
+    abstract fun onDoubleClick(view: View)
+
+    companion object {
+
+        private val DOUBLE_CLICK_TIME_DELTA = ViewConfiguration.getDoubleTapTimeout().toLong()
+    }
+}
+
+data class PosInfo(val currentPos: Int, val lastPos: Int, val isManualClick: Boolean = false)

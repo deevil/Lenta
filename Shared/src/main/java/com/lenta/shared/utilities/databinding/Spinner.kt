@@ -27,7 +27,7 @@ fun setupSpinner(spinner: Spinner, items: List<String>?, position: Int?, onPosit
                 override fun onNothingSelected(adapterView: AdapterView<*>) {
                 }
             }
-        }, 100)
+        }, 500)
     }
     @Suppress("UNCHECKED_CAST")
     adapter = (spinner.adapter as ArrayAdapter<String>)

@@ -3,7 +3,7 @@ package com.lenta.shared.features.printer_change
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.shared.account.ISessionInfo
-import com.lenta.shared.fmp.resources.ZmpUtz26V001
+import com.lenta.shared.fmp.resources.fast.ZmpUtz26V001
 import com.lenta.shared.requests.db.PrinterChangeDBRequest
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.platform.navigation.ICoreNavigator
@@ -30,7 +30,7 @@ class PrinterChangeViewModel : CoreViewModel(), OnPositionClickListener {
 
     private val printers: MutableLiveData<List<PrinterUi>> = MutableLiveData()
     val printersNames: MutableLiveData<List<String>> = printers.map { printers ->
-        printers?.map { it.printerName }
+        printers?.map { "${it.number}-${it.printerName}" }
     }
     val selectedPosition: MutableLiveData<Int> = MutableLiveData()
     val selectedDescription: MutableLiveData<String> = selectedPosition.map {
@@ -52,7 +52,13 @@ class PrinterChangeViewModel : CoreViewModel(), OnPositionClickListener {
     }
 
     private fun handlePrinters(list: List<ZmpUtz26V001.ItemLocal_ET_PRINTERS>) {
-        printers.value = list.map { PrinterUi(number = it.werks, printerName = it.printername, printerInfo = it.printerinfo) }
+        printers.value = list.mapIndexed { index, printerInfo ->
+            PrinterUi(
+                    number = "${index + 1}",
+                    printerName = printerInfo.printername,
+                    printerInfo = printerInfo.printerinfo
+            )
+        }
         if (list.isNotEmpty() && selectedPosition.value == null) {
             var pos = 0
             for ((i, item) in list.withIndex()) {
@@ -64,7 +70,7 @@ class PrinterChangeViewModel : CoreViewModel(), OnPositionClickListener {
             onClickPosition(pos)
         } else {
             screenNavigator.goBack()
-            screenNavigator.openAlertScreen(txtNotFoundPrinter.value!!)
+            screenNavigator.openAlertScreen(message = txtNotFoundPrinter.value!!, pageNumber = "95")
         }
     }
 
@@ -75,8 +81,13 @@ class PrinterChangeViewModel : CoreViewModel(), OnPositionClickListener {
 
 
     fun onClickApply() {
-        sessionInfo.printer = printers.value?.getOrNull(selectedPosition.value!!)?.printerName
+        printers.value?.getOrNull(selectedPosition.value!!).let {
+            sessionInfo.printer = it?.printerName
+            sessionInfo.printerNumber = it?.number
+        }
+
         appSettings.printer = sessionInfo.printer
+        appSettings.printerNumber = sessionInfo.printerNumber
         screenNavigator.goBack()
     }
 

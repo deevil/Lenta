@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+
         <variable
             name="vm"
             type="com.lenta.bp10.features.good_information.sets.SetsViewModel" />
@@ -63,11 +64,12 @@
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
-            android:digits="0123456789-."
             android:ellipsize="end"
             android:inputType="numberDecimal"
             android:maxLines="1"
+            app:requestFocus="@{vm.editTextFocus}"
             android:text="@={vm.count}"
+            app:digitsForUom="@{vm.setProductInfo.uom}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/div_vert"
             app:layout_constraintTop_toTopOf="@+id/div_vert"
@@ -157,13 +159,14 @@
             android:layout_marginBottom="24dp"
             android:fontFamily="@font/tahoma_bold"
             android:gravity="center"
+            android:onClick="@{(v) -> vm.screenNavigator.openMatrixInfoScreen(vm.setProductInfo.matrixType)}"
             android:textSize="18sp"
-            tools:background="@drawable/bg_white_circle"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/div_hor4"
             app:layout_constraintVertical_bias="1.0"
-            app:matrixType="@{vm.productInfo.matrixType}"
+            app:matrixType="@{vm.setProductInfo.matrixType}"
+            tools:background="@drawable/bg_white_circle"
             tools:text="A" />
 
         <TextView
@@ -176,13 +179,40 @@
             android:background="@drawable/bg_white_circle"
             android:fontFamily="@font/tahoma_bold"
             android:gravity="center"
-            android:text='@{"" + vm.productInfo.sectionNumber}'
+            android:text='@{"" + vm.setProductInfo.sectionId}'
+            android:onClick="@{(v) -> vm.screenNavigator.openSectionInfoScreen(vm.setProductInfo.sectionId)}"
             android:textSize="16sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@+id/tv_matrix"
             app:layout_constraintTop_toTopOf="@+id/div_hor4"
             app:layout_constraintVertical_bias="1.0"
             tools:text="02" />
+
+        <ImageButton
+            android:id="@+id/b_excise_alco"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginBottom="18dp"
+            android:background="?selectableItemBackground"
+            app:alcoIcon="@{vm.setProductInfo.type}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/tv_section"
+            tools:src="@drawable/ic_excise_white_48dp" />
+
+        <ImageButton
+            android:id="@+id/b_scan_es"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:background="?selectableItemBackground"
+            android:onClick="@{(v) -> vm.screenNavigator.openESInfoScreen()}"
+            android:padding="8dp"
+            android:src="@drawable/is_scan_barcode_es"
+            app:layout_constraintBottom_toBottomOf="@+id/b_scan"
+            app:layout_constraintEnd_toStartOf="@+id/b_scan"
+            app:layout_constraintTop_toTopOf="@+id/b_scan"
+            tools:visibility="visible" />
 
         <ImageButton
             android:id="@+id/b_scan"
@@ -196,18 +226,6 @@
             android:src="@drawable/ic_scan_barcode"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
-
-        <ImageView
-            android:id="@+id/imageView4"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginBottom="18dp"
-            android:background="?selectableItemBackground"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/tv_section"
-            app:srcCompat="@drawable/ic_excise_white_48dp"
-            tools:ignore="VectorDrawableCompat" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

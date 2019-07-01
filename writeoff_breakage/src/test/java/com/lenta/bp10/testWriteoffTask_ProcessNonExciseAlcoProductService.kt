@@ -34,7 +34,7 @@ class testWriteoffTask_ProcessNonExciseAlcoProductService {
                 TaskType("СГП", "nСГП"),
                 "Списание от 04.06 10:23",
                 "0002",
-                ArrayList(Arrays.asList(WriteOffReason("949ВД", "Лом/Бой"))),
+                ArrayList(Arrays.asList(WriteOffReason("949ВД", "Лом/Бой", "A"))),
                 ArrayList(Arrays.asList("N")),
                 ArrayList(Arrays.asList("2FER", "3ROH")), "perNo", "printer", "tkNumber", "ipAddress"
         )
@@ -42,64 +42,32 @@ class testWriteoffTask_ProcessNonExciseAlcoProductService {
         task = WriteOffTask(taskDescription, taskRepository)
     }
 
-    @Test
-    fun testProcessNonExciseAlcoProduct() {
-        var test = false
-        val product1 = ProductInfo("materialNumber1", "description", Uom("ST", "шт"), ProductType.General,
-                false, 1, MatrixType.Active, "materialType")
-
-        val product2 = ProductInfo("materialNumber1", "description", Uom("ST", "шт"), ProductType.NonExciseAlcohol,
-                false, 1, MatrixType.Active, "materialType")
-
-        val product3 = ProductInfo("materialNumber1", "description", Uom("ST", "шт"), ProductType.ExciseAlcohol,
-                false, 1, MatrixType.Active, "materialType")
-
-        creatingObjectsForTest()
-
-        if (task.processNonExciseAlcoProduct(product1) == null) {
-            test = true
-        }
-        assertTrue(test)
-
-        test = false
-        if (task.processNonExciseAlcoProduct(product2) != null) {
-            test = true
-        }
-        assertTrue(test)
-
-        test = false
-        if (task.processNonExciseAlcoProduct(product3) == null) {
-            test = true
-        }
-        assertTrue(test)
-
-    }
 
     @Test
     fun testAddProduct() {
         creatingObjectsForTest()
 
         val product1 = ProductInfo("materialNumber1", "description", Uom("ST", "шт"), ProductType.NonExciseAlcohol,
-                false, 1, MatrixType.Active, "materialType")
+                false, "1", MatrixType.Active, "materialType")
 
         val product2 = ProductInfo("materialNumber2", "description", Uom("ST", "шт"), ProductType.NonExciseAlcohol,
-                false, 1, MatrixType.Active, "materialType")
+                false, "1", MatrixType.Active, "materialType")
 
         //дублирует продукт2, который не должен добавляться
         val product3 = ProductInfo("materialNumber2", "description", Uom("ST", "шт"), ProductType.NonExciseAlcohol,
-                false, 1, MatrixType.Active, "materialType")
+                false, "1", MatrixType.Active, "materialType")
 
-        val reason1 = WriteOffReason("01", "Срок годности")
-        val reason2 = WriteOffReason("02", "Срок негодности")
+        val reason1 = WriteOffReason("01", "Срок годности", "A")
+        val reason2 = WriteOffReason("02", "Срок негодности", "A")
 
-        task = task.processNonExciseAlcoProduct(product1)!!
+        task = task.processGeneralProduct(product1)!!
                 .add(reason1, 1.0)
                 .apply()
 
         assertEquals(1, task.getProcessedProducts().size.toLong())
         assertEquals(1.0, task.getTotalCountOfProduct(product1), 0.0)
 
-        task = task.processNonExciseAlcoProduct(product2)!!
+        task = task.processGeneralProduct(product2)!!
                 .add(reason1, 1.0)
                 .add(reason2, 2.0)
                 .apply()
@@ -108,7 +76,7 @@ class testWriteoffTask_ProcessNonExciseAlcoProductService {
         assertEquals(3.0, task.getTotalCountOfProduct(product2), 0.0)
 
         //продукт product3 не должен добавляться, а TotalCount (итого списано) у продукта product2 должен быть увеличен до 5
-        task = task.processNonExciseAlcoProduct(product3)!!
+        task = task.processGeneralProduct(product3)!!
                 .add(reason1, 2.0)
                 .apply()
 
@@ -121,28 +89,28 @@ class testWriteoffTask_ProcessNonExciseAlcoProductService {
         creatingObjectsForTest()
 
         val product1 = ProductInfo("materialNumber1", "description", Uom("ST", "шт"), ProductType.NonExciseAlcohol,
-                false, 1, MatrixType.Active, "materialType")
+                false, "1", MatrixType.Active, "materialType")
 
         val product2 = ProductInfo("materialNumber2", "description", Uom("ST", "шт"), ProductType.NonExciseAlcohol,
-                false, 1, MatrixType.Active, "materialType")
+                false, "1", MatrixType.Active, "materialType")
 
         val product3 = ProductInfo("materialNumber3", "description", Uom("ST", "шт"), ProductType.NonExciseAlcohol,
-                false, 1, MatrixType.Active, "materialType")
+                false, "1", MatrixType.Active, "materialType")
 
 
-        val reason1 = WriteOffReason("01", "Срок годности")
-        val reason2 = WriteOffReason("02", "Срок негодности")
+        val reason1 = WriteOffReason("01", "Срок годности", "A")
+        val reason2 = WriteOffReason("02", "Срок негодности", "A")
 
-        task = task.processNonExciseAlcoProduct(product1)!!
+        task = task.processGeneralProduct(product1)!!
                 .add(reason1, 1.0)
                 .apply()
 
-        task = task.processNonExciseAlcoProduct(product2)!!
+        task = task.processGeneralProduct(product2)!!
                 .add(reason1, 1.0)
                 .add(reason2, 2.0)
                 .apply()
 
-        task = task.processNonExciseAlcoProduct(product3)!!
+        task = task.processGeneralProduct(product3)!!
                 .add(reason1, 3.0)
                 .apply()
 

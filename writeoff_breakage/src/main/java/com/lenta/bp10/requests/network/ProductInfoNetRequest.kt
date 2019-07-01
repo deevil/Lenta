@@ -2,12 +2,13 @@ package com.lenta.bp10.requests.network
 
 import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
-import com.lenta.bp10.fmp.resources.dao_ext.getUomInfo
-import com.lenta.bp10.fmp.resources.fast.ZmpUtz07V001
+import com.lenta.shared.fmp.resources.fast.ZmpUtz07V001
 import com.lenta.bp10.models.repositories.IWriteOffTaskManager
 import com.lenta.bp10.requests.db.ProductInfoRequestParams
+import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.fmp.ObjectRawStatus
+import com.lenta.shared.fmp.resources.dao_ext.getUomInfo
 import com.lenta.shared.functional.Either
 import com.lenta.shared.interactor.UseCase
 import com.lenta.shared.models.core.ProductInfo
@@ -23,7 +24,8 @@ import javax.inject.Inject
 class ProductInfoNetRequest
 @Inject constructor(private val hyperHive: HyperHive,
                     private val gson: Gson,
-                    private val processServiceManager: IWriteOffTaskManager) :
+                    private val processServiceManager: IWriteOffTaskManager,
+                    private val sessionInfo: ISessionInfo) :
         UseCase<ProductInfo, ProductInfoRequestParams>() {
 
     private val zmpUtz07V001: ZmpUtz07V001 by lazy {
@@ -39,21 +41,22 @@ class ProductInfoNetRequest
                 matNr = ""
         )
 
-        val stringRes = hyperHive.requestAPI.web("ZMP_UTZ_WOB_02_V001",
+        val productInfoStatus = hyperHive.requestAPI.web("ZMP_UTZ_WOB_02_V001",
                 WebCallParams().apply {
                     data = gson.toJson(productInfoNetRequestParams)
                     headers = mapOf(
                             "X-SUP-DOMAIN" to "DM-MAIN",
-                            "Content-Type" to "application/json"
+                            "Content-Type" to "application/json",
+                            "Web-Authorization" to sessionInfo.basicAuth
                     )
-                })
+                },
+                ProductInfoStatus::class.java)
                 .execute()
 
-        val productInfoStatus: ProductInfoStatus = gson.fromJson(stringRes, ProductInfoStatus::class.java)
 
         if (productInfoStatus.isNotBad()) {
             productInfoStatus.result?.raw?.let {
-                val productInfo = it.getProductInfo(zmpUtz07V001.getUomInfo(it.ean?.uom))
+                val productInfo = it.getProductInfo(zmpUtz07V001.getUomInfo(it.material?.buom))
                 productInfo?.let { info ->
                     return Either.Right(info)
                 }
@@ -76,7 +79,7 @@ class ProductInfoNetRequest
                 uom = Uom(code = uomInfo.uom, name = uomInfo.name),
                 type = getProductType(isAlco = material.isAlco.isNotEmpty(), isExcise = material.isExcise.isNotEmpty()),
                 isSet = !set.isNullOrEmpty(),
-                sectionNumber = material.abtnr.toIntOrNull() ?: 0,
+                sectionId = material.abtnr,
                 matrixType = getMatrixType(material.matrixType),
                 materialType = material.materialType
         )

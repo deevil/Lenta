@@ -55,7 +55,9 @@
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toEndOf="@+id/tv_login"
             app:layout_constraintTop_toTopOf="parent"
-            tools:ignore="Autofill,LabelFor" />
+            tools:ignore="Autofill,LabelFor" >
+            <requestFocus />
+        </EditText>
 
         <TextView
             android:id="@+id/tv_password"

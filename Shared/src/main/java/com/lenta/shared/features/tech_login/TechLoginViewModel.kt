@@ -47,10 +47,10 @@ class TechLoginViewModel : CoreViewModel() {
 
     override fun handleFailure(failure: Failure) {
         super.handleFailure(failure)
-        screenNavigator.openAlertScreen(failure)
+        screenNavigator.openAlertScreen(failure, pageNumber = "97")
     }
 
-    private fun handlePinCodeSuccess(pinCodeInfo: PinCodeInfo) {
+    private fun handlePinCodeSuccess(@Suppress("UNUSED_PARAMETER") pinCodeInfo: PinCodeInfo) {
         settings.techLogin = login.value!!
         settings.techPassword = password.value!!
 

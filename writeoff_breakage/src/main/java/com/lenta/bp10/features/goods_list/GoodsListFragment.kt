@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
 import androidx.databinding.DataBindingUtil
 import com.lenta.bp10.BR
 import com.lenta.bp10.R
@@ -20,6 +21,8 @@ import com.lenta.shared.scan.OnScanResultListener
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.databinding.*
 import com.lenta.shared.utilities.extentions.connectLiveData
+import com.lenta.shared.utilities.extentions.generateScreenNumber
+import com.lenta.shared.utilities.extentions.getFragmentResultCode
 import com.lenta.shared.utilities.extentions.provideViewModel
 
 class GoodsListFragment :
@@ -35,12 +38,11 @@ class GoodsListFragment :
 
     override fun getLayoutId(): Int = R.layout.fragment_goods_list
 
-    override fun getPageNumber() = "10/06"
+    override fun getPageNumber() = generateScreenNumber()
 
     override fun getViewModel(): GoodsListViewModel {
         provideViewModel(GoodsListViewModel::class.java).let {
             getAppComponent()?.inject(it)
-            it.setMsgGoodsNotForTask(getString(R.string.goods_not_for_task))
             return it
         }
     }
@@ -56,7 +58,7 @@ class GoodsListFragment :
         bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.print, enabled = false)
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.save, enabled = true)
 
-        viewLifecycleOwner.let {
+        viewLifecycleOwner.apply {
             connectLiveData(source = vm.deleteEnabled, target = bottomToolbarUiModel.uiModelButton3.enabled)
             connectLiveData(source = vm.printButtonEnabled, target = bottomToolbarUiModel.uiModelButton4.enabled)
             connectLiveData(source = vm.saveButtonEnabled, target = bottomToolbarUiModel.uiModelButton5.enabled)
@@ -88,7 +90,7 @@ class GoodsListFragment :
 
     override fun onFragmentResult(arguments: Bundle) {
         super.onFragmentResult(arguments)
-        vm.onConfirmAllDelete()
+        vm.onResult(arguments.getFragmentResultCode())
     }
 
     override fun getPagerItemView(container: ViewGroup, position: Int): View {
@@ -119,6 +121,16 @@ class GoodsListFragment :
                                         binding.selectedForDelete = vm.countedSelectionsHelper.isSelected(position)
                                         countedRecyclerViewKeyHandler?.let {
                                             binding.root.isSelected = it.isSelected(position)
+                                        }
+                                    }
+
+                                },
+                                onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
+                                    countedRecyclerViewKeyHandler?.let {
+                                        if (it.isSelected(position)) {
+                                            vm.onClickItemPosition(position)
+                                        } else {
+                                            it.selectPosition(position)
                                         }
                                     }
 
@@ -167,6 +179,16 @@ class GoodsListFragment :
 
                                 }
 
+                            },
+                            onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
+                                filterRecyclerViewKeyHandler?.let {
+                                    if (it.isSelected(position)) {
+                                        vm.onClickItemPosition(position)
+                                    } else {
+                                        it.selectPosition(position)
+                                    }
+                                }
+
                             }
                     )
 
@@ -203,10 +225,20 @@ class GoodsListFragment :
         } else {
             filterRecyclerViewKeyHandler
         })?.let {
-            return it.onKeyDown(keyCode)
+            if (!it.onKeyDown(keyCode)) {
+                keyCode.digit?.let { digit ->
+                    vm.onDigitPressed(digit)
+                    return true
+                }
+                return false
+            }
+            return true
         }
         return false
     }
 
 
+
 }
+
+

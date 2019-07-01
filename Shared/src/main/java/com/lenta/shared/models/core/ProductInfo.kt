@@ -5,20 +5,10 @@ data class ProductInfo(val materialNumber: String,
                   val uom: Uom,
                   val type: ProductType,
                   val isSet: Boolean,
-                  val sectionNumber: Int,
+                  val sectionId: String,
                   val matrixType: MatrixType,
                   val materialType: String) : IProduct {
 
-
-    constructor(product: ProductInfo) : this(
-            product.materialNumber,
-            product.description,
-            product.uom,
-            product.type,
-            product.isSet,
-            product.sectionNumber,
-            product.matrixType,
-            product.materialType)
 
     override fun getMaterialLastSix(): String {
         return if (materialNumber.length > 6)

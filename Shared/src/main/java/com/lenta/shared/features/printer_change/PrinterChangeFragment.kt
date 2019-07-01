@@ -8,12 +8,13 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
+import com.lenta.shared.utilities.extentions.generateScreenNumber
 import com.lenta.shared.utilities.extentions.provideViewModel
 
 class PrinterChangeFragment : CoreFragment<FragmentPrinterChangeBinding, PrinterChangeViewModel>(),
         ToolbarButtonsClickListener {
 
-    override fun getPageNumber(): String = "10/53"
+    override fun getPageNumber(): String = generateScreenNumber()
 
     override fun getViewModel(): PrinterChangeViewModel {
         provideViewModel(PrinterChangeViewModel::class.java).let {

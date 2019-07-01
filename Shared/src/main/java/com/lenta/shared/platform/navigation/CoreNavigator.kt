@@ -2,6 +2,7 @@ package com.lenta.shared.platform.navigation
 
 import android.content.Context
 import android.os.Bundle
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.LiveData
 import com.lenta.shared.R
 import com.lenta.shared.analytics.IAnalytics
@@ -9,8 +10,11 @@ import com.lenta.shared.exception.Failure
 import com.lenta.shared.exception.IFailureInterpreter
 import com.lenta.shared.features.alert.AlertFragment
 import com.lenta.shared.features.auxiliary_menu.AuxiliaryMenuFragment
+import com.lenta.shared.features.exit.ExitWithConfirmationFragment
 import com.lenta.shared.features.fmp_settings.FmpSettingsFragment
+import com.lenta.shared.features.matrix_info.MatrixInfoFragment
 import com.lenta.shared.features.printer_change.PrinterChangeFragment
+import com.lenta.shared.features.section_info.SectionInfoFragment
 import com.lenta.shared.features.select_oper_mode.SelectOperModeFragment
 import com.lenta.shared.features.select_oper_mode.SelectOperModeViewModel
 import com.lenta.shared.features.settings.SettingsFragment
@@ -19,7 +23,10 @@ import com.lenta.shared.features.tech_login.TechLoginFragment
 import com.lenta.shared.features.test_environment.PinCodeFragment
 import com.lenta.shared.features.test_environment.failure.FailurePinCodeFragment
 import com.lenta.shared.interactor.UseCase
+import com.lenta.shared.models.core.MatrixType
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
+import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
+import com.lenta.shared.utilities.extentions.setFragmentResultCode
 
 
 class CoreNavigator constructor(private val context: Context,
@@ -38,6 +45,13 @@ class CoreNavigator constructor(private val context: Context,
         }
     }
 
+    override fun goBackWithResultCode(code: Int) {
+        goBackWithArgs(
+                args = Bundle().apply {
+                    setFragmentResultCode(code)
+                })
+    }
+
     override fun goBack() {
         runOrPostpone {
             getFragmentStack()?.pop()
@@ -54,20 +68,28 @@ class CoreNavigator constructor(private val context: Context,
     }
 
 
-    override fun openAlertScreen(message: String, pageNumber: String) {
+    override fun openAlertScreen(message: String, iconRes: Int, textColor: Int?, pageNumber: String?, timeAutoExitInMillis: Int?) {
         runOrPostpone {
             getFragmentStack()?.let {
-                val fragment = AlertFragment.create(message = message, pageNumber = pageNumber)
-                it.push(fragment, CustomAnimation.vertical())
+                val fragment = AlertFragment.create(
+                        message = message,
+                        iconRes = iconRes,
+                        textColor = textColor,
+                        pageNumber = pageNumber,
+                        timeAutoExitInMillis = timeAutoExitInMillis
+                )
+                it.push(fragment, CustomAnimation.vertical)
 
             }
         }
     }
 
     override fun openAlertScreen(failure: Failure, pageNumber: String) {
-        runOrPostpone {
-            openAlertScreen(message = failureInterpreter.getFailureDescription(failure), pageNumber = pageNumber)
-        }
+        openAlertScreen(
+                message = failureInterpreter.getFailureDescription(failure).message,
+                iconRes = failureInterpreter.getFailureDescription(failure).iconRes,
+                textColor = failureInterpreter.getFailureDescription(failure).textColor,
+                pageNumber = pageNumber)
     }
 
     override fun openSupportScreen() {
@@ -84,13 +106,13 @@ class CoreNavigator constructor(private val context: Context,
 
     override fun showProgress(title: String) {
         runOrPostpone {
-            foregroundActivityProvider.getActivity()?.getViewModel()?.showSimpleProgress(title)
+            foregroundActivityProvider.getActivity()?.showSimpleProgress(title)
         }
     }
 
     override fun hideProgress() {
         runOrPostpone {
-            foregroundActivityProvider.getActivity()?.getViewModel()?.hideProgress()
+            foregroundActivityProvider.getActivity()?.hideProgress()
         }
     }
 
@@ -151,6 +173,80 @@ class CoreNavigator constructor(private val context: Context,
         }
     }
 
+    override fun openExitConfirmationScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(ExitWithConfirmationFragment())
+        }
+    }
+
+    override fun openMatrixInfoScreen(matrixType: MatrixType) {
+        runOrPostpone {
+            getFragmentStack()?.push(MatrixInfoFragment.create(matrixType), CustomAnimation.vertical)
+        }
+    }
+
+    override fun openSectionInfoScreen(section: String) {
+        runOrPostpone {
+            getFragmentStack()?.push(SectionInfoFragment.create(sectionNumber = section), CustomAnimation.vertical)
+        }
+    }
+
+    override fun openEanInfoScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.ean_info),
+                    iconRes = R.drawable.ic_scan_barcode), CustomAnimation.vertical)
+        }
+    }
+
+    override fun openESInfoScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.es_info),
+                    iconRes = R.drawable.is_scan_barcode_es), CustomAnimation.vertical)
+        }
+    }
+
+    override fun openInfoScreen(message: String) {
+        openAlertScreen(message = message,
+                iconRes = R.drawable.ic_info_pink,
+                textColor = ContextCompat.getColor(context, R.color.color_text_dialogWarning),
+                pageNumber = "97"
+        )
+    }
+
+    override fun openStampAnotherMarketAlert(codeConfirm: Int) {
+        runOrPostpone {
+            getFragmentStack()?.push(
+                    AlertFragment.create(
+                            message = context.getString(R.string.another_market_stamp),
+                            pageNumber = "93",
+                            codeConfirm = codeConfirm,
+                            rightButtonDecorationInfo = ButtonDecorationInfo.next
+                    )
+            )
+        }
+    }
+
+    override fun openWriteOffToProductionConfirmationScreen(codeConfirm: Int) {
+        runOrPostpone {
+            getFragmentStack()?.push(
+                    AlertFragment.create(
+                            message = context.getString(R.string.writeoff_to_production_confirmation),
+                            pageNumber = "95",
+                            codeConfirm = codeConfirm,
+                            rightButtonDecorationInfo = ButtonDecorationInfo.nextAlternate
+                    )
+            )
+        }
+    }
+
+
+    override fun openAnotherProductStampAlert(productName: String) {
+        openInfoScreen(message = context.getString(R.string.another_product_stamp, productName))
+    }
+
+    override fun openNeedUpdateScreen() {
+        openInfoScreen(context.getString(R.string.need_update))
+    }
 
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 
@@ -163,10 +259,11 @@ fun ICoreNavigator.runOrPostpone(function: () -> Unit) {
 interface ICoreNavigator {
     val functionsCollector: FunctionsCollector
     fun goBackWithArgs(args: Bundle)
+    fun goBackWithResultCode(code: Int)
     fun goBack()
     fun finishApp()
-    fun openAlertScreen(message: String, pageNumber: String = "?")
-    fun openAlertScreen(failure: Failure, pageNumber: String = "?")
+    fun openAlertScreen(message: String, iconRes: Int = 0, textColor: Int? = null, pageNumber: String? = null, timeAutoExitInMillis: Int? = null)
+    fun openAlertScreen(failure: Failure, pageNumber: String = "96")
     fun openSupportScreen()
     fun <Params> showProgress(useCase: UseCase<Any, Params>)
     fun showProgress(title: String)
@@ -180,6 +277,16 @@ interface ICoreNavigator {
     fun openSettingsScreen()
     fun openAuxiliaryMenuScreen()
     fun openFailurePinCodeScreen(message: String)
+    fun openExitConfirmationScreen()
+    fun openMatrixInfoScreen(matrixType: MatrixType)
+    fun openSectionInfoScreen(section: String)
+    fun openEanInfoScreen()
+    fun openESInfoScreen()
+    fun openInfoScreen(message: String)
+    fun openStampAnotherMarketAlert(codeConfirm: Int)
+    fun openAnotherProductStampAlert(productName: String)
+    fun openWriteOffToProductionConfirmationScreen(codeConfirm: Int)
+    fun openNeedUpdateScreen()
 }
 
 class FunctionsCollector(private val needCollectLiveData: LiveData<Boolean>) {

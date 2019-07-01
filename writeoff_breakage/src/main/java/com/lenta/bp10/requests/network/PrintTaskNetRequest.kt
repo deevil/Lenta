@@ -2,6 +2,7 @@ package com.lenta.bp10.requests.network
 
 import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
+import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.fmp.BaseRestSapStatus
 import com.lenta.shared.fmp.ObjectRawStatus
@@ -16,22 +17,25 @@ import javax.inject.Inject
 
 class PrintTaskNetRequest
 @Inject constructor(private val hyperHive: HyperHive,
-                    private val gson: Gson) :
+                    private val gson: Gson,
+                    private val sessionInfo: ISessionInfo) :
         UseCase<Boolean, PrintTask>() {
 
 
     override suspend fun run(params: PrintTask): Either<Failure, Boolean> {
-        val stringStatus = hyperHive.requestAPI.web("ZMP_UTZ_WOB_04_V001",
+        val printTaskStatus = hyperHive.requestAPI.web("ZMP_UTZ_WOB_04_V001",
                 WebCallParams().apply {
                     data = gson.toJson(params)
                     headers = mapOf(
                             "X-SUP-DOMAIN" to "DM-MAIN",
-                            "Content-Type" to "application/json"
+                            "Content-Type" to "application/json",
+                            "Web-Authorization" to sessionInfo.basicAuth
                     )
-                })
+                },
+                PrintTaskStatus::class.java
+        )
                 .execute()
 
-        val printTaskStatus = gson.fromJson(stringStatus, PrintTaskStatus::class.java)
         if (printTaskStatus.isNotBad()) {
             val errorText = printTaskStatus.result?.raw?.errorText
             return if (errorText.isNullOrEmpty()) {

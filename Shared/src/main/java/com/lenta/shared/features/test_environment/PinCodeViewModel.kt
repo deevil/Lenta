@@ -11,6 +11,8 @@ import com.lenta.shared.requests.network.PinCodeInfo
 import com.lenta.shared.requests.network.PinCodeNetRequest
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
+import com.lenta.shared.utilities.extentions.combineLatest
+import com.lenta.shared.utilities.extentions.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -33,6 +35,29 @@ class PinCodeViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     @Inject
     lateinit var failureInterpreter: IFailureInterpreter
 
+    private val msgIncorrectPinCode: MutableLiveData<String> = MutableLiveData()
+
+    val enabledGoOverBtn: MutableLiveData<Boolean> = pinCode1
+            .combineLatest(pinCode2)
+            .combineLatest(pinCode3)
+            .combineLatest(pinCode4)
+            .map {
+                val pin1 = it?.first?.first?.first
+                val pin2 = it?.first?.first?.second
+                val pin3 = it?.first?.second
+                val pin4 = it?.second
+                !(pin1.isNullOrEmpty() || pin2.isNullOrEmpty() || pin3.isNullOrEmpty() || pin4.isNullOrEmpty())
+            }
+
+    fun setMsgIncorrectPinCode(string: String) {
+        this.msgIncorrectPinCode.value = string
+    }
+
+    private lateinit var prefixScreen: String
+    fun setPrefixScreen(prefixScreen: String){
+        this.prefixScreen = prefixScreen
+    }
+
     fun onClickGoOver() {
         viewModelScope.launch {
             progress.value = true
@@ -48,13 +73,13 @@ class PinCodeViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
                 putInt(KEY_ARGS_ID_CODE_CONFIRM, requestCode ?: 0)
             })
         } else {
-            screenNavigator.openAlertScreen("Пин-код неверный")
+            screenNavigator.openAlertScreen(message = msgIncorrectPinCode.value!!, pageNumber = "95")
         }
     }
 
     override fun handleFailure(failure: Failure) {
         super.handleFailure(failure)
-        screenNavigator.openFailurePinCodeScreen(failureInterpreter.getFailureDescription(failure))
+        screenNavigator.openFailurePinCodeScreen(failureInterpreter.getFailureDescription(failure).message)
     }
 
 

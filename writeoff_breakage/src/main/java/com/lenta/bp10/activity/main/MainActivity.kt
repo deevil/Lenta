@@ -7,6 +7,7 @@ import com.lenta.bp10.di.AppComponent
 import com.lenta.bp10.platform.extentions.getAppComponent
 import com.lenta.shared.platform.activity.main_activity.CoreMainActivity
 import com.crashlytics.android.Crashlytics
+import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.utilities.runIfRelease
 import com.lenta.shared.scan.OnScanResultListener
 import com.lenta.shared.utilities.Logg
@@ -17,6 +18,8 @@ import io.fabric.sdk.android.Fabric
 class MainActivity : CoreMainActivity() {
 
     var mainViewModel: MainViewModel? = null
+
+    private val numberScreenGenerator = NumberScreenGenerator()
 
     val appComponent: AppComponent by lazy {
         getAppComponent(coreComponent)
@@ -54,6 +57,7 @@ class MainActivity : CoreMainActivity() {
 
                 if (action == "com.symbol.datawedge.krittest") {
                     intent1.getStringExtra("com.motorolasolutions.emdk.datawedge.data_string")?.let {
+                        Logg.d { "scan data $it" }
                         fragmentStack.peek()?.implementationOf(OnScanResultListener::class.java)?.onScanResult(it)
                     }
 
@@ -77,6 +81,18 @@ class MainActivity : CoreMainActivity() {
         /*startActivity(Intent(applicationContext, this::class.java).apply {
             flags = FLAG_ACTIVITY_REORDER_TO_FRONT
         })*/
+    }
+
+    override fun generateNumberScreenFromPostfix(postfix: String?): String? {
+        return numberScreenGenerator.generateNumberScreenFromPostfix(postfix)
+    }
+
+    override fun generateNumberScreen(fragment: CoreFragment<*, *>): String? {
+        return numberScreenGenerator.generateNumberScreen(fragment)
+    }
+
+    override fun getPrefixScreen(fragment: CoreFragment<*, *>): String {
+        return numberScreenGenerator.getPrefixScreen(fragment)
     }
 
 }

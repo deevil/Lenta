@@ -10,7 +10,5 @@ fun ZmpUtz32V001.getMotionTypes(taskType: String, taskCntrlList: List<String>): 
     return localHelper_ET_MOVREASONS
             .getWhere("TASK_TYPE == \"$taskType\" AND " +
                     "TASK_CNTRL IN ${taskCntrlList.toSQliteSet()}")
-            .map {
-                it.reason to it
-            }.toMap().values
+
 }

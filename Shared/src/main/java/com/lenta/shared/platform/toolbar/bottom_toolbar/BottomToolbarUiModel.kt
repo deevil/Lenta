@@ -53,6 +53,24 @@ data class ButtonDecorationInfo(
         @StringRes val titleRes: Int
 ) {
     companion object {
+        val update: ButtonDecorationInfo by lazy {
+            ButtonDecorationInfo(R.drawable.ic_sync_white_24dp, R.string.update)
+        }
+        val menu: ButtonDecorationInfo by lazy {
+            ButtonDecorationInfo(R.drawable.ic_home_white_24dp, R.string.menu)
+        }
+        val sap: ButtonDecorationInfo by lazy {
+            ButtonDecorationInfo(R.drawable.ic_sap, R.string.sap_code)
+        }
+        val barcode: ButtonDecorationInfo by lazy {
+            ButtonDecorationInfo(R.drawable.ic_barcode, R.string.barcode)
+        }
+        val yes: ButtonDecorationInfo by lazy {
+            ButtonDecorationInfo(R.drawable.ic_done_white_24dp, R.string.yes)
+        }
+        val no: ButtonDecorationInfo by lazy {
+            ButtonDecorationInfo(R.drawable.ic_close_white_24dp, R.string.no)
+        }
         val goOver: ButtonDecorationInfo by lazy {
             ButtonDecorationInfo(R.drawable.ic_send_white_24dp, R.string.go_over)
         }
@@ -69,6 +87,9 @@ data class ButtonDecorationInfo(
         val save: ButtonDecorationInfo by lazy {
             ButtonDecorationInfo(R.drawable.ic_send_white_24dp, R.string.save)
         }
+        val complete: ButtonDecorationInfo by lazy {
+            ButtonDecorationInfo(R.drawable.ic_send_white_24dp, R.string.complete)
+        }
         val print: ButtonDecorationInfo by lazy {
             ButtonDecorationInfo(R.drawable.ic_print_white_24dp, R.string.print)
         }
@@ -80,6 +101,10 @@ data class ButtonDecorationInfo(
         }
         val next: ButtonDecorationInfo by lazy {
             ButtonDecorationInfo(R.drawable.ic_arrow_forward_white_24dp, R.string.to_next)
+        }
+
+        val nextAlternate: ButtonDecorationInfo by lazy {
+            ButtonDecorationInfo(R.drawable.ic_send_white_24dp, R.string.to_next)
         }
 
         val back: ButtonDecorationInfo by lazy {
@@ -94,8 +119,21 @@ data class ButtonDecorationInfo(
             ButtonDecorationInfo(R.drawable.ic_rollback_white_24dp, R.string.rollback)
         }
 
+        val missing: ButtonDecorationInfo by lazy {
+            ButtonDecorationInfo(R.drawable.ic_close_white_24dp, R.string.missing)
+        }
+
+        //TODO: Добавить правильную иконку
+        val refresh: ButtonDecorationInfo by lazy {
+            ButtonDecorationInfo(R.drawable.ic_print_white_24dp, R.string.refresh)
+        }
+
         val empty: ButtonDecorationInfo by lazy {
             ButtonDecorationInfo(0, 0)
+        }
+
+        val skip: ButtonDecorationInfo by lazy {
+            ButtonDecorationInfo(R.drawable.ic_send_white_24dp, R.string.skip)
         }
 
 

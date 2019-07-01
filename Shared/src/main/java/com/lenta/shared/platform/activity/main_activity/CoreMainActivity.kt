@@ -13,6 +13,7 @@ import com.lenta.shared.keys.OnKeyDownListener
 import com.lenta.shared.platform.network_state.NetworkStateMonitor
 import com.lenta.shared.platform.activity.CoreActivity
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
+import com.lenta.shared.platform.activity.INumberScreenGenerator
 import com.lenta.shared.platform.activity.OnBackPresserListener
 import com.lenta.shared.platform.battery_state.BatteryStateMonitor
 import com.lenta.shared.platform.fragment.CoreFragment
@@ -24,12 +25,14 @@ import com.lenta.shared.platform.toolbar.top_toolbar.ImageButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.scan.IScanHelper
 import com.lenta.shared.scan.OnScanResultListener
+import com.lenta.shared.scan.honeywell.HoneywellScanHelper
+import com.lenta.shared.scan.newland.NewLandScanHelper
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.hideKeyboard
 import com.lenta.shared.utilities.extentions.implementationOf
 import javax.inject.Inject
 
-abstract class CoreMainActivity : CoreActivity<ActivityMainBinding>(), ToolbarButtonsClickListener {
+abstract class CoreMainActivity : CoreActivity<ActivityMainBinding>(), ToolbarButtonsClickListener, INumberScreenGenerator {
 
     @Inject
     lateinit var networkStateMonitor: NetworkStateMonitor
@@ -42,6 +45,9 @@ abstract class CoreMainActivity : CoreActivity<ActivityMainBinding>(), ToolbarBu
 
     @Inject
     lateinit var scanHelper: IScanHelper
+
+    val honeywellScanHelper = HoneywellScanHelper()
+    val newLandScanHelper = NewLandScanHelper()
 
     private val vm: CoreMainViewModel by lazy {
         getViewModel()
@@ -72,22 +78,43 @@ abstract class CoreMainActivity : CoreActivity<ActivityMainBinding>(), ToolbarBu
 
         })
 
+        honeywellScanHelper.scanResult.observe(this, Observer<String> {
+            Logg.d { "scan result: $it" }
+            it?.let { code ->
+                getCurrentFragment()?.implementationOf(OnScanResultListener::class.java)?.onScanResult(code)
+            }
+
+        })
+
+        honeywellScanHelper.init(this)
+
+        newLandScanHelper.scanResult.observe(this, Observer<String> {
+            Logg.d { "scan result: $it" }
+            it?.let { code ->
+                getCurrentFragment()?.implementationOf(OnScanResultListener::class.java)?.onScanResult(code)
+            }
+        })
+
     }
 
     override fun onResume() {
         super.onResume()
         networkStateMonitor.start(this)
         batteryStateMonitor.start(this)
-        foregroundActivityProvider.setActivity(this)
         scanHelper.startListen(this)
+        foregroundActivityProvider.setActivity(this)
+        honeywellScanHelper.startListen(this)
+        newLandScanHelper.startListen(this)
     }
 
     override fun onPause() {
+        foregroundActivityProvider.clear()
         super.onPause()
         networkStateMonitor.stop(this)
         batteryStateMonitor.stop(this)
-        foregroundActivityProvider.clear()
         scanHelper.stopListen(this)
+        honeywellScanHelper.stopListen(this)
+        newLandScanHelper.stopListen(this)
     }
 
     override fun onBackPressed() {
@@ -111,8 +138,10 @@ abstract class CoreMainActivity : CoreActivity<ActivityMainBinding>(), ToolbarBu
     }
 
     private fun updateNumberPage() {
-        vm.statusBarUiModel.pageNumber.postValue(getCurrentFragment()?.implementationOf(CoreFragment::class.java)
-                ?.getPageNumber() ?: "???")
+        getCurrentFragment()?.implementationOf(CoreFragment::class.java)?.getPageNumber()?.let {
+            vm.statusBarUiModel.pageNumber.postValue(it)
+        }
+
 
     }
 
@@ -174,11 +203,17 @@ abstract class CoreMainActivity : CoreActivity<ActivityMainBinding>(), ToolbarBu
         vm.onNewEnter()
     }
 
+    fun showSimpleProgress(title: String) {
+        vm.showSimpleProgress(title)
+    }
 
-    abstract fun getViewModel(): CoreMainViewModel
+    fun hideProgress() {
+        vm.hideProgress()
+    }
+
+    protected abstract fun getViewModel(): CoreMainViewModel
 
     abstract fun onClickExit()
-
 
 }
 

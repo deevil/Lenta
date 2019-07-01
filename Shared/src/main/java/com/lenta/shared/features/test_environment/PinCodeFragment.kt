@@ -1,5 +1,6 @@
 package com.lenta.shared.features.test_environment
 
+import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
@@ -10,6 +11,9 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
+import com.lenta.shared.utilities.extentions.connectLiveData
+import com.lenta.shared.utilities.extentions.generateScreenNumber
+import com.lenta.shared.utilities.extentions.getScreenPrefix
 import com.lenta.shared.utilities.extentions.provideViewModel
 import com.lenta.shared.utilities.state.state
 
@@ -33,15 +37,21 @@ class PinCodeFragment : CoreFragment<com.lenta.shared.databinding.FragmentPinCod
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
         bottomToolbarUiModel.cleanAll()
-        bottomToolbarUiModel.uiModelButton1.let { buttonUiModel -> buttonUiModel.show(ButtonDecorationInfo.back) }
-        bottomToolbarUiModel.uiModelButton5.let { buttonUiModel -> buttonUiModel.show(ButtonDecorationInfo.goOver) }
+        bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
+        bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.goOver, enabled = false)
+
+        viewLifecycleOwner.connectLiveData(vm.enabledGoOverBtn, bottomToolbarUiModel.uiModelButton5.enabled)
     }
 
-    override fun getPageNumber(): String = "10/56"
+    override fun getPageNumber(): String = generateScreenNumber()
 
     override fun getViewModel(): PinCodeViewModel {
         provideViewModel(PinCodeViewModel::class.java).let { viewModel ->
             coreComponent.inject(viewModel)
+
+            viewModel.setPrefixScreen(getScreenPrefix())
+
+            viewModel.setMsgIncorrectPinCode(getString(R.string.msg_incorrect_pin_code))
 
             requestCode?.let {
                 viewModel.requestCode = it
@@ -51,11 +61,16 @@ class PinCodeFragment : CoreFragment<com.lenta.shared.databinding.FragmentPinCod
                 viewModel.message.value = it
             }
 
-            binding?.let { it.etPin1.addTextChangedListener(EnterCodeTextWatcher(binding?.etPin2)) }
-            binding?.let { it.etPin2.addTextChangedListener(EnterCodeTextWatcher(binding?.etPin3)) }
-            binding?.let { it.etPin3.addTextChangedListener(EnterCodeTextWatcher(binding?.etPin4)) }
-
             return viewModel
+        }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        binding?.apply {
+            etPin1.addTextChangedListener(EnterCodeTextWatcher(binding?.etPin2))
+            etPin2.addTextChangedListener(EnterCodeTextWatcher(binding?.etPin3))
+            etPin3.addTextChangedListener(EnterCodeTextWatcher(binding?.etPin4))
         }
     }
 
@@ -69,7 +84,7 @@ class PinCodeFragment : CoreFragment<com.lenta.shared.databinding.FragmentPinCod
     }
 }
 
-class EnterCodeTextWatcher (private var nextFocus: EditText?) : TextWatcher {
+class EnterCodeTextWatcher(private var nextFocus: EditText?) : TextWatcher {
     override fun afterTextChanged(s: Editable?) {
     }
 

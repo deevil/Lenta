@@ -67,7 +67,13 @@ class AppSettings @Inject constructor(
         get() = sharedPrefferences.getString("printer", null)
         set(value) {
             sharedPrefferences.edit().putString("printer", value).commit()
-            printerLiveData.value = value
+        }
+
+    override var printerNumber: String?
+        get() = sharedPrefferences.getString("printerNumber", null)
+        set(value) {
+            sharedPrefferences.edit().putString("printerNumber", value).commit()
+            printerNumberLiveData.value = value
         }
 
 
@@ -77,22 +83,28 @@ class AppSettings @Inject constructor(
             sharedPrefferences.edit().putString("lastLogin", value).commit()
         }
 
-    override var lastTK: String?
-        get() = sharedPrefferences.getString("lastTK", null)
+    override var lastJobType: String?
+        get() = sharedPrefferences.getString("lastJobType$lastLogin", null)
         set(value) {
-            sharedPrefferences.edit().putString("lastTK", value).commit()
+            sharedPrefferences.edit().putString("lastJobType$lastLogin", value).commit()
+        }
+
+    override var lastTK: String?
+        get() = sharedPrefferences.getString("lastTK$lastLogin", null)
+        set(value) {
+            sharedPrefferences.edit().putString("lastTK$lastLogin", value).commit()
         }
 
     override var lastPersonnelNumber: String?
-        get() = sharedPrefferences.getString("lastPersonnelNumber", null)
+        get() = sharedPrefferences.getString("lastPersonnelNumber$lastLogin", null)
         set(value) {
-            sharedPrefferences.edit().putString("lastPersonnelNumber", value).commit()
+            sharedPrefferences.edit().putString("lastPersonnelNumber$lastLogin", value).commit()
         }
 
     override var lastPersonnelFullName: String?
-        get() = sharedPrefferences.getString("lastPersonnelFullName", null)
+        get() = sharedPrefferences.getString("lastPersonnelFullName$lastLogin", null)
         set(value) {
-            sharedPrefferences.edit().putString("lastPersonnelFullName", value).commit()
+            sharedPrefferences.edit().putString("lastPersonnelFullName$lastLogin", value).commit()
         }
 
     override fun getCurrentServerAddress(): String {
@@ -107,7 +119,7 @@ class AppSettings @Inject constructor(
         return if (isTest) testProject else project
     }
 
-    override val printerLiveData: MutableLiveData<String?> = MutableLiveData(printer)
+    override val printerNumberLiveData: MutableLiveData<String?> = MutableLiveData(printerNumber)
 
 
 }
@@ -121,9 +133,11 @@ interface IAppSettings {
     var testEnvironment: String
     var testProject: String
     var lastLogin: String?
+    var lastJobType: String?
 
     var printer: String?
-    val printerLiveData: MutableLiveData<String?>
+    var printerNumber: String?
+    val printerNumberLiveData: MutableLiveData<String?>
 
     var techLogin: String
     var techPassword: String

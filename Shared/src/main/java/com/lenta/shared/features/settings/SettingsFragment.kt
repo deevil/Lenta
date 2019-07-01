@@ -10,6 +10,7 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.ImageButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
+import com.lenta.shared.utilities.extentions.generateScreenNumber
 import com.lenta.shared.utilities.extentions.provideViewModel
 
 class SettingsFragment : CoreFragment<com.lenta.shared.databinding.FragmentSettingsBinding, SettingsViewModel>(), OnBackPresserListener, ToolbarButtonsClickListener {
@@ -42,7 +43,7 @@ class SettingsFragment : CoreFragment<com.lenta.shared.databinding.FragmentSetti
         bottomToolbarUiModel.cleanAll(false)
     }
 
-    override fun getPageNumber(): String = "10/51"
+    override fun getPageNumber(): String = generateScreenNumber()
 
     override fun getViewModel(): SettingsViewModel {
         provideViewModel(SettingsViewModel::class.java).let {

@@ -2,119 +2,101 @@ package com.lenta.bp10.features.good_information.general
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.lenta.bp10.models.repositories.IWriteOffTaskManager
-import com.lenta.bp10.models.repositories.getTotalCountForProduct
+import com.lenta.bp10.features.good_information.base.BaseProductInfoViewModel
+import com.lenta.bp10.models.repositories.ITaskRepository
 import com.lenta.bp10.models.task.ProcessGeneralProductService
+import com.lenta.bp10.models.task.TaskDescription
 import com.lenta.bp10.models.task.WriteOffReason
-import com.lenta.bp10.platform.navigation.IScreenNavigator
-import com.lenta.shared.models.core.ProductInfo
-import com.lenta.shared.platform.viewmodel.CoreViewModel
-import com.lenta.shared.utilities.extentions.combineLatest
-import com.lenta.shared.utilities.extentions.map
+import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
 import com.lenta.shared.utilities.extentions.toStringFormatted
-import com.lenta.shared.view.OnPositionClickListener
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
-class GoodInfoViewModel : CoreViewModel(), OnPositionClickListener {
+class GoodInfoViewModel : BaseProductInfoViewModel() {
 
-    @Inject
-    lateinit var processServiceManager: IWriteOffTaskManager
-    @Inject
-    lateinit var screenNavigator: IScreenNavigator
 
     private val processGeneralProductService: ProcessGeneralProductService by lazy {
         processServiceManager.getWriteOffTask()!!.processGeneralProduct(productInfo.value!!)!!
     }
 
-    val productInfo: MutableLiveData<ProductInfo> = MutableLiveData()
-
-    val writeOffReasonTitles: MutableLiveData<List<String>> = MutableLiveData()
-
-    val selectedPosition: MutableLiveData<Int> = MutableLiveData(0)
-
-    val count: MutableLiveData<String> = MutableLiveData("")
-
-    val countValue: MutableLiveData<Double> = count.map { it?.toDoubleOrNull()?: 0.0 }
-
-    val suffix: MutableLiveData<String> = MutableLiveData()
-
-    val totalCount: MutableLiveData<Double> = countValue.map {
-        (it ?: 0.0) + processGeneralProductService.getTotalCount()
+    override fun getProcessTotalCount(): Double {
+        return processGeneralProductService.getTotalCount()
     }
 
-    val totalCountWithUom: MutableLiveData<String> = totalCount.map { "${it.toStringFormatted()} ${productInfo.value!!.uom.name}" }
-
-    val enabledApplyButton: MutableLiveData<Boolean> = countValue.combineLatest(selectedPosition).map {
-        val count = it?.first ?: 0.0
-        var enabled = false
-        productInfo.value?.let { productInfoVal ->
-            enabled =
-                    count != 0.0
-                            &&
-                            processGeneralProductService.taskRepository.getTotalCountForProduct(productInfoVal, getReason()) + (countValue.value
-                            ?: 0.0) >= 0.0
-        }
-        enabled
+    override fun getTaskRepo(): ITaskRepository {
+        return processGeneralProductService.taskRepository
     }
 
-    val enabledDetailsButton: MutableLiveData<Boolean> = totalCount.map {
-        processGeneralProductService.getTotalCount() > 0.0
-    }
-
-    fun setProductInfo(productInfo: ProductInfo) {
-        this.productInfo.value = productInfo
-    }
-
-    init {
-        viewModelScope.launch {
-
-            processServiceManager.getWriteOffTask()?.let { writeOffTask ->
-                writeOffReasonTitles.value = writeOffTask.taskDescription.moveTypes.map { it.name }
+    override fun handleProductSearchResult(scanInfoResult: ScanInfoResult?): Boolean {
+        scanInfoResult?.let {
+            if (it.productInfo.materialNumber == productInfo.value?.materialNumber) {
+                count.value = it.quantity.toStringFormatted()
+                return true
             }
-            suffix.value = productInfo.value?.uom?.name
+        }
+        onClickApply()
+        return false
+    }
 
+    override fun getTaskDescription(): TaskDescription {
+        return processGeneralProductService.taskDescription
+    }
+
+    override fun onClickAdd() {
+        if (addGood()) {
+            viewModelScope.launch {
+                limitsChecker?.check()
+            }
         }
     }
 
-    override fun onClickPosition(position: Int) {
-        selectedPosition.postValue(position)
-    }
 
-    fun onClickAdd() {
-        addGood()
-    }
-
-
-    fun onClickApply() {
-        addGood()
-        processGeneralProductService.apply()
-        screenNavigator.goBack()
-    }
-
-    fun onClickDetails() {
-
-        productInfo.value?.let {
-            screenNavigator.openGoodsReasonsScreen(productInfo = it)
+    override fun onClickApply() {
+        addGood().let { wasAdded ->
+            if (wasAdded) {
+                processGeneralProductService.apply()
+                screenNavigator.goBack()
+                limitsChecker?.check()
+            }
         }
 
     }
 
-    private fun addGood() {
+    private fun addGood(): Boolean {
         countValue.value?.let {
-            processGeneralProductService.add(getReason(), it)
+
+            if (enabledApplyButton.value != true && it != 0.0) {
+                if (getSelectedReason() === WriteOffReason.empty) {
+                    screenNavigator.openNotPossibleSaveWithoutReasonScreen()
+                } else {
+                    screenNavigator.openNotPossibleSaveNegativeQuantityScreen()
+                }
+                return false
+            }
+
+            if (it != 0.0) {
+                processGeneralProductService.add(getSelectedReason(), it)
+            }
+
             count.value = ""
+
+            return true
+        }
+        return false
+    }
+
+
+    override fun onBackPressed() {
+        processGeneralProductService.discard()
+    }
+
+    override fun onScanResult(data: String) {
+        if (addGood()) {
+            searchProductDelegate.searchCode(code = data, fromScan = true)
         }
     }
 
-
-    private fun getReason(): WriteOffReason {
-        return processGeneralProductService.taskDescription.moveTypes
-                .getOrElse(selectedPosition.value ?: -1) { WriteOffReason.empty }
-    }
-
-    fun onBackPressed() {
-        processGeneralProductService.discard()
+    override fun initCountLiveData(): MutableLiveData<String> {
+        return MutableLiveData()
     }
 
 }

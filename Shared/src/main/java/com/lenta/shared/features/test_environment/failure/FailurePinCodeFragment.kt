@@ -3,6 +3,7 @@ package com.lenta.shared.features.test_environment.failure
 import com.lenta.shared.features.message.CoreMessageFragment
 import com.lenta.shared.features.message.MessageViewModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
+import com.lenta.shared.utilities.extentions.generateScreenNumber
 import com.lenta.shared.utilities.extentions.provideViewModel
 
 class FailurePinCodeFragment : CoreMessageFragment() {
@@ -27,7 +28,7 @@ class FailurePinCodeFragment : CoreMessageFragment() {
     }
 
     override fun getPageNumber(): String {
-        return "10/96"
+        return generateScreenNumber()
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {

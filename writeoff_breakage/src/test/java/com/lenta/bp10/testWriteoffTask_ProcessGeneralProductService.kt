@@ -24,7 +24,7 @@ class testWriteoffTask_ProcessGeneralProductService {
                 TaskType("СГП", "nСГП"),
                 "Списание от 04.06 10:23",
                 "0002",
-                listOf(WriteOffReason("949ВД", "Лом/Бой")),
+                listOf(WriteOffReason("949ВД", "Лом/Бой", "A")),
                 listOf("N"),
                 listOf("2FER", "3ROH"), "perNo", "printer", "tkNumber", "ipAddress"
         )
@@ -35,14 +35,15 @@ class testWriteoffTask_ProcessGeneralProductService {
     @Test
     fun testProcessGeneralProduct() {
         var test = false
+
         val product1 = ProductInfo("materialNumber1", "description", Uom("ST", "шт"), ProductType.General,
-                false, 1, MatrixType.Active, "materialType")
+                false, "1", MatrixType.Active, "materialType")
 
         val product2 = ProductInfo("materialNumber1", "description", Uom("ST", "шт"), ProductType.NonExciseAlcohol,
-                false, 1, MatrixType.Active, "materialType")
+                false, "1", MatrixType.Active, "materialType")
 
         val product3 = ProductInfo("materialNumber1", "description", Uom("ST", "шт"), ProductType.ExciseAlcohol,
-                false, 1, MatrixType.Active, "materialType")
+                false, "1", MatrixType.Active, "materialType")
 
         creatingObjectsForTest()
 
@@ -52,7 +53,7 @@ class testWriteoffTask_ProcessGeneralProductService {
         assertTrue(test)
 
         test = false
-        if (task.processGeneralProduct(product2) == null) {
+        if (task.processGeneralProduct(product2) != null) {
             test = true
         }
         assertTrue(test)
@@ -70,18 +71,18 @@ class testWriteoffTask_ProcessGeneralProductService {
         creatingObjectsForTest()
 
         val product1 = ProductInfo("materialNumber1", "description", Uom("ST", "шт"), ProductType.General,
-                false, 1, MatrixType.Active, "materialType")
+                false, "1", MatrixType.Active, "materialType")
 
         val product2 = ProductInfo("materialNumber2", "description", Uom("ST", "шт"), ProductType.General,
-                false, 1, MatrixType.Active, "materialType")
+                false, "1", MatrixType.Active, "materialType")
 
         //дублирует продукт2, который не должен добавляться
         val product3 = ProductInfo("materialNumber2", "description", Uom("ST", "шт"), ProductType.General,
-                false, 1, MatrixType.Active, "materialType")
+                false, "1", MatrixType.Active, "materialType")
 
 
-        val reason1 = WriteOffReason("01", "Срок годности")
-        val reason2 = WriteOffReason("02", "Срок негодности")
+        val reason1 = WriteOffReason("01", "Срок годности", "A")
+        val reason2 = WriteOffReason("02", "Срок негодности", "A")
 
         task = task.processGeneralProduct(product1)!!
                 .add(reason1, 1.0)
@@ -112,17 +113,17 @@ class testWriteoffTask_ProcessGeneralProductService {
         creatingObjectsForTest()
 
         val product1 = ProductInfo("materialNumber1", "description", Uom("ST", "шт"), ProductType.General,
-                false, 1, MatrixType.Active, "materialType")
+                false, "1", MatrixType.Active, "materialType")
 
         val product2 = ProductInfo("materialNumber2", "description", Uom("ST", "шт"), ProductType.General,
-                false, 1, MatrixType.Active, "materialType")
+                false, "1", MatrixType.Active, "materialType")
 
         val product3 = ProductInfo("materialNumber3", "description", Uom("ST", "шт"), ProductType.General,
-                false, 1, MatrixType.Active, "materialType")
+                false, "1", MatrixType.Active, "materialType")
 
 
-        val reason1 = WriteOffReason("01", "Срок годности")
-        val reason2 = WriteOffReason("02", "Срок негодности")
+        val reason1 = WriteOffReason("01", "Срок годности", "A")
+        val reason2 = WriteOffReason("02", "Срок негодности", "A")
 
         task = task.processGeneralProduct(product1)!!
                 .add(reason1, 1.0)
@@ -168,14 +169,14 @@ class testWriteoffTask_ProcessGeneralProductService {
         creatingObjectsForTest()
 
         val product1 = ProductInfo("materialNumber1", "description", Uom("ST", "шт"), ProductType.General,
-                false, 1, MatrixType.Active, "materialType")
+                false, "1", MatrixType.Active, "materialType")
 
         val product2 = ProductInfo("materialNumber2", "description", Uom("ST", "шт"), ProductType.General,
-                false, 1, MatrixType.Active, "materialType")
+                false, "1", MatrixType.Active, "materialType")
 
 
-        val reason1 = WriteOffReason("01", "Срок годности")
-        val reason2 = WriteOffReason("02", "Срок негодности")
+        val reason1 = WriteOffReason("01", "Срок годности", "A")
+        val reason2 = WriteOffReason("02", "Срок негодности", "A")
 
         task = task.processGeneralProduct(product1)!!
                 .add(reason1, 1.0)
@@ -201,14 +202,14 @@ class testWriteoffTask_ProcessGeneralProductService {
         creatingObjectsForTest()
 
         val product1 = ProductInfo("materialNumber1", "description", Uom("ST", "шт"), ProductType.General,
-                false, 1, MatrixType.Active, "materialType")
+                false, "1", MatrixType.Active, "materialType")
 
         val product2 = ProductInfo("materialNumber2", "description", Uom("ST", "шт"), ProductType.General,
-                false, 1, MatrixType.Active, "materialType")
+                false, "1", MatrixType.Active, "materialType")
 
 
-        val reason1 = WriteOffReason("01", "Срок годности")
-        val reason2 = WriteOffReason("02", "Срок негодности")
+        val reason1 = WriteOffReason("01", "Срок годности", "A")
+        val reason2 = WriteOffReason("02", "Срок негодности", "A")
 
         task = task.processGeneralProduct(product1)!!
                 .add(reason1, 1.0)
@@ -242,6 +243,42 @@ class testWriteoffTask_ProcessGeneralProductService {
         assertEquals(0, task.getProcessedProducts().size.toLong())
         assertEquals(0.0, task.getTotalCountOfProduct(product1), 0.0)
         assertEquals(0.0, task.getTotalCountOfProduct(product2), 0.0)
+    }
+
+    @Test
+    fun testSortGoodsAndReasons() {
+        creatingObjectsForTest()
+
+        val product1 = ProductInfo("materialNumber1", "description", Uom("ST", "шт"), ProductType.General,
+                false, "1", MatrixType.Active, "materialType")
+
+        val product2 = ProductInfo("materialNumber2", "description", Uom("ST", "шт"), ProductType.General,
+                false, "1", MatrixType.Active, "materialType")
+
+
+        val reason1 = WriteOffReason("01", "Срок годности", "A")
+        val reason2 = WriteOffReason("02", "Срок негодности", "A")
+
+        task = task.processGeneralProduct(product1)!!
+                .add(reason1, 1.0)
+                .apply()
+
+        task = task.processGeneralProduct(product2)!!
+                .add(reason1, 1.0)
+                .add(reason2, 2.0)
+                .apply()
+
+        assertEquals(listOf(reason1, reason1, reason2), task.taskRepository.getWriteOffReasons().getWriteOffReasons().map { it.writeOffReason })
+        assertEquals(listOf(product1, product2), task.taskRepository.getProducts().getProducts())
+
+        task = task.processGeneralProduct(product1)!!
+                .add(reason1, 1.0)
+                .apply()
+
+        assertEquals(listOf(reason1, reason2, reason1), task.taskRepository.getWriteOffReasons().getWriteOffReasons().map { it.writeOffReason })
+
+        assertEquals(listOf(product2, product1), task.taskRepository.getProducts().getProducts())
+
     }
 
 }

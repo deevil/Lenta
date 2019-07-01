@@ -1,6 +1,6 @@
 package com.lenta.shared.requests.db
 
-import com.lenta.shared.fmp.resources.ZmpUtz26V001
+import com.lenta.shared.fmp.resources.fast.ZmpUtz26V001
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.functional.Either
 import com.lenta.shared.interactor.UseCase

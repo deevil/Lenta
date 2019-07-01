@@ -1,0 +1,10 @@
+package com.lenta.shared.platform.activity
+
+import com.lenta.shared.platform.fragment.CoreFragment
+
+
+interface INumberScreenGenerator {
+    fun generateNumberScreenFromPostfix(postfix: String?): String?
+    fun generateNumberScreen(fragment: CoreFragment<*, *>): String?
+    fun getPrefixScreen(fragment: CoreFragment<*, *>): String
+}

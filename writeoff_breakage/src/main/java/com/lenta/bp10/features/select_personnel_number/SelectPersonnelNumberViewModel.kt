@@ -3,14 +3,13 @@ package com.lenta.bp10.features.select_personnel_number
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp10.models.IPersistWriteOffTask
-import com.lenta.bp10.models.repositories.IWriteOffTaskManager
 import com.lenta.bp10.platform.navigation.IScreenNavigator
-import com.lenta.bp10.requests.network.PersonnelNumberNetRequest
-import com.lenta.bp10.requests.network.TabNumberInfo
-import com.lenta.bp10.requests.network.TabNumberParams
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.platform.viewmodel.CoreViewModel
+import com.lenta.shared.requests.network.PersonnelNumberNetRequest
+import com.lenta.shared.requests.network.TabNumberInfo
+import com.lenta.shared.requests.network.TabNumberParams
 import com.lenta.shared.settings.IAppSettings
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
@@ -33,14 +32,28 @@ class SelectPersonnelNumberViewModel : CoreViewModel(), OnOkInSoftKeyboardListen
     val fullName = MutableLiveData<String>("")
     val employeesPosition = MutableLiveData<String>("")
 
+    val editTextFocus = MutableLiveData<Boolean>()
+    val nextButtonFocus = MutableLiveData<Boolean>()
+
+    private var codeConfirm: Int? = null
+
+    fun setCodeConfirm(codeConfirm: Int?) {
+        this.codeConfirm = codeConfirm
+    }
+
     init {
         viewModelScope.launch {
-            if (sessionInfo.personnelNumber != null) {
-                personnelNumber.value = sessionInfo.personnelNumber
-                fullName.value = sessionInfo.personnelFullName
-            } else {
-                personnelNumber.value = appSettings.lastPersonnelNumber
-                fullName.value = appSettings.lastPersonnelFullName
+            when {
+                sessionInfo.personnelNumber != null -> {
+                    personnelNumber.value = sessionInfo.personnelNumber
+                    fullName.value = sessionInfo.personnelFullName
+                    searchPersonnelNumber()
+                }
+                appSettings.lastPersonnelNumber != null -> {
+                    personnelNumber.value = appSettings.lastPersonnelNumber
+                    searchPersonnelNumber()
+                }
+                else -> editTextFocus.postValue(true)
             }
 
         }
@@ -60,6 +73,7 @@ class SelectPersonnelNumberViewModel : CoreViewModel(), OnOkInSoftKeyboardListen
         Logg.d { "handleSuccess $personnelNumberInfo" }
         fullName.value = personnelNumberInfo.name
         employeesPosition.value = personnelNumberInfo.jobName
+        nextButtonFocus.postValue(true)
 
     }
 
@@ -82,6 +96,11 @@ class SelectPersonnelNumberViewModel : CoreViewModel(), OnOkInSoftKeyboardListen
             appSettings.lastPersonnelFullName = fullName.value
         }
 
+        codeConfirm?.let {
+            screenNavigator.goBackWithResultCode(it)
+            return
+        }
+
         persistWriteOffTask.getSavedWriteOffTask().let {
             if (it == null || it.taskDescription.tkNumber != sessionInfo.market) {
                 screenNavigator.openMainMenuScreen()
@@ -92,8 +111,21 @@ class SelectPersonnelNumberViewModel : CoreViewModel(), OnOkInSoftKeyboardListen
 
     }
 
+
+    fun onResume() {
+        viewModelScope.launch {
+            if (personnelNumber.value.isNullOrBlank()) {
+                editTextFocus.value = true
+            } else {
+                nextButtonFocus.value = true
+            }
+        }
+    }
+
+
     fun onScanResult(data: String) {
         personnelNumber.value = data
         searchPersonnelNumber()
     }
+
 }

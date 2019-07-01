@@ -5,11 +5,13 @@ import com.lenta.shared.R
 import javax.inject.Inject
 
 
-class StringResourceManager @Inject constructor(val context: Context) : IStringResourceManager {
+class SharedStringResourceManager @Inject constructor(val context: Context) : ISharedStringResourceManager {
     override fun notSelected(): String = context.getString(R.string.not_selected)
+    override fun emptyCategory(): String = context.getString(R.string.empty_category)
 }
 
-interface IStringResourceManager {
+interface ISharedStringResourceManager {
     fun notSelected(): String
+    fun emptyCategory(): String
 
 }
