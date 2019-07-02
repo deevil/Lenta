@@ -114,8 +114,8 @@ class SetsInfoFragment : CoreFragment<FragmentSetsInfoBinding, SetsInfoViewModel
                             R.layout.layout_sets_info_quantity,
                             container,
                             false).let {
-                        it.lifecycleOwner = viewLifecycleOwner
                         it.vm = vm
+                        it.lifecycleOwner = viewLifecycleOwner
                         return it.root
                     }
         }

@@ -19,9 +19,7 @@ open class ExciseAlcoInfoFragment : GoodInfoFragment() {
         provideViewModel(ExciseAlcoInfoViewModel::class.java).let { viewModel ->
             getAppComponent()?.inject(viewModel)
             exciseAlcoInfoViewModel = viewModel
-            productInfo?.let {
-                viewModel.setProductInfo(it)
-            }
+            viewModel.setProductInfo(productInfo!!)
             initCount?.let {
                 viewModel.count.value = it.toStringFormatted()
             }

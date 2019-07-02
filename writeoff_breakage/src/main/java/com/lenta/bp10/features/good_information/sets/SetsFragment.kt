@@ -121,8 +121,8 @@ class SetsFragment :
                             R.layout.layout_sets_quantity,
                             container,
                             false).let {
-                        it.lifecycleOwner = viewLifecycleOwner
                         it.vm = vm
+                        it.lifecycleOwner = viewLifecycleOwner
                         return it.root
                     }
         }
