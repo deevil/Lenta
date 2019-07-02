@@ -1,1 +1,1 @@
-include ':writeoff_breakage', ':Shared', ':hhive', ':inventory', ':HoneywellDataCollection'
+include ':writeoff_breakage', ':Shared', ':planogram',':hhive', ':inventory', ':HoneywellDataCollection'

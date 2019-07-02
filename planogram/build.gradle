@@ -1,15 +1,14 @@
-
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'io.fabric'
 
-def prefixAppVersion = "11"
+def prefixAppVersion = "7"
 
 android {
     compileSdkVersion build_versions.target_sdk
     defaultConfig {
-        applicationId "com.lenta.inventory"
+        applicationId "com.lenta.bp7"
         minSdkVersion build_versions.min_sdk
         targetSdkVersion build_versions.target_sdk
         versionCode getCodeVersion()
@@ -31,7 +30,7 @@ android {
     applicationVariants.all { variant ->
         if (variant.buildType.name == "release") {
             variant.outputs.all {
-                def name = outputFileName.replace("app-", "LentaInventory-")
+                def name = outputFileName.replace("app-", "LentaPlanogram-")
                 outputFileName = name.replace(".apk", "-${variant.versionName}-${variant.versionCode}.apk")
             }
         }
