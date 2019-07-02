@@ -101,5 +101,7 @@
     <string name="need_update">Версия мобильного приложения устарела. Необходимо выполнить обновление</string>
     <string name="menu">Меню</string>
     <string name="update">Обновить</string>
+    <string name="job_card">Карточка задания</string>
+    <string name="storage">Склад</string>
 
 </resources>
