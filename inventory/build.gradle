@@ -31,7 +31,7 @@ android {
     applicationVariants.all { variant ->
         if (variant.buildType.name == "release") {
             variant.outputs.all {
-                def name = outputFileName.replace("app-", "LentaWriteOff-")
+                def name = outputFileName.replace("app-", "LentaInventory-")
                 outputFileName = name.replace(".apk", "-${variant.versionName}-${variant.versionCode}.apk")
             }
         }

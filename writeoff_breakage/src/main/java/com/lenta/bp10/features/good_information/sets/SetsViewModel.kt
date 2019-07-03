@@ -102,7 +102,7 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
                     quantity = "${countExciseStampForComponent.toStringFormatted()} из ${(rightCount).toStringFormatted()}",
                     menge = componentsDataList[index].menge.toString(),
                     even = index % 2 == 0,
-                    countSets = totalCount.value!!,
+                    countSets = totalCount.value?: 0.0,
                     selectedPosition = selectedPosition.value!!,
                     writeOffReason = getReason(),
                     setMaterialNumber = setProductInfo.value!!.materialNumber,

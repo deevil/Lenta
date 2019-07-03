@@ -5,6 +5,7 @@ import com.lenta.inventory.features.goods_details_storage.GoodsDetailsStorageFra
 import com.lenta.inventory.features.goods_information.general.GoodsInfoFragment
 import com.lenta.inventory.features.goods_information.sets.SetsInfoFragment
 import com.lenta.inventory.features.goods_information.sets.components.SetComponentsFragment
+import com.lenta.inventory.features.job_card.JobCardFragment
 import com.lenta.inventory.features.sets_details_storage.SetsDetailsStorageFragment
 import com.lenta.inventory.features.task_list.TaskListFragment
 import com.lenta.shared.features.auxiliary_menu.AuxiliaryMenuFragment
@@ -46,6 +47,7 @@ class NumberScreenGenerator @Inject constructor() : INumberScreenGenerator {
             is SetsInfoFragment -> "24"
             is SetComponentsFragment -> "25"
             is TaskListFragment -> "04"
+            is JobCardFragment -> "05"
             else -> null
         }
         )

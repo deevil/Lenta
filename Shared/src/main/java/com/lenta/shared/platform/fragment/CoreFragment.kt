@@ -32,6 +32,7 @@ abstract class CoreFragment<T : ViewDataBinding, S : ViewModel> : Fragment(), Gs
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         restoreInstanceStateGsonBundle(savedInstanceState)
+        vm = getViewModel()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -39,10 +40,6 @@ abstract class CoreFragment<T : ViewDataBinding, S : ViewModel> : Fragment(), Gs
         saveInstanceStateGsonBundle(outState)
     }
 
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        vm = getViewModel()
-    }
 
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {

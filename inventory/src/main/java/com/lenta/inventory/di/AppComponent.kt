@@ -9,6 +9,7 @@ import com.lenta.inventory.features.goods_information.general.GoodsInfoViewModel
 import com.lenta.inventory.features.goods_information.sets.SetsInfoViewModel
 import com.lenta.inventory.features.goods_information.sets.components.SetComponentsViewModel
 import com.lenta.inventory.features.goods_list.GoodsListViewModel
+import com.lenta.inventory.features.job_card.JobCardViewModel
 import com.lenta.inventory.features.loading.fast.FastLoadingViewModel
 import com.lenta.inventory.features.main_menu.MainMenuViewModel
 import com.lenta.inventory.features.select_market.SelectMarketViewModel
@@ -43,5 +44,6 @@ interface AppComponent {
     fun inject(it: StoragesListViewModel)
     fun inject(it: TaskListViewModel)
     fun inject(it: DiscrepanciesFoundViewModel)
+    fun inject(it: JobCardViewModel)
 }
 

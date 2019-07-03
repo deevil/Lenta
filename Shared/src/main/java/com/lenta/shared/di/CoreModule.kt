@@ -8,6 +8,8 @@ import android.preference.PreferenceManager
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.lenta.shared.BuildConfig
+import com.lenta.shared.account.Authenticator
+import com.lenta.shared.account.IAuthenticator
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.account.SessionInfo
 import com.lenta.shared.analytics.FmpAnalytics
@@ -46,6 +48,12 @@ import javax.inject.Singleton
 class CoreModule(val application: Application, val defaultConnectionSettings: DefaultConnectionSettings) {
     @Provides
     fun provideAppContext() = application.applicationContext!!
+
+    @Provides
+    @Singleton
+    internal fun provideAuthenticator(hyperHive: HyperHive): IAuthenticator {
+        return Authenticator(hyperHive)
+    }
 
     @Provides
     @Singleton

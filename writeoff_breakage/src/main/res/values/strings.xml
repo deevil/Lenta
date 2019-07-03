@@ -5,11 +5,9 @@
     <string name="create_task">Создать задание</string>
     <string name="type_job">Тип задания</string>
     <string name="name">Название</string>
-    <string name="storage">Склад</string>
     <string name="type_of_motion">Вид движения</string>
     <string name="gis_control">ГИС-контроль</string>
     <string name="product_type">Тип товара</string>
-    <string name="job_card">Карточка задания</string>
     <string name="type_tasks_loading">Загрузка типов задания</string>
     <string name="write_off_from">Списание от %s</string>
     <string name="list_of_goods">Список товаров</string>
