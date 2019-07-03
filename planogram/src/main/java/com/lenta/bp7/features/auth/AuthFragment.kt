@@ -10,7 +10,7 @@ import com.lenta.shared.platform.toolbar.top_toolbar.ImageButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
 import com.lenta.shared.utilities.extentions.provideViewModel
-import com.lenta.shared.utilities.extentions.setVisible
+import com.lenta.shared.utilities.extentions.setInvisible
 
 class AuthFragment : CoreLoginFragment() {
 
@@ -31,16 +31,15 @@ class AuthFragment : CoreLoginFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         hideLoginAndPassword()
     }
 
     private fun hideLoginAndPassword() {
         binding?.layoutLogin?.apply {
-            tvLogin.setVisible(false)
-            etLogin.setVisible(false)
-            tvPassword.setVisible(false)
-            etPassword.setVisible(false)
+            tvLogin.setInvisible()
+            etLogin.setInvisible()
+            tvPassword.setInvisible()
+            etPassword.setInvisible()
         }
     }
 }
