@@ -10,6 +10,7 @@ import com.lenta.shared.platform.toolbar.top_toolbar.ImageButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
 import com.lenta.shared.utilities.extentions.provideViewModel
+import com.lenta.shared.utilities.extentions.setVisible
 
 class AuthFragment : CoreLoginFragment() {
 
@@ -31,10 +32,15 @@ class AuthFragment : CoreLoginFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Скрытие полей логина и пароля
-        binding?.layoutLogin?.tvLogin?.visibility = View.INVISIBLE
-        binding?.layoutLogin?.etLogin?.visibility = View.INVISIBLE
-        binding?.layoutLogin?.tvPassword?.visibility = View.INVISIBLE
-        binding?.layoutLogin?.etPassword?.visibility = View.INVISIBLE
+        hideLoginAndPassword()
+    }
+
+    private fun hideLoginAndPassword() {
+        binding?.layoutLogin?.apply {
+            tvLogin.setVisible(false)
+            etLogin.setVisible(false)
+            tvPassword.setVisible(false)
+            etPassword.setVisible(false)
+        }
     }
 }
