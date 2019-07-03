@@ -2,7 +2,6 @@ package com.lenta.bp10.di
 
 import android.content.Context
 import com.google.gson.Gson
-import com.lenta.bp10.features.auth.Authenticator
 import com.lenta.bp10.features.good_information.GoodInformationRepo
 import com.lenta.bp10.features.good_information.IGoodInformationRepo
 import com.lenta.bp10.features.job_card.IJobCardRepo
@@ -21,7 +20,6 @@ import com.lenta.bp10.requests.network.SlowResourcesMultiRequest
 import com.lenta.bp10.requests.network.loader.ResourcesLoader
 import com.lenta.shared.account.IAuthenticator
 import com.lenta.shared.di.AppScope
-import com.lenta.shared.exception.IFailureInterpreter
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
 import com.lenta.shared.platform.navigation.ICoreNavigator
 import com.lenta.shared.platform.resources.ISharedStringResourceManager
@@ -34,11 +32,7 @@ import dagger.Provides
 class AppModule {
 
 
-    @Provides
-    @AppScope
-    internal fun provideAuthenticator(hyperHive: HyperHive): IAuthenticator {
-        return Authenticator(hyperHive)
-    }
+
 
     @Provides
     @AppScope
