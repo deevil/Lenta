@@ -1,5 +1,7 @@
 package com.lenta.bp7.features.auth
 
+import android.os.Bundle
+import android.view.View
 import com.lenta.bp7.platform.extentions.getAppComponent
 import com.lenta.bp7.platform.extentions.getAppTitle
 import com.lenta.shared.features.login.CoreAuthViewModel
@@ -8,6 +10,7 @@ import com.lenta.shared.platform.toolbar.top_toolbar.ImageButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
 import com.lenta.shared.utilities.extentions.provideViewModel
+import com.lenta.shared.utilities.extentions.setInvisible
 
 class AuthFragment : CoreLoginFragment() {
 
@@ -26,5 +29,17 @@ class AuthFragment : CoreLoginFragment() {
         topToolbarUiModel.uiModelButton2.show(ImageButtonDecorationInfo.exitFromApp)
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        hideLoginAndPassword()
+    }
 
+    private fun hideLoginAndPassword() {
+        binding?.layoutLogin?.apply {
+            tvLogin.setInvisible()
+            etLogin.setInvisible()
+            tvPassword.setInvisible()
+            etPassword.setInvisible()
+        }
+    }
 }
