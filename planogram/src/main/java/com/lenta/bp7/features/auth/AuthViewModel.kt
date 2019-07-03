@@ -94,19 +94,8 @@ class AuthViewModel : CoreAuthViewModel() {
 
     override fun onResume() {
         viewModelScope.launch {
-            if (!appSettings.lastLogin.isNullOrEmpty()) {
-                login.value = appSettings.lastLogin
-            }
-            runIfDebug {
-                Logg.d { "login.value ${login.value}" }
-                if (login.value.isNullOrEmpty()) {
-                    login.value = "MAKAROV"
-                }
-                if (login.value == "MAKAROV" && getPassword().isEmpty()) {
-                    password.value = "1q2w3e4r"
-                }
-
-            }
+            login.value = appSettings.techLogin
+            password.value = appSettings.techPassword
         }
     }
 }

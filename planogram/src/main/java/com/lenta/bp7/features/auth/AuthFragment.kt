@@ -1,5 +1,7 @@
 package com.lenta.bp7.features.auth
 
+import android.os.Bundle
+import android.view.View
 import com.lenta.bp7.platform.extentions.getAppComponent
 import com.lenta.bp7.platform.extentions.getAppTitle
 import com.lenta.shared.features.login.CoreAuthViewModel
@@ -26,5 +28,13 @@ class AuthFragment : CoreLoginFragment() {
         topToolbarUiModel.uiModelButton2.show(ImageButtonDecorationInfo.exitFromApp)
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
+        // Скрытие полей логина и пароля
+        binding?.layoutLogin?.tvLogin?.visibility = View.INVISIBLE
+        binding?.layoutLogin?.etLogin?.visibility = View.INVISIBLE
+        binding?.layoutLogin?.tvPassword?.visibility = View.INVISIBLE
+        binding?.layoutLogin?.etPassword?.visibility = View.INVISIBLE
+    }
 }
