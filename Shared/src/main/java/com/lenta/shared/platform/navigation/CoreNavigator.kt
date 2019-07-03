@@ -248,6 +248,12 @@ class CoreNavigator constructor(private val context: Context,
         openInfoScreen(context.getString(R.string.need_update))
     }
 
+    override fun openNotImplementedScreenAlert(screenName: String) {
+        //TODO изменить реализацию метода после создания экрана
+        openInfoScreen(context.getString(R.string.not_implemented_screen, screenName))
+
+    }
+
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 
 }
@@ -287,6 +293,7 @@ interface ICoreNavigator {
     fun openAnotherProductStampAlert(productName: String)
     fun openWriteOffToProductionConfirmationScreen(codeConfirm: Int)
     fun openNeedUpdateScreen()
+    fun openNotImplementedScreenAlert(screenName: String)
 }
 
 class FunctionsCollector(private val needCollectLiveData: LiveData<Boolean>) {

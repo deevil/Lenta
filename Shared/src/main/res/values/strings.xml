@@ -103,5 +103,6 @@
     <string name="update">Обновить</string>
     <string name="job_card">Карточка задания</string>
     <string name="storage">Склад</string>
+    <string name="not_implemented_screen">Экран «%s» в процессе разработки</string>
 
 </resources>
