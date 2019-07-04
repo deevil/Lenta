@@ -2,9 +2,10 @@ package com.lenta.inventory.models.task
 
 import com.lenta.inventory.models.repositories.ITaskRepository
 
-class ProcessGeneralProductService(val taskDescription: TaskDescription,
-                                   val taskRepository: ITaskRepository,
-                                   val productInfo: TaskProductInfo) : IProcessProductService {
+class ProcessSetsService(val taskDescription: TaskDescription,
+                         val taskRepository: ITaskRepository,
+                         val productInfo: TaskProductInfo) : IProcessProductService {
+
     override fun getTotalCount(): Double {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }

@@ -2,6 +2,7 @@ package com.lenta.bp7.platform.navigation
 
 import android.content.Context
 import com.lenta.bp7.features.auth.AuthFragment
+import com.lenta.bp7.features.select_market.SelectMarketFragment
 
 import com.lenta.shared.account.IAuthenticator
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
@@ -16,6 +17,12 @@ class ScreenNavigator(
         private val authenticator: IAuthenticator,
         private val progressUseCaseInformator: IProgressUseCaseInformator
 ) : IScreenNavigator, ICoreNavigator by coreNavigator {
+
+    override fun openSelectMarketScreen() {
+        runOrPostpone {
+            getFragmentStack()?.replace(SelectMarketFragment())
+        }
+    }
 
     override fun openFirstScreen() {
         if (authenticator.isAuthorized()) {
@@ -47,5 +54,6 @@ interface IScreenNavigator : ICoreNavigator {
     fun openFirstScreen()
     fun openLoginScreen()
     fun openMainMenuScreen()
+    fun openSelectMarketScreen()
 
 }

@@ -17,15 +17,17 @@ import com.lenta.shared.utilities.state.state
 class GoodsInfoFragment : CoreFragment<FragmentGoodsInfoBinding, GoodsInfoViewModel>(), ToolbarButtonsClickListener {
 
     companion object {
-        fun create(productInfo: ProductInfo): GoodsInfoFragment {
+        fun create(productInfo: ProductInfo, storePlaceNumber: String? = null): GoodsInfoFragment {
             GoodsInfoFragment().let {
                 it.productInfo = productInfo
+                it.storePlaceNumber = storePlaceNumber
                 return it
             }
         }
     }
 
     private var productInfo by state<ProductInfo?>(null)
+    private var storePlaceNumber by state<String?>(null)
 
     override fun getLayoutId(): Int = R.layout.fragment_goods_info
 
@@ -51,9 +53,14 @@ class GoodsInfoFragment : CoreFragment<FragmentGoodsInfoBinding, GoodsInfoViewMo
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
-        bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.details)
         bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.missing)
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.apply)
+
+        if (storePlaceNumber == null) {
+            binding?.ConstraintStoragePlace!!.visibility = View.INVISIBLE
+        } else{
+            bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.details)
+        }
 
         /**viewLifecycleOwner.apply {
             connectLiveData(vm.enabledApplyButton, bottomToolbarUiModel.uiModelButton4.enabled)

@@ -5,6 +5,7 @@ import com.lenta.bp7.ExceptionHandler
 import com.lenta.bp7.activity.main.MainActivity
 import com.lenta.bp7.activity.main.MainViewModel
 import com.lenta.bp7.features.auth.AuthViewModel
+import com.lenta.bp7.features.select_market.SelectMarketViewModel
 import com.lenta.shared.di.AppScope
 import com.lenta.shared.di.CoreComponent
 import dagger.Component
@@ -16,6 +17,7 @@ interface AppComponent {
     fun inject(mainActivity: MainViewModel)
     fun inject(it: ExceptionHandler)
     fun inject(it: AuthViewModel)
+    fun inject(it: SelectMarketViewModel)
 
 }
 

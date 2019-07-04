@@ -2,8 +2,11 @@ package com.lenta.bp7.features.auth
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.lenta.shared.utilities.runIfDebug
 import com.lenta.bp7.platform.navigation.IScreenNavigator
+import com.lenta.bp7.repos.IRepoInMemoryHolder
+import com.lenta.bp7.requests.network.PermissionsParams
+import com.lenta.bp7.requests.network.PermissionsRequest
+import com.lenta.bp7.requests.network.PermissionsResult
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.features.login.CoreAuthViewModel
@@ -12,7 +15,6 @@ import com.lenta.shared.features.login.isValidLoginFields
 import com.lenta.shared.requests.network.Auth
 import com.lenta.shared.requests.network.AuthParams
 import com.lenta.shared.settings.IAppSettings
-import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.getBaseAuth
@@ -25,14 +27,16 @@ class AuthViewModel : CoreAuthViewModel() {
 
     @Inject
     lateinit var auth: Auth
-    /*@Inject
-    lateinit var permissionsRequest: PermissionsRequest*/
+    @Inject
+    lateinit var permissionsRequest: PermissionsRequest
     @Inject
     lateinit var navigator: IScreenNavigator
     @Inject
     lateinit var sessionInfo: ISessionInfo
     @Inject
     lateinit var appSettings: IAppSettings
+    @Inject
+    lateinit var repoInMemoryHolder: IRepoInMemoryHolder
 
 
     override val enterEnabled: MutableLiveData<Boolean> by lazy {
@@ -50,15 +54,15 @@ class AuthViewModel : CoreAuthViewModel() {
     }
 
     private fun loadPermissions(@Suppress("UNUSED_PARAMETER") boolean: Boolean) {
-        /*viewModelScope.launch {
+        viewModelScope.launch {
             progress.value = true
             permissionsRequest(PermissionsParams(login = getLogin())).either(::handleFailure, ::handleAuthSuccess)
             progress.value = false
-        }*/
+        }
 
         //TODO возможно после авторизации необходимо загружать дополнительные данные. При необходимости добавить тут
 
-        handleAuthSuccess(true)
+        //handleAuthSuccess(true)
     }
 
     override fun handleFailure(failure: Failure) {
@@ -68,16 +72,16 @@ class AuthViewModel : CoreAuthViewModel() {
     }
 
 
-    private fun handleAuthSuccess(@Suppress("UNUSED_PARAMETER") b: Boolean) {
+    private fun handleAuthSuccess(permissionsResult: PermissionsResult) {
+        repoInMemoryHolder.permissionsResult = permissionsResult
+
         getLogin().let {
             sessionInfo.userName = it
             sessionInfo.basicAuth = getBaseAuth(it, getPassword())
             appSettings.lastLogin = it
         }
 
-        //navigator.openSelectMarketScreen()
-        navigator.openInfoScreen("Авторизация успешна")
-
+        navigator.openSelectMarketScreen()
     }
 
     override fun onClickAuxiliaryMenu() {

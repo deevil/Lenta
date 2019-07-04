@@ -1,13 +1,14 @@
 package com.lenta.inventory.models.repositories
 
-import com.lenta.shared.models.core.ProductInfo
+import com.lenta.inventory.models.task.TaskProductInfo
 
 interface ITaskProductRepository {
-    fun getProducts(): List<ProductInfo>
-    fun findProduct(product: ProductInfo): ProductInfo?
-    fun findProduct(materialNumber: String): ProductInfo?
-    fun addProduct(product: ProductInfo): Boolean
-    fun deleteProduct(product: ProductInfo): Boolean
+    fun getProducts(): List<TaskProductInfo>
+    fun findProduct(product: TaskProductInfo): TaskProductInfo?
+    fun findProduct(materialNumber: String): TaskProductInfo?
+    fun addProduct(product: TaskProductInfo): Boolean
+    fun deleteProduct(product: TaskProductInfo): Boolean
+    fun getNotProcessedProducts(): List<TaskProductInfo>
+    fun getProcessedProducts(): List<TaskProductInfo>
     fun clear()
-    operator fun get(index: Int): ProductInfo
 }

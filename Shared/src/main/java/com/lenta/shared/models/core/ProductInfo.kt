@@ -1,6 +1,6 @@
 package com.lenta.shared.models.core
 
-data class ProductInfo(val materialNumber: String,
+open class ProductInfo(val materialNumber: String,
                   val description: String,
                   val uom: Uom,
                   val type: ProductType,
