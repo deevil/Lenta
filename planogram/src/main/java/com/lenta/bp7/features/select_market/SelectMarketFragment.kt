@@ -11,6 +11,7 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.ImageButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
+import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
 import com.lenta.shared.utilities.extentions.provideViewModel
 
 class SelectMarketFragment : CoreFragment<FragmentSelectMarketBinding, SelectMarketViewModel>(), ToolbarButtonsClickListener {
@@ -18,7 +19,7 @@ class SelectMarketFragment : CoreFragment<FragmentSelectMarketBinding, SelectMar
     override fun getLayoutId(): Int = R.layout.fragment_select_market
 
 
-    override fun getPageNumber(): String = "10/03"
+    override fun getPageNumber(): String? = generateScreenNumberFromPostfix("03")
 
     override fun getViewModel(): SelectMarketViewModel {
         provideViewModel(SelectMarketViewModel::class.java).let {
