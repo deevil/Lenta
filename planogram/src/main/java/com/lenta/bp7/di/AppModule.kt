@@ -3,6 +3,8 @@ package com.lenta.bp7.di
 import android.content.Context
 import com.lenta.bp7.platform.navigation.IScreenNavigator
 import com.lenta.bp7.platform.navigation.ScreenNavigator
+import com.lenta.bp7.repos.IRepoInMemoryHolder
+import com.lenta.bp7.repos.RepoInMemoryHolder
 import com.lenta.shared.account.IAuthenticator
 import com.lenta.shared.di.AppScope
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
@@ -27,7 +29,11 @@ class AppModule {
         return ScreenNavigator(context, iCoreNavigator, foregroundActivityProvider, authenticator, progressUseCaseInformator)
     }
 
-
+    @Provides
+    @AppScope
+    internal fun provideIRepoInMemoryHolder(): IRepoInMemoryHolder {
+        return RepoInMemoryHolder()
+    }
 
 
 }
