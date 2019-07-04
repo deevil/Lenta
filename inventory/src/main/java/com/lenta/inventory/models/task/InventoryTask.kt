@@ -1,28 +1,30 @@
 package com.lenta.inventory.models.task
 
 import com.lenta.inventory.models.repositories.ITaskRepository
-import org.joda.time.DateTime
 
-class InventoryTask(val taskDescription: TaskDescription, val taskRepository: ITaskRepository, val taskDeadLine : DateTime) {
+class InventoryTask(val taskDescription: TaskDescription, val taskRepository: ITaskRepository) {
 
-    fun UpdateStorplaces() : InventoryTask {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    fun ClearStorplace() : InventoryTask {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    fun DeleteStorplace() : InventoryTask {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
+    //TODO возвращает модель сохранения задания
     fun getTaskSaveModel(): TaskSaveModel {
-        return TaskSaveModel(taskDescription, taskRepository)
+        return TaskSaveModel(taskDescription!!)
     }
 
-    fun clearTask() {
+    //вызывается при возврате на 20 экран и при нажатии на кнопку ОБНОВИТЬ, вызываем 96 рест
+    fun updateStorePlaces() : InventoryTask {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
+
+    fun clearStorePlace() : InventoryTask {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    fun processStorePlace(storePlaceNumber: String) : StorePlaceProcessing{
+        return StorePlaceProcessing(this,  storePlaceNumber)
+    }
+
+
+
+
+
 
 }

@@ -2,6 +2,8 @@ package com.lenta.inventory.features.goods_information.general
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.lenta.inventory.models.memory.*
+import com.lenta.inventory.models.task.InventoryTask
 import com.lenta.inventory.platform.navigation.IScreenNavigator
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.models.core.MatrixType
@@ -24,7 +26,9 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
     val productInfo: MutableLiveData<ProductInfo> = MutableLiveData(ProductInfo("materialNumber1", "description", Uom("ST", "шт"), ProductType.General,
             false, "1", MatrixType.Active, "materialType"))
 
-    val storagePlace: MutableLiveData<String> = MutableLiveData("123456789")
+    val storePlaceNumber: MutableLiveData<String> = MutableLiveData("123456789")
+    val isStorePlaceNumber: MutableLiveData<Boolean> = storePlaceNumber.map { !it.isNullOrEmpty() }
+
     val spinList: MutableLiveData<List<String>> = MutableLiveData()
 
     val selectedPosition: MutableLiveData<Int> = MutableLiveData(0)

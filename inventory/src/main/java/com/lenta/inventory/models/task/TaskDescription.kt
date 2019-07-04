@@ -18,6 +18,7 @@ class TaskDescription (val taskNumber: String,
                        val isStarted: Boolean, //!notFinish - rest91
                        val dateFrom: String,
                        val dateTo: String,
+                       val taskDeadLine: String, //Время на обработку задания (строка) REST-96
                        val recountType: RecountType, //mode - rest91
                        val gis: GisControl) {
 
