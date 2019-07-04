@@ -44,7 +44,9 @@ class AuthViewModel : CoreAuthViewModel() {
     override fun onClickEnter() {
         viewModelScope.launch {
             progress.value = true
-            auth(AuthParams(getLogin(), getPassword())).either(::handleFailure, ::loadPermissions)
+            //auth(AuthParams(getLogin(), getPassword())).either(::handleFailure, ::loadPermissions)
+            handleAuthSuccess(true)
+
             progress.value = false
         }
     }
@@ -75,9 +77,8 @@ class AuthViewModel : CoreAuthViewModel() {
             appSettings.lastLogin = it
         }
 
-        //navigator.openSelectMarketScreen()
-        navigator.openInfoScreen("Авторизация успешна")
-
+        //navigator.openInfoScreen("Авторизация успешна")
+        navigator.openSelectMarketScreen()
     }
 
     override fun onClickAuxiliaryMenu() {
