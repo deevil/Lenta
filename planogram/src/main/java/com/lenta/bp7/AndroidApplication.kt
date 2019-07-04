@@ -13,8 +13,10 @@ class AndroidApplication : CoreApplication() {
                 testServerAddress = "http://9.6.24.110",
                 testEnvironment = "Lenta_LRQ",
                 testProject = "PR_SHARED",
-                techLogin = "tech_user",
-                techPassword = "123456"
+                //techLogin = "tech_user",
+                //techPassword = "123456"
+                techLogin = "MAKAROV",
+                techPassword = "1q2w3e4r"
         )
     }
 

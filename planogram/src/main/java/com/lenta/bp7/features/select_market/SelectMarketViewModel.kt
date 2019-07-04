@@ -73,6 +73,7 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
             sessionInfo.market = it
             appSettings.lastTK = it
         }
+
         //screenNavigator.openFastDataLoadingScreen()
     }
 
