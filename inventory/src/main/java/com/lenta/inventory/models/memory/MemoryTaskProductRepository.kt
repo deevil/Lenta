@@ -2,8 +2,6 @@ package com.lenta.inventory.models.memory
 
 import com.lenta.inventory.models.repositories.ITaskProductRepository
 import com.lenta.inventory.models.task.TaskProductInfo
-import java.util.*
-import kotlin.collections.ArrayList
 
 class MemoryTaskProductRepository : ITaskProductRepository {
 
@@ -60,19 +58,11 @@ class MemoryTaskProductRepository : ITaskProductRepository {
     }
 
     override fun getNotProcessedProducts(): List<TaskProductInfo> {
-        var notProcessedProducts = ArrayList<TaskProductInfo>()
-        productInfo.forEach { taskProductInfo: TaskProductInfo ->
-            if (!taskProductInfo.isPositionCalc) notProcessedProducts.add(taskProductInfo)
-        }
-        return notProcessedProducts
+        return productInfo.filter { !it.isPositionCalc }
     }
 
     override fun getProcessedProducts(): List<TaskProductInfo> {
-        var processedProducts = ArrayList<TaskProductInfo>()
-        productInfo.forEach { taskProductInfo: TaskProductInfo ->
-            if (taskProductInfo.isPositionCalc) processedProducts.add(taskProductInfo)
-        }
-        return processedProducts
+        return productInfo.filter { it.isPositionCalc }
     }
 
     override fun clear() {
