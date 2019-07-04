@@ -3,8 +3,10 @@ package com.lenta.bp7.features.auth
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp7.platform.navigation.IScreenNavigator
+import com.lenta.bp7.repos.IRepoInMemoryHolder
 import com.lenta.bp7.requests.network.PermissionsParams
 import com.lenta.bp7.requests.network.PermissionsRequest
+import com.lenta.bp7.requests.network.PermissionsResult
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.features.login.CoreAuthViewModel
@@ -33,6 +35,8 @@ class AuthViewModel : CoreAuthViewModel() {
     lateinit var sessionInfo: ISessionInfo
     @Inject
     lateinit var appSettings: IAppSettings
+    @Inject
+    lateinit var repoInMemoryHolder: IRepoInMemoryHolder
 
 
     override val enterEnabled: MutableLiveData<Boolean> by lazy {
@@ -68,14 +72,15 @@ class AuthViewModel : CoreAuthViewModel() {
     }
 
 
-    private fun handleAuthSuccess(@Suppress("UNUSED_PARAMETER") b: Boolean) {
+    private fun handleAuthSuccess(permissionsResult: PermissionsResult) {
+        repoInMemoryHolder.permissionsResult = permissionsResult
+
         getLogin().let {
             sessionInfo.userName = it
             sessionInfo.basicAuth = getBaseAuth(it, getPassword())
             appSettings.lastLogin = it
         }
 
-        //navigator.openInfoScreen("Авторизация успешна")
         navigator.openSelectMarketScreen()
     }
 
