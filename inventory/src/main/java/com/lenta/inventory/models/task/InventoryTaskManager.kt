@@ -1,19 +1,25 @@
 package com.lenta.inventory.models.task
 
-class InventoryTaskManager(private var currentWriteOffTask: InventoryTask? = null) : IInventoryTaskManager {
+import com.lenta.inventory.models.memory.MemoryTaskRepository
+
+class InventoryTaskManager : IInventoryTaskManager {
+
+    private var currentWriteOffTask: InventoryTask? = null
+
     override fun getInventoryTask(): InventoryTask? {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        return currentWriteOffTask
     }
 
     override fun newInventoryTask(taskDescription: TaskDescription) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        currentWriteOffTask = InventoryTask(taskDescription, taskRepository = MemoryTaskRepository())
     }
 
     override fun clearTask() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        currentWriteOffTask = null
+
     }
 
-    override fun setTask(inventoryTask: InventoryTask?) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    override fun setTask(writeOffTask: InventoryTask?) {
+        currentWriteOffTask = writeOffTask
     }
 }

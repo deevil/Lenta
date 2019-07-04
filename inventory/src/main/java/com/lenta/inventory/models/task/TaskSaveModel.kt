@@ -1,6 +1,8 @@
 package com.lenta.inventory.models.task
 
-import com.lenta.inventory.models.repositories.ITaskRepository
+import javax.inject.Inject
 
-class TaskSaveModel(val taskDescription: TaskDescription, val taskRepository: ITaskRepository) {
+class TaskSaveModel(val taskDescription: TaskDescription) {
+    @Inject
+    lateinit var inventoryTask: InventoryTask
 }

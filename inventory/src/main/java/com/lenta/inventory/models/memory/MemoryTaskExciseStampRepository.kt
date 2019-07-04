@@ -2,16 +2,18 @@ package com.lenta.inventory.models.memory
 
 import com.lenta.inventory.models.repositories.ITaskExciseStampRepository
 import com.lenta.inventory.models.task.TaskExciseStamp
-import com.lenta.shared.models.core.ProductInfo
-import java.util.ArrayList
+import com.lenta.inventory.models.task.TaskProductInfo
+import java.util.*
 
-class MemoryTaskExciseStampRepository(private val stamps: ArrayList<TaskExciseStamp> = ArrayList()) : ITaskExciseStampRepository {
+class MemoryTaskExciseStampRepository : ITaskExciseStampRepository {
+
+    private val stamps: ArrayList<TaskExciseStamp> = ArrayList()
 
     override fun getExciseStamps(): List<TaskExciseStamp> {
         return stamps
     }
 
-    override fun findExciseStampsOfProduct(product: ProductInfo): List<TaskExciseStamp> {
+    override fun findExciseStampsOfProduct(product: TaskProductInfo): List<TaskExciseStamp> {
         return findExciseStampsOfProduct(product.materialNumber)
     }
 
@@ -49,7 +51,7 @@ class MemoryTaskExciseStampRepository(private val stamps: ArrayList<TaskExciseSt
         return true
     }
 
-    override fun deleteExciseStampsForProduct(product: ProductInfo): Boolean {
+    override fun deleteExciseStampsForProduct(product: TaskProductInfo): Boolean {
         (stamps.map { it.materialNumber }.filterIndexed { index, materialNumber ->
             if (materialNumber == product.materialNumber) {
                 stamps.removeAt(index)
