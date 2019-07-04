@@ -42,6 +42,6 @@ class LoadingTasksFragment : CoreLoadingFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        vm.title.value = getString(R.string.task_list_count)
+        vm.title.value = getString(R.string.tasks_loading)
     }
 }

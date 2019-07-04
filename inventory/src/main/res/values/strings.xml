@@ -28,4 +28,5 @@
     <string name="recount">Пересчёт</string>
     <string name="period_of_actual">Период актуальности</string>
     <string name="strict_list">Строгий список</string>
+    <string name="tasks_loading">Загрузка заданий</string>
 </resources>
