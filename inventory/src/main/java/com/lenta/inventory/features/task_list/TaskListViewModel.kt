@@ -86,6 +86,10 @@ class TaskListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
         return true
     }
 
+    fun onClickItemPosition(position: Int) {
+        screenNavigator.openJobCard()
+    }
+
 }
 
 data class TaskItem(

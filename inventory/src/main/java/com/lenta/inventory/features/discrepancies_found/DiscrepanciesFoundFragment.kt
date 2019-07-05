@@ -150,7 +150,8 @@ class DiscrepanciesFoundFragment : CoreFragment<FragmentDiscrepanciesFoundBindin
 //                    byStoragePlaceRecyclerViewKeyHandler = RecyclerViewKeyHandler(
 //                            rv = layoutBinding.rv,
 //                            items = vm.discrepanciesByStorage,
-//                            lifecycleOwner = layoutBinding.lifecycleOwner!!
+//                            lifecycleOwner = layoutBinding.lifecycleOwner!!,
+//                            initPosInfo = byStoragePlaceRecyclerViewKeyHandler?.posInfo?.value
 //                    )
                     return layoutBinding.root
                 }
