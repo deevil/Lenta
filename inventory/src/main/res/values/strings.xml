@@ -28,4 +28,10 @@
     <string name="period_of_actual">Период актуальности</string>
     <string name="strict_list">Строгий список</string>
     <string name="tasks_loading">Загрузка заданий</string>
+    <string name="primary">Первичный</string>
+    <string name="secondary">Вторичный</string>
+    <string name="from_to">c %s\nпо %s</string>
+    <string name="simple_recount">Обычный пересчет</string>
+    <string name="parallel_by_storeplaces">Параллельный пересчет с МХ</string>
+    <string name="parallel_by_per_number">Параллельный пересчёт с таб.номерами</string>
 </resources>

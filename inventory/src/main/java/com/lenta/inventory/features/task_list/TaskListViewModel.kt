@@ -37,6 +37,7 @@ class TaskListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
         repoInMemoryHolder.tasksListRestInfo.map {
             it?.tasks?.mapIndexed { index, task ->
                 TaskItem(
+                        taskNumber = task.taskNumber,
                         number = "${index + 1}",
                         title = task.taskName,
                         stock = task.stock,
@@ -87,12 +88,16 @@ class TaskListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     }
 
     fun onClickItemPosition(position: Int) {
-        screenNavigator.openJobCard()
+        tasks.value?.getOrNull(position)?.let {
+            screenNavigator.openJobCard(it.taskNumber)
+        }
+
     }
 
 }
 
 data class TaskItem(
+        val taskNumber: String,
         val number: String,
         val title: String,
         val stock: String,
