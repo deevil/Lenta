@@ -168,7 +168,7 @@ class RecyclerViewKeyHandler<T>(private val rv: RecyclerView,
                                 lifecycleOwner: LifecycleOwner,
                                 initPosInfo: PosInfo? = null) {
 
-    val posInfo = MutableLiveData(initPosInfo ?: PosInfo(0, -1))
+    val posInfo = MutableLiveData(initPosInfo?.copy(isManualClick = false) ?: PosInfo(0, -1))
 
     init {
         posInfo.observe(lifecycleOwner, Observer { info ->
