@@ -2,6 +2,8 @@ package com.lenta.bp7.platform.navigation
 
 import android.content.Context
 import com.lenta.bp7.features.auth.AuthFragment
+import com.lenta.bp7.features.loading.fast.FastDataLoadingFragment
+import com.lenta.bp7.features.option.OptionFragment
 import com.lenta.bp7.features.select_market.SelectMarketFragment
 
 import com.lenta.shared.account.IAuthenticator
@@ -18,12 +20,6 @@ class ScreenNavigator(
         private val progressUseCaseInformator: IProgressUseCaseInformator
 ) : IScreenNavigator, ICoreNavigator by coreNavigator {
 
-    override fun openSelectMarketScreen() {
-        runOrPostpone {
-            getFragmentStack()?.replace(SelectMarketFragment())
-        }
-    }
-
     override fun openFirstScreen() {
         if (authenticator.isAuthorized()) {
             openMainMenuScreen()
@@ -38,12 +34,27 @@ class ScreenNavigator(
         }
     }
 
+    override fun openSelectMarketScreen() {
+        runOrPostpone {
+            getFragmentStack()?.replace(SelectMarketFragment())
+        }
+    }
+
+    override fun openFastDataLoadingScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(FastDataLoadingFragment())
+        }
+    }
+
+    override fun openOptionScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(OptionFragment())
+        }
+    }
 
     override fun openMainMenuScreen() {
         openNotImplementedScreenAlert("Главное меню")
     }
-
-
 
 
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
@@ -55,5 +66,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openLoginScreen()
     fun openMainMenuScreen()
     fun openSelectMarketScreen()
+    fun openFastDataLoadingScreen()
+    fun openOptionScreen()
 
 }
