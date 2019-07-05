@@ -6,6 +6,7 @@ import com.lenta.inventory.features.auth.AuthFragment
 import com.lenta.inventory.features.discrepancies_found.DiscrepanciesFoundFragment
 import com.lenta.inventory.features.goods_details.GoodsDetailsFragment
 import com.lenta.inventory.features.goods_details_storage.GoodsDetailsStorageFragment
+import com.lenta.inventory.features.goods_information.excise_alco.ExciseAlcoInfoFragment
 import com.lenta.inventory.features.goods_information.general.GoodsInfoFragment
 import com.lenta.inventory.features.goods_information.sets.SetsInfoFragment
 import com.lenta.inventory.features.goods_information.sets.components.SetComponentsFragment
@@ -77,6 +78,12 @@ class ScreenNavigator(
     override fun openGoodsInfoScreen() {
         runOrPostpone {
             getFragmentStack()?.push(GoodsInfoFragment())
+        }
+    }
+
+    override fun openExciseAlcoInfoScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(ExciseAlcoInfoFragment())
         }
     }
 
@@ -169,4 +176,5 @@ interface IScreenNavigator : ICoreNavigator {
     fun openTasksList()
     fun openJobCard()
     fun openLoadingTasksScreen()
+    fun openExciseAlcoInfoScreen()
 }

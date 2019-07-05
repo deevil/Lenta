@@ -3,10 +3,10 @@ package com.lenta.inventory.features.goods_information.sets.components
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.inventory.features.goods_details.ComponentItem
+import com.lenta.inventory.models.task.TaskProductInfo
 import com.lenta.inventory.platform.navigation.IScreenNavigator
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.models.core.MatrixType
-import com.lenta.shared.models.core.ProductInfo
 import com.lenta.shared.models.core.ProductType
 import com.lenta.shared.models.core.Uom
 import com.lenta.shared.platform.viewmodel.CoreViewModel
@@ -31,9 +31,9 @@ class SetComponentsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInS
     @Inject
     lateinit var sessionInfo: ISessionInfo
 
-    //val productInfo: MutableLiveData<ProductInfo> = MutableLiveData()
-    val productInfo: MutableLiveData<ProductInfo> = MutableLiveData(ProductInfo("materialNumber1", "description", Uom("ST", "шт"), ProductType.ExciseAlcohol,
-            true, "1", MatrixType.Active, "materialType"))
+    //val productInfo: MutableLiveData<TaskProductInfo> = MutableLiveData()
+    val productInfo: MutableLiveData<TaskProductInfo> = MutableLiveData(TaskProductInfo("materialNumber1", "description", Uom("ST", "шт"), ProductType.ExciseAlcohol,
+            true, "1", MatrixType.Active, "materialType","3", null, false))
 
     //val componentItem: MutableLiveData<ComponentItem> = MutableLiveData()
     val componentItem: MutableLiveData<ComponentItem> = MutableLiveData(ComponentItem(1,"000027 НАБОР ВИНИШКА", "0 из 2", "2", true, 2.0, 0, "000027"))
@@ -53,7 +53,7 @@ class SetComponentsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInS
         it!! > 0.0
     }
 
-    fun setProductInfo(productInfo: ProductInfo) {
+    fun setProductInfo(productInfo: TaskProductInfo) {
         this.productInfo.value = productInfo
     }
 

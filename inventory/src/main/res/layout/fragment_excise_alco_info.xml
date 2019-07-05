@@ -1,0 +1,292 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".features.goods_information.excise_alco.ExciseAlcoInfoFragment">
+
+    <data>
+
+        <variable
+            name="vm"
+            type="com.lenta.inventory.features.goods_information.excise_alco.ExciseAlcoInfoViewModel" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <View
+            android:id="@+id/div_hor1"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="8dp"
+            android:background="@color/color_divider"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.5" />
+
+        <View
+            android:id="@+id/div_vert"
+            android:layout_width="1dp"
+            android:layout_height="0dp"
+            android:background="@color/color_divider"
+            app:layout_constraintBottom_toBottomOf="@+id/div_hor3"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="@+id/guideline"
+            app:layout_constraintTop_toBottomOf="@+id/div_hor1" />
+
+        <com.lenta.shared.view.ClickableSpinner
+            android:id="@+id/spinner_inventory"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:enabled="false"
+            app:items="@{vm.spinList}"
+            app:layout_constraintBottom_toBottomOf="@+id/et_inventory"
+            app:layout_constraintEnd_toStartOf="@+id/div_vert"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/et_inventory"
+            app:onPositionClickListener="@{vm}"
+            app:position="@{vm.selectedPosition}" />
+
+        <com.lenta.shared.view.EditTextWithSuffix
+            android:id="@+id/et_inventory"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:ellipsize="end"
+            android:inputType="numberDecimal"
+            android:maxLines="1"
+            android:enabled="false"
+            android:text="@={vm.count}"
+            app:digitsForUom="@{vm.productInfo.uom}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/div_vert"
+            app:layout_constraintTop_toTopOf="@+id/div_vert"
+            app:suffix="@{vm.suffix}"
+            tools:text="1" />
+
+        <View
+            android:id="@+id/div_hor2"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="8dp"
+            android:background="@color/color_divider"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/et_inventory" />
+
+        <TextView
+            android:id="@+id/tv_total_title"
+            style="@style/TextTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:text="@string/total"
+            app:layout_constraintBottom_toBottomOf="@+id/tv_total_value"
+            app:layout_constraintEnd_toStartOf="@+id/div_vert"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/tv_total_value" />
+
+        <TextView
+            android:id="@+id/tv_total_value"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:text="@{vm.totalCountWithUom}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/guideline"
+            app:layout_constraintTop_toBottomOf="@+id/div_hor2"
+            tools:text="1шт" />
+
+        <View
+            android:id="@+id/div_hor3"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="8dp"
+            android:background="@color/color_divider"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_total_value" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/ConstraintStoragePlace"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/div_hor3">
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/guideline2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.5" />
+
+            <TextView
+                android:id="@+id/tv_storage_place"
+                style="@style/TextTitle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:paddingTop="8dp"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:text="@string/storage_place"
+                app:layout_constraintBottom_toBottomOf="@+id/tv_storage_place_value"
+                app:layout_constraintEnd_toStartOf="@+id/div_vert2"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/tv_storage_place_value" />
+
+            <View
+                android:id="@+id/div_vert2"
+                android:layout_width="1dp"
+                android:layout_height="0dp"
+                android:background="@color/color_divider"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="@+id/guideline2"
+                app:layout_constraintTop_toBottomOf="@+id/div_hor4"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/tv_storage_place_value"
+                style="@style/TextTitle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:paddingTop="8dp"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:text="@{vm.storePlaceNumber}"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="@+id/guideline2"
+                app:layout_constraintTop_toBottomOf="@+id/ConstraintStoragePlace"
+                tools:text="123456789" />
+
+            <View
+                android:id="@+id/div_hor4"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="8dp"
+                android:background="@color/color_divider"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tv_storage_place" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <TextView
+            android:id="@+id/tv_matrix"
+            android:layout_width="36sp"
+            android:layout_height="36sp"
+            android:layout_marginStart="8dp"
+            android:layout_marginBottom="24dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:fontFamily="@font/tahoma_bold"
+            android:foreground="?selectableItemBackground"
+            android:gravity="center"
+            android:onClick="@{(v) -> vm.screenNavigator.openMatrixInfoScreen(vm.productInfo.matrixType)}"
+            android:textSize="18sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:matrixType="@{vm.productInfo.matrixType}"
+            tools:background="@drawable/bg_white_circle"
+            tools:text="A" />
+
+        <TextView
+            android:id="@+id/tv_section"
+            android:layout_width="36sp"
+            android:layout_height="36sp"
+            android:layout_marginStart="8dp"
+            android:layout_marginBottom="24dp"
+            android:background="@drawable/bg_white_circle"
+            android:clickable="true"
+            android:focusable="true"
+            android:fontFamily="@font/tahoma_bold"
+            android:foreground="?selectableItemBackground"
+            android:gravity="center"
+            android:onClick="@{(v) -> vm.screenNavigator.openSectionInfoScreen(vm.productInfo.sectionId)}"
+            android:text='@{"" + vm.productInfo.sectionId}'
+            android:textSize="16sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/tv_matrix"
+            tools:text="02" />
+
+        <ImageButton
+            android:id="@+id/b_excise_alco"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="18dp"
+            android:background="?selectableItemBackground"
+            app:alcoIcon="@{vm.productInfo.type}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/tv_section"
+            tools:src="@drawable/ic_excise_white_48dp" />
+
+        <ImageButton
+            android:id="@+id/b_scan_es"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="?selectableItemBackground"
+            android:onClick="@{(v) -> vm.screenNavigator.openESInfoScreen()}"
+            android:padding="4dp"
+            android:src="@drawable/is_scan_barcode_es"
+            app:layout_constraintBottom_toBottomOf="@+id/b_scan"
+            app:layout_constraintEnd_toStartOf="@+id/b_scan"
+            app:layout_constraintTop_toTopOf="@+id/b_scan"
+            tools:visibility="visible" />
+
+        <ImageButton
+            android:id="@+id/b_scan_corob"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="?selectableItemBackground"
+            android:onClick="@{(v) -> vm.screenNavigator.openCorobInfoScreen()}"
+            android:padding="4dp"
+            android:src="@drawable/is_scan_corob"
+            app:layout_constraintBottom_toBottomOf="@+id/b_scan_es"
+            app:layout_constraintEnd_toStartOf="@+id/b_scan_es"
+            app:layout_constraintTop_toTopOf="@+id/b_scan_es"
+            tools:visibility="visible" />
+
+        <ImageButton
+            android:id="@+id/b_scan"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="?selectableItemBackground"
+            android:onClick="@{(v) -> vm.screenNavigator.openEanInfoScreen()}"
+            android:padding="4dp"
+            android:src="@drawable/ic_scan_barcode"
+            app:layout_constraintBottom_toBottomOf="@+id/tv_matrix"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/tv_matrix" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>

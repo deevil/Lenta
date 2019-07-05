@@ -1,4 +1,4 @@
-package com.lenta.inventory.features.goods_information.general
+package com.lenta.inventory.features.goods_information.excise_alco
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
@@ -14,13 +14,15 @@ import com.lenta.shared.view.OnPositionClickListener
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
+class ExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
 
     @Inject
     lateinit var screenNavigator: IScreenNavigator
 
+    val editTextFocus: MutableLiveData<Boolean> = MutableLiveData(false)
+
     //val productInfo: MutableLiveData<TaskProductInfo> = MutableLiveData()
-    val productInfo: MutableLiveData<TaskProductInfo> = MutableLiveData(TaskProductInfo("materialNumber1", "description", Uom("ST", "шт"), ProductType.General,
+    val productInfo: MutableLiveData<TaskProductInfo> = MutableLiveData(TaskProductInfo("materialNumber1", "description", Uom("ST", "шт"), ProductType.ExciseAlcohol,
             false, "1", MatrixType.Active, "materialType","3", null, false))
 
     val storePlaceNumber: MutableLiveData<String> = MutableLiveData("123456789")
@@ -52,6 +54,16 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
         }
     }
 
+    fun onClickКollback() {
+        //todo
+        screenNavigator.openGoodsDetailsScreen()
+    }
+
+    fun onClickDetails() {
+        //todo
+        screenNavigator.openGoodsDetailsScreen()
+    }
+
     fun onClickMissing() {
         //todo
         screenNavigator.openGoodsDetailsStorageScreen()
@@ -60,6 +72,10 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
     fun onClickApply() {
         //todo
         screenNavigator.openSetsDetailsStorageScreen()
+    }
+
+    fun onScanResult(data: String) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
     override fun onClickPosition(position: Int) {
