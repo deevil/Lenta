@@ -23,7 +23,7 @@ class ProcessGeneralProductService(private val taskDescription: TaskDescription,
                 productInfo.factCount = count
                 productInfo.isPositionCalc = true
             } else {
-                productInfo.factCount = count
+                productInfo.factCount = 0.0
                 productInfo.isPositionCalc = false
             }
         }

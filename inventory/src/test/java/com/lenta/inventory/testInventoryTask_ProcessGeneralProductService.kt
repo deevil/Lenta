@@ -51,7 +51,7 @@ class testInventoryTask_ProcessGeneralProductService {
 
 
     @Test
-    fun testIsGeneralProduct() {
+    fun testProcessGeneralProduct() {
 
         creatingObjectsForTest()
 
@@ -84,30 +84,52 @@ class testInventoryTask_ProcessGeneralProductService {
         Assert.assertTrue(test)
     }
 
-    /**@Test
-    fun testAddProductsInRepository() {
+    @Test
+    fun testAddCountProduct() {
 
         creatingObjectsForTest()
 
         val product1 = TaskProductInfo("materialNumber111", "description", Uom("ST", "шт"), ProductType.General,
                 false, "1", MatrixType.Active, "materialType", "1", null, false)
 
-        val product2 = TaskProductInfo("materialNumber222", "description", Uom("ST", "шт"), ProductType.NonExciseAlcohol,
-                false, "1", MatrixType.Active, "materialType","2", null, false)
+        val processGeneralProductService = ProcessGeneralProductService(taskDescription, taskRepository, product1)
+        //устанавливаем продукту фактическое количество (5), и помечаем, что продукт обработан
+        processGeneralProductService.addCount(5.0)
 
-        val product3 = TaskProductInfo("materialNumber333", "description", Uom("ST", "шт"), ProductType.ExciseAlcohol,
-                false, "1", MatrixType.Active, "materialType", "3", null, false)
+        //проверяем кол-во продуктов, должно быть 5
+        Assert.assertEquals(5.0, processGeneralProductService.getTotalCount(), 0.0)
 
-        //TODO добавляем продукты из REST-96 в репозиторий
-        inventoryTask.addProduct(product1)
-        inventoryTask.addProduct(product2)
-        storePlaceProcessing.inventoryTask.addProduct(product3)
-        Assert.assertEquals(3, storePlaceProcessing.inventoryTask.taskRepository.getProducts().getProducts().size.toLong())
-        //Assert.assertEquals(1.0, task.getTotalCountOfProduct(product1), 0.0)
+        //проверяем, что продукт помечен как обработанный
+        Assert.assertTrue(product1.isPositionCalc)
+
+        //устанавливаем отрицательное кол-во продуктов -1
+        processGeneralProductService.addCount(-1.0)
+        //проверяем кол-во продуктов, должно остаться 5
+        Assert.assertEquals(5.0, processGeneralProductService.getTotalCount(), 0.0)
 
     }
 
     @Test
+    fun testMissingProduct() {
+
+        creatingObjectsForTest()
+
+        val product1 = TaskProductInfo("materialNumber111", "description", Uom("ST", "шт"), ProductType.General,
+                false, "1", MatrixType.Active, "materialType", "1", null, false)
+
+        val processGeneralProductService = ProcessGeneralProductService(taskDescription, taskRepository, product1)
+        //помечаем, что продукт отсутствует
+        processGeneralProductService.missing()
+
+        //проверяем кол-во продуктов, должно быть 0
+        Assert.assertEquals(0.0, processGeneralProductService.getTotalCount(), 0.0)
+
+        //проверяем, что продукт помечен как обработанный
+        Assert.assertTrue(product1.isPositionCalc)
+
+    }
+
+    /**@Test
     fun testGetNotProcessedProducts() {
 
         creatingObjectsForTest()
