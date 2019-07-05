@@ -188,6 +188,10 @@ class RecyclerViewKeyHandler<T>(private val rv: RecyclerView,
 
     fun onKeyDown(keyCode: KeyCode): Boolean {
 
+        if (!rv.isFocused) {
+            return false
+        }
+
         var pos = posInfo.value!!.currentPos
 
         when (keyCode) {
@@ -204,6 +208,8 @@ class RecyclerViewKeyHandler<T>(private val rv: RecyclerView,
         }
 
         posInfo.value = PosInfo(currentPos = pos, lastPos = posInfo.value!!.currentPos)
+
+        rv.requestFocus()
 
         return true
     }
