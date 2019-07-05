@@ -56,6 +56,11 @@ class AuthViewModel : CoreAuthViewModel() {
     private fun loadPermissions(@Suppress("UNUSED_PARAMETER") boolean: Boolean) {
         viewModelScope.launch {
             progress.value = true
+            getLogin().let {
+                sessionInfo.userName = it
+                sessionInfo.basicAuth = getBaseAuth(it, getPassword())
+                appSettings.lastLogin = it
+            }
             permissionsRequest(PermissionsParams(login = getLogin())).either(::handleFailure, ::handleAuthSuccess)
             progress.value = false
         }
@@ -74,12 +79,6 @@ class AuthViewModel : CoreAuthViewModel() {
 
     private fun handleAuthSuccess(permissionsResult: PermissionsResult) {
         repoInMemoryHolder.permissionsResult = permissionsResult
-
-        getLogin().let {
-            sessionInfo.userName = it
-            sessionInfo.basicAuth = getBaseAuth(it, getPassword())
-            appSettings.lastLogin = it
-        }
 
         navigator.openSelectMarketScreen()
     }

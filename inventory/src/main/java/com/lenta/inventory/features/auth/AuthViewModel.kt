@@ -20,6 +20,7 @@ import com.lenta.shared.settings.IAppSettings
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.map
+import com.lenta.shared.utilities.getBaseAuth
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -74,6 +75,13 @@ class AuthViewModel : CoreAuthViewModel() {
     }
 
     private fun loadPermissions(@Suppress("UNUSED_PARAMETER") boolean: Boolean) {
+
+        getLogin().let {
+            sessionInfo.userName = it
+            sessionInfo.basicAuth = getBaseAuth(it, getPassword())
+            appSettings.lastLogin = it
+        }
+
         viewModelScope.launch {
             progress.value = true
             permissionsRequest(PermissionsParams(login = "")).either(::handleFailure, ::handleAuthSuccess)
@@ -85,10 +93,7 @@ class AuthViewModel : CoreAuthViewModel() {
 
         repoInMemoryHolder.permissions = permissionsResult
 
-        login.value.let {
-            sessionInfo.userName = it
-            appSettings.lastLogin = it
-        }
+
 
         navigator.openSelectMarketScreen()
     }
