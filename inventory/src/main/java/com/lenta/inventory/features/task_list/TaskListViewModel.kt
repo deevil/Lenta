@@ -1,69 +1,89 @@
 package com.lenta.inventory.features.task_list
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.lenta.inventory.platform.navigation.IScreenNavigator
+import com.lenta.inventory.platform.navigation.ScreenNavigator
+import com.lenta.inventory.repos.IRepoInMemoryHolder
+import com.lenta.inventory.requests.network.TaskListNetRequest
+import com.lenta.inventory.requests.network.TasksListParams
+import com.lenta.inventory.requests.network.TasksListRestInfo
 import com.lenta.shared.account.ISessionInfo
+import com.lenta.shared.exception.Failure
 import com.lenta.shared.platform.viewmodel.CoreViewModel
+import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.view.OnPositionClickListener
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class TaskListViewModel : CoreViewModel(), OnPositionClickListener {
+class TaskListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     @Inject
     lateinit var sessionInfo: ISessionInfo
+    @Inject
+    lateinit var repoInMemoryHolder: IRepoInMemoryHolder
+    @Inject
+    lateinit var taskListNetRequest: TaskListNetRequest
+    @Inject
+    lateinit var screenNavigator: IScreenNavigator
 
+    val filter = MutableLiveData("")
 
     val tkNumber: String by lazy {
         sessionInfo.market ?: ""
     }
-    val tasks = MutableLiveData<List<TaskItem>>()
-    val tasksCount = tasks.map { tasks.value?.size ?: 0 }
-
-    val filerTitles = MutableLiveData<List<String>>()
-    val filerPosition = MutableLiveData<Int>()
-
-    init {
-        generateTestData()
+    val tasks: LiveData<List<TaskItem>> by lazy {
+        repoInMemoryHolder.tasksListRestInfo.map {
+            it?.tasks?.mapIndexed { index, task ->
+                TaskItem(
+                        number = "${index + 1}",
+                        title = task.taskName,
+                        stock = task.stock,
+                        typeConversion = TypeConversion.Primary,
+                        statusTask = StatusTask.from(task.blockType),
+                        count = "0"
+                )
+            }?.reversed()
+        }
+    }
+    val tasksCount by lazy {
+        tasks.map { tasks.value?.size ?: 0 }
     }
 
-    private fun generateTestData() {
+
+    init {
+    }
+
+
+    fun onClickUpdate() {
         viewModelScope.launch {
-            tasks.value = listOf(
-                    TaskItem(
-                            number = "3",
-                            title = "ВИ-304-Акционка",
-                            stock = "Склад 0001",
-                            typeConversion = TypeConversion.Secondary,
-                            statusTask = StatusTask.BlockedMe,
-                            count = "55"
-                    ),
-                    TaskItem(
-                            number = "2",
-                            title = "КИ-303-Секция",
-                            stock = "Склад 0001",
-                            typeConversion = TypeConversion.Secondary,
-                            statusTask = StatusTask.Free,
-                            count = "29"
-                    ),
-                    TaskItem(
-                            number = "1",
-                            title = "ЦИ-311-Срочно",
-                            stock = "Склад 0001",
-                            typeConversion = TypeConversion.Secondary,
-                            statusTask = StatusTask.Free,
-                            count = "432"
+            screenNavigator.showProgress(taskListNetRequest)
+            taskListNetRequest(
+                    TasksListParams(
+                            werks = sessionInfo.market ?: "",
+                            user = if (filter.value.isNullOrBlank()) sessionInfo.userName!! else filter.value!!
                     )
             )
-
-            filerTitles.value = listOf("MAKAROV", "DENISENKO", "OVCHARENKO", "BORISENKO")
-
+                    .either(::handleFailure, ::handleUpdateSuccess)
+            screenNavigator.hideProgress()
         }
 
     }
 
-    override fun onClickPosition(position: Int) {
-        filerPosition.value = position
+    override fun handleFailure(failure: Failure) {
+        super.handleFailure(failure)
+        screenNavigator.openAlertScreen(failure)
+    }
+
+    private fun handleUpdateSuccess(tasksListRestInfo: TasksListRestInfo) {
+        repoInMemoryHolder.tasksListRestInfo.value = tasksListRestInfo
+
+    }
+
+    override fun onOkInSoftKeyboard(): Boolean {
+        onClickUpdate()
+        return true
     }
 
 }
@@ -78,17 +98,27 @@ data class TaskItem(
 
 )
 
+
+//TODO нужно уточнить формирование и отображение признаков
+
 enum class TypeConversion {
     Primary,
     Secondary,
-    Parallels
-
+    Parallels;
 }
 
 enum class StatusTask {
     Free,
     BlockedMe,
     BlockedNotMe,
-    Processed
+    Processed;
 
+    companion object {
+        fun from(code: String): StatusTask {
+            return Free
+        }
+
+    }
 }
+
+

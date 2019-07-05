@@ -83,7 +83,7 @@ class AuthViewModel : CoreAuthViewModel() {
 
     private fun handleAuthSuccess(permissionsResult: PermissionsResult) {
 
-        repoInMemoryHolder.permissionsResult = permissionsResult
+        repoInMemoryHolder.permissions = permissionsResult
 
         login.value.let {
             sessionInfo.userName = it

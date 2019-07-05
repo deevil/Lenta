@@ -37,7 +37,7 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
     init {
         viewModelScope.launch {
 
-            repoInMemoryHolder.permissionsResult?.markets?.let { list ->
+            repoInMemoryHolder.permissions?.markets?.let { list ->
 
                 markets.value = list.map { MarketUi(number = it.number, address = it.address) }
 

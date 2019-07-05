@@ -10,6 +10,7 @@ import com.lenta.inventory.platform.extentions.getAppComponent
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
+import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig
 import com.lenta.shared.utilities.extentions.connectLiveData
@@ -17,7 +18,7 @@ import com.lenta.shared.utilities.extentions.generateScreenNumber
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.provideViewModel
 
-class TaskListFragment : CoreFragment<FragmentTaskListBinding, TaskListViewModel>() {
+class TaskListFragment : CoreFragment<FragmentTaskListBinding, TaskListViewModel>(), ToolbarButtonsClickListener {
 
     override fun getLayoutId(): Int = R.layout.fragment_task_list
 
@@ -41,12 +42,20 @@ class TaskListFragment : CoreFragment<FragmentTaskListBinding, TaskListViewModel
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.update)
     }
 
+
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding?.rvConfig = DataBindingRecyclerViewConfig<ItemTileTasksBinding>(
                 layoutId = R.layout.item_tile_tasks,
                 itemId = BR.vm
         )
+    }
+
+    override fun onToolbarButtonClick(view: View) {
+        when (view.id) {
+            R.id.b_5 -> vm.onClickUpdate()
+        }
     }
 
 
