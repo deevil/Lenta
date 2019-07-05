@@ -88,8 +88,8 @@
             app:layout_constraintEnd_toStartOf="@+id/div_vert1"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            tools:text="2"
-            tools:ignore="UnusedAttribute" />
+            tools:ignore="UnusedAttribute"
+            tools:text="2" />
 
         <TextView
             android:id="@+id/tv_name"
@@ -135,22 +135,29 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
 
-        <ImageView
-            android:id="@+id/imageView2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+
+        <TextView
+            android:id="@+id/tv_recount_status"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
             android:layout_marginBottom="8dp"
-            android:src="@drawable/ic_people_white_32"
-            app:layout_constraintBottom_toBottomOf="parent"
+            android:background="@drawable/bg_border_circle_white"
+            android:ellipsize="end"
+            android:gravity="center"
+            android:maxLines="1"
+            android:text='@{vm.typeConversion}'
+            app:layout_constraintBottom_toBottomOf="@+id/tv_stock"
             app:layout_constraintEnd_toStartOf="@+id/imageView3"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toEndOf="@+id/vertical_guidline_2"
             app:layout_constraintStart_toStartOf="@+id/vertical_guidline_2"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/tv_name"
             app:layout_goneMarginEnd="8dp"
-            tools:visibility="visible" />
+            app:layout_constraintHorizontal_chainStyle="packed"
+            tools:text="2" />
 
 
         <ImageView
@@ -158,15 +165,16 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:layout_marginEnd="8dp"
+            android:layout_marginEnd="4dp"
             android:layout_marginBottom="8dp"
-            android:src="@drawable/ic_lock_close_white_32"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/vertical_guidline_3"
             app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/imageView2"
+            app:layout_constraintStart_toEndOf="@+id/tv_recount_status"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_goneMarginStart="8dp" />
+            app:layout_goneMarginStart="8dp"
+            app:statusTaskIcon='@{vm.statusTask}'
+            tools:src="@drawable/ic_lock_close_white_32" />
 
         <TextView
             android:id="@+id/tv_quantity"

@@ -70,7 +70,7 @@ data class TasksItem(
         @SerializedName("LOCK_IP")
         val lockIP: String,
         @SerializedName("NUM_POS")
-        val productsInTask: String,
+        val countProductsInTask: String,
         @SerializedName("NOT_FINISH")
         val notFinish: String,
         @SerializedName("DATE_FROM")
