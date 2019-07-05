@@ -1,13 +1,15 @@
 package com.lenta.inventory.features.goods_information.general
 
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.lenta.inventory.models.task.IInventoryTaskManager
+import com.lenta.inventory.models.task.ProcessGeneralProductService
 import com.lenta.inventory.models.task.TaskProductInfo
 import com.lenta.inventory.platform.navigation.IScreenNavigator
-import com.lenta.shared.models.core.MatrixType
-import com.lenta.shared.models.core.ProductType
-import com.lenta.shared.models.core.Uom
 import com.lenta.shared.platform.viewmodel.CoreViewModel
+import com.lenta.shared.utilities.Logg
+import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.toStringFormatted
 import com.lenta.shared.view.OnPositionClickListener
@@ -19,12 +21,17 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
     @Inject
     lateinit var screenNavigator: IScreenNavigator
 
-    //val productInfo: MutableLiveData<TaskProductInfo> = MutableLiveData()
-    val productInfo: MutableLiveData<TaskProductInfo> = MutableLiveData(TaskProductInfo("materialNumber1", "description", Uom("ST", "шт"), ProductType.General,
-            false, "1", MatrixType.Active, "materialType","3", null, false))
+    @Inject
+    lateinit var processServiceManager: IInventoryTaskManager
 
-    val storePlaceNumber: MutableLiveData<String> = MutableLiveData("123456789")
-    val isStorePlaceNumber: MutableLiveData<Boolean> = storePlaceNumber.map { !it.isNullOrEmpty() }
+    private val processGeneralProductService: ProcessGeneralProductService by lazy {
+        processServiceManager.getInventoryTask()!!.processGeneralProduct(productInfo.value!!)!!
+    }
+
+    val productInfo: MutableLiveData<TaskProductInfo> = MutableLiveData()
+
+    val storePlaceNumber: MutableLiveData<String> = MutableLiveData()
+    val isStorePlaceNumber: MutableLiveData<Boolean> = storePlaceNumber.map { it != "00" }
 
     val spinList: MutableLiveData<List<String>> = MutableLiveData()
 
@@ -32,18 +39,18 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
 
     val count: MutableLiveData<String> = MutableLiveData("")
 
-    val countValue: MutableLiveData<Double> = count.map { it?.toDoubleOrNull()?: 0.0 }
-
-    val suffix: MutableLiveData<String> = MutableLiveData()
+    val countValue: MutableLiveData<Double> = count.map { it?.toDoubleOrNull() ?: 0.0 }
 
     val totalCount: MutableLiveData<Double> = countValue.map {
-        (it ?: 0.0)
+        (it ?: 0.0) + (productInfo.value!!.factCount ?: 0.0)
     }
 
     val totalCountWithUom: MutableLiveData<String> = totalCount.map { "${it.toStringFormatted()} ${productInfo.value!!.uom.name}" }
 
-    fun setProductInfo(productInfo: TaskProductInfo) {
-        this.productInfo.value = productInfo
+    val suffix: MutableLiveData<String> = MutableLiveData()
+
+    val enabledApplyButton: MutableLiveData<Boolean> = countValue.combineLatest(totalCount).map {
+        it!!.first != 0.0 && it.second >= 0.0
     }
 
     init {
@@ -53,13 +60,17 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
     }
 
     fun onClickMissing() {
-        //todo
-        screenNavigator.openGoodsDetailsStorageScreen()
+        processGeneralProductService.missing()
+        screenNavigator.goBack()
     }
 
     fun onClickApply() {
-        //todo
-        screenNavigator.openSetsDetailsStorageScreen()
+        processGeneralProductService.addCount(totalCount.value!!)
+        screenNavigator.goBack()
+    }
+
+    fun onScanResult(data: String) {
+        //TODO необходимо будет прописать тот же функционал, что и на экране Список товаров, когда он будет реализован
     }
 
     override fun onClickPosition(position: Int) {

@@ -1,6 +1,8 @@
 package com.lenta.inventory.di
 
 import android.content.Context
+import com.lenta.inventory.models.task.IInventoryTaskManager
+import com.lenta.inventory.models.task.InventoryTaskManager
 import com.lenta.inventory.platform.navigation.IScreenNavigator
 import com.lenta.inventory.platform.navigation.ScreenNavigator
 import com.lenta.inventory.progress.IInventoryProgressUseCaseInformator
@@ -18,6 +20,11 @@ import dagger.Provides
 @Module
 class AppModule {
 
+    @Provides
+    @AppScope
+    internal fun provideInventoryTaskManager(): IInventoryTaskManager {
+        return InventoryTaskManager()
+    }
 
     @Provides
     @AppScope

@@ -19,6 +19,7 @@ import com.lenta.inventory.features.select_personnel_number.SelectPersonnelNumbe
 import com.lenta.inventory.features.sets_details_storage.SetsDetailsStorageFragment
 import com.lenta.inventory.features.storages_list.StoragesListFragment
 import com.lenta.inventory.features.task_list.TaskListFragment
+import com.lenta.inventory.models.task.TaskProductInfo
 import com.lenta.shared.account.IAuthenticator
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
 import com.lenta.shared.platform.navigation.ICoreNavigator
@@ -75,9 +76,9 @@ class ScreenNavigator(
         }
     }
 
-    override fun openGoodsInfoScreen() {
+    override fun openGoodsInfoScreen(productInfo: TaskProductInfo, storePlaceNumber: String) {
         runOrPostpone {
-            getFragmentStack()?.push(GoodsInfoFragment())
+            getFragmentStack()?.push(GoodsInfoFragment(productInfo, storePlaceNumber))
         }
     }
 
@@ -164,7 +165,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openFastDataLoadingScreen()
     fun openSelectionPersonnelNumberScreen()
     fun openMainMenuScreen()
-    fun openGoodsInfoScreen()
+    fun openGoodsInfoScreen(productInfo: TaskProductInfo, storePlaceNumber: String)
     fun openGoodsDetailsScreen()
     fun openGoodsDetailsStorageScreen()
     fun openSetsDetailsStorageScreen()

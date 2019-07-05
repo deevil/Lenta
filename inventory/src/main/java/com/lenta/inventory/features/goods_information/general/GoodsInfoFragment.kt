@@ -10,23 +10,12 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
+import com.lenta.shared.scan.OnScanResultListener
+import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.generateScreenNumber
 import com.lenta.shared.utilities.extentions.provideViewModel
 
-class GoodsInfoFragment : CoreFragment<FragmentGoodsInfoBinding, GoodsInfoViewModel>(), ToolbarButtonsClickListener {
-
-    companion object {
-        fun create(productInfo: TaskProductInfo, storePlaceNumber: String): GoodsInfoFragment {
-            GoodsInfoFragment().let {
-                it.productInfo = productInfo
-                it.storePlaceNumber = storePlaceNumber
-                return it
-            }
-        }
-    }
-
-    private var productInfo: TaskProductInfo? = null
-    private var storePlaceNumber: String? = null
+class GoodsInfoFragment(val productInfo: TaskProductInfo, val storePlaceNumber: String) : CoreFragment<FragmentGoodsInfoBinding, GoodsInfoViewModel>(), ToolbarButtonsClickListener, OnScanResultListener {
 
     override fun getLayoutId(): Int = R.layout.fragment_goods_info
 
@@ -35,12 +24,8 @@ class GoodsInfoFragment : CoreFragment<FragmentGoodsInfoBinding, GoodsInfoViewMo
     override fun getViewModel(): GoodsInfoViewModel {
         provideViewModel(GoodsInfoViewModel::class.java).let { vm ->
             getAppComponent()?.inject(vm)
-            productInfo?.let {
-                vm.productInfo.value = it
-            }
-            storePlaceNumber?.let {
-                vm.storePlaceNumber.value = it
-            }
+            vm.productInfo.value = this.productInfo
+            vm.storePlaceNumber.value = this.storePlaceNumber
             vm.spinList.value = listOf(getString(R.string.quantity))
             return vm
         }
@@ -58,18 +43,9 @@ class GoodsInfoFragment : CoreFragment<FragmentGoodsInfoBinding, GoodsInfoViewMo
         bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.missing)
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.apply)
 
-        if (storePlaceNumber == null) {
-            binding?.ConstraintStoragePlace!!.visibility = View.INVISIBLE
-        } else{
-            bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.details)
-        }
-
-        /**viewLifecycleOwner.apply {
-            connectLiveData(vm.enabledApplyButton, bottomToolbarUiModel.uiModelButton4.enabled)
+        viewLifecycleOwner.apply {
             connectLiveData(vm.enabledApplyButton, bottomToolbarUiModel.uiModelButton5.enabled)
-            connectLiveData(vm.enabledDetailsButton, bottomToolbarUiModel.uiModelButton3.enabled)
-            connectLiveData(vm.selectedPosition, bottomToolbarUiModel.uiModelButton4.requestFocus)
-        }*/
+        }
     }
 
     override fun onToolbarButtonClick(view: View) {
@@ -79,5 +55,8 @@ class GoodsInfoFragment : CoreFragment<FragmentGoodsInfoBinding, GoodsInfoViewMo
         }
     }
 
+    override fun onScanResult(data: String) {
+        vm.onScanResult(data)
+    }
 
 }

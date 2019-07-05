@@ -55,6 +55,8 @@ class testInventoryTask_ProcessGeneralProductService {
 
         creatingObjectsForTest()
 
+        var test = false
+
         val product1 = TaskProductInfo("materialNumber1", "description", Uom("ST", "шт"), ProductType.General,
                 false, "1", MatrixType.Active, "materialType", "1", null, false)
 
@@ -64,11 +66,22 @@ class testInventoryTask_ProcessGeneralProductService {
         val product3 = TaskProductInfo("materialNumber1", "description", Uom("ST", "шт"), ProductType.ExciseAlcohol,
                 false, "1", MatrixType.Active, "materialType", "3", null, false)
 
-        Assert.assertTrue(storePlaceProcessing.isGeneralProduct(product1))
+        if (inventoryTask.processGeneralProduct(product1) != null) {
+            test = true
+        }
+        Assert.assertTrue(test)
 
-        Assert.assertTrue(storePlaceProcessing.isGeneralProduct(product2))
+        test = false
+        if (inventoryTask.processGeneralProduct(product2) != null) {
+            test = true
+        }
+        Assert.assertTrue(test)
 
-        Assert.assertFalse(storePlaceProcessing.isGeneralProduct(product3))
+        test = false
+        if (inventoryTask.processGeneralProduct(product3) == null) {
+            test = true
+        }
+        Assert.assertTrue(test)
     }
 
     /**@Test

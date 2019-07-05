@@ -2,11 +2,11 @@ package com.lenta.inventory.models.task
 
 import com.lenta.inventory.models.repositories.ITaskRepository
 
-class ProcessGeneralProductService(val taskDescription: TaskDescription,
-                                   val taskRepository: ITaskRepository,
-                                   val productInfo: TaskProductInfo) : IProcessProductService {
+class ProcessGeneralProductService(private val taskDescription: TaskDescription,
+                                   private val taskRepository: ITaskRepository,
+                                   private val productInfo: TaskProductInfo) : IProcessProductService {
     override fun getTotalCount(): Double {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        return productInfo.factCount ?: 0.0
     }
 
     override fun apply(): InventoryTask {
@@ -17,7 +17,20 @@ class ProcessGeneralProductService(val taskDescription: TaskDescription,
         return InventoryTask(taskDescription, taskRepository)
     }
 
-    fun add(){
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    fun addCount(count: Double){
+        if (count >= 0.0) {
+            if (count > 0.0) {
+                productInfo.factCount = count
+                productInfo.isPositionCalc = true
+            } else {
+                productInfo.factCount = count
+                productInfo.isPositionCalc = false
+            }
+        }
+    }
+
+    fun missing(){
+        productInfo.factCount = 0.0
+        productInfo.isPositionCalc = true
     }
 }
