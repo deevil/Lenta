@@ -18,6 +18,7 @@ import dagger.Provides
 @Module
 class AppModule {
 
+
     @Provides
     @AppScope
     internal fun provideProgressUseCaseInformator(

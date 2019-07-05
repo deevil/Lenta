@@ -104,5 +104,7 @@
     <string name="job_card">Карточка задания</string>
     <string name="storage">Склад</string>
     <string name="not_implemented_screen">Экран «%s» в процессе разработки</string>
+    <string name="high_priority_title">Высокий приоритет</string>
+    <string name="high_priority_content">Приложение работает с повышенным приоритетом</string>
 
 </resources>

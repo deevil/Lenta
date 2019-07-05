@@ -17,6 +17,7 @@ import com.lenta.shared.platform.activity.INumberScreenGenerator
 import com.lenta.shared.platform.activity.OnBackPresserListener
 import com.lenta.shared.platform.battery_state.BatteryStateMonitor
 import com.lenta.shared.platform.fragment.CoreFragment
+import com.lenta.shared.platform.high_priority.PriorityAppManager
 import com.lenta.shared.platform.navigation.FragmentStack
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
@@ -45,6 +46,9 @@ abstract class CoreMainActivity : CoreActivity<ActivityMainBinding>(), ToolbarBu
 
     @Inject
     lateinit var scanHelper: IScanHelper
+
+    @Inject
+    lateinit var priorityAppManager: PriorityAppManager
 
     val honeywellScanHelper = HoneywellScanHelper()
     val newLandScanHelper = NewLandScanHelper()
@@ -105,6 +109,7 @@ abstract class CoreMainActivity : CoreActivity<ActivityMainBinding>(), ToolbarBu
         foregroundActivityProvider.setActivity(this)
         honeywellScanHelper.startListen(this)
         newLandScanHelper.startListen(this)
+        priorityAppManager.setLowPriority()
     }
 
     override fun onPause() {
@@ -115,6 +120,7 @@ abstract class CoreMainActivity : CoreActivity<ActivityMainBinding>(), ToolbarBu
         scanHelper.stopListen(this)
         honeywellScanHelper.stopListen(this)
         newLandScanHelper.stopListen(this)
+        priorityAppManager.setHighPriority()
     }
 
     override fun onBackPressed() {

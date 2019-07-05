@@ -12,6 +12,7 @@ import com.lenta.inventory.features.goods_information.sets.components.SetCompone
 import com.lenta.inventory.features.goods_list.GoodsListFragment
 import com.lenta.inventory.features.job_card.JobCardFragment
 import com.lenta.inventory.features.loading.fast.FastDataLoadingFragment
+import com.lenta.inventory.features.loading.tasks.LoadingTasksFragment
 import com.lenta.inventory.features.select_market.SelectMarketFragment
 import com.lenta.inventory.features.select_personnel_number.SelectPersonnelNumberFragment
 import com.lenta.inventory.features.sets_details_storage.SetsDetailsStorageFragment
@@ -139,6 +140,12 @@ class ScreenNavigator(
         }
     }
 
+    override fun openLoadingTasksScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(LoadingTasksFragment())
+        }
+    }
+
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 
 }
@@ -161,4 +168,5 @@ interface IScreenNavigator : ICoreNavigator {
     fun openDiscrepanciesScreen()
     fun openTasksList()
     fun openJobCard()
+    fun openLoadingTasksScreen()
 }

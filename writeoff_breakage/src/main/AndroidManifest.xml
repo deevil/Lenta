@@ -32,6 +32,9 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
+
+        <service android:name="com.lenta.shared.platform.high_priority.MainService"/>
+
     </application>
 
 </manifest>
