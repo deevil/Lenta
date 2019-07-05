@@ -263,13 +263,13 @@
             tools:visibility="visible" />
 
         <ImageButton
-            android:id="@+id/b_scan_corob"
+            android:id="@+id/b_scan_box"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="?selectableItemBackground"
-            android:onClick="@{(v) -> vm.screenNavigator.openCorobInfoScreen()}"
+            android:onClick="@{(v) -> vm.screenNavigator.openBoxInfoScreen()}"
             android:padding="4dp"
-            android:src="@drawable/is_scan_corob"
+            android:src="@drawable/is_scan_box"
             app:layout_constraintBottom_toBottomOf="@+id/b_scan_es"
             app:layout_constraintEnd_toStartOf="@+id/b_scan_es"
             app:layout_constraintTop_toTopOf="@+id/b_scan_es"

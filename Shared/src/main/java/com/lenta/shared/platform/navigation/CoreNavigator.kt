@@ -205,10 +205,10 @@ class CoreNavigator constructor(private val context: Context,
         }
     }
 
-    override fun openCorobInfoScreen() {
+    override fun openBoxInfoScreen() {
         runOrPostpone {
-            getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.corob_info),
-                    iconRes = R.drawable.is_scan_corob), CustomAnimation.vertical)
+            getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.box_info),
+                    iconRes = R.drawable.is_scan_box), CustomAnimation.vertical)
         }
     }
 
@@ -295,7 +295,7 @@ interface ICoreNavigator {
     fun openSectionInfoScreen(section: String)
     fun openEanInfoScreen()
     fun openESInfoScreen()
-    fun openCorobInfoScreen()
+    fun openBoxInfoScreen()
     fun openInfoScreen(message: String)
     fun openStampAnotherMarketAlert(codeConfirm: Int)
     fun openAnotherProductStampAlert(productName: String)
