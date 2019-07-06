@@ -84,28 +84,28 @@ class testInventoryTask_ProcessGeneralProductService {
 
         creatingObjectsForTest()
 
-        val product1 = TaskProductInfo("materialNumber111", "description", Uom("ST", "шт"), ProductType.General,
+        var product1: TaskProductInfo? = TaskProductInfo("materialNumber111", "description", Uom("ST", "шт"), ProductType.General,
                 false, "1", MatrixType.Active, "materialType", "1", null, false)
 
         //добавляем продукт в репозиторий
-        inventoryTask.taskRepository.getProducts().addProduct(product1)
+        inventoryTask.taskRepository.getProducts().addProduct(product1!!)
+        //обнуляем  данный объект, чтобы не было на него ссылок и связей с ним
+        product1 = null
 
         val processGeneralProductService = ProcessGeneralProductService(taskDescription, inventoryTask.taskRepository, inventoryTask.taskRepository.getProducts().findProduct("materialNumber111")!!)
         //устанавливаем продукту в репозитории фактическое количество (5), и помечаем, что продукт обработан
         processGeneralProductService.setFactCount(5.0)
 
         //проверяем кол-во продуктов, должно быть 5
-        Assert.assertEquals(5.0, inventoryTask.taskRepository.getProducts().findProduct(product1)!!.factCount!!, 0.0)
+        Assert.assertEquals(5.0, inventoryTask.taskRepository.getProducts().findProduct("materialNumber111")!!.factCount!!, 0.0)
 
         //проверяем, что продукт помечен как обработанный
-        Assert.assertTrue(inventoryTask.taskRepository.getProducts().findProduct(product1)!!.isPositionCalc)
+        Assert.assertTrue(inventoryTask.taskRepository.getProducts().findProduct("materialNumber111")!!.isPositionCalc)
 
         //устанавливаем отрицательное кол-во продуктов -1
         processGeneralProductService.setFactCount(-1.0)
         //проверяем кол-во продуктов, должно остаться 5
-        Assert.assertEquals(5.0, inventoryTask.taskRepository.getProducts().findProduct(product1)!!.factCount!!, 0.0)
-        //Assert.assertEquals(5.0, product1.factCount!!, 0.0)
-
+        Assert.assertEquals(5.0, inventoryTask.taskRepository.getProducts().findProduct("materialNumber111")!!.factCount!!, 0.0)
     }
 
     /**@Test

@@ -13,7 +13,6 @@ class ProcessGeneralProductService(private val taskDescription: TaskDescription,
     override fun setFactCount(count: Double){
         if (count >= 0.0) {
             if (count > 0.0) {
-                //productInfo.factCount = count
                 taskRepository.getProducts().findProduct(productInfo)?.factCount = count
                 taskRepository.getProducts().findProduct(productInfo)?.isPositionCalc = true
             } else {
