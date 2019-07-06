@@ -1,6 +1,5 @@
 package com.lenta.inventory.features.goods_information.general
 
-import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.inventory.models.task.IInventoryTaskManager
@@ -8,7 +7,6 @@ import com.lenta.inventory.models.task.ProcessGeneralProductService
 import com.lenta.inventory.models.task.TaskProductInfo
 import com.lenta.inventory.platform.navigation.IScreenNavigator
 import com.lenta.shared.platform.viewmodel.CoreViewModel
-import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.toStringFormatted
@@ -39,9 +37,9 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
 
     val count: MutableLiveData<String> = MutableLiveData("")
 
-    val countValue: MutableLiveData<Double> = count.map { it?.toDoubleOrNull() ?: 0.0 }
+    private val countValue: MutableLiveData<Double> = count.map { it?.toDoubleOrNull() ?: 0.0 }
 
-    val totalCount: MutableLiveData<Double> = countValue.map {
+    private val totalCount: MutableLiveData<Double> = countValue.map {
         (it ?: 0.0) + (productInfo.value!!.factCount ?: 0.0)
     }
 

@@ -5,32 +5,26 @@ import com.lenta.inventory.models.repositories.ITaskRepository
 class ProcessGeneralProductService(private val taskDescription: TaskDescription,
                                    private val taskRepository: ITaskRepository,
                                    private val productInfo: TaskProductInfo) : IProcessProductService {
-    override fun getTotalCount(): Double {
+
+    override fun getFactCount(): Double {
         return productInfo.factCount ?: 0.0
     }
 
-    override fun apply(): InventoryTask {
-        return InventoryTask(taskDescription, taskRepository)
-    }
-
-    override fun discard(): InventoryTask {
-        return InventoryTask(taskDescription, taskRepository)
-    }
-
-    fun setFactCount(count: Double){
+    override fun setFactCount(count: Double){
         if (count >= 0.0) {
             if (count > 0.0) {
-                productInfo.factCount = count
-                productInfo.isPositionCalc = true
+                //productInfo.factCount = count
+                taskRepository.getProducts().findProduct(productInfo)?.factCount = count
+                taskRepository.getProducts().findProduct(productInfo)?.isPositionCalc = true
             } else {
-                productInfo.factCount = 0.0
-                productInfo.isPositionCalc = false
+                taskRepository.getProducts().findProduct(productInfo)?.factCount = 0.0
+                taskRepository.getProducts().findProduct(productInfo)?.isPositionCalc = false
             }
         }
     }
 
-    fun setMissing(){
-        productInfo.factCount = 0.0
-        productInfo.isPositionCalc = true
+    override fun setMissing(){
+        taskRepository.getProducts().findProduct(productInfo)?.factCount = 0.0
+        taskRepository.getProducts().findProduct(productInfo)?.isPositionCalc = true
     }
 }
