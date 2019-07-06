@@ -17,7 +17,7 @@ class ProcessGeneralProductService(private val taskDescription: TaskDescription,
         return InventoryTask(taskDescription, taskRepository)
     }
 
-    fun addCount(count: Double){
+    fun setFactCount(count: Double){
         if (count >= 0.0) {
             if (count > 0.0) {
                 productInfo.factCount = count
@@ -29,7 +29,7 @@ class ProcessGeneralProductService(private val taskDescription: TaskDescription,
         }
     }
 
-    fun missing(){
+    fun setMissing(){
         productInfo.factCount = 0.0
         productInfo.isPositionCalc = true
     }

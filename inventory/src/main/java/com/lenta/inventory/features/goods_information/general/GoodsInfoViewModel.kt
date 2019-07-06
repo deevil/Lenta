@@ -60,12 +60,12 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
     }
 
     fun onClickMissing() {
-        processGeneralProductService.missing()
+        processGeneralProductService.setMissing()
         screenNavigator.goBack()
     }
 
     fun onClickApply() {
-        processGeneralProductService.addCount(totalCount.value!!)
+        processGeneralProductService.setFactCount(totalCount.value!!)
         screenNavigator.goBack()
     }
 

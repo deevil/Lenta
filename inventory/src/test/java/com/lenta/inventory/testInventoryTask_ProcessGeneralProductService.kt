@@ -94,7 +94,7 @@ class testInventoryTask_ProcessGeneralProductService {
 
         val processGeneralProductService = ProcessGeneralProductService(taskDescription, taskRepository, product1)
         //устанавливаем продукту фактическое количество (5), и помечаем, что продукт обработан
-        processGeneralProductService.addCount(5.0)
+        processGeneralProductService.setFactCount(5.0)
 
         //проверяем кол-во продуктов, должно быть 5
         Assert.assertEquals(5.0, processGeneralProductService.getTotalCount(), 0.0)
@@ -103,7 +103,7 @@ class testInventoryTask_ProcessGeneralProductService {
         Assert.assertTrue(product1.isPositionCalc)
 
         //устанавливаем отрицательное кол-во продуктов -1
-        processGeneralProductService.addCount(-1.0)
+        processGeneralProductService.setFactCount(-1.0)
         //проверяем кол-во продуктов, должно остаться 5
         Assert.assertEquals(5.0, processGeneralProductService.getTotalCount(), 0.0)
 
@@ -119,7 +119,7 @@ class testInventoryTask_ProcessGeneralProductService {
 
         val processGeneralProductService = ProcessGeneralProductService(taskDescription, taskRepository, product1)
         //помечаем, что продукт отсутствует
-        processGeneralProductService.missing()
+        processGeneralProductService.setMissing()
 
         //проверяем кол-во продуктов, должно быть 0
         Assert.assertEquals(0.0, processGeneralProductService.getTotalCount(), 0.0)
