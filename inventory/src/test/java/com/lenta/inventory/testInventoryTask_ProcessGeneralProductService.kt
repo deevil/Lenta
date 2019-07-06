@@ -108,25 +108,31 @@ class testInventoryTask_ProcessGeneralProductService {
         Assert.assertEquals(5.0, inventoryTask.taskRepository.getProducts().findProduct("materialNumber111")!!.factCount!!, 0.0)
     }
 
-    /**@Test
+    @Test
     fun testSetMissingForProduct() {
 
         creatingObjectsForTest()
 
-        val product1 = TaskProductInfo("materialNumber111", "description", Uom("ST", "шт"), ProductType.General,
+        var product1: TaskProductInfo? = TaskProductInfo("materialNumber111", "description", Uom("ST", "шт"), ProductType.General,
                 false, "1", MatrixType.Active, "materialType", "1", null, false)
 
-        val processGeneralProductService = ProcessGeneralProductService(taskDescription, taskRepository, product1)
+        //добавляем продукт в репозиторий
+        inventoryTask.taskRepository.getProducts().addProduct(product1!!)
+        //обнуляем  данный объект, чтобы не было на него ссылок и связей с ним
+        product1 = null
+
+        val processGeneralProductService = ProcessGeneralProductService(taskDescription, inventoryTask.taskRepository, inventoryTask.taskRepository.getProducts().findProduct("materialNumber111")!!)
+
         //помечаем, что продукт отсутствует
         processGeneralProductService.setMissing()
 
         //проверяем кол-во продуктов, должно быть 0
-        Assert.assertEquals(0.0, processGeneralProductService.getTotalCount(), 0.0)
+        Assert.assertEquals(0.0, inventoryTask.taskRepository.getProducts().findProduct("materialNumber111")!!.factCount!!, 0.0)
 
         //проверяем, что продукт помечен как обработанный
-        Assert.assertTrue(product1.isPositionCalc)
+        Assert.assertTrue(inventoryTask.taskRepository.getProducts().findProduct("materialNumber111")!!.isPositionCalc)
 
-    }*/
+    }
 
     /**@Test
     fun testGetNotProcessedProducts() {
