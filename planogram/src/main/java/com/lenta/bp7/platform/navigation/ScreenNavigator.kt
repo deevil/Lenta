@@ -20,6 +20,12 @@ class ScreenNavigator(
         private val progressUseCaseInformator: IProgressUseCaseInformator
 ) : IScreenNavigator, ICoreNavigator by coreNavigator {
 
+    override fun closeAllScreen() {
+        runOrPostpone {
+            getFragmentStack()?.popAll()
+        }
+    }
+
     override fun openFirstScreen() {
         if (authenticator.isAuthorized()) {
             openMainMenuScreen()
@@ -62,6 +68,7 @@ class ScreenNavigator(
 }
 
 interface IScreenNavigator : ICoreNavigator {
+    fun closeAllScreen()
     fun openFirstScreen()
     fun openLoginScreen()
     fun openMainMenuScreen()

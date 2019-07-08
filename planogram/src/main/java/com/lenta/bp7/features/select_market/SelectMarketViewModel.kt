@@ -23,7 +23,6 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
     @Inject
     lateinit var repoInMemoryHolder: IRepoInMemoryHolder
 
-
     private val markets: MutableLiveData<List<MarketUi>> = MutableLiveData()
     val marketsNames: MutableLiveData<List<String>> = markets.map { markets ->
         markets?.map { it.number }
@@ -69,7 +68,8 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
             appSettings.lastTK = it
         }
 
-        screenNavigator.openFastDataLoadingScreen()
+        // Открыть экран - самоконтроль / внешний аудит
+        //screenNavigator.openFastDataLoadingScreen()
     }
 
     private fun clearPrinters() {

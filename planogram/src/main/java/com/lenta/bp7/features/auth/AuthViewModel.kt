@@ -29,11 +29,6 @@ class AuthViewModel : CoreAuthViewModel() {
     lateinit var sessionInfo: ISessionInfo
     @Inject
     lateinit var appSettings: IAppSettings
-    @Inject
-    lateinit var repoInMemoryHolder: IRepoInMemoryHolder
-    @Inject
-    lateinit var storesRequest: StoresRequest
-
 
     override val enterEnabled: MutableLiveData<Boolean> by lazy {
         login.combineLatest(password).map { isValidLoginFields(login = it?.first, password = it?.second) }
@@ -58,9 +53,9 @@ class AuthViewModel : CoreAuthViewModel() {
                 appSettings.lastLogin = it
             }
 
-            storesRequest(RequestParams(login = getLogin())).either(::handleFailure, ::handleAuthSuccess)
-
             progress.value = false
+
+            navigator.openFastDataLoadingScreen()
         }
     }
 
@@ -68,11 +63,6 @@ class AuthViewModel : CoreAuthViewModel() {
         super.handleFailure(failure)
         progress.value = false
         navigator.openAlertScreen(failure, pageNumber = "97")
-    }
-
-    private fun handleAuthSuccess(storesRequestResult: StoresRequestResult) {
-        repoInMemoryHolder.storesRequestResult = storesRequestResult
-        navigator.openSelectMarketScreen()
     }
 
     override fun onClickAuxiliaryMenu() {

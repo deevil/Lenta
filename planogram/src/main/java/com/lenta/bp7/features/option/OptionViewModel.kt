@@ -12,11 +12,8 @@ class OptionViewModel : CoreViewModel() {
 
 
     fun onClickNext() {
-        // Куда-то сохранить состояние галок
-        // ...
 
         // Перейти к следующему экрану
-        // ...
 
     }
 }

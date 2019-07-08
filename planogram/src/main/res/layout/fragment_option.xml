@@ -48,37 +48,37 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/iv_logo"/>
 
-        <CheckBox
+        <TextView
             android:id="@+id/checkBox_facings"
-            style="@android:style/Widget.Holo.Light.CompoundButton.CheckBox"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="50dp"
+            android:layout_marginStart="8dp"
             android:layout_marginTop="50dp"
-            android:checked="@={vm.withFacing}"
+            android:layout_marginEnd="8dp"
             android:ellipsize="end"
             android:fontFamily="@font/tahoma"
             android:maxLines="1"
             android:text="@string/with_counting_facings"
             android:textAllCaps="true"
             android:textSize="16sp"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tv_title"/>
 
-        <CheckBox
+        <TextView
             android:id="@+id/checkBox_places"
-            style="@android:style/Widget.Holo.Light.CompoundButton.CheckBox"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="48dp"
+            android:layout_marginStart="8dp"
             android:layout_marginTop="16dp"
-            android:checked="@={vm.checkEmptyPlaces}"
+            android:layout_marginEnd="8dp"
             android:ellipsize="end"
             android:fontFamily="@font/tahoma"
             android:maxLines="1"
             android:text="@string/with_control_of_empty_places"
             android:textAllCaps="true"
             android:textSize="16sp"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/checkBox_facings"/>
 

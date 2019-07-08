@@ -4,29 +4,36 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp7.platform.navigation.IScreenNavigator
 import com.lenta.bp7.repos.IRepoInMemoryHolder
-import com.lenta.bp7.requests.network.RequestParams
-import com.lenta.bp7.requests.network.SettingRequest
-import com.lenta.bp7.requests.network.SettingRequestResult
+import com.lenta.bp7.requests.network.*
+import com.lenta.bp7.requests.network.loader.ResourcesLoader
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.exception.IFailureInterpreter
 import com.lenta.shared.features.loading.CoreLoadingViewModel
 import com.lenta.shared.platform.app_update.AppUpdateChecker
+import com.mobrun.plugin.api.HyperHive
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class FastLoadingViewModel : CoreLoadingViewModel() {
 
     @Inject
+    lateinit var hyperHive: HyperHive
+    @Inject
     lateinit var navigator: IScreenNavigator
     @Inject
     lateinit var failureInterpreter: IFailureInterpreter
+    @Inject
+    lateinit var resourceLoader: ResourcesLoader
+    @Inject
+    lateinit var fastResourcesNetRequest: FastResourcesMultiRequest
+    @Inject
+    lateinit var storesNetRequest: StoresNetRequest
     @Inject
     lateinit var appUpdateChecker: AppUpdateChecker
     @Inject
     lateinit var repoInMemoryHolder: IRepoInMemoryHolder
     @Inject
-    lateinit var settingRequest: SettingRequest
-
+    lateinit var storesRequest: StoresRequest
 
     override val title: MutableLiveData<String> = MutableLiveData()
     override val progress: MutableLiveData<Boolean> = MutableLiveData(true)
@@ -36,20 +43,25 @@ class FastLoadingViewModel : CoreLoadingViewModel() {
     init {
         viewModelScope.launch {
             progress.value = true
-            settingRequest(RequestParams(login = "")).either(::handleFailure, ::handleSuccess)
+            fastResourcesNetRequest(null).either(::handleFailure, ::loadStores)
             progress.value = false
         }
     }
 
+    private fun loadStores(@Suppress("UNUSED_PARAMETER") b: Boolean) {
+        viewModelScope.launch {
+            storesRequest(RequestParams(login = "")).either(::handleFailure, ::handleSuccess)
+        }
+    }
+
     override fun handleFailure(failure: Failure) {
-        navigator.openSelectMarketScreen()
+        navigator.openLoginScreen()
         navigator.openAlertScreen(failureInterpreter.getFailureDescription(failure).message)
     }
 
-    private fun handleSuccess(settingRequestResult: SettingRequestResult) {
-        repoInMemoryHolder.settingRequestResult = settingRequestResult
-
-        navigator.openOptionScreen()
+    private fun handleSuccess(storesRequestResult: StoresRequestResult) {
+        repoInMemoryHolder.storesRequestResult = storesRequestResult
+        navigator.openSelectMarketScreen()
     }
 
     override fun clean() {
