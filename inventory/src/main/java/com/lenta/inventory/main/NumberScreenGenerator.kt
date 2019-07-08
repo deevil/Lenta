@@ -2,6 +2,7 @@ package com.lenta.inventory.main
 
 import com.lenta.inventory.features.goods_details.GoodsDetailsFragment
 import com.lenta.inventory.features.goods_details_storage.GoodsDetailsStorageFragment
+import com.lenta.inventory.features.goods_information.excise_alco.ExciseAlcoInfoFragment
 import com.lenta.inventory.features.goods_information.general.GoodsInfoFragment
 import com.lenta.inventory.features.goods_information.sets.SetsInfoFragment
 import com.lenta.inventory.features.goods_information.sets.components.SetComponentsFragment
@@ -41,6 +42,7 @@ class NumberScreenGenerator @Inject constructor() : INumberScreenGenerator {
             is PinCodeFragment -> "56"
             is FailurePinCodeFragment -> "96"
             is GoodsInfoFragment -> "10"
+            is ExciseAlcoInfoFragment -> "16"
             is GoodsDetailsFragment -> "11"
             is GoodsDetailsStorageFragment -> "22"
             is SetsDetailsStorageFragment -> "27"

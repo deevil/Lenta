@@ -2,14 +2,13 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/layout2"
-    tools:context=".features.goods_information.general.GoodsInfoFragment">
+    tools:context=".features.goods_information.excise_alco.ExciseAlcoInfoFragment">
 
     <data>
 
         <variable
             name="vm"
-            type="com.lenta.inventory.features.goods_information.general.GoodsInfoViewModel" />
+            type="com.lenta.inventory.features.goods_information.excise_alco.ExciseAlcoInfoViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -69,6 +68,7 @@
             android:ellipsize="end"
             android:inputType="numberDecimal"
             android:maxLines="1"
+            android:enabled="false"
             android:text="@={vm.count}"
             app:digitsForUom="@{vm.productInfo.uom}"
             app:layout_constraintEnd_toEndOf="parent"
@@ -131,7 +131,6 @@
             android:id="@+id/ConstraintStoragePlace"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:visibility="@{vm.isStorePlaceNumber}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/div_hor3">
@@ -224,7 +223,7 @@
             android:id="@+id/tv_section"
             android:layout_width="36sp"
             android:layout_height="36sp"
-            android:layout_marginStart="16dp"
+            android:layout_marginStart="8dp"
             android:layout_marginBottom="24dp"
             android:background="@drawable/bg_white_circle"
             android:clickable="true"
@@ -240,13 +239,49 @@
             tools:text="02" />
 
         <ImageButton
+            android:id="@+id/b_excise_alco"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="18dp"
+            android:background="?selectableItemBackground"
+            app:alcoIcon="@{vm.productInfo.type}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/tv_section"
+            tools:src="@drawable/ic_excise_white_48dp" />
+
+        <ImageButton
+            android:id="@+id/b_scan_es"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="?selectableItemBackground"
+            android:onClick="@{(v) -> vm.screenNavigator.openESInfoScreen()}"
+            android:padding="4dp"
+            android:src="@drawable/is_scan_barcode_es"
+            app:layout_constraintBottom_toBottomOf="@+id/b_scan"
+            app:layout_constraintEnd_toStartOf="@+id/b_scan"
+            app:layout_constraintTop_toTopOf="@+id/b_scan"
+            tools:visibility="visible" />
+
+        <ImageButton
+            android:id="@+id/b_scan_box"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="?selectableItemBackground"
+            android:onClick="@{(v) -> vm.screenNavigator.openBoxInfoScreen()}"
+            android:padding="4dp"
+            android:src="@drawable/is_scan_box"
+            app:layout_constraintBottom_toBottomOf="@+id/b_scan_es"
+            app:layout_constraintEnd_toStartOf="@+id/b_scan_es"
+            app:layout_constraintTop_toTopOf="@+id/b_scan_es"
+            tools:visibility="visible" />
+
+        <ImageButton
             android:id="@+id/b_scan"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
             android:background="?selectableItemBackground"
             android:onClick="@{(v) -> vm.screenNavigator.openEanInfoScreen()}"
-            android:padding="8dp"
+            android:padding="4dp"
             android:src="@drawable/ic_scan_barcode"
             app:layout_constraintBottom_toBottomOf="@+id/tv_matrix"
             app:layout_constraintEnd_toEndOf="parent"
