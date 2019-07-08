@@ -39,13 +39,13 @@ class TaskListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
                 TaskItem(
                         taskNumber = task.taskNumber,
                         number = "${index + 1}",
-                        title = task.taskName,
+                        title = "${task.taskType}-${task.taskNumber}-${task.taskName}",
                         stock = task.stock,
                         typeConversion = if (task.isRecount.isBlank()) "1" else "2",
                         statusTask = StatusTask.from(task),
                         count = task.countProductsInTask
                 )
-            }?.reversed()
+            }
         }
     }
     val tasksCount by lazy {
