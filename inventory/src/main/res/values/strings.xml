@@ -24,7 +24,9 @@
     <string name="task">Задание</string>
     <string name="tags">Признаки</string>
     <string name="task_list_count">Список заданий (%d)</string>
+    <string name="task_list">Список заданий</string>
     <string name="recount">Пересчёт</string>
     <string name="period_of_actual">Период актуальности</string>
     <string name="strict_list">Строгий список</string>
+    <string name="tasks_loading">Загрузка заданий</string>
 </resources>

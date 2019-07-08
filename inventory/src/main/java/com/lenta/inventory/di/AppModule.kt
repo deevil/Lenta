@@ -1,7 +1,8 @@
 package com.lenta.inventory.di
 
 import android.content.Context
-import com.lenta.inventory.features.auth.Authenticator
+import com.lenta.inventory.models.task.IInventoryTaskManager
+import com.lenta.inventory.models.task.InventoryTaskManager
 import com.lenta.inventory.platform.navigation.IScreenNavigator
 import com.lenta.inventory.platform.navigation.ScreenNavigator
 import com.lenta.inventory.progress.IInventoryProgressUseCaseInformator
@@ -13,18 +14,17 @@ import com.lenta.shared.di.AppScope
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
 import com.lenta.shared.platform.navigation.ICoreNavigator
 import com.lenta.shared.progress.IProgressUseCaseInformator
-import com.mobrun.plugin.api.HyperHive
 import dagger.Module
 import dagger.Provides
 
 @Module
 class AppModule {
+
     @Provides
     @AppScope
-    internal fun provideAuthenticator(hyperHive: HyperHive): IAuthenticator {
-        return Authenticator(hyperHive)
+    internal fun provideInventoryTaskManager(): IInventoryTaskManager {
+        return InventoryTaskManager()
     }
-
 
     @Provides
     @AppScope
