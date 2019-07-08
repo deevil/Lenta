@@ -173,7 +173,8 @@ class SetsFragment :
                     recyclerViewKeyHandler = RecyclerViewKeyHandler(
                             rv = layoutBinding.rv,
                             items = vm.componentsLiveData,
-                            lifecycleOwner = layoutBinding.lifecycleOwner!!
+                            lifecycleOwner = layoutBinding.lifecycleOwner!!,
+                            initPosInfo = recyclerViewKeyHandler?.posInfo?.value
                     )
                     return layoutBinding.root
                 }

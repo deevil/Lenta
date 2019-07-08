@@ -14,7 +14,6 @@
     <string name="counted">Посчитанные</string>
     <string name="filter">Фильтр</string>
     <string name="plan">План</string>
-    <string name="enter_item_number_or_barcode">Введите SAP-код или штрихкод</string>
     <string name="write_off">Списание</string>
     <string name="remove_task_confirmation">По заданию \"%s\" будут удалены все непереданные данные</string>
     <string name="remove_lines_confirmation">Подтвердите удаление всех (%d) строк</string>

@@ -142,9 +142,9 @@ class ScreenNavigator(
         }
     }
 
-    override fun openJobCard() {
+    override fun openJobCard(taskNumber: String) {
         runOrPostpone {
-            getFragmentStack()?.push(JobCardFragment())
+            getFragmentStack()?.push(JobCardFragment.create(taskNumber))
         }
     }
 
@@ -175,7 +175,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openStoragesList()
     fun openDiscrepanciesScreen()
     fun openTasksList()
-    fun openJobCard()
+    fun openJobCard(taskNumber: String)
     fun openLoadingTasksScreen()
     fun openExciseAlcoInfoScreen()
 }

@@ -165,9 +165,10 @@ interface Evenable {
 
 class RecyclerViewKeyHandler<T>(private val rv: RecyclerView,
                                 private val items: LiveData<List<T>>,
-                                lifecycleOwner: LifecycleOwner) {
+                                lifecycleOwner: LifecycleOwner,
+                                initPosInfo: PosInfo? = null) {
 
-    val posInfo = MutableLiveData(PosInfo(0, -1))
+    val posInfo = MutableLiveData(initPosInfo?.copy(isManualClick = false) ?: PosInfo(0, -1))
 
     init {
         posInfo.observe(lifecycleOwner, Observer { info ->
@@ -181,11 +182,15 @@ class RecyclerViewKeyHandler<T>(private val rv: RecyclerView,
 
         })
         items.observe(lifecycleOwner, Observer {
-            clearPositions()
+            resendPositions()
         })
     }
 
     fun onKeyDown(keyCode: KeyCode): Boolean {
+
+        if (!rv.isFocused) {
+            return false
+        }
 
         var pos = posInfo.value!!.currentPos
 
@@ -204,6 +209,8 @@ class RecyclerViewKeyHandler<T>(private val rv: RecyclerView,
 
         posInfo.value = PosInfo(currentPos = pos, lastPos = posInfo.value!!.currentPos)
 
+        rv.requestFocus()
+
         return true
     }
 
@@ -215,8 +222,8 @@ class RecyclerViewKeyHandler<T>(private val rv: RecyclerView,
         return pos == posInfo.value!!.currentPos
     }
 
-    fun clearPositions() {
-        posInfo.value = PosInfo(0, -1)
+    fun resendPositions() {
+        posInfo.value = posInfo.value
     }
 
 

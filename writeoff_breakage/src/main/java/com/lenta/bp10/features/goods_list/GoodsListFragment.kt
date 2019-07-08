@@ -142,7 +142,8 @@ class GoodsListFragment :
                         countedRecyclerViewKeyHandler = RecyclerViewKeyHandler(
                                 rv = layoutBinding.rv,
                                 items = vm.countedGoods,
-                                lifecycleOwner = layoutBinding.lifecycleOwner!!
+                                lifecycleOwner = layoutBinding.lifecycleOwner!!,
+                                initPosInfo = countedRecyclerViewKeyHandler?.posInfo?.value
                         )
                         return layoutBinding.root
                     }
@@ -197,7 +198,8 @@ class GoodsListFragment :
                     filterRecyclerViewKeyHandler = RecyclerViewKeyHandler(
                             rv = layoutBinding.rv,
                             items = vm.filteredGoods,
-                            lifecycleOwner = layoutBinding.lifecycleOwner!!
+                            lifecycleOwner = layoutBinding.lifecycleOwner!!,
+                            initPosInfo = filterRecyclerViewKeyHandler?.posInfo?.value
                     )
                     return layoutBinding.root
                 }
