@@ -8,7 +8,6 @@ import com.lenta.shared.fmp.ObjectRawStatus
 import com.lenta.shared.fmp.toFmpObjectRawStatusEither
 import com.lenta.shared.functional.Either
 import com.lenta.shared.interactor.UseCase
-import com.lenta.shared.utilities.Logg
 import com.mobrun.plugin.api.HyperHive
 import com.mobrun.plugin.api.callparams.WebCallParams
 import javax.inject.Inject
@@ -44,14 +43,14 @@ class TasksListStatus : ObjectRawStatus<TasksListRestInfo>()
 
 data class TasksListRestInfo(
         @SerializedName("ET_TASK_LIST")
-        val taskList: List<TasksList>,
+        val tasks: List<TasksItem>,
         @SerializedName("EV_ERROR_TEXT")
         val error: String,
         @SerializedName("EV_RETCODE")
         val retcode: String
 )
 
-data class TasksList(
+data class TasksItem(
         @SerializedName("TASK_NUM")
         val taskNumber: String,
         @SerializedName("TASK_NAME")
@@ -71,7 +70,7 @@ data class TasksList(
         @SerializedName("LOCK_IP")
         val lockIP: String,
         @SerializedName("NUM_POS")
-        val productsInTask: String,
+        val countProductsInTask: String,
         @SerializedName("NOT_FINISH")
         val notFinish: String,
         @SerializedName("DATE_FROM")
