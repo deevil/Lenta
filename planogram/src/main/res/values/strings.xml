@@ -4,4 +4,6 @@
     <string name="select_segment_processing_mode">Выберите режим\nобработки сегмента</string>
     <string name="with_counting_facings">С подсчетом фейсингов</string>
     <string name="with_control_of_empty_places">С контролем пустых мест</string>
+    <string name="self_control_tc">Самоконтроль ТК</string>
+    <string name="external_audit">Внешний аудит</string>
 </resources>

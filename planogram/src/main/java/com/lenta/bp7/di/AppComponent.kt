@@ -4,6 +4,7 @@ import com.lenta.bp7.ExceptionHandler
 import com.lenta.bp7.activity.main.MainActivity
 import com.lenta.bp7.activity.main.MainViewModel
 import com.lenta.bp7.features.auth.AuthViewModel
+import com.lenta.bp7.features.check_type.CheckTypeViewModel
 import com.lenta.bp7.features.loading.fast.FastLoadingViewModel
 import com.lenta.bp7.features.option.OptionViewModel
 import com.lenta.bp7.features.select_market.SelectMarketViewModel
@@ -21,6 +22,7 @@ interface AppComponent {
     fun inject(it: AuthViewModel)
     fun inject(it: SelectMarketViewModel)
     fun inject(it: FastLoadingViewModel)
+    fun inject(it: CheckTypeViewModel)
     fun inject(it: OptionViewModel)
 
 }

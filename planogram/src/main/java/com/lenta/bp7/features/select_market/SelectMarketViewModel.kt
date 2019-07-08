@@ -68,8 +68,7 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
             appSettings.lastTK = it
         }
 
-        // Открыть экран - самоконтроль / внешний аудит
-        //screenNavigator.openFastDataLoadingScreen()
+        screenNavigator.openCheckTypeScreen()
     }
 
     private fun clearPrinters() {

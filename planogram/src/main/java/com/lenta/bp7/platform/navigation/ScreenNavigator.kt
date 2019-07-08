@@ -2,6 +2,7 @@ package com.lenta.bp7.platform.navigation
 
 import android.content.Context
 import com.lenta.bp7.features.auth.AuthFragment
+import com.lenta.bp7.features.check_type.CheckTypeFragment
 import com.lenta.bp7.features.loading.fast.FastDataLoadingFragment
 import com.lenta.bp7.features.option.OptionFragment
 import com.lenta.bp7.features.select_market.SelectMarketFragment
@@ -52,6 +53,12 @@ class ScreenNavigator(
         }
     }
 
+    override fun openCheckTypeScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(CheckTypeFragment())
+        }
+    }
+
     override fun openOptionScreen() {
         runOrPostpone {
             getFragmentStack()?.push(OptionFragment())
@@ -74,6 +81,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openMainMenuScreen()
     fun openSelectMarketScreen()
     fun openFastDataLoadingScreen()
+    fun openCheckTypeScreen()
     fun openOptionScreen()
 
 }
