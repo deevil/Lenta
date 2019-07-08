@@ -7,10 +7,10 @@ import com.lenta.shared.settings.DefaultConnectionSettings
 class AndroidApplication : CoreApplication() {
     override fun getDefaultConnectionSettings(): DefaultConnectionSettings {
         return DefaultConnectionSettings(
-                serverAddress = "http://9.6.24.110",
+                serverAddress = "http://9.6.24.46",
                 environment = "Lenta_LRQ",
                 project = "PR_SHARED",
-                testServerAddress = "http://9.6.24.110",
+                testServerAddress = "http://9.6.24.46",
                 testEnvironment = "Lenta_LRQ",
                 testProject = "PR_SHARED",
                 //techLogin = "tech_user",
