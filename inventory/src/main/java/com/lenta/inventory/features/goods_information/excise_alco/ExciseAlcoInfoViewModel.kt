@@ -1,37 +1,32 @@
-package com.lenta.inventory.features.goods_information.sets
+package com.lenta.inventory.features.goods_information.excise_alco
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.lenta.inventory.features.goods_details.ComponentItem
 import com.lenta.inventory.models.task.TaskProductInfo
 import com.lenta.inventory.platform.navigation.IScreenNavigator
 import com.lenta.shared.models.core.MatrixType
 import com.lenta.shared.models.core.ProductType
 import com.lenta.shared.models.core.Uom
 import com.lenta.shared.platform.viewmodel.CoreViewModel
-import com.lenta.shared.utilities.SelectionItemsHelper
-import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.toStringFormatted
 import com.lenta.shared.view.OnPositionClickListener
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class SetsInfoViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboardListener {
+class ExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
+
     @Inject
     lateinit var screenNavigator: IScreenNavigator
 
+    val editTextFocus: MutableLiveData<Boolean> = MutableLiveData(false)
+
     //val productInfo: MutableLiveData<TaskProductInfo> = MutableLiveData()
     val productInfo: MutableLiveData<TaskProductInfo> = MutableLiveData(TaskProductInfo("materialNumber1", "description", Uom("ST", "шт"), ProductType.ExciseAlcohol,
-            true, "1", MatrixType.Active, "materialType","3", null, false))
+            false, "1", MatrixType.Active, "materialType","3", null, false))
 
-    var selectedPage = MutableLiveData(0)
-
-    val componentsItem: MutableLiveData<List<ComponentItem>> = MutableLiveData()
-
-    val componentsSelectionsHelper = SelectionItemsHelper()
-
-    val eanCode: MutableLiveData<String> = MutableLiveData()
+    val storePlaceNumber: MutableLiveData<String> = MutableLiveData("123456789")
+    val isStorePlaceNumber: MutableLiveData<Boolean> = storePlaceNumber.map { !it.isNullOrEmpty() }
 
     val spinList: MutableLiveData<List<String>> = MutableLiveData()
 
@@ -49,9 +44,6 @@ class SetsInfoViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKe
 
     val totalCountWithUom: MutableLiveData<String> = totalCount.map { "${it.toStringFormatted()} ${productInfo.value!!.uom.name}" }
 
-    val enabledApplyButton: MutableLiveData<Boolean> = MutableLiveData(true)
-    val enabledDetailsCleanBtn: MutableLiveData<Boolean> = MutableLiveData(true)
-
     fun setProductInfo(productInfo: TaskProductInfo) {
         this.productInfo.value = productInfo
     }
@@ -62,47 +54,28 @@ class SetsInfoViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKe
         }
     }
 
-    fun onResume() {
-        return
-        //updateComponents()
-    }
-
-    fun onClickMissing() {
+    fun onClickКollback() {
         //todo
-        screenNavigator.openAlertScreen("onClickMissing")
-    }
-
-    fun onClickApply() {
-        //todo
-        screenNavigator.openAlertScreen("onClickApply")
-    }
-
-    fun onClickButton3() {
-        if (selectedPage.value == 0) onClickDetails() else onClickClean()
+        screenNavigator.openGoodsDetailsScreen()
     }
 
     fun onClickDetails() {
         //todo
-        screenNavigator.openAlertScreen("onClickDetails")
+        screenNavigator.openGoodsDetailsScreen()
     }
 
-    fun onClickClean() {
+    fun onClickMissing() {
         //todo
-        screenNavigator.openAlertScreen("onClickClean")
+        screenNavigator.openGoodsDetailsStorageScreen()
     }
 
-    fun onPageSelected(position: Int) {
-        selectedPage.value = position
-        //updateComponents()
-    }
-    fun onBackPressed() {
-        return
-        //processExciseAlcoProductService.discard()
+    fun onClickApply() {
+        //todo
+        screenNavigator.openSetsDetailsStorageScreen()
     }
 
-    override fun onOkInSoftKeyboard(): Boolean {
-        //searchEANCode()
-        return true
+    fun onScanResult(data: String) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
     override fun onClickPosition(position: Int) {
