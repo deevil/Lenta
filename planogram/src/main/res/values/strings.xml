@@ -1,4 +1,7 @@
 <resources>
-    <string name="app_name">Контроль выкладки</string>
+    <string name="app_name">Планограмма</string>
     <string name="action_settings">Settings</string>
+    <string name="select_segment_processing_mode">Выберите режим\nобработки сегмента</string>
+    <string name="with_counting_facings">С подсчетом фейсингов</string>
+    <string name="with_control_of_empty_places">С контролем пустых мест</string>
 </resources>

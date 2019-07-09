@@ -3,10 +3,9 @@ package com.lenta.inventory.features.goods_information.sets
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.inventory.features.goods_details.ComponentItem
-import com.lenta.inventory.features.goods_details.GoodsDetailsCategoriesItem
+import com.lenta.inventory.models.task.TaskProductInfo
 import com.lenta.inventory.platform.navigation.IScreenNavigator
 import com.lenta.shared.models.core.MatrixType
-import com.lenta.shared.models.core.ProductInfo
 import com.lenta.shared.models.core.ProductType
 import com.lenta.shared.models.core.Uom
 import com.lenta.shared.platform.viewmodel.CoreViewModel
@@ -22,9 +21,9 @@ class SetsInfoViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKe
     @Inject
     lateinit var screenNavigator: IScreenNavigator
 
-    //val productInfo: MutableLiveData<ProductInfo> = MutableLiveData()
-    val productInfo: MutableLiveData<ProductInfo> = MutableLiveData(ProductInfo("materialNumber1", "description", Uom("ST", "шт"), ProductType.ExciseAlcohol,
-            true, "1", MatrixType.Active, "materialType"))
+    //val productInfo: MutableLiveData<TaskProductInfo> = MutableLiveData()
+    val productInfo: MutableLiveData<TaskProductInfo> = MutableLiveData(TaskProductInfo("materialNumber1", "description", Uom("ST", "шт"), ProductType.ExciseAlcohol,
+            true, "1", MatrixType.Active, "materialType","3", null, false))
 
     var selectedPage = MutableLiveData(0)
 
@@ -53,7 +52,7 @@ class SetsInfoViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKe
     val enabledApplyButton: MutableLiveData<Boolean> = MutableLiveData(true)
     val enabledDetailsCleanBtn: MutableLiveData<Boolean> = MutableLiveData(true)
 
-    fun setProductInfo(productInfo: ProductInfo) {
+    fun setProductInfo(productInfo: TaskProductInfo) {
         this.productInfo.value = productInfo
     }
 

@@ -34,28 +34,35 @@
             android:layout_height="0dp"
             android:layout_marginBottom="8dp"
             app:items="@{vm.tasks}"
-            app:layout_constraintBottom_toTopOf="@+id/spinner"
+            app:layout_constraintBottom_toTopOf="@+id/et_search"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/layout_titles"
             app:rv_config="@{rvConfig}"
             tools:listitem="@layout/item_tile_tasks" />
 
-        <com.lenta.shared.view.ClickableSpinner
-            android:id="@+id/spinner"
+
+        <EditText
+            android:id="@+id/et_search"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
             android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp"
             android:layout_marginBottom="8dp"
-            android:theme="@style/AppThemeFilterSpinner"
-            app:items="@{vm.filerTitles}"
+            android:drawableEnd="@drawable/ic_filter_white_24"
+            android:ellipsize="end"
+            android:imeOptions="actionSearch"
+            android:inputType="textNoSuggestions|textVisiblePassword"
+            android:maxLines="1"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:text="@={vm.filter}"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="@+id/layout_titles"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="@+id/layout_titles"
-            app:onPositionClickListener="@{vm}"
-            app:position="@{vm.filerPosition}" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:onOkInSoftKeyboard="@{vm}"
+            tools:ignore="Autofill" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

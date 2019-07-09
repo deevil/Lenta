@@ -5,6 +5,8 @@ import com.lenta.bp7.platform.navigation.IScreenNavigator
 import com.lenta.bp7.platform.navigation.ScreenNavigator
 import com.lenta.bp7.repos.IRepoInMemoryHolder
 import com.lenta.bp7.repos.RepoInMemoryHolder
+import com.lenta.bp7.requests.network.SlowResourcesMultiRequest
+import com.lenta.bp7.requests.network.loader.ResourcesLoader
 import com.lenta.shared.account.IAuthenticator
 import com.lenta.shared.di.AppScope
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
@@ -35,5 +37,10 @@ class AppModule {
         return RepoInMemoryHolder()
     }
 
+    @Provides
+    @AppScope
+    internal fun provideResourceLoader(slowResourcesNetRequest: SlowResourcesMultiRequest): ResourcesLoader {
+        return ResourcesLoader(slowResourcesNetRequest)
+    }
 
 }

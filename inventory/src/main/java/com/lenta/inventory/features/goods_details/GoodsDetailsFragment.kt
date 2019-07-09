@@ -128,7 +128,8 @@ class GoodsDetailsFragment : CoreFragment<FragmentGoodsDetailsBinding, GoodsDeta
                     countedRecyclerViewKeyHandler = RecyclerViewKeyHandler(
                             rv = layoutBinding.rv,
                             items = vm.countedCategories,
-                            lifecycleOwner = layoutBinding.lifecycleOwner!!
+                            lifecycleOwner = layoutBinding.lifecycleOwner!!,
+                            initPosInfo = countedRecyclerViewKeyHandler?.posInfo?.value
                     )
                     return layoutBinding.root
                 }

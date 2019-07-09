@@ -47,7 +47,7 @@ class LoadingTasksViewModel : CoreLoadingViewModel() {
 
     private fun handleSuccess(tasksListRestInfo: TasksListRestInfo) {
         Logg.d { "tasksListRestInfo $tasksListRestInfo" }
-        repoInMemoryHolder.tasksListRestInfo = tasksListRestInfo
+        repoInMemoryHolder.tasksListRestInfo.value = tasksListRestInfo
         screenNavigator.openTasksList()
     }
 

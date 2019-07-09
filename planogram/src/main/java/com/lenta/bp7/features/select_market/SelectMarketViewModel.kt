@@ -21,8 +21,7 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
     @Inject
     lateinit var appSettings: IAppSettings
     @Inject
-    lateinit var repoInMemoryHolder : IRepoInMemoryHolder
-
+    lateinit var repoInMemoryHolder: IRepoInMemoryHolder
 
     private val markets: MutableLiveData<List<MarketUi>> = MutableLiveData()
     val marketsNames: MutableLiveData<List<String>> = markets.map { markets ->
@@ -37,7 +36,7 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
 
     init {
         viewModelScope.launch {
-            repoInMemoryHolder.permissionsResult?.markets?.let { list ->
+            repoInMemoryHolder.storesRequestResult?.markets?.let { list ->
                 markets.value = list.map { MarketUi(number = it.number, address = it.address) }
 
                 if (selectedPosition.value == null) {
@@ -69,6 +68,7 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
             appSettings.lastTK = it
         }
 
+        // Открыть экран - самоконтроль / внешний аудит
         //screenNavigator.openFastDataLoadingScreen()
     }
 
@@ -77,11 +77,9 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
         sessionInfo.printer = null
     }
 
-
     override fun onClickPosition(position: Int) {
         selectedPosition.value = position
     }
-
 }
 
 data class MarketUi(

@@ -18,7 +18,6 @@ class SelectMarketFragment : CoreFragment<FragmentSelectMarketBinding, SelectMar
 
     override fun getLayoutId(): Int = R.layout.fragment_select_market
 
-
     override fun getPageNumber(): String? = generateScreenNumberFromPostfix("03")
 
     override fun getViewModel(): SelectMarketViewModel {
@@ -46,6 +45,4 @@ class SelectMarketFragment : CoreFragment<FragmentSelectMarketBinding, SelectMar
             vm.onClickNext()
         }
     }
-
-
 }

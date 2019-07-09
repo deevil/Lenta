@@ -13,6 +13,7 @@ import com.lenta.inventory.databinding.FragmentSetsInfoBinding
 import com.lenta.inventory.databinding.ItemTileSetsInfoBinding
 import com.lenta.inventory.databinding.LayoutSetsInfoComponentsBinding
 import com.lenta.inventory.databinding.LayoutSetsInfoQuantityBinding
+import com.lenta.inventory.models.task.TaskProductInfo
 import com.lenta.inventory.platform.extentions.getAppComponent
 import com.lenta.shared.models.core.ProductInfo
 import com.lenta.shared.platform.activity.OnBackPresserListener
@@ -36,10 +37,10 @@ class SetsInfoFragment : CoreFragment<FragmentSetsInfoBinding, SetsInfoViewModel
         ToolbarButtonsClickListener,
         OnBackPresserListener {
 
-    private var productInfo by state<ProductInfo?>(null)
+    private var productInfo: TaskProductInfo? = null
 
     companion object {
-        fun create(productInfo: ProductInfo): SetsInfoFragment {
+        fun create(productInfo: TaskProductInfo): SetsInfoFragment {
             SetsInfoFragment().let {
                 it.productInfo = productInfo
                 return it

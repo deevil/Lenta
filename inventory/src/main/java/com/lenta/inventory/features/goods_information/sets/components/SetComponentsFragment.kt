@@ -4,6 +4,7 @@ import android.view.View
 import com.lenta.inventory.R
 import com.lenta.inventory.databinding.FragmentSetComponentsBinding
 import com.lenta.inventory.features.goods_details.ComponentItem
+import com.lenta.inventory.models.task.TaskProductInfo
 import com.lenta.inventory.platform.extentions.getAppComponent
 import com.lenta.shared.models.core.ProductInfo
 import com.lenta.shared.platform.fragment.CoreFragment
@@ -18,11 +19,11 @@ import com.lenta.shared.utilities.state.state
 
 class SetComponentsFragment : CoreFragment<FragmentSetComponentsBinding, SetComponentsViewModel>(), ToolbarButtonsClickListener {
 
-    private var productInfo by state<ProductInfo?>(null)
+    private var productInfo by state<TaskProductInfo?>(null)
     private var componentItem by state<ComponentItem?>(null)
 
     companion object {
-        fun create(productInfo: ProductInfo, componentItem: ComponentItem): SetComponentsFragment {
+        fun create(productInfo: TaskProductInfo, componentItem: ComponentItem): SetComponentsFragment {
             SetComponentsFragment().let {
                 it.productInfo = productInfo
                 it.componentItem = componentItem

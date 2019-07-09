@@ -82,6 +82,7 @@
     <string name="section">Секция %s</string>
     <string name="ean_info">Доступно сканирование штрихкода EAN</string>
     <string name="es_info">Доступно сканирование акцизной марки</string>
+    <string name="box_info">Доступно сканирование номера короба</string>
     <string name="empty_category">Пустая категория</string>
     <string name="good_not_found">Товар не найден в справочниках</string>
     <string name="not_valid_format_ean">Неверный формат штрихкода</string>
@@ -106,5 +107,5 @@
     <string name="not_implemented_screen">Экран «%s» в процессе разработки</string>
     <string name="high_priority_title">Высокий приоритет</string>
     <string name="high_priority_content">Приложение работает с повышенным приоритетом</string>
-
+    <string name="enter_item_number_or_barcode">Введите SAP-код или штрихкод</string>
 </resources>

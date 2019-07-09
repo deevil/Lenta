@@ -118,7 +118,8 @@ class StoragesListFragment : CoreFragment<FragmentStoragesListBinding, StoragesL
                         unprocessedRecyclerViewKeyHandler = RecyclerViewKeyHandler(
                                 rv = layoutBinding.rv,
                                 items = vm.unprocessedStorages,
-                                lifecycleOwner = layoutBinding.lifecycleOwner!!
+                                lifecycleOwner = layoutBinding.lifecycleOwner!!,
+                                initPosInfo = unprocessedRecyclerViewKeyHandler?.posInfo?.value
                         )
                         return layoutBinding.root
                     }
@@ -153,7 +154,8 @@ class StoragesListFragment : CoreFragment<FragmentStoragesListBinding, StoragesL
                     processedRecyclerViewKeyHandler = RecyclerViewKeyHandler(
                             rv = layoutBinding.rv,
                             items = vm.processedStorages,
-                            lifecycleOwner = layoutBinding.lifecycleOwner!!
+                            lifecycleOwner = layoutBinding.lifecycleOwner!!,
+                            initPosInfo = processedRecyclerViewKeyHandler?.posInfo?.value
                     )
                     return layoutBinding.root
                 }

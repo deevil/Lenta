@@ -119,7 +119,8 @@ class GoodsListFragment : CoreFragment<FragmentGoodsListBinding, GoodsListViewMo
                         unprocessedRecyclerViewKeyHandler = RecyclerViewKeyHandler(
                                 rv = layoutBinding.rv,
                                 items = vm.unprocessedGoods,
-                                lifecycleOwner = layoutBinding.lifecycleOwner!!
+                                lifecycleOwner = layoutBinding.lifecycleOwner!!,
+                                initPosInfo = unprocessedRecyclerViewKeyHandler?.posInfo?.value
                         )
                         return layoutBinding.root
                     }
@@ -154,7 +155,8 @@ class GoodsListFragment : CoreFragment<FragmentGoodsListBinding, GoodsListViewMo
                     processedRecyclerViewKeyHandler = RecyclerViewKeyHandler(
                             rv = layoutBinding.rv,
                             items = vm.unprocessedGoods,
-                            lifecycleOwner = layoutBinding.lifecycleOwner!!
+                            lifecycleOwner = layoutBinding.lifecycleOwner!!,
+                            initPosInfo = processedRecyclerViewKeyHandler?.posInfo?.value
                     )
                     return layoutBinding.root
                 }

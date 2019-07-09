@@ -5,19 +5,15 @@ import com.lenta.inventory.models.repositories.ITaskRepository
 class ProcessExciseAlcoProductService(val taskDescription: TaskDescription,
                                       val taskRepository: ITaskRepository,
                                       val productInfo: TaskProductInfo) : IProcessProductService {
-    override fun getTotalCount(): Double {
+    override fun getFactCount(): Double {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override fun apply(): InventoryTask {
-        return InventoryTask(taskDescription, taskRepository)
+    override fun setFactCount(count: Double){
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override fun discard(): InventoryTask {
-        return InventoryTask(taskDescription, taskRepository)
-    }
-
-    fun add(){
+    override fun setMissing(){
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 }

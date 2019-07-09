@@ -5,6 +5,7 @@ import com.lenta.inventory.features.auth.AuthViewModel
 import com.lenta.inventory.features.discrepancies_found.DiscrepanciesFoundViewModel
 import com.lenta.inventory.features.goods_details.GoodsDetailsViewModel
 import com.lenta.inventory.features.goods_details_storage.GoodsDetailsStorageViewModel
+import com.lenta.inventory.features.goods_information.excise_alco.ExciseAlcoInfoViewModel
 import com.lenta.inventory.features.goods_information.general.GoodsInfoViewModel
 import com.lenta.inventory.features.goods_information.sets.SetsInfoViewModel
 import com.lenta.inventory.features.goods_information.sets.components.SetComponentsViewModel
@@ -51,5 +52,6 @@ interface AppComponent {
     fun inject(it: LoadingTasksViewModel)
     fun inject(it: LoadingTaskContentViewModel)
     fun inject(it: LoadingStorePlaceLockViewModel)
+    fun inject(it: ExciseAlcoInfoViewModel)
 }
 

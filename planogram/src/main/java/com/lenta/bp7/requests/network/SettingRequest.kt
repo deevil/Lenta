@@ -7,15 +7,17 @@ import com.lenta.shared.exception.Failure
 import com.lenta.shared.fmp.ObjectRawStatus
 import com.lenta.shared.functional.Either
 import com.lenta.shared.interactor.UseCase
+import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.hhive.getFailure
 import com.lenta.shared.utilities.extentions.hhive.isNotBad
 import com.mobrun.plugin.api.HyperHive
 import com.mobrun.plugin.api.callparams.WebCallParams
 import javax.inject.Inject
 
-class PermissionsRequest
-@Inject constructor(private val hyperHive: HyperHive, private val gson: Gson, private val sessionInfo: ISessionInfo) : UseCase<PermissionsResult, PermissionsParams>() {
-    override suspend fun run(params: PermissionsParams): Either<Failure, PermissionsResult> {
+class SettingRequest
+@Inject constructor(private val hyperHive: HyperHive, private val gson: Gson, private val sessionInfo: ISessionInfo) : UseCase<SettingRequestResult, RequestParams>() {
+
+    override suspend fun run(params: RequestParams): Either<Failure, SettingRequestResult> {
         //TODO (DB) нужно добавить поддержку логина пользователя когда доработают ФМ модуль
         val webCallParams = WebCallParams().apply {
             data = gson.toJson(params)
@@ -26,9 +28,11 @@ class PermissionsRequest
             )
         }
 
-        val status = hyperHive.requestAPI.web("ZMP_UTZ_WOB_01_V001", webCallParams, PermissionInventoryStatus::class.java).execute()
+        val status = hyperHive.requestAPI.web("ZMP_UTZ_GRZ_14_V001", webCallParams, SettingRequestStatus::class.java).execute()
+        Logg.d { "SettingRequest response: $status" }
         if (status.isNotBad()) {
             val errorText = status.result?.raw?.errorText
+
             return if (errorText.isNullOrEmpty()) {
                 Either.Right(status.result!!.raw!!)
             } else {
@@ -40,25 +44,19 @@ class PermissionsRequest
     }
 }
 
+class SettingRequestStatus : ObjectRawStatus<SettingRequestResult>()
 
-data class PermissionsParams(val login: String)
-
-class PermissionInventoryStatus : ObjectRawStatus<PermissionsResult>()
-
-data class PermissionsResult(
-        @SerializedName("ET_WERKS")
-        val markets: List<Market>,
+data class SettingRequestResult(
+        @SerializedName("ES_TASK")
+        val tasks: Task,
         @SerializedName("EV_ERROR_TEXT")
         val errorText: String,
         @SerializedName("EV_RETCODE")
         val retCode: String
 )
 
-data class Market(
-        @SerializedName("WERKS")
-        val number: String,
-        @SerializedName("ADDRES")
-        val address: String,
-        @SerializedName("RETAIL_TYPE")
-        val retailType: String
+data class Task(
+        @SerializedName("CUR_STAT")
+        val curStat: String
 )
+

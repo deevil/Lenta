@@ -15,11 +15,6 @@ import org.junit.Test
 
 class testInventoryTask_ProcessGeneralProductService {
 
-    val taskRepository = MemoryTaskRepository()
-    val taskProductRepository = MemoryTaskProductRepository()
-    val taskExciseStampRepository = MemoryTaskExciseStampRepository()
-    val taskStorePlaceRepository = MemoryTaskStorePlaceRepository()
-
     lateinit var taskDescription: TaskDescription
     lateinit var inventoryTask: InventoryTask
     lateinit var storePlaceProcessing: StorePlaceProcessing
@@ -44,16 +39,18 @@ class testInventoryTask_ProcessGeneralProductService {
                 gis = GisControl.GeneralProduct
         )
 
-        inventoryTask = InventoryTask(taskDescription, taskRepository)
+        inventoryTask = InventoryTask(taskDescription, taskRepository = MemoryTaskRepository())
         storePlaceProcessing = StorePlaceProcessing(inventoryTask, storePlaceNumber = "123456789")
     }
 
 
 
     @Test
-    fun testIsGeneralProduct() {
+    fun testProcessGeneralProduct() {
 
         creatingObjectsForTest()
+
+        var test = false
 
         val product1 = TaskProductInfo("materialNumber1", "description", Uom("ST", "шт"), ProductType.General,
                 false, "1", MatrixType.Active, "materialType", "1", null, false)
@@ -64,37 +61,80 @@ class testInventoryTask_ProcessGeneralProductService {
         val product3 = TaskProductInfo("materialNumber1", "description", Uom("ST", "шт"), ProductType.ExciseAlcohol,
                 false, "1", MatrixType.Active, "materialType", "3", null, false)
 
-        Assert.assertTrue(storePlaceProcessing.isGeneralProduct(product1))
+        if (inventoryTask.processGeneralProduct(product1) != null) {
+            test = true
+        }
+        Assert.assertTrue(test)
 
-        Assert.assertTrue(storePlaceProcessing.isGeneralProduct(product2))
+        test = false
+        if (inventoryTask.processGeneralProduct(product2) != null) {
+            test = true
+        }
+        Assert.assertTrue(test)
 
-        Assert.assertFalse(storePlaceProcessing.isGeneralProduct(product3))
-    }
-
-    /**@Test
-    fun testAddProductsInRepository() {
-
-        creatingObjectsForTest()
-
-        val product1 = TaskProductInfo("materialNumber111", "description", Uom("ST", "шт"), ProductType.General,
-                false, "1", MatrixType.Active, "materialType", "1", null, false)
-
-        val product2 = TaskProductInfo("materialNumber222", "description", Uom("ST", "шт"), ProductType.NonExciseAlcohol,
-                false, "1", MatrixType.Active, "materialType","2", null, false)
-
-        val product3 = TaskProductInfo("materialNumber333", "description", Uom("ST", "шт"), ProductType.ExciseAlcohol,
-                false, "1", MatrixType.Active, "materialType", "3", null, false)
-
-        //TODO добавляем продукты из REST-96 в репозиторий
-        inventoryTask.addProduct(product1)
-        inventoryTask.addProduct(product2)
-        storePlaceProcessing.inventoryTask.addProduct(product3)
-        Assert.assertEquals(3, storePlaceProcessing.inventoryTask.taskRepository.getProducts().getProducts().size.toLong())
-        //Assert.assertEquals(1.0, task.getTotalCountOfProduct(product1), 0.0)
-
+        test = false
+        if (inventoryTask.processGeneralProduct(product3) == null) {
+            test = true
+        }
+        Assert.assertTrue(test)
     }
 
     @Test
+    fun testSetFactCountForProduct() {
+
+        creatingObjectsForTest()
+
+        var product1: TaskProductInfo? = TaskProductInfo("materialNumber111", "description", Uom("ST", "шт"), ProductType.General,
+                false, "1", MatrixType.Active, "materialType", "1", null, false)
+
+        //добавляем продукт в репозиторий
+        inventoryTask.taskRepository.getProducts().addProduct(product1!!)
+        //обнуляем  данный объект, чтобы не было на него ссылок и связей с ним
+        product1 = null
+
+        val processGeneralProductService = ProcessGeneralProductService(taskDescription, inventoryTask.taskRepository, inventoryTask.taskRepository.getProducts().findProduct("materialNumber111")!!)
+        //устанавливаем продукту в репозитории фактическое количество (5), и помечаем, что продукт обработан
+        processGeneralProductService.setFactCount(5.0)
+
+        //проверяем кол-во продуктов, должно быть 5
+        Assert.assertEquals(5.0, inventoryTask.taskRepository.getProducts().findProduct("materialNumber111")!!.factCount!!, 0.0)
+
+        //проверяем, что продукт помечен как обработанный
+        Assert.assertTrue(inventoryTask.taskRepository.getProducts().findProduct("materialNumber111")!!.isPositionCalc)
+
+        //устанавливаем отрицательное кол-во продуктов -1
+        processGeneralProductService.setFactCount(-1.0)
+        //проверяем кол-во продуктов, должно остаться 5
+        Assert.assertEquals(5.0, inventoryTask.taskRepository.getProducts().findProduct("materialNumber111")!!.factCount!!, 0.0)
+    }
+
+    @Test
+    fun testSetMissingForProduct() {
+
+        creatingObjectsForTest()
+
+        var product1: TaskProductInfo? = TaskProductInfo("materialNumber111", "description", Uom("ST", "шт"), ProductType.General,
+                false, "1", MatrixType.Active, "materialType", "1", null, false)
+
+        //добавляем продукт в репозиторий
+        inventoryTask.taskRepository.getProducts().addProduct(product1!!)
+        //обнуляем  данный объект, чтобы не было на него ссылок и связей с ним
+        product1 = null
+
+        val processGeneralProductService = ProcessGeneralProductService(taskDescription, inventoryTask.taskRepository, inventoryTask.taskRepository.getProducts().findProduct("materialNumber111")!!)
+
+        //помечаем, что продукт отсутствует
+        processGeneralProductService.setMissing()
+
+        //проверяем кол-во продуктов, должно быть 0
+        Assert.assertEquals(0.0, inventoryTask.taskRepository.getProducts().findProduct("materialNumber111")!!.factCount!!, 0.0)
+
+        //проверяем, что продукт помечен как обработанный
+        Assert.assertTrue(inventoryTask.taskRepository.getProducts().findProduct("materialNumber111")!!.isPositionCalc)
+
+    }
+
+    /**@Test
     fun testGetNotProcessedProducts() {
 
         creatingObjectsForTest()
