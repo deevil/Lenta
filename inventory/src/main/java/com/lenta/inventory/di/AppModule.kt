@@ -40,10 +40,9 @@ class AppModule {
             context: Context,
             iCoreNavigator: ICoreNavigator,
             foregroundActivityProvider: ForegroundActivityProvider,
-            authenticator: IAuthenticator,
-            progressUseCaseInformator: IProgressUseCaseInformator
+            authenticator: IAuthenticator
     ): IScreenNavigator {
-        return ScreenNavigator(context, iCoreNavigator, foregroundActivityProvider, authenticator, progressUseCaseInformator)
+        return ScreenNavigator(context, iCoreNavigator, foregroundActivityProvider, authenticator)
     }
 
     @Provides

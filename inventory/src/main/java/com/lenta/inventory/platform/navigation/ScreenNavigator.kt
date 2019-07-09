@@ -27,14 +27,12 @@ import com.lenta.shared.platform.activity.ForegroundActivityProvider
 import com.lenta.shared.platform.navigation.ICoreNavigator
 import com.lenta.shared.platform.navigation.runOrPostpone
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
-import com.lenta.shared.progress.IProgressUseCaseInformator
 
 class ScreenNavigator(
         private val context: Context,
         private val coreNavigator: ICoreNavigator,
         private val foregroundActivityProvider: ForegroundActivityProvider,
-        private val authenticator: IAuthenticator,
-        private val progressUseCaseInformator: IProgressUseCaseInformator
+        private val authenticator: IAuthenticator
 ) : IScreenNavigator, ICoreNavigator by coreNavigator {
 
     override fun openFirstScreen() {
@@ -157,10 +155,12 @@ class ScreenNavigator(
         }
     }
 
-    override fun openConfirmationTaskOpenScreen(userName: String, ip: String, codeConfirmation: Int) {
+    override fun openConfirmationTaskOpenScreen(userName: String, ip: String, callbackFunc: () -> Unit) {
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.confirmation_task_open, userName, ip),
-                    codeConfirm = codeConfirmation, pageNumber = "93", rightButtonDecorationInfo = ButtonDecorationInfo.next))
+                    codeConfirm = backFragmentResultHelper.setFuncForResult(callbackFunc),
+                    pageNumber = "93",
+                    rightButtonDecorationInfo = ButtonDecorationInfo.next))
         }
     }
 
@@ -188,5 +188,5 @@ interface IScreenNavigator : ICoreNavigator {
     fun openJobCard(taskNumber: String)
     fun openLoadingTasksScreen()
     fun openExciseAlcoInfoScreen()
-    fun openConfirmationTaskOpenScreen(userName: String, ip: String, codeConfirmation: Int)
+    fun openConfirmationTaskOpenScreen(userName: String, ip: String, callbackFunc: () -> Unit)
 }

@@ -35,8 +35,6 @@ class TaskListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     val tasks: LiveData<List<TaskItemVm>> by lazy {
         repoInMemoryHolder.tasksListRestInfo.map {
             it!!.tasks
-                    // TODO remove test add
-                    .testAdd()
                     .mapIndexed { index, task ->
                         TaskItemVm(
                                 taskNumber = task.taskNumber,
@@ -101,11 +99,10 @@ class TaskListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
     private fun openConfirmationScreen(taskNumber: String) {
         repoInMemoryHolder.tasksListRestInfo.value!!.tasks
-                // TODO remove test add
-                .testAdd()
                 .firstOrNull { it.taskNumber == taskNumber }?.let {
-                    screenNavigator.openConfirmationTaskOpenScreen(it.lockUser, it.lockIP, 0)
-
+                    screenNavigator.openConfirmationTaskOpenScreen(it.lockUser, it.lockIP) {
+                        screenNavigator.openJobCard(taskNumber)
+                    }
                 }
     }
 
@@ -117,11 +114,6 @@ class TaskListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
 }
 
-private fun List<TasksItem>.testAdd(): MutableList<TasksItem> {
-    return toMutableList().apply {
-        add(this.last().copy(taskNumber = "7899", lockUser = "MAKAROV", lockIP = "192.168.100.105"))
-    }
-}
 
 data class TaskItemVm(
         val taskNumber: String,

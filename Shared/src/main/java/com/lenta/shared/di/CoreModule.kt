@@ -21,6 +21,7 @@ import com.lenta.shared.platform.network_state.NetworkStateMonitor
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
 import com.lenta.shared.platform.battery_state.BatteryStateMonitor
 import com.lenta.shared.platform.battery_state.IBatteryStateMonitor
+import com.lenta.shared.platform.navigation.BackFragmentResultHelper
 import com.lenta.shared.platform.navigation.CoreNavigator
 import com.lenta.shared.platform.navigation.ICoreNavigator
 import com.lenta.shared.platform.resources.ISharedStringResourceManager
@@ -146,8 +147,9 @@ class CoreModule(val application: Application, val defaultConnectionSettings: De
     internal fun provideICoreNavigator(context: Context,
                                        foregroundActivityProvider: ForegroundActivityProvider,
                                        failureInterpreter: IFailureInterpreter,
-                                       analytics: IAnalytics): ICoreNavigator {
-        return CoreNavigator(context, foregroundActivityProvider, failureInterpreter, analytics)
+                                       analytics: IAnalytics,
+                                       backFragmentResultHelper: BackFragmentResultHelper): ICoreNavigator {
+        return CoreNavigator(context, foregroundActivityProvider, failureInterpreter, analytics, backFragmentResultHelper)
     }
 
     @Provides
@@ -177,6 +179,12 @@ class CoreModule(val application: Application, val defaultConnectionSettings: De
     @Provides
     fun provideScanInfoRequest(hyperHive: HyperHive, gson: Gson, sessionInfo: ISessionInfo): ScanInfoRequest {
         return ScanInfoRequest(hyperHive, gson, sessionInfo)
+    }
+
+    @Provides
+    @Singleton
+    internal fun provideBackResultHelper(): BackFragmentResultHelper {
+        return BackFragmentResultHelper()
     }
 
 }

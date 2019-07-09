@@ -32,12 +32,12 @@ import com.lenta.shared.utilities.extentions.setFragmentResultCode
 class CoreNavigator constructor(private val context: Context,
                                 private val foregroundActivityProvider: ForegroundActivityProvider,
                                 private val failureInterpreter: IFailureInterpreter,
-                                private val analytics: IAnalytics) : ICoreNavigator {
+                                private val analytics: IAnalytics,
+                                override val backFragmentResultHelper: BackFragmentResultHelper) : ICoreNavigator {
 
     override val functionsCollector: FunctionsCollector by lazy {
         FunctionsCollector(foregroundActivityProvider.onPauseStateLiveData)
     }
-
 
     override fun goBackWithArgs(args: Bundle) {
         runOrPostpone {
@@ -281,6 +281,7 @@ fun ICoreNavigator.runOrPostpone(function: () -> Unit) {
 
 interface ICoreNavigator {
     val functionsCollector: FunctionsCollector
+    val backFragmentResultHelper: BackFragmentResultHelper
     fun goBackWithArgs(args: Bundle)
     fun goBackWithResultCode(code: Int)
     fun goBack()

@@ -19,6 +19,7 @@ import com.lenta.shared.features.test_environment.PinCodeViewModel
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
 import com.lenta.shared.platform.battery_state.BatteryStateMonitor
 import com.lenta.shared.platform.battery_state.IBatteryStateMonitor
+import com.lenta.shared.platform.navigation.BackFragmentResultHelper
 import com.lenta.shared.platform.navigation.ICoreNavigator
 import com.lenta.shared.platform.network_state.INetworkStateMonitor
 import com.lenta.shared.platform.network_state.NetworkStateMonitor
@@ -59,6 +60,7 @@ interface CoreComponent {
     fun getIScanHelper(): IScanHelper
     fun getIProgressUseCaseInformator(): IProgressUseCaseInformator
     fun getScanInfoRequest(): ScanInfoRequest
+    fun getBackResultHelper(): BackFragmentResultHelper
 
 
     fun inject(it: FmpSettingsViewModel)

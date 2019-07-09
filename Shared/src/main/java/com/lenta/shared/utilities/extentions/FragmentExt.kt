@@ -1,6 +1,5 @@
 package com.lenta.shared.utilities.extentions
 
-import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -12,7 +11,7 @@ fun <T : ViewModel> Fragment.provideViewModel(clazz: Class<T>): T {
     return ViewModelProviders.of(this).get(clazz)
 }
 
-fun <T : ViewDataBinding, S : ViewModel> CoreFragment<T, S>.generateScreenNumber(): String {
+fun CoreFragment<*, *>.generateScreenNumber(): String {
     return activity.implementationOf(CoreMainActivity::class.java)?.generateNumberScreen(this) ?: ""
 }
 
@@ -20,7 +19,7 @@ fun CoreFragment<*, *>.generateScreenNumberFromPostfix(postfix: String?): String
     return activity.implementationOf(CoreMainActivity::class.java)?.generateNumberScreenFromPostfix(postfix)
 }
 
-fun <T : ViewDataBinding, S : ViewModel> CoreFragment<T, S>.getScreenPrefix(): String {
+fun CoreFragment<*, *>.getScreenPrefix(): String {
     return activity.implementationOf(CoreMainActivity::class.java)?.getPrefixScreen(this) ?: ""
 }
 
