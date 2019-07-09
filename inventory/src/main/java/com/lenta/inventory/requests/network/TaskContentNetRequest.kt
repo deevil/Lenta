@@ -31,6 +31,7 @@ class TaskContentNetRequest
     }
 
 }
+
 data class TaskContentParams(
         @SerializedName("IV_IP")
         val ip: String,

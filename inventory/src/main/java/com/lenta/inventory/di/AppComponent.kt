@@ -11,6 +11,7 @@ import com.lenta.inventory.features.goods_information.sets.components.SetCompone
 import com.lenta.inventory.features.goods_list.GoodsListViewModel
 import com.lenta.inventory.features.job_card.JobCardViewModel
 import com.lenta.inventory.features.loading.fast.FastLoadingViewModel
+import com.lenta.inventory.features.loading.store_place_lock.LoadingStorePlaceLockViewModel
 import com.lenta.inventory.features.loading.tasks.LoadingTaskContentViewModel
 import com.lenta.inventory.features.loading.tasks.LoadingTasksViewModel
 import com.lenta.inventory.features.main_menu.MainMenuViewModel
@@ -49,5 +50,6 @@ interface AppComponent {
     fun inject(it: JobCardViewModel)
     fun inject(it: LoadingTasksViewModel)
     fun inject(it: LoadingTaskContentViewModel)
+    fun inject(it: LoadingStorePlaceLockViewModel)
 }
 
