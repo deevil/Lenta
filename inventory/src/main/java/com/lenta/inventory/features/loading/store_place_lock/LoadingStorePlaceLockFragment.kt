@@ -55,7 +55,7 @@ class LoadingStorePlaceLockFragment: CoreLoadingFragment() {
         super.onViewCreated(view, savedInstanceState)
         vm.title.value = when (mode) {
             StorePlaceLockMode.Lock -> getString(R.string.store_place_locking)
-            StorePlaceLockMode.Lock -> getString(R.string.store_place_unlocking)
+            StorePlaceLockMode.Unlock -> getString(R.string.store_place_unlocking)
             else -> ""
         }
     }
