@@ -6,4 +6,5 @@
     <string name="with_control_of_empty_places">С контролем пустых мест</string>
     <string name="self_control_tc">Самоконтроль ТК</string>
     <string name="external_audit">Внешний аудит</string>
+    <string name="select_mode">Выбор режима</string>
 </resources>
