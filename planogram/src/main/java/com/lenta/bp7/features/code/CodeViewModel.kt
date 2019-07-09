@@ -1,5 +1,6 @@
 package com.lenta.bp7.features.code
 
+import androidx.databinding.ObservableField
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp7.features.check_type.CheckTypeViewModel
@@ -33,7 +34,7 @@ class CodeViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     val pinCode3: MutableLiveData<String> = MutableLiveData("")
     val pinCode4: MutableLiveData<String> = MutableLiveData("")
 
-    val message: MutableLiveData<String> = MutableLiveData("")
+    val message = ObservableField<String>()
 
     var checkType: String? = ""
     var pinCode: String? = ""
@@ -52,12 +53,7 @@ class CodeViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
                 }
             }
 
-            message.value = """
-            Введите пин-код
-            для подтверждения
-            входа в режим
-            "$checkType"
-            """.trimMargin()
+            message.set(checkType)
         }
     }
 
@@ -74,7 +70,7 @@ class CodeViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
             }
 
     fun onClickGoOver() {
-        Logg.d { "Проверка пинн-кода: $pinCode" }
+        Logg.d { "Проверка пин-кода: $pinCode" }
         if (pinCode == pinCode1.value + pinCode2.value + pinCode3.value + pinCode4.value) {
             navigator.openOptionScreen()
         } else {
