@@ -6,8 +6,10 @@ import com.lenta.inventory.platform.navigation.IScreenNavigator
 import com.lenta.inventory.repos.IRepoInMemoryHolder
 import com.lenta.inventory.requests.network.TasksItem
 import com.lenta.shared.models.core.ProductType
+import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.Logg
+import com.lenta.shared.utilities.date_time.DateTimeUtil.convertTimeString
 import com.lenta.shared.view.OnPositionClickListener
 import javax.inject.Inject
 
@@ -24,7 +26,7 @@ class JobCardViewModel : CoreViewModel(), OnPositionClickListener {
     lateinit var recountsTitles: List<String>
 
     val title: String by lazy {
-        tasksItem.taskName
+        "${tasksItem.taskType}-${tasksItem.taskNumber}"
     }
 
     val productType: ProductType? by lazy {
@@ -40,11 +42,12 @@ class JobCardViewModel : CoreViewModel(), OnPositionClickListener {
     }
 
     val actualPeriodFrom: String by lazy {
-        tasksItem.dateFrom
+        convertTime(tasksItem.dateFrom)
     }
 
+
     val actualPeriodTo: String by lazy {
-        tasksItem.dateTo
+        convertTime(tasksItem.dateTo)
     }
 
     val isStrictList: Boolean by lazy {
@@ -68,12 +71,17 @@ class JobCardViewModel : CoreViewModel(), OnPositionClickListener {
 
     }
 
+    fun onClickNext() {
+        screenNavigator.openInfoScreen("Выбран тип перечета: ${getSelectedTypeRecount()}")
+    }
+
     private fun getSelectedTypeRecount(): RecountType? {
         return typesRecount.getOrNull(selectedPosition.value ?: -1)
     }
 
-    fun onClickNext() {
-        screenNavigator.openInfoScreen("Выбран тип перечета: ${getSelectedTypeRecount()}")
+    private fun convertTime(dateString: String): String {
+        return convertTimeString(formatSource = Constants.DATE_FORMAT_yyyy_mm_dd, formatDestination = Constants.DATE_FORMAT_ddmmyy, date = dateString)
     }
+
 
 }
