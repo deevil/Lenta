@@ -20,7 +20,7 @@ class OptionFragment : CoreFragment<FragmentOptionBinding, OptionViewModel>(), T
 
     override fun getLayoutId(): Int = R.layout.fragment_option
 
-    override fun getPageNumber(): String? = generateScreenNumberFromPostfix("03")
+    override fun getPageNumber(): String? = generateScreenNumberFromPostfix("07")
 
     override fun getViewModel(): OptionViewModel {
         provideViewModel(OptionViewModel::class.java).let {
@@ -40,8 +40,6 @@ class OptionFragment : CoreFragment<FragmentOptionBinding, OptionViewModel>(), T
                 .uiModelButton5.show(ButtonDecorationInfo.next)
         bottomToolbarUiModel
                 .uiModelButton1.show(ButtonDecorationInfo.back)
-
-        viewLifecycleOwner.connectLiveData(vm.nextButtonFocus, bottomToolbarUiModel.uiModelButton5.requestFocus)
     }
 
     override fun onToolbarButtonClick(view: View) {
