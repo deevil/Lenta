@@ -12,12 +12,15 @@ import com.lenta.inventory.features.goods_information.sets.components.SetCompone
 import com.lenta.inventory.features.goods_list.GoodsListFragment
 import com.lenta.inventory.features.job_card.JobCardFragment
 import com.lenta.inventory.features.loading.fast.FastDataLoadingFragment
+import com.lenta.inventory.features.loading.tasks.LoadingTaskContentFragment
 import com.lenta.inventory.features.loading.tasks.LoadingTasksFragment
 import com.lenta.inventory.features.select_market.SelectMarketFragment
 import com.lenta.inventory.features.select_personnel_number.SelectPersonnelNumberFragment
 import com.lenta.inventory.features.sets_details_storage.SetsDetailsStorageFragment
 import com.lenta.inventory.features.storages_list.StoragesListFragment
+import com.lenta.inventory.features.task_list.TaskItem
 import com.lenta.inventory.features.task_list.TaskListFragment
+import com.lenta.inventory.models.RecountType
 import com.lenta.shared.account.IAuthenticator
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
 import com.lenta.shared.platform.navigation.ICoreNavigator
@@ -146,6 +149,12 @@ class ScreenNavigator(
         }
     }
 
+    override fun openLoadingTaskContentsScreen(taskInfo: TaskItem, recountType: RecountType) {
+        runOrPostpone {
+            getFragmentStack()?.push(LoadingTaskContentFragment.create(taskInfo, recountType))
+        }
+    }
+
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 
 }
@@ -169,4 +178,5 @@ interface IScreenNavigator : ICoreNavigator {
     fun openTasksList()
     fun openJobCard()
     fun openLoadingTasksScreen()
+    fun openLoadingTaskContentsScreen(taskInfo: TaskItem, recountType: RecountType)
 }
