@@ -21,11 +21,24 @@ import com.lenta.shared.utilities.databinding.*
 import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.generateScreenNumber
 import com.lenta.shared.utilities.extentions.provideViewModel
+import com.lenta.shared.utilities.state.state
 
-class GoodsDetailsStorageFragment(private val productInfo: TaskProductInfo) : CoreFragment<FragmentGoodsDetailsStorageBinding, GoodsDetailsStorageViewModel>(),
+class GoodsDetailsStorageFragment : CoreFragment<FragmentGoodsDetailsStorageBinding, GoodsDetailsStorageViewModel>(),
         ToolbarButtonsClickListener,
         ViewPagerSettings,
         PageSelectionListener {
+
+    companion object {
+        fun create(productInfo: TaskProductInfo): GoodsDetailsStorageFragment {
+            GoodsDetailsStorageFragment().let {
+                it.productInfo = productInfo
+                return it
+            }
+        }
+
+    }
+
+    private var productInfo by state<TaskProductInfo?>(null)
 
     private var countedRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
 
@@ -37,8 +50,8 @@ class GoodsDetailsStorageFragment(private val productInfo: TaskProductInfo) : Co
         provideViewModel(GoodsDetailsStorageViewModel::class.java).let { vm ->
             getAppComponent()?.inject(vm)
             vm.productInfo.value = productInfo
-            vm.isGeneralProduct.value = productInfo.type == ProductType.General || productInfo.type == ProductType.NonExciseAlcohol
-            vm.isStorePlace.value = productInfo.placeCode != "00"
+            vm.isGeneralProduct.value = productInfo!!.type == ProductType.General || productInfo!!.type == ProductType.NonExciseAlcohol
+            vm.isStorePlace.value = productInfo!!.placeCode != "00"
             vm.partly.value = getString(R.string.partly)
             vm.vintage.value = getString(R.string.vintage)
             return vm
@@ -51,7 +64,7 @@ class GoodsDetailsStorageFragment(private val productInfo: TaskProductInfo) : Co
             vm.isStorePlace.value!! -> getString(R.string.goods_of_details_store_place)
             else -> getString(R.string.goods_of_details)
         }
-        topToolbarUiModel.title.value = "${productInfo.getMaterialLastSix()} ${productInfo.description}"
+        topToolbarUiModel.title.value = "${vm.productInfo.value!!.getMaterialLastSix()} ${vm.productInfo.value!!.description}"
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
@@ -94,16 +107,16 @@ class GoodsDetailsStorageFragment(private val productInfo: TaskProductInfo) : Co
     override fun getPagerItemView(container: ViewGroup, position: Int): View {
         return if (vm.isGeneralProduct.value!! || vm.productInfo.value!!.isSet) {
                     when (position) {
-                        0 -> createPagerItemNotProssed(container)
-                        else -> createPagerItemProssed(container)
+                        0 -> createPagerItemNotProcessed(container)
+                        else -> createPagerItemProcessed(container)
                     }
                 }
                 else {
                     if (vm.isStorePlace.value!!) {
                         when (position) {
                             0 -> createPagerItemCategories(container)
-                            1 -> createPagerItemNotProssed(container)
-                            else -> createPagerItemProssed(container)
+                            1 -> createPagerItemNotProcessed(container)
+                            else -> createPagerItemProcessed(container)
                         }
                     }
                     else createPagerItemCategories(container)
@@ -190,7 +203,7 @@ class GoodsDetailsStorageFragment(private val productInfo: TaskProductInfo) : Co
                         }
             }
 
-    private fun createPagerItemNotProssed(container: ViewGroup): View{
+    private fun createPagerItemNotProcessed(container: ViewGroup): View{
         DataBindingUtil
                 .inflate<LayoutGoodsDetailsNotProssedBinding>(LayoutInflater.from(container.context),
                         R.layout.layout_goods_details_not_prossed,
@@ -217,7 +230,7 @@ class GoodsDetailsStorageFragment(private val productInfo: TaskProductInfo) : Co
                 }
     }
 
-    private fun createPagerItemProssed(container: ViewGroup): View{
+    private fun createPagerItemProcessed(container: ViewGroup): View{
         DataBindingUtil
                 .inflate<LayoutGoodsDetailsProssedBinding>(LayoutInflater.from(container.context),
                         R.layout.layout_goods_details_prossed,

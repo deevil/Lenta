@@ -14,8 +14,24 @@ import com.lenta.shared.scan.OnScanResultListener
 import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.generateScreenNumber
 import com.lenta.shared.utilities.extentions.provideViewModel
+import com.lenta.shared.utilities.state.state
 
-class GoodsInfoFragment(private val productInfo: TaskProductInfo) : CoreFragment<FragmentGoodsInfoBinding, GoodsInfoViewModel>(), ToolbarButtonsClickListener, OnScanResultListener {
+class GoodsInfoFragment : CoreFragment<FragmentGoodsInfoBinding,
+        GoodsInfoViewModel>(),
+        ToolbarButtonsClickListener,
+        OnScanResultListener {
+
+    companion object {
+        fun create(productInfo: TaskProductInfo): GoodsInfoFragment {
+            GoodsInfoFragment().let {
+                it.productInfo = productInfo
+                return it
+            }
+        }
+
+    }
+
+    private var productInfo by state<TaskProductInfo?>(null)
 
     override fun getLayoutId(): Int = R.layout.fragment_goods_info
 

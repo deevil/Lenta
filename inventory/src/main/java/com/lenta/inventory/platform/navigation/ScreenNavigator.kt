@@ -83,7 +83,7 @@ class ScreenNavigator(
 
     override fun openGoodsInfoScreen(productInfo: TaskProductInfo) {
         runOrPostpone {
-            getFragmentStack()?.push(GoodsInfoFragment(productInfo))
+            getFragmentStack()?.push(GoodsInfoFragment.create(productInfo))
         }
     }
 
@@ -95,7 +95,7 @@ class ScreenNavigator(
 
     override fun openGoodsDetailsStorageScreen(productInfo: TaskProductInfo) {
         runOrPostpone {
-            getFragmentStack()?.push(GoodsDetailsStorageFragment(productInfo))
+            getFragmentStack()?.push(GoodsDetailsStorageFragment.create(productInfo))
         }
     }
 
