@@ -27,6 +27,7 @@ import com.lenta.shared.models.core.MatrixType
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.utilities.extentions.setFragmentResultCode
+import kotlin.system.exitProcess
 
 
 class CoreNavigator constructor(private val context: Context,
@@ -62,7 +63,7 @@ class CoreNavigator constructor(private val context: Context,
         runOrPostpone {
             foregroundActivityProvider.getActivity()?.finish()
             analytics.cleanLogs()
-            System.exit(0)
+            exitProcess(0)
         }
 
     }

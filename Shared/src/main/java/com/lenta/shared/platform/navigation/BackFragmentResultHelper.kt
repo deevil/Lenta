@@ -1,28 +1,25 @@
 package com.lenta.shared.platform.navigation
 
-import java.lang.ref.Reference
-import java.lang.ref.WeakReference
+import java.util.*
 
 class BackFragmentResultHelper {
 
-    private var funcForResultRef: Reference<(() -> Unit)?> = WeakReference(null)
-    private var idCodeFunc: Int? = null
+    private var weakHashMap: WeakHashMap<Int, () -> Unit> = WeakHashMap()
 
     fun setFuncForResult(func: () -> Unit): Int {
-        funcForResultRef = WeakReference(func)
         return func.hashCode().apply {
-            idCodeFunc = this
+            weakHashMap[this] = func
         }
     }
 
     fun getFuncAndClear(idCodeFunc: Int?): (() -> Unit)? {
-        if (idCodeFunc == null && idCodeFunc != this.idCodeFunc) {
-            return null
-        }
-        funcForResultRef.get().let {
-            funcForResultRef.clear()
+
+        weakHashMap[idCodeFunc]?.let {
+            weakHashMap.clear()
             return it
         }
+
+        return null
     }
 
 
