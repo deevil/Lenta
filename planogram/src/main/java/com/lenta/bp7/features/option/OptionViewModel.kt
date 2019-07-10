@@ -1,6 +1,6 @@
 package com.lenta.bp7.features.option
 
-import androidx.databinding.ObservableBoolean
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp7.platform.navigation.IScreenNavigator
 import com.lenta.shared.account.ISessionInfo
@@ -25,8 +25,8 @@ class OptionViewModel : CoreViewModel() {
     private val zmpUtz23V001: ZmpUtz23V001 by lazy { ZmpUtz23V001(hyperHive) }
     private val zmpUtz14V001: ZmpUtz14V001 by lazy { ZmpUtz14V001(hyperHive) }
 
-    var isFacings = ObservableBoolean()
-    var isPlaces = ObservableBoolean()
+    val isFacings: MutableLiveData<Boolean> = MutableLiveData(false)
+    val isPlaces: MutableLiveData<Boolean> = MutableLiveData(false)
 
     companion object {
         const val HYPER = "H"
@@ -38,12 +38,12 @@ class OptionViewModel : CoreViewModel() {
         viewModelScope.launch {
             when (sessionInfo.market?.let { zmpUtz23V001.getRetailType(it) }) {
                 HYPER -> {
-                    isFacings.set(zmpUtz14V001.getFacingsHyperParam() != TURNED_OFF)
-                    isPlaces.set(zmpUtz14V001.getPlacesHyperParam() != TURNED_OFF)
+                    isFacings.value = zmpUtz14V001.getFacingsHyperParam() != TURNED_OFF
+                    isPlaces.value = zmpUtz14V001.getPlacesHyperParam() != TURNED_OFF
                 }
                 SUPER -> {
-                    isFacings.set(zmpUtz14V001.getFacingsSuperParam() != TURNED_OFF)
-                    isPlaces.set(zmpUtz14V001.getPlacesSuperParam() != TURNED_OFF)
+                    isFacings.value = zmpUtz14V001.getFacingsSuperParam() != TURNED_OFF
+                    isPlaces.value = zmpUtz14V001.getPlacesSuperParam() != TURNED_OFF
                 }
                 else -> {
                     Logg.d { "Тип магазина неизвестен." }
