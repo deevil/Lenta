@@ -3,8 +3,6 @@ package com.lenta.bp7.features.auth
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp7.platform.navigation.IScreenNavigator
-import com.lenta.bp7.repos.IRepoInMemoryHolder
-import com.lenta.bp7.requests.network.*
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.features.login.CoreAuthViewModel
