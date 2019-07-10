@@ -29,7 +29,6 @@
                 android:orientation="horizontal">
 
                 <TextView
-                    android:id="@+id/tv_segment_number"
                     style="@style/ColumnTitleStyle"
                     android:layout_weight="@integer/segment_column_1"
                     android:text="@string/number"/>
@@ -38,28 +37,25 @@
                     style="@style/TitleColumnVerticalDivider"/>
 
                 <TextView
-                    android:id="@+id/tv_segment_number_date"
                     style="@style/ColumnTitleStyle"
                     android:layout_weight="@integer/segment_column_2"
-                    android:text="@string/segment_number_date"/>
+                    android:text="@string/segment_title_number_date"/>
 
                 <View
                     style="@style/TitleColumnVerticalDivider"/>
 
                 <TextView
-                    android:id="@+id/tv_segment_status"
                     style="@style/ColumnTitleStyle"
                     android:layout_weight="@integer/segment_column_3"
-                    android:text="@string/segment_status"/>
+                    android:text="@string/segment_title_status"/>
 
                 <View
                     style="@style/TitleColumnVerticalDivider"/>
 
                 <TextView
-                    android:id="@+id/tv_segment_shelves"
                     style="@style/ColumnTitleStyle"
                     android:layout_weight="@integer/segment_column_4"
-                    android:text="@string/segment_shelves"/>
+                    android:text="@string/segment_title_shelves"/>
 
             </LinearLayout>
 
@@ -74,7 +70,8 @@
         <androidx.recyclerview.widget.RecyclerView
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1"/>
+            android:layout_weight="1"
+            tools:listitem="@layout/item_segment"/>
 
         <!-- Поле ввода номера сегмента -->
         <EditText
@@ -85,7 +82,7 @@
             android:digits="0123456789"
             android:hint="@string/enter_segment_number"
             android:inputType="numberDecimal"
-            android:maxLength="10"
+            android:maxLength="7"
             tools:ignore="Autofill"/>
 
     </LinearLayout>

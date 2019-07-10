@@ -22,6 +22,9 @@ class SegmentListViewModel : CoreViewModel() {
 
     val enabledSaveBtn: LiveData<Boolean> = MutableLiveData()
 
+    var segmentNumber: LiveData<String> = MutableLiveData()
+    var storeNumber: LiveData<String> = MutableLiveData()
+
     fun getTitle(storeNumberPrefix: String): String? {
         return storeNumberPrefix + sessionInfo.market
     }

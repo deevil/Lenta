@@ -13,8 +13,9 @@
     <string name="store_number_prefix">"TK - "</string>
     <string name="list_of_processed_segments">Список обработанных сегментов</string>
     <string name="enter_segment_number">Введите номер сегмента</string>
-    <string name="segment_number">№</string>
-    <string name="segment_number_date">№ Сегмента/Дата</string>
-    <string name="segment_status">Статус</string>
-    <string name="segment_shelves">Полок</string>
+    <string name="segment_title_number">№</string>
+    <string name="segment_title_number_date">№ Сегмента/Дата</string>
+    <string name="segment_title_status">Статус</string>
+    <string name="segment_title_shelves">Полок</string>
+    <string name="segment_number_date">%1$s (TK - %2$s)\n%3$s</string>
 </resources>
