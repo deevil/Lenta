@@ -1,13 +1,11 @@
 package com.lenta.shared.platform.fragment
 
-import android.content.Context
 import android.os.Bundle
 import android.view.*
 import androidx.annotation.LayoutRes
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModel
 import com.lenta.shared.BR
 import com.lenta.shared.di.CoreComponent
 import com.lenta.shared.platform.activity.CoreActivity
@@ -15,13 +13,15 @@ import com.lenta.shared.platform.activity.main_activity.CoreMainActivity
 import com.lenta.shared.platform.navigation.FragmentStack
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
+import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.Logg
+import com.lenta.shared.utilities.extentions.getFragmentResultCode
 import com.lenta.shared.utilities.extentions.implementationOf
 import com.lenta.shared.utilities.state.GsonBundle
 import com.lenta.shared.utilities.state.GsonBundleDelegate
 import java.lang.NullPointerException
 
-abstract class CoreFragment<T : ViewDataBinding, S : ViewModel> : Fragment(), GsonBundle by GsonBundleDelegate() {
+abstract class CoreFragment<T : ViewDataBinding, S : CoreViewModel> : Fragment(), GsonBundle by GsonBundleDelegate() {
     var binding: T? = null
     lateinit var vm: S
 
@@ -83,6 +83,7 @@ abstract class CoreFragment<T : ViewDataBinding, S : ViewModel> : Fragment(), Gs
 
     open fun onFragmentResult(arguments: Bundle) {
         Logg.d { "onFragmentResult arguments: $arguments" }
+        vm.handleFragmentResult(arguments.getFragmentResultCode())
     }
 
     override fun onDestroy() {

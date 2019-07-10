@@ -3,7 +3,7 @@ package com.lenta.inventory.features.loading.store_place_lock
 import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.lenta.inventory.features.task_list.TaskItem
+import com.lenta.inventory.features.task_list.TaskItemVm
 import com.lenta.inventory.models.StorePlaceLockMode
 import com.lenta.inventory.models.task.TaskStorePlaceInfo
 import com.lenta.inventory.platform.navigation.IScreenNavigator
@@ -30,7 +30,7 @@ class LoadingStorePlaceLockViewModel : CoreLoadingViewModel() {
 
     var storePlaceInfo: TaskStorePlaceInfo? = null
     var mode: StorePlaceLockMode = StorePlaceLockMode.None
-    var taskInfo: TaskItem? = null
+    var taskInfo: TaskItemVm? = null
 
     override val title: MutableLiveData<String> = MutableLiveData()
     override val progress: MutableLiveData<Boolean> = MutableLiveData(true)

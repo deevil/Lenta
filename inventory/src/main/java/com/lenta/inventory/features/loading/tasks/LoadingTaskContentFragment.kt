@@ -3,7 +3,7 @@ package com.lenta.inventory.features.loading.tasks
 import android.os.Bundle
 import android.view.View
 import com.lenta.inventory.R
-import com.lenta.inventory.features.task_list.TaskItem
+import com.lenta.inventory.features.task_list.TaskItemVm
 import com.lenta.inventory.models.RecountType
 import com.lenta.inventory.platform.extentions.getAppComponent
 import com.lenta.shared.features.loading.CoreLoadingFragment
@@ -15,7 +15,7 @@ import com.lenta.shared.utilities.extentions.provideViewModel
 
 class LoadingTaskContentFragment: CoreLoadingFragment() {
 
-    private var taskInfo: TaskItem? = null
+    private var taskInfo: TaskItemVm? = null
     private var recountType: RecountType? = null
 
     override fun getPageNumber(): String? {
@@ -54,7 +54,7 @@ class LoadingTaskContentFragment: CoreLoadingFragment() {
     }
 
     companion object {
-        fun create(taskInfo: TaskItem, recountType: RecountType): LoadingTaskContentFragment {
+        fun create(taskInfo: TaskItemVm, recountType: RecountType): LoadingTaskContentFragment {
             LoadingTaskContentFragment().let {
                 it.taskInfo = taskInfo
                 it.recountType = recountType

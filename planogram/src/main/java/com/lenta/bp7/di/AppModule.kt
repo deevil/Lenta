@@ -3,6 +3,8 @@ package com.lenta.bp7.di
 import android.content.Context
 import com.lenta.bp7.platform.navigation.IScreenNavigator
 import com.lenta.bp7.platform.navigation.ScreenNavigator
+import com.lenta.bp7.repos.DatabaseRepo
+import com.lenta.bp7.repos.IDatabaseRepo
 import com.lenta.bp7.repos.IRepoInMemoryHolder
 import com.lenta.bp7.repos.RepoInMemoryHolder
 import com.lenta.bp7.requests.network.SlowResourcesMultiRequest
@@ -12,6 +14,7 @@ import com.lenta.shared.di.AppScope
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
 import com.lenta.shared.platform.navigation.ICoreNavigator
 import com.lenta.shared.progress.IProgressUseCaseInformator
+import com.mobrun.plugin.api.HyperHive
 import dagger.Module
 import dagger.Provides
 
@@ -43,4 +46,9 @@ class AppModule {
         return ResourcesLoader(slowResourcesNetRequest)
     }
 
+    @Provides
+    @AppScope
+    internal fun provideIGoodInformationRepo(hyperHive: HyperHive): IDatabaseRepo {
+        return DatabaseRepo(hyperHive)
+    }
 }

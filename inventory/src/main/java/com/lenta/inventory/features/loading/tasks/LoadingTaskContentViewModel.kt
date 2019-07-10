@@ -3,7 +3,7 @@ package com.lenta.inventory.features.loading.tasks
 import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.lenta.inventory.features.task_list.TaskItem
+import com.lenta.inventory.features.task_list.TaskItemVm
 import com.lenta.inventory.models.RecountType
 import com.lenta.inventory.platform.navigation.IScreenNavigator
 import com.lenta.inventory.repos.IRepoInMemoryHolder
@@ -30,7 +30,7 @@ class LoadingTaskContentViewModel: CoreLoadingViewModel() {
     @Inject
     lateinit var repoInMemoryHolder: IRepoInMemoryHolder
 
-    var taskInfo: TaskItem? = null
+    var taskInfo: TaskItemVm? = null
     var recountType: RecountType? = null
 
     override val title: MutableLiveData<String> = MutableLiveData()

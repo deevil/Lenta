@@ -3,7 +3,7 @@ package com.lenta.inventory.features.loading.store_place_lock
 import android.os.Bundle
 import android.view.View
 import com.lenta.inventory.R
-import com.lenta.inventory.features.task_list.TaskItem
+import com.lenta.inventory.features.task_list.TaskItemVm
 import com.lenta.inventory.models.StorePlaceLockMode
 import com.lenta.inventory.models.task.TaskStorePlaceInfo
 import com.lenta.inventory.platform.extentions.getAppComponent
@@ -18,7 +18,7 @@ class LoadingStorePlaceLockFragment: CoreLoadingFragment() {
 
     private var storePlaceInfo: TaskStorePlaceInfo? = null
     private var mode: StorePlaceLockMode = StorePlaceLockMode.None
-    private var taskInfo: TaskItem? = null
+    private var taskInfo: TaskItemVm? = null
 
     override fun getPageNumber(): String? {
         return generateScreenNumberFromPostfix("98")
@@ -61,7 +61,7 @@ class LoadingStorePlaceLockFragment: CoreLoadingFragment() {
     }
 
     companion object {
-        fun create(taskInfo: TaskItem, lockMode: StorePlaceLockMode, storePlaceInfo: TaskStorePlaceInfo): LoadingStorePlaceLockFragment {
+        fun create(taskInfo: TaskItemVm, lockMode: StorePlaceLockMode, storePlaceInfo: TaskStorePlaceInfo): LoadingStorePlaceLockFragment {
             LoadingStorePlaceLockFragment().let {
                 it.taskInfo = taskInfo
                 it.mode = lockMode

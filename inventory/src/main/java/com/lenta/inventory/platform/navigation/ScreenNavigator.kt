@@ -1,6 +1,7 @@
 package com.lenta.inventory.platform.navigation
 
 import android.content.Context
+import com.lenta.inventory.R
 import com.lenta.inventory.features.main_menu.MainMenuFragment
 import com.lenta.inventory.features.auth.AuthFragment
 import com.lenta.inventory.features.discrepancies_found.DiscrepanciesFoundFragment
@@ -20,24 +21,24 @@ import com.lenta.inventory.features.select_market.SelectMarketFragment
 import com.lenta.inventory.features.select_personnel_number.SelectPersonnelNumberFragment
 import com.lenta.inventory.features.sets_details_storage.SetsDetailsStorageFragment
 import com.lenta.inventory.features.storages_list.StoragesListFragment
-import com.lenta.inventory.features.task_list.TaskItem
+import com.lenta.inventory.features.task_list.TaskItemVm
 import com.lenta.inventory.features.task_list.TaskListFragment
 import com.lenta.inventory.models.RecountType
 import com.lenta.inventory.models.StorePlaceLockMode
 import com.lenta.inventory.models.task.TaskStorePlaceInfo
 import com.lenta.inventory.models.task.TaskProductInfo
 import com.lenta.shared.account.IAuthenticator
+import com.lenta.shared.features.alert.AlertFragment
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
 import com.lenta.shared.platform.navigation.ICoreNavigator
 import com.lenta.shared.platform.navigation.runOrPostpone
-import com.lenta.shared.progress.IProgressUseCaseInformator
+import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 
 class ScreenNavigator(
         private val context: Context,
         private val coreNavigator: ICoreNavigator,
         private val foregroundActivityProvider: ForegroundActivityProvider,
-        private val authenticator: IAuthenticator,
-        private val progressUseCaseInformator: IProgressUseCaseInformator
+        private val authenticator: IAuthenticator
 ) : IScreenNavigator, ICoreNavigator by coreNavigator {
 
     override fun openFirstScreen() {
@@ -160,13 +161,22 @@ class ScreenNavigator(
         }
     }
 
-    override fun openLoadingTaskContentsScreen(taskInfo: TaskItem, recountType: RecountType) {
+    override fun openConfirmationTaskOpenScreen(userName: String, ip: String, callbackFunc: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.confirmation_task_open, userName, ip),
+                    codeConfirm = backFragmentResultHelper.setFuncForResult(callbackFunc),
+                    pageNumber = "93",
+                    rightButtonDecorationInfo = ButtonDecorationInfo.next))
+        }
+    }
+
+    override fun openLoadingTaskContentsScreen(taskInfo: TaskItemVm, recountType: RecountType) {
         runOrPostpone {
             getFragmentStack()?.push(LoadingTaskContentFragment.create(taskInfo, recountType))
         }
     }
 
-    override fun openLoadingStorePlaceLockScreen(taskInfo: TaskItem, mode: StorePlaceLockMode, storePlaceInfo: TaskStorePlaceInfo)
+    override fun openLoadingStorePlaceLockScreen(taskInfo: TaskItemVm, mode: StorePlaceLockMode, storePlaceInfo: TaskStorePlaceInfo)
     {
         runOrPostpone {
             getFragmentStack()?.push(LoadingStorePlaceLockFragment.create(taskInfo, mode, storePlaceInfo))
@@ -197,7 +207,8 @@ interface IScreenNavigator : ICoreNavigator {
     fun openTasksList()
     fun openJobCard(taskNumber: String)
     fun openLoadingTasksScreen()
-    fun openLoadingTaskContentsScreen(taskInfo: TaskItem, recountType: RecountType)
-    fun openLoadingStorePlaceLockScreen(taskInfo: TaskItem, mode: StorePlaceLockMode, storePlaceInfo: TaskStorePlaceInfo)
+    fun openLoadingTaskContentsScreen(taskInfo: TaskItemVm, recountType: RecountType)
+    fun openLoadingStorePlaceLockScreen(taskInfo: TaskItemVm, mode: StorePlaceLockMode, storePlaceInfo: TaskStorePlaceInfo)
     fun openExciseAlcoInfoScreen()
+    fun openConfirmationTaskOpenScreen(userName: String, ip: String, callbackFunc: () -> Unit)
 }

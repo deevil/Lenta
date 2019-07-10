@@ -27,17 +27,18 @@ import com.lenta.shared.models.core.MatrixType
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.utilities.extentions.setFragmentResultCode
+import kotlin.system.exitProcess
 
 
 class CoreNavigator constructor(private val context: Context,
                                 private val foregroundActivityProvider: ForegroundActivityProvider,
                                 private val failureInterpreter: IFailureInterpreter,
-                                private val analytics: IAnalytics) : ICoreNavigator {
+                                private val analytics: IAnalytics,
+                                override val backFragmentResultHelper: BackFragmentResultHelper) : ICoreNavigator {
 
     override val functionsCollector: FunctionsCollector by lazy {
         FunctionsCollector(foregroundActivityProvider.onPauseStateLiveData)
     }
-
 
     override fun goBackWithArgs(args: Bundle) {
         runOrPostpone {
@@ -62,15 +63,25 @@ class CoreNavigator constructor(private val context: Context,
         runOrPostpone {
             foregroundActivityProvider.getActivity()?.finish()
             analytics.cleanLogs()
-            System.exit(0)
+            exitProcess(0)
         }
 
     }
 
 
-    override fun openAlertScreen(message: String, iconRes: Int, textColor: Int?, pageNumber: String?, timeAutoExitInMillis: Int?) {
+    override fun openAlertScreen(message: String,
+                                 iconRes: Int,
+                                 textColor: Int?,
+                                 pageNumber: String?,
+                                 timeAutoExitInMillis: Int?,
+                                 onlyIfFirstAlert: Boolean) {
         runOrPostpone {
             getFragmentStack()?.let {
+
+                if (onlyIfFirstAlert && it.peek() is AlertFragment) {
+                    return@let
+                }
+
                 val fragment = AlertFragment.create(
                         message = message,
                         iconRes = iconRes,
@@ -271,11 +282,17 @@ fun ICoreNavigator.runOrPostpone(function: () -> Unit) {
 
 interface ICoreNavigator {
     val functionsCollector: FunctionsCollector
+    val backFragmentResultHelper: BackFragmentResultHelper
     fun goBackWithArgs(args: Bundle)
     fun goBackWithResultCode(code: Int)
     fun goBack()
     fun finishApp()
-    fun openAlertScreen(message: String, iconRes: Int = 0, textColor: Int? = null, pageNumber: String? = null, timeAutoExitInMillis: Int? = null)
+    fun openAlertScreen(message: String,
+                        iconRes: Int = 0,
+                        textColor: Int? = null,
+                        pageNumber: String? = null,
+                        timeAutoExitInMillis: Int? = null,
+                        onlyIfFirstAlert: Boolean = false)
     fun openAlertScreen(failure: Failure, pageNumber: String = "96")
     fun openSupportScreen()
     fun <Params> showProgress(useCase: UseCase<Any, Params>)
