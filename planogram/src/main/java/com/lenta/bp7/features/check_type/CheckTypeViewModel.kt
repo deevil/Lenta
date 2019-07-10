@@ -1,5 +1,6 @@
 package com.lenta.bp7.features.check_type
 
+import com.lenta.bp7.data.CheckType
 import com.lenta.bp7.platform.navigation.IScreenNavigator
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
@@ -12,18 +13,13 @@ class CheckTypeViewModel : CoreViewModel() {
     @Inject
     lateinit var sessionInfo: ISessionInfo
 
-    companion object {
-        const val SELF_CONTROL = "SELF_CONTROL"
-        const val EXTERNAL_AUDIT = "EXTERNAL_AUDIT"
-    }
-
     fun onClickSelfControl() {
-        sessionInfo.checkType = SELF_CONTROL
+        sessionInfo.checkType = CheckType.SELF_CONTROL.type
         navigator.openCodeScreen()
     }
 
     fun onClickExternalAudit() {
-        sessionInfo.checkType = EXTERNAL_AUDIT
+        sessionInfo.checkType = CheckType.EXTERNAL_AUDIT.type
         navigator.openCodeScreen()
     }
 }

@@ -2,8 +2,8 @@
     <string name="app_name">Планограмма</string>
     <string name="action_settings">Settings</string>
     <string name="select_segment_processing_mode">Режим\nобработки сегмента</string>
-    <string name="with_counting_facings">С подсчетом фейсингов</string>
-    <string name="with_control_of_empty_places">С контролем пустых мест</string>
+    <string name="with_counting_facings">Подсчет фейсингов</string>
+    <string name="with_control_of_empty_places">Контроль пустых мест</string>
     <string name="self_control_tc">Самоконтроль ТК</string>
     <string name="external_audit">Внешний аудит</string>
     <string name="select_mode">Выбор режима</string>
