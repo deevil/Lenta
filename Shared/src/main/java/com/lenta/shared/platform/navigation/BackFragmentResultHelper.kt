@@ -13,13 +13,9 @@ class BackFragmentResultHelper {
     }
 
     fun getFuncAndClear(idCodeFunc: Int?): (() -> Unit)? {
-
-        weakHashMap[idCodeFunc]?.let {
-            weakHashMap.clear()
-            return it
-        }
-
-        return null
+        val func = weakHashMap[idCodeFunc]
+        weakHashMap.clear()
+        return func
     }
 
 
