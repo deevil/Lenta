@@ -1,6 +1,5 @@
 package com.lenta.bp7.features.code
 
-import androidx.databinding.ObservableField
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp7.features.check_type.CheckTypeViewModel
@@ -34,7 +33,8 @@ class CodeViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     val pinCode3: MutableLiveData<String> = MutableLiveData("")
     val pinCode4: MutableLiveData<String> = MutableLiveData("")
 
-    val message = ObservableField<String>()
+    val message: MutableLiveData<String> = MutableLiveData()
+    private val incorrectCodeMessage: MutableLiveData<String> = MutableLiveData()
 
     var checkType: String? = ""
     var pinCode: String? = ""
@@ -53,8 +53,12 @@ class CodeViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
                 }
             }
 
-            message.set(checkType)
+            message.value = checkType
         }
+    }
+
+    fun setIncorrectCodeMessage(incorrectCodeMessage: String) {
+        this.incorrectCodeMessage.value = incorrectCodeMessage
     }
 
     val enabledGoOverBtn: MutableLiveData<Boolean> = pinCode1
@@ -74,7 +78,7 @@ class CodeViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
         if (pinCode == pinCode1.value + pinCode2.value + pinCode3.value + pinCode4.value) {
             navigator.openOptionScreen()
         } else {
-            navigator.openAlertScreen(message = "Введен некорректный пин-код!", pageNumber = "95")
+            navigator.openAlertScreen(message = incorrectCodeMessage.value!!, pageNumber = "95")
         }
     }
 

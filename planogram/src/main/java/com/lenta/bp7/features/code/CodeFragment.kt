@@ -27,8 +27,13 @@ class CodeFragment : CoreFragment<FragmentCodeBinding, CodeViewModel>(), Toolbar
     override fun getViewModel(): CodeViewModel {
         provideViewModel(CodeViewModel::class.java).let {
             getAppComponent()?.inject(it)
+
+            it.setIncorrectCodeMessage(getString(R.string.incorrect_code_message))
+
             return it
         }
+
+
     }
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
