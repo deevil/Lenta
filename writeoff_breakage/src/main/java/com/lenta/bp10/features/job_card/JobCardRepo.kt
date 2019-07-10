@@ -7,8 +7,8 @@ import com.lenta.bp10.fmp.resources.fast.ZmpUtz33V001
 import com.lenta.bp10.fmp.resources.fast.ZmpUtz34V001
 import com.lenta.bp10.fmp.resources.fast.ZmpUtz36V001
 import com.lenta.bp10.fmp.resources.gis_control.ZmpUtz35V001Rfc
-import com.lenta.bp10.fmp.resources.storloc.ZmpUtz02V001
 import com.lenta.bp10.fmp.resources.tasks_settings.ZmpUtz29V001Rfc
+import com.lenta.bp10.repos.IRepoInMemoryHolder
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.utilities.date_time.DateTimeUtil.formatCurrentDate
 import com.mobrun.plugin.api.HyperHive
@@ -18,7 +18,8 @@ import javax.inject.Inject
 
 class JobCardRepo @Inject constructor(val hyperHive: HyperHive,
                                       val context: Context,
-                                      val sessionInfo: ISessionInfo) : IJobCardRepo {
+                                      val sessionInfo: ISessionInfo,
+                                      val repoInMemoryHolder: IRepoInMemoryHolder) : IJobCardRepo {
     override suspend fun getAllTaskSettings(): List<TaskSetting> {
         return withContext(Dispatchers.IO) {
             @Suppress("INACCESSIBLE_TYPE")
@@ -64,19 +65,18 @@ class JobCardRepo @Inject constructor(val hyperHive: HyperHive,
         }
     }
 
+    @Suppress("INACCESSIBLE_TYPE")
     override suspend fun getStores(taskType: String?): List<String> {
         if (taskType == null) {
             return emptyList()
         }
         return withContext(Dispatchers.IO) {
 
-            @Suppress("INACCESSIBLE_TYPE") var lgortList = ZmpUtz33V001(hyperHive).localHelper_ET_LGORT
+            val lgortList = ZmpUtz33V001(hyperHive).localHelper_ET_LGORT
                     .getWhere("TASK_TYPE = \"$taskType\" and (WERKS = \"*\" OR WERKS = \"${sessionInfo.market}\")")
 
             if (lgortList.size == 1 && lgortList[0].lgort == "*") {
-                @Suppress("INACCESSIBLE_TYPE")
-                return@withContext ZmpUtz02V001(hyperHive).localHelper_ET_STORLOCS
-                        .getWhere("LOCKED = \"\"").map { it.storloc }
+                return@withContext repoInMemoryHolder.stockLockRequestResult!!.stocksLocks.filter { it.locked == "" }.map { it.storloc }
             }
 
             return@withContext lgortList.map {

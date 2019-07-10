@@ -3,8 +3,10 @@ package com.lenta.bp10.features.loading.fast
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp10.platform.navigation.IScreenNavigator
+import com.lenta.bp10.repos.IRepoInMemoryHolder
 import com.lenta.bp10.requests.network.FastResourcesMultiRequest
-import com.lenta.bp10.requests.network.StoresNetRequest
+import com.lenta.bp10.requests.network.StockLockRequestResult
+import com.lenta.bp10.requests.network.StockNetRequest
 import com.lenta.bp10.requests.network.loader.ResourcesLoader
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.exception.IFailureInterpreter
@@ -31,9 +33,11 @@ class FastLoadingViewModel : CoreLoadingViewModel() {
     @Inject
     lateinit var resourceLoader: ResourcesLoader
     @Inject
-    lateinit var storesNetRequest: StoresNetRequest
+    lateinit var stockNetRequest: StockNetRequest
     @Inject
     lateinit var appUpdateChecker: AppUpdateChecker
+    @Inject
+    lateinit var repoInMemoryHolder: IRepoInMemoryHolder
 
     val zmpUtz14V001: ZmpUtz14V001 by lazy { ZmpUtz14V001(hyperHive) }
 
@@ -53,7 +57,7 @@ class FastLoadingViewModel : CoreLoadingViewModel() {
 
     private fun loadStores(@Suppress("UNUSED_PARAMETER") b: Boolean) {
         viewModelScope.launch {
-            storesNetRequest(null).either(::handleFailure, ::handleSuccess)
+            stockNetRequest(null).either(::handleFailure, ::handleSuccess)
         }
 
     }
@@ -63,7 +67,8 @@ class FastLoadingViewModel : CoreLoadingViewModel() {
         screenNavigator.openAlertScreen(failureInterpreter.getFailureDescription(failure).message)
     }
 
-    private fun handleSuccess(@Suppress("UNUSED_PARAMETER") b: Boolean) {
+    private fun handleSuccess(stockLockRequestResult: StockLockRequestResult) {
+        repoInMemoryHolder.stockLockRequestResult = stockLockRequestResult
         viewModelScope.launch {
             if (appUpdateChecker.isNeedUpdate(withContext(Dispatchers.IO) {
                         return@withContext zmpUtz14V001.getAllowedWobAppVersion()

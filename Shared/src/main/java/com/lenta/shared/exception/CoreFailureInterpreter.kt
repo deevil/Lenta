@@ -27,6 +27,8 @@ class CoreFailureInterpreter
                     iconRes = R.drawable.is_warning_yellow,
                     message = failure.message)
 
+            is Failure.DbError -> FailureDescription(message = context.getString(R.string.db_error))
+
             else -> FailureDescription(message = context.getString(R.string.error_unknown))
         }
 

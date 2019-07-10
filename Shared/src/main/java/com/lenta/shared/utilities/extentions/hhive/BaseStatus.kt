@@ -12,6 +12,7 @@ fun BaseStatus.getFailure(): Failure {
         when (it.source) {
             "cURL" -> return Failure.NetworkConnection
             "Server" -> return it.getServerFailure()
+            "SQLite" -> return it.getDbFailure()
         }
     }
 
@@ -24,6 +25,11 @@ fun Error.getServerFailure(): Failure {
     }
     return Failure.ServerError
 }
+
+fun Error.getDbFailure(): Failure.DbError {
+    return Failure.DbError("${this.descriptions}")
+}
+
 
 fun BaseStatus.toEitherBoolean(): Either<Failure, Boolean> {
     return toEither(true)

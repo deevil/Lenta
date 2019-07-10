@@ -3,9 +3,8 @@ package com.lenta.bp10.features.auth
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp10.platform.navigation.IScreenNavigator
+import com.lenta.bp10.repos.IRepoInMemoryHolder
 import com.lenta.shared.utilities.runIfDebug
-import com.lenta.bp10.requests.network.PermissionsParams
-import com.lenta.bp10.requests.network.PermissionsRequest
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.features.login.CoreAuthViewModel
@@ -13,6 +12,8 @@ import com.lenta.shared.features.login.isEnterEnabled
 import com.lenta.shared.features.login.isValidLoginFields
 import com.lenta.shared.requests.network.Auth
 import com.lenta.shared.requests.network.AuthParams
+import com.lenta.shared.requests.network.StoresRequest
+import com.lenta.shared.requests.network.StoresRequestResult
 import com.lenta.shared.settings.IAppSettings
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.combineLatest
@@ -28,13 +29,15 @@ class AuthViewModel : CoreAuthViewModel() {
     @Inject
     lateinit var auth: Auth
     @Inject
-    lateinit var permissionsRequest: PermissionsRequest
+    lateinit var repoInMemoryHolder: IRepoInMemoryHolder
     @Inject
     lateinit var navigator: IScreenNavigator
     @Inject
     lateinit var sessionInfo: ISessionInfo
     @Inject
     lateinit var appSettings: IAppSettings
+    @Inject
+    lateinit var storesRequest: StoresRequest
 
 
     override val enterEnabled: MutableLiveData<Boolean> by lazy {
@@ -58,7 +61,7 @@ class AuthViewModel : CoreAuthViewModel() {
                 appSettings.lastLogin = it
             }
             progress.value = true
-            permissionsRequest(PermissionsParams(login = getLogin())).either(::handleFailure, ::handleAuthSuccess)
+            storesRequest(null).either(::handleFailure, ::handleAuthSuccess)
             progress.value = false
         }
     }
@@ -70,7 +73,8 @@ class AuthViewModel : CoreAuthViewModel() {
     }
 
 
-    private fun handleAuthSuccess(@Suppress("UNUSED_PARAMETER") b: Boolean) {
+    private fun handleAuthSuccess(storesRequestResult: StoresRequestResult) {
+        repoInMemoryHolder.storesRequestResult = storesRequestResult
         navigator.openSelectMarketScreen()
 
     }
