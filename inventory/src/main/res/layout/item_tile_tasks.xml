@@ -7,7 +7,7 @@
 
         <variable
             name="vm"
-            type="com.lenta.inventory.features.task_list.TaskItem" />
+            type="com.lenta.inventory.features.task_list.TaskItemVm" />
 
     </data>
 
@@ -80,7 +80,6 @@
             android:layout_marginEnd="8dp"
             android:layout_marginBottom="16dp"
             android:ellipsize="end"
-            android:foreground="?selectableItemBackground"
             android:gravity="center"
             android:maxLines="1"
             android:text='@{vm.number}'
@@ -118,7 +117,7 @@
             android:ellipsize="end"
             android:gravity="start|center_vertical"
             android:maxLines="1"
-            android:text="@{vm.stock}"
+            android:text="@{@string/stock_number(vm.stock)}"
             app:layout_constraintBottom_toTopOf="@+id/div_hor_bottom"
             app:layout_constraintEnd_toStartOf="@+id/vertical_guidline_2"
             app:layout_constraintHorizontal_bias="0.5"

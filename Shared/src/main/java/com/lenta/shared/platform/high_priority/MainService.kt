@@ -1,10 +1,13 @@
 package com.lenta.shared.platform.high_priority
 
 
-import android.app.PendingIntent
-import android.app.Service
+import android.app.*
+import android.content.Context
 import android.content.Intent
+import android.graphics.Color
+import android.os.Build
 import android.os.IBinder
+import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import com.lenta.shared.R
 
@@ -41,7 +44,15 @@ class MainService : Service() {
         val pendingIntent = PendingIntent.getActivity(this, 0,
                 notificationIntent, 0)
 
-        val mBuilder = NotificationCompat.Builder(this, "GENERAL")
+        val channelId =
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    createNotificationChannel("lenta_service", "General Lenta Service")
+                } else {
+                    ""
+                }
+
+
+        val mBuilder = NotificationCompat.Builder(this, channelId)
                 .setSmallIcon(R.drawable.ic_launcher)
                 .setContentTitle(getString(R.string.high_priority_title))
                 .setContentText(getString(R.string.high_priority_content))
@@ -49,6 +60,18 @@ class MainService : Service() {
 
         startForeground(NOTIFICATION_ID, mBuilder.build())
     }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun createNotificationChannel(channelId: String, channelName: String): String {
+        val chan = NotificationChannel(channelId,
+                channelName, NotificationManager.IMPORTANCE_NONE)
+        chan.lightColor = Color.BLUE
+        chan.lockscreenVisibility = Notification.VISIBILITY_PRIVATE
+        val service = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        service.createNotificationChannel(chan)
+        return channelId
+    }
+
 
     companion object {
         val ACTION_HIGH_PRIORITY = "ACTION_HIGH_PRIORITY"

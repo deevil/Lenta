@@ -115,7 +115,7 @@ fun setMatrixType(textView: TextView, matrixType: MatrixType?) {
 @BindingAdapter(value = ["zoom"], requireAll = false)
 fun setTextWithVisibilities(textView: TextView, @Suppress("UNUSED_PARAMETER") screenNavigatorForZoom: Boolean) {
     textView.setOnClickListener {
-        dataBindingHelpHolder.coreNavigator.openAlertScreen(message = textView.text.toString())
+        dataBindingHelpHolder.coreNavigator.openAlertScreen(message = textView.text.toString(), onlyIfFirstAlert = true)
     }
     textView.setBackgroundResource(textView.context.selectableItemBackgroundResId())
 }

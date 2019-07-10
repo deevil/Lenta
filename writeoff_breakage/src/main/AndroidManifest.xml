@@ -3,6 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.lenta.bp10">
 
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+
     <application
         android:name=".AndroidApplication"
         android:allowBackup="false"
@@ -33,7 +35,7 @@
             </intent-filter>
         </activity>
 
-        <service android:name="com.lenta.shared.platform.high_priority.MainService"/>
+        <service android:name="com.lenta.shared.platform.high_priority.MainService" />
 
     </application>
 

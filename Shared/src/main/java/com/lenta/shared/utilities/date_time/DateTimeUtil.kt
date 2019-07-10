@@ -22,4 +22,9 @@ object DateTimeUtil {
         return getDateFormat(targetFormat).format(Date())
     }
 
+    fun convertTimeString(formatSource: String, formatDestination: String, date: String): String {
+        return formatDate(getDateFormat(formatSource).parse(date).time, formatDestination)
+
+    }
+
 }

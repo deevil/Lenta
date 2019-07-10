@@ -3,7 +3,6 @@ package com.lenta.inventory.features.task_list
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.lenta.inventory.R
 import com.lenta.inventory.platform.navigation.IScreenNavigator
 import com.lenta.inventory.repos.IRepoInMemoryHolder
 import com.lenta.inventory.requests.network.TaskListNetRequest
@@ -33,19 +32,21 @@ class TaskListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     val tkNumber: String by lazy {
         sessionInfo.market ?: ""
     }
-    val tasks: LiveData<List<TaskItem>> by lazy {
+    val tasks: LiveData<List<TaskItemVm>> by lazy {
         repoInMemoryHolder.tasksListRestInfo.map {
-            it?.tasks?.mapIndexed { index, task ->
-                TaskItem(
-                        taskNumber = task.taskNumber,
-                        number = "${index + 1}",
-                        title = task.taskName,
-                        stock = task.stock,
-                        typeConversion = if (task.isRecount.isBlank()) "1" else "2",
-                        statusTask = StatusTask.from(task),
-                        count = task.countProductsInTask
-                )
-            }?.reversed()
+            it!!.tasks
+                    .mapIndexed { index, task ->
+                        TaskItemVm(
+                                taskNumber = task.taskNumber,
+                                number = "${repoInMemoryHolder.tasksListRestInfo.value!!.tasks.size
+                                        - index}",
+                                title = "${task.taskType}-${task.taskNumber}-${task.taskName}",
+                                stock = task.stock,
+                                typeConversion = if (task.isRecount.isBlank()) "1" else "2",
+                                statusTask = StatusTask.from(taskItem = task, userName = sessionInfo.userName!!),
+                                count = task.countProductsInTask
+                        )
+                    }
         }
     }
     val tasksCount by lazy {
@@ -54,6 +55,9 @@ class TaskListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
 
     init {
+        viewModelScope.launch {
+            filter.value = sessionInfo.userName
+        }
     }
 
 
@@ -77,26 +81,41 @@ class TaskListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
         screenNavigator.openAlertScreen(failure)
     }
 
-    private fun handleUpdateSuccess(tasksListRestInfo: TasksListRestInfo) {
-        repoInMemoryHolder.tasksListRestInfo.value = tasksListRestInfo
-
-    }
-
     override fun onOkInSoftKeyboard(): Boolean {
         onClickUpdate()
         return true
     }
 
     fun onClickItemPosition(position: Int) {
-        tasks.value?.getOrNull(position)?.let {
-            screenNavigator.openJobCard(it.taskNumber)
+        tasks.value?.getOrNull(position)?.let { taskItem ->
+            if (taskItem.statusTask == StatusTask.BlockedMe) {
+                openConfirmationScreen(taskItem.taskNumber)
+                return
+            }
+            screenNavigator.openJobCard(taskItem.taskNumber)
         }
+
+    }
+
+    private fun openConfirmationScreen(taskNumber: String) {
+        repoInMemoryHolder.tasksListRestInfo.value!!.tasks
+                .firstOrNull { it.taskNumber == taskNumber }?.let {
+                    screenNavigator.openConfirmationTaskOpenScreen(it.lockUser, it.lockIP) {
+                        screenNavigator.openJobCard(taskNumber)
+                    }
+                }
+    }
+
+
+    private fun handleUpdateSuccess(tasksListRestInfo: TasksListRestInfo) {
+        repoInMemoryHolder.tasksListRestInfo.value = tasksListRestInfo
 
     }
 
 }
 
-data class TaskItem(
+
+data class TaskItemVm(
         val taskNumber: String,
         val number: String,
         val title: String,
@@ -116,12 +135,12 @@ enum class StatusTask {
     Parallels;
 
     companion object {
-        fun from(taskItem: TasksItem): StatusTask {
+        fun from(taskItem: TasksItem, userName: String): StatusTask {
             return when {
                 taskItem.notFinish.isNotBlank() -> Processed
                 taskItem.mode == "2" || taskItem.mode == "3" -> Parallels
-                taskItem.blockType == "1" -> BlockedMe
-                taskItem.blockType == "2" -> BlockedNotMe
+                taskItem.blockType == "1" && taskItem.lockUser == userName -> BlockedMe
+                taskItem.blockType == "1" || taskItem.blockType == "2" -> BlockedNotMe
                 else -> Free
 
 

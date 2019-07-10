@@ -48,8 +48,8 @@ class NumberScreenGenerator @Inject constructor() : INumberScreenGenerator {
             is SetsDetailsStorageFragment -> "27"
             is SetsInfoFragment -> "24"
             is SetComponentsFragment -> "25"
-            is TaskListFragment -> "04"
-            is JobCardFragment -> "05"
+            is TaskListFragment -> "05"
+            is JobCardFragment -> "06"
             else -> null
         }
         )
