@@ -23,13 +23,13 @@
             android:layout_marginEnd="16dp"
             android:layout_marginBottom="32dp"
             android:gravity="center"
-            android:text="@{String.format(@string/code_screen_message, vm.message)}"
+            android:text="@{@string/code_screen_message(vm.message)}"
             android:textAllCaps="true"
             android:textSize="16sp"
             app:layout_constraintBottom_toTopOf="@+id/code_container"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            tools:text="Введите пин-код"/>
+            tools:text="@string/code_screen_message"/>
 
         <LinearLayout
             android:id="@+id/code_container"
