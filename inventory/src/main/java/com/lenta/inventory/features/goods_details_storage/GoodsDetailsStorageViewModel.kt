@@ -104,7 +104,7 @@ class GoodsDetailsStorageViewModel : CoreViewModel() {
                     )
             )
         }
-        countedCategories.postValue(goodsDetailsCategoriesItem)
+        countedCategories.postValue(goodsDetailsCategoriesItem.reversed())
         categoriesSelectionsHelper.clearPositions()
     }
 

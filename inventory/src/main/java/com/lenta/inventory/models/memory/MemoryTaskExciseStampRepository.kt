@@ -37,18 +37,12 @@ class MemoryTaskExciseStampRepository : ITaskExciseStampRepository {
     }
 
     override fun deleteExciseStamp(exciseStamp: TaskExciseStamp): Boolean {
-        var index = -1
-        for (i in stamps.indices) {
-            if (exciseStamp.code == stamps[i].code) {
-                index = i
-            }
+        stamps.filter {taskExciseStamp ->
+            exciseStamp.code == taskExciseStamp.code
+        }.map {
+            return stamps.remove(it)
         }
-
-        if (index == -1) {
-            return false
-        }
-        stamps.removeAt(index)
-        return true
+        return false
     }
 
     override fun deleteExciseStampsForProduct(product: TaskProductInfo): Boolean {
