@@ -172,16 +172,21 @@ class testInventoryTask_ProcessGeneralProductService {
         inventoryTask.taskRepository.getProducts().addProduct(product1!!)
         inventoryTask.taskRepository.getProducts().addProduct(product2!!)
 
-        //удаляем продукт с МХ=1
+        //удаляем продукт с МХ=1 (дублируем удаление несколько раз)
         inventoryTask.taskRepository.getProducts().deleteProduct(product1!!)
-        product1 = null
-        product2 = null
+
         var test = false
         if (inventoryTask.taskRepository.getProducts().findProduct("materialNumber111", "1") == null) {
             test = true
         }
         Assert.assertTrue(test)
 
+        //продублируем удаление продукта с МХ=1 несколько раз, если код удаления не верен, то после второго удаления продукта с МХ=1, может удалиться и продукт с МХ=2
+        inventoryTask.taskRepository.getProducts().deleteProduct(product1!!)
+        inventoryTask.taskRepository.getProducts().deleteProduct(product1!!)
+        inventoryTask.taskRepository.getProducts().deleteProduct(product1!!)
+        product1 = null
+        product2 = null
         //проверяем,, продукт с МХ=2 должен быть в репозитории
         test = false
         if (inventoryTask.taskRepository.getProducts().findProduct("materialNumber111", "2") != null) {

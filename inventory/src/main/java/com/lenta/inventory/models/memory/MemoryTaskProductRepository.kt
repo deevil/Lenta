@@ -42,8 +42,13 @@ class MemoryTaskProductRepository : ITaskProductRepository {
         return false
     }
 
-    override fun deleteProduct(product: TaskProductInfo) {
-        productInfo.remove(product)
+    override fun deleteProduct(product: TaskProductInfo): Boolean {
+        productInfo.filter {taskProductInfo ->
+            product.materialNumber == taskProductInfo.materialNumber && product.placeCode == taskProductInfo.placeCode
+        }.map {
+            return productInfo.remove(it)
+        }
+        return false
     }
 
     override fun getNotProcessedProducts(): List<TaskProductInfo> {
