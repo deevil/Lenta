@@ -33,6 +33,9 @@ class CodeViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     val pinCode3: MutableLiveData<String> = MutableLiveData("")
     val pinCode4: MutableLiveData<String> = MutableLiveData("")
 
+    private val selfControlType: MutableLiveData<String> = MutableLiveData()
+    private val externalAuditType: MutableLiveData<String> = MutableLiveData()
+
     val message: MutableLiveData<String> = MutableLiveData()
     private val incorrectCodeMessage: MutableLiveData<String> = MutableLiveData()
 
@@ -45,16 +48,25 @@ class CodeViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
                 checkType = type
             }
 
-            pinCode = when (checkType) {
-                CheckTypeViewModel.SELF_CONTROL -> zmpUtz14V001.getSelfControlPinCode()
-                CheckTypeViewModel.EXTERNAL_AUDIT -> zmpUtz14V001.getExternalAuditPinCode()
+            when (checkType) {
+                CheckTypeViewModel.SELF_CONTROL -> {
+                    message.value = selfControlType.value
+                    pinCode = zmpUtz14V001.getSelfControlPinCode()
+                }
+                CheckTypeViewModel.EXTERNAL_AUDIT -> {
+                    message.value = externalAuditType.value
+                    pinCode = zmpUtz14V001.getExternalAuditPinCode()
+                }
                 else -> {
                     throw IllegalArgumentException("Тип проверки не определен!")
                 }
             }
-
-            message.value = checkType
         }
+    }
+
+    fun setTextForCheckType(selfControlType: String, externalAuditType: String) {
+        this.selfControlType.value = selfControlType
+        this.externalAuditType.value = externalAuditType
     }
 
     fun setIncorrectCodeMessage(incorrectCodeMessage: String) {

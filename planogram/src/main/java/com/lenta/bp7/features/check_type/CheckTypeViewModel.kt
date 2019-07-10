@@ -13,8 +13,8 @@ class CheckTypeViewModel : CoreViewModel() {
     lateinit var sessionInfo: ISessionInfo
 
     companion object {
-        const val SELF_CONTROL = "Самоконтроль ТК"
-        const val EXTERNAL_AUDIT = "Внешний аудит"
+        const val SELF_CONTROL = "SELF_CONTROL"
+        const val EXTERNAL_AUDIT = "EXTERNAL_AUDIT"
     }
 
     fun onClickSelfControl() {

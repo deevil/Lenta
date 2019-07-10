@@ -29,6 +29,7 @@ class CodeFragment : CoreFragment<FragmentCodeBinding, CodeViewModel>(), Toolbar
             getAppComponent()?.inject(it)
 
             it.setIncorrectCodeMessage(getString(R.string.incorrect_code_message))
+            it.setTextForCheckType(getString(R.string.self_control_tc), getString(R.string.external_audit))
 
             return it
         }

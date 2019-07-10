@@ -9,4 +9,5 @@
     <string name="select_mode">Выбор режима</string>
     <string name="code_screen_message">Введите пин-код\nдля подтверждения\nвхода в режим\n\"%1$s\"</string>
     <string name="incorrect_code_message">Введен некорректный пин-код!</string>
+    <string name="auxiliary_menu">Вспомогательное меню</string>
 </resources>
