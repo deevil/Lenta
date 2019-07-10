@@ -7,7 +7,7 @@ class ProcessGeneralProductService(private val taskDescription: TaskDescription,
                                    private val productInfo: TaskProductInfo) : IProcessProductService {
 
     override fun getFactCount(): Double {
-        return productInfo.factCount ?: 0.0
+        return taskRepository.getProducts().findProduct(productInfo)?.factCount ?: 0.0
     }
 
     override fun setFactCount(count: Double){

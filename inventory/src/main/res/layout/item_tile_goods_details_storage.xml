@@ -7,7 +7,7 @@
 
         <variable
             name="vm"
-            type="com.lenta.inventory.features.goods_details.GoodsDetailsStorageItem" />
+            type="com.lenta.inventory.features.goods_details_storage.GoodsDetailsStorageItem" />
 
     </data>
 
