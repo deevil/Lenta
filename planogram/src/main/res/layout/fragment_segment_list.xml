@@ -39,7 +39,9 @@
                 <TextView
                     style="@style/ColumnTitleStyle"
                     android:layout_weight="@integer/segment_column_2"
-                    android:text="@string/segment_title_number_date"/>
+                    android:paddingStart="5dp"
+                    android:text="@string/segment_title_number_date"
+                    tools:ignore="RtlSymmetry"/>
 
                 <View
                     style="@style/TitleColumnVerticalDivider"/>

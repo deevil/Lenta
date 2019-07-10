@@ -24,7 +24,7 @@
                 android:id="@+id/tv_item_number"
                 style="@style/ItemTextStyle"
                 android:layout_weight="@integer/segment_column_1"
-                tools:text="3"/>
+                tools:text="1"/>
 
             <View
                 style="@style/TitleColumnVerticalDivider"/>
