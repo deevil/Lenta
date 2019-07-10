@@ -14,11 +14,11 @@ class MemoryTaskExciseStampRepository : ITaskExciseStampRepository {
     }
 
     override fun findExciseStampsOfProduct(product: TaskProductInfo): List<TaskExciseStamp> {
-        return findExciseStampsOfProduct(product.materialNumber)
+        return findExciseStampsOfProduct(product.materialNumber, product.placeCode)
     }
 
-    override fun findExciseStampsOfProduct(materialNumber: String): List<TaskExciseStamp> {
-        return stamps.filter { it.materialNumber == materialNumber }
+    override fun findExciseStampsOfProduct(materialNumber: String, storePlaceNumber: String): List<TaskExciseStamp> {
+        return stamps.filter { it.materialNumber == materialNumber && it.placeCode == storePlaceNumber}
     }
 
     override fun addExciseStamp(exciseStamp: TaskExciseStamp): Boolean {

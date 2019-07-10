@@ -5,7 +5,6 @@ import com.lenta.inventory.R
 import com.lenta.inventory.features.main_menu.MainMenuFragment
 import com.lenta.inventory.features.auth.AuthFragment
 import com.lenta.inventory.features.discrepancies_found.DiscrepanciesFoundFragment
-import com.lenta.inventory.features.goods_details.GoodsDetailsFragment
 import com.lenta.inventory.features.goods_details_storage.GoodsDetailsStorageFragment
 import com.lenta.inventory.features.goods_information.excise_alco.ExciseAlcoInfoFragment
 import com.lenta.inventory.features.goods_information.general.GoodsInfoFragment
@@ -19,7 +18,6 @@ import com.lenta.inventory.features.loading.tasks.LoadingTaskContentFragment
 import com.lenta.inventory.features.loading.tasks.LoadingTasksFragment
 import com.lenta.inventory.features.select_market.SelectMarketFragment
 import com.lenta.inventory.features.select_personnel_number.SelectPersonnelNumberFragment
-import com.lenta.inventory.features.sets_details_storage.SetsDetailsStorageFragment
 import com.lenta.inventory.features.storages_list.StoragesListFragment
 import com.lenta.inventory.features.task_list.TaskItemVm
 import com.lenta.inventory.features.task_list.TaskListFragment
@@ -83,9 +81,9 @@ class ScreenNavigator(
         }
     }
 
-    override fun openGoodsInfoScreen(productInfo: TaskProductInfo, storePlaceNumber: String) {
+    override fun openGoodsInfoScreen(productInfo: TaskProductInfo) {
         runOrPostpone {
-            getFragmentStack()?.push(GoodsInfoFragment(productInfo, storePlaceNumber))
+            getFragmentStack()?.push(GoodsInfoFragment.create(productInfo))
         }
     }
 
@@ -95,21 +93,9 @@ class ScreenNavigator(
         }
     }
 
-    override fun openGoodsDetailsScreen() {
+    override fun openGoodsDetailsStorageScreen(productInfo: TaskProductInfo) {
         runOrPostpone {
-            getFragmentStack()?.push(GoodsDetailsFragment())
-        }
-    }
-
-    override fun openGoodsDetailsStorageScreen() {
-        runOrPostpone {
-            getFragmentStack()?.push(GoodsDetailsStorageFragment())
-        }
-    }
-
-    override fun openSetsDetailsStorageScreen() {
-        runOrPostpone {
-            getFragmentStack()?.push(SetsDetailsStorageFragment())
+            getFragmentStack()?.push(GoodsDetailsStorageFragment.create(productInfo))
         }
     }
 
@@ -195,10 +181,8 @@ interface IScreenNavigator : ICoreNavigator {
     fun openFastDataLoadingScreen()
     fun openSelectionPersonnelNumberScreen()
     fun openMainMenuScreen()
-    fun openGoodsInfoScreen(productInfo: TaskProductInfo, storePlaceNumber: String)
-    fun openGoodsDetailsScreen()
-    fun openGoodsDetailsStorageScreen()
-    fun openSetsDetailsStorageScreen()
+    fun openGoodsInfoScreen(productInfo: TaskProductInfo)
+    fun openGoodsDetailsStorageScreen(productInfo: TaskProductInfo)
     fun openGoodsListScreen()
     fun openSetsInfoScreen()
     fun openSetComponentsScreen()

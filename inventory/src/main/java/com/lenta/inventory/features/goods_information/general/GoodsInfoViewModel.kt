@@ -54,7 +54,12 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
     init {
         viewModelScope.launch {
             suffix.value = productInfo.value?.uom?.name
+            storePlaceNumber.value= productInfo.value?.placeCode
         }
+    }
+
+    fun onClickDetails(){
+        screenNavigator.openGoodsDetailsStorageScreen(productInfo.value!!)
     }
 
     fun onClickMissing() {
