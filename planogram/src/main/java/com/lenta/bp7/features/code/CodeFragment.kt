@@ -33,8 +33,6 @@ class CodeFragment : CoreFragment<FragmentCodeBinding, CodeViewModel>(), Toolbar
 
             return it
         }
-
-
     }
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
@@ -59,9 +57,9 @@ class CodeFragment : CoreFragment<FragmentCodeBinding, CodeViewModel>(), Toolbar
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding?.apply {
-            etCode1.addTextChangedListener(EnterCodeTextWatcher(binding?.etCode2))
-            etCode2.addTextChangedListener(EnterCodeTextWatcher(binding?.etCode3))
-            etCode3.addTextChangedListener(EnterCodeTextWatcher(binding?.etCode4))
+            etNumber1.addTextChangedListener(EnterCodeTextWatcher(binding?.etNumber2))
+            etNumber2.addTextChangedListener(EnterCodeTextWatcher(binding?.etNumber3))
+            etNumber3.addTextChangedListener(EnterCodeTextWatcher(binding?.etNumber4))
         }
     }
 }

@@ -8,6 +8,7 @@ import com.lenta.bp7.features.check_type.CheckTypeViewModel
 import com.lenta.bp7.features.loading.fast.FastLoadingViewModel
 import com.lenta.bp7.features.option.OptionViewModel
 import com.lenta.bp7.features.code.CodeViewModel
+import com.lenta.bp7.features.segment_list.SegmentListViewModel
 import com.lenta.bp7.features.select_market.SelectMarketViewModel
 import com.lenta.shared.di.AppScope
 import com.lenta.shared.di.CoreComponent
@@ -26,6 +27,7 @@ interface AppComponent {
     fun inject(it: CheckTypeViewModel)
     fun inject(it: CodeViewModel)
     fun inject(it: OptionViewModel)
+    fun inject(it: SegmentListViewModel)
 
 }
 

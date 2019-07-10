@@ -35,6 +35,6 @@ class OptionViewModel : CoreViewModel() {
 
     fun onClickNext() {
         // Перейти к следующему экрану
-        //navigator.openSomething()
+        navigator.openSegmentListScreen()
     }
 }

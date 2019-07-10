@@ -6,6 +6,7 @@ import com.lenta.bp7.features.check_type.CheckTypeFragment
 import com.lenta.bp7.features.loading.fast.FastDataLoadingFragment
 import com.lenta.bp7.features.option.OptionFragment
 import com.lenta.bp7.features.code.CodeFragment
+import com.lenta.bp7.features.segment_list.SegmentListFragment
 import com.lenta.bp7.features.select_market.SelectMarketFragment
 
 import com.lenta.shared.account.IAuthenticator
@@ -22,10 +23,16 @@ class ScreenNavigator(
         private val progressUseCaseInformator: IProgressUseCaseInformator
 ) : IScreenNavigator, ICoreNavigator by coreNavigator {
 
+    private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
+
     override fun closeAllScreen() {
         runOrPostpone {
             getFragmentStack()?.popAll()
         }
+    }
+
+    override fun openMainMenuScreen() {
+        openNotImplementedScreenAlert("Главное меню")
     }
 
     override fun openFirstScreen() {
@@ -72,13 +79,11 @@ class ScreenNavigator(
         }
     }
 
-    override fun openMainMenuScreen() {
-        openNotImplementedScreenAlert("Главное меню")
+    override fun openSegmentListScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(SegmentListFragment())
+        }
     }
-
-
-    private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
-
 }
 
 interface IScreenNavigator : ICoreNavigator {
@@ -91,5 +96,6 @@ interface IScreenNavigator : ICoreNavigator {
     fun openCheckTypeScreen()
     fun openCodeScreen()
     fun openOptionScreen()
+    fun openSegmentListScreen()
 
 }
