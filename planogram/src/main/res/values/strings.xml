@@ -10,4 +10,6 @@
     <string name="code_screen_message">Введите пин-код\nдля подтверждения\nвхода в режим\n\"%1$s\"</string>
     <string name="incorrect_code_message">Введен некорректный пин-код!</string>
     <string name="auxiliary_menu">Вспомогательное меню</string>
+    <string name="store_number_prefix">"TK - "</string>
+    <string name="list_of_processed_segments">Список обработанных сегментов</string>
 </resources>

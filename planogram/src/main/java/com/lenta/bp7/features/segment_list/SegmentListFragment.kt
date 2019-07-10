@@ -1,20 +1,23 @@
 package com.lenta.bp7.features.segment_list
 
+import android.view.View
 import com.lenta.bp7.R
 import com.lenta.bp7.databinding.FragmentSegmentListBinding
 import com.lenta.bp7.platform.extentions.getAppComponent
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
+import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
+import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
+import com.lenta.shared.utilities.extentions.connectLiveData
+import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
 import com.lenta.shared.utilities.extentions.provideViewModel
 
-class SegmentListFragment : CoreFragment<FragmentSegmentListBinding, SegmentListViewModel>() {
+class SegmentListFragment : CoreFragment<FragmentSegmentListBinding, SegmentListViewModel>(), ToolbarButtonsClickListener {
 
     override fun getLayoutId(): Int = R.layout.fragment_segment_list
 
-    override fun getPageNumber(): String {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    override fun getPageNumber(): String? = generateScreenNumberFromPostfix("08")
 
     override fun getViewModel(): SegmentListViewModel {
         provideViewModel(SegmentListViewModel::class.java).let {
@@ -24,12 +27,21 @@ class SegmentListFragment : CoreFragment<FragmentSegmentListBinding, SegmentList
     }
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        topToolbarUiModel.title.value = vm.getTitle(getString(R.string.store_number_prefix))
+        topToolbarUiModel.description.value = getString(R.string.list_of_processed_segments)
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        bottomToolbarUiModel.cleanAll()
+        bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
+        bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.save, enabled = false)
+
+        viewLifecycleOwner.connectLiveData(vm.enabledSaveBtn, bottomToolbarUiModel.uiModelButton5.enabled)
     }
 
-
+    override fun onToolbarButtonClick(view: View) {
+        if (view.id == R.id.b_5) {
+            vm.onClickSave()
+        }
+    }
 }

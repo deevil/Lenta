@@ -32,15 +32,11 @@ class OptionFragment : CoreFragment<FragmentOptionBinding, OptionViewModel>(), T
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
         topToolbarUiModel.title.value = getAppTitle()
         topToolbarUiModel.description.value = getString(R.string.auxiliary_menu)
-        topToolbarUiModel.uiModelButton1.show(ImageButtonDecorationInfo.settings)
-        topToolbarUiModel.uiModelButton2.show(ImageButtonDecorationInfo.exitFromApp)
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
-        bottomToolbarUiModel
-                .uiModelButton5.show(ButtonDecorationInfo.next)
-        bottomToolbarUiModel
-                .uiModelButton1.show(ButtonDecorationInfo.back)
+        bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.next)
+        bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
     }
 
     override fun onToolbarButtonClick(view: View) {
