@@ -28,6 +28,9 @@
     <string name="period_of_actual">Период актуальности</string>
     <string name="strict_list">Строгий список</string>
     <string name="tasks_loading">Загрузка заданий</string>
+    <string name="task_content_loading">Загрузка товаров задания/МХ</string>
+    <string name="store_place_locking">Блокировка МХ</string>
+    <string name="store_place_unlocking">Разблокировка МХ</string>
     <string name="primary">Первичный</string>
     <string name="secondary">Вторичный</string>
     <string name="from_to">c %s\nпо %s</string>
