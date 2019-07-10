@@ -22,6 +22,7 @@
         <activity
             android:name=".activity.main.MainActivity"
             android:launchMode="singleInstance"
+            android:excludeFromRecents="true"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -33,7 +34,7 @@
             </intent-filter>
         </activity>
 
-        <service android:name="com.lenta.shared.platform.high_priority.MainService"/>
+        <service android:name="com.lenta.shared.platform.high_priority.MainService" />
 
         <meta-data
             android:name="io.fabric.ApiKey"
