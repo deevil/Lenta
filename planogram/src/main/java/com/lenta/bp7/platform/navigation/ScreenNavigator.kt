@@ -6,7 +6,10 @@ import com.lenta.bp7.features.check_type.CheckTypeFragment
 import com.lenta.bp7.features.loading.fast.FastDataLoadingFragment
 import com.lenta.bp7.features.option.OptionFragment
 import com.lenta.bp7.features.code.CodeFragment
+import com.lenta.bp7.features.good_list.GoodListFragment
+import com.lenta.bp7.features.segment_list.SegmentListFragment
 import com.lenta.bp7.features.select_market.SelectMarketFragment
+import com.lenta.bp7.features.shelf_list.ShelfListFragment
 
 import com.lenta.shared.account.IAuthenticator
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
@@ -22,10 +25,16 @@ class ScreenNavigator(
         private val progressUseCaseInformator: IProgressUseCaseInformator
 ) : IScreenNavigator, ICoreNavigator by coreNavigator {
 
+    private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
+
     override fun closeAllScreen() {
         runOrPostpone {
             getFragmentStack()?.popAll()
         }
+    }
+
+    override fun openMainMenuScreen() {
+        openNotImplementedScreenAlert("Главное меню")
     }
 
     override fun openFirstScreen() {
@@ -72,13 +81,23 @@ class ScreenNavigator(
         }
     }
 
-    override fun openMainMenuScreen() {
-        openNotImplementedScreenAlert("Главное меню")
+    override fun openSegmentListScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(SegmentListFragment())
+        }
     }
 
+    override fun openShelfListScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(ShelfListFragment())
+        }
+    }
 
-    private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
-
+    override fun openGoodListScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(GoodListFragment())
+        }
+    }
 }
 
 interface IScreenNavigator : ICoreNavigator {
@@ -91,5 +110,8 @@ interface IScreenNavigator : ICoreNavigator {
     fun openCheckTypeScreen()
     fun openCodeScreen()
     fun openOptionScreen()
+    fun openSegmentListScreen()
+    fun openShelfListScreen()
+    fun openGoodListScreen()
 
 }

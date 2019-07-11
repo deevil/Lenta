@@ -33,8 +33,6 @@ class CodeFragment : CoreFragment<FragmentCodeBinding, CodeViewModel>(), Toolbar
 
             return it
         }
-
-
     }
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
@@ -45,7 +43,7 @@ class CodeFragment : CoreFragment<FragmentCodeBinding, CodeViewModel>(), Toolbar
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
         bottomToolbarUiModel.cleanAll()
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
-        bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.goOver, enabled = false)
+        bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.apply2, enabled = false)
 
         viewLifecycleOwner.connectLiveData(vm.enabledGoOverBtn, bottomToolbarUiModel.uiModelButton5.enabled)
     }
@@ -59,9 +57,9 @@ class CodeFragment : CoreFragment<FragmentCodeBinding, CodeViewModel>(), Toolbar
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding?.apply {
-            etCode1.addTextChangedListener(EnterCodeTextWatcher(binding?.etCode2))
-            etCode2.addTextChangedListener(EnterCodeTextWatcher(binding?.etCode3))
-            etCode3.addTextChangedListener(EnterCodeTextWatcher(binding?.etCode4))
+            etNumber1.addTextChangedListener(EnterCodeTextWatcher(binding?.etNumber2))
+            etNumber2.addTextChangedListener(EnterCodeTextWatcher(binding?.etNumber3))
+            etNumber3.addTextChangedListener(EnterCodeTextWatcher(binding?.etNumber4))
         }
     }
 }

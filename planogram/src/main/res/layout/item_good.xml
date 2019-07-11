@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="vm"
+            type="com.lenta.bp7.features.segment_list.SegmentListViewModel"/>
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/list_row_height"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                style="@style/LinearCellStyle"
+                android:layout_weight="@integer/size_column_1">
+
+                <TextView
+                    android:id="@+id/tv_item_number"
+                    style="@style/CellTextStyle"
+                    tools:text="1"/>
+
+            </LinearLayout>
+
+            <View
+                style="@style/RowVerticalDivider"/>
+
+            <LinearLayout
+                style="@style/LinearCellStyle"
+                android:layout_weight="@integer/size_column_2">
+
+                <TextView
+                    android:id="@+id/tv_good_number_name"
+                    style="@style/CellTextStyle"
+                    android:maxLines="2"
+                    tools:text="000021 Масло"/>
+
+            </LinearLayout>
+
+            <View
+                style="@style/RowVerticalDivider"/>
+
+            <LinearLayout
+                style="@style/LinearCellStyle"
+                android:layout_weight="@integer/size_column_3">
+
+                <ImageView
+                    android:id="@+id/iv_shelf_status"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_close_white_24dp"/>
+
+            </LinearLayout>
+
+            <View
+                style="@style/RowVerticalDivider"/>
+
+            <LinearLayout
+                style="@style/LinearCellStyle"
+                android:layout_weight="@integer/size_column_4">
+
+                <TextView
+                    android:id="@+id/tv_goods_count"
+                    style="@style/CellTextStyle"
+                    tools:text="0"/>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/color_divider"/>
+
+    </LinearLayout>
+
+</layout>

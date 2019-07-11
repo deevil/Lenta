@@ -26,10 +26,10 @@ class CodeViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     @Inject
     lateinit var database: IDatabaseRepo
 
-    val pinCode1: MutableLiveData<String> = MutableLiveData("")
-    val pinCode2: MutableLiveData<String> = MutableLiveData("")
-    val pinCode3: MutableLiveData<String> = MutableLiveData("")
-    val pinCode4: MutableLiveData<String> = MutableLiveData("")
+    val number1: MutableLiveData<String> = MutableLiveData("")
+    val number2: MutableLiveData<String> = MutableLiveData("")
+    val number3: MutableLiveData<String> = MutableLiveData("")
+    val number4: MutableLiveData<String> = MutableLiveData("")
 
     private val selfControlType: MutableLiveData<String> = MutableLiveData()
     private val externalAuditType: MutableLiveData<String> = MutableLiveData()
@@ -37,7 +37,7 @@ class CodeViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     val message: MutableLiveData<String> = MutableLiveData()
     private val incorrectCodeMessage: MutableLiveData<String> = MutableLiveData()
 
-    var pinCode: String? = ""
+    private var pinCode: String? = ""
 
     init {
         viewModelScope.launch {
@@ -66,10 +66,10 @@ class CodeViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
         this.incorrectCodeMessage.value = incorrectCodeMessage
     }
 
-    val enabledGoOverBtn: MutableLiveData<Boolean> = pinCode1
-            .combineLatest(pinCode2)
-            .combineLatest(pinCode3)
-            .combineLatest(pinCode4)
+    val enabledGoOverBtn: MutableLiveData<Boolean> = number1
+            .combineLatest(number2)
+            .combineLatest(number3)
+            .combineLatest(number4)
             .map {
                 val pin1 = it?.first?.first?.first
                 val pin2 = it?.first?.first?.second
@@ -80,7 +80,7 @@ class CodeViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
     fun onClickGoOver() {
         Logg.d { "PIN check: $pinCode" }
-        if (pinCode == pinCode1.value + pinCode2.value + pinCode3.value + pinCode4.value) {
+        if (pinCode == number1.value + number2.value + number3.value + number4.value) {
             navigator.openOptionScreen()
         } else {
             navigator.openAlertScreen(message = incorrectCodeMessage.value!!, pageNumber = "95")
