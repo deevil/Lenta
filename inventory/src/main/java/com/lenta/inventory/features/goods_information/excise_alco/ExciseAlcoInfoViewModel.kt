@@ -21,9 +21,9 @@ import com.lenta.shared.view.OnPositionClickListener
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-const val SPIN_POSITION_QUANTITY = 0
-const val SPIN_POSITION_PARTLY = 1
-const val SPIN_POSITION_VINTAGE = 2
+private const val SPIN_POSITION_QUANTITY = 0
+private const val SPIN_POSITION_PARTLY = 1
+private const val SPIN_POSITION_VINTAGE = 2
 
 class ExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
 
@@ -78,6 +78,7 @@ class ExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
     fun onClickDetails() {
         //todo
         selectedPosition.value = SPIN_POSITION_PARTLY
+        count.value = processExciseAlcoProductService.getFactCount().toString()
     }
 
     fun onClickMissing() {

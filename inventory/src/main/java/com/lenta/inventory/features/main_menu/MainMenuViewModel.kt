@@ -58,16 +58,16 @@ class MainMenuViewModel : CoreViewModel() {
 
         val productInfo6 = TaskProductInfo("000077", "Виски", Uom("ST", "шт"), ProductType.ExciseAlcohol,
                 false, "1", MatrixType.Active, "materialType","00", 2.0, true)
-        /**val productInfo7 = TaskProductInfo("000077", "Виски", Uom("ST", "шт"), ProductType.ExciseAlcohol,
+        val productInfo7 = TaskProductInfo("000077", "Виски", Uom("ST", "шт"), ProductType.ExciseAlcohol,
                 false, "1", MatrixType.Active, "materialType","2", 2.0, true)
         val productInfo8 = TaskProductInfo("000077", "Виски", Uom("ST", "шт"), ProductType.ExciseAlcohol,
                 false, "1", MatrixType.Active, "materialType","3", null, false)
 
-        val exciseStamp1 = TaskExciseStamp("000077", "951869302882400418200O46BLILJ3I8DPM0DV1NT3PAFZR9M13NK6CD9LOQKOE0VX143NMT2JZSTII5RQG0A5N5YVB8BG90UPAC5BTDNALGLOH9YH8SP1QV6RJ9YTFIIQAG2RFX73JKZLAM3C5060", "1", "boxNumber1", "", "", null, false)
-        val exciseStamp2 = TaskExciseStamp("000077", "951869302882400418200O46BLILJ3I8DPM0DV1NT3PAFZR9M13NK6CD9LOQKOE0VX143NMT2JZSTII5RQG0A5N5YVB8BG90UPAC5BTDNALGLOH9YH8SP1QV6RJ9YTFIIQAG2RFX73JKZLAM3C5061", "1", "boxNumber2", "", "", null, false)
-        val exciseStamp3 = TaskExciseStamp("000077", "22N0000154KNI691XDC380V71231001511013ZZ012345678901234567890123456ZZ", "2", "boxNumber3", "", "", null, false)
-        val exciseStamp4 = TaskExciseStamp("000077", "22N0000154KNI691XDC380V71231001513730ZZ012345678901234567890123456ZZ", "2", "boxNumber3", "", "", null, false)
-*/
+        val exciseStamp1 = TaskExciseStamp("000077", "951869302882400418200O46BLILJ3I8DPM0DV1NT3PAFZR9M13NK6CD9LOQKOE0VX143NMT2JZSTII5RQG0A5N5YVB8BG90UPAC5BTDNALGLOH9YH8SP1QV6RJ9YTFIIQAG2RFX73JKZLAM3C5060", "00", "boxNumber1", "", "", null, false)
+        val exciseStamp2 = TaskExciseStamp("000077", "951869302882400418200O46BLILJ3I8DPM0DV1NT3PAFZR9M13NK6CD9LOQKOE0VX143NMT2JZSTII5RQG0A5N5YVB8BG90UPAC5BTDNALGLOH9YH8SP1QV6RJ9YTFIIQAG2RFX73JKZLAM3C5061", "00", "boxNumber2", "", "", null, false)
+        val exciseStamp3 = TaskExciseStamp("000077", "22N0000154KNI691XDC380V71231001511013ZZ012345678901234567890123456ZZ", "00", "boxNumber3", "", "", null, false)
+        val exciseStamp4 = TaskExciseStamp("000077", "22N0000154KNI691XDC380V71231001513730ZZ012345678901234567890123456ZZ", "00", "boxNumber3", "", "", null, false)
+
 
 
         if (processServiceManager.getInventoryTask() == null) {
@@ -76,11 +76,11 @@ class MainMenuViewModel : CoreViewModel() {
         //processServiceManager.getInventoryTask()!!.taskRepository.getProducts().deleteProduct(productInfo6)
         processServiceManager.getInventoryTask()!!.taskRepository.getProducts().addProduct(productInfo6)
         /**processServiceManager.getInventoryTask()!!.taskRepository.getProducts().addProduct(productInfo7)
-        processServiceManager.getInventoryTask()!!.taskRepository.getProducts().addProduct(productInfo8)
+        processServiceManager.getInventoryTask()!!.taskRepository.getProducts().addProduct(productInfo8)*/
         processServiceManager.getInventoryTask()!!.taskRepository.getExciseStamps().addExciseStamp(exciseStamp1)
         processServiceManager.getInventoryTask()!!.taskRepository.getExciseStamps().addExciseStamp(exciseStamp2)
         processServiceManager.getInventoryTask()!!.taskRepository.getExciseStamps().addExciseStamp(exciseStamp3)
-        processServiceManager.getInventoryTask()!!.taskRepository.getExciseStamps().addExciseStamp(exciseStamp4)*/
+        processServiceManager.getInventoryTask()!!.taskRepository.getExciseStamps().addExciseStamp(exciseStamp4)
 
         screenNavigator.openExciseAlcoInfoScreen(processServiceManager.getInventoryTask()!!.taskRepository.getProducts().findProduct(productInfo6)!!)
     }
