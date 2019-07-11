@@ -26,13 +26,11 @@ class ShelfListFragment : CoreFragment<FragmentShelfListBinding, ShelfListViewMo
     }
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
-        topToolbarUiModel.cleanAll()
         topToolbarUiModel.title.value = getString(R.string.title_segment_number, vm.getSegmentNumber())
         topToolbarUiModel.description.value = getString(R.string.list_of_processed_selves)
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
-        bottomToolbarUiModel.cleanAll()
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
         bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.delete, enabled = false)
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.apply, enabled = true)
