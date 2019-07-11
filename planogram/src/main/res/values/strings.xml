@@ -31,5 +31,10 @@
     <string name="column_title_goods">Товаров</string>
     <string name="column_title_sign">Признак</string>
     <string name="column_title_facing">Фейсинг</string>
+    <string name="number_of_facings">Количество фейсингов</string>
+    <string name="enter_quantity">Введите количество</string>
+    <string name="total_facings">Итого фейсингов</string>
+    <string name="goods_barcode">Штрихкод товара</string>
+    <string name="good_on_shelf">Товар на полке</string>
 
 </resources>

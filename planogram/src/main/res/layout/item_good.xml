@@ -32,7 +32,7 @@
             </LinearLayout>
 
             <View
-                style="@style/ColumnVerticalDivider"/>
+                style="@style/RowVerticalDivider"/>
 
             <LinearLayout
                 style="@style/LinearCellStyle"
@@ -47,7 +47,7 @@
             </LinearLayout>
 
             <View
-                style="@style/ColumnVerticalDivider"/>
+                style="@style/RowVerticalDivider"/>
 
             <LinearLayout
                 style="@style/LinearCellStyle"
@@ -62,7 +62,7 @@
             </LinearLayout>
 
             <View
-                style="@style/ColumnVerticalDivider"/>
+                style="@style/RowVerticalDivider"/>
 
             <LinearLayout
                 style="@style/LinearCellStyle"

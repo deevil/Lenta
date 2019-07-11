@@ -38,7 +38,7 @@
                 </LinearLayout>
 
                 <View
-                    style="@style/ColumnVerticalDivider"/>
+                    style="@style/RowVerticalDivider"/>
 
                 <LinearLayout
                     style="@style/LinearCellStyle"
@@ -51,7 +51,7 @@
                 </LinearLayout>
 
                 <View
-                    style="@style/ColumnVerticalDivider"/>
+                    style="@style/RowVerticalDivider"/>
 
                 <LinearLayout
                     style="@style/LinearCellStyle"
@@ -64,7 +64,7 @@
                 </LinearLayout>
 
                 <View
-                    style="@style/ColumnVerticalDivider"/>
+                    style="@style/RowVerticalDivider"/>
 
                 <LinearLayout
                     style="@style/LinearCellStyle"
@@ -79,9 +79,7 @@
             </LinearLayout>
 
             <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="@color/color_divider"/>
+                style="@style/RowHorizontalDivider"/>
 
         </LinearLayout>
 
