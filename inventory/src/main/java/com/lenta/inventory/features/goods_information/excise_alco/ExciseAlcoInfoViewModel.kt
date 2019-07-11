@@ -21,6 +21,10 @@ import com.lenta.shared.view.OnPositionClickListener
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+const val SPIN_POSITION_QUANTITY = 0
+const val SPIN_POSITION_PARTLY = 1
+const val SPIN_POSITION_VINTAGE = 2
+
 class ExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
 
     @Inject
@@ -41,6 +45,7 @@ class ExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
     val productInfo: MutableLiveData<TaskProductInfo> = MutableLiveData()
 
     val storePlaceNumber: MutableLiveData<String> = MutableLiveData()
+
     val isStorePlaceNumber: MutableLiveData<Boolean> = storePlaceNumber.map { it != "00" }
 
     val spinList: MutableLiveData<List<String>> = MutableLiveData()
@@ -62,6 +67,7 @@ class ExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
     init {
         viewModelScope.launch {
             suffix.value = productInfo.value?.uom?.name
+            storePlaceNumber.value = productInfo.value!!.placeCode
         }
     }
 
@@ -71,10 +77,12 @@ class ExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
 
     fun onClickDetails() {
         //todo
+        selectedPosition.value = SPIN_POSITION_PARTLY
     }
 
     fun onClickMissing() {
         //todo
+        selectedPosition.value = SPIN_POSITION_VINTAGE
         //screenNavigator.openGoodsDetailsStorageScreen()
     }
 
@@ -88,7 +96,7 @@ class ExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
                             materialNumberComp = "materialNumberComp",
                             markNumber = "markNumber",
                             boxNumber = "boxNumber",
-                            organCode = "organCode",
+                            codeEGAIS = "organCode",
                             bottMark = "bottMark",
                             mode = "mode",
                             codeEBP = "codeEBP",

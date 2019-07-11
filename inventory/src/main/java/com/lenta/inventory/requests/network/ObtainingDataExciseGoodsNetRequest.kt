@@ -8,6 +8,7 @@ import com.lenta.shared.fmp.ObjectRawStatus
 import com.lenta.shared.fmp.toFmpObjectRawStatusEither
 import com.lenta.shared.functional.Either
 import com.lenta.shared.interactor.UseCase
+import com.lenta.shared.models.core.Manufacturer
 import com.lenta.shared.utilities.Logg
 import com.mobrun.plugin.api.HyperHive
 import com.mobrun.plugin.api.callparams.WebCallParams
@@ -47,7 +48,7 @@ data class ExciseGoodsParams(
         @SerializedName("IV_BOX_NUM")
         val boxNumber: String, //Номер коробки
         @SerializedName("IV_ZPROD")
-        val organCode: String, //ЕГАИС Код организации
+        val codeEGAIS: String, //ЕГАИС Код организации
         @SerializedName("IV_BOTT_MARK")
         val bottMark: String, //УТЗ ТСД: Дата розлива
         @SerializedName("IV_MODE")
@@ -69,7 +70,7 @@ data class ExciseGoodsRestInfo(
         @SerializedName("EV_MATNR_COMP")
         val materialNumber: String, //Номер товара
         @SerializedName("ET_PROD_TEXT")
-        val manufacturers: List<Manufacturers>, //Таблица ЕГАИС производителей
+        val manufacturers: List<Manufacturer>, //Таблица ЕГАИС производителей
         @SerializedName("EV_ZCHARG")
         val batchNumber: String, //Номер партии
         @SerializedName("EV_DATEOFPOUR")
@@ -84,9 +85,3 @@ data class StampsBox(
         val boxNumber: String, //Номер коробки
         @SerializedName("MARK_NUM")
         val exciseStampCode: String) //Код акцизной марки
-
-data class Manufacturers(
-        @SerializedName("ZPROD")
-        val organCode: String, //ЕГАИС Код организации
-        @SerializedName("PROD_NAME")
-        val manufacturerName: String) //Наименовние производителя

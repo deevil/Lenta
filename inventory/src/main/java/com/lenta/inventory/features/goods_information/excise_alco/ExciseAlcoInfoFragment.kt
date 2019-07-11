@@ -36,7 +36,6 @@ class ExciseAlcoInfoFragment : CoreFragment<FragmentExciseAlcoInfoBinding, Excis
         provideViewModel(ExciseAlcoInfoViewModel::class.java).let { vm ->
             getAppComponent()?.inject(vm)
             vm.productInfo.value = productInfo
-            vm.storePlaceNumber.value = productInfo!!.placeCode
             vm.spinList.value = listOf(getString(R.string.quantity), getString(R.string.partly), getString(R.string.vintage))
             return vm
         }
@@ -44,9 +43,7 @@ class ExciseAlcoInfoFragment : CoreFragment<FragmentExciseAlcoInfoBinding, Excis
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
         topToolbarUiModel.description.value = getString(R.string.goods_info)
-        productInfo?.let {
-            topToolbarUiModel.title.value = "${it.getMaterialLastSix()} ${it.description}"
-        }
+        topToolbarUiModel.title.value = "${vm.productInfo.value!!.getMaterialLastSix()} ${vm.productInfo.value!!.description}"
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
