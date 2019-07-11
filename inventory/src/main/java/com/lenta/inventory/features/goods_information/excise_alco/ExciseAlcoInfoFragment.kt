@@ -77,7 +77,7 @@ class ExciseAlcoInfoFragment : CoreFragment<FragmentExciseAlcoInfoBinding, Excis
 
     override fun onToolbarButtonClick(view: View) {
         when (view.id) {
-            R.id.b_2 -> vm.onClickКollback()
+            R.id.b_2 -> vm.onClickRollback()
             R.id.b_3 -> vm.onClickDetails()
             R.id.b_4 -> vm.onClickMissing()
             R.id.b_5 -> vm.onClickApply()

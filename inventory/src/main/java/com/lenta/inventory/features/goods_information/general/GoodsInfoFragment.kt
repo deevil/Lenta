@@ -14,8 +14,24 @@ import com.lenta.shared.scan.OnScanResultListener
 import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.generateScreenNumber
 import com.lenta.shared.utilities.extentions.provideViewModel
+import com.lenta.shared.utilities.state.state
 
-class GoodsInfoFragment(val productInfo: TaskProductInfo, val storePlaceNumber: String) : CoreFragment<FragmentGoodsInfoBinding, GoodsInfoViewModel>(), ToolbarButtonsClickListener, OnScanResultListener {
+class GoodsInfoFragment : CoreFragment<FragmentGoodsInfoBinding,
+        GoodsInfoViewModel>(),
+        ToolbarButtonsClickListener,
+        OnScanResultListener {
+
+    companion object {
+        fun create(productInfo: TaskProductInfo): GoodsInfoFragment {
+            GoodsInfoFragment().let {
+                it.productInfo = productInfo
+                return it
+            }
+        }
+
+    }
+
+    private var productInfo by state<TaskProductInfo?>(null)
 
     override fun getLayoutId(): Int = R.layout.fragment_goods_info
 
@@ -25,7 +41,6 @@ class GoodsInfoFragment(val productInfo: TaskProductInfo, val storePlaceNumber: 
         provideViewModel(GoodsInfoViewModel::class.java).let { vm ->
             getAppComponent()?.inject(vm)
             vm.productInfo.value = this.productInfo
-            vm.storePlaceNumber.value = this.storePlaceNumber
             vm.spinList.value = listOf(getString(R.string.quantity))
             return vm
         }
@@ -33,23 +48,24 @@ class GoodsInfoFragment(val productInfo: TaskProductInfo, val storePlaceNumber: 
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
         topToolbarUiModel.description.value = getString(R.string.goods_info)
-        productInfo?.let {
-            topToolbarUiModel.title.value = "${it.getMaterialLastSix()} ${it.description}"
-        }
+        topToolbarUiModel.title.value = "${vm.productInfo.value!!.getMaterialLastSix()} ${vm.productInfo.value!!.description}"
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
+        bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.details)
         bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.missing)
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.apply)
 
         viewLifecycleOwner.apply {
+            connectLiveData(vm.isStorePlaceNumber, bottomToolbarUiModel.uiModelButton3.visibility)
             connectLiveData(vm.enabledApplyButton, bottomToolbarUiModel.uiModelButton5.enabled)
         }
     }
 
     override fun onToolbarButtonClick(view: View) {
         when (view.id) {
+            R.id.b_3 -> vm.onClickDetails()
             R.id.b_4 -> vm.onClickMissing()
             R.id.b_5 -> vm.onClickApply()
         }

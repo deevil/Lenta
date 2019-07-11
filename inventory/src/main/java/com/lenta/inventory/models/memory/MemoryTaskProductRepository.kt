@@ -2,6 +2,7 @@ package com.lenta.inventory.models.memory
 
 import com.lenta.inventory.models.repositories.ITaskProductRepository
 import com.lenta.inventory.models.task.TaskProductInfo
+import com.lenta.shared.utilities.Logg
 
 class MemoryTaskProductRepository : ITaskProductRepository {
 
@@ -12,17 +13,17 @@ class MemoryTaskProductRepository : ITaskProductRepository {
     }
 
     override fun findProduct(product: TaskProductInfo): TaskProductInfo? {
-        return findProduct(product.materialNumber)
+        return findProduct(product.materialNumber, product.placeCode)
     }
 
-    override fun findProduct(materialNumber: String): TaskProductInfo? {
-        return productInfo.firstOrNull { it.materialNumber == materialNumber }
+    override fun findProduct(materialNumber: String, storePlaceNumber: String): TaskProductInfo? {
+        return productInfo.firstOrNull { it.materialNumber == materialNumber && it.placeCode == storePlaceNumber}
     }
 
     override fun addProduct(product: TaskProductInfo): Boolean {
         var index = -1
         for (i in productInfo.indices) {
-            if (product.materialNumber == productInfo[i].materialNumber) {
+            if (product.materialNumber == productInfo[i].materialNumber && product.placeCode == productInfo[i].placeCode) {
                 index = i
             }
         }
@@ -42,19 +43,12 @@ class MemoryTaskProductRepository : ITaskProductRepository {
     }
 
     override fun deleteProduct(product: TaskProductInfo): Boolean {
-        var index = -1
-        for (i in productInfo.indices) {
-            if (product.materialNumber == productInfo[i].materialNumber) {
-                index = i
-            }
+        productInfo.filter {taskProductInfo ->
+            product.materialNumber == taskProductInfo.materialNumber && product.placeCode == taskProductInfo.placeCode
+        }.map {
+            return productInfo.remove(it)
         }
-
-        if (index == -1) {
-            return false
-        }
-
-        productInfo.removeAt(index)
-        return true
+        return false
     }
 
     override fun getNotProcessedProducts(): List<TaskProductInfo> {

@@ -54,24 +54,21 @@ class ExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
         }
     }
 
-    fun onClickКollback() {
+    fun onClickRollback() {
         //todo
-        screenNavigator.openGoodsDetailsScreen()
     }
 
     fun onClickDetails() {
         //todo
-        screenNavigator.openGoodsDetailsScreen()
     }
 
     fun onClickMissing() {
         //todo
-        screenNavigator.openGoodsDetailsStorageScreen()
+        //screenNavigator.openGoodsDetailsStorageScreen()
     }
 
     fun onClickApply() {
         //todo
-        screenNavigator.openSetsDetailsStorageScreen()
     }
 
     fun onScanResult(data: String) {

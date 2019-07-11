@@ -5,7 +5,6 @@ import com.lenta.inventory.R
 import com.lenta.inventory.features.main_menu.MainMenuFragment
 import com.lenta.inventory.features.auth.AuthFragment
 import com.lenta.inventory.features.discrepancies_found.DiscrepanciesFoundFragment
-import com.lenta.inventory.features.goods_details.GoodsDetailsFragment
 import com.lenta.inventory.features.goods_details_storage.GoodsDetailsStorageFragment
 import com.lenta.inventory.features.goods_information.excise_alco.ExciseAlcoInfoFragment
 import com.lenta.inventory.features.goods_information.general.GoodsInfoFragment
@@ -14,12 +13,17 @@ import com.lenta.inventory.features.goods_information.sets.components.SetCompone
 import com.lenta.inventory.features.goods_list.GoodsListFragment
 import com.lenta.inventory.features.job_card.JobCardFragment
 import com.lenta.inventory.features.loading.fast.FastDataLoadingFragment
+import com.lenta.inventory.features.loading.store_place_lock.LoadingStorePlaceLockFragment
+import com.lenta.inventory.features.loading.tasks.LoadingTaskContentFragment
 import com.lenta.inventory.features.loading.tasks.LoadingTasksFragment
 import com.lenta.inventory.features.select_market.SelectMarketFragment
 import com.lenta.inventory.features.select_personnel_number.SelectPersonnelNumberFragment
-import com.lenta.inventory.features.sets_details_storage.SetsDetailsStorageFragment
 import com.lenta.inventory.features.storages_list.StoragesListFragment
+import com.lenta.inventory.features.task_list.TaskItemVm
 import com.lenta.inventory.features.task_list.TaskListFragment
+import com.lenta.inventory.models.RecountType
+import com.lenta.inventory.models.StorePlaceLockMode
+import com.lenta.inventory.models.task.TaskStorePlaceInfo
 import com.lenta.inventory.models.task.TaskProductInfo
 import com.lenta.shared.account.IAuthenticator
 import com.lenta.shared.features.alert.AlertFragment
@@ -77,9 +81,9 @@ class ScreenNavigator(
         }
     }
 
-    override fun openGoodsInfoScreen(productInfo: TaskProductInfo, storePlaceNumber: String) {
+    override fun openGoodsInfoScreen(productInfo: TaskProductInfo) {
         runOrPostpone {
-            getFragmentStack()?.push(GoodsInfoFragment(productInfo, storePlaceNumber))
+            getFragmentStack()?.push(GoodsInfoFragment.create(productInfo))
         }
     }
 
@@ -89,21 +93,9 @@ class ScreenNavigator(
         }
     }
 
-    override fun openGoodsDetailsScreen() {
+    override fun openGoodsDetailsStorageScreen(productInfo: TaskProductInfo) {
         runOrPostpone {
-            getFragmentStack()?.push(GoodsDetailsFragment())
-        }
-    }
-
-    override fun openGoodsDetailsStorageScreen() {
-        runOrPostpone {
-            getFragmentStack()?.push(GoodsDetailsStorageFragment())
-        }
-    }
-
-    override fun openSetsDetailsStorageScreen() {
-        runOrPostpone {
-            getFragmentStack()?.push(SetsDetailsStorageFragment())
+            getFragmentStack()?.push(GoodsDetailsStorageFragment.create(productInfo))
         }
     }
 
@@ -164,6 +156,20 @@ class ScreenNavigator(
         }
     }
 
+    override fun openLoadingTaskContentsScreen(taskInfo: TaskItemVm, recountType: RecountType) {
+        runOrPostpone {
+            getFragmentStack()?.push(LoadingTaskContentFragment.create(taskInfo, recountType))
+        }
+    }
+
+    override fun openLoadingStorePlaceLockScreen(taskInfo: TaskItemVm, mode: StorePlaceLockMode, storePlaceInfo: TaskStorePlaceInfo)
+    {
+        runOrPostpone {
+            getFragmentStack()?.push(LoadingStorePlaceLockFragment.create(taskInfo, mode, storePlaceInfo))
+        }
+    }
+
+
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 
 }
@@ -175,10 +181,8 @@ interface IScreenNavigator : ICoreNavigator {
     fun openFastDataLoadingScreen()
     fun openSelectionPersonnelNumberScreen()
     fun openMainMenuScreen()
-    fun openGoodsInfoScreen(productInfo: TaskProductInfo, storePlaceNumber: String)
-    fun openGoodsDetailsScreen()
-    fun openGoodsDetailsStorageScreen()
-    fun openSetsDetailsStorageScreen()
+    fun openGoodsInfoScreen(productInfo: TaskProductInfo)
+    fun openGoodsDetailsStorageScreen(productInfo: TaskProductInfo)
     fun openGoodsListScreen()
     fun openSetsInfoScreen()
     fun openSetComponentsScreen()
@@ -187,6 +191,8 @@ interface IScreenNavigator : ICoreNavigator {
     fun openTasksList()
     fun openJobCard(taskNumber: String)
     fun openLoadingTasksScreen()
+    fun openLoadingTaskContentsScreen(taskInfo: TaskItemVm, recountType: RecountType)
+    fun openLoadingStorePlaceLockScreen(taskInfo: TaskItemVm, mode: StorePlaceLockMode, storePlaceInfo: TaskStorePlaceInfo)
     fun openExciseAlcoInfoScreen()
     fun openConfirmationTaskOpenScreen(userName: String, ip: String, callbackFunc: () -> Unit)
 }
