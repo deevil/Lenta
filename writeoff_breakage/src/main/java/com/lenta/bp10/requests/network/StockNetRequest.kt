@@ -29,7 +29,7 @@ class StockNetRequest
         val status = hyperHive.requestAPI.web("ZMP_UTZ_02_V001", webCallParams, StockLockRequestStatus::class.java).execute()
         Logg.d { "StockNetRequest response: $status" }
 
-        if (status.isNotBad()) {
+        if (status.isNotBad() && status.result != null && status.result!!.raw != null) {
             return Either.Right(status.result!!.raw!!)
         }
 
