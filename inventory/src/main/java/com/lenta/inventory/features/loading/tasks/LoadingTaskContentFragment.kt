@@ -6,6 +6,7 @@ import com.lenta.inventory.R
 import com.lenta.inventory.features.task_list.TaskItemVm
 import com.lenta.inventory.models.RecountType
 import com.lenta.inventory.platform.extentions.getAppComponent
+import com.lenta.inventory.requests.network.TasksItem
 import com.lenta.shared.features.loading.CoreLoadingFragment
 import com.lenta.shared.features.loading.CoreLoadingViewModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
@@ -15,7 +16,7 @@ import com.lenta.shared.utilities.extentions.provideViewModel
 
 class LoadingTaskContentFragment: CoreLoadingFragment() {
 
-    private var taskInfo: TaskItemVm? = null
+    private var taskInfo: TasksItem? = null
     private var recountType: RecountType? = null
 
     override fun getPageNumber(): String? {
@@ -32,7 +33,7 @@ class LoadingTaskContentFragment: CoreLoadingFragment() {
     }
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
-        topToolbarUiModel.title.value = taskInfo?.title
+        topToolbarUiModel.title.value = taskInfo?.taskName
         topToolbarUiModel.description.value = getString(R.string.data_loading)
     }
 
@@ -54,7 +55,7 @@ class LoadingTaskContentFragment: CoreLoadingFragment() {
     }
 
     companion object {
-        fun create(taskInfo: TaskItemVm, recountType: RecountType): LoadingTaskContentFragment {
+        fun create(taskInfo: TasksItem, recountType: RecountType): LoadingTaskContentFragment {
             LoadingTaskContentFragment().let {
                 it.taskInfo = taskInfo
                 it.recountType = recountType

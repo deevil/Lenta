@@ -4,22 +4,23 @@ import com.lenta.inventory.models.memory.MemoryTaskRepository
 
 class InventoryTaskManager : IInventoryTaskManager {
 
-    private var currentWriteOffTask: InventoryTask? = null
+    private var currentInventoryTask: InventoryTask? = null
 
     override fun getInventoryTask(): InventoryTask? {
-        return currentWriteOffTask
+        return currentInventoryTask
     }
 
-    override fun newInventoryTask(taskDescription: TaskDescription) {
-        currentWriteOffTask = InventoryTask(taskDescription, taskRepository = MemoryTaskRepository())
+    override fun newInventoryTask(taskDescription: TaskDescription) : InventoryTask? {
+        currentInventoryTask = InventoryTask(taskDescription, taskRepository = MemoryTaskRepository())
+        return  currentInventoryTask
     }
 
     override fun clearTask() {
-        currentWriteOffTask = null
+        currentInventoryTask = null
 
     }
 
-    override fun setTask(writeOffTask: InventoryTask?) {
-        currentWriteOffTask = writeOffTask
+    override fun setTask(inventoryTask: InventoryTask?) {
+        currentInventoryTask = inventoryTask
     }
 }
