@@ -8,8 +8,10 @@ import com.lenta.bp7.features.check_type.CheckTypeViewModel
 import com.lenta.bp7.features.loading.fast.FastLoadingViewModel
 import com.lenta.bp7.features.option.OptionViewModel
 import com.lenta.bp7.features.code.CodeViewModel
+import com.lenta.bp7.features.good_list.GoodListViewModel
 import com.lenta.bp7.features.segment_list.SegmentListViewModel
 import com.lenta.bp7.features.select_market.SelectMarketViewModel
+import com.lenta.bp7.features.shelf_list.ShelfListViewModel
 import com.lenta.shared.di.AppScope
 import com.lenta.shared.di.CoreComponent
 import dagger.Component
@@ -28,6 +30,8 @@ interface AppComponent {
     fun inject(it: CodeViewModel)
     fun inject(it: OptionViewModel)
     fun inject(it: SegmentListViewModel)
+    fun inject(it: ShelfListViewModel)
+    fun inject(it: GoodListViewModel)
 
 }
 

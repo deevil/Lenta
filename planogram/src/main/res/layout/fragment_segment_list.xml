@@ -46,7 +46,7 @@
 
                     <TextView
                         style="@style/CellTitleTextStyle"
-                        android:text="@string/segment_title_number_date"/>
+                        android:text="@string/column_title_segment_number_date"/>
 
                 </LinearLayout>
 
@@ -59,7 +59,7 @@
 
                     <TextView
                         style="@style/CellTitleTextStyle"
-                        android:text="@string/title_status"/>
+                        android:text="@string/column_title_status"/>
 
                 </LinearLayout>
 
@@ -72,7 +72,7 @@
 
                     <TextView
                         style="@style/CellTitleTextStyle"
-                        android:text="@string/segment_title_shelves"/>
+                        android:text="@string/column_title_shelves"/>
 
                 </LinearLayout>
 

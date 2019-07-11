@@ -10,19 +10,26 @@
     <string name="code_screen_message">Введите пин-код\nдля подтверждения\nвхода в режим\n\"%1$s\"</string>
     <string name="incorrect_code_message">Введен некорректный пин-код!</string>
     <string name="auxiliary_menu">Вспомогательное меню</string>
-    <string name="store_number_prefix">"TK - "</string>
-    <string name="list_of_processed_segments">Список обработанных сегментов</string>
+    <string name="list_of_processed_segments">Список обработанных сегментов:</string>
+    <string name="list_of_processed_selves">Список обработанных полок:</string>
+    <string name="list_of_processed_goods">Список обработанных товаров:</string>
     <string name="enter_segment_number">Введите номер сегмента</string>
-    <string name="segment_title_number">№</string>
-    <string name="segment_title_number_date">№ Сегмента/Дата</string>
-    <string name="title_status">Статус</string>
-    <string name="segment_title_shelves">Полок</string>
-    <string name="segment_number_date">%1$s (TK - %2$s)\n%3$s</string>
-    <string name="title_item_number">№</string>
-    <string name="title_number_shelf_time">№ Полки/Время начала</string>
-    <string name="title_goods">Товаров</string>
     <string name="enter_shelf_number">Введите номер полки</string>
-    <string name="title_facing">Фейсинг</string>
-    <string name="title_sign">Признак</string>
-    <string name="title_good">Товар</string>
+
+    <!-- Заголовки экранов -->
+    <string name="title_store_number">TK - %1$s</string>
+    <string name="title_segment_number">Сегмент: %1$s</string>
+    <string name="title_segment_shelf_number">Сегмент: %1$s/Полка: %2$s</string>
+
+    <!-- Заголовки списков -->
+    <string name="column_title_item_number">№</string>
+    <string name="column_title_segment_number_date">№ Сегмента/Дата</string>
+    <string name="column_title_number_shelf_time">№ Полки/Время начала</string>
+    <string name="column_title_shelves">Полок</string>
+    <string name="column_title_status">Статус</string>
+    <string name="column_title_good">Товар</string>
+    <string name="column_title_goods">Товаров</string>
+    <string name="column_title_sign">Признак</string>
+    <string name="column_title_facing">Фейсинг</string>
+
 </resources>

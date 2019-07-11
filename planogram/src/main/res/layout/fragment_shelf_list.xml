@@ -33,7 +33,7 @@
 
                     <TextView
                         style="@style/CellTitleTextStyle"
-                        android:text="@string/title_item_number"/>
+                        android:text="@string/column_title_item_number"/>
 
                 </LinearLayout>
 
@@ -46,7 +46,7 @@
 
                     <TextView
                         style="@style/CellTitleTextStyle"
-                        android:text="@string/title_number_shelf_time"/>
+                        android:text="@string/column_title_number_shelf_time"/>
 
                 </LinearLayout>
 
@@ -59,7 +59,7 @@
 
                     <TextView
                         style="@style/CellTitleTextStyle"
-                        android:text="@string/title_status"/>
+                        android:text="@string/column_title_status"/>
 
                 </LinearLayout>
 
@@ -72,7 +72,7 @@
 
                     <TextView
                         style="@style/CellTitleTextStyle"
-                        android:text="@string/title_goods"/>
+                        android:text="@string/column_title_goods"/>
 
                 </LinearLayout>
 

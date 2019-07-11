@@ -28,16 +28,15 @@ class SegmentListFragment : CoreFragment<FragmentSegmentListBinding, SegmentList
     }
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
-        topToolbarUiModel.title.value = vm.getTitle(getString(R.string.store_number_prefix))
+        topToolbarUiModel.cleanAll()
+        topToolbarUiModel.title.value = vm.getTitle(getString(R.string.title_store_number))
         topToolbarUiModel.description.value = getString(R.string.list_of_processed_segments)
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
         bottomToolbarUiModel.cleanAll()
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
-        bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.save, enabled = false)
-
-        viewLifecycleOwner.connectLiveData(vm.enabledSaveBtn, bottomToolbarUiModel.uiModelButton5.enabled)
+        bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.save, enabled = true)
     }
 
     override fun onToolbarButtonClick(view: View) {
