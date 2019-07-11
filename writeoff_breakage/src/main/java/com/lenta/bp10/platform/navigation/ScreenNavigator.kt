@@ -137,7 +137,7 @@ class ScreenNavigator(
         }
     }
 
-    override fun openComponentSetScreen(productInfo: ProductInfo, componentItem: ComponentItem, mengeTotalCount: Double) {
+    override fun openComponentSetScreen(productInfo: ProductInfo, componentItem: ComponentItem, targetTotalCount: Double) {
         runOrPostpone {
 
             if (productInfo.type != ProductType.ExciseAlcohol) {
@@ -148,7 +148,7 @@ class ScreenNavigator(
             getFragmentStack()?.push(ComponentFragment.create(
                     productInfo = productInfo,
                     componentItem = componentItem,
-                    mengeTotalCount = mengeTotalCount
+                    targetTotalCount = targetTotalCount
             )
             )
         }

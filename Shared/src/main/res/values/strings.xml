@@ -109,4 +109,5 @@
     <string name="high_priority_content">Приложение работает с повышенным приоритетом</string>
     <string name="enter_item_number_or_barcode">Введите SAP-код или штрихкод</string>
     <string name="db_error">Ошибка базы данных</string>
+    <string name="one_of">%s из %s</string>
 </resources>
