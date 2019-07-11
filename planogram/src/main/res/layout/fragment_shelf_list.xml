@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
-        tools:context=".features.segment_list.SegmentListFragment">
+        tools:context=".features.shelf_list.ShelfListFragment">
 
     <data>
 
         <variable
             name="vm"
-            type="com.lenta.bp7.features.segment_list.SegmentListViewModel"/>
+            type="com.lenta.bp7.features.shelf_list.ShelfListViewModel"/>
     </data>
 
     <LinearLayout
@@ -33,7 +33,7 @@
 
                     <TextView
                         style="@style/CellTitleTextStyle"
-                        android:text="@string/number"/>
+                        android:text="@string/title_item_number"/>
 
                 </LinearLayout>
 
@@ -46,7 +46,7 @@
 
                     <TextView
                         style="@style/CellTitleTextStyle"
-                        android:text="@string/segment_title_number_date"/>
+                        android:text="@string/title_number_shelf_time"/>
 
                 </LinearLayout>
 
@@ -72,7 +72,7 @@
 
                     <TextView
                         style="@style/CellTitleTextStyle"
-                        android:text="@string/segment_title_shelves"/>
+                        android:text="@string/title_goods"/>
 
                 </LinearLayout>
 
@@ -85,22 +85,22 @@
 
         </LinearLayout>
 
-        <!-- Список сегментов -->
+        <!-- Список полок -->
         <androidx.recyclerview.widget.RecyclerView
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            tools:listitem="@layout/item_segment"/>
+            tools:listitem="@layout/item_shelf"/>
 
-        <!-- Поле ввода номера сегмента -->
+        <!-- Поле ввода номера полки -->
         <EditText
-            android:id="@+id/et_segment_number"
+            android:id="@+id/et_shelf_number"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="8dp"
-            android:hint="@string/enter_segment_number"
+            android:hint="@string/enter_shelf_number"
             android:inputType="numberDecimal"
-            android:maxLength="7"
+            android:maxLength="3"
             tools:ignore="Autofill"/>
 
     </LinearLayout>

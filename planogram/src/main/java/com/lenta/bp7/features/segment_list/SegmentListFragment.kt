@@ -1,5 +1,6 @@
 package com.lenta.bp7.features.segment_list
 
+import android.os.Bundle
 import android.view.View
 import com.lenta.bp7.R
 import com.lenta.bp7.databinding.FragmentSegmentListBinding
@@ -43,5 +44,13 @@ class SegmentListFragment : CoreFragment<FragmentSegmentListBinding, SegmentList
         if (view.id == R.id.b_5) {
             vm.onClickSave()
         }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        initSegmentNumberField()
+    }
+
+    private fun initSegmentNumberField() {
+
     }
 }

@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
-        tools:context=".features.segment_list.SegmentListFragment">
+        tools:context=".features.good_list.GoodListFragment">
 
     <data>
 
         <variable
             name="vm"
-            type="com.lenta.bp7.features.segment_list.SegmentListViewModel"/>
+            type="com.lenta.bp7.features.good_list.GoodListViewModel"/>
     </data>
 
     <LinearLayout
@@ -33,7 +33,7 @@
 
                     <TextView
                         style="@style/CellTitleTextStyle"
-                        android:text="@string/number"/>
+                        android:text="@string/title_item_number"/>
 
                 </LinearLayout>
 
@@ -46,7 +46,7 @@
 
                     <TextView
                         style="@style/CellTitleTextStyle"
-                        android:text="@string/segment_title_number_date"/>
+                        android:text="@string/title_good"/>
 
                 </LinearLayout>
 
@@ -59,7 +59,7 @@
 
                     <TextView
                         style="@style/CellTitleTextStyle"
-                        android:text="@string/title_status"/>
+                        android:text="@string/title_sign"/>
 
                 </LinearLayout>
 
@@ -72,7 +72,7 @@
 
                     <TextView
                         style="@style/CellTitleTextStyle"
-                        android:text="@string/segment_title_shelves"/>
+                        android:text="@string/title_facing"/>
 
                 </LinearLayout>
 
@@ -85,23 +85,41 @@
 
         </LinearLayout>
 
-        <!-- Список сегментов -->
+        <!-- Список товаров -->
         <androidx.recyclerview.widget.RecyclerView
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            tools:listitem="@layout/item_segment"/>
+            tools:listitem="@layout/item_good"/>
 
-        <!-- Поле ввода номера сегмента -->
-        <EditText
-            android:id="@+id/et_segment_number"
+        <!-- Поле ввода номера товара -->
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="8dp"
-            android:hint="@string/enter_segment_number"
-            android:inputType="numberDecimal"
-            android:maxLength="7"
-            tools:ignore="Autofill"/>
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/et_shelf_number"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:layout_weight="1"
+                android:hint="@string/enter_item_number_or_barcode"
+                android:inputType="numberDecimal"
+                android:maxLength="3"
+                tools:ignore="Autofill"/>
+
+            <ImageButton
+                android:id="@+id/b_scan"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="?selectableItemBackground"
+                android:padding="8dp"
+                android:src="@drawable/ic_scan_barcode"
+                tools:ignore="ContentDescription"/>
+
+        </LinearLayout>
 
     </LinearLayout>
 

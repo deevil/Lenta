@@ -39,10 +39,10 @@
                 android:layout_weight="@integer/size_column_2">
 
                 <TextView
-                    android:id="@+id/tv_segment_number_date"
+                    android:id="@+id/tv_shelf_number_time"
                     style="@style/CellTextStyle"
                     android:maxLines="2"
-                    tools:text="123-456 (ТК - 0005)\n09.07.2019"/>
+                    tools:text="1\n10:59"/>
 
             </LinearLayout>
 
@@ -54,7 +54,7 @@
                 android:layout_weight="@integer/size_column_3">
 
                 <ImageView
-                    android:id="@+id/iv_segment_status"
+                    android:id="@+id/iv_shelf_status"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:src="@drawable/ic_lock_white_24dp"/>
@@ -69,9 +69,9 @@
                 android:layout_weight="@integer/size_column_4">
 
                 <TextView
-                    android:id="@+id/tv_shelves_count"
+                    android:id="@+id/tv_goods_count"
                     style="@style/CellTextStyle"
-                    tools:text="5"/>
+                    tools:text="27"/>
 
             </LinearLayout>
 
