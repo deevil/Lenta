@@ -87,9 +87,9 @@ class ScreenNavigator(
         }
     }
 
-    override fun openExciseAlcoInfoScreen() {
+    override fun openExciseAlcoInfoScreen(productInfo: TaskProductInfo) {
         runOrPostpone {
-            getFragmentStack()?.push(ExciseAlcoInfoFragment())
+            getFragmentStack()?.push(ExciseAlcoInfoFragment.create(productInfo))
         }
     }
 
@@ -193,6 +193,6 @@ interface IScreenNavigator : ICoreNavigator {
     fun openLoadingTasksScreen()
     fun openLoadingTaskContentsScreen(taskInfo: TaskItemVm, recountType: RecountType)
     fun openLoadingStorePlaceLockScreen(taskInfo: TaskItemVm, mode: StorePlaceLockMode, storePlaceInfo: TaskStorePlaceInfo)
-    fun openExciseAlcoInfoScreen()
+    fun openExciseAlcoInfoScreen(productInfo: TaskProductInfo)
     fun openConfirmationTaskOpenScreen(userName: String, ip: String, callbackFunc: () -> Unit)
 }

@@ -63,7 +63,7 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
     }
 
     fun onClickMissing() {
-        processGeneralProductService.setMissing()
+        processGeneralProductService.markMissing()
         screenNavigator.goBack()
     }
 

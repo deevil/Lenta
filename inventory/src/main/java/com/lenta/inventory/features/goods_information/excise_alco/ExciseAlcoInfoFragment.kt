@@ -13,21 +13,20 @@ import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.scan.OnScanResultListener
 import com.lenta.shared.utilities.extentions.generateScreenNumber
 import com.lenta.shared.utilities.extentions.provideViewModel
+import com.lenta.shared.utilities.state.state
 
 class ExciseAlcoInfoFragment : CoreFragment<FragmentExciseAlcoInfoBinding, ExciseAlcoInfoViewModel>(), ToolbarButtonsClickListener, OnScanResultListener {
 
     companion object {
-        fun create(productInfo: TaskProductInfo, storePlaceNumber: String): ExciseAlcoInfoFragment {
+        fun create(productInfo: TaskProductInfo): ExciseAlcoInfoFragment {
             ExciseAlcoInfoFragment().let {
                 it.productInfo = productInfo
-                it.storePlaceNumber = storePlaceNumber
                 return it
             }
         }
     }
 
-    private var productInfo: TaskProductInfo? = null
-    private var storePlaceNumber: String? = null
+    private var productInfo by state<TaskProductInfo?>(null)
 
     override fun getLayoutId(): Int = R.layout.fragment_excise_alco_info
 
@@ -36,13 +35,9 @@ class ExciseAlcoInfoFragment : CoreFragment<FragmentExciseAlcoInfoBinding, Excis
     override fun getViewModel(): ExciseAlcoInfoViewModel {
         provideViewModel(ExciseAlcoInfoViewModel::class.java).let { vm ->
             getAppComponent()?.inject(vm)
-            productInfo?.let {
-                vm.productInfo.value = it
-            }
-            storePlaceNumber?.let {
-                vm.storePlaceNumber.value = it
-            }
-            vm.spinList.value = listOf(getString(R.string.quantity))
+            vm.productInfo.value = productInfo
+            vm.storePlaceNumber.value = productInfo!!.placeCode
+            vm.spinList.value = listOf(getString(R.string.quantity), getString(R.string.partly), getString(R.string.vintage))
             return vm
         }
     }
@@ -60,12 +55,6 @@ class ExciseAlcoInfoFragment : CoreFragment<FragmentExciseAlcoInfoBinding, Excis
         bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.details)
         bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.missing)
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.apply)
-
-        if (storePlaceNumber == null) {
-            binding?.ConstraintStoragePlace!!.visibility = View.INVISIBLE
-        } else{
-            bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.details)
-        }
 
         /**viewLifecycleOwner.apply {
         connectLiveData(vm.enabledApplyButton, bottomToolbarUiModel.uiModelButton4.enabled)

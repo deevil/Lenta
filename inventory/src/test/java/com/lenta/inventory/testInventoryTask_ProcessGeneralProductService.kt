@@ -132,7 +132,7 @@ class testInventoryTask_ProcessGeneralProductService {
     }
 
     @Test
-    fun testSetMissingForProduct() {
+    fun testMarkMissingForProduct() {
 
         creatingObjectsForTest()
 
@@ -147,7 +147,7 @@ class testInventoryTask_ProcessGeneralProductService {
         val processGeneralProductService = ProcessGeneralProductService(taskDescription, inventoryTask.taskRepository, inventoryTask.taskRepository.getProducts().findProduct("materialNumber111", "1")!!)
 
         //помечаем, что продукт отсутствует
-        processGeneralProductService.setMissing()
+        processGeneralProductService.markMissing()
 
         //проверяем кол-во продуктов, должно быть 0
         Assert.assertEquals(0.0, inventoryTask.taskRepository.getProducts().findProduct("materialNumber111", "1")!!.factCount!!, 0.0)

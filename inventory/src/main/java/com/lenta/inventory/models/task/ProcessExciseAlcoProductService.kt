@@ -21,7 +21,7 @@ class ProcessExciseAlcoProductService(val taskDescription: TaskDescription,
         }
     }
 
-    override fun setMissing(){
+    override fun markMissing(){
         taskRepository.getProducts().findProduct(productInfo)?.factCount = 0.0
         taskRepository.getProducts().findProduct(productInfo)?.isPositionCalc = true
     }
