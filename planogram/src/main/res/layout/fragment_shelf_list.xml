@@ -23,7 +23,7 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="25dp"
+                android:layout_height="@dimen/list_title_height"
                 android:gravity="center_vertical"
                 android:orientation="horizontal">
 

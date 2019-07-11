@@ -5,4 +5,7 @@
     <integer name="size_column_3">20</integer>
     <integer name="size_column_4">20</integer>
 
+    <dimen name="list_title_height">25dp</dimen>
+    <dimen name="list_row_height">50dp</dimen>
+
 </resources>
