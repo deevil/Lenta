@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        tools:context=".features.good_list.GoodListFragment">
+
+    <data>
+
+        <variable
+            name="vm"
+            type="com.lenta.bp7.features.good_list.GoodListViewModel"/>
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <!-- Наименование колонок -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/list_title_height"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    style="@style/LinearCellStyle"
+                    android:layout_weight="@integer/size_column_1">
+
+                    <TextView
+                        style="@style/CellTitleTextStyle"
+                        android:text="@string/column_title_item_number"/>
+
+                </LinearLayout>
+
+                <View
+                    style="@style/RowVerticalDivider"/>
+
+                <LinearLayout
+                    style="@style/LinearCellStyle"
+                    android:layout_weight="@integer/size_column_2">
+
+                    <TextView
+                        style="@style/CellTitleTextStyle"
+                        android:text="@string/column_title_good"/>
+
+                </LinearLayout>
+
+                <View
+                    style="@style/RowVerticalDivider"/>
+
+                <LinearLayout
+                    style="@style/LinearCellStyle"
+                    android:layout_weight="@integer/size_column_3">
+
+                    <TextView
+                        style="@style/CellTitleTextStyle"
+                        android:text="@string/column_title_sign"/>
+
+                </LinearLayout>
+
+                <View
+                    style="@style/RowVerticalDivider"/>
+
+                <LinearLayout
+                    style="@style/LinearCellStyle"
+                    android:layout_weight="@integer/size_column_4">
+
+                    <TextView
+                        style="@style/CellTitleTextStyle"
+                        android:text="@string/column_title_facing"/>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <View
+                style="@style/RowHorizontalDivider"/>
+
+        </LinearLayout>
+
+        <!-- Список товаров -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            tools:listitem="@layout/item_good"/>
+
+        <!-- Поле ввода номера товара -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/et_shelf_number"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:layout_weight="1"
+                android:hint="@string/enter_item_number_or_barcode"
+                android:inputType="numberDecimal"
+                android:maxLength="3"
+                tools:ignore="Autofill"/>
+
+            <ImageButton
+                android:id="@+id/b_scan"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="?selectableItemBackground"
+                android:padding="8dp"
+                android:src="@drawable/ic_scan_barcode"
+                tools:ignore="ContentDescription"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</layout>

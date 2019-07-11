@@ -87,25 +87,48 @@ class testInventoryTask_ProcessGeneralProductService {
         var product1: TaskProductInfo? = TaskProductInfo("materialNumber111", "description", Uom("ST", "шт"), ProductType.General,
                 false, "1", MatrixType.Active, "materialType", "1", null, false)
 
-        //добавляем продукт в репозиторий
-        inventoryTask.taskRepository.getProducts().addProduct(product1!!)
-        //обнуляем  данный объект, чтобы не было на него ссылок и связей с ним
-        product1 = null
+        var product2: TaskProductInfo? = TaskProductInfo("materialNumber111", "description", Uom("ST", "шт"), ProductType.General,
+                false, "1", MatrixType.Active, "materialType", "2", null, false)
 
-        val processGeneralProductService = ProcessGeneralProductService(taskDescription, inventoryTask.taskRepository, inventoryTask.taskRepository.getProducts().findProduct("materialNumber111")!!)
-        //устанавливаем продукту в репозитории фактическое количество (5), и помечаем, что продукт обработан
+        //добавляем продукты в репозиторий
+        inventoryTask.taskRepository.getProducts().addProduct(product1!!)
+        inventoryTask.taskRepository.getProducts().addProduct(product2!!)
+        //обнуляем  данные объект, чтобы не было на него ссылок и связей с ним
+        product1 = null
+        product2 = null
+
+        val processGeneralProductService = ProcessGeneralProductService(taskDescription, inventoryTask.taskRepository, inventoryTask.taskRepository.getProducts().findProduct("materialNumber111", "1")!!)
+        //устанавливаем продукту с МХ=1 в репозитории фактическое количество (5), и помечаем, что продукт обработан
         processGeneralProductService.setFactCount(5.0)
 
         //проверяем кол-во продуктов, должно быть 5
-        Assert.assertEquals(5.0, inventoryTask.taskRepository.getProducts().findProduct("materialNumber111")!!.factCount!!, 0.0)
+        Assert.assertEquals(5.0, inventoryTask.taskRepository.getProducts().findProduct("materialNumber111", "1")!!.factCount!!, 0.0)
 
         //проверяем, что продукт помечен как обработанный
-        Assert.assertTrue(inventoryTask.taskRepository.getProducts().findProduct("materialNumber111")!!.isPositionCalc)
+        Assert.assertTrue(inventoryTask.taskRepository.getProducts().findProduct("materialNumber111", "1")!!.isPositionCalc)
 
         //устанавливаем отрицательное кол-во продуктов -1
         processGeneralProductService.setFactCount(-1.0)
         //проверяем кол-во продуктов, должно остаться 5
-        Assert.assertEquals(5.0, inventoryTask.taskRepository.getProducts().findProduct("materialNumber111")!!.factCount!!, 0.0)
+        Assert.assertEquals(5.0, inventoryTask.taskRepository.getProducts().findProduct("materialNumber111", "1")!!.factCount!!, 0.0)
+        //проверяем кол-во продуктов через ф-цию getFactCount, должно остаться 5
+        Assert.assertEquals(5.0, processGeneralProductService.getFactCount(), 0.0)
+
+        //устанавливаем кол-во продуктов в ноль
+        processGeneralProductService.setFactCount(0.0)
+        //проверяем кол-во продуктов, должно быть 0
+        Assert.assertEquals(0.0, inventoryTask.taskRepository.getProducts().findProduct("materialNumber111", "1")!!.factCount!!, 0.0)
+        //проверяем, что продукт стал помечен как необработанный
+        Assert.assertTrue(!inventoryTask.taskRepository.getProducts().findProduct("materialNumber111", "1")!!.isPositionCalc)
+
+        //проверяем, что продукт с МХ=2 остался без изменений
+        var test = false
+        if (inventoryTask.taskRepository.getProducts().findProduct("materialNumber111", "2")!!.factCount == null) {
+            test = true
+        }
+        Assert.assertTrue(test)
+        Assert.assertFalse(inventoryTask.taskRepository.getProducts().findProduct("materialNumber111", "2")!!.isPositionCalc)
+
     }
 
     @Test
@@ -121,17 +144,55 @@ class testInventoryTask_ProcessGeneralProductService {
         //обнуляем  данный объект, чтобы не было на него ссылок и связей с ним
         product1 = null
 
-        val processGeneralProductService = ProcessGeneralProductService(taskDescription, inventoryTask.taskRepository, inventoryTask.taskRepository.getProducts().findProduct("materialNumber111")!!)
+        val processGeneralProductService = ProcessGeneralProductService(taskDescription, inventoryTask.taskRepository, inventoryTask.taskRepository.getProducts().findProduct("materialNumber111", "1")!!)
 
         //помечаем, что продукт отсутствует
         processGeneralProductService.setMissing()
 
         //проверяем кол-во продуктов, должно быть 0
-        Assert.assertEquals(0.0, inventoryTask.taskRepository.getProducts().findProduct("materialNumber111")!!.factCount!!, 0.0)
+        Assert.assertEquals(0.0, inventoryTask.taskRepository.getProducts().findProduct("materialNumber111", "1")!!.factCount!!, 0.0)
 
         //проверяем, что продукт помечен как обработанный
-        Assert.assertTrue(inventoryTask.taskRepository.getProducts().findProduct("materialNumber111")!!.isPositionCalc)
+        Assert.assertTrue(inventoryTask.taskRepository.getProducts().findProduct("materialNumber111", "1")!!.isPositionCalc)
 
+    }
+
+    @Test
+    fun testDeleteProduct() {
+
+        creatingObjectsForTest()
+
+        var product1: TaskProductInfo? = TaskProductInfo("materialNumber111", "description", Uom("ST", "шт"), ProductType.General,
+                false, "1", MatrixType.Active, "materialType", "1", null, false)
+
+        var product2: TaskProductInfo? = TaskProductInfo("materialNumber111", "description", Uom("ST", "шт"), ProductType.General,
+                false, "1", MatrixType.Active, "materialType", "2", null, false)
+
+        //добавляем продукты в репозиторий
+        inventoryTask.taskRepository.getProducts().addProduct(product1!!)
+        inventoryTask.taskRepository.getProducts().addProduct(product2!!)
+
+        //удаляем продукт с МХ=1 (дублируем удаление несколько раз)
+        inventoryTask.taskRepository.getProducts().deleteProduct(product1!!)
+
+        var test = false
+        if (inventoryTask.taskRepository.getProducts().findProduct("materialNumber111", "1") == null) {
+            test = true
+        }
+        Assert.assertTrue(test)
+
+        //продублируем удаление продукта с МХ=1 несколько раз, если код удаления не верен, то после второго удаления продукта с МХ=1, может удалиться и продукт с МХ=2
+        inventoryTask.taskRepository.getProducts().deleteProduct(product1!!)
+        inventoryTask.taskRepository.getProducts().deleteProduct(product1!!)
+        inventoryTask.taskRepository.getProducts().deleteProduct(product1!!)
+        product1 = null
+        product2 = null
+        //проверяем,, продукт с МХ=2 должен быть в репозитории
+        test = false
+        if (inventoryTask.taskRepository.getProducts().findProduct("materialNumber111", "2") != null) {
+            test = true
+        }
+        Assert.assertTrue(test)
     }
 
     /**@Test

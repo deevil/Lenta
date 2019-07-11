@@ -11,7 +11,8 @@
     <string name="processed">Обработанные</string>
     <string name="not_processed">Не обработанные</string>
     <string name="goods_of_details">Детали по товару</string>
-    <string name="goods_of_details_mx">Детали по товару и местам хранения</string>
+    <string name="goods_of_details_store_place">Детали по товару и местам хранения</string>
+    <string name="goods_store_place">МХ товара</string>
     <string name="list_of_goods">Список товаров</string>
     <string name="enter_storage_place_number">Введите номер МХ</string>
     <string name="limit_exceeded">Превышен лимит</string>
@@ -39,4 +40,6 @@
     <string name="parallel_by_storeplaces">Параллельный пересчет с МХ</string>
     <string name="parallel_by_per_number">Параллельный пересчёт с таб.номерами</string>
     <string name="confirmation_task_open">Обработка задания начата исполнителем с логином %s на ТСД %s. Все равно продолжить?</string>
+    <string name="partly">Партионно</string>
+    <string name="vintage">Марочно</string>
 </resources>

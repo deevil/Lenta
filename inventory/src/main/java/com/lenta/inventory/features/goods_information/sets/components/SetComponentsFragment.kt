@@ -3,10 +3,9 @@ package com.lenta.inventory.features.goods_information.sets.components
 import android.view.View
 import com.lenta.inventory.R
 import com.lenta.inventory.databinding.FragmentSetComponentsBinding
-import com.lenta.inventory.features.goods_details.ComponentItem
+import com.lenta.inventory.features.goods_details_storage.ComponentItem
 import com.lenta.inventory.models.task.TaskProductInfo
 import com.lenta.inventory.platform.extentions.getAppComponent
-import com.lenta.shared.models.core.ProductInfo
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo

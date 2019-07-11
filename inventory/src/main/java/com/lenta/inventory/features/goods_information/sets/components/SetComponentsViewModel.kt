@@ -2,7 +2,7 @@ package com.lenta.inventory.features.goods_information.sets.components
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.lenta.inventory.features.goods_details.ComponentItem
+import com.lenta.inventory.features.goods_details_storage.ComponentItem
 import com.lenta.inventory.models.task.TaskProductInfo
 import com.lenta.inventory.platform.navigation.IScreenNavigator
 import com.lenta.shared.account.ISessionInfo
@@ -36,7 +36,7 @@ class SetComponentsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInS
             true, "1", MatrixType.Active, "materialType","3", null, false))
 
     //val componentItem: MutableLiveData<ComponentItem> = MutableLiveData()
-    val componentItem: MutableLiveData<ComponentItem> = MutableLiveData(ComponentItem(1,"000027 НАБОР ВИНИШКА", "0 из 2", "2", true, 2.0, 0, "000027"))
+    val componentItem: MutableLiveData<ComponentItem> = MutableLiveData(ComponentItem(1, "000027 НАБОР ВИНИШКА", "0 из 2", "2", true, 2.0, 0, "000027"))
 
     val limitExceeded: MutableLiveData<String> = MutableLiveData()
     val selectedPosition: MutableLiveData<Int> = componentItem.map { it!!.selectedPosition }

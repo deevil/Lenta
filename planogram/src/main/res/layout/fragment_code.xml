@@ -46,7 +46,7 @@
             app:layout_constraintTop_toTopOf="parent">
 
             <EditText
-                android:id="@+id/et_code1"
+                android:id="@+id/et_number1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="30dp"
@@ -55,7 +55,7 @@
                 android:inputType="number"
                 android:maxLength="1"
                 android:nextFocusDown="@+id/et_pin2"
-                android:text="@={vm.pinCode1}"
+                android:text="@={vm.number1}"
                 tools:text="9">
 
                 <requestFocus/>
@@ -63,7 +63,7 @@
             </EditText>
 
             <EditText
-                android:id="@+id/et_code2"
+                android:id="@+id/et_number2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
@@ -72,11 +72,11 @@
                 android:inputType="number"
                 android:maxLength="1"
                 android:nextFocusDown="@+id/et_pin3"
-                android:text="@={vm.pinCode2}"
+                android:text="@={vm.number2}"
                 tools:text="1"/>
 
             <EditText
-                android:id="@+id/et_code3"
+                android:id="@+id/et_number3"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
@@ -85,11 +85,11 @@
                 android:inputType="number"
                 android:maxLength="1"
                 android:nextFocusDown="@+id/et_pin4"
-                android:text="@={vm.pinCode3}"
+                android:text="@={vm.number3}"
                 tools:text="1"/>
 
             <EditText
-                android:id="@+id/et_code4"
+                android:id="@+id/et_number4"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
@@ -98,7 +98,7 @@
                 android:gravity="center"
                 android:inputType="number"
                 android:maxLength="1"
-                android:text="@={vm.pinCode4}"
+                android:text="@={vm.number4}"
 
                 app:onOkInSoftKeyboard="@{vm}"
 

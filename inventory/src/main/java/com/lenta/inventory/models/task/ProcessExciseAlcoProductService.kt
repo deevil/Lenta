@@ -6,14 +6,23 @@ class ProcessExciseAlcoProductService(val taskDescription: TaskDescription,
                                       val taskRepository: ITaskRepository,
                                       val productInfo: TaskProductInfo) : IProcessProductService {
     override fun getFactCount(): Double {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        return taskRepository.getProducts().findProduct(productInfo)?.factCount ?: 0.0
     }
 
     override fun setFactCount(count: Double){
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        if (count >= 0.0) {
+            if (count > 0.0) {
+                taskRepository.getProducts().findProduct(productInfo)?.factCount = count
+                taskRepository.getProducts().findProduct(productInfo)?.isPositionCalc = true
+            } else {
+                taskRepository.getProducts().findProduct(productInfo)?.factCount = 0.0
+                taskRepository.getProducts().findProduct(productInfo)?.isPositionCalc = false
+            }
+        }
     }
 
     override fun setMissing(){
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        taskRepository.getProducts().findProduct(productInfo)?.factCount = 0.0
+        taskRepository.getProducts().findProduct(productInfo)?.isPositionCalc = true
     }
 }

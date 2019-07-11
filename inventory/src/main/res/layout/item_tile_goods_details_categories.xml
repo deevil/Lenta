@@ -7,7 +7,7 @@
 
         <variable
             name="vm"
-            type="com.lenta.inventory.features.goods_details.GoodsDetailsCategoriesItem" />
+            type="com.lenta.inventory.features.goods_details_storage.GoodsDetailsCategoriesItem" />
 
         <variable
             name="selectedForDelete"

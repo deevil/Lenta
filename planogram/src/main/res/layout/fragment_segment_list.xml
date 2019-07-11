@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        tools:context=".features.segment_list.SegmentListFragment">
+
+    <data>
+
+        <variable
+            name="vm"
+            type="com.lenta.bp7.features.segment_list.SegmentListViewModel"/>
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <!-- Наименование колонок -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/list_title_height"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    style="@style/LinearCellStyle"
+                    android:layout_weight="@integer/size_column_1">
+
+                    <TextView
+                        style="@style/CellTitleTextStyle"
+                        android:text="@string/number"/>
+
+                </LinearLayout>
+
+                <View
+                    style="@style/RowVerticalDivider"/>
+
+                <LinearLayout
+                    style="@style/LinearCellStyle"
+                    android:layout_weight="@integer/size_column_2">
+
+                    <TextView
+                        style="@style/CellTitleTextStyle"
+                        android:text="@string/column_title_segment_number_date"/>
+
+                </LinearLayout>
+
+                <View
+                    style="@style/RowVerticalDivider"/>
+
+                <LinearLayout
+                    style="@style/LinearCellStyle"
+                    android:layout_weight="@integer/size_column_3">
+
+                    <TextView
+                        style="@style/CellTitleTextStyle"
+                        android:text="@string/column_title_status"/>
+
+                </LinearLayout>
+
+                <View
+                    style="@style/RowVerticalDivider"/>
+
+                <LinearLayout
+                    style="@style/LinearCellStyle"
+                    android:layout_weight="@integer/size_column_4">
+
+                    <TextView
+                        style="@style/CellTitleTextStyle"
+                        android:text="@string/column_title_shelves"/>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <View
+                style="@style/RowHorizontalDivider"/>
+
+        </LinearLayout>
+
+        <!-- Список сегментов -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            tools:listitem="@layout/item_segment"/>
+
+        <!-- Поле ввода номера сегмента -->
+        <EditText
+            android:id="@+id/et_segment_number"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:hint="@string/enter_segment_number"
+            android:inputType="numberDecimal"
+            android:maxLength="7"
+            tools:ignore="Autofill"/>
+
+    </LinearLayout>
+
+</layout>

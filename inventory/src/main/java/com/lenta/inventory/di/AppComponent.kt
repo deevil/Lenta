@@ -3,7 +3,6 @@ package com.lenta.inventory.di
 import com.lenta.inventory.ExceptionHandler
 import com.lenta.inventory.features.auth.AuthViewModel
 import com.lenta.inventory.features.discrepancies_found.DiscrepanciesFoundViewModel
-import com.lenta.inventory.features.goods_details.GoodsDetailsViewModel
 import com.lenta.inventory.features.goods_details_storage.GoodsDetailsStorageViewModel
 import com.lenta.inventory.features.goods_information.excise_alco.ExciseAlcoInfoViewModel
 import com.lenta.inventory.features.goods_information.general.GoodsInfoViewModel
@@ -18,7 +17,6 @@ import com.lenta.inventory.features.loading.tasks.LoadingTasksViewModel
 import com.lenta.inventory.features.main_menu.MainMenuViewModel
 import com.lenta.inventory.features.select_market.SelectMarketViewModel
 import com.lenta.inventory.features.select_personnel_number.SelectPersonnelNumberViewModel
-import com.lenta.inventory.features.sets_details_storage.SetsDetailsStorageViewModel
 import com.lenta.inventory.features.storages_list.StoragesListViewModel
 import com.lenta.inventory.features.task_list.TaskListViewModel
 import com.lenta.inventory.main.MainActivity
@@ -39,9 +37,7 @@ interface AppComponent {
     fun inject(it: SelectPersonnelNumberViewModel)
     fun inject(it: MainMenuViewModel)
     fun inject(it: GoodsInfoViewModel)
-    fun inject(it: GoodsDetailsViewModel)
     fun inject(it: GoodsDetailsStorageViewModel)
-    fun inject(it: SetsDetailsStorageViewModel)
     fun inject(it: SetsInfoViewModel)
     fun inject(it: GoodsListViewModel)
     fun inject(it: SetComponentsViewModel)
