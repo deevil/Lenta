@@ -27,7 +27,7 @@ class ShelfListFragment : CoreFragment<FragmentShelfListBinding, ShelfListViewMo
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
         topToolbarUiModel.cleanAll()
-        topToolbarUiModel.title.value = vm.getTitle(getString(R.string.title_segment_number))
+        topToolbarUiModel.title.value = getString(R.string.title_segment_number, vm.getSegmentNumber())
         topToolbarUiModel.description.value = getString(R.string.list_of_processed_selves)
     }
 

@@ -21,7 +21,7 @@ class SegmentListViewModel : CoreViewModel() {
     @Inject
     lateinit var database: IDatabaseRepo
 
-    private val storeNumber: MutableLiveData<String> = MutableLiveData("")
+    private val storeNumber: MutableLiveData<String> = MutableLiveData("0000")
 
     init {
         viewModelScope.launch {
@@ -29,8 +29,8 @@ class SegmentListViewModel : CoreViewModel() {
         }
     }
 
-    fun getTitle(pattern: String): String? {
-        return String.format(pattern, storeNumber)
+    fun getStoreNumber(): String? {
+        return storeNumber.value
     }
 
     fun onClickSave() {

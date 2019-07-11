@@ -26,7 +26,7 @@ class GoodListFragment : CoreFragment<FragmentGoodListBinding, GoodListViewModel
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
         topToolbarUiModel.cleanAll()
-        topToolbarUiModel.title.value = vm.getTitle(getString(R.string.title_segment_shelf_number))
+        topToolbarUiModel.title.value = getString(R.string.title_segment_shelf_number, vm.getSegmentNumber(), vm.getShelfNumber())
         topToolbarUiModel.description.value = getString(R.string.list_of_processed_goods)
     }
 

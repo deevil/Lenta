@@ -22,8 +22,12 @@ class GoodListViewModel : CoreViewModel() {
     private val segmentNumber: MutableLiveData<String> = MutableLiveData("123-456")
     private val shelfNumber: MutableLiveData<String> = MutableLiveData("4")
 
-    fun getTitle(pattern: String): String? {
-        return String.format(pattern, segmentNumber.value, shelfNumber.value)
+    fun getSegmentNumber(): String? {
+        return segmentNumber.value
+    }
+
+    fun getShelfNumber(): String? {
+        return shelfNumber.value
     }
 
     fun onClickApply() {

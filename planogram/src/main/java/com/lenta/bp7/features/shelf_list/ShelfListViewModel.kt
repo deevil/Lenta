@@ -21,8 +21,8 @@ class ShelfListViewModel : CoreViewModel() {
 
     private val segmentNumber: MutableLiveData<String> = MutableLiveData("123-456")
 
-    fun getTitle(pattern: String): String? {
-        return String.format(pattern, segmentNumber.value)
+    fun getSegmentNumber(): String? {
+        return segmentNumber.value
     }
 
     fun onClickDelete() {

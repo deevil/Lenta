@@ -29,7 +29,7 @@ class SegmentListFragment : CoreFragment<FragmentSegmentListBinding, SegmentList
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
         topToolbarUiModel.cleanAll()
-        topToolbarUiModel.title.value = vm.getTitle(getString(R.string.title_store_number))
+        topToolbarUiModel.title.value = getString(R.string.title_store_number, vm.getStoreNumber())
         topToolbarUiModel.description.value = getString(R.string.list_of_processed_segments)
     }
 
