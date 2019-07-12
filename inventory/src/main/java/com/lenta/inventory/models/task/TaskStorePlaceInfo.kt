@@ -1,8 +1,9 @@
 package com.lenta.inventory.models.task
 
+import com.lenta.inventory.models.StorePlaceStatus
+
 class TaskStorePlaceInfo(val placeCode: String,	//Код места хранения
-                         val countProducts: String, //Кол-во товаров
-                         val placeStat: String, //Индикатор из одной позиции
+                         val status: StorePlaceStatus,
                          val lockUser: String,	//Имя пользователя
                          val lockIP: String	//IP адрес ТСД
                         ) {

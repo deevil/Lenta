@@ -1,6 +1,7 @@
 package com.lenta.inventory.models.task
 
 import com.lenta.inventory.models.RecountType
+import com.lenta.inventory.requests.network.TasksItem
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.models.core.GisControl
 import javax.inject.Inject
@@ -45,4 +46,24 @@ class TaskDescription (val taskNumber: String,
         return blockType == "2"
     }
 
+    companion object {
+        fun from(taskInfo: TasksItem, recountType: RecountType, deadline: String) : TaskDescription {
+            return TaskDescription(taskNumber = taskInfo.taskNumber,
+                    taskName = taskInfo.taskName,
+                    taskType = taskInfo.taskType,
+                    stock = taskInfo.stock,
+                    isRecount = taskInfo.isRecount.isNotEmpty(),
+                    isStrict = taskInfo.isStrict.isNotEmpty(),
+                    blockType = taskInfo.blockType,
+                    lockUser = taskInfo.lockUser,
+                    lockIP = taskInfo.lockIP,
+                    productsInTask = taskInfo.countProductsInTask.toInt(),
+                    isStarted = taskInfo.notFinish.isNotEmpty(),
+                    dateFrom = taskInfo.dateFrom,
+                    dateTo = taskInfo.dateTo,
+                    taskDeadLine = deadline,
+                    recountType = recountType,
+                    gis = GisControl.GeneralProduct) //TODO: taskInfo.gisControl string to GisControl value
+        }
+    }
 }

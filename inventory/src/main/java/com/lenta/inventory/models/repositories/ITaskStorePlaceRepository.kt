@@ -7,6 +7,7 @@ interface ITaskStorePlaceRepository {
     fun findStorePlace(storePlace: TaskStorePlaceInfo): TaskStorePlaceInfo?
     fun findStorePlace(storePlaceNumber: String): TaskStorePlaceInfo?
     fun addStorePlace(storePlace: TaskStorePlaceInfo): Boolean
+    fun updateStorePlaces(newStorePlaces: List<TaskStorePlaceInfo>)
     fun deleteStorePlace(storePlace: TaskStorePlaceInfo): Boolean
     fun clear()
 }
