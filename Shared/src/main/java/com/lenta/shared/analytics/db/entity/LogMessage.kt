@@ -3,10 +3,10 @@ package com.lenta.shared.analytics.db.entity
 import androidx.room.*
 import java.util.*
 
-@Entity(tableName = "logs")
+@Entity(tableName = "logs", primaryKeys = ["time", "message"])
 @TypeConverters(Converters::class)
 data class LogMessage(
-        @PrimaryKey @ColumnInfo(name = "time") val time: String,
+        @ColumnInfo(name = "time") val time: String,
         @ColumnInfo(name = "infoLevel") val infoLevel: InfoLevel,
         @ColumnInfo(name = "message") val message: String
         )

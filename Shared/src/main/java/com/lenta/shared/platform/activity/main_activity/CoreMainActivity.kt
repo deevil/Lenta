@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Observer
 import com.lenta.shared.R
+import com.lenta.shared.analytics.AnalyticsHelper
 import com.lenta.shared.databinding.ActivityMainBinding
 import com.lenta.shared.keys.KeyCode
 import com.lenta.shared.keys.OnKeyDownListener
@@ -59,6 +60,9 @@ abstract class CoreMainActivity : CoreActivity<ActivityMainBinding>(), ToolbarBu
     @Inject
     lateinit var screenNavigator: ICoreNavigator
 
+    @Inject
+    lateinit var analyticsHelper: AnalyticsHelper
+
     val honeywellScanHelper = HoneywellScanHelper()
     val newLandScanHelper = NewLandScanHelper()
 
@@ -67,7 +71,9 @@ abstract class CoreMainActivity : CoreActivity<ActivityMainBinding>(), ToolbarBu
     }
 
     val fragmentStack: FragmentStack by lazy {
-        FragmentStack(supportFragmentManager, R.id.fragments)
+        FragmentStack(supportFragmentManager, R.id.fragments).apply {
+            coreComponent.inject(this)
+        }
     }
 
 
@@ -171,7 +177,10 @@ abstract class CoreMainActivity : CoreActivity<ActivityMainBinding>(), ToolbarBu
 
     override fun onToolbarButtonClick(view: View) {
         this.hideKeyboard()
+
         Logg.d { "onToolbarButtonClick ${view.id}" }
+
+        analyticsHelper.onClickToolbarButton(view)
 
         if (view.id == R.id.b_1 && isHaveBackButton()) {
             onBackPressed()

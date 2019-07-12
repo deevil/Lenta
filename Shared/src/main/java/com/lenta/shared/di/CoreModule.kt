@@ -17,7 +17,7 @@ import com.lenta.shared.account.SessionInfo
 import com.lenta.shared.analytics.FmpAnalytics
 import com.lenta.shared.analytics.IAnalytics
 import com.lenta.shared.analytics.db.dao.LogDao
-import com.lenta.shared.analytics.db.LogDatabase
+import com.lenta.shared.analytics.db.RoomAppDatabase
 import com.lenta.shared.exception.CoreFailureInterpreter
 import com.lenta.shared.exception.IFailureInterpreter
 import com.lenta.shared.platform.network_state.INetworkStateMonitor
@@ -53,7 +53,7 @@ import javax.inject.Singleton
 @Module
 class CoreModule(val application: Application, val defaultConnectionSettings: DefaultConnectionSettings) {
 
-    var dbPath = "${Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS).canonicalPath}/FMP/db"
+    val dbPath = "${Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS).absolutePath}/FMP/db"
 
     @Provides
     fun provideAppContext() = application.applicationContext!!
@@ -75,14 +75,13 @@ class CoreModule(val application: Application, val defaultConnectionSettings: De
     internal fun provideHyperHiveState(appContext: Context, appSettings: IAppSettings): HyperHiveState {
         prepareFolder(dbPath)
         val fmpDbName = "resources_${appSettings.getCurrentEnvironment()}_${appSettings.getCurrentProject()}.sqlite"
-        dbPath = "$dbPath/$fmpDbName"
 
         Logg.d { "dbPath: $dbPath" }
         return HyperHiveState(appContext)
                 .setHostWithSchema(appSettings.getCurrentServerAddress())
                 .setApiVersion(VersionAPI.V_1)
                 .setEnvironmentSlug(appSettings.getCurrentEnvironment())
-                .setDbPathDefault(dbPath)
+                .setDbPathDefault("$dbPath/$fmpDbName")
                 .setProjectSlug(appSettings.getCurrentProject())
                 .setVersionProject("app")
                 .setHandler(Handler())
@@ -163,8 +162,9 @@ class CoreModule(val application: Application, val defaultConnectionSettings: De
                                        foregroundActivityProvider: ForegroundActivityProvider,
                                        failureInterpreter: IFailureInterpreter,
                                        analytics: IAnalytics,
+                                       roomAppDatabase: RoomAppDatabase,
                                        backFragmentResultHelper: BackFragmentResultHelper): ICoreNavigator {
-        return CoreNavigator(context, foregroundActivityProvider, failureInterpreter, analytics, backFragmentResultHelper)
+        return CoreNavigator(context, foregroundActivityProvider, failureInterpreter, analytics, roomAppDatabase, backFragmentResultHelper)
     }
 
     @Provides
@@ -204,13 +204,22 @@ class CoreModule(val application: Application, val defaultConnectionSettings: De
 
     @Provides
     @Singleton
-    fun provideLogDao(context: Context): LogDao {
-        prepareFolder(dbPath)
-        val dbLogName = "loggs.sqlite"
+    fun provideRoomDB(context: Context): RoomAppDatabase {
+        val logsDbPath = "$dbPath/logs/${context.packageName}"
+        prepareFolder(logsDbPath)
+        val dbLogName = "logs_${context.packageName}.sqlite"
         return Room.databaseBuilder(
                 context,
-                LogDatabase::class.java, "$dbPath/$dbLogName"
-        ).build().logDao()
+                RoomAppDatabase::class.java, "$logsDbPath/$dbLogName"
+        ).allowMainThreadQueries()
+                .build()
     }
+
+    @Provides
+    @Singleton
+    fun provideLogDao(roomAppDatabase: RoomAppDatabase): LogDao {
+        return roomAppDatabase.logDao()
+    }
+
 
 }

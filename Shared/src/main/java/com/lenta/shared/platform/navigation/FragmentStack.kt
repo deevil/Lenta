@@ -9,10 +9,17 @@ import java.util.Random
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import com.lenta.shared.R
+import com.lenta.shared.analytics.AnalyticsHelper
+import com.lenta.shared.platform.fragment.CoreFragment
+import com.lenta.shared.utilities.extentions.implementationOf
+import javax.inject.Inject
 
 class FragmentStack(private val manager: FragmentManager, private val containerId: Int) {
     private val random: Random = Random(System.currentTimeMillis())
     private var listener: FragmentManager.OnBackStackChangedListener? = null
+
+    @Inject
+    lateinit var analyticsHelper: AnalyticsHelper
 
     var defaultAnimation: CustomAnimation = CustomAnimation.horizontal
 
@@ -27,6 +34,7 @@ class FragmentStack(private val manager: FragmentManager, private val containerI
      * Pushes a fragment to the top of the stack.
      */
     fun push(fragment: Fragment, customAnimation: CustomAnimation? = null, disableAnimations: Boolean = false) {
+        analyticsHelper.onNewScreen(fragment.implementationOf(CoreFragment::class.java))
         val transaction = manager.beginTransaction()
         if (!disableAnimations) {
             val animation = customAnimation ?: defaultAnimation
@@ -51,6 +59,7 @@ class FragmentStack(private val manager: FragmentManager, private val containerI
      * Replaces entire stack contents with just one fragment.
      */
     fun replace(fragment: Fragment) {
+        analyticsHelper.onNewScreen(fragment.implementationOf(CoreFragment::class.java))
         popAll()
         manager.beginTransaction()
                 .replace(containerId, fragment, setTag(fragment))

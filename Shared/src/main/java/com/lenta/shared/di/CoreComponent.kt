@@ -6,7 +6,8 @@ import com.google.gson.Gson
 import com.lenta.shared.account.IAuthenticator
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.analytics.IAnalytics
-//import com.lenta.shared.analytics.db.dao.LogDao
+import com.lenta.shared.analytics.db.RoomAppDatabase
+import com.lenta.shared.analytics.db.dao.LogDao
 import com.lenta.shared.exception.IFailureInterpreter
 import com.lenta.shared.features.auxiliary_menu.AuxiliaryMenuViewModel
 import com.lenta.shared.features.fmp_settings.FmpSettingsViewModel
@@ -22,6 +23,7 @@ import com.lenta.shared.platform.activity.ForegroundActivityProvider
 import com.lenta.shared.platform.battery_state.BatteryStateMonitor
 import com.lenta.shared.platform.battery_state.IBatteryStateMonitor
 import com.lenta.shared.platform.navigation.BackFragmentResultHelper
+import com.lenta.shared.platform.navigation.FragmentStack
 import com.lenta.shared.platform.navigation.ICoreNavigator
 import com.lenta.shared.platform.network_state.INetworkStateMonitor
 import com.lenta.shared.platform.network_state.NetworkStateMonitor
@@ -63,7 +65,8 @@ interface CoreComponent {
     fun getIProgressUseCaseInformator(): IProgressUseCaseInformator
     fun getScanInfoRequest(): ScanInfoRequest
     fun getBackResultHelper(): BackFragmentResultHelper
-    //fun getLogDao(): LogDao
+    fun getRoomAppDatabase(): RoomAppDatabase
+    fun getLogDao(): LogDao
 
 
     fun inject(it: FmpSettingsViewModel)
@@ -77,4 +80,5 @@ interface CoreComponent {
     fun inject(it: AuxiliaryMenuViewModel)
     fun inject(dataBindingHelpHolder: DataBindingExtHolder)
     fun inject(coreLoginFragment: CoreLoginFragment)
+    fun inject(fragmentStack: FragmentStack)
 }
