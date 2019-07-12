@@ -25,6 +25,7 @@ import com.lenta.inventory.models.RecountType
 import com.lenta.inventory.models.StorePlaceLockMode
 import com.lenta.inventory.models.task.TaskStorePlaceInfo
 import com.lenta.inventory.models.task.TaskProductInfo
+import com.lenta.inventory.requests.network.TasksItem
 import com.lenta.shared.account.IAuthenticator
 import com.lenta.shared.features.alert.AlertFragment
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
@@ -156,7 +157,7 @@ class ScreenNavigator(
         }
     }
 
-    override fun openLoadingTaskContentsScreen(taskInfo: TaskItemVm, recountType: RecountType) {
+    override fun openLoadingTaskContentsScreen(taskInfo: TasksItem, recountType: RecountType) {
         runOrPostpone {
             getFragmentStack()?.push(LoadingTaskContentFragment.create(taskInfo, recountType))
         }
@@ -191,7 +192,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openTasksList()
     fun openJobCard(taskNumber: String)
     fun openLoadingTasksScreen()
-    fun openLoadingTaskContentsScreen(taskInfo: TaskItemVm, recountType: RecountType)
+    fun openLoadingTaskContentsScreen(taskInfo: TasksItem, recountType: RecountType)
     fun openLoadingStorePlaceLockScreen(taskInfo: TaskItemVm, mode: StorePlaceLockMode, storePlaceInfo: TaskStorePlaceInfo)
     fun openExciseAlcoInfoScreen()
     fun openConfirmationTaskOpenScreen(userName: String, ip: String, callbackFunc: () -> Unit)

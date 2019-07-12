@@ -7,6 +7,7 @@ interface ITaskProductRepository {
     fun findProduct(product: TaskProductInfo): TaskProductInfo?
     fun findProduct(materialNumber: String, storePlaceNumber: String): TaskProductInfo?
     fun addProduct(product: TaskProductInfo): Boolean
+    fun updateProducts(newProducts: List<TaskProductInfo>)
     fun deleteProduct(product: TaskProductInfo): Boolean
     fun getNotProcessedProducts(): List<TaskProductInfo>
     fun getProcessedProducts(): List<TaskProductInfo>

@@ -5,11 +5,16 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.inventory.features.task_list.TaskItemVm
 import com.lenta.inventory.models.RecountType
+import com.lenta.inventory.models.task.IInventoryTaskManager
+import com.lenta.inventory.models.task.InventoryTaskManager
+import com.lenta.inventory.models.task.TaskContents
+import com.lenta.inventory.models.task.TaskDescription
 import com.lenta.inventory.platform.navigation.IScreenNavigator
 import com.lenta.inventory.repos.IRepoInMemoryHolder
 import com.lenta.inventory.requests.network.TaskContentNetRequest
 import com.lenta.inventory.requests.network.TaskContentParams
 import com.lenta.inventory.requests.network.TaskContentRestInfo
+import com.lenta.inventory.requests.network.TasksItem
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.features.loading.CoreLoadingViewModel
@@ -29,8 +34,10 @@ class LoadingTaskContentViewModel: CoreLoadingViewModel() {
     lateinit var context: Context
     @Inject
     lateinit var repoInMemoryHolder: IRepoInMemoryHolder
+    @Inject
+    lateinit var taskManager: IInventoryTaskManager
 
-    var taskInfo: TaskItemVm? = null
+    var taskInfo: TasksItem? = null
     var recountType: RecountType? = null
 
     override val title: MutableLiveData<String> = MutableLiveData()
@@ -42,7 +49,7 @@ class LoadingTaskContentViewModel: CoreLoadingViewModel() {
         viewModelScope.launch {
             progress.value = true
             taskContentRequest(TaskContentParams(ip = context.getDeviceIp(),
-                    taskNumber = taskInfo?.number ?: "",
+                    taskNumber = taskInfo?.taskNumber ?: "",
                     userNumber = sessionInfo.personnelNumber ?: "",
                     additionalDataFlag = "",
                     newProductNumbers = emptyList(),
@@ -57,13 +64,17 @@ class LoadingTaskContentViewModel: CoreLoadingViewModel() {
         screenNavigator.openAlertScreen(failure)
     }
 
-    private fun handleSuccess(taskContentInfo: TaskContentRestInfo) {
-        Logg.d { "tasksListRestInfo $taskContentInfo" }
-        repoInMemoryHolder.taskContentRestInfo = taskContentInfo
+    private fun handleSuccess(taskContents: TaskContents) {
+        Logg.d { "taskContents $taskContents" }
         screenNavigator.goBack()
-        when (recountType) {
-            RecountType.Simple, RecountType.ParallelByPerNo -> screenNavigator.openGoodsListScreen()
-            RecountType.ParallelByStorePlaces -> screenNavigator.openStoragesList()
+        taskInfo?.let {
+            val taskDescription = TaskDescription.from(it, recountType ?: RecountType.None, taskContents.deadline)
+            taskManager.newInventoryTask(taskDescription)
+            taskManager.getInventoryTask()?.updateTaskWithContents(taskContents)
+            when (recountType) {
+                RecountType.Simple, RecountType.ParallelByPerNo -> screenNavigator.openGoodsListScreen()
+                RecountType.ParallelByStorePlaces -> screenNavigator.openStoragesList()
+            }
         }
     }
 
