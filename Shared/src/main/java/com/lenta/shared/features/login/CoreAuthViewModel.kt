@@ -11,4 +11,7 @@ abstract class CoreAuthViewModel : CoreViewModel() {
     abstract fun onClickEnter()
     abstract fun onClickAuxiliaryMenu()
     abstract fun onResume()
+    fun onScanResult(data: String) {
+        login.postValue(data)
+    }
 }

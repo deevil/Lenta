@@ -3,6 +3,7 @@ package com.lenta.shared.di
 import android.app.Application
 import android.content.Context
 import android.content.SharedPreferences
+import android.os.Environment
 import android.os.Handler
 import android.preference.PreferenceManager
 import com.google.gson.Gson
@@ -42,6 +43,7 @@ import com.mobrun.plugin.api.HyperHiveState
 import com.mobrun.plugin.api.VersionAPI
 import dagger.Module
 import dagger.Provides
+import java.io.File
 import javax.inject.Singleton
 
 
@@ -65,10 +67,22 @@ class CoreModule(val application: Application, val defaultConnectionSettings: De
     @Provides
     @Singleton
     internal fun provideHyperHiveState(appContext: Context, appSettings: IAppSettings): HyperHiveState {
+        var dbPath = "${Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS).canonicalPath}/FMP/db"
+        with(File(dbPath)) {
+            if (!exists()) {
+                mkdirs().also {
+                    Logg.d { "mkDirs: $it" }
+                }
+            }
+        }
+
+        dbPath = "$dbPath/resources_${appSettings.getCurrentEnvironment()}_${appSettings.getCurrentProject()}.sqlite"
+        Logg.d { "dbPath: $dbPath" }
         return HyperHiveState(appContext)
                 .setHostWithSchema(appSettings.getCurrentServerAddress())
                 .setApiVersion(VersionAPI.V_1)
                 .setEnvironmentSlug(appSettings.getCurrentEnvironment())
+                .setDbPathDefault(dbPath)
                 .setProjectSlug(appSettings.getCurrentProject())
                 .setVersionProject("app")
                 .setHandler(Handler())

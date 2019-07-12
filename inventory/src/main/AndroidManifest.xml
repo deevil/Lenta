@@ -3,9 +3,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.lenta.inventory">
 
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-
     <application
         android:name=".AndroidApplication"
         android:allowBackup="false"
@@ -21,6 +18,7 @@
         tools:targetApi="p">
         <activity
             android:name=".main.MainActivity"
+            android:excludeFromRecents="true"
             android:launchMode="singleInstance"
             android:screenOrientation="portrait">
             <intent-filter>

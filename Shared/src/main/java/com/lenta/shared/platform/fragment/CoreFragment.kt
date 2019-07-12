@@ -53,12 +53,6 @@ abstract class CoreFragment<T : ViewDataBinding, S : CoreViewModel> : Fragment()
         throw NullPointerException("DataBinding is null")
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        invalidateTopToolBar()
-        invalidateBottomToolBar()
-    }
-
     fun getBottomToolBarUIModel(): BottomToolbarUiModel? {
         return getCoreMainActivity()?.getBottomToolBarUIModel()
     }
@@ -79,6 +73,8 @@ abstract class CoreFragment<T : ViewDataBinding, S : CoreViewModel> : Fragment()
             }
             arguments.remove(FragmentStack.SAVE_TAG_FOR_ARGUMENTS)
         }
+        invalidateTopToolBar()
+        invalidateBottomToolBar()
     }
 
     open fun onFragmentResult(arguments: Bundle) {
