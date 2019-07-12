@@ -6,6 +6,7 @@ import android.content.SharedPreferences
 import android.os.Environment
 import android.os.Handler
 import android.preference.PreferenceManager
+import androidx.room.Room
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.lenta.shared.BuildConfig
@@ -15,6 +16,8 @@ import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.account.SessionInfo
 import com.lenta.shared.analytics.FmpAnalytics
 import com.lenta.shared.analytics.IAnalytics
+import com.lenta.shared.analytics.db.dao.LogDao
+import com.lenta.shared.analytics.db.LogDatabase
 import com.lenta.shared.exception.CoreFailureInterpreter
 import com.lenta.shared.exception.IFailureInterpreter
 import com.lenta.shared.platform.network_state.INetworkStateMonitor
@@ -38,17 +41,20 @@ import com.lenta.shared.settings.AppSettings
 import com.lenta.shared.settings.DefaultConnectionSettings
 import com.lenta.shared.settings.IAppSettings
 import com.lenta.shared.utilities.Logg
+import com.lenta.shared.utilities.prepareFolder
 import com.mobrun.plugin.api.HyperHive
 import com.mobrun.plugin.api.HyperHiveState
 import com.mobrun.plugin.api.VersionAPI
 import dagger.Module
 import dagger.Provides
-import java.io.File
 import javax.inject.Singleton
 
 
 @Module
 class CoreModule(val application: Application, val defaultConnectionSettings: DefaultConnectionSettings) {
+
+    var dbPath = "${Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS).canonicalPath}/FMP/db"
+
     @Provides
     fun provideAppContext() = application.applicationContext!!
 
@@ -67,16 +73,10 @@ class CoreModule(val application: Application, val defaultConnectionSettings: De
     @Provides
     @Singleton
     internal fun provideHyperHiveState(appContext: Context, appSettings: IAppSettings): HyperHiveState {
-        var dbPath = "${Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS).canonicalPath}/FMP/db"
-        with(File(dbPath)) {
-            if (!exists()) {
-                mkdirs().also {
-                    Logg.d { "mkDirs: $it" }
-                }
-            }
-        }
+        prepareFolder(dbPath)
+        val fmpDbName = "resources_${appSettings.getCurrentEnvironment()}_${appSettings.getCurrentProject()}.sqlite"
+        dbPath = "$dbPath/$fmpDbName"
 
-        dbPath = "$dbPath/resources_${appSettings.getCurrentEnvironment()}_${appSettings.getCurrentProject()}.sqlite"
         Logg.d { "dbPath: $dbPath" }
         return HyperHiveState(appContext)
                 .setHostWithSchema(appSettings.getCurrentServerAddress())
@@ -90,6 +90,7 @@ class CoreModule(val application: Application, val defaultConnectionSettings: De
                 .setDefaultRetryIntervalSec(10)
                 .setGsonForParcelPacker(GsonBuilder().excludeFieldsWithoutExposeAnnotation().create())
     }
+
 
     @Provides
     @Singleton
@@ -174,8 +175,8 @@ class CoreModule(val application: Application, val defaultConnectionSettings: De
 
     @Provides
     @Singleton
-    internal fun provideIAnalitycs(hyperHive: HyperHive): IAnalytics {
-        return FmpAnalytics(hyperHive)
+    internal fun provideIAnalitycs(hyperHive: HyperHive, logDao: LogDao): IAnalytics {
+        return FmpAnalytics(hyperHive, logDao)
     }
 
     @Provides
@@ -199,6 +200,17 @@ class CoreModule(val application: Application, val defaultConnectionSettings: De
     @Singleton
     internal fun provideBackResultHelper(): BackFragmentResultHelper {
         return BackFragmentResultHelper()
+    }
+
+    @Provides
+    @Singleton
+    fun provideLogDao(context: Context): LogDao {
+        prepareFolder(dbPath)
+        val dbLogName = "loggs.sqlite"
+        return Room.databaseBuilder(
+                context,
+                LogDatabase::class.java, "$dbPath/$dbLogName"
+        ).build().logDao()
     }
 
 }

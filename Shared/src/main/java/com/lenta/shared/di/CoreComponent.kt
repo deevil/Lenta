@@ -6,9 +6,11 @@ import com.google.gson.Gson
 import com.lenta.shared.account.IAuthenticator
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.analytics.IAnalytics
+//import com.lenta.shared.analytics.db.dao.LogDao
 import com.lenta.shared.exception.IFailureInterpreter
 import com.lenta.shared.features.auxiliary_menu.AuxiliaryMenuViewModel
 import com.lenta.shared.features.fmp_settings.FmpSettingsViewModel
+import com.lenta.shared.features.login.CoreLoginFragment
 import com.lenta.shared.features.message.MessageViewModel
 import com.lenta.shared.features.printer_change.PrinterChangeViewModel
 import com.lenta.shared.features.select_oper_mode.SelectOperModeViewModel
@@ -61,6 +63,7 @@ interface CoreComponent {
     fun getIProgressUseCaseInformator(): IProgressUseCaseInformator
     fun getScanInfoRequest(): ScanInfoRequest
     fun getBackResultHelper(): BackFragmentResultHelper
+    //fun getLogDao(): LogDao
 
 
     fun inject(it: FmpSettingsViewModel)
@@ -73,4 +76,5 @@ interface CoreComponent {
     fun inject(it: SettingsViewModel)
     fun inject(it: AuxiliaryMenuViewModel)
     fun inject(dataBindingHelpHolder: DataBindingExtHolder)
+    fun inject(coreLoginFragment: CoreLoginFragment)
 }

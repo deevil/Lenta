@@ -11,7 +11,6 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListe
 import com.lenta.shared.scan.OnScanResultListener
 
 abstract class CoreLoginFragment : CoreFragment<com.lenta.shared.databinding.FragmentLoginBinding, CoreAuthViewModel>(), OnBackPresserListener, ToolbarButtonsClickListener, OnScanResultListener {
-
     override fun getLayoutId(): Int = R.layout.fragment_login
 
 
