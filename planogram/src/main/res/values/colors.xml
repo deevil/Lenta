@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <color name="segment_deleted_status">#ff5e5e</color>
+    <color name="segment_pocessed_status">#838383</color>
+    <color name="segment_other_status">#ffffff</color>
+
+</resources>

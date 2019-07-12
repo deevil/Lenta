@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
-        xmlns:app="http://schemas.android.com/apk/res-auto">
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools">
 
     <data>
 
@@ -30,6 +30,7 @@
                     android:id="@+id/tv_item_number"
                     style="@style/CellTextStyle"
                     android:text="@{String.valueOf(segment.id)}"
+                    app:segmentTextColor="@{segment.status}"
                     tools:text="1"/>
 
             </LinearLayout>
@@ -46,6 +47,7 @@
                     style="@style/CellTextStyle"
                     android:maxLines="2"
                     android:text="@{@string/segment_number_store_date(segment.number, segment.storeNumber, segment.formattedDate)}"
+                    app:segmentTextColor="@{segment.status}"
                     tools:text="123-456 (ТК - 0005)\n09.07.2019"/>
 
             </LinearLayout>
@@ -77,6 +79,7 @@
                     android:id="@+id/tv_shelves_count"
                     style="@style/CellTextStyle"
                     android:text="@{String.valueOf(segment.numberOfShelves)}"
+                    app:segmentTextColor="@{segment.status}"
                     tools:text="5"/>
 
             </LinearLayout>
