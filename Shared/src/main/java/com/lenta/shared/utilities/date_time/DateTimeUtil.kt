@@ -14,8 +14,12 @@ object DateTimeUtil {
         }
     }
 
+    fun formatDate(date: Date, targetFormat: String): String {
+        return getDateFormat(targetFormat).format(date)
+    }
+
     fun formatDate(unixTime: Long, targetFormat: String): String {
-        return getDateFormat(targetFormat).format(Date(unixTime))
+        return formatDate(Date(unixTime), targetFormat)
     }
 
     fun formatCurrentDate(targetFormat: String): String {
@@ -24,7 +28,10 @@ object DateTimeUtil {
 
     fun convertTimeString(formatSource: String, formatDestination: String, date: String): String {
         return formatDate(getDateFormat(formatSource).parse(date).time, formatDestination)
+    }
 
+    fun getDateFromString(dateString: String, format: String): Date {
+        return getDateFormat(format).parse(dateString)
     }
 
 }

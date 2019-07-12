@@ -18,18 +18,18 @@ class FmpAnalytics @Inject constructor(val hyperHive: HyperHive, val logDao: Log
 
 
     override fun logTrace(tag: String?, message: String) {
-        logDao.insert(LogMessage(Date().toString(), InfoLevel.INFO, message))
+        logDao.insert(LogMessage(Date(), InfoLevel.INFO, message))
         enableLogsFuncDisableLogs(tag, message, hyperHive.loggingAPI::logTrace)
     }
 
 
     override fun logError(tag: String?, message: String) {
-        logDao.insert(LogMessage(Date().toString(), InfoLevel.ERROR, message))
+        logDao.insert(LogMessage(Date(), InfoLevel.ERROR, message))
         enableLogsFuncDisableLogs(tag, message, hyperHive.loggingAPI::logWarning)
     }
 
     override fun logFatal(tag: String?, message: String) {
-        logDao.insert(LogMessage(Date().toString(), InfoLevel.FATAL, message))
+        logDao.insert(LogMessage(Date(), InfoLevel.FATAL, message))
         enableLogsFuncDisableLogs(tag, message, hyperHive.loggingAPI::logFatal)
     }
 
