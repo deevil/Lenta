@@ -4,7 +4,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp7.platform.navigation.IScreenNavigator
 import com.lenta.bp7.repos.IRepoInMemoryHolder
-import com.lenta.shared.account.ISessionInfo
+import com.lenta.bp7.account.IPlanogramSessionInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.settings.IAppSettings
 import com.lenta.shared.utilities.extentions.map
@@ -17,7 +17,7 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
     @Inject
     lateinit var screenNavigator: IScreenNavigator
     @Inject
-    lateinit var sessionInfo: ISessionInfo
+    lateinit var sessionInfo: IPlanogramSessionInfo
     @Inject
     lateinit var appSettings: IAppSettings
     @Inject
@@ -64,7 +64,7 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
                 clearPrinters()
             }
             sessionInfo.printer = appSettings.printer
-            sessionInfo.market = it
+            sessionInfo.marketNumber = it
             appSettings.lastTK = it
         }
 

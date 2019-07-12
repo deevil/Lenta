@@ -6,7 +6,7 @@ import com.lenta.bp7.data.model.Segment
 import com.lenta.bp7.data.model.SegmentStatus
 import com.lenta.bp7.platform.navigation.IScreenNavigator
 import com.lenta.bp7.repos.IDatabaseRepo
-import com.lenta.shared.account.ISessionInfo
+import com.lenta.bp7.account.IPlanogramSessionInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.mobrun.plugin.api.HyperHive
 import kotlinx.coroutines.launch
@@ -19,7 +19,7 @@ class SegmentListViewModel : CoreViewModel() {
     @Inject
     lateinit var navigator: IScreenNavigator
     @Inject
-    lateinit var sessionInfo: ISessionInfo
+    lateinit var sessionInfo: IPlanogramSessionInfo
     @Inject
     lateinit var database: IDatabaseRepo
 
@@ -28,7 +28,7 @@ class SegmentListViewModel : CoreViewModel() {
 
     init {
         viewModelScope.launch {
-            storeNumber.value = sessionInfo.market
+            storeNumber.value = sessionInfo.marketNumber
 
             segments.value = listOf(
                     Segment(id = 1, number = "126-652", storeNumber = storeNumber.value, status = SegmentStatus.DELETED),

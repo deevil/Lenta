@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.lenta.bp7.data.CheckType
 import com.lenta.bp7.platform.navigation.IScreenNavigator
 import com.lenta.bp7.repos.IDatabaseRepo
-import com.lenta.shared.account.ISessionInfo
+import com.lenta.bp7.account.IPlanogramSessionInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
@@ -22,7 +22,7 @@ class CodeViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     @Inject
     lateinit var navigator: IScreenNavigator
     @Inject
-    lateinit var sessionInfo: ISessionInfo
+    lateinit var sessionInfo: IPlanogramSessionInfo
     @Inject
     lateinit var database: IDatabaseRepo
 

@@ -2,7 +2,7 @@ package com.lenta.bp7.requests.network
 
 import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
-import com.lenta.shared.account.ISessionInfo
+import com.lenta.bp7.account.IPlanogramSessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.fmp.ObjectRawStatus
 import com.lenta.shared.functional.Either
@@ -16,7 +16,7 @@ import javax.inject.Inject
 
 
 class StoresRequest
-@Inject constructor(private val hyperHive: HyperHive, private val gson: Gson, private val sessionInfo: ISessionInfo) : UseCase<StoresRequestResult, RequestParams>() {
+@Inject constructor(private val hyperHive: HyperHive, private val gson: Gson, private val sessionInfo: IPlanogramSessionInfo) : UseCase<StoresRequestResult, RequestParams>() {
     override suspend fun run(params: RequestParams): Either<Failure, StoresRequestResult> {
         //TODO (DB) нужно добавить поддержку логина пользователя когда доработают ФМ модуль
         val webCallParams = WebCallParams().apply {

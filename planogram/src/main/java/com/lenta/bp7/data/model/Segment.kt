@@ -19,6 +19,7 @@ data class Segment(
     fun getNumberOfShelves(): Int {
         return shelves.size
     }
+
 }
 
 enum class SegmentStatus {
