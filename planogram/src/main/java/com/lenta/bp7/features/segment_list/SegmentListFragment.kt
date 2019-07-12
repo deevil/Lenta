@@ -2,15 +2,17 @@ package com.lenta.bp7.features.segment_list
 
 import android.os.Bundle
 import android.view.View
+import com.lenta.bp7.BR
 import com.lenta.bp7.R
 import com.lenta.bp7.databinding.FragmentSegmentListBinding
+import com.lenta.bp7.databinding.ItemSegmentBinding
 import com.lenta.bp7.platform.extentions.getAppComponent
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
-import com.lenta.shared.utilities.extentions.connectLiveData
+import com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig
 import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
 import com.lenta.shared.utilities.extentions.provideViewModel
 
@@ -44,7 +46,15 @@ class SegmentListFragment : CoreFragment<FragmentSegmentListBinding, SegmentList
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        initRvConfig()
         initSegmentNumberField()
+    }
+
+    private fun initRvConfig() {
+        binding?.rvConfig = DataBindingRecyclerViewConfig<ItemSegmentBinding>(
+                layoutId = R.layout.item_segment,
+                itemId = BR.segment
+        )
     }
 
     private fun initSegmentNumberField() {

@@ -37,4 +37,6 @@
     <string name="goods_barcode">Штрихкод товара</string>
     <string name="good_on_shelf">Товар на полке</string>
 
+    <string name="segment_number_store_date">%1$s (ТК - %2$s)\n%3$s</string>
+
 </resources>
