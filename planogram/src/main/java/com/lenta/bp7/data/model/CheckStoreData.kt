@@ -81,7 +81,7 @@ class CheckStoreData(
                     sapCode = createSapCode(),
                     barCode = createBarCode(),
                     name = createGoodName(i),
-                    sign = createGoodSign(facings),
+                    status = createGoodSign(facings),
                     totalFacings = facings))
         }
 
@@ -92,8 +92,8 @@ class CheckStoreData(
         return (0..35).random()
     }
 
-    private fun createGoodSign(facings: Int): GoodSign {
-        return if (facings == 0) GoodSign.MISSING else GoodSign.PRESENT
+    private fun createGoodSign(facings: Int): GoodStatus {
+        return if (facings == 0) GoodStatus.MISSING else GoodStatus.PRESENT
     }
 
     private fun createSapCode(): String {

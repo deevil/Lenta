@@ -6,10 +6,11 @@ class Good(
     val barCode: String,
     val name: String,
     var totalFacings: Int,
-    var sign: GoodSign
+    var status: GoodStatus = GoodStatus.STARTED
 )
 
-enum class GoodSign {
+enum class GoodStatus {
+    STARTED,
     MISSING,
     PRESENT
 }

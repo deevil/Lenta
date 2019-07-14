@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools">
 
     <data>
@@ -43,8 +44,8 @@
                 <TextView
                     android:id="@+id/tv_good_number_name"
                     style="@style/CellTextStyle"
-                    android:text="@{@string/good_sap_name(good.sapCode, good.name)}"
                     android:maxLines="2"
+                    android:text="@{@string/good_sap_name(good.sapCode, good.name)}"
                     tools:text="000021 Масло"/>
 
             </LinearLayout>
@@ -60,7 +61,8 @@
                     android:id="@+id/iv_shelf_status"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/ic_close_white_24dp"/>
+                    app:goodStatusIcon="@{good.sign}"
+                    tools:src="@drawable/ic_close_white_24dp"/>
 
             </LinearLayout>
 
