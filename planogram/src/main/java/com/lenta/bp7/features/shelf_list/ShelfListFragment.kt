@@ -1,14 +1,18 @@
 package com.lenta.bp7.features.shelf_list
 
+import android.os.Bundle
 import android.view.View
+import com.lenta.bp7.BR
 import com.lenta.bp7.R
 import com.lenta.bp7.databinding.FragmentShelfListBinding
+import com.lenta.bp7.databinding.ItemShelfBinding
 import com.lenta.bp7.platform.extentions.getAppComponent
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
+import com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig
 import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
 import com.lenta.shared.utilities.extentions.provideViewModel
 
@@ -41,5 +45,16 @@ class ShelfListFragment : CoreFragment<FragmentShelfListBinding, ShelfListViewMo
             /*R.id.b_3 -> vm.onClickDelete()*/
             R.id.b_5 -> vm.onClickApply()
         }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        initRvConfig()
+    }
+
+    private fun initRvConfig() {
+        binding?.rvConfig = DataBindingRecyclerViewConfig<ItemShelfBinding>(
+                layoutId = R.layout.item_shelf,
+                itemId = BR.shelf
+        )
     }
 }

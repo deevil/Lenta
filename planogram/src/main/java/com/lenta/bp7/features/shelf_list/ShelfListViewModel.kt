@@ -1,11 +1,14 @@
 package com.lenta.bp7.features.shelf_list
 
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
+import com.lenta.bp7.account.IPlanogramSessionInfo
+import com.lenta.bp7.data.model.Shelf
 import com.lenta.bp7.platform.navigation.IScreenNavigator
 import com.lenta.bp7.repos.IDatabaseRepo
-import com.lenta.bp7.account.IPlanogramSessionInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.mobrun.plugin.api.HyperHive
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class ShelfListViewModel : CoreViewModel() {
@@ -19,7 +22,15 @@ class ShelfListViewModel : CoreViewModel() {
     @Inject
     lateinit var database: IDatabaseRepo
 
-    private val segmentNumber: MutableLiveData<String> = MutableLiveData("123-456")
+    private val segmentNumber: MutableLiveData<String> = MutableLiveData()
+    val shelves: MutableLiveData<List<Shelf>> = MutableLiveData()
+
+    init {
+        viewModelScope.launch {
+            segmentNumber.value = sessionInfo.checkStoreData.getCurrentSegment().number
+            shelves.value = sessionInfo.checkStoreData.getCurrentSegment().shelves
+        }
+    }
 
     fun getSegmentNumber(): String? {
         return segmentNumber.value

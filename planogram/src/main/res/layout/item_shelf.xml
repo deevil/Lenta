@@ -5,8 +5,9 @@
     <data>
 
         <variable
-            name="vm"
-            type="com.lenta.bp7.features.segment_list.SegmentListViewModel"/>
+            name="shelf"
+            type="com.lenta.bp7.data.model.Shelf"/>
+
     </data>
 
     <LinearLayout
@@ -27,6 +28,7 @@
                 <TextView
                     android:id="@+id/tv_item_number"
                     style="@style/CellTextStyle"
+                    android:text="@{String.valueOf(shelf.id)}"
                     tools:text="1"/>
 
             </LinearLayout>
@@ -41,6 +43,7 @@
                 <TextView
                     android:id="@+id/tv_shelf_number_time"
                     style="@style/CellTextStyle"
+                    android:text="@{@string/shelf_number_time(shelf.number, shelf.formattedTime)}"
                     android:maxLines="2"
                     tools:text="1\n10:59"/>
 
@@ -71,6 +74,7 @@
                 <TextView
                     android:id="@+id/tv_goods_count"
                     style="@style/CellTextStyle"
+                    android:text="@{String.valueOf(shelf.numberOfGoods)}"
                     tools:text="27"/>
 
             </LinearLayout>

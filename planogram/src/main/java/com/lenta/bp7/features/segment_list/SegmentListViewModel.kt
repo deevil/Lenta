@@ -2,11 +2,10 @@ package com.lenta.bp7.features.segment_list
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.lenta.bp7.account.IPlanogramSessionInfo
 import com.lenta.bp7.data.model.Segment
-import com.lenta.bp7.data.model.SegmentStatus
 import com.lenta.bp7.platform.navigation.IScreenNavigator
 import com.lenta.bp7.repos.IDatabaseRepo
-import com.lenta.bp7.account.IPlanogramSessionInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.mobrun.plugin.api.HyperHive
 import kotlinx.coroutines.launch
@@ -23,23 +22,16 @@ class SegmentListViewModel : CoreViewModel() {
     @Inject
     lateinit var database: IDatabaseRepo
 
-    private val storeNumber: MutableLiveData<String> = MutableLiveData("0000")
     val segments: MutableLiveData<List<Segment>> = MutableLiveData()
 
     init {
         viewModelScope.launch {
-            storeNumber.value = sessionInfo.marketNumber
-
-            segments.value = listOf(
-                    Segment(id = 1, number = "126-652", storeNumber = storeNumber.value, status = SegmentStatus.DELETED),
-                    Segment(id = 2, number = "104-236", storeNumber = storeNumber.value, status = SegmentStatus.PROCESSED),
-                    Segment(id = 3, number = "008-397", storeNumber = storeNumber.value, status = SegmentStatus.UNFINISHED)
-            )
+            segments.value = sessionInfo.checkStoreData.segments
         }
     }
 
     fun getStoreNumber(): String? {
-        return storeNumber.value
+        return sessionInfo.marketNumber
     }
 
     fun onClickSave() {

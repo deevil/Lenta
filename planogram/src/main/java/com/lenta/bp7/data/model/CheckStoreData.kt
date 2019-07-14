@@ -6,9 +6,25 @@ class CheckStoreData(
         val segments: MutableList<Segment> = mutableListOf()
 ) {
 
+    private var currentSegment: Segment
+    private var currentShelf: Shelf
+
     init {
         generateTestData()
+        currentSegment = segments[0]
+        currentShelf = currentSegment.shelves[0]
     }
+
+    fun getCurrentSegment(): Segment {
+        return currentSegment
+    }
+
+
+
+
+
+
+
 
     private fun generateTestData() {
         Logg.d { "Test data generation for CheckStoreData" }
@@ -38,7 +54,7 @@ class CheckStoreData(
 
     private fun createShelvesList(): MutableList<Shelf> {
         val shelves: MutableList<Shelf> = mutableListOf()
-        for (i in 1..8) {
+        for (i in 1..(3..8).random()) {
             shelves.add(Shelf(
                     id = i,
                     number = i.toString(),
@@ -194,6 +210,6 @@ class CheckStoreData(
                 "Any delicate you",
                 "At principle perfe")
 
-        return goodNames[index]
+        return goodNames[index - 1]
     }
 }
