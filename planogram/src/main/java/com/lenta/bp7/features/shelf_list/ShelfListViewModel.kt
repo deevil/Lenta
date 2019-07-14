@@ -27,8 +27,10 @@ class ShelfListViewModel : CoreViewModel() {
 
     init {
         viewModelScope.launch {
-            segmentNumber.value = sessionInfo.checkStoreData.getCurrentSegment().number
-            shelves.value = sessionInfo.checkStoreData.getCurrentSegment().shelves
+            sessionInfo.checkStoreData.let {
+                segmentNumber.value = it.getCurrentSegment().number
+                shelves.value = it.getCurrentSegment().shelves
+            }
         }
     }
 

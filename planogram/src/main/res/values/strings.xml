@@ -39,5 +39,6 @@
 
     <string name="segment_number_store_date">%1$s (ТК - %2$s)\n%3$s</string>
     <string name="shelf_number_time">%1$s\n%2$s</string>
+    <string name="good_sap_name">%1$s %2$s</string>
 
 </resources>

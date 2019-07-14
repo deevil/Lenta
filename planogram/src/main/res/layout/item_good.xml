@@ -5,8 +5,9 @@
     <data>
 
         <variable
-            name="vm"
-            type="com.lenta.bp7.features.segment_list.SegmentListViewModel"/>
+            name="good"
+            type="com.lenta.bp7.data.model.Good"/>
+
     </data>
 
     <LinearLayout
@@ -27,6 +28,7 @@
                 <TextView
                     android:id="@+id/tv_item_number"
                     style="@style/CellTextStyle"
+                    android:text="@{String.valueOf(good.id)}"
                     tools:text="1"/>
 
             </LinearLayout>
@@ -41,6 +43,7 @@
                 <TextView
                     android:id="@+id/tv_good_number_name"
                     style="@style/CellTextStyle"
+                    android:text="@{@string/good_sap_name(good.sapCode, good.name)}"
                     android:maxLines="2"
                     tools:text="000021 Масло"/>
 
@@ -71,6 +74,7 @@
                 <TextView
                     android:id="@+id/tv_goods_count"
                     style="@style/CellTextStyle"
+                    android:text="@{String.valueOf(good.totalFacings)}"
                     tools:text="0"/>
 
             </LinearLayout>

@@ -1,14 +1,18 @@
 package com.lenta.bp7.features.good_list
 
+import android.os.Bundle
 import android.view.View
+import com.lenta.bp7.BR
 import com.lenta.bp7.R
 import com.lenta.bp7.databinding.FragmentGoodListBinding
+import com.lenta.bp7.databinding.ItemGoodBinding
 import com.lenta.bp7.platform.extentions.getAppComponent
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
+import com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig
 import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
 import com.lenta.shared.utilities.extentions.provideViewModel
 
@@ -38,5 +42,16 @@ class GoodListFragment : CoreFragment<FragmentGoodListBinding, GoodListViewModel
         /*when (view.id) {
             R.id.b_5 -> vm.onClickApply()
         }*/
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        initRvConfig()
+    }
+
+    private fun initRvConfig() {
+        binding?.rvConfig = DataBindingRecyclerViewConfig<ItemGoodBinding>(
+                layoutId = R.layout.item_good,
+                itemId = BR.good
+        )
     }
 }

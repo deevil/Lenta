@@ -19,7 +19,9 @@ class CheckStoreData(
         return currentSegment
     }
 
-
+    fun getCurrentShelf(): Shelf {
+        return currentShelf
+    }
 
 
 
