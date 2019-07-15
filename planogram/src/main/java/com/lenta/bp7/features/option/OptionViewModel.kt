@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.lenta.bp7.data.Enabled
 import com.lenta.bp7.platform.navigation.IScreenNavigator
 import com.lenta.bp7.repos.IDatabaseRepo
-import com.lenta.bp7.account.IPlanogramSessionInfo
+import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.mobrun.plugin.api.HyperHive
 import kotlinx.coroutines.launch
@@ -18,7 +18,7 @@ class OptionViewModel : CoreViewModel() {
     @Inject
     lateinit var navigator: IScreenNavigator
     @Inject
-    lateinit var sessionInfo: IPlanogramSessionInfo
+    lateinit var sessionInfo: ISessionInfo
     @Inject
     lateinit var database: IDatabaseRepo
 
@@ -27,7 +27,7 @@ class OptionViewModel : CoreViewModel() {
 
     init {
         viewModelScope.launch {
-            val marketNumber = sessionInfo.marketNumber
+            val marketNumber = sessionInfo.market
             isFacings.value = database.getFacingsParam(marketNumber) != Enabled.NO.type
             isPlaces.value = database.getPlacesParam(marketNumber) != Enabled.NO.type
         }

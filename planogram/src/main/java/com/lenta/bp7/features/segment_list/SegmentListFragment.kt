@@ -2,6 +2,7 @@ package com.lenta.bp7.features.segment_list
 
 import android.os.Bundle
 import android.view.View
+import androidx.lifecycle.Observer
 import com.lenta.bp7.BR
 import com.lenta.bp7.R
 import com.lenta.bp7.databinding.FragmentSegmentListBinding
@@ -18,6 +19,7 @@ import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
 import com.lenta.shared.utilities.extentions.provideViewModel
 
+
 class SegmentListFragment : CoreFragment<FragmentSegmentListBinding, SegmentListViewModel>(), ToolbarButtonsClickListener {
 
     override fun getLayoutId(): Int = R.layout.fragment_segment_list
@@ -32,8 +34,11 @@ class SegmentListFragment : CoreFragment<FragmentSegmentListBinding, SegmentList
     }
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
-        topToolbarUiModel.title.value = getString(R.string.title_store_number, vm.getStoreNumber())
         topToolbarUiModel.description.value = getString(R.string.list_of_processed_segments)
+
+        vm.marketNumber.observe(this, Observer<String> { marketNumber ->
+            topToolbarUiModel.title.value = getString(R.string.title_store_number, marketNumber)
+        })
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {

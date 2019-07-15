@@ -2,6 +2,7 @@ package com.lenta.bp7.features.good_list
 
 import android.os.Bundle
 import android.view.View
+import androidx.lifecycle.Observer
 import com.lenta.bp7.BR
 import com.lenta.bp7.R
 import com.lenta.bp7.databinding.FragmentGoodListBinding
@@ -29,8 +30,15 @@ class GoodListFragment : CoreFragment<FragmentGoodListBinding, GoodListViewModel
     }
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
-        topToolbarUiModel.title.value = getString(R.string.title_segment_shelf_number, vm.getSegmentNumber(), vm.getShelfNumber())
         topToolbarUiModel.description.value = getString(R.string.list_of_processed_goods)
+
+        vm.segmentNumber.observe(this, Observer<String> { segmentNumber ->
+            topToolbarUiModel.title.value = getString(R.string.title_segment_shelf_number, segmentNumber, vm.shelfNumber.value)
+        })
+
+        vm.shelfNumber.observe(this, Observer<String> { shelfNumber ->
+            topToolbarUiModel.title.value = getString(R.string.title_segment_shelf_number, vm.segmentNumber.value, shelfNumber)
+        })
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {

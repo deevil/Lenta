@@ -6,25 +6,19 @@ class CheckStoreData(
         val segments: MutableList<Segment> = mutableListOf()
 ) {
 
-    private var currentSegment: Segment
-    private var currentShelf: Shelf
+    var checkType: String? = ""
+
+    var currentSegment: Segment
+    var currentShelf: Shelf
 
     init {
         generateTestData()
 
         currentSegment = segments[0]
-        currentShelf = segments[0].shelves[1]
+        currentShelf = segments[0].shelves[0]
     }
 
-    fun getCurrentSegment(): Segment {
-        return currentSegment
-    }
-
-    fun getCurrentShelf(): Shelf {
-        return currentShelf
-    }
-
-    fun addSegment(storeNumber: String, segmentNumber: String?) {
+    fun addSegment(storeNumber: String?, segmentNumber: String?) {
         currentSegment = Segment(
                 id = segments.lastIndex + 1,
                 storeNumber = storeNumber,
@@ -54,7 +48,6 @@ class CheckStoreData(
     private fun createShelvesList(): MutableList<Shelf> {
         val shelves: MutableList<Shelf> = mutableListOf()
         for (i in 1..(3..8).random()) {
-            Logg.d { "Created shelf: $i" }
             shelves.add(Shelf(
                     id = i,
                     number = i.toString(),
@@ -71,7 +64,7 @@ class CheckStoreData(
 
     private fun createGoodsList(): MutableList<Good> {
         val goods: MutableList<Good> = mutableListOf()
-        for (i in 1..(10..100).random()) {
+        for (i in 1..(10..50).random()) {
             val facings = (0..35).random()
             goods.add(Good(
                     id = i,

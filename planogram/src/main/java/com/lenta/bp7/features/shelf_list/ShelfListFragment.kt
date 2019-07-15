@@ -2,6 +2,7 @@ package com.lenta.bp7.features.shelf_list
 
 import android.os.Bundle
 import android.view.View
+import androidx.lifecycle.Observer
 import com.lenta.bp7.BR
 import com.lenta.bp7.R
 import com.lenta.bp7.databinding.FragmentShelfListBinding
@@ -30,8 +31,11 @@ class ShelfListFragment : CoreFragment<FragmentShelfListBinding, ShelfListViewMo
     }
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
-        topToolbarUiModel.title.value = getString(R.string.title_segment_number, vm.getSegmentNumber())
         topToolbarUiModel.description.value = getString(R.string.list_of_processed_selves)
+
+        vm.segmentNumber.observe(this, Observer<String> { segmentNumber ->
+            topToolbarUiModel.title.value = getString(R.string.title_segment_number, segmentNumber)
+        })
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {

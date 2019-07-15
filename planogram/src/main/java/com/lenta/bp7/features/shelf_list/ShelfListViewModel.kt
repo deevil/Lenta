@@ -2,7 +2,7 @@ package com.lenta.bp7.features.shelf_list
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.lenta.bp7.account.IPlanogramSessionInfo
+import com.lenta.bp7.data.model.CheckStoreData
 import com.lenta.bp7.data.model.Shelf
 import com.lenta.bp7.platform.navigation.IScreenNavigator
 import com.lenta.bp7.repos.IDatabaseRepo
@@ -19,26 +19,22 @@ class ShelfListViewModel : CoreViewModel() {
     @Inject
     lateinit var navigator: IScreenNavigator
     @Inject
-    lateinit var sessionInfo: IPlanogramSessionInfo
-    @Inject
     lateinit var database: IDatabaseRepo
+    @Inject
+    lateinit var checkStoreData: CheckStoreData
 
-    private val segmentNumber: MutableLiveData<String> = MutableLiveData()
+    val segmentNumber: MutableLiveData<String> = MutableLiveData()
     val shelves: MutableLiveData<List<Shelf>> = MutableLiveData()
 
     init {
         viewModelScope.launch {
-            sessionInfo.checkStoreData.let {
-                segmentNumber.value = it.getCurrentSegment().number
+            checkStoreData.let {
+                segmentNumber.value = it.currentSegment.number
                 val numberOfShelves = it.segments[0].shelves.size
                 Logg.d { "Count of shelves: $numberOfShelves" }
-                shelves.value = it.getCurrentSegment().shelves
+                shelves.value = it.currentSegment.shelves
             }
         }
-    }
-
-    fun getSegmentNumber(): String? {
-        return segmentNumber.value
     }
 
     fun onClickDelete() {
