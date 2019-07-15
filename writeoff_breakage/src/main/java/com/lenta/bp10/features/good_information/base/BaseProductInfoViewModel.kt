@@ -65,7 +65,7 @@ abstract class BaseProductInfoViewModel : CoreViewModel(), OnPositionClickListen
         }
     }
 
-    val totalCountWithUom: MutableLiveData<String> by lazy {
+    open val totalCountWithUom: MutableLiveData<String> by lazy {
         totalCount.map { getCountWithUom(count = it, productInfo = productInfo) }
     }
 

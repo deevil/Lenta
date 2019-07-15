@@ -2,9 +2,8 @@ package com.lenta.bp10.features.select_market
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.lenta.bp10.fmp.resources.permissions.ZfmpUtzWob01V001
 import com.lenta.bp10.platform.navigation.IScreenNavigator
-import com.lenta.bp10.requests.db.PermissionsDbRequest
+import com.lenta.bp10.repos.IRepoInMemoryHolder
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.settings.IAppSettings
@@ -15,7 +14,7 @@ import javax.inject.Inject
 
 class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
     @Inject
-    lateinit var permissionsDbRequest: PermissionsDbRequest
+    lateinit var repoInMemoryHolder: IRepoInMemoryHolder
     @Inject
     lateinit var screenNavigator: IScreenNavigator
     @Inject
@@ -37,32 +36,29 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
 
     init {
         viewModelScope.launch {
-            permissionsDbRequest(null).either(::handleFailure, ::handlePermissions)
-        }
-    }
-
-
-    private fun handlePermissions(list: List<ZfmpUtzWob01V001.ItemLocal_ET_WERKS>) {
-        markets.value = list.map { MarketUi(number = it.werks, address = it.addres) }
-
-        if (selectedPosition.value == null) {
-            if (appSettings.lastTK != null) {
-                list.forEachIndexed { index, itemLocal_ET_WERKS ->
-                    if (itemLocal_ET_WERKS.werks == appSettings.lastTK) {
-                        onClickPosition(index)
+            markets.value = repoInMemoryHolder.storesRequestResult!!.markets.map { MarketUi(number = it.number, address = it.address) }.also {
+                if (selectedPosition.value == null) {
+                    if (appSettings.lastTK != null) {
+                        it.forEachIndexed { index, itemLocal_ET_WERKS ->
+                            if (itemLocal_ET_WERKS.number == appSettings.lastTK) {
+                                onClickPosition(index)
+                            }
+                        }
+                    } else {
+                        onClickPosition(0)
                     }
                 }
-            } else {
-                onClickPosition(0)
+
+
+
+                if (it.size == 1) {
+                    onClickNext()
+                }
             }
-        }
 
-
-
-        if (list.size == 1) {
-            onClickNext()
         }
     }
+
 
     fun onClickNext() {
         markets.value?.getOrNull(selectedPosition.value ?: -1)?.number?.let {

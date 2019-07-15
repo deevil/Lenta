@@ -19,6 +19,12 @@ class MemoryTaskStorePlaceRepository : ITaskStorePlaceRepository {
         return storePlaceInfo.firstOrNull { it.placeCode == storePlaceNumber }
     }
 
+    override fun updateStorePlaces(newStorePlaces: List<TaskStorePlaceInfo>) {
+        for (storePlace in newStorePlaces) {
+            addStorePlace(storePlace)
+        }
+    }
+
     override fun addStorePlace(storePlace: TaskStorePlaceInfo): Boolean {
         var index = -1
         for (i in storePlaceInfo.indices) {

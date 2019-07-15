@@ -2,6 +2,7 @@ package com.lenta.inventory.features.job_card
 
 import androidx.lifecycle.MutableLiveData
 import com.lenta.inventory.models.RecountType
+import com.lenta.inventory.models.task.InventoryTask
 import com.lenta.inventory.platform.navigation.IScreenNavigator
 import com.lenta.inventory.repos.IRepoInMemoryHolder
 import com.lenta.inventory.requests.network.TasksItem
@@ -72,7 +73,8 @@ class JobCardViewModel : CoreViewModel(), OnPositionClickListener {
     }
 
     fun onClickNext() {
-        screenNavigator.openInfoScreen("Выбран тип перечета: ${getSelectedTypeRecount()}")
+        //screenNavigator.openInfoScreen("Выбран тип пересчета: ${getSelectedTypeRecount()}")
+        screenNavigator.openLoadingTaskContentsScreen(tasksItem, getSelectedTypeRecount() ?: RecountType.None)
     }
 
     private fun getSelectedTypeRecount(): RecountType? {

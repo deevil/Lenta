@@ -1,8 +1,12 @@
 package com.lenta.shared.platform.activity.main_activity
 
+import android.Manifest
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.view.KeyEvent
 import android.view.View
+import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Observer
@@ -32,6 +36,8 @@ import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.hideKeyboard
 import com.lenta.shared.utilities.extentions.implementationOf
 import javax.inject.Inject
+import com.lenta.shared.platform.navigation.ICoreNavigator
+
 
 abstract class CoreMainActivity : CoreActivity<ActivityMainBinding>(), ToolbarButtonsClickListener, INumberScreenGenerator {
 
@@ -50,6 +56,9 @@ abstract class CoreMainActivity : CoreActivity<ActivityMainBinding>(), ToolbarBu
     @Inject
     lateinit var priorityAppManager: PriorityAppManager
 
+    @Inject
+    lateinit var screenNavigator: ICoreNavigator
+
     val honeywellScanHelper = HoneywellScanHelper()
     val newLandScanHelper = NewLandScanHelper()
 
@@ -66,6 +75,7 @@ abstract class CoreMainActivity : CoreActivity<ActivityMainBinding>(), ToolbarBu
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         fragmentStack.setOnBackStackChangedListener(FragmentManager.OnBackStackChangedListener { onBackStackChanged() })
         if (savedInstanceState == null) {
             onNewEnter()
@@ -103,6 +113,9 @@ abstract class CoreMainActivity : CoreActivity<ActivityMainBinding>(), ToolbarBu
 
     override fun onResume() {
         super.onResume()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, listOf(Manifest.permission.WRITE_EXTERNAL_STORAGE).toTypedArray(), 1)
+        }
         networkStateMonitor.start(this)
         batteryStateMonitor.start(this)
         scanHelper.startListen(this)
@@ -133,6 +146,11 @@ abstract class CoreMainActivity : CoreActivity<ActivityMainBinding>(), ToolbarBu
         if (isHaveBackButton()) {
             super.onBackPressed()
         }
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        screenNavigator.finishApp()
     }
 
     private fun getCurrentFragment(): Fragment? = fragmentStack.peek()

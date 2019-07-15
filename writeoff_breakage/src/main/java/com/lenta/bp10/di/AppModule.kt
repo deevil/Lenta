@@ -16,6 +16,8 @@ import com.lenta.bp10.platform.resources.IStringResourceManager
 import com.lenta.bp10.platform.resources.StringResourceManager
 import com.lenta.bp10.progress.IWriteOffProgressUseCaseInformator
 import com.lenta.bp10.progress.ProgressUseCaseInformator
+import com.lenta.bp10.repos.IRepoInMemoryHolder
+import com.lenta.bp10.repos.RepoInMemoryHolder
 import com.lenta.bp10.requests.network.SlowResourcesMultiRequest
 import com.lenta.bp10.requests.network.loader.ResourcesLoader
 import com.lenta.shared.account.IAuthenticator
@@ -32,8 +34,6 @@ import dagger.Provides
 class AppModule {
 
 
-
-
     @Provides
     @AppScope
     internal fun provideScreenNavigator(
@@ -45,7 +45,6 @@ class AppModule {
     ): IScreenNavigator {
         return ScreenNavigator(context, iCoreNavigator, foregroundActivityProvider, authenticator, progressUseCaseInformator)
     }
-
 
 
     @Provides
@@ -88,6 +87,12 @@ class AppModule {
     @AppScope
     internal fun provideIGoodInformationRepo(hyperHive: HyperHive): IGoodInformationRepo {
         return GoodInformationRepo(hyperHive)
+    }
+
+    @Provides
+    @AppScope
+    internal fun provideIRepoInMemoryHolder(): IRepoInMemoryHolder {
+        return RepoInMemoryHolder()
     }
 
 

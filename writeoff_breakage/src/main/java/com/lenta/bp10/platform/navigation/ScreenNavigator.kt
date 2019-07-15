@@ -27,6 +27,7 @@ import com.lenta.shared.features.printer_change.PrinterChangeFragment
 import com.lenta.shared.interactor.UseCase
 import com.lenta.shared.models.core.MatrixType
 import com.lenta.shared.models.core.ProductInfo
+import com.lenta.shared.models.core.ProductType
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
 import com.lenta.shared.platform.navigation.ICoreNavigator
 import com.lenta.shared.platform.navigation.runOrPostpone
@@ -48,7 +49,7 @@ class ScreenNavigator(
 
     override fun openFirstScreen() {
         if (authenticator.isAuthorized()) {
-            openMainMenuScreen()
+            openSelectMarketScreen()
         } else {
             openLoginScreen()
         }
@@ -136,12 +137,18 @@ class ScreenNavigator(
         }
     }
 
-    override fun openComponentSetScreen(productInfo: ProductInfo, componentItem: ComponentItem, mengeTotalCount: Double) {
+    override fun openComponentSetScreen(productInfo: ProductInfo, componentItem: ComponentItem, targetTotalCount: Double) {
         runOrPostpone {
+
+            if (productInfo.type != ProductType.ExciseAlcohol) {
+                openInfoScreen(context.getString(R.string.not_support_type_product_for_set))
+                return@runOrPostpone
+            }
+
             getFragmentStack()?.push(ComponentFragment.create(
                     productInfo = productInfo,
                     componentItem = componentItem,
-                    mengeTotalCount = mengeTotalCount
+                    targetTotalCount = targetTotalCount
             )
             )
         }

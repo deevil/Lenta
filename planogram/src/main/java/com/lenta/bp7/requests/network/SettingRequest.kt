@@ -15,10 +15,9 @@ import com.mobrun.plugin.api.callparams.WebCallParams
 import javax.inject.Inject
 
 class SettingRequest
-@Inject constructor(private val hyperHive: HyperHive, private val gson: Gson, private val sessionInfo: ISessionInfo) : UseCase<SettingRequestResult, RequestParams>() {
+@Inject constructor(private val hyperHive: HyperHive, private val gson: Gson, private val sessionInfo: ISessionInfo) : UseCase<SettingRequestResult, Nothing?>() {
 
-    override suspend fun run(params: RequestParams): Either<Failure, SettingRequestResult> {
-        //TODO (DB) нужно добавить поддержку логина пользователя когда доработают ФМ модуль
+    override suspend fun run(params: Nothing?): Either<Failure, SettingRequestResult> {
         val webCallParams = WebCallParams().apply {
             data = gson.toJson(params)
             headers = mapOf(

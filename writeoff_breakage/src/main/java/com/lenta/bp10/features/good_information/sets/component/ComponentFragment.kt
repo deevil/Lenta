@@ -2,6 +2,7 @@ package com.lenta.bp10.features.good_information.sets.component
 
 import android.os.Bundle
 import android.view.View
+import androidx.lifecycle.Observer
 import com.lenta.bp10.R
 import com.lenta.bp10.features.good_information.excise_alco.ExciseAlcoInfoFragment
 import com.lenta.bp10.features.good_information.sets.ComponentItem
@@ -11,21 +12,22 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.utilities.extentions.provideViewModel
 import com.lenta.shared.utilities.extentions.setVisible
+import com.lenta.shared.utilities.extentions.toStringFormatted
 import com.lenta.shared.utilities.state.state
 
 class ComponentFragment : ExciseAlcoInfoFragment() {
 
     private var componentItem by state<ComponentItem?>(null)
-    private var mengeTotalCount by state<Double?>(null)
+    private var targetTotalCount by state<Double?>(null)
 
     private var componentViewModel: ComponentViewModel? = null
 
     companion object {
-        fun create(productInfo: ProductInfo, componentItem: ComponentItem, mengeTotalCount: Double): ComponentFragment {
+        fun create(productInfo: ProductInfo, componentItem: ComponentItem, targetTotalCount: Double): ComponentFragment {
             ComponentFragment().let {
                 it.productInfo = productInfo
                 it.componentItem = componentItem
-                it.mengeTotalCount = mengeTotalCount
+                it.targetTotalCount = targetTotalCount
                 return it
             }
         }
@@ -43,8 +45,8 @@ class ComponentFragment : ExciseAlcoInfoFragment() {
                 vm.setComponentItem(it)
             }
 
-            mengeTotalCount?.let {
-                vm.setMengeTotalCount(it)
+            targetTotalCount?.let {
+                vm.setTargetTotalCount(it)
             }
 
             componentViewModel = vm
@@ -65,9 +67,10 @@ class ComponentFragment : ExciseAlcoInfoFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding?.let {
-            it.bScan.setVisible(false)
-        }
+        binding?.bScan?.setVisible(false)
+        vm.totalCount.observe(viewLifecycleOwner, Observer {
+            binding?.tvTotalValue?.text = getString(R.string.one_of, it.toStringFormatted(), componentViewModel?.getTargetCount())
+        })
     }
 
 

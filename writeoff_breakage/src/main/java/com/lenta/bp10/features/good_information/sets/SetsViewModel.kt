@@ -294,14 +294,13 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
             if (componentInfo.materialNumber == materialNumber) {
                 if (getCountExciseStampsForComponent(componentInfo) == componentsDataList[index].menge * totalCount.value!!) {
                     screenNavigator.openStampsCountAlreadyScannedScreen()
-                    return
                 } else {
                     screenNavigator.openComponentSetScreen(
                             componentInfo,
                             componentsLiveData.value!![index],
                             componentsLiveData.value!![index].rightCount)
-                    return
                 }
+                return
             }
         }
         if (enabledApplyButton.value == true || countValue.value == 0.0) {

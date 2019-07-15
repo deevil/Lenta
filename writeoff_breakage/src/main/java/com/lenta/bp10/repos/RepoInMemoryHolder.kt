@@ -1,14 +1,14 @@
-package com.lenta.bp7.repos
+package com.lenta.bp10.repos
 
-import com.lenta.bp7.requests.network.SettingRequestResult
+import com.lenta.bp10.requests.network.StockLockRequestResult
 import com.lenta.shared.requests.network.StoresRequestResult
 
 class RepoInMemoryHolder : IRepoInMemoryHolder {
     override var storesRequestResult: StoresRequestResult? = null
-    override var settingRequestResult: SettingRequestResult? = null
+    override var stockLockRequestResult: StockLockRequestResult? = null
 }
 
 interface IRepoInMemoryHolder {
     var storesRequestResult: StoresRequestResult?
-    var settingRequestResult: SettingRequestResult?
+    var stockLockRequestResult: StockLockRequestResult?
 }

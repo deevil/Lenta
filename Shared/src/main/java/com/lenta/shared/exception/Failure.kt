@@ -28,6 +28,7 @@ sealed class Failure {
     object GoodNotFound : Failure()
     object NotValidEnterNumber : Failure()
     class SapError(val message: String) : Failure()
+    class DbError(val message: String) : Failure()
 
     /** * Extend this class for feature specific failures.*/
     abstract class FeatureFailure : Failure()

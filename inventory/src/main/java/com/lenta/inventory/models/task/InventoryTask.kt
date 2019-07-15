@@ -35,8 +35,19 @@ class InventoryTask(val taskDescription: TaskDescription, val taskRepository: IT
     }
 
     //вызывается при возврате на 20 экран и при нажатии на кнопку ОБНОВИТЬ, вызываем 96 рест
-    fun updateStorePlaces() : InventoryTask {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    fun updateStorePlaces(storePlaces : List<TaskStorePlaceInfo>) : InventoryTask {
+        taskRepository.getStorePlace().updateStorePlaces(storePlaces)
+        return this
+    }
+
+    fun updateProducts(products : List<TaskProductInfo>) : InventoryTask {
+        taskRepository.getProducts().updateProducts(products)
+        return this
+    }
+
+    fun updateExciseStamps(exciseStamps : List<TaskExciseStamp>) : InventoryTask {
+        taskRepository.getExciseStamps().updateExciseStamps(exciseStamps)
+        return this
     }
 
     fun clearStorePlace() : InventoryTask {
@@ -47,9 +58,9 @@ class InventoryTask(val taskDescription: TaskDescription, val taskRepository: IT
         return StorePlaceProcessing(this,  storePlaceNumber)
     }
 
-
-
-
-
-
+    fun updateTaskWithContents(taskContents: TaskContents) {
+        updateStorePlaces(taskContents.storePlaces)
+        updateProducts(taskContents.products)
+        updateExciseStamps(taskContents.exciseStamps)
+    }
 }
