@@ -8,7 +8,7 @@ data class PlanogramSessionInfo(
         override var personnelFullName: String? = null,
         override var printer: String? = null,
         override var printerNumber: String? = null,
-        override var marketNumber: String? = null,
+        override var marketNumber: String = "",
         override var basicAuth: String? = null,
         override var checkType: String? = null,
         override var checkStoreData: CheckStoreData = CheckStoreData()
@@ -20,7 +20,7 @@ interface IPlanogramSessionInfo {
     var personnelFullName: String?
     var printer: String?
     var printerNumber: String?
-    var marketNumber: String?
+    var marketNumber: String
     var basicAuth: String?
     var checkType: String?
     var checkStoreData: CheckStoreData

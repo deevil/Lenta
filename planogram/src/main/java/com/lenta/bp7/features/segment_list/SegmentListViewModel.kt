@@ -7,6 +7,7 @@ import com.lenta.bp7.data.model.Segment
 import com.lenta.bp7.platform.navigation.IScreenNavigator
 import com.lenta.bp7.repos.IDatabaseRepo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
+import com.lenta.shared.utilities.extentions.map
 import com.mobrun.plugin.api.HyperHive
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -24,6 +25,9 @@ class SegmentListViewModel : CoreViewModel() {
 
     val segments: MutableLiveData<List<Segment>> = MutableLiveData()
 
+    val segmentNumber: MutableLiveData<String> = MutableLiveData("")
+    val saveButtonEnabled: MutableLiveData<Boolean> = segmentNumber.map { it?.length == 7 }
+
     init {
         viewModelScope.launch {
             segments.value = sessionInfo.checkStoreData.segments
@@ -35,7 +39,7 @@ class SegmentListViewModel : CoreViewModel() {
     }
 
     fun onClickSave() {
-        // Заглушка
+        sessionInfo.checkStoreData.addSegment(sessionInfo.marketNumber, segmentNumber.value)
         navigator.openShelfListScreen()
     }
 }

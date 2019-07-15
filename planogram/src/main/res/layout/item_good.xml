@@ -61,7 +61,7 @@
                     android:id="@+id/iv_shelf_status"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    app:goodStatusIcon="@{good.sign}"
+                    app:goodStatusIcon="@{good.status}"
                     tools:src="@drawable/ic_close_white_24dp"/>
 
             </LinearLayout>

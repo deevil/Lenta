@@ -5,8 +5,8 @@ import java.util.*
 
 data class Segment(
         val id: Int,
-        val storeNumber: String?,
-        val number: String,
+        val storeNumber: String,
+        val number: String?,
         val checkDate: Date = Date(),
         var status: SegmentStatus = SegmentStatus.CREATED,
         val shelves: MutableList<Shelf> = mutableListOf()

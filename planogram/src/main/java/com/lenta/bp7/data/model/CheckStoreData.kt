@@ -23,11 +23,19 @@ class CheckStoreData(
         return currentShelf
     }
 
+    fun addSegment(storeNumber: String, segmentNumber: String?) {
+        currentSegment = Segment(
+                id = segments.lastIndex + 1,
+                storeNumber = storeNumber,
+                number = segmentNumber)
+
+        segments.add(0, currentSegment)
+    }
 
     private fun generateTestData() {
         Logg.d { "Test data generation for CheckStoreData" }
 
-        for (i in 1..15) {
+        for (i in 1..5) {
             segments.add(Segment(
                     id = i,
                     number = (100..999).random().toString() + "-" + (100..999).random().toString(),
