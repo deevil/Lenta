@@ -7,6 +7,7 @@ import com.lenta.bp7.data.model.Shelf
 import com.lenta.bp7.platform.navigation.IScreenNavigator
 import com.lenta.bp7.repos.IDatabaseRepo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
+import com.lenta.shared.utilities.Logg
 import com.mobrun.plugin.api.HyperHive
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -29,6 +30,8 @@ class ShelfListViewModel : CoreViewModel() {
         viewModelScope.launch {
             sessionInfo.checkStoreData.let {
                 segmentNumber.value = it.getCurrentSegment().number
+                val numberOfShelves = it.segments[0].shelves.size
+                Logg.d { "Count of shelves: $numberOfShelves" }
                 shelves.value = it.getCurrentSegment().shelves
             }
         }

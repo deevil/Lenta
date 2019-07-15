@@ -53,7 +53,7 @@ class SegmentListFragment : CoreFragment<FragmentSegmentListBinding, SegmentList
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         initRvConfig()
-        initSegmentNumberField()
+        //initSegmentNumberField()
     }
 
     private fun initRvConfig() {
