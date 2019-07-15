@@ -100,8 +100,9 @@ class ComponentViewModel : BaseProductInfoViewModel() {
         screenNavigator.goBack()
     }
 
-    override fun onBackPressed() {
+    override fun onBackPressed(): Boolean {
         stampsCollectorManager.clearComponentsStampCollector()
+        return true
     }
 
 
@@ -144,10 +145,12 @@ class ComponentViewModel : BaseProductInfoViewModel() {
         this.targetTotalCount = targetTotalCount
     }
 
-    override fun onResult(code: Int?) {
-        if (!exciseAlcoDelegate.handleResult(code)) {
-            super.onResult(code)
+    override fun handleFragmentResult(code: Int?): Boolean {
+        if (exciseAlcoDelegate.handleResult(code)) {
+            return true
         }
+        return super.handleFragmentResult(code)
+
     }
 
     fun getTargetCount(): String {

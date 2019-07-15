@@ -67,11 +67,11 @@ class ExciseAlcoInfoViewModel : BaseProductInfoViewModel() {
     }
 
 
-    override fun onResult(code: Int?) {
+    override fun handleFragmentResult(code: Int?): Boolean {
         if (exciseAlcoDelegate.handleResult(code)) {
-            return
+            return true
         }
-        super.onResult(code)
+        return super.handleFragmentResult(code)
     }
 
     private fun addGood(): Boolean {
@@ -109,8 +109,15 @@ class ExciseAlcoInfoViewModel : BaseProductInfoViewModel() {
     }
 
 
-    override fun onBackPressed() {
+    override fun onBackPressed(): Boolean {
+        if (stampCollector.isNotEmpty()) {
+            screenNavigator.openConfirmationToBackNotEmptyStampsScreen {
+                screenNavigator.goBack()
+            }
+            return false
+        }
         processExciseAlcoProductService.discard()
+        return true
     }
 
     override fun onScanResult(data: String) {

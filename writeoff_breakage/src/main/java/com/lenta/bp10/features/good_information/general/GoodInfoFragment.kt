@@ -87,8 +87,7 @@ open class GoodInfoFragment : CoreFragment<FragmentGoodInfoBinding, BaseProductI
     }
 
     override fun onBackPressed(): Boolean {
-        vm.onBackPressed()
-        return true
+        return vm.onBackPressed()
     }
 
     override fun onScanResult(data: String) {
@@ -96,7 +95,7 @@ open class GoodInfoFragment : CoreFragment<FragmentGoodInfoBinding, BaseProductI
     }
 
     override fun onFragmentResult(arguments: Bundle) {
-        vm.onResult(arguments.getFragmentResultCode())
+        vm.handleFragmentResult(arguments.getFragmentResultCode())
 
     }
 
