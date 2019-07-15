@@ -104,6 +104,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:digits="1234567890-"
+            app:maskPattern='@{"[000]-[000]"}'
             android:layout_margin="8dp"
             android:text="@={vm.segmentNumber}"
             android:hint="@string/enter_segment_number"

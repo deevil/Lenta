@@ -17,7 +17,6 @@ import com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig
 import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
 import com.lenta.shared.utilities.extentions.provideViewModel
-import com.redmadrobot.inputmask.MaskedTextChangedListener
 
 
 class SegmentListFragment : CoreFragment<FragmentSegmentListBinding, SegmentListViewModel>(), ToolbarButtonsClickListener {
@@ -58,7 +57,6 @@ class SegmentListFragment : CoreFragment<FragmentSegmentListBinding, SegmentList
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         initRvConfig()
-        initSegmentNumberField()
     }
 
     private fun initRvConfig() {
@@ -66,13 +64,5 @@ class SegmentListFragment : CoreFragment<FragmentSegmentListBinding, SegmentList
                 layoutId = R.layout.item_segment,
                 itemId = BR.segment
         )
-    }
-
-    private fun initSegmentNumberField() {
-        binding?.let {
-            val listener = MaskedTextChangedListener("[000]-[000]", it.etSegmentNumber)
-            it.etSegmentNumber.addTextChangedListener(listener)
-            it.etSegmentNumber.onFocusChangeListener = listener
-        }
     }
 }
