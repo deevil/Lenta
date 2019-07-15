@@ -137,10 +137,13 @@ abstract class BaseProductInfoViewModel : CoreViewModel(), OnPositionClickListen
         this.productInfo.value = productInfo
     }
 
-    open fun onResult(code: Int?) {
-        searchProductDelegate.handleResultCode(code)
+    override fun handleFragmentResult(code: Int?): Boolean {
+        return if (searchProductDelegate.handleResultCode(code)) {
+            true
+        } else super.handleFragmentResult(code)
 
     }
+
 
     protected fun getSelectedReason(): WriteOffReason {
         return writeOffReasons.value?.getOrNull((selectedPosition.value ?: -1))
@@ -174,7 +177,7 @@ abstract class BaseProductInfoViewModel : CoreViewModel(), OnPositionClickListen
         selectedPosition.postValue(position)
     }
 
-    abstract fun onBackPressed()
+    abstract fun onBackPressed(): Boolean
 
     abstract fun onScanResult(data: String)
 

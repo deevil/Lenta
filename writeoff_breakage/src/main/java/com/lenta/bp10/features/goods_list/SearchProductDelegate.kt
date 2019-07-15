@@ -208,10 +208,16 @@ class SearchProductDelegate @Inject constructor(
                 processServiceManager.getWriteOffTask()?.taskDescription!!.gisControls.forEach { gis ->
                     if (gis == "A") goodsForTask = true
                 }
-                if (!goodsForTask) {
-                    screenNavigator.openAlertGoodsNotForTaskScreen()
-                    return
+
+            } else if (it.productInfo.type == ProductType.General) {
+                processServiceManager.getWriteOffTask()?.taskDescription!!.gisControls.forEach { gis ->
+                    if (gis == "N") goodsForTask = true
                 }
+            }
+
+            if (!goodsForTask) {
+                screenNavigator.openAlertGoodsNotForTaskScreen()
+                return
             }
 
             it.productInfo.matrixType.let { matrixType ->

@@ -18,8 +18,8 @@ abstract class CoreViewModel : ViewModel() {
         this.failure.value = failure
     }
 
-    fun handleFragmentResult(idCodeFunc: Int?) : Boolean {
-        backFragmentResultHelper.getFuncAndClear(idCodeFunc)?.let {
+    open fun handleFragmentResult(code: Int?) : Boolean {
+        backFragmentResultHelper.getFuncAndClear(code)?.let {
             it()
             return true
         }
