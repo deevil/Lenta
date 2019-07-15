@@ -30,7 +30,7 @@ class ShelfListViewModel : CoreViewModel() {
         viewModelScope.launch {
             checkStoreData.let {
                 segmentNumber.value = it.currentSegment.number
-                val numberOfShelves = it.segments[0].shelves.size
+                val numberOfShelves = it.currentSegment.shelves.size
                 Logg.d { "Count of shelves: $numberOfShelves" }
                 shelves.value = it.currentSegment.shelves
             }

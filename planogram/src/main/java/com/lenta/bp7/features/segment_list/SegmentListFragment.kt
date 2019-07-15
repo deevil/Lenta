@@ -8,7 +8,6 @@ import com.lenta.bp7.R
 import com.lenta.bp7.databinding.FragmentSegmentListBinding
 import com.lenta.bp7.databinding.ItemSegmentBinding
 import com.lenta.bp7.platform.extentions.getAppComponent
-import com.lenta.bp7.util.MaskWatcher
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
@@ -18,6 +17,7 @@ import com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig
 import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
 import com.lenta.shared.utilities.extentions.provideViewModel
+import com.redmadrobot.inputmask.MaskedTextChangedListener
 
 
 class SegmentListFragment : CoreFragment<FragmentSegmentListBinding, SegmentListViewModel>(), ToolbarButtonsClickListener {
@@ -58,7 +58,7 @@ class SegmentListFragment : CoreFragment<FragmentSegmentListBinding, SegmentList
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         initRvConfig()
-        //initSegmentNumberField()
+        initSegmentNumberField()
     }
 
     private fun initRvConfig() {
@@ -69,6 +69,10 @@ class SegmentListFragment : CoreFragment<FragmentSegmentListBinding, SegmentList
     }
 
     private fun initSegmentNumberField() {
-        binding?.etSegmentNumber?.addTextChangedListener(MaskWatcher("###-###"))
+        binding?.let {
+            val listener = MaskedTextChangedListener("[000]-[000]", it.etSegmentNumber)
+            it.etSegmentNumber.addTextChangedListener(listener)
+            it.etSegmentNumber.onFocusChangeListener = listener
+        }
     }
 }
