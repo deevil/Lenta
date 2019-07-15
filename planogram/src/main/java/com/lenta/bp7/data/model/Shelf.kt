@@ -7,7 +7,7 @@ class Shelf(
         val id: Int,
         val number: String,
         val checkTime: Date = Date(),
-        var status: ShelfStatus = ShelfStatus.STARTED,
+        var status: ShelfStatus = ShelfStatus.CREATED,
         val goods: MutableList<Good> = mutableListOf()
 ) {
 
@@ -22,7 +22,7 @@ class Shelf(
 }
 
 enum class ShelfStatus {
-    STARTED,
+    CREATED,
     PROCESSED,
     DELETED
 }

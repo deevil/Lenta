@@ -8,7 +8,7 @@ data class Segment(
         val storeNumber: String?,
         val number: String,
         val checkDate: Date = Date(),
-        var status: SegmentStatus = SegmentStatus.STARTED,
+        var status: SegmentStatus = SegmentStatus.CREATED,
         val shelves: MutableList<Shelf> = mutableListOf()
 ) {
 
@@ -23,7 +23,7 @@ data class Segment(
 }
 
 enum class SegmentStatus {
-    STARTED,
+    CREATED,
     UNFINISHED,
     PROCESSED,
     DELETED

@@ -24,33 +24,21 @@ class CheckStoreData(
     }
 
 
-
-
-
-
     private fun generateTestData() {
         Logg.d { "Test data generation for CheckStoreData" }
 
         for (i in 1..15) {
             segments.add(Segment(
                     id = i,
-                    number = createSegmentNumber(),
+                    number = (100..999).random().toString() + "-" + (100..999).random().toString(),
                     storeNumber = "0007",
-                    status = createSegmentStatus(),
-                    shelves =  createShelvesList()))
-        }
-    }
-
-    private fun createSegmentNumber(): String {
-        return (100..999).random().toString() + "-" + (100..999).random().toString()
-    }
-
-    private fun createSegmentStatus(): SegmentStatus {
-        return when ((1..4).random()) {
-            1 -> SegmentStatus.STARTED
-            2 -> SegmentStatus.UNFINISHED
-            3 -> SegmentStatus.PROCESSED
-            else -> SegmentStatus.DELETED
+                    status = when ((2..4).random()) {
+                        2 -> SegmentStatus.UNFINISHED
+                        3 -> SegmentStatus.PROCESSED
+                        4 -> SegmentStatus.DELETED
+                        else -> SegmentStatus.CREATED
+                    },
+                    shelves = createShelvesList()))
         }
     }
 
@@ -60,40 +48,44 @@ class CheckStoreData(
             shelves.add(Shelf(
                     id = i,
                     number = i.toString(),
-                    status = createShelfStatus(),
+                    status = when ((2..3).random()) {
+                        2 -> ShelfStatus.PROCESSED
+                        3 -> ShelfStatus.DELETED
+                        else -> ShelfStatus.CREATED
+                    },
                     goods = createGoodsList()))
         }
 
         return shelves
     }
 
-    private fun createShelfStatus(): ShelfStatus {
-        return if ((1..2).random() == 1) ShelfStatus.PROCESSED else ShelfStatus.DELETED
-    }
-
     private fun createGoodsList(): MutableList<Good> {
         val goods: MutableList<Good> = mutableListOf()
-        for (i in 1..100) {
-            val facings = createFacings()
+        for (i in 1..(10..100).random()) {
+            val facings = (0..35).random()
 
             goods.add(Good(
                     id = i,
                     sapCode = createSapCode(),
-                    barCode = createBarCode(),
-                    name = createGoodName(i),
-                    status = createGoodSign(facings),
+                    barCode = (10000000000..99999999999).random().toString(),
+                    name = createGoodName(),
+                    status = createGoodStatus(facings),
                     totalFacings = facings))
         }
 
         return goods
     }
 
-    private fun createFacings(): Int {
-        return (0..35).random()
-    }
-
-    private fun createGoodSign(facings: Int): GoodStatus {
-        return if (facings == 0) GoodStatus.MISSING else GoodStatus.PRESENT
+    private fun createGoodStatus(facings: Int): GoodStatus {
+        return if (facings == 0) {
+            when ((2..3).random()) {
+                2 -> GoodStatus.MISSING
+                3 -> GoodStatus.PRESENT
+                else -> GoodStatus.CREATED
+            }
+        } else {
+            GoodStatus.CREATED
+        }
     }
 
     private fun createSapCode(): String {
@@ -105,11 +97,7 @@ class CheckStoreData(
         return sap
     }
 
-    private fun createBarCode(): String {
-        return (10000000000..99999999999).random().toString()
-    }
-
-    private fun createGoodName(index: Int): String {
+    private fun createGoodName(): String {
         val goodNames = listOf(
                 "Celebrated delight",
                 "Celebrate",
@@ -212,6 +200,6 @@ class CheckStoreData(
                 "Any delicate you",
                 "At principle perfe")
 
-        return goodNames[index - 1]
+        return goodNames[(0..99).random()]
     }
 }

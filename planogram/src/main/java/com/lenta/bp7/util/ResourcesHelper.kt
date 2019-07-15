@@ -26,7 +26,7 @@ fun setSegmentTextColor(textView: TextView, segmentStatus: SegmentStatus) {
 
 fun SegmentStatus.getIconRes(): Int {
     return when (this) {
-        SegmentStatus.STARTED -> R.drawable.ic_add_white_24dp
+        SegmentStatus.CREATED -> R.drawable.ic_add_white_24dp
         SegmentStatus.UNFINISHED -> R.drawable.ic_play_arrow_white_24dp
         SegmentStatus.PROCESSED -> R.drawable.ic_lock_white_24dp
         SegmentStatus.DELETED -> R.drawable.ic_delete_white_24dp
@@ -35,7 +35,7 @@ fun SegmentStatus.getIconRes(): Int {
 
 fun SegmentStatus.getColorRes(): Int {
     return when (this) {
-        SegmentStatus.STARTED -> R.color.status_other
+        SegmentStatus.CREATED -> R.color.status_other
         SegmentStatus.UNFINISHED -> R.color.status_deleted
         SegmentStatus.PROCESSED -> R.color.status_other
         SegmentStatus.DELETED -> R.color.status_processed
@@ -59,7 +59,7 @@ fun setShelfTextColor(textView: TextView, shelfStatus: ShelfStatus) {
 
 fun ShelfStatus.getIconRes(): Int {
     return when (this) {
-        ShelfStatus.STARTED -> R.drawable.ic_add_white_24dp
+        ShelfStatus.CREATED -> R.drawable.ic_add_white_24dp
         ShelfStatus.PROCESSED -> R.drawable.ic_lock_white_24dp
         ShelfStatus.DELETED -> R.drawable.ic_delete_white_24dp
     }
@@ -67,7 +67,7 @@ fun ShelfStatus.getIconRes(): Int {
 
 fun ShelfStatus.getColorRes(): Int {
     return when (this) {
-        ShelfStatus.STARTED -> R.color.status_other
+        ShelfStatus.CREATED -> R.color.status_other
         ShelfStatus.PROCESSED -> R.color.status_other
         ShelfStatus.DELETED -> R.color.status_processed
     }
@@ -83,7 +83,7 @@ fun setGoodStatusIcon(imageView: ImageView, goodStatus: GoodStatus) {
 
 fun GoodStatus.getIconRes(): Int {
     return when (this) {
-        GoodStatus.STARTED -> R.drawable.ic_add_white_24dp
+        GoodStatus.CREATED -> R.drawable.ic_add_white_24dp
         GoodStatus.MISSING -> R.drawable.ic_close_white_24dp
         GoodStatus.PRESENT -> R.drawable.ic_done_white_24dp
     }
@@ -91,7 +91,7 @@ fun GoodStatus.getIconRes(): Int {
 
 fun GoodStatus.getColorRes(): Int {
     return when (this) {
-        GoodStatus.STARTED -> R.color.status_other
+        GoodStatus.CREATED -> R.color.status_other
         GoodStatus.MISSING -> R.color.status_missing
         GoodStatus.PRESENT -> R.color.status_present
     }
