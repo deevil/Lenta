@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.inventory.features.task_list.TaskItemVm
 import com.lenta.inventory.models.StorePlaceLockMode
+import com.lenta.inventory.models.task.IInventoryTaskManager
 import com.lenta.inventory.models.task.TaskStorePlaceInfo
 import com.lenta.inventory.platform.navigation.IScreenNavigator
 import com.lenta.inventory.requests.network.StorePlaceLockNetRequest
@@ -19,6 +20,9 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class LoadingStorePlaceLockViewModel : CoreLoadingViewModel() {
+
+    @Inject
+    lateinit var taskManager: IInventoryTaskManager
     @Inject
     lateinit var screenNavigator: IScreenNavigator
     @Inject
@@ -28,9 +32,9 @@ class LoadingStorePlaceLockViewModel : CoreLoadingViewModel() {
     @Inject
     lateinit var context: Context
 
-    var storePlaceInfo: TaskStorePlaceInfo? = null
     var mode: StorePlaceLockMode = StorePlaceLockMode.None
-    var taskInfo: TaskItemVm? = null
+    var storePlaceNumber: String = ""
+
 
     override val title: MutableLiveData<String> = MutableLiveData()
     override val progress: MutableLiveData<Boolean> = MutableLiveData(true)
@@ -39,13 +43,16 @@ class LoadingStorePlaceLockViewModel : CoreLoadingViewModel() {
 
     init {
         viewModelScope.launch {
-            progress.value = true
-            storePlaceLockRequest(StorePlaceLockParams(ip = context.getDeviceIp(),
-                    taskNumber = taskInfo?.number ?: "",
-                    storePlaceCode = storePlaceInfo?.placeCode ?: "",
-                    mode = mode.mode,
-                    userNumber = sessionInfo.personnelNumber ?: "")).either(::handleFailure, ::handleSuccess)
-            progress.value = false
+            taskManager.getInventoryTask()?.let {
+                title.postValue(it.taskDescription.getTaskTypeAndNumber())
+                progress.value = true
+                storePlaceLockRequest(StorePlaceLockParams(ip = context.getDeviceIp(),
+                        taskNumber = it.taskDescription.taskNumber,
+                        storePlaceCode = storePlaceNumber,
+                        mode = mode.mode,
+                        userNumber = sessionInfo.personnelNumber ?: "")).either(::handleFailure, ::handleSuccess)
+                progress.value = false
+            }
         }
     }
 
