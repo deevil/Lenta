@@ -23,7 +23,7 @@ import com.lenta.shared.utilities.extentions.provideViewModel
 class ShelfListFragment : CoreFragment<FragmentShelfListBinding, ShelfListViewModel>(), ToolbarButtonsClickListener {
 
     private var recyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
-    
+
     override fun getLayoutId(): Int = R.layout.fragment_shelf_list
 
     override fun getPageNumber(): String? = generateScreenNumberFromPostfix("10")
@@ -45,13 +45,13 @@ class ShelfListFragment : CoreFragment<FragmentShelfListBinding, ShelfListViewMo
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
-        bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.delete, enabled = false)
-        bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.apply, enabled = true)
+        bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.delete)
+        bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.apply)
     }
 
     override fun onToolbarButtonClick(view: View) {
         when (view.id) {
-            /*R.id.b_3 -> vm.onClickDelete()*/
+            R.id.b_3 -> vm.onClickDelete()
             R.id.b_5 -> vm.onClickApply()
         }
     }

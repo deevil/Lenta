@@ -7,10 +7,9 @@ class CheckStoreData(
 ) {
 
     var checkType: String? = ""
-
     var isExistUnfinishedSegment = false
-    var currentSegment: Segment
-    var currentShelf: Shelf
+    var currentSegment: Segment? = null
+    var currentShelf: Shelf? = null
 
     init {
         generateTestData()
@@ -25,7 +24,7 @@ class CheckStoreData(
                 storeNumber = storeNumber,
                 number = segmentNumber)
 
-        segments.add(0, currentSegment)
+        segments.add(0, currentSegment!!)
     }
 
     private fun generateTestData() {

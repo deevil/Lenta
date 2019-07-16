@@ -29,15 +29,22 @@ class GoodListViewModel : CoreViewModel() {
 
     init {
         viewModelScope.launch {
-            checkStoreData.let {
-                segmentNumber.value = it.currentSegment.number
-                shelfNumber.value = it.currentShelf.number
-                goods.value = it.currentShelf.goods
+            checkStoreData.currentSegment?.let {
+                segmentNumber.value = it.number
+            }
+
+            checkStoreData.currentShelf?.let {
+                shelfNumber.value = it.number
+                goods.value = it.goods
             }
         }
     }
 
     fun onClickApply() {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    fun onClickItemPosition(position: Int) {
+
     }
 }

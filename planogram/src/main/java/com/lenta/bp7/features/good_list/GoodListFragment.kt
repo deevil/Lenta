@@ -2,6 +2,7 @@ package com.lenta.bp7.features.good_list
 
 import android.os.Bundle
 import android.view.View
+import android.widget.AdapterView
 import androidx.lifecycle.Observer
 import com.lenta.bp7.BR
 import com.lenta.bp7.R
@@ -13,11 +14,16 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
+import com.lenta.shared.utilities.databinding.DataBindingAdapter
 import com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig
+import com.lenta.shared.utilities.databinding.RecyclerViewKeyHandler
 import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
 import com.lenta.shared.utilities.extentions.provideViewModel
 
 class GoodListFragment : CoreFragment<FragmentGoodListBinding, GoodListViewModel>(), ToolbarButtonsClickListener {
+
+    private var recyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
+
     override fun getLayoutId(): Int = R.layout.fragment_good_list
 
     override fun getPageNumber(): String? = generateScreenNumberFromPostfix("12")
@@ -47,9 +53,9 @@ class GoodListFragment : CoreFragment<FragmentGoodListBinding, GoodListViewModel
     }
 
     override fun onToolbarButtonClick(view: View) {
-        /*when (view.id) {
+        when (view.id) {
             R.id.b_5 -> vm.onClickApply()
-        }*/
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -57,9 +63,40 @@ class GoodListFragment : CoreFragment<FragmentGoodListBinding, GoodListViewModel
     }
 
     private fun initRvConfig() {
-        binding?.rvConfig = DataBindingRecyclerViewConfig<ItemGoodBinding>(
-                layoutId = R.layout.item_good,
-                itemId = BR.good
-        )
+        binding?.let { layoutBinding ->
+            layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
+                    layoutId = R.layout.item_good,
+                    itemId = BR.good,
+                    realisation = object : DataBindingAdapter<ItemGoodBinding> {
+                        override fun onCreate(binding: ItemGoodBinding) {
+                        }
+
+                        override fun onBind(binding: ItemGoodBinding, position: Int) {
+                            recyclerViewKeyHandler?.let {
+                                binding.root.isSelected = it.isSelected(position)
+                            }
+                        }
+                    },
+                    onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
+                        recyclerViewKeyHandler?.let {
+                            if (it.isSelected(position)) {
+                                vm.onClickItemPosition(position)
+                            } else {
+                                it.selectPosition(position)
+                            }
+                        }
+
+                    }
+            )
+
+            layoutBinding.vm = vm
+            layoutBinding.lifecycleOwner = viewLifecycleOwner
+            recyclerViewKeyHandler = RecyclerViewKeyHandler(
+                    rv = layoutBinding.rv,
+                    items = vm.goods,
+                    lifecycleOwner = layoutBinding.lifecycleOwner!!,
+                    initPosInfo = recyclerViewKeyHandler?.posInfo?.value
+            )
+        }
     }
 }

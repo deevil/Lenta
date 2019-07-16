@@ -31,27 +31,25 @@ class ShelfListViewModel : CoreViewModel() {
 
     init {
         viewModelScope.launch {
-            checkStoreData.let {
-                segmentNumber.value = it.currentSegment.number
-                val numberOfShelves = it.currentSegment.shelves.size
-                Logg.d { "Count of shelves: $numberOfShelves" }
-                shelves.value = it.currentSegment.shelves
+            checkStoreData.currentSegment?.let {
+                segmentNumber.value = it.number
+                shelves.value = it.shelves
             }
         }
     }
 
     fun onClickDelete() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        // todo подтверждение удаления полок/сегмента
+
     }
 
     fun onClickApply() {
-        // Заглушка
-        navigator.openGoodListScreen()
+        // todo экран подтверждение завершения сканирования сегмента
+
     }
 
     fun onClickItemPosition(position: Int) {
-        // todo сохранить выбранную полку как текущую
-
-        // todo открыть список товаров
+        checkStoreData.currentShelf = shelves.value!![position]
+        navigator.openGoodListScreen()
     }
 }
