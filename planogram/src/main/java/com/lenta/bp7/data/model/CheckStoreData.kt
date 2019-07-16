@@ -8,6 +8,7 @@ class CheckStoreData(
 
     var checkType: String? = ""
 
+    var isExistUnfinishedSegment = false
     var currentSegment: Segment
     var currentShelf: Shelf
 
