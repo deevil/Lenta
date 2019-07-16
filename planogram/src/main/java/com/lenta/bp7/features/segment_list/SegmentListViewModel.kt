@@ -8,6 +8,7 @@ import com.lenta.bp7.platform.navigation.IScreenNavigator
 import com.lenta.bp7.repos.IDatabaseRepo
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
+import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.map
 import com.mobrun.plugin.api.HyperHive
@@ -57,5 +58,13 @@ class SegmentListViewModel : CoreViewModel() {
         // todo показать сообщение о результате отправки данных
         // 1. Сообщение об успешной отправке. / Что должно быть после этого сообщения? Просто выход?
         // 2. Отправка не удалась. Вопрос о продолжении работы.
+    }
+
+    fun onClickItemPosition(position: Int) {
+        Logg.d { "Clicked item position: $position" }
+
+        // todo назначить выбранный сегмент текущим
+
+        // todo открыть экран списка полок
     }
 }
