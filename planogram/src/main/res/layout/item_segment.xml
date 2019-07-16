@@ -29,6 +29,10 @@
                 <TextView
                     android:id="@+id/tv_item_number"
                     style="@style/CellTextStyle"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:background="@drawable/bg_border_circle_white_selected"
+                    android:gravity="center"
                     android:text="@{String.valueOf(segment.id)}"
                     app:segmentTextColor="@{segment.status}"
                     tools:text="1"/>
@@ -47,7 +51,7 @@
                     android:id="@+id/tv_segment_number_date"
                     style="@style/CellTextStyle"
                     android:layout_width="0dp"
-                    android:layout_marginEnd="0dp"
+                    android:layout_marginStart="5dp"
                     android:layout_weight="1"
                     android:maxLines="2"
                     android:text="@{@string/segment_number_store_date(segment.number, segment.storeNumber, segment.formattedDate)}"
@@ -58,7 +62,7 @@
                     android:id="@+id/iv_open"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:padding="8dp"
+                    android:padding="5dp"
                     android:src="@drawable/ic_keyboard_arrow_right_white_16dp"/>
 
             </LinearLayout>
@@ -89,6 +93,7 @@
                 <TextView
                     android:id="@+id/tv_shelves_count"
                     style="@style/CellTextStyle"
+                    android:layout_marginStart="5dp"
                     android:text="@{String.valueOf(segment.numberOfShelves)}"
                     app:segmentTextColor="@{segment.status}"
                     tools:text="5"/>
