@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
         tools:context=".features.shelf_list.ShelfListFragment">
 
@@ -8,6 +9,11 @@
         <variable
             name="vm"
             type="com.lenta.bp7.features.shelf_list.ShelfListViewModel"/>
+
+        <variable
+            name="rvConfig"
+            type="com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig"/>
+
     </data>
 
     <LinearLayout
@@ -37,9 +43,6 @@
 
                 </LinearLayout>
 
-                <View
-                    style="@style/RowVerticalDivider"/>
-
                 <LinearLayout
                     style="@style/LinearCellStyle"
                     android:layout_weight="@integer/size_column_2">
@@ -50,9 +53,6 @@
 
                 </LinearLayout>
 
-                <View
-                    style="@style/RowVerticalDivider"/>
-
                 <LinearLayout
                     style="@style/LinearCellStyle"
                     android:layout_weight="@integer/size_column_3">
@@ -62,9 +62,6 @@
                         android:text="@string/column_title_status"/>
 
                 </LinearLayout>
-
-                <View
-                    style="@style/RowVerticalDivider"/>
 
                 <LinearLayout
                     style="@style/LinearCellStyle"
@@ -88,6 +85,8 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
+            app:items="@{vm.shelves}"
+            app:rv_config="@{rvConfig}"
             tools:listitem="@layout/item_shelf"/>
 
         <!-- Поле ввода номера полки -->
@@ -96,6 +95,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="8dp"
+            android:drawableEnd="@drawable/ic_add_white_24dp"
             android:hint="@string/enter_shelf_number"
             android:inputType="numberDecimal"
             android:maxLength="3"

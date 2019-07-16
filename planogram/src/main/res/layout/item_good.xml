@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools">
 
     <data>
 
         <variable
-            name="vm"
-            type="com.lenta.bp7.features.segment_list.SegmentListViewModel"/>
+            name="good"
+            type="com.lenta.bp7.data.model.Good"/>
+
     </data>
 
     <LinearLayout
@@ -27,6 +29,7 @@
                 <TextView
                     android:id="@+id/tv_item_number"
                     style="@style/CellTextStyle"
+                    android:text="@{String.valueOf(good.id)}"
                     tools:text="1"/>
 
             </LinearLayout>
@@ -42,6 +45,7 @@
                     android:id="@+id/tv_good_number_name"
                     style="@style/CellTextStyle"
                     android:maxLines="2"
+                    android:text="@{@string/good_sap_name(good.sapCode, good.name)}"
                     tools:text="000021 Масло"/>
 
             </LinearLayout>
@@ -57,7 +61,8 @@
                     android:id="@+id/iv_shelf_status"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/ic_close_white_24dp"/>
+                    app:goodStatusIcon="@{good.status}"
+                    tools:src="@drawable/ic_close_white_24dp"/>
 
             </LinearLayout>
 
@@ -71,6 +76,7 @@
                 <TextView
                     android:id="@+id/tv_goods_count"
                     style="@style/CellTextStyle"
+                    android:text="@{String.valueOf(good.totalFacings)}"
                     tools:text="0"/>
 
             </LinearLayout>

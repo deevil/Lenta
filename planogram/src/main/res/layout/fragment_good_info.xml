@@ -10,132 +10,149 @@
             type="com.lenta.bp7.features.good_info.GoodInfoViewModel"/>
     </data>
 
-    <LinearLayout
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_height="match_parent">
 
         <LinearLayout
-            style="@style/LinearGoodInfoRowStyle">
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
             <LinearLayout
-                style="@style/LinearCellStyle"
-                android:layout_weight="1">
+                style="@style/LinearGoodInfoRowStyle">
 
-                <TextView
-                    style="@style/GoodInfoCellTextStyle"
-                    android:text="@string/number_of_facings"/>
+                <LinearLayout
+                    style="@style/LinearCellStyle"
+                    android:layout_weight="1">
+
+                    <TextView
+                        style="@style/GoodInfoCellTextStyle"
+                        android:text="@string/number_of_facings"/>
+
+                </LinearLayout>
+
+                <View
+                    style="@style/RowVerticalDivider"/>
+
+                <LinearLayout
+                    style="@style/LinearCellStyle"
+                    android:layout_weight="1">
+
+                    <EditText
+                        android:id="@+id/et_enter_facing_count"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="8dp"
+                        android:hint="@string/enter_quantity"
+                        android:inputType="numberDecimal"
+                        android:maxLength="3"
+                        tools:ignore="Autofill"/>
+
+                </LinearLayout>
 
             </LinearLayout>
 
             <View
-                style="@style/RowVerticalDivider"/>
+                style="@style/RowHorizontalDivider"/>
 
             <LinearLayout
-                style="@style/LinearCellStyle"
-                android:layout_weight="1">
+                style="@style/LinearGoodInfoRowStyle">
 
-                <EditText
-                    android:id="@+id/et_enter_facing_count"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="8dp"
-                    android:hint="@string/enter_quantity"
-                    android:inputType="numberDecimal"
-                    android:maxLength="3"
-                    tools:ignore="Autofill"/>
+                <LinearLayout
+                    style="@style/LinearCellStyle"
+                    android:layout_weight="1">
 
-            </LinearLayout>
+                    <TextView
+                        style="@style/GoodInfoCellTextStyle"
+                        android:text="@string/total_facings"/>
 
-        </LinearLayout>
+                </LinearLayout>
 
-        <View
-            style="@style/RowHorizontalDivider"/>
+                <View
+                    style="@style/RowVerticalDivider"/>
 
-        <LinearLayout
-            style="@style/LinearGoodInfoRowStyle">
+                <LinearLayout
+                    style="@style/LinearCellStyle"
+                    android:layout_weight="1">
 
-            <LinearLayout
-                style="@style/LinearCellStyle"
-                android:layout_weight="1">
+                    <TextView
+                        android:id="@+id/tw_facing_count"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingStart="10dp"
+                        android:paddingEnd="10dp"
+                        android:textSize="14sp"
+                        tools:text="5 шт"/>
 
-                <TextView
-                    style="@style/GoodInfoCellTextStyle"
-                    android:text="@string/total_facings"/>
-
-            </LinearLayout>
-
-            <View
-                style="@style/RowVerticalDivider"/>
-
-            <LinearLayout
-                style="@style/LinearCellStyle"
-                android:layout_weight="1">
-
-                <TextView
-                    android:id="@+id/tw_facing_count"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:paddingStart="10dp"
-                    android:paddingEnd="10dp"
-                    tools:text="5 шт."
-                    android:textSize="12sp"/>
-
-            </LinearLayout>
-
-        </LinearLayout>
-
-        <View
-            style="@style/RowHorizontalDivider"/>
-
-        <LinearLayout
-            style="@style/LinearGoodInfoRowStyle">
-
-            <TextView
-                style="@style/GoodInfoCellTextStyle"
-                android:text="@string/good_on_shelf"/>
-
-        </LinearLayout>
-
-        <View
-            style="@style/RowHorizontalDivider"/>
-
-        <LinearLayout
-            style="@style/LinearGoodInfoRowStyle">
-
-            <LinearLayout
-                style="@style/LinearCellStyle"
-                android:layout_weight="1">
-
-                <TextView
-                    style="@style/GoodInfoCellTextStyle"
-                    android:text="@string/goods_barcode"/>
+                </LinearLayout>
 
             </LinearLayout>
 
             <View
-                style="@style/RowVerticalDivider"/>
+                style="@style/RowHorizontalDivider"/>
 
             <LinearLayout
-                style="@style/LinearCellStyle"
-                android:layout_weight="1">
+                style="@style/LinearGoodInfoRowStyle">
 
                 <TextView
-                    android:id="@+id/tw_barcode"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:paddingStart="10dp"
-                    android:paddingEnd="10dp"
-                    tools:text="12345678912"
-                    android:textSize="12sp"/>
+                    style="@style/GoodInfoCellTextStyle"
+                    android:text="@string/good_on_shelf"/>
 
             </LinearLayout>
 
+            <View
+                style="@style/RowHorizontalDivider"/>
+
+            <LinearLayout
+                style="@style/LinearGoodInfoRowStyle">
+
+                <LinearLayout
+                    style="@style/LinearCellStyle"
+                    android:layout_weight="1">
+
+                    <TextView
+                        style="@style/GoodInfoCellTextStyle"
+                        android:text="@string/goods_barcode"/>
+
+                </LinearLayout>
+
+                <View
+                    style="@style/RowVerticalDivider"/>
+
+                <LinearLayout
+                    style="@style/LinearCellStyle"
+                    android:layout_weight="1">
+
+                    <TextView
+                        android:id="@+id/tw_barcode"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingStart="10dp"
+                        android:paddingEnd="10dp"
+                        android:textSize="14sp"
+                        tools:text="12345678912"/>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <View
+                style="@style/RowHorizontalDivider"/>
+
         </LinearLayout>
 
-        <View
-            style="@style/RowHorizontalDivider"/>
+        <ImageButton
+            android:id="@+id/b_scan"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end|bottom"
+            android:layout_margin="10dp"
+            android:background="?selectableItemBackground"
+            android:padding="8dp"
+            android:src="@drawable/ic_scan_barcode"
+            tools:ignore="ContentDescription"/>
 
-    </LinearLayout>
+    </FrameLayout>
 
 </layout>

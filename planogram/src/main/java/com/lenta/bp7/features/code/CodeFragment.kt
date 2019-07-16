@@ -37,13 +37,13 @@ class CodeFragment : CoreFragment<FragmentCodeBinding, CodeViewModel>(), Toolbar
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
         topToolbarUiModel.title.value = getAppTitle()
-        topToolbarUiModel.description.value = getString(R.string.select_mode)
+        topToolbarUiModel.description.value = getString(R.string.description_select_mode)
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
         bottomToolbarUiModel.cleanAll()
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
-        bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.apply2, enabled = false)
+        bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.goOver, enabled = false)
 
         viewLifecycleOwner.connectLiveData(vm.enabledGoOverBtn, bottomToolbarUiModel.uiModelButton5.enabled)
     }

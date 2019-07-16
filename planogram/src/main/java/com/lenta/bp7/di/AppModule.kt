@@ -1,6 +1,7 @@
 package com.lenta.bp7.di
 
 import android.content.Context
+import com.lenta.bp7.data.model.CheckStoreData
 import com.lenta.bp7.platform.navigation.IScreenNavigator
 import com.lenta.bp7.platform.navigation.ScreenNavigator
 import com.lenta.bp7.repos.DatabaseRepo
@@ -20,7 +21,6 @@ import dagger.Provides
 
 @Module
 class AppModule {
-
 
     @Provides
     @AppScope
@@ -50,5 +50,11 @@ class AppModule {
     @AppScope
     internal fun provideIGoodInformationRepo(hyperHive: HyperHive): IDatabaseRepo {
         return DatabaseRepo(hyperHive)
+    }
+
+    @Provides
+    @AppScope
+    internal fun provideCheckStoreData(): CheckStoreData {
+        return CheckStoreData()
     }
 }

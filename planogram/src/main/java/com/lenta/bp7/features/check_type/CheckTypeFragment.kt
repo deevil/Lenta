@@ -24,7 +24,7 @@ class CheckTypeFragment : CoreFragment<FragmentCheckTypeBinding, CheckTypeViewMo
     }
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
-        topToolbarUiModel.description.value = getString(R.string.data_loading)
+        topToolbarUiModel.description.value = getString(R.string.description_main_menu)
         topToolbarUiModel.uiModelButton1.show(ImageButtonDecorationInfo.settings)
         topToolbarUiModel.uiModelButton2.show(ImageButtonDecorationInfo.exitFromApp)
     }

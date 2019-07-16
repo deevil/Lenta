@@ -32,7 +32,7 @@
     <string name="employees_position">Должность</string>
     <string name="definition_performer">Определение исполнителя</string>
     <string name="to_back">Назад</string>
-    <string name="auxiliary_menu">Вспомогательное меню</string>
+    <string name="description_auxiliary_menu">Вспомогательное меню</string>
     <string name="settings">Настройки</string>
     <string name="support">Поддержка</string>
     <string name="rollback">Откатить</string>

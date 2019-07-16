@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools">
 
     <data>
 
         <variable
-            name="vm"
-            type="com.lenta.bp7.features.segment_list.SegmentListViewModel"/>
+            name="shelf"
+            type="com.lenta.bp7.data.model.Shelf"/>
+
     </data>
 
     <LinearLayout
@@ -27,6 +29,8 @@
                 <TextView
                     android:id="@+id/tv_item_number"
                     style="@style/CellTextStyle"
+                    android:text="@{String.valueOf(shelf.id)}"
+                    app:shelfTextColor="@{shelf.status}"
                     tools:text="1"/>
 
             </LinearLayout>
@@ -42,6 +46,8 @@
                     android:id="@+id/tv_shelf_number_time"
                     style="@style/CellTextStyle"
                     android:maxLines="2"
+                    android:text="@{@string/shelf_number_time(shelf.number, shelf.formattedTime)}"
+                    app:shelfTextColor="@{shelf.status}"
                     tools:text="1\n10:59"/>
 
             </LinearLayout>
@@ -57,7 +63,8 @@
                     android:id="@+id/iv_shelf_status"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/ic_lock_white_24dp"/>
+                    app:shelfStatusIcon="@{shelf.status}"
+                    tools:src="@drawable/ic_lock_white_24dp"/>
 
             </LinearLayout>
 
@@ -71,6 +78,8 @@
                 <TextView
                     android:id="@+id/tv_goods_count"
                     style="@style/CellTextStyle"
+                    android:text="@{String.valueOf(shelf.numberOfGoods)}"
+                    app:shelfTextColor="@{shelf.status}"
                     tools:text="27"/>
 
             </LinearLayout>
