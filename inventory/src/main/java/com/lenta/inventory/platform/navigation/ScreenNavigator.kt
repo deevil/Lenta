@@ -163,10 +163,10 @@ class ScreenNavigator(
         }
     }
 
-    override fun openLoadingStorePlaceLockScreen(taskInfo: TaskItemVm, mode: StorePlaceLockMode, storePlaceInfo: TaskStorePlaceInfo)
+    override fun openLoadingStorePlaceLockScreen(mode: StorePlaceLockMode, storePlaceNumber: String)
     {
         runOrPostpone {
-            getFragmentStack()?.push(LoadingStorePlaceLockFragment.create(taskInfo, mode, storePlaceInfo))
+            getFragmentStack()?.push(LoadingStorePlaceLockFragment.create(mode, storePlaceNumber))
         }
     }
 
@@ -193,7 +193,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openJobCard(taskNumber: String)
     fun openLoadingTasksScreen()
     fun openLoadingTaskContentsScreen(taskInfo: TasksItem, recountType: RecountType)
-    fun openLoadingStorePlaceLockScreen(taskInfo: TaskItemVm, mode: StorePlaceLockMode, storePlaceInfo: TaskStorePlaceInfo)
+    fun openLoadingStorePlaceLockScreen(mode: StorePlaceLockMode, storePlaceNumber: String)
     fun openExciseAlcoInfoScreen()
     fun openConfirmationTaskOpenScreen(userName: String, ip: String, callbackFunc: () -> Unit)
 }

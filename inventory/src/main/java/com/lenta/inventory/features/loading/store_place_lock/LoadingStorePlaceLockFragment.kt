@@ -16,9 +16,8 @@ import com.lenta.shared.utilities.extentions.provideViewModel
 
 class LoadingStorePlaceLockFragment: CoreLoadingFragment() {
 
-    private var storePlaceInfo: TaskStorePlaceInfo? = null
     private var mode: StorePlaceLockMode = StorePlaceLockMode.None
-    private var taskInfo: TaskItemVm? = null
+    private var storePlaceNumber: String = ""
 
     override fun getPageNumber(): String? {
         return generateScreenNumberFromPostfix("98")
@@ -27,15 +26,14 @@ class LoadingStorePlaceLockFragment: CoreLoadingFragment() {
     override fun getViewModel(): CoreLoadingViewModel {
         provideViewModel(LoadingStorePlaceLockViewModel::class.java).let {
             getAppComponent()?.inject(it)
-            it.taskInfo = taskInfo
+            it.storePlaceNumber = storePlaceNumber
             it.mode = mode
-            it.storePlaceInfo = storePlaceInfo
             return it
         }
     }
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
-        topToolbarUiModel.title.value = taskInfo?.title
+        topToolbarUiModel.title.value = vm.title.value
         topToolbarUiModel.description.value = getString(R.string.data_loading)
     }
 
@@ -61,11 +59,10 @@ class LoadingStorePlaceLockFragment: CoreLoadingFragment() {
     }
 
     companion object {
-        fun create(taskInfo: TaskItemVm, lockMode: StorePlaceLockMode, storePlaceInfo: TaskStorePlaceInfo): LoadingStorePlaceLockFragment {
+        fun create(mode: StorePlaceLockMode, storePlaceNumber: String): LoadingStorePlaceLockFragment {
             LoadingStorePlaceLockFragment().let {
-                it.taskInfo = taskInfo
-                it.mode = lockMode
-                it.storePlaceInfo = storePlaceInfo
+                it.mode = mode
+                it.storePlaceNumber = storePlaceNumber
                 return it
             }
         }

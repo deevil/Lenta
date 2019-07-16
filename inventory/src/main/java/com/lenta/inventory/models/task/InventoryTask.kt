@@ -1,5 +1,6 @@
 package com.lenta.inventory.models.task
 
+import com.lenta.inventory.models.StorePlaceStatus
 import com.lenta.inventory.models.repositories.ITaskRepository
 import com.lenta.shared.models.core.ProductType
 
@@ -27,6 +28,18 @@ class InventoryTask(val taskDescription: TaskDescription, val taskRepository: IT
     //фун-ция возвращает ОБРАБОТАННЫЕ товары
     fun getProcessedProducts(){
         taskRepository.getProducts().getProcessedProducts()
+    }
+
+    fun getProcessedStorePlaces() : List<TaskStorePlaceInfo> {
+        return taskRepository.getStorePlace().getStorePlaces().filter { it.status == StorePlaceStatus.Finished }
+    }
+
+    fun getUnprocessedStorePlaces() : List<TaskStorePlaceInfo> {
+        return taskRepository.getStorePlace().getStorePlaces().filter { it.status != StorePlaceStatus.Finished }
+    }
+
+    fun getProductsQuantityForStorePlace(storePlaceNumber: String) : Int {
+        return taskRepository.getProducts().getProducts().count { it.placeCode == storePlaceNumber }
     }
 
     //возвращает модель сохранения задания
