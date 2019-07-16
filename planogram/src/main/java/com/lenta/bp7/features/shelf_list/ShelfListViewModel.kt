@@ -8,6 +8,7 @@ import com.lenta.bp7.platform.navigation.IScreenNavigator
 import com.lenta.bp7.repos.IDatabaseRepo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.Logg
+import com.lenta.shared.utilities.SelectionItemsHelper
 import com.mobrun.plugin.api.HyperHive
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -22,6 +23,8 @@ class ShelfListViewModel : CoreViewModel() {
     lateinit var database: IDatabaseRepo
     @Inject
     lateinit var checkStoreData: CheckStoreData
+
+    val selectionsHelper = SelectionItemsHelper()
 
     val segmentNumber: MutableLiveData<String> = MutableLiveData()
     val shelves: MutableLiveData<List<Shelf>> = MutableLiveData()
@@ -44,5 +47,11 @@ class ShelfListViewModel : CoreViewModel() {
     fun onClickApply() {
         // Заглушка
         navigator.openGoodListScreen()
+    }
+
+    fun onClickItemPosition(position: Int) {
+        // todo сохранить выбранную полку как текущую
+
+        // todo открыть список товаров
     }
 }

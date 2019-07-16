@@ -66,8 +66,8 @@ class SegmentListFragment : CoreFragment<FragmentSegmentListBinding, SegmentList
     }
 
     private fun initRvConfig() {
-        binding?.let { it ->
-            it.rvConfig = DataBindingRecyclerViewConfig(
+        binding?.let { layoutBinding ->
+            layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
                     layoutId = R.layout.item_segment,
                     itemId = BR.segment,
                     realisation = object : DataBindingAdapter<ItemSegmentBinding> {
@@ -92,12 +92,12 @@ class SegmentListFragment : CoreFragment<FragmentSegmentListBinding, SegmentList
                     }
             )
 
-            it.vm = vm
-            it.lifecycleOwner = viewLifecycleOwner
+            layoutBinding.vm = vm
+            layoutBinding.lifecycleOwner = viewLifecycleOwner
             recyclerViewKeyHandler = RecyclerViewKeyHandler(
-                    rv = it.rv,
+                    rv = layoutBinding.rv,
                     items = vm.segments,
-                    lifecycleOwner = it.lifecycleOwner!!,
+                    lifecycleOwner = layoutBinding.lifecycleOwner!!,
                     initPosInfo = recyclerViewKeyHandler?.posInfo?.value
             )
         }
