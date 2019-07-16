@@ -46,9 +46,10 @@ class SegmentListViewModel : CoreViewModel() {
     }
 
     fun createSegment() {
+        checkStoreData.addSegment(sessionInfo.market, segmentNumber.value)
+
         // todo показать сообщение о начале обработки сегмента
 
-        checkStoreData.addSegment(sessionInfo.market, segmentNumber.value)
         navigator.openShelfListScreen()
     }
 
@@ -61,10 +62,7 @@ class SegmentListViewModel : CoreViewModel() {
     }
 
     fun onClickItemPosition(position: Int) {
-        Logg.d { "Clicked item position: $position" }
-
-        // todo назначить выбранный сегмент текущим
-
-        // todo открыть экран списка полок
+        checkStoreData.currentSegment = segments.value!![position]
+        navigator.openShelfListScreen()
     }
 }
