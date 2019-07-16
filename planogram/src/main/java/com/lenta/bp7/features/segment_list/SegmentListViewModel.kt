@@ -39,7 +39,7 @@ class SegmentListViewModel : CoreViewModel() {
         }
     }
 
-    fun onClickSave() {
+    fun onClickApply() {
         checkStoreData.addSegment(sessionInfo.market, segmentNumber.value)
         navigator.openShelfListScreen()
     }

@@ -31,7 +31,7 @@ class ShelfListFragment : CoreFragment<FragmentShelfListBinding, ShelfListViewMo
     }
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
-        topToolbarUiModel.description.value = getString(R.string.list_of_processed_selves)
+        topToolbarUiModel.description.value = getString(R.string.description_list_of_processed_selves)
 
         vm.segmentNumber.observe(this, Observer<String> { segmentNumber ->
             topToolbarUiModel.title.value = getString(R.string.title_segment_number, segmentNumber)

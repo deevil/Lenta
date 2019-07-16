@@ -33,7 +33,7 @@ class SegmentListFragment : CoreFragment<FragmentSegmentListBinding, SegmentList
     }
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
-        topToolbarUiModel.description.value = getString(R.string.list_of_processed_segments)
+        topToolbarUiModel.description.value = getString(R.string.description_list_of_processed_segments)
 
         vm.marketNumber.observe(this, Observer<String> { marketNumber ->
             topToolbarUiModel.title.value = getString(R.string.title_store_number, marketNumber)
@@ -42,7 +42,7 @@ class SegmentListFragment : CoreFragment<FragmentSegmentListBinding, SegmentList
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
-        bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.save, enabled = false)
+        bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.apply, enabled = false)
 
         viewLifecycleOwner.apply {
             connectLiveData(source = vm.saveButtonEnabled, target = bottomToolbarUiModel.uiModelButton5.enabled)
@@ -51,7 +51,7 @@ class SegmentListFragment : CoreFragment<FragmentSegmentListBinding, SegmentList
 
     override fun onToolbarButtonClick(view: View) {
         if (view.id == R.id.b_5) {
-            vm.onClickSave()
+            vm.onClickApply()
         }
     }
 

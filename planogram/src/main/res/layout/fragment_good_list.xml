@@ -43,9 +43,6 @@
 
                 </LinearLayout>
 
-                <View
-                    style="@style/RowVerticalDivider"/>
-
                 <LinearLayout
                     style="@style/LinearCellStyle"
                     android:layout_weight="@integer/size_column_2">
@@ -56,9 +53,6 @@
 
                 </LinearLayout>
 
-                <View
-                    style="@style/RowVerticalDivider"/>
-
                 <LinearLayout
                     style="@style/LinearCellStyle"
                     android:layout_weight="@integer/size_column_3">
@@ -68,9 +62,6 @@
                         android:text="@string/column_title_sign"/>
 
                 </LinearLayout>
-
-                <View
-                    style="@style/RowVerticalDivider"/>
 
                 <LinearLayout
                     style="@style/LinearCellStyle"
@@ -99,33 +90,16 @@
             tools:listitem="@layout/item_good"/>
 
         <!-- Поле ввода номера товара -->
-        <LinearLayout
+        <EditText
+            android:id="@+id/et_shelf_number"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:orientation="horizontal">
-
-            <EditText
-                android:id="@+id/et_shelf_number"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_margin="8dp"
-                android:layout_weight="1"
-                android:hint="@string/enter_item_number_or_barcode"
-                android:inputType="numberDecimal"
-                android:maxLength="3"
-                tools:ignore="Autofill"/>
-
-            <ImageButton
-                android:id="@+id/b_scan"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="?selectableItemBackground"
-                android:padding="8dp"
-                android:src="@drawable/ic_scan_barcode"
-                tools:ignore="ContentDescription"/>
-
-        </LinearLayout>
+            android:layout_margin="8dp"
+            android:drawableEnd="@drawable/ic_add_white_24dp"
+            android:hint="@string/enter_item_number_or_barcode"
+            android:inputType="numberDecimal"
+            android:maxLength="3"
+            tools:ignore="Autofill"/>
 
     </LinearLayout>
 

@@ -43,9 +43,6 @@
 
                 </LinearLayout>
 
-                <View
-                    style="@style/RowVerticalDivider"/>
-
                 <LinearLayout
                     style="@style/LinearCellStyle"
                     android:layout_weight="@integer/size_column_2">
@@ -56,9 +53,6 @@
 
                 </LinearLayout>
 
-                <View
-                    style="@style/RowVerticalDivider"/>
-
                 <LinearLayout
                     style="@style/LinearCellStyle"
                     android:layout_weight="@integer/size_column_3">
@@ -68,9 +62,6 @@
                         android:text="@string/column_title_status"/>
 
                 </LinearLayout>
-
-                <View
-                    style="@style/RowVerticalDivider"/>
 
                 <LinearLayout
                     style="@style/LinearCellStyle"
@@ -104,6 +95,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="8dp"
+            android:drawableEnd="@drawable/ic_add_white_24dp"
             android:hint="@string/enter_shelf_number"
             android:inputType="numberDecimal"
             android:maxLength="3"

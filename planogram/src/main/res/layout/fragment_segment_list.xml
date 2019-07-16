@@ -43,9 +43,6 @@
 
                 </LinearLayout>
 
-                <View
-                    style="@style/RowVerticalDivider"/>
-
                 <LinearLayout
                     style="@style/LinearCellStyle"
                     android:layout_weight="@integer/size_column_2">
@@ -56,9 +53,6 @@
 
                 </LinearLayout>
 
-                <View
-                    style="@style/RowVerticalDivider"/>
-
                 <LinearLayout
                     style="@style/LinearCellStyle"
                     android:layout_weight="@integer/size_column_3">
@@ -68,9 +62,6 @@
                         android:text="@string/column_title_status"/>
 
                 </LinearLayout>
-
-                <View
-                    style="@style/RowVerticalDivider"/>
 
                 <LinearLayout
                     style="@style/LinearCellStyle"
@@ -103,12 +94,13 @@
             android:id="@+id/et_segment_number"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:digits="1234567890-"
-            app:maskPattern='@{"[000]-[000]"}'
             android:layout_margin="8dp"
-            android:text="@={vm.segmentNumber}"
+            android:digits="1234567890-"
+            android:drawableEnd="@drawable/ic_add_white_24dp"
             android:hint="@string/enter_segment_number"
             android:inputType="number"
+            android:text="@={vm.segmentNumber}"
+            app:maskPattern='@{"[000]-[000]"}'
             tools:ignore="Autofill"/>
 
     </LinearLayout>

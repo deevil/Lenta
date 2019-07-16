@@ -1,25 +1,41 @@
 <resources>
-    <string name="app_name">Планограмма</string>
+    <string name="app_name">Контроль выкладки</string>
+
     <string name="action_settings">Settings</string>
-    <string name="select_segment_processing_mode">Режим\nобработки сегмента</string>
     <string name="with_counting_facings">Подсчет фейсингов</string>
     <string name="with_control_of_empty_places">Контроль пустых мест</string>
     <string name="self_control_tc">Самоконтроль ТК</string>
     <string name="external_audit">Внешний аудит</string>
-    <string name="select_mode">Выбор режима</string>
-    <string name="code_screen_message">Введите пин-код\nдля подтверждения\nвхода в режим\n\"%1$s\"</string>
     <string name="incorrect_code_message">Введен некорректный пин-код!</string>
-    <string name="auxiliary_menu">Вспомогательное меню</string>
-    <string name="list_of_processed_segments">Список обработанных сегментов:</string>
-    <string name="list_of_processed_selves">Список обработанных полок:</string>
-    <string name="list_of_processed_goods">Список обработанных товаров:</string>
-    <string name="enter_segment_number">Введите номер сегмента</string>
-    <string name="enter_shelf_number">Введите номер полки</string>
+    <string name="number_of_facings">Количество фейсингов</string>
+    <string name="enter_quantity">Введите количество</string>
+    <string name="total_facings">Итого фейсингов</string>
+    <string name="goods_barcode">Штрихкод товара</string>
+    <string name="good_on_shelf">Товар на полке</string>
+    <string name="segment_number_store_date">%1$s (ТК - %2$s)\n%3$s</string>
+    <string name="shelf_number_time">%1$s\n%2$s</string>
+    <string name="good_sap_name">%1$s %2$s</string>
+
+
+    <!-- Информационные сообщения -->
+    <string name="code_screen_message">Введите ПИН-код для подтверждения входа в режим \"%1$s\"</string>
+    <string name="segment_processing_mode">Определение режима\nобработки сегмента</string>
+
 
     <!-- Заголовки экранов -->
     <string name="title_store_number">TK - %1$s</string>
     <string name="title_segment_number">Сегмент: %1$s</string>
     <string name="title_segment_shelf_number">Сегмент: %1$s/Полка: %2$s</string>
+
+
+    <!-- Подзаголовки экранов -->
+    <string name="description_main_menu">Главное меню</string>
+    <string name="description_select_mode">Выбор режима</string>
+    <string name="description_auxiliary_menu">Вспомогательное меню</string>
+    <string name="description_list_of_processed_segments">Список обработанных сегментов</string>
+    <string name="description_list_of_processed_selves">Список обработанных полок</string>
+    <string name="description_list_of_processed_goods">Список обработанных товаров</string>
+
 
     <!-- Заголовки списков -->
     <string name="column_title_item_number">№</string>
@@ -31,14 +47,10 @@
     <string name="column_title_goods">Товаров</string>
     <string name="column_title_sign">Признак</string>
     <string name="column_title_facing">Фейсинг</string>
-    <string name="number_of_facings">Количество фейсингов</string>
-    <string name="enter_quantity">Введите количество</string>
-    <string name="total_facings">Итого фейсингов</string>
-    <string name="goods_barcode">Штрихкод товара</string>
-    <string name="good_on_shelf">Товар на полке</string>
 
-    <string name="segment_number_store_date">%1$s (ТК - %2$s)\n%3$s</string>
-    <string name="shelf_number_time">%1$s\n%2$s</string>
-    <string name="good_sap_name">%1$s %2$s</string>
+
+    <!-- Подсказки в полях -->
+    <string name="enter_segment_number">Введите номер сегмента</string>
+    <string name="enter_shelf_number">Введите номер полки</string>
 
 </resources>
