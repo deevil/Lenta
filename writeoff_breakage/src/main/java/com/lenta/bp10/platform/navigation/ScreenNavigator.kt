@@ -286,6 +286,15 @@ class ScreenNavigator(
         )
     }
 
+    override fun openConfirmationToBackNotEmptyStampsScreen(callbackFunc: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.confirmation_back_with_scanned_stamps),
+                    codeConfirm = backFragmentResultHelper.setFuncForResult(callbackFunc),
+                    pageNumber = "93",
+                    rightButtonDecorationInfo = ButtonDecorationInfo.yes))
+        }
+    }
+
     override fun openNotPossibleSaveWithoutReasonScreen() {
         openInfoScreen(message = context.getString(R.string.not_possible_save_without_reason))
     }
@@ -323,4 +332,5 @@ interface IScreenNavigator : ICoreNavigator {
     fun openFailDetectComponentForStampScreen()
     fun openLimitExceededScreen()
     fun openNotPossibleSaveWithoutReasonScreen()
+    fun openConfirmationToBackNotEmptyStampsScreen(callbackFunc: () -> Unit)
 }
