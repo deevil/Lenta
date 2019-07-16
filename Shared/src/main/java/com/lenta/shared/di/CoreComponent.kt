@@ -5,6 +5,7 @@ import android.content.SharedPreferences
 import com.google.gson.Gson
 import com.lenta.shared.account.IAuthenticator
 import com.lenta.shared.account.ISessionInfo
+import com.lenta.shared.analytics.AnalyticsHelper
 import com.lenta.shared.analytics.IAnalytics
 import com.lenta.shared.analytics.db.RoomAppDatabase
 import com.lenta.shared.analytics.db.dao.LogDao
@@ -67,6 +68,7 @@ interface CoreComponent {
     fun getBackResultHelper(): BackFragmentResultHelper
     fun getRoomAppDatabase(): RoomAppDatabase
     fun getLogDao(): LogDao
+    fun getAnalyticsHelper(): AnalyticsHelper
 
 
     fun inject(it: FmpSettingsViewModel)

@@ -14,6 +14,7 @@ import com.lenta.shared.account.Authenticator
 import com.lenta.shared.account.IAuthenticator
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.account.SessionInfo
+import com.lenta.shared.analytics.AnalyticsHelper
 import com.lenta.shared.analytics.FmpAnalytics
 import com.lenta.shared.analytics.IAnalytics
 import com.lenta.shared.analytics.db.dao.LogDao
@@ -219,6 +220,12 @@ class CoreModule(val application: Application, val defaultConnectionSettings: De
     @Singleton
     fun provideLogDao(roomAppDatabase: RoomAppDatabase): LogDao {
         return roomAppDatabase.logDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideAnalyticsHelper(iAnalytics: IAnalytics, context: Context): AnalyticsHelper {
+        return AnalyticsHelper(iAnalytics, context)
     }
 
 

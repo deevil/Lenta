@@ -1,6 +1,7 @@
 package com.lenta.shared.platform.statusbar
 
 import androidx.lifecycle.MutableLiveData
+import com.lenta.shared.analytics.AnalyticsHelper
 import com.lenta.shared.platform.battery_state.IBatteryStateMonitor
 import com.lenta.shared.platform.network_state.INetworkStateMonitor
 import com.lenta.shared.platform.time.ITimeMonitor
@@ -12,10 +13,13 @@ class StatusBarUiModel @Inject constructor(
         val networkStateMonitor: INetworkStateMonitor,
         val batteryStateMonitor: IBatteryStateMonitor,
         val timeMonitor: ITimeMonitor,
-        val appSettings: IAppSettings
+        val appSettings: IAppSettings,
+        val analyticsHelper: AnalyticsHelper
 ) {
     val pageNumber: MutableLiveData<String> = MutableLiveData("")
-    var ip: MutableLiveData<String> = networkStateMonitor.networkInfo.map { it?.ip }
+    var ip: MutableLiveData<String> = networkStateMonitor.networkInfo.map { it?.ip.apply {
+        analyticsHelper.logNetworkInfo(it)
+    } }
     val printer = appSettings.printerNumberLiveData.map { if (it.isNullOrBlank()) "?" else it }
     val batteryLevel: MutableLiveData<Int> = batteryStateMonitor.batteryState.map { it?.level }
     val batteryIsCharging: MutableLiveData<Boolean> = batteryStateMonitor.batteryState.map { it?.isCharging }

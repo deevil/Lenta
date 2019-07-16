@@ -38,6 +38,7 @@ import com.lenta.shared.utilities.extentions.hideKeyboard
 import com.lenta.shared.utilities.extentions.implementationOf
 import javax.inject.Inject
 import com.lenta.shared.platform.navigation.ICoreNavigator
+import com.lenta.shared.utilities.extentions.hhive.ANALYTICS_HELPER
 
 
 abstract class CoreMainActivity : CoreActivity<ActivityMainBinding>(), ToolbarButtonsClickListener, INumberScreenGenerator {
@@ -67,7 +68,14 @@ abstract class CoreMainActivity : CoreActivity<ActivityMainBinding>(), ToolbarBu
     val newLandScanHelper = NewLandScanHelper()
 
     private val vm: CoreMainViewModel by lazy {
-        getViewModel()
+        getViewModel().apply {
+            if (!permissionNotGranted()) {
+                analyticsHelper.onPermissionGranted()
+                ANALYTICS_HELPER = analyticsHelper
+                analyticsHelper.logAppInfo()
+                analyticsHelper.logDeviceInfo()
+            }
+        }
     }
 
     val fragmentStack: FragmentStack by lazy {
@@ -119,7 +127,7 @@ abstract class CoreMainActivity : CoreActivity<ActivityMainBinding>(), ToolbarBu
 
     override fun onResume() {
         super.onResume()
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+        if (permissionNotGranted()) {
             ActivityCompat.requestPermissions(this, listOf(Manifest.permission.WRITE_EXTERNAL_STORAGE).toTypedArray(), 1)
         }
         networkStateMonitor.start(this)
@@ -129,6 +137,10 @@ abstract class CoreMainActivity : CoreActivity<ActivityMainBinding>(), ToolbarBu
         honeywellScanHelper.startListen(this)
         newLandScanHelper.startListen(this)
         priorityAppManager.setLowPriority()
+    }
+
+    private fun permissionNotGranted(): Boolean {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
     }
 
     override fun onPause() {
