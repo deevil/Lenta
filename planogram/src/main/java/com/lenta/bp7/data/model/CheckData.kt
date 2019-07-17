@@ -2,7 +2,7 @@ package com.lenta.bp7.data.model
 
 import com.lenta.shared.utilities.Logg
 
-class CheckStoreData(
+class CheckData(
         val segments: MutableList<Segment> = mutableListOf()
 ) {
 
@@ -27,20 +27,20 @@ class CheckStoreData(
         currentSegmentIndex = 0
     }
 
+    fun deleteCurrentSegment() {
+        segments.removeAt(currentSegmentIndex)
+        currentSegmentIndex = 0
+    }
+
     private fun generateTestData() {
-        Logg.d { "Test data generation for CheckStoreData" }
+        Logg.d { "Test data generation for CheckData" }
 
         for (i in 1..5) {
             segments.add(0, Segment(
                     id = i,
                     number = (100..999).random().toString() + "-" + (100..999).random().toString(),
                     storeNumber = "0007",
-                    status = when ((2..4).random()) {
-                        2 -> SegmentStatus.UNFINISHED
-                        3 -> SegmentStatus.PROCESSED
-                        4 -> SegmentStatus.DELETED
-                        else -> SegmentStatus.CREATED
-                    },
+                    status = SegmentStatus.PROCESSED,
                     shelves = createShelvesList()))
         }
     }
@@ -51,11 +51,7 @@ class CheckStoreData(
             shelves.add(0, Shelf(
                     id = i,
                     number = i.toString(),
-                    status = when ((2..3).random()) {
-                        2 -> ShelfStatus.PROCESSED
-                        3 -> ShelfStatus.DELETED
-                        else -> ShelfStatus.CREATED
-                    },
+                    status = ShelfStatus.PROCESSED,
                     goods = createGoodsList()))
         }
 

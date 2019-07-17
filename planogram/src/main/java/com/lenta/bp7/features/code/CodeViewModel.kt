@@ -3,7 +3,7 @@ package com.lenta.bp7.features.code
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp7.data.CheckType
-import com.lenta.bp7.data.model.CheckStoreData
+import com.lenta.bp7.data.model.CheckData
 import com.lenta.bp7.platform.navigation.IScreenNavigator
 import com.lenta.bp7.repos.IDatabaseRepo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
@@ -24,7 +24,7 @@ class CodeViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     @Inject
     lateinit var database: IDatabaseRepo
     @Inject
-    lateinit var checkStoreData: CheckStoreData
+    lateinit var checkData: CheckData
 
     val number1: MutableLiveData<String> = MutableLiveData("")
     val number2: MutableLiveData<String> = MutableLiveData("")
@@ -41,7 +41,7 @@ class CodeViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
     init {
         viewModelScope.launch {
-            when (checkStoreData.checkType) {
+            when (checkData.checkType) {
                 CheckType.SELF_CONTROL.type -> {
                     message.value = selfControlType.value
                     pinCode = database.getSelfControlPinCode()

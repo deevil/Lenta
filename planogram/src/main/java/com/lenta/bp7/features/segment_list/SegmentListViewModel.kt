@@ -2,13 +2,12 @@ package com.lenta.bp7.features.segment_list
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.lenta.bp7.data.model.CheckStoreData
+import com.lenta.bp7.data.model.CheckData
 import com.lenta.bp7.data.model.Segment
 import com.lenta.bp7.platform.navigation.IScreenNavigator
 import com.lenta.bp7.repos.IDatabaseRepo
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
-import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.map
 import com.mobrun.plugin.api.HyperHive
@@ -26,7 +25,7 @@ class SegmentListViewModel : CoreViewModel() {
     @Inject
     lateinit var database: IDatabaseRepo
     @Inject
-    lateinit var checkStoreData: CheckStoreData
+    lateinit var checkData: CheckData
 
     val segments: MutableLiveData<List<Segment>> = MutableLiveData()
     private val unfinishedSegment: MutableLiveData<Boolean> = MutableLiveData()
@@ -39,16 +38,15 @@ class SegmentListViewModel : CoreViewModel() {
 
     init {
         viewModelScope.launch {
-            unfinishedSegment.value = checkStoreData.isExistUnfinishedSegment
+            unfinishedSegment.value = checkData.isExistUnfinishedSegment
             marketNumber.value = sessionInfo.market
-            segments.value = checkStoreData.segments
+            segments.value = checkData.segments
         }
     }
 
     fun createSegment() {
-        Logg.d { "createSegment started!" }
         if (segmentNumber.value?.length == 7) {
-            checkStoreData.addSegment(sessionInfo.market!!, segmentNumber.value!!)
+            checkData.addSegment(sessionInfo.market!!, segmentNumber.value!!)
 
             // todo показать экран с сообщением о начале обработки сегмента
 
@@ -65,7 +63,7 @@ class SegmentListViewModel : CoreViewModel() {
     }
 
     fun onClickItemPosition(position: Int) {
-        checkStoreData.currentSegmentIndex = position
+        checkData.currentSegmentIndex = position
         navigator.openShelfListScreen()
     }
 }

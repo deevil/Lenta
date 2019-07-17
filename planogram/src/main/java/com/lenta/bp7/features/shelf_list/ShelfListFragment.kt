@@ -12,6 +12,7 @@ import com.lenta.bp7.R
 import com.lenta.bp7.databinding.FragmentShelfListBinding
 import com.lenta.bp7.databinding.ItemShelfBinding
 import com.lenta.bp7.platform.extentions.getAppComponent
+import com.lenta.shared.platform.activity.OnBackPresserListener
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
@@ -20,11 +21,12 @@ import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.utilities.databinding.DataBindingAdapter
 import com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig
 import com.lenta.shared.utilities.databinding.RecyclerViewKeyHandler
+import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
 import com.lenta.shared.utilities.extentions.provideViewModel
 
 class ShelfListFragment : CoreFragment<FragmentShelfListBinding, ShelfListViewModel>(),
-        ToolbarButtonsClickListener, TextView.OnEditorActionListener {
+        ToolbarButtonsClickListener, OnBackPresserListener {
 
     private var recyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
 
@@ -49,12 +51,18 @@ class ShelfListFragment : CoreFragment<FragmentShelfListBinding, ShelfListViewMo
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
-        bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.delete)
-        bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.apply)
+        bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.delete, enabled = false)
+        bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.apply, enabled = false)
+
+        viewLifecycleOwner.apply {
+            connectLiveData(source = vm.deleteButtonEnabled, target = bottomToolbarUiModel.uiModelButton3.enabled)
+            connectLiveData(source = vm.applyButtonEnabled, target = bottomToolbarUiModel.uiModelButton5.enabled)
+        }
     }
 
     override fun onToolbarButtonClick(view: View) {
         when (view.id) {
+            R.id.b_1 -> vm.onClickBack()
             R.id.b_3 -> vm.onClickDelete()
             R.id.b_5 -> vm.onClickApply()
         }
@@ -114,15 +122,19 @@ class ShelfListFragment : CoreFragment<FragmentShelfListBinding, ShelfListViewMo
     }
 
     private fun initShelfNumberField() {
-        binding?.etShelfNumber?.setOnEditorActionListener(this)
+        binding?.etShelfNumber?.setOnEditorActionListener { _, actionId, _ ->
+            return@setOnEditorActionListener when (actionId) {
+                EditorInfo.IME_ACTION_GO -> {
+                    vm.createShelf()
+                    true
+                }
+                else -> false
+            }
+        }
     }
 
-    override fun onEditorAction(v: TextView?, actionId: Int, event: KeyEvent?): Boolean {
-        if (actionId == EditorInfo.IME_ACTION_GO) {
-            vm.createShelf()
-            return true
-        }
-
+    override fun onBackPressed(): Boolean {
+        vm.onClickBack()
         return false
     }
 }

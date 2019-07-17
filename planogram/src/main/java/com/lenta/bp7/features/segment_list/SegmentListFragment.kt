@@ -25,7 +25,7 @@ import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
 import com.lenta.shared.utilities.extentions.provideViewModel
 
 class SegmentListFragment : CoreFragment<FragmentSegmentListBinding, SegmentListViewModel>(),
-        ToolbarButtonsClickListener, TextView.OnEditorActionListener {
+        ToolbarButtonsClickListener {
 
     private var recyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
 
@@ -107,15 +107,14 @@ class SegmentListFragment : CoreFragment<FragmentSegmentListBinding, SegmentList
     }
 
     private fun initSegmentNumberField() {
-        binding?.etSegmentNumber?.setOnEditorActionListener(this)
-    }
-
-    override fun onEditorAction(v: TextView?, actionId: Int, event: KeyEvent?): Boolean {
-        if (actionId == EditorInfo.IME_ACTION_GO) {
-            vm.createSegment()
-            return true
+        binding?.etSegmentNumber?.setOnEditorActionListener { _, actionId, _ ->
+            return@setOnEditorActionListener when (actionId) {
+                EditorInfo.IME_ACTION_GO -> {
+                    vm.createSegment()
+                    true
+                }
+                else -> false
+            }
         }
-
-        return false
     }
 }

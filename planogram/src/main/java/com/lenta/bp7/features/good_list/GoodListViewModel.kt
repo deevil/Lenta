@@ -2,7 +2,7 @@ package com.lenta.bp7.features.good_list
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.lenta.bp7.data.model.CheckStoreData
+import com.lenta.bp7.data.model.CheckData
 import com.lenta.bp7.data.model.Good
 import com.lenta.bp7.platform.navigation.IScreenNavigator
 import com.lenta.bp7.repos.IDatabaseRepo
@@ -20,7 +20,7 @@ class GoodListViewModel : CoreViewModel() {
     @Inject
     lateinit var database: IDatabaseRepo
     @Inject
-    lateinit var checkStoreData: CheckStoreData
+    lateinit var checkData: CheckData
 
     val segmentNumber: MutableLiveData<String> = MutableLiveData()
     val shelfNumber: MutableLiveData<String> = MutableLiveData()
@@ -30,7 +30,7 @@ class GoodListViewModel : CoreViewModel() {
 
     init {
         viewModelScope.launch {
-            checkStoreData.getCurrentSegment().let {
+            checkData.getCurrentSegment().let {
                 segmentNumber.value = it.number
                 shelfNumber.value = it.getCurrentShelf().number
                 goods.value = it.getCurrentShelf().goods
@@ -43,7 +43,7 @@ class GoodListViewModel : CoreViewModel() {
     }
 
     fun onClickItemPosition(position: Int) {
-        checkStoreData.getCurrentSegment().getCurrentShelf().currentGoodIndex = position
+        checkData.getCurrentSegment().getCurrentShelf().currentGoodIndex = position
         //navigator.openGoodInfoScreen()
     }
 }
