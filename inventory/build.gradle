@@ -9,7 +9,7 @@ def prefixAppVersion = "11"
 android {
     compileSdkVersion build_versions.target_sdk
     defaultConfig {
-        applicationId "com.lenta.inventory"
+        applicationId "com.lenta.bp11"
         minSdkVersion build_versions.min_sdk
         targetSdkVersion build_versions.target_sdk
         versionCode getCodeVersion()
