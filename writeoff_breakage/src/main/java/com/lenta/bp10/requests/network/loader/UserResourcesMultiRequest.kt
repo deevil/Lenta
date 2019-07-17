@@ -15,18 +15,13 @@ class UserResourcesMultiRequest @Inject constructor(private val hyperHive: Hyper
 
     override val isDeltaRequest = false
 
-    override fun getListOfRequests(): List<RequestBuilder<out CustomParameter, out ScalarParameter<Any>>> {
-
+    override fun getMapOfRequests(): Map<String, RequestBuilder<out CustomParameter, out ScalarParameter<Any>>> {
         val user = sessionInfo.userName
-
-        return listOf(
-                ZmpUtz29V001Rfc(hyperHive).newRequest()
-                        .addScalar(IV_USER(user)),
-                ZmpUtz35V001Rfc(hyperHive)
-                        .newRequest()
+        return mapOf(
+                ZmpUtz29V001Rfc.NAME_RESOURCE to ZmpUtz29V001Rfc(hyperHive).newRequest().addScalar(IV_USER(user)),
+                ZmpUtz35V001Rfc.NAME_RESOURCE to ZmpUtz35V001Rfc(hyperHive).newRequest()
                         .addScalar(ZmpUtz35V001Rfc.LimitedScalarParameter.IV_USER(user))
         )
-
     }
 
 

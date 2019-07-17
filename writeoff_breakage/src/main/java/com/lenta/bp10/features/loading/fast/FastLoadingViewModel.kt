@@ -79,7 +79,8 @@ class FastLoadingViewModel : CoreLoadingViewModel() {
                 screenNavigator.openLoginScreen()
                 screenNavigator.openNeedUpdateScreen()
             } else {
-                resourceLoader.startLoadSlowResources()
+                //TODO Вернуть загрузку в фоне slow data после доработки SDK
+                //resourceLoader.startLoadSlowResources()
                 screenNavigator.openSelectionPersonnelNumberScreen()
             }
         }

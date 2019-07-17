@@ -318,7 +318,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openSetsInfoScreen(productInfo: ProductInfo, quantity: Double)
     fun openGoodsReasonsScreen(productInfo: ProductInfo)
     fun openSuccessPrintMessage()
-    fun openComponentSetScreen(productInfo: ProductInfo, componentItem: ComponentItem, mengeTotalCount: Double)
+    fun openComponentSetScreen(productInfo: ProductInfo, componentItem: ComponentItem, targetTotalCount: Double)
     fun openDetectionSavedDataScreen()
     fun openRemoveLinesConfirmationScreen(taskDescription: String, count: Int, codeConfirmation: Int)
     fun openMatrixAlertScreen(matrixType: MatrixType, codeConfirmation: Int)

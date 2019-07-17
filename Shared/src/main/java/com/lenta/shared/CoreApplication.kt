@@ -9,6 +9,7 @@ import com.lenta.shared.settings.DefaultConnectionSettings
 import com.lenta.shared.utilities.runIfRelease
 import java.io.PrintWriter
 import java.io.StringWriter
+import kotlin.system.exitProcess
 
 abstract class CoreApplication : Application(), CoreComponentProvider {
 
@@ -44,7 +45,8 @@ abstract class CoreApplication : Application(), CoreComponentProvider {
                 Thread(Runnable {
                     onHandleException()
                     Thread.sleep(200)
-                    System.exit(1)
+                    coreComponent.getRoomAppDatabase().close()
+                    exitProcess(1)
                 }).run()
 
             }

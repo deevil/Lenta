@@ -9,6 +9,7 @@ import com.lenta.shared.fmp.ObjectRawStatus
 import com.lenta.shared.fmp.toFmpObjectRawStatusEither
 import com.lenta.shared.functional.Either
 import com.lenta.shared.interactor.UseCase
+import com.lenta.shared.utilities.extentions.hhive.ANALYTICS_HELPER
 import com.mobrun.plugin.api.HyperHive
 import com.mobrun.plugin.api.callparams.WebCallParams
 import javax.inject.Inject
@@ -16,7 +17,8 @@ import javax.inject.Inject
 class SendWriteOffReportRequest
 @Inject constructor(private val hyperHive: HyperHive, private val gson: Gson, private val sessionInfo: ISessionInfo) : UseCase<WriteOffReportResponse, WriteOffReport>() {
     override suspend fun run(params: WriteOffReport): Either<Failure, WriteOffReportResponse> {
-        return hyperHive.requestAPI.web("ZMP_UTZ_WOB_04_V001",
+        val resName = "ZMP_UTZ_WOB_04_V001"
+        return hyperHive.requestAPI.web(resName,
                 WebCallParams().apply {
                     data = gson.toJson(params)
                     headers = mapOf(
@@ -24,6 +26,8 @@ class SendWriteOffReportRequest
                             "Content-Type" to "application/json",
                             "Web-Authorization" to sessionInfo.basicAuth
                     )
+                }.apply {
+                    ANALYTICS_HELPER?.onStartFmpRequest(resName, "headers: ${this.headers}, data: ${this.data}")
                 })
                 .execute().toFmpObjectRawStatusEither(WriteOffReportStatus::class.java, gson)
     }

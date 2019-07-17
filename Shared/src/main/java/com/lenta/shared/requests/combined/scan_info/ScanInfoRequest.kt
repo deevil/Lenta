@@ -16,12 +16,13 @@ import com.lenta.shared.models.core.getMatrixType
 import com.lenta.shared.models.core.getProductType
 import com.lenta.shared.requests.combined.scan_info.pojo.*
 import com.lenta.shared.utilities.Logg
+import com.lenta.shared.utilities.extentions.hhive.ANALYTICS_HELPER
 import com.lenta.shared.utilities.extentions.hhive.getFailure
 import com.lenta.shared.utilities.extentions.hhive.isNotBad
 import com.mobrun.plugin.api.HyperHive
 import com.mobrun.plugin.api.callparams.WebCallParams
 
-class ScanInfoRequest (private val hyperHive: HyperHive, private val gson: Gson, private val sessionInfo: ISessionInfo) : UseCase<ScanInfoResult, ScanInfoRequestParams>() {
+class ScanInfoRequest(private val hyperHive: HyperHive, private val gson: Gson, private val sessionInfo: ISessionInfo) : UseCase<ScanInfoResult, ScanInfoRequestParams>() {
 
     private val zmpUtz25V001: ZmpUtz25V001 by lazy {
         ZmpUtz25V001(hyperHive)
@@ -69,36 +70,46 @@ class ScanInfoRequest (private val hyperHive: HyperHive, private val gson: Gson,
 
         Logg.d { "searchParams: $productInfoNetRequestParams" }
 
-        val productInfoStatus = hyperHive.requestAPI.web("ZMP_UTZ_WOB_02_V001",
-                WebCallParams().apply {
-                    data = gson.toJson(productInfoNetRequestParams)
-                    headers = mapOf(
-                            "X-SUP-DOMAIN" to "DM-MAIN",
-                            "Content-Type" to "application/json",
-                            "Web-Authorization" to sessionInfo.basicAuth
-                    )
-                }, ProductInfoStatus::class.java)
-                .execute()
+        "ZMP_UTZ_WOB_02_V001".let { resName ->
+            val productInfoStatus = hyperHive.requestAPI.web(resName,
+                    WebCallParams().apply {
+                        data = gson.toJson(productInfoNetRequestParams)
+                        headers = mapOf(
+                                "X-SUP-DOMAIN" to "DM-MAIN",
+                                "Content-Type" to "application/json",
+                                "Web-Authorization" to sessionInfo.basicAuth
+                        )
+                    }.apply {
+                        ANALYTICS_HELPER?.onStartFmpRequest(resName, "headers: ${this.headers}, data: ${this.data}")
+                    }, ProductInfoStatus::class.java)
+                    .execute()
 
-        Logg.d { "productInfoStatus: $productInfoStatus" }
+            ANALYTICS_HELPER?.onFinishFmpRequest(resName)
+
+            Logg.d { "productInfoStatus: $productInfoStatus" }
 
 
-        if (productInfoStatus.isNotBad()) {
+            if (productInfoStatus.isNotBad()) {
 
-            val quantity = scanCodeInfo.extractQuantityFromEan(
-                    eanInfo = productInfoStatus.result!!.raw!!.ean!!.toEan()
-            )
+                val quantity = scanCodeInfo.extractQuantityFromEan(
+                        eanInfo = productInfoStatus.result!!.raw!!.ean!!.toEan()
+                )
 
-            productInfoStatus.result?.raw?.let {
-                val productInfo = it.getProductInfo(zmpUtz07V001.getUomInfo(it.material?.buom))
-                productInfo?.let { info ->
-                    return Either.Right(ScanInfoResult(info, quantity))
+                productInfoStatus.result?.raw?.let {
+                    val productInfo = it.getProductInfo(zmpUtz07V001.getUomInfo(it.material?.buom))
+                    productInfo?.let { info ->
+                        return Either.Right(ScanInfoResult(info, quantity))
+                    }
+                    return Either.Left(Failure.GoodNotFound)
                 }
-                return Either.Left(Failure.GoodNotFound)
             }
+
+            return Either.Left(productInfoStatus.getFailure()).apply {
+                ANALYTICS_HELPER?.logRequestError(resName, productInfoStatus)
+            }
+
         }
 
-        return Either.Left(productInfoStatus.getFailure())
 
     }
 
