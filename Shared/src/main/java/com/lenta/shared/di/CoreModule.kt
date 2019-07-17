@@ -1,5 +1,6 @@
 package com.lenta.shared.di
 
+import android.Manifest
 import android.app.Application
 import android.content.Context
 import android.content.SharedPreferences
@@ -17,6 +18,7 @@ import com.lenta.shared.account.SessionInfo
 import com.lenta.shared.analytics.AnalyticsHelper
 import com.lenta.shared.analytics.FmpAnalytics
 import com.lenta.shared.analytics.IAnalytics
+import com.lenta.shared.analytics.db.FileArchivator
 import com.lenta.shared.analytics.db.dao.LogDao
 import com.lenta.shared.analytics.db.RoomAppDatabase
 import com.lenta.shared.exception.CoreFailureInterpreter
@@ -42,6 +44,7 @@ import com.lenta.shared.settings.AppSettings
 import com.lenta.shared.settings.DefaultConnectionSettings
 import com.lenta.shared.settings.IAppSettings
 import com.lenta.shared.utilities.Logg
+import com.lenta.shared.utilities.extentions.isWriteExternalStoragePermissionGranted
 import com.lenta.shared.utilities.prepareFolder
 import com.mobrun.plugin.api.HyperHive
 import com.mobrun.plugin.api.HyperHiveState
@@ -207,13 +210,35 @@ class CoreModule(val application: Application, val defaultConnectionSettings: De
     @Singleton
     fun provideRoomDB(context: Context): RoomAppDatabase {
         val logsDbPath = "$dbPath/logs/${context.packageName}"
+
         prepareFolder(logsDbPath)
+
         val dbLogName = "logs_${context.packageName}.sqlite"
+        val dbLogFilePath = "$logsDbPath/$dbLogName"
+
+
+        var isBackUpCreating = false
+
+        if (context.isWriteExternalStoragePermissionGranted()) {
+            val fileArchivator = FileArchivator(filePath = dbLogFilePath,
+                    archivePath = "$logsDbPath/archives")
+
+            isBackUpCreating = fileArchivator.backup()
+
+        }
+
         return Room.databaseBuilder(
                 context,
-                RoomAppDatabase::class.java, "$logsDbPath/$dbLogName"
+                RoomAppDatabase::class.java, dbLogFilePath
         ).allowMainThreadQueries()
-                .build()
+                .build().apply {
+                    if (isBackUpCreating) {
+                        this.clearAllTables()
+                    }
+                }
+
+
+
     }
 
     @Provides

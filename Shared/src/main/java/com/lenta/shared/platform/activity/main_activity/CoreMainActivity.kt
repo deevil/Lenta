@@ -39,6 +39,7 @@ import com.lenta.shared.utilities.extentions.implementationOf
 import javax.inject.Inject
 import com.lenta.shared.platform.navigation.ICoreNavigator
 import com.lenta.shared.utilities.extentions.hhive.ANALYTICS_HELPER
+import com.lenta.shared.utilities.extentions.isWriteExternalStoragePermissionGranted
 
 
 abstract class CoreMainActivity : CoreActivity<ActivityMainBinding>(), ToolbarButtonsClickListener, INumberScreenGenerator {
@@ -140,7 +141,7 @@ abstract class CoreMainActivity : CoreActivity<ActivityMainBinding>(), ToolbarBu
     }
 
     private fun permissionNotGranted(): Boolean {
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
+        return !isWriteExternalStoragePermissionGranted()
     }
 
     override fun onPause() {
