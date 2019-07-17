@@ -40,19 +40,32 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@+id/et_login" />
 
+        <TextView
+            android:id="@+id/tv_app_version"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:text='@{vm.appTitle}'
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/iv_logo"
+            tools:text="v10.0.122" />
+
         <EditText
             android:id="@+id/et_login"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="32dp"
-            android:layout_marginTop="24dp"
+            android:layout_marginTop="16dp"
             android:layout_marginEnd="16dp"
             android:inputType="textNoSuggestions|textVisiblePassword"
-            app:textAllCaps="@{true}"
             android:text="@={vm.login}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/tv_login"
-            app:layout_constraintTop_toBottomOf="@+id/iv_logo"
+            app:layout_constraintTop_toBottomOf="@+id/tv_app_version"
+            app:textAllCaps="@{true}"
             tools:ignore="Autofill,LabelFor" />
 
         <TextView

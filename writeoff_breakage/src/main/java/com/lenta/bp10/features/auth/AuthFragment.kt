@@ -1,5 +1,7 @@
 package com.lenta.bp10.features.auth
 
+import android.os.Bundle
+import android.view.View
 import com.lenta.bp10.R
 import com.lenta.bp10.platform.extentions.getAppComponent
 import com.lenta.bp10.platform.extentions.getAppTitle
@@ -27,6 +29,10 @@ class AuthFragment : CoreLoginFragment() {
         topToolbarUiModel.uiModelButton2.show(ImageButtonDecorationInfo.exitFromApp)
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        vm.appTitle.value = getAppTitle()
+    }
 
 
 }
