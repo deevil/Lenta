@@ -5,6 +5,7 @@ object Constants {
     //---------Time formats---------//
     const val TIME_FORMAT_HHmm = "HH:mm"
     const val TIME_FORMAT_mmss = "mm:ss"
+    const val TIME_FORMAT_hhmmss = "HH:mm:ss"
     const val TIME_FORMAT_LOGS = "yyyy-MM-dd HH:mm:ss.SSS"
 
     //---------Date formats---------//
