@@ -210,7 +210,7 @@ class ScreenNavigator(
     }
 
     override fun openAlertGoodsNotForTaskScreen() {
-        openAlertScreen(context.getString(R.string.goods_not_for_task))
+        openInfoScreen(context.getString(R.string.goods_not_for_task))
     }
 
 
