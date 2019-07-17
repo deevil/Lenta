@@ -99,6 +99,7 @@
             android:digits="1234567890-"
             android:drawableEnd="@drawable/ic_add_white_24dp"
             android:hint="@string/enter_segment_number"
+            android:imeOptions="actionGo"
             android:inputType="number"
             android:text="@={vm.segmentNumber}"
             app:maskPattern='@{"[000]-[000]"}'

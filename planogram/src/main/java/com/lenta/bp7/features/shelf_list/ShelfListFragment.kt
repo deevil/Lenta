@@ -1,8 +1,11 @@
 package com.lenta.bp7.features.shelf_list
 
 import android.os.Bundle
+import android.view.KeyEvent
 import android.view.View
+import android.view.inputmethod.EditorInfo
 import android.widget.AdapterView
+import android.widget.TextView
 import androidx.lifecycle.Observer
 import com.lenta.bp7.BR
 import com.lenta.bp7.R
@@ -20,7 +23,8 @@ import com.lenta.shared.utilities.databinding.RecyclerViewKeyHandler
 import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
 import com.lenta.shared.utilities.extentions.provideViewModel
 
-class ShelfListFragment : CoreFragment<FragmentShelfListBinding, ShelfListViewModel>(), ToolbarButtonsClickListener {
+class ShelfListFragment : CoreFragment<FragmentShelfListBinding, ShelfListViewModel>(),
+        ToolbarButtonsClickListener, TextView.OnEditorActionListener {
 
     private var recyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
 
@@ -58,6 +62,7 @@ class ShelfListFragment : CoreFragment<FragmentShelfListBinding, ShelfListViewMo
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         initRvConfig()
+        initShelfNumberField()
     }
 
     private fun initRvConfig() {
@@ -106,5 +111,18 @@ class ShelfListFragment : CoreFragment<FragmentShelfListBinding, ShelfListViewMo
                     initPosInfo = recyclerViewKeyHandler?.posInfo?.value
             )
         }
+    }
+
+    private fun initShelfNumberField() {
+        binding?.etShelfNumber?.setOnEditorActionListener(this)
+    }
+
+    override fun onEditorAction(v: TextView?, actionId: Int, event: KeyEvent?): Boolean {
+        if (actionId == EditorInfo.IME_ACTION_GO) {
+            vm.createShelf()
+            return true
+        }
+
+        return false
     }
 }

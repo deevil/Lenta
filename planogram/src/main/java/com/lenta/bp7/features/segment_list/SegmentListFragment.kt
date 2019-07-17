@@ -1,8 +1,11 @@
 package com.lenta.bp7.features.segment_list
 
 import android.os.Bundle
+import android.view.KeyEvent
 import android.view.View
+import android.view.inputmethod.EditorInfo
 import android.widget.AdapterView
+import android.widget.TextView
 import androidx.lifecycle.Observer
 import com.lenta.bp7.BR
 import com.lenta.bp7.R
@@ -21,9 +24,8 @@ import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
 import com.lenta.shared.utilities.extentions.provideViewModel
 
-
 class SegmentListFragment : CoreFragment<FragmentSegmentListBinding, SegmentListViewModel>(),
-        ToolbarButtonsClickListener {
+        ToolbarButtonsClickListener, TextView.OnEditorActionListener {
 
     private var recyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
 
@@ -63,6 +65,7 @@ class SegmentListFragment : CoreFragment<FragmentSegmentListBinding, SegmentList
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         initRvConfig()
+        initSegmentNumberField()
     }
 
     private fun initRvConfig() {
@@ -101,5 +104,18 @@ class SegmentListFragment : CoreFragment<FragmentSegmentListBinding, SegmentList
                     initPosInfo = recyclerViewKeyHandler?.posInfo?.value
             )
         }
+    }
+
+    private fun initSegmentNumberField() {
+        binding?.etSegmentNumber?.setOnEditorActionListener(this)
+    }
+
+    override fun onEditorAction(v: TextView?, actionId: Int, event: KeyEvent?): Boolean {
+        if (actionId == EditorInfo.IME_ACTION_GO) {
+            vm.createSegment()
+            return true
+        }
+
+        return false
     }
 }

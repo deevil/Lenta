@@ -46,11 +46,14 @@ class SegmentListViewModel : CoreViewModel() {
     }
 
     fun createSegment() {
-        checkStoreData.addSegment(sessionInfo.market, segmentNumber.value)
+        Logg.d { "createSegment started!" }
+        if (segmentNumber.value?.length == 7) {
+            checkStoreData.addSegment(sessionInfo.market!!, segmentNumber.value!!)
 
-        // todo показать сообщение о начале обработки сегмента
+            // todo показать экран с сообщением о начале обработки сегмента
 
-        navigator.openShelfListScreen()
+            navigator.openShelfListScreen()
+        }
     }
 
     fun onClickComplete() {
@@ -62,7 +65,7 @@ class SegmentListViewModel : CoreViewModel() {
     }
 
     fun onClickItemPosition(position: Int) {
-        checkStoreData.currentSegment = segments.value!![position]
+        checkStoreData.currentSegmentIndex = position
         navigator.openShelfListScreen()
     }
 }

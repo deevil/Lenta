@@ -96,6 +96,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="8dp"
+            android:text="@={vm.shelfNumber}"
             android:drawableEnd="@drawable/ic_add_white_24dp"
             android:hint="@string/enter_shelf_number"
             android:inputType="numberDecimal"

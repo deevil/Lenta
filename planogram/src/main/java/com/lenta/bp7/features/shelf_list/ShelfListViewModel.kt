@@ -7,7 +7,6 @@ import com.lenta.bp7.data.model.Shelf
 import com.lenta.bp7.platform.navigation.IScreenNavigator
 import com.lenta.bp7.repos.IDatabaseRepo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
-import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.mobrun.plugin.api.HyperHive
 import kotlinx.coroutines.launch
@@ -27,15 +26,21 @@ class ShelfListViewModel : CoreViewModel() {
     val selectionsHelper = SelectionItemsHelper()
 
     val segmentNumber: MutableLiveData<String> = MutableLiveData()
+    val shelfNumber: MutableLiveData<String> = MutableLiveData("")
+
     val shelves: MutableLiveData<List<Shelf>> = MutableLiveData()
 
     init {
         viewModelScope.launch {
-            checkStoreData.currentSegment?.let {
-                segmentNumber.value = it.number
-                shelves.value = it.shelves
+            checkStoreData.let {
+                segmentNumber.value = it.getCurrentSegment().number
+                shelves.value = it.getCurrentSegment().shelves
             }
         }
+    }
+
+    fun createShelf() {
+        checkStoreData.getCurrentSegment().addShelf(shelfNumber.value!!)
     }
 
     fun onClickDelete() {
@@ -49,7 +54,7 @@ class ShelfListViewModel : CoreViewModel() {
     }
 
     fun onClickItemPosition(position: Int) {
-        checkStoreData.currentShelf = shelves.value!![position]
+        checkStoreData.getCurrentSegment().currentShelfIndex = position
         navigator.openGoodListScreen()
     }
 }

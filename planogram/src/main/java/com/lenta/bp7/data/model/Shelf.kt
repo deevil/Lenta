@@ -11,6 +11,18 @@ class Shelf(
         val goods: MutableList<Good> = mutableListOf()
 ) {
 
+    var currentGoodIndex = 0
+
+    fun getCurrentGood(): Good {
+        return goods[currentGoodIndex]
+    }
+
+    fun addGood() {
+        // todo логика добавления товара в список
+
+        currentGoodIndex = 0
+    }
+
     fun getFormattedTime(): String {
         return SimpleDateFormat("HH:mm", Locale.getDefault()).format(checkTime)
     }

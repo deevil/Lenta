@@ -7,31 +7,31 @@ class CheckStoreData(
 ) {
 
     var checkType: String? = ""
+
     var isExistUnfinishedSegment = false
-    var currentSegment: Segment? = null
-    var currentShelf: Shelf? = null
+    var currentSegmentIndex = 0
 
     init {
         generateTestData()
-
-        currentSegment = segments[0]
-        currentShelf = segments[0].shelves[0]
     }
 
-    fun addSegment(storeNumber: String?, segmentNumber: String?) {
-        currentSegment = Segment(
-                id = segments.lastIndex + 1,
-                storeNumber = storeNumber,
-                number = segmentNumber)
+    fun getCurrentSegment(): Segment {
+        return segments[currentSegmentIndex]
+    }
 
-        segments.add(0, currentSegment!!)
+    fun addSegment(storeNumber: String, segmentNumber: String) {
+        segments.add(0, Segment(
+                id = segments.lastIndex + 2,
+                storeNumber = storeNumber,
+                number = segmentNumber))
+        currentSegmentIndex = 0
     }
 
     private fun generateTestData() {
         Logg.d { "Test data generation for CheckStoreData" }
 
         for (i in 1..5) {
-            segments.add(Segment(
+            segments.add(0, Segment(
                     id = i,
                     number = (100..999).random().toString() + "-" + (100..999).random().toString(),
                     storeNumber = "0007",
@@ -48,7 +48,7 @@ class CheckStoreData(
     private fun createShelvesList(): MutableList<Shelf> {
         val shelves: MutableList<Shelf> = mutableListOf()
         for (i in 1..(3..8).random()) {
-            shelves.add(Shelf(
+            shelves.add(0, Shelf(
                     id = i,
                     number = i.toString(),
                     status = when ((2..3).random()) {
@@ -66,7 +66,7 @@ class CheckStoreData(
         val goods: MutableList<Good> = mutableListOf()
         for (i in 1..(10..50).random()) {
             val facings = (0..35).random()
-            goods.add(Good(
+            goods.add(0, Good(
                     id = i,
                     sapCode = createSapCode(),
                     barCode = (10000000000..99999999999).random().toString(),

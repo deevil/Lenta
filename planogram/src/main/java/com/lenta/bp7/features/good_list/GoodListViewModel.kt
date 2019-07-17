@@ -24,18 +24,16 @@ class GoodListViewModel : CoreViewModel() {
 
     val segmentNumber: MutableLiveData<String> = MutableLiveData()
     val shelfNumber: MutableLiveData<String> = MutableLiveData()
+    val goodNumber: MutableLiveData<String> = MutableLiveData("")
 
     val goods: MutableLiveData<List<Good>> = MutableLiveData()
 
     init {
         viewModelScope.launch {
-            checkStoreData.currentSegment?.let {
+            checkStoreData.getCurrentSegment().let {
                 segmentNumber.value = it.number
-            }
-
-            checkStoreData.currentShelf?.let {
-                shelfNumber.value = it.number
-                goods.value = it.goods
+                shelfNumber.value = it.getCurrentShelf().number
+                goods.value = it.getCurrentShelf().goods
             }
         }
     }
@@ -45,6 +43,7 @@ class GoodListViewModel : CoreViewModel() {
     }
 
     fun onClickItemPosition(position: Int) {
-
+        checkStoreData.getCurrentSegment().getCurrentShelf().currentGoodIndex = position
+        //navigator.openGoodInfoScreen()
     }
 }
