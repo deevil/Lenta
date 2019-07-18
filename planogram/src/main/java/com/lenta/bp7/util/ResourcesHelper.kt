@@ -26,7 +26,6 @@ fun setSegmentTextColor(textView: TextView, segmentStatus: SegmentStatus) {
 
 fun SegmentStatus.getIconRes(): Int {
     return when (this) {
-        SegmentStatus.CREATED -> R.drawable.ic_add_white_24dp
         SegmentStatus.UNFINISHED -> R.drawable.ic_play_arrow_white_24dp
         SegmentStatus.PROCESSED -> R.drawable.ic_lock_white_24dp
         SegmentStatus.DELETED -> R.drawable.ic_delete_white_24dp
@@ -35,10 +34,9 @@ fun SegmentStatus.getIconRes(): Int {
 
 fun SegmentStatus.getColorRes(): Int {
     return when (this) {
-        SegmentStatus.CREATED -> R.color.status_other
-        SegmentStatus.UNFINISHED -> R.color.status_deleted
+        SegmentStatus.UNFINISHED -> R.color.status_unfinished
         SegmentStatus.PROCESSED -> R.color.status_other
-        SegmentStatus.DELETED -> R.color.status_processed
+        SegmentStatus.DELETED -> R.color.status_deleted
     }
 }
 
@@ -69,7 +67,7 @@ fun ShelfStatus.getColorRes(): Int {
     return when (this) {
         ShelfStatus.CREATED -> R.color.status_other
         ShelfStatus.PROCESSED -> R.color.status_other
-        ShelfStatus.DELETED -> R.color.status_processed
+        ShelfStatus.DELETED -> R.color.status_deleted
     }
 }
 

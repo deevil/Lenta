@@ -7,8 +7,6 @@ class CheckData(
 ) {
 
     var checkType: String? = ""
-
-    var isExistUnfinishedSegment = false
     var currentSegmentIndex = 0
 
     init {
@@ -30,6 +28,10 @@ class CheckData(
     fun deleteCurrentSegment() {
         segments.removeAt(currentSegmentIndex)
         currentSegmentIndex = 0
+    }
+
+    fun isExistUnfinishedSegment(): Boolean {
+        return segments.find { it.status == SegmentStatus.UNFINISHED } != null
     }
 
     private fun generateTestData() {

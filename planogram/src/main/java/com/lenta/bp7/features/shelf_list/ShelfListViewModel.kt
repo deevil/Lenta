@@ -10,6 +10,7 @@ import com.lenta.bp7.platform.navigation.IScreenNavigator
 import com.lenta.bp7.repos.IDatabaseRepo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.SelectionItemsHelper
+import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.map
 import com.mobrun.plugin.api.HyperHive
 import kotlinx.coroutines.launch
@@ -28,35 +29,31 @@ class ShelfListViewModel : CoreViewModel() {
 
     val selectionsHelper = SelectionItemsHelper()
 
-    val segmentNumber: MutableLiveData<String> = MutableLiveData()
-    val shelfNumber: MutableLiveData<String> = MutableLiveData("")
     val shelves: MutableLiveData<List<Shelf>> = MutableLiveData()
 
-    val deleteButtonEnabled: MutableLiveData<Boolean> = shelves.map { it?.isNotEmpty() ?: false && !isDeletedCurrentSegment() }
-    val applyButtonEnabled: MutableLiveData<Boolean> = shelves.map { it?.isNotEmpty() ?: false && isExistProcessedShelf() }
+    val segmentNumber: MutableLiveData<String> = MutableLiveData()
+    val shelfNumber: MutableLiveData<String> = MutableLiveData("")
+    private val unfinishedCurrentSegment: MutableLiveData<Boolean> = MutableLiveData()
+    private val deletedCurrentSegment: MutableLiveData<Boolean> = MutableLiveData()
+
+    val deleteButtonEnabled: MutableLiveData<Boolean> = shelves.combineLatest(deletedCurrentSegment).map { pair ->
+        pair?.first?.isNotEmpty() ?: false && pair?.second == false
+    }
+
+    val applyButtonEnabled: MutableLiveData<Boolean> = shelves.combineLatest(unfinishedCurrentSegment).map { pair ->
+        pair?.first?.isNotEmpty() ?: false && pair?.second == true &&
+                pair.first.find { it.status == ShelfStatus.PROCESSED } != null
+    }
 
     init {
         viewModelScope.launch {
             checkData.let {
                 segmentNumber.value = it.getCurrentSegment().number
                 shelves.value = it.getCurrentSegment().shelves
+                unfinishedCurrentSegment.value = it.getCurrentSegment().status == SegmentStatus.UNFINISHED
+                deletedCurrentSegment.value = it.getCurrentSegment().status == SegmentStatus.DELETED
             }
         }
-    }
-
-    private fun isExistProcessedShelf(): Boolean {
-        for (shelf in shelves.value!!) {
-            if (shelf.status == ShelfStatus.PROCESSED) {
-                return true
-            }
-        }
-        //shelves.value?.find {it.status == ShelfStatus.PROCESSED }
-
-        return false
-    }
-
-    private fun isDeletedCurrentSegment(): Boolean {
-        return checkData.getCurrentSegment().status == SegmentStatus.DELETED
     }
 
     fun createShelf() {
@@ -65,19 +62,13 @@ class ShelfListViewModel : CoreViewModel() {
     }
 
     fun onClickBack() {
-        if (shelves.value?.isEmpty()!!) {
+        if (shelves.value?.isEmpty() == true) {
             // todo ЭКРАН предупреждение об удалении пустого сегмента
 
-            // Перенести в логику указанного экрана
+            // !Перенести на другой экран
             checkData.deleteCurrentSegment()
             navigator.goBack()
         } else {
-            checkData.let {
-                if (it.getCurrentSegment().status == SegmentStatus.CREATED) {
-                    it.getCurrentSegment().status = SegmentStatus.UNFINISHED
-                    it.isExistUnfinishedSegment = true
-                }
-            }
             navigator.goBack()
         }
     }
@@ -85,18 +76,20 @@ class ShelfListViewModel : CoreViewModel() {
     fun onClickDelete() {
         selectionsHelper.let {
             val items = it.selectedPositions.value?.toMutableSet()
-            if (items?.isEmpty()!!) {
+            if (items?.isEmpty() == true) {
                 // todo ЭКРАН подтверждение удаления данных по сегменту
 
-                // Перенести на экран удаления данных по сегменту
+                // !Перенести на другой экран
                 checkData.getCurrentSegment().status = SegmentStatus.DELETED
                 navigator.goBack()
             } else {
                 // todo ЭКРАН подтверждение удаления полок
 
-                for (index in items) {
-                    it.revert(index) // todo почему не снимается выделение?
+                // !Перенести на другой экран
+                items!!.forEach { index ->
+                    it.revert(index)
                     checkData.getCurrentSegment().changeShelfStatusByIndex(index, ShelfStatus.DELETED)
+                    shelves.value = checkData.getCurrentSegment().shelves
                 }
             }
         }
@@ -105,6 +98,9 @@ class ShelfListViewModel : CoreViewModel() {
     fun onClickApply() {
         // todo ЭКРАН подтверждение завершения сканирования сегмента
 
+        // !Перенести на другой экран
+        checkData.getCurrentSegment().status = SegmentStatus.PROCESSED
+        navigator.goBack()
     }
 
     fun onClickItemPosition(position: Int) {

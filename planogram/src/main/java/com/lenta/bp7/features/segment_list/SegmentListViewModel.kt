@@ -30,34 +30,42 @@ class SegmentListViewModel : CoreViewModel() {
     val segments: MutableLiveData<List<Segment>> = MutableLiveData()
     private val unfinishedSegment: MutableLiveData<Boolean> = MutableLiveData()
 
-    val completeButtonEnabled: MutableLiveData<Boolean> = unfinishedSegment.combineLatest(segments)
-            .map { !it?.first!! || it.second!!.size > 1 }
-
     val marketNumber: MutableLiveData<String> = MutableLiveData("")
     val segmentNumber: MutableLiveData<String> = MutableLiveData("")
 
+    val completeButtonEnabled: MutableLiveData<Boolean> = segments.combineLatest(unfinishedSegment).map { pair ->
+        pair?.first?.isNotEmpty() ?: false && pair?.second == false
+    }
+
     init {
         viewModelScope.launch {
-            unfinishedSegment.value = checkData.isExistUnfinishedSegment
+            unfinishedSegment.value = checkData.isExistUnfinishedSegment()
             marketNumber.value = sessionInfo.market
             segments.value = checkData.segments
         }
     }
 
     fun createSegment() {
+        if (unfinishedSegment.value == true) {
+            // todo ЭКРАН сообщение наличии незавершенного сегмента
+
+            return
+        }
+
         if (segmentNumber.value?.length == 7) {
             checkData.addSegment(sessionInfo.market!!, segmentNumber.value!!)
 
-            // todo показать экран с сообщением о начале обработки сегмента
+            // todo ЭКРАН сообщение о начале обработки сегмента
 
+            // !Перенести на другой экран
             navigator.openShelfListScreen()
         }
     }
 
     fun onClickComplete() {
-        // todo отправить неотправленные сегменты
+        // todo ЭКРАН отправить неотправленные сегменты
 
-        // todo показать сообщение о результате отправки данных
+        // todo ЭКРАН сообщение о результате отправки данных
         // 1. Сообщение об успешной отправке. / Что должно быть после этого сообщения? Просто выход?
         // 2. Отправка не удалась. Вопрос о продолжении работы.
     }
