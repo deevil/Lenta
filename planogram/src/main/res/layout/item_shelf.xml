@@ -40,7 +40,6 @@
                     android:gravity="center"
                     android:text="@{String.valueOf(shelf.id)}"
                     app:selected="@{selectedForDelete}"
-                    app:shelfTextColor="@{shelf.status}"
                     tools:text="1"/>
 
             </LinearLayout>
@@ -61,7 +60,6 @@
                     android:layout_weight="1"
                     android:maxLines="2"
                     android:text="@{@string/shelf_number_time(shelf.number, shelf.formattedTime)}"
-                    app:shelfTextColor="@{shelf.status}"
                     tools:text="1\n10:59"/>
 
                 <ImageView
@@ -101,7 +99,6 @@
                     style="@style/CellTextStyle"
                     android:layout_marginStart="5dp"
                     android:text="@{String.valueOf(shelf.numberOfGoods)}"
-                    app:shelfTextColor="@{shelf.status}"
                     tools:text="27"/>
 
             </LinearLayout>

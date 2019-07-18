@@ -32,7 +32,6 @@
                     style="@style/CellTextStyle"
                     android:layout_marginStart="5dp"
                     android:text="@{String.valueOf(segment.id)}"
-                    app:segmentTextColor="@{segment.status}"
                     tools:text="1"/>
 
             </LinearLayout>
@@ -53,7 +52,6 @@
                     android:layout_weight="1"
                     android:maxLines="2"
                     android:text="@{@string/segment_number_store_date(segment.number, segment.storeNumber, segment.formattedDate)}"
-                    app:segmentTextColor="@{segment.status}"
                     tools:text="123-456 (ТК - 0005)\n09.07.2019"/>
 
                 <ImageView
@@ -93,7 +91,6 @@
                     style="@style/CellTextStyle"
                     android:layout_marginStart="5dp"
                     android:text="@{String.valueOf(segment.numberOfShelves)}"
-                    app:segmentTextColor="@{segment.status}"
                     tools:text="5"/>
 
             </LinearLayout>
