@@ -55,7 +55,12 @@ class GoodListViewModel : CoreViewModel() {
                     val good = goods.value?.find { it.sapCode == number }
                     checkData.getCurrentSegment().getCurrentShelf().let { currentShelf ->
                         when (good) {
-                            null -> currentShelf.addGoodBySapCode(number)
+                            null -> {
+                                // todo получить информацию о товаре из базы
+
+
+                                currentShelf.addGoodBySapCode(number)
+                            }
                             else -> currentShelf.currentGoodIndex = goods.value?.indexOf(good) ?:
                                     throw IllegalArgumentException("Good with SAP-$number already exist, but not found!")
                         }

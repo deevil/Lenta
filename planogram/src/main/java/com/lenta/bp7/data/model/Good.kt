@@ -6,6 +6,7 @@ data class Good(
     val barCode: String = "",
     val name: String = "",
     var totalFacings: Int = 0,
+    val units: String = "",
     var status: GoodStatus = GoodStatus.CREATED
 )
 
