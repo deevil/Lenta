@@ -37,13 +37,13 @@ class DatabaseRepo(hyperHive: HyperHive) : IDatabaseRepo {
         }
     }
 
-    override suspend fun getGoodInfo(sapCode: String): GoodInfo? {
+    override suspend fun getGoodInfo(sapCode: String?): GoodInfo? {
         return withContext(Dispatchers.IO) {
             return@withContext goodInfo.getGoodInfo(sapCode)?.toGoodInfo()
         }
     }
 
-    override suspend fun getGoodUnit(unitCode: String): String? {
+    override suspend fun getGoodUnit(unitCode: String?): String? {
         return withContext(Dispatchers.IO) {
             return@withContext units.getUnitName(unitCode)
         }
@@ -102,6 +102,6 @@ interface IDatabaseRepo {
     suspend fun getExternalAuditPinCode(): String?
     suspend fun getBarCodeInfoByBarCode(barCode: String): EanInfo?
     suspend fun getBarCodeInfoBySapCode(sapCode: String): EanInfo?
-    suspend fun getGoodInfo(sapCode: String): GoodInfo?
-    suspend fun getGoodUnit(unitCode: String): String?
+    suspend fun getGoodInfo(sapCode: String?): GoodInfo?
+    suspend fun getGoodUnit(unitCode: String?): String?
 }

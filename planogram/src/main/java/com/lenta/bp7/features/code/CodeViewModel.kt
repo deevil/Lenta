@@ -39,6 +39,18 @@ class CodeViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
     private var pinCode: String? = ""
 
+    val enabledGoOverBtn: MutableLiveData<Boolean> = number1
+            .combineLatest(number2)
+            .combineLatest(number3)
+            .combineLatest(number4)
+            .map {
+                val pin1 = it?.first?.first?.first
+                val pin2 = it?.first?.first?.second
+                val pin3 = it?.first?.second
+                val pin4 = it?.second
+                !(pin1.isNullOrEmpty() || pin2.isNullOrEmpty() || pin3.isNullOrEmpty() || pin4.isNullOrEmpty())
+            }
+
     init {
         viewModelScope.launch {
             when (checkData.checkType) {
@@ -65,18 +77,6 @@ class CodeViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     fun setIncorrectCodeMessage(incorrectCodeMessage: String) {
         this.incorrectCodeMessage.value = incorrectCodeMessage
     }
-
-    val enabledGoOverBtn: MutableLiveData<Boolean> = number1
-            .combineLatest(number2)
-            .combineLatest(number3)
-            .combineLatest(number4)
-            .map {
-                val pin1 = it?.first?.first?.first
-                val pin2 = it?.first?.first?.second
-                val pin3 = it?.first?.second
-                val pin4 = it?.second
-                !(pin1.isNullOrEmpty() || pin2.isNullOrEmpty() || pin3.isNullOrEmpty() || pin4.isNullOrEmpty())
-            }
 
     fun onClickGoOver() {
         Logg.d { "PIN check: $pinCode" }

@@ -57,9 +57,13 @@ class GoodListViewModel : CoreViewModel() {
                         when (good) {
                             null -> {
                                 // todo получить информацию о товаре из базы
+                                viewModelScope.launch {
+                                    val barCodeInfo = database.getBarCodeInfoBySapCode(number)
+                                    val goodInfo = database.getGoodInfo(barCodeInfo?.materialNumber)
+                                    val unitName = database.getGoodUnit(goodInfo?.buom)
 
-
-                                currentShelf.addGoodBySapCode(number)
+                                    currentShelf.addGood(goodInfo?.material, barCodeInfo?.ean, goodInfo?.name, unitName )
+                                }
                             }
                             else -> currentShelf.currentGoodIndex = goods.value?.indexOf(good) ?:
                                     throw IllegalArgumentException("Good with SAP-$number already exist, but not found!")
@@ -76,7 +80,15 @@ class GoodListViewModel : CoreViewModel() {
                     val good = goods.value?.find { it.barCode == number }
                     checkData.getCurrentSegment().getCurrentShelf().let { currentShelf ->
                         when (good) {
-                            null -> currentShelf.addGoodByBarCode(number)
+                            null -> {
+                                viewModelScope.launch {
+                                    val barCodeInfo = database.getBarCodeInfoByBarCode(number)
+                                    val goodInfo = database.getGoodInfo(barCodeInfo?.materialNumber)
+                                    val unitName = database.getGoodUnit(goodInfo?.buom)
+
+                                    currentShelf.addGood(goodInfo?.material, barCodeInfo?.ean, goodInfo?.name, unitName )
+                                }
+                            }
                             else -> currentShelf.currentGoodIndex = goods.value?.indexOf(good) ?:
                                     throw IllegalArgumentException("Good with BAR-$number already exist, but not found!")
                         }

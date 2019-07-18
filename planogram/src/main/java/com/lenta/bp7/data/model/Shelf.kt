@@ -17,10 +17,13 @@ data class Shelf(
         return goods[currentGoodIndex]
     }
 
-    fun addGoodBySapCode(sapCode: String) {
+    fun addGood(sapCode: String?, barCode: String?, name: String?, units: String?) {
         goods.add(0, Good(
                 id = goods.lastIndex + 2,
-                sapCode = sapCode))
+                sapCode = sapCode,
+                barCode = barCode,
+                name = name,
+                units = units))
 
         currentGoodIndex = 0
     }
