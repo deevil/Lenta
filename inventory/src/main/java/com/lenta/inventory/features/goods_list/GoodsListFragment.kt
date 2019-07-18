@@ -12,9 +12,11 @@ import com.lenta.inventory.databinding.FragmentGoodsListBinding
 import com.lenta.inventory.databinding.ItemTileGoodsBinding
 import com.lenta.inventory.databinding.ItemTileProcessedGoodsBinding
 import com.lenta.inventory.databinding.LayoutGoodsProcessedBinding
+import com.lenta.inventory.models.task.StorePlaceProcessing
 import com.lenta.inventory.platform.extentions.getAppComponent
 import com.lenta.shared.keys.KeyCode
 import com.lenta.shared.keys.OnKeyDownListener
+import com.lenta.shared.platform.activity.OnBackPresserListener
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
@@ -26,16 +28,19 @@ import com.lenta.shared.utilities.databinding.*
 import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.provideViewModel
 
-class GoodsListFragment : CoreFragment<FragmentGoodsListBinding, GoodsListViewModel>(), ToolbarButtonsClickListener, ViewPagerSettings, PageSelectionListener, OnKeyDownListener, OnScanResultListener
+class GoodsListFragment : CoreFragment<FragmentGoodsListBinding, GoodsListViewModel>(), ToolbarButtonsClickListener, ViewPagerSettings, PageSelectionListener, OnKeyDownListener, OnScanResultListener, OnBackPresserListener
 {
     private var unprocessedRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
     private var processedRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
+
+    private var manager: StorePlaceProcessing? = null
 
     override fun getLayoutId(): Int = R.layout.fragment_goods_list
     override fun getPageNumber(): String = "11/08"
 
     override fun getViewModel(): GoodsListViewModel {
         provideViewModel(GoodsListViewModel::class.java).let { vm ->
+            vm.storePlaceManager = manager
             getAppComponent()?.inject(vm)
             return vm
         }
@@ -60,6 +65,12 @@ class GoodsListFragment : CoreFragment<FragmentGoodsListBinding, GoodsListViewMo
             R.id.b_3 -> vm.onClickClean()
             R.id.b_5 -> vm.onClickComplete()
         }
+    }
+
+    override fun onBackPressed(): Boolean
+    {
+        vm.onClickBack()
+        return false
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -180,5 +191,13 @@ class GoodsListFragment : CoreFragment<FragmentGoodsListBinding, GoodsListViewMo
 
     override fun onScanResult(data: String) {
         vm.onScanResult(data)
+    }
+
+    companion object {
+        fun create(storePlaceManager: StorePlaceProcessing) : GoodsListFragment {
+            val fragment = GoodsListFragment()
+            fragment.manager = storePlaceManager
+            return fragment
+        }
     }
 }

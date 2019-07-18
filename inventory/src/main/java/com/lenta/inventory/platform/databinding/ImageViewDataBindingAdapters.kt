@@ -44,7 +44,7 @@ fun StorePlaceStatus.getIconRes(): Int? {
         StorePlaceStatus.LockedByMe -> com.lenta.inventory.R.drawable.ic_lock_open_white_32
         StorePlaceStatus.LockedByOthers -> com.lenta.inventory.R.drawable.ic_lock_close_white_32
         StorePlaceStatus.Finished -> com.lenta.inventory.R.drawable.ic_checkbox_green_32dp
-        StorePlaceStatus.Started -> com.lenta.inventory.R.drawable.ic_battery_20_red_16dp //TODO: proper image
+        StorePlaceStatus.Started -> com.lenta.inventory.R.drawable.ic_play_white_32
         else -> null
     }
 }

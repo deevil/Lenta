@@ -31,11 +31,11 @@ class InventoryTask(val taskDescription: TaskDescription, val taskRepository: IT
     }
 
     fun getProcessedStorePlaces() : List<TaskStorePlaceInfo> {
-        return taskRepository.getStorePlace().getStorePlaces().filter { it.status == StorePlaceStatus.Finished }
+        return taskRepository.getStorePlace().getStorePlaces().filter { it.isProcessed }
     }
 
     fun getUnprocessedStorePlaces() : List<TaskStorePlaceInfo> {
-        return taskRepository.getStorePlace().getStorePlaces().filter { it.status != StorePlaceStatus.Finished }
+        return taskRepository.getStorePlace().getStorePlaces().filter { !it.isProcessed }
     }
 
     fun getProductsQuantityForStorePlace(storePlaceNumber: String) : Int {

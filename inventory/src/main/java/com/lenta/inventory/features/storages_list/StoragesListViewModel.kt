@@ -45,6 +45,7 @@ class StoragesListViewModel: CoreViewModel(), OnOkInSoftKeyboardListener {
     val requestFocusToStorageNumber: MutableLiveData<Boolean> = MutableLiveData()
 
     val deleteEnabled: MutableLiveData<Boolean> = selectedPage.map { it ?: 0 != 0 }
+    private var justLoaded: Boolean = true
 
     init {
         viewModelScope.launch {
@@ -54,15 +55,18 @@ class StoragesListViewModel: CoreViewModel(), OnOkInSoftKeyboardListener {
     }
 
     fun onResume() {
-        updateUnprocessed()
-        updateProcessed()
+        if (!justLoaded) {
+            onClickRefresh()
+        } else {
+            justLoaded = false
+        }
     }
 
     fun getTitle(): String {
         return taskManager.getInventoryTask()?.taskDescription?.getTaskTypeAndNumber() ?: ""
     }
 
-    fun updateProcessed() {
+    private fun updateProcessed() {
         taskManager.getInventoryTask()?.let {
             val processed = it.getProcessedStorePlaces().mapIndexed{ index, storePlace ->
                 val productsQuantity = it.getProductsQuantityForStorePlace(storePlace.placeCode)
@@ -74,7 +78,7 @@ class StoragesListViewModel: CoreViewModel(), OnOkInSoftKeyboardListener {
         processedStorages.postValue(emptyList())
     }
 
-    fun updateUnprocessed() {
+    private fun updateUnprocessed() {
         taskManager.getInventoryTask()?.let {
             val unprocessed = it.getUnprocessedStorePlaces().mapIndexed{ index, storePlace ->
                 val productsQuantity = it.getProductsQuantityForStorePlace(storePlace.placeCode)
@@ -97,14 +101,16 @@ class StoragesListViewModel: CoreViewModel(), OnOkInSoftKeyboardListener {
     fun onClickRefresh() {
         viewModelScope.launch {
             screenNavigator.showProgress(taskContentsRequest)
+            val recountType = taskManager.getInventoryTask()?.taskDescription?.recountType
+            val userNumber = if (recountType == RecountType.ParallelByStorePlaces || sessionInfo.personnelNumber == null) "" else sessionInfo.personnelNumber
             taskContentsRequest(
                     TaskContentParams(ip = context.getDeviceIp(),
                             taskNumber = taskManager.getInventoryTask()?.taskDescription?.taskNumber ?: "",
-                            userNumber = sessionInfo.personnelNumber ?: "",
+                            userNumber = userNumber ?: "",
                             additionalDataFlag = "",
                             newProductNumbers = emptyList(),
                             numberRelock = "",
-                            mode = taskManager.getInventoryTask()?.taskDescription?.recountType?.recountType ?: "")
+                            mode = recountType?.recountType ?: "")
             )
                     .either(::handleFailure, ::handleUpdateSuccess)
             screenNavigator.hideProgress()
@@ -129,13 +135,16 @@ class StoragesListViewModel: CoreViewModel(), OnOkInSoftKeyboardListener {
     }
 
     fun onDoubleClickPosition(position: Int) {
+        var storeNumber : String?
         if (selectedPage.value == 0) {
-            unprocessedStorages.value?.get(position)?.storeNumber?.let {
-                screenNavigator.openLoadingStorePlaceLockScreen(StorePlaceLockMode.Lock, it)
-            }
+            storeNumber = unprocessedStorages.value?.get(position)?.storeNumber
         } else {
-            processedStorages.value?.get(position)?.storeNumber?.let {
-                screenNavigator.openLoadingStorePlaceLockScreen(StorePlaceLockMode.Lock, it)
+            storeNumber = processedStorages.value?.get(position)?.storeNumber
+        }
+        storeNumber?.let {
+            val storePlaceManager = taskManager.getInventoryTask()?.processStorePlace(it)
+            storePlaceManager?.let {
+                screenNavigator.openGoodsListScreen(it)
             }
         }
     }
@@ -158,6 +167,7 @@ class StoragesListViewModel: CoreViewModel(), OnOkInSoftKeyboardListener {
                     it.taskRepository.getStorePlace().addStorePlace(TaskStorePlaceInfo(placeCode = storageNumber, lockIP = "", lockUser = "", status = StorePlaceStatus.None))
                     updateUnprocessed()
                 }
+                screenNavigator.openLoadingStorePlaceLockScreen(StorePlaceLockMode.Lock, storageNumber)
             }
         }
 

@@ -9,7 +9,7 @@
     <string name="status">Статус</string>
     <string name="categories">Категории</string>
     <string name="processed">Обработанные</string>
-    <string name="not_processed">Не обработанные</string>
+    <string name="not_processed">К обработке</string>
     <string name="goods_of_details">Детали по товару</string>
     <string name="goods_of_details_store_place">Детали по товару и местам хранения</string>
     <string name="goods_store_place">МХ товара</string>
@@ -32,6 +32,7 @@
     <string name="task_content_loading">Загрузка товаров задания/МХ</string>
     <string name="store_place_locking">Блокировка МХ</string>
     <string name="store_place_unlocking">Разблокировка МХ</string>
+    <string name="store_place_lock_unlock">Блокировка/разблокировка МХ</string>
     <string name="primary">Первичный</string>
     <string name="secondary">Вторичный</string>
     <string name="from_to">c %s\nпо %s</string>

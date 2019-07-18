@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.inventory.features.task_list.TaskItemVm
 import com.lenta.inventory.models.RecountType
+import com.lenta.inventory.models.StorePlaceLockMode
 import com.lenta.inventory.models.task.IInventoryTaskManager
 import com.lenta.inventory.models.task.InventoryTaskManager
 import com.lenta.inventory.models.task.TaskContents
@@ -48,9 +49,10 @@ class LoadingTaskContentViewModel: CoreLoadingViewModel() {
     init {
         viewModelScope.launch {
             progress.value = true
+            val userNumber = if (recountType == RecountType.ParallelByStorePlaces || sessionInfo.personnelNumber == null) "" else sessionInfo.personnelNumber
             taskContentRequest(TaskContentParams(ip = context.getDeviceIp(),
                     taskNumber = taskInfo?.taskNumber ?: "",
-                    userNumber = sessionInfo.personnelNumber ?: "",
+                    userNumber = userNumber ?: "",
                     additionalDataFlag = "",
                     newProductNumbers = emptyList(),
                     numberRelock = "",
@@ -72,7 +74,10 @@ class LoadingTaskContentViewModel: CoreLoadingViewModel() {
             taskManager.newInventoryTask(taskDescription)
             taskManager.getInventoryTask()?.updateTaskWithContents(taskContents)
             when (recountType) {
-                RecountType.Simple, RecountType.ParallelByPerNo -> screenNavigator.openGoodsListScreen()
+                RecountType.Simple, RecountType.ParallelByPerNo -> {
+                    val manager = taskManager.getInventoryTask()?.processStorePlace("00") //00 - код "общего" места хранения для пересчетов без МХ
+                    if (manager != null) screenNavigator.openGoodsListScreen(manager)
+                }
                 RecountType.ParallelByStorePlaces -> screenNavigator.openStoragesList()
             }
         }
