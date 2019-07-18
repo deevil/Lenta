@@ -1,11 +1,11 @@
 package com.lenta.bp7.data.model
 
-class Good(
+data class Good(
     val id: Int,
-    val sapCode: String,
-    val barCode: String,
-    val name: String,
-    var totalFacings: Int,
+    val sapCode: String = "",
+    val barCode: String = "",
+    val name: String = "",
+    var totalFacings: Int = 0,
     var status: GoodStatus = GoodStatus.CREATED
 )
 

@@ -92,15 +92,16 @@
 
         <!-- Поле ввода номера товара -->
         <EditText
-            android:id="@+id/et_shelf_number"
+            android:id="@+id/et_good_number"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="8dp"
-            android:text="@={vm.goodNumber}"
+            android:digits="0123456789"
             android:drawableEnd="@drawable/ic_add_white_24dp"
             android:hint="@string/enter_item_number_or_barcode"
             android:inputType="numberDecimal"
-            android:maxLength="3"
+            android:maxLength="14"
+            android:text="@={vm.goodNumber}"
             tools:ignore="Autofill"/>
 
     </LinearLayout>

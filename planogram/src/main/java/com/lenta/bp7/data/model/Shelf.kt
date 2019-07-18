@@ -3,11 +3,11 @@ package com.lenta.bp7.data.model
 import java.text.SimpleDateFormat
 import java.util.*
 
-class Shelf(
+data class Shelf(
         val id: Int,
         val number: String,
         val checkTime: Date = Date(),
-        var status: ShelfStatus = ShelfStatus.CREATED,
+        var status: ShelfStatus = ShelfStatus.UNFINISHED,
         val goods: MutableList<Good> = mutableListOf()
 ) {
 
@@ -17,8 +17,18 @@ class Shelf(
         return goods[currentGoodIndex]
     }
 
-    fun addGood() {
-        // todo логика добавления товара в список
+    fun addGoodBySapCode(sapCode: String) {
+        goods.add(0, Good(
+                id = goods.lastIndex + 2,
+                sapCode = sapCode))
+
+        currentGoodIndex = 0
+    }
+
+    fun addGoodByBarCode(barCode: String) {
+        goods.add(0, Good(
+                id = goods.lastIndex + 2,
+                barCode = barCode))
 
         currentGoodIndex = 0
     }
@@ -34,7 +44,7 @@ class Shelf(
 }
 
 enum class ShelfStatus {
-    CREATED,
+    UNFINISHED,
     PROCESSED,
     DELETED
 }

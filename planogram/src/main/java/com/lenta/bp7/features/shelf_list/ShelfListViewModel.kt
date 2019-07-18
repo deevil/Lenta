@@ -61,18 +61,6 @@ class ShelfListViewModel : CoreViewModel() {
         navigator.openGoodListScreen()
     }
 
-    fun onClickBack() {
-        if (shelves.value?.isEmpty() == true) {
-            // todo ЭКРАН предупреждение об удалении пустого сегмента
-
-            // !Перенести на другой экран
-            checkData.deleteCurrentSegment()
-            navigator.goBack()
-        } else {
-            navigator.goBack()
-        }
-    }
-
     fun onClickDelete() {
         selectionsHelper.let {
             val items = it.selectedPositions.value?.toMutableSet()
@@ -96,11 +84,32 @@ class ShelfListViewModel : CoreViewModel() {
     }
 
     fun onClickApply() {
-        // todo ЭКРАН подтверждение завершения сканирования сегмента
+        // todo ЭКРАН сохранить результаты и закрыть для редактирования
 
         // !Перенести на другой экран
         checkData.getCurrentSegment().status = SegmentStatus.PROCESSED
         navigator.goBack()
+    }
+
+    fun onClickBack() {
+        if (unfinishedCurrentSegment.value == false) {
+            navigator.goBack()
+            return
+        }
+
+        if (shelves.value?.isEmpty() == true) {
+            // todo ЭКРАН предупреждение об удалении пустого сегмента
+
+            // !Перенести на другой экран
+            checkData.deleteCurrentSegment()
+            navigator.goBack()
+        } else {
+            // todo ЭКРАН сохранить результаты и закрыть для редактирования
+
+            // !Перенести на другой экран
+            checkData.getCurrentSegment().status = SegmentStatus.PROCESSED
+            navigator.goBack()
+        }
     }
 
     fun onClickItemPosition(position: Int) {

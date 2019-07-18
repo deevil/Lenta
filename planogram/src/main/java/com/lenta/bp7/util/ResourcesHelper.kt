@@ -1,8 +1,6 @@
 package com.lenta.bp7.util
 
 import android.widget.ImageView
-import android.widget.TextView
-import androidx.core.content.res.ResourcesCompat
 import androidx.databinding.BindingAdapter
 import com.lenta.bp7.R
 import com.lenta.bp7.data.model.GoodStatus
@@ -25,7 +23,7 @@ fun setSegmentStatusIcon(imageView: ImageView, segmentStatus: SegmentStatus) {
 fun setShelfStatusIcon(imageView: ImageView, shelfStatus: ShelfStatus) {
     shelfStatus.let {
         val icon = when (it) {
-            ShelfStatus.CREATED -> R.drawable.ic_add_white_24dp
+            ShelfStatus.UNFINISHED -> R.drawable.ic_add_white_24dp
             ShelfStatus.PROCESSED -> R.drawable.ic_lock_white_24dp
             ShelfStatus.DELETED -> R.drawable.ic_delete_white_24dp
         }

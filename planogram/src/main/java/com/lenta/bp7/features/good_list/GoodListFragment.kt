@@ -2,6 +2,7 @@ package com.lenta.bp7.features.good_list
 
 import android.os.Bundle
 import android.view.View
+import android.view.inputmethod.EditorInfo
 import android.widget.AdapterView
 import androidx.lifecycle.Observer
 import com.lenta.bp7.BR
@@ -9,6 +10,7 @@ import com.lenta.bp7.R
 import com.lenta.bp7.databinding.FragmentGoodListBinding
 import com.lenta.bp7.databinding.ItemGoodBinding
 import com.lenta.bp7.platform.extentions.getAppComponent
+import com.lenta.shared.platform.activity.OnBackPresserListener
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
@@ -17,10 +19,12 @@ import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.utilities.databinding.DataBindingAdapter
 import com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig
 import com.lenta.shared.utilities.databinding.RecyclerViewKeyHandler
+import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
 import com.lenta.shared.utilities.extentions.provideViewModel
 
-class GoodListFragment : CoreFragment<FragmentGoodListBinding, GoodListViewModel>(), ToolbarButtonsClickListener {
+class GoodListFragment : CoreFragment<FragmentGoodListBinding, GoodListViewModel>(),
+        ToolbarButtonsClickListener, OnBackPresserListener {
 
     private var recyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
 
@@ -49,7 +53,11 @@ class GoodListFragment : CoreFragment<FragmentGoodListBinding, GoodListViewModel
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
-        bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.apply, enabled = true)
+        bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.apply, enabled = false)
+
+        viewLifecycleOwner.apply {
+            connectLiveData(source = vm.applyButtonEnabled, target = bottomToolbarUiModel.uiModelButton5.enabled)
+        }
     }
 
     override fun onToolbarButtonClick(view: View) {
@@ -60,6 +68,7 @@ class GoodListFragment : CoreFragment<FragmentGoodListBinding, GoodListViewModel
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         initRvConfig()
+        initGoodNumberField()
     }
 
     private fun initRvConfig() {
@@ -98,5 +107,22 @@ class GoodListFragment : CoreFragment<FragmentGoodListBinding, GoodListViewModel
                     initPosInfo = recyclerViewKeyHandler?.posInfo?.value
             )
         }
+    }
+
+    private fun initGoodNumberField() {
+        binding?.etGoodNumber?.setOnEditorActionListener { _, actionId, _ ->
+            return@setOnEditorActionListener when (actionId) {
+                EditorInfo.IME_ACTION_GO -> {
+                    vm.createGood()
+                    true
+                }
+                else -> false
+            }
+        }
+    }
+
+    override fun onBackPressed(): Boolean {
+        vm.onClickBack()
+        return false
     }
 }
