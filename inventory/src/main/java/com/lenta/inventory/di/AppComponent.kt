@@ -18,6 +18,7 @@ import com.lenta.inventory.features.main_menu.MainMenuViewModel
 import com.lenta.inventory.features.select_market.SelectMarketViewModel
 import com.lenta.inventory.features.select_personnel_number.SelectPersonnelNumberViewModel
 import com.lenta.inventory.features.storages_list.StoragesListViewModel
+import com.lenta.inventory.features.taken_to_work.TakenToWorkViewModel
 import com.lenta.inventory.features.task_list.TaskListViewModel
 import com.lenta.inventory.main.MainActivity
 import com.lenta.inventory.main.MainViewModel
@@ -49,5 +50,6 @@ interface AppComponent {
     fun inject(it: LoadingTaskContentViewModel)
     fun inject(it: LoadingStorePlaceLockViewModel)
     fun inject(it: ExciseAlcoInfoViewModel)
+    fun inject(it: TakenToWorkViewModel)
 }
 

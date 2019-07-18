@@ -19,11 +19,10 @@ import com.lenta.inventory.features.loading.tasks.LoadingTasksFragment
 import com.lenta.inventory.features.select_market.SelectMarketFragment
 import com.lenta.inventory.features.select_personnel_number.SelectPersonnelNumberFragment
 import com.lenta.inventory.features.storages_list.StoragesListFragment
-import com.lenta.inventory.features.task_list.TaskItemVm
+import com.lenta.inventory.features.taken_to_work.TakenToWorkFragment
 import com.lenta.inventory.features.task_list.TaskListFragment
 import com.lenta.inventory.models.RecountType
 import com.lenta.inventory.models.StorePlaceLockMode
-import com.lenta.inventory.models.task.TaskStorePlaceInfo
 import com.lenta.inventory.models.task.TaskProductInfo
 import com.lenta.inventory.requests.network.TasksItem
 import com.lenta.shared.account.IAuthenticator
@@ -163,10 +162,15 @@ class ScreenNavigator(
         }
     }
 
-    override fun openLoadingStorePlaceLockScreen(mode: StorePlaceLockMode, storePlaceNumber: String)
-    {
+    override fun openLoadingStorePlaceLockScreen(mode: StorePlaceLockMode, storePlaceNumber: String) {
         runOrPostpone {
             getFragmentStack()?.push(LoadingStorePlaceLockFragment.create(mode, storePlaceNumber))
+        }
+    }
+
+    override fun openTakenToWorkFragment() {
+        runOrPostpone {
+            getFragmentStack()?.push(TakenToWorkFragment.create())
         }
     }
 
@@ -196,4 +200,5 @@ interface IScreenNavigator : ICoreNavigator {
     fun openLoadingStorePlaceLockScreen(mode: StorePlaceLockMode, storePlaceNumber: String)
     fun openExciseAlcoInfoScreen()
     fun openConfirmationTaskOpenScreen(userName: String, ip: String, callbackFunc: () -> Unit)
+    fun openTakenToWorkFragment()
 }
