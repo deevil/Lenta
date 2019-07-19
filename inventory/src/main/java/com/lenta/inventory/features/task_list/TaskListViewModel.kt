@@ -76,6 +76,10 @@ class TaskListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
     }
 
+    fun onClickMenu() {
+        screenNavigator.openMainMenuScreen()
+    }
+
     override fun handleFailure(failure: Failure) {
         super.handleFailure(failure)
         screenNavigator.openAlertScreen(failure)

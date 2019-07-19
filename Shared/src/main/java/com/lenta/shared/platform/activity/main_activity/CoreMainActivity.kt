@@ -1,12 +1,17 @@
 package com.lenta.shared.platform.activity.main_activity
 
+import android.Manifest
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.view.KeyEvent
 import android.view.View
+import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Observer
 import com.lenta.shared.R
+import com.lenta.shared.analytics.AnalyticsHelper
 import com.lenta.shared.databinding.ActivityMainBinding
 import com.lenta.shared.keys.KeyCode
 import com.lenta.shared.keys.OnKeyDownListener
@@ -32,6 +37,10 @@ import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.hideKeyboard
 import com.lenta.shared.utilities.extentions.implementationOf
 import javax.inject.Inject
+import com.lenta.shared.platform.navigation.ICoreNavigator
+import com.lenta.shared.utilities.extentions.hhive.ANALYTICS_HELPER
+import com.lenta.shared.utilities.extentions.isWriteExternalStoragePermissionGranted
+
 
 abstract class CoreMainActivity : CoreActivity<ActivityMainBinding>(), ToolbarButtonsClickListener, INumberScreenGenerator {
 
@@ -50,15 +59,30 @@ abstract class CoreMainActivity : CoreActivity<ActivityMainBinding>(), ToolbarBu
     @Inject
     lateinit var priorityAppManager: PriorityAppManager
 
+    @Inject
+    lateinit var screenNavigator: ICoreNavigator
+
+    @Inject
+    lateinit var analyticsHelper: AnalyticsHelper
+
     val honeywellScanHelper = HoneywellScanHelper()
     val newLandScanHelper = NewLandScanHelper()
 
     private val vm: CoreMainViewModel by lazy {
-        getViewModel()
+        getViewModel().apply {
+            if (!permissionNotGranted()) {
+                analyticsHelper.onPermissionGranted()
+                ANALYTICS_HELPER = analyticsHelper
+                analyticsHelper.logAppInfo()
+                analyticsHelper.logDeviceInfo()
+            }
+        }
     }
 
     val fragmentStack: FragmentStack by lazy {
-        FragmentStack(supportFragmentManager, R.id.fragments)
+        FragmentStack(supportFragmentManager, R.id.fragments).apply {
+            coreComponent.inject(this)
+        }
     }
 
 
@@ -66,6 +90,7 @@ abstract class CoreMainActivity : CoreActivity<ActivityMainBinding>(), ToolbarBu
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         fragmentStack.setOnBackStackChangedListener(FragmentManager.OnBackStackChangedListener { onBackStackChanged() })
         if (savedInstanceState == null) {
             onNewEnter()
@@ -103,6 +128,9 @@ abstract class CoreMainActivity : CoreActivity<ActivityMainBinding>(), ToolbarBu
 
     override fun onResume() {
         super.onResume()
+        if (permissionNotGranted()) {
+            ActivityCompat.requestPermissions(this, listOf(Manifest.permission.WRITE_EXTERNAL_STORAGE).toTypedArray(), 1)
+        }
         networkStateMonitor.start(this)
         batteryStateMonitor.start(this)
         scanHelper.startListen(this)
@@ -110,6 +138,10 @@ abstract class CoreMainActivity : CoreActivity<ActivityMainBinding>(), ToolbarBu
         honeywellScanHelper.startListen(this)
         newLandScanHelper.startListen(this)
         priorityAppManager.setLowPriority()
+    }
+
+    private fun permissionNotGranted(): Boolean {
+        return !isWriteExternalStoragePermissionGranted()
     }
 
     override fun onPause() {
@@ -135,6 +167,11 @@ abstract class CoreMainActivity : CoreActivity<ActivityMainBinding>(), ToolbarBu
         }
     }
 
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        screenNavigator.finishApp()
+    }
+
     private fun getCurrentFragment(): Fragment? = fragmentStack.peek()
 
     private fun onBackStackChanged() {
@@ -153,7 +190,10 @@ abstract class CoreMainActivity : CoreActivity<ActivityMainBinding>(), ToolbarBu
 
     override fun onToolbarButtonClick(view: View) {
         this.hideKeyboard()
+
         Logg.d { "onToolbarButtonClick ${view.id}" }
+
+        analyticsHelper.onClickToolbarButton(view)
 
         if (view.id == R.id.b_1 && isHaveBackButton()) {
             onBackPressed()

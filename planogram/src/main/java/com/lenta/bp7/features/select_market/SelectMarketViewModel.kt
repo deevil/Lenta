@@ -5,7 +5,11 @@ import androidx.lifecycle.viewModelScope
 import com.lenta.bp7.platform.navigation.IScreenNavigator
 import com.lenta.bp7.repos.IRepoInMemoryHolder
 import com.lenta.shared.account.ISessionInfo
+import com.lenta.shared.platform.time.ITimeMonitor
 import com.lenta.shared.platform.viewmodel.CoreViewModel
+import com.lenta.shared.requests.network.ServerTime
+import com.lenta.shared.requests.network.ServerTimeRequest
+import com.lenta.shared.requests.network.ServerTimeRequestParam
 import com.lenta.shared.settings.IAppSettings
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.view.OnPositionClickListener
@@ -15,13 +19,17 @@ import javax.inject.Inject
 class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
 
     @Inject
-    lateinit var screenNavigator: IScreenNavigator
+    lateinit var navigator: IScreenNavigator
     @Inject
     lateinit var sessionInfo: ISessionInfo
     @Inject
     lateinit var appSettings: IAppSettings
     @Inject
     lateinit var repoInMemoryHolder: IRepoInMemoryHolder
+    @Inject
+    lateinit var timeMonitor: ITimeMonitor
+    @Inject
+    lateinit var serverTimeRequest: ServerTimeRequest
 
     private val markets: MutableLiveData<List<MarketUi>> = MutableLiveData()
     val marketsNames: MutableLiveData<List<String>> = markets.map { markets ->
@@ -66,9 +74,19 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
             sessionInfo.printer = appSettings.printer
             sessionInfo.market = it
             appSettings.lastTK = it
-        }
 
-        screenNavigator.openCheckTypeScreen()
+            viewModelScope.launch {
+                navigator.showProgress(serverTimeRequest)
+                serverTimeRequest(ServerTimeRequestParam(sessionInfo.market
+                        ?: "")).either(::handleFailure, ::handleSuccessServerTime)
+                navigator.hideProgress()
+            }
+        }
+    }
+
+    private fun handleSuccessServerTime(serverTime: ServerTime) {
+        timeMonitor.setServerTime(time = serverTime.time, date = serverTime.date)
+        navigator.openCheckTypeScreen()
     }
 
     private fun clearPrinters() {

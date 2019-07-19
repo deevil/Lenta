@@ -27,6 +27,7 @@ import com.lenta.shared.features.printer_change.PrinterChangeFragment
 import com.lenta.shared.interactor.UseCase
 import com.lenta.shared.models.core.MatrixType
 import com.lenta.shared.models.core.ProductInfo
+import com.lenta.shared.models.core.ProductType
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
 import com.lenta.shared.platform.navigation.ICoreNavigator
 import com.lenta.shared.platform.navigation.runOrPostpone
@@ -48,7 +49,7 @@ class ScreenNavigator(
 
     override fun openFirstScreen() {
         if (authenticator.isAuthorized()) {
-            openMainMenuScreen()
+            openSelectMarketScreen()
         } else {
             openLoginScreen()
         }
@@ -136,12 +137,18 @@ class ScreenNavigator(
         }
     }
 
-    override fun openComponentSetScreen(productInfo: ProductInfo, componentItem: ComponentItem, mengeTotalCount: Double) {
+    override fun openComponentSetScreen(productInfo: ProductInfo, componentItem: ComponentItem, targetTotalCount: Double) {
         runOrPostpone {
+
+            if (productInfo.type != ProductType.ExciseAlcohol) {
+                openInfoScreen(context.getString(R.string.not_support_type_product_for_set))
+                return@runOrPostpone
+            }
+
             getFragmentStack()?.push(ComponentFragment.create(
                     productInfo = productInfo,
                     componentItem = componentItem,
-                    mengeTotalCount = mengeTotalCount
+                    targetTotalCount = targetTotalCount
             )
             )
         }
@@ -203,7 +210,7 @@ class ScreenNavigator(
     }
 
     override fun openAlertGoodsNotForTaskScreen() {
-        openAlertScreen(context.getString(R.string.goods_not_for_task))
+        openInfoScreen(context.getString(R.string.goods_not_for_task))
     }
 
 
@@ -279,6 +286,15 @@ class ScreenNavigator(
         )
     }
 
+    override fun openConfirmationToBackNotEmptyStampsScreen(callbackFunc: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.confirmation_back_with_scanned_stamps),
+                    codeConfirm = backFragmentResultHelper.setFuncForResult(callbackFunc),
+                    pageNumber = "93",
+                    rightButtonDecorationInfo = ButtonDecorationInfo.yes))
+        }
+    }
+
     override fun openNotPossibleSaveWithoutReasonScreen() {
         openInfoScreen(message = context.getString(R.string.not_possible_save_without_reason))
     }
@@ -302,7 +318,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openSetsInfoScreen(productInfo: ProductInfo, quantity: Double)
     fun openGoodsReasonsScreen(productInfo: ProductInfo)
     fun openSuccessPrintMessage()
-    fun openComponentSetScreen(productInfo: ProductInfo, componentItem: ComponentItem, mengeTotalCount: Double)
+    fun openComponentSetScreen(productInfo: ProductInfo, componentItem: ComponentItem, targetTotalCount: Double)
     fun openDetectionSavedDataScreen()
     fun openRemoveLinesConfirmationScreen(taskDescription: String, count: Int, codeConfirmation: Int)
     fun openMatrixAlertScreen(matrixType: MatrixType, codeConfirmation: Int)
@@ -316,4 +332,5 @@ interface IScreenNavigator : ICoreNavigator {
     fun openFailDetectComponentForStampScreen()
     fun openLimitExceededScreen()
     fun openNotPossibleSaveWithoutReasonScreen()
+    fun openConfirmationToBackNotEmptyStampsScreen(callbackFunc: () -> Unit)
 }

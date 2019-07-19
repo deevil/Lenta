@@ -11,6 +11,7 @@ import com.lenta.bp10.models.repositories.ITaskRepository
 import com.lenta.bp10.models.task.ProcessExciseAlcoProductService
 import com.lenta.bp10.models.task.TaskDescription
 import com.lenta.bp10.models.task.WriteOffReason
+import com.lenta.shared.models.core.ProductInfo
 import com.lenta.shared.models.core.ProductType
 import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
 import com.lenta.shared.utilities.extentions.combineLatest
@@ -22,7 +23,7 @@ import javax.inject.Inject
 class ComponentViewModel : BaseProductInfoViewModel() {
 
 
-    private var mengeTotalCount: Double = 0.0
+    private var targetTotalCount: Double = 0.0
 
     private lateinit var componentItem: ComponentItem
 
@@ -44,6 +45,9 @@ class ComponentViewModel : BaseProductInfoViewModel() {
         }
     }
 
+    //Not used for this screen
+    override val totalCountWithUom: MutableLiveData<String> = MutableLiveData()
+
     private val processExciseAlcoProductService: ProcessExciseAlcoProductService by lazy {
         processServiceManager.getWriteOffTask()!!.processExciseAlcoProduct(productInfo.value!!)!!
     }
@@ -64,6 +68,10 @@ class ComponentViewModel : BaseProductInfoViewModel() {
         this.componentItem = componentItem
     }
 
+    private fun getCountSavedExciseStamps(): Double {
+        return stampsCollectorManager.getSetsStampCollector()!!.getCount(productInfo.value!!.materialNumber)
+    }
+
 
     override fun handleProductSearchResult(scanInfoResult: ScanInfoResult?): Boolean {
         //not used search product for this screen
@@ -80,7 +88,7 @@ class ComponentViewModel : BaseProductInfoViewModel() {
     }
 
     override fun getProcessTotalCount(): Double {
-        return processExciseAlcoProductService.getTotalCount()
+        return processExciseAlcoProductService.getTotalCount() + getCountSavedExciseStamps()
     }
 
     override fun onClickAdd() {
@@ -92,13 +100,14 @@ class ComponentViewModel : BaseProductInfoViewModel() {
         screenNavigator.goBack()
     }
 
-    override fun onBackPressed() {
+    override fun onBackPressed(): Boolean {
         stampsCollectorManager.clearComponentsStampCollector()
+        return true
     }
 
 
     override fun onScanResult(data: String) {
-        if (stampsCollectorManager.getComponentsStampCollector()!!.getCount(productInfo.value!!.materialNumber) >= mengeTotalCount) {
+        if (totalCount.value ?: 0.0 >= targetTotalCount) {
             screenNavigator.openStampsCountAlreadyScannedScreen()
             return
         }
@@ -132,14 +141,20 @@ class ComponentViewModel : BaseProductInfoViewModel() {
         return stampsCollectorManager.getComponentsStampCollector()!!.observeCount().map { it.toStringFormatted() }
     }
 
-    fun setMengeTotalCount(mengeTotalCount: Double) {
-        this.mengeTotalCount = mengeTotalCount
+    fun setTargetTotalCount(targetTotalCount: Double) {
+        this.targetTotalCount = targetTotalCount
     }
 
-    override fun onResult(code: Int?) {
-        if (!exciseAlcoDelegate.handleResult(code)) {
-            super.onResult(code)
+    override fun handleFragmentResult(code: Int?): Boolean {
+        if (exciseAlcoDelegate.handleResult(code)) {
+            return true
         }
+        return super.handleFragmentResult(code)
+
+    }
+
+    fun getTargetCount(): String {
+        return targetTotalCount.toStringFormatted()
     }
 
 }

@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        tools:context=".features.good_list.GoodListFragment">
+
+    <data>
+
+        <variable
+            name="vm"
+            type="com.lenta.bp7.features.good_list.GoodListViewModel"/>
+
+        <variable
+            name="rvConfig"
+            type="com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig"/>
+
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <!-- Наименование колонок -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/list_title_height"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    style="@style/LinearCellStyle"
+                    android:layout_weight="@integer/size_column_1">
+
+                    <TextView
+                        style="@style/CellTitleTextStyle"
+                        android:text="@string/column_title_item_number"/>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    style="@style/LinearCellStyle"
+                    android:layout_weight="@integer/size_column_2">
+
+                    <TextView
+                        style="@style/CellTitleTextStyle"
+                        android:text="@string/column_title_good"/>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    style="@style/LinearCellStyle"
+                    android:layout_weight="@integer/size_column_3">
+
+                    <TextView
+                        style="@style/CellTitleTextStyle"
+                        android:text="@string/column_title_sign"/>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    style="@style/LinearCellStyle"
+                    android:layout_weight="@integer/size_column_4">
+
+                    <TextView
+                        style="@style/CellTitleTextStyle"
+                        android:text="@string/column_title_facing"/>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <View
+                style="@style/RowHorizontalDivider"/>
+
+        </LinearLayout>
+
+        <!-- Список товаров -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            app:items="@{vm.goods}"
+            app:rv_config="@{rvConfig}"
+            tools:listitem="@layout/item_good"/>
+
+        <!-- Поле ввода номера товара -->
+        <EditText
+            android:id="@+id/et_good_number"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:digits="0123456789"
+            android:drawableEnd="@drawable/ic_add_white_24dp"
+            android:hint="@string/enter_item_number_or_barcode"
+            android:imeOptions="actionGo"
+            android:inputType="number"
+            android:maxLength="14"
+            android:text="@={vm.goodNumber}"
+            tools:ignore="Autofill"/>
+
+    </LinearLayout>
+
+</layout>

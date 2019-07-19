@@ -32,6 +32,7 @@ class AuthFragment : CoreLoginFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         hideLoginAndPassword()
+        vm.appTitle.value = getAppTitle()
     }
 
     private fun hideLoginAndPassword() {

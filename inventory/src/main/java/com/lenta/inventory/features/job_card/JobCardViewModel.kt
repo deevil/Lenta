@@ -62,7 +62,12 @@ class JobCardViewModel : CoreViewModel(), OnPositionClickListener {
         Logg.d { "taskItem $tasksItem" }
 
         this.typesRecount = typesRecount
-        this.recountsTitles = typesRecount.map { converterTypeToString(it) }
+        this.recountsTitles = typesRecount
+                .filterIndexed {
+                    index, recountType -> if (!isStrictList) true else index == 0 }
+                .map {
+                    converterTypeToString(it)
+                }
 
     }
 
@@ -72,7 +77,8 @@ class JobCardViewModel : CoreViewModel(), OnPositionClickListener {
     }
 
     fun onClickNext() {
-        screenNavigator.openInfoScreen("Выбран тип перечета: ${getSelectedTypeRecount()}")
+        screenNavigator.openLoadingTaskContentsScreen(tasksItem, getSelectedTypeRecount()
+                ?: RecountType.None)
     }
 
     private fun getSelectedTypeRecount(): RecountType? {

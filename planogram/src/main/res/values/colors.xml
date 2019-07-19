@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <color name="status_missing">#ff5e5e</color>
+    <color name="status_present">#5AFF83</color>
+
+</resources>

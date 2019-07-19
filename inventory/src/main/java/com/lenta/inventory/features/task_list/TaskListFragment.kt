@@ -92,6 +92,7 @@ class TaskListFragment : CoreFragment<FragmentTaskListBinding, TaskListViewModel
 
     override fun onToolbarButtonClick(view: View) {
         when (view.id) {
+            R.id.b_1 -> vm.onClickMenu()
             R.id.b_5 -> vm.onClickUpdate()
         }
     }

@@ -32,7 +32,7 @@
     <string name="employees_position">Должность</string>
     <string name="definition_performer">Определение исполнителя</string>
     <string name="to_back">Назад</string>
-    <string name="auxiliary_menu">Вспомогательное меню</string>
+    <string name="description_auxiliary_menu">Вспомогательное меню</string>
     <string name="settings">Настройки</string>
     <string name="support">Поддержка</string>
     <string name="rollback">Откатить</string>
@@ -108,4 +108,6 @@
     <string name="high_priority_title">Высокий приоритет</string>
     <string name="high_priority_content">Приложение работает с повышенным приоритетом</string>
     <string name="enter_item_number_or_barcode">Введите SAP-код или штрихкод</string>
+    <string name="db_error">Ошибка базы данных</string>
+    <string name="one_of">%s из %s</string>
 </resources>

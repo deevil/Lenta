@@ -20,6 +20,12 @@ class MemoryTaskProductRepository : ITaskProductRepository {
         return productInfo.firstOrNull { it.materialNumber == materialNumber && it.placeCode == storePlaceNumber}
     }
 
+    override fun updateProducts(newProducts: List<TaskProductInfo>) {
+        for (productInfo in newProducts) {
+            addProduct(productInfo)
+        }
+    }
+
     override fun addProduct(product: TaskProductInfo): Boolean {
         var index = -1
         for (i in productInfo.indices) {

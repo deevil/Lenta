@@ -1,17 +1,44 @@
 package com.lenta.inventory.features.storages_list
 
+import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.lenta.inventory.models.RecountType
+import com.lenta.inventory.models.StorePlaceLockMode
+import com.lenta.inventory.models.StorePlaceStatus
+import com.lenta.inventory.models.task.IInventoryTaskManager
+import com.lenta.inventory.models.task.TaskContents
+import com.lenta.inventory.models.task.TaskDescription
+import com.lenta.inventory.models.task.TaskStorePlaceInfo
+import com.lenta.inventory.platform.navigation.IScreenNavigator
+import com.lenta.inventory.requests.network.TaskContentNetRequest
+import com.lenta.inventory.requests.network.TaskContentParams
+import com.lenta.inventory.requests.network.TasksListRestInfo
+import com.lenta.shared.account.ISessionInfo
+import com.lenta.shared.exception.Failure
 import com.lenta.shared.platform.viewmodel.CoreViewModel
-import com.lenta.shared.utilities.databinding.Evenable
+import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
+import com.lenta.shared.utilities.extentions.getDeviceIp
 import com.lenta.shared.utilities.extentions.map
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 class StoragesListViewModel: CoreViewModel(), OnOkInSoftKeyboardListener {
 
-    val unprocessedStorages: MutableLiveData<List<StoragePlace>> = MutableLiveData()
-    val processedStorages: MutableLiveData<List<StoragePlace>> = MutableLiveData()
+    @Inject
+    lateinit var taskManager: IInventoryTaskManager
+    @Inject
+    lateinit var taskContentsRequest: TaskContentNetRequest
+    @Inject
+    lateinit var screenNavigator: IScreenNavigator
+    @Inject
+    lateinit var sessionInfo: ISessionInfo
+    @Inject
+    lateinit var context: Context
+
+    val unprocessedStorages: MutableLiveData<List<StoragePlaceVM>> = MutableLiveData()
+    val processedStorages: MutableLiveData<List<StoragePlaceVM>> = MutableLiveData()
     var selectedPage = MutableLiveData(0)
 
     val storageNumber: MutableLiveData<String> = MutableLiveData()
@@ -24,7 +51,6 @@ class StoragesListViewModel: CoreViewModel(), OnOkInSoftKeyboardListener {
             updateUnprocessed()
             updateProcessed()
         }
-
     }
 
     fun onResume() {
@@ -33,21 +59,31 @@ class StoragesListViewModel: CoreViewModel(), OnOkInSoftKeyboardListener {
     }
 
     fun getTitle(): String {
-        return "Номер задания - тип задания"
+        return taskManager.getInventoryTask()?.taskDescription?.getTaskTypeAndNumber() ?: ""
     }
 
     fun updateProcessed() {
-        val goodItem = StoragePlace(1, "Good Processed Storage", 20, false)
-        val badItem = StoragePlace(2, "Bad Processed Storage", 23, true)
-        val uglyItem = StoragePlace(3, "Ugly Processed Storage", 10050, false)
-        processedStorages.postValue(listOf(goodItem, badItem, uglyItem))
+        taskManager.getInventoryTask()?.let {
+            val processed = it.getProcessedStorePlaces().mapIndexed{ index, storePlace ->
+                val productsQuantity = it.getProductsQuantityForStorePlace(storePlace.placeCode)
+                StoragePlaceVM.from(storePlace, productsQuantity, index + 1)
+            }
+            processedStorages.postValue(processed)
+            return
+        }
+        processedStorages.postValue(emptyList())
     }
 
     fun updateUnprocessed() {
-        val goodItem = StoragePlace(1, "Good Unrocessed Storage", 40, false)
-        val badItem = StoragePlace(2, "Bad Unprocessed Storage", 43, true)
-        val uglyItem = StoragePlace(3, "Ugly Unprocessed Storage", 40050, false)
-        unprocessedStorages.postValue(listOf(goodItem, badItem, uglyItem))
+        taskManager.getInventoryTask()?.let {
+            val unprocessed = it.getUnprocessedStorePlaces().mapIndexed{ index, storePlace ->
+                val productsQuantity = it.getProductsQuantityForStorePlace(storePlace.placeCode)
+                StoragePlaceVM.from(storePlace, productsQuantity, index + 1)
+            }
+            unprocessedStorages.postValue(unprocessed)
+            return
+        }
+        unprocessedStorages.postValue(emptyList())
     }
 
     fun onClickClean() {
@@ -59,7 +95,33 @@ class StoragesListViewModel: CoreViewModel(), OnOkInSoftKeyboardListener {
     }
 
     fun onClickRefresh() {
-        return
+        viewModelScope.launch {
+            screenNavigator.showProgress(taskContentsRequest)
+            taskContentsRequest(
+                    TaskContentParams(ip = context.getDeviceIp(),
+                            taskNumber = taskManager.getInventoryTask()?.taskDescription?.taskNumber ?: "",
+                            userNumber = sessionInfo.personnelNumber ?: "",
+                            additionalDataFlag = "",
+                            newProductNumbers = emptyList(),
+                            numberRelock = "",
+                            mode = taskManager.getInventoryTask()?.taskDescription?.recountType?.recountType ?: "")
+            )
+                    .either(::handleFailure, ::handleUpdateSuccess)
+            screenNavigator.hideProgress()
+        }
+    }
+
+    override fun handleFailure(failure: Failure) {
+        super.handleFailure(failure)
+        screenNavigator.openAlertScreen(failure)
+    }
+
+    private fun handleUpdateSuccess(taskContents: TaskContents) {
+        taskManager.getInventoryTask()?.let {
+            it.updateTaskWithContents(taskContents)
+            updateProcessed()
+            updateUnprocessed()
+        }
     }
 
     fun onPageSelected(position: Int) {
@@ -67,6 +129,15 @@ class StoragesListViewModel: CoreViewModel(), OnOkInSoftKeyboardListener {
     }
 
     fun onDoubleClickPosition(position: Int) {
+        if (selectedPage.value == 0) {
+            unprocessedStorages.value?.get(position)?.storeNumber?.let {
+                screenNavigator.openLoadingStorePlaceLockScreen(StorePlaceLockMode.Lock, it)
+            }
+        } else {
+            processedStorages.value?.get(position)?.storeNumber?.let {
+                screenNavigator.openLoadingStorePlaceLockScreen(StorePlaceLockMode.Lock, it)
+            }
+        }
     }
 
     fun onDigitPressed(digit: Int) {
@@ -79,16 +150,36 @@ class StoragesListViewModel: CoreViewModel(), OnOkInSoftKeyboardListener {
     }
 
     override fun onOkInSoftKeyboard(): Boolean {
+        if (!storageNumber.value.isNullOrEmpty()){
+            val storageNumber = storageNumber.value!!
+            taskManager.getInventoryTask()?.let {
+                val existingPlace = it.taskRepository.getStorePlace().findStorePlace(storageNumber)
+                if (existingPlace == null) {
+                    it.taskRepository.getStorePlace().addStorePlace(TaskStorePlaceInfo(placeCode = storageNumber, lockIP = "", lockUser = "", status = StorePlaceStatus.None))
+                    updateUnprocessed()
+                }
+            }
+        }
 
         return true
     }
 }
 
-data class StoragePlace(
+data class StoragePlaceVM(
         val number: Int,
+        val storeNumber: String,
+        val status: StorePlaceStatus,
         val name: String,
-        val goodsQuantity: Int,
-        val even: Boolean
-) : Evenable {
-    override fun isEven() = even
+        val productsQuantity: Int) {
+
+    companion object {
+        fun from(taskStoragePlaceInfo : TaskStorePlaceInfo, productsQuantity: Int, number: Int) : StoragePlaceVM {
+            return StoragePlaceVM(number = number,
+                    storeNumber = taskStoragePlaceInfo.placeCode,
+                    status = taskStoragePlaceInfo.status,
+                    name = taskStoragePlaceInfo.placeCode,
+                    productsQuantity = productsQuantity)
+        }
+
+    }
 }

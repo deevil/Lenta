@@ -12,6 +12,7 @@ import com.lenta.bp10.platform.requestCodeDelete
 import com.lenta.bp10.platform.requestCodeSelectPersonnelNumber
 import com.lenta.bp10.requests.network.*
 import com.lenta.shared.account.ISessionInfo
+import com.lenta.shared.analytics.AnalyticsHelper
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.models.core.ProductInfo
 import com.lenta.shared.platform.resources.ISharedStringResourceManager
@@ -48,6 +49,8 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     lateinit var sessionInfo: ISessionInfo
     @Inject
     lateinit var searchProductDelegate: SearchProductDelegate
+    @Inject
+    lateinit var analyticsHelper: AnalyticsHelper
 
     var selectedPage = MutableLiveData(0)
     val countedGoods: MutableLiveData<List<GoodItem>> = MutableLiveData()
@@ -243,6 +246,7 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
             processServiceManager.clearTask()
             screenNavigator.openSendingReportsScreen(writeOffReportResponse)
         } else {
+            analyticsHelper.onRetCodeNotEmpty("$writeOffReportResponse")
             screenNavigator.openAlertScreen(writeOffReportResponse.errorText)
         }
 

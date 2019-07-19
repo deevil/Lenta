@@ -21,6 +21,12 @@ class MemoryTaskExciseStampRepository : ITaskExciseStampRepository {
         return stamps.filter { it.materialNumber == materialNumber && it.placeCode == storePlaceNumber}
     }
 
+    override fun updateExciseStamps(newStamps: List<TaskExciseStamp>) {
+        for (stamp in newStamps) {
+            addExciseStamp(stamp)
+        }
+    }
+
     override fun addExciseStamp(exciseStamp: TaskExciseStamp): Boolean {
         var index = -1
         for (i in stamps.indices) {

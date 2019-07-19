@@ -85,8 +85,9 @@ class GoodInfoViewModel : BaseProductInfoViewModel() {
     }
 
 
-    override fun onBackPressed() {
+    override fun onBackPressed(): Boolean {
         processGeneralProductService.discard()
+        return true
     }
 
     override fun onScanResult(data: String) {

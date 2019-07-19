@@ -8,6 +8,7 @@ import com.lenta.shared.fmp.BaseRestSapStatus
 import com.lenta.shared.fmp.ObjectRawStatus
 import com.lenta.shared.functional.Either
 import com.lenta.shared.interactor.UseCase
+import com.lenta.shared.utilities.extentions.hhive.ANALYTICS_HELPER
 import com.lenta.shared.utilities.extentions.hhive.getFailure
 import com.lenta.shared.utilities.extentions.hhive.isNotBad
 import com.mobrun.plugin.api.HyperHive
@@ -23,7 +24,8 @@ class PrintTaskNetRequest
 
 
     override suspend fun run(params: PrintTask): Either<Failure, Boolean> {
-        val printTaskStatus = hyperHive.requestAPI.web("ZMP_UTZ_WOB_04_V001",
+        val resName = "ZMP_UTZ_WOB_04_V001"
+        val printTaskStatus = hyperHive.requestAPI.web(resName,
                 WebCallParams().apply {
                     data = gson.toJson(params)
                     headers = mapOf(
@@ -31,6 +33,8 @@ class PrintTaskNetRequest
                             "Content-Type" to "application/json",
                             "Web-Authorization" to sessionInfo.basicAuth
                     )
+                }.apply {
+                    ANALYTICS_HELPER?.onStartFmpRequest(resName, "headers: ${this.headers}, data: ${this.data}")
                 },
                 PrintTaskStatus::class.java
         )

@@ -18,7 +18,7 @@ class SelectMarketFragment : CoreFragment<FragmentSelectMarketBinding, SelectMar
 
     override fun getLayoutId(): Int = R.layout.fragment_select_market
 
-    override fun getPageNumber(): String? = generateScreenNumberFromPostfix("03")
+    override fun getPageNumber(): String? = generateScreenNumberFromPostfix("04")
 
     override fun getViewModel(): SelectMarketViewModel {
         provideViewModel(SelectMarketViewModel::class.java).let {
@@ -35,8 +35,7 @@ class SelectMarketFragment : CoreFragment<FragmentSelectMarketBinding, SelectMar
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.next)
         vm.selectedPosition.observe(viewLifecycleOwner, Observer {
-            bottomToolbarUiModel
-                    .uiModelButton5.requestFocus()
+            bottomToolbarUiModel.uiModelButton5.requestFocus()
         })
     }
 

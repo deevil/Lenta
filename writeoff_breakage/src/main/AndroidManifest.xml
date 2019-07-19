@@ -3,8 +3,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.lenta.bp10">
 
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-
     <application
         android:name=".AndroidApplication"
         android:allowBackup="false"
@@ -23,6 +21,7 @@
             android:value="c9e0b6b582d5dcd9003ee56a70c75fa689ef0939" />
         <activity
             android:name=".activity.main.MainActivity"
+            android:excludeFromRecents="true"
             android:launchMode="singleInstance"
             android:screenOrientation="portrait">
             <intent-filter>

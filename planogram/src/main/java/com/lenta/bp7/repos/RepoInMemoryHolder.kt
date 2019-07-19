@@ -1,7 +1,7 @@
 package com.lenta.bp7.repos
 
 import com.lenta.bp7.requests.network.SettingRequestResult
-import com.lenta.bp7.requests.network.StoresRequestResult
+import com.lenta.shared.requests.network.StoresRequestResult
 
 class RepoInMemoryHolder : IRepoInMemoryHolder {
     override var storesRequestResult: StoresRequestResult? = null

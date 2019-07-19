@@ -21,13 +21,14 @@ import com.lenta.inventory.features.loading.tasks.LoadingTasksFragment
 import com.lenta.inventory.features.select_market.SelectMarketFragment
 import com.lenta.inventory.features.select_personnel_number.SelectPersonnelNumberFragment
 import com.lenta.inventory.features.storages_list.StoragesListFragment
-import com.lenta.inventory.features.task_list.TaskItemVm
+import com.lenta.inventory.features.taken_to_work.TakenToWorkFragment
 import com.lenta.inventory.features.task_list.TaskListFragment
 import com.lenta.inventory.models.RecountType
 import com.lenta.inventory.models.StorePlaceLockMode
 import com.lenta.inventory.models.task.ProcessExciseAlcoProductService
 import com.lenta.inventory.models.task.TaskStorePlaceInfo
 import com.lenta.inventory.models.task.TaskProductInfo
+import com.lenta.inventory.requests.network.TasksItem
 import com.lenta.shared.account.IAuthenticator
 import com.lenta.shared.features.alert.AlertFragment
 import com.lenta.shared.models.core.Manufacturer
@@ -166,16 +167,21 @@ class ScreenNavigator(
         }
     }
 
-    override fun openLoadingTaskContentsScreen(taskInfo: TaskItemVm, recountType: RecountType) {
+    override fun openLoadingTaskContentsScreen(taskInfo: TasksItem, recountType: RecountType) {
         runOrPostpone {
             getFragmentStack()?.push(LoadingTaskContentFragment.create(taskInfo, recountType))
         }
     }
 
-    override fun openLoadingStorePlaceLockScreen(taskInfo: TaskItemVm, mode: StorePlaceLockMode, storePlaceInfo: TaskStorePlaceInfo)
-    {
+    override fun openLoadingStorePlaceLockScreen(mode: StorePlaceLockMode, storePlaceNumber: String) {
         runOrPostpone {
-            getFragmentStack()?.push(LoadingStorePlaceLockFragment.create(taskInfo, mode, storePlaceInfo))
+            getFragmentStack()?.push(LoadingStorePlaceLockFragment.create(mode, storePlaceNumber))
+        }
+    }
+
+    override fun openTakenToWorkFragment() {
+        runOrPostpone {
+            getFragmentStack()?.push(TakenToWorkFragment.create())
         }
     }
 
@@ -210,10 +216,11 @@ interface IScreenNavigator : ICoreNavigator {
     fun openTasksList()
     fun openJobCard(taskNumber: String)
     fun openLoadingTasksScreen()
-    fun openLoadingTaskContentsScreen(taskInfo: TaskItemVm, recountType: RecountType)
-    fun openLoadingStorePlaceLockScreen(taskInfo: TaskItemVm, mode: StorePlaceLockMode, storePlaceInfo: TaskStorePlaceInfo)
+    fun openLoadingTaskContentsScreen(taskInfo: TasksItem, recountType: RecountType)
+    fun openLoadingStorePlaceLockScreen(mode: StorePlaceLockMode, storePlaceNumber: String)
     fun openExciseAlcoInfoScreen(productInfo: TaskProductInfo)
     fun openConfirmationTaskOpenScreen(userName: String, ip: String, callbackFunc: () -> Unit)
     fun openAlertDoubleScanStamp()
     fun openPartySignsScreen(title: String, manufacturers: List<String>, stampLength: Int)
+    fun openTakenToWorkFragment()
 }

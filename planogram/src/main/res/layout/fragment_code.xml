@@ -19,13 +19,12 @@
             android:id="@+id/tv_message"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"
+            android:layout_marginStart="25dp"
+            android:layout_marginEnd="25dp"
             android:layout_marginBottom="32dp"
             android:gravity="center"
             android:text="@{@string/code_screen_message(vm.message)}"
-            android:textAllCaps="true"
-            android:textSize="16sp"
+            android:textSize="18sp"
             app:layout_constraintBottom_toTopOf="@+id/code_container"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -46,7 +45,7 @@
             app:layout_constraintTop_toTopOf="parent">
 
             <EditText
-                android:id="@+id/et_code1"
+                android:id="@+id/et_number1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="30dp"
@@ -55,7 +54,7 @@
                 android:inputType="number"
                 android:maxLength="1"
                 android:nextFocusDown="@+id/et_pin2"
-                android:text="@={vm.pinCode1}"
+                android:text="@={vm.number1}"
                 tools:text="9">
 
                 <requestFocus/>
@@ -63,7 +62,7 @@
             </EditText>
 
             <EditText
-                android:id="@+id/et_code2"
+                android:id="@+id/et_number2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
@@ -72,11 +71,11 @@
                 android:inputType="number"
                 android:maxLength="1"
                 android:nextFocusDown="@+id/et_pin3"
-                android:text="@={vm.pinCode2}"
+                android:text="@={vm.number2}"
                 tools:text="1"/>
 
             <EditText
-                android:id="@+id/et_code3"
+                android:id="@+id/et_number3"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
@@ -85,11 +84,11 @@
                 android:inputType="number"
                 android:maxLength="1"
                 android:nextFocusDown="@+id/et_pin4"
-                android:text="@={vm.pinCode3}"
+                android:text="@={vm.number3}"
                 tools:text="1"/>
 
             <EditText
-                android:id="@+id/et_code4"
+                android:id="@+id/et_number4"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
@@ -98,7 +97,7 @@
                 android:gravity="center"
                 android:inputType="number"
                 android:maxLength="1"
-                android:text="@={vm.pinCode4}"
+                android:text="@={vm.number4}"
 
                 app:onOkInSoftKeyboard="@{vm}"
 

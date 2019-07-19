@@ -9,15 +9,15 @@ import com.lenta.shared.fmp.toFmpObjectRawStatusEither
 import com.lenta.shared.functional.Either
 import com.lenta.shared.interactor.UseCase
 import com.lenta.shared.utilities.Logg
+import com.lenta.shared.utilities.extentions.hhive.ANALYTICS_HELPER
 import com.mobrun.plugin.api.HyperHive
 import com.mobrun.plugin.api.callparams.WebCallParams
 import javax.inject.Inject
 
 class ExciseStampNetRequest
-@Inject constructor(private val hyperHive: HyperHive, private val gson: Gson, private val sessionInfo: ISessionInfo) : UseCase<List<ExciseStampRestInfo>, ExciseStampParams>(){
+@Inject constructor(private val hyperHive: HyperHive, private val gson: Gson, private val sessionInfo: ISessionInfo) : UseCase<List<ExciseStampRestInfo>, ExciseStampParams>() {
     override suspend fun run(params: ExciseStampParams): Either<Failure, List<ExciseStampRestInfo>> {
 
-        Logg.d { "search stamp params: $params" }
 
         val webCallParams = WebCallParams().apply {
             data = gson.toJson(params)
@@ -27,10 +27,15 @@ class ExciseStampNetRequest
                     "Web-Authorization" to sessionInfo.basicAuth
             )
         }
-        return hyperHive.requestAPI.web("ZFMP_UTZ_WOB_03_V001", webCallParams).execute().toFmpObjectRawStatusEither(ExciseStampStatus::class.java, gson)
+
+        val resName = "ZFMP_UTZ_WOB_03_V001"
+        ANALYTICS_HELPER?.onStartFmpRequest(resName, "headers: ${webCallParams.headers}, data: ${webCallParams.data}")
+        return hyperHive.requestAPI.web(resName, webCallParams).execute()
+                .toFmpObjectRawStatusEither(ExciseStampStatus::class.java, gson, resName)
     }
 
 }
+
 data class ExciseStampParams(
         @SerializedName("IV_PDF417")
         val pdf417: String,

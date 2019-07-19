@@ -16,15 +16,16 @@ class FastResourcesMultiRequest @Inject constructor(val hyperHive: HyperHive) : 
 
     override val isDeltaRequest = true
 
-    override fun getListOfRequests(): List<RequestBuilder<out CustomParameter, out ScalarParameter<Any>>> {
-        return arrayListOf(
-                ZmpUtz07V001(hyperHive).newRequest(),
-                ZmpUtz14V001(hyperHive).newRequest(),
-                ZmpUtz23V001(hyperHive).newRequest(),
+    override fun getMapOfRequests(): Map<String, RequestBuilder<out CustomParameter, out ScalarParameter<Any>>> {
+        return mapOf(
+                ZmpUtz07V001.NAME_RESOURCE to ZmpUtz07V001(hyperHive).newRequest(),
+                ZmpUtz14V001.NAME_RESOURCE to ZmpUtz14V001(hyperHive).newRequest(),
+                ZmpUtz23V001.NAME_RESOURCE to ZmpUtz23V001(hyperHive).newRequest(),
 
-                ZmpUtz24V001(hyperHive).newRequest(),
-                ZmpUtz25V001(hyperHive).newRequest()
-        )
+                //TODO удалить загрузку SlowData после добавления в FMP sdk возможности обращения к базе во время синхронизации
+                ZmpUtz24V001.NAME_RESOURCE to ZmpUtz24V001(hyperHive).newRequest(),
+                ZmpUtz25V001.NAME_RESOURCE to ZmpUtz25V001(hyperHive).newRequest()
+                )
     }
 }
 

@@ -1,5 +1,6 @@
 package com.lenta.inventory.models.task
 
+import com.lenta.inventory.models.StorePlaceStatus
 import com.lenta.inventory.models.repositories.ITaskRepository
 import com.lenta.shared.models.core.ProductType
 
@@ -29,14 +30,37 @@ class InventoryTask(val taskDescription: TaskDescription, val taskRepository: IT
         taskRepository.getProducts().getProcessedProducts()
     }
 
+    fun getProcessedStorePlaces() : List<TaskStorePlaceInfo> {
+        return taskRepository.getStorePlace().getStorePlaces().filter { it.status == StorePlaceStatus.Finished }
+    }
+
+    fun getUnprocessedStorePlaces() : List<TaskStorePlaceInfo> {
+        return taskRepository.getStorePlace().getStorePlaces().filter { it.status != StorePlaceStatus.Finished }
+    }
+
+    fun getProductsQuantityForStorePlace(storePlaceNumber: String) : Int {
+        return taskRepository.getProducts().getProducts().count { it.placeCode == storePlaceNumber }
+    }
+
     //возвращает модель сохранения задания
     fun getTaskSaveModel(): TaskSaveModel {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
     //вызывается при возврате на 20 экран и при нажатии на кнопку ОБНОВИТЬ, вызываем 96 рест
-    fun updateStorePlaces() : InventoryTask {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    fun updateStorePlaces(storePlaces : List<TaskStorePlaceInfo>) : InventoryTask {
+        taskRepository.getStorePlace().updateStorePlaces(storePlaces)
+        return this
+    }
+
+    fun updateProducts(products : List<TaskProductInfo>) : InventoryTask {
+        taskRepository.getProducts().updateProducts(products)
+        return this
+    }
+
+    fun updateExciseStamps(exciseStamps : List<TaskExciseStamp>) : InventoryTask {
+        taskRepository.getExciseStamps().updateExciseStamps(exciseStamps)
+        return this
     }
 
     fun clearStorePlace() : InventoryTask {
@@ -47,9 +71,9 @@ class InventoryTask(val taskDescription: TaskDescription, val taskRepository: IT
         return StorePlaceProcessing(this,  storePlaceNumber)
     }
 
-
-
-
-
-
+    fun updateTaskWithContents(taskContents: TaskContents) {
+        updateStorePlaces(taskContents.storePlaces)
+        updateProducts(taskContents.products)
+        updateExciseStamps(taskContents.exciseStamps)
+    }
 }

@@ -5,10 +5,14 @@ import android.content.SharedPreferences
 import com.google.gson.Gson
 import com.lenta.shared.account.IAuthenticator
 import com.lenta.shared.account.ISessionInfo
+import com.lenta.shared.analytics.AnalyticsHelper
 import com.lenta.shared.analytics.IAnalytics
+import com.lenta.shared.analytics.db.RoomAppDatabase
+import com.lenta.shared.analytics.db.dao.LogDao
 import com.lenta.shared.exception.IFailureInterpreter
 import com.lenta.shared.features.auxiliary_menu.AuxiliaryMenuViewModel
 import com.lenta.shared.features.fmp_settings.FmpSettingsViewModel
+import com.lenta.shared.features.login.CoreLoginFragment
 import com.lenta.shared.features.message.MessageViewModel
 import com.lenta.shared.features.printer_change.PrinterChangeViewModel
 import com.lenta.shared.features.select_oper_mode.SelectOperModeViewModel
@@ -20,6 +24,7 @@ import com.lenta.shared.platform.activity.ForegroundActivityProvider
 import com.lenta.shared.platform.battery_state.BatteryStateMonitor
 import com.lenta.shared.platform.battery_state.IBatteryStateMonitor
 import com.lenta.shared.platform.navigation.BackFragmentResultHelper
+import com.lenta.shared.platform.navigation.FragmentStack
 import com.lenta.shared.platform.navigation.ICoreNavigator
 import com.lenta.shared.platform.network_state.INetworkStateMonitor
 import com.lenta.shared.platform.network_state.NetworkStateMonitor
@@ -61,6 +66,9 @@ interface CoreComponent {
     fun getIProgressUseCaseInformator(): IProgressUseCaseInformator
     fun getScanInfoRequest(): ScanInfoRequest
     fun getBackResultHelper(): BackFragmentResultHelper
+    fun getRoomAppDatabase(): RoomAppDatabase
+    fun getLogDao(): LogDao
+    fun getAnalyticsHelper(): AnalyticsHelper
 
 
     fun inject(it: FmpSettingsViewModel)
@@ -73,4 +81,6 @@ interface CoreComponent {
     fun inject(it: SettingsViewModel)
     fun inject(it: AuxiliaryMenuViewModel)
     fun inject(dataBindingHelpHolder: DataBindingExtHolder)
+    fun inject(coreLoginFragment: CoreLoginFragment)
+    fun inject(fragmentStack: FragmentStack)
 }

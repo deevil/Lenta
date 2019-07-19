@@ -8,9 +8,9 @@ import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
+import com.lenta.shared.scan.OnScanResultListener
 
-abstract class CoreLoginFragment : CoreFragment<com.lenta.shared.databinding.FragmentLoginBinding, CoreAuthViewModel>(), OnBackPresserListener, ToolbarButtonsClickListener {
-
+abstract class CoreLoginFragment : CoreFragment<com.lenta.shared.databinding.FragmentLoginBinding, CoreAuthViewModel>(), OnBackPresserListener, ToolbarButtonsClickListener, OnScanResultListener {
     override fun getLayoutId(): Int = R.layout.fragment_login
 
 
@@ -36,6 +36,10 @@ abstract class CoreLoginFragment : CoreFragment<com.lenta.shared.databinding.Fra
     override fun onResume() {
         super.onResume()
         vm.onResume()
+    }
+
+    override fun onScanResult(data: String) {
+        vm.onScanResult(data)
     }
 
 

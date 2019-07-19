@@ -92,6 +92,10 @@ class StampCollector(private val processExciseAlcoProductService: ProcessExciseA
         return countLiveData.map { it }
     }
 
+    fun isNotEmpty(): Boolean {
+        return countLiveData.value?: 0.0 > 0.0
+    }
+
     fun getCount(materialNumber: String): Double {
         return stamps.filter { it.materialNumber == materialNumber }.count().toDouble()
     }

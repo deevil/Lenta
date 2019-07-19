@@ -4,7 +4,7 @@ interface IInventoryTaskManager {
 
     fun getInventoryTask() : InventoryTask?
 
-    fun newInventoryTask(taskDescription: TaskDescription)
+    fun newInventoryTask(taskDescription: TaskDescription) : InventoryTask?
 
     fun clearTask()
 

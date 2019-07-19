@@ -10,6 +10,8 @@ import com.lenta.shared.exception.Failure
 import com.lenta.shared.exception.IFailureInterpreter
 import com.lenta.shared.features.loading.CoreLoadingViewModel
 import com.lenta.shared.platform.app_update.AppUpdateChecker
+import com.lenta.shared.requests.network.StoresRequest
+import com.lenta.shared.requests.network.StoresRequestResult
 import com.mobrun.plugin.api.HyperHive
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -50,7 +52,7 @@ class FastLoadingViewModel : CoreLoadingViewModel() {
 
     private fun loadStores(@Suppress("UNUSED_PARAMETER") b: Boolean) {
         viewModelScope.launch {
-            storesRequest(RequestParams(login = "")).either(::handleFailure, ::handleSuccess)
+            storesRequest(null).either(::handleFailure, ::handleSuccess)
         }
     }
 

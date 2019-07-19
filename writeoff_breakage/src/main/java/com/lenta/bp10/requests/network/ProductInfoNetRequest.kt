@@ -15,6 +15,7 @@ import com.lenta.shared.models.core.ProductInfo
 import com.lenta.shared.models.core.Uom
 import com.lenta.shared.models.core.getMatrixType
 import com.lenta.shared.models.core.getProductType
+import com.lenta.shared.utilities.extentions.hhive.ANALYTICS_HELPER
 import com.lenta.shared.utilities.extentions.hhive.getFailure
 import com.lenta.shared.utilities.extentions.hhive.isNotBad
 import com.mobrun.plugin.api.HyperHive
@@ -41,7 +42,9 @@ class ProductInfoNetRequest
                 matNr = ""
         )
 
-        val productInfoStatus = hyperHive.requestAPI.web("ZMP_UTZ_WOB_02_V001",
+        val resName = "ZMP_UTZ_WOB_02_V001"
+
+        val productInfoStatus = hyperHive.requestAPI.web(resName,
                 WebCallParams().apply {
                     data = gson.toJson(productInfoNetRequestParams)
                     headers = mapOf(
@@ -49,6 +52,8 @@ class ProductInfoNetRequest
                             "Content-Type" to "application/json",
                             "Web-Authorization" to sessionInfo.basicAuth
                     )
+                }.apply {
+                    ANALYTICS_HELPER?.onStartFmpRequest(resName, "headers: ${this.headers}, data: ${this.data}")
                 },
                 ProductInfoStatus::class.java)
                 .execute()
