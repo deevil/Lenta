@@ -90,7 +90,7 @@ class GoodListViewModel : CoreViewModel() {
                     }
                 }
 
-                //navigator.openGoodInfoScreen()
+                navigator.openGoodInfoScreen()
             }
         }
     }

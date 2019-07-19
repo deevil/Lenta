@@ -8,7 +8,13 @@ data class Good(
     var totalFacings: Int = 0,
     val units: String? = "",
     var status: GoodStatus = GoodStatus.CREATED
-)
+) {
+
+    fun getFormattedSapCode(): String {
+        return sapCode?.substring(sapCode.length - 6) ?: ""
+    }
+
+}
 
 data class GoodInfo(
         val sapCode: String? = "",
