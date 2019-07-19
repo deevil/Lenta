@@ -33,7 +33,7 @@ class SetComponentsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInS
 
     //val productInfo: MutableLiveData<TaskProductInfo> = MutableLiveData()
     val productInfo: MutableLiveData<TaskProductInfo> = MutableLiveData(TaskProductInfo("materialNumber1", "description", Uom("ST", "шт"), ProductType.ExciseAlcohol,
-            true, "1", MatrixType.Active, "materialType","3", null, false))
+            true, "1", MatrixType.Active, "materialType","3", 0.0, isPositionCalc = false, isExcOld = false))
 
     //val componentItem: MutableLiveData<ComponentItem> = MutableLiveData()
     val componentItem: MutableLiveData<ComponentItem> = MutableLiveData(ComponentItem(1, "000027 НАБОР ВИНИШКА", "0 из 2", "2", true, 2.0, 0, "000027"))

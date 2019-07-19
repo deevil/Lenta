@@ -71,6 +71,7 @@ class MemoryTaskExciseStampRepository : ITaskExciseStampRepository {
             }
         }
 
+        stamps.removeAll(distinctStamp)
         stamps.addAll(distinctStamp)
         return true
     }

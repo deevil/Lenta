@@ -1,21 +1,27 @@
 package com.lenta.inventory.features.goods_information.excise_alco
 
+import android.os.Bundle
 import android.view.View
 import com.lenta.inventory.R
 import com.lenta.inventory.databinding.FragmentExciseAlcoInfoBinding
 import com.lenta.inventory.models.task.TaskProductInfo
 import com.lenta.inventory.platform.extentions.getAppComponent
+import com.lenta.shared.platform.activity.OnBackPresserListener
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.scan.OnScanResultListener
+import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.generateScreenNumber
 import com.lenta.shared.utilities.extentions.provideViewModel
 import com.lenta.shared.utilities.state.state
 
-class ExciseAlcoInfoFragment : CoreFragment<FragmentExciseAlcoInfoBinding, ExciseAlcoInfoViewModel>(), ToolbarButtonsClickListener, OnScanResultListener {
+class ExciseAlcoInfoFragment : CoreFragment<FragmentExciseAlcoInfoBinding, ExciseAlcoInfoViewModel>(),
+        ToolbarButtonsClickListener,
+        OnScanResultListener,
+        OnBackPresserListener {
 
     companion object {
         fun create(productInfo: TaskProductInfo): ExciseAlcoInfoFragment {
@@ -37,6 +43,8 @@ class ExciseAlcoInfoFragment : CoreFragment<FragmentExciseAlcoInfoBinding, Excis
             getAppComponent()?.inject(vm)
             vm.productInfo.value = productInfo
             vm.spinList.value = listOf(getString(R.string.quantity), getString(R.string.partly), getString(R.string.vintage))
+            vm.textErrorUnknownStatus.value = getString(R.string.text_error_unknown_status)
+            vm.titleProgressScreen.value = getString(R.string.data_loading)
             return vm
         }
     }
@@ -53,12 +61,11 @@ class ExciseAlcoInfoFragment : CoreFragment<FragmentExciseAlcoInfoBinding, Excis
         bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.missing)
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.apply)
 
-        /**viewLifecycleOwner.apply {
-        connectLiveData(vm.enabledApplyButton, bottomToolbarUiModel.uiModelButton4.enabled)
-        connectLiveData(vm.enabledApplyButton, bottomToolbarUiModel.uiModelButton5.enabled)
-        connectLiveData(vm.enabledDetailsButton, bottomToolbarUiModel.uiModelButton3.enabled)
-        connectLiveData(vm.selectedPosition, bottomToolbarUiModel.uiModelButton4.requestFocus)
-        }*/
+        viewLifecycleOwner.apply {
+            connectLiveData(vm.enabledRollbackButton, bottomToolbarUiModel.uiModelButton2.enabled)
+            connectLiveData(vm.enabledMissingButton, bottomToolbarUiModel.uiModelButton4.enabled)
+            connectLiveData(vm.enabledApplyButton, bottomToolbarUiModel.uiModelButton5.enabled)
+        }
     }
 
     override fun onToolbarButtonClick(view: View) {
@@ -74,4 +81,23 @@ class ExciseAlcoInfoFragment : CoreFragment<FragmentExciseAlcoInfoBinding, Excis
         vm.onScanResult(data)
     }
 
+    override fun onFragmentResult(arguments: Bundle) {
+        super.onFragmentResult(arguments)
+        if (arguments["stampLength"] == 150){
+            vm.onPartySignsResult(arguments)
+        }
+        else {
+            vm.onPartySignsStamp68Result(arguments)
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        vm.onResume()
+    }
+
+    override fun onBackPressed(): Boolean {
+        vm.onBackPressed()
+        return true
+    }
 }

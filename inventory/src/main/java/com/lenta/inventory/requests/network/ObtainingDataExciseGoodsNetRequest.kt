@@ -27,8 +27,8 @@ class ObtainingDataExciseGoodsNetRequest
             )
         }
 
-        val resString = hyperHive.requestAPI.web("ZMP_UTZ_100_V001", webCallParams). execute()
-        Logg.d { "resString: $resString" }
+        /**val resString = hyperHive.requestAPI.web("ZMP_UTZ_100_V001", webCallParams). execute()
+        Logg.d { "resString: $resString" }*/
 
         val res = hyperHive.requestAPI.web("ZMP_UTZ_100_V001", webCallParams).execute().toFmpObjectRawStatusEither(ExciseGoodsStatus::class.java, gson)
 
@@ -44,13 +44,13 @@ data class ExciseGoodsParams(
         @SerializedName("IV_MATNR_COMP")
         val materialNumberComp: String, //Номер компонета набора
         @SerializedName("IV_MARK_NUM")
-        val markNumber: String, //Код акцизной марки
+        val stampCode: String, //Код акцизной марки
         @SerializedName("IV_BOX_NUM")
         val boxNumber: String, //Номер коробки
         @SerializedName("IV_ZPROD")
-        val codeEGAIS: String, //ЕГАИС Код организации
+        val manufacturerCode: String, //ЕГАИС Код организации
         @SerializedName("IV_BOTT_MARK")
-        val bottMark: String, //УТЗ ТСД: Дата розлива
+        val bottlingDate: String, //УТЗ ТСД: Дата розлива
         @SerializedName("IV_MODE")
         val mode: String, //Индикатор из одной позиции
         @SerializedName("IV_CODEBP")
@@ -66,7 +66,7 @@ data class ExciseGoodsRestInfo(
         @SerializedName("EV_STAT_TEXT")
         val statusTxt: String, //Текст статуса для отображения в МП
         @SerializedName("ET_MARKS")
-        val stamps: List<StampsBox>, //Таблица марок в коробке
+        val stampsBox: List<StampsBox>, //Таблица марок в коробке
         @SerializedName("EV_MATNR_COMP")
         val materialNumber: String, //Номер товара
         @SerializedName("ET_PROD_TEXT")

@@ -20,7 +20,8 @@ class TaskDescription (val taskNumber: String,
                        val dateTo: String,
                        val taskDeadLine: String, //Время на обработку задания (строка) REST-96
                        val recountType: RecountType, //mode - rest91
-                       val gis: GisControl) {
+                       val gis: GisControl,
+                       val linkOldStamp: Boolean) {
 
     @Inject
     lateinit var sessionInfo: ISessionInfo

@@ -2,10 +2,10 @@ package com.lenta.shared.models.core
 
 import com.google.gson.annotations.SerializedName
 
-class Manufacturer(@SerializedName("ZPROD") val code: String?, @SerializedName("PROD_NAME") val name: String) {
+class Manufacturer(@SerializedName("ZPROD") val code: String, @SerializedName("PROD_NAME") val name: String) {
 
     companion object {
-        val DEFAULT = Manufacturer(null, "Нет производителя")
+        val DEFAULT = Manufacturer("", "Нет производителя")
     }
 
     override fun toString(): String {

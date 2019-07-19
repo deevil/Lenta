@@ -36,7 +36,8 @@ class testInventoryTask_ProcessGeneralProductService {
                 dateTo = "2019-07-24",
                 taskDeadLine = "2019-07-25",
                 recountType = RecountType.None,
-                gis = GisControl.GeneralProduct
+                gis = GisControl.GeneralProduct,
+                linkOldStamp = true
         )
 
         inventoryTask = InventoryTask(taskDescription, taskRepository = MemoryTaskRepository())
@@ -53,13 +54,13 @@ class testInventoryTask_ProcessGeneralProductService {
         var test = false
 
         val product1 = TaskProductInfo("materialNumber1", "description", Uom("ST", "шт"), ProductType.General,
-                false, "1", MatrixType.Active, "materialType", "1", null, false)
+                false, "1", MatrixType.Active, "materialType", "1", 0.0, isPositionCalc = false, isExcOld = false)
 
         val product2 = TaskProductInfo("materialNumber1", "description", Uom("ST", "шт"), ProductType.NonExciseAlcohol,
-                false, "1", MatrixType.Active, "materialType","2", null, false)
+                false, "1", MatrixType.Active, "materialType","2", 0.0, isPositionCalc = false, isExcOld = false)
 
         val product3 = TaskProductInfo("materialNumber1", "description", Uom("ST", "шт"), ProductType.ExciseAlcohol,
-                false, "1", MatrixType.Active, "materialType", "3", null, false)
+                false, "1", MatrixType.Active, "materialType", "3", 0.0, isPositionCalc = false, isExcOld = false)
 
         if (inventoryTask.processGeneralProduct(product1) != null) {
             test = true
@@ -85,10 +86,10 @@ class testInventoryTask_ProcessGeneralProductService {
         creatingObjectsForTest()
 
         var product1: TaskProductInfo? = TaskProductInfo("materialNumber111", "description", Uom("ST", "шт"), ProductType.General,
-                false, "1", MatrixType.Active, "materialType", "1", null, false)
+                false, "1", MatrixType.Active, "materialType", "1", 0.0, isPositionCalc = false, isExcOld = false)
 
         var product2: TaskProductInfo? = TaskProductInfo("materialNumber111", "description", Uom("ST", "шт"), ProductType.General,
-                false, "1", MatrixType.Active, "materialType", "2", null, false)
+                false, "1", MatrixType.Active, "materialType", "2", 0.0, isPositionCalc = false, isExcOld = false)
 
         //добавляем продукты в репозиторий
         inventoryTask.taskRepository.getProducts().addProduct(product1!!)
@@ -102,7 +103,7 @@ class testInventoryTask_ProcessGeneralProductService {
         processGeneralProductService.setFactCount(5.0)
 
         //проверяем кол-во продуктов, должно быть 5
-        Assert.assertEquals(5.0, inventoryTask.taskRepository.getProducts().findProduct("materialNumber111", "1")!!.factCount!!, 0.0)
+        Assert.assertEquals(5.0, inventoryTask.taskRepository.getProducts().findProduct("materialNumber111", "1")!!.factCount, 0.0)
 
         //проверяем, что продукт помечен как обработанный
         Assert.assertTrue(inventoryTask.taskRepository.getProducts().findProduct("materialNumber111", "1")!!.isPositionCalc)
@@ -110,20 +111,20 @@ class testInventoryTask_ProcessGeneralProductService {
         //устанавливаем отрицательное кол-во продуктов -1
         processGeneralProductService.setFactCount(-1.0)
         //проверяем кол-во продуктов, должно остаться 5
-        Assert.assertEquals(5.0, inventoryTask.taskRepository.getProducts().findProduct("materialNumber111", "1")!!.factCount!!, 0.0)
+        Assert.assertEquals(5.0, inventoryTask.taskRepository.getProducts().findProduct("materialNumber111", "1")!!.factCount, 0.0)
         //проверяем кол-во продуктов через ф-цию getFactCount, должно остаться 5
         Assert.assertEquals(5.0, processGeneralProductService.getFactCount(), 0.0)
 
         //устанавливаем кол-во продуктов в ноль
         processGeneralProductService.setFactCount(0.0)
         //проверяем кол-во продуктов, должно быть 0
-        Assert.assertEquals(0.0, inventoryTask.taskRepository.getProducts().findProduct("materialNumber111", "1")!!.factCount!!, 0.0)
+        Assert.assertEquals(0.0, inventoryTask.taskRepository.getProducts().findProduct("materialNumber111", "1")!!.factCount, 0.0)
         //проверяем, что продукт стал помечен как необработанный
         Assert.assertTrue(!inventoryTask.taskRepository.getProducts().findProduct("materialNumber111", "1")!!.isPositionCalc)
 
         //проверяем, что продукт с МХ=2 остался без изменений
         var test = false
-        if (inventoryTask.taskRepository.getProducts().findProduct("materialNumber111", "2")!!.factCount == null) {
+        if (inventoryTask.taskRepository.getProducts().findProduct("materialNumber111", "2")!!.factCount == 0.0) {
             test = true
         }
         Assert.assertTrue(test)
@@ -137,7 +138,7 @@ class testInventoryTask_ProcessGeneralProductService {
         creatingObjectsForTest()
 
         var product1: TaskProductInfo? = TaskProductInfo("materialNumber111", "description", Uom("ST", "шт"), ProductType.General,
-                false, "1", MatrixType.Active, "materialType", "1", null, false)
+                false, "1", MatrixType.Active, "materialType", "1", 0.0, isPositionCalc = false, isExcOld = false)
 
         //добавляем продукт в репозиторий
         inventoryTask.taskRepository.getProducts().addProduct(product1!!)
@@ -150,7 +151,7 @@ class testInventoryTask_ProcessGeneralProductService {
         processGeneralProductService.markMissing()
 
         //проверяем кол-во продуктов, должно быть 0
-        Assert.assertEquals(0.0, inventoryTask.taskRepository.getProducts().findProduct("materialNumber111", "1")!!.factCount!!, 0.0)
+        Assert.assertEquals(0.0, inventoryTask.taskRepository.getProducts().findProduct("materialNumber111", "1")!!.factCount, 0.0)
 
         //проверяем, что продукт помечен как обработанный
         Assert.assertTrue(inventoryTask.taskRepository.getProducts().findProduct("materialNumber111", "1")!!.isPositionCalc)
@@ -163,10 +164,10 @@ class testInventoryTask_ProcessGeneralProductService {
         creatingObjectsForTest()
 
         var product1: TaskProductInfo? = TaskProductInfo("materialNumber111", "description", Uom("ST", "шт"), ProductType.General,
-                false, "1", MatrixType.Active, "materialType", "1", null, false)
+                false, "1", MatrixType.Active, "materialType", "1", 0.0, isPositionCalc = false, isExcOld = false)
 
         var product2: TaskProductInfo? = TaskProductInfo("materialNumber111", "description", Uom("ST", "шт"), ProductType.General,
-                false, "1", MatrixType.Active, "materialType", "2", null, false)
+                false, "1", MatrixType.Active, "materialType", "2", 0.0, isPositionCalc = false, isExcOld = false)
 
         //добавляем продукты в репозиторий
         inventoryTask.taskRepository.getProducts().addProduct(product1!!)

@@ -54,7 +54,7 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
     init {
         viewModelScope.launch {
             suffix.value = productInfo.value?.uom?.name
-            storePlaceNumber.value= productInfo.value?.placeCode
+            storePlaceNumber.value = productInfo.value?.placeCode
         }
     }
 

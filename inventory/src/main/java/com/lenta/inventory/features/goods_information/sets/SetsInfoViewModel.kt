@@ -23,7 +23,7 @@ class SetsInfoViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKe
 
     //val productInfo: MutableLiveData<TaskProductInfo> = MutableLiveData()
     val productInfo: MutableLiveData<TaskProductInfo> = MutableLiveData(TaskProductInfo("materialNumber1", "description", Uom("ST", "шт"), ProductType.ExciseAlcohol,
-            true, "1", MatrixType.Active, "materialType","3", null, false))
+            true, "1", MatrixType.Active, "materialType","3", 0.0, isPositionCalc = false, isExcOld = false))
 
     var selectedPage = MutableLiveData(0)
 
