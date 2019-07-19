@@ -67,7 +67,7 @@ class CheckData(
             goods.add(0, Good(
                     id = i,
                     sapCode = "000000000000" + (100000..999999).random().toString(),
-                    barCode = (10000000000..99999999999).random().toString(),
+                    barCode = (100000000000..999999999999).random().toString(),
                     name = "Товар " + (1..1000).random(),
                     status = createGoodStatus(facings),
                     totalFacings = facings))

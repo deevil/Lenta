@@ -12,14 +12,11 @@ import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.map
-import com.mobrun.plugin.api.HyperHive
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class ShelfListViewModel : CoreViewModel() {
 
-    @Inject
-    lateinit var hyperHive: HyperHive
     @Inject
     lateinit var navigator: IScreenNavigator
     @Inject

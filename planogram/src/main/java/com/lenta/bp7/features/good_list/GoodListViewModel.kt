@@ -11,7 +11,6 @@ import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.map
-import com.mobrun.plugin.api.HyperHive
 import kotlinx.coroutines.launch
 import java.lang.IllegalArgumentException
 import javax.inject.Inject
@@ -19,13 +18,16 @@ import javax.inject.Inject
 class GoodListViewModel : CoreViewModel() {
 
     @Inject
-    lateinit var hyperHive: HyperHive
-    @Inject
     lateinit var navigator: IScreenNavigator
     @Inject
     lateinit var database: IDatabaseRepo
     @Inject
     lateinit var checkData: CheckData
+
+    companion object {
+        const val SAP_LENGTH = 6
+        const val SAP_OR_BAR_LENGTH = 12
+    }
 
     val goods: MutableLiveData<List<Good>> = MutableLiveData()
 
@@ -52,7 +54,7 @@ class GoodListViewModel : CoreViewModel() {
     fun createGood() {
         goodNumber.value.let { number ->
             if (number?.isNotEmpty() == true && number.length >= 6) {
-                if (number.length == 6) {
+                if (number.length == SAP_LENGTH) {
                     Logg.d { "Entered SAP-code: $number" }
                     val good = goods.value?.find { it.sapCode == number }
                     checkData.getCurrentSegment().getCurrentShelf().let { currentShelf ->
@@ -68,13 +70,13 @@ class GoodListViewModel : CoreViewModel() {
                     }
                 }
 
-                if (number.length == 12) { // введен sap/bar код
+                if (number.length == SAP_OR_BAR_LENGTH) { // введен sap/bar код
                     Logg.d { "Entered SAP or BAR-code: $number" }
                     // todo ЭКРАН выбора типа введенного кода
 
                 }
 
-                if (number.length > 6) {
+                if (number.length > SAP_LENGTH) {
                     Logg.d { "Entered BAR-code: $number" }
                     val good = goods.value?.find { it.barCode == number }
                     checkData.getCurrentSegment().getCurrentShelf().let { currentShelf ->
