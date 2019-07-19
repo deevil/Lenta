@@ -44,10 +44,11 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_margin="8dp"
+                        android:digits="0123456789"
                         android:hint="@string/enter_quantity"
-                        android:inputType="numberDecimal"
+                        android:inputType="number"
                         android:maxLength="3"
-                        android:text="@={vm.numberOfFacings}"
+                        android:text="@={vm.facings}"
                         android:textSize="14sp"
                         tools:ignore="Autofill"/>
 

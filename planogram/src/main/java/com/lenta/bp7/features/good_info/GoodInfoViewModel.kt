@@ -7,6 +7,7 @@ import com.lenta.bp7.data.model.Good
 import com.lenta.bp7.platform.navigation.IScreenNavigator
 import com.lenta.bp7.repos.IDatabaseRepo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
+import com.lenta.shared.utilities.extentions.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -21,10 +22,10 @@ class GoodInfoViewModel : CoreViewModel() {
 
     val good: MutableLiveData<Good> = MutableLiveData()
 
-    val numberOfFacings: MutableLiveData<String> = MutableLiveData()
+    val facings: MutableLiveData<String> = MutableLiveData()
 
-    val missingButtonEnabled: MutableLiveData<Boolean> = MutableLiveData(false)
-    val applyButtonEnabled: MutableLiveData<Boolean> = MutableLiveData(false)
+    val missingButtonEnabled: MutableLiveData<Boolean> = facings.map { if (it?.isNotEmpty() == true) it.toInt() == 0 else true }
+    val applyButtonEnabled: MutableLiveData<Boolean> = facings.map { if (it?.isNotEmpty() == true) it.toInt() > 0 else false }
 
     init {
         viewModelScope.launch {
