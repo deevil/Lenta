@@ -99,7 +99,8 @@
             android:digits="0123456789"
             android:drawableEnd="@drawable/ic_add_white_24dp"
             android:hint="@string/enter_shelf_number"
-            android:inputType="numberDecimal"
+            android:imeOptions="actionGo"
+            android:inputType="number"
             android:maxLength="12"
             android:text="@={vm.shelfNumber}"
             tools:ignore="Autofill"/>

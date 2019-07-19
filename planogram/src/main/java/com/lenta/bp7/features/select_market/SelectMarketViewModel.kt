@@ -15,7 +15,7 @@ import javax.inject.Inject
 class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
 
     @Inject
-    lateinit var screenNavigator: IScreenNavigator
+    lateinit var navigator: IScreenNavigator
     @Inject
     lateinit var sessionInfo: ISessionInfo
     @Inject
@@ -68,7 +68,10 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
             appSettings.lastTK = it
         }
 
-        screenNavigator.openCheckTypeScreen()
+        //navigator.openCheckTypeScreen()
+
+        // todo Удалить после тестов!!!
+        navigator.openSegmentListScreen()
     }
 
     private fun clearPrinters() {

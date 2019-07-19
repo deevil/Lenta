@@ -8,6 +8,7 @@ import com.lenta.bp7.data.model.ShelfStatus
 import com.lenta.bp7.platform.navigation.IScreenNavigator
 import com.lenta.bp7.repos.IDatabaseRepo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
+import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.map
 import com.mobrun.plugin.api.HyperHive
@@ -51,13 +52,14 @@ class GoodListViewModel : CoreViewModel() {
     fun createGood() {
         goodNumber.value.let { number ->
             if (number?.isNotEmpty() == true && number.length >= 6) {
-                if (number.length == 6) { // введен sap код
+                if (number.length == 6) {
+                    Logg.d { "Entered SAP-code: $number" }
                     val good = goods.value?.find { it.sapCode == number }
                     checkData.getCurrentSegment().getCurrentShelf().let { currentShelf ->
                         when (good) {
                             null -> {
                                 viewModelScope.launch {
-                                    currentShelf.addGood(database.getGoodInfoBySapCode(number))
+                                    currentShelf.addGood(database.getGoodInfoBySapCode("000000000000$number"))
                                 }
                             }
                             else -> currentShelf.currentGoodIndex = goods.value?.indexOf(good)
@@ -67,11 +69,13 @@ class GoodListViewModel : CoreViewModel() {
                 }
 
                 if (number.length == 12) { // введен sap/bar код
+                    Logg.d { "Entered SAP or BAR-code: $number" }
                     // todo ЭКРАН выбора типа введенного кода
 
                 }
 
-                if (number.length > 6) { // введен bar код
+                if (number.length > 6) {
+                    Logg.d { "Entered BAR-code: $number" }
                     val good = goods.value?.find { it.barCode == number }
                     checkData.getCurrentSegment().getCurrentShelf().let { currentShelf ->
                         when (good) {
@@ -86,7 +90,7 @@ class GoodListViewModel : CoreViewModel() {
                     }
                 }
 
-                navigator.openGoodInfoScreen()
+                //navigator.openGoodInfoScreen()
             }
         }
     }

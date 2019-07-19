@@ -66,7 +66,7 @@ class CheckData(
             val facings = (0..35).random()
             goods.add(0, Good(
                     id = i,
-                    sapCode = createSapCode(),
+                    sapCode = (100000..999999).random().toString(),
                     barCode = (10000000000..99999999999).random().toString(),
                     name = "Товар " + (1..1000).random(),
                     status = createGoodStatus(facings),
@@ -74,15 +74,6 @@ class CheckData(
         }
 
         return goods
-    }
-
-    private fun createSapCode(): String {
-        var sap = (1..999999).random().toString()
-        while (sap.length < 6) {
-            sap = "0$sap"
-        }
-
-        return sap
     }
 
     private fun createGoodStatus(facings: Int): GoodStatus {
