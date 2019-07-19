@@ -44,5 +44,4 @@ class GoodInfoViewModel : CoreViewModel() {
 
     }
 
-
 }

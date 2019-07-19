@@ -9,13 +9,14 @@ import com.lenta.bp7.platform.navigation.IScreenNavigator
 import com.lenta.bp7.repos.IDatabaseRepo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.Logg
+import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.map
 import kotlinx.coroutines.launch
 import java.lang.IllegalArgumentException
 import javax.inject.Inject
 
-class GoodListViewModel : CoreViewModel() {
+class GoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
     @Inject
     lateinit var navigator: IScreenNavigator
@@ -51,7 +52,12 @@ class GoodListViewModel : CoreViewModel() {
         }
     }
 
-    fun createGood() {
+    override fun onOkInSoftKeyboard(): Boolean {
+        createGood()
+        return true
+    }
+
+    private fun createGood() {
         goodNumber.value.let { number ->
             if (number?.isNotEmpty() == true && number.length >= 6) {
                 if (number.length == SAP_LENGTH) {

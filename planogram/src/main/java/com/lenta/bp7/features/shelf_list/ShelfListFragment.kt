@@ -70,7 +70,6 @@ class ShelfListFragment : CoreFragment<FragmentShelfListBinding, ShelfListViewMo
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         initRvConfig()
-        initShelfNumberField()
     }
 
     private fun initRvConfig() {
@@ -118,18 +117,6 @@ class ShelfListFragment : CoreFragment<FragmentShelfListBinding, ShelfListViewMo
                     lifecycleOwner = layoutBinding.lifecycleOwner!!,
                     initPosInfo = recyclerViewKeyHandler?.posInfo?.value
             )
-        }
-    }
-
-    private fun initShelfNumberField() {
-        binding?.etShelfNumber?.setOnEditorActionListener { _, actionId, _ ->
-            return@setOnEditorActionListener when (actionId) {
-                EditorInfo.IME_ACTION_GO -> {
-                    vm.createShelf()
-                    true
-                }
-                else -> false
-            }
         }
     }
 

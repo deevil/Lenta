@@ -65,7 +65,6 @@ class SegmentListFragment : CoreFragment<FragmentSegmentListBinding, SegmentList
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         initRvConfig()
-        initSegmentNumberField()
     }
 
     private fun initRvConfig() {
@@ -103,18 +102,6 @@ class SegmentListFragment : CoreFragment<FragmentSegmentListBinding, SegmentList
                     lifecycleOwner = layoutBinding.lifecycleOwner!!,
                     initPosInfo = recyclerViewKeyHandler?.posInfo?.value
             )
-        }
-    }
-
-    private fun initSegmentNumberField() {
-        binding?.etSegmentNumber?.setOnEditorActionListener { _, actionId, _ ->
-            return@setOnEditorActionListener when (actionId) {
-                EditorInfo.IME_ACTION_GO -> {
-                    vm.createSegment()
-                    true
-                }
-                else -> false
-            }
         }
     }
 }

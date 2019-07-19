@@ -68,7 +68,6 @@ class GoodListFragment : CoreFragment<FragmentGoodListBinding, GoodListViewModel
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         initRvConfig()
-        initGoodNumberField()
     }
 
     private fun initRvConfig() {
@@ -106,18 +105,6 @@ class GoodListFragment : CoreFragment<FragmentGoodListBinding, GoodListViewModel
                     lifecycleOwner = layoutBinding.lifecycleOwner!!,
                     initPosInfo = recyclerViewKeyHandler?.posInfo?.value
             )
-        }
-    }
-
-    private fun initGoodNumberField() {
-        binding?.etGoodNumber?.setOnEditorActionListener { _, actionId, _ ->
-            return@setOnEditorActionListener when (actionId) {
-                EditorInfo.IME_ACTION_GO -> {
-                    vm.createGood()
-                    true
-                }
-                else -> false
-            }
         }
     }
 
