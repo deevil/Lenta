@@ -47,7 +47,6 @@
     <string name="tv_party_signs">По отсканированной марке необходимо указать партионные признаки</string>
     <string name="tv_bottling_date">Дата розлива</string>
     <string name="et_bottling_date">дд.мм.гггг</string>
-
     <string name="taken_to_work">Принято в работу</string>
     <string name="taken_to_work_info">Задание %1$s принято в работу. До окончания пересчета осталось %2$s часов</string>
 </resources>
