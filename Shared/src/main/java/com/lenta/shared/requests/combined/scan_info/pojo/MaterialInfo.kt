@@ -1,7 +1,7 @@
 package com.lenta.shared.requests.combined.scan_info.pojo
 
 
-data class GoodInfo(
+data class MaterialInfo(
         val material: String,
         val name: String,
         val matype: String,

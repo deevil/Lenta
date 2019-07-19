@@ -56,17 +56,12 @@ class GoodListViewModel : CoreViewModel() {
                     checkData.getCurrentSegment().getCurrentShelf().let { currentShelf ->
                         when (good) {
                             null -> {
-                                // todo получить информацию о товаре из базы
                                 viewModelScope.launch {
-                                    val barCodeInfo = database.getBarCodeInfoBySapCode(number)
-                                    val goodInfo = database.getGoodInfo(barCodeInfo?.materialNumber)
-                                    val unitName = database.getGoodUnit(goodInfo?.buom)
-
-                                    currentShelf.addGood(goodInfo?.material, barCodeInfo?.ean, goodInfo?.name, unitName )
+                                    currentShelf.addGood(database.getGoodInfoBySapCode(number))
                                 }
                             }
-                            else -> currentShelf.currentGoodIndex = goods.value?.indexOf(good) ?:
-                                    throw IllegalArgumentException("Good with SAP-$number already exist, but not found!")
+                            else -> currentShelf.currentGoodIndex = goods.value?.indexOf(good)
+                                    ?: throw IllegalArgumentException("Good with SAP-$number already exist, but not found!")
                         }
                     }
                 }
@@ -82,15 +77,11 @@ class GoodListViewModel : CoreViewModel() {
                         when (good) {
                             null -> {
                                 viewModelScope.launch {
-                                    val barCodeInfo = database.getBarCodeInfoByBarCode(number)
-                                    val goodInfo = database.getGoodInfo(barCodeInfo?.materialNumber)
-                                    val unitName = database.getGoodUnit(goodInfo?.buom)
-
-                                    currentShelf.addGood(goodInfo?.material, barCodeInfo?.ean, goodInfo?.name, unitName )
+                                    currentShelf.addGood(database.getGoodInfoByBarCode(number))
                                 }
                             }
-                            else -> currentShelf.currentGoodIndex = goods.value?.indexOf(good) ?:
-                                    throw IllegalArgumentException("Good with BAR-$number already exist, but not found!")
+                            else -> currentShelf.currentGoodIndex = goods.value?.indexOf(good)
+                                    ?: throw IllegalArgumentException("Good with BAR-$number already exist, but not found!")
                         }
                     }
                 }

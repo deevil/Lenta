@@ -10,6 +10,13 @@ data class Good(
     var status: GoodStatus = GoodStatus.CREATED
 )
 
+data class GoodInfo(
+        val sapCode: String? = "",
+        val barCode: String? = "",
+        val name: String? = "",
+        val units: String? = ""
+)
+
 enum class GoodStatus {
     CREATED,
     MISSING,
