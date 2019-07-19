@@ -8,6 +8,7 @@ import com.lenta.shared.fmp.ObjectRawStatus
 import com.lenta.shared.functional.Either
 import com.lenta.shared.interactor.UseCase
 import com.lenta.shared.utilities.Logg
+import com.lenta.shared.utilities.extentions.hhive.ANALYTICS_HELPER
 import com.lenta.shared.utilities.extentions.hhive.getFailure
 import com.lenta.shared.utilities.extentions.hhive.isNotBad
 import com.mobrun.plugin.api.HyperHive
@@ -25,6 +26,10 @@ class StockNetRequest
                     "Web-Authorization" to sessionInfo.basicAuth
             )
         }
+
+        val resName = "ZMP_UTZ_02_V001"
+
+        ANALYTICS_HELPER?.onStartFmpRequest(resName, "headers: ${webCallParams.headers}, data: ${webCallParams.data}")
 
         val status = hyperHive.requestAPI.web("ZMP_UTZ_02_V001", webCallParams, StockLockRequestStatus::class.java).execute()
         Logg.d { "StockNetRequest response: $status" }

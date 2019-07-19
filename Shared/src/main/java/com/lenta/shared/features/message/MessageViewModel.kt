@@ -2,6 +2,7 @@ package com.lenta.shared.features.message
 
 import androidx.annotation.DrawableRes
 import androidx.lifecycle.viewModelScope
+import com.lenta.shared.analytics.AnalyticsHelper
 import com.lenta.shared.features.message.usecase.DelayGoBack
 import com.lenta.shared.platform.navigation.ICoreNavigator
 import com.lenta.shared.platform.viewmodel.CoreViewModel
@@ -10,12 +11,14 @@ import javax.inject.Inject
 
 open class MessageViewModel : CoreViewModel() {
 
-
     @Inject
     lateinit var goBackWithDelay: DelayGoBack
 
     @Inject
     lateinit var coreNavigator: ICoreNavigator
+
+    @Inject
+    lateinit var analyticsHelper: AnalyticsHelper
 
     lateinit var message: String
 
@@ -34,6 +37,8 @@ open class MessageViewModel : CoreViewModel() {
                     goBackWithDelay(params = delayInMillis.toLong())
                 }
             }
+
+            analyticsHelper.infoScreenMessage(message)
 
         }
 

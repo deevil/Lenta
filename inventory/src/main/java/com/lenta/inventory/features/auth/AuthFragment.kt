@@ -1,5 +1,7 @@
 package com.lenta.inventory.features.auth
 
+import android.os.Bundle
+import android.view.View
 import com.lenta.inventory.R
 import com.lenta.inventory.platform.extentions.getAppComponent
 import com.lenta.inventory.platform.extentions.getAppTitle
@@ -26,6 +28,12 @@ class AuthFragment : CoreLoginFragment() {
         topToolbarUiModel.uiModelButton1.show(ImageButtonDecorationInfo.settings)
         topToolbarUiModel.uiModelButton2.show(ImageButtonDecorationInfo.exitFromApp)
     }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        vm.appTitle.value = getAppTitle()
+    }
+
 
 
 

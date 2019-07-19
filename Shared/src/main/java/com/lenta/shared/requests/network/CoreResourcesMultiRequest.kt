@@ -5,6 +5,7 @@ import com.lenta.shared.exception.Failure
 import com.lenta.shared.functional.Either
 import com.lenta.shared.interactor.UseCase
 import com.lenta.shared.utilities.Logg
+import com.lenta.shared.utilities.extentions.hhive.ANALYTICS_HELPER
 import com.lenta.shared.utilities.extentions.hhive.toEitherBoolean
 import com.lenta.shared.utilities.extentions.implementationOf
 import com.mobrun.plugin.api.request_assistant.CustomParameter
@@ -19,7 +20,7 @@ abstract class CoreResourcesMultiRequest : UseCase<Boolean, MutableLiveData<Load
 
     override suspend fun run(params: MutableLiveData<LoadStatus>?): Either<Failure, Boolean> {
 
-        val requests = getListOfRequests()
+        val requests = getMapOfRequests()
 
         lateinit var either: Either<Failure, Boolean>
 
@@ -27,12 +28,15 @@ abstract class CoreResourcesMultiRequest : UseCase<Boolean, MutableLiveData<Load
 
         params?.postValue(Loading(startTime = startTime, loadingDataSize = 0L))
 
-        for (request in requests) {
+        for (entry in requests) {
+
+            ANALYTICS_HELPER?.onStartFmpRequest(entry.key)
+
             either = (if (isDeltaRequest) {
-                request.streamCallDelta()
+                entry.value.streamCallDelta()
             } else {
-                request.streamCallTable()
-            }).execute().handleResult(status = params).toEitherBoolean()
+                entry.value.streamCallTable()
+            }).execute().handleResult(status = params).toEitherBoolean(nameResource = entry.key)
             if (either.isLeft) {
                 params?.postValue(NotInit)
                 return either
@@ -45,7 +49,7 @@ abstract class CoreResourcesMultiRequest : UseCase<Boolean, MutableLiveData<Load
 
     }
 
-    abstract fun getListOfRequests(): List<RequestBuilder<out CustomParameter, out ScalarParameter<Any>>>
+    abstract fun getMapOfRequests(): Map<String, RequestBuilder<out CustomParameter, out ScalarParameter<Any>>>
 
     private fun BaseStatus.handleResult(status: MutableLiveData<LoadStatus>?): BaseStatus {
         Logg.d { "BaseStatus: $this" }

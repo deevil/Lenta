@@ -6,6 +6,7 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.LiveData
 import com.lenta.shared.R
 import com.lenta.shared.analytics.IAnalytics
+import com.lenta.shared.analytics.db.RoomAppDatabase
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.exception.IFailureInterpreter
 import com.lenta.shared.features.alert.AlertFragment
@@ -34,6 +35,7 @@ class CoreNavigator constructor(private val context: Context,
                                 private val foregroundActivityProvider: ForegroundActivityProvider,
                                 private val failureInterpreter: IFailureInterpreter,
                                 private val analytics: IAnalytics,
+                                private val roomAppDatabase: RoomAppDatabase,
                                 override val backFragmentResultHelper: BackFragmentResultHelper) : ICoreNavigator {
 
     override val functionsCollector: FunctionsCollector by lazy {
@@ -63,6 +65,7 @@ class CoreNavigator constructor(private val context: Context,
         runOrPostpone {
             foregroundActivityProvider.getActivity()?.finish()
             analytics.cleanLogs()
+            roomAppDatabase.close()
             exitProcess(0)
         }
 

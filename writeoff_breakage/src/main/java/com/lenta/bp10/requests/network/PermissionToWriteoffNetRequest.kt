@@ -8,6 +8,7 @@ import com.lenta.shared.fmp.ObjectRawStatus
 import com.lenta.shared.fmp.toFmpObjectRawStatusEither
 import com.lenta.shared.functional.Either
 import com.lenta.shared.interactor.UseCase
+import com.lenta.shared.utilities.extentions.hhive.ANALYTICS_HELPER
 import com.mobrun.plugin.api.HyperHive
 import com.mobrun.plugin.api.callparams.WebCallParams
 import javax.inject.Inject
@@ -24,9 +25,11 @@ class PermissionToWriteoffNetRequest
             )
         }
 
-        /**val resString = hyperHive.requestAPI.web("ZMP_UTZ_WOB_06_V001", webCallParams). execute()
-        Logg.d { "resString: $resString" }*/
-        val res = hyperHive.requestAPI.web("ZMP_UTZ_WOB_06_V001", webCallParams).execute().toFmpObjectRawStatusEither(PermissionToWriteoffStatus::class.java, gson)
+        val resName = "ZMP_UTZ_WOB_06_V001"
+
+        ANALYTICS_HELPER?.onStartFmpRequest(resName, "headers: ${webCallParams.headers}, data: ${webCallParams.data}")
+
+        val res = hyperHive.requestAPI.web(resName, webCallParams).execute().toFmpObjectRawStatusEither(PermissionToWriteoffStatus::class.java, gson)
 
         return res
     }

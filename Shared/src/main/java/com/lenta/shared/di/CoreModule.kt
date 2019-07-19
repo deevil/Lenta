@@ -1,11 +1,13 @@
 package com.lenta.shared.di
 
+import android.Manifest
 import android.app.Application
 import android.content.Context
 import android.content.SharedPreferences
 import android.os.Environment
 import android.os.Handler
 import android.preference.PreferenceManager
+import androidx.room.Room
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.lenta.shared.BuildConfig
@@ -13,8 +15,12 @@ import com.lenta.shared.account.Authenticator
 import com.lenta.shared.account.IAuthenticator
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.account.SessionInfo
+import com.lenta.shared.analytics.AnalyticsHelper
 import com.lenta.shared.analytics.FmpAnalytics
 import com.lenta.shared.analytics.IAnalytics
+import com.lenta.shared.analytics.db.FileArchivator
+import com.lenta.shared.analytics.db.dao.LogDao
+import com.lenta.shared.analytics.db.RoomAppDatabase
 import com.lenta.shared.exception.CoreFailureInterpreter
 import com.lenta.shared.exception.IFailureInterpreter
 import com.lenta.shared.platform.network_state.INetworkStateMonitor
@@ -38,17 +44,21 @@ import com.lenta.shared.settings.AppSettings
 import com.lenta.shared.settings.DefaultConnectionSettings
 import com.lenta.shared.settings.IAppSettings
 import com.lenta.shared.utilities.Logg
+import com.lenta.shared.utilities.extentions.isWriteExternalStoragePermissionGranted
+import com.lenta.shared.utilities.prepareFolder
 import com.mobrun.plugin.api.HyperHive
 import com.mobrun.plugin.api.HyperHiveState
 import com.mobrun.plugin.api.VersionAPI
 import dagger.Module
 import dagger.Provides
-import java.io.File
 import javax.inject.Singleton
 
 
 @Module
 class CoreModule(val application: Application, val defaultConnectionSettings: DefaultConnectionSettings) {
+
+    val dbPath = "${Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS).absolutePath}/FMP/db"
+
     @Provides
     fun provideAppContext() = application.applicationContext!!
 
@@ -67,22 +77,15 @@ class CoreModule(val application: Application, val defaultConnectionSettings: De
     @Provides
     @Singleton
     internal fun provideHyperHiveState(appContext: Context, appSettings: IAppSettings): HyperHiveState {
-        var dbPath = "${Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS).canonicalPath}/FMP/db"
-        with(File(dbPath)) {
-            if (!exists()) {
-                mkdirs().also {
-                    Logg.d { "mkDirs: $it" }
-                }
-            }
-        }
+        prepareFolder(dbPath)
+        val fmpDbName = "resources_${appSettings.getCurrentEnvironment()}_${appSettings.getCurrentProject()}.sqlite"
 
-        dbPath = "$dbPath/resources_${appSettings.getCurrentEnvironment()}_${appSettings.getCurrentProject()}.sqlite"
         Logg.d { "dbPath: $dbPath" }
         return HyperHiveState(appContext)
                 .setHostWithSchema(appSettings.getCurrentServerAddress())
                 .setApiVersion(VersionAPI.V_1)
                 .setEnvironmentSlug(appSettings.getCurrentEnvironment())
-                .setDbPathDefault(dbPath)
+                .setDbPathDefault("$dbPath/$fmpDbName")
                 .setProjectSlug(appSettings.getCurrentProject())
                 .setVersionProject("app")
                 .setHandler(Handler())
@@ -90,6 +93,7 @@ class CoreModule(val application: Application, val defaultConnectionSettings: De
                 .setDefaultRetryIntervalSec(10)
                 .setGsonForParcelPacker(GsonBuilder().excludeFieldsWithoutExposeAnnotation().create())
     }
+
 
     @Provides
     @Singleton
@@ -162,8 +166,9 @@ class CoreModule(val application: Application, val defaultConnectionSettings: De
                                        foregroundActivityProvider: ForegroundActivityProvider,
                                        failureInterpreter: IFailureInterpreter,
                                        analytics: IAnalytics,
+                                       roomAppDatabase: RoomAppDatabase,
                                        backFragmentResultHelper: BackFragmentResultHelper): ICoreNavigator {
-        return CoreNavigator(context, foregroundActivityProvider, failureInterpreter, analytics, backFragmentResultHelper)
+        return CoreNavigator(context, foregroundActivityProvider, failureInterpreter, analytics, roomAppDatabase, backFragmentResultHelper)
     }
 
     @Provides
@@ -174,8 +179,8 @@ class CoreModule(val application: Application, val defaultConnectionSettings: De
 
     @Provides
     @Singleton
-    internal fun provideIAnalitycs(hyperHive: HyperHive): IAnalytics {
-        return FmpAnalytics(hyperHive)
+    internal fun provideIAnalitycs(hyperHive: HyperHive, logDao: LogDao): IAnalytics {
+        return FmpAnalytics(hyperHive, logDao)
     }
 
     @Provides
@@ -200,5 +205,53 @@ class CoreModule(val application: Application, val defaultConnectionSettings: De
     internal fun provideBackResultHelper(): BackFragmentResultHelper {
         return BackFragmentResultHelper()
     }
+
+    @Provides
+    @Singleton
+    fun provideRoomDB(context: Context): RoomAppDatabase {
+        val logsDbPath = "$dbPath/logs/${context.packageName}"
+
+        prepareFolder(logsDbPath)
+
+        val dbLogName = "logs_${context.packageName}.sqlite"
+        val dbLogFilePath = "$logsDbPath/$dbLogName"
+
+
+        var isBackUpCreating = false
+
+        if (context.isWriteExternalStoragePermissionGranted()) {
+            val fileArchivator = FileArchivator(filePath = dbLogFilePath,
+                    archivePath = "$logsDbPath/archives")
+
+            isBackUpCreating = fileArchivator.backup()
+
+        }
+
+        return Room.databaseBuilder(
+                context,
+                RoomAppDatabase::class.java, dbLogFilePath
+        ).allowMainThreadQueries()
+                .build().apply {
+                    if (isBackUpCreating) {
+                        this.clearAllTables()
+                    }
+                }
+
+
+
+    }
+
+    @Provides
+    @Singleton
+    fun provideLogDao(roomAppDatabase: RoomAppDatabase): LogDao {
+        return roomAppDatabase.logDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideAnalyticsHelper(iAnalytics: IAnalytics, context: Context): AnalyticsHelper {
+        return AnalyticsHelper(iAnalytics, context)
+    }
+
 
 }

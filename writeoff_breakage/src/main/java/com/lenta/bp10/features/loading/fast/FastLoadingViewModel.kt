@@ -8,12 +8,17 @@ import com.lenta.bp10.requests.network.FastResourcesMultiRequest
 import com.lenta.bp10.requests.network.StockLockRequestResult
 import com.lenta.bp10.requests.network.StockNetRequest
 import com.lenta.bp10.requests.network.loader.ResourcesLoader
+import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.exception.IFailureInterpreter
 import com.lenta.shared.features.loading.CoreLoadingViewModel
 import com.lenta.shared.fmp.resources.dao_ext.getAllowedWobAppVersion
 import com.lenta.shared.fmp.resources.fast.ZmpUtz14V001
 import com.lenta.shared.platform.app_update.AppUpdateChecker
+import com.lenta.shared.platform.time.ITimeMonitor
+import com.lenta.shared.requests.network.ServerTime
+import com.lenta.shared.requests.network.ServerTimeRequest
+import com.lenta.shared.requests.network.ServerTimeRequestParam
 import com.mobrun.plugin.api.HyperHive
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -38,6 +43,12 @@ class FastLoadingViewModel : CoreLoadingViewModel() {
     lateinit var appUpdateChecker: AppUpdateChecker
     @Inject
     lateinit var repoInMemoryHolder: IRepoInMemoryHolder
+    @Inject
+    lateinit var serverTimeRequest: ServerTimeRequest
+    @Inject
+    lateinit var sessionInfo: ISessionInfo
+    @Inject
+    lateinit var timeMonitor: ITimeMonitor
 
     val zmpUtz14V001: ZmpUtz14V001 by lazy { ZmpUtz14V001(hyperHive) }
 
@@ -49,13 +60,23 @@ class FastLoadingViewModel : CoreLoadingViewModel() {
     init {
         viewModelScope.launch {
             progress.value = true
-            fastResourcesNetRequest(null).either(::handleFailure, ::loadStores)
+            serverTimeRequest(ServerTimeRequestParam(sessionInfo.market
+                    ?: "")).either(::handleFailure, ::handleSuccessServerTime)
             progress.value = false
 
         }
     }
 
-    private fun loadStores(@Suppress("UNUSED_PARAMETER") b: Boolean) {
+    private fun handleSuccessServerTime(serverTime: ServerTime) {
+        timeMonitor.setServerTime(time = serverTime.time, date = serverTime.date)
+        viewModelScope.launch {
+            progress.value = true
+            fastResourcesNetRequest(null).either(::handleFailure, ::loadStocks)
+            progress.value = false
+        }
+    }
+
+    private fun loadStocks(@Suppress("UNUSED_PARAMETER") b: Boolean) {
         viewModelScope.launch {
             stockNetRequest(null).either(::handleFailure, ::handleSuccess)
         }
@@ -79,7 +100,8 @@ class FastLoadingViewModel : CoreLoadingViewModel() {
                 screenNavigator.openLoginScreen()
                 screenNavigator.openNeedUpdateScreen()
             } else {
-                resourceLoader.startLoadSlowResources()
+                //TODO Вернуть загрузку в фоне slow data после доработки SDK
+                //resourceLoader.startLoadSlowResources()
                 screenNavigator.openSelectionPersonnelNumberScreen()
             }
         }
