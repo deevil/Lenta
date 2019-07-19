@@ -20,16 +20,6 @@ class InventoryTask(val taskDescription: TaskDescription, val taskRepository: IT
         } else null
     }
 
-    //фун-ция возвращает НЕ ОБРАБОТАННЫЕ товары
-    fun getNotProcessedProducts(){
-        taskRepository.getProducts().getNotProcessedProducts()
-    }
-
-    //фун-ция возвращает ОБРАБОТАННЫЕ товары
-    fun getProcessedProducts(){
-        taskRepository.getProducts().getProcessedProducts()
-    }
-
     fun getProcessedStorePlaces() : List<TaskStorePlaceInfo> {
         return taskRepository.getStorePlace().getStorePlaces().filter { it.isProcessed }
     }

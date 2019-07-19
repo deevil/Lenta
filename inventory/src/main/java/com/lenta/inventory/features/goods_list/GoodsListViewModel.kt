@@ -20,6 +20,7 @@ import com.lenta.shared.utilities.databinding.Evenable
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.extentions.getDeviceIp
 import com.lenta.shared.utilities.extentions.map
+import com.lenta.shared.utilities.extentions.toStringFormatted
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -36,8 +37,8 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     @Inject
     lateinit var taskManager: IInventoryTaskManager
 
-    val unprocessedGoods: MutableLiveData<List<GoodItem>> = MutableLiveData()
-    val processedGoods: MutableLiveData<List<GoodItem>> = MutableLiveData()
+    val unprocessedGoods: MutableLiveData<List<ProductInfoVM>> = MutableLiveData()
+    val processedGoods: MutableLiveData<List<ProductInfoVM>> = MutableLiveData()
     var selectedPage = MutableLiveData(0)
 
     val eanCode: MutableLiveData<String> = MutableLiveData()
@@ -82,17 +83,17 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     }
 
     fun updateProcessed() {
-        val goodItem = GoodItem(1, "Good Processed Good", "Што шт.", false)
-        val badItem = GoodItem(2, "Bad Processed Good", "Што шт.", true)
-        val uglyItem = GoodItem(3, "Ugly Processed Good", "Што шт.", false)
-        processedGoods.postValue(listOf(goodItem, badItem, uglyItem))
+        val processed = storePlaceManager?.getProcessedProducts() ?: emptyList()
+        processedGoods.postValue(processed.mapIndexed { index, productInfo ->
+            ProductInfoVM(number = processed.size - index,
+                    name = "${productInfo.getMaterialLastSix()} ${productInfo.description}",
+                    quantity = "${productInfo.factCount.toStringFormatted()} ${productInfo.uom.name}")
+        })
     }
 
     fun updateUnprocessed() {
-        val goodItem = GoodItem(1, "Good Good", "Што шт.", false)
-        val badItem = GoodItem(2, "Bad Good", "Што шт.", true)
-        val uglyItem = GoodItem(3, "Ugly Good", "Што шт.", false)
-        unprocessedGoods.postValue(listOf(goodItem, badItem, uglyItem))
+        val unprocessed = storePlaceManager?.getNotProcessedProducts() ?: emptyList()
+        unprocessedGoods.postValue(unprocessed.mapIndexed { index, productInfo -> ProductInfoVM(number = unprocessed.size - index, name = "${productInfo.getMaterialLastSix()} ${productInfo.description}\"", quantity = productInfo.factCount.toString()) })
     }
 
     fun onClickClean() {
@@ -152,12 +153,8 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     }
 }
 
-data class GoodItem(
+data class ProductInfoVM(
         val number: Int,
         val name: String,
-        val quantity: String,
-        val even: Boolean
-//        val productInfo: ProductInfo
-) : Evenable {
-    override fun isEven() = even
-}
+        val quantity: String
+)
