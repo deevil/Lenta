@@ -62,16 +62,20 @@ class GoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
             if (number?.isNotEmpty() == true && number.length >= 6) {
                 if (number.length == SAP_LENGTH) {
                     Logg.d { "Entered SAP-code: $number" }
-                    val good = goods.value?.find { it.sapCode == number }
+                    val good = goods.value?.find { it.sapCode == "000000000000$number" }
                     checkData.getCurrentSegment().getCurrentShelf().let { currentShelf ->
                         when (good) {
                             null -> {
                                 viewModelScope.launch {
                                     currentShelf.addGood(database.getGoodInfoBySapCode("000000000000$number"))
+                                    openInfoScreen()
                                 }
                             }
-                            else -> currentShelf.currentGoodIndex = goods.value?.indexOf(good)
-                                    ?: throw IllegalArgumentException("Good with SAP-$number already exist, but not found!")
+                            else -> {
+                                currentShelf.currentGoodIndex = goods.value?.indexOf(good)
+                                        ?: throw IllegalArgumentException("Good with SAP-$number exist, but not found!")
+                                openInfoScreen()
+                            }
                         }
                     }
                 }
@@ -90,17 +94,25 @@ class GoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
                             null -> {
                                 viewModelScope.launch {
                                     currentShelf.addGood(database.getGoodInfoByBarCode(number))
+                                    openInfoScreen()
                                 }
                             }
-                            else -> currentShelf.currentGoodIndex = goods.value?.indexOf(good)
-                                    ?: throw IllegalArgumentException("Good with BAR-$number already exist, but not found!")
+                            else -> {
+                                currentShelf.currentGoodIndex = goods.value?.indexOf(good)
+                                        ?: throw IllegalArgumentException("Good with BAR-$number exist, but not found!")
+                                openInfoScreen()
+                            }
                         }
                     }
                 }
-
-                navigator.openGoodInfoScreen()
             }
         }
+    }
+
+    private fun openInfoScreen() {
+        // todo Логика выбора экрана в зависимости от параметров проверки
+
+        navigator.openGoodInfoScreen()
     }
 
     fun onClickApply() {
@@ -134,6 +146,7 @@ class GoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
     fun onClickItemPosition(position: Int) {
         checkData.getCurrentSegment().getCurrentShelf().currentGoodIndex = position
-        navigator.openGoodInfoScreen()
+        openInfoScreen()
     }
+
 }

@@ -86,7 +86,10 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
 
     private fun handleSuccessServerTime(serverTime: ServerTime) {
         timeMonitor.setServerTime(time = serverTime.time, date = serverTime.date)
-        navigator.openCheckTypeScreen()
+
+        // todo Для упрощения тестирования. Потом поменять обратно.
+        //navigator.openCheckTypeScreen()
+        navigator.openSegmentListScreen()
     }
 
     private fun clearPrinters() {

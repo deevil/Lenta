@@ -1,8 +1,8 @@
-package com.lenta.bp7.features.option
+package com.lenta.bp7.features.option_info
 
 import android.view.View
 import com.lenta.bp7.R
-import com.lenta.bp7.databinding.FragmentOptionBinding
+import com.lenta.bp7.databinding.FragmentOptionInfoBinding
 import com.lenta.bp7.platform.extentions.getAppComponent
 import com.lenta.bp7.platform.extentions.getAppTitle
 import com.lenta.shared.platform.fragment.CoreFragment
@@ -13,14 +13,14 @@ import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
 import com.lenta.shared.utilities.extentions.provideViewModel
 
-class OptionFragment : CoreFragment<FragmentOptionBinding, OptionViewModel>(), ToolbarButtonsClickListener {
+class OptionInfoFragment : CoreFragment<FragmentOptionInfoBinding, OptionInfoViewModel>(), ToolbarButtonsClickListener {
 
-    override fun getLayoutId(): Int = R.layout.fragment_option
+    override fun getLayoutId(): Int = R.layout.fragment_option_info
 
     override fun getPageNumber(): String? = generateScreenNumberFromPostfix("07")
 
-    override fun getViewModel(): OptionViewModel {
-        provideViewModel(OptionViewModel::class.java).let {
+    override fun getViewModel(): OptionInfoViewModel {
+        provideViewModel(OptionInfoViewModel::class.java).let {
             getAppComponent()?.inject(it)
             return it
         }

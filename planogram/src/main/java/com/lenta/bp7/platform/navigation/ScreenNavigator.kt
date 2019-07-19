@@ -4,7 +4,7 @@ import android.content.Context
 import com.lenta.bp7.features.auth.AuthFragment
 import com.lenta.bp7.features.check_type.CheckTypeFragment
 import com.lenta.bp7.features.loading.fast.FastDataLoadingFragment
-import com.lenta.bp7.features.option.OptionFragment
+import com.lenta.bp7.features.option_info.OptionInfoFragment
 import com.lenta.bp7.features.code.CodeFragment
 import com.lenta.bp7.features.good_info.GoodInfoFragment
 import com.lenta.bp7.features.good_list.GoodListFragment
@@ -78,7 +78,7 @@ class ScreenNavigator(
 
     override fun openOptionScreen() {
         runOrPostpone {
-            getFragmentStack()?.push(OptionFragment())
+            getFragmentStack()?.push(OptionInfoFragment())
         }
     }
 

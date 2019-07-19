@@ -44,10 +44,11 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_margin="8dp"
-                        android:text="@={vm.numberOfFacings}"
                         android:hint="@string/enter_quantity"
                         android:inputType="numberDecimal"
                         android:maxLength="3"
+                        android:text="@={vm.numberOfFacings}"
+                        android:textSize="14sp"
                         tools:ignore="Autofill"/>
 
                 </LinearLayout>
@@ -81,9 +82,9 @@
                         android:id="@+id/tw_facing_count"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="@{@string/one_space_two(vm.good.totalFacings, vm.good.units)}"
                         android:paddingStart="10dp"
                         android:paddingEnd="10dp"
+                        android:text="@{@string/one_space_two(vm.good.totalFacings, vm.good.units)}"
                         android:textSize="14sp"
                         tools:text="5 шт"/>
 
@@ -130,9 +131,9 @@
                         android:id="@+id/tw_barcode"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="@{vm.good.barCode}"
                         android:paddingStart="10dp"
                         android:paddingEnd="10dp"
+                        android:text="@{vm.good.barCode}"
                         android:textSize="14sp"
                         tools:text="12345678912"/>
 
