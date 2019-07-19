@@ -14,6 +14,7 @@ class TaskProductInfo(materialNumber: String,
                       matrixType: MatrixType,
                       materialType: String,
                       val placeCode: String,
-                      var factCount: Double?,
-                      var isPositionCalc: Boolean) : ProductInfo(materialNumber, description, uom, type, isSet, sectionId, matrixType, materialType) {
+                      var factCount: Double = 0.0,
+                      var isPositionCalc: Boolean,
+                      val isExcOld: Boolean) : ProductInfo(materialNumber, description, uom, type, isSet, sectionId, matrixType, materialType) {
 }

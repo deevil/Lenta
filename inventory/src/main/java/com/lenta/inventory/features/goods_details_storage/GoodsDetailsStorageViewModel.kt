@@ -9,6 +9,7 @@ import com.lenta.inventory.platform.navigation.IScreenNavigator
 import com.lenta.shared.models.core.EgaisStampVersion
 import com.lenta.shared.models.core.ExciseStamp
 import com.lenta.shared.platform.viewmodel.CoreViewModel
+import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.toStringFormatted
@@ -33,6 +34,7 @@ class GoodsDetailsStorageViewModel : CoreViewModel() {
     val countedProssed: MutableLiveData<List<GoodsDetailsStorageItem>> = MutableLiveData()
     val countedNotProssed: MutableLiveData<List<GoodsDetailsStorageItem>> = MutableLiveData()
     val categoriesSelectionsHelper = SelectionItemsHelper()
+
     private val processExciseAlcoProductService: ProcessExciseAlcoProductService by lazy {
         processServiceManager.getInventoryTask()!!.processExciseAlcoProduct(productInfo.value!!)!!
     }
@@ -46,7 +48,6 @@ class GoodsDetailsStorageViewModel : CoreViewModel() {
             //searchProductDelegate.init(viewModelScope = this@GoodsListViewModel::viewModelScope)
             updateGoodsInfo()
         }
-
     }
 
     fun onResume() {
@@ -76,6 +77,8 @@ class GoodsDetailsStorageViewModel : CoreViewModel() {
                                         filter {
                                             ExciseStamp.getEgaisVersion(it.code) == EgaisStampVersion.V3.version
                                         }.size
+
+        Logg.d { "vintageCount ${vintageCount}" }
 
         val goodsDetailsCategoriesItem: MutableList<GoodsDetailsCategoriesItem> = ArrayList()
 
