@@ -8,6 +8,5 @@ fun ZmpUtz07V001.getUomInfo(uom: String?): ZmpUtz07V001.ItemLocal_ET_UOMS? {
 }
 
 fun ZmpUtz07V001.getUnitName(uom: String?): String? {
-    @Suppress("INACCESSIBLE_TYPE")
-    return localHelper_ET_UOMS.getWhere("UOM = \"$uom\" LIMIT 1").getOrNull(0)?.name?.toLowerCase()
+    return getUomInfo(uom)?.name?.toLowerCase()
 }
