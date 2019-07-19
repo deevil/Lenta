@@ -29,7 +29,7 @@ class GoodInfoViewModel : CoreViewModel() {
 
     init {
         viewModelScope.launch {
-            good.value = checkData.getCurrentSegment().getCurrentShelf().getCurrentGood()
+            good.value = checkData.getCurrentGood()
         }
     }
 

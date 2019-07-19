@@ -43,8 +43,8 @@ class GoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
     init {
         viewModelScope.launch {
-            checkData.getCurrentSegment().let {
-                segmentNumber.value = it.number
+            checkData.let {
+                segmentNumber.value = it.getCurrentSegment().number
                 shelfNumber.value = it.getCurrentShelf().number
                 goods.value = it.getCurrentShelf().goods
                 unfinishedCurrentShelf.value = it.getCurrentShelf().status == ShelfStatus.UNFINISHED
@@ -63,16 +63,16 @@ class GoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
                 if (number.length == SAP_LENGTH) {
                     Logg.d { "Entered SAP-code: $number" }
                     val good = goods.value?.find { it.sapCode == "000000000000$number" }
-                    checkData.getCurrentSegment().getCurrentShelf().let { currentShelf ->
+                    checkData.let {
                         when (good) {
                             null -> {
                                 viewModelScope.launch {
-                                    currentShelf.addGood(database.getGoodInfoBySapCode("000000000000$number"))
+                                    it.addGood(database.getGoodInfoBySapCode("000000000000$number"))
                                     openInfoScreen()
                                 }
                             }
                             else -> {
-                                currentShelf.currentGoodIndex = goods.value?.indexOf(good)
+                                it.currentGoodIndex = goods.value?.indexOf(good)
                                         ?: throw IllegalArgumentException("Good with SAP-$number exist, but not found!")
                                 openInfoScreen()
                             }
@@ -89,16 +89,16 @@ class GoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
                 if (number.length > SAP_LENGTH) {
                     Logg.d { "Entered BAR-code: $number" }
                     val good = goods.value?.find { it.barCode == number }
-                    checkData.getCurrentSegment().getCurrentShelf().let { currentShelf ->
+                    checkData.let {
                         when (good) {
                             null -> {
                                 viewModelScope.launch {
-                                    currentShelf.addGood(database.getGoodInfoByBarCode(number))
+                                    it.addGood(database.getGoodInfoByBarCode(number))
                                     openInfoScreen()
                                 }
                             }
                             else -> {
-                                currentShelf.currentGoodIndex = goods.value?.indexOf(good)
+                                it.currentGoodIndex = goods.value?.indexOf(good)
                                         ?: throw IllegalArgumentException("Good with BAR-$number exist, but not found!")
                                 openInfoScreen()
                             }
@@ -119,7 +119,7 @@ class GoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
         // todo ЭКРАН подтверждение завершения сканирования полки
 
         // !Перенести на другой экран
-        checkData.getCurrentSegment().getCurrentShelf().status = ShelfStatus.PROCESSED
+        checkData.getCurrentShelf().status = ShelfStatus.PROCESSED
         navigator.goBack()
     }
 
@@ -133,20 +133,19 @@ class GoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
             // todo ЭКРАН полка пуста и будет удалена
 
             // !Перенести на другой экран
-            checkData.getCurrentSegment().deleteCurrentShelf()
+            checkData.deleteCurrentShelf()
             navigator.goBack()
         } else {
             // todo ЭКРАН сохранить результаты и закрыть для редактирования
 
             // !Перенести на другой экран
-            checkData.getCurrentSegment().getCurrentShelf().status = ShelfStatus.PROCESSED
+            checkData.getCurrentShelf().status = ShelfStatus.PROCESSED
             navigator.goBack()
         }
     }
 
     fun onClickItemPosition(position: Int) {
-        checkData.getCurrentSegment().getCurrentShelf().currentGoodIndex = position
+        checkData.currentGoodIndex = position
         openInfoScreen()
     }
-
 }

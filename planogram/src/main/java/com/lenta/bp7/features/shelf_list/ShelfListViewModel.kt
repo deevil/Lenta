@@ -61,7 +61,7 @@ class ShelfListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
     private fun createShelf() {
         if (shelfNumber.value?.isNotEmpty() == true) {
-            checkData.getCurrentSegment().addShelf(shelfNumber.value!!)
+            checkData.addShelf(shelfNumber.value!!)
             navigator.openGoodListScreen()
         }
     }
@@ -81,7 +81,7 @@ class ShelfListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
                 // !Перенести на другой экран
                 items!!.forEach { index ->
                     it.revert(index)
-                    checkData.getCurrentSegment().changeShelfStatusByIndex(index, ShelfStatus.DELETED)
+                    checkData.setShelfStatusDeletedByIndex(index)
                     shelves.value = checkData.getCurrentSegment().shelves
                 }
             }
@@ -118,7 +118,7 @@ class ShelfListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     }
 
     fun onClickItemPosition(position: Int) {
-        checkData.getCurrentSegment().currentShelfIndex = position
+        checkData.currentShelfIndex = position
         navigator.openGoodListScreen()
     }
 }

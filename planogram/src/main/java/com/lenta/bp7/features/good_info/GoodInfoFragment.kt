@@ -40,7 +40,7 @@ class GoodInfoFragment : CoreFragment<FragmentGoodInfoBinding, GoodInfoViewModel
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
-        bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.missing, enabled = false)
+        bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.missing, enabled = true)
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.apply, enabled = false)
 
         viewLifecycleOwner.apply {
