@@ -71,10 +71,7 @@ class LoadingTaskContentViewModel: CoreLoadingViewModel() {
             val taskDescription = TaskDescription.from(it, recountType ?: RecountType.None, taskContents.deadline)
             taskManager.newInventoryTask(taskDescription)
             taskManager.getInventoryTask()?.updateTaskWithContents(taskContents)
-            when (recountType) {
-                RecountType.Simple, RecountType.ParallelByPerNo -> screenNavigator.openGoodsListScreen()
-                RecountType.ParallelByStorePlaces -> screenNavigator.openStoragesList()
-            }
+            screenNavigator.openTakenToWorkFragment()
         }
     }
 

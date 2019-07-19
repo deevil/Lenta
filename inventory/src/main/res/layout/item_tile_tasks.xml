@@ -101,8 +101,7 @@
             android:maxLines="1"
             android:text="@{vm.title}"
             app:layout_constraintBottom_toTopOf="@+id/tv_stock"
-            app:layout_constraintEnd_toStartOf="@+id/div_vert2"
-            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintEnd_toStartOf="@+id/imageView2"
             app:layout_constraintStart_toEndOf="@+id/div_vert1"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_chainStyle="packed"
@@ -119,11 +118,22 @@
             android:maxLines="1"
             android:text="@{@string/stock_number(vm.stock)}"
             app:layout_constraintBottom_toTopOf="@+id/div_hor_bottom"
-            app:layout_constraintEnd_toStartOf="@+id/vertical_guidline_2"
+            app:layout_constraintEnd_toStartOf="@+id/imageView2"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="@+id/vertical_guidline_1"
             app:layout_constraintTop_toBottomOf="@+id/tv_name"
             tools:text="Склад 0001" />
+
+        <ImageView
+            android:id="@+id/imageView2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:src="@drawable/ic_keyboard_arrow_right_white_16dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/vertical_guidline_2"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <View
             android:id="@+id/div_hor_bottom"
