@@ -3,7 +3,7 @@ package com.lenta.bp7.features.code
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp7.data.CheckType
-import com.lenta.bp7.data.model.CheckStoreData
+import com.lenta.bp7.data.model.CheckData
 import com.lenta.bp7.platform.navigation.IScreenNavigator
 import com.lenta.bp7.repos.IDatabaseRepo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
@@ -24,7 +24,7 @@ class CodeViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     @Inject
     lateinit var database: IDatabaseRepo
     @Inject
-    lateinit var checkStoreData: CheckStoreData
+    lateinit var checkData: CheckData
 
     val number1: MutableLiveData<String> = MutableLiveData("")
     val number2: MutableLiveData<String> = MutableLiveData("")
@@ -39,9 +39,21 @@ class CodeViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
     private var pinCode: String? = ""
 
+    val enabledGoOverBtn: MutableLiveData<Boolean> = number1
+            .combineLatest(number2)
+            .combineLatest(number3)
+            .combineLatest(number4)
+            .map {
+                val pin1 = it?.first?.first?.first
+                val pin2 = it?.first?.first?.second
+                val pin3 = it?.first?.second
+                val pin4 = it?.second
+                !(pin1.isNullOrEmpty() || pin2.isNullOrEmpty() || pin3.isNullOrEmpty() || pin4.isNullOrEmpty())
+            }
+
     init {
         viewModelScope.launch {
-            when (checkStoreData.checkType) {
+            when (checkData.checkType) {
                 CheckType.SELF_CONTROL.type -> {
                     message.value = selfControlType.value
                     pinCode = database.getSelfControlPinCode()
@@ -65,18 +77,6 @@ class CodeViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     fun setIncorrectCodeMessage(incorrectCodeMessage: String) {
         this.incorrectCodeMessage.value = incorrectCodeMessage
     }
-
-    val enabledGoOverBtn: MutableLiveData<Boolean> = number1
-            .combineLatest(number2)
-            .combineLatest(number3)
-            .combineLatest(number4)
-            .map {
-                val pin1 = it?.first?.first?.first
-                val pin2 = it?.first?.first?.second
-                val pin3 = it?.first?.second
-                val pin4 = it?.second
-                !(pin1.isNullOrEmpty() || pin2.isNullOrEmpty() || pin3.isNullOrEmpty() || pin4.isNullOrEmpty())
-            }
 
     fun onClickGoOver() {
         Logg.d { "PIN check: $pinCode" }

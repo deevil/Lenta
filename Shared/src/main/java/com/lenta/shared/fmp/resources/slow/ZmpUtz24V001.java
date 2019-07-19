@@ -1,7 +1,5 @@
 package com.lenta.shared.fmp.resources.slow;
 
-import android.util.Log;
-
 import com.google.gson.annotations.SerializedName;
 import com.mobrun.plugin.api.HyperHive;
 import com.mobrun.plugin.api.helper.LocalTableResourceHelper;
