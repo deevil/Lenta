@@ -18,7 +18,9 @@ import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.Logg
+import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
+import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.getDeviceIp
 import com.lenta.shared.utilities.extentions.map
 import kotlinx.coroutines.launch
@@ -43,8 +45,14 @@ class StoragesListViewModel: CoreViewModel(), OnOkInSoftKeyboardListener {
 
     val storageNumber: MutableLiveData<String> = MutableLiveData()
     val requestFocusToStorageNumber: MutableLiveData<Boolean> = MutableLiveData()
+    val processedSelectionHelper = SelectionItemsHelper()
 
-    val deleteEnabled: MutableLiveData<Boolean> = selectedPage.map { it ?: 0 != 0 }
+    val deleteEnabled: MutableLiveData<Boolean> = selectedPage.combineLatest(processedSelectionHelper.selectedPositions).map {
+        val page = it?.first ?: 0
+        val selectionCount = it?.second?.size ?: 0
+        page != 0 && selectionCount > 0
+    }
+
     private var justLoaded: Boolean = true
 
     init {
@@ -91,7 +99,15 @@ class StoragesListViewModel: CoreViewModel(), OnOkInSoftKeyboardListener {
     }
 
     fun onClickClean() {
-        return
+        val selectedPositions = processedSelectionHelper.selectedPositions.value ?: emptySet<Int>()
+        for (position in selectedPositions) {
+            processedStorages.value?.get(position)?.let {
+                taskManager.getInventoryTask()?.clearStorePlaceByNumber(it.storeNumber)
+            }
+        }
+        processedSelectionHelper.clearPositions()
+        updateUnprocessed()
+        updateProcessed()
     }
 
     fun onClickComplete() {
@@ -134,7 +150,7 @@ class StoragesListViewModel: CoreViewModel(), OnOkInSoftKeyboardListener {
         selectedPage.value = position
     }
 
-    fun onDoubleClickPosition(position: Int) {
+    fun onClickItemPosition(position: Int) {
         var storeNumber : String?
         if (selectedPage.value == 0) {
             storeNumber = unprocessedStorages.value?.get(position)?.storeNumber

@@ -2,6 +2,13 @@ package com.lenta.inventory.models.task
 
 class StorePlaceProcessing(val inventoryTask: InventoryTask, val storePlaceNumber: String) {
 
+    fun markAsProcessed() {
+        val storePlace = inventoryTask.taskRepository.getStorePlace().findStorePlace(storePlaceNumber)
+        storePlace?.let {
+            it.isProcessed = true
+        }
+    }
+
     //фун-ция возвращает НЕ ОБРАБОТАННЫЕ товары
     fun getNotProcessedProducts() : List<TaskProductInfo> {
         return inventoryTask.taskRepository.getProducts().getNotProcessedProducts(storePlaceNumber)

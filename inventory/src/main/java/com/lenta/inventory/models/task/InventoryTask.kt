@@ -53,8 +53,20 @@ class InventoryTask(val taskDescription: TaskDescription, val taskRepository: IT
         return this
     }
 
-    fun clearStorePlace() : InventoryTask {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    fun clearStorePlaceByNumber(storePlaceNumber: String) : InventoryTask {
+        taskRepository.getStorePlace().findStorePlace(storePlaceNumber)?.let {
+            return clearStorePlace(it)
+        }
+        return this
+    }
+
+    fun clearStorePlace(storePlace: TaskStorePlaceInfo) : InventoryTask {
+        storePlace.isProcessed = false
+        taskRepository.getProducts().getProcessedProducts(storePlace.placeCode).map {
+            it.isPositionCalc = false
+            it.factCount = 0.0
+        }
+        return this
     }
 
     fun processStorePlace(storePlaceNumber: String) : StorePlaceProcessing{

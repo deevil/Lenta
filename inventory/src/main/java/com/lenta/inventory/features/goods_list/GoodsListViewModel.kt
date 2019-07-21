@@ -16,8 +16,10 @@ import com.lenta.shared.exception.Failure
 import com.lenta.shared.models.core.ProductInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.Logg
+import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.Evenable
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
+import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.getDeviceIp
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.toStringFormatted
@@ -43,14 +45,20 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
     val eanCode: MutableLiveData<String> = MutableLiveData()
     val requestFocusToEan: MutableLiveData<Boolean> = MutableLiveData()
-
-    val deleteEnabled: MutableLiveData<Boolean> = selectedPage.map { it ?: 0 != 0 }
-
+    
     var storePlaceManager: StorePlaceProcessing? = null
     var justCreated: Boolean = true
 
+    val processedSelectionHelper = SelectionItemsHelper()
+
+    val deleteEnabled: MutableLiveData<Boolean> = selectedPage.combineLatest(processedSelectionHelper.selectedPositions).map {
+        val page = it?.first ?: 0
+        val selectionCount = it?.second?.size ?: 0
+        page != 0 && selectionCount > 0
+    }
+
     fun getTitle(): String {
-        return "Номер задания - тип задания"
+        return "${taskManager.getInventoryTask()?.taskDescription?.getTaskTypeAndNumber() ?: ""} / МХ-${storePlaceManager?.storePlaceNumber}"
     }
 
     init {
@@ -87,20 +95,41 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
         processedGoods.postValue(processed.mapIndexed { index, productInfo ->
             ProductInfoVM(number = processed.size - index,
                     name = "${productInfo.getMaterialLastSix()} ${productInfo.description}",
-                    quantity = "${productInfo.factCount.toStringFormatted()} ${productInfo.uom.name}")
+                    quantity = "${productInfo.factCount.toStringFormatted()} ${productInfo.uom.name}",
+                    matnr = productInfo.materialNumber)
         })
     }
 
     fun updateUnprocessed() {
         val unprocessed = storePlaceManager?.getNotProcessedProducts() ?: emptyList()
-        unprocessedGoods.postValue(unprocessed.mapIndexed { index, productInfo -> ProductInfoVM(number = unprocessed.size - index, name = "${productInfo.getMaterialLastSix()} ${productInfo.description}\"", quantity = productInfo.factCount.toString()) })
+        unprocessedGoods.postValue(unprocessed.mapIndexed { index, productInfo ->
+            ProductInfoVM(number = unprocessed.size - index,
+                    name = "${productInfo.getMaterialLastSix()} ${productInfo.description}\"",
+                    quantity = "${productInfo.factCount.toStringFormatted()} ${productInfo.uom.name}",
+                    matnr = productInfo.materialNumber)
+        })
     }
 
     fun onClickClean() {
-        return
+        processedSelectionHelper.selectedPositions.value?.forEach {
+            val matnr = processedGoods.value?.get(it)?.matnr
+            if (matnr != null) {
+                val productInfo = taskManager.getInventoryTask()?.taskRepository?.getProducts()?.findProduct(matnr, storePlaceManager?.storePlaceNumber ?: "")
+                productInfo?.isPositionCalc = false
+                productInfo?.factCount = 0.0
+            }
+        }
+        processedSelectionHelper.clearPositions()
+        updateUnprocessed()
+        updateProcessed()
     }
 
     fun onClickComplete() {
+        val recountType = taskManager.getInventoryTask()?.taskDescription?.recountType
+        if (recountType == RecountType.ParallelByStorePlaces) {
+            storePlaceManager?.markAsProcessed()
+            makeLockUnlockRequest(recountType, StorePlaceLockMode.Unlock, ::handleUnlockSuccess)
+        }
         return
     }
 
@@ -134,9 +163,6 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
         selectedPage.value = position
     }
 
-    fun onDoubleClickPosition(position: Int) {
-    }
-
     fun onDigitPressed(digit: Int) {
         requestFocusToEan.value = true
         eanCode.value = eanCode.value ?: "" + digit
@@ -147,14 +173,30 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     }
 
     override fun onOkInSoftKeyboard(): Boolean {
-
-
+        eanCode.value?.let {
+            val productInfo = taskManager.getInventoryTask()?.taskRepository?.getProducts()?.findProduct(it, storePlaceManager?.storePlaceNumber ?: "")
+            if (productInfo != null) screenNavigator.openGoodsInfoScreen(productInfo)
+        }
         return true
+    }
+
+    fun onClickItemPosition(position: Int) {
+        var matnr : String?
+        if (selectedPage.value == 0) {
+            matnr = unprocessedGoods.value?.get(position)?.matnr
+        } else {
+            matnr = processedGoods.value?.get(position)?.matnr
+        }
+        matnr?.let {
+            val productInfo = taskManager.getInventoryTask()?.taskRepository?.getProducts()?.findProduct(it, storePlaceManager?.storePlaceNumber ?: "")
+            if (productInfo != null) screenNavigator.openGoodsInfoScreen(productInfo)
+        }
     }
 }
 
 data class ProductInfoVM(
         val number: Int,
         val name: String,
-        val quantity: String
+        val quantity: String,
+        val matnr: String
 )
