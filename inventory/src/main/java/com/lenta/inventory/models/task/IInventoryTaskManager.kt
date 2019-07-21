@@ -8,6 +8,6 @@ interface IInventoryTaskManager {
 
     fun clearTask()
 
-    fun setTask(writeOffTask: InventoryTask?)
+    fun setTask(inventoryTask: InventoryTask?)
 
 }

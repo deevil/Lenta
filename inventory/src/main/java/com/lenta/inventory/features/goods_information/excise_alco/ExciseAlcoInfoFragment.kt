@@ -1,33 +1,38 @@
 package com.lenta.inventory.features.goods_information.excise_alco
 
+import android.os.Bundle
 import android.view.View
 import com.lenta.inventory.R
 import com.lenta.inventory.databinding.FragmentExciseAlcoInfoBinding
 import com.lenta.inventory.models.task.TaskProductInfo
 import com.lenta.inventory.platform.extentions.getAppComponent
+import com.lenta.shared.platform.activity.OnBackPresserListener
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.scan.OnScanResultListener
+import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.generateScreenNumber
 import com.lenta.shared.utilities.extentions.provideViewModel
+import com.lenta.shared.utilities.state.state
 
-class ExciseAlcoInfoFragment : CoreFragment<FragmentExciseAlcoInfoBinding, ExciseAlcoInfoViewModel>(), ToolbarButtonsClickListener, OnScanResultListener {
+class ExciseAlcoInfoFragment : CoreFragment<FragmentExciseAlcoInfoBinding, ExciseAlcoInfoViewModel>(),
+        ToolbarButtonsClickListener,
+        OnScanResultListener,
+        OnBackPresserListener {
 
     companion object {
-        fun create(productInfo: TaskProductInfo, storePlaceNumber: String): ExciseAlcoInfoFragment {
+        fun create(productInfo: TaskProductInfo): ExciseAlcoInfoFragment {
             ExciseAlcoInfoFragment().let {
                 it.productInfo = productInfo
-                it.storePlaceNumber = storePlaceNumber
                 return it
             }
         }
     }
 
-    private var productInfo: TaskProductInfo? = null
-    private var storePlaceNumber: String? = null
+    private var productInfo by state<TaskProductInfo?>(null)
 
     override fun getLayoutId(): Int = R.layout.fragment_excise_alco_info
 
@@ -36,22 +41,17 @@ class ExciseAlcoInfoFragment : CoreFragment<FragmentExciseAlcoInfoBinding, Excis
     override fun getViewModel(): ExciseAlcoInfoViewModel {
         provideViewModel(ExciseAlcoInfoViewModel::class.java).let { vm ->
             getAppComponent()?.inject(vm)
-            productInfo?.let {
-                vm.productInfo.value = it
-            }
-            storePlaceNumber?.let {
-                vm.storePlaceNumber.value = it
-            }
-            vm.spinList.value = listOf(getString(R.string.quantity))
+            vm.productInfo.value = productInfo
+            vm.spinList.value = listOf(getString(R.string.quantity), getString(R.string.partly), getString(R.string.vintage))
+            vm.textErrorUnknownStatus.value = getString(R.string.text_error_unknown_status)
+            vm.titleProgressScreen.value = getString(R.string.data_loading)
             return vm
         }
     }
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
         topToolbarUiModel.description.value = getString(R.string.goods_info)
-        productInfo?.let {
-            topToolbarUiModel.title.value = "${it.getMaterialLastSix()} ${it.description}"
-        }
+        topToolbarUiModel.title.value = "${vm.productInfo.value!!.getMaterialLastSix()} ${vm.productInfo.value!!.description}"
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
@@ -61,18 +61,11 @@ class ExciseAlcoInfoFragment : CoreFragment<FragmentExciseAlcoInfoBinding, Excis
         bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.missing)
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.apply)
 
-        if (storePlaceNumber == null) {
-            binding?.ConstraintStoragePlace!!.visibility = View.INVISIBLE
-        } else{
-            bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.details)
+        viewLifecycleOwner.apply {
+            connectLiveData(vm.enabledRollbackButton, bottomToolbarUiModel.uiModelButton2.enabled)
+            connectLiveData(vm.enabledMissingButton, bottomToolbarUiModel.uiModelButton4.enabled)
+            connectLiveData(vm.enabledApplyButton, bottomToolbarUiModel.uiModelButton5.enabled)
         }
-
-        /**viewLifecycleOwner.apply {
-        connectLiveData(vm.enabledApplyButton, bottomToolbarUiModel.uiModelButton4.enabled)
-        connectLiveData(vm.enabledApplyButton, bottomToolbarUiModel.uiModelButton5.enabled)
-        connectLiveData(vm.enabledDetailsButton, bottomToolbarUiModel.uiModelButton3.enabled)
-        connectLiveData(vm.selectedPosition, bottomToolbarUiModel.uiModelButton4.requestFocus)
-        }*/
     }
 
     override fun onToolbarButtonClick(view: View) {
@@ -88,4 +81,23 @@ class ExciseAlcoInfoFragment : CoreFragment<FragmentExciseAlcoInfoBinding, Excis
         vm.onScanResult(data)
     }
 
+    override fun onFragmentResult(arguments: Bundle) {
+        super.onFragmentResult(arguments)
+        if (arguments["stampLength"] == 150){
+            vm.onPartySignsResult(arguments)
+        }
+        else {
+            vm.onPartySignsStamp68Result(arguments)
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        vm.onResume()
+    }
+
+    override fun onBackPressed(): Boolean {
+        vm.onBackPressed()
+        return true
+    }
 }

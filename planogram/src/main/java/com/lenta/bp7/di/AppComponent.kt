@@ -3,7 +3,7 @@ package com.lenta.bp7.di
 import com.lenta.bp7.ExceptionHandler
 import com.lenta.bp7.activity.main.MainActivity
 import com.lenta.bp7.activity.main.MainViewModel
-import com.lenta.bp7.data.model.CheckStoreData
+import com.lenta.bp7.data.model.CheckData
 import com.lenta.bp7.features.auth.AuthViewModel
 import com.lenta.bp7.features.check_type.CheckTypeViewModel
 import com.lenta.bp7.features.code.CodeViewModel
@@ -22,7 +22,7 @@ import dagger.Component
 @AppScope
 interface AppComponent {
 
-    fun getCheckStoreData(): CheckStoreData
+    fun getCheckStoreData(): CheckData
 
     fun inject(mainActivity: MainActivity)
     fun inject(mainActivity: MainViewModel)

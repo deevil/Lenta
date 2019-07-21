@@ -19,7 +19,7 @@ import javax.inject.Inject
 class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
 
     @Inject
-    lateinit var screenNavigator: IScreenNavigator
+    lateinit var navigator: IScreenNavigator
     @Inject
     lateinit var sessionInfo: ISessionInfo
     @Inject
@@ -67,7 +67,6 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
     }
 
     fun onClickNext() {
-
         markets.value?.getOrNull(selectedPosition.value ?: -1)?.number?.let {
             if (appSettings.lastTK != it) {
                 clearPrinters()
@@ -77,19 +76,17 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
             appSettings.lastTK = it
 
             viewModelScope.launch {
-                screenNavigator.showProgress(serverTimeRequest)
+                navigator.showProgress(serverTimeRequest)
                 serverTimeRequest(ServerTimeRequestParam(sessionInfo.market
                         ?: "")).either(::handleFailure, ::handleSuccessServerTime)
-                screenNavigator.hideProgress()
+                navigator.hideProgress()
             }
-
         }
-
     }
 
     private fun handleSuccessServerTime(serverTime: ServerTime) {
         timeMonitor.setServerTime(time = serverTime.time, date = serverTime.date)
-        screenNavigator.openCheckTypeScreen()
+        navigator.openCheckTypeScreen()
     }
 
     private fun clearPrinters() {
