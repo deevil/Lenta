@@ -1,12 +1,14 @@
 package com.lenta.inventory.platform.navigation
 
 import android.content.Context
+import androidx.core.content.ContextCompat
 import com.lenta.inventory.R
 import com.lenta.inventory.features.main_menu.MainMenuFragment
 import com.lenta.inventory.features.auth.AuthFragment
 import com.lenta.inventory.features.discrepancies_found.DiscrepanciesFoundFragment
 import com.lenta.inventory.features.goods_details_storage.GoodsDetailsStorageFragment
 import com.lenta.inventory.features.goods_information.excise_alco.ExciseAlcoInfoFragment
+import com.lenta.inventory.features.goods_information.excise_alco.party_signs.PartySignsFragment
 import com.lenta.inventory.features.goods_information.general.GoodsInfoFragment
 import com.lenta.inventory.features.goods_information.sets.SetsInfoFragment
 import com.lenta.inventory.features.goods_information.sets.components.SetComponentsFragment
@@ -19,15 +21,17 @@ import com.lenta.inventory.features.loading.tasks.LoadingTasksFragment
 import com.lenta.inventory.features.select_market.SelectMarketFragment
 import com.lenta.inventory.features.select_personnel_number.SelectPersonnelNumberFragment
 import com.lenta.inventory.features.storages_list.StoragesListFragment
-import com.lenta.inventory.features.task_list.TaskItemVm
+import com.lenta.inventory.features.taken_to_work.TakenToWorkFragment
 import com.lenta.inventory.features.task_list.TaskListFragment
 import com.lenta.inventory.models.RecountType
 import com.lenta.inventory.models.StorePlaceLockMode
+import com.lenta.inventory.models.task.ProcessExciseAlcoProductService
 import com.lenta.inventory.models.task.TaskStorePlaceInfo
 import com.lenta.inventory.models.task.TaskProductInfo
 import com.lenta.inventory.requests.network.TasksItem
 import com.lenta.shared.account.IAuthenticator
 import com.lenta.shared.features.alert.AlertFragment
+import com.lenta.shared.models.core.Manufacturer
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
 import com.lenta.shared.platform.navigation.ICoreNavigator
 import com.lenta.shared.platform.navigation.runOrPostpone
@@ -88,9 +92,15 @@ class ScreenNavigator(
         }
     }
 
-    override fun openExciseAlcoInfoScreen() {
+    override fun openExciseAlcoInfoScreen(productInfo: TaskProductInfo) {
         runOrPostpone {
-            getFragmentStack()?.push(ExciseAlcoInfoFragment())
+            getFragmentStack()?.push(ExciseAlcoInfoFragment.create(productInfo))
+        }
+    }
+
+    override fun openPartySignsScreen(title: String, manufacturers: List<String>, stampLength: Int) {
+        runOrPostpone {
+            getFragmentStack()?.push(PartySignsFragment.create(title, manufacturers, stampLength))
         }
     }
 
@@ -163,11 +173,25 @@ class ScreenNavigator(
         }
     }
 
-    override fun openLoadingStorePlaceLockScreen(mode: StorePlaceLockMode, storePlaceNumber: String)
-    {
+    override fun openLoadingStorePlaceLockScreen(mode: StorePlaceLockMode, storePlaceNumber: String) {
         runOrPostpone {
             getFragmentStack()?.push(LoadingStorePlaceLockFragment.create(mode, storePlaceNumber))
         }
+    }
+
+    override fun openTakenToWorkFragment() {
+        runOrPostpone {
+            getFragmentStack()?.push(TakenToWorkFragment.create())
+        }
+    }
+
+    override fun openAlertDoubleScanStamp() {
+        openAlertScreen(
+                message = context.getString(R.string.alert_double_scan_stamp),
+                iconRes = R.drawable.ic_info_pink,
+                textColor = ContextCompat.getColor(context, com.lenta.shared.R.color.color_text_dialogWarning),
+                pageNumber = "98"
+        )
     }
 
 
@@ -194,6 +218,9 @@ interface IScreenNavigator : ICoreNavigator {
     fun openLoadingTasksScreen()
     fun openLoadingTaskContentsScreen(taskInfo: TasksItem, recountType: RecountType)
     fun openLoadingStorePlaceLockScreen(mode: StorePlaceLockMode, storePlaceNumber: String)
-    fun openExciseAlcoInfoScreen()
+    fun openExciseAlcoInfoScreen(productInfo: TaskProductInfo)
     fun openConfirmationTaskOpenScreen(userName: String, ip: String, callbackFunc: () -> Unit)
+    fun openAlertDoubleScanStamp()
+    fun openPartySignsScreen(title: String, manufacturers: List<String>, stampLength: Int)
+    fun openTakenToWorkFragment()
 }

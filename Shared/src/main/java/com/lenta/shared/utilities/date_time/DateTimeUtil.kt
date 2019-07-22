@@ -1,5 +1,7 @@
 package com.lenta.shared.utilities.date_time
 
+import com.lenta.shared.platform.constants.Constants
+import org.apache.commons.lang3.time.DurationFormatUtils
 import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.*
@@ -32,6 +34,10 @@ object DateTimeUtil {
 
     fun getDateFromString(dateString: String, format: String): Date {
         return getDateFormat(format).parse(dateString)
+    }
+
+    fun convertMilisecondsToHHMm(mSecs: Long): String {
+        return DurationFormatUtils.formatDuration(mSecs, Constants.TIME_FORMAT_HHmm)
     }
 
 }
