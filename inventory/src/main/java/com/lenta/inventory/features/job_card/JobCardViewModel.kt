@@ -38,7 +38,7 @@ class JobCardViewModel : CoreViewModel(), OnPositionClickListener {
     }
 
     val isPrimary: Boolean by lazy {
-        tasksItem.isRecount.isNotBlank()
+        tasksItem.isRecount.isBlank()
     }
 
     val actualPeriodFrom: String by lazy {
