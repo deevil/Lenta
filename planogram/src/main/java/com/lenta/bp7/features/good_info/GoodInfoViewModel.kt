@@ -7,6 +7,7 @@ import com.lenta.bp7.data.model.Good
 import com.lenta.bp7.data.model.GoodStatus
 import com.lenta.bp7.platform.navigation.IScreenNavigator
 import com.lenta.shared.platform.viewmodel.CoreViewModel
+import com.lenta.shared.utilities.extentions.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -19,6 +20,13 @@ class GoodInfoViewModel : CoreViewModel() {
 
     val good: MutableLiveData<Good> = MutableLiveData()
 
+    val missingGood: MutableLiveData<Boolean> = good.map {
+        it?.status == GoodStatus.MISSING_WRONG || it?.status == GoodStatus.MISSING_RIGHT
+    }
+
+    val missingButtonEnabled: MutableLiveData<Boolean> = good.map { it?.status == GoodStatus.CREATED && checkData.checkEmptyPlaces }
+    val applyButtonEnabled: MutableLiveData<Boolean> = good.map { it?.status == GoodStatus.CREATED }
+
     init {
         viewModelScope.launch {
             good.value = checkData.getCurrentGood()
@@ -30,19 +38,21 @@ class GoodInfoViewModel : CoreViewModel() {
 
         // !Перенести на другой экран
         checkData.getCurrentGood().status = when ((1..2).random()) {
-            1 -> GoodStatus.PRESENT
-            else -> GoodStatus.MISSING
+            1 -> GoodStatus.MISSING_RIGHT
+            else -> GoodStatus.MISSING_WRONG
         }
         navigator.goBack()
     }
 
     fun onClickApply() {
-        //checkData.getCurrentGood().totalFacings += facings.value!!.toInt()
+        checkData.getCurrentGood().status = GoodStatus.PROCESSED
         navigator.goBack()
     }
 
     fun onClickBack() {
-        checkData.deleteCurrentGood()
+        if (checkData.getCurrentGood().status == GoodStatus.CREATED) {
+            checkData.deleteCurrentGood()
+        }
         navigator.goBack()
     }
 

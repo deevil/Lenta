@@ -7,8 +7,8 @@ class CheckData(
 ) {
 
     var checkType = ""
-    var isFacings = false
-    var isPlaces = false
+    var countFacings = false
+    var checkEmptyPlaces = false
 
     var currentSegmentIndex = 0
     var currentShelfIndex = 0
@@ -134,12 +134,12 @@ class CheckData(
     private fun createGoodStatus(facings: Int): GoodStatus {
         return if (facings == 0) {
             when ((2..3).random()) {
-                2 -> GoodStatus.MISSING
-                3 -> GoodStatus.PRESENT
-                else -> GoodStatus.CREATED
+                2 -> GoodStatus.MISSING_WRONG
+                3 -> GoodStatus.MISSING_RIGHT
+                else -> GoodStatus.PROCESSED
             }
         } else {
-            GoodStatus.CREATED
+            GoodStatus.PROCESSED
         }
     }
 }

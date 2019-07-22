@@ -25,6 +25,7 @@ data class GoodInfo(
 
 enum class GoodStatus {
     CREATED,
-    MISSING,
-    PRESENT
+    PROCESSED,
+    MISSING_WRONG,
+    MISSING_RIGHT
 }

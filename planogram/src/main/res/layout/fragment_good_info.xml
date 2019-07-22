@@ -73,7 +73,8 @@
 
                 <TextView
                     style="@style/GoodInfoCellTextStyle"
-                    android:text="@string/good_on_shelf"/>
+                    android:text="@{!vm.missingGood ? @string/good_on_shelf : @string/good_is_missing }"
+                    tools:text="@string/good_on_shelf"/>
 
             </LinearLayout>
 

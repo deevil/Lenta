@@ -39,8 +39,8 @@ class OptionInfoViewModel : CoreViewModel() {
     }
 
     private fun saveCheckState() {
-        checkData.isFacings = isFacings.value!!
-        checkData.isPlaces = isPlaces.value!!
+        checkData.countFacings = isFacings.value!!
+        checkData.checkEmptyPlaces = isPlaces.value!!
     }
 
     fun onClickNext() {

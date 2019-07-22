@@ -41,6 +41,7 @@
 
                     <EditText
                         android:id="@+id/et_enter_facing_count"
+                        android:enabled="@{vm.facingFieldEnabled}"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_margin="8dp"
@@ -101,7 +102,8 @@
 
                 <TextView
                     style="@style/GoodInfoCellTextStyle"
-                    android:text="@string/good_on_shelf"/>
+                    android:text="@{vm.goodIsPresent ? @string/good_on_shelf : @string/good_is_missing}"
+                    tools:text="@string/good_on_shelf"/>
 
             </LinearLayout>
 
@@ -149,13 +151,13 @@
 
         <ImageButton
             android:id="@+id/b_scan"
-            android:clickable="false"
-            android:focusable="false"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end|bottom"
             android:layout_margin="10dp"
             android:background="?selectableItemBackground"
+            android:clickable="false"
+            android:focusable="false"
             android:padding="8dp"
             android:src="@drawable/ic_scan_barcode"
             tools:ignore="ContentDescription"/>

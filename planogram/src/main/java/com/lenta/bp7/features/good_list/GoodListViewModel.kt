@@ -4,6 +4,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp7.data.model.CheckData
 import com.lenta.bp7.data.model.Good
+import com.lenta.bp7.data.model.GoodStatus
 import com.lenta.bp7.data.model.ShelfStatus
 import com.lenta.bp7.platform.navigation.IScreenNavigator
 import com.lenta.bp7.repos.IDatabaseRepo
@@ -105,14 +106,22 @@ class GoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
                         }
                     }
                 }
+
+                checkData.getCurrentGood().status = GoodStatus.CREATED
             }
         }
     }
 
     private fun openInfoScreen() {
-        // todo Логика выбора экрана в зависимости от параметров проверки
+        // todo Для тестирования разных сценариев проверки. Потом удалить.
+        checkData.countFacings = false
+        checkData.checkEmptyPlaces = true
 
-        navigator.openGoodInfoScreen()
+        if (checkData.countFacings) {
+            navigator.openGoodInfoFacingScreen()
+        } else {
+            navigator.openGoodInfoScreen()
+        }
     }
 
     fun onClickApply() {

@@ -35,9 +35,9 @@ fun setShelfStatusIcon(imageView: ImageView, shelfStatus: ShelfStatus) {
 fun setGoodStatusIcon(imageView: ImageView, goodStatus: GoodStatus) {
     goodStatus.let {
         val icon = when (it) {
-            GoodStatus.CREATED -> R.drawable.ic_add_white_24dp
-            GoodStatus.MISSING -> R.drawable.ic_close_white_24dp
-            GoodStatus.PRESENT -> R.drawable.ic_done_white_24dp
+            GoodStatus.MISSING_WRONG -> R.drawable.ic_close_white_24dp
+            GoodStatus.MISSING_RIGHT -> R.drawable.ic_done_white_24dp
+            else -> R.drawable.ic_add_white_24dp
         }
         imageView.setImageResource(icon)
     }
