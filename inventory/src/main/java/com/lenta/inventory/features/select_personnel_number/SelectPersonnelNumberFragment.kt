@@ -1,5 +1,6 @@
 package com.lenta.inventory.features.select_personnel_number
 
+import android.os.Bundle
 import android.view.View
 import androidx.lifecycle.Observer
 import com.lenta.inventory.R
@@ -11,6 +12,7 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListe
 import com.lenta.shared.platform.toolbar.top_toolbar.ImageButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.scan.OnScanResultListener
+import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.provideViewModel
 
 class SelectPersonnelNumberFragment : CoreFragment<com.lenta.inventory.databinding.FragmentSelectPersonnelNumberBinding, SelectPersonnelNumberViewModel>(),
@@ -40,6 +42,14 @@ class SelectPersonnelNumberFragment : CoreFragment<com.lenta.inventory.databindi
             bottomToolbarUiModel
                     .uiModelButton5.requestFocus()
         })
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        getBottomToolBarUIModel()?.let {
+            connectLiveData(vm.enabledNextButton, it.uiModelButton5.enabled)
+        }
+
     }
 
     override fun onToolbarButtonClick(view: View) {
