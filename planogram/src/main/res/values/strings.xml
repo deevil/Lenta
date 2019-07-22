@@ -8,6 +8,7 @@
     <string name="external_audit">Внешний аудит</string>
     <string name="incorrect_code_message">Введен некорректный пин-код!</string>
     <string name="number_of_facings">Количество фейсингов</string>
+    <string name="without_number_of_facings">Без количества фейсингов</string>
     <string name="enter_quantity">Введите кол-во</string>
     <string name="total_facings">Итого фейсингов</string>
     <string name="goods_barcode">Штрихкод товара</string>

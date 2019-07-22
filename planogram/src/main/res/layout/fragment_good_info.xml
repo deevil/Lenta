@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        tools:context=".features.good_info_facing.GoodInfoFacingFragment">
+
+    <data>
+
+        <variable
+            name="vm"
+            type="com.lenta.bp7.features.good_info.GoodInfoViewModel"/>
+    </data>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <LinearLayout
+                style="@style/LinearGoodInfoRowStyle">
+
+                <TextView
+                    style="@style/GoodInfoCellTextStyle"
+                    android:text="@string/without_number_of_facings"/>
+
+            </LinearLayout>
+
+            <View
+                style="@style/RowHorizontalDivider"/>
+
+            <LinearLayout
+                style="@style/LinearGoodInfoRowStyle">
+
+                <LinearLayout
+                    style="@style/LinearCellStyle"
+                    android:layout_weight="1">
+
+                    <TextView
+                        style="@style/GoodInfoCellTextStyle"
+                        android:text="@string/total_facings"/>
+
+                </LinearLayout>
+
+                <View
+                    style="@style/RowVerticalDivider"/>
+
+                <LinearLayout
+                    style="@style/LinearCellStyle"
+                    android:layout_weight="1">
+
+                    <TextView
+                        android:id="@+id/tw_facing_count"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingStart="10dp"
+                        android:paddingEnd="10dp"
+                        android:text="+"
+                        android:textSize="14sp"
+                        tools:text="+"/>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <View
+                style="@style/RowHorizontalDivider"/>
+
+            <LinearLayout
+                style="@style/LinearGoodInfoRowStyle">
+
+                <TextView
+                    style="@style/GoodInfoCellTextStyle"
+                    android:text="@string/good_on_shelf"/>
+
+            </LinearLayout>
+
+            <View
+                style="@style/RowHorizontalDivider"/>
+
+            <LinearLayout
+                style="@style/LinearGoodInfoRowStyle">
+
+                <LinearLayout
+                    style="@style/LinearCellStyle"
+                    android:layout_weight="1">
+
+                    <TextView
+                        style="@style/GoodInfoCellTextStyle"
+                        android:text="@string/goods_barcode"/>
+
+                </LinearLayout>
+
+                <View
+                    style="@style/RowVerticalDivider"/>
+
+                <LinearLayout
+                    style="@style/LinearCellStyle"
+                    android:layout_weight="1">
+
+                    <TextView
+                        android:id="@+id/tw_barcode"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingStart="10dp"
+                        android:paddingEnd="10dp"
+                        android:text="@{vm.good.barCode}"
+                        android:textSize="14sp"
+                        tools:text="12345678912"/>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <View
+                style="@style/RowHorizontalDivider"/>
+
+        </LinearLayout>
+
+        <ImageButton
+            android:id="@+id/b_scan"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end|bottom"
+            android:layout_margin="10dp"
+            android:background="?selectableItemBackground"
+            android:clickable="false"
+            android:focusable="false"
+            android:padding="8dp"
+            android:src="@drawable/ic_scan_barcode"
+            tools:ignore="ContentDescription"/>
+
+    </FrameLayout>
+
+</layout>
