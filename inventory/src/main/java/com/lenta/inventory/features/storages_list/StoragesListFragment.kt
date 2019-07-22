@@ -107,8 +107,14 @@ class StoragesListFragment : CoreFragment<FragmentStoragesListBinding, StoragesL
                                     }
 
                                 },
-                                onItemDoubleClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
-                                    vm.onDoubleClickPosition(position)
+                                onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
+                                    unprocessedRecyclerViewKeyHandler?.let {
+                                        if (it.isSelected(position)) {
+                                            vm.onClickItemPosition(position)
+                                        } else {
+                                            it.selectPosition(position)
+                                        }
+                                    }
                                 }
                         )
 
@@ -130,6 +136,14 @@ class StoragesListFragment : CoreFragment<FragmentStoragesListBinding, StoragesL
                         R.layout.layout_storages_processed,
                         container,
                         false).let { layoutBinding ->
+
+                    val onClickSelectionListener = View.OnClickListener {
+                        (it!!.tag as Int).let { position ->
+                            vm.processedSelectionHelper.revert(position = position)
+                            layoutBinding.rv.adapter?.notifyItemChanged(position)
+                        }
+                    }
+
                     layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
                             layoutId = R.layout.item_tile_processed_storages,
                             itemId = BR.vm,
@@ -139,14 +153,22 @@ class StoragesListFragment : CoreFragment<FragmentStoragesListBinding, StoragesL
 
                                 override fun onBind(binding: ItemTileProcessedStoragesBinding, position: Int) {
                                     binding.tvCounter.tag = position
+                                    binding.tvCounter.setOnClickListener(onClickSelectionListener)
+                                    binding.selectedForDelete = vm.processedSelectionHelper.isSelected(position)
                                     processedRecyclerViewKeyHandler?.let {
                                         binding.root.isSelected = it.isSelected(position)
                                     }
                                 }
 
                             },
-                            onItemDoubleClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
-                                vm.onDoubleClickPosition(position)
+                            onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
+                                processedRecyclerViewKeyHandler?.let {
+                                    if (it.isSelected(position)) {
+                                        vm.onClickItemPosition(position)
+                                    } else {
+                                        it.selectPosition(position)
+                                    }
+                                }
                             }
                     )
                     layoutBinding.vm = vm

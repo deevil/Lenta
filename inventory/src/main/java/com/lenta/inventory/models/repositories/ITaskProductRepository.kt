@@ -9,7 +9,7 @@ interface ITaskProductRepository {
     fun addProduct(product: TaskProductInfo): Boolean
     fun updateProducts(newProducts: List<TaskProductInfo>)
     fun deleteProduct(product: TaskProductInfo): Boolean
-    fun getNotProcessedProducts(): List<TaskProductInfo>
-    fun getProcessedProducts(): List<TaskProductInfo>
+    fun getNotProcessedProducts(storePlaceNumber: String? = null): List<TaskProductInfo>
+    fun getProcessedProducts(storePlaceNumber: String? = null): List<TaskProductInfo>
     fun clear()
 }

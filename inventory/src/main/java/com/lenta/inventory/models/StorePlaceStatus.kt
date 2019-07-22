@@ -1,11 +1,15 @@
 package com.lenta.inventory.models
 
 enum class StorePlaceStatus(val status: String) {
-    None(""),
+    None("0"),
     Finished("1"),
     LockedByMe("2"),
     LockedByOthers("3"),
-    Started("4")
+    Started("4");
+
+    companion object {
+        fun from(statusCode: String): StorePlaceStatus = StorePlaceStatus.values().firstOrNull { it.status == statusCode } ?: None
+    }
 }
 
 //0 - ничего

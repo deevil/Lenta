@@ -25,12 +25,15 @@ import com.lenta.inventory.features.taken_to_work.TakenToWorkFragment
 import com.lenta.inventory.features.task_list.TaskListFragment
 import com.lenta.inventory.models.RecountType
 import com.lenta.inventory.models.StorePlaceLockMode
+import com.lenta.inventory.models.task.StorePlaceProcessing
 import com.lenta.inventory.models.task.ProcessExciseAlcoProductService
 import com.lenta.inventory.models.task.TaskStorePlaceInfo
 import com.lenta.inventory.models.task.TaskProductInfo
+import com.lenta.inventory.progress.IInventoryProgressUseCaseInformator
 import com.lenta.inventory.requests.network.TasksItem
 import com.lenta.shared.account.IAuthenticator
 import com.lenta.shared.features.alert.AlertFragment
+import com.lenta.shared.interactor.UseCase
 import com.lenta.shared.models.core.Manufacturer
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
 import com.lenta.shared.platform.navigation.ICoreNavigator
@@ -41,7 +44,8 @@ class ScreenNavigator(
         private val context: Context,
         private val coreNavigator: ICoreNavigator,
         private val foregroundActivityProvider: ForegroundActivityProvider,
-        private val authenticator: IAuthenticator
+        private val authenticator: IAuthenticator,
+        private val progressUseCaseInformator: IInventoryProgressUseCaseInformator
 ) : IScreenNavigator, ICoreNavigator by coreNavigator {
 
     override fun openFirstScreen() {
@@ -60,6 +64,12 @@ class ScreenNavigator(
             }
         }
 
+    }
+
+    override fun <Params> showProgress(useCase: UseCase<Any, Params>) {
+        runOrPostpone {
+            showProgress(progressUseCaseInformator.getTitle(useCase))
+        }
     }
 
     override fun openSelectMarketScreen() {
@@ -110,9 +120,9 @@ class ScreenNavigator(
         }
     }
 
-    override fun openGoodsListScreen() {
+    override fun openGoodsListScreen(storePlaceManager: StorePlaceProcessing) {
         runOrPostpone {
-            getFragmentStack()?.push(GoodsListFragment())
+            getFragmentStack()?.push(GoodsListFragment.create(storePlaceManager))
         }
     }
 
@@ -208,7 +218,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openMainMenuScreen()
     fun openGoodsInfoScreen(productInfo: TaskProductInfo)
     fun openGoodsDetailsStorageScreen(productInfo: TaskProductInfo)
-    fun openGoodsListScreen()
+    fun openGoodsListScreen(storePlaceManager: StorePlaceProcessing)
     fun openSetsInfoScreen()
     fun openSetComponentsScreen()
     fun openStoragesList()
