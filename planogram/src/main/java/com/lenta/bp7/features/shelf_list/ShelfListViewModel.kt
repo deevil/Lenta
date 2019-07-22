@@ -10,12 +10,13 @@ import com.lenta.bp7.platform.navigation.IScreenNavigator
 import com.lenta.bp7.repos.IDatabaseRepo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.SelectionItemsHelper
+import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class ShelfListViewModel : CoreViewModel() {
+class ShelfListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
     @Inject
     lateinit var navigator: IScreenNavigator
@@ -53,9 +54,16 @@ class ShelfListViewModel : CoreViewModel() {
         }
     }
 
-    fun createShelf() {
-        checkData.getCurrentSegment().addShelf(shelfNumber.value!!)
-        navigator.openGoodListScreen()
+    override fun onOkInSoftKeyboard(): Boolean {
+        createShelf()
+        return true
+    }
+
+    private fun createShelf() {
+        if (shelfNumber.value?.isNotEmpty() == true) {
+            checkData.addShelf(shelfNumber.value!!)
+            navigator.openGoodListScreen()
+        }
     }
 
     fun onClickDelete() {
@@ -73,7 +81,7 @@ class ShelfListViewModel : CoreViewModel() {
                 // !Перенести на другой экран
                 items!!.forEach { index ->
                     it.revert(index)
-                    checkData.getCurrentSegment().changeShelfStatusByIndex(index, ShelfStatus.DELETED)
+                    checkData.setShelfStatusDeletedByIndex(index)
                     shelves.value = checkData.getCurrentSegment().shelves
                 }
             }
@@ -110,7 +118,7 @@ class ShelfListViewModel : CoreViewModel() {
     }
 
     fun onClickItemPosition(position: Int) {
-        checkData.getCurrentSegment().currentShelfIndex = position
+        checkData.currentShelfIndex = position
         navigator.openGoodListScreen()
     }
 }

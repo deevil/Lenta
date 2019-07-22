@@ -6,8 +6,13 @@ class CheckData(
         val segments: MutableList<Segment> = mutableListOf()
 ) {
 
-    var checkType: String? = ""
+    var checkType = ""
+    var emptyPlaces = false
+    var countFacings = false
+
     var currentSegmentIndex = 0
+    var currentShelfIndex = 0
+    var currentGoodIndex = 0
 
     init {
         generateTestData()
@@ -15,6 +20,20 @@ class CheckData(
 
     fun getCurrentSegment(): Segment {
         return segments[currentSegmentIndex]
+    }
+
+    fun getCurrentShelf(): Shelf {
+        return segments[currentSegmentIndex].let { segment ->
+            segment.shelves[currentShelfIndex]
+        }
+    }
+
+    fun getCurrentGood(): Good {
+        return segments[currentSegmentIndex].let {segment ->
+            segment.shelves[currentShelfIndex].let { shelf ->
+                shelf.goods[currentGoodIndex]
+            }
+        }
     }
 
     fun addSegment(storeNumber: String, segmentNumber: String) {
@@ -25,14 +44,50 @@ class CheckData(
         currentSegmentIndex = 0
     }
 
+    fun addShelf(shelfNumber: String) {
+        getCurrentSegment().shelves.let {
+            it.add(0, Shelf(
+                    id = it.lastIndex + 2,
+                    number = shelfNumber))
+        }
+        currentShelfIndex = 0
+    }
+
+    fun addGood(goodInfo: GoodInfo?) {
+        getCurrentShelf().goods.let {
+            it.add(0, Good(
+                    id = it.lastIndex + 2,
+                    sapCode = goodInfo?.sapCode,
+                    barCode = goodInfo?.barCode,
+                    name = goodInfo?.name,
+                    units = goodInfo?.units))
+        }
+        currentGoodIndex = 0
+    }
+
     fun deleteCurrentSegment() {
         segments.removeAt(currentSegmentIndex)
         currentSegmentIndex = 0
     }
 
+    fun deleteCurrentShelf() {
+        getCurrentSegment().shelves.removeAt(currentShelfIndex)
+        currentShelfIndex = 0
+    }
+
+    fun deleteCurrentGood() {
+        getCurrentShelf().goods.removeAt(currentGoodIndex)
+        currentGoodIndex = 0
+    }
+
+    fun setShelfStatusDeletedByIndex(shelfIndex: Int) {
+        getCurrentSegment().shelves[shelfIndex].status = ShelfStatus.DELETED
+    }
+
     fun isExistUnfinishedSegment(): Boolean {
         return segments.find { it.status == SegmentStatus.UNFINISHED } != null
     }
+
 
     private fun generateTestData() {
         Logg.d { "Test data generation for CheckData" }

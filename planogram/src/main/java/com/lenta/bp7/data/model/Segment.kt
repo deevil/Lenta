@@ -12,28 +12,6 @@ data class Segment(
         val shelves: MutableList<Shelf> = mutableListOf()
 ) {
 
-    var currentShelfIndex = 0
-
-    fun getCurrentShelf(): Shelf {
-        return shelves[currentShelfIndex]
-    }
-
-    fun deleteCurrentShelf() {
-        shelves.removeAt(currentShelfIndex)
-    }
-
-    fun addShelf(shelfNumber: String) {
-        shelves.add(0, Shelf(
-                id = shelves.lastIndex + 2,
-                number = shelfNumber))
-
-        currentShelfIndex = 0
-    }
-
-    fun changeShelfStatusByIndex(shelfIndex: Int, status: ShelfStatus) {
-        shelves[shelfIndex].status = status
-    }
-
     fun getFormattedDate(): String {
         return SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(checkDate)
     }

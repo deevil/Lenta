@@ -1,4 +1,4 @@
-package com.lenta.bp7.features.option
+package com.lenta.bp7.features.option_info
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
@@ -11,7 +11,7 @@ import com.mobrun.plugin.api.HyperHive
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class OptionViewModel : CoreViewModel() {
+class OptionInfoViewModel : CoreViewModel() {
 
     @Inject
     lateinit var hyperHive: HyperHive

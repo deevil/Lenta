@@ -10,8 +10,8 @@ data class Good(
     var status: GoodStatus = GoodStatus.CREATED
 ) {
 
-    fun getFormattedSapCode(): String {
-        return sapCode?.substring(sapCode.length - 6) ?: ""
+    fun getFormattedSapCode(): String? {
+        return if (sapCode?.isNotEmpty() == true) sapCode.substring(sapCode.length - 6) else ""
     }
 
 }

@@ -103,6 +103,7 @@
             android:inputType="number"
             android:text="@={vm.segmentNumber}"
             app:maskPattern='@{"[000]-[000]"}'
+            app:onOkInSoftKeyboard="@{vm}"
             tools:ignore="Autofill"/>
 
     </LinearLayout>

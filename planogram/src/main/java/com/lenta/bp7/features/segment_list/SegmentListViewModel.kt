@@ -8,12 +8,13 @@ import com.lenta.bp7.platform.navigation.IScreenNavigator
 import com.lenta.bp7.repos.IDatabaseRepo
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
+import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class SegmentListViewModel : CoreViewModel() {
+class SegmentListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
     @Inject
     lateinit var navigator: IScreenNavigator
@@ -42,7 +43,12 @@ class SegmentListViewModel : CoreViewModel() {
         }
     }
 
-    fun createSegment() {
+    override fun onOkInSoftKeyboard(): Boolean {
+        createSegment()
+        return true
+    }
+
+    private fun createSegment() {
         if (unfinishedSegment.value == true) {
             // todo ЭКРАН сообщение наличии незавершенного сегмента
 
