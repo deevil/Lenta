@@ -204,6 +204,16 @@ class ScreenNavigator(
         )
     }
 
+    override fun openConfirmationSavingJobScreen(callbackFunc: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.confirmation_saving_job),
+                    codeConfirm = backFragmentResultHelper.setFuncForResult(callbackFunc),
+                    pageNumber = "94",
+                    leftButtonDecorationInfo = ButtonDecorationInfo.no,
+                    rightButtonDecorationInfo = ButtonDecorationInfo.yes))
+        }
+    }
+
 
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 
@@ -233,4 +243,5 @@ interface IScreenNavigator : ICoreNavigator {
     fun openAlertDoubleScanStamp()
     fun openPartySignsScreen(title: String, manufacturers: List<String>, stampLength: Int)
     fun openTakenToWorkFragment()
+    fun openConfirmationSavingJobScreen(callbackFunc: () -> Unit)
 }

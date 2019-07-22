@@ -13,11 +13,9 @@ import com.lenta.inventory.requests.network.StorePlaceLockParams
 import com.lenta.inventory.requests.network.StorePlaceLockRestInfo
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
-import com.lenta.shared.models.core.ProductInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.SelectionItemsHelper
-import com.lenta.shared.utilities.databinding.Evenable
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.getDeviceIp
@@ -45,7 +43,7 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
     val eanCode: MutableLiveData<String> = MutableLiveData()
     val requestFocusToEan: MutableLiveData<Boolean> = MutableLiveData()
-    
+
     var storePlaceManager: StorePlaceProcessing? = null
     var justCreated: Boolean = true
 
@@ -58,7 +56,8 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     }
 
     fun getTitle(): String {
-        return "${taskManager.getInventoryTask()?.taskDescription?.getTaskTypeAndNumber() ?: ""} / МХ-${storePlaceManager?.storePlaceNumber}"
+        return "${taskManager.getInventoryTask()?.taskDescription?.getTaskTypeAndNumber()
+                ?: ""} / МХ-${storePlaceManager?.storePlaceNumber}"
     }
 
     init {
@@ -114,7 +113,8 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
         processedSelectionHelper.selectedPositions.value?.forEach {
             val matnr = processedGoods.value?.get(it)?.matnr
             if (matnr != null) {
-                val productInfo = taskManager.getInventoryTask()?.taskRepository?.getProducts()?.findProduct(matnr, storePlaceManager?.storePlaceNumber ?: "")
+                val productInfo = taskManager.getInventoryTask()?.taskRepository?.getProducts()?.findProduct(matnr, storePlaceManager?.storePlaceNumber
+                        ?: "")
                 productInfo?.isPositionCalc = false
                 productInfo?.factCount = 0.0
             }
@@ -125,11 +125,15 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     }
 
     fun onClickComplete() {
-        val recountType = taskManager.getInventoryTask()?.taskDescription?.recountType
-        if (recountType == RecountType.ParallelByStorePlaces) {
-            storePlaceManager?.markAsProcessed()
-            makeLockUnlockRequest(recountType, StorePlaceLockMode.Unlock, ::handleUnlockSuccess)
+        screenNavigator.openConfirmationSavingJobScreen {
+            val recountType = taskManager.getInventoryTask()?.taskDescription?.recountType
+            if (recountType == RecountType.ParallelByStorePlaces) {
+                storePlaceManager?.markAsProcessed()
+                makeLockUnlockRequest(recountType, StorePlaceLockMode.Unlock, ::handleUnlockSuccess)
+            }
+
         }
+
         return
     }
 
@@ -142,13 +146,14 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
         }
     }
 
-    private fun makeLockUnlockRequest(recountType: RecountType?, mode: StorePlaceLockMode, successCallback: (StorePlaceLockRestInfo) -> Unit)
-    {
+    private fun makeLockUnlockRequest(recountType: RecountType?, mode: StorePlaceLockMode, successCallback: (StorePlaceLockRestInfo) -> Unit) {
         viewModelScope.launch {
             screenNavigator.showProgress(lockRequest)
             taskManager.getInventoryTask()?.let {
-                val userNumber = if (recountType == RecountType.ParallelByPerNo) sessionInfo.personnelNumber ?: "" else "" // указываем номер только при пересчете по номерам
-                val storePlaceCode = if (recountType == RecountType.ParallelByStorePlaces) storePlaceManager?.storePlaceNumber ?: "" else "" //указываем номер только при пересчете по МХ
+                val userNumber = if (recountType == RecountType.ParallelByPerNo) sessionInfo.personnelNumber
+                        ?: "" else "" // указываем номер только при пересчете по номерам
+                val storePlaceCode = if (recountType == RecountType.ParallelByStorePlaces) storePlaceManager?.storePlaceNumber
+                        ?: "" else "" //указываем номер только при пересчете по МХ
                 lockRequest(StorePlaceLockParams(ip = context.getDeviceIp(),
                         taskNumber = it.taskDescription.taskNumber,
                         storePlaceCode = storePlaceCode,
@@ -174,21 +179,23 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
     override fun onOkInSoftKeyboard(): Boolean {
         eanCode.value?.let {
-            val productInfo = taskManager.getInventoryTask()?.taskRepository?.getProducts()?.findProduct(it, storePlaceManager?.storePlaceNumber ?: "")
+            val productInfo = taskManager.getInventoryTask()?.taskRepository?.getProducts()?.findProduct(it, storePlaceManager?.storePlaceNumber
+                    ?: "")
             if (productInfo != null) screenNavigator.openGoodsInfoScreen(productInfo)
         }
         return true
     }
 
     fun onClickItemPosition(position: Int) {
-        var matnr : String?
+        val matnr: String?
         if (selectedPage.value == 0) {
             matnr = unprocessedGoods.value?.get(position)?.matnr
         } else {
             matnr = processedGoods.value?.get(position)?.matnr
         }
         matnr?.let {
-            val productInfo = taskManager.getInventoryTask()?.taskRepository?.getProducts()?.findProduct(it, storePlaceManager?.storePlaceNumber ?: "")
+            val productInfo = taskManager.getInventoryTask()?.taskRepository?.getProducts()?.findProduct(it, storePlaceManager?.storePlaceNumber
+                    ?: "")
             if (productInfo != null) screenNavigator.openGoodsInfoScreen(productInfo)
         }
     }
