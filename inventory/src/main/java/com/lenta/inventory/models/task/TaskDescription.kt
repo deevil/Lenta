@@ -64,7 +64,8 @@ class TaskDescription (val taskNumber: String,
                     dateTo = taskInfo.dateTo,
                     taskDeadLine = deadline,
                     recountType = recountType,
-                    gis = GisControl.GeneralProduct) //TODO: taskInfo.gisControl string to GisControl value
+                    gis = GisControl.GeneralProduct, //TODO: taskInfo.gisControl string to GisControl value
+                    linkOldStamp = false) //TODO: в 91 ресте должен возвращаться данный параметр, уточнить
         }
     }
 }
