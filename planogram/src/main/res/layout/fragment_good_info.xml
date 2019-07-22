@@ -85,7 +85,7 @@
                         android:layout_height="wrap_content"
                         android:paddingStart="10dp"
                         android:paddingEnd="10dp"
-                        android:text="@{@string/one_space_two(vm.good.totalFacings, vm.good.units)}"
+                        android:text="@{@string/one_space_two(String.valueOf(vm.totalFacings), vm.good.units)}"
                         android:textSize="14sp"
                         tools:text="5 шт"/>
 
@@ -149,6 +149,8 @@
 
         <ImageButton
             android:id="@+id/b_scan"
+            android:clickable="false"
+            android:focusable="false"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end|bottom"

@@ -143,9 +143,4 @@ class GoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
             navigator.goBack()
         }
     }
-
-    fun onClickItemPosition(position: Int) {
-        checkData.currentGoodIndex = position
-        openInfoScreen()
-    }
 }

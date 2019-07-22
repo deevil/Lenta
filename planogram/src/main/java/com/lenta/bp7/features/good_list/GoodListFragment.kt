@@ -26,8 +26,6 @@ import com.lenta.shared.utilities.extentions.provideViewModel
 class GoodListFragment : CoreFragment<FragmentGoodListBinding, GoodListViewModel>(),
         ToolbarButtonsClickListener, OnBackPresserListener {
 
-    private var recyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
-
     override fun getLayoutId(): Int = R.layout.fragment_good_list
 
     override fun getPageNumber(): String? = generateScreenNumberFromPostfix("12")
@@ -72,38 +70,9 @@ class GoodListFragment : CoreFragment<FragmentGoodListBinding, GoodListViewModel
 
     private fun initRvConfig() {
         binding?.let { layoutBinding ->
-            layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
+            layoutBinding.rvConfig = DataBindingRecyclerViewConfig<ItemGoodBinding>(
                     layoutId = R.layout.item_good,
-                    itemId = BR.good,
-                    realisation = object : DataBindingAdapter<ItemGoodBinding> {
-                        override fun onCreate(binding: ItemGoodBinding) {
-                        }
-
-                        override fun onBind(binding: ItemGoodBinding, position: Int) {
-                            recyclerViewKeyHandler?.let {
-                                binding.root.isSelected = it.isSelected(position)
-                            }
-                        }
-                    },
-                    onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
-                        recyclerViewKeyHandler?.let {
-                            if (it.isSelected(position)) {
-                                vm.onClickItemPosition(position)
-                            } else {
-                                it.selectPosition(position)
-                            }
-                        }
-
-                    }
-            )
-
-            layoutBinding.vm = vm
-            layoutBinding.lifecycleOwner = viewLifecycleOwner
-            recyclerViewKeyHandler = RecyclerViewKeyHandler(
-                    rv = layoutBinding.rv,
-                    items = vm.goods,
-                    lifecycleOwner = layoutBinding.lifecycleOwner!!,
-                    initPosInfo = recyclerViewKeyHandler?.posInfo?.value
+                    itemId = BR.good
             )
         }
     }

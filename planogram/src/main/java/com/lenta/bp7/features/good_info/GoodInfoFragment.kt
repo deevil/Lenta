@@ -57,8 +57,7 @@ class GoodInfoFragment : CoreFragment<FragmentGoodInfoBinding, GoodInfoViewModel
     }
 
     override fun onBackPressed(): Boolean {
-        //vm.onClickBack()
-        //return false
-        return true
+        vm.onClickBack()
+        return false
     }
 }

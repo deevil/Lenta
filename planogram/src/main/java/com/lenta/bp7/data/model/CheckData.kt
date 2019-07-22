@@ -75,6 +75,11 @@ class CheckData(
         currentShelfIndex = 0
     }
 
+    fun deleteCurrentGood() {
+        getCurrentShelf().goods.removeAt(currentGoodIndex)
+        currentGoodIndex = 0
+    }
+
     fun setShelfStatusDeletedByIndex(shelfIndex: Int) {
         getCurrentSegment().shelves[shelfIndex].status = ShelfStatus.DELETED
     }
