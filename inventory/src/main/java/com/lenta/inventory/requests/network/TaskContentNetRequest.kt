@@ -79,8 +79,9 @@ class TaskContentNetRequest
 				matrixType = getMatrixType(materialInfo.matrType),
 				materialType = materialInfo.matype,
 				placeCode = storePlaceCode,
-				factCount = factQuantity.toDoubleOrNull(),
-				isPositionCalc = positionCounted.isNotEmpty()
+				factCount = factQuantity.toDouble(),
+				isPositionCalc = positionCounted.isNotEmpty(),
+				isExcOld = isExcOld == "X"
 				)
 	}
 
@@ -101,8 +102,8 @@ class TaskContentNetRequest
 				placeCode = storePlaceCode,
 				boxNumber = boxNumber,
 				setMaterialNumber = productNumberOSN,
-				zprod = organizationCodeEGAIS,
-				bottMark = dateOfPour,
+				manufacturerCode = organizationCodeEGAIS,
+				bottlingDate = dateOfPour,
 				isBadStamp = isUnknown.isNotEmpty())
 	}
 }
