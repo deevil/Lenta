@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
-        tools:context=".features.good_info.GoodInfoFragment">
+        tools:context=".features.good_info_facing.GoodInfoFacingFragment">
 
     <data>
 
         <variable
             name="vm"
-            type="com.lenta.bp7.features.good_info.GoodInfoViewModel"/>
+            type="com.lenta.bp7.features.good_info_facing.GoodInfoFacingViewModel"/>
     </data>
 
     <FrameLayout

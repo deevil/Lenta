@@ -1,10 +1,10 @@
-package com.lenta.bp7.features.good_info
+package com.lenta.bp7.features.good_info_facing
 
 import android.view.View
 import androidx.lifecycle.Observer
 import com.lenta.bp7.R
 import com.lenta.bp7.data.model.Good
-import com.lenta.bp7.databinding.FragmentGoodInfoBinding
+import com.lenta.bp7.databinding.FragmentGoodInfoFacingBinding
 import com.lenta.bp7.platform.extentions.getAppComponent
 import com.lenta.shared.platform.activity.OnBackPresserListener
 import com.lenta.shared.platform.fragment.CoreFragment
@@ -16,15 +16,15 @@ import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
 import com.lenta.shared.utilities.extentions.provideViewModel
 
-class GoodInfoFragment : CoreFragment<FragmentGoodInfoBinding, GoodInfoViewModel>(),
+class GoodInfoFacingFragment : CoreFragment<FragmentGoodInfoFacingBinding, GoodInfoFacingViewModel>(),
         ToolbarButtonsClickListener, OnBackPresserListener {
 
-    override fun getLayoutId(): Int = R.layout.fragment_good_info
+    override fun getLayoutId(): Int = R.layout.fragment_good_info_facing
 
     override fun getPageNumber(): String? = generateScreenNumberFromPostfix("13")
 
-    override fun getViewModel(): GoodInfoViewModel {
-        provideViewModel(GoodInfoViewModel::class.java).let {
+    override fun getViewModel(): GoodInfoFacingViewModel {
+        provideViewModel(GoodInfoFacingViewModel::class.java).let {
             getAppComponent()?.inject(it)
             return it
         }

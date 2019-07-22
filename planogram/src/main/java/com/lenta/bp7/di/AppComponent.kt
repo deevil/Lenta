@@ -7,7 +7,7 @@ import com.lenta.bp7.data.model.CheckData
 import com.lenta.bp7.features.auth.AuthViewModel
 import com.lenta.bp7.features.check_type.CheckTypeViewModel
 import com.lenta.bp7.features.code.CodeViewModel
-import com.lenta.bp7.features.good_info.GoodInfoViewModel
+import com.lenta.bp7.features.good_info_facing.GoodInfoFacingViewModel
 import com.lenta.bp7.features.good_list.GoodListViewModel
 import com.lenta.bp7.features.loading.fast.FastLoadingViewModel
 import com.lenta.bp7.features.option_info.OptionInfoViewModel
@@ -36,7 +36,7 @@ interface AppComponent {
     fun inject(it: SegmentListViewModel)
     fun inject(it: ShelfListViewModel)
     fun inject(it: GoodListViewModel)
-    fun inject(it: GoodInfoViewModel)
+    fun inject(it: GoodInfoFacingViewModel)
 
 }
 

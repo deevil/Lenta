@@ -1,4 +1,4 @@
-package com.lenta.bp7.features.good_info
+package com.lenta.bp7.features.good_info_facing
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
@@ -12,7 +12,7 @@ import com.lenta.shared.utilities.extentions.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class GoodInfoViewModel : CoreViewModel() {
+class GoodInfoFacingViewModel : CoreViewModel() {
 
     @Inject
     lateinit var navigator: IScreenNavigator
@@ -21,7 +21,7 @@ class GoodInfoViewModel : CoreViewModel() {
 
     val good: MutableLiveData<Good> = MutableLiveData()
 
-    val facings: MutableLiveData<String> = MutableLiveData()
+    val facings: MutableLiveData<String> = MutableLiveData("")
 
     val totalFacings: MutableLiveData<Int> = facings.combineLatest(good).map { pair ->
         val currentFacings = if(pair?.first?.isNotEmpty() == true) pair.first.toInt() else 0
