@@ -7,8 +7,8 @@ class CheckData(
 ) {
 
     var checkType = ""
-    var emptyPlaces = false
-    var countFacings = false
+    var isFacings = false
+    var isPlaces = false
 
     var currentSegmentIndex = 0
     var currentShelfIndex = 0
