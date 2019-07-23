@@ -24,7 +24,7 @@ class GoodInfoViewModel : CoreViewModel() {
         it?.status == GoodStatus.MISSING_WRONG || it?.status == GoodStatus.MISSING_RIGHT
     }
 
-    val missingButtonEnabled: MutableLiveData<Boolean> = good.map { it?.status == GoodStatus.CREATED && checkData.checkEmptyPlaces }
+    val missingButtonEnabled: MutableLiveData<Boolean> = good.map { it?.status == GoodStatus.CREATED }
     val applyButtonEnabled: MutableLiveData<Boolean> = good.map { it?.status == GoodStatus.CREATED }
 
     init {
@@ -34,14 +34,21 @@ class GoodInfoViewModel : CoreViewModel() {
     }
 
     fun onClickMissing() {
-        // todo ЭКРАН выбор правильности оформления пустого места
+        if (checkData.checkEmptyPlaces) {
+            // todo ЭКРАН выбор правильности оформления пустого места
 
-        // !Перенести на другой экран
-        checkData.getCurrentGood().status = when ((1..2).random()) {
-            1 -> GoodStatus.MISSING_RIGHT
-            else -> GoodStatus.MISSING_WRONG
+            // !Перенести на другой экран
+            checkData.getCurrentGood().status = when ((1..2).random()) {
+                1 -> GoodStatus.MISSING_RIGHT
+                else -> GoodStatus.MISSING_WRONG
+            }
+
+            navigator.openGoodListScreen()
+        } else {
+            // Пустое место всегда оформлено правильно
+            checkData.getCurrentGood().status = GoodStatus.MISSING_RIGHT
+            navigator.openGoodListScreen()
         }
-        navigator.openGoodListScreen()
     }
 
     fun onClickApply() {

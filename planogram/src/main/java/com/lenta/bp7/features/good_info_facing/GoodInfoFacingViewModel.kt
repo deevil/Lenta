@@ -36,9 +36,9 @@ class GoodInfoFacingViewModel : CoreViewModel() {
     val facingFieldEnabled: MutableLiveData<Boolean> = good.map { it?.status == GoodStatus.CREATED }
 
     val missingButtonEnabled: MutableLiveData<Boolean> = facings.combineLatest(good).map { pair ->
-        val emptyField = if (pair?.first?.isNotEmpty() == true) pair.first.toInt() == 0 else true
-        val existFacings = if (pair?.second != null) pair.second.totalFacings > 0 else false
-        checkData.checkEmptyPlaces && emptyField && !existFacings && currentGoodIsCreated()
+        val emptyCountField = if (pair?.first?.isNotEmpty() == true) pair.first.toInt() == 0 else true
+        val alreadyExistFacings = if (pair?.second != null) pair.second.totalFacings > 0 else false
+        emptyCountField && !alreadyExistFacings && currentGoodIsCreated()
     }
 
     val applyButtonEnabled: MutableLiveData<Boolean> = facings.map {
@@ -57,14 +57,21 @@ class GoodInfoFacingViewModel : CoreViewModel() {
     }
 
     fun onClickMissing() {
-        // todo ЭКРАН выбор правильности оформления пустого места
+        if (checkData.checkEmptyPlaces) {
+            // todo ЭКРАН выбор правильности оформления пустого места
 
-        // !Перенести на другой экран
-        checkData.getCurrentGood().status = when ((1..2).random()) {
-            1 -> GoodStatus.MISSING_RIGHT
-            else -> GoodStatus.MISSING_WRONG
+            // !Перенести на другой экран
+            checkData.getCurrentGood().status = when ((1..2).random()) {
+                1 -> GoodStatus.MISSING_RIGHT
+                else -> GoodStatus.MISSING_WRONG
+            }
+
+            navigator.openGoodListScreen()
+        } else {
+            // Пустое место всегда оформлено правильно
+            checkData.getCurrentGood().status = GoodStatus.MISSING_RIGHT
+            navigator.openGoodListScreen()
         }
-        navigator.openGoodListScreen()
     }
 
     fun onClickApply() {
