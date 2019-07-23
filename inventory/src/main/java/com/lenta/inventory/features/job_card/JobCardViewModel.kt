@@ -64,7 +64,7 @@ class JobCardViewModel : CoreViewModel(), OnPositionClickListener {
         this.typesRecount = typesRecount
         this.recountsTitles = typesRecount
                 .filterIndexed {
-                    index, recountType -> if (!isStrictList) true else index == 0 }
+                    index, recountType -> if (isStrictList) true else index == 0 }
                 .map {
                     converterTypeToString(it)
                 }
