@@ -39,8 +39,8 @@ fun setGoodStatusIcon(imageView: ImageView, goodStatus: GoodStatus) {
         imageView.setVisible()
 
         when (it) {
-            GoodStatus.MISSING_WRONG -> imageView.setImageResource(R.drawable.ic_close_white_24dp)
-            GoodStatus.MISSING_RIGHT -> imageView.setImageResource(R.drawable.ic_done_white_24dp)
+            GoodStatus.MISSING_WRONG -> imageView.setImageResource(R.drawable.ic_good_missing_wrong_white_24dp)
+            GoodStatus.MISSING_RIGHT -> imageView.setImageResource(R.drawable.ic_good_missing_rigth_white_24dp)
             else -> imageView.setInvisible()
         }
     }
