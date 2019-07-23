@@ -41,12 +41,12 @@ class GoodInfoViewModel : CoreViewModel() {
             1 -> GoodStatus.MISSING_RIGHT
             else -> GoodStatus.MISSING_WRONG
         }
-        navigator.goBack()
+        navigator.openGoodListScreen()
     }
 
     fun onClickApply() {
         checkData.getCurrentGood().status = GoodStatus.PROCESSED
-        navigator.goBack()
+        navigator.openGoodListScreen()
     }
 
     fun onClickBack() {

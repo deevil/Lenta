@@ -2,10 +2,7 @@ package com.lenta.bp7.features.good_list
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.lenta.bp7.data.model.CheckData
-import com.lenta.bp7.data.model.Good
-import com.lenta.bp7.data.model.GoodStatus
-import com.lenta.bp7.data.model.ShelfStatus
+import com.lenta.bp7.data.model.*
 import com.lenta.bp7.platform.navigation.IScreenNavigator
 import com.lenta.bp7.repos.IDatabaseRepo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
@@ -36,10 +33,11 @@ class GoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     val segmentNumber: MutableLiveData<String> = MutableLiveData()
     val shelfNumber: MutableLiveData<String> = MutableLiveData()
     val goodNumber: MutableLiveData<String> = MutableLiveData("")
-    private val unfinishedCurrentShelf: MutableLiveData<Boolean> = MutableLiveData()
 
-    val applyButtonEnabled: MutableLiveData<Boolean> = goods.combineLatest(unfinishedCurrentShelf).map { pair ->
-        pair?.first?.isNotEmpty() ?: false && pair?.second == true
+    val numberFieldEnabled: MutableLiveData<Boolean> = MutableLiveData(false)
+
+    val applyButtonEnabled: MutableLiveData<Boolean> = goods.map {
+        it?.isNotEmpty() ?: false && checkData.getCurrentShelf().status == ShelfStatus.UNFINISHED
     }
 
     init {
@@ -48,7 +46,7 @@ class GoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
                 segmentNumber.value = it.getCurrentSegment().number
                 shelfNumber.value = it.getCurrentShelf().number
                 goods.value = it.getCurrentShelf().goods
-                unfinishedCurrentShelf.value = it.getCurrentShelf().status == ShelfStatus.UNFINISHED
+                numberFieldEnabled.value = it.getCurrentShelf().status == ShelfStatus.UNFINISHED
             }
         }
     }
@@ -81,7 +79,7 @@ class GoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
                     }
                 }
 
-                if (number.length == SAP_OR_BAR_LENGTH) { // введен sap/bar код
+                if (number.length == SAP_OR_BAR_LENGTH) {
                     Logg.d { "Entered SAP or BAR-code: $number" }
                     // todo ЭКРАН выбора типа введенного кода
 
@@ -106,8 +104,6 @@ class GoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
                         }
                     }
                 }
-
-                checkData.getCurrentGood().status = GoodStatus.CREATED
             }
         }
     }
@@ -115,7 +111,7 @@ class GoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     private fun openInfoScreen() {
         // todo Для тестирования разных сценариев проверки. Потом удалить.
         checkData.countFacings = false
-        checkData.checkEmptyPlaces = true
+        checkData.checkEmptyPlaces = false
 
         if (checkData.countFacings) {
             navigator.openGoodInfoFacingScreen()
@@ -133,7 +129,7 @@ class GoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     }
 
     fun onClickBack() {
-        if (unfinishedCurrentShelf.value == false) {
+        if (checkData.getCurrentShelf().status != ShelfStatus.UNFINISHED) {
             navigator.goBack()
             return
         }
@@ -143,13 +139,13 @@ class GoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
             // !Перенести на другой экран
             checkData.deleteCurrentShelf()
-            navigator.goBack()
+            navigator.openSegmentListScreen()
         } else {
             // todo ЭКРАН сохранить результаты и закрыть для редактирования
 
             // !Перенести на другой экран
             checkData.getCurrentShelf().status = ShelfStatus.PROCESSED
-            navigator.goBack()
+            navigator.openSegmentListScreen()
         }
     }
 

@@ -2,10 +2,7 @@ package com.lenta.bp7.features.shelf_list
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.lenta.bp7.data.model.CheckData
-import com.lenta.bp7.data.model.SegmentStatus
-import com.lenta.bp7.data.model.Shelf
-import com.lenta.bp7.data.model.ShelfStatus
+import com.lenta.bp7.data.model.*
 import com.lenta.bp7.platform.navigation.IScreenNavigator
 import com.lenta.bp7.repos.IDatabaseRepo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
@@ -34,6 +31,8 @@ class ShelfListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     private val unfinishedCurrentSegment: MutableLiveData<Boolean> = MutableLiveData()
     private val deletedCurrentSegment: MutableLiveData<Boolean> = MutableLiveData()
 
+    val numberFieldEnabled: MutableLiveData<Boolean> = MutableLiveData(false)
+
     val deleteButtonEnabled: MutableLiveData<Boolean> = shelves.combineLatest(deletedCurrentSegment).map { pair ->
         pair?.first?.isNotEmpty() ?: false && pair?.second == false
     }
@@ -50,6 +49,7 @@ class ShelfListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
                 shelves.value = it.getCurrentSegment().shelves
                 unfinishedCurrentSegment.value = it.getCurrentSegment().status == SegmentStatus.UNFINISHED
                 deletedCurrentSegment.value = it.getCurrentSegment().status == SegmentStatus.DELETED
+                numberFieldEnabled.value = it.getCurrentSegment().status == SegmentStatus.UNFINISHED
             }
         }
     }
