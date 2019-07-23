@@ -3,6 +3,7 @@ package com.lenta.bp7.features.option_info
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp7.data.Enabled
+import com.lenta.bp7.data.model.CheckData
 import com.lenta.bp7.platform.navigation.IScreenNavigator
 import com.lenta.bp7.repos.IDatabaseRepo
 import com.lenta.shared.account.ISessionInfo
@@ -21,6 +22,8 @@ class OptionInfoViewModel : CoreViewModel() {
     lateinit var sessionInfo: ISessionInfo
     @Inject
     lateinit var database: IDatabaseRepo
+    @Inject
+    lateinit var checkData: CheckData
 
     val isFacings: MutableLiveData<Boolean> = MutableLiveData(false)
     val isPlaces: MutableLiveData<Boolean> = MutableLiveData(false)
@@ -30,11 +33,17 @@ class OptionInfoViewModel : CoreViewModel() {
             val marketNumber = sessionInfo.market
             isFacings.value = database.getFacingsParam(marketNumber) != Enabled.NO.type
             isPlaces.value = database.getPlacesParam(marketNumber) != Enabled.NO.type
+
+            saveCheckState()
         }
     }
 
+    private fun saveCheckState() {
+        checkData.countFacings = isFacings.value!!
+        checkData.checkEmptyPlaces = isPlaces.value!!
+    }
+
     fun onClickNext() {
-        // Перейти к следующему экрану
         navigator.openSegmentListScreen()
     }
 }

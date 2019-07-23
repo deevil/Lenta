@@ -98,6 +98,7 @@
             android:layout_margin="8dp"
             android:digits="0123456789"
             android:drawableEnd="@drawable/ic_add_white_24dp"
+            android:enabled="@{vm.numberFieldEnabled}"
             android:hint="@string/enter_item_number_or_barcode"
             android:imeOptions="actionGo"
             android:inputType="number"

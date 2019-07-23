@@ -6,6 +6,7 @@ import com.lenta.bp7.features.check_type.CheckTypeFragment
 import com.lenta.bp7.features.loading.fast.FastDataLoadingFragment
 import com.lenta.bp7.features.option_info.OptionInfoFragment
 import com.lenta.bp7.features.code.CodeFragment
+import com.lenta.bp7.features.good_info.GoodInfoFragment
 import com.lenta.bp7.features.good_info_facing.GoodInfoFacingFragment
 import com.lenta.bp7.features.good_list.GoodListFragment
 import com.lenta.bp7.features.segment_list.SegmentListFragment
@@ -100,9 +101,15 @@ class ScreenNavigator(
         }
     }
 
-    override fun openGoodInfoScreen() {
+    override fun openGoodInfoFacingScreen() {
         runOrPostpone {
             getFragmentStack()?.push(GoodInfoFacingFragment())
+        }
+    }
+
+    override fun openGoodInfoScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(GoodInfoFragment())
         }
     }
 }
@@ -120,6 +127,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openSegmentListScreen()
     fun openShelfListScreen()
     fun openGoodListScreen()
+    fun openGoodInfoFacingScreen()
     fun openGoodInfoScreen()
 
 }

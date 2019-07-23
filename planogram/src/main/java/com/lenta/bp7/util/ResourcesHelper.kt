@@ -23,7 +23,7 @@ fun setSegmentStatusIcon(imageView: ImageView, segmentStatus: SegmentStatus) {
 fun setShelfStatusIcon(imageView: ImageView, shelfStatus: ShelfStatus) {
     shelfStatus.let {
         val icon = when (it) {
-            ShelfStatus.UNFINISHED -> R.drawable.ic_add_white_24dp
+            ShelfStatus.UNFINISHED -> R.drawable.ic_play_arrow_white_24dp
             ShelfStatus.PROCESSED -> R.drawable.ic_lock_white_24dp
             ShelfStatus.DELETED -> R.drawable.ic_delete_white_24dp
         }
@@ -35,9 +35,9 @@ fun setShelfStatusIcon(imageView: ImageView, shelfStatus: ShelfStatus) {
 fun setGoodStatusIcon(imageView: ImageView, goodStatus: GoodStatus) {
     goodStatus.let {
         val icon = when (it) {
-            GoodStatus.CREATED -> R.drawable.ic_add_white_24dp
-            GoodStatus.MISSING -> R.drawable.ic_close_white_24dp
-            GoodStatus.PRESENT -> R.drawable.ic_done_white_24dp
+            GoodStatus.MISSING_WRONG -> R.drawable.ic_close_white_24dp
+            GoodStatus.MISSING_RIGHT -> R.drawable.ic_done_white_24dp
+            else -> R.drawable.ic_add_white_24dp
         }
         imageView.setImageResource(icon)
     }
