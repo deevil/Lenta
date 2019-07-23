@@ -70,7 +70,7 @@ class ShelfListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
         selectionsHelper.let {
             val items = it.selectedPositions.value?.toMutableSet()
             if (items?.isEmpty() == true) {
-                // todo ЭКРАН подтверждение удаления данных по сегменту
+                // todo ЭКРАН удалить данные по сегменту?
 
                 // !Перенести на другой экран
                 checkData.getCurrentSegment().status = SegmentStatus.DELETED
@@ -89,7 +89,7 @@ class ShelfListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     }
 
     fun onClickApply() {
-        // todo ЭКРАН сохранить результаты и закрыть для редактирования
+        // todo ЭКРАН сохранить результаты сканирования сегмента и закрыть для редактирования?
 
         // !Перенести на другой экран
         checkData.getCurrentSegment().status = SegmentStatus.PROCESSED
@@ -97,22 +97,19 @@ class ShelfListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     }
 
     fun onClickBack() {
-        if (unfinishedCurrentSegment.value == false) {
+        if (checkData.getCurrentSegment().status != SegmentStatus.UNFINISHED) {
             navigator.goBack()
             return
         }
 
         if (shelves.value?.isEmpty() == true) {
-            // todo ЭКРАН предупреждение об удалении пустого сегмента
+            // todo ЭКРАН в сегменте отсутствуют полки, сегмент не будет сохранен
 
             // !Перенести на другой экран
             checkData.deleteCurrentSegment()
             navigator.goBack()
         } else {
-            // todo ЭКРАН сохранить результаты и закрыть для редактирования
-
-            // !Перенести на другой экран
-            checkData.getCurrentSegment().status = SegmentStatus.PROCESSED
+            // Сегмен остается незавершенным
             navigator.goBack()
         }
     }

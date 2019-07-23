@@ -64,13 +64,13 @@ class GoodInfoFacingViewModel : CoreViewModel() {
             1 -> GoodStatus.MISSING_RIGHT
             else -> GoodStatus.MISSING_WRONG
         }
-        navigator.goBack()
+        navigator.openGoodListScreen()
     }
 
     fun onClickApply() {
-        checkData.getCurrentGood().totalFacings += facings.value!!.toInt()
+        checkData.getCurrentGood().totalFacings = totalFacings.value!!
         checkData.getCurrentGood().status = GoodStatus.PROCESSED
-        navigator.goBack()
+        navigator.openGoodListScreen()
     }
 
     fun onClickBack() {

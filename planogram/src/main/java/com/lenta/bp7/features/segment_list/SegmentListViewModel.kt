@@ -49,8 +49,8 @@ class SegmentListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     }
 
     private fun createSegment() {
-        if (unfinishedSegment.value == true) {
-            // todo ЭКРАН сообщение наличии незавершенного сегмента
+        if (checkData.isExistUnfinishedSegment()) {
+            // todo ЭКРАН обнаружен незавершенный сегмент, начало работы с новым невозможно. Перейти к сегменту?
 
             return
         }
@@ -58,7 +58,7 @@ class SegmentListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
         if (segmentNumber.value?.length == 7) {
             checkData.addSegment(sessionInfo.market!!, segmentNumber.value!!)
 
-            // todo ЭКРАН сообщение о начале обработки сегмента
+            // todo ЭКРАН начата обработка сегмента, с подсчетом фейсингов / без подсчета фейсингов
 
             // !Перенести на другой экран
             navigator.openShelfListScreen()
