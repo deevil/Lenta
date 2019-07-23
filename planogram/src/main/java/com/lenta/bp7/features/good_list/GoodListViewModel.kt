@@ -110,7 +110,7 @@ class GoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
     private fun openInfoScreen() {
         // todo для тестирования разных сценариев проверки. Потом удалить.
-        checkData.countFacings = true
+        checkData.countFacings = false
         checkData.checkEmptyPlaces = true
 
         if (checkData.countFacings) {

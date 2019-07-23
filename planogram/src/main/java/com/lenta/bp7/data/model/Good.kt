@@ -14,6 +14,10 @@ data class Good(
         return sapCode?.takeLast(6) ?: ""
     }
 
+    fun getNumberOfFacing(): String? {
+        return if ((status == GoodStatus.CREATED || status == GoodStatus.PROCESSED) && totalFacings == 0) "+" else totalFacings.toString()
+    }
+
 }
 
 data class GoodInfo(
