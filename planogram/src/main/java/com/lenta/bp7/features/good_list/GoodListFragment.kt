@@ -26,6 +26,8 @@ import com.lenta.shared.utilities.extentions.provideViewModel
 class GoodListFragment : CoreFragment<FragmentGoodListBinding, GoodListViewModel>(),
         ToolbarButtonsClickListener, OnBackPresserListener {
 
+    private var recyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
+
     override fun getLayoutId(): Int = R.layout.fragment_good_list
 
     override fun getPageNumber(): String? = generateScreenNumberFromPostfix("12")
@@ -52,10 +54,14 @@ class GoodListFragment : CoreFragment<FragmentGoodListBinding, GoodListViewModel
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.apply, enabled = false)
+    }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         viewLifecycleOwner.apply {
-            connectLiveData(source = vm.applyButtonEnabled, target = bottomToolbarUiModel.uiModelButton5.enabled)
+            connectLiveData(vm.applyButtonEnabled, getBottomToolBarUIModel()!!.uiModelButton5.enabled)
         }
+
+        initRvConfig()
     }
 
     override fun onToolbarButtonClick(view: View) {
@@ -64,15 +70,40 @@ class GoodListFragment : CoreFragment<FragmentGoodListBinding, GoodListViewModel
         }
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        initRvConfig()
-    }
-
     private fun initRvConfig() {
         binding?.let { layoutBinding ->
-            layoutBinding.rvConfig = DataBindingRecyclerViewConfig<ItemGoodBinding>(
+            layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
                     layoutId = R.layout.item_good,
-                    itemId = BR.good
+                    itemId = BR.good,
+                    realisation = object : DataBindingAdapter<ItemGoodBinding> {
+                        override fun onCreate(binding: ItemGoodBinding) {
+                        }
+
+                        override fun onBind(binding: ItemGoodBinding, position: Int) {
+                            recyclerViewKeyHandler?.let {
+                                binding.root.isSelected = it.isSelected(position)
+                            }
+                        }
+                    },
+                    onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
+                        recyclerViewKeyHandler?.let {
+                            if (it.isSelected(position)) {
+                                vm.onClickItemPosition(position)
+                            } else {
+                                it.selectPosition(position)
+                            }
+                        }
+
+                    }
+            )
+
+            layoutBinding.vm = vm
+            layoutBinding.lifecycleOwner = viewLifecycleOwner
+            recyclerViewKeyHandler = RecyclerViewKeyHandler(
+                    rv = layoutBinding.rv,
+                    items = vm.goods,
+                    lifecycleOwner = layoutBinding.lifecycleOwner!!,
+                    initPosInfo = recyclerViewKeyHandler?.posInfo?.value
             )
         }
     }

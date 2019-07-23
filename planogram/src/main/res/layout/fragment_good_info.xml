@@ -7,7 +7,7 @@
 
         <variable
             name="vm"
-            type="com.lenta.bp7.features.good_info_facing.GoodInfoFacingViewModel"/>
+            type="com.lenta.bp7.features.good_info.GoodInfoViewModel"/>
     </data>
 
     <FrameLayout
@@ -22,38 +22,9 @@
             <LinearLayout
                 style="@style/LinearGoodInfoRowStyle">
 
-                <LinearLayout
-                    style="@style/LinearCellStyle"
-                    android:layout_weight="1">
-
-                    <TextView
-                        style="@style/GoodInfoCellTextStyle"
-                        android:text="@string/number_of_facings"/>
-
-                </LinearLayout>
-
-                <View
-                    style="@style/RowVerticalDivider"/>
-
-                <LinearLayout
-                    style="@style/LinearCellStyle"
-                    android:layout_weight="1">
-
-                    <EditText
-                        android:id="@+id/et_enter_facing_count"
-                        android:enabled="@{vm.facingFieldEnabled}"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="8dp"
-                        android:digits="0123456789"
-                        android:hint="@string/enter_quantity"
-                        android:inputType="number"
-                        android:maxLength="3"
-                        android:text="@={vm.facings}"
-                        android:textSize="14sp"
-                        tools:ignore="Autofill"/>
-
-                </LinearLayout>
+                <TextView
+                    style="@style/GoodInfoCellTextStyle"
+                    android:text="@string/without_number_of_facings"/>
 
             </LinearLayout>
 
@@ -86,9 +57,9 @@
                         android:layout_height="wrap_content"
                         android:paddingStart="10dp"
                         android:paddingEnd="10dp"
-                        android:text="@{@string/one_space_two(String.valueOf(vm.totalFacings), vm.good.units)}"
+                        android:text="+"
                         android:textSize="14sp"
-                        tools:text="5 шт"/>
+                        tools:text="+"/>
 
                 </LinearLayout>
 
@@ -102,7 +73,7 @@
 
                 <TextView
                     style="@style/GoodInfoCellTextStyle"
-                    android:text="@{vm.goodIsPresent ? @string/good_on_shelf : @string/good_is_missing}"
+                    android:text="@{!vm.missingGood ? @string/good_on_shelf : @string/good_is_missing }"
                     tools:text="@string/good_on_shelf"/>
 
             </LinearLayout>
