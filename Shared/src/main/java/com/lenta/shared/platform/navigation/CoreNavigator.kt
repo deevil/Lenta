@@ -275,6 +275,12 @@ class CoreNavigator constructor(private val context: Context,
 
     }
 
+    override fun closeAllScreen() {
+        runOrPostpone {
+            getFragmentStack()?.popAll()
+        }
+    }
+
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 
 }
@@ -296,6 +302,7 @@ interface ICoreNavigator {
                         pageNumber: String? = null,
                         timeAutoExitInMillis: Int? = null,
                         onlyIfFirstAlert: Boolean = false)
+
     fun openAlertScreen(failure: Failure, pageNumber: String = "96")
     fun openSupportScreen()
     fun <Params> showProgress(useCase: UseCase<Any, Params>)
@@ -322,6 +329,7 @@ interface ICoreNavigator {
     fun openWriteOffToProductionConfirmationScreen(codeConfirm: Int)
     fun openNeedUpdateScreen()
     fun openNotImplementedScreenAlert(screenName: String)
+    fun closeAllScreen()
 }
 
 class FunctionsCollector(private val needCollectLiveData: LiveData<Boolean>) {

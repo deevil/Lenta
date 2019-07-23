@@ -8,9 +8,7 @@ import com.lenta.inventory.models.StorePlaceLockMode
 import com.lenta.inventory.models.task.IInventoryTaskManager
 import com.lenta.inventory.models.task.StorePlaceProcessing
 import com.lenta.inventory.platform.navigation.IScreenNavigator
-import com.lenta.inventory.requests.network.StorePlaceLockNetRequest
-import com.lenta.inventory.requests.network.StorePlaceLockParams
-import com.lenta.inventory.requests.network.StorePlaceLockRestInfo
+import com.lenta.inventory.requests.network.*
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.platform.viewmodel.CoreViewModel
@@ -36,6 +34,8 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     lateinit var context: Context
     @Inject
     lateinit var taskManager: IInventoryTaskManager
+    @Inject
+    lateinit var invSendReportNetRequest: InvSendReportNetRequest
 
     val unprocessedGoods: MutableLiveData<List<ProductInfoVM>> = MutableLiveData()
     val processedGoods: MutableLiveData<List<ProductInfoVM>> = MutableLiveData()
@@ -129,12 +129,27 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
             val recountType = taskManager.getInventoryTask()?.taskDescription?.recountType
             if (recountType == RecountType.ParallelByStorePlaces) {
                 storePlaceManager?.markAsProcessed()
-                makeLockUnlockRequest(recountType, StorePlaceLockMode.Unlock, ::handleUnlockSuccess)
             }
-
+            saveData()
         }
 
-        return
+    }
+
+    private fun saveData() {
+        viewModelScope.launch {
+            screenNavigator.showProgress(invSendReportNetRequest)
+            invSendReportNetRequest(storePlaceManager!!.getReport(isFinish = true)).either(::handleFailure) {
+                if (it.retCode != "0") {
+                    screenNavigator.openInfoScreen(it.errorText)
+                } else {
+                    makeLockUnlockRequest(taskManager.getInventoryTask()?.taskDescription?.recountType, StorePlaceLockMode.Unlock) {
+                        screenNavigator.openSuccessSaveDataScreen()
+                    }
+                }
+            }
+            screenNavigator.hideProgress()
+        }
+
     }
 
     fun onClickBack() {

@@ -214,6 +214,19 @@ class ScreenNavigator(
         }
     }
 
+    override fun openSuccessSaveDataScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(
+                    AlertFragment.create(
+                            iconRes = R.drawable.ic_done_green_80dp,
+                            message = context.getString(R.string.success_save_report),
+                            timeAutoExitInMillis = 3000,
+                            leftButtonDecorationInfo = ButtonDecorationInfo.empty
+                    )
+            )
+        }
+    }
+
 
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 
@@ -244,4 +257,5 @@ interface IScreenNavigator : ICoreNavigator {
     fun openPartySignsScreen(title: String, manufacturers: List<String>, stampLength: Int)
     fun openTakenToWorkFragment()
     fun openConfirmationSavingJobScreen(callbackFunc: () -> Unit)
+    fun openSuccessSaveDataScreen()
 }

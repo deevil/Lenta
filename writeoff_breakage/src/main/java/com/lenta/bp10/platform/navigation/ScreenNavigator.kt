@@ -187,11 +187,6 @@ class ScreenNavigator(
         }
     }
 
-    override fun closeAllScreen() {
-        runOrPostpone {
-            getFragmentStack()?.popAll()
-        }
-    }
 
     override fun openGoodsReasonsScreen(productInfo: ProductInfo) {
         runOrPostpone {
@@ -314,7 +309,6 @@ interface IScreenNavigator : ICoreNavigator {
     fun openExciseAlcoScreen(productInfo: ProductInfo)
     fun openRemoveTaskConfirmationScreen(taskDescription: String, codeConfirmation: Int)
     fun openSendingReportsScreen(writeOffReportResponse: WriteOffReportResponse)
-    fun closeAllScreen()
     fun openSetsInfoScreen(productInfo: ProductInfo, quantity: Double)
     fun openGoodsReasonsScreen(productInfo: ProductInfo)
     fun openSuccessPrintMessage()
