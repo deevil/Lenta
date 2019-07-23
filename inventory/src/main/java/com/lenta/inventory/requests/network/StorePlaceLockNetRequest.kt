@@ -8,6 +8,7 @@ import com.lenta.shared.fmp.ObjectRawStatus
 import com.lenta.shared.fmp.toFmpObjectRawStatusEither
 import com.lenta.shared.functional.Either
 import com.lenta.shared.interactor.UseCase
+import com.lenta.shared.utilities.Logg
 import com.mobrun.plugin.api.HyperHive
 import com.mobrun.plugin.api.callparams.WebCallParams
 import javax.inject.Inject
@@ -25,6 +26,7 @@ class StorePlaceLockNetRequest
             )
         }
 
+        Logg.d { "IP: ${params.ip}\nTask number: ${params.taskNumber}\nPlace code: ${params.storePlaceCode}\nMode: ${params.mode}\n Personal number: ${params.userNumber}" }
         val res = hyperHive.requestAPI.web("ZMP_UTZ_97_V001", webCallParams).execute().toFmpObjectRawStatusEither(StorePlaceLockStatus::class.java, gson)
 
         return res

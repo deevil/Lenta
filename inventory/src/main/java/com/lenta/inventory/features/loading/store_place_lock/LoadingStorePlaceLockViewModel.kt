@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.inventory.features.task_list.TaskItemVm
+import com.lenta.inventory.models.RecountType
 import com.lenta.inventory.models.StorePlaceLockMode
 import com.lenta.inventory.models.task.IInventoryTaskManager
 import com.lenta.inventory.models.task.TaskStorePlaceInfo
@@ -46,11 +47,14 @@ class LoadingStorePlaceLockViewModel : CoreLoadingViewModel() {
             taskManager.getInventoryTask()?.let {
                 title.postValue(it.taskDescription.getTaskTypeAndNumber())
                 progress.value = true
+                val recountType = taskManager.getInventoryTask()?.taskDescription?.recountType
+                val userNumber = if (recountType == RecountType.ParallelByPerNo) sessionInfo.personnelNumber ?: "" else "" // указываем номер только при пересчете по номерам
+                val storePlaceCode = if (recountType == RecountType.ParallelByStorePlaces) storePlaceNumber else "" //указываем номер только при пересчете по МХ
                 storePlaceLockRequest(StorePlaceLockParams(ip = context.getDeviceIp(),
                         taskNumber = it.taskDescription.taskNumber,
-                        storePlaceCode = storePlaceNumber,
+                        storePlaceCode = storePlaceCode,
                         mode = mode.mode,
-                        userNumber = sessionInfo.personnelNumber ?: "")).either(::handleFailure, ::handleSuccess)
+                        userNumber = userNumber)).either(::handleFailure, ::handleSuccess)
                 progress.value = false
             }
         }
@@ -65,8 +69,13 @@ class LoadingStorePlaceLockViewModel : CoreLoadingViewModel() {
         Logg.d { "tasksListRestInfo $storePlaceLockInfo" }
         screenNavigator.goBack()
         when(mode) {
-            StorePlaceLockMode.Lock -> screenNavigator.openGoodsListScreen()
-            StorePlaceLockMode.Unlock -> screenNavigator.openStoragesList()
+            StorePlaceLockMode.Lock -> {
+                taskManager.getInventoryTask()?.let {
+                    val storePlaceManager = it.processStorePlace(storePlaceNumber)
+                    screenNavigator.openGoodsListScreen(storePlaceManager)
+                }
+            }
+            StorePlaceLockMode.Unlock -> screenNavigator.goBack()
         }
     }
 
