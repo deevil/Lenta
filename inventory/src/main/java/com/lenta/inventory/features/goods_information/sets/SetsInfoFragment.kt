@@ -46,7 +46,6 @@ class SetsInfoFragment : CoreFragment<FragmentSetsInfoBinding, SetsInfoViewModel
                 return it
             }
         }
-
     }
 
     override fun getLayoutId(): Int = R.layout.fragment_sets_info
@@ -56,10 +55,9 @@ class SetsInfoFragment : CoreFragment<FragmentSetsInfoBinding, SetsInfoViewModel
     override fun getViewModel(): SetsInfoViewModel {
         provideViewModel(SetsInfoViewModel::class.java).let { vm ->
             getAppComponent()?.inject(vm)
-            productInfo?.let {
-                vm.setProductInfo(it)
-            }
+            vm.productInfo.value = productInfo
             vm.spinList.value = listOf(getString(R.string.quantity))
+            vm.titleProgressScreen.value = getString(R.string.data_loading)
             return vm
         }
     }
@@ -78,7 +76,7 @@ class SetsInfoFragment : CoreFragment<FragmentSetsInfoBinding, SetsInfoViewModel
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.apply)
 
         viewLifecycleOwner.apply {
-            connectLiveData(vm.enabledApplyButton, bottomToolbarUiModel.uiModelButton4.enabled)
+            connectLiveData(vm.enabledMissingButton, bottomToolbarUiModel.uiModelButton4.enabled)
             connectLiveData(vm.enabledApplyButton, bottomToolbarUiModel.uiModelButton5.enabled)
             connectLiveData(vm.enabledDetailsCleanBtn, bottomToolbarUiModel.uiModelButton3.enabled)
             vm.selectedPage.observe(viewLifecycleOwner, Observer { pos ->

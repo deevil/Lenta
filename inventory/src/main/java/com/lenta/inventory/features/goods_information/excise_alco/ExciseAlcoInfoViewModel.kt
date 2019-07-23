@@ -20,6 +20,8 @@ import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.toStringFormatted
 import com.lenta.shared.view.OnPositionClickListener
 import kotlinx.coroutines.launch
+import java.math.BigDecimal
+import java.math.BigInteger
 import javax.inject.Inject
 
 class ExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
@@ -43,7 +45,7 @@ class ExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
         processServiceManager.getInventoryTask()!!.processExciseAlcoProduct(productInfo.value!!)!!
     }
 
-    val scannedStampCode: MutableLiveData<String> = MutableLiveData()
+    private val scannedStampCode: MutableLiveData<String> = MutableLiveData()
 
     val isEtCountValue: MutableLiveData<Boolean> = MutableLiveData(false)
 
@@ -89,7 +91,7 @@ class ExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
 
     val enabledMissingButton: MutableLiveData<Boolean> = totalCount.map { it ?: 0.0 <= 0.0 }
 
-    val isUpdateDate: MutableLiveData<Boolean> = MutableLiveData(false)
+    private val isUpdateData: MutableLiveData<Boolean> = MutableLiveData(false)
 
     init {
         viewModelScope.launch {
@@ -99,13 +101,13 @@ class ExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
     }
 
     fun onResume(){
-        if (isUpdateDate.value!!) {
+        if (isUpdateData.value!!) {
             processExciseAlcoProductService.updateCurrentData()
             processExciseAlcoProductService.getLastCountExciseStamp().countLastExciseStamp.let {
                 if (it == 0) "" else it
             }
             selectedPosition.value = processExciseAlcoProductService.getLastCountExciseStamp().countType
-            isUpdateDate.value = false
+            isUpdateData.value = false
         }
     }
 
@@ -116,8 +118,9 @@ class ExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
     }
 
     fun onClickDetails() {
-        isUpdateDate.value = true
-        screenNavigator.openGoodsDetailsStorageScreen(productInfo.value!!)
+        onScanResult("22N00002VF2XODYXEUN380V71231001687963ZZ012345678901234567890123456ZZ")
+        /**isUpdateData.value = true
+        screenNavigator.openGoodsDetailsStorageScreen(productInfo.value!!)*/
     }
 
     fun onClickMissing() {
@@ -255,7 +258,7 @@ class ExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
                 count.value = "1"
                 selectedPosition.value = GoodsInfoCountType.VINTAGE.number
                 if (exciseGoodsRestInfo.status.toInt() == InfoStatus.StampOverload.status) {
-                    isUpdateDate.value = true
+                    isUpdateData.value = true
                     screenNavigator.openAlertScreen(exciseGoodsRestInfo.statusTxt, pageNumber = "98")
                 }
             }
@@ -317,7 +320,7 @@ class ExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
                 selectedPosition.value = GoodsInfoCountType.VINTAGE.number
                 if (exciseGoodsRestInfo.status.toInt() == InfoStatus.BatchNotFound.status) {
 
-                    isUpdateDate.value = true
+                    isUpdateData.value = true
                     screenNavigator.openAlertScreen(exciseGoodsRestInfo.statusTxt, pageNumber = "98")
                 }
             }
@@ -365,7 +368,7 @@ class ExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
                 selectedPosition.value = GoodsInfoCountType.PARTLY.number
                 if (exciseGoodsRestInfo.status.toInt() == InfoStatus.StampOverload.status) {
 
-                    isUpdateDate.value = true
+                    isUpdateData.value = true
                     screenNavigator.openAlertScreen(exciseGoodsRestInfo.statusTxt, pageNumber = "98")
                 }
             }
@@ -427,7 +430,7 @@ class ExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
                 selectedPosition.value = GoodsInfoCountType.PARTLY.number
                 if (exciseGoodsRestInfo.status.toInt() == InfoStatus.BatchNotFound.status) {
 
-                    isUpdateDate.value = true
+                    isUpdateData.value = true
                     screenNavigator.openAlertScreen(exciseGoodsRestInfo.statusTxt, pageNumber = "98")
                 }
             }
@@ -449,11 +452,10 @@ class ExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
     }
 
     fun alcoCodeHandleSuccess(alcoCodeRestInfo: List<AlcoCodeRestInfo>){
-        alcoCodeRestInfo.filterIndexed { index, alcoCodeRestInfo ->
-            (alcoCodeRestInfo.data[index][2] == Base36ToBase10(scannedStampCode.value!!.substring(7,19)).padStart(19,'0') &&
-                alcoCodeRestInfo.data[index][1].substring(alcoCodeRestInfo.data[index][1].length - 6) == productInfo.value!!.materialNumber) ||
-                    (alcoCodeRestInfo.data[index][2] == Base36ToBase10(scannedStampCode.value!!.substring(7,19)).padStart(20,'0') &&
-                            alcoCodeRestInfo.data[index][1].substring(alcoCodeRestInfo.data[index][1].length - 6) == productInfo.value!!.materialNumber)
+        alcoCodeRestInfo[0].data.filter { data ->
+            data[1] == productInfo.value!!.materialNumber &&
+                    (data[2] == BigInteger(scannedStampCode.value!!.substring(7,19), 36).toString().padStart(19,'0') ||
+                            data[2] == BigInteger(scannedStampCode.value!!.substring(7,19), 36).toString().padStart(20,'0'))
         }.isNotEmpty().let {
             if (it) {
                 processExciseAlcoProductService.add(1,
@@ -482,15 +484,6 @@ class ExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
 
     override fun onClickPosition(position: Int) {
         return
-    }
-
-    fun Base36ToBase10(base36: String) : String{
-        var base10 = 0.0
-        val base36Length = base36.length - 1
-        base36.forEachIndexed { index, c ->
-            base10 += (Integer.valueOf(c.toString(), 36).toDouble()) * Math.pow(36.0, (base36Length-index).toDouble())
-        }
-        return base10.toBigDecimal().toString()
     }
 
     fun onBackPressed(){
