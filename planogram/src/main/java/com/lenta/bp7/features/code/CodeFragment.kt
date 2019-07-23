@@ -44,22 +44,21 @@ class CodeFragment : CoreFragment<FragmentCodeBinding, CodeViewModel>(), Toolbar
         bottomToolbarUiModel.cleanAll()
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.goOver, enabled = false)
+    }
 
-        viewLifecycleOwner.connectLiveData(vm.enabledGoOverBtn, bottomToolbarUiModel.uiModelButton5.enabled)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        viewLifecycleOwner.connectLiveData(vm.enabledGoOverBtn, getBottomToolBarUIModel()!!.uiModelButton5.enabled)
+
+        binding?.apply {
+            etNumber1.addTextChangedListener(EnterCodeTextWatcher(binding?.etNumber2))
+            etNumber2.addTextChangedListener(EnterCodeTextWatcher(binding?.etNumber3))
+            etNumber3.addTextChangedListener(EnterCodeTextWatcher(binding?.etNumber4))
+        }
     }
 
     override fun onToolbarButtonClick(view: View) {
         when (view.id) {
             R.id.b_5 -> vm.onClickGoOver()
-        }
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        binding?.apply {
-            etNumber1.addTextChangedListener(EnterCodeTextWatcher(binding?.etNumber2))
-            etNumber2.addTextChangedListener(EnterCodeTextWatcher(binding?.etNumber3))
-            etNumber3.addTextChangedListener(EnterCodeTextWatcher(binding?.etNumber4))
         }
     }
 }

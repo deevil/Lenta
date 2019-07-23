@@ -1,5 +1,6 @@
 package com.lenta.bp7.features.good_info_facing
 
+import android.os.Bundle
 import android.view.View
 import androidx.lifecycle.Observer
 import com.lenta.bp7.R
@@ -42,10 +43,12 @@ class GoodInfoFacingFragment : CoreFragment<FragmentGoodInfoFacingBinding, GoodI
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
         bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.missing, enabled = true)
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.apply, enabled = false)
+    }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         viewLifecycleOwner.apply {
-            connectLiveData(source = vm.missingButtonEnabled, target = bottomToolbarUiModel.uiModelButton4.enabled)
-            connectLiveData(source = vm.applyButtonEnabled, target = bottomToolbarUiModel.uiModelButton5.enabled)
+            connectLiveData(vm.missingButtonEnabled, getBottomToolBarUIModel()!!.uiModelButton4.enabled)
+            connectLiveData(vm.applyButtonEnabled, getBottomToolBarUIModel()!!.uiModelButton5.enabled)
         }
     }
 
