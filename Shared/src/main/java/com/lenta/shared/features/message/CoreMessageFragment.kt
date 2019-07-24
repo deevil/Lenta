@@ -15,10 +15,16 @@ abstract class CoreMessageFragment : CoreFragment<LayoutMessageBinding, MessageV
     protected var message by state("")
     protected var iconRes by state(0)
     protected var textColor by state<Int?>(null)
-    protected var codeConfirm by state<Int?>(null)
-    protected var codeConfirmForLeft by state<Int?>(null)
+    protected var codeConfirmForRight by state<Int?>(null)
+    var codeConfirmForButton2 by state<Int?>(null)
+    var codeConfirmForButton3 by state<Int?>(null)
+    var codeConfirmForButton4 by state<Int?>(null)
+    var codeConfirmForLeft by state<Int?>(null)
     protected var pageNumb by state<String?>(null)
     protected var leftButtonDecorationInfo by state(ButtonDecorationInfo.back)
+    protected var buttonDecorationInfo2: ButtonDecorationInfo? by state(null)
+    protected var buttonDecorationInfo3: ButtonDecorationInfo? by state(null)
+    protected var buttonDecorationInfo4: ButtonDecorationInfo? by state(null)
     protected var rightButtonDecorationInfo by state(ButtonDecorationInfo.apply)
     protected var timeAutoExitInMillis by state<Int?>(null)
 
@@ -34,13 +40,22 @@ abstract class CoreMessageFragment : CoreFragment<LayoutMessageBinding, MessageV
             return
         }
         bottomToolbarUiModel.uiModelButton1.show(leftButtonDecorationInfo)
-        if (codeConfirm != null) {
+        if (codeConfirmForRight != null) {
             bottomToolbarUiModel.uiModelButton5.show(rightButtonDecorationInfo)
+        }
+
+        buttonDecorationInfo2?.let {
+            bottomToolbarUiModel.uiModelButton2.show(it)
+        }
+        buttonDecorationInfo3?.let {
+            bottomToolbarUiModel.uiModelButton3.show(it)
+        }
+        buttonDecorationInfo4?.let {
+            bottomToolbarUiModel.uiModelButton4.show(it)
         }
     }
 
     override fun cleanTopToolbar(topToolbarUiModel: TopToolbarUiModel) {
-
         topToolbarUiModel.uiModelButton1.visibility.value = false
         topToolbarUiModel.uiModelButton2.visibility.value = false
     }
@@ -48,6 +63,9 @@ abstract class CoreMessageFragment : CoreFragment<LayoutMessageBinding, MessageV
     override fun onToolbarButtonClick(view: View) {
         when (view.id) {
             R.id.b_1 -> vm.onClickLeftButton()
+            R.id.b_2 -> vm.onClickButton2()
+            R.id.b_3 -> vm.onClickButton3()
+            R.id.b_4 -> vm.onClickButton4()
             R.id.b_5 -> vm.onClickRightButton()
         }
     }

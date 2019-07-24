@@ -240,7 +240,7 @@ class CoreNavigator constructor(private val context: Context,
                     AlertFragment.create(
                             message = context.getString(R.string.another_market_stamp),
                             pageNumber = "93",
-                            codeConfirm = codeConfirm,
+                            codeConfirmForRight = codeConfirm,
                             rightButtonDecorationInfo = ButtonDecorationInfo.next
                     )
             )
@@ -253,7 +253,7 @@ class CoreNavigator constructor(private val context: Context,
                     AlertFragment.create(
                             message = context.getString(R.string.writeoff_to_production_confirmation),
                             pageNumber = "95",
-                            codeConfirm = codeConfirm,
+                            codeConfirmForRight = codeConfirm,
                             rightButtonDecorationInfo = ButtonDecorationInfo.nextAlternate
                     )
             )
