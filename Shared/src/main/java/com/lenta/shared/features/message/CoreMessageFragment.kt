@@ -3,6 +3,7 @@ package com.lenta.shared.features.message
 import android.view.View
 import com.lenta.shared.R
 import com.lenta.shared.databinding.LayoutMessageBinding
+import com.lenta.shared.platform.activity.OnBackPresserListener
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
@@ -11,10 +12,11 @@ import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
 import com.lenta.shared.utilities.state.state
 
-abstract class CoreMessageFragment : CoreFragment<LayoutMessageBinding, MessageViewModel>(), ToolbarButtonsClickListener {
+abstract class CoreMessageFragment : CoreFragment<LayoutMessageBinding, MessageViewModel>(), ToolbarButtonsClickListener, OnBackPresserListener {
     protected var message by state("")
     protected var iconRes by state(0)
     protected var textColor by state<Int?>(null)
+    protected var codeConfirmForExit by state<Int?>(null)
     protected var codeConfirmForRight by state<Int?>(null)
     var codeConfirmForButton2 by state<Int?>(null)
     var codeConfirmForButton3 by state<Int?>(null)
