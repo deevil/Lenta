@@ -25,6 +25,10 @@ class SegmentListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     @Inject
     lateinit var checkData: CheckData
 
+    companion object {
+        const val SEGMENT_NUMBER_LENGTH = 7
+    }
+
     val segments: MutableLiveData<List<Segment>> = MutableLiveData()
     private val unfinishedSegment: MutableLiveData<Boolean> = MutableLiveData()
 
@@ -55,13 +59,14 @@ class SegmentListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
             return
         }
 
-        if (segmentNumber.value?.length == 7) {
-            checkData.addSegment(sessionInfo.market!!, segmentNumber.value!!)
-
+        if (segmentNumber.value?.length == SEGMENT_NUMBER_LENGTH) {
             // todo ЭКРАН начата обработка сегмента, с подсчетом фейсингов / без подсчета фейсингов
-
-            // !Перенести на другой экран
+            // Сообщение - Начата обработка сегмента
+            navigator.showBeganProcessingSegment(segmentNumber.value!!, checkData.countFacings)
+            checkData.addSegment(sessionInfo.market!!, segmentNumber.value!!)
             navigator.openShelfListScreen()
+            // !Сейчас сообщение показывается после перехода на следующий экран и его невозможно скрыть
+            // !Нужно исправить
         }
     }
 

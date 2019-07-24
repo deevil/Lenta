@@ -145,6 +145,19 @@ class ScreenNavigator(
                     rightButtonDecorationInfo = ButtonDecorationInfo.yes))
         }
     }
+
+    override fun showBeganProcessingSegment(segment: String, facings: Boolean, afterShowCallback: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(message = context.getString(if (facings) R.string.began_segment_with_facings else R.string.began_segment_without_facings, segment),
+                    pageNumber = "9",
+                    timeAutoExitInMillis = 3000))
+        }
+        /*openAlertScreen(
+                message = context.getString(if (facings) R.string.began_segment_with_facings else R.string.began_segment_without_facings, segment),
+                pageNumber = "16",
+                timeAutoExitInMillis = 2000
+        )*/
+    }
 }
 
 interface IScreenNavigator : ICoreNavigator {
@@ -165,5 +178,6 @@ interface IScreenNavigator : ICoreNavigator {
     fun showShelfDataWillNotBeSaved(segment: String, shelf: String, confirmCallback: () -> Unit)
     fun showSaveShelfScanResults(segment: String, shelf: String, yesCallback: () -> Unit)
     fun showIsEmptyPlaceDecoratedCorrectly(sap: String, name: String, segment: String, shelf: String, noCallback: () -> Unit, yesCallback: () -> Unit)
+    fun showBeganProcessingSegment(segment: String, facings: Boolean)
 
 }
