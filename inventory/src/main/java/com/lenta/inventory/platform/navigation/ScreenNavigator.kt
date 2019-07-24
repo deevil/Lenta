@@ -26,15 +26,12 @@ import com.lenta.inventory.features.task_list.TaskListFragment
 import com.lenta.inventory.models.RecountType
 import com.lenta.inventory.models.StorePlaceLockMode
 import com.lenta.inventory.models.task.StorePlaceProcessing
-import com.lenta.inventory.models.task.ProcessExciseAlcoProductService
-import com.lenta.inventory.models.task.TaskStorePlaceInfo
 import com.lenta.inventory.models.task.TaskProductInfo
 import com.lenta.inventory.progress.IInventoryProgressUseCaseInformator
 import com.lenta.inventory.requests.network.TasksItem
 import com.lenta.shared.account.IAuthenticator
 import com.lenta.shared.features.alert.AlertFragment
 import com.lenta.shared.interactor.UseCase
-import com.lenta.shared.models.core.Manufacturer
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
 import com.lenta.shared.platform.navigation.ICoreNavigator
 import com.lenta.shared.platform.navigation.runOrPostpone
@@ -171,7 +168,7 @@ class ScreenNavigator(
     override fun openConfirmationTaskOpenScreen(userName: String, ip: String, callbackFunc: () -> Unit) {
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.confirmation_task_open, userName, ip),
-                    codeConfirm = backFragmentResultHelper.setFuncForResult(callbackFunc),
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(callbackFunc),
                     pageNumber = "93",
                     rightButtonDecorationInfo = ButtonDecorationInfo.next))
         }
