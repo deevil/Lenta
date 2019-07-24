@@ -159,7 +159,7 @@ class ScreenNavigator(
     override fun openRemoveTaskConfirmationScreen(taskDescription: String, codeConfirmation: Int) {
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.remove_task_confirmation, taskDescription),
-                    iconRes = R.drawable.ic_delete_red_80dp, codeConfirm = codeConfirmation, pageNumber = "88"))
+                    iconRes = R.drawable.ic_delete_red_80dp, codeConfirmForRight = codeConfirmation, pageNumber = "88"))
         }
     }
 
@@ -167,7 +167,7 @@ class ScreenNavigator(
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
                     message = context.getString(if (matrixType == MatrixType.Deleted) R.string.allert_deleted_matrix_message else R.string.allert_unknown_matrix_message),
-                    codeConfirm = codeConfirmation,
+                    codeConfirmForRight = codeConfirmation,
                     leftButtonDecorationInfo = ButtonDecorationInfo.no,
                     rightButtonDecorationInfo = ButtonDecorationInfo.yes)
             )
@@ -177,7 +177,7 @@ class ScreenNavigator(
     override fun openRemoveLinesConfirmationScreen(taskDescription: String, count: Int, codeConfirmation: Int) {
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.remove_lines_confirmation, count),
-                    iconRes = R.drawable.ic_delete_red_80dp, codeConfirm = codeConfirmation, pageNumber = "89"))
+                    iconRes = R.drawable.ic_delete_red_80dp, codeConfirmForRight = codeConfirmation, pageNumber = "89"))
         }
     }
 
@@ -223,7 +223,7 @@ class ScreenNavigator(
             getFragmentStack()?.push(AlertFragment.create(
                     message = context.getString(R.string.select_type_code_description),
                     iconRes = 0,
-                    codeConfirm = codeConfirmationForBarCode,
+                    codeConfirmForRight = codeConfirmationForBarCode,
                     codeConfirmForLeft = codeConfirmationForSap,
                     pageNumber = "90",
                     leftButtonDecorationInfo = ButtonDecorationInfo.sap,
@@ -246,7 +246,7 @@ class ScreenNavigator(
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
                     message = context.getString(R.string.not_all_component_processed),
-                    codeConfirm = codeConfirmation,
+                    codeConfirmForRight = codeConfirmation,
                     pageNumber = "95",
                     leftButtonDecorationInfo = ButtonDecorationInfo.back,
                     rightButtonDecorationInfo = ButtonDecorationInfo.nextAlternate)
@@ -289,7 +289,7 @@ class ScreenNavigator(
     override fun openConfirmationToBackNotEmptyStampsScreen(callbackFunc: () -> Unit) {
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.confirmation_back_with_scanned_stamps),
-                    codeConfirm = backFragmentResultHelper.setFuncForResult(callbackFunc),
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(callbackFunc),
                     pageNumber = "93",
                     rightButtonDecorationInfo = ButtonDecorationInfo.yes))
         }

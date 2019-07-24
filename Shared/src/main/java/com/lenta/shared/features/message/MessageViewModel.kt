@@ -24,7 +24,10 @@ open class MessageViewModel : CoreViewModel() {
 
     @DrawableRes
     var iconRes: Int = 0
-    var codeConfirm: Int? = null
+    var codeConfirmForRight: Int? = null
+    var codeConfirmForButton2: Int? = null
+    var codeConfirmForButton3: Int? = null
+    var codeConfirmForButton4: Int? = null
     var codeConfirmForLeft: Int? = null
     var textColor: Int? = null
     var timeAutoExitInMillis: Int? = null
@@ -33,7 +36,7 @@ open class MessageViewModel : CoreViewModel() {
 
         viewModelScope.launch {
             timeAutoExitInMillis?.let { delayInMillis ->
-                if (codeConfirm == null) {
+                if (codeConfirmForRight == null) {
                     goBackWithDelay(params = delayInMillis.toLong())
                 }
             }
@@ -45,7 +48,7 @@ open class MessageViewModel : CoreViewModel() {
     }
 
     open fun onClickRightButton() {
-        codeConfirm?.let {
+        codeConfirmForRight?.let {
             coreNavigator.goBackWithResultCode(it)
         }
     }
@@ -56,6 +59,24 @@ open class MessageViewModel : CoreViewModel() {
             return
         }
         coreNavigator.goBack()
+    }
+
+    fun onClickButton2() {
+        codeConfirmForButton2?.let {
+            coreNavigator.goBackWithResultCode(it)
+        }
+    }
+
+    fun onClickButton3() {
+        codeConfirmForButton3?.let {
+            coreNavigator.goBackWithResultCode(it)
+        }
+    }
+
+    fun onClickButton4() {
+        codeConfirmForButton4?.let {
+            coreNavigator.goBackWithResultCode(it)
+        }
     }
 
 
