@@ -136,12 +136,12 @@
             android:fontFamily="@font/tahoma_bold"
             android:gravity="center"
             android:textSize="18sp"
-            android:onClick="@{(v) -> vm.screenNavigator.openMatrixInfoScreen(vm.productInfo.matrixType)}"
+            android:onClick="@{(v) -> vm.screenNavigator.openMatrixInfoScreen(vm.componentInfo.matrixType)}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/div_hor4"
             app:layout_constraintVertical_bias="1.0"
-            app:matrixType="@{vm.productInfo.matrixType}"
+            app:matrixType="@{vm.componentInfo.matrixType}"
             tools:background="@drawable/bg_white_circle"
             tools:text="A" />
 
@@ -155,8 +155,8 @@
             android:background="@drawable/bg_white_circle"
             android:fontFamily="@font/tahoma_bold"
             android:gravity="center"
-            android:text='@{"" + vm.productInfo.sectionId}'
-            android:onClick="@{(v) -> vm.screenNavigator.openSectionInfoScreen(vm.productInfo.sectionId)}"
+            android:text='@{"" + vm.componentInfo.sectionId}'
+            android:onClick="@{(v) -> vm.screenNavigator.openSectionInfoScreen(vm.componentInfo.sectionId)}"
             android:textSize="16sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@+id/tv_matrix"
@@ -170,7 +170,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:background="?selectableItemBackground"
-            app:alcoIcon="@{vm.productInfo.type}"
+            app:alcoIcon="@{vm.componentInfo.typeProduct}"
             app:layout_constraintBottom_toBottomOf="@+id/tv_section"
             app:layout_constraintStart_toEndOf="@+id/tv_section"
             app:layout_constraintTop_toTopOf="@+id/tv_section"

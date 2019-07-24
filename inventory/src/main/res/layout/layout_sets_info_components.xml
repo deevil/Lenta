@@ -61,7 +61,7 @@
             android:maxLines="1"
             android:paddingTop="8dp"
             android:paddingBottom="8dp"
-            android:text="@={vm.eanCode}"
+            android:text="@={vm.searchCode}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/b_scan_es"
             app:layout_constraintStart_toStartOf="parent"

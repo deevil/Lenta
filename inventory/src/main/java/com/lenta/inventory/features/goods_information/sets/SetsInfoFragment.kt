@@ -22,6 +22,7 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
+import com.lenta.shared.scan.OnScanResultListener
 import com.lenta.shared.utilities.databinding.DataBindingAdapter
 import com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig
 import com.lenta.shared.utilities.databinding.PageSelectionListener
@@ -33,6 +34,7 @@ import com.lenta.shared.utilities.state.state
 
 class SetsInfoFragment : CoreFragment<FragmentSetsInfoBinding, SetsInfoViewModel>(),
         ViewPagerSettings,
+        OnScanResultListener,
         PageSelectionListener,
         ToolbarButtonsClickListener,
         OnBackPresserListener {
@@ -134,13 +136,13 @@ class SetsInfoFragment : CoreFragment<FragmentSetsInfoBinding, SetsInfoViewModel
 
                     val onClickGoodTitle = View.OnClickListener {v ->
                         //Logg.d { "onClickListener ${(v as TextView).text.substring(0,6)}" }
-                        vm.eanCode.value = (v as TextView).text.substring(0,6)
+                        vm.searchCode.value = (v as TextView).text.substring(0,6)
                         vm.onOkInSoftKeyboard()
                     }
 
                     layoutBinding.lifecycleOwner = viewLifecycleOwner
                     layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
-                            layoutId = R.layout.item_tile_processed_goods,
+                            layoutId = R.layout.item_tile_sets_info,
                             itemId = BR.vm,
                             realisation = object : DataBindingAdapter<ItemTileSetsInfoBinding> {
                                 override fun onCreate(binding: ItemTileSetsInfoBinding) {
@@ -172,6 +174,10 @@ class SetsInfoFragment : CoreFragment<FragmentSetsInfoBinding, SetsInfoViewModel
     override fun onResume() {
         super.onResume()
         vm.onResume()
+    }
+
+    override fun onScanResult(data: String) {
+        vm.onScanResult(data)
     }
 
     override fun onBackPressed(): Boolean {

@@ -118,9 +118,8 @@ class ExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
     }
 
     fun onClickDetails() {
-        onScanResult("22N00002VF2XODYXEUN380V71231001687963ZZ012345678901234567890123456ZZ")
-        /**isUpdateData.value = true
-        screenNavigator.openGoodsDetailsStorageScreen(productInfo.value!!)*/
+        isUpdateData.value = true
+        screenNavigator.openGoodsDetailsStorageScreen(productInfo.value!!)
     }
 
     fun onClickMissing() {

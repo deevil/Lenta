@@ -3,11 +3,17 @@ package com.lenta.inventory.features.goods_information.sets
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.inventory.features.goods_details_storage.ComponentItem
+import com.lenta.inventory.models.task.IInventoryTaskManager
+import com.lenta.inventory.models.task.ProcessSetsService
 import com.lenta.inventory.models.task.TaskProductInfo
 import com.lenta.inventory.platform.navigation.IScreenNavigator
 import com.lenta.inventory.requests.network.SetComponentsNetRequest
 import com.lenta.inventory.requests.network.SetComponentsRestInfo
 import com.lenta.shared.exception.Failure
+import com.lenta.shared.fmp.resources.slow.ZfmpUtz48V001
+import com.lenta.shared.models.core.MatrixType
+import com.lenta.shared.models.core.ProductType
+import com.lenta.shared.models.core.Uom
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.SelectionItemsHelper
@@ -16,6 +22,7 @@ import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.toStringFormatted
 import com.lenta.shared.view.OnPositionClickListener
+import com.mobrun.plugin.api.HyperHive
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -26,6 +33,9 @@ class SetsInfoViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKe
 
     @Inject
     lateinit var setComponentsNetRequest: SetComponentsNetRequest
+
+    @Inject
+    lateinit var processSetsService: ProcessSetsService
 
     val productInfo: MutableLiveData<TaskProductInfo> = MutableLiveData()
 
@@ -41,87 +51,102 @@ class SetsInfoViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKe
 
     val componentsSelectionsHelper = SelectionItemsHelper()
 
-    val eanCode: MutableLiveData<String> = MutableLiveData()
+    val searchCode: MutableLiveData<String> = MutableLiveData()
 
     val spinList: MutableLiveData<List<String>> = MutableLiveData()
 
     val selectedPosition: MutableLiveData<Int> = MutableLiveData(0)
 
-    val count: MutableLiveData<String> = MutableLiveData("")
+    val count: MutableLiveData<String> = MutableLiveData("0")
 
-    val countValue: MutableLiveData<Double> = count.map { it?.toDoubleOrNull()?: 0.0 }
+    private val countValue: MutableLiveData<Double> = count.map { it?.toDoubleOrNull()?: 0.0 }
 
     val suffix: MutableLiveData<String> = MutableLiveData()
 
-    val totalCount: MutableLiveData<Double> = countValue.map {
-        (it ?: 0.0)
+    private val totalCount: MutableLiveData<Double> by lazy {
+        countValue.map {
+            (it ?: 0.0) + productInfo.value!!.factCount
+        }
     }
 
     val totalCountWithUom: MutableLiveData<String> = totalCount.map { "${it.toStringFormatted()} ${productInfo.value!!.uom.name}" }
 
+
     val componentsItem: MutableLiveData<List<ComponentItem>> = countValue.map {
         componentsInfo.mapIndexed { index, componentInfo ->
-            //val countExciseStampForComponent = getCountExciseStampsForComponent(compInfo)
-            //val rightCount = componentsDataList[index].menge * countValue.value!!
+            val countExciseStampForComponent = processSetsService.getCountExciseStampsForComponent(componentInfo)
             ComponentItem(
                     number = index + 1,
-                    name = "${componentInfo.materialNumber.substring(componentInfo.materialNumber.length - 6)}", // ${componentInfo.description}",
-                    quantity = componentInfo.countComponent, //"${countExciseStampForComponent.toStringFormatted()} из ${(componentInfo.countComponent).toStringFormatted()}",
-                    menge = "-1", //componentsDataList[index].menge.toString(),
+                    name = "${componentInfo.number.substring(componentInfo.number.length - 6)} ${componentInfo.name}",
+                    quantity = "$countExciseStampForComponent из ${((componentInfo.count).toDouble() * totalCount.value!!).toStringFormatted()}",
+                    menge = componentInfo.count,
                     even = index % 2 == 0,
-                    countSets = totalCount.value?: 0.0,
+                    countSets = totalCount.value ?: 0.0,
                     selectedPosition = selectedPosition.value!!,
-                    setMaterialNumber = "00000" //setProductInfo.value!!.materialNumber
+                    setMaterialNumber = componentInfo.setNumber
             )
         }
     }
 
     val enabledMissingButton: MutableLiveData<Boolean> = totalCount.map { it ?: 0.0 <= 0.0 }
 
-    val enabledApplyButton: MutableLiveData<Boolean> = countValue.combineLatest(totalCount).map {
-        it!!.first != 0.0 && it.second >= 0.0
+    val enabledApplyButton: MutableLiveData<Boolean> = componentsItem.map {
+        var totalCountComponents = 0.0
+        var totalCountExciseStampForComponents = 0
+        componentsInfo.map {componentInfo ->
+            totalCountComponents += componentInfo.count.toDouble() * totalCount.value!!
+            totalCountExciseStampForComponents += processSetsService.getCountExciseStampsForComponent(componentInfo)
+        }
+        countValue.value ?: 0.0 != 0.0 && totalCountComponents == totalCountExciseStampForComponents.toDouble()
     }
 
-    val enabledDetailsCleanBtn: MutableLiveData<Boolean> = MutableLiveData(true)
+    val enabledDetailsCleanBtn: MutableLiveData<Boolean> = selectedPage
+            .combineLatest(componentsSelectionsHelper.selectedPositions)
+            .combineLatest(totalCount)
+            .map {
+                val selectedTabPos = selectedPage.value ?: 0
+                val selectedComponentsPositions = componentsSelectionsHelper.selectedPositions.value
+                if (selectedTabPos == 0) totalCount.value!! > 0.0 else !selectedComponentsPositions.isNullOrEmpty()
+            }
 
     init {
         viewModelScope.launch {
+            screenNavigator.showProgress(titleProgressScreen.value!!)
             suffix.value = productInfo.value?.uom?.name
             storePlaceNumber.value = productInfo.value!!.placeCode
 
-            screenNavigator.showProgress(titleProgressScreen.value!!)
+            processSetsService.newProcessSetsService(productInfo.value!!)
+
             setComponentsNetRequest(null).either(::handleFailure, ::componentsInfoHandleSuccess)
             screenNavigator.hideProgress()
+
         }
     }
 
     private fun componentsInfoHandleSuccess(componentsRestInfo: List<SetComponentsRestInfo>) {
-        componentsRestInfo[0].data.filter{ data ->
-            data[1] == productInfo.value!!.materialNumber
-        }.map {
-            componentsInfo.add(SetComponentInfo(
-                    materialNumber = it[1],
-                    componentNumber = it[2],
-                    countComponent = it[3],
-                    uom = it[4]
-            ))
+        viewModelScope.launch {
+            screenNavigator.showProgress(titleProgressScreen.value!!)
+            componentsInfo.addAll(processSetsService.getComponentsForSet(componentsRestInfo))
+            screenNavigator.hideProgress()
         }
+    }
 
-        Logg.d { "componentsInfo ${componentsInfo}" }
+    private fun updateComponents() {
+        count.value = count.value
+        componentsSelectionsHelper.clearPositions()
     }
 
     fun onResume() {
-        return
-        //updateComponents()
+        updateComponents()
     }
 
     fun onClickMissing() {
-        //todo
+        //todo onClickMissing
         screenNavigator.openAlertScreen("onClickMissing")
     }
 
     fun onClickApply() {
-        //todo
+        //todo onClickApply
         screenNavigator.openAlertScreen("onClickApply")
     }
 
@@ -129,26 +154,39 @@ class SetsInfoViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKe
         if (selectedPage.value == 0) onClickDetails() else onClickClean()
     }
 
-    fun onClickDetails() {
-        //todo
-        screenNavigator.openAlertScreen("onClickDetails")
+    private fun onClickClean() {
+        componentsSelectionsHelper.selectedPositions.value?.map { position ->
+            processSetsService.clearExciseStampsForComponent(componentsInfo[position])
+        }
+        updateComponents()
     }
 
-    fun onClickClean() {
-        //todo
-        screenNavigator.openAlertScreen("onClickClean")
+    private fun onClickDetails() {
+        //todo onClickDetails
+        onScanResult("000000000000377980")
+    }
+
+    fun onScanResult(data: String) {
+        //scannedStampCode.value = data
+        when (data.length) {
+            68, 150 -> screenNavigator.openSetComponentsScreen(componentInfo = componentsInfo[0], targetTotalCount = totalCount.value!!)
+            else -> screenNavigator.openSetComponentsScreen(componentInfo = componentsInfo[0], targetTotalCount = totalCount.value!!)
+        }
     }
 
     fun onPageSelected(position: Int) {
         selectedPage.value = position
-        //updateComponents()
+        updateComponents()
     }
+
     fun onBackPressed() {
+        //todo onBackPressed
         return
         //processExciseAlcoProductService.discard()
     }
 
     override fun onOkInSoftKeyboard(): Boolean {
+        //todo onOkInSoftKeyboard
         //searchEANCode()
         return true
     }

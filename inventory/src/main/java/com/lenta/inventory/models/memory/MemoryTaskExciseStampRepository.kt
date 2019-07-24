@@ -14,11 +14,13 @@ class MemoryTaskExciseStampRepository : ITaskExciseStampRepository {
     }
 
     override fun findExciseStampsOfProduct(product: TaskProductInfo): List<TaskExciseStamp> {
-        return findExciseStampsOfProduct(product.materialNumber, product.placeCode)
+        return findExciseStampsOfProduct(product.materialNumber, product.placeCode, product.isSet)
     }
 
-    override fun findExciseStampsOfProduct(materialNumber: String, storePlaceNumber: String): List<TaskExciseStamp> {
-        return stamps.filter { it.materialNumber == materialNumber && it.placeCode == storePlaceNumber}
+    override fun findExciseStampsOfProduct(materialNumber: String, storePlaceNumber: String, isSet: Boolean): List<TaskExciseStamp> {
+        return stamps.filter {stamp ->
+            (stamp.materialNumber == materialNumber && stamp.placeCode == storePlaceNumber) ||
+                (isSet && stamp.setMaterialNumber == materialNumber && stamp.placeCode == storePlaceNumber)}
     }
 
     override fun updateExciseStamps(newStamps: List<TaskExciseStamp>) {
@@ -52,12 +54,13 @@ class MemoryTaskExciseStampRepository : ITaskExciseStampRepository {
     }
 
     override fun deleteExciseStampsForProduct(product: TaskProductInfo): Boolean {
-        (stamps.map { it.materialNumber }.filterIndexed { index, materialNumber ->
-            if (materialNumber == product.materialNumber) {
-                stamps.removeAt(index)
-                return true
+       (stamps.map { it }.filter {stamp ->
+            if ((stamp.materialNumber == product.materialNumber && stamp.placeCode == product.placeCode) ||
+                    (product.isSet && stamp.setMaterialNumber == product.materialNumber && stamp.placeCode == product.placeCode)) {
+                stamps.remove(stamp)
+                return@filter true
             }
-            return false
+            return@filter false
 
         }).let {
             return it.isNotEmpty()
@@ -83,12 +86,7 @@ class MemoryTaskExciseStampRepository : ITaskExciseStampRepository {
     }
 
     override fun deleteExciseStamps(exciseStamps150: List<TaskExciseStamp>): Boolean {
-        if (exciseStamps150.isEmpty()) {
-            return false
-        }
-
-        stamps.removeAll(exciseStamps150)
-        return true
+        return stamps.removeAll(exciseStamps150)
     }
 
     override fun clear() {

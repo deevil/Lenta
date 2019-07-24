@@ -2,153 +2,201 @@ package com.lenta.inventory.features.goods_information.sets.components
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.lenta.inventory.features.goods_details_storage.ComponentItem
-import com.lenta.inventory.models.task.TaskProductInfo
+import com.lenta.inventory.features.goods_information.excise_alco.GoodsInfoCountType
+import com.lenta.inventory.features.goods_information.sets.SetComponentInfo
+import com.lenta.inventory.models.task.ProcessSetsService
+import com.lenta.inventory.models.task.TaskExciseStamp
 import com.lenta.inventory.platform.navigation.IScreenNavigator
+import com.lenta.inventory.requests.network.*
 import com.lenta.shared.account.ISessionInfo
-import com.lenta.shared.models.core.MatrixType
-import com.lenta.shared.models.core.ProductType
-import com.lenta.shared.models.core.Uom
+import com.lenta.shared.exception.Failure
 import com.lenta.shared.platform.viewmodel.CoreViewModel
+import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.toStringFormatted
 import com.lenta.shared.view.OnPositionClickListener
 import kotlinx.coroutines.launch
+import java.math.BigInteger
 import javax.inject.Inject
 
-class SetComponentsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboardListener {
+class SetComponentsViewModel : CoreViewModel(), OnPositionClickListener {
 
     @Inject
     lateinit var screenNavigator: IScreenNavigator
 
-    /**@Inject
-    lateinit var processServiceManager: IWriteOffTaskManager
-
-    @Inject
-    lateinit var exciseStampNetRequest: ExciseStampNetRequest*/
-
     @Inject
     lateinit var sessionInfo: ISessionInfo
 
-    //val productInfo: MutableLiveData<TaskProductInfo> = MutableLiveData()
-    val productInfo: MutableLiveData<TaskProductInfo> = MutableLiveData(TaskProductInfo("materialNumber1", "description", Uom("ST", "шт"), ProductType.ExciseAlcohol,
-            true, "1", MatrixType.Active, "materialType","3", 0.0, isPositionCalc = false, isExcOld = false))
+    @Inject
+    lateinit var processSetsService: ProcessSetsService
 
-    //val componentItem: MutableLiveData<ComponentItem> = MutableLiveData()
-    val componentItem: MutableLiveData<ComponentItem> = MutableLiveData(ComponentItem(1, "000027 НАБОР ВИНИШКА", "0 из 2", "2", true, 2.0, 0, "000027"))
+    @Inject
+    lateinit var obtainingDataExciseGoodsNetRequest: ObtainingDataExciseGoodsNetRequest
 
+    @Inject
+    lateinit var alcoCodeNetRequest: AlcoCodeNetRequest
+
+    val componentInfo: MutableLiveData<SetComponentInfo> = MutableLiveData()
     val limitExceeded: MutableLiveData<String> = MutableLiveData()
-    val selectedPosition: MutableLiveData<Int> = componentItem.map { it!!.selectedPosition }
+    val selectedPosition: MutableLiveData<Int> = MutableLiveData(0)
+    val targetTotalCount: MutableLiveData<Double> = MutableLiveData()
     val count: MutableLiveData<String> = MutableLiveData("0")
-    val countValue: MutableLiveData<Double> = count.map { it?.toDoubleOrNull() }
-    val totalCount: MutableLiveData<Double> = countValue.map { (it ?: 0.0) /**+ processServiceManager.getWriteOffTask()!!.taskRepository.getExciseStamps().findExciseStampsOfProduct(productInfo.value!!).size*/}
-    val totalCountWithUom: MutableLiveData<String> = totalCount.map { "${it.toStringFormatted()} из ${(componentItem.value!!.menge.toDouble() * componentItem.value!!.countSets).toStringFormatted()}" }
+    private val countValue: MutableLiveData<Double> = MutableLiveData(0.0)
+    private val totalCount: MutableLiveData<Double> = countValue.map { (it ?: 0.0) + processSetsService.getCountExciseStampsForComponent(componentInfo.value!!)}
+    val totalCountWithUom: MutableLiveData<String> = totalCount.map { "${it.toStringFormatted()} из ${((componentInfo.value!!.count).toDouble() * targetTotalCount.value!!).toStringFormatted()}" }
     val suffix: MutableLiveData<String> = MutableLiveData()
-    val exciseStampCode: MutableLiveData<String> = MutableLiveData()
     val spinList: MutableLiveData<List<String>> = MutableLiveData()
-    //private val exciseStamp = mutableListOf<TaskExciseStamp>()
+    val titleProgressScreen: MutableLiveData<String> = MutableLiveData()
+    private val scannedStampCode: MutableLiveData<String> = MutableLiveData()
+    val stampAnotherProduct: MutableLiveData<String> = MutableLiveData()
+    val alcocodeNotFound: MutableLiveData<String> = MutableLiveData()
 
     val enabledButton: MutableLiveData<Boolean> = countValue.map {
         it!! > 0.0
     }
 
-    fun setProductInfo(productInfo: TaskProductInfo) {
-        this.productInfo.value = productInfo
-    }
-
-    fun setComponentItem(componentItem: ComponentItem) {
-        this.componentItem.value = componentItem
-    }
-
-    fun setLimitExceeded(limitExceeded: String) {
-        this.limitExceeded.value = limitExceeded
-    }
-
     init {
         viewModelScope.launch {
-            /**processServiceManager.getWriteOffTask()?.let { writeOffTask ->
-                writeOffReasonTitles.value = writeOffTask.taskDescription.moveTypes.map { it.name }
-            }*/
-            suffix.value = productInfo.value?.uom?.name
+            suffix.value = componentInfo.value?.uom?.name
         }
     }
 
     fun onClickRollback() {
-        /**if (exciseStamp.size > 0) {
-            exciseStamp.removeAt(exciseStamp.lastIndex)
-            count.value = exciseStamp.size.toString()
-        }*/
-    }
-
-    fun onClickAdd() {
-        /**processServiceManager.getWriteOffTask()!!.taskRepository.getExciseStamps().addExciseStamps(exciseStamp)
-
-        exciseStamp.clear()*/
-        count.value = "0"
-
-        //Logg.d { "exiseStampsForProduct ${processServiceManager.getWriteOffTask()!!.taskRepository.getExciseStamps().findExciseStampsOfProduct(productInfo.value!!).map { it.code }}" }
-        //Logg.d { "exiseStampsAll ${processServiceManager.getWriteOffTask()!!.taskRepository.getExciseStamps().getExciseStamps().size}" }
-
+        screenNavigator.openAlertScreen(processSetsService.rollback().toString(), pageNumber = "98")
+        //countValue.value = countValue.value!!.minus(processSetsService.rollback())
     }
 
     fun onClickApply() {
-        onClickAdd()
-        screenNavigator.goBack()
+        //todo onClickApply
+        onScanResult("22N0000154KNI691XDC380V71231001511013ZZ012345678901234567890123456ZZ")
     }
 
     override fun onClickPosition(position: Int) {
-        selectedPosition.value = position
+        return
     }
 
-    //TODO тестовый код, для проверки сканирования, потом переписать
-    override fun onOkInSoftKeyboard(): Boolean {
-        //searchExciseStamp()
-        return true
+    fun onBackPressed() {
+        //todo onBackPressed
+        return
+        //processExciseAlcoProductService.discard()
     }
 
-    /**private fun searchExciseStamp() {
+    fun onScanResult(data: String) {
+        //todo onScanResult
+        scannedStampCode.value = data
+        when (data.length) {
+            68 -> processPdf68(data)
+            150 -> processPdf150(data)
+            else -> processPdf150(data)
+        }
+    }
+
+    private fun processPdf150(stampCode: String){
+        if ( totalCount.value!! >= ((componentInfo.value!!.count).toDouble() * targetTotalCount.value!!) ) {
+            count.value = "0"
+            screenNavigator.openAlertScreen(limitExceeded.value!!, pageNumber = "98")
+            return
+        }
+
+        if (processSetsService.isTaskAlreadyHasExciseStamp(stampCode)) {
+            count.value = "0"
+            screenNavigator.openAlertDoubleScanStamp()
+            return
+        }
+
         viewModelScope.launch {
-            exciseStampCode.value?.let {
-                exciseStampNetRequest(ExciseStampParams(pdf417 = it, werks = sessionInfo.market!!, matnr = productInfo.value!!.materialNumber)).either(::handleFailure, ::handleExciseStampSuccess)
+            screenNavigator.showProgress(titleProgressScreen.value!!)
+            obtainingDataExciseGoodsNetRequest(
+                    ExciseGoodsParams(
+                            werks = sessionInfo.market.orEmpty(),
+                            materialNumber = componentInfo.value!!.number,
+                            materialNumberComp = "",
+                            stampCode = stampCode,
+                            boxNumber = "",
+                            manufacturerCode = "",
+                            bottlingDate = "",
+                            mode = "1",
+                            codeEBP = "INV",
+                            factCount = ""
+
+                    )).
+                    either(::handleFailure, ::processPdf150HandleSuccess)
+            screenNavigator.hideProgress()
+        }
+    }
+
+    private fun processPdf150HandleSuccess(exciseGoodsRestInfo: ExciseGoodsRestInfo){
+        if (exciseGoodsRestInfo.retCode != "0") {
+            count.value = "0"
+            screenNavigator.openAlertScreen(exciseGoodsRestInfo.errorTxt, pageNumber = "98")
+            return
+        }
+
+        if (exciseGoodsRestInfo.materialNumber == componentInfo.value!!.number) {
+            processSetsService.addCurrentComponentExciseStamps(
+                                                    TaskExciseStamp(
+                                                            materialNumber = componentInfo.value!!.number,
+                                                            code = scannedStampCode.value!!,
+                                                            placeCode = componentInfo.value!!.placeCode,
+                                                            setMaterialNumber = componentInfo.value!!.setNumber
+                                                    )
+            )
+            count.value = "1"
+            countValue.value = countValue.value!!.plus(1.0)
+        }
+        else {
+            count.value = "0"
+            screenNavigator.openAlertScreen(stampAnotherProduct.value!!, pageNumber = "98")
+        }
+    }
+
+    private fun processPdf68(stampCode: String){
+        if ( totalCount.value!! >= ((componentInfo.value!!.count).toDouble() * targetTotalCount.value!!) ) {
+            count.value = "0"
+            screenNavigator.openAlertScreen(limitExceeded.value!!, pageNumber = "98")
+            return
+        }
+
+        if (processSetsService.isTaskAlreadyHasExciseStamp(stampCode)) {
+            count.value = "0"
+            screenNavigator.openAlertDoubleScanStamp()
+            return
+        }
+
+        viewModelScope.launch {
+            screenNavigator.showProgress(titleProgressScreen.value!!)
+            alcoCodeNetRequest(null).either(::handleFailure, ::alcoCodeHandleSuccess)
+            screenNavigator.hideProgress()
+        }
+    }
+
+    private fun alcoCodeHandleSuccess(alcoCodeRestInfo: List<AlcoCodeRestInfo>){
+        alcoCodeRestInfo[0].data.filter { data ->
+            data[1] == componentInfo.value!!.number &&
+                    (data[2] == BigInteger(scannedStampCode.value!!.substring(7,19), 36).toString().padStart(19,'0') ||
+                            data[2] == BigInteger(scannedStampCode.value!!.substring(7,19), 36).toString().padStart(20,'0'))
+        }.isNotEmpty().let {
+            if (it) {
+                processSetsService.addCurrentComponentExciseStamps(
+                        TaskExciseStamp(
+                                materialNumber = componentInfo.value!!.number,
+                                code = scannedStampCode.value!!,
+                                placeCode = componentInfo.value!!.placeCode,
+                                setMaterialNumber = componentInfo.value!!.setNumber
+                        )
+                )
+                count.value = "1"
+                countValue.value = countValue.value!!.plus(1.0)
+            }
+            else{
+                count.value = "0"
+                screenNavigator.openAlertScreen(alcocodeNotFound.value!!, pageNumber = "98")
             }
         }
     }
 
-    private fun handleExciseStampSuccess(exciseStampRestInfo: List<ExciseStampRestInfo>) {
-        //Logg.d { "handleSuccess ${exciseStampRestInfo}" }
-        if (totalCount.value!! >= componentItem.value!!.menge.toDouble() * componentItem.value!!.countSets) {
-            screenNavigator.openAlertScreen(limitExceeded.value!!)
-            return
-        }
-
-        val retcodeCode = exciseStampRestInfo[1].data[0][0].toInt()
-        val retcodeName = exciseStampRestInfo[1].data[0][1]
-
-        when (retcodeCode) {
-            0 -> addExciseStamp()
-            1 -> screenNavigator.openAlertScreen(message = retcodeName)
-            2 -> screenNavigator.openAlertScreen(message = retcodeName)
-            3 -> screenNavigator.openAlertScreen(message = retcodeName)
-            4 -> screenNavigator.openAlertScreen(message = retcodeName)
-        }
-    }
-
-    fun addExciseStamp(){
-        count.value = (count.value!!.toInt() + 1).toString()
-        exciseStamp.add(TaskExciseStamp(
-                materialNumber = productInfo.value!!.materialNumber,
-                code = exciseStampCode.value!!,
-                setMaterialNumber = componentItem.value!!.setMaterialNumber,
-                writeOffReason = componentItem.value!!.writeOffReason.name,
-                isBadStamp = true
-        ))
-        countValue.value = exciseStamp.size.toDouble()
-    }
-
     override fun handleFailure(failure: Failure) {
         screenNavigator.openAlertScreen(failure)
-    }*/
-    //TODO тестовый код==================================================
-
+    }
 }

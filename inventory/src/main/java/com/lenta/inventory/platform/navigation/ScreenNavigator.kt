@@ -10,6 +10,7 @@ import com.lenta.inventory.features.goods_details_storage.GoodsDetailsStorageFra
 import com.lenta.inventory.features.goods_information.excise_alco.ExciseAlcoInfoFragment
 import com.lenta.inventory.features.goods_information.excise_alco.party_signs.PartySignsFragment
 import com.lenta.inventory.features.goods_information.general.GoodsInfoFragment
+import com.lenta.inventory.features.goods_information.sets.SetComponentInfo
 import com.lenta.inventory.features.goods_information.sets.SetsInfoFragment
 import com.lenta.inventory.features.goods_information.sets.components.SetComponentsFragment
 import com.lenta.inventory.features.goods_list.GoodsListFragment
@@ -132,9 +133,9 @@ class ScreenNavigator(
         }
     }
 
-    override fun openSetComponentsScreen() {
+    override fun openSetComponentsScreen(componentInfo: SetComponentInfo, targetTotalCount: Double) {
         runOrPostpone {
-            getFragmentStack()?.push(SetComponentsFragment())
+            getFragmentStack()?.push(SetComponentsFragment.create(componentInfo,targetTotalCount))
         }
     }
 
@@ -220,7 +221,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openGoodsDetailsStorageScreen(productInfo: TaskProductInfo)
     fun openGoodsListScreen(storePlaceManager: StorePlaceProcessing)
     fun openSetsInfoScreen(productInfo: TaskProductInfo)
-    fun openSetComponentsScreen()
+    fun openSetComponentsScreen(componentInfo: SetComponentInfo, targetTotalCount: Double)
     fun openStoragesList()
     fun openDiscrepanciesScreen()
     fun openTasksList()
