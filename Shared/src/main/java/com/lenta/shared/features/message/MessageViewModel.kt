@@ -4,6 +4,7 @@ import androidx.annotation.DrawableRes
 import androidx.lifecycle.viewModelScope
 import com.lenta.shared.analytics.AnalyticsHelper
 import com.lenta.shared.features.message.usecase.DelayGoBack
+import com.lenta.shared.features.message.usecase.GoBackParams
 import com.lenta.shared.platform.navigation.ICoreNavigator
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import kotlinx.coroutines.launch
@@ -24,6 +25,7 @@ open class MessageViewModel : CoreViewModel() {
 
     @DrawableRes
     var iconRes: Int = 0
+    var codeConfirmForExit: Int? = null
     var codeConfirmForRight: Int? = null
     var codeConfirmForButton2: Int? = null
     var codeConfirmForButton3: Int? = null
@@ -37,7 +39,9 @@ open class MessageViewModel : CoreViewModel() {
         viewModelScope.launch {
             timeAutoExitInMillis?.let { delayInMillis ->
                 if (codeConfirmForRight == null) {
-                    goBackWithDelay(params = delayInMillis.toLong())
+                    goBackWithDelay(params = GoBackParams(
+                            timeInMillis = delayInMillis.toLong()
+                    ))
                 }
             }
 
@@ -77,6 +81,15 @@ open class MessageViewModel : CoreViewModel() {
         codeConfirmForButton4?.let {
             coreNavigator.goBackWithResultCode(it)
         }
+    }
+
+    fun onBackPressed(): Boolean {
+        if (codeConfirmForExit == null) {
+            return true
+        }
+        coreNavigator.goBackWithResultCode(codeConfirmForExit!!)
+        return false
+
     }
 
 

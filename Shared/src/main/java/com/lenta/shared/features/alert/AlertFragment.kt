@@ -14,6 +14,7 @@ class AlertFragment : CoreMessageFragment() {
             coreComponent.inject(vm)
             vm.message = message
             vm.iconRes = iconRes
+            vm.codeConfirmForExit = codeConfirmForExit
             vm.codeConfirmForRight = codeConfirmForRight
             vm.codeConfirmForButton2 = codeConfirmForButton2
             vm.codeConfirmForButton3 = codeConfirmForButton3
@@ -42,6 +43,7 @@ class AlertFragment : CoreMessageFragment() {
                 codeConfirmForButton3: Int? = null,
                 codeConfirmForButton4: Int? = null,
                 codeConfirmForLeft: Int? = null,
+                codeConfirmForExit: Int? = null,
                 leftButtonDecorationInfo: ButtonDecorationInfo? = null,
                 buttonDecorationInfo2: ButtonDecorationInfo? = null,
                 buttonDecorationInfo3: ButtonDecorationInfo? = null,
@@ -53,6 +55,7 @@ class AlertFragment : CoreMessageFragment() {
                 this.message = message
                 this.iconRes = iconRes
                 this.textColor = textColor
+                this.codeConfirmForExit = codeConfirmForExit
                 this.codeConfirmForRight = codeConfirmForRight
                 this.codeConfirmForButton2 = codeConfirmForButton2
                 this.codeConfirmForButton3 = codeConfirmForButton3
@@ -78,6 +81,10 @@ class AlertFragment : CoreMessageFragment() {
 
             }
         }
+    }
+
+    override fun onBackPressed(): Boolean {
+        return vm.onBackPressed()
     }
 
 }
