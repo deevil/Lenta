@@ -85,5 +85,4 @@ class GoodInfoFacingViewModel : CoreViewModel() {
         }
         navigator.goBack()
     }
-
 }

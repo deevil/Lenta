@@ -74,7 +74,7 @@ class ShelfListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
                 // !Перенести на другой экран
                 checkData.getCurrentSegment().status = SegmentStatus.DELETED
-                navigator.goBack()
+                navigator.openSegmentListScreen()
             } else {
                 // todo ЭКРАН подтверждение удаления полок
 
@@ -93,7 +93,7 @@ class ShelfListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
         // !Перенести на другой экран
         checkData.getCurrentSegment().status = SegmentStatus.PROCESSED
-        navigator.goBack()
+        navigator.openSegmentListScreen()
     }
 
     fun onClickBack() {
@@ -110,7 +110,7 @@ class ShelfListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
             navigator.goBack()
         } else {
             // Сегмен остается незавершенным
-            navigator.goBack()
+            navigator.openSegmentListScreen()
         }
     }
 

@@ -111,7 +111,7 @@ class GoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
         // !Перенести на другой экран
         checkData.getCurrentShelf().status = ShelfStatus.PROCESSED
-        navigator.goBack()
+        navigator.openShelfListScreen()
     }
 
     fun onClickBack() {
@@ -120,23 +120,15 @@ class GoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
             return
         }
 
-        // В одном месте есть инфо о том, что полка не будет сохранена
-        // В другом, что она может иметь статус незавершенной
-        // todo узнать какое поведение правильное
-
-        // Предположительное поведение...
         if (goods.value?.isEmpty() == true) {
-            // todo ЭКРАН полка пуста и будет удалена
-
-            // !Перенести на другой экран
             checkData.deleteCurrentShelf()
-            navigator.openSegmentListScreen()
+            navigator.goBack()
         } else {
-            // todo ЭКРАН сохранить результаты сканирования полки и закрыть для редактирования
+            // todo ЭКРАН данные полки не будут сохранены
 
             // !Перенести на другой экран
-            checkData.getCurrentShelf().status = ShelfStatus.PROCESSED
-            navigator.openSegmentListScreen()
+            checkData.getCurrentShelf().status = ShelfStatus.DELETED
+            navigator.openShelfListScreen()
         }
     }
 
