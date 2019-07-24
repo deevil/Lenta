@@ -22,6 +22,7 @@
     <!-- Информационные сообщения -->
     <string name="code_screen_message">Введите ПИН-код для подтверждения входа в режим \"%1$s\"</string>
     <string name="segment_processing_mode">Определение режима\nобработки сегмента</string>
+    <string name="shelf_data_will_not_be_saved">СЕГМЕНТ № %1$s\nПОЛКА № %2$s\n\nДанные полки не будут сохранены</string>
 
 
     <!-- Заголовки экранов -->

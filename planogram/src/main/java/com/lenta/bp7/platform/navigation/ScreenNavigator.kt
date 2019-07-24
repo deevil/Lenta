@@ -1,6 +1,7 @@
 package com.lenta.bp7.platform.navigation
 
 import android.content.Context
+import com.lenta.bp7.R
 import com.lenta.bp7.features.auth.AuthFragment
 import com.lenta.bp7.features.check_type.CheckTypeFragment
 import com.lenta.bp7.features.loading.fast.FastDataLoadingFragment
@@ -14,9 +15,11 @@ import com.lenta.bp7.features.select_market.SelectMarketFragment
 import com.lenta.bp7.features.shelf_list.ShelfListFragment
 
 import com.lenta.shared.account.IAuthenticator
+import com.lenta.shared.features.alert.AlertFragment
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
 import com.lenta.shared.platform.navigation.ICoreNavigator
 import com.lenta.shared.platform.navigation.runOrPostpone
+import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.progress.IProgressUseCaseInformator
 
 class ScreenNavigator(
@@ -112,6 +115,16 @@ class ScreenNavigator(
             getFragmentStack()?.push(GoodInfoFragment())
         }
     }
+
+
+    override fun showShelfDataWillNotBeSaved(segment: String, shelf: String, callbackFunc: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.shelf_data_will_not_be_saved, segment, shelf),
+                    codeConfirm = backFragmentResultHelper.setFuncForResult(callbackFunc),
+                    pageNumber = "44",
+                    rightButtonDecorationInfo = ButtonDecorationInfo.confirm))
+        }
+    }
 }
 
 interface IScreenNavigator : ICoreNavigator {
@@ -129,5 +142,6 @@ interface IScreenNavigator : ICoreNavigator {
     fun openGoodListScreen()
     fun openGoodInfoFacingScreen()
     fun openGoodInfoScreen()
+    fun showShelfDataWillNotBeSaved(segment: String, shelf: String, callbackFunc: () -> Unit)
 
 }

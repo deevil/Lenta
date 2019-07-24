@@ -49,6 +49,10 @@ class GoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
         }
     }
 
+    fun updateGoodList() {
+        goods.value = checkData.getCurrentShelf().goods
+    }
+
     override fun onOkInSoftKeyboard(): Boolean {
         checkEnteredNumber()
         return true
@@ -85,7 +89,7 @@ class GoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     }
 
     private fun createGoodByBarCode() {
-        goodNumber.value.let {number ->
+        goodNumber.value.let { number ->
             Logg.d { "Entered BAR-code: $number" }
             viewModelScope.launch {
                 checkData.addGood(database.getGoodInfoByBarCode(number))
@@ -124,11 +128,11 @@ class GoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
             checkData.deleteCurrentShelf()
             navigator.goBack()
         } else {
-            // todo ЭКРАН данные полки не будут сохранены
-
-            // !Перенести на другой экран
-            checkData.getCurrentShelf().status = ShelfStatus.DELETED
-            navigator.openShelfListScreen()
+            // Сообщение - данные полки не будут сохранены - Назад / Подтвердить
+            navigator.showShelfDataWillNotBeSaved(segmentNumber.value!!, shelfNumber.value!!) {
+                checkData.getCurrentShelf().status = ShelfStatus.DELETED
+                navigator.openShelfListScreen()
+            }
         }
     }
 

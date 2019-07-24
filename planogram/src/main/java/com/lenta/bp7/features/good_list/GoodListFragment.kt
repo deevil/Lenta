@@ -64,6 +64,11 @@ class GoodListFragment : CoreFragment<FragmentGoodListBinding, GoodListViewModel
         initRvConfig()
     }
 
+    override fun onResume() {
+        super.onResume()
+        vm.updateGoodList()
+    }
+
     override fun onToolbarButtonClick(view: View) {
         when (view.id) {
             R.id.b_5 -> vm.onClickApply()
