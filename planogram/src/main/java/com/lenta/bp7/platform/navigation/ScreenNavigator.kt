@@ -134,6 +134,17 @@ class ScreenNavigator(
                     rightButtonDecorationInfo = ButtonDecorationInfo.yes))
         }
     }
+
+    override fun showIsEmptyPlaceDecoratedCorrectly(sap: String, name: String, segment: String, shelf: String, noCallback: () -> Unit, yesCallback: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.is_empty_place_decorated_correctly, sap, name, segment, shelf),
+                    pageNumber = "16",
+                    codeConfirmForButton4 = backFragmentResultHelper.setFuncForResult(noCallback),
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(yesCallback),
+                    buttonDecorationInfo4 = ButtonDecorationInfo.no,
+                    rightButtonDecorationInfo = ButtonDecorationInfo.yes))
+        }
+    }
 }
 
 interface IScreenNavigator : ICoreNavigator {
@@ -153,5 +164,6 @@ interface IScreenNavigator : ICoreNavigator {
 
     fun showShelfDataWillNotBeSaved(segment: String, shelf: String, confirmCallback: () -> Unit)
     fun showSaveShelfScanResults(segment: String, shelf: String, yesCallback: () -> Unit)
+    fun showIsEmptyPlaceDecoratedCorrectly(sap: String, name: String, segment: String, shelf: String, noCallback: () -> Unit, yesCallback: () -> Unit)
 
 }

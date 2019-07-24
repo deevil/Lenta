@@ -58,14 +58,15 @@ class GoodInfoFacingViewModel : CoreViewModel() {
 
     fun onClickMissing() {
         if (checkData.checkEmptyPlaces) {
-            // todo ЭКРАН выбор правильности оформления пустого места
-
-            // !Перенести на другой экран
-            checkData.setCurrentGoodStatus(when ((1..2).random()) {
-                1 -> GoodStatus.MISSING_RIGHT
-                else -> GoodStatus.MISSING_WRONG
+            // Выбор - Пустое место оформлено правильно? - Назад / Нет / Да
+            navigator.showIsEmptyPlaceDecoratedCorrectly(good.value?.getFormattedSapCode()!!, good.value?.name!!,
+                    checkData.getCurrentSegment().number, checkData.getCurrentShelf().number, {
+                checkData.setCurrentGoodStatus(GoodStatus.MISSING_WRONG)
+                navigator.openGoodListScreen()
+            }, {
+                checkData.setCurrentGoodStatus(GoodStatus.MISSING_RIGHT)
+                navigator.openGoodListScreen()
             })
-            navigator.openGoodListScreen()
         } else {
             // Пустое место всегда оформлено правильно
             checkData.setCurrentGoodStatus(GoodStatus.MISSING_RIGHT)
