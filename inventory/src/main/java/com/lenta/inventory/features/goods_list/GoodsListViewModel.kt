@@ -125,11 +125,15 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     }
 
     fun onClickComplete() {
+
+        val recountType = taskManager.getInventoryTask()?.taskDescription?.recountType
+        if (recountType == RecountType.ParallelByStorePlaces) {
+            storePlaceManager?.markAsProcessed()
+            makeLockUnlockRequest(recountType, StorePlaceLockMode.Unlock, ::handleUnlockSuccess)
+            return
+        }
+
         screenNavigator.openConfirmationSavingJobScreen {
-            val recountType = taskManager.getInventoryTask()?.taskDescription?.recountType
-            if (recountType == RecountType.ParallelByStorePlaces) {
-                storePlaceManager?.markAsProcessed()
-            }
             saveData()
         }
 
