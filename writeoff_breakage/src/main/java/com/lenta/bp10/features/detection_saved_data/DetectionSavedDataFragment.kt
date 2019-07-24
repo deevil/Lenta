@@ -19,7 +19,7 @@ class DetectionSavedDataFragment : CoreMessageFragment() {
             getAppComponent()?.inject(vm)
             vm.message = getString(R.string.saved_data_detect_message)
             vm.iconRes = R.drawable.ic_question
-            vm.codeConfirm = 1
+            vm.codeConfirmForRight = 1
             return vm
         }
     }

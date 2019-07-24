@@ -1,6 +1,5 @@
 package com.lenta.inventory.models.task
 
-import com.lenta.inventory.models.StorePlaceStatus
 import com.lenta.inventory.models.repositories.ITaskRepository
 import com.lenta.shared.models.core.ProductType
 
@@ -20,15 +19,15 @@ class InventoryTask(val taskDescription: TaskDescription, val taskRepository: IT
         } else null
     }
 
-    fun getProcessedStorePlaces() : List<TaskStorePlaceInfo> {
+    fun getProcessedStorePlaces(): List<TaskStorePlaceInfo> {
         return taskRepository.getStorePlace().getStorePlaces().filter { it.isProcessed }
     }
 
-    fun getUnprocessedStorePlaces() : List<TaskStorePlaceInfo> {
+    fun getUnprocessedStorePlaces(): List<TaskStorePlaceInfo> {
         return taskRepository.getStorePlace().getStorePlaces().filter { !it.isProcessed }
     }
 
-    fun getProductsQuantityForStorePlace(storePlaceNumber: String) : Int {
+    fun getProductsQuantityForStorePlace(storePlaceNumber: String): Int {
         return taskRepository.getProducts().getProducts().count { it.placeCode == storePlaceNumber }
     }
 
@@ -38,29 +37,29 @@ class InventoryTask(val taskDescription: TaskDescription, val taskRepository: IT
     }
 
     //вызывается при возврате на 20 экран и при нажатии на кнопку ОБНОВИТЬ, вызываем 96 рест
-    fun updateStorePlaces(storePlaces : List<TaskStorePlaceInfo>) : InventoryTask {
+    fun updateStorePlaces(storePlaces: List<TaskStorePlaceInfo>): InventoryTask {
         taskRepository.getStorePlace().updateStorePlaces(storePlaces)
         return this
     }
 
-    fun updateProducts(products : List<TaskProductInfo>) : InventoryTask {
+    fun updateProducts(products: List<TaskProductInfo>): InventoryTask {
         taskRepository.getProducts().updateProducts(products)
         return this
     }
 
-    fun updateExciseStamps(exciseStamps : List<TaskExciseStamp>) : InventoryTask {
+    fun updateExciseStamps(exciseStamps: List<TaskExciseStamp>): InventoryTask {
         taskRepository.getExciseStamps().updateExciseStamps(exciseStamps)
         return this
     }
 
-    fun clearStorePlaceByNumber(storePlaceNumber: String) : InventoryTask {
+    fun clearStorePlaceByNumber(storePlaceNumber: String): InventoryTask {
         taskRepository.getStorePlace().findStorePlace(storePlaceNumber)?.let {
             return clearStorePlace(it)
         }
         return this
     }
 
-    fun clearStorePlace(storePlace: TaskStorePlaceInfo) : InventoryTask {
+    fun clearStorePlace(storePlace: TaskStorePlaceInfo): InventoryTask {
         storePlace.isProcessed = false
         taskRepository.getProducts().getProcessedProducts(storePlace.placeCode).map {
             it.isPositionCalc = false
@@ -69,8 +68,8 @@ class InventoryTask(val taskDescription: TaskDescription, val taskRepository: IT
         return this
     }
 
-    fun processStorePlace(storePlaceNumber: String) : StorePlaceProcessing{
-        return StorePlaceProcessing(this,  storePlaceNumber)
+    fun processStorePlace(storePlaceNumber: String): StorePlaceProcessing {
+        return StorePlaceProcessing(this, storePlaceNumber)
     }
 
     fun updateTaskWithContents(taskContents: TaskContents) {

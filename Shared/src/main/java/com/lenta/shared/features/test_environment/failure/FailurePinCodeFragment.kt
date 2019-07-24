@@ -22,7 +22,7 @@ class FailurePinCodeFragment : CoreMessageFragment() {
         provideViewModel(FailurePinCodeViewModel::class.java).let { vm ->
             coreComponent.inject(vm)
             vm.message = message
-            vm.codeConfirm = null
+            vm.codeConfirmForRight = null
             return vm
         }
     }

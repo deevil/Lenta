@@ -29,7 +29,7 @@ class SendWriteOffReportRequest
                 }.apply {
                     ANALYTICS_HELPER?.onStartFmpRequest(resName, "headers: ${this.headers}, data: ${this.data}")
                 })
-                .execute().toFmpObjectRawStatusEither(WriteOffReportStatus::class.java, gson)
+                .execute().toFmpObjectRawStatusEither(WriteOffReportStatus::class.java, gson, resourceName = resName)
     }
 }
 

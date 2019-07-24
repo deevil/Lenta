@@ -240,7 +240,7 @@ class CoreNavigator constructor(private val context: Context,
                     AlertFragment.create(
                             message = context.getString(R.string.another_market_stamp),
                             pageNumber = "93",
-                            codeConfirm = codeConfirm,
+                            codeConfirmForRight = codeConfirm,
                             rightButtonDecorationInfo = ButtonDecorationInfo.next
                     )
             )
@@ -253,7 +253,7 @@ class CoreNavigator constructor(private val context: Context,
                     AlertFragment.create(
                             message = context.getString(R.string.writeoff_to_production_confirmation),
                             pageNumber = "95",
-                            codeConfirm = codeConfirm,
+                            codeConfirmForRight = codeConfirm,
                             rightButtonDecorationInfo = ButtonDecorationInfo.nextAlternate
                     )
             )
@@ -273,6 +273,12 @@ class CoreNavigator constructor(private val context: Context,
         //TODO изменить реализацию метода после создания экрана
         openInfoScreen(context.getString(R.string.not_implemented_screen, screenName))
 
+    }
+
+    override fun closeAllScreen() {
+        runOrPostpone {
+            getFragmentStack()?.popAll()
+        }
     }
 
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
@@ -296,6 +302,7 @@ interface ICoreNavigator {
                         pageNumber: String? = null,
                         timeAutoExitInMillis: Int? = null,
                         onlyIfFirstAlert: Boolean = false)
+
     fun openAlertScreen(failure: Failure, pageNumber: String = "96")
     fun openSupportScreen()
     fun <Params> showProgress(useCase: UseCase<Any, Params>)
@@ -322,6 +329,7 @@ interface ICoreNavigator {
     fun openWriteOffToProductionConfirmationScreen(codeConfirm: Int)
     fun openNeedUpdateScreen()
     fun openNotImplementedScreenAlert(screenName: String)
+    fun closeAllScreen()
 }
 
 class FunctionsCollector(private val needCollectLiveData: LiveData<Boolean>) {
