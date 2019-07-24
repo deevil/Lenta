@@ -8,10 +8,8 @@ import com.lenta.bp7.repos.IDatabaseRepo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
-import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.map
 import kotlinx.coroutines.launch
-import java.lang.IllegalArgumentException
 import javax.inject.Inject
 
 class GoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
@@ -52,65 +50,53 @@ class GoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     }
 
     override fun onOkInSoftKeyboard(): Boolean {
-        createGood()
+        checkEnteredNumber()
         return true
     }
 
-    private fun createGood() {
+    private fun checkEnteredNumber() {
         goodNumber.value.let { number ->
             if (number?.isNotEmpty() == true && number.length >= 6) {
                 if (number.length == SAP_LENGTH) {
-                    Logg.d { "Entered SAP-code: $number" }
-                    val good = goods.value?.find { it.sapCode == "000000000000$number" }
-                    checkData.let {
-                        when (good) {
-                            null -> {
-                                viewModelScope.launch {
-                                    it.addGood(database.getGoodInfoBySapCode("000000000000$number"))
-                                    openInfoScreen()
-                                }
-                            }
-                            else -> {
-                                it.currentGoodIndex = goods.value?.indexOf(good)
-                                        ?: throw IllegalArgumentException("Good with SAP-$number exist, but not found!")
-                                openInfoScreen()
-                            }
-                        }
-                    }
+                    createGoodBySapCode()
                 }
 
                 if (number.length == SAP_OR_BAR_LENGTH) {
-                    Logg.d { "Entered SAP or BAR-code: $number" }
                     // todo ЭКРАН выбора типа введенного кода
 
                 }
 
                 if (number.length > SAP_LENGTH) {
-                    Logg.d { "Entered BAR-code: $number" }
-                    val good = goods.value?.find { it.barCode == number }
-                    checkData.let {
-                        when (good) {
-                            null -> {
-                                viewModelScope.launch {
-                                    it.addGood(database.getGoodInfoByBarCode(number))
-                                    openInfoScreen()
-                                }
-                            }
-                            else -> {
-                                it.currentGoodIndex = goods.value?.indexOf(good)
-                                        ?: throw IllegalArgumentException("Good with BAR-$number exist, but not found!")
-                                openInfoScreen()
-                            }
-                        }
-                    }
+                    createGoodByBarCode()
                 }
             }
         }
     }
 
-    private fun openInfoScreen() {
+    private fun createGoodBySapCode() {
+        goodNumber.value.let { number ->
+            Logg.d { "Entered SAP-code: $number" }
+            val sapcode = if (number?.length == 6) "000000000000$number" else "000000$number"
+            viewModelScope.launch {
+                checkData.addGood(database.getGoodInfoBySapCode(sapcode))
+                openGoodInfoScreen()
+            }
+        }
+    }
+
+    private fun createGoodByBarCode() {
+        goodNumber.value.let {number ->
+            Logg.d { "Entered BAR-code: $number" }
+            viewModelScope.launch {
+                checkData.addGood(database.getGoodInfoByBarCode(number))
+                openGoodInfoScreen()
+            }
+        }
+    }
+
+    private fun openGoodInfoScreen() {
         // todo для тестирования разных сценариев проверки. Потом удалить.
-        checkData.countFacings = false
+        checkData.countFacings = true
         checkData.checkEmptyPlaces = true
 
         if (checkData.countFacings) {
@@ -156,6 +142,6 @@ class GoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
     fun onClickItemPosition(position: Int) {
         checkData.currentGoodIndex = position
-        openInfoScreen()
+        openGoodInfoScreen()
     }
 }

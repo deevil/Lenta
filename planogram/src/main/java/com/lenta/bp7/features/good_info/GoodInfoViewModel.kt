@@ -38,21 +38,20 @@ class GoodInfoViewModel : CoreViewModel() {
             // todo ЭКРАН выбор правильности оформления пустого места
 
             // !Перенести на другой экран
-            checkData.getCurrentGood().status = when ((1..2).random()) {
+            checkData.setCurrentGoodStatus(when ((1..2).random()) {
                 1 -> GoodStatus.MISSING_RIGHT
                 else -> GoodStatus.MISSING_WRONG
-            }
-
+            })
             navigator.openGoodListScreen()
         } else {
             // Пустое место всегда оформлено правильно
-            checkData.getCurrentGood().status = GoodStatus.MISSING_RIGHT
+            checkData.setCurrentGoodStatus(GoodStatus.MISSING_RIGHT)
             navigator.openGoodListScreen()
         }
     }
 
     fun onClickApply() {
-        checkData.getCurrentGood().status = GoodStatus.PROCESSED
+        checkData.setCurrentGoodStatus(GoodStatus.PROCESSED)
         navigator.openGoodListScreen()
     }
 

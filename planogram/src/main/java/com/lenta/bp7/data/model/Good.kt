@@ -5,7 +5,7 @@ data class Good(
         val sapCode: String? = "",
         val barCode: String? = "",
         val name: String? = "",
-        var totalFacings: Int = 0,
+        var facings: Int = 0,
         val units: String? = "",
         var status: GoodStatus = GoodStatus.CREATED
 ) {
@@ -15,7 +15,7 @@ data class Good(
     }
 
     fun getNumberOfFacing(): String? {
-        return if ((status == GoodStatus.CREATED || status == GoodStatus.PROCESSED) && totalFacings == 0) "+" else totalFacings.toString()
+        return if ((status == GoodStatus.CREATED || status == GoodStatus.PROCESSED) && facings == 0) "+" else facings.toString()
     }
 
 }
