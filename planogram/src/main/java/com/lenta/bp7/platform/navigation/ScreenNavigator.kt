@@ -117,18 +117,26 @@ class ScreenNavigator(
     }
 
 
-    override fun showShelfDataWillNotBeSaved(segment: String, shelf: String, callbackFunc: () -> Unit) {
+    override fun showShelfDataWillNotBeSaved(segment: String, shelf: String, confirmCallback: () -> Unit) {
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.shelf_data_will_not_be_saved, segment, shelf),
-                    codeConfirm = backFragmentResultHelper.setFuncForResult(callbackFunc),
                     pageNumber = "44",
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(confirmCallback),
                     rightButtonDecorationInfo = ButtonDecorationInfo.confirm))
+        }
+    }
+
+    override fun showSaveShelfScanResults(segment: String, shelf: String, yesCallback: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.save_shelf_scan_results, segment, shelf),
+                    pageNumber = "21",
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(yesCallback),
+                    rightButtonDecorationInfo = ButtonDecorationInfo.yes))
         }
     }
 }
 
 interface IScreenNavigator : ICoreNavigator {
-    fun closeAllScreen()
     fun openFirstScreen()
     fun openLoginScreen()
     fun openMainMenuScreen()
@@ -142,6 +150,8 @@ interface IScreenNavigator : ICoreNavigator {
     fun openGoodListScreen()
     fun openGoodInfoFacingScreen()
     fun openGoodInfoScreen()
-    fun showShelfDataWillNotBeSaved(segment: String, shelf: String, callbackFunc: () -> Unit)
+
+    fun showShelfDataWillNotBeSaved(segment: String, shelf: String, confirmCallback: () -> Unit)
+    fun showSaveShelfScanResults(segment: String, shelf: String, yesCallback: () -> Unit)
 
 }

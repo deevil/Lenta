@@ -111,11 +111,11 @@ class GoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     }
 
     fun onClickApply() {
-        // todo ЭКРАН сохранить результаты сканирования полки и закрыть для редактирования
-
-        // !Перенести на другой экран
-        checkData.getCurrentShelf().status = ShelfStatus.PROCESSED
-        navigator.openShelfListScreen()
+        // Подтверждение - сохранить результаты сканирования полки и закрыть ее для редактирования - Назад / Да
+        navigator.showSaveShelfScanResults(segmentNumber.value!!, shelfNumber.value!!) {
+            checkData.getCurrentShelf().status = ShelfStatus.PROCESSED
+            navigator.openShelfListScreen()
+        }
     }
 
     fun onClickBack() {
@@ -128,7 +128,7 @@ class GoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
             checkData.deleteCurrentShelf()
             navigator.goBack()
         } else {
-            // Сообщение - данные полки не будут сохранены - Назад / Подтвердить
+            // Подтверждение - данные полки не будут сохранены - Назад / Подтвердить
             navigator.showShelfDataWillNotBeSaved(segmentNumber.value!!, shelfNumber.value!!) {
                 checkData.getCurrentShelf().status = ShelfStatus.DELETED
                 navigator.openShelfListScreen()
