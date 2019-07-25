@@ -51,6 +51,7 @@ class CoreNavigator constructor(private val context: Context,
     override fun goBackWithResultCode(code: Int?) {
         if (code == null) {
             backFragmentResultHelper.getFuncAndClear(null)
+            goBack()
         } else {
             goBackWithArgs(
                     args = Bundle().apply {
