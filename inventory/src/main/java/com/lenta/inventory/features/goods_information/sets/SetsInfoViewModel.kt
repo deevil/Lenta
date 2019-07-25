@@ -67,6 +67,7 @@ class SetsInfoViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKe
     private val scannedStampCode: MutableLiveData<String> = MutableLiveData()
     private var countRunRest = 0
     private val arrExciseGoodsRestInfo: ArrayList<ExciseGoodsRestInfo> = ArrayList()
+    val limitExceeded: MutableLiveData<String> = MutableLiveData()
 
     private val totalCount: MutableLiveData<Double> by lazy {
         countValue.map {
@@ -90,12 +91,11 @@ class SetsInfoViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKe
                     selectedPosition = selectedPosition.value!!,
                     setMaterialNumber = componentInfo.setNumber
             )
-        }.reversed()
+        }
     }
 
     val enabledMissingButton: MutableLiveData<Boolean> = totalCount.map { it ?: 0.0 <= 0.0 }
 
-    //todo проверить работает ли
     val enabledApplyButton: MutableLiveData<Boolean> = componentsItem.map {
         var totalCountComponents = 0.0
         var totalCountExciseStampForComponents = 0
@@ -167,8 +167,7 @@ class SetsInfoViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKe
     }
 
     private fun onClickDetails() {
-        //todo onClickDetails
-        onScanResult("22N0000154KNI691XDC380V71231001511013ZZ012345678901234567890123456ZZ")
+        screenNavigator.openGoodsDetailsStorageScreen(productInfo.value!!)
     }
 
     fun onScanResult(data: String) {
@@ -225,18 +224,24 @@ class SetsInfoViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKe
         if (countRunRest == componentsInfo.size){
             componentsInfo.forEachIndexed { index, setComponentInfo ->
                 if (arrExciseGoodsRestInfo[index].materialNumber == setComponentInfo.number){
-                    processSetsService.addCurrentComponentExciseStamps(
-                            TaskExciseStamp(
-                                    materialNumber = setComponentInfo.number,
-                                    code = scannedStampCode.value!!,
-                                    placeCode = setComponentInfo.placeCode,
-                                    setMaterialNumber = setComponentInfo.setNumber
-                            )
-                    )
-                    screenNavigator.openSetComponentsScreen(
-                                                    componentInfo = setComponentInfo,
-                                                    targetTotalCount = totalCount.value!!,
-                                                    isStamp = true)
+                    val countExciseStampForComponent = processSetsService.getCountExciseStampsForComponent(setComponentInfo)
+                    if (countExciseStampForComponent >= (setComponentInfo.count).toDouble() * totalCount.value!!){
+                        screenNavigator.openAlertScreen(limitExceeded.value!!, pageNumber = "98")
+                    }
+                    else{
+                        processSetsService.addCurrentComponentExciseStamps(
+                                TaskExciseStamp(
+                                        materialNumber = setComponentInfo.number,
+                                        code = scannedStampCode.value!!,
+                                        placeCode = setComponentInfo.placeCode,
+                                        setMaterialNumber = setComponentInfo.setNumber
+                                )
+                        )
+                        screenNavigator.openSetComponentsScreen(
+                                componentInfo = setComponentInfo,
+                                targetTotalCount = totalCount.value!!,
+                                isStamp = true)
+                    }
                     return
                 }
             }
@@ -264,17 +269,22 @@ class SetsInfoViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKe
                         (data[2] == BigInteger(scannedStampCode.value!!.substring(7,19), 36).toString().padStart(19,'0') ||
                                 data[2] == BigInteger(scannedStampCode.value!!.substring(7,19), 36).toString().padStart(20,'0'))
             }.isNotEmpty().let {
-                //todo !it in it
-                if (!it) {
-                    processSetsService.addCurrentComponentExciseStamps(
-                            TaskExciseStamp(
+                if (it) {
+                    val countExciseStampForComponent = processSetsService.getCountExciseStampsForComponent(componentInfo)
+                    if (countExciseStampForComponent >= (componentInfo.count).toDouble() * totalCount.value!!){
+                        screenNavigator.openAlertScreen("${limitExceeded.value!!} (${componentInfo.number.substring(componentInfo.number.length - 6)})", pageNumber = "98")
+                    }
+                    else{
+                        processSetsService.addCurrentComponentExciseStamps(
+                                TaskExciseStamp(
                                         materialNumber = componentInfo.number,
                                         code = scannedStampCode.value!!,
                                         placeCode = componentInfo.placeCode,
                                         setMaterialNumber = componentInfo.setNumber
-                            )
-                    )
-                    screenNavigator.openSetComponentsScreen(componentInfo = componentInfo, targetTotalCount = totalCount.value!!, isStamp = true)
+                                )
+                        )
+                        screenNavigator.openSetComponentsScreen(componentInfo = componentInfo, targetTotalCount = totalCount.value!!, isStamp = true)
+                    }
                     return
                 }
             }
@@ -287,7 +297,13 @@ class SetsInfoViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKe
         componentsInfo.filter {
             it.number.substring(it.number.length - 6) == searchCode
         }.map {componentInfo ->
-            screenNavigator.openSetComponentsScreen(componentInfo = componentInfo, targetTotalCount = totalCount.value!!, isStamp = false)
+            val countExciseStampForComponent = processSetsService.getCountExciseStampsForComponent(componentInfo)
+            if (countExciseStampForComponent >= (componentInfo.count).toDouble() * totalCount.value!!){
+                screenNavigator.openAlertScreen("${limitExceeded.value!!} ($searchCode)", pageNumber = "98")
+            }
+            else{
+                screenNavigator.openSetComponentsScreen(componentInfo = componentInfo, targetTotalCount = totalCount.value!!, isStamp = false)
+            }
             return
         }
 

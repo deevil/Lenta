@@ -86,7 +86,7 @@ class MainMenuViewModel : CoreViewModel() {
         processServiceManager.getInventoryTask()!!.taskRepository.getProducts().addProduct(productInfo6)
         processServiceManager.getInventoryTask()!!.taskRepository.getExciseStamps().addExciseStamp(exciseStamp1)
         processServiceManager.getInventoryTask()!!.taskRepository.getExciseStamps().addExciseStamp(exciseStamp2)
-        //processServiceManager.getInventoryTask()!!.taskRepository.getExciseStamps().addExciseStamp(exciseStamp3)
+        processServiceManager.getInventoryTask()!!.taskRepository.getExciseStamps().addExciseStamp(exciseStamp3)
         processServiceManager.getInventoryTask()!!.taskRepository.getExciseStamps().addExciseStamp(exciseStamp4)
         //processServiceManager.getInventoryTask()!!.taskRepository.getExciseStamps().addExciseStamp(exciseStamp5)
         //processServiceManager.getInventoryTask()!!.taskRepository.getExciseStamps().addExciseStamp(exciseStamp6)

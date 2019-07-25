@@ -63,6 +63,7 @@ class SetsInfoFragment : CoreFragment<FragmentSetsInfoBinding, SetsInfoViewModel
             vm.componentNotFound.value = getString(R.string.component_not_found)
             vm.stampAnotherProduct.value = getString(R.string.stamp_another_product)
             vm.alcocodeNotFound.value = getString(R.string.alcocode_not_found)
+            vm.limitExceeded.value = getString(R.string.limit_exceeded)
             return vm
         }
     }

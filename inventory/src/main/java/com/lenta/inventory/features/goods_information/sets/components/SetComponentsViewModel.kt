@@ -54,12 +54,10 @@ class SetComponentsViewModel : CoreViewModel(), OnPositionClickListener {
     val topTitle: MutableLiveData<String> = MutableLiveData()
     val isStamp: MutableLiveData<Boolean> = MutableLiveData()
 
-    //todo проверить работает ли
     val enabledRollbackButton: MutableLiveData<Boolean> = countValue.map {
         (it ?: 0.0) > 0.0
     }
 
-    //todo проверить работает ли
     val enabledApplyButton: MutableLiveData<Boolean> = totalCount.map {
         (it ?: 0.0) >= (componentInfo.value!!.count).toDouble() * targetTotalCount.value!!
     }
