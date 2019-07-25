@@ -52,4 +52,5 @@
     <string name="taken_to_work_info">Задание %1$s принято в работу. До окончания пересчета осталось %2$s часов</string>
     <string name="stamp_another_product">АМ принадлежит другому товару</string>
     <string name="alcocode_not_found">Алкокод не найден в справочнике</string>
+    <string name="component_not_found">Неверный номер компонента</string>
 </resources>

@@ -85,7 +85,7 @@ class SetsInfoViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKe
                     selectedPosition = selectedPosition.value!!,
                     setMaterialNumber = componentInfo.setNumber
             )
-        }
+        }.reversed()
     }
 
     val enabledMissingButton: MutableLiveData<Boolean> = totalCount.map { it ?: 0.0 <= 0.0 }
@@ -115,8 +115,6 @@ class SetsInfoViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKe
             suffix.value = productInfo.value?.uom?.name
             storePlaceNumber.value = productInfo.value!!.placeCode
 
-            processSetsService.newProcessSetsService(productInfo.value!!)
-
             setComponentsNetRequest(null).either(::handleFailure, ::componentsInfoHandleSuccess)
             screenNavigator.hideProgress()
 
@@ -126,7 +124,8 @@ class SetsInfoViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKe
     private fun componentsInfoHandleSuccess(componentsRestInfo: List<SetComponentsRestInfo>) {
         viewModelScope.launch {
             screenNavigator.showProgress(titleProgressScreen.value!!)
-            componentsInfo.addAll(processSetsService.getComponentsForSet(componentsRestInfo))
+            processSetsService.newProcessSetsService(productInfo.value!!, componentsRestInfo)
+            componentsInfo.addAll(processSetsService.getComponentsForSet())
             screenNavigator.hideProgress()
         }
     }

@@ -2,7 +2,6 @@ package com.lenta.inventory.features.goods_information.sets.components
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.lenta.inventory.features.goods_information.excise_alco.GoodsInfoCountType
 import com.lenta.inventory.features.goods_information.sets.SetComponentInfo
 import com.lenta.inventory.models.task.ProcessSetsService
 import com.lenta.inventory.models.task.TaskExciseStamp
@@ -11,8 +10,6 @@ import com.lenta.inventory.requests.network.*
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.platform.viewmodel.CoreViewModel
-import com.lenta.shared.utilities.Logg
-import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.toStringFormatted
 import com.lenta.shared.view.OnPositionClickListener
@@ -38,6 +35,8 @@ class SetComponentsViewModel : CoreViewModel(), OnPositionClickListener {
     lateinit var alcoCodeNetRequest: AlcoCodeNetRequest
 
     val componentInfo: MutableLiveData<SetComponentInfo> = MutableLiveData()
+    val storePlaceNumber: MutableLiveData<String> = MutableLiveData()
+    val isStorePlaceNumber: MutableLiveData<Boolean> = storePlaceNumber.map { it != "00" }
     val limitExceeded: MutableLiveData<String> = MutableLiveData()
     val selectedPosition: MutableLiveData<Int> = MutableLiveData(0)
     val targetTotalCount: MutableLiveData<Double> = MutableLiveData()
@@ -51,44 +50,44 @@ class SetComponentsViewModel : CoreViewModel(), OnPositionClickListener {
     private val scannedStampCode: MutableLiveData<String> = MutableLiveData()
     val stampAnotherProduct: MutableLiveData<String> = MutableLiveData()
     val alcocodeNotFound: MutableLiveData<String> = MutableLiveData()
+    val componentNotFound: MutableLiveData<String> = MutableLiveData()
+    val topTitle: MutableLiveData<String> = MutableLiveData()
 
-    val enabledButton: MutableLiveData<Boolean> = countValue.map {
-        it!! > 0.0
+    val enabledRollbackButton: MutableLiveData<Boolean> = countValue.map {
+        (it ?: 0.0) > 0.0
+    }
+
+    val enabledApplyButton: MutableLiveData<Boolean> = totalCount.map {
+        (it ?: 0.0) >= (componentInfo.value!!.count).toDouble() * targetTotalCount.value!!
     }
 
     init {
         viewModelScope.launch {
             suffix.value = componentInfo.value?.uom?.name
+            storePlaceNumber.value = componentInfo.value!!.placeCode
+            topTitle.value = "${componentInfo.value!!.number.substring(componentInfo.value!!.number.length - 6)} ${componentInfo.value!!.name}"
         }
     }
 
     fun onClickRollback() {
-        screenNavigator.openAlertScreen(processSetsService.rollback().toString(), pageNumber = "98")
-        //countValue.value = countValue.value!!.minus(processSetsService.rollback())
+        countValue.value = processSetsService.rollback().toDouble()
     }
 
     fun onClickApply() {
-        //todo onClickApply
-        onScanResult("22N0000154KNI691XDC380V71231001511013ZZ012345678901234567890123456ZZ")
-    }
-
-    override fun onClickPosition(position: Int) {
-        return
+        processSetsService.applyComponent()
+        screenNavigator.goBack()
     }
 
     fun onBackPressed() {
-        //todo onBackPressed
-        return
-        //processExciseAlcoProductService.discard()
+        processSetsService.discardComponent()
     }
 
     fun onScanResult(data: String) {
-        //todo onScanResult
         scannedStampCode.value = data
         when (data.length) {
             68 -> processPdf68(data)
             150 -> processPdf150(data)
-            else -> processPdf150(data)
+            else -> processItemByBarcode(data)
         }
     }
 
@@ -196,7 +195,26 @@ class SetComponentsViewModel : CoreViewModel(), OnPositionClickListener {
         }
     }
 
+    private fun processItemByBarcode(eanCode: String){
+        processSetsService.getComponentsForSet().filter {component ->
+            component.number == eanCode
+        }.map {
+            processSetsService.discardComponent()
+            componentInfo.value = it
+            count.value = "0"
+            countValue.value = 0.0
+            topTitle.value = "${componentInfo.value!!.number.substring(componentInfo.value!!.number.length - 6)} ${componentInfo.value!!.name}"
+            return
+        }
+
+        screenNavigator.openAlertScreen(componentNotFound.value!!, pageNumber = "98")
+    }
+
     override fun handleFailure(failure: Failure) {
         screenNavigator.openAlertScreen(failure)
+    }
+
+    override fun onClickPosition(position: Int) {
+        return
     }
 }

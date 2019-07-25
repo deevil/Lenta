@@ -32,6 +32,7 @@ class ProcessSetsService@Inject constructor() : IProcessProductService {
 
     private val currentComponentExciseStamps: ArrayList<TaskExciseStamp> = ArrayList()
     private val currentAllExciseStamps: ArrayList<TaskExciseStamp> = ArrayList()
+    private val componentsInfo: ArrayList<SetComponentInfo> = ArrayList()
 
     private val zfmpUtz48V001: ZfmpUtz48V001 by lazy {
         ZfmpUtz48V001(hyperHive)
@@ -41,8 +42,9 @@ class ProcessSetsService@Inject constructor() : IProcessProductService {
         ZmpUtz07V001(hyperHive)
     }
 
-    fun newProcessSetsService(productInfo: TaskProductInfo) : ProcessSetsService {
+    fun newProcessSetsService(productInfo: TaskProductInfo, componentsRestInfo: List<SetComponentsRestInfo>) : ProcessSetsService {
         this.productInfo = productInfo
+        setComponentsForSet(componentsRestInfo)
         return this
     }
 
@@ -67,8 +69,12 @@ class ProcessSetsService@Inject constructor() : IProcessProductService {
         taskRepository.getProducts().findProduct(productInfo)?.isPositionCalc = true
     }
 
-    fun getComponentsForSet(componentsRestInfo: List<SetComponentsRestInfo>) : List<SetComponentInfo>{
-        val componentsInfo: ArrayList<SetComponentInfo> = ArrayList()
+    fun getComponentsForSet() : List<SetComponentInfo>{
+        return componentsInfo
+    }
+
+    private fun setComponentsForSet(componentsRestInfo: List<SetComponentsRestInfo>) : List<SetComponentInfo>{
+        componentsInfo.clear()
         componentsRestInfo[0].data.filter{ data ->
             data[1] == productInfo.materialNumber
         }.map {data ->
@@ -91,7 +97,7 @@ class ProcessSetsService@Inject constructor() : IProcessProductService {
     }
 
     fun getCountExciseStampsForComponent(componentsInfo: SetComponentInfo) : Int{
-        return currentAllExciseStamps.size +
+        return currentAllExciseStamps.filter {it.materialNumber == componentsInfo.number}.size +
                 taskRepository.getExciseStamps().findExciseStampsOfProduct(productInfo).filter {it.materialNumber == componentsInfo.number}.size
     }
 
@@ -118,6 +124,15 @@ class ProcessSetsService@Inject constructor() : IProcessProductService {
     fun rollback() : Int{
         currentComponentExciseStamps.removeAt(currentComponentExciseStamps.lastIndex)
         return currentComponentExciseStamps.size
+    }
+
+    fun applyComponent(){
+        currentAllExciseStamps.addAll(currentComponentExciseStamps)
+        currentComponentExciseStamps.clear()
+    }
+
+    fun discardComponent(){
+        currentComponentExciseStamps.clear()
     }
 
     fun isTaskAlreadyHasExciseStamp(stampCode: String): Boolean{

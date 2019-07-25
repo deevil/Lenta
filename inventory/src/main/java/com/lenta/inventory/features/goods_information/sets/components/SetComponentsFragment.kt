@@ -3,9 +3,7 @@ package com.lenta.inventory.features.goods_information.sets.components
 import android.view.View
 import com.lenta.inventory.R
 import com.lenta.inventory.databinding.FragmentSetComponentsBinding
-import com.lenta.inventory.features.goods_details_storage.ComponentItem
 import com.lenta.inventory.features.goods_information.sets.SetComponentInfo
-import com.lenta.inventory.models.task.TaskProductInfo
 import com.lenta.inventory.platform.extentions.getAppComponent
 import com.lenta.shared.platform.activity.OnBackPresserListener
 import com.lenta.shared.platform.fragment.CoreFragment
@@ -52,13 +50,16 @@ class SetComponentsFragment : CoreFragment<FragmentSetComponentsBinding, SetComp
             vm.titleProgressScreen.value = getString(R.string.data_loading)
             vm.stampAnotherProduct.value = getString(R.string.stamp_another_product)
             vm.alcocodeNotFound.value = getString(R.string.alcocode_not_found)
+            vm.componentNotFound.value = getString(R.string.component_not_found)
             return vm
         }
     }
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
         topToolbarUiModel.description.value = getString(R.string.set_component)
-        topToolbarUiModel.title.value = "${componentInfo!!.number.substring(componentInfo!!.number.length - 6)} ${componentInfo!!.name}"
+        viewLifecycleOwner.let {
+            connectLiveData(vm.topTitle, topToolbarUiModel.title)
+        }
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
@@ -67,8 +68,8 @@ class SetComponentsFragment : CoreFragment<FragmentSetComponentsBinding, SetComp
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.apply)
 
         viewLifecycleOwner.let {
-            //connectLiveData(vm.enabledButton, bottomToolbarUiModel.uiModelButton2.enabled)
-            //connectLiveData(vm.enabledButton, bottomToolbarUiModel.uiModelButton5.enabled)
+            connectLiveData(vm.enabledRollbackButton, bottomToolbarUiModel.uiModelButton2.enabled)
+            connectLiveData(vm.enabledApplyButton, bottomToolbarUiModel.uiModelButton5.enabled)
         }
     }
 
