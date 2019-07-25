@@ -62,20 +62,20 @@ class GoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
         goodNumber.value.let { number ->
             if (number?.isNotEmpty() == true && number.length >= 6) {
                 when (number.length) {
-                    SAP_LENGTH -> createGoodBySapCode()
+                    SAP_LENGTH -> addGoodBySapCode()
                     SAP_OR_BAR_LENGTH -> {
                         // Выбор - Введено 12 знаков. Какой код вы ввели? - SAP-код / Штрихкод
                         navigator.showTwelveCharactersEntered(
-                                sapCallback = ::createGoodBySapCode,
-                                barCallback = ::createGoodByBarCode)
+                                sapCallback = ::addGoodBySapCode,
+                                barCallback = ::addGoodByBarCode)
                     }
-                    else -> createGoodByBarCode()
+                    else -> addGoodByBarCode()
                 }
             }
         }
     }
 
-    private fun createGoodBySapCode() {
+    private fun addGoodBySapCode() {
         goodNumber.value.let { number ->
             Logg.d { "Entered SAP-code: $number" }
             val sapcode = if (number?.length == 6) "000000000000$number" else "000000$number"
@@ -86,7 +86,7 @@ class GoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
         }
     }
 
-    private fun createGoodByBarCode() {
+    private fun addGoodByBarCode() {
         goodNumber.value.let { number ->
             Logg.d { "Entered BAR-code: $number" }
             viewModelScope.launch {

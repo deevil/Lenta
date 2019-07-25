@@ -59,14 +59,19 @@ class GoodInfoFacingViewModel : CoreViewModel() {
     fun onClickMissing() {
         if (checkData.checkEmptyPlaces) {
             // Выбор - Пустое место оформлено правильно? - Назад / Нет / Да
-            navigator.showIsEmptyPlaceDecoratedCorrectly(good.value?.getFormattedSapCode()!!, good.value?.name!!,
-                    checkData.getCurrentSegment().number, checkData.getCurrentShelf().number, {
-                checkData.setCurrentGoodStatus(GoodStatus.MISSING_WRONG)
-                navigator.openGoodListScreen()
-            }, {
-                checkData.setCurrentGoodStatus(GoodStatus.MISSING_RIGHT)
-                navigator.openGoodListScreen()
-            })
+            navigator.showIsEmptyPlaceDecoratedCorrectly(
+                    sap = good.value?.getFormattedSapCode()!!,
+                    name = good.value?.name!!,
+                    segment = checkData.getCurrentSegment().number,
+                    shelf = checkData.getCurrentShelf().number,
+                    noCallback = {
+                        checkData.setCurrentGoodStatus(GoodStatus.MISSING_WRONG)
+                        navigator.openGoodListScreen()
+                    },
+                    yesCallback = {
+                        checkData.setCurrentGoodStatus(GoodStatus.MISSING_RIGHT)
+                        navigator.openGoodListScreen()
+                    })
         } else {
             // Пустое место всегда оформлено правильно
             checkData.setCurrentGoodStatus(GoodStatus.MISSING_RIGHT)
@@ -84,6 +89,6 @@ class GoodInfoFacingViewModel : CoreViewModel() {
         if (checkData.getCurrentGood().status == GoodStatus.CREATED) {
             checkData.deleteCurrentGood()
         }
-        navigator.goBack()
+        navigator.openGoodListScreen()
     }
 }
