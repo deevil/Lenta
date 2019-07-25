@@ -9,7 +9,6 @@ import com.lenta.bp7.repos.IDatabaseRepo
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
-import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -30,18 +29,16 @@ class SegmentListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     }
 
     val segments: MutableLiveData<List<Segment>> = MutableLiveData()
-    private val unfinishedSegment: MutableLiveData<Boolean> = MutableLiveData()
 
     val marketNumber: MutableLiveData<String> = MutableLiveData("")
     val segmentNumber: MutableLiveData<String> = MutableLiveData("")
 
-    val completeButtonEnabled: MutableLiveData<Boolean> = segments.combineLatest(unfinishedSegment).map { pair ->
-        pair?.first?.isNotEmpty() ?: false && pair?.second == false
+    val completeButtonEnabled: MutableLiveData<Boolean> = segments.map {
+        it?.isNotEmpty() ?: false && checkData.isExistUnfinishedSegment()
     }
 
     init {
         viewModelScope.launch {
-            unfinishedSegment.value = checkData.isExistUnfinishedSegment()
             marketNumber.value = sessionInfo.market
             segments.value = checkData.segments
         }
