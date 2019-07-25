@@ -60,13 +60,14 @@ class SegmentListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
         }
 
         if (segmentNumber.value?.length == SEGMENT_NUMBER_LENGTH) {
-            // todo ЭКРАН начата обработка сегмента, с подсчетом фейсингов / без подсчета фейсингов
             // Сообщение - Начата обработка сегмента
-            navigator.showBeganProcessingSegment(segmentNumber.value!!, checkData.countFacings)
+            /*navigator.showBeganProcessingSegment(segmentNumber.value!!, checkData.countFacings){
+                checkData.addSegment(sessionInfo.market!!, segmentNumber.value!!)
+                navigator.openShelfListScreen()
+            }*/
+
             checkData.addSegment(sessionInfo.market!!, segmentNumber.value!!)
             navigator.openShelfListScreen()
-            // !Сейчас сообщение показывается после перехода на следующий экран и его невозможно скрыть
-            // !Нужно исправить
         }
     }
 

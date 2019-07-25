@@ -16,7 +16,7 @@ abstract class CoreMessageFragment : CoreFragment<LayoutMessageBinding, MessageV
     protected var message by state("")
     protected var iconRes by state(0)
     protected var textColor by state<Int?>(null)
-    protected var codeConfirmForExit by state<Int?>(null)
+    var codeConfirmForExit by state<Int?>(null)
     protected var codeConfirmForRight by state<Int?>(null)
     var codeConfirmForButton2 by state<Int?>(null)
     var codeConfirmForButton3 by state<Int?>(null)
@@ -70,6 +70,10 @@ abstract class CoreMessageFragment : CoreFragment<LayoutMessageBinding, MessageV
             R.id.b_4 -> vm.onClickButton4()
             R.id.b_5 -> vm.onClickRightButton()
         }
+    }
+
+    override fun onBackPressed(): Boolean {
+        return true
     }
 
     override fun getPageNumber(): String? = if (pageNumb != null) generateScreenNumberFromPostfix(pageNumb) else null
