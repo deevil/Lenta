@@ -199,6 +199,24 @@ class ScreenNavigator(
                     rightButtonDecorationInfo = ButtonDecorationInfo.goOver))
         }
     }
+
+    override fun showUnsavedSelfControlDataDetected(goOverCallback: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.unsaved_self_control_data_detected),
+                    pageNumber = "70",
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(goOverCallback),
+                    rightButtonDecorationInfo = ButtonDecorationInfo.goOver))
+        }
+    }
+
+    override fun showUnsavedExternalAuditDataDetected(goOverCallback: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.unsaved_external_audit_data_detected),
+                    pageNumber = "4",
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(goOverCallback),
+                    rightButtonDecorationInfo = ButtonDecorationInfo.goOver))
+        }
+    }
 }
 
 interface IScreenNavigator : ICoreNavigator {
@@ -225,5 +243,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun showDeleteDataOnSegment(store: String, segment: String, deleteCallback: () -> Unit)
     fun showNoShelvesInSegmentToSave(segment: String, confirmCallback: () -> Unit)
     fun showIncompleteSegmentDetected(goOverCallback: () -> Unit)
+    fun showUnsavedSelfControlDataDetected(goOverCallback: () -> Unit)
+    fun showUnsavedExternalAuditDataDetected(goOverCallback: () -> Unit)
 
 }

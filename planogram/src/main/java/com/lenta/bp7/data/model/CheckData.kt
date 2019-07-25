@@ -7,7 +7,7 @@ class CheckData(
         val segments: MutableList<Segment> = mutableListOf()
 ) {
 
-    var checkType: CheckType = CheckType.NOT_DEFINED
+    var checkType: CheckType = CheckType.SELF_CONTROL
     var countFacings = false
     var checkEmptyPlaces = false
 
