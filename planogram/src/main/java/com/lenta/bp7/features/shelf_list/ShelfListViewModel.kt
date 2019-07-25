@@ -63,8 +63,11 @@ class ShelfListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
     private fun createShelf() {
         if (shelfNumber.value?.isNotEmpty() == true) {
-            checkData.addShelf(shelfNumber.value!!)
-            navigator.openGoodListScreen()
+            // Сообщение - Начата обработка полки
+            navigator.showShelfStarted(segmentNumber.value!!, shelfNumber.value!!) {
+                checkData.addShelf(shelfNumber.value!!)
+                navigator.openGoodListScreen()
+            }
         }
     }
 
