@@ -9,7 +9,7 @@ class FailurePinCodeViewModel : MessageViewModel() {
 
     init {
         viewModelScope.launch {
-            goBackWithDelay(params = GoBackParams(timeInMillis = 3000))
+            goBackWithDelay(GoBackParams(timeInMillis = 3000L))
         }
     }
 }
