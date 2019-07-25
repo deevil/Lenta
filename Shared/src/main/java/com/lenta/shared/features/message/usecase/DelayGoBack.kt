@@ -11,11 +11,7 @@ class DelayGoBack
 @Inject constructor(val coreNavigator: ICoreNavigator) : UseCase<Boolean, GoBackParams>() {
     override suspend fun run(params: GoBackParams): Either<Failure, Boolean> {
         delay(params.timeInMillis)
-        if (params.codeForBackResult == null) {
-            coreNavigator.goBack()
-        } else {
-            coreNavigator.goBackWithResultCode(params.codeForBackResult)
-        }
+        coreNavigator.goBackWithResultCode(params.codeForBackResult)
         return Either.Right(true)
     }
 

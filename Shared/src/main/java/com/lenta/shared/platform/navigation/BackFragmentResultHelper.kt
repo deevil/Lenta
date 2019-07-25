@@ -1,21 +1,21 @@
 package com.lenta.shared.platform.navigation
 
-import java.util.*
+import java.lang.ref.SoftReference
 
 class BackFragmentResultHelper {
 
-    private var weakHashMap: WeakHashMap<Int, () -> Unit> = WeakHashMap()
+    private var referenceHashMap: MutableMap<Int, SoftReference<() -> Unit>> = mutableMapOf()
 
     fun setFuncForResult(func: () -> Unit): Int {
         return func.hashCode().apply {
-            weakHashMap[this] = func
+            referenceHashMap[this] = SoftReference(func)
         }
     }
 
     fun getFuncAndClear(idCodeFunc: Int?): (() -> Unit)? {
-        val func = weakHashMap[idCodeFunc]
-        weakHashMap.clear()
-        return func
+        val reference = referenceHashMap[idCodeFunc]
+        referenceHashMap.clear()
+        return reference?.get()
     }
 
 

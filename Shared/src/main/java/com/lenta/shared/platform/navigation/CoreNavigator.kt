@@ -48,11 +48,16 @@ class CoreNavigator constructor(private val context: Context,
         }
     }
 
-    override fun goBackWithResultCode(code: Int) {
-        goBackWithArgs(
-                args = Bundle().apply {
-                    setFragmentResultCode(code)
-                })
+    override fun goBackWithResultCode(code: Int?) {
+        if (code == null) {
+            backFragmentResultHelper.getFuncAndClear(null)
+        } else {
+            goBackWithArgs(
+                    args = Bundle().apply {
+                        setFragmentResultCode(code)
+                    })
+        }
+
     }
 
     override fun goBack() {
@@ -293,7 +298,7 @@ interface ICoreNavigator {
     val functionsCollector: FunctionsCollector
     val backFragmentResultHelper: BackFragmentResultHelper
     fun goBackWithArgs(args: Bundle)
-    fun goBackWithResultCode(code: Int)
+    fun goBackWithResultCode(code: Int?)
     fun goBack()
     fun finishApp()
     fun openAlertScreen(message: String,
