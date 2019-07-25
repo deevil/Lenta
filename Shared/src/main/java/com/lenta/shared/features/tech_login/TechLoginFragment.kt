@@ -1,5 +1,6 @@
 package com.lenta.shared.features.tech_login
 
+import android.os.Bundle
 import android.view.View
 import com.lenta.shared.R
 import com.lenta.shared.databinding.FragmentTechLoginBinding
@@ -32,7 +33,11 @@ class TechLoginFragment : CoreFragment<FragmentTechLoginBinding, TechLoginViewMo
         bottomToolbarUiModel.cleanAll()
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.apply)
-        viewLifecycleOwner.connectLiveData(vm.applyButtonEnabled, bottomToolbarUiModel.uiModelButton5.enabled)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        viewLifecycleOwner.connectLiveData(vm.applyButtonEnabled, getBottomToolBarUIModel()!!.uiModelButton5.enabled)
     }
 
     override fun getPageNumber(): String =  generateScreenNumber()

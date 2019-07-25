@@ -1,5 +1,6 @@
 package com.lenta.inventory.features.goods_information.sets.components
 
+import android.os.Bundle
 import android.view.View
 import com.lenta.inventory.R
 import com.lenta.inventory.databinding.FragmentSetComponentsBinding
@@ -63,12 +64,16 @@ class SetComponentsFragment : CoreFragment<FragmentSetComponentsBinding, SetComp
         bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.rollback, enabled = false)
         bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.add, enabled = false)
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.apply, enabled = false)
+    }
 
-        viewLifecycleOwner.let {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        getBottomToolBarUIModel()?.let { bottomToolbarUiModel ->
             connectLiveData(vm.enabledButton, bottomToolbarUiModel.uiModelButton4.enabled)
             connectLiveData(vm.enabledButton, bottomToolbarUiModel.uiModelButton5.enabled)
             connectLiveData(vm.enabledButton, bottomToolbarUiModel.uiModelButton2.enabled)
         }
+
     }
 
     override fun onToolbarButtonClick(view: View) {

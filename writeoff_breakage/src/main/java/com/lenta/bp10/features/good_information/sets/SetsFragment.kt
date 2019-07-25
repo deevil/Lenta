@@ -76,7 +76,7 @@ class SetsFragment :
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
         topToolbarUiModel.description.value = getString(R.string.set_info)
-        connectLiveData(vm.title, topToolbarUiModel.title)
+
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
@@ -85,17 +85,6 @@ class SetsFragment :
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
         bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.add, enabled = false)
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.apply, enabled = false)
-
-        viewLifecycleOwner.apply {
-            connectLiveData(vm.enabledApplyButton, bottomToolbarUiModel.uiModelButton4.enabled)
-            connectLiveData(vm.enabledApplyButton, bottomToolbarUiModel.uiModelButton5.enabled)
-            connectLiveData(vm.enabledDetailsCleanBtn, bottomToolbarUiModel.uiModelButton3.enabled)
-            vm.selectedPage.observe(this, Observer { pos ->
-                bottomToolbarUiModel.uiModelButton3.show(
-                        if (pos == 0) ButtonDecorationInfo.details else ButtonDecorationInfo.clean,
-                        enabled = false)
-            })
-        }
     }
 
     override fun onToolbarButtonClick(view: View) {
@@ -112,6 +101,19 @@ class SetsFragment :
             it.viewPagerSettings = this
             it.pageSelectionListener = this
         }
+
+        getBottomToolBarUIModel()?.let { bottomToolbarUiModel ->
+            connectLiveData(vm.enabledApplyButton, bottomToolbarUiModel.uiModelButton4.enabled)
+            connectLiveData(vm.enabledApplyButton, bottomToolbarUiModel.uiModelButton5.enabled)
+            connectLiveData(vm.enabledDetailsCleanBtn, bottomToolbarUiModel.uiModelButton3.enabled)
+            vm.selectedPage.observe(this, Observer { pos ->
+                bottomToolbarUiModel.uiModelButton3.show(
+                        if (pos == 0) ButtonDecorationInfo.details else ButtonDecorationInfo.clean,
+                        enabled = false)
+            })
+        }
+
+        connectLiveData(vm.title, getTopToolBarUIModel()!!.title)
     }
 
     override fun getPagerItemView(container: ViewGroup, position: Int): View {

@@ -28,8 +28,7 @@ import com.lenta.shared.utilities.databinding.*
 import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.provideViewModel
 
-class GoodsListFragment : CoreFragment<FragmentGoodsListBinding, GoodsListViewModel>(), ToolbarButtonsClickListener, ViewPagerSettings, PageSelectionListener, OnKeyDownListener, OnScanResultListener, OnBackPresserListener
-{
+class GoodsListFragment : CoreFragment<FragmentGoodsListBinding, GoodsListViewModel>(), ToolbarButtonsClickListener, ViewPagerSettings, PageSelectionListener, OnKeyDownListener, OnScanResultListener, OnBackPresserListener {
     private var unprocessedRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
     private var processedRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
 
@@ -55,9 +54,7 @@ class GoodsListFragment : CoreFragment<FragmentGoodsListBinding, GoodsListViewMo
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
         bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.clean)
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.complete)
-        viewLifecycleOwner.apply {
-            connectLiveData(source = vm.deleteEnabled, target = bottomToolbarUiModel.uiModelButton3.enabled)
-        }
+
     }
 
     override fun onToolbarButtonClick(view: View) {
@@ -67,8 +64,7 @@ class GoodsListFragment : CoreFragment<FragmentGoodsListBinding, GoodsListViewMo
         }
     }
 
-    override fun onBackPressed(): Boolean
-    {
+    override fun onBackPressed(): Boolean {
         vm.onClickBack()
         return false
     }
@@ -79,6 +75,10 @@ class GoodsListFragment : CoreFragment<FragmentGoodsListBinding, GoodsListViewMo
             it.viewPagerSettings = this
             it.pageSelectionListener = this
         }
+
+        connectLiveData(source = vm.deleteEnabled, target = getBottomToolBarUIModel()!!.uiModelButton3.enabled)
+
+
     }
 
     override fun onResume() {
@@ -216,7 +216,7 @@ class GoodsListFragment : CoreFragment<FragmentGoodsListBinding, GoodsListViewMo
     }
 
     companion object {
-        fun create(storePlaceManager: StorePlaceProcessing) : GoodsListFragment {
+        fun create(storePlaceManager: StorePlaceProcessing): GoodsListFragment {
             val fragment = GoodsListFragment()
             fragment.manager = storePlaceManager
             return fragment
