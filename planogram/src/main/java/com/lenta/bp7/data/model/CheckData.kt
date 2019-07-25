@@ -1,12 +1,13 @@
 package com.lenta.bp7.data.model
 
+import com.lenta.bp7.data.CheckType
 import com.lenta.shared.utilities.Logg
 
 class CheckData(
         val segments: MutableList<Segment> = mutableListOf()
 ) {
 
-    var checkType = ""
+    var checkType: CheckType = CheckType.NOT_DEFINED
     var countFacings = false
     var checkEmptyPlaces = false
 
