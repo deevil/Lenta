@@ -73,4 +73,10 @@ abstract class CoreMessageFragment : CoreFragment<LayoutMessageBinding, MessageV
     }
 
     override fun getPageNumber(): String? = if (pageNumb != null) generateScreenNumberFromPostfix(pageNumb) else null
+
+
+    override fun onBackPressed(): Boolean {
+        return true
+    }
+
 }
