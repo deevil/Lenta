@@ -190,6 +190,15 @@ class ScreenNavigator(
                     rightButtonDecorationInfo = ButtonDecorationInfo.confirm))
         }
     }
+
+    override fun showIncompleteSegmentDetected(goOverCallback: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.incomplete_segment_detected),
+                    pageNumber = "72",
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(goOverCallback),
+                    rightButtonDecorationInfo = ButtonDecorationInfo.goOver))
+        }
+    }
 }
 
 interface IScreenNavigator : ICoreNavigator {
@@ -215,5 +224,6 @@ interface IScreenNavigator : ICoreNavigator {
     fun showShelfStarted(segment: String, shelf: String, afterShowCallback: () -> Unit)
     fun showDeleteDataOnSegment(store: String, segment: String, deleteCallback: () -> Unit)
     fun showNoShelvesInSegmentToSave(segment: String, confirmCallback: () -> Unit)
+    fun showIncompleteSegmentDetected(goOverCallback: () -> Unit)
 
 }

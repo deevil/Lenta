@@ -86,7 +86,6 @@ data class ButtonDecorationInfo(
         val details: ButtonDecorationInfo by lazy {
             ButtonDecorationInfo(R.drawable.ic_details_white_24dp, R.string.details)
         }
-
         val save: ButtonDecorationInfo by lazy {
             ButtonDecorationInfo(R.drawable.ic_send_white_24dp, R.string.save)
         }

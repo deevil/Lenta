@@ -54,14 +54,19 @@ class SegmentListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
     private fun createSegment() {
         if (checkData.isExistUnfinishedSegment()) {
-            // todo ЭКРАН обнаружен незавершенный сегмент, начало работы с новым невозможно. Перейти к сегменту?
+            // Подтверждение - Обнаружен незавершенный сегмент. Начало работы с новым сегментом невозможно. Перейти к обработке сегмента? - Назад / Перейти
+            navigator.showIncompleteSegmentDetected {
+                checkData.setUnfinishedSegmentAsCurrent()
+                navigator.openShelfListScreen()
+            }
+        } else {
+            if (segmentNumber.value?.length == SEGMENT_NUMBER_LENGTH) {
+                // Сообщение - Начата обработка сегмента
+                /*navigator.showSegmentStarted(segmentNumber.value!!, checkData.countFacings){
+                    checkData.addSegment(sessionInfo.market!!, segmentNumber.value!!)
+                    navigator.openShelfListScreen()
+                }*/
 
-            return
-        }
-
-        if (segmentNumber.value?.length == SEGMENT_NUMBER_LENGTH) {
-            // Сообщение - Начата обработка сегмента
-            navigator.showSegmentStarted(segmentNumber.value!!, checkData.countFacings){
                 checkData.addSegment(sessionInfo.market!!, segmentNumber.value!!)
                 navigator.openShelfListScreen()
             }

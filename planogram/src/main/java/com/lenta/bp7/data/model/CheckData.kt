@@ -114,6 +114,10 @@ class CheckData(
         return segments.find { it.status == SegmentStatus.UNFINISHED } != null
     }
 
+    fun setUnfinishedSegmentAsCurrent() {
+        currentSegmentIndex = segments.indexOf(segments.find { it.status == SegmentStatus.UNFINISHED })
+    }
+
     fun getLastGoodFacings(): Int {
         return if (goodsMoreThanOne() && getCurrentGood().barCode == getLastGood().barCode) getLastGood().facings else 0
     }
