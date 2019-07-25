@@ -40,7 +40,8 @@ open class MessageViewModel : CoreViewModel() {
             timeAutoExitInMillis?.let { delayInMillis ->
                 if (codeConfirmForRight == null) {
                     goBackWithDelay(params = GoBackParams(
-                            timeInMillis = delayInMillis.toLong()
+                            timeInMillis = delayInMillis.toLong(),
+                            codeForBackResult = codeConfirmForExit
                     ))
                 }
             }
