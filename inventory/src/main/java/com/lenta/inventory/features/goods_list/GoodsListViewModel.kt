@@ -35,7 +35,7 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     @Inject
     lateinit var taskManager: IInventoryTaskManager
     @Inject
-    lateinit var invSendReportNetRequest: InvSendReportNetRequest
+    lateinit var dataSaver: DataSaver
 
     val unprocessedGoods: MutableLiveData<List<ProductInfoVM>> = MutableLiveData()
     val processedGoods: MutableLiveData<List<ProductInfoVM>> = MutableLiveData()
@@ -93,8 +93,8 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
         val processed = storePlaceManager?.getProcessedProducts() ?: emptyList()
         processedGoods.postValue(processed.mapIndexed { index, productInfo ->
             ProductInfoVM(number = processed.size - index,
-                    name = "${productInfo.getMaterialLastSix()} ${productInfo.description}",
-                    quantity = "${productInfo.factCount.toStringFormatted()} ${productInfo.uom.name}",
+                    name = productInfo.getDisplayName(),
+                    quantity = productInfo.getFormattedCount(),
                     matnr = productInfo.materialNumber)
         })
     }
@@ -103,8 +103,8 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
         val unprocessed = storePlaceManager?.getNotProcessedProducts() ?: emptyList()
         unprocessedGoods.postValue(unprocessed.mapIndexed { index, productInfo ->
             ProductInfoVM(number = unprocessed.size - index,
-                    name = "${productInfo.getMaterialLastSix()} ${productInfo.description}\"",
-                    quantity = "${productInfo.factCount.toStringFormatted()} ${productInfo.uom.name}",
+                    name = productInfo.getDisplayName(),
+                    quantity = productInfo.getFormattedCount(),
                     matnr = productInfo.materialNumber)
         })
     }
@@ -133,27 +133,15 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
             return
         }
 
-        screenNavigator.openConfirmationSavingJobScreen {
-            saveData()
-        }
-
-    }
-
-    private fun saveData() {
-        viewModelScope.launch {
-            screenNavigator.showProgress(invSendReportNetRequest)
-            invSendReportNetRequest(storePlaceManager!!.getReport(isFinish = true)).either(::handleFailure) {
-                if (it.retCode != "0") {
-                    screenNavigator.openInfoScreen(it.errorText)
-                } else {
-                    makeLockUnlockRequest(taskManager.getInventoryTask()?.taskDescription?.recountType, StorePlaceLockMode.Unlock) {
-                        screenNavigator.openSuccessSaveDataScreen()
-                    }
+        taskManager.getInventoryTask()?.let {
+            if (it.hasDiscrepancies()) {
+                screenNavigator.openDiscrepanciesScreen()
+            } else {
+                screenNavigator.openConfirmationSavingJobScreen {
+                    dataSaver.saveData()
                 }
             }
-            screenNavigator.hideProgress()
         }
-
     }
 
     fun onClickBack() {
