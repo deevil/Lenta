@@ -6,6 +6,8 @@ import com.lenta.bp7.R
 import com.lenta.bp7.data.model.GoodStatus
 import com.lenta.bp7.data.model.SegmentStatus
 import com.lenta.bp7.data.model.ShelfStatus
+import com.lenta.shared.utilities.extentions.setInvisible
+import com.lenta.shared.utilities.extentions.setVisible
 
 @BindingAdapter("segmentStatusIcon")
 fun setSegmentStatusIcon(imageView: ImageView, segmentStatus: SegmentStatus) {
@@ -34,11 +36,12 @@ fun setShelfStatusIcon(imageView: ImageView, shelfStatus: ShelfStatus) {
 @BindingAdapter("goodStatusIcon")
 fun setGoodStatusIcon(imageView: ImageView, goodStatus: GoodStatus) {
     goodStatus.let {
-        val icon = when (it) {
-            GoodStatus.MISSING_WRONG -> R.drawable.ic_close_white_24dp
-            GoodStatus.MISSING_RIGHT -> R.drawable.ic_done_white_24dp
-            else -> R.drawable.ic_add_white_24dp
+        imageView.setVisible()
+
+        when (it) {
+            GoodStatus.MISSING_WRONG -> imageView.setImageResource(R.drawable.ic_good_missing_wrong_white_24dp)
+            GoodStatus.MISSING_RIGHT -> imageView.setImageResource(R.drawable.ic_good_missing_rigth_white_24dp)
+            else -> imageView.setInvisible()
         }
-        imageView.setImageResource(icon)
     }
 }

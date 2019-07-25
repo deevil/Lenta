@@ -17,12 +17,12 @@ class CheckTypeViewModel : CoreViewModel() {
     lateinit var checkData: CheckData
 
     fun onClickSelfControl() {
-        checkData.checkType = CheckType.SELF_CONTROL.type
+        checkData.checkType = CheckType.SELF_CONTROL
         navigator.openCodeScreen()
     }
 
     fun onClickExternalAudit() {
-        checkData.checkType = CheckType.EXTERNAL_AUDIT.type
+        checkData.checkType = CheckType.EXTERNAL_AUDIT
         navigator.openCodeScreen()
     }
 }

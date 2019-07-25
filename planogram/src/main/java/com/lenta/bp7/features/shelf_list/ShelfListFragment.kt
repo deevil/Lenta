@@ -64,6 +64,11 @@ class ShelfListFragment : CoreFragment<FragmentShelfListBinding, ShelfListViewMo
         initRvConfig()
     }
 
+    override fun onResume() {
+        super.onResume()
+        vm.updateShelfList()
+    }
+
     override fun onToolbarButtonClick(view: View) {
         when (view.id) {
             R.id.b_1 -> vm.onClickBack()

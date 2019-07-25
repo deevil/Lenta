@@ -11,6 +11,7 @@
     <string name="details">Детали</string>
     <string name="add">Добавить</string>
     <string name="apply">Применить</string>
+    <string name="confirm">Подтвердить</string>
     <string name="enter">Войти</string>
     <string name="go_over">Перейти</string>
     <string name="error_server">Ошибка сервера</string>

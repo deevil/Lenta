@@ -24,21 +24,21 @@ class GoodInfoFacingViewModel : CoreViewModel() {
     val facings: MutableLiveData<String> = MutableLiveData("")
 
     val goodIsPresent: MutableLiveData<Boolean> = good.map {
-        it?.status == GoodStatus.CREATED || (it?.totalFacings ?: 0 > 0 && it?.status != GoodStatus.CREATED)
+        it?.status == GoodStatus.CREATED || (it?.facings ?: 0 > 0 && it?.status != GoodStatus.CREATED)
     }
 
-    val totalFacings: MutableLiveData<Int> = facings.combineLatest(good).map { pair ->
-        val currentFacings = if (pair?.first?.isNotEmpty() == true) pair.first.toInt() else 0
-        val totalFacings = if (pair?.second != null) pair.second.totalFacings else 0
-        currentFacings + totalFacings
+    val totalFacings: MutableLiveData<Int> = facings.map {
+        val currentFacings = if (it?.isNotEmpty() == true) it.toInt() else 0
+        val lastFacings = checkData.getLastGoodFacings()
+        currentFacings + lastFacings
     }
 
     val facingFieldEnabled: MutableLiveData<Boolean> = good.map { it?.status == GoodStatus.CREATED }
 
     val missingButtonEnabled: MutableLiveData<Boolean> = facings.combineLatest(good).map { pair ->
-        val emptyField = if (pair?.first?.isNotEmpty() == true) pair.first.toInt() == 0 else true
-        val existFacings = if (pair?.second != null) pair.second.totalFacings > 0 else false
-        checkData.checkEmptyPlaces && emptyField && !existFacings && currentGoodIsCreated()
+        val emptyCountField = if (pair?.first?.isNotEmpty() == true) pair.first.toInt() == 0 else true
+        val alreadyExistFacings = if (pair?.second != null) pair.second.facings > 0 else false
+        emptyCountField && !alreadyExistFacings && currentGoodIsCreated()
     }
 
     val applyButtonEnabled: MutableLiveData<Boolean> = facings.map {
@@ -57,19 +57,26 @@ class GoodInfoFacingViewModel : CoreViewModel() {
     }
 
     fun onClickMissing() {
-        // todo ЭКРАН выбор правильности оформления пустого места
-
-        // !Перенести на другой экран
-        checkData.getCurrentGood().status = when ((1..2).random()) {
-            1 -> GoodStatus.MISSING_RIGHT
-            else -> GoodStatus.MISSING_WRONG
+        if (checkData.checkEmptyPlaces) {
+            // Выбор - Пустое место оформлено правильно? - Назад / Нет / Да
+            navigator.showIsEmptyPlaceDecoratedCorrectly(good.value?.getFormattedSapCode()!!, good.value?.name!!,
+                    checkData.getCurrentSegment().number, checkData.getCurrentShelf().number, {
+                checkData.setCurrentGoodStatus(GoodStatus.MISSING_WRONG)
+                navigator.openGoodListScreen()
+            }, {
+                checkData.setCurrentGoodStatus(GoodStatus.MISSING_RIGHT)
+                navigator.openGoodListScreen()
+            })
+        } else {
+            // Пустое место всегда оформлено правильно
+            checkData.setCurrentGoodStatus(GoodStatus.MISSING_RIGHT)
+            navigator.openGoodListScreen()
         }
-        navigator.openGoodListScreen()
     }
 
     fun onClickApply() {
-        checkData.getCurrentGood().totalFacings = totalFacings.value!!
-        checkData.getCurrentGood().status = GoodStatus.PROCESSED
+        checkData.getCurrentGood().facings = facings.value!!.toInt()
+        checkData.setCurrentGoodStatus(GoodStatus.PROCESSED)
         navigator.openGoodListScreen()
     }
 
@@ -79,5 +86,4 @@ class GoodInfoFacingViewModel : CoreViewModel() {
         }
         navigator.goBack()
     }
-
 }

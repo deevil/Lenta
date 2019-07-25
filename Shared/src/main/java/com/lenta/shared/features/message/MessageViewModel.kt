@@ -47,7 +47,6 @@ open class MessageViewModel : CoreViewModel() {
             }
 
             analyticsHelper.infoScreenMessage(message)
-
         }
 
     }

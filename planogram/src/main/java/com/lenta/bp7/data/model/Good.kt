@@ -5,13 +5,17 @@ data class Good(
         val sapCode: String? = "",
         val barCode: String? = "",
         val name: String? = "",
-        var totalFacings: Int = 0,
+        var facings: Int = 0,
         val units: String? = "",
         var status: GoodStatus = GoodStatus.CREATED
 ) {
 
     fun getFormattedSapCode(): String? {
         return sapCode?.takeLast(6) ?: ""
+    }
+
+    fun getNumberOfFacing(): String? {
+        return if ((status == GoodStatus.CREATED || status == GoodStatus.PROCESSED) && facings == 0) "+" else facings.toString()
     }
 
 }

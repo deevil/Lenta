@@ -10,7 +10,8 @@ enum class Enabled(val type: String) {
     NO("NO"),
 }
 
-enum class CheckType(val type: String) {
-    SELF_CONTROL("SELF_CONTROL"),
-    EXTERNAL_AUDIT("EXTERNAL_AUDIT"),
+enum class CheckType {
+    NOT_DEFINED,
+    SELF_CONTROL,
+    EXTERNAL_AUDIT,
 }

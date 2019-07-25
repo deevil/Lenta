@@ -1,12 +1,13 @@
 package com.lenta.bp7.data.model
 
+import com.lenta.bp7.data.CheckType
 import com.lenta.shared.utilities.Logg
 
 class CheckData(
         val segments: MutableList<Segment> = mutableListOf()
 ) {
 
-    var checkType = ""
+    var checkType: CheckType = CheckType.NOT_DEFINED
     var countFacings = false
     var checkEmptyPlaces = false
 
@@ -29,9 +30,17 @@ class CheckData(
     }
 
     fun getCurrentGood(): Good {
-        return segments[currentSegmentIndex].let {segment ->
+        return segments[currentSegmentIndex].let { segment ->
             segment.shelves[currentShelfIndex].let { shelf ->
                 shelf.goods[currentGoodIndex]
+            }
+        }
+    }
+
+    fun getLastGood(): Good {
+        return segments[currentSegmentIndex].let { segment ->
+            segment.shelves[currentShelfIndex].let { shelf ->
+                shelf.goods[currentGoodIndex + 1]
             }
         }
     }
@@ -80,12 +89,42 @@ class CheckData(
         currentGoodIndex = 0
     }
 
+    fun setCurrentGoodStatus(status: GoodStatus) {
+        getCurrentGood().status = status
+        removeCurrentGoodIfSameLast()
+    }
+
+    fun currentGoodIsSameLast(): Boolean {
+        val current = getCurrentGood()
+        val last = getLastGood()
+        return current.barCode == last.barCode && current.status == last.status
+    }
+
+    fun removeCurrentGoodIfSameLast() {
+        if (goodsMoreThanOne() && currentGoodIsSameLast()) {
+            getLastGood().facings += getCurrentGood().facings
+            deleteCurrentGood()
+        }
+    }
+
     fun setShelfStatusDeletedByIndex(shelfIndex: Int) {
         getCurrentSegment().shelves[shelfIndex].status = ShelfStatus.DELETED
     }
 
     fun isExistUnfinishedSegment(): Boolean {
         return segments.find { it.status == SegmentStatus.UNFINISHED } != null
+    }
+
+    fun setUnfinishedSegmentAsCurrent() {
+        currentSegmentIndex = segments.indexOf(segments.find { it.status == SegmentStatus.UNFINISHED })
+    }
+
+    fun getLastGoodFacings(): Int {
+        return if (goodsMoreThanOne() && getCurrentGood().barCode == getLastGood().barCode) getLastGood().facings else 0
+    }
+
+    private fun goodsMoreThanOne(): Boolean {
+        return getCurrentShelf().goods.size > 1
     }
 
 
@@ -125,7 +164,7 @@ class CheckData(
                     barCode = (100000000000..999999999999).random().toString(),
                     name = "Товар " + (1..1000).random(),
                     status = createGoodStatus(facings),
-                    totalFacings = facings))
+                    facings = facings))
         }
 
         return goods
