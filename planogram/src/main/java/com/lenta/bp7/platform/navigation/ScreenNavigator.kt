@@ -135,6 +135,15 @@ class ScreenNavigator(
         }
     }
 
+    override fun showSaveSegmentScanResults(segment: String, yesCallback: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.save_segment_scan_results, segment),
+                    pageNumber = "23",
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(yesCallback),
+                    rightButtonDecorationInfo = ButtonDecorationInfo.yes))
+        }
+    }
+
     override fun showIsEmptyPlaceDecoratedCorrectly(sap: String, name: String, segment: String, shelf: String, noCallback: () -> Unit, yesCallback: () -> Unit) {
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.is_empty_place_decorated_correctly, sap, name, segment, shelf),
@@ -159,6 +168,15 @@ class ScreenNavigator(
                 timeAutoExitInMillis = 2000
         )*/
     }
+
+    override fun showDeleteDataOnSegment(store: String, segment: String, deleteCallback: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.delete_data_on_segment, store, segment),
+                    pageNumber = "53",
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(deleteCallback),
+                    rightButtonDecorationInfo = ButtonDecorationInfo.delete))
+        }
+    }
 }
 
 interface IScreenNavigator : ICoreNavigator {
@@ -178,7 +196,9 @@ interface IScreenNavigator : ICoreNavigator {
 
     fun showShelfDataWillNotBeSaved(segment: String, shelf: String, confirmCallback: () -> Unit)
     fun showSaveShelfScanResults(segment: String, shelf: String, yesCallback: () -> Unit)
+    fun showSaveSegmentScanResults(segment: String, yesCallback: () -> Unit)
     fun showIsEmptyPlaceDecoratedCorrectly(sap: String, name: String, segment: String, shelf: String, noCallback: () -> Unit, yesCallback: () -> Unit)
     fun showBeganProcessingSegment(segment: String, facings: Boolean, afterShowCallback: () -> Unit)
+    fun showDeleteDataOnSegment(store: String, segment: String, deleteCallback: () -> Unit)
 
 }

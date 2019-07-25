@@ -2,13 +2,15 @@ package com.lenta.bp7.features.shelf_list
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.lenta.bp7.data.model.*
+import com.lenta.bp7.data.model.CheckData
+import com.lenta.bp7.data.model.SegmentStatus
+import com.lenta.bp7.data.model.Shelf
+import com.lenta.bp7.data.model.ShelfStatus
 import com.lenta.bp7.platform.navigation.IScreenNavigator
 import com.lenta.bp7.repos.IDatabaseRepo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
-import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -28,18 +30,16 @@ class ShelfListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
     val segmentNumber: MutableLiveData<String> = MutableLiveData()
     val shelfNumber: MutableLiveData<String> = MutableLiveData("")
-    private val unfinishedCurrentSegment: MutableLiveData<Boolean> = MutableLiveData()
-    private val deletedCurrentSegment: MutableLiveData<Boolean> = MutableLiveData()
 
     val numberFieldEnabled: MutableLiveData<Boolean> = MutableLiveData(false)
 
-    val deleteButtonEnabled: MutableLiveData<Boolean> = shelves.combineLatest(deletedCurrentSegment).map { pair ->
-        pair?.first?.isNotEmpty() ?: false && pair?.second == false
+    val deleteButtonEnabled: MutableLiveData<Boolean> = shelves.map {
+        it?.isNotEmpty() ?: false && checkData.getCurrentSegment().status != SegmentStatus.DELETED
     }
 
-    val applyButtonEnabled: MutableLiveData<Boolean> = shelves.combineLatest(unfinishedCurrentSegment).map { pair ->
-        pair?.first?.isNotEmpty() ?: false && pair?.second == true &&
-                pair.first.find { it.status == ShelfStatus.PROCESSED } != null
+    val applyButtonEnabled: MutableLiveData<Boolean> = shelves.map {
+        it?.isNotEmpty() ?: false && checkData.getCurrentSegment().status == SegmentStatus.UNFINISHED &&
+                it?.find { shelf -> shelf.status == ShelfStatus.PROCESSED } != null
     }
 
     init {
@@ -47,11 +47,13 @@ class ShelfListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
             checkData.let {
                 segmentNumber.value = it.getCurrentSegment().number
                 shelves.value = it.getCurrentSegment().shelves
-                unfinishedCurrentSegment.value = it.getCurrentSegment().status == SegmentStatus.UNFINISHED
-                deletedCurrentSegment.value = it.getCurrentSegment().status == SegmentStatus.DELETED
                 numberFieldEnabled.value = it.getCurrentSegment().status == SegmentStatus.UNFINISHED
             }
         }
+    }
+
+    fun updateShelfList() {
+        shelves.value = checkData.getCurrentSegment().shelves
     }
 
     override fun onOkInSoftKeyboard(): Boolean {
@@ -70,15 +72,12 @@ class ShelfListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
         selectionsHelper.let {
             val items = it.selectedPositions.value?.toMutableSet()
             if (items?.isEmpty() == true) {
-                // todo ЭКРАН удалить данные по сегменту?
-
-                // !Перенести на другой экран
-                checkData.getCurrentSegment().status = SegmentStatus.DELETED
-                navigator.openSegmentListScreen()
+                // Подтверждение - Удалить данные по сегменту? - Назад / Удалить
+                navigator.showDeleteDataOnSegment(checkData.getCurrentSegment().storeNumber, segmentNumber.value!!) {
+                    checkData.getCurrentSegment().status = SegmentStatus.DELETED
+                    navigator.openSegmentListScreen()
+                }
             } else {
-                // todo ЭКРАН подтверждение удаления полок
-
-                // !Перенести на другой экран
                 items!!.forEach { index ->
                     it.revert(index)
                     checkData.setShelfStatusDeletedByIndex(index)
@@ -89,11 +88,14 @@ class ShelfListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     }
 
     fun onClickApply() {
-        // todo ЭКРАН сохранить результаты сканирования сегмента и закрыть для редактирования?
+        // Подтверждение - Сохранить результаты сканирования сегмента, закрыть его для редактирования и переслать? - Назад / Да
+        navigator.showSaveSegmentScanResults(segmentNumber.value!!) {
+            checkData.getCurrentSegment().status = SegmentStatus.PROCESSED
 
-        // !Перенести на другой экран
-        checkData.getCurrentSegment().status = SegmentStatus.PROCESSED
-        navigator.openSegmentListScreen()
+            // TODO сюда добавить логику отправки сегмента на сервер
+
+            navigator.openSegmentListScreen()
+        }
     }
 
     fun onClickBack() {

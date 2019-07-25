@@ -25,9 +25,11 @@
 
     <string name="shelf_data_will_not_be_saved">СЕГМЕНТ № %1$s\nПОЛКА № %2$s\n\nДанные полки не будут сохранены</string>
     <string name="save_shelf_scan_results">СЕГМЕНТ: %1$s\nПОЛКА: %2$s\n\nСохранить результаты сканирования полки и закрыть ее для редактирования?</string>
+    <string name="save_segment_scan_results">СЕГМЕНТ: %1$s\n\nСохранить результаты сканирования сегмента, закрыть его для редактирования и переслать?</string>
     <string name="is_empty_place_decorated_correctly">%1$s %2$s\n\nСЕГМЕНТ № %3$s\nПОЛКА № %4$s\n\nПустое место оформлено правильно?</string>
     <string name="began_segment_with_facings">Начата обработка сегмента\n№%1$s с подсчетом количества фейсингов</string>
     <string name="began_segment_without_facings">Начата обработка сегмента\n№%1$s без подсчета количества фейсингов</string>
+    <string name="delete_data_on_segment">ТК № %1$s\nСЕГМЕНТ № %2$s\n\nУдалить данные по сегменту?</string>
 
 
     <!-- Заголовки экранов -->
