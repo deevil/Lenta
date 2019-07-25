@@ -11,7 +11,6 @@ enum class Enabled(val type: String) {
 }
 
 enum class CheckType {
-    NOT_DEFINED,
     SELF_CONTROL,
     EXTERNAL_AUDIT,
 }
