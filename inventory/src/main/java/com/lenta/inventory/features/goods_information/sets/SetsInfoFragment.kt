@@ -60,6 +60,9 @@ class SetsInfoFragment : CoreFragment<FragmentSetsInfoBinding, SetsInfoViewModel
             vm.productInfo.value = productInfo
             vm.spinList.value = listOf(getString(R.string.quantity))
             vm.titleProgressScreen.value = getString(R.string.data_loading)
+            vm.componentNotFound.value = getString(R.string.component_not_found)
+            vm.stampAnotherProduct.value = getString(R.string.stamp_another_product)
+            vm.alcocodeNotFound.value = getString(R.string.alcocode_not_found)
             return vm
         }
     }
@@ -135,7 +138,6 @@ class SetsInfoFragment : CoreFragment<FragmentSetsInfoBinding, SetsInfoViewModel
                     }
 
                     val onClickGoodTitle = View.OnClickListener {v ->
-                        //Logg.d { "onClickListener ${(v as TextView).text.substring(0,6)}" }
                         vm.searchCode.value = (v as TextView).text.substring(0,6)
                         vm.onOkInSoftKeyboard()
                     }

@@ -52,11 +52,14 @@ class SetComponentsViewModel : CoreViewModel(), OnPositionClickListener {
     val alcocodeNotFound: MutableLiveData<String> = MutableLiveData()
     val componentNotFound: MutableLiveData<String> = MutableLiveData()
     val topTitle: MutableLiveData<String> = MutableLiveData()
+    val isStamp: MutableLiveData<Boolean> = MutableLiveData()
 
+    //todo проверить работает ли
     val enabledRollbackButton: MutableLiveData<Boolean> = countValue.map {
         (it ?: 0.0) > 0.0
     }
 
+    //todo проверить работает ли
     val enabledApplyButton: MutableLiveData<Boolean> = totalCount.map {
         (it ?: 0.0) >= (componentInfo.value!!.count).toDouble() * targetTotalCount.value!!
     }
@@ -66,6 +69,10 @@ class SetComponentsViewModel : CoreViewModel(), OnPositionClickListener {
             suffix.value = componentInfo.value?.uom?.name
             storePlaceNumber.value = componentInfo.value!!.placeCode
             topTitle.value = "${componentInfo.value!!.number.substring(componentInfo.value!!.number.length - 6)} ${componentInfo.value!!.name}"
+            if (isStamp.value!!) {
+                count.value = "1"
+                countValue.value = 1.0
+            }
         }
     }
 
@@ -109,8 +116,8 @@ class SetComponentsViewModel : CoreViewModel(), OnPositionClickListener {
             obtainingDataExciseGoodsNetRequest(
                     ExciseGoodsParams(
                             werks = sessionInfo.market.orEmpty(),
-                            materialNumber = componentInfo.value!!.number,
-                            materialNumberComp = "",
+                            materialNumber = componentInfo.value!!.setNumber,
+                            materialNumberComp = componentInfo.value!!.number,
                             stampCode = stampCode,
                             boxNumber = "",
                             manufacturerCode = "",

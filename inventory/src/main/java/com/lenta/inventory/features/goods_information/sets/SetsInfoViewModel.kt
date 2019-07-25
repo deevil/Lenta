@@ -5,10 +5,11 @@ import androidx.lifecycle.viewModelScope
 import com.lenta.inventory.features.goods_details_storage.ComponentItem
 import com.lenta.inventory.models.task.IInventoryTaskManager
 import com.lenta.inventory.models.task.ProcessSetsService
+import com.lenta.inventory.models.task.TaskExciseStamp
 import com.lenta.inventory.models.task.TaskProductInfo
 import com.lenta.inventory.platform.navigation.IScreenNavigator
-import com.lenta.inventory.requests.network.SetComponentsNetRequest
-import com.lenta.inventory.requests.network.SetComponentsRestInfo
+import com.lenta.inventory.requests.network.*
+import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.fmp.resources.slow.ZfmpUtz48V001
 import com.lenta.shared.models.core.MatrixType
@@ -24,6 +25,7 @@ import com.lenta.shared.utilities.extentions.toStringFormatted
 import com.lenta.shared.view.OnPositionClickListener
 import com.mobrun.plugin.api.HyperHive
 import kotlinx.coroutines.launch
+import java.math.BigInteger
 import javax.inject.Inject
 
 class SetsInfoViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboardListener {
@@ -32,36 +34,39 @@ class SetsInfoViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKe
     lateinit var screenNavigator: IScreenNavigator
 
     @Inject
+    lateinit var sessionInfo: ISessionInfo
+
+    @Inject
     lateinit var setComponentsNetRequest: SetComponentsNetRequest
 
     @Inject
     lateinit var processSetsService: ProcessSetsService
 
+    @Inject
+    lateinit var obtainingDataExciseGoodsNetRequest: ObtainingDataExciseGoodsNetRequest
+
+    @Inject
+    lateinit var alcoCodeNetRequest: AlcoCodeNetRequest
+
     val productInfo: MutableLiveData<TaskProductInfo> = MutableLiveData()
-
     private val componentsInfo : ArrayList<SetComponentInfo> = ArrayList()
-
     val titleProgressScreen: MutableLiveData<String> = MutableLiveData()
-
     val storePlaceNumber: MutableLiveData<String> = MutableLiveData()
-
     val isStorePlaceNumber: MutableLiveData<Boolean> = storePlaceNumber.map { it != "00" }
-
     var selectedPage = MutableLiveData(0)
-
     val componentsSelectionsHelper = SelectionItemsHelper()
-
     val searchCode: MutableLiveData<String> = MutableLiveData()
-
     val spinList: MutableLiveData<List<String>> = MutableLiveData()
-
     val selectedPosition: MutableLiveData<Int> = MutableLiveData(0)
-
     val count: MutableLiveData<String> = MutableLiveData("0")
-
     private val countValue: MutableLiveData<Double> = count.map { it?.toDoubleOrNull()?: 0.0 }
-
     val suffix: MutableLiveData<String> = MutableLiveData()
+    val stampAnotherProduct: MutableLiveData<String> = MutableLiveData()
+    val alcocodeNotFound: MutableLiveData<String> = MutableLiveData()
+    val componentNotFound: MutableLiveData<String> = MutableLiveData()
+    private val scannedStampCode: MutableLiveData<String> = MutableLiveData()
+    private var countRunRest = 0
+    private val arrExciseGoodsRestInfo: ArrayList<ExciseGoodsRestInfo> = ArrayList()
 
     private val totalCount: MutableLiveData<Double> by lazy {
         countValue.map {
@@ -90,6 +95,7 @@ class SetsInfoViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKe
 
     val enabledMissingButton: MutableLiveData<Boolean> = totalCount.map { it ?: 0.0 <= 0.0 }
 
+    //todo проверить работает ли
     val enabledApplyButton: MutableLiveData<Boolean> = componentsItem.map {
         var totalCountComponents = 0.0
         var totalCountExciseStampForComponents = 0
@@ -140,13 +146,13 @@ class SetsInfoViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKe
     }
 
     fun onClickMissing() {
-        //todo onClickMissing
-        screenNavigator.openAlertScreen("onClickMissing")
+        processSetsService.markMissing()
+        screenNavigator.goBack()
     }
 
     fun onClickApply() {
-        //todo onClickApply
-        screenNavigator.openAlertScreen("onClickApply")
+        processSetsService.apply()
+        screenNavigator.goBack()
     }
 
     fun onClickButton3() {
@@ -162,15 +168,130 @@ class SetsInfoViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKe
 
     private fun onClickDetails() {
         //todo onClickDetails
-        onScanResult("000000000000377980")
+        onScanResult("22N0000154KNI691XDC380V71231001511013ZZ012345678901234567890123456ZZ")
     }
 
     fun onScanResult(data: String) {
-        //scannedStampCode.value = data
+        scannedStampCode.value = data
         when (data.length) {
-            68, 150 -> screenNavigator.openSetComponentsScreen(componentInfo = componentsInfo[0], targetTotalCount = totalCount.value!!)
-            else -> screenNavigator.openSetComponentsScreen(componentInfo = componentsInfo[0], targetTotalCount = totalCount.value!!)
+            68 -> processPdf68(data)
+            150 -> processPdf150(data)
+            else -> processItemByBarcode(data)
         }
+    }
+
+    private fun processPdf150(stampCode: String){
+        if (processSetsService.isTaskAlreadyHasExciseStamp(stampCode)) {
+            screenNavigator.openAlertDoubleScanStamp()
+            return
+        }
+
+        countRunRest = 0
+        arrExciseGoodsRestInfo.clear()
+
+        viewModelScope.launch {
+            screenNavigator.showProgress(titleProgressScreen.value!!)
+            componentsInfo.map {componentInfo ->
+                obtainingDataExciseGoodsNetRequest(
+                        ExciseGoodsParams(
+                                werks = sessionInfo.market.orEmpty(),
+                                materialNumber = componentInfo.setNumber,
+                                materialNumberComp = componentInfo.number,
+                                stampCode = stampCode,
+                                boxNumber = "",
+                                manufacturerCode = "",
+                                bottlingDate = "",
+                                mode = "1",
+                                codeEBP = "INV",
+                                factCount = ""
+
+                        )).
+                        either(::handleFailure, ::processPdf150HandleSuccess)
+            }
+            screenNavigator.hideProgress()
+        }
+    }
+
+    private fun processPdf150HandleSuccess(exciseGoodsRestInfo: ExciseGoodsRestInfo){
+        if (exciseGoodsRestInfo.retCode != "0") {
+            screenNavigator.openAlertScreen(exciseGoodsRestInfo.errorTxt, pageNumber = "98")
+            return
+        }
+
+        if (countRunRest <= componentsInfo.size){
+            countRunRest += 1
+            arrExciseGoodsRestInfo.add(exciseGoodsRestInfo)
+        }
+        if (countRunRest == componentsInfo.size){
+            componentsInfo.forEachIndexed { index, setComponentInfo ->
+                if (arrExciseGoodsRestInfo[index].materialNumber == setComponentInfo.number){
+                    processSetsService.addCurrentComponentExciseStamps(
+                            TaskExciseStamp(
+                                    materialNumber = setComponentInfo.number,
+                                    code = scannedStampCode.value!!,
+                                    placeCode = setComponentInfo.placeCode,
+                                    setMaterialNumber = setComponentInfo.setNumber
+                            )
+                    )
+                    screenNavigator.openSetComponentsScreen(
+                                                    componentInfo = setComponentInfo,
+                                                    targetTotalCount = totalCount.value!!,
+                                                    isStamp = true)
+                    return
+                }
+            }
+            screenNavigator.openAlertScreen(stampAnotherProduct.value!!, pageNumber = "98")
+        }
+    }
+
+    private fun processPdf68(stampCode: String){
+        if (processSetsService.isTaskAlreadyHasExciseStamp(stampCode)) {
+            screenNavigator.openAlertDoubleScanStamp()
+            return
+        }
+
+        viewModelScope.launch {
+            screenNavigator.showProgress(titleProgressScreen.value!!)
+            alcoCodeNetRequest(null).either(::handleFailure, ::alcoCodeHandleSuccess)
+            screenNavigator.hideProgress()
+        }
+    }
+
+    private fun alcoCodeHandleSuccess(alcoCodeRestInfo: List<AlcoCodeRestInfo>){
+        componentsInfo.map {componentInfo ->
+            alcoCodeRestInfo[0].data.filter { data ->
+                data[1] == componentInfo.number &&
+                        (data[2] == BigInteger(scannedStampCode.value!!.substring(7,19), 36).toString().padStart(19,'0') ||
+                                data[2] == BigInteger(scannedStampCode.value!!.substring(7,19), 36).toString().padStart(20,'0'))
+            }.isNotEmpty().let {
+                //todo !it in it
+                if (!it) {
+                    processSetsService.addCurrentComponentExciseStamps(
+                            TaskExciseStamp(
+                                        materialNumber = componentInfo.number,
+                                        code = scannedStampCode.value!!,
+                                        placeCode = componentInfo.placeCode,
+                                        setMaterialNumber = componentInfo.setNumber
+                            )
+                    )
+                    screenNavigator.openSetComponentsScreen(componentInfo = componentInfo, targetTotalCount = totalCount.value!!, isStamp = true)
+                    return
+                }
+            }
+        }
+
+        screenNavigator.openAlertScreen(alcocodeNotFound.value!!, pageNumber = "98")
+    }
+
+    private fun processItemByBarcode(searchCode: String){
+        componentsInfo.filter {
+            it.number.substring(it.number.length - 6) == searchCode
+        }.map {componentInfo ->
+            screenNavigator.openSetComponentsScreen(componentInfo = componentInfo, targetTotalCount = totalCount.value!!, isStamp = false)
+            return
+        }
+
+        screenNavigator.openAlertScreen(componentNotFound.value!!, pageNumber = "98")
     }
 
     fun onPageSelected(position: Int) {
@@ -179,14 +300,11 @@ class SetsInfoViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKe
     }
 
     fun onBackPressed() {
-        //todo onBackPressed
-        return
-        //processExciseAlcoProductService.discard()
+        processSetsService.discard()
     }
 
     override fun onOkInSoftKeyboard(): Boolean {
-        //todo onOkInSoftKeyboard
-        //searchEANCode()
+        onScanResult(searchCode.value ?: "")
         return true
     }
 

@@ -46,6 +46,7 @@
 
         <EditText
             android:id="@+id/et_search"
+            android:visibility="invisible"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
@@ -65,7 +66,8 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/b_scan_es"
             app:layout_constraintStart_toStartOf="parent"
-            app:onOkInSoftKeyboard="@{vm}" />
+            app:onOkInSoftKeyboard="@{vm}"
+            tools:text="Введите SAP-код или штрихкод"/>
 
         <ImageButton
             android:id="@+id/b_scan_es"

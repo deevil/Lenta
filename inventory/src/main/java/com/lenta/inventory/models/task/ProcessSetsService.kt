@@ -135,6 +135,17 @@ class ProcessSetsService@Inject constructor() : IProcessProductService {
         currentComponentExciseStamps.clear()
     }
 
+    fun apply(){
+        taskRepository.getExciseStamps().addExciseStamps(currentAllExciseStamps)
+        currentAllExciseStamps.clear()
+        currentComponentExciseStamps.clear()
+    }
+
+    fun discard(){
+        currentAllExciseStamps.clear()
+        currentComponentExciseStamps.clear()
+    }
+
     fun isTaskAlreadyHasExciseStamp(stampCode: String): Boolean{
         return currentComponentExciseStamps.any { stamp ->
             stamp.code == stampCode

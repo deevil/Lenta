@@ -24,12 +24,14 @@ class SetComponentsFragment : CoreFragment<FragmentSetComponentsBinding, SetComp
 
     private var targetTotalCount by state<Double?>(null)
     private var componentInfo by state<SetComponentInfo?>(null)
+    private var isStamp = false
 
     companion object {
-        fun create(componentInfo: SetComponentInfo, targetTotalCount: Double): SetComponentsFragment {
+        fun create(componentInfo: SetComponentInfo, targetTotalCount: Double, isStamp: Boolean = false): SetComponentsFragment {
             SetComponentsFragment().let {
                 it.targetTotalCount = targetTotalCount
                 it.componentInfo = componentInfo
+                it.isStamp = isStamp
                 return it
             }
         }
@@ -45,6 +47,7 @@ class SetComponentsFragment : CoreFragment<FragmentSetComponentsBinding, SetComp
             getAppComponent()?.inject(vm)
             vm.targetTotalCount.value = targetTotalCount
             vm.componentInfo.value = componentInfo
+            vm.isStamp.value = isStamp
             vm.limitExceeded.value = getString(R.string.limit_exceeded)
             vm.spinList.value = listOf(getString(R.string.quantity))
             vm.titleProgressScreen.value = getString(R.string.data_loading)
