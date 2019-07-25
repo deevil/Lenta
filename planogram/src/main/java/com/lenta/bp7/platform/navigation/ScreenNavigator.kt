@@ -177,6 +177,15 @@ class ScreenNavigator(
                     rightButtonDecorationInfo = ButtonDecorationInfo.delete))
         }
     }
+
+    override fun showNoShelvesInSegmentToSave(segment: String, confirmCallback: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.no_shelves_in_segment_to_save, segment),
+                    pageNumber = "48",
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(confirmCallback),
+                    rightButtonDecorationInfo = ButtonDecorationInfo.confirm))
+        }
+    }
 }
 
 interface IScreenNavigator : ICoreNavigator {
@@ -200,5 +209,6 @@ interface IScreenNavigator : ICoreNavigator {
     fun showIsEmptyPlaceDecoratedCorrectly(sap: String, name: String, segment: String, shelf: String, noCallback: () -> Unit, yesCallback: () -> Unit)
     fun showBeganProcessingSegment(segment: String, facings: Boolean, afterShowCallback: () -> Unit)
     fun showDeleteDataOnSegment(store: String, segment: String, deleteCallback: () -> Unit)
+    fun showNoShelvesInSegmentToSave(segment: String, confirmCallback: () -> Unit)
 
 }

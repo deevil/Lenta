@@ -105,11 +105,11 @@ class ShelfListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
         }
 
         if (shelves.value?.isEmpty() == true) {
-            // todo ЭКРАН в сегменте отсутствуют полки, сегмент не будет сохранен
-
-            // !Перенести на другой экран
-            checkData.deleteCurrentSegment()
-            navigator.goBack()
+            // Подтверждение - В сегменте отсутствуют полки для сохранения. Сегмент не будет сохранен - Назад / Подтвердить
+            navigator.showNoShelvesInSegmentToSave(segmentNumber.value!!) {
+                checkData.deleteCurrentSegment()
+                navigator.openSegmentListScreen()
+            }
         } else {
             // Сегмен остается незавершенным
             navigator.openSegmentListScreen()

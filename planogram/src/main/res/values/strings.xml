@@ -30,6 +30,7 @@
     <string name="began_segment_with_facings">Начата обработка сегмента\n№%1$s с подсчетом количества фейсингов</string>
     <string name="began_segment_without_facings">Начата обработка сегмента\n№%1$s без подсчета количества фейсингов</string>
     <string name="delete_data_on_segment">ТК № %1$s\nСЕГМЕНТ № %2$s\n\nУдалить данные по сегменту?</string>
+    <string name="no_shelves_in_segment_to_save">СЕГМЕНТ № %1$s\n\nВ сегменте отсутствуют полки для сохранения. Сегмент не будет сохранен</string>
 
 
     <!-- Заголовки экранов -->
