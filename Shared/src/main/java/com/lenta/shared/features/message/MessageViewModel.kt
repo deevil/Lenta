@@ -85,10 +85,7 @@ open class MessageViewModel : CoreViewModel() {
     }
 
     fun onBackPressed(): Boolean {
-        if (codeConfirmForExit == null) {
-            return true
-        }
-        coreNavigator.goBackWithResultCode(codeConfirmForExit!!)
+        coreNavigator.goBackWithResultCode(codeConfirmForExit)
         return false
 
     }
