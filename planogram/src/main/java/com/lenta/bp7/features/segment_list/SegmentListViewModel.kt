@@ -44,6 +44,10 @@ class SegmentListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
         }
     }
 
+    fun updateSegmentList() {
+        segments.value = checkData.segments
+    }
+
     override fun onOkInSoftKeyboard(): Boolean {
         createSegment()
         return true
@@ -59,8 +63,10 @@ class SegmentListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
         } else {
             if (segmentNumber.value?.length == SEGMENT_NUMBER_LENGTH) {
                 // Сообщение - Начата обработка сегмента
-                navigator.showSegmentStarted(segmentNumber.value!!, checkData.countFacings) {
-                    checkData.addSegment(sessionInfo.market!!, segmentNumber.value!!)
+                navigator.showSegmentStarted(
+                        segmentNumber = segmentNumber.value!!,
+                        isFacings = checkData.countFacings) {
+                    checkData.addSegment(sessionInfo.market ?: "Not found!", segmentNumber.value!!)
                     navigator.openShelfListScreen()
                 }
             }

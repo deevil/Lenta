@@ -117,36 +117,36 @@ class ScreenNavigator(
     }
 
 
-    override fun showShelfDataWillNotBeSaved(segment: String, shelf: String, confirmCallback: () -> Unit) {
+    override fun showShelfDataWillNotBeSaved(segmentNumber: String, shelfNumber: String, confirmCallback: () -> Unit) {
         runOrPostpone {
-            getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.shelf_data_will_not_be_saved, segment, shelf),
+            getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.shelf_data_will_not_be_saved, segmentNumber, shelfNumber),
                     pageNumber = "44",
                     codeConfirmForRight = backFragmentResultHelper.setFuncForResult(confirmCallback),
                     rightButtonDecorationInfo = ButtonDecorationInfo.confirm))
         }
     }
 
-    override fun showSaveShelfScanResults(segment: String, shelf: String, yesCallback: () -> Unit) {
+    override fun showSaveShelfScanResults(segmentNumber: String, shelfNumber: String, yesCallback: () -> Unit) {
         runOrPostpone {
-            getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.save_shelf_scan_results, segment, shelf),
+            getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.save_shelf_scan_results, segmentNumber, shelfNumber),
                     pageNumber = "21",
                     codeConfirmForRight = backFragmentResultHelper.setFuncForResult(yesCallback),
                     rightButtonDecorationInfo = ButtonDecorationInfo.yes))
         }
     }
 
-    override fun showSaveSegmentScanResults(segment: String, yesCallback: () -> Unit) {
+    override fun showSaveSegmentScanResults(segmentNumber: String, yesCallback: () -> Unit) {
         runOrPostpone {
-            getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.save_segment_scan_results, segment),
+            getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.save_segment_scan_results, segmentNumber),
                     pageNumber = "23",
                     codeConfirmForRight = backFragmentResultHelper.setFuncForResult(yesCallback),
                     rightButtonDecorationInfo = ButtonDecorationInfo.yes))
         }
     }
 
-    override fun showIsEmptyPlaceDecoratedCorrectly(sap: String, name: String, segment: String, shelf: String, noCallback: () -> Unit, yesCallback: () -> Unit) {
+    override fun showIsEmptyPlaceDecoratedCorrectly(sapCode: String, name: String, segmentNumber: String, shelfNumber: String, noCallback: () -> Unit, yesCallback: () -> Unit) {
         runOrPostpone {
-            getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.is_empty_place_decorated_correctly, sap, name, segment, shelf),
+            getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.is_empty_place_decorated_correctly, sapCode, name, segmentNumber, shelfNumber),
                     pageNumber = "16",
                     codeConfirmForButton4 = backFragmentResultHelper.setFuncForResult(noCallback),
                     codeConfirmForRight = backFragmentResultHelper.setFuncForResult(yesCallback),
@@ -155,36 +155,36 @@ class ScreenNavigator(
         }
     }
 
-    override fun showSegmentStarted(segment: String, facings: Boolean, afterShowCallback: () -> Unit) {
+    override fun showSegmentStarted(segmentNumber: String, isFacings: Boolean, afterShowCallback: () -> Unit) {
         runOrPostpone {
-            getFragmentStack()?.push(AlertFragment.create(message = context.getString(if (facings) R.string.segment_started_with_facings else R.string.segment_started_without_facings, segment),
+            getFragmentStack()?.push(AlertFragment.create(message = context.getString(if (isFacings) R.string.segment_started_with_facings else R.string.segment_started_without_facings, segmentNumber),
                     pageNumber = "9",
                     codeConfirmForExit = backFragmentResultHelper.setFuncForResult(afterShowCallback),
                     timeAutoExitInMillis = 2000))
         }
     }
 
-    override fun showShelfStarted(segment: String, shelf: String, afterShowCallback: () -> Unit) {
+    override fun showShelfStarted(segmentNumber: String, shelfNumber: String, afterShowCallback: () -> Unit) {
         runOrPostpone {
-            getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.shelf_started, segment, shelf),
+            getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.shelf_started, segmentNumber, shelfNumber),
                     pageNumber = "11",
                     codeConfirmForExit = backFragmentResultHelper.setFuncForResult(afterShowCallback),
                     timeAutoExitInMillis = 2000))
         }
     }
 
-    override fun showDeleteDataOnSegment(store: String, segment: String, deleteCallback: () -> Unit) {
+    override fun showDeleteDataOnSegment(storeNumber: String, segmentNumber: String, deleteCallback: () -> Unit) {
         runOrPostpone {
-            getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.delete_data_on_segment, store, segment),
+            getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.delete_data_on_segment, storeNumber, segmentNumber),
                     pageNumber = "53",
                     codeConfirmForRight = backFragmentResultHelper.setFuncForResult(deleteCallback),
                     rightButtonDecorationInfo = ButtonDecorationInfo.delete))
         }
     }
 
-    override fun showNoShelvesInSegmentToSave(segment: String, confirmCallback: () -> Unit) {
+    override fun showNoShelvesInSegmentToSave(segmentNumber: String, confirmCallback: () -> Unit) {
         runOrPostpone {
-            getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.no_shelves_in_segment_to_save, segment),
+            getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.no_shelves_in_segment_to_save, segmentNumber),
                     pageNumber = "48",
                     codeConfirmForRight = backFragmentResultHelper.setFuncForResult(confirmCallback),
                     rightButtonDecorationInfo = ButtonDecorationInfo.confirm))
@@ -228,6 +228,15 @@ class ScreenNavigator(
                     rightButtonDecorationInfo = ButtonDecorationInfo.barcode))
         }
     }
+
+    override fun showUnknownGoodBarcode(barCode: String, yesCallback: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.unknown_good_barcode, barCode),
+                    pageNumber = "41",
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(yesCallback),
+                    rightButtonDecorationInfo = ButtonDecorationInfo.yes))
+        }
+    }
 }
 
 interface IScreenNavigator : ICoreNavigator {
@@ -245,17 +254,18 @@ interface IScreenNavigator : ICoreNavigator {
     fun openGoodInfoFacingScreen()
     fun openGoodInfoScreen()
 
-    fun showShelfDataWillNotBeSaved(segment: String, shelf: String, confirmCallback: () -> Unit)
-    fun showSaveShelfScanResults(segment: String, shelf: String, yesCallback: () -> Unit)
-    fun showSaveSegmentScanResults(segment: String, yesCallback: () -> Unit)
-    fun showIsEmptyPlaceDecoratedCorrectly(sap: String, name: String, segment: String, shelf: String, noCallback: () -> Unit, yesCallback: () -> Unit)
-    fun showSegmentStarted(segment: String, facings: Boolean, afterShowCallback: () -> Unit)
-    fun showShelfStarted(segment: String, shelf: String, afterShowCallback: () -> Unit)
-    fun showDeleteDataOnSegment(store: String, segment: String, deleteCallback: () -> Unit)
-    fun showNoShelvesInSegmentToSave(segment: String, confirmCallback: () -> Unit)
+    fun showShelfDataWillNotBeSaved(segmentNumber: String, shelfNumber: String, confirmCallback: () -> Unit)
+    fun showSaveShelfScanResults(segmentNumber: String, shelfNumber: String, yesCallback: () -> Unit)
+    fun showSaveSegmentScanResults(segmentNumber: String, yesCallback: () -> Unit)
+    fun showIsEmptyPlaceDecoratedCorrectly(sapCode: String, name: String, segmentNumber: String, shelfNumber: String, noCallback: () -> Unit, yesCallback: () -> Unit)
+    fun showSegmentStarted(segmentNumber: String, isFacings: Boolean, afterShowCallback: () -> Unit)
+    fun showShelfStarted(segmentNumber: String, shelfNumber: String, afterShowCallback: () -> Unit)
+    fun showDeleteDataOnSegment(storeNumber: String, segmentNumber: String, deleteCallback: () -> Unit)
+    fun showNoShelvesInSegmentToSave(segmentNumber: String, confirmCallback: () -> Unit)
     fun showIncompleteSegmentDetected(goOverCallback: () -> Unit)
     fun showUnsavedSelfControlDataDetected(goOverCallback: () -> Unit)
     fun showUnsavedExternalAuditDataDetected(goOverCallback: () -> Unit)
     fun showTwelveCharactersEntered(sapCallback: () -> Unit, barCallback: () -> Unit)
+    fun showUnknownGoodBarcode(barCode: String, yesCallback: () -> Unit)
 
 }

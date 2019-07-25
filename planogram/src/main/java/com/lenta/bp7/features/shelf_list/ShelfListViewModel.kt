@@ -34,26 +34,26 @@ class ShelfListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     val numberFieldEnabled: MutableLiveData<Boolean> = MutableLiveData(false)
 
     val deleteButtonEnabled: MutableLiveData<Boolean> = shelves.map {
-        it?.isNotEmpty() ?: false && checkData.getCurrentSegment().status != SegmentStatus.DELETED
+        it?.isNotEmpty() ?: false && checkData.getCurrentSegment()?.status != SegmentStatus.DELETED
     }
 
     val applyButtonEnabled: MutableLiveData<Boolean> = shelves.map {
-        it?.isNotEmpty() ?: false && checkData.getCurrentSegment().status == SegmentStatus.UNFINISHED &&
+        it?.isNotEmpty() ?: false && checkData.getCurrentSegment()?.status == SegmentStatus.UNFINISHED &&
                 it?.find { shelf -> shelf.status == ShelfStatus.PROCESSED } != null
     }
 
     init {
         viewModelScope.launch {
             checkData.let {
-                segmentNumber.value = it.getCurrentSegment().number
-                shelves.value = it.getCurrentSegment().shelves
-                numberFieldEnabled.value = it.getCurrentSegment().status == SegmentStatus.UNFINISHED
+                segmentNumber.value = it.getCurrentSegment()?.number
+                shelves.value = it.getCurrentSegment()?.shelves
+                numberFieldEnabled.value = it.getCurrentSegment()?.status == SegmentStatus.UNFINISHED
             }
         }
     }
 
     fun updateShelfList() {
-        shelves.value = checkData.getCurrentSegment().shelves
+        shelves.value = checkData.getCurrentSegment()?.shelves
     }
 
     override fun onOkInSoftKeyboard(): Boolean {
@@ -64,7 +64,9 @@ class ShelfListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     private fun createShelf() {
         if (shelfNumber.value?.isNotEmpty() == true) {
             // Сообщение - Начата обработка полки
-            navigator.showShelfStarted(segmentNumber.value!!, shelfNumber.value!!) {
+            navigator.showShelfStarted(
+                    segmentNumber = segmentNumber.value!!,
+                    shelfNumber = shelfNumber.value!!) {
                 checkData.addShelf(shelfNumber.value!!)
                 navigator.openGoodListScreen()
             }
@@ -76,15 +78,17 @@ class ShelfListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
             val items = it.selectedPositions.value?.toMutableSet()
             if (items?.isEmpty() == true) {
                 // Подтверждение - Удалить данные по сегменту? - Назад / Удалить
-                navigator.showDeleteDataOnSegment(checkData.getCurrentSegment().storeNumber, segmentNumber.value!!) {
-                    checkData.getCurrentSegment().status = SegmentStatus.DELETED
+                navigator.showDeleteDataOnSegment(
+                        storeNumber = checkData.getCurrentSegment()!!.storeNumber,
+                        segmentNumber = segmentNumber.value!!) {
+                    checkData.getCurrentSegment()?.status = SegmentStatus.DELETED
                     navigator.openSegmentListScreen()
                 }
             } else {
                 items!!.forEach { index ->
                     it.revert(index)
                     checkData.setShelfStatusDeletedByIndex(index)
-                    shelves.value = checkData.getCurrentSegment().shelves
+                    updateShelfList()
                 }
             }
         }
@@ -93,7 +97,7 @@ class ShelfListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     fun onClickApply() {
         // Подтверждение - Сохранить результаты сканирования сегмента, закрыть его для редактирования и переслать? - Назад / Да
         navigator.showSaveSegmentScanResults(segmentNumber.value!!) {
-            checkData.getCurrentSegment().status = SegmentStatus.PROCESSED
+            checkData.getCurrentSegment()?.status = SegmentStatus.PROCESSED
 
             // TODO сюда добавить логику отправки сегмента на сервер
 
@@ -102,14 +106,15 @@ class ShelfListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     }
 
     fun onClickBack() {
-        if (checkData.getCurrentSegment().status != SegmentStatus.UNFINISHED) {
+        if (checkData.getCurrentSegment()?.status != SegmentStatus.UNFINISHED) {
             navigator.goBack()
             return
         }
 
         if (shelves.value?.isEmpty() == true) {
             // Подтверждение - В сегменте отсутствуют полки для сохранения. Сегмент не будет сохранен - Назад / Подтвердить
-            navigator.showNoShelvesInSegmentToSave(segmentNumber.value!!) {
+            navigator.showNoShelvesInSegmentToSave(
+                    segmentNumber = segmentNumber.value!!) {
                 checkData.deleteCurrentSegment()
                 navigator.openSegmentListScreen()
             }

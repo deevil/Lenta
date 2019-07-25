@@ -37,10 +37,10 @@ class GoodInfoViewModel : CoreViewModel() {
         if (checkData.checkEmptyPlaces) {
             // Выбор - Пустое место оформлено правильно? - Назад / Нет / Да
             navigator.showIsEmptyPlaceDecoratedCorrectly(
-                    sap = good.value?.getFormattedSapCode()!!,
-                    name = good.value?.name!!,
-                    segment = checkData.getCurrentSegment().number,
-                    shelf = checkData.getCurrentShelf().number,
+                    sapCode = good.value?.getFormattedSapCode() ?: "Not found!",
+                    name = good.value?.name ?: "Not found!",
+                    segmentNumber = checkData.getCurrentSegment()!!.number,
+                    shelfNumber = checkData.getCurrentShelf()!!.number,
                     noCallback = {
                         checkData.setCurrentGoodStatus(GoodStatus.MISSING_WRONG)
                         navigator.openGoodListScreen()
@@ -62,7 +62,7 @@ class GoodInfoViewModel : CoreViewModel() {
     }
 
     fun onClickBack() {
-        if (checkData.getCurrentGood().status == GoodStatus.CREATED) {
+        if (checkData.getCurrentGood()?.status == GoodStatus.CREATED) {
             checkData.deleteCurrentGood()
         }
         navigator.openGoodListScreen()
