@@ -61,13 +61,10 @@ class SegmentListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
         if (segmentNumber.value?.length == SEGMENT_NUMBER_LENGTH) {
             // Сообщение - Начата обработка сегмента
-            /*navigator.showBeganProcessingSegment(segmentNumber.value!!, checkData.countFacings){
+            navigator.showBeganProcessingSegment(segmentNumber.value!!, checkData.countFacings){
                 checkData.addSegment(sessionInfo.market!!, segmentNumber.value!!)
                 navigator.openShelfListScreen()
-            }*/
-
-            checkData.addSegment(sessionInfo.market!!, segmentNumber.value!!)
-            navigator.openShelfListScreen()
+            }
         }
     }
 
