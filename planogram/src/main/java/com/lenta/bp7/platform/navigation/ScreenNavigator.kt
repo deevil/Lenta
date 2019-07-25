@@ -160,7 +160,7 @@ class ScreenNavigator(
             getFragmentStack()?.push(AlertFragment.create(message = context.getString(if (facings) R.string.segment_started_with_facings else R.string.segment_started_without_facings, segment),
                     pageNumber = "9",
                     codeConfirmForExit = backFragmentResultHelper.setFuncForResult(afterShowCallback),
-                    timeAutoExitInMillis = 3000))
+                    timeAutoExitInMillis = 2000))
         }
     }
 
@@ -169,7 +169,7 @@ class ScreenNavigator(
             getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.shelf_started, segment, shelf),
                     pageNumber = "11",
                     codeConfirmForExit = backFragmentResultHelper.setFuncForResult(afterShowCallback),
-                    timeAutoExitInMillis = 3000))
+                    timeAutoExitInMillis = 2000))
         }
     }
 
@@ -217,6 +217,17 @@ class ScreenNavigator(
                     rightButtonDecorationInfo = ButtonDecorationInfo.goOver))
         }
     }
+
+    override fun showTwelveCharactersEntered(sapCallback: () -> Unit, barCallback: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.twelve_characters_entered),
+                    pageNumber = "40",
+                    codeConfirmForLeft = backFragmentResultHelper.setFuncForResult(sapCallback),
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(barCallback),
+                    leftButtonDecorationInfo = ButtonDecorationInfo.sap,
+                    rightButtonDecorationInfo = ButtonDecorationInfo.barcode))
+        }
+    }
 }
 
 interface IScreenNavigator : ICoreNavigator {
@@ -245,5 +256,6 @@ interface IScreenNavigator : ICoreNavigator {
     fun showIncompleteSegmentDetected(goOverCallback: () -> Unit)
     fun showUnsavedSelfControlDataDetected(goOverCallback: () -> Unit)
     fun showUnsavedExternalAuditDataDetected(goOverCallback: () -> Unit)
+    fun showTwelveCharactersEntered(sapCallback: () -> Unit, barCallback: () -> Unit)
 
 }

@@ -61,17 +61,15 @@ class GoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     private fun checkEnteredNumber() {
         goodNumber.value.let { number ->
             if (number?.isNotEmpty() == true && number.length >= 6) {
-                if (number.length == SAP_LENGTH) {
-                    createGoodBySapCode()
-                }
-
-                if (number.length == SAP_OR_BAR_LENGTH) {
-                    // todo ЭКРАН выбора типа введенного кода
-
-                }
-
-                if (number.length > SAP_LENGTH) {
-                    createGoodByBarCode()
+                when (number.length) {
+                    SAP_LENGTH -> createGoodBySapCode()
+                    SAP_OR_BAR_LENGTH -> {
+                        // Выбор - Введено 12 знаков. Какой код вы ввели? - SAP-код / Штрихкод
+                        navigator.showTwelveCharactersEntered(
+                                sapCallback = ::createGoodBySapCode,
+                                barCallback = ::createGoodByBarCode)
+                    }
+                    else -> createGoodByBarCode()
                 }
             }
         }

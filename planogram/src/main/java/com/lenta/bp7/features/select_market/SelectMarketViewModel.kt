@@ -94,7 +94,7 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
         // TODO Реализовать логику проверки несохраненных данных
         // После того как будет сделано хранение данных
 
-        val unsavedData = true
+        val unsavedData = false
         checkData.checkType = CheckType.EXTERNAL_AUDIT
 
         if (unsavedData) {
@@ -113,8 +113,9 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
                 }
             }
         } else {
-            navigator.openCheckTypeScreen()
-            //navigator.openSegmentListScreen()
+            // TODO Для простоты тестирования
+            //navigator.openCheckTypeScreen()
+            navigator.openSegmentListScreen()
         }
     }
 
