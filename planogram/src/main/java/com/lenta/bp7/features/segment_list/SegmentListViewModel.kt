@@ -59,13 +59,10 @@ class SegmentListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
         } else {
             if (segmentNumber.value?.length == SEGMENT_NUMBER_LENGTH) {
                 // Сообщение - Начата обработка сегмента
-                /*navigator.showSegmentStarted(segmentNumber.value!!, checkData.countFacings){
+                navigator.showSegmentStarted(segmentNumber.value!!, checkData.countFacings){
                     checkData.addSegment(sessionInfo.market!!, segmentNumber.value!!)
                     navigator.openShelfListScreen()
-                }*/
-
-                checkData.addSegment(sessionInfo.market!!, segmentNumber.value!!)
-                navigator.openShelfListScreen()
+                }
             }
         }
     }
