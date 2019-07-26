@@ -1,19 +1,59 @@
 package com.lenta.shared.platform.activity.main_activity
 
+import androidx.lifecycle.viewModelScope
+import com.lenta.shared.auto_exit.AutoExitManager
 import com.lenta.shared.features.loading.ICoreLoadingViewModel
 import com.lenta.shared.features.loading.TimerLoadingViewModel
+import com.lenta.shared.fmp.resources.dao_ext.getAutoExitTimeInMinutes
+import com.lenta.shared.fmp.resources.fast.ZmpUtz14V001
+import com.lenta.shared.platform.navigation.ICoreNavigator
 import com.lenta.shared.platform.statusbar.StatusBarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
+import com.lenta.shared.utilities.Logg
+import com.mobrun.plugin.api.HyperHive
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
 abstract class CoreMainViewModel : CoreViewModel() {
     abstract var statusBarUiModel: StatusBarUiModel
+    @Inject
+    lateinit var coreNavigator: ICoreNavigator
+    @Inject
+    lateinit var hyperHive: HyperHive
+    val zmpUtz14V001: ZmpUtz14V001 by lazy { ZmpUtz14V001(hyperHive) }
     val topToolbarUiModel: TopToolbarUiModel = TopToolbarUiModel()
     val bottomToolbarUiModel: BottomToolbarUiModel = BottomToolbarUiModel()
     val loadingViewModel: ICoreLoadingViewModel = TimerLoadingViewModel()
+    var autoExitManager: AutoExitManager? = null
     abstract fun onNewEnter()
     abstract fun showSimpleProgress(title: String)
     abstract fun hideProgress()
-    abstract fun onPause()
+
+    open fun onPause() {
+        autoExitManager?.setLastActiveTime()
+    }
+
+    fun onResume() {
+        autoExitManager?.checkLastTime()
+    }
+
+    init {
+        viewModelScope.launch {
+            autoExitManager = AutoExitManager {
+                coreNavigator.finishApp(restart = true)
+            }.apply {
+                autoExitTimeInMinutes = withContext(Dispatchers.IO) {
+                    return@withContext zmpUtz14V001.getAutoExitTimeInMinutes().apply {
+                        Logg.d { "autoExitTimeInMinutes: $this" }
+                    }
+                }
+            }
+
+        }
+    }
+
 }

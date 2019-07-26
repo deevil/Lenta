@@ -53,7 +53,9 @@ class MainViewModel : CoreMainViewModel() {
 
 
     override fun onPause() {
-
+        super.onPause()
+        //TODO реализовать сохранение задачи
+        //persistWriteOffTask.saveWriteOffTask(writeOffTaskManager.getWriteOffTask())
     }
 
 
