@@ -48,6 +48,8 @@ class SetsInfoViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKe
     @Inject
     lateinit var alcoCodeNetRequest: AlcoCodeNetRequest
 
+    val iconRes: MutableLiveData<Int> = MutableLiveData(0)
+    val textColor: MutableLiveData<Int> = MutableLiveData(0)
     val productInfo: MutableLiveData<TaskProductInfo> = MutableLiveData()
     private val componentsInfo : ArrayList<SetComponentInfo> = ArrayList()
     val titleProgressScreen: MutableLiveData<String> = MutableLiveData()
@@ -212,7 +214,7 @@ class SetsInfoViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKe
 
     private fun processPdf150HandleSuccess(exciseGoodsRestInfo: ExciseGoodsRestInfo){
         if (exciseGoodsRestInfo.retCode != "0") {
-            screenNavigator.openAlertScreen(exciseGoodsRestInfo.errorTxt, pageNumber = "98")
+            screenNavigator.openAlertScreen(exciseGoodsRestInfo.errorTxt, iconRes = iconRes.value!!, textColor = textColor.value, pageNumber = "98")
             return
         }
 
@@ -225,7 +227,7 @@ class SetsInfoViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKe
                 if (arrExciseGoodsRestInfo[index].materialNumber == setComponentInfo.number){
                     val countExciseStampForComponent = processSetsService.getCountExciseStampsForComponent(setComponentInfo)
                     if (countExciseStampForComponent >= (setComponentInfo.count).toDouble() * totalCount.value!!){
-                        screenNavigator.openAlertScreen(limitExceeded.value!!, pageNumber = "98")
+                        screenNavigator.openAlertScreen(limitExceeded.value!!, iconRes = iconRes.value!!, textColor = textColor.value, pageNumber = "98")
                     }
                     else{
                         processSetsService.addCurrentComponentExciseStamps(
@@ -244,7 +246,7 @@ class SetsInfoViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKe
                     return
                 }
             }
-            screenNavigator.openAlertScreen(stampAnotherProduct.value!!, pageNumber = "98")
+            screenNavigator.openAlertScreen(stampAnotherProduct.value!!, iconRes = iconRes.value!!, textColor = textColor.value, pageNumber = "98")
         }
     }
 
@@ -271,7 +273,7 @@ class SetsInfoViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKe
                 if (it) {
                     val countExciseStampForComponent = processSetsService.getCountExciseStampsForComponent(componentInfo)
                     if (countExciseStampForComponent >= (componentInfo.count).toDouble() * totalCount.value!!){
-                        screenNavigator.openAlertScreen("${limitExceeded.value!!} (${componentInfo.number.substring(componentInfo.number.length - 6)})", pageNumber = "98")
+                        screenNavigator.openAlertScreen("${limitExceeded.value!!} (${componentInfo.number.substring(componentInfo.number.length - 6)})", iconRes = iconRes.value!!, textColor = textColor.value, pageNumber = "98")
                     }
                     else{
                         processSetsService.addCurrentComponentExciseStamps(
@@ -289,7 +291,7 @@ class SetsInfoViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKe
             }
         }
 
-        screenNavigator.openAlertScreen(alcocodeNotFound.value!!, pageNumber = "98")
+        screenNavigator.openAlertScreen(alcocodeNotFound.value!!, iconRes = iconRes.value!!, textColor = textColor.value, pageNumber = "98")
     }
 
     private fun processItemByBarcode(searchCode: String){
@@ -298,7 +300,7 @@ class SetsInfoViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKe
         }.map {componentInfo ->
             val countExciseStampForComponent = processSetsService.getCountExciseStampsForComponent(componentInfo)
             if (countExciseStampForComponent >= (componentInfo.count).toDouble() * totalCount.value!!){
-                screenNavigator.openAlertScreen("${limitExceeded.value!!} ($searchCode)", pageNumber = "98")
+                screenNavigator.openAlertScreen("${limitExceeded.value!!} ($searchCode)", iconRes = iconRes.value!!, textColor = textColor.value, pageNumber = "98")
             }
             else{
                 screenNavigator.openSetComponentsScreen(componentInfo = componentInfo, targetTotalCount = totalCount.value!!, isStamp = false)
@@ -306,7 +308,7 @@ class SetsInfoViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKe
             return
         }
 
-        screenNavigator.openAlertScreen(componentNotFound.value!!, pageNumber = "98")
+        screenNavigator.openAlertScreen(componentNotFound.value!!, iconRes = iconRes.value!!, textColor = textColor.value, pageNumber = "98")
     }
 
     fun onPageSelected(position: Int) {

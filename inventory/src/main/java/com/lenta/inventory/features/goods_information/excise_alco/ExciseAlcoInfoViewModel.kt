@@ -15,7 +15,6 @@ import com.lenta.shared.exception.Failure
 import com.lenta.shared.models.core.Manufacturer
 import com.lenta.shared.models.core.ProductType
 import com.lenta.shared.platform.viewmodel.CoreViewModel
-import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.toStringFormatted
