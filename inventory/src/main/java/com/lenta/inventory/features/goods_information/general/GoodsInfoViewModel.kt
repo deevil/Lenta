@@ -47,6 +47,8 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
 
     val suffix: MutableLiveData<String> = MutableLiveData()
 
+    val enabledMissingButton: MutableLiveData<Boolean> = totalCount.map { it ?: 0.0 <= 0.0 }
+
     val enabledApplyButton: MutableLiveData<Boolean> = countValue.combineLatest(totalCount).map {
         it!!.first != 0.0 && it.second >= 0.0
     }
