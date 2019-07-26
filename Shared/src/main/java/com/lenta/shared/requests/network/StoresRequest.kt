@@ -6,6 +6,7 @@ import com.lenta.shared.fmp.ObjectRawStatus
 import com.lenta.shared.functional.Either
 import com.lenta.shared.interactor.UseCase
 import com.lenta.shared.requests.FmpRequestsHelper
+import com.lenta.shared.requests.SapResponse
 import javax.inject.Inject
 
 
@@ -22,10 +23,10 @@ data class StoresRequestResult(
         @SerializedName("ET_WERKS")
         val markets: List<Market>,
         @SerializedName("EV_ERROR_TEXT")
-        val errorText: String,
+        override val errorText: String?,
         @SerializedName("EV_RETCODE")
-        val retCode: String
-)
+        override val retCode: Int
+) : SapResponse
 
 data class Market(
         @SerializedName("WERKS")
