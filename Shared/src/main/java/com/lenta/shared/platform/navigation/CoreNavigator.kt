@@ -279,7 +279,6 @@ class CoreNavigator constructor(private val context: Context,
     }
 
     override fun openNotImplementedScreenAlert(screenName: String) {
-        //TODO изменить реализацию метода после создания экрана
         openInfoScreen(context.getString(R.string.not_implemented_screen, screenName))
 
     }
