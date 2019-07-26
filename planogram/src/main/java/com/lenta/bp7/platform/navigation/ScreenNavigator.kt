@@ -259,6 +259,55 @@ class ScreenNavigator(
                     rightButtonDecorationInfo = ButtonDecorationInfo.create))
         }
     }
+
+    override fun showSuccessfullySavedToLua(afterShowCallback: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.successfully_saved_to_lua),
+                    pageNumber = "24",
+                    codeConfirmForExit = backFragmentResultHelper.setFuncForResult(afterShowCallback),
+                    timeAutoExitInMillis = 2000))
+        }
+    }
+
+    override fun showErrorSavingToLua(afterShowCallback: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.error_saving_to_lua),
+                    pageNumber = "61",
+                    codeConfirmForExit = backFragmentResultHelper.setFuncForResult(afterShowCallback),
+                    timeAutoExitInMillis = 2000))
+        }
+    }
+
+    override fun showLuaSystemUnavailable(exitCallback: () -> Unit, nextCallback: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.lua_system_unavailable),
+                    pageNumber = "59",
+                    codeConfirmForLeft = backFragmentResultHelper.setFuncForResult(exitCallback),
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(nextCallback),
+                    leftButtonDecorationInfo = ButtonDecorationInfo.exit,
+                    rightButtonDecorationInfo = ButtonDecorationInfo.next))
+        }
+    }
+
+    override fun showUnsentDataDetected(exitToAppCallback: () -> Unit, goOverCallback: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.unsent_data_detected),
+                    pageNumber = "65",
+                    codeConfirmForButton4 = backFragmentResultHelper.setFuncForResult(exitToAppCallback),
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(goOverCallback),
+                    buttonDecorationInfo4 = ButtonDecorationInfo.exitToApp,
+                    rightButtonDecorationInfo = ButtonDecorationInfo.goOver))
+        }
+    }
+
+    override fun showUnsavedDataDetected(confirmCallback: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.unsaved_data_detected),
+                    pageNumber = "80",
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(confirmCallback),
+                    rightButtonDecorationInfo = ButtonDecorationInfo.confirm))
+        }
+    }
 }
 
 interface IScreenNavigator : ICoreNavigator {
@@ -291,5 +340,10 @@ interface IScreenNavigator : ICoreNavigator {
     fun showUnknownGoodBarcode(barCode: String, yesCallback: () -> Unit)
     fun showShelfIsDeleted(reviewCallback: () -> Unit, createCallback: () -> Unit)
     fun showSegmentIsDeleted(reviewCallback: () -> Unit, createCallback: () -> Unit)
+    fun showSuccessfullySavedToLua(afterShowCallback: () -> Unit)
+    fun showErrorSavingToLua(afterShowCallback: () -> Unit)
+    fun showLuaSystemUnavailable(exitCallback: () -> Unit, nextCallback: () -> Unit)
+    fun showUnsentDataDetected(exitToAppCallback: () -> Unit, goOverCallback: () -> Unit)
+    fun showUnsavedDataDetected(confirmCallback: () -> Unit)
 
 }
