@@ -6,10 +6,14 @@ import com.lenta.shared.analytics.AnalyticsHelper
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.fmp.ObjectRawStatus
 import com.lenta.shared.functional.Either
-import com.lenta.shared.utilities.extentions.hhive.getFailure
+import com.lenta.shared.utilities.Logg
+import com.lenta.shared.utilities.extentions.hhive.ANALYTICS_HELPER
 import com.lenta.shared.utilities.extentions.hhive.isNotBad
+import com.lenta.shared.utilities.extentions.hhive.toEither
 import com.mobrun.plugin.api.HyperHive
 import com.mobrun.plugin.api.callparams.WebCallParams
+import com.mobrun.plugin.models.BaseStatus
+import java.lang.Exception
 
 class FmpRequestsHelper(val hyperHive: HyperHive,
                         val defaultHeaders: Map<String, String>,
@@ -29,24 +33,37 @@ class FmpRequestsHelper(val hyperHive: HyperHive,
 
         analyticsHelper.onStartFmpRequest(resourceName = resourceName)
 
-        val status = hyperHive.requestAPI.web(resourceName, webCallParams, clazz)
+        val statusString = hyperHive.requestAPI.web(resourceName, webCallParams)
                 .execute()
 
-        analyticsHelper.onFinishFmpRequest(resourceName = resourceName)
+        var result: Either<Failure, S>
 
-        if (status.isNotBad()) {
-            val resultData = status.result?.raw
-            return if (resultData is SapResponse && resultData.retCode != 0) {
-                val errorText = resultData.errorText ?: ""
-                analyticsHelper.onRetCodeNotEmpty("errorText: ${resultData.errorText}, retCode: ${resultData.retCode}")
-                Either.Left(Failure.SapError(errorText))
+        try {
+            val status = gson.fromJson(statusString, clazz)
+            Logg.d { "status: $status" }
+            result = if (status.isNotBad()) {
+                analyticsHelper.onFinishFmpRequest(resourceName = resourceName)
+                val resultData = status.result?.raw
+                if (resultData is SapResponse && resultData.retCode != 0) {
+                    val errorText = resultData.errorText ?: ""
+                    analyticsHelper.onRetCodeNotEmpty("errorText: ${resultData.errorText}, retCode: ${resultData.retCode}")
+                    Either.Left(Failure.SapError(errorText))
+                } else {
+                    Either.Right(status.result!!.raw!!)
+                }
             } else {
-                Either.Right(status.result!!.raw!!)
+                status.toEither(status.result?.raw, resourceName = resourceName)
             }
-        }
-        return Either.Left(status.getFailure())
-    }
 
+        } catch (e: Exception) {
+            Logg.w { "e: $e" }
+            val status = gson.fromJson(statusString, BaseStatus::class.java)
+            Logg.d { "status: $status" }
+            result = status.toEither(data = null, resourceName = resourceName)
+        }
+
+        return result
+    }
 }
 
 interface SapResponse {
