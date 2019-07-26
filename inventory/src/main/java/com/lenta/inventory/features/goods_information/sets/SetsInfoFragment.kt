@@ -76,21 +76,6 @@ class SetsInfoFragment : CoreFragment<FragmentSetsInfoBinding, SetsInfoViewModel
 
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.apply)
-
-        viewLifecycleOwner.apply {
-            connectLiveData(vm.enabledApplyButton, bottomToolbarUiModel.uiModelButton4.enabled)
-            connectLiveData(vm.enabledApplyButton, bottomToolbarUiModel.uiModelButton5.enabled)
-            connectLiveData(vm.enabledDetailsCleanBtn, bottomToolbarUiModel.uiModelButton3.enabled)
-            vm.selectedPage.observe(viewLifecycleOwner, Observer { pos ->
-                if (pos == 0) {
-                    bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.details)
-                    bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.missing)
-                } else {
-                    bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.clean)
-                    bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.missing, visible = false)
-                }
-            })
-        }
     }
 
     override fun onToolbarButtonClick(view: View) {
@@ -105,7 +90,24 @@ class SetsInfoFragment : CoreFragment<FragmentSetsInfoBinding, SetsInfoViewModel
         super.onViewCreated(view, savedInstanceState)
         binding?.let {
             it.viewPagerSettings = this
-            it.pageSelectionListener=this}
+            it.pageSelectionListener=this
+        }
+        val bottomToolbarUiModel = getBottomToolBarUIModel()!!
+        viewLifecycleOwner.apply {
+            connectLiveData(vm.enabledApplyButton, bottomToolbarUiModel.uiModelButton4.enabled)
+            connectLiveData(vm.enabledApplyButton, bottomToolbarUiModel.uiModelButton5.enabled)
+            connectLiveData(vm.enabledDetailsCleanBtn, bottomToolbarUiModel.uiModelButton3.enabled)
+            vm.selectedPage.observe(viewLifecycleOwner, Observer { pos ->
+                if (pos == 0) {
+                    bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.details)
+                    bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.missing)
+                } else {
+                    bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.clean)
+                    bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.missing, visible = false)
+                }
+            })
+        }
+
     }
 
     override fun getPagerItemView(container: ViewGroup, position: Int): View {

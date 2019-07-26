@@ -158,11 +158,13 @@ abstract class CoreMainActivity : CoreActivity<ActivityMainBinding>(), ToolbarBu
     override fun onBackPressed() {
         getCurrentFragment()?.implementationOf(OnBackPresserListener::class.java)?.let {
             if (it.onBackPressed()) {
+                analyticsHelper.onGoBack()
                 super.onBackPressed()
             }
             return
         }
         if (isHaveBackButton()) {
+            analyticsHelper.onGoBack()
             super.onBackPressed()
         }
     }

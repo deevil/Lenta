@@ -60,7 +60,11 @@ class ExciseAlcoInfoFragment : CoreFragment<FragmentExciseAlcoInfoBinding, Excis
         bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.details)
         bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.missing)
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.apply)
+    }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        val bottomToolbarUiModel = getBottomToolBarUIModel()!!
         viewLifecycleOwner.apply {
             connectLiveData(vm.enabledRollbackButton, bottomToolbarUiModel.uiModelButton2.enabled)
             connectLiveData(vm.enabledMissingButton, bottomToolbarUiModel.uiModelButton4.enabled)
@@ -83,10 +87,9 @@ class ExciseAlcoInfoFragment : CoreFragment<FragmentExciseAlcoInfoBinding, Excis
 
     override fun onFragmentResult(arguments: Bundle) {
         super.onFragmentResult(arguments)
-        if (arguments["stampLength"] == 150){
+        if (arguments["stampLength"] == 150) {
             vm.onPartySignsResult(arguments)
-        }
-        else {
+        } else {
             vm.onPartySignsStamp68Result(arguments)
         }
     }

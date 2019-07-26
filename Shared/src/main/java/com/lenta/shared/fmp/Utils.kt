@@ -13,12 +13,12 @@ fun <N, T : ObjectRawStatus<N>> String?.toFmpObjectRawStatusEither(clazz: Class<
     return try {
         val status = gson.fromJson(this, clazz)
         Logg.d { "status: $status" }
-        status.toEither(status.result?.raw, nameResource = resourceName)
+        status.toEither(status.result?.raw, resourceName = resourceName)
     } catch (ex: JsonSyntaxException) {
         val status = gson.fromJson(this, BaseStatus::class.java)
         Logg.d { "status: $status" }
         ANALYTICS_HELPER?.onFinishFmpRequest(resourceName)
-        status.toEither(null)
+        status.toEither(null, resourceName = resourceName)
     }
 
 }

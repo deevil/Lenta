@@ -90,7 +90,7 @@ class TaskContentNetRequest
 			return null
 		}
 		return TaskStorePlaceInfo(placeCode = placeCode,
-				status = StorePlaceStatus.valueOf(state),
+				status = StorePlaceStatus.from(state),
 				lockUser = lockUser,
 				lockIP = lockIP
 				)

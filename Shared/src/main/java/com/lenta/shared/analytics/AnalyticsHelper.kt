@@ -84,5 +84,9 @@ class AnalyticsHelper(
         analytics.logTrace(message = "Параметр экспорта EV_RETCODE «не равно» 0. $status")
     }
 
+    fun onGoBack() {
+        analytics.logTrace(message = "Переход к предыдущему экрану")
+    }
+
 
 }

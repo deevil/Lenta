@@ -37,6 +37,7 @@ import com.lenta.shared.platform.time.ITimeMonitor
 import com.lenta.shared.platform.time.TimeMonitor
 import com.lenta.shared.progress.CoreProgressUseCaseInformator
 import com.lenta.shared.progress.IProgressUseCaseInformator
+import com.lenta.shared.requests.FmpRequestsHelper
 import com.lenta.shared.requests.combined.scan_info.ScanInfoRequest
 import com.lenta.shared.scan.IScanHelper
 import com.lenta.shared.scan.mobilbase.MobilBaseScanHelper
@@ -166,9 +167,10 @@ class CoreModule(val application: Application, val defaultConnectionSettings: De
                                        foregroundActivityProvider: ForegroundActivityProvider,
                                        failureInterpreter: IFailureInterpreter,
                                        analytics: IAnalytics,
+                                       analyticsHelper: AnalyticsHelper,
                                        roomAppDatabase: RoomAppDatabase,
                                        backFragmentResultHelper: BackFragmentResultHelper): ICoreNavigator {
-        return CoreNavigator(context, foregroundActivityProvider, failureInterpreter, analytics, roomAppDatabase, backFragmentResultHelper)
+        return CoreNavigator(context, foregroundActivityProvider, failureInterpreter, analytics, analyticsHelper, roomAppDatabase, backFragmentResultHelper)
     }
 
     @Provides
@@ -238,7 +240,6 @@ class CoreModule(val application: Application, val defaultConnectionSettings: De
                 }
 
 
-
     }
 
     @Provides
@@ -251,6 +252,21 @@ class CoreModule(val application: Application, val defaultConnectionSettings: De
     @Singleton
     fun provideAnalyticsHelper(iAnalytics: IAnalytics, context: Context): AnalyticsHelper {
         return AnalyticsHelper(iAnalytics, context)
+    }
+
+    @Provides
+    @Singleton
+    fun provideFmpRequestsHelper(hyperHive: HyperHive, sessionInfo: ISessionInfo, gson: Gson, analyticsHelper: AnalyticsHelper): FmpRequestsHelper {
+        return FmpRequestsHelper(
+                hyperHive = hyperHive,
+                defaultHeaders = mapOf(
+                        "X-SUP-DOMAIN" to "DM-MAIN",
+                        "Content-Type" to "application/json"
+                ),
+                sessionInfo = sessionInfo,
+                gson = gson,
+                analyticsHelper = analyticsHelper
+        )
     }
 
 

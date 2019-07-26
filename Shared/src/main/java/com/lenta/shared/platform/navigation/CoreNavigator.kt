@@ -5,6 +5,7 @@ import android.os.Bundle
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LiveData
 import com.lenta.shared.R
+import com.lenta.shared.analytics.AnalyticsHelper
 import com.lenta.shared.analytics.IAnalytics
 import com.lenta.shared.analytics.db.RoomAppDatabase
 import com.lenta.shared.exception.Failure
@@ -35,6 +36,7 @@ class CoreNavigator constructor(private val context: Context,
                                 private val foregroundActivityProvider: ForegroundActivityProvider,
                                 private val failureInterpreter: IFailureInterpreter,
                                 private val analytics: IAnalytics,
+                                private val analyticsHelper: AnalyticsHelper,
                                 private val roomAppDatabase: RoomAppDatabase,
                                 override val backFragmentResultHelper: BackFragmentResultHelper) : ICoreNavigator {
 
@@ -63,6 +65,7 @@ class CoreNavigator constructor(private val context: Context,
 
     override fun goBack() {
         runOrPostpone {
+            analyticsHelper.onGoBack()
             getFragmentStack()?.pop()
         }
     }
@@ -276,7 +279,6 @@ class CoreNavigator constructor(private val context: Context,
     }
 
     override fun openNotImplementedScreenAlert(screenName: String) {
-        //TODO изменить реализацию метода после создания экрана
         openInfoScreen(context.getString(R.string.not_implemented_screen, screenName))
 
     }
