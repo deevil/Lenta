@@ -132,6 +132,7 @@ class CheckData(
         return if (getCurrentGood()?.barCode == getPreviousGood()?.barCode) getPreviousGood()?.facings ?: 0 else 0
     }
 
+
     private fun generateTestData() {
         Logg.d { "Test data generation for CheckData" }
 

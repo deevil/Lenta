@@ -57,19 +57,41 @@ class ShelfListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     }
 
     override fun onOkInSoftKeyboard(): Boolean {
-        createShelf()
+        checkNumber()
         return true
     }
 
-    private fun createShelf() {
-        if (shelfNumber.value?.isNotEmpty() == true) {
-            // Сообщение - Начата обработка полки
-            navigator.showShelfStarted(
-                    segmentNumber = segmentNumber.value!!,
-                    shelfNumber = shelfNumber.value!!) {
-                checkData.addShelf(shelfNumber.value!!)
-                navigator.openGoodListScreen()
+    private fun checkNumber() {
+        val shelfNumber = shelfNumber.value?.toInt() ?: 0
+        if (shelfNumber > 0) {
+            val shelf = shelves.value?.find { it.number.toInt() == shelfNumber }
+            if (shelf != null) {
+                if (shelf.status == ShelfStatus.DELETED) {
+                    // Выбор - Полка удалена. Открыть просмотр или создать новую? - Назад / Просмотр / Создать
+                    navigator.showShelfIsDeleted(
+                            reviewCallback = { openExistShelf(shelf) },
+                            createCallback = { createShelf(shelfNumber) })
+                } else {
+                    openExistShelf(shelf)
+                }
+            } else {
+                createShelf(shelfNumber)
             }
+        }
+    }
+
+    private fun openExistShelf(shelf: Shelf) {
+        checkData.currentShelfIndex = shelves.value!!.indexOf(shelf)
+        navigator.openGoodListScreen()
+    }
+
+    private fun createShelf(shelfNumber: Int) {
+        // Сообщение - Начата обработка полки
+        navigator.showShelfStarted(
+                segmentNumber = segmentNumber.value!!,
+                shelfNumber = shelfNumber.toString()) {
+            checkData.addShelf(shelfNumber.toString())
+            navigator.openGoodListScreen()
         }
     }
 

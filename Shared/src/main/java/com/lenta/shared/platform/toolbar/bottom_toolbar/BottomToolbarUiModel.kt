@@ -80,8 +80,14 @@ data class ButtonDecorationInfo(
         val confirm: ButtonDecorationInfo by lazy {
             ButtonDecorationInfo(R.drawable.ic_done_white_24dp, R.string.confirm)
         }
+        val review: ButtonDecorationInfo by lazy {
+            ButtonDecorationInfo(R.drawable.ic_visibility_white_24dp, R.string.review)
+        }
         val add: ButtonDecorationInfo by lazy {
             ButtonDecorationInfo(R.drawable.ic_add_white_24dp, R.string.add)
+        }
+        val create: ButtonDecorationInfo by lazy {
+            ButtonDecorationInfo(R.drawable.ic_add_white_24dp, R.string.create)
         }
         val details: ButtonDecorationInfo by lazy {
             ButtonDecorationInfo(R.drawable.ic_details_white_24dp, R.string.details)

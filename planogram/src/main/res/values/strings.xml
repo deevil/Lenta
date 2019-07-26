@@ -37,6 +37,8 @@
     <string name="unsaved_external_audit_data_detected">На устройстве обнаружены несохраненные данные в режиме \"Внешний аудит\".\n\nПереход к самоконтролю ТК будет недоступен.</string>
     <string name="twelve_characters_entered">Введено 12 знаков. Какой код вы ввели?</string>
     <string name="unknown_good_barcode">ШК %1$s\n\nНеизвестный штрихкод. Товар определить не удалось. Все равно использовать этот штрихкод?</string>
+    <string name="shelf_is_deleted">Полка удалена. Открыть просмотр или создать новую?</string>
+    <string name="segment_is_deleted">Сегмент удален. Открыть просмотр или создать новый?</string>
 
 
     <!-- Заголовки экранов -->

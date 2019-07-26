@@ -237,6 +237,28 @@ class ScreenNavigator(
                     rightButtonDecorationInfo = ButtonDecorationInfo.yes))
         }
     }
+
+    override fun showShelfIsDeleted(reviewCallback: () -> Unit, createCallback: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.shelf_is_deleted),
+                    pageNumber = "46",
+                    codeConfirmForButton4 = backFragmentResultHelper.setFuncForResult(reviewCallback),
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(createCallback),
+                    buttonDecorationInfo4 = ButtonDecorationInfo.review,
+                    rightButtonDecorationInfo = ButtonDecorationInfo.create))
+        }
+    }
+
+    override fun showSegmentIsDeleted(reviewCallback: () -> Unit, createCallback: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.segment_is_deleted),
+                    pageNumber = "46",
+                    codeConfirmForButton4 = backFragmentResultHelper.setFuncForResult(reviewCallback),
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(createCallback),
+                    buttonDecorationInfo4 = ButtonDecorationInfo.review,
+                    rightButtonDecorationInfo = ButtonDecorationInfo.create))
+        }
+    }
 }
 
 interface IScreenNavigator : ICoreNavigator {
@@ -267,5 +289,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun showUnsavedExternalAuditDataDetected(goOverCallback: () -> Unit)
     fun showTwelveCharactersEntered(sapCallback: () -> Unit, barCallback: () -> Unit)
     fun showUnknownGoodBarcode(barCode: String, yesCallback: () -> Unit)
+    fun showShelfIsDeleted(reviewCallback: () -> Unit, createCallback: () -> Unit)
+    fun showSegmentIsDeleted(reviewCallback: () -> Unit, createCallback: () -> Unit)
 
 }
