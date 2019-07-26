@@ -29,7 +29,9 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/list_title_height"
+                android:layout_height="wrap_content"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
                 android:gravity="center_vertical"
                 android:orientation="horizontal">
 
@@ -39,6 +41,8 @@
 
                     <TextView
                         style="@style/CellTitleTextStyle"
+                        android:layout_width="wrap_content"
+                        android:layout_marginStart="0dp"
                         android:text="@string/column_title_item_number"/>
 
                 </LinearLayout>

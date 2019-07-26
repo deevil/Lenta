@@ -30,7 +30,7 @@
                 <TextView
                     android:id="@+id/tv_item_number"
                     style="@style/CellTextStyle"
-                    android:layout_marginStart="5dp"
+                    android:layout_width="wrap_content"
                     android:text="@{String.valueOf(good.id)}"
                     tools:text="1"/>
 
@@ -48,7 +48,7 @@
                     android:id="@+id/tv_good_number_name"
                     style="@style/CellTextStyle"
                     android:layout_width="0dp"
-                    android:layout_marginStart="5dp"
+                    android:layout_marginStart="8dp"
                     android:layout_weight="1"
                     android:maxLines="2"
                     android:text="@{@string/one_space_two(good.formattedSapCode, good.name)}"
@@ -89,7 +89,7 @@
                 <TextView
                     android:id="@+id/tv_goods_count"
                     style="@style/CellTextStyle"
-                    android:layout_marginStart="5dp"
+                    android:layout_marginStart="8dp"
                     android:text="@{good.numberOfFacing}"
                     tools:text="0"/>
 
