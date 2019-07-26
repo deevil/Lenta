@@ -14,8 +14,7 @@
     <string name="goods_barcode">Штрихкод товара</string>
     <string name="good_on_shelf">Товар на полке</string>
     <string name="good_is_missing">Товар отсутствует</string>
-    <string name="segment_number_store_date">%1$s (ТК - %2$s)\n%3$s</string>
-    <string name="shelf_number_time">%1$s\n%2$s</string>
+    <string name="segment_number_store">%1$s (ТК - %2$s)</string>
     <string name="one_space_two">%1$s %2$s</string>
 
 
