@@ -167,9 +167,10 @@ class CoreModule(val application: Application, val defaultConnectionSettings: De
                                        foregroundActivityProvider: ForegroundActivityProvider,
                                        failureInterpreter: IFailureInterpreter,
                                        analytics: IAnalytics,
+                                       analyticsHelper: AnalyticsHelper,
                                        roomAppDatabase: RoomAppDatabase,
                                        backFragmentResultHelper: BackFragmentResultHelper): ICoreNavigator {
-        return CoreNavigator(context, foregroundActivityProvider, failureInterpreter, analytics, roomAppDatabase, backFragmentResultHelper)
+        return CoreNavigator(context, foregroundActivityProvider, failureInterpreter, analytics, analyticsHelper, roomAppDatabase, backFragmentResultHelper)
     }
 
     @Provides
