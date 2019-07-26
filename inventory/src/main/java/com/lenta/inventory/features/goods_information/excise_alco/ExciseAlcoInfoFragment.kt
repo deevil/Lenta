@@ -2,6 +2,7 @@ package com.lenta.inventory.features.goods_information.excise_alco
 
 import android.os.Bundle
 import android.view.View
+import androidx.core.content.ContextCompat
 import com.lenta.inventory.R
 import com.lenta.inventory.databinding.FragmentExciseAlcoInfoBinding
 import com.lenta.inventory.models.task.TaskProductInfo
@@ -59,7 +60,7 @@ class ExciseAlcoInfoFragment : CoreFragment<FragmentExciseAlcoInfoBinding, Excis
         bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.rollback)
         bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.details)
         bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.missing)
-        bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.apply)
+        bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.apply, enabled = false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

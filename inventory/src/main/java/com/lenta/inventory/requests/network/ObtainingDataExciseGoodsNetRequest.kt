@@ -9,30 +9,21 @@ import com.lenta.shared.fmp.toFmpObjectRawStatusEither
 import com.lenta.shared.functional.Either
 import com.lenta.shared.interactor.UseCase
 import com.lenta.shared.models.core.Manufacturer
+import com.lenta.shared.requests.FmpRequestsHelper
 import com.lenta.shared.utilities.Logg
 import com.mobrun.plugin.api.HyperHive
 import com.mobrun.plugin.api.callparams.WebCallParams
 import javax.inject.Inject
 
 class ObtainingDataExciseGoodsNetRequest
-@Inject constructor(private val hyperHive: HyperHive, private val gson: Gson, private val sessionInfo: ISessionInfo) : UseCase<ExciseGoodsRestInfo, ExciseGoodsParams>(){
+@Inject constructor(private val fmpRequestsHelper: FmpRequestsHelper) : UseCase<ExciseGoodsRestInfo, ExciseGoodsParams>(){
     override suspend fun run(params: ExciseGoodsParams): Either<Failure, ExciseGoodsRestInfo> {
 
-        val webCallParams = WebCallParams().apply {
-            data = gson.toJson(params)
-            headers = mapOf(
-                    "X-SUP-DOMAIN" to "DM-MAIN",
-                    "Content-Type" to "application/json",
-                    "Web-Authorization" to sessionInfo.basicAuth
-            )
-        }
-
-        /**val resString = hyperHive.requestAPI.web("ZMP_UTZ_100_V001", webCallParams). execute()
-        Logg.d { "resString: $resString" }*/
-
-        val res = hyperHive.requestAPI.web("ZMP_UTZ_100_V001", webCallParams).execute().toFmpObjectRawStatusEither(ExciseGoodsStatus::class.java, gson)
-
-        return res
+        return fmpRequestsHelper.restRequest(
+                resourceName = "ZMP_UTZ_100_V001",
+                data = null,
+                clazz = ExciseGoodsStatus::class.java
+        )
     }
 }
 
