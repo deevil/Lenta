@@ -58,6 +58,9 @@ class WriteOffDetailsFragment : CoreFragment<FragmentWriteOffDetailsBinding, Wri
                     }
 
                 })
+
+        viewLifecycleOwner.connectLiveData(vm.deleteButtonEnabled, getBottomToolBarUIModel()!!.uiModelButton3.enabled)
+
     }
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
@@ -72,7 +75,6 @@ class WriteOffDetailsFragment : CoreFragment<FragmentWriteOffDetailsBinding, Wri
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
         bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.delete)
-        viewLifecycleOwner.connectLiveData(vm.deleteButtonEnabled, bottomToolbarUiModel.uiModelButton3.enabled)
     }
 
     override fun onToolbarButtonClick(view: View) {

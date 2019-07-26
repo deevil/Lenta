@@ -57,13 +57,6 @@ class GoodsListFragment :
         bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.delete, enabled = false)
         bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.print, enabled = false)
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.save, enabled = true)
-
-        viewLifecycleOwner.apply {
-            connectLiveData(source = vm.deleteEnabled, target = bottomToolbarUiModel.uiModelButton3.enabled)
-            connectLiveData(source = vm.printButtonEnabled, target = bottomToolbarUiModel.uiModelButton4.enabled)
-            connectLiveData(source = vm.saveButtonEnabled, target = bottomToolbarUiModel.uiModelButton5.enabled)
-        }
-
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -71,6 +64,12 @@ class GoodsListFragment :
         binding?.let {
             it.viewPagerSettings = this
             it.pageSelectionListener = this
+        }
+
+        getBottomToolBarUIModel()?.let {bottomToolbarUiModel ->
+            connectLiveData(source = vm.deleteEnabled, target = bottomToolbarUiModel.uiModelButton3.enabled)
+            connectLiveData(source = vm.printButtonEnabled, target = bottomToolbarUiModel.uiModelButton4.enabled)
+            connectLiveData(source = vm.saveButtonEnabled, target = bottomToolbarUiModel.uiModelButton5.enabled)
         }
 
     }

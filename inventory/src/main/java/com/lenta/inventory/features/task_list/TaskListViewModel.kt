@@ -112,6 +112,9 @@ class TaskListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
 
     private fun handleUpdateSuccess(tasksListRestInfo: TasksListRestInfo) {
+        if (tasksListRestInfo.retcode != "0") {
+            screenNavigator.openInfoScreen(tasksListRestInfo.error)
+        }
         repoInMemoryHolder.tasksListRestInfo.value = tasksListRestInfo
 
     }

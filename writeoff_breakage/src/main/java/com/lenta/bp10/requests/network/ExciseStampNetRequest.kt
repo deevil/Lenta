@@ -1,37 +1,17 @@
 package com.lenta.bp10.requests.network
 
-import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
-import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.fmp.ObjectRawStatus
-import com.lenta.shared.fmp.toFmpObjectRawStatusEither
 import com.lenta.shared.functional.Either
 import com.lenta.shared.interactor.UseCase
-import com.lenta.shared.utilities.Logg
-import com.lenta.shared.utilities.extentions.hhive.ANALYTICS_HELPER
-import com.mobrun.plugin.api.HyperHive
-import com.mobrun.plugin.api.callparams.WebCallParams
+import com.lenta.shared.requests.FmpRequestsHelper
 import javax.inject.Inject
 
 class ExciseStampNetRequest
-@Inject constructor(private val hyperHive: HyperHive, private val gson: Gson, private val sessionInfo: ISessionInfo) : UseCase<List<ExciseStampRestInfo>, ExciseStampParams>() {
+@Inject constructor(private val fmpRequestsHelper: FmpRequestsHelper) : UseCase<List<ExciseStampRestInfo>, ExciseStampParams>() {
     override suspend fun run(params: ExciseStampParams): Either<Failure, List<ExciseStampRestInfo>> {
-
-
-        val webCallParams = WebCallParams().apply {
-            data = gson.toJson(params)
-            headers = mapOf(
-                    "X-SUP-DOMAIN" to "DM-MAIN",
-                    "Content-Type" to "application/json",
-                    "Web-Authorization" to sessionInfo.basicAuth
-            )
-        }
-
-        val resName = "ZFMP_UTZ_WOB_03_V001"
-        ANALYTICS_HELPER?.onStartFmpRequest(resName, "headers: ${webCallParams.headers}, data: ${webCallParams.data}")
-        return hyperHive.requestAPI.web(resName, webCallParams).execute()
-                .toFmpObjectRawStatusEither(ExciseStampStatus::class.java, gson, resName)
+        return fmpRequestsHelper.restRequest("ZFMP_UTZ_WOB_03_V001", params, ExciseStampStatus::class.java)
     }
 
 }
