@@ -133,7 +133,9 @@ data class ButtonDecorationInfo(
             ButtonDecorationInfo(R.drawable.ic_send_white_24dp, R.string.skip)
         }
 
-
+        val untie: ButtonDecorationInfo by lazy {
+            ButtonDecorationInfo(R.drawable.ic_rollback_white_24dp, R.string.untie) //TODO: proper image
+        }
     }
 }
 

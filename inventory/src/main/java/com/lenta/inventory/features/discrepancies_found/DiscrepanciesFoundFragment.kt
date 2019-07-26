@@ -2,6 +2,7 @@ package com.lenta.inventory.features.discrepancies_found
 
 import android.content.Context
 import android.os.Bundle
+import android.transition.Visibility
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -41,19 +42,24 @@ class DiscrepanciesFoundFragment : CoreFragment<FragmentDiscrepanciesFoundBindin
     }
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
-        topToolbarUiModel.title.value = "Номер задания"
+        topToolbarUiModel.title.value = vm.getTitle()
         topToolbarUiModel.description.value = getString(R.string.discrepancies_found)
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
+        bottomToolbarUiModel.uiModelButton2.show(if (vm.selectedPage.value == 0) ButtonDecorationInfo.delete else ButtonDecorationInfo.untie)
         bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.missing)
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.skip)
-
+        viewLifecycleOwner.apply {
+            connectLiveData(source = vm.absentEnabled, target = bottomToolbarUiModel.uiModelButton4.enabled)
+            connectLiveData(source = vm.untieDeleteEnabled, target = bottomToolbarUiModel.uiModelButton2.enabled)
+        }
     }
 
     override fun onToolbarButtonClick(view: View) {
         when (view.id) {
+            R.id.b_2 -> vm.onClickDeleteUntie()
             R.id.b_4 -> vm.onClickMissing()
             R.id.b_5 -> vm.onClickSkip()
         }
@@ -79,7 +85,13 @@ class DiscrepanciesFoundFragment : CoreFragment<FragmentDiscrepanciesFoundBindin
         vm.onPageSelected(position)
     }
 
-    override fun countTab(): Int = 2
+    override fun countTab(): Int {
+        if (vm.isRecountByStorePlaces()) {
+            return 2
+        } else {
+            return 1
+        }
+    }
 
     override fun getPagerItemView(container: ViewGroup, position: Int): View {
         if (position == 0) {
@@ -88,6 +100,13 @@ class DiscrepanciesFoundFragment : CoreFragment<FragmentDiscrepanciesFoundBindin
                             R.layout.layout_discrepancies,
                             container,
                             false).let { layoutBinding ->
+
+                        val onClickSelectionListener = View.OnClickListener {
+                            (it!!.tag as Int).let { position ->
+                                vm.byGoodsSelectionHelper.revert(position = position)
+                                layoutBinding.rv.adapter?.notifyItemChanged(position)
+                            }
+                        }
 
                         layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
                                 layoutId = R.layout.item_tile_discrepancies,
@@ -98,14 +117,27 @@ class DiscrepanciesFoundFragment : CoreFragment<FragmentDiscrepanciesFoundBindin
 
                                     override fun onBind(binding: ItemTileDiscrepanciesBinding, position: Int) {
                                         binding.tvCounter.tag = position
+                                        if (vm.isRecountByStorePlaces()) {
+                                            binding.imageView2.visibility = View.INVISIBLE
+                                        } else {
+                                            binding.imageView2.visibility = View.VISIBLE
+                                        }
+                                        binding.tvCounter.setOnClickListener(onClickSelectionListener)
+                                        binding.selectedForDelete = vm.byGoodsSelectionHelper.isSelected(position)
                                         byGoodsRecyclerViewKeyHandler?.let {
                                             binding.root.isSelected = it.isSelected(position)
                                         }
                                     }
 
                                 },
-                                onItemDoubleClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
-                                    vm.onDoubleClickPosition(position)
+                                onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
+                                    byGoodsRecyclerViewKeyHandler?.let {
+                                        if (it.isSelected(position)) {
+                                            vm.onClickItemPosition(position)
+                                        } else {
+                                            it.selectPosition(position)
+                                        }
+                                    }
                                 }
                         )
 
@@ -115,7 +147,8 @@ class DiscrepanciesFoundFragment : CoreFragment<FragmentDiscrepanciesFoundBindin
                         byGoodsRecyclerViewKeyHandler = RecyclerViewKeyHandler(
                                 rv = layoutBinding.rv,
                                 items = vm.discrepanciesByGoods,
-                                lifecycleOwner = layoutBinding.lifecycleOwner!!
+                                lifecycleOwner = layoutBinding.lifecycleOwner!!,
+                                initPosInfo = byGoodsRecyclerViewKeyHandler?.posInfo?.value
                         )
                         return layoutBinding.root
                     }
@@ -126,6 +159,14 @@ class DiscrepanciesFoundFragment : CoreFragment<FragmentDiscrepanciesFoundBindin
                         R.layout.layout_discrepancies_by_storage,
                         container,
                         false).let { layoutBinding ->
+
+                    val onClickSelectionListener = View.OnClickListener {
+                        (it!!.tag as Int).let { position ->
+                            vm.byStorageSelectionHelper.revert(position = position)
+                            layoutBinding.rv.adapter?.notifyItemChanged(position)
+                        }
+                    }
+
                     layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
                             layoutId = R.layout.item_tile_discrepancies,
                             itemId = BR.vm,
@@ -135,24 +176,32 @@ class DiscrepanciesFoundFragment : CoreFragment<FragmentDiscrepanciesFoundBindin
 
                                 override fun onBind(binding: ItemTileDiscrepanciesBinding, position: Int) {
                                     binding.tvCounter.tag = position
+                                    binding.tvCounter.setOnClickListener(onClickSelectionListener)
+                                    binding.selectedForDelete = vm.byStorageSelectionHelper.isSelected(position)
                                     byStoragePlaceRecyclerViewKeyHandler?.let {
                                         binding.root.isSelected = it.isSelected(position)
                                     }
                                 }
 
                             },
-                            onItemDoubleClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
-                                vm.onDoubleClickPosition(position)
+                            onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
+                                byStoragePlaceRecyclerViewKeyHandler?.let {
+                                    if (it.isSelected(position)) {
+                                        vm.onClickItemPosition(position)
+                                    } else {
+                                        it.selectPosition(position)
+                                    }
+                                }
                             }
                     )
                     layoutBinding.vm = vm
                     layoutBinding.lifecycleOwner = viewLifecycleOwner
-//                    byStoragePlaceRecyclerViewKeyHandler = RecyclerViewKeyHandler(
-//                            rv = layoutBinding.rv,
-//                            items = vm.discrepanciesByStorage,
-//                            lifecycleOwner = layoutBinding.lifecycleOwner!!,
-//                            initPosInfo = byStoragePlaceRecyclerViewKeyHandler?.posInfo?.value
-//                    )
+                    byStoragePlaceRecyclerViewKeyHandler = RecyclerViewKeyHandler(
+                            rv = layoutBinding.rv,
+                            items = vm.discrepanciesByStorage,
+                            lifecycleOwner = layoutBinding.lifecycleOwner!!,
+                            initPosInfo = byStoragePlaceRecyclerViewKeyHandler?.posInfo?.value
+                    )
                     return layoutBinding.root
                 }
     }
