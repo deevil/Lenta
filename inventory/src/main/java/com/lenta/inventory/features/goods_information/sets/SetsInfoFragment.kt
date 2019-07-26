@@ -16,7 +16,6 @@ import com.lenta.inventory.databinding.LayoutSetsInfoComponentsBinding
 import com.lenta.inventory.databinding.LayoutSetsInfoQuantityBinding
 import com.lenta.inventory.models.task.TaskProductInfo
 import com.lenta.inventory.platform.extentions.getAppComponent
-import com.lenta.shared.models.core.ProductInfo
 import com.lenta.shared.platform.activity.OnBackPresserListener
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
@@ -31,7 +30,6 @@ import com.lenta.shared.utilities.databinding.ViewPagerSettings
 import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.generateScreenNumber
 import com.lenta.shared.utilities.extentions.provideViewModel
-import com.lenta.shared.utilities.state.state
 
 class SetsInfoFragment : CoreFragment<FragmentSetsInfoBinding, SetsInfoViewModel>(),
         ViewPagerSettings,

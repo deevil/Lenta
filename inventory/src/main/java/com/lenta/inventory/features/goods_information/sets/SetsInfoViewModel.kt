@@ -3,7 +3,6 @@ package com.lenta.inventory.features.goods_information.sets
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.inventory.features.goods_details_storage.ComponentItem
-import com.lenta.inventory.models.task.IInventoryTaskManager
 import com.lenta.inventory.models.task.ProcessSetsService
 import com.lenta.inventory.models.task.TaskExciseStamp
 import com.lenta.inventory.models.task.TaskProductInfo
@@ -11,19 +10,13 @@ import com.lenta.inventory.platform.navigation.IScreenNavigator
 import com.lenta.inventory.requests.network.*
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
-import com.lenta.shared.fmp.resources.slow.ZfmpUtz48V001
-import com.lenta.shared.models.core.MatrixType
-import com.lenta.shared.models.core.ProductType
-import com.lenta.shared.models.core.Uom
 import com.lenta.shared.platform.viewmodel.CoreViewModel
-import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.toStringFormatted
 import com.lenta.shared.view.OnPositionClickListener
-import com.mobrun.plugin.api.HyperHive
 import kotlinx.coroutines.launch
 import java.math.BigInteger
 import javax.inject.Inject

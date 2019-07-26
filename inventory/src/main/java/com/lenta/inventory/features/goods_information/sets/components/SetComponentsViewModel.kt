@@ -34,6 +34,8 @@ class SetComponentsViewModel : CoreViewModel(), OnPositionClickListener {
     @Inject
     lateinit var alcoCodeNetRequest: AlcoCodeNetRequest
 
+    val iconRes: MutableLiveData<Int> = MutableLiveData(0)
+    val textColor: MutableLiveData<Int> = MutableLiveData(0)
     val componentInfo: MutableLiveData<SetComponentInfo> = MutableLiveData()
     val storePlaceNumber: MutableLiveData<String> = MutableLiveData()
     val isStorePlaceNumber: MutableLiveData<Boolean> = storePlaceNumber.map { it != "00" }
@@ -99,7 +101,7 @@ class SetComponentsViewModel : CoreViewModel(), OnPositionClickListener {
     private fun processPdf150(stampCode: String){
         if ( totalCount.value!! >= ((componentInfo.value!!.count).toDouble() * targetTotalCount.value!!) ) {
             count.value = "0"
-            screenNavigator.openAlertScreen(limitExceeded.value!!, pageNumber = "98")
+            screenNavigator.openAlertScreen(limitExceeded.value!!, iconRes = iconRes.value!!, textColor = textColor.value, pageNumber = "98")
             return
         }
 
@@ -133,7 +135,7 @@ class SetComponentsViewModel : CoreViewModel(), OnPositionClickListener {
     private fun processPdf150HandleSuccess(exciseGoodsRestInfo: ExciseGoodsRestInfo){
         if (exciseGoodsRestInfo.retCode != "0") {
             count.value = "0"
-            screenNavigator.openAlertScreen(exciseGoodsRestInfo.errorTxt, pageNumber = "98")
+            screenNavigator.openAlertScreen(exciseGoodsRestInfo.errorTxt, iconRes = iconRes.value!!, textColor = textColor.value, pageNumber = "98")
             return
         }
 
@@ -151,14 +153,14 @@ class SetComponentsViewModel : CoreViewModel(), OnPositionClickListener {
         }
         else {
             count.value = "0"
-            screenNavigator.openAlertScreen(stampAnotherProduct.value!!, pageNumber = "98")
+            screenNavigator.openAlertScreen(stampAnotherProduct.value!!, iconRes = iconRes.value!!, textColor = textColor.value, pageNumber = "98")
         }
     }
 
     private fun processPdf68(stampCode: String){
         if ( totalCount.value!! >= ((componentInfo.value!!.count).toDouble() * targetTotalCount.value!!) ) {
             count.value = "0"
-            screenNavigator.openAlertScreen(limitExceeded.value!!, pageNumber = "98")
+            screenNavigator.openAlertScreen(limitExceeded.value!!, iconRes = iconRes.value!!, textColor = textColor.value, pageNumber = "98")
             return
         }
 
@@ -195,7 +197,7 @@ class SetComponentsViewModel : CoreViewModel(), OnPositionClickListener {
             }
             else{
                 count.value = "0"
-                screenNavigator.openAlertScreen(alcocodeNotFound.value!!, pageNumber = "98")
+                screenNavigator.openAlertScreen(alcocodeNotFound.value!!, iconRes = iconRes.value!!, textColor = textColor.value, pageNumber = "98")
             }
         }
     }
@@ -212,7 +214,7 @@ class SetComponentsViewModel : CoreViewModel(), OnPositionClickListener {
             return
         }
 
-        screenNavigator.openAlertScreen(componentNotFound.value!!, pageNumber = "98")
+        screenNavigator.openAlertScreen(componentNotFound.value!!, iconRes = iconRes.value!!, textColor = textColor.value, pageNumber = "98")
     }
 
     override fun handleFailure(failure: Failure) {
