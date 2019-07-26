@@ -1,32 +1,37 @@
 package com.lenta.inventory.features.goods_information.sets.components
 
-import android.os.Bundle
 import android.view.View
 import com.lenta.inventory.R
 import com.lenta.inventory.databinding.FragmentSetComponentsBinding
-import com.lenta.inventory.features.goods_details_storage.ComponentItem
-import com.lenta.inventory.models.task.TaskProductInfo
+import com.lenta.inventory.features.goods_information.sets.SetComponentInfo
 import com.lenta.inventory.platform.extentions.getAppComponent
+import com.lenta.shared.platform.activity.OnBackPresserListener
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
+import com.lenta.shared.scan.OnScanResultListener
 import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.generateScreenNumber
 import com.lenta.shared.utilities.extentions.provideViewModel
 import com.lenta.shared.utilities.state.state
 
-class SetComponentsFragment : CoreFragment<FragmentSetComponentsBinding, SetComponentsViewModel>(), ToolbarButtonsClickListener {
+class SetComponentsFragment : CoreFragment<FragmentSetComponentsBinding, SetComponentsViewModel>(),
+        OnBackPresserListener,
+        OnScanResultListener,
+        ToolbarButtonsClickListener {
 
-    private var productInfo by state<TaskProductInfo?>(null)
-    private var componentItem by state<ComponentItem?>(null)
+    private var targetTotalCount by state<Double?>(null)
+    private var componentInfo by state<SetComponentInfo?>(null)
+    private var isStamp = false
 
     companion object {
-        fun create(productInfo: TaskProductInfo, componentItem: ComponentItem): SetComponentsFragment {
+        fun create(componentInfo: SetComponentInfo, targetTotalCount: Double, isStamp: Boolean = false): SetComponentsFragment {
             SetComponentsFragment().let {
-                it.productInfo = productInfo
-                it.componentItem = componentItem
+                it.targetTotalCount = targetTotalCount
+                it.componentInfo = componentInfo
+                it.isStamp = isStamp
                 return it
             }
         }
@@ -40,48 +45,51 @@ class SetComponentsFragment : CoreFragment<FragmentSetComponentsBinding, SetComp
     override fun getViewModel(): SetComponentsViewModel {
         provideViewModel(SetComponentsViewModel::class.java).let { vm ->
             getAppComponent()?.inject(vm)
-            productInfo?.let {
-                vm.setProductInfo(it)
-            }
-            componentItem?.let {
-                vm.setComponentItem(it)
-            }
-            vm.setLimitExceeded(getString(R.string.limit_exceeded))
-            vm.spinList.value = listOf("Марочно")
+            vm.targetTotalCount.value = targetTotalCount
+            vm.componentInfo.value = componentInfo
+            vm.isStamp.value = isStamp
+            vm.limitExceeded.value = getString(R.string.limit_exceeded)
+            vm.spinList.value = listOf(getString(R.string.quantity))
+            vm.titleProgressScreen.value = getString(R.string.data_loading)
+            vm.stampAnotherProduct.value = getString(R.string.stamp_another_product)
+            vm.alcocodeNotFound.value = getString(R.string.alcocode_not_found)
+            vm.componentNotFound.value = getString(R.string.component_not_found)
             return vm
         }
     }
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
         topToolbarUiModel.description.value = getString(R.string.set_component)
-        componentItem?.let {
-            topToolbarUiModel.title.value = it.name
+        viewLifecycleOwner.let {
+            connectLiveData(vm.topTitle, topToolbarUiModel.title)
         }
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
-        bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.rollback, enabled = false)
-        bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.add, enabled = false)
-        bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.apply, enabled = false)
-    }
+        bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.rollback)
+        bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.apply)
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        getBottomToolBarUIModel()?.let { bottomToolbarUiModel ->
-            connectLiveData(vm.enabledButton, bottomToolbarUiModel.uiModelButton4.enabled)
-            connectLiveData(vm.enabledButton, bottomToolbarUiModel.uiModelButton5.enabled)
-            connectLiveData(vm.enabledButton, bottomToolbarUiModel.uiModelButton2.enabled)
+        viewLifecycleOwner.let {
+            connectLiveData(vm.enabledRollbackButton, bottomToolbarUiModel.uiModelButton2.enabled)
+            connectLiveData(vm.enabledApplyButton, bottomToolbarUiModel.uiModelButton5.enabled)
         }
-
     }
 
     override fun onToolbarButtonClick(view: View) {
         when (view.id) {
             R.id.b_2 -> vm.onClickRollback()
-            R.id.b_4 -> vm.onClickAdd()
             R.id.b_5 -> vm.onClickApply()
         }
+    }
+
+    override fun onBackPressed(): Boolean {
+        vm.onBackPressed()
+        return true
+    }
+
+    override fun onScanResult(data: String) {
+        vm.onScanResult(data)
     }
 
 }

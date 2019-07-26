@@ -46,6 +46,7 @@
 
         <EditText
             android:id="@+id/et_search"
+            android:visibility="invisible"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
@@ -61,11 +62,12 @@
             android:maxLines="1"
             android:paddingTop="8dp"
             android:paddingBottom="8dp"
-            android:text="@={vm.eanCode}"
+            android:text="@={vm.searchCode}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/b_scan_es"
             app:layout_constraintStart_toStartOf="parent"
-            app:onOkInSoftKeyboard="@{vm}" />
+            app:onOkInSoftKeyboard="@{vm}"
+            tools:text="Введите SAP-код или штрихкод"/>
 
         <ImageButton
             android:id="@+id/b_scan_es"

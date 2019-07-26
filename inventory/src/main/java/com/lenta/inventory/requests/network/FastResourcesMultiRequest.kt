@@ -6,6 +6,7 @@ import com.lenta.shared.fmp.resources.fast.ZmpUtz14V001
 import com.lenta.shared.fmp.resources.slow.ZmpUtz25V001
 import com.lenta.shared.fmp.resources.slow.ZmpUtz30V001
 import com.lenta.shared.fmp.resources.slow.ZmpUtz46V001
+import com.lenta.shared.fmp.resources.slow.ZfmpUtz48V001
 import com.lenta.shared.requests.network.CoreResourcesMultiRequest
 import com.mobrun.plugin.api.HyperHive
 import com.mobrun.plugin.api.request_assistant.CustomParameter

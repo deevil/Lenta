@@ -22,6 +22,7 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
+import com.lenta.shared.scan.OnScanResultListener
 import com.lenta.shared.utilities.databinding.DataBindingAdapter
 import com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig
 import com.lenta.shared.utilities.databinding.PageSelectionListener
@@ -33,6 +34,7 @@ import com.lenta.shared.utilities.state.state
 
 class SetsInfoFragment : CoreFragment<FragmentSetsInfoBinding, SetsInfoViewModel>(),
         ViewPagerSettings,
+        OnScanResultListener,
         PageSelectionListener,
         ToolbarButtonsClickListener,
         OnBackPresserListener {
@@ -46,7 +48,6 @@ class SetsInfoFragment : CoreFragment<FragmentSetsInfoBinding, SetsInfoViewModel
                 return it
             }
         }
-
     }
 
     override fun getLayoutId(): Int = R.layout.fragment_sets_info
@@ -56,10 +57,13 @@ class SetsInfoFragment : CoreFragment<FragmentSetsInfoBinding, SetsInfoViewModel
     override fun getViewModel(): SetsInfoViewModel {
         provideViewModel(SetsInfoViewModel::class.java).let { vm ->
             getAppComponent()?.inject(vm)
-            productInfo?.let {
-                vm.setProductInfo(it)
-            }
+            vm.productInfo.value = productInfo
             vm.spinList.value = listOf(getString(R.string.quantity))
+            vm.titleProgressScreen.value = getString(R.string.data_loading)
+            vm.componentNotFound.value = getString(R.string.component_not_found)
+            vm.stampAnotherProduct.value = getString(R.string.stamp_another_product)
+            vm.alcocodeNotFound.value = getString(R.string.alcocode_not_found)
+            vm.limitExceeded.value = getString(R.string.limit_exceeded)
             return vm
         }
     }
@@ -94,12 +98,17 @@ class SetsInfoFragment : CoreFragment<FragmentSetsInfoBinding, SetsInfoViewModel
         }
         val bottomToolbarUiModel = getBottomToolBarUIModel()!!
         viewLifecycleOwner.apply {
-            connectLiveData(vm.enabledApplyButton, bottomToolbarUiModel.uiModelButton4.enabled)
+            connectLiveData(vm.enabledMissingButton, bottomToolbarUiModel.uiModelButton4.enabled)
             connectLiveData(vm.enabledApplyButton, bottomToolbarUiModel.uiModelButton5.enabled)
             connectLiveData(vm.enabledDetailsCleanBtn, bottomToolbarUiModel.uiModelButton3.enabled)
             vm.selectedPage.observe(viewLifecycleOwner, Observer { pos ->
                 if (pos == 0) {
-                    bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.details)
+                    if (productInfo!!.placeCode != "00") {
+                        bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.details)
+                    }
+                    else{
+                        bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.details, visible = false)
+                    }
                     bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.missing)
                 } else {
                     bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.clean)
@@ -137,14 +146,13 @@ class SetsInfoFragment : CoreFragment<FragmentSetsInfoBinding, SetsInfoViewModel
                     }
 
                     val onClickGoodTitle = View.OnClickListener {v ->
-                        //Logg.d { "onClickListener ${(v as TextView).text.substring(0,6)}" }
-                        vm.eanCode.value = (v as TextView).text.substring(0,6)
+                        vm.searchCode.value = (v as TextView).text.substring(0,6)
                         vm.onOkInSoftKeyboard()
                     }
 
                     layoutBinding.lifecycleOwner = viewLifecycleOwner
                     layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
-                            layoutId = R.layout.item_tile_processed_goods,
+                            layoutId = R.layout.item_tile_sets_info,
                             itemId = BR.vm,
                             realisation = object : DataBindingAdapter<ItemTileSetsInfoBinding> {
                                 override fun onCreate(binding: ItemTileSetsInfoBinding) {
@@ -176,6 +184,10 @@ class SetsInfoFragment : CoreFragment<FragmentSetsInfoBinding, SetsInfoViewModel
     override fun onResume() {
         super.onResume()
         vm.onResume()
+    }
+
+    override fun onScanResult(data: String) {
+        vm.onScanResult(data)
     }
 
     override fun onBackPressed(): Boolean {

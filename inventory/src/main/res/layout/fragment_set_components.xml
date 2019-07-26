@@ -126,6 +126,80 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tv_total_value" />
 
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/ConstraintStoragePlace"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="@{vm.isStorePlaceNumber}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/div_hor3">
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/guideline2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.5" />
+
+            <TextView
+                android:id="@+id/tv_storage_place"
+                style="@style/TextTitle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:paddingTop="8dp"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:text="@string/storage_place"
+                app:layout_constraintBottom_toBottomOf="@+id/tv_storage_place_value"
+                app:layout_constraintEnd_toStartOf="@+id/div_vert2"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/tv_storage_place_value" />
+
+            <View
+                android:id="@+id/div_vert2"
+                android:layout_width="1dp"
+                android:layout_height="0dp"
+                android:background="@color/color_divider"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="@+id/guideline2"
+                app:layout_constraintTop_toBottomOf="@+id/div_hor4"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/tv_storage_place_value"
+                style="@style/TextTitle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:paddingTop="8dp"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:text="@{vm.storePlaceNumber}"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="@+id/guideline2"
+                app:layout_constraintTop_toBottomOf="@+id/ConstraintStoragePlace"
+                tools:text="123456789" />
+
+            <View
+                android:id="@+id/div_hor4"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="8dp"
+                android:background="@color/color_divider"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tv_storage_place" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
         <TextView
             android:id="@+id/tv_matrix"
             android:layout_width="36sp"
@@ -136,12 +210,12 @@
             android:fontFamily="@font/tahoma_bold"
             android:gravity="center"
             android:textSize="18sp"
-            android:onClick="@{(v) -> vm.screenNavigator.openMatrixInfoScreen(vm.productInfo.matrixType)}"
+            android:onClick="@{(v) -> vm.screenNavigator.openMatrixInfoScreen(vm.componentInfo.matrixType)}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/div_hor4"
             app:layout_constraintVertical_bias="1.0"
-            app:matrixType="@{vm.productInfo.matrixType}"
+            app:matrixType="@{vm.componentInfo.matrixType}"
             tools:background="@drawable/bg_white_circle"
             tools:text="A" />
 
@@ -155,8 +229,8 @@
             android:background="@drawable/bg_white_circle"
             android:fontFamily="@font/tahoma_bold"
             android:gravity="center"
-            android:text='@{"" + vm.productInfo.sectionId}'
-            android:onClick="@{(v) -> vm.screenNavigator.openSectionInfoScreen(vm.productInfo.sectionId)}"
+            android:text='@{"" + vm.componentInfo.sectionId}'
+            android:onClick="@{(v) -> vm.screenNavigator.openSectionInfoScreen(vm.componentInfo.sectionId)}"
             android:textSize="16sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@+id/tv_matrix"
@@ -170,7 +244,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:background="?selectableItemBackground"
-            app:alcoIcon="@{vm.productInfo.type}"
+            app:alcoIcon="@{vm.componentInfo.typeProduct}"
             app:layout_constraintBottom_toBottomOf="@+id/tv_section"
             app:layout_constraintStart_toEndOf="@+id/tv_section"
             app:layout_constraintTop_toTopOf="@+id/tv_section"

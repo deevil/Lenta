@@ -65,6 +65,7 @@ class GoodsInfoFragment : CoreFragment<FragmentGoodsInfoBinding,
         val bottomToolbarUiModel = getBottomToolBarUIModel()!!
         viewLifecycleOwner.apply {
             connectLiveData(vm.isStorePlaceNumber, bottomToolbarUiModel.uiModelButton3.visibility)
+            connectLiveData(vm.enabledMissingButton, bottomToolbarUiModel.uiModelButton4.enabled)
             connectLiveData(vm.enabledApplyButton, bottomToolbarUiModel.uiModelButton5.enabled)
         }
     }
