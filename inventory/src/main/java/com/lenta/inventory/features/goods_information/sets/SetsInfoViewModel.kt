@@ -108,11 +108,10 @@ class SetsInfoViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKe
 
     val enabledDetailsCleanBtn: MutableLiveData<Boolean> = selectedPage
             .combineLatest(componentsSelectionsHelper.selectedPositions)
-            .combineLatest(totalCount)
             .map {
                 val selectedTabPos = selectedPage.value ?: 0
                 val selectedComponentsPositions = componentsSelectionsHelper.selectedPositions.value
-                if (selectedTabPos == 0) totalCount.value!! > 0.0 else !selectedComponentsPositions.isNullOrEmpty()
+                if (selectedTabPos == 0) true else !selectedComponentsPositions.isNullOrEmpty()
             }
 
     init {
@@ -151,7 +150,7 @@ class SetsInfoViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKe
     }
 
     fun onClickApply() {
-        processSetsService.apply()
+        processSetsService.apply(totalCount.value!!)
         screenNavigator.goBack()
     }
 

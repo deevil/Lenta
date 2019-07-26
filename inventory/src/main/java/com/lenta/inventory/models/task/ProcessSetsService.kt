@@ -135,7 +135,8 @@ class ProcessSetsService@Inject constructor() : IProcessProductService {
         currentComponentExciseStamps.clear()
     }
 
-    fun apply(){
+    fun apply(factCount: Double){
+        setFactCount(factCount)
         taskRepository.getExciseStamps().addExciseStamps(currentAllExciseStamps)
         currentAllExciseStamps.clear()
         currentComponentExciseStamps.clear()

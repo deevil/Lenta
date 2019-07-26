@@ -87,7 +87,12 @@ class SetsInfoFragment : CoreFragment<FragmentSetsInfoBinding, SetsInfoViewModel
             connectLiveData(vm.enabledDetailsCleanBtn, bottomToolbarUiModel.uiModelButton3.enabled)
             vm.selectedPage.observe(viewLifecycleOwner, Observer { pos ->
                 if (pos == 0) {
-                    bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.details)
+                    if (productInfo!!.placeCode != "00") {
+                        bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.details)
+                    }
+                    else{
+                        bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.details, visible = false)
+                    }
                     bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.missing)
                 } else {
                     bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.clean)

@@ -59,8 +59,8 @@ class MainMenuViewModel : CoreViewModel() {
         )
 
 
-        val productInfo6 = TaskProductInfo("000000000000378167", "Набор Коньяк СТАРЫЙ КЕНИГСБЕРГ Лего (Стар. Кениг 4г, 5 лет и КВ) п/у 3*0.25L алк.40% (Россия) 0.75L", Uom("ST", "шт"), ProductType.ExciseAlcohol,
-                true, "01", MatrixType.Active, "materialType","00", 1.0, false, isExcOld = false)
+        val productInfo6 = TaskProductInfo("000000000000378167", "Набор Коньяк СТАРЫЙ КЕНИГСБЕРГ Лего (Стар. Кениг 4г, 5 лет и КВ) п/у 3*0.25L алк.40% (Россия) 0.75L", Uom("ST", "шт"), ProductType.NonExciseAlcohol,
+                true, "01", MatrixType.Active, "materialType","100", 1.0, false, isExcOld = false)
         val productInfo7 = TaskProductInfo("000077", "Виски", Uom("ST", "шт"), ProductType.ExciseAlcohol,
                 false, "1", MatrixType.Active, "materialType","2", 2.0, true, isExcOld = false)
         val productInfo8 = TaskProductInfo("000077", "Виски", Uom("ST", "шт"), ProductType.ExciseAlcohol,
@@ -106,7 +106,8 @@ class MainMenuViewModel : CoreViewModel() {
         processServiceManager.getInventoryTask()!!.taskRepository.getExciseStamps().addExciseStamp(exciseStamp3)
         processServiceManager.getInventoryTask()!!.taskRepository.getExciseStamps().addExciseStamp(exciseStamp4)*/
 
-        screenNavigator.openSetsInfoScreen(processServiceManager.getInventoryTask()!!.taskRepository.getProducts().findProduct(productInfo6)!!)
+        screenNavigator.openGoodsInfoScreen(processServiceManager.getInventoryTask()!!.taskRepository.getProducts().findProduct(productInfo6)!!)
+        //screenNavigator.openSetsInfoScreen(processServiceManager.getInventoryTask()!!.taskRepository.getProducts().findProduct(productInfo6)!!)
     }
 
     fun onClickUser() {
