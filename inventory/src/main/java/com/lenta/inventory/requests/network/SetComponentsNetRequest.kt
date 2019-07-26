@@ -12,19 +12,6 @@ class SetComponentsNetRequest
 @Inject constructor(private val fmpRequestsHelper: FmpRequestsHelper) : UseCase<List<SetComponentsRestInfo>, Nothing?>(){
     override suspend fun run(params: Nothing?): Either<Failure, List<SetComponentsRestInfo>> {
 
-        /**val webCallParams = WebCallParams().apply {
-            headers = mapOf(
-                    "X-SUP-DOMAIN" to "DM-MAIN",
-                    "Content-Type" to "application/json",
-                    "Web-Authorization" to sessionInfo.basicAuth
-            )
-        }*/
-
-        /**val resString = hyperHive.requestAPI.web("ZMP_UTZ_46_V001", webCallParams). execute()
-        Logg.d { "resString: $resString" }*/
-
-        //val res = hyperHive.requestAPI.web("ZMP_UTZ_46_V001", webCallParams).execute().toFmpObjectRawStatusEither(SetComponentsStatus::class.java, gson)
-
         return fmpRequestsHelper.restRequest(
                 resourceName = "ZMP_UTZ_46_V001",
                 data = null,
