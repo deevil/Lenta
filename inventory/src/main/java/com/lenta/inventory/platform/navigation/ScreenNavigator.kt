@@ -27,15 +27,12 @@ import com.lenta.inventory.features.task_list.TaskListFragment
 import com.lenta.inventory.models.RecountType
 import com.lenta.inventory.models.StorePlaceLockMode
 import com.lenta.inventory.models.task.StorePlaceProcessing
-import com.lenta.inventory.models.task.ProcessExciseAlcoProductService
-import com.lenta.inventory.models.task.TaskStorePlaceInfo
 import com.lenta.inventory.models.task.TaskProductInfo
 import com.lenta.inventory.progress.IInventoryProgressUseCaseInformator
 import com.lenta.inventory.requests.network.TasksItem
 import com.lenta.shared.account.IAuthenticator
 import com.lenta.shared.features.alert.AlertFragment
 import com.lenta.shared.interactor.UseCase
-import com.lenta.shared.models.core.Manufacturer
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
 import com.lenta.shared.platform.navigation.ICoreNavigator
 import com.lenta.shared.platform.navigation.runOrPostpone
@@ -172,7 +169,7 @@ class ScreenNavigator(
     override fun openConfirmationTaskOpenScreen(userName: String, ip: String, callbackFunc: () -> Unit) {
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.confirmation_task_open, userName, ip),
-                    codeConfirm = backFragmentResultHelper.setFuncForResult(callbackFunc),
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(callbackFunc),
                     pageNumber = "93",
                     rightButtonDecorationInfo = ButtonDecorationInfo.next))
         }
@@ -205,6 +202,29 @@ class ScreenNavigator(
         )
     }
 
+    override fun openConfirmationSavingJobScreen(callbackFunc: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.confirmation_saving_job),
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(callbackFunc),
+                    pageNumber = "94",
+                    leftButtonDecorationInfo = ButtonDecorationInfo.no,
+                    rightButtonDecorationInfo = ButtonDecorationInfo.yes))
+        }
+    }
+
+    override fun openSuccessSaveDataScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(
+                    AlertFragment.create(
+                            iconRes = R.drawable.ic_done_green_80dp,
+                            message = context.getString(R.string.success_save_report),
+                            timeAutoExitInMillis = 3000,
+                            leftButtonDecorationInfo = ButtonDecorationInfo.empty
+                    )
+            )
+        }
+    }
+
 
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 
@@ -234,4 +254,6 @@ interface IScreenNavigator : ICoreNavigator {
     fun openAlertDoubleScanStamp()
     fun openPartySignsScreen(title: String, manufacturers: List<String>, stampLength: Int)
     fun openTakenToWorkFragment()
+    fun openConfirmationSavingJobScreen(callbackFunc: () -> Unit)
+    fun openSuccessSaveDataScreen()
 }

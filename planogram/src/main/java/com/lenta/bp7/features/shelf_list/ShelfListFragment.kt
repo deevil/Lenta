@@ -53,11 +53,20 @@ class ShelfListFragment : CoreFragment<FragmentShelfListBinding, ShelfListViewMo
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
         bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.delete, enabled = false)
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.apply, enabled = false)
+    }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         viewLifecycleOwner.apply {
-            connectLiveData(source = vm.deleteButtonEnabled, target = bottomToolbarUiModel.uiModelButton3.enabled)
-            connectLiveData(source = vm.applyButtonEnabled, target = bottomToolbarUiModel.uiModelButton5.enabled)
+            connectLiveData(vm.deleteButtonEnabled, getBottomToolBarUIModel()!!.uiModelButton3.enabled)
+            connectLiveData(vm.applyButtonEnabled, getBottomToolBarUIModel()!!.uiModelButton5.enabled)
         }
+
+        initRvConfig()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        vm.updateShelfList()
     }
 
     override fun onToolbarButtonClick(view: View) {
@@ -66,10 +75,6 @@ class ShelfListFragment : CoreFragment<FragmentShelfListBinding, ShelfListViewMo
             R.id.b_3 -> vm.onClickDelete()
             R.id.b_5 -> vm.onClickApply()
         }
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        initRvConfig()
     }
 
     private fun initRvConfig() {

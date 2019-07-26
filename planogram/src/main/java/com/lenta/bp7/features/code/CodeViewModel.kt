@@ -54,11 +54,11 @@ class CodeViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     init {
         viewModelScope.launch {
             when (checkData.checkType) {
-                CheckType.SELF_CONTROL.type -> {
+                CheckType.SELF_CONTROL -> {
                     message.value = selfControlType.value
                     pinCode = database.getSelfControlPinCode()
                 }
-                CheckType.EXTERNAL_AUDIT.type -> {
+                CheckType.EXTERNAL_AUDIT -> {
                     message.value = externalAuditType.value
                     pinCode = database.getExternalAuditPinCode()
                 }

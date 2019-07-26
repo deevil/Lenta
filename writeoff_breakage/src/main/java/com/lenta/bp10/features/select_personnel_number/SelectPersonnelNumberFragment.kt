@@ -1,5 +1,6 @@
 package com.lenta.bp10.features.select_personnel_number
 
+import android.os.Bundle
 import android.view.View
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
@@ -55,7 +56,11 @@ class SelectPersonnelNumberFragment : CoreFragment<FragmentSelectPersonnelNumber
         bottomToolbarUiModel
                 .uiModelButton1.show(ButtonDecorationInfo.back, enabled = codeConfirmation != null)
 
-        viewLifecycleOwner.connectLiveData(vm.nextButtonFocus, bottomToolbarUiModel.uiModelButton5.requestFocus)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        viewLifecycleOwner.connectLiveData(vm.nextButtonFocus, getBottomToolBarUIModel()!!.uiModelButton5.requestFocus)
     }
 
     override fun onToolbarButtonClick(view: View) {

@@ -3,6 +3,7 @@ package com.lenta.inventory.features.storages_list
 import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.lenta.inventory.features.goods_list.DataSaver
 import com.lenta.inventory.models.RecountType
 import com.lenta.inventory.models.StorePlaceLockMode
 import com.lenta.inventory.models.StorePlaceStatus
@@ -38,6 +39,8 @@ class StoragesListViewModel: CoreViewModel(), OnOkInSoftKeyboardListener {
     lateinit var sessionInfo: ISessionInfo
     @Inject
     lateinit var context: Context
+    @Inject
+    lateinit var dataSaver: DataSaver
 
     val unprocessedStorages: MutableLiveData<List<StoragePlaceVM>> = MutableLiveData()
     val processedStorages: MutableLiveData<List<StoragePlaceVM>> = MutableLiveData()
@@ -111,7 +114,15 @@ class StoragesListViewModel: CoreViewModel(), OnOkInSoftKeyboardListener {
     }
 
     fun onClickComplete() {
-        return
+        taskManager.getInventoryTask()?.let {
+            if (it.hasDiscrepancies()) {
+                screenNavigator.openDiscrepanciesScreen()
+            } else {
+                screenNavigator.openConfirmationSavingJobScreen {
+                    dataSaver.saveData()
+                }
+            }
+        }
     }
 
     fun onClickRefresh() {

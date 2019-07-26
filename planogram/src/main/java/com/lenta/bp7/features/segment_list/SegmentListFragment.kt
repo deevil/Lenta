@@ -51,20 +51,20 @@ class SegmentListFragment : CoreFragment<FragmentSegmentListBinding, SegmentList
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.complete, enabled = false)
+    }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         viewLifecycleOwner.apply {
-            connectLiveData(source = vm.completeButtonEnabled, target = bottomToolbarUiModel.uiModelButton5.enabled)
+            connectLiveData(vm.completeButtonEnabled, getBottomToolBarUIModel()!!.uiModelButton5.enabled)
         }
+
+        initRvConfig()
     }
 
     override fun onToolbarButtonClick(view: View) {
         if (view.id == R.id.b_5) {
             vm.onClickComplete()
         }
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        initRvConfig()
     }
 
     private fun initRvConfig() {

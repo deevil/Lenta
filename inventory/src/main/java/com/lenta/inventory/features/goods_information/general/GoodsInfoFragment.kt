@@ -1,5 +1,6 @@
 package com.lenta.inventory.features.goods_information.general
 
+import android.os.Bundle
 import android.view.View
 import com.lenta.inventory.R
 import com.lenta.inventory.databinding.FragmentGoodsInfoBinding
@@ -57,6 +58,11 @@ class GoodsInfoFragment : CoreFragment<FragmentGoodsInfoBinding,
         bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.missing)
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.apply)
 
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        val bottomToolbarUiModel = getBottomToolBarUIModel()!!
         viewLifecycleOwner.apply {
             connectLiveData(vm.isStorePlaceNumber, bottomToolbarUiModel.uiModelButton3.visibility)
             connectLiveData(vm.enabledMissingButton, bottomToolbarUiModel.uiModelButton4.enabled)

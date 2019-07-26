@@ -12,6 +12,7 @@ import com.lenta.shared.requests.network.TabNumberParams
 import com.lenta.shared.settings.IAppSettings
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
+import com.lenta.shared.utilities.extentions.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -27,9 +28,11 @@ class SelectPersonnelNumberViewModel : CoreViewModel(), OnOkInSoftKeyboardListen
     /*@Inject
     lateinit var persistWriteOffTask: IPersistWriteOffTask*/
 
-    val personnelNumber = MutableLiveData<String>("")
-    val fullName = MutableLiveData<String>("")
-    val employeesPosition = MutableLiveData<String>("")
+    val personnelNumber = MutableLiveData("")
+    val fullName = MutableLiveData("")
+    val employeesPosition = MutableLiveData("")
+    val enabledNextButton = fullName.map { !it.isNullOrBlank() }
+
 
     init {
         viewModelScope.launch {

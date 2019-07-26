@@ -2,18 +2,14 @@ package com.lenta.bp7.features.good_list
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.lenta.bp7.data.model.CheckData
-import com.lenta.bp7.data.model.Good
-import com.lenta.bp7.data.model.ShelfStatus
+import com.lenta.bp7.data.model.*
 import com.lenta.bp7.platform.navigation.IScreenNavigator
 import com.lenta.bp7.repos.IDatabaseRepo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
-import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.map
 import kotlinx.coroutines.launch
-import java.lang.IllegalArgumentException
 import javax.inject.Inject
 
 class GoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
@@ -35,10 +31,11 @@ class GoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     val segmentNumber: MutableLiveData<String> = MutableLiveData()
     val shelfNumber: MutableLiveData<String> = MutableLiveData()
     val goodNumber: MutableLiveData<String> = MutableLiveData("")
-    private val unfinishedCurrentShelf: MutableLiveData<Boolean> = MutableLiveData()
 
-    val applyButtonEnabled: MutableLiveData<Boolean> = goods.combineLatest(unfinishedCurrentShelf).map { pair ->
-        pair?.first?.isNotEmpty() ?: false && pair?.second == true
+    val numberFieldEnabled: MutableLiveData<Boolean> = MutableLiveData(false)
+
+    val applyButtonEnabled: MutableLiveData<Boolean> = goods.map {
+        it?.isNotEmpty() ?: false && checkData.getCurrentShelf().status == ShelfStatus.UNFINISHED
     }
 
     init {
@@ -47,100 +44,100 @@ class GoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
                 segmentNumber.value = it.getCurrentSegment().number
                 shelfNumber.value = it.getCurrentShelf().number
                 goods.value = it.getCurrentShelf().goods
-                unfinishedCurrentShelf.value = it.getCurrentShelf().status == ShelfStatus.UNFINISHED
+                numberFieldEnabled.value = it.getCurrentShelf().status == ShelfStatus.UNFINISHED
             }
         }
     }
 
+    fun updateGoodList() {
+        goods.value = checkData.getCurrentShelf().goods
+    }
+
     override fun onOkInSoftKeyboard(): Boolean {
-        createGood()
+        checkEnteredNumber()
         return true
     }
 
-    private fun createGood() {
+    private fun checkEnteredNumber() {
         goodNumber.value.let { number ->
             if (number?.isNotEmpty() == true && number.length >= 6) {
                 if (number.length == SAP_LENGTH) {
-                    Logg.d { "Entered SAP-code: $number" }
-                    val good = goods.value?.find { it.sapCode == "000000000000$number" }
-                    checkData.let {
-                        when (good) {
-                            null -> {
-                                viewModelScope.launch {
-                                    it.addGood(database.getGoodInfoBySapCode("000000000000$number"))
-                                    openInfoScreen()
-                                }
-                            }
-                            else -> {
-                                it.currentGoodIndex = goods.value?.indexOf(good)
-                                        ?: throw IllegalArgumentException("Good with SAP-$number exist, but not found!")
-                                openInfoScreen()
-                            }
-                        }
-                    }
+                    createGoodBySapCode()
                 }
 
-                if (number.length == SAP_OR_BAR_LENGTH) { // введен sap/bar код
-                    Logg.d { "Entered SAP or BAR-code: $number" }
+                if (number.length == SAP_OR_BAR_LENGTH) {
                     // todo ЭКРАН выбора типа введенного кода
 
                 }
 
                 if (number.length > SAP_LENGTH) {
-                    Logg.d { "Entered BAR-code: $number" }
-                    val good = goods.value?.find { it.barCode == number }
-                    checkData.let {
-                        when (good) {
-                            null -> {
-                                viewModelScope.launch {
-                                    it.addGood(database.getGoodInfoByBarCode(number))
-                                    openInfoScreen()
-                                }
-                            }
-                            else -> {
-                                it.currentGoodIndex = goods.value?.indexOf(good)
-                                        ?: throw IllegalArgumentException("Good with BAR-$number exist, but not found!")
-                                openInfoScreen()
-                            }
-                        }
-                    }
+                    createGoodByBarCode()
                 }
             }
         }
     }
 
-    private fun openInfoScreen() {
-        // todo Логика выбора экрана в зависимости от параметров проверки
+    private fun createGoodBySapCode() {
+        goodNumber.value.let { number ->
+            Logg.d { "Entered SAP-code: $number" }
+            val sapcode = if (number?.length == 6) "000000000000$number" else "000000$number"
+            viewModelScope.launch {
+                checkData.addGood(database.getGoodInfoBySapCode(sapcode))
+                openGoodInfoScreen()
+            }
+        }
+    }
 
-        navigator.openGoodInfoScreen()
+    private fun createGoodByBarCode() {
+        goodNumber.value.let { number ->
+            Logg.d { "Entered BAR-code: $number" }
+            viewModelScope.launch {
+                checkData.addGood(database.getGoodInfoByBarCode(number))
+                openGoodInfoScreen()
+            }
+        }
+    }
+
+    private fun openGoodInfoScreen() {
+        // todo для тестирования разных сценариев проверки. Потом удалить.
+        checkData.countFacings = true
+        checkData.checkEmptyPlaces = true
+
+        if (checkData.countFacings) {
+            navigator.openGoodInfoFacingScreen()
+        } else {
+            navigator.openGoodInfoScreen()
+        }
     }
 
     fun onClickApply() {
-        // todo ЭКРАН подтверждение завершения сканирования полки
-
-        // !Перенести на другой экран
-        checkData.getCurrentShelf().status = ShelfStatus.PROCESSED
-        navigator.goBack()
+        // Подтверждение - Сохранить результаты сканирования полки и закрыть ее для редактирования - Назад / Да
+        navigator.showSaveShelfScanResults(segmentNumber.value!!, shelfNumber.value!!) {
+            checkData.getCurrentShelf().status = ShelfStatus.PROCESSED
+            navigator.openShelfListScreen()
+        }
     }
 
     fun onClickBack() {
-        if (unfinishedCurrentShelf.value == false) {
+        if (checkData.getCurrentShelf().status != ShelfStatus.UNFINISHED) {
             navigator.goBack()
             return
         }
 
         if (goods.value?.isEmpty() == true) {
-            // todo ЭКРАН полка пуста и будет удалена
-
-            // !Перенести на другой экран
             checkData.deleteCurrentShelf()
             navigator.goBack()
         } else {
-            // todo ЭКРАН сохранить результаты и закрыть для редактирования
-
-            // !Перенести на другой экран
-            checkData.getCurrentShelf().status = ShelfStatus.PROCESSED
-            navigator.goBack()
+            // Подтверждение - Данные полки не будут сохранены - Назад / Подтвердить
+            navigator.showShelfDataWillNotBeSaved(segmentNumber.value!!, shelfNumber.value!!) {
+                checkData.getCurrentShelf().status = ShelfStatus.DELETED
+                navigator.openShelfListScreen()
+            }
         }
+    }
+
+    fun onClickItemPosition(position: Int) {
+        checkData.currentGoodIndex = position
+        openGoodInfoScreen()
     }
 }

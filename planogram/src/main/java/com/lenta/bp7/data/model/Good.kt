@@ -1,17 +1,21 @@
 package com.lenta.bp7.data.model
 
 data class Good(
-    val id: Int,
-    val sapCode: String? = "",
-    val barCode: String? = "",
-    val name: String? = "",
-    var totalFacings: Int = 0,
-    val units: String? = "",
-    var status: GoodStatus = GoodStatus.CREATED
+        val id: Int,
+        val sapCode: String? = "",
+        val barCode: String? = "",
+        val name: String? = "",
+        var facings: Int = 0,
+        val units: String? = "",
+        var status: GoodStatus = GoodStatus.CREATED
 ) {
 
     fun getFormattedSapCode(): String? {
-        return if (sapCode?.isNotEmpty() == true) sapCode.substring(sapCode.length - 6) else ""
+        return sapCode?.takeLast(6) ?: ""
+    }
+
+    fun getNumberOfFacing(): String? {
+        return if ((status == GoodStatus.CREATED || status == GoodStatus.PROCESSED) && facings == 0) "+" else facings.toString()
     }
 
 }
@@ -25,6 +29,7 @@ data class GoodInfo(
 
 enum class GoodStatus {
     CREATED,
-    MISSING,
-    PRESENT
+    PROCESSED,
+    MISSING_WRONG,
+    MISSING_RIGHT
 }

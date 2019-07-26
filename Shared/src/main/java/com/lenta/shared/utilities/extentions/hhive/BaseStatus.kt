@@ -40,13 +40,13 @@ fun BaseStatus.toEitherBoolean(nameResource: String? = null): Either<Failure, Bo
     return toEither(true, nameResource)
 }
 
-fun <T> BaseStatus.toEither(data: T?, nameResource: String? = null): Either<Failure, T> {
+fun <T> BaseStatus.toEither(data: T?, resourceName: String? = null): Either<Failure, T> {
+    ANALYTICS_HELPER?.onFinishFmpRequest(resourceName)
     return if (this.isNotBad() && data != null) {
-        ANALYTICS_HELPER?.onFinishFmpRequest(nameResource)
         Either.Right(data)
     } else {
-        ANALYTICS_HELPER?.logRequestError(nameResource, this)
-        Logg.e { "Failure FMP request for resource $nameResource: ${this}" }
+        ANALYTICS_HELPER?.logRequestError(resourceName, this)
+        Logg.w { "Failure FMP request for resource $resourceName: ${this}" }
         Either.Left(this.getFailure())
     }
 }

@@ -40,7 +40,6 @@ class PinCodeFragment : CoreFragment<com.lenta.shared.databinding.FragmentPinCod
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.goOver, enabled = false)
 
-        viewLifecycleOwner.connectLiveData(vm.enabledGoOverBtn, bottomToolbarUiModel.uiModelButton5.enabled)
     }
 
     override fun getPageNumber(): String = generateScreenNumber()
@@ -72,6 +71,7 @@ class PinCodeFragment : CoreFragment<com.lenta.shared.databinding.FragmentPinCod
             etPin2.addTextChangedListener(EnterCodeTextWatcher(binding?.etPin3))
             etPin3.addTextChangedListener(EnterCodeTextWatcher(binding?.etPin4))
         }
+        viewLifecycleOwner.connectLiveData(vm.enabledGoOverBtn, getBottomToolBarUIModel()!!.uiModelButton5.enabled)
     }
 
     companion object {

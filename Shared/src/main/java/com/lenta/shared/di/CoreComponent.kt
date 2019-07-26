@@ -31,6 +31,7 @@ import com.lenta.shared.platform.network_state.NetworkStateMonitor
 import com.lenta.shared.platform.resources.ISharedStringResourceManager
 import com.lenta.shared.platform.time.ITimeMonitor
 import com.lenta.shared.progress.IProgressUseCaseInformator
+import com.lenta.shared.requests.FmpRequestsHelper
 import com.lenta.shared.requests.combined.scan_info.ScanInfoRequest
 import com.lenta.shared.scan.IScanHelper
 import com.lenta.shared.settings.IAppSettings
@@ -69,6 +70,7 @@ interface CoreComponent {
     fun getRoomAppDatabase(): RoomAppDatabase
     fun getLogDao(): LogDao
     fun getAnalyticsHelper(): AnalyticsHelper
+    fun getFmpRequestsHelper(): FmpRequestsHelper
 
 
     fun inject(it: FmpSettingsViewModel)

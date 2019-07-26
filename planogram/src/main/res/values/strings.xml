@@ -8,10 +8,12 @@
     <string name="external_audit">Внешний аудит</string>
     <string name="incorrect_code_message">Введен некорректный пин-код!</string>
     <string name="number_of_facings">Количество фейсингов</string>
+    <string name="without_number_of_facings">Без количества фейсингов</string>
     <string name="enter_quantity">Введите кол-во</string>
     <string name="total_facings">Итого фейсингов</string>
     <string name="goods_barcode">Штрихкод товара</string>
     <string name="good_on_shelf">Товар на полке</string>
+    <string name="good_is_missing">Товар отсутствует</string>
     <string name="segment_number_store_date">%1$s (ТК - %2$s)\n%3$s</string>
     <string name="shelf_number_time">%1$s\n%2$s</string>
     <string name="one_space_two">%1$s %2$s</string>
@@ -20,6 +22,17 @@
     <!-- Информационные сообщения -->
     <string name="code_screen_message">Введите ПИН-код для подтверждения входа в режим \"%1$s\"</string>
     <string name="segment_processing_mode">Определение режима\nобработки сегмента</string>
+
+    <string name="shelf_data_will_not_be_saved">СЕГМЕНТ № %1$s\nПОЛКА № %2$s\n\nДанные полки не будут сохранены</string>
+    <string name="save_shelf_scan_results">СЕГМЕНТ: %1$s\nПОЛКА: %2$s\n\nСохранить результаты сканирования полки и закрыть ее для редактирования?</string>
+    <string name="save_segment_scan_results">СЕГМЕНТ: %1$s\n\nСохранить результаты сканирования сегмента, закрыть его для редактирования и переслать?</string>
+    <string name="is_empty_place_decorated_correctly">%1$s %2$s\n\nСЕГМЕНТ № %3$s\nПОЛКА № %4$s\n\nПустое место оформлено правильно?</string>
+    <string name="segment_started_with_facings">Начата обработка сегмента\n№%1$s с подсчетом количества фейсингов</string>
+    <string name="segment_started_without_facings">Начата обработка сегмента\n№%1$s без подсчета количества фейсингов</string>
+    <string name="shelf_started">СЕГМЕНТ: %1$s\nНачата обработка полки №%2$s</string>
+    <string name="delete_data_on_segment">ТК № %1$s\nСЕГМЕНТ № %2$s\n\nУдалить данные по сегменту?</string>
+    <string name="no_shelves_in_segment_to_save">СЕГМЕНТ № %1$s\n\nВ сегменте отсутствуют полки для сохранения. Сегмент не будет сохранен</string>
+    <string name="incomplete_segment_detected">Обнаружен незавершенный сегмент. Начало работы с новым сегментом невозможно. Перейти к обработке сегмента?</string>
 
 
     <!-- Заголовки экранов -->

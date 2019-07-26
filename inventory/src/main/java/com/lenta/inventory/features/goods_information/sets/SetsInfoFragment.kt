@@ -80,7 +80,23 @@ class SetsInfoFragment : CoreFragment<FragmentSetsInfoBinding, SetsInfoViewModel
 
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.apply)
+    }
 
+    override fun onToolbarButtonClick(view: View) {
+        when (view.id) {
+            R.id.b_3 -> vm.onClickButton3()
+            R.id.b_4 -> vm.onClickMissing()
+            R.id.b_5 -> vm.onClickApply()
+        }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        binding?.let {
+            it.viewPagerSettings = this
+            it.pageSelectionListener=this
+        }
+        val bottomToolbarUiModel = getBottomToolBarUIModel()!!
         viewLifecycleOwner.apply {
             connectLiveData(vm.enabledMissingButton, bottomToolbarUiModel.uiModelButton4.enabled)
             connectLiveData(vm.enabledApplyButton, bottomToolbarUiModel.uiModelButton5.enabled)
@@ -100,21 +116,7 @@ class SetsInfoFragment : CoreFragment<FragmentSetsInfoBinding, SetsInfoViewModel
                 }
             })
         }
-    }
 
-    override fun onToolbarButtonClick(view: View) {
-        when (view.id) {
-            R.id.b_3 -> vm.onClickButton3()
-            R.id.b_4 -> vm.onClickMissing()
-            R.id.b_5 -> vm.onClickApply()
-        }
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        binding?.let {
-            it.viewPagerSettings = this
-            it.pageSelectionListener=this}
     }
 
     override fun getPagerItemView(container: ViewGroup, position: Int): View {

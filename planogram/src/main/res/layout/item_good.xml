@@ -47,11 +47,19 @@
                 <TextView
                     android:id="@+id/tv_good_number_name"
                     style="@style/CellTextStyle"
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_marginStart="5dp"
+                    android:layout_weight="1"
                     android:maxLines="2"
                     android:text="@{@string/one_space_two(good.formattedSapCode, good.name)}"
                     tools:text="000021 Масло"/>
+
+                <ImageView
+                    android:id="@+id/iv_open"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="5dp"
+                    android:src="@drawable/ic_keyboard_arrow_right_white_16dp"/>
 
             </LinearLayout>
 
@@ -82,7 +90,7 @@
                     android:id="@+id/tv_goods_count"
                     style="@style/CellTextStyle"
                     android:layout_marginStart="5dp"
-                    android:text="@{String.valueOf(good.totalFacings)}"
+                    android:text="@{good.numberOfFacing}"
                     tools:text="0"/>
 
             </LinearLayout>

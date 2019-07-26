@@ -18,7 +18,7 @@ class ExitWithConfirmationFragment : CoreMessageFragment() {
         provideViewModel(ExitFromAppViewModel::class.java).let {
             coreComponent.inject(it)
             it.message = getString(R.string.exit_confirmation)
-            it.codeConfirm = 1
+            it.codeConfirmForRight = 1
             return it
         }
     }

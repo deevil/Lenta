@@ -5,6 +5,7 @@ import android.os.Bundle
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LiveData
 import com.lenta.shared.R
+import com.lenta.shared.analytics.AnalyticsHelper
 import com.lenta.shared.analytics.IAnalytics
 import com.lenta.shared.analytics.db.RoomAppDatabase
 import com.lenta.shared.exception.Failure
@@ -35,6 +36,7 @@ class CoreNavigator constructor(private val context: Context,
                                 private val foregroundActivityProvider: ForegroundActivityProvider,
                                 private val failureInterpreter: IFailureInterpreter,
                                 private val analytics: IAnalytics,
+                                private val analyticsHelper: AnalyticsHelper,
                                 private val roomAppDatabase: RoomAppDatabase,
                                 override val backFragmentResultHelper: BackFragmentResultHelper) : ICoreNavigator {
 
@@ -48,15 +50,22 @@ class CoreNavigator constructor(private val context: Context,
         }
     }
 
-    override fun goBackWithResultCode(code: Int) {
-        goBackWithArgs(
-                args = Bundle().apply {
-                    setFragmentResultCode(code)
-                })
+    override fun goBackWithResultCode(code: Int?) {
+        if (code == null) {
+            backFragmentResultHelper.getFuncAndClear(null)
+            goBack()
+        } else {
+            goBackWithArgs(
+                    args = Bundle().apply {
+                        setFragmentResultCode(code)
+                    })
+        }
+
     }
 
     override fun goBack() {
         runOrPostpone {
+            analyticsHelper.onGoBack()
             getFragmentStack()?.pop()
         }
     }
@@ -240,7 +249,7 @@ class CoreNavigator constructor(private val context: Context,
                     AlertFragment.create(
                             message = context.getString(R.string.another_market_stamp),
                             pageNumber = "93",
-                            codeConfirm = codeConfirm,
+                            codeConfirmForRight = codeConfirm,
                             rightButtonDecorationInfo = ButtonDecorationInfo.next
                     )
             )
@@ -253,7 +262,7 @@ class CoreNavigator constructor(private val context: Context,
                     AlertFragment.create(
                             message = context.getString(R.string.writeoff_to_production_confirmation),
                             pageNumber = "95",
-                            codeConfirm = codeConfirm,
+                            codeConfirmForRight = codeConfirm,
                             rightButtonDecorationInfo = ButtonDecorationInfo.nextAlternate
                     )
             )
@@ -270,9 +279,14 @@ class CoreNavigator constructor(private val context: Context,
     }
 
     override fun openNotImplementedScreenAlert(screenName: String) {
-        //TODO изменить реализацию метода после создания экрана
         openInfoScreen(context.getString(R.string.not_implemented_screen, screenName))
 
+    }
+
+    override fun closeAllScreen() {
+        runOrPostpone {
+            getFragmentStack()?.popAll()
+        }
     }
 
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
@@ -287,7 +301,7 @@ interface ICoreNavigator {
     val functionsCollector: FunctionsCollector
     val backFragmentResultHelper: BackFragmentResultHelper
     fun goBackWithArgs(args: Bundle)
-    fun goBackWithResultCode(code: Int)
+    fun goBackWithResultCode(code: Int?)
     fun goBack()
     fun finishApp()
     fun openAlertScreen(message: String,
@@ -296,6 +310,7 @@ interface ICoreNavigator {
                         pageNumber: String? = null,
                         timeAutoExitInMillis: Int? = null,
                         onlyIfFirstAlert: Boolean = false)
+
     fun openAlertScreen(failure: Failure, pageNumber: String = "96")
     fun openSupportScreen()
     fun <Params> showProgress(useCase: UseCase<Any, Params>)
@@ -322,6 +337,7 @@ interface ICoreNavigator {
     fun openWriteOffToProductionConfirmationScreen(codeConfirm: Int)
     fun openNeedUpdateScreen()
     fun openNotImplementedScreenAlert(screenName: String)
+    fun closeAllScreen()
 }
 
 class FunctionsCollector(private val needCollectLiveData: LiveData<Boolean>) {
