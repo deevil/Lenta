@@ -12,7 +12,6 @@ import com.lenta.inventory.platform.navigation.IScreenNavigator
 import com.lenta.inventory.requests.network.*
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
-import com.lenta.shared.features.message.MessageViewModel
 import com.lenta.shared.models.core.Manufacturer
 import com.lenta.shared.models.core.ProductType
 import com.lenta.shared.platform.viewmodel.CoreViewModel
@@ -22,7 +21,6 @@ import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.toStringFormatted
 import com.lenta.shared.view.OnPositionClickListener
 import kotlinx.coroutines.launch
-import java.math.BigDecimal
 import java.math.BigInteger
 import javax.inject.Inject
 
@@ -130,10 +128,8 @@ class ExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
     }
 
     fun onClickMissing() {
-        //todo
-        onScanResult("14680001340000845000000001")
-        /**processExciseAlcoProductService.markMissing()
-        screenNavigator.goBack()*/
+        processExciseAlcoProductService.markMissing()
+        screenNavigator.goBack()
     }
 
     fun onClickApply() {
@@ -306,8 +302,6 @@ class ExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
     }
 
     private fun partySignsHandleSuccess(exciseGoodsRestInfo: ExciseGoodsRestInfo){
-        Logg.d { "partySignsHandleSuccess $exciseGoodsRestInfo" }
-
         if (exciseGoodsRestInfo.retCode != "0") {
             screenNavigator.openAlertScreen(exciseGoodsRestInfo.errorTxt, iconRes = iconRes.value!!, textColor = textColor.value, pageNumber = "98")
             return
@@ -416,8 +410,6 @@ class ExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
     }
 
     private fun partySignsStamp68HandleSuccess(exciseGoodsRestInfo: ExciseGoodsRestInfo){
-        Logg.d { "partySignsHandleSuccess $exciseGoodsRestInfo" }
-
         if (exciseGoodsRestInfo.retCode != "0") {
             screenNavigator.openAlertScreen(exciseGoodsRestInfo.errorTxt, iconRes = iconRes.value!!, textColor = textColor.value, pageNumber = "98")
             return
