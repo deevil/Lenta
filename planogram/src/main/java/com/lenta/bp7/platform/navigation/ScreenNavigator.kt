@@ -264,6 +264,7 @@ class ScreenNavigator(
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.successfully_saved_to_lua),
                     pageNumber = "24",
+                    iconRes = R.drawable.ic_done_green_80dp,
                     codeConfirmForExit = backFragmentResultHelper.setFuncForResult(afterShowCallback),
                     timeAutoExitInMillis = 2000))
         }
@@ -273,6 +274,7 @@ class ScreenNavigator(
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.error_saving_to_lua),
                     pageNumber = "61",
+                    iconRes = R.drawable.ic_info_pink,
                     codeConfirmForExit = backFragmentResultHelper.setFuncForResult(afterShowCallback),
                     timeAutoExitInMillis = 2000))
         }
