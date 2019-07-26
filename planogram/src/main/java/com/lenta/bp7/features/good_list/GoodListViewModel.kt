@@ -35,22 +35,22 @@ class GoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     val numberFieldEnabled: MutableLiveData<Boolean> = MutableLiveData(false)
 
     val applyButtonEnabled: MutableLiveData<Boolean> = goods.map {
-        it?.isNotEmpty() ?: false && checkData.getCurrentShelf().status == ShelfStatus.UNFINISHED
+        it?.isNotEmpty() ?: false && checkData.getCurrentShelf()?.status == ShelfStatus.UNFINISHED
     }
 
     init {
         viewModelScope.launch {
             checkData.let {
-                segmentNumber.value = it.getCurrentSegment().number
-                shelfNumber.value = it.getCurrentShelf().number
-                goods.value = it.getCurrentShelf().goods
-                numberFieldEnabled.value = it.getCurrentShelf().status == ShelfStatus.UNFINISHED
+                segmentNumber.value = it.getCurrentSegment()?.number
+                shelfNumber.value = it.getCurrentShelf()?.number
+                goods.value = it.getCurrentShelf()?.goods
+                numberFieldEnabled.value = it.getCurrentShelf()?.status == ShelfStatus.UNFINISHED
             }
         }
     }
 
     fun updateGoodList() {
-        goods.value = checkData.getCurrentShelf().goods
+        goods.value = checkData.getCurrentShelf()?.goods
     }
 
     override fun onOkInSoftKeyboard(): Boolean {
@@ -60,40 +60,55 @@ class GoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
     private fun checkEnteredNumber() {
         goodNumber.value.let { number ->
-            if (number?.isNotEmpty() == true && number.length >= 6) {
-                if (number.length == SAP_LENGTH) {
-                    createGoodBySapCode()
-                }
-
-                if (number.length == SAP_OR_BAR_LENGTH) {
-                    // todo ЭКРАН выбора типа введенного кода
-
-                }
-
-                if (number.length > SAP_LENGTH) {
-                    createGoodByBarCode()
+            if (number?.isNotEmpty() == true && number.length >= SAP_LENGTH) {
+                when (number.length) {
+                    SAP_LENGTH -> addGoodBySapCode()
+                    SAP_OR_BAR_LENGTH -> {
+                        // Выбор - Введено 12 знаков. Какой код вы ввели? - SAP-код / Штрихкод
+                        navigator.showTwelveCharactersEntered(
+                                sapCallback = ::addGoodBySapCode,
+                                barCallback = ::addGoodByBarCode)
+                    }
+                    else -> addGoodByBarCode()
                 }
             }
         }
     }
 
-    private fun createGoodBySapCode() {
+    private fun addGoodBySapCode() {
         goodNumber.value.let { number ->
             Logg.d { "Entered SAP-code: $number" }
-            val sapcode = if (number?.length == 6) "000000000000$number" else "000000$number"
             viewModelScope.launch {
-                checkData.addGood(database.getGoodInfoBySapCode(sapcode))
-                openGoodInfoScreen()
+                val goodInfo = database.getGoodInfoBySapCode(if (number!!.length == SAP_LENGTH) "000000000000$number" else "000000$number")
+                if (goodInfo != null) {
+                    checkData.addGood(goodInfo)
+                    openGoodInfoScreen()
+                }
             }
         }
     }
 
-    private fun createGoodByBarCode() {
+    private fun addGoodByBarCode() {
         goodNumber.value.let { number ->
             Logg.d { "Entered BAR-code: $number" }
             viewModelScope.launch {
-                checkData.addGood(database.getGoodInfoByBarCode(number))
-                openGoodInfoScreen()
+                val goodInfo = database.getGoodInfoByBarCode(number!!)
+                if (goodInfo != null) {
+                    checkData.addGood(goodInfo)
+                    openGoodInfoScreen()
+                } else {
+                    if (checkData.getCurrentGood()?.barCode == number) {
+                        checkData.addGood(GoodInfo(barCode = number))
+                        openGoodInfoScreen()
+                    } else {
+                        // Подтверждение - Неизвестный штрихкод. Товар определить не удалось. Все равно использовать этот штрихкод? - Назад / Да
+                        navigator.showUnknownGoodBarcode(
+                                barCode = number) {
+                            checkData.addGood(GoodInfo(barCode = number))
+                            openGoodInfoScreen()
+                        }
+                    }
+                }
             }
         }
     }
@@ -112,14 +127,16 @@ class GoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
     fun onClickApply() {
         // Подтверждение - Сохранить результаты сканирования полки и закрыть ее для редактирования - Назад / Да
-        navigator.showSaveShelfScanResults(segmentNumber.value!!, shelfNumber.value!!) {
-            checkData.getCurrentShelf().status = ShelfStatus.PROCESSED
+        navigator.showSaveShelfScanResults(
+                segmentNumber = segmentNumber.value!!,
+                shelfNumber = shelfNumber.value!!) {
+            checkData.getCurrentShelf()?.status = ShelfStatus.PROCESSED
             navigator.openShelfListScreen()
         }
     }
 
     fun onClickBack() {
-        if (checkData.getCurrentShelf().status != ShelfStatus.UNFINISHED) {
+        if (checkData.getCurrentShelf()?.status != ShelfStatus.UNFINISHED) {
             navigator.goBack()
             return
         }
@@ -129,8 +146,10 @@ class GoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
             navigator.goBack()
         } else {
             // Подтверждение - Данные полки не будут сохранены - Назад / Подтвердить
-            navigator.showShelfDataWillNotBeSaved(segmentNumber.value!!, shelfNumber.value!!) {
-                checkData.getCurrentShelf().status = ShelfStatus.DELETED
+            navigator.showShelfDataWillNotBeSaved(
+                    segmentNumber = segmentNumber.value!!,
+                    shelfNumber = shelfNumber.value!!) {
+                checkData.getCurrentShelf()?.status = ShelfStatus.DELETED
                 navigator.openShelfListScreen()
             }
         }

@@ -62,9 +62,6 @@ class CodeViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
                     message.value = externalAuditType.value
                     pinCode = database.getExternalAuditPinCode()
                 }
-                else -> {
-                    throw IllegalArgumentException("Check type is not defined!")
-                }
             }
         }
     }

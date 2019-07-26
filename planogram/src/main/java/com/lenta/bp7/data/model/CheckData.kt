@@ -7,7 +7,7 @@ class CheckData(
         val segments: MutableList<Segment> = mutableListOf()
 ) {
 
-    var checkType: CheckType = CheckType.NOT_DEFINED
+    var checkType: CheckType = CheckType.SELF_CONTROL
     var countFacings = false
     var checkEmptyPlaces = false
 
@@ -19,30 +19,39 @@ class CheckData(
         generateTestData()
     }
 
-    fun getCurrentSegment(): Segment {
-        return segments[currentSegmentIndex]
+    fun getCurrentSegment(): Segment? {
+        return if (segments.isNotEmpty()) {
+            segments[currentSegmentIndex]
+        } else null
     }
 
-    fun getCurrentShelf(): Shelf {
-        return segments[currentSegmentIndex].let { segment ->
-            segment.shelves[currentShelfIndex]
-        }
-    }
-
-    fun getCurrentGood(): Good {
-        return segments[currentSegmentIndex].let { segment ->
-            segment.shelves[currentShelfIndex].let { shelf ->
-                shelf.goods[currentGoodIndex]
+    fun getCurrentShelf(): Shelf? {
+        return if (getCurrentSegment()?.shelves?.isNotEmpty() == true) {
+            segments[currentSegmentIndex].let { segment ->
+                segment.shelves[currentShelfIndex]
             }
-        }
+        } else null
+
     }
 
-    fun getLastGood(): Good {
-        return segments[currentSegmentIndex].let { segment ->
-            segment.shelves[currentShelfIndex].let { shelf ->
-                shelf.goods[currentGoodIndex + 1]
+    fun getCurrentGood(): Good? {
+        return if (getCurrentShelf()?.goods?.isNotEmpty() == true) {
+            segments[currentSegmentIndex].let { segment ->
+                segment.shelves[currentShelfIndex].let { shelf ->
+                    shelf.goods[currentGoodIndex]
+                }
             }
-        }
+        } else null
+    }
+
+    fun getPreviousGood(): Good? {
+        return if (getCurrentShelf()?.goods?.size ?: 0 > 1) {
+            segments[currentSegmentIndex].let { segment ->
+                segment.shelves[currentShelfIndex].let { shelf ->
+                    shelf.goods[currentGoodIndex + 1]
+                }
+            }
+        } else null
     }
 
     fun addSegment(storeNumber: String, segmentNumber: String) {
@@ -54,7 +63,7 @@ class CheckData(
     }
 
     fun addShelf(shelfNumber: String) {
-        getCurrentSegment().shelves.let {
+        getCurrentSegment()!!.shelves.let {
             it.add(0, Shelf(
                     id = it.lastIndex + 2,
                     number = shelfNumber))
@@ -62,14 +71,14 @@ class CheckData(
         currentShelfIndex = 0
     }
 
-    fun addGood(goodInfo: GoodInfo?) {
-        getCurrentShelf().goods.let {
+    fun addGood(goodInfo: GoodInfo) {
+        getCurrentShelf()!!.goods.let {
             it.add(0, Good(
                     id = it.lastIndex + 2,
-                    sapCode = goodInfo?.sapCode,
-                    barCode = goodInfo?.barCode,
-                    name = goodInfo?.name,
-                    units = goodInfo?.units))
+                    sapCode = goodInfo.sapCode,
+                    barCode = goodInfo.barCode,
+                    name = goodInfo.name,
+                    units = goodInfo.units))
         }
         currentGoodIndex = 0
     }
@@ -80,35 +89,35 @@ class CheckData(
     }
 
     fun deleteCurrentShelf() {
-        getCurrentSegment().shelves.removeAt(currentShelfIndex)
+        getCurrentSegment()?.shelves?.removeAt(currentShelfIndex)
         currentShelfIndex = 0
     }
 
     fun deleteCurrentGood() {
-        getCurrentShelf().goods.removeAt(currentGoodIndex)
+        getCurrentShelf()?.goods?.removeAt(currentGoodIndex)
         currentGoodIndex = 0
     }
 
     fun setCurrentGoodStatus(status: GoodStatus) {
-        getCurrentGood().status = status
-        removeCurrentGoodIfSameLast()
+        getCurrentGood()?.status = status
+        removeCurrentGoodIfSamePrevious()
     }
 
-    fun currentGoodIsSameLast(): Boolean {
+    private fun removeCurrentGoodIfSamePrevious() {
         val current = getCurrentGood()
-        val last = getLastGood()
-        return current.barCode == last.barCode && current.status == last.status
-    }
-
-    fun removeCurrentGoodIfSameLast() {
-        if (goodsMoreThanOne() && currentGoodIsSameLast()) {
-            getLastGood().facings += getCurrentGood().facings
-            deleteCurrentGood()
+        val previous = getPreviousGood()
+        if (current != null && previous != null) {
+            if (current.barCode == previous.barCode && current.status == previous.status) {
+                getPreviousGood()!!.facings += getCurrentGood()!!.facings
+                deleteCurrentGood()
+            }
         }
     }
 
     fun setShelfStatusDeletedByIndex(shelfIndex: Int) {
-        getCurrentSegment().shelves[shelfIndex].status = ShelfStatus.DELETED
+        if (getCurrentSegment()?.shelves?.size ?: 0 >= shelfIndex) {
+            getCurrentSegment()!!.shelves[shelfIndex].status = ShelfStatus.DELETED
+        }
     }
 
     fun isExistUnfinishedSegment(): Boolean {
@@ -119,12 +128,8 @@ class CheckData(
         currentSegmentIndex = segments.indexOf(segments.find { it.status == SegmentStatus.UNFINISHED })
     }
 
-    fun getLastGoodFacings(): Int {
-        return if (goodsMoreThanOne() && getCurrentGood().barCode == getLastGood().barCode) getLastGood().facings else 0
-    }
-
-    private fun goodsMoreThanOne(): Boolean {
-        return getCurrentShelf().goods.size > 1
+    fun getPreviousGoodFacings(): Int {
+        return if (getCurrentGood()?.barCode == getPreviousGood()?.barCode) getPreviousGood()?.facings ?: 0 else 0
     }
 
 
@@ -164,7 +169,8 @@ class CheckData(
                     barCode = (100000000000..999999999999).random().toString(),
                     name = "Товар " + (1..1000).random(),
                     status = createGoodStatus(facings),
-                    facings = facings))
+                    facings = facings,
+                    units = "шт"))
         }
 
         return goods

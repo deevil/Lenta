@@ -2,6 +2,8 @@ package com.lenta.bp7.features.select_market
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.lenta.bp7.data.CheckType
+import com.lenta.bp7.data.model.CheckData
 import com.lenta.bp7.platform.navigation.IScreenNavigator
 import com.lenta.bp7.repos.IRepoInMemoryHolder
 import com.lenta.shared.account.ISessionInfo
@@ -30,6 +32,8 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
     lateinit var timeMonitor: ITimeMonitor
     @Inject
     lateinit var serverTimeRequest: ServerTimeRequest
+    @Inject
+    lateinit var checkData: CheckData
 
     private val markets: MutableLiveData<List<MarketUi>> = MutableLiveData()
     val marketsNames: MutableLiveData<List<String>> = markets.map { markets ->
@@ -87,9 +91,32 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
     private fun handleSuccessServerTime(serverTime: ServerTime) {
         timeMonitor.setServerTime(time = serverTime.time, date = serverTime.date)
 
-        // todo Для упрощения тестирования. Потом поменять обратно.
-        //navigator.openCheckTypeScreen()
-        navigator.openSegmentListScreen()
+        // TODO Реализовать логику проверки несохраненных данных
+        // После того как будет сделано хранение данных
+
+        val unsavedData = false
+        checkData.checkType = CheckType.EXTERNAL_AUDIT
+
+        if (unsavedData) {
+            when (checkData.checkType) {
+                CheckType.SELF_CONTROL -> {
+                    // Подтверждение - На устройстве обнаружены несохраненные данные в режиме "Самоконтроль ТК" - Назад / Перейти
+                    navigator.showUnsavedSelfControlDataDetected {
+                        navigator.openCodeScreen()
+                    }
+                }
+                CheckType.EXTERNAL_AUDIT -> {
+                    // Подтверждение - На устройстве обнаружены несохраненные данные в режиме "Внешний аудит" - Назад / Перейти
+                    navigator.showUnsavedExternalAuditDataDetected {
+                        navigator.openCodeScreen()
+                    }
+                }
+            }
+        } else {
+            // TODO Для простоты тестирования
+            //navigator.openCheckTypeScreen()
+            navigator.openSegmentListScreen()
+        }
     }
 
     private fun clearPrinters() {

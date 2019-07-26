@@ -4,6 +4,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp7.data.model.CheckData
 import com.lenta.bp7.data.model.Segment
+import com.lenta.bp7.data.model.SegmentStatus
 import com.lenta.bp7.platform.navigation.IScreenNavigator
 import com.lenta.bp7.repos.IDatabaseRepo
 import com.lenta.shared.account.ISessionInfo
@@ -44,12 +45,11 @@ class SegmentListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
         }
     }
 
-    override fun onOkInSoftKeyboard(): Boolean {
-        createSegment()
-        return true
+    fun updateSegmentList() {
+        segments.value = checkData.segments
     }
 
-    private fun createSegment() {
+    override fun onOkInSoftKeyboard(): Boolean {
         if (checkData.isExistUnfinishedSegment()) {
             // Подтверждение - Обнаружен незавершенный сегмент. Начало работы с новым сегментом невозможно. Перейти к обработке сегмента? - Назад / Перейти
             navigator.showIncompleteSegmentDetected {
@@ -57,13 +57,44 @@ class SegmentListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
                 navigator.openShelfListScreen()
             }
         } else {
-            if (segmentNumber.value?.length == SEGMENT_NUMBER_LENGTH) {
-                // Сообщение - Начата обработка сегмента
-                navigator.showSegmentStarted(segmentNumber.value!!, checkData.countFacings){
-                    checkData.addSegment(sessionInfo.market!!, segmentNumber.value!!)
-                    navigator.openShelfListScreen()
+            checkNumber()
+        }
+
+        return true
+    }
+
+    private fun checkNumber() {
+        segmentNumber.value?.let { number ->
+            if (number.length == SEGMENT_NUMBER_LENGTH) {
+                val segment = segments.value?.find { it.number == number }
+                if (segment != null) {
+                    if (segment.status == SegmentStatus.DELETED) {
+                        // Выбор - Сегмент удален. Открыть просмотр или создать новый? - Назад / Просмотр / Создать
+                        navigator.showSegmentIsDeleted(
+                                reviewCallback = { openExistSegment(segment) },
+                                createCallback = { createSegment(number) })
+                    } else {
+                        openExistSegment(segment)
+                    }
+                } else {
+                    createSegment(number)
                 }
             }
+        }
+    }
+
+    private fun openExistSegment(segment: Segment) {
+        checkData.currentSegmentIndex = segments.value!!.indexOf(segment)
+        navigator.openShelfListScreen()
+    }
+
+    private fun createSegment(segmentNumber: String) {
+        // Сообщение - Начата обработка сегмента
+        navigator.showSegmentStarted(
+                segmentNumber = segmentNumber,
+                isFacings = checkData.countFacings) {
+            checkData.addSegment(sessionInfo.market ?: "Not found!", segmentNumber)
+            navigator.openShelfListScreen()
         }
     }
 

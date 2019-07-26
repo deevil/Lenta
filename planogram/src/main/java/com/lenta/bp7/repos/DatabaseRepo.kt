@@ -26,31 +26,37 @@ class DatabaseRepo(hyperHive: HyperHive) : IDatabaseRepo {
     private val goodInfo: ZmpUtz24V001 by lazy { ZmpUtz24V001(hyperHive) } // Информация о товаре
     private val barCodeInfo: ZmpUtz25V001 by lazy { ZmpUtz25V001(hyperHive) } // Информация о штрих-коде
 
-    override suspend fun getGoodInfoByBarCode(barCode: String?): GoodInfo? {
+    override suspend fun getGoodInfoByBarCode(barCode: String): GoodInfo? {
         return withContext(Dispatchers.IO) {
             val eanInfo = getEanInfoByBarCode(barCode)
-            val materialInfo = getMaterialInfo(eanInfo?.materialNumber)
-            val unitName = getGoodUnitName(materialInfo?.buom)
-            return@withContext GoodInfo(
-                    sapCode = eanInfo?.materialNumber,
-                    barCode = barCode,
-                    name = materialInfo?.name,
-                    units = unitName
-            )
+            if (eanInfo == null) {
+                return@withContext null
+            } else {
+                val materialInfo = getMaterialInfo(eanInfo.materialNumber)
+                val unitName = getGoodUnitName(materialInfo?.buom)
+                return@withContext GoodInfo(
+                        sapCode = eanInfo.materialNumber,
+                        barCode = barCode,
+                        name = materialInfo?.name ?: "Not fount!",
+                        units = unitName ?: "Not fount!")
+            }
         }
     }
 
-    override suspend fun getGoodInfoBySapCode(sapCode: String?): GoodInfo? {
+    override suspend fun getGoodInfoBySapCode(sapCode: String): GoodInfo? {
         return withContext(Dispatchers.IO) {
             val eanInfo = getEanInfoBySapCode(sapCode)
-            val materialInfo = getMaterialInfo(eanInfo?.materialNumber)
-            val unitName = getGoodUnitName(materialInfo?.buom)
-            return@withContext GoodInfo(
-                    sapCode = sapCode,
-                    barCode = eanInfo?.ean,
-                    name = materialInfo?.name,
-                    units = unitName
-            )
+            if (eanInfo == null) {
+                return@withContext null
+            } else {
+                val materialInfo = getMaterialInfo(eanInfo.materialNumber)
+                val unitName = getGoodUnitName(materialInfo?.buom)
+                return@withContext GoodInfo(
+                        sapCode = sapCode,
+                        barCode = eanInfo.ean,
+                        name = materialInfo?.name ?: "Not fount!",
+                        units = unitName ?: "Not fount!")
+            }
         }
     }
 
@@ -133,6 +139,6 @@ interface IDatabaseRepo {
     suspend fun getEanInfoBySapCode(sapCode: String?): EanInfo?
     suspend fun getMaterialInfo(sapCode: String?): MaterialInfo?
     suspend fun getGoodUnitName(unitCode: String?): String?
-    suspend fun getGoodInfoByBarCode(barCode: String?): GoodInfo?
-    suspend fun getGoodInfoBySapCode(sapCode: String?): GoodInfo?
+    suspend fun getGoodInfoByBarCode(barCode: String): GoodInfo?
+    suspend fun getGoodInfoBySapCode(sapCode: String): GoodInfo?
 }

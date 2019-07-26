@@ -53,54 +53,79 @@ data class ButtonDecorationInfo(
         @StringRes val titleRes: Int
 ) {
     companion object {
+
         val update: ButtonDecorationInfo by lazy {
             ButtonDecorationInfo(R.drawable.ic_sync_white_24dp, R.string.update)
         }
+
         val menu: ButtonDecorationInfo by lazy {
             ButtonDecorationInfo(R.drawable.ic_home_white_24dp, R.string.menu)
         }
+
         val sap: ButtonDecorationInfo by lazy {
             ButtonDecorationInfo(R.drawable.ic_sap, R.string.sap_code)
         }
+
         val barcode: ButtonDecorationInfo by lazy {
             ButtonDecorationInfo(R.drawable.ic_barcode, R.string.barcode)
         }
+
         val yes: ButtonDecorationInfo by lazy {
             ButtonDecorationInfo(R.drawable.ic_done_white_24dp, R.string.yes)
         }
+
         val no: ButtonDecorationInfo by lazy {
             ButtonDecorationInfo(R.drawable.ic_close_white_24dp, R.string.no)
         }
+
         val goOver: ButtonDecorationInfo by lazy {
             ButtonDecorationInfo(R.drawable.ic_send_white_24dp, R.string.go_over)
         }
+
         val apply: ButtonDecorationInfo by lazy {
             ButtonDecorationInfo(R.drawable.ic_done_white_24dp, R.string.apply)
         }
+
         val confirm: ButtonDecorationInfo by lazy {
             ButtonDecorationInfo(R.drawable.ic_done_white_24dp, R.string.confirm)
         }
+
+        val review: ButtonDecorationInfo by lazy {
+            ButtonDecorationInfo(R.drawable.ic_visibility_white_24dp, R.string.review)
+        }
+
         val add: ButtonDecorationInfo by lazy {
             ButtonDecorationInfo(R.drawable.ic_add_white_24dp, R.string.add)
         }
+
+        val create: ButtonDecorationInfo by lazy {
+            ButtonDecorationInfo(R.drawable.ic_add_white_24dp, R.string.create)
+        }
+
         val details: ButtonDecorationInfo by lazy {
             ButtonDecorationInfo(R.drawable.ic_details_white_24dp, R.string.details)
         }
+
         val save: ButtonDecorationInfo by lazy {
             ButtonDecorationInfo(R.drawable.ic_send_white_24dp, R.string.save)
         }
+
         val complete: ButtonDecorationInfo by lazy {
             ButtonDecorationInfo(R.drawable.ic_send_white_24dp, R.string.complete)
         }
+
         val print: ButtonDecorationInfo by lazy {
             ButtonDecorationInfo(R.drawable.ic_print_white_24dp, R.string.print)
         }
+
         val delete: ButtonDecorationInfo by lazy {
             ButtonDecorationInfo(R.drawable.ic_delete_white_24dp, R.string.delete)
         }
+
         val clean: ButtonDecorationInfo by lazy {
             ButtonDecorationInfo(R.drawable.ic_delete_white_24dp, R.string.clean)
         }
+
         val next: ButtonDecorationInfo by lazy {
             ButtonDecorationInfo(R.drawable.ic_arrow_forward_white_24dp, R.string.to_next)
         }
@@ -113,8 +138,16 @@ data class ButtonDecorationInfo(
             ButtonDecorationInfo(R.drawable.ic_arrow_back_white_24dp, R.string.to_back)
         }
 
+        val exit: ButtonDecorationInfo by lazy {
+            ButtonDecorationInfo(R.drawable.ic_arrow_back_white_24dp, R.string.to_exit)
+        }
+
         val enterToApp: ButtonDecorationInfo by lazy {
             ButtonDecorationInfo(R.drawable.ic_exit_to_app_white, R.string.enter)
+        }
+
+        val exitToApp: ButtonDecorationInfo by lazy {
+            ButtonDecorationInfo(R.drawable.ic_exit_to_app_white, R.string.to_exit)
         }
 
         val rollback: ButtonDecorationInfo by lazy {

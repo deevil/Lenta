@@ -10,8 +10,10 @@
     <string name="revert">Откатить</string>
     <string name="details">Детали</string>
     <string name="add">Добавить</string>
+    <string name="create">Создать</string>
     <string name="apply">Применить</string>
     <string name="confirm">Подтвердить</string>
+    <string name="review">Просмотр</string>
     <string name="enter">Войти</string>
     <string name="go_over">Перейти</string>
     <string name="error_server">Ошибка сервера</string>
@@ -33,6 +35,7 @@
     <string name="employees_position">Должность</string>
     <string name="definition_performer">Определение исполнителя</string>
     <string name="to_back">Назад</string>
+    <string name="to_exit">Выйти</string>
     <string name="description_auxiliary_menu">Вспомогательное меню</string>
     <string name="settings">Настройки</string>
     <string name="support">Поддержка</string>

@@ -61,6 +61,11 @@ class SegmentListFragment : CoreFragment<FragmentSegmentListBinding, SegmentList
         initRvConfig()
     }
 
+    override fun onResume() {
+        super.onResume()
+        vm.updateSegmentList()
+    }
+
     override fun onToolbarButtonClick(view: View) {
         if (view.id == R.id.b_5) {
             vm.onClickComplete()
