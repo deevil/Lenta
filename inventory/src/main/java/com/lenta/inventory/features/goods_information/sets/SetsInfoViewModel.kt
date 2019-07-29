@@ -3,7 +3,6 @@ package com.lenta.inventory.features.goods_information.sets
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.inventory.features.goods_details_storage.ComponentItem
-import com.lenta.inventory.models.task.IInventoryTaskManager
 import com.lenta.inventory.models.task.ProcessSetsService
 import com.lenta.inventory.models.task.TaskExciseStamp
 import com.lenta.inventory.models.task.TaskProductInfo
@@ -11,19 +10,13 @@ import com.lenta.inventory.platform.navigation.IScreenNavigator
 import com.lenta.inventory.requests.network.*
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
-import com.lenta.shared.fmp.resources.slow.ZfmpUtz48V001
-import com.lenta.shared.models.core.MatrixType
-import com.lenta.shared.models.core.ProductType
-import com.lenta.shared.models.core.Uom
 import com.lenta.shared.platform.viewmodel.CoreViewModel
-import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.toStringFormatted
 import com.lenta.shared.view.OnPositionClickListener
-import com.mobrun.plugin.api.HyperHive
 import kotlinx.coroutines.launch
 import java.math.BigInteger
 import javax.inject.Inject
@@ -37,9 +30,6 @@ class SetsInfoViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKe
     lateinit var sessionInfo: ISessionInfo
 
     @Inject
-    lateinit var setComponentsNetRequest: SetComponentsNetRequest
-
-    @Inject
     lateinit var processSetsService: ProcessSetsService
 
     @Inject
@@ -48,6 +38,8 @@ class SetsInfoViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKe
     @Inject
     lateinit var alcoCodeNetRequest: AlcoCodeNetRequest
 
+    val iconRes: MutableLiveData<Int> = MutableLiveData(0)
+    val textColor: MutableLiveData<Int> = MutableLiveData(0)
     val productInfo: MutableLiveData<TaskProductInfo> = MutableLiveData()
     private val componentsInfo : ArrayList<SetComponentInfo> = ArrayList()
     val titleProgressScreen: MutableLiveData<String> = MutableLiveData()
@@ -119,19 +111,10 @@ class SetsInfoViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKe
             screenNavigator.showProgress(titleProgressScreen.value!!)
             suffix.value = productInfo.value?.uom?.name
             storePlaceNumber.value = productInfo.value!!.placeCode
-
-            setComponentsNetRequest(null).either(::handleFailure, ::componentsInfoHandleSuccess)
-            screenNavigator.hideProgress()
-
-        }
-    }
-
-    private fun componentsInfoHandleSuccess(componentsRestInfo: List<SetComponentsRestInfo>) {
-        viewModelScope.launch {
-            screenNavigator.showProgress(titleProgressScreen.value!!)
-            processSetsService.newProcessSetsService(productInfo.value!!, componentsRestInfo)
+            processSetsService.newProcessSetsService(productInfo.value!!)
             componentsInfo.addAll(processSetsService.getComponentsForSet())
             screenNavigator.hideProgress()
+
         }
     }
 
@@ -212,7 +195,7 @@ class SetsInfoViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKe
 
     private fun processPdf150HandleSuccess(exciseGoodsRestInfo: ExciseGoodsRestInfo){
         if (exciseGoodsRestInfo.retCode != "0") {
-            screenNavigator.openAlertScreen(exciseGoodsRestInfo.errorTxt, pageNumber = "98")
+            screenNavigator.openAlertScreen(exciseGoodsRestInfo.errorTxt, iconRes = iconRes.value!!, textColor = textColor.value, pageNumber = "98")
             return
         }
 
@@ -225,7 +208,7 @@ class SetsInfoViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKe
                 if (arrExciseGoodsRestInfo[index].materialNumber == setComponentInfo.number){
                     val countExciseStampForComponent = processSetsService.getCountExciseStampsForComponent(setComponentInfo)
                     if (countExciseStampForComponent >= (setComponentInfo.count).toDouble() * totalCount.value!!){
-                        screenNavigator.openAlertScreen(limitExceeded.value!!, pageNumber = "98")
+                        screenNavigator.openAlertScreen(limitExceeded.value!!, iconRes = iconRes.value!!, textColor = textColor.value, pageNumber = "98")
                     }
                     else{
                         processSetsService.addCurrentComponentExciseStamps(
@@ -244,7 +227,7 @@ class SetsInfoViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKe
                     return
                 }
             }
-            screenNavigator.openAlertScreen(stampAnotherProduct.value!!, pageNumber = "98")
+            screenNavigator.openAlertScreen(stampAnotherProduct.value!!, iconRes = iconRes.value!!, textColor = textColor.value, pageNumber = "98")
         }
     }
 
@@ -271,7 +254,7 @@ class SetsInfoViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKe
                 if (it) {
                     val countExciseStampForComponent = processSetsService.getCountExciseStampsForComponent(componentInfo)
                     if (countExciseStampForComponent >= (componentInfo.count).toDouble() * totalCount.value!!){
-                        screenNavigator.openAlertScreen("${limitExceeded.value!!} (${componentInfo.number.substring(componentInfo.number.length - 6)})", pageNumber = "98")
+                        screenNavigator.openAlertScreen("${limitExceeded.value!!} (${componentInfo.number.substring(componentInfo.number.length - 6)})", iconRes = iconRes.value!!, textColor = textColor.value, pageNumber = "98")
                     }
                     else{
                         processSetsService.addCurrentComponentExciseStamps(
@@ -289,7 +272,7 @@ class SetsInfoViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKe
             }
         }
 
-        screenNavigator.openAlertScreen(alcocodeNotFound.value!!, pageNumber = "98")
+        screenNavigator.openAlertScreen(alcocodeNotFound.value!!, iconRes = iconRes.value!!, textColor = textColor.value, pageNumber = "98")
     }
 
     private fun processItemByBarcode(searchCode: String){
@@ -298,7 +281,7 @@ class SetsInfoViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKe
         }.map {componentInfo ->
             val countExciseStampForComponent = processSetsService.getCountExciseStampsForComponent(componentInfo)
             if (countExciseStampForComponent >= (componentInfo.count).toDouble() * totalCount.value!!){
-                screenNavigator.openAlertScreen("${limitExceeded.value!!} ($searchCode)", pageNumber = "98")
+                screenNavigator.openAlertScreen("${limitExceeded.value!!} ($searchCode)", iconRes = iconRes.value!!, textColor = textColor.value, pageNumber = "98")
             }
             else{
                 screenNavigator.openSetComponentsScreen(componentInfo = componentInfo, targetTotalCount = totalCount.value!!, isStamp = false)
@@ -306,7 +289,7 @@ class SetsInfoViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKe
             return
         }
 
-        screenNavigator.openAlertScreen(componentNotFound.value!!, pageNumber = "98")
+        screenNavigator.openAlertScreen(componentNotFound.value!!, iconRes = iconRes.value!!, textColor = textColor.value, pageNumber = "98")
     }
 
     fun onPageSelected(position: Int) {

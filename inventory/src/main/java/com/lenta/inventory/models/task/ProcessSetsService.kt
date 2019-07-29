@@ -2,17 +2,16 @@ package com.lenta.inventory.models.task
 
 import com.lenta.inventory.features.goods_information.sets.SetComponentInfo
 import com.lenta.inventory.models.repositories.ITaskRepository
-import com.lenta.inventory.requests.network.SetComponentsRestInfo
 import com.lenta.shared.di.AppScope
 import com.lenta.shared.fmp.resources.dao_ext.getComponentsForSet
 import com.lenta.shared.fmp.resources.dao_ext.getProductInfo
 import com.lenta.shared.fmp.resources.dao_ext.getUomInfo
 import com.lenta.shared.fmp.resources.fast.ZmpUtz07V001
 import com.lenta.shared.fmp.resources.slow.ZfmpUtz48V001
+import com.lenta.shared.fmp.resources.slow.ZmpUtz46V001
 import com.lenta.shared.models.core.Uom
 import com.lenta.shared.models.core.getMatrixType
 import com.lenta.shared.models.core.getProductType
-import com.lenta.shared.utilities.Logg
 import com.mobrun.plugin.api.HyperHive
 import javax.inject.Inject
 
@@ -34,6 +33,10 @@ class ProcessSetsService@Inject constructor() : IProcessProductService {
     private val currentAllExciseStamps: ArrayList<TaskExciseStamp> = ArrayList()
     private val componentsInfo: ArrayList<SetComponentInfo> = ArrayList()
 
+    private val zmpUtz46V001: ZmpUtz46V001 by lazy {
+        ZmpUtz46V001(hyperHive)
+    }
+
     private val zfmpUtz48V001: ZfmpUtz48V001 by lazy {
         ZfmpUtz48V001(hyperHive)
     }
@@ -42,9 +45,9 @@ class ProcessSetsService@Inject constructor() : IProcessProductService {
         ZmpUtz07V001(hyperHive)
     }
 
-    fun newProcessSetsService(productInfo: TaskProductInfo, componentsRestInfo: List<SetComponentsRestInfo>) : ProcessSetsService {
+    fun newProcessSetsService(productInfo: TaskProductInfo) : ProcessSetsService {
         this.productInfo = productInfo
-        setComponentsForSet(componentsRestInfo)
+        setComponentsForSet()
         return this
     }
 
@@ -73,18 +76,17 @@ class ProcessSetsService@Inject constructor() : IProcessProductService {
         return componentsInfo
     }
 
-    private fun setComponentsForSet(componentsRestInfo: List<SetComponentsRestInfo>) : List<SetComponentInfo>{
+    private fun setComponentsForSet() : List<SetComponentInfo>{
         componentsInfo.clear()
-        componentsRestInfo[0].data.filter{ data ->
-            data[1] == productInfo.materialNumber
-        }.map {data ->
-            zfmpUtz48V001.getProductInfo(data[2]).map {
-                val uomInfo = zmpUtz07V001.getUomInfo(data[4])
+
+        zmpUtz46V001.getComponentsForSet(productInfo.materialNumber).map {data ->
+            zfmpUtz48V001.getProductInfo(data.matnrOsn).map {
+                val uomInfo = zmpUtz07V001.getUomInfo(data.meins)
                 componentsInfo.add(SetComponentInfo(
-                        setNumber = data[1],
-                        number = data[2],
+                        setNumber = data.matnrOsn,
+                        number = data.matnr,
                         name = it.name,
-                        count = data[3],
+                        count = data.menge.toString(),
                         uom = Uom(code = uomInfo!!.uom, name = uomInfo!!.name),
                         matrixType = getMatrixType(it.matrType),
                         sectionId = it.abtnr,

@@ -1,6 +1,7 @@
 package com.lenta.inventory.features.goods_information.sets.components
 
 import android.view.View
+import androidx.core.content.ContextCompat
 import com.lenta.inventory.R
 import com.lenta.inventory.databinding.FragmentSetComponentsBinding
 import com.lenta.inventory.features.goods_information.sets.SetComponentInfo
@@ -54,6 +55,8 @@ class SetComponentsFragment : CoreFragment<FragmentSetComponentsBinding, SetComp
             vm.stampAnotherProduct.value = getString(R.string.stamp_another_product)
             vm.alcocodeNotFound.value = getString(R.string.alcocode_not_found)
             vm.componentNotFound.value = getString(R.string.component_not_found)
+            vm.iconRes.value = R.drawable.ic_info_pink
+            vm.textColor.value = ContextCompat.getColor(context!!, com.lenta.shared.R.color.color_text_dialogWarning)
             return vm
         }
     }

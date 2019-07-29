@@ -9,13 +9,13 @@
     <string name="status">Статус</string>
     <string name="categories">Категории</string>
     <string name="processed">Обработанные</string>
-    <string name="not_processed">Не обработанные</string>
+    <string name="not_processed">К обработке</string>
     <string name="goods_of_details">Детали по товару</string>
     <string name="goods_of_details_store_place">Детали по товару и местам хранения</string>
     <string name="goods_store_place">МХ товара</string>
     <string name="list_of_goods">Список товаров</string>
     <string name="enter_storage_place_number">Введите номер МХ</string>
-    <string name="limit_exceeded">Превышен лимит</string>
+    <string name="limit_exceeded">Требуемое количество АМ уже отсканировано</string>
     <string name="list_of_storages">Список МХ</string>
     <string name="discrepancies_found">Обнаружены расхождения</string>
     <string name="byGoods">По товару</string>
@@ -59,4 +59,5 @@
     <string name="stamp_another_product">АМ принадлежит другому товару</string>
     <string name="alcocode_not_found">Алкокод не найден в справочнике</string>
     <string name="component_not_found">Неверный номер компонента</string>
+    <string name="brand_other_market">Марка на другом ТК</string>
 </resources>
