@@ -77,7 +77,6 @@ class MainActivity : CoreMainActivity() {
 
     override fun onPause() {
         super.onPause()
-        mainViewModel?.onPause()
         /*startActivity(Intent(applicationContext, this::class.java).apply {
             flags = FLAG_ACTIVITY_REORDER_TO_FRONT
         })*/

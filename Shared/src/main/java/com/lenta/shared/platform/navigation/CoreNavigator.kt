@@ -28,6 +28,7 @@ import com.lenta.shared.interactor.UseCase
 import com.lenta.shared.models.core.MatrixType
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
+import com.lenta.shared.utilities.extentions.restartApp
 import com.lenta.shared.utilities.extentions.setFragmentResultCode
 import kotlin.system.exitProcess
 
@@ -70,12 +71,16 @@ class CoreNavigator constructor(private val context: Context,
         }
     }
 
-    override fun finishApp() {
+    override fun finishApp(restart: Boolean) {
         runOrPostpone {
             foregroundActivityProvider.getActivity()?.finish()
             analytics.cleanLogs()
             roomAppDatabase.close()
-            exitProcess(0)
+            if (restart) {
+                context.restartApp()
+            } else {
+                exitProcess(0)
+            }
         }
 
     }
@@ -303,7 +308,7 @@ interface ICoreNavigator {
     fun goBackWithArgs(args: Bundle)
     fun goBackWithResultCode(code: Int?)
     fun goBack()
-    fun finishApp()
+    fun finishApp(restart: Boolean = false)
     fun openAlertScreen(message: String,
                         iconRes: Int = 0,
                         textColor: Int? = null,
