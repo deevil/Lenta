@@ -48,6 +48,9 @@ dependencies {
     implementation project(':Shared')
     implementation 'com.android.support:multidex:1.0.3'
 
+    // Simple XML
+    implementation 'org.simpleframework:simple-xml:2.7.1'
+
     // Dagger2
     kapt deps.dagger.compiler
 
