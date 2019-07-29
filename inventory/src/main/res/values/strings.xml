@@ -15,7 +15,7 @@
     <string name="goods_store_place">МХ товара</string>
     <string name="list_of_goods">Список товаров</string>
     <string name="enter_storage_place_number">Введите номер МХ</string>
-    <string name="limit_exceeded">Превышен лимит</string>
+    <string name="limit_exceeded">Требуемое количество АМ уже отсканировано</string>
     <string name="list_of_storages">Список МХ</string>
     <string name="discrepancies_found">Обнаружены расхождения</string>
     <string name="byGoods">По товару</string>

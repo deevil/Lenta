@@ -1,18 +1,12 @@
 package com.lenta.inventory.requests.network
 
-import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
-import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.fmp.ObjectRawStatus
-import com.lenta.shared.fmp.toFmpObjectRawStatusEither
 import com.lenta.shared.functional.Either
 import com.lenta.shared.interactor.UseCase
 import com.lenta.shared.models.core.Manufacturer
 import com.lenta.shared.requests.FmpRequestsHelper
-import com.lenta.shared.utilities.Logg
-import com.mobrun.plugin.api.HyperHive
-import com.mobrun.plugin.api.callparams.WebCallParams
 import javax.inject.Inject
 
 class ObtainingDataExciseGoodsNetRequest

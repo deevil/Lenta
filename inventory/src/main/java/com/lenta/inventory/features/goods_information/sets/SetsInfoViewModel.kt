@@ -30,9 +30,6 @@ class SetsInfoViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKe
     lateinit var sessionInfo: ISessionInfo
 
     @Inject
-    lateinit var setComponentsNetRequest: SetComponentsNetRequest
-
-    @Inject
     lateinit var processSetsService: ProcessSetsService
 
     @Inject
@@ -114,19 +111,10 @@ class SetsInfoViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKe
             screenNavigator.showProgress(titleProgressScreen.value!!)
             suffix.value = productInfo.value?.uom?.name
             storePlaceNumber.value = productInfo.value!!.placeCode
-
-            setComponentsNetRequest(null).either(::handleFailure, ::componentsInfoHandleSuccess)
-            screenNavigator.hideProgress()
-
-        }
-    }
-
-    private fun componentsInfoHandleSuccess(componentsRestInfo: List<SetComponentsRestInfo>) {
-        viewModelScope.launch {
-            screenNavigator.showProgress(titleProgressScreen.value!!)
-            processSetsService.newProcessSetsService(productInfo.value!!, componentsRestInfo)
+            processSetsService.newProcessSetsService(productInfo.value!!)
             componentsInfo.addAll(processSetsService.getComponentsForSet())
             screenNavigator.hideProgress()
+
         }
     }
 
