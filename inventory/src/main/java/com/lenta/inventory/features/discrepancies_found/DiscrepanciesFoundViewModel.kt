@@ -45,16 +45,22 @@ class DiscrepanciesFoundViewModel : CoreViewModel() {
         selectionCount > 0 && (page != 0 || !(taskManager.getInventoryTask()?.taskDescription?.isStrict ?: true))
     }
 
+    val isNotEmpty: MutableLiveData<Boolean> = discrepanciesByGoods.map { it?.size != 0 }
+
     init {
         viewModelScope.launch {
-            updateByGoods()
-            updateByStorage()
+            update()
         }
     }
 
     fun onResume() {
+        update()
+    }
+
+    fun update() {
         updateByGoods()
         updateByStorage()
+
     }
 
     fun updateByGoods() {
@@ -89,27 +95,43 @@ class DiscrepanciesFoundViewModel : CoreViewModel() {
     }
 
     fun onClickMissing() {
+        val count: Int
         if (selectedPage.value == 0) {
-            byGoodsSelectionHelper.selectedPositions.value?.forEach {
-                discrepanciesByGoods.value?.get(it)?.let {
-                    taskManager.getInventoryTask()?.markProductMissing(it.matnr)
-                }
-            }
-            byGoodsSelectionHelper.clearPositions()
+            count = byGoodsSelectionHelper.selectedPositions.value?.size ?: 0
         } else {
-            byStorageSelectionHelper.selectedPositions.value?.forEach {
-                discrepanciesByStorage.value?.get(it)?.let {
-                    taskManager.getInventoryTask()?.markProductMissing(it.matnr, it.place)
-                }
-            }
-            byStorageSelectionHelper.clearPositions()
+            count = byStorageSelectionHelper.selectedPositions.value?.size ?: 0
         }
-        updateByGoods()
-        updateByStorage()
+
+        screenNavigator.openConfirmationMissingGoods(count) {
+            if (selectedPage.value == 0) {
+                byGoodsSelectionHelper.selectedPositions.value?.forEach {
+                    discrepanciesByGoods.value?.get(it)?.let {
+                        taskManager.getInventoryTask()?.markProductMissing(it.matnr)
+                    }
+                }
+                byGoodsSelectionHelper.clearPositions()
+            } else {
+                byStorageSelectionHelper.selectedPositions.value?.forEach {
+                    discrepanciesByStorage.value?.get(it)?.let {
+                        taskManager.getInventoryTask()?.markProductMissing(it.matnr, it.place)
+                    }
+                }
+                byStorageSelectionHelper.clearPositions()
+            }
+            update()
+        }
     }
 
     fun onClickSkip() {
-        dataSaver.saveData()
+        if (isNotEmpty.value == true) {
+            screenNavigator.openConfirmationSkippingDiscrepancies {
+                dataSaver.saveData()
+            }
+        } else {
+            screenNavigator.openConfirmationSavingJobScreen {
+                dataSaver.saveData()
+            }
+        }
     }
 
     fun onClickDeleteUntie() {
@@ -128,8 +150,7 @@ class DiscrepanciesFoundViewModel : CoreViewModel() {
             }
             byStorageSelectionHelper.clearPositions()
         }
-        updateByGoods()
-        updateByStorage()
+        update()
     }
 
     fun onPageSelected(position: Int) {

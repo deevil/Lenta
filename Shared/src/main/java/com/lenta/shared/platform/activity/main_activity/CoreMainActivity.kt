@@ -1,8 +1,7 @@
 package com.lenta.shared.platform.activity.main_activity
 
 import android.Manifest
-import android.content.pm.PackageManager
-import android.os.Build
+import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.os.Bundle
 import android.view.KeyEvent
 import android.view.View
@@ -138,6 +137,7 @@ abstract class CoreMainActivity : CoreActivity<ActivityMainBinding>(), ToolbarBu
         honeywellScanHelper.startListen(this)
         newLandScanHelper.startListen(this)
         priorityAppManager.setLowPriority()
+        vm.onResume()
     }
 
     private fun permissionNotGranted(): Boolean {
@@ -153,7 +153,9 @@ abstract class CoreMainActivity : CoreActivity<ActivityMainBinding>(), ToolbarBu
         honeywellScanHelper.stopListen(this)
         newLandScanHelper.stopListen(this)
         priorityAppManager.setHighPriority()
+        vm.onPause()
     }
+
 
     override fun onBackPressed() {
         getCurrentFragment()?.implementationOf(OnBackPresserListener::class.java)?.let {
@@ -171,7 +173,7 @@ abstract class CoreMainActivity : CoreActivity<ActivityMainBinding>(), ToolbarBu
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        screenNavigator.finishApp()
+        screenNavigator.finishApp(restart = grantResults.all { it == PERMISSION_GRANTED })
     }
 
     private fun getCurrentFragment(): Fragment? = fragmentStack.peek()

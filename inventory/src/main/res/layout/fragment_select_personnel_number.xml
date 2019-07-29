@@ -48,8 +48,9 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:onOkInSoftKeyboard="@{vm}"
-            tools:targetApi="o"
-            tools:ignore="LabelFor" />
+            app:requestFocus="@{vm.editTextFocus}"
+            tools:ignore="LabelFor"
+            tools:targetApi="o" />
 
         <TextView
             android:id="@+id/tv_fio"

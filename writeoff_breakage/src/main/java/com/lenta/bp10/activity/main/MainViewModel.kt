@@ -22,7 +22,6 @@ class MainViewModel : CoreMainViewModel() {
     lateinit var persistWriteOffTask: IPersistWriteOffTask
 
 
-
     override fun onNewEnter() {
         screenNavigator.openFirstScreen()
     }
@@ -57,6 +56,7 @@ class MainViewModel : CoreMainViewModel() {
     }
 
     override fun onPause() {
+        super.onPause()
         persistWriteOffTask.saveWriteOffTask(writeOffTaskManager.getWriteOffTask())
     }
 
