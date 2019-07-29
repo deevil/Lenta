@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.Observer
 import com.lenta.inventory.BR
 import com.lenta.inventory.R
 import com.lenta.inventory.databinding.FragmentDiscrepanciesFoundBinding
@@ -50,7 +51,7 @@ class DiscrepanciesFoundFragment : CoreFragment<FragmentDiscrepanciesFoundBindin
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
         bottomToolbarUiModel.uiModelButton2.show(if (vm.selectedPage.value == 0) ButtonDecorationInfo.delete else ButtonDecorationInfo.untie)
         bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.missing)
-        bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.skip)
+        bottomToolbarUiModel.uiModelButton5.show(if (vm.isNotEmpty.value == true) ButtonDecorationInfo.skip else ButtonDecorationInfo.complete)
     }
 
     override fun onToolbarButtonClick(view: View) {
@@ -67,9 +68,12 @@ class DiscrepanciesFoundFragment : CoreFragment<FragmentDiscrepanciesFoundBindin
             it.viewPagerSettings = this
             it.pageSelectionListener = this
         }
+
         viewLifecycleOwner.apply {
             connectLiveData(source = vm.absentEnabled, target = getBottomToolBarUIModel()!!.uiModelButton4.enabled)
             connectLiveData(source = vm.untieDeleteEnabled, target = getBottomToolBarUIModel()!!.uiModelButton2.enabled)
+            vm.selectedPage.observe(this, Observer { getBottomToolBarUIModel()!!.uiModelButton2.show(if (vm.selectedPage.value == 0) ButtonDecorationInfo.delete else ButtonDecorationInfo.untie)})
+            vm.isNotEmpty.observe(this, Observer { getBottomToolbarViewModel()!!.uiModelButton5.show(if (vm.isNotEmpty.value == true) ButtonDecorationInfo.skip else ButtonDecorationInfo.complete)})
         }
     }
 
