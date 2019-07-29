@@ -213,7 +213,6 @@
             android:onClick="@{(v) -> vm.screenNavigator.openMatrixInfoScreen(vm.componentInfo.matrixType)}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/div_hor4"
             app:layout_constraintVertical_bias="1.0"
             app:matrixType="@{vm.componentInfo.matrixType}"
             tools:background="@drawable/bg_white_circle"
@@ -234,7 +233,6 @@
             android:textSize="16sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@+id/tv_matrix"
-            app:layout_constraintTop_toTopOf="@+id/div_hor4"
             app:layout_constraintVertical_bias="1.0"
             tools:text="02" />
 
