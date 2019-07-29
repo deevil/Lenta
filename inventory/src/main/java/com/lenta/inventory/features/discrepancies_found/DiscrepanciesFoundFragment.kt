@@ -73,7 +73,7 @@ class DiscrepanciesFoundFragment : CoreFragment<FragmentDiscrepanciesFoundBindin
             connectLiveData(source = vm.absentEnabled, target = getBottomToolBarUIModel()!!.uiModelButton4.enabled)
             connectLiveData(source = vm.untieDeleteEnabled, target = getBottomToolBarUIModel()!!.uiModelButton2.enabled)
             vm.selectedPage.observe(this, Observer { getBottomToolBarUIModel()!!.uiModelButton2.show(if (vm.selectedPage.value == 0) ButtonDecorationInfo.delete else ButtonDecorationInfo.untie)})
-            vm.isNotEmpty.observe(this, Observer { getBottomToolbarViewModel()!!.uiModelButton5.show(if (vm.isNotEmpty.value == true) ButtonDecorationInfo.skip else ButtonDecorationInfo.complete)})
+            vm.isNotEmpty.observe(this, Observer { getBottomToolBarUIModel()!!.uiModelButton5.show(if (vm.isNotEmpty.value == true) ButtonDecorationInfo.skip else ButtonDecorationInfo.complete)})
         }
     }
 
@@ -87,7 +87,6 @@ class DiscrepanciesFoundFragment : CoreFragment<FragmentDiscrepanciesFoundBindin
     override fun onPageSelected(position: Int) {
         Logg.d { "onPageSelected $position" }
         vm.onPageSelected(position)
-        invalidateBottomToolBar()
     }
 
     override fun countTab(): Int {
