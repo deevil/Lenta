@@ -51,10 +51,6 @@ class DiscrepanciesFoundFragment : CoreFragment<FragmentDiscrepanciesFoundBindin
         bottomToolbarUiModel.uiModelButton2.show(if (vm.selectedPage.value == 0) ButtonDecorationInfo.delete else ButtonDecorationInfo.untie)
         bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.missing)
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.skip)
-        viewLifecycleOwner.apply {
-            connectLiveData(source = vm.absentEnabled, target = bottomToolbarUiModel.uiModelButton4.enabled)
-            connectLiveData(source = vm.untieDeleteEnabled, target = bottomToolbarUiModel.uiModelButton2.enabled)
-        }
     }
 
     override fun onToolbarButtonClick(view: View) {
@@ -71,6 +67,10 @@ class DiscrepanciesFoundFragment : CoreFragment<FragmentDiscrepanciesFoundBindin
             it.viewPagerSettings = this
             it.pageSelectionListener = this
         }
+        viewLifecycleOwner.apply {
+            connectLiveData(source = vm.absentEnabled, target = getBottomToolBarUIModel()!!.uiModelButton4.enabled)
+            connectLiveData(source = vm.untieDeleteEnabled, target = getBottomToolBarUIModel()!!.uiModelButton2.enabled)
+        }
     }
 
     override fun onResume() {
@@ -83,6 +83,7 @@ class DiscrepanciesFoundFragment : CoreFragment<FragmentDiscrepanciesFoundBindin
     override fun onPageSelected(position: Int) {
         Logg.d { "onPageSelected $position" }
         vm.onPageSelected(position)
+        invalidateBottomToolBar()
     }
 
     override fun countTab(): Int {
