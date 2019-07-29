@@ -7,10 +7,13 @@ import com.lenta.inventory.models.RecountType
 import com.lenta.inventory.models.StorePlaceLockMode
 import com.lenta.inventory.models.task.IInventoryTaskManager
 import com.lenta.inventory.models.task.StorePlaceProcessing
+import com.lenta.inventory.models.task.TaskProductInfo
 import com.lenta.inventory.platform.navigation.IScreenNavigator
 import com.lenta.inventory.requests.network.*
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
+import com.lenta.shared.models.core.ProductInfo
+import com.lenta.shared.models.core.ProductType
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.SelectionItemsHelper
@@ -205,9 +208,24 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
         matnr?.let {
             val productInfo = taskManager.getInventoryTask()?.taskRepository?.getProducts()?.findProduct(it, storePlaceManager?.storePlaceNumber
                     ?: "")
-            if (productInfo != null) screenNavigator.openGoodsInfoScreen(productInfo)
+            if (productInfo != null) openProductScreen(productInfo)
         }
     }
+
+    fun openProductScreen(productInfo: TaskProductInfo) {
+        when (productInfo.type) {
+            ProductType.General -> screenNavigator.openGoodsInfoScreen(productInfo)
+            ProductType.ExciseAlcohol -> {
+                if (productInfo.isSet) {
+                    screenNavigator.openSetsInfoScreen(productInfo)
+                    return
+                } else
+                    screenNavigator.openExciseAlcoInfoScreen(productInfo)
+            }
+            else -> screenNavigator.openGoodsInfoScreen(productInfo)
+        }
+    }
+
 }
 
 data class ProductInfoVM(
