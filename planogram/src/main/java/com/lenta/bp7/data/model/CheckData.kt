@@ -1,7 +1,6 @@
 package com.lenta.bp7.data.model
 
 import com.lenta.bp7.data.CheckType
-import com.lenta.shared.utilities.Logg
 
 class CheckData(
         val segments: MutableList<Segment> = mutableListOf()
@@ -15,9 +14,6 @@ class CheckData(
     var currentShelfIndex = 0
     var currentGoodIndex = 0
 
-    init {
-        generateTestData()
-    }
 
     fun getCurrentSegment(): Segment? {
         return if (segments.isNotEmpty()) {
@@ -66,7 +62,8 @@ class CheckData(
         getCurrentSegment()!!.shelves.let {
             it.add(0, Shelf(
                     id = it.lastIndex + 2,
-                    number = shelfNumber))
+                    number = shelfNumber,
+                    counted = if (countFacings) 1 else 0))
         }
         currentShelfIndex = 0
     }
@@ -78,6 +75,7 @@ class CheckData(
                     sapCode = goodInfo.sapCode,
                     barCode = goodInfo.barCode,
                     name = goodInfo.name,
+                    unitsCode = goodInfo.unitsCode,
                     units = goodInfo.units))
         }
         currentGoodIndex = 0
@@ -98,8 +96,16 @@ class CheckData(
         currentGoodIndex = 0
     }
 
+    fun setCurrentSegmentStatus(status: SegmentStatus) {
+        getCurrentSegment()?.setStatus(status)
+    }
+
+    fun setCurrentShelfStatus(status: ShelfStatus) {
+        getCurrentShelf()?.setStatus(status)
+    }
+
     fun setCurrentGoodStatus(status: GoodStatus) {
-        getCurrentGood()?.status = status
+        getCurrentGood()?.setStatus(status)
         removeCurrentGoodIfSamePrevious()
     }
 
@@ -107,7 +113,7 @@ class CheckData(
         val current = getCurrentGood()
         val previous = getPreviousGood()
         if (current != null && previous != null) {
-            if (current.barCode == previous.barCode && current.status == previous.status) {
+            if (current.barCode == previous.barCode && current.getStatus() == previous.getStatus()) {
                 getPreviousGood()!!.facings += getCurrentGood()!!.facings
                 deleteCurrentGood()
             }
@@ -116,75 +122,27 @@ class CheckData(
 
     fun setShelfStatusDeletedByIndex(shelfIndex: Int) {
         if (getCurrentSegment()?.shelves?.size ?: 0 >= shelfIndex) {
-            getCurrentSegment()!!.shelves[shelfIndex].status = ShelfStatus.DELETED
+            getCurrentSegment()!!.shelves[shelfIndex].setStatus(ShelfStatus.DELETED)
         }
     }
 
     fun isExistUnfinishedSegment(): Boolean {
-        return segments.find { it.status == SegmentStatus.UNFINISHED } != null
+        return segments.find { it.getStatus() == SegmentStatus.UNFINISHED } != null
     }
 
     fun setUnfinishedSegmentAsCurrent() {
-        currentSegmentIndex = segments.indexOf(segments.find { it.status == SegmentStatus.UNFINISHED })
+        currentSegmentIndex = segments.indexOf(segments.find { it.getStatus() == SegmentStatus.UNFINISHED })
     }
 
     fun getPreviousGoodFacings(): Int {
-        return if (getCurrentGood()?.barCode == getPreviousGood()?.barCode) getPreviousGood()?.facings ?: 0 else 0
+        return if (getCurrentGood()?.barCode == getPreviousGood()?.barCode) getPreviousGood()?.facings
+                ?: 0 else 0
     }
 
+    fun prepareDataForSend(): Any? {
 
-    private fun generateTestData() {
-        Logg.d { "Test data generation for CheckData" }
 
-        for (i in 1..5) {
-            segments.add(0, Segment(
-                    id = i,
-                    number = (100..999).random().toString() + "-" + (100..999).random().toString(),
-                    storeNumber = "0007",
-                    status = SegmentStatus.PROCESSED,
-                    shelves = createShelvesList()))
-        }
+        return null
     }
 
-    private fun createShelvesList(): MutableList<Shelf> {
-        val shelves: MutableList<Shelf> = mutableListOf()
-        for (i in 1..(3..8).random()) {
-            shelves.add(0, Shelf(
-                    id = i,
-                    number = i.toString(),
-                    status = ShelfStatus.PROCESSED,
-                    goods = createGoodsList()))
-        }
-
-        return shelves
-    }
-
-    private fun createGoodsList(): MutableList<Good> {
-        val goods: MutableList<Good> = mutableListOf()
-        for (i in 1..(10..50).random()) {
-            val facings = (0..35).random()
-            goods.add(0, Good(
-                    id = i,
-                    sapCode = "000000000000" + (100000..999999).random().toString(),
-                    barCode = (100000000000..999999999999).random().toString(),
-                    name = "Товар " + (1..1000).random(),
-                    status = createGoodStatus(facings),
-                    facings = facings,
-                    units = "шт"))
-        }
-
-        return goods
-    }
-
-    private fun createGoodStatus(facings: Int): GoodStatus {
-        return if (facings == 0) {
-            when ((2..3).random()) {
-                2 -> GoodStatus.MISSING_WRONG
-                3 -> GoodStatus.MISSING_RIGHT
-                else -> GoodStatus.PROCESSED
-            }
-        } else {
-            GoodStatus.PROCESSED
-        }
-    }
 }

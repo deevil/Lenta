@@ -68,7 +68,7 @@ class SegmentListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
             if (number.length == SEGMENT_NUMBER_LENGTH) {
                 val segment = segments.value?.find { it.number == number }
                 if (segment != null) {
-                    if (segment.status == SegmentStatus.DELETED) {
+                    if (segment.getStatus() == SegmentStatus.DELETED) {
                         // Выбор - Сегмент удален. Открыть просмотр или создать новый? - Назад / Просмотр / Создать
                         navigator.showSegmentIsDeleted(
                                 reviewCallback = { openExistSegment(segment) },
@@ -99,6 +99,8 @@ class SegmentListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     }
 
     fun onClickComplete() {
+        val dataForSend = checkData.prepareDataForSend()
+
         // todo ЭКРАН отправить неотправленные сегменты
 
         // todo ЭКРАН сообщение о результате отправки данных

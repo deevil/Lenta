@@ -34,12 +34,12 @@ class ShelfListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     val numberFieldEnabled: MutableLiveData<Boolean> = MutableLiveData(false)
 
     val deleteButtonEnabled: MutableLiveData<Boolean> = shelves.map {
-        it?.isNotEmpty() ?: false && checkData.getCurrentSegment()?.status != SegmentStatus.DELETED
+        it?.isNotEmpty() ?: false && checkData.getCurrentSegment()?.getStatus() != SegmentStatus.DELETED
     }
 
     val applyButtonEnabled: MutableLiveData<Boolean> = shelves.map {
-        it?.isNotEmpty() ?: false && checkData.getCurrentSegment()?.status == SegmentStatus.UNFINISHED &&
-                it?.find { shelf -> shelf.status == ShelfStatus.PROCESSED } != null
+        it?.isNotEmpty() ?: false && checkData.getCurrentSegment()?.getStatus() == SegmentStatus.UNFINISHED &&
+                it?.find { shelf -> shelf.getStatus() == ShelfStatus.PROCESSED } != null
     }
 
     init {
@@ -47,7 +47,7 @@ class ShelfListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
             checkData.let {
                 segmentNumber.value = it.getCurrentSegment()?.number
                 shelves.value = it.getCurrentSegment()?.shelves
-                numberFieldEnabled.value = it.getCurrentSegment()?.status == SegmentStatus.UNFINISHED
+                numberFieldEnabled.value = it.getCurrentSegment()?.getStatus() == SegmentStatus.UNFINISHED
             }
         }
     }
@@ -66,7 +66,7 @@ class ShelfListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
         if (shelfNumber > 0) {
             val shelf = shelves.value?.find { it.number.toInt() == shelfNumber }
             if (shelf != null) {
-                if (shelf.status == ShelfStatus.DELETED) {
+                if (shelf.getStatus() == ShelfStatus.DELETED) {
                     // Выбор - Полка удалена. Открыть просмотр или создать новую? - Назад / Просмотр / Создать
                     navigator.showShelfIsDeleted(
                             reviewCallback = { openExistShelf(shelf) },
@@ -103,7 +103,7 @@ class ShelfListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
                 navigator.showDeleteDataOnSegment(
                         storeNumber = checkData.getCurrentSegment()!!.storeNumber,
                         segmentNumber = segmentNumber.value!!) {
-                    checkData.getCurrentSegment()?.status = SegmentStatus.DELETED
+                    checkData.setCurrentSegmentStatus(SegmentStatus.DELETED)
                     navigator.openSegmentListScreen()
                 }
             } else {
@@ -119,7 +119,7 @@ class ShelfListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     fun onClickApply() {
         // Подтверждение - Сохранить результаты сканирования сегмента, закрыть его для редактирования и переслать? - Назад / Да
         navigator.showSaveSegmentScanResults(segmentNumber.value!!) {
-            checkData.getCurrentSegment()?.status = SegmentStatus.PROCESSED
+            checkData.setCurrentSegmentStatus(SegmentStatus.PROCESSED)
 
             // TODO сюда добавить логику отправки сегмента на сервер
 
@@ -128,7 +128,7 @@ class ShelfListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     }
 
     fun onClickBack() {
-        if (checkData.getCurrentSegment()?.status != SegmentStatus.UNFINISHED) {
+        if (checkData.getCurrentSegment()?.getStatus() != SegmentStatus.UNFINISHED) {
             navigator.goBack()
             return
         }

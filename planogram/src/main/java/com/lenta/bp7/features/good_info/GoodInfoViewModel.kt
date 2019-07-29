@@ -21,11 +21,11 @@ class GoodInfoViewModel : CoreViewModel() {
     val good: MutableLiveData<Good> = MutableLiveData()
 
     val missingGood: MutableLiveData<Boolean> = good.map {
-        it?.status == GoodStatus.MISSING_WRONG || it?.status == GoodStatus.MISSING_RIGHT
+        it?.getStatus() == GoodStatus.MISSING_WRONG || it?.getStatus() == GoodStatus.MISSING_RIGHT
     }
 
-    val missingButtonEnabled: MutableLiveData<Boolean> = good.map { it?.status == GoodStatus.CREATED }
-    val applyButtonEnabled: MutableLiveData<Boolean> = good.map { it?.status == GoodStatus.CREATED }
+    val missingButtonEnabled: MutableLiveData<Boolean> = good.map { it?.getStatus() == GoodStatus.CREATED }
+    val applyButtonEnabled: MutableLiveData<Boolean> = good.map { it?.getStatus() == GoodStatus.CREATED }
 
     init {
         viewModelScope.launch {
@@ -62,7 +62,7 @@ class GoodInfoViewModel : CoreViewModel() {
     }
 
     fun onClickBack() {
-        if (checkData.getCurrentGood()?.status == GoodStatus.CREATED) {
+        if (checkData.getCurrentGood()?.getStatus() == GoodStatus.CREATED) {
             checkData.deleteCurrentGood()
         }
         navigator.openGoodListScreen()

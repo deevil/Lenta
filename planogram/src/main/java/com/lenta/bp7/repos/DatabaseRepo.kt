@@ -37,8 +37,9 @@ class DatabaseRepo(hyperHive: HyperHive) : IDatabaseRepo {
                 return@withContext GoodInfo(
                         sapCode = eanInfo.materialNumber,
                         barCode = barCode,
-                        name = materialInfo?.name ?: "Not fount!",
-                        units = unitName ?: "Not fount!")
+                        name = materialInfo?.name ?: "Not found!",
+                        unitsCode = materialInfo?.buom ?: "Not found!",
+                        units = unitName ?: "Not found!")
             }
         }
     }
@@ -54,8 +55,9 @@ class DatabaseRepo(hyperHive: HyperHive) : IDatabaseRepo {
                 return@withContext GoodInfo(
                         sapCode = sapCode,
                         barCode = eanInfo.ean,
-                        name = materialInfo?.name ?: "Not fount!",
-                        units = unitName ?: "Not fount!")
+                        name = materialInfo?.name ?: "Not found!",
+                        unitsCode = materialInfo?.buom ?: "Not found!",
+                        units = unitName ?: "Not found!")
             }
         }
     }

@@ -1,35 +1,18 @@
 package com.lenta.bp7.data.model
 
+import org.simpleframework.xml.Attribute
+import org.simpleframework.xml.ElementList
+import org.simpleframework.xml.Root
 import java.util.*
 
-
+@Root(name = "DisplayOfGoods")
 data class DisplayOfGoods(
-        val documentDate: String,
-        val id: String,
+        @Attribute(name = "documentDate")
+        val sendDateTime: String = Date().toString(),
+        @Attribute(name = "id")
+        val marketIp: String = "11.111.11.111",
+        @Attribute(name = "gid")
         val gid: String = UUID.randomUUID().toString(),
-        val equipment: Array<Equipment>
-)
-
-data class Equipment(
-        val number: String,
-        val startTime: String,
-        val completionTime: String,
-        val canceled: String,
-        val shelf: Array<SendShelf>
-)
-
-data class SendShelf(
-        val number: String,
-        val counted: String,
-        val startTime: String,
-        val completionTime: String,
-        val canceled: String,
-        val goods: Array<SendGood>
-)
-
-data class SendGood(
-        val SAPCode: String,
-        val barcode: String,
-        val count: String,
-        val labeled: String
+        @ElementList(name = "equipment")
+        val segments: MutableList<Segment>
 )
