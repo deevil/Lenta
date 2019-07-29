@@ -110,18 +110,20 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     }
 
     fun onClickClean() {
-        processedSelectionHelper.selectedPositions.value?.forEach {
-            val matnr = processedGoods.value?.get(it)?.matnr
-            if (matnr != null) {
-                val productInfo = taskManager.getInventoryTask()?.taskRepository?.getProducts()?.findProduct(matnr, storePlaceManager?.storePlaceNumber
+        screenNavigator.openConfirmationClean {
+            processedSelectionHelper.selectedPositions.value?.forEach {
+                val matnr = processedGoods.value?.get(it)?.matnr
+                if (matnr != null) {
+                    val productInfo = taskManager.getInventoryTask()?.taskRepository?.getProducts()?.findProduct(matnr, storePlaceManager?.storePlaceNumber
                         ?: "")
-                productInfo?.isPositionCalc = false
-                productInfo?.factCount = 0.0
+                    productInfo?.isPositionCalc = false
+                    productInfo?.factCount = 0.0
+                }
             }
+            processedSelectionHelper.clearPositions()
+            updateUnprocessed()
+            updateProcessed()
         }
-        processedSelectionHelper.clearPositions()
-        updateUnprocessed()
-        updateProcessed()
     }
 
     fun onClickComplete() {

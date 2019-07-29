@@ -212,6 +212,34 @@ class ScreenNavigator(
         }
     }
 
+    override fun openConfirmationSkippingDiscrepancies(callbackFunc: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.confirmation_skipping_discrepancies),
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(callbackFunc),
+                    pageNumber = "93",
+                    rightButtonDecorationInfo = ButtonDecorationInfo.yes))
+        }
+    }
+
+    override fun openConfirmationClean(byStorage: Boolean, callbackFunc: () -> Unit) {
+        runOrPostpone {
+            val message = if (byStorage) context.getString(R.string.confirmation_clean_storages) else context.getString(R.string.confirmation_clean_goods)
+            getFragmentStack()?.push(AlertFragment.create(message = message,
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(callbackFunc),
+                    pageNumber = "93",
+                    rightButtonDecorationInfo = ButtonDecorationInfo.yes))
+        }
+    }
+
+    override fun openConfirmationMissingGoods(positionsCount: Int, callbackFunc: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.confirmation_missing_goods, positionsCount),
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(callbackFunc),
+                    pageNumber = "93",
+                    rightButtonDecorationInfo = ButtonDecorationInfo.yes))
+        }
+    }
+
     override fun openSuccessSaveDataScreen() {
         runOrPostpone {
             getFragmentStack()?.push(
@@ -255,5 +283,8 @@ interface IScreenNavigator : ICoreNavigator {
     fun openPartySignsScreen(title: String, manufacturers: List<String>, stampLength: Int)
     fun openTakenToWorkFragment()
     fun openConfirmationSavingJobScreen(callbackFunc: () -> Unit)
+    fun openConfirmationSkippingDiscrepancies(callbackFunc: () -> Unit)
+    fun openConfirmationMissingGoods(positionsCount: Int, callbackFunc: () -> Unit)
+    fun openConfirmationClean(byStorage: Boolean = false, callbackFunc: () -> Unit)
     fun openSuccessSaveDataScreen()
 }
