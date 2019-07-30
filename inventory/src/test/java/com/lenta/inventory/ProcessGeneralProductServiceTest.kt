@@ -13,7 +13,7 @@ import com.lenta.shared.models.core.Uom
 import org.junit.Assert
 import org.junit.Test
 
-class testInventoryTask_ProcessGeneralProductService {
+class ProcessGeneralProductServiceTest {
 
     lateinit var taskDescription: TaskDescription
     lateinit var inventoryTask: InventoryTask

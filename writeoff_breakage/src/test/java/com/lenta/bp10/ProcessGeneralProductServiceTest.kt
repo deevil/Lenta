@@ -14,7 +14,7 @@ import org.junit.Assert.*
 import org.junit.Test
 import java.util.*
 
-class testWriteoffTask_ProcessGeneralProductService {
+class ProcessGeneralProductServiceTest {
     lateinit var taskDescription: TaskDescription
     var taskRepository: ITaskRepository = MemoryTaskRepository()
     lateinit var task: WriteOffTask
