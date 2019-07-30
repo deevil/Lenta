@@ -1,6 +1,9 @@
 package com.lenta.bp7.data.model
 
 import com.lenta.bp7.data.CheckType
+import org.simpleframework.xml.core.Persister
+import java.io.StringWriter
+
 
 class CheckData(
         val segments: MutableList<Segment> = mutableListOf()
@@ -62,8 +65,7 @@ class CheckData(
         getCurrentSegment()!!.shelves.let {
             it.add(0, Shelf(
                     id = it.lastIndex + 2,
-                    number = shelfNumber,
-                    counted = if (countFacings) 1 else 0))
+                    number = shelfNumber))
         }
         currentShelfIndex = 0
     }
@@ -139,10 +141,21 @@ class CheckData(
                 ?: 0 else 0
     }
 
-    fun prepareDataForSend(): Any? {
+    fun prepareDataForSend(): String? {
+        // Будущий XML со списком неотправленных сегментов
+        val displayOfGoods = DisplayOfGoods()
+        for (segment in segments) {
+            //if (segment.getStatus() != SegmentStatus.UNFINISHED) displayOfGoods.segments.add(segment)
+        }
+
+        val serializer = Persister()
+        val result = StringWriter()
+
+        serializer.write(displayOfGoods, result)
 
 
-        return null
+
+        return result.toString()
     }
 
 }
