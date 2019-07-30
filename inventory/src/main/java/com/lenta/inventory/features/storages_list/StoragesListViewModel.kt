@@ -170,11 +170,8 @@ class StoragesListViewModel: CoreViewModel(), OnOkInSoftKeyboardListener {
         } else {
             storeNumber = processedStorages.value?.get(position)?.storeNumber
         }
-        storeNumber?.let {
-            val storePlaceManager = taskManager.getInventoryTask()?.processStorePlace(it)
-            storePlaceManager?.let {
-                screenNavigator.openGoodsListScreen(it)
-            }
+        storeNumber?.let {storePlaceNumber ->
+            screenNavigator.openGoodsListScreen(storePlaceNumber)
         }
     }
 

@@ -6,6 +6,7 @@ import com.lenta.inventory.databinding.FragmentJobCardBinding
 import com.lenta.inventory.models.RecountType
 import com.lenta.inventory.models.getDescriptionStringRes
 import com.lenta.inventory.platform.extentions.getAppComponent
+import com.lenta.shared.platform.activity.OnBackPresserListener
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
@@ -15,7 +16,7 @@ import com.lenta.shared.utilities.extentions.generateScreenNumber
 import com.lenta.shared.utilities.extentions.provideViewModel
 import com.lenta.shared.utilities.state.state
 
-class JobCardFragment : CoreFragment<FragmentJobCardBinding, JobCardViewModel>(), ToolbarButtonsClickListener {
+class JobCardFragment : CoreFragment<FragmentJobCardBinding, JobCardViewModel>(), ToolbarButtonsClickListener, OnBackPresserListener {
 
     private var taskNumber by state("")
 
@@ -62,6 +63,10 @@ class JobCardFragment : CoreFragment<FragmentJobCardBinding, JobCardViewModel>()
         when (view.id) {
             R.id.b_5 -> vm.onClickNext()
         }
+    }
+
+    override fun onBackPressed(): Boolean {
+        return vm.onBackPressed()
     }
 
 

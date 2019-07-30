@@ -61,4 +61,5 @@
     <string name="component_not_found">Неверный номер компонента</string>
     <string name="brand_other_market">Марка на другом ТК</string>
     <string name="wrong_product_type">Неверный тип продукта</string>
+    <string name="confirmation_exit_task">Вы точно хотите выйти из обработки задания?</string>
 </resources>

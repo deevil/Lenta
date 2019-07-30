@@ -12,7 +12,6 @@ import com.lenta.inventory.platform.navigation.IScreenNavigator
 import com.lenta.inventory.requests.network.*
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
-import com.lenta.shared.models.core.ProductInfo
 import com.lenta.shared.models.core.ProductType
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.Logg
@@ -21,7 +20,6 @@ import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.getDeviceIp
 import com.lenta.shared.utilities.extentions.map
-import com.lenta.shared.utilities.extentions.toStringFormatted
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -61,6 +59,10 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     fun getTitle(): String {
         return "${taskManager.getInventoryTask()?.taskDescription?.getTaskTypeAndNumber()
                 ?: ""} / МХ-${storePlaceManager?.storePlaceNumber}"
+    }
+
+    fun setStorePlaceNumber(storePlaceNumber: String) {
+        storePlaceManager = taskManager.getInventoryTask()!!.processStorePlace(storePlaceNumber = storePlaceNumber)
     }
 
     init {

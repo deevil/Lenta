@@ -92,11 +92,12 @@ class TaskListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
     fun onClickItemPosition(position: Int) {
         tasks.value?.getOrNull(position)?.let { taskItem ->
-            if (taskItem.statusTask == StatusTask.BlockedMe) {
-                openConfirmationScreen(taskItem.taskNumber)
-                return
+
+            when (taskItem.statusTask) {
+                StatusTask.BlockedMe -> openConfirmationScreen(taskItem.taskNumber)
+                StatusTask.BlockedNotMe -> return
+                else -> screenNavigator.openJobCard(taskItem.taskNumber)
             }
-            screenNavigator.openJobCard(taskItem.taskNumber)
         }
 
     }

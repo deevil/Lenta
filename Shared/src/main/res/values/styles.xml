@@ -37,7 +37,7 @@
 
     <style name="LentaCheckbox" parent="@style/Widget.AppCompat.CompoundButton.CheckBox">
         <item name="android:button">@drawable/selector_check_box</item>
-        <item name="android:background">@drawable/bg_border_rectangle</item>
+        <item name="android:background">@drawable/bg_border_rectangle_for_checkbox</item>
     </style>
 
     <style name="Button" parent="@android:style/TextAppearance.Widget.TextView">
@@ -68,7 +68,7 @@
     </style>
 
     <style name="SpinnerItemStyle" parent="Widget.AppCompat.TextView.SpinnerItem">
-        <item name="android:drawableRight">@drawable/spinner_arrow_down</item>
+        <item name="android:drawableRight">@drawable/selector_spinner_arrow</item>
         <item name="android:textColor">@color/spinner_text_color</item>
     </style>
 

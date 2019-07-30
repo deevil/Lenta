@@ -118,9 +118,9 @@ class ScreenNavigator(
         }
     }
 
-    override fun openGoodsListScreen(storePlaceManager: StorePlaceProcessing) {
+    override fun openGoodsListScreen(storePlaceNumber: String) {
         runOrPostpone {
-            getFragmentStack()?.push(GoodsListFragment.create(storePlaceManager))
+            getFragmentStack()?.push(GoodsListFragment.create(storePlaceNumber))
         }
     }
 
@@ -132,7 +132,7 @@ class ScreenNavigator(
 
     override fun openSetComponentsScreen(componentInfo: SetComponentInfo, targetTotalCount: Double, isStamp: Boolean) {
         runOrPostpone {
-            getFragmentStack()?.push(SetComponentsFragment.create(componentInfo,targetTotalCount, isStamp))
+            getFragmentStack()?.push(SetComponentsFragment.create(componentInfo, targetTotalCount, isStamp))
         }
     }
 
@@ -253,6 +253,19 @@ class ScreenNavigator(
         }
     }
 
+    override fun openConfirmationExitTask(callbackFunc: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.confirmation_exit_task),
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(callbackFunc),
+                    pageNumber = "94",
+                    leftButtonDecorationInfo = ButtonDecorationInfo.no,
+                    rightButtonDecorationInfo = ButtonDecorationInfo.yes
+            )
+            )
+        }
+    }
+
 
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 
@@ -267,7 +280,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openMainMenuScreen()
     fun openGoodsInfoScreen(productInfo: TaskProductInfo)
     fun openGoodsDetailsStorageScreen(productInfo: TaskProductInfo)
-    fun openGoodsListScreen(storePlaceManager: StorePlaceProcessing)
+    fun openGoodsListScreen(storePlaceNumber: String)
     fun openSetsInfoScreen(productInfo: TaskProductInfo)
     fun openSetComponentsScreen(componentInfo: SetComponentInfo, targetTotalCount: Double, isStamp: Boolean)
     fun openStoragesList()
@@ -287,4 +300,5 @@ interface IScreenNavigator : ICoreNavigator {
     fun openConfirmationMissingGoods(positionsCount: Int, callbackFunc: () -> Unit)
     fun openConfirmationClean(byStorage: Boolean = false, callbackFunc: () -> Unit)
     fun openSuccessSaveDataScreen()
+    fun openConfirmationExitTask(callbackFunc: () -> Unit)
 }
