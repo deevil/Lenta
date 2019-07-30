@@ -114,9 +114,9 @@ class GoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     }
 
     private fun openGoodInfoScreen() {
-        // todo для тестирования разных сценариев проверки. Потом удалить.
-        checkData.countFacings = true
-        checkData.checkEmptyPlaces = true
+        // TODO Раскомментировать для тестирования разных сценариев проверки
+        /*checkData.countFacings = true
+        checkData.checkEmptyPlaces = true*/
 
         if (checkData.countFacings) {
             navigator.openGoodInfoFacingScreen()

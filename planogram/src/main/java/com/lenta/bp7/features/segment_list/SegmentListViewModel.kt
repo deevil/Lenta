@@ -106,14 +106,11 @@ class SegmentListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     }
 
     fun onClickComplete() {
-        //val dataForSend = checkData.prepareJsonCheckResult()
-        //Logg.d { "dataForSend --> $dataForSend" }
-
         viewModelScope.launch {
             navigator.showProgress(saveCheckDataNetRequest)
 
             saveCheckDataNetRequest.run(SaveCheckDataParams(
-                    shop = "000", // checkData.getFormattedMarketNumber(),
+                    shop = "000", // checkData.getFormattedMarketNumber(), // TODO Раскомментировать после тестирования
                     terminalId = "5a4c3555-730c-493a-821f-8780a22d8d31", // TODO Реализовать получение этого id с устройства
                     data = checkData.prepareXmlCheckResult(),
                     saveDoc = 1
@@ -131,16 +128,9 @@ class SegmentListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     }
 
     private fun handleSaveCheckDataSuccess(saveCheckDataRestInfo: SaveCheckDataRestInfo) {
-        //val retCode = saveCheckDataRestInfo[1].data[0][0].toInt()
-        //val serverDescription = saveCheckDataRestInfo[1].data[0][1]
-
-        //Logg.d { "handleSaveCheckDataSuccess --> retCode = $retCode / serverDescription = $serverDescription" }
-
         // Сообщение - Успешно сохранено в LUA
         navigator.showSuccessfullySavedToLua {
-            // Удалить отправленные данные из checkData
-            // ...
-
+            checkData.removeAllFinishedSegments()
             navigator.openSegmentListScreen()
         }
     }

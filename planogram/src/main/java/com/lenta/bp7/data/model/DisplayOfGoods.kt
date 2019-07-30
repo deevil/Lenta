@@ -8,21 +8,12 @@ import org.simpleframework.xml.Root
 import java.text.SimpleDateFormat
 import java.util.*
 
-data class DataForSend(
-        val shop: String,
-        val terminalId: String = "5a4c3555-730c-493a-821f-8780a22d8d31",
-        val data: String,
-        val saveDoc: Int = 1
-) {
-
-}
-
 @Root(strict = false, name = "DisplayOfGoods")
 data class DisplayOfGoods @JvmOverloads constructor(
         @field:Attribute(name = "documentDate")
         var sendDateTime: String = SimpleDateFormat(CHECK_DATA_TIME_FORMAT, Locale.getDefault()).format(Date()),
         @field:Attribute(name = "id")
-        var marketIp: String = "11.111.11.111",
+        var marketIp: String,
         @field:Attribute(name = "gid")
         var gid: String = UUID.randomUUID().toString(),
         @Path("equipment") @field:ElementList(name = "equipment", inline = true)

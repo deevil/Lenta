@@ -7,7 +7,6 @@ import org.simpleframework.xml.core.Persister
 import java.io.StringWriter
 import java.text.SimpleDateFormat
 import java.util.*
-import com.google.gson.Gson
 
 class CheckData(
         val segments: MutableList<Segment> = mutableListOf()
@@ -16,8 +15,8 @@ class CheckData(
     var marketNumber = "000"
 
     var checkType = CheckType.SELF_CONTROL
-    var countFacings = true
-    var checkEmptyPlaces = true
+    var countFacings = false
+    var checkEmptyPlaces = false
 
     var currentSegmentIndex = 0
     var currentShelfIndex = 0
@@ -107,6 +106,13 @@ class CheckData(
         currentGoodIndex = 0
     }
 
+    fun removeAllFinishedSegments() {
+        val unfinishedSegment = segments.find { it.getStatus() == SegmentStatus.UNFINISHED }
+
+        segments.clear()
+        if (unfinishedSegment != null) segments.add(unfinishedSegment)
+    }
+
     fun setCurrentSegmentStatus(status: SegmentStatus) {
         getCurrentSegment()?.setStatus(status)
     }
@@ -150,18 +156,21 @@ class CheckData(
                 ?: 0 else 0
     }
 
-    fun prepareJsonCheckResult(): String {
-        val dataForSend = DataForSend(
-                shop = marketNumber,
-                data = prepareXmlCheckResult()
-        )
-
-        return Gson().toJson(dataForSend)
+    fun getFormattedMarketNumber(): String {
+        var number = marketNumber
+        while (number.startsWith("0")) {
+            number = number.substring(1)
+        }
+        return number
     }
 
+
     fun prepareXmlCheckResult(): String {
-        // Будущий XML со списком неотправленных сегментов
-        val displayOfGoods = DisplayOfGoods()
+        // XML со списком неотправленных сегментов
+        val displayOfGoods = DisplayOfGoods(
+                marketIp = "11.111.11.111" // TODO Реализовать получение реального ip
+        )
+
         for (segment in segments) {
             if (segment.getStatus() != SegmentStatus.UNFINISHED) {
                 val segmentSend = SegmentSend(
@@ -211,7 +220,6 @@ class CheckData(
         return result.toString()
     }
 
-
     private fun generateTestData() {
         Logg.d { "Test data generation for CheckData" }
         segments.add(0, Segment(
@@ -229,7 +237,7 @@ class CheckData(
         shelves.add(0, Shelf(
                 id = 0,
                 checkFinish = Date(),
-                number = "11",
+                number = "111",
                 status = ShelfStatus.PROCESSED,
                 goods = createGoodsList()))
 
@@ -249,13 +257,5 @@ class CheckData(
                 units = "шт"))
 
         return goods
-    }
-
-    fun getFormattedMarketNumber(): String {
-        var number = marketNumber
-        while (number.startsWith("0")) {
-            number = number.substring(1)
-        }
-        return number
     }
 }
