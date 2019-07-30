@@ -15,46 +15,46 @@ data class DataForSend(
 }
 
 @Root(strict = false, name = "DisplayOfGoods")
-data class DisplayOfGoods(
+data class DisplayOfGoods (
         @Attribute(name = "documentDate")
         var sendDateTime: String = Date().toString(),
         @Attribute(name = "id")
         var marketIp: String = "11.111.11.111",
         @Attribute(name = "gid")
         var gid: String = UUID.randomUUID().toString(),
-        @ElementList(name = "equipment")
+        @field:ElementList(name = "equipment") @param:ElementList(name = "equipment")
         var segments: MutableList<SegmentSend> = mutableListOf()
 ) {
     // <DisplayOfGoods documentDate="2019-07-28T01:48:15" id="10.254.22.119" gid="a4ba84be-8198-4b89-95b9-9be5a8198102">
 }
 
-data class SegmentSend(
+data class SegmentSend (
         @Attribute(name = "number")
         var number: String,
         @Attribute(name = "startTime")
-        var startTime: String = "",
+        var startTime: String,
         @Attribute(name = "completionTime")
-        var completionTime: String = "",
+        var completionTime: String,
         @Attribute(name = "canceled")
-        var canceled: Int = 0,
-        @ElementList(name = "shelf")
+        var canceled: Int,
+        @field:ElementList(name = "shelf") @param:ElementList(name = "shelf")
         var shelves: MutableList<ShelfSend> = mutableListOf()
 ) {
     // <equipment number="032 007" startTime="2019-07-28T01:45:03" completionTime="2019-07-28T01:48:13">
 }
 
-data class ShelfSend(
+data class ShelfSend (
         @Attribute(name = "number")
         var number: String,
         @Attribute(name = "startTime")
-        var startTime: String = "",
+        var startTime: String,
         @Attribute(name = "completionTime")
-        var completionTime: String = "",
+        var completionTime: String,
         @Attribute(name = "counted")
         var counted: Int,
         @Attribute(name = "canceled")
-        var canceled: Int = 0,
-        @ElementList(name = "goods")
+        var canceled: Int,
+        @field:ElementList(name = "goods") @param:ElementList(name = "goods")
         var goods: MutableList<GoodSend> = mutableListOf()
 ) {
     // <shelf number="1" startTime="2019-07-28T01:45:08" completionTime="2019-07-28T01:45:38" counted="0">
@@ -62,7 +62,7 @@ data class ShelfSend(
 
 data class GoodSend(
         @Attribute(name = "SAPCode")
-        var sapCodeForSend: String = "",
+        var sapCodeForSend: String,
         @Attribute(name = "barcode")
         var barCode: String,
         @Attribute(name = "count", required = false)

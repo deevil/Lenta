@@ -1,6 +1,7 @@
 package com.lenta.bp7.data.model
 
 import com.lenta.bp7.data.CheckType
+import com.lenta.shared.utilities.Logg
 import org.simpleframework.xml.core.Persister
 import java.io.StringWriter
 
@@ -145,15 +146,48 @@ class CheckData(
         // Будущий XML со списком неотправленных сегментов
         val displayOfGoods = DisplayOfGoods()
         for (segment in segments) {
-            //if (segment.getStatus() != SegmentStatus.UNFINISHED) displayOfGoods.segments.add(segment)
+            if (segment.getStatus() != SegmentStatus.UNFINISHED) {
+                val segmentSend = SegmentSend(
+                        number = segment.number,
+                        startTime = segment.checkStart.toString(),
+                        completionTime = segment.checkFinish.toString(),
+                        canceled = if (segment.getStatus() == SegmentStatus.DELETED) 1 else 0
+                )
+
+                for (shelf in segment.shelves) {
+                    val shelfSend = ShelfSend(
+                            number = shelf.number,
+                            startTime = shelf.checkStart.toString(),
+                            completionTime = shelf.checkFinish.toString(),
+                            counted = if (countFacings) 1 else 0,
+                            canceled = if (shelf.getStatus() == ShelfStatus.DELETED) 1 else 0
+                    )
+
+                    for (good in shelf.goods) {
+                        val goodSend = GoodSend(
+                                sapCodeForSend = good.getFormattedSapCode() + "_${good.unitsCode}",
+                                barCode = good.barCode,
+                                count = if (countFacings) good.facings else null,
+                                labeled = if (checkEmptyPlaces) {
+                                    if (good.getStatus() == GoodStatus.MISSING_RIGHT) 1 else 0
+                                } else null
+                        )
+
+                        shelfSend.goods.add(goodSend)
+                    }
+
+                    segmentSend.shelves.add(shelfSend)
+                }
+
+                displayOfGoods.segments.add(segmentSend)
+            }
         }
 
         val serializer = Persister()
         val result = StringWriter()
-
         serializer.write(displayOfGoods, result)
 
-
+        Logg.d { "displayOfGoods --> $result" }
 
         return result.toString()
     }

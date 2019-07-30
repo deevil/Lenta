@@ -6,8 +6,8 @@ import java.util.*
 data class Shelf(
         val id: Int,
         val number: String,
-        val startTime: Date = Date(),
-        var completionTime: Date? = null,
+        val checkStart: Date = Date(),
+        var checkFinish: Date? = null,
         private var status: ShelfStatus = ShelfStatus.UNFINISHED,
         val goods: MutableList<Good> = mutableListOf()
 ) {
@@ -16,7 +16,7 @@ data class Shelf(
         this.status = status
 
         if (status != ShelfStatus.UNFINISHED) {
-            completionTime = Date()
+            checkFinish = Date()
         }
     }
 
@@ -25,7 +25,7 @@ data class Shelf(
     }
 
     fun getFormattedTime(): String {
-        return SimpleDateFormat("HH:mm", Locale.getDefault()).format(startTime)
+        return SimpleDateFormat("HH:mm", Locale.getDefault()).format(checkStart)
     }
 
     fun getNumberOfGoods(): Int {

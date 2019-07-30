@@ -99,7 +99,7 @@ class SegmentListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     }
 
     fun onClickComplete() {
-        //val dataForSend = checkData.prepareDataForSend()
+        val dataForSend = checkData.prepareDataForSend()
 
         // todo ЭКРАН отправить неотправленные сегменты
 
