@@ -159,7 +159,7 @@ class CheckData(
         return Gson().toJson(dataForSend)
     }
 
-    private fun prepareXmlCheckResult(): String {
+    fun prepareXmlCheckResult(): String {
         // Будущий XML со списком неотправленных сегментов
         val displayOfGoods = DisplayOfGoods()
         for (segment in segments) {
@@ -249,5 +249,13 @@ class CheckData(
                 units = "шт"))
 
         return goods
+    }
+
+    fun getFormattedMarketNumber(): String {
+        var number = marketNumber
+        while (number.startsWith("0")) {
+            number = number.substring(1)
+        }
+        return number
     }
 }

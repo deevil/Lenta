@@ -7,7 +7,11 @@ import com.lenta.bp7.data.model.Segment
 import com.lenta.bp7.data.model.SegmentStatus
 import com.lenta.bp7.platform.navigation.IScreenNavigator
 import com.lenta.bp7.repos.IDatabaseRepo
+import com.lenta.bp7.requests.network.SaveCheckDataNetRequest
+import com.lenta.bp7.requests.network.SaveCheckDataParams
+import com.lenta.bp7.requests.network.SaveCheckDataRestInfo
 import com.lenta.shared.account.ISessionInfo
+import com.lenta.shared.exception.Failure
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
@@ -25,6 +29,8 @@ class SegmentListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     lateinit var database: IDatabaseRepo
     @Inject
     lateinit var checkData: CheckData
+    @Inject
+    lateinit var saveCheckDataNetRequest: SaveCheckDataNetRequest
 
     companion object {
         const val SEGMENT_NUMBER_LENGTH = 7
@@ -100,14 +106,43 @@ class SegmentListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     }
 
     fun onClickComplete() {
-        val dataForSend = checkData.prepareJsonCheckResult()
-        Logg.d { "dataForSend --> $dataForSend" }
+        //val dataForSend = checkData.prepareJsonCheckResult()
+        //Logg.d { "dataForSend --> $dataForSend" }
 
-        // todo ЭКРАН отправить неотправленные сегменты
+        viewModelScope.launch {
+            navigator.showProgress(saveCheckDataNetRequest)
 
-        // todo ЭКРАН сообщение о результате отправки данных
-        // 1. Сообщение об успешной отправке. Выход из приложения.
-        // 2. Отправка не удалась. Вопрос о продолжении работы.
+            saveCheckDataNetRequest.run(SaveCheckDataParams(
+                    shop = "000", // checkData.getFormattedMarketNumber(),
+                    terminalId = "5a4c3555-730c-493a-821f-8780a22d8d31", // TODO Реализовать получение этого id с устройства
+                    data = checkData.prepareXmlCheckResult(),
+                    saveDoc = 1
+            )).either(::handleFailure, ::handleSaveCheckDataSuccess)
+
+            navigator.hideProgress()
+        }
+    }
+
+    override fun handleFailure(failure: Failure) {
+        // Сообщение - Ошибка сохранения в LUA
+        navigator.showErrorSavingToLua {
+            navigator.openSegmentListScreen()
+        }
+    }
+
+    private fun handleSaveCheckDataSuccess(saveCheckDataRestInfo: SaveCheckDataRestInfo) {
+        //val retCode = saveCheckDataRestInfo[1].data[0][0].toInt()
+        //val serverDescription = saveCheckDataRestInfo[1].data[0][1]
+
+        //Logg.d { "handleSaveCheckDataSuccess --> retCode = $retCode / serverDescription = $serverDescription" }
+
+        // Сообщение - Успешно сохранено в LUA
+        navigator.showSuccessfullySavedToLua {
+            // Удалить отправленные данные из checkData
+            // ...
+
+            navigator.openSegmentListScreen()
+        }
     }
 
     fun onClickItemPosition(position: Int) {
