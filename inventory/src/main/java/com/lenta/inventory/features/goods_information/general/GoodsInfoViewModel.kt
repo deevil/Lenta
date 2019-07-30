@@ -23,13 +23,12 @@ class GoodsInfoViewModel : MessageViewModel(), OnPositionClickListener {
     @Inject
     lateinit var processServiceManager: IInventoryTaskManager
 
-    private val processGeneralProductService: ProcessGeneralProductService by lazy {
-        processServiceManager.getInventoryTask()!!.processGeneralProduct(productInfo.value!!)!!
-    }
-
+    @Inject
+    lateinit var processGeneralProductService: ProcessGeneralProductService
 
     val productInfo: MutableLiveData<TaskProductInfo> = MutableLiveData()
     val storePlaceNumber: MutableLiveData<String> = MutableLiveData()
+    val msgWrongProducType: MutableLiveData<String> = MutableLiveData()
     val isStorePlaceNumber: MutableLiveData<Boolean> = storePlaceNumber.map { it != "00" }
     val spinList: MutableLiveData<List<String>> = MutableLiveData()
     val selectedPosition: MutableLiveData<Int> = MutableLiveData(0)
@@ -51,6 +50,14 @@ class GoodsInfoViewModel : MessageViewModel(), OnPositionClickListener {
         viewModelScope.launch {
             suffix.value = productInfo.value?.uom?.name
             storePlaceNumber.value = productInfo.value?.placeCode
+            if (processGeneralProductService.newProcessGeneralProductService(productInfo.value!!) == null){
+                screenNavigator.goBack()
+                screenNavigator.openAlertScreen(
+                        message = msgWrongProducType.value!!,
+                        iconRes = iconRes,
+                        textColor = textColor,
+                        pageNumber = "98")
+            }
         }
     }
 
