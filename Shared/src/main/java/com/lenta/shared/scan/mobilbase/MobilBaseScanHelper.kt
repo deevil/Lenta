@@ -6,7 +6,6 @@ import android.content.Context.BIND_AUTO_CREATE
 import android.os.Handler
 import android.os.IBinder
 import android.os.Message
-import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import app.dsic.barcodetray.IBarcodeInterface
 import com.lenta.shared.scan.IScanHelper

@@ -37,6 +37,7 @@ import com.lenta.shared.utilities.extentions.hideKeyboard
 import com.lenta.shared.utilities.extentions.implementationOf
 import javax.inject.Inject
 import com.lenta.shared.platform.navigation.ICoreNavigator
+import com.lenta.shared.scan.zebra.ZebraScanHelper
 import com.lenta.shared.utilities.extentions.hhive.ANALYTICS_HELPER
 import com.lenta.shared.utilities.extentions.isWriteExternalStoragePermissionGranted
 
@@ -66,6 +67,7 @@ abstract class CoreMainActivity : CoreActivity<ActivityMainBinding>(), ToolbarBu
 
     val honeywellScanHelper = HoneywellScanHelper()
     val newLandScanHelper = NewLandScanHelper()
+    val zebraScanHelper = ZebraScanHelper()
 
     private val vm: CoreMainViewModel by lazy {
         getViewModel().apply {
@@ -123,6 +125,13 @@ abstract class CoreMainActivity : CoreActivity<ActivityMainBinding>(), ToolbarBu
             }
         })
 
+        zebraScanHelper.scanResult.observe(this, Observer {
+            Logg.d { "scan result: $it" }
+            it?.let { code ->
+                getCurrentFragment()?.implementationOf(OnScanResultListener::class.java)?.onScanResult(code)
+            }
+        })
+
     }
 
     override fun onResume() {
@@ -136,6 +145,7 @@ abstract class CoreMainActivity : CoreActivity<ActivityMainBinding>(), ToolbarBu
         foregroundActivityProvider.setActivity(this)
         honeywellScanHelper.startListen(this)
         newLandScanHelper.startListen(this)
+        zebraScanHelper.startListen(this)
         priorityAppManager.setLowPriority()
         vm.onResume()
     }
@@ -152,6 +162,7 @@ abstract class CoreMainActivity : CoreActivity<ActivityMainBinding>(), ToolbarBu
         scanHelper.stopListen(this)
         honeywellScanHelper.stopListen(this)
         newLandScanHelper.stopListen(this)
+        zebraScanHelper.stopListen(this)
         priorityAppManager.setHighPriority()
         vm.onPause()
     }
