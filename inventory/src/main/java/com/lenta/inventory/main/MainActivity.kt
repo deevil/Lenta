@@ -43,32 +43,6 @@ class MainActivity : CoreMainActivity() {
         }
     }
 
-    override fun onNewIntent(intent: Intent?) {
-        super.onNewIntent(intent)
-        intent?.let { intent1 ->
-            intent1.action?.let { action ->
-                Logg.d("onNewIntent action: ${action}")
-                Logg.d("extras: ")
-                /*intent1.extras.keySet().forEach {
-                    Logg.d("${it}:${intent1.extras.get(it)}")
-                }*/
-
-                if (action == "com.symbol.datawedge.krittest") {
-                    intent1.getStringExtra("com.motorolasolutions.emdk.datawedge.data_string")?.let {
-                        Logg.d { "scan data: $it" }
-                        fragmentStack.peek()?.implementationOf(OnScanResultListener::class.java)?.onScanResult(it)
-                    }
-
-                }
-
-
-            }
-
-
-        }
-
-    }
-
     override fun onClickExit() {
         mainViewModel?.onExitClick()
     }
