@@ -7,10 +7,12 @@ import com.lenta.inventory.models.RecountType
 import com.lenta.inventory.models.StorePlaceLockMode
 import com.lenta.inventory.models.task.IInventoryTaskManager
 import com.lenta.inventory.models.task.StorePlaceProcessing
+import com.lenta.inventory.models.task.TaskProductInfo
 import com.lenta.inventory.platform.navigation.IScreenNavigator
 import com.lenta.inventory.requests.network.*
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
+import com.lenta.shared.models.core.ProductType
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.SelectionItemsHelper
@@ -18,7 +20,6 @@ import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.getDeviceIp
 import com.lenta.shared.utilities.extentions.map
-import com.lenta.shared.utilities.extentions.toStringFormatted
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -58,6 +59,10 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     fun getTitle(): String {
         return "${taskManager.getInventoryTask()?.taskDescription?.getTaskTypeAndNumber()
                 ?: ""} / МХ-${storePlaceManager?.storePlaceNumber}"
+    }
+
+    fun setStorePlaceNumber(storePlaceNumber: String) {
+        storePlaceManager = taskManager.getInventoryTask()!!.processStorePlace(storePlaceNumber = storePlaceNumber)
     }
 
     init {
@@ -110,18 +115,20 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     }
 
     fun onClickClean() {
-        processedSelectionHelper.selectedPositions.value?.forEach {
-            val matnr = processedGoods.value?.get(it)?.matnr
-            if (matnr != null) {
-                val productInfo = taskManager.getInventoryTask()?.taskRepository?.getProducts()?.findProduct(matnr, storePlaceManager?.storePlaceNumber
+        screenNavigator.openConfirmationClean {
+            processedSelectionHelper.selectedPositions.value?.forEach {
+                val matnr = processedGoods.value?.get(it)?.matnr
+                if (matnr != null) {
+                    val productInfo = taskManager.getInventoryTask()?.taskRepository?.getProducts()?.findProduct(matnr, storePlaceManager?.storePlaceNumber
                         ?: "")
-                productInfo?.isPositionCalc = false
-                productInfo?.factCount = 0.0
+                    productInfo?.isPositionCalc = false
+                    productInfo?.factCount = 0.0
+                }
             }
+            processedSelectionHelper.clearPositions()
+            updateUnprocessed()
+            updateProcessed()
         }
-        processedSelectionHelper.clearPositions()
-        updateUnprocessed()
-        updateProcessed()
     }
 
     fun onClickComplete() {
@@ -203,9 +210,24 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
         matnr?.let {
             val productInfo = taskManager.getInventoryTask()?.taskRepository?.getProducts()?.findProduct(it, storePlaceManager?.storePlaceNumber
                     ?: "")
-            if (productInfo != null) screenNavigator.openGoodsInfoScreen(productInfo)
+            if (productInfo != null) openProductScreen(productInfo)
         }
     }
+
+    fun openProductScreen(productInfo: TaskProductInfo) {
+        when (productInfo.type) {
+            ProductType.General -> screenNavigator.openGoodsInfoScreen(productInfo)
+            ProductType.ExciseAlcohol -> {
+                if (productInfo.isSet) {
+                    screenNavigator.openSetsInfoScreen(productInfo)
+                    return
+                } else
+                    screenNavigator.openExciseAlcoInfoScreen(productInfo)
+            }
+            else -> screenNavigator.openGoodsInfoScreen(productInfo)
+        }
+    }
+
 }
 
 data class ProductInfoVM(

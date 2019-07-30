@@ -118,9 +118,9 @@ class ScreenNavigator(
         }
     }
 
-    override fun openGoodsListScreen(storePlaceManager: StorePlaceProcessing) {
+    override fun openGoodsListScreen(storePlaceNumber: String) {
         runOrPostpone {
-            getFragmentStack()?.push(GoodsListFragment.create(storePlaceManager))
+            getFragmentStack()?.push(GoodsListFragment.create(storePlaceNumber))
         }
     }
 
@@ -132,7 +132,7 @@ class ScreenNavigator(
 
     override fun openSetComponentsScreen(componentInfo: SetComponentInfo, targetTotalCount: Double, isStamp: Boolean) {
         runOrPostpone {
-            getFragmentStack()?.push(SetComponentsFragment.create(componentInfo,targetTotalCount, isStamp))
+            getFragmentStack()?.push(SetComponentsFragment.create(componentInfo, targetTotalCount, isStamp))
         }
     }
 
@@ -212,6 +212,34 @@ class ScreenNavigator(
         }
     }
 
+    override fun openConfirmationSkippingDiscrepancies(callbackFunc: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.confirmation_skipping_discrepancies),
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(callbackFunc),
+                    pageNumber = "93",
+                    rightButtonDecorationInfo = ButtonDecorationInfo.yes))
+        }
+    }
+
+    override fun openConfirmationClean(byStorage: Boolean, callbackFunc: () -> Unit) {
+        runOrPostpone {
+            val message = if (byStorage) context.getString(R.string.confirmation_clean_storages) else context.getString(R.string.confirmation_clean_goods)
+            getFragmentStack()?.push(AlertFragment.create(message = message,
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(callbackFunc),
+                    pageNumber = "93",
+                    rightButtonDecorationInfo = ButtonDecorationInfo.yes))
+        }
+    }
+
+    override fun openConfirmationMissingGoods(positionsCount: Int, callbackFunc: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.confirmation_missing_goods, positionsCount),
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(callbackFunc),
+                    pageNumber = "93",
+                    rightButtonDecorationInfo = ButtonDecorationInfo.yes))
+        }
+    }
+
     override fun openSuccessSaveDataScreen() {
         runOrPostpone {
             getFragmentStack()?.push(
@@ -221,6 +249,19 @@ class ScreenNavigator(
                             timeAutoExitInMillis = 3000,
                             leftButtonDecorationInfo = ButtonDecorationInfo.empty
                     )
+            )
+        }
+    }
+
+    override fun openConfirmationExitTask(callbackFunc: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.confirmation_exit_task),
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(callbackFunc),
+                    pageNumber = "94",
+                    leftButtonDecorationInfo = ButtonDecorationInfo.no,
+                    rightButtonDecorationInfo = ButtonDecorationInfo.yes
+            )
             )
         }
     }
@@ -239,7 +280,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openMainMenuScreen()
     fun openGoodsInfoScreen(productInfo: TaskProductInfo)
     fun openGoodsDetailsStorageScreen(productInfo: TaskProductInfo)
-    fun openGoodsListScreen(storePlaceManager: StorePlaceProcessing)
+    fun openGoodsListScreen(storePlaceNumber: String)
     fun openSetsInfoScreen(productInfo: TaskProductInfo)
     fun openSetComponentsScreen(componentInfo: SetComponentInfo, targetTotalCount: Double, isStamp: Boolean)
     fun openStoragesList()
@@ -255,5 +296,9 @@ interface IScreenNavigator : ICoreNavigator {
     fun openPartySignsScreen(title: String, manufacturers: List<String>, stampLength: Int)
     fun openTakenToWorkFragment()
     fun openConfirmationSavingJobScreen(callbackFunc: () -> Unit)
+    fun openConfirmationSkippingDiscrepancies(callbackFunc: () -> Unit)
+    fun openConfirmationMissingGoods(positionsCount: Int, callbackFunc: () -> Unit)
+    fun openConfirmationClean(byStorage: Boolean = false, callbackFunc: () -> Unit)
     fun openSuccessSaveDataScreen()
+    fun openConfirmationExitTask(callbackFunc: () -> Unit)
 }

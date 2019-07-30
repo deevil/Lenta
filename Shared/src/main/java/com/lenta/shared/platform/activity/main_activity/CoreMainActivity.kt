@@ -1,8 +1,7 @@
 package com.lenta.shared.platform.activity.main_activity
 
 import android.Manifest
-import android.content.pm.PackageManager
-import android.os.Build
+import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.os.Bundle
 import android.view.KeyEvent
 import android.view.View
@@ -38,6 +37,7 @@ import com.lenta.shared.utilities.extentions.hideKeyboard
 import com.lenta.shared.utilities.extentions.implementationOf
 import javax.inject.Inject
 import com.lenta.shared.platform.navigation.ICoreNavigator
+import com.lenta.shared.scan.zebra.ZebraScanHelper
 import com.lenta.shared.utilities.extentions.hhive.ANALYTICS_HELPER
 import com.lenta.shared.utilities.extentions.isWriteExternalStoragePermissionGranted
 
@@ -67,6 +67,7 @@ abstract class CoreMainActivity : CoreActivity<ActivityMainBinding>(), ToolbarBu
 
     val honeywellScanHelper = HoneywellScanHelper()
     val newLandScanHelper = NewLandScanHelper()
+    val zebraScanHelper = ZebraScanHelper()
 
     private val vm: CoreMainViewModel by lazy {
         getViewModel().apply {
@@ -124,6 +125,13 @@ abstract class CoreMainActivity : CoreActivity<ActivityMainBinding>(), ToolbarBu
             }
         })
 
+        zebraScanHelper.scanResult.observe(this, Observer {
+            Logg.d { "scan result: $it" }
+            it?.let { code ->
+                getCurrentFragment()?.implementationOf(OnScanResultListener::class.java)?.onScanResult(code)
+            }
+        })
+
     }
 
     override fun onResume() {
@@ -137,7 +145,9 @@ abstract class CoreMainActivity : CoreActivity<ActivityMainBinding>(), ToolbarBu
         foregroundActivityProvider.setActivity(this)
         honeywellScanHelper.startListen(this)
         newLandScanHelper.startListen(this)
+        zebraScanHelper.startListen(this)
         priorityAppManager.setLowPriority()
+        vm.onResume()
     }
 
     private fun permissionNotGranted(): Boolean {
@@ -152,8 +162,11 @@ abstract class CoreMainActivity : CoreActivity<ActivityMainBinding>(), ToolbarBu
         scanHelper.stopListen(this)
         honeywellScanHelper.stopListen(this)
         newLandScanHelper.stopListen(this)
+        zebraScanHelper.stopListen(this)
         priorityAppManager.setHighPriority()
+        vm.onPause()
     }
+
 
     override fun onBackPressed() {
         getCurrentFragment()?.implementationOf(OnBackPresserListener::class.java)?.let {
@@ -171,7 +184,7 @@ abstract class CoreMainActivity : CoreActivity<ActivityMainBinding>(), ToolbarBu
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        screenNavigator.finishApp()
+        screenNavigator.finishApp(restart = grantResults.all { it == PERMISSION_GRANTED })
     }
 
     private fun getCurrentFragment(): Fragment? = fragmentStack.peek()

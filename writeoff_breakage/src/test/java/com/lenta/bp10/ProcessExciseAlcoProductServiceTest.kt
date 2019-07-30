@@ -18,7 +18,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 import java.util.*
 
-class testWriteoffTask_ProcessExciseAlcoProductService {
+class ProcessExciseAlcoProductServiceTest {
     lateinit var taskDescription: TaskDescription
     var taskProductRepository: ITaskProductRepository = MemoryTaskProductRepository()
     var taskExciseStampRepository: ITaskExciseStampRepository = MemoryTaskExciseStampRepository()

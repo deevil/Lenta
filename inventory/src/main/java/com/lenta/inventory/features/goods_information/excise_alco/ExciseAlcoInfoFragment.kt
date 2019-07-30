@@ -2,6 +2,7 @@ package com.lenta.inventory.features.goods_information.excise_alco
 
 import android.os.Bundle
 import android.view.View
+import androidx.core.content.ContextCompat
 import com.lenta.inventory.R
 import com.lenta.inventory.databinding.FragmentExciseAlcoInfoBinding
 import com.lenta.inventory.models.task.TaskProductInfo
@@ -45,6 +46,10 @@ class ExciseAlcoInfoFragment : CoreFragment<FragmentExciseAlcoInfoBinding, Excis
             vm.spinList.value = listOf(getString(R.string.quantity), getString(R.string.partly), getString(R.string.vintage))
             vm.textErrorUnknownStatus.value = getString(R.string.text_error_unknown_status)
             vm.titleProgressScreen.value = getString(R.string.data_loading)
+            vm.alcocodeNotFound.value = getString(R.string.alcocode_not_found)
+            vm.brandOtherMarket.value = getString(R.string.brand_other_market)
+            vm.iconRes.value = R.drawable.ic_info_pink
+            vm.textColor.value = ContextCompat.getColor(context!!, com.lenta.shared.R.color.color_text_dialogWarning)
             return vm
         }
     }
@@ -60,12 +65,8 @@ class ExciseAlcoInfoFragment : CoreFragment<FragmentExciseAlcoInfoBinding, Excis
         bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.details)
         bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.missing)
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.apply)
-    }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        val bottomToolbarUiModel = getBottomToolBarUIModel()!!
-        viewLifecycleOwner.apply {
+        viewLifecycleOwner.let {
             connectLiveData(vm.enabledRollbackButton, bottomToolbarUiModel.uiModelButton2.enabled)
             connectLiveData(vm.enabledMissingButton, bottomToolbarUiModel.uiModelButton4.enabled)
             connectLiveData(vm.enabledApplyButton, bottomToolbarUiModel.uiModelButton5.enabled)

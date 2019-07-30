@@ -6,34 +6,31 @@ import com.lenta.bp10.models.IPersistWriteOffTask
 import com.lenta.bp10.platform.navigation.IScreenNavigator
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
+import com.lenta.shared.features.select_personnel_number.SelectPersonnelNumberDelegate
 import com.lenta.shared.platform.viewmodel.CoreViewModel
-import com.lenta.shared.requests.network.PersonnelNumberNetRequest
-import com.lenta.shared.requests.network.TabNumberInfo
-import com.lenta.shared.requests.network.TabNumberParams
-import com.lenta.shared.settings.IAppSettings
-import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class SelectPersonnelNumberViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
+
     @Inject
-    lateinit var personnelNumberNetRequest: PersonnelNumberNetRequest
+    lateinit var persistWriteOffTask: IPersistWriteOffTask
     @Inject
     lateinit var screenNavigator: IScreenNavigator
     @Inject
     lateinit var sessionInfo: ISessionInfo
     @Inject
-    lateinit var appSettings: IAppSettings
-    @Inject
-    lateinit var persistWriteOffTask: IPersistWriteOffTask
+    lateinit var selectPersonnelNumberDelegate: SelectPersonnelNumberDelegate
 
-    val personnelNumber = MutableLiveData<String>("")
-    val fullName = MutableLiveData<String>("")
-    val employeesPosition = MutableLiveData<String>("")
+    val personnelNumber = MutableLiveData("")
+    val fullName = MutableLiveData("")
+    val employeesPosition = MutableLiveData("")
+
 
     val editTextFocus = MutableLiveData<Boolean>()
     val nextButtonFocus = MutableLiveData<Boolean>()
+
 
     private var codeConfirm: Int? = null
 
@@ -43,89 +40,49 @@ class SelectPersonnelNumberViewModel : CoreViewModel(), OnOkInSoftKeyboardListen
 
     init {
         viewModelScope.launch {
-            when {
-                sessionInfo.personnelNumber != null -> {
-                    personnelNumber.value = sessionInfo.personnelNumber
-                    fullName.value = sessionInfo.personnelFullName
-                    searchPersonnelNumber()
-                }
-                appSettings.lastPersonnelNumber != null -> {
-                    personnelNumber.value = appSettings.lastPersonnelNumber
-                    searchPersonnelNumber()
-                }
-                else -> editTextFocus.postValue(true)
-            }
-
+            selectPersonnelNumberDelegate.personnelNumber = personnelNumber
+            selectPersonnelNumberDelegate.fullName = fullName
+            selectPersonnelNumberDelegate.employeesPosition = employeesPosition
+            selectPersonnelNumberDelegate.editTextFocus = editTextFocus
+            selectPersonnelNumberDelegate.nextButtonFocus = nextButtonFocus
+            selectPersonnelNumberDelegate.init(
+                    viewModelScope = this@SelectPersonnelNumberViewModel::viewModelScope,
+                    onNextScreenOpen = {
+                        persistWriteOffTask.getSavedWriteOffTask().let {
+                            if (it == null || it.taskDescription.tkNumber != sessionInfo.market) {
+                                screenNavigator.openMainMenuScreen()
+                            } else {
+                                screenNavigator.openDetectionSavedDataScreen()
+                            }
+                        }
+                    }
+            )
         }
-    }
-
-    private fun searchPersonnelNumber() {
-        Logg.d { "searchPersonnelNumber" }
-        viewModelScope.launch {
-            screenNavigator.showProgress(personnelNumberNetRequest)
-            personnelNumberNetRequest(TabNumberParams(tabNumber = personnelNumber.value
-                    ?: "")).either(::handleFailure, ::handleSuccess)
-            screenNavigator.hideProgress()
-        }
-    }
-
-    private fun handleSuccess(personnelNumberInfo: TabNumberInfo) {
-        Logg.d { "handleSuccess $personnelNumberInfo" }
-        fullName.value = personnelNumberInfo.name
-        employeesPosition.value = personnelNumberInfo.jobName
-        nextButtonFocus.postValue(true)
 
     }
+
 
     override fun handleFailure(failure: Failure) {
         super.handleFailure(failure)
-        screenNavigator.openAlertScreen(failure)
+        selectPersonnelNumberDelegate.handleFailure(failure)
     }
 
     override fun onOkInSoftKeyboard(): Boolean {
-        searchPersonnelNumber()
-        return true
+        return selectPersonnelNumberDelegate.onOkInSoftKeyboard()
     }
 
     fun onClickNext() {
-        (if (!fullName.value.isNullOrEmpty()) personnelNumber.value else null).let {
-            sessionInfo.personnelNumber = it
-            sessionInfo.personnelFullName = fullName.value
-
-            appSettings.lastPersonnelNumber = it
-            appSettings.lastPersonnelFullName = fullName.value
-        }
-
-        codeConfirm?.let {
-            screenNavigator.goBackWithResultCode(it)
-            return
-        }
-
-        persistWriteOffTask.getSavedWriteOffTask().let {
-            if (it == null || it.taskDescription.tkNumber != sessionInfo.market) {
-                screenNavigator.openMainMenuScreen()
-            } else {
-                screenNavigator.openDetectionSavedDataScreen()
-            }
-        }
-
+        selectPersonnelNumberDelegate.onClickNext()
     }
 
 
     fun onResume() {
-        viewModelScope.launch {
-            if (personnelNumber.value.isNullOrBlank()) {
-                editTextFocus.value = true
-            } else {
-                nextButtonFocus.value = true
-            }
-        }
+        selectPersonnelNumberDelegate.onResume()
     }
 
 
     fun onScanResult(data: String) {
-        personnelNumber.value = data
-        searchPersonnelNumber()
+        selectPersonnelNumberDelegate.onScanResult(data)
     }
 
 }

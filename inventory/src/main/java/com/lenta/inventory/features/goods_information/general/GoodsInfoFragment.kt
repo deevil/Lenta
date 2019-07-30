@@ -1,7 +1,7 @@
 package com.lenta.inventory.features.goods_information.general
 
-import android.os.Bundle
 import android.view.View
+import androidx.core.content.ContextCompat
 import com.lenta.inventory.R
 import com.lenta.inventory.databinding.FragmentGoodsInfoBinding
 import com.lenta.inventory.models.task.TaskProductInfo
@@ -29,7 +29,6 @@ class GoodsInfoFragment : CoreFragment<FragmentGoodsInfoBinding,
                 return it
             }
         }
-
     }
 
     private var productInfo by state<TaskProductInfo?>(null)
@@ -43,6 +42,10 @@ class GoodsInfoFragment : CoreFragment<FragmentGoodsInfoBinding,
             getAppComponent()?.inject(vm)
             vm.productInfo.value = this.productInfo
             vm.spinList.value = listOf(getString(R.string.quantity))
+            vm.iconRes = R.drawable.ic_info_pink
+            vm.textColor = ContextCompat.getColor(context!!, com.lenta.shared.R.color.color_text_dialogWarning)
+            vm.message = getString(R.string.brand_other_market)
+            vm.msgWrongProducType.value = getString(R.string.wrong_product_type)
             return vm
         }
     }
@@ -58,16 +61,12 @@ class GoodsInfoFragment : CoreFragment<FragmentGoodsInfoBinding,
         bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.missing)
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.apply)
 
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        val bottomToolbarUiModel = getBottomToolBarUIModel()!!
-        viewLifecycleOwner.apply {
+        viewLifecycleOwner.let {
             connectLiveData(vm.isStorePlaceNumber, bottomToolbarUiModel.uiModelButton3.visibility)
             connectLiveData(vm.enabledMissingButton, bottomToolbarUiModel.uiModelButton4.enabled)
             connectLiveData(vm.enabledApplyButton, bottomToolbarUiModel.uiModelButton5.enabled)
         }
+
     }
 
     override fun onToolbarButtonClick(view: View) {

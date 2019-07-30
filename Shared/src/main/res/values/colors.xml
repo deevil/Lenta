@@ -23,6 +23,8 @@
     <color name="color_pressed_blue">#4894d8</color>
     <color name="color_disabled_blue">#446081</color>
 
+    <color name="color_checkbox_background">#152A45</color>
+
     <color name="color_text_title_header">#b6d2f4</color>
 
     <color name="color_normal_yellow">#eba93c</color>
@@ -48,6 +50,7 @@
 
     <color name="color_text_btn_disabled">#8299AC</color>
     <color name="color_transparent_selected">#22FFFFFF</color>
+    <color name="color_transparent_checkbox_disable">#11FFFFFF</color>
     <color name="color_item_selected">#2f5f9d</color>
 
     <color name="color_text_dialogWarning">#FF6578</color>

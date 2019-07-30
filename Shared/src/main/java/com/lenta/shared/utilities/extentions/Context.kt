@@ -9,6 +9,8 @@ import android.os.Build
 import android.provider.Settings
 import android.text.format.Formatter
 import android.util.TypedValue
+import kotlin.system.exitProcess
+import android.content.Intent
 
 fun Context.getDeviceIp(): String {
     val wm = this.getSystemService(Context.WIFI_SERVICE) as WifiManager
@@ -31,4 +33,13 @@ fun Context.selectableItemBackgroundResId(): Int {
 
 fun Context.isWriteExternalStoragePermissionGranted(): Boolean {
     return Build.VERSION.SDK_INT < Build.VERSION_CODES.M || this.checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
+}
+
+fun Context.restartApp() {
+    val packageManager = packageManager
+    val intent = packageManager.getLaunchIntentForPackage(packageName)
+    val componentName = intent!!.component
+    val mainIntent = Intent.makeRestartActivityTask(componentName)
+    this.startActivity(mainIntent)
+    exitProcess(0)
 }

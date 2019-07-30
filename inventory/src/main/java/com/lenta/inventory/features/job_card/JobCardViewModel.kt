@@ -2,6 +2,7 @@ package com.lenta.inventory.features.job_card
 
 import androidx.lifecycle.MutableLiveData
 import com.lenta.inventory.models.RecountType
+import com.lenta.inventory.models.task.IInventoryTaskManager
 import com.lenta.inventory.platform.navigation.IScreenNavigator
 import com.lenta.inventory.repos.IRepoInMemoryHolder
 import com.lenta.inventory.requests.network.TasksItem
@@ -19,6 +20,9 @@ class JobCardViewModel : CoreViewModel(), OnPositionClickListener {
 
     @Inject
     lateinit var screenNavigator: IScreenNavigator
+
+    @Inject
+    lateinit var taskManager: IInventoryTaskManager
 
     private lateinit var tasksItem: TasksItem
 
@@ -63,8 +67,7 @@ class JobCardViewModel : CoreViewModel(), OnPositionClickListener {
 
         this.typesRecount = typesRecount
         this.recountsTitles = typesRecount
-                .filterIndexed {
-                    index, recountType -> if (isStrictList) true else index == 0 }
+                .filterIndexed { index, recountType -> if (isStrictList) true else index == 0 }
                 .map {
                     converterTypeToString(it)
                 }
@@ -77,8 +80,17 @@ class JobCardViewModel : CoreViewModel(), OnPositionClickListener {
     }
 
     fun onClickNext() {
-        screenNavigator.openLoadingTaskContentsScreen(tasksItem, getSelectedTypeRecount()
-                ?: RecountType.None)
+        if (taskManager.getInventoryTask() == null) {
+            screenNavigator.openLoadingTaskContentsScreen(tasksItem, getSelectedTypeRecount()
+                    ?: RecountType.None)
+        } else {
+            if (getSelectedTypeRecount() == RecountType.ParallelByStorePlaces) {
+                screenNavigator.openStoragesList()
+            } else {
+                screenNavigator.openGoodsListScreen(storePlaceNumber = "00")
+            }
+        }
+
     }
 
     private fun getSelectedTypeRecount(): RecountType? {
@@ -87,6 +99,20 @@ class JobCardViewModel : CoreViewModel(), OnPositionClickListener {
 
     private fun convertTime(dateString: String): String {
         return convertTimeString(formatSource = Constants.DATE_FORMAT_yyyy_mm_dd, formatDestination = Constants.DATE_FORMAT_ddmmyy, date = dateString)
+    }
+
+    fun onBackPressed(): Boolean {
+        if (taskManager.getInventoryTask() == null) {
+            return true
+        }
+
+        screenNavigator.openConfirmationExitTask {
+            taskManager.clearTask()
+            screenNavigator.goBack()
+        }
+
+        return false
+
     }
 
 

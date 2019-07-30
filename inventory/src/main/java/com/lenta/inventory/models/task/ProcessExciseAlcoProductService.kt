@@ -115,6 +115,7 @@ class ProcessExciseAlcoProductService(private val taskDescription: TaskDescripti
     fun apply(){
         taskRepository.getProducts().findProduct(productInfo)!!.factCount = currentProductInfo.factCount
         taskRepository.getExciseStamps().addExciseStamps(currentExciseStamps)
+        taskRepository.getProducts().findProduct(productInfo)!!.isPositionCalc = taskRepository.getProducts().findProduct(productInfo)!!.factCount > 0.0
     }
 
     fun isLinkingOldStamps(): Boolean{
@@ -200,5 +201,6 @@ class ProcessExciseAlcoProductService(private val taskDescription: TaskDescripti
     fun discard(){
         taskRepository.getProducts().findProduct(productInfo)!!.factCount -= currentProductInfo.factCount
         taskRepository.getExciseStamps().deleteExciseStamps(currentExciseStamps)
+        taskRepository.getProducts().findProduct(productInfo)!!.isPositionCalc = taskRepository.getProducts().findProduct(productInfo)!!.factCount > 0.0
     }
 }

@@ -102,15 +102,17 @@ class StoragesListViewModel: CoreViewModel(), OnOkInSoftKeyboardListener {
     }
 
     fun onClickClean() {
-        val selectedPositions = processedSelectionHelper.selectedPositions.value ?: emptySet<Int>()
-        for (position in selectedPositions) {
-            processedStorages.value?.get(position)?.let {
-                taskManager.getInventoryTask()?.clearStorePlaceByNumber(it.storeNumber)
+        screenNavigator.openConfirmationClean(byStorage = true) {
+            val selectedPositions = processedSelectionHelper.selectedPositions.value ?: emptySet<Int>()
+            for (position in selectedPositions) {
+                processedStorages.value?.get(position)?.let {
+                    taskManager.getInventoryTask()?.clearStorePlaceByNumber(it.storeNumber)
+                }
             }
+            processedSelectionHelper.clearPositions()
+            updateUnprocessed()
+            updateProcessed()
         }
-        processedSelectionHelper.clearPositions()
-        updateUnprocessed()
-        updateProcessed()
     }
 
     fun onClickComplete() {
@@ -168,11 +170,8 @@ class StoragesListViewModel: CoreViewModel(), OnOkInSoftKeyboardListener {
         } else {
             storeNumber = processedStorages.value?.get(position)?.storeNumber
         }
-        storeNumber?.let {
-            val storePlaceManager = taskManager.getInventoryTask()?.processStorePlace(it)
-            storePlaceManager?.let {
-                screenNavigator.openGoodsListScreen(it)
-            }
+        storeNumber?.let {storePlaceNumber ->
+            screenNavigator.openGoodsListScreen(storePlaceNumber)
         }
     }
 
