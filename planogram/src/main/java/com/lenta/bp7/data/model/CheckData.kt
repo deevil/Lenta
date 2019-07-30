@@ -4,6 +4,7 @@ import com.lenta.bp7.data.CheckType
 import com.lenta.shared.utilities.Logg
 import org.simpleframework.xml.core.Persister
 import java.io.StringWriter
+import java.util.*
 
 
 class CheckData(
@@ -11,13 +12,16 @@ class CheckData(
 ) {
 
     var checkType: CheckType = CheckType.SELF_CONTROL
-    var countFacings = false
-    var checkEmptyPlaces = false
+    var countFacings = true
+    var checkEmptyPlaces = true
 
     var currentSegmentIndex = 0
     var currentShelfIndex = 0
     var currentGoodIndex = 0
 
+    init {
+        generateTestData()
+    }
 
     fun getCurrentSegment(): Segment? {
         return if (segments.isNotEmpty()) {
@@ -192,4 +196,61 @@ class CheckData(
         return result.toString()
     }
 
+
+    private fun generateTestData() {
+        Logg.d { "Test data generation for CheckData" }
+
+        for (i in 2..3) {
+            segments.add(0, Segment(
+                    id = i,
+                    number = (100..999).random().toString() + "-" + (100..999).random().toString(),
+                    storeNumber = "0007",
+                    checkFinish = Date(),
+                    status = SegmentStatus.PROCESSED,
+                    shelves = createShelvesList()))
+        }
+    }
+
+    private fun createShelvesList(): MutableList<Shelf> {
+        val shelves: MutableList<Shelf> = mutableListOf()
+        for (i in 1..(2..3).random()) {
+            shelves.add(0, Shelf(
+                    id = i,
+                    checkFinish = Date(),
+                    number = i.toString(),
+                    status = ShelfStatus.PROCESSED,
+                    goods = createGoodsList()))
+        }
+
+        return shelves
+    }
+
+    private fun createGoodsList(): MutableList<Good> {
+        val goods: MutableList<Good> = mutableListOf()
+        for (i in 1..(2..3).random()) {
+            val facings = (0..5).random()
+            goods.add(0, Good(
+                    id = i,
+                    sapCode = "000000000000" + (100000..999999).random().toString(),
+                    barCode = (100000000000..999999999999).random().toString(),
+                    name = "Товар " + (1..1000).random(),
+                    status = createGoodStatus(facings),
+                    facings = facings,
+                    unitsCode = "ST",
+                    units = "шт"))
+        }
+
+        return goods
+    }
+
+    private fun createGoodStatus(facings: Int): GoodStatus {
+        return if (facings == 0) {
+            when ((1..2).random()) {
+                1 -> GoodStatus.MISSING_WRONG
+                else -> GoodStatus.MISSING_RIGHT
+            }
+        } else {
+            GoodStatus.PROCESSED
+        }
+    }
 }
