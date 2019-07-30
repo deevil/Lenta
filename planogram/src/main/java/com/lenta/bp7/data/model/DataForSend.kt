@@ -1,9 +1,11 @@
 package com.lenta.bp7.data.model
 
+import com.lenta.shared.platform.constants.Constants.CHECK_DATA_TIME_FORMAT
 import org.simpleframework.xml.Attribute
 import org.simpleframework.xml.ElementList
 import org.simpleframework.xml.Path
 import org.simpleframework.xml.Root
+import java.text.SimpleDateFormat
 import java.util.*
 
 data class DataForSend(
@@ -18,7 +20,7 @@ data class DataForSend(
 @Root(strict = false, name = "DisplayOfGoods")
 data class DisplayOfGoods @JvmOverloads constructor(
         @field:Attribute(name = "documentDate")
-        var sendDateTime: String = Date().toString(),
+        var sendDateTime: String = SimpleDateFormat(CHECK_DATA_TIME_FORMAT, Locale.getDefault()).format(Date()),
         @field:Attribute(name = "id")
         var marketIp: String = "11.111.11.111",
         @field:Attribute(name = "gid")
