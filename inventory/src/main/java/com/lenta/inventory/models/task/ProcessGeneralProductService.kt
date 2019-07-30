@@ -2,6 +2,7 @@ package com.lenta.inventory.models.task
 
 import com.lenta.inventory.models.repositories.ITaskRepository
 import com.lenta.shared.di.AppScope
+import com.lenta.shared.models.core.ProductType
 import javax.inject.Inject
 
 @AppScope
@@ -11,13 +12,17 @@ class ProcessGeneralProductService@Inject constructor() : IProcessProductService
     lateinit var processServiceManager: IInventoryTaskManager
 
     private val taskRepository: ITaskRepository by lazy {
-        processServiceManager.getInventoryTask()!!.taskRepository!!
+        processServiceManager.getInventoryTask()!!.taskRepository
     }
+
     private lateinit var productInfo: TaskProductInfo
 
-    fun newProcessGeneralProductService(productInfo: TaskProductInfo) : ProcessGeneralProductService {
-        this.productInfo = productInfo
-        return this
+    fun newProcessGeneralProductService(productInfo: TaskProductInfo) : ProcessGeneralProductService? {
+        return if (productInfo.type != ProductType.General || productInfo.type != ProductType.NonExciseAlcohol){
+            this.productInfo = productInfo
+            this
+        }
+        else null
     }
 
     override fun getFactCount(): Double {
