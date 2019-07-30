@@ -23,10 +23,8 @@ class GoodsInfoViewModel : MessageViewModel(), OnPositionClickListener {
     @Inject
     lateinit var processServiceManager: IInventoryTaskManager
 
-    private val processGeneralProductService: ProcessGeneralProductService by lazy {
-        processServiceManager.getInventoryTask()!!.processGeneralProduct(productInfo.value!!)!!
-    }
-
+    @Inject
+    lateinit var processGeneralProductService: ProcessGeneralProductService
 
     val productInfo: MutableLiveData<TaskProductInfo> = MutableLiveData()
     val storePlaceNumber: MutableLiveData<String> = MutableLiveData()
@@ -51,6 +49,7 @@ class GoodsInfoViewModel : MessageViewModel(), OnPositionClickListener {
         viewModelScope.launch {
             suffix.value = productInfo.value?.uom?.name
             storePlaceNumber.value = productInfo.value?.placeCode
+            processGeneralProductService.newProcessGeneralProductService(productInfo.value!!)
         }
     }
 

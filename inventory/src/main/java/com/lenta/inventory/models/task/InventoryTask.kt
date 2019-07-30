@@ -9,13 +9,6 @@ import com.lenta.shared.models.core.ProductType
 
 class InventoryTask(val taskDescription: TaskDescription, val taskRepository: ITaskRepository) {
 
-    //фун-ция проверят, является ли продукт обычным либо безакцизным алкоголем
-    fun processGeneralProduct(product: TaskProductInfo): ProcessGeneralProductService? {
-        return if (product.type == ProductType.General || product.type == ProductType.NonExciseAlcohol) {
-            ProcessGeneralProductService(taskDescription, taskRepository, product)
-        } else null
-    }
-
     //фун-ция проверят, является ли продукт акцизным алкоголем
     fun processExciseAlcoProduct(product: TaskProductInfo): ProcessExciseAlcoProductService? {
         return if (product.type == ProductType.ExciseAlcohol) {
