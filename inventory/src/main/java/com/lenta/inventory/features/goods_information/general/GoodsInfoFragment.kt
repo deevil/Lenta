@@ -45,7 +45,7 @@ class GoodsInfoFragment : CoreFragment<FragmentGoodsInfoBinding,
             vm.iconRes = R.drawable.ic_info_pink
             vm.textColor = ContextCompat.getColor(context!!, com.lenta.shared.R.color.color_text_dialogWarning)
             vm.message = getString(R.string.brand_other_market)
-            vm.msgWrongProducTtype.value = getString(R.string.wrong_product_type)
+            vm.msgWrongProducType.value = getString(R.string.wrong_product_type)
             return vm
         }
     }

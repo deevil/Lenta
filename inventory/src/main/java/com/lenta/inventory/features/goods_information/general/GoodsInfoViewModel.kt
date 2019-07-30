@@ -28,7 +28,7 @@ class GoodsInfoViewModel : MessageViewModel(), OnPositionClickListener {
 
     val productInfo: MutableLiveData<TaskProductInfo> = MutableLiveData()
     val storePlaceNumber: MutableLiveData<String> = MutableLiveData()
-    val msgWrongProducTtype: MutableLiveData<String> = MutableLiveData()
+    val msgWrongProducType: MutableLiveData<String> = MutableLiveData()
     val isStorePlaceNumber: MutableLiveData<Boolean> = storePlaceNumber.map { it != "00" }
     val spinList: MutableLiveData<List<String>> = MutableLiveData()
     val selectedPosition: MutableLiveData<Int> = MutableLiveData(0)
@@ -53,7 +53,7 @@ class GoodsInfoViewModel : MessageViewModel(), OnPositionClickListener {
             if (processGeneralProductService.newProcessGeneralProductService(productInfo.value!!) == null){
                 screenNavigator.goBack()
                 screenNavigator.openAlertScreen(
-                        message = msgWrongProducTtype.value!!,
+                        message = msgWrongProducType.value!!,
                         iconRes = iconRes,
                         textColor = textColor,
                         pageNumber = "98")
