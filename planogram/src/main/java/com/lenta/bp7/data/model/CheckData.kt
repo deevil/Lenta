@@ -7,13 +7,15 @@ import org.simpleframework.xml.core.Persister
 import java.io.StringWriter
 import java.text.SimpleDateFormat
 import java.util.*
-
+import com.google.gson.Gson
 
 class CheckData(
         val segments: MutableList<Segment> = mutableListOf()
 ) {
 
-    var checkType: CheckType = CheckType.SELF_CONTROL
+    var marketNumber = "000"
+
+    var checkType = CheckType.SELF_CONTROL
     var countFacings = true
     var checkEmptyPlaces = true
 
@@ -148,7 +150,16 @@ class CheckData(
                 ?: 0 else 0
     }
 
-    fun prepareDataForSend(): String? {
+    fun prepareJsonCheckResult(): String {
+        val dataForSend = DataForSend(
+                shop = marketNumber,
+                data = prepareXmlCheckResult()
+        )
+
+        return Gson().toJson(dataForSend)
+    }
+
+    private fun prepareXmlCheckResult(): String {
         // Будущий XML со списком неотправленных сегментов
         val displayOfGoods = DisplayOfGoods()
         for (segment in segments) {
@@ -195,7 +206,6 @@ class CheckData(
         val serializer = Persister()
         val result = StringWriter()
         serializer.write(displayOfGoods, result)
-
         Logg.d { "displayOfGoods --> $result" }
 
         return result.toString()
@@ -206,8 +216,8 @@ class CheckData(
         Logg.d { "Test data generation for CheckData" }
         segments.add(0, Segment(
                 id = 0,
-                number = (100..999).random().toString() + "-" + (100..999).random().toString(),
-                storeNumber = "0007",
+                number = "111-111",
+                storeNumber = marketNumber,
                 checkFinish = Date(),
                 status = SegmentStatus.PROCESSED,
                 shelves = createShelvesList()))
@@ -219,7 +229,7 @@ class CheckData(
         shelves.add(0, Shelf(
                 id = 0,
                 checkFinish = Date(),
-                number = "12",
+                number = "11",
                 status = ShelfStatus.PROCESSED,
                 goods = createGoodsList()))
 
@@ -232,9 +242,9 @@ class CheckData(
                 id = 0,
                 sapCode = "000000000000" + (100000..999999).random().toString(),
                 barCode = (100000000000..999999999999).random().toString(),
-                name = "Товар " + (1..1000).random(),
+                name = "Test 1",
                 status = GoodStatus.PROCESSED,
-                facings = 15,
+                facings = 111,
                 unitsCode = "ST",
                 units = "шт"))
 

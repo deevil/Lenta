@@ -95,6 +95,7 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
         // После того как будет сделано хранение данных
 
         val unsavedData = false
+        checkData.marketNumber = sessionInfo.market ?: "Not found!"
         checkData.checkType = CheckType.EXTERNAL_AUDIT
 
         if (unsavedData) {

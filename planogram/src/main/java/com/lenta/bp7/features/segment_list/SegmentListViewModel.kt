@@ -9,6 +9,7 @@ import com.lenta.bp7.platform.navigation.IScreenNavigator
 import com.lenta.bp7.repos.IDatabaseRepo
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
+import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.extentions.map
 import kotlinx.coroutines.launch
@@ -99,7 +100,8 @@ class SegmentListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     }
 
     fun onClickComplete() {
-        val dataForSend = checkData.prepareDataForSend()
+        val dataForSend = checkData.prepareJsonCheckResult()
+        Logg.d { "dataForSend --> $dataForSend" }
 
         // todo ЭКРАН отправить неотправленные сегменты
 
