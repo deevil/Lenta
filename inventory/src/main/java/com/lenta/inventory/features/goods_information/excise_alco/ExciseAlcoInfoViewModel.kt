@@ -213,7 +213,7 @@ class ExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
         } else{
             if (processExciseAlcoProductService.isLinkingOldStamps()) {
                 checkExciseStampByCode(stampCode)
-            } else checkExciseStampByAlcCcode(stampCode)
+            } else checkExciseStampByAlcoCode(stampCode)
         }
     }
 
@@ -437,7 +437,7 @@ class ExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
         }
     }
 
-    private fun checkExciseStampByAlcCcode(stampCode: String){
+    private fun checkExciseStampByAlcoCode(stampCode: String){
         if (productInfo.value!!.isExcOld){
             isEtCountValue.value = true
         }
