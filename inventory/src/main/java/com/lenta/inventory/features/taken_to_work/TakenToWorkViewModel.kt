@@ -51,8 +51,7 @@ class TakenToWorkViewModel : CoreViewModel() {
             screenNavigator.goBack()
             when (it.recountType) {
                 RecountType.Simple, RecountType.ParallelByPerNo -> {
-                    val manager = taskManager.getInventoryTask()?.processStorePlace("00") //00 - код "общего" места хранения для пересчетов без МХ
-                    if (manager != null) screenNavigator.openGoodsListScreen(manager)
+                    screenNavigator.openGoodsListScreen("00")
                 }
                 RecountType.ParallelByStorePlaces -> screenNavigator.openStoragesList()
             }

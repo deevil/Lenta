@@ -71,8 +71,7 @@ class LoadingStorePlaceLockViewModel : CoreLoadingViewModel() {
         when(mode) {
             StorePlaceLockMode.Lock -> {
                 taskManager.getInventoryTask()?.let {
-                    val storePlaceManager = it.processStorePlace(storePlaceNumber)
-                    screenNavigator.openGoodsListScreen(storePlaceManager)
+                    screenNavigator.openGoodsListScreen(storePlaceNumber)
                 }
             }
             StorePlaceLockMode.Unlock -> screenNavigator.goBack()

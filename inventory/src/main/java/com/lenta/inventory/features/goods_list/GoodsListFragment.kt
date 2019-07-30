@@ -27,20 +27,21 @@ import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.databinding.*
 import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.provideViewModel
+import com.lenta.shared.utilities.state.state
 
 class GoodsListFragment : CoreFragment<FragmentGoodsListBinding, GoodsListViewModel>(), ToolbarButtonsClickListener, ViewPagerSettings, PageSelectionListener, OnKeyDownListener, OnScanResultListener, OnBackPresserListener {
     private var unprocessedRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
     private var processedRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
 
-    private var manager: StorePlaceProcessing? = null
+    private var storePlaceNumber by state("00")
 
     override fun getLayoutId(): Int = R.layout.fragment_goods_list
     override fun getPageNumber(): String = "11/08"
 
     override fun getViewModel(): GoodsListViewModel {
         provideViewModel(GoodsListViewModel::class.java).let { vm ->
-            vm.storePlaceManager = manager
             getAppComponent()?.inject(vm)
+            vm.setStorePlaceNumber(storePlaceNumber)
             return vm
         }
     }
@@ -216,9 +217,9 @@ class GoodsListFragment : CoreFragment<FragmentGoodsListBinding, GoodsListViewMo
     }
 
     companion object {
-        fun create(storePlaceManager: StorePlaceProcessing): GoodsListFragment {
+        fun create(storePlaceNumber: String): GoodsListFragment {
             val fragment = GoodsListFragment()
-            fragment.manager = storePlaceManager
+            fragment.storePlaceNumber = storePlaceNumber
             return fragment
         }
     }
