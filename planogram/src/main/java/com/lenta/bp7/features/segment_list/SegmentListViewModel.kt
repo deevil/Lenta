@@ -38,6 +38,9 @@ class SegmentListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
     val segments: MutableLiveData<List<Segment>> = MutableLiveData()
 
+    val marketIp: MutableLiveData<String> = MutableLiveData("")
+    val terminalId: MutableLiveData<String> = MutableLiveData("")
+
     val marketNumber: MutableLiveData<String> = MutableLiveData("")
     val segmentNumber: MutableLiveData<String> = MutableLiveData("")
 
@@ -110,9 +113,9 @@ class SegmentListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
             navigator.showProgress(saveCheckDataNetRequest)
 
             saveCheckDataNetRequest.run(SaveCheckDataParams(
-                    shop = "000", // checkData.getFormattedMarketNumber(), // TODO Раскомментировать после тестирования
-                    terminalId = "5a4c3555-730c-493a-821f-8780a22d8d31", // TODO Реализовать получение этого id с устройства
-                    data = checkData.prepareXmlCheckResult(),
+                    shop = checkData.getFormattedMarketNumber(),
+                    terminalId = terminalId.value ?: "Not found!",
+                    data = checkData.prepareXmlCheckResult(marketIp.value ?: "Not found!"),
                     saveDoc = 1
             )).either(::handleFailure, ::handleSaveCheckDataSuccess)
 

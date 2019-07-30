@@ -23,7 +23,7 @@ class CheckData(
     var currentGoodIndex = 0
 
     init {
-        generateTestData()
+        //generateTestData()
     }
 
     fun getCurrentSegment(): Segment? {
@@ -165,10 +165,10 @@ class CheckData(
     }
 
 
-    fun prepareXmlCheckResult(): String {
+    fun prepareXmlCheckResult(marketIp: String): String {
         // XML со списком неотправленных сегментов
         val displayOfGoods = DisplayOfGoods(
-                marketIp = "11.111.11.111" // TODO Реализовать получение реального ip
+                marketIp = marketIp
         )
 
         for (segment in segments) {
@@ -220,6 +220,8 @@ class CheckData(
         return result.toString()
     }
 
+
+    // Тестовые данные для быстрой проверки функционала
     private fun generateTestData() {
         Logg.d { "Test data generation for CheckData" }
         segments.add(0, Segment(
@@ -229,7 +231,6 @@ class CheckData(
                 checkFinish = Date(),
                 status = SegmentStatus.PROCESSED,
                 shelves = createShelvesList()))
-
     }
 
     private fun createShelvesList(): MutableList<Shelf> {
