@@ -60,10 +60,6 @@ class SegmentListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
     fun updateSegmentList() {
         segments.value = checkData.segments
-
-        if (completeButtonEnabled.value == true) {
-            saveCheckResult()
-        }
     }
 
     override fun onOkInSoftKeyboard(): Boolean {
