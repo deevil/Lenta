@@ -28,6 +28,7 @@ class AuthViewModel : CoreAuthViewModel() {
     @Inject
     lateinit var appSettings: IAppSettings
 
+
     override val enterEnabled: MutableLiveData<Boolean> by lazy {
         login.combineLatest(password).map { isValidLoginFields(login = it?.first, password = it?.second) }
                 .combineLatest(progress).map { isEnterEnabled(isFieldsValid = it?.first, inProgress = it?.second) }
@@ -41,14 +42,14 @@ class AuthViewModel : CoreAuthViewModel() {
         }
     }
 
-    private fun loadPermissions(@Suppress("UNUSED_PARAMETER") boolean: Boolean) {
+    private fun loadPermissions(boolean: Boolean) {
         viewModelScope.launch {
             progress.value = true
 
-            getLogin().let {
-                sessionInfo.userName = it
-                sessionInfo.basicAuth = getBaseAuth(it, getPassword())
-                appSettings.lastLogin = it
+            getLogin().let { login ->
+                sessionInfo.userName = login
+                sessionInfo.basicAuth = getBaseAuth(login, getPassword())
+                appSettings.lastLogin = login
             }
 
             progress.value = false

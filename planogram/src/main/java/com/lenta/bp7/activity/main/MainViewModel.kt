@@ -12,6 +12,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class MainViewModel : CoreMainViewModel() {
+
     @Inject
     override lateinit var statusBarUiModel: StatusBarUiModel
     @Inject
@@ -20,7 +21,6 @@ class MainViewModel : CoreMainViewModel() {
     lateinit var checkData: CheckData
     @Inject
     lateinit var persistCheckResult: IPersistCheckResult
-
 
 
     override fun onNewEnter() {
@@ -38,11 +38,10 @@ class MainViewModel : CoreMainViewModel() {
                 startProgressTimer(
                         coroutineScope = this,
                         remainingTime = it.remainingTime,
-                        timeoutInSec = 60
-                )
+                        timeoutInSec = 60)
             }
-
         }
+
         bottomToolbarUiModel.visibility.value = false
     }
 
