@@ -65,10 +65,6 @@ class SegmentListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
         segments.value = checkData.segments
     }
 
-    fun saveUnsentData() {
-        persistCheckResult.saveCheckResult(checkData)
-    }
-
     override fun onOkInSoftKeyboard(): Boolean {
         if (checkData.isExistUnfinishedSegment()) {
             // Подтверждение - Обнаружен незавершенный сегмент. Начало работы с новым сегментом невозможно. Перейти к обработке сегмента? - Назад / Перейти

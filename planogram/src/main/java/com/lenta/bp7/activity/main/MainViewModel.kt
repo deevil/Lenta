@@ -1,6 +1,8 @@
 package com.lenta.bp7.activity.main
 
 import androidx.lifecycle.viewModelScope
+import com.lenta.bp7.data.IPersistCheckResult
+import com.lenta.bp7.data.model.CheckData
 import com.lenta.bp7.platform.navigation.IScreenNavigator
 import com.lenta.shared.features.loading.startProgressTimer
 import com.lenta.shared.platform.activity.main_activity.CoreMainViewModel
@@ -14,10 +16,10 @@ class MainViewModel : CoreMainViewModel() {
     override lateinit var statusBarUiModel: StatusBarUiModel
     @Inject
     lateinit var screenNavigator: IScreenNavigator
-    /*@Inject
-    lateinit var writeOffTaskManager: IWriteOffTaskManager
     @Inject
-    lateinit var persistWriteOffTask: IPersistWriteOffTask*/
+    lateinit var checkData: CheckData
+    @Inject
+    lateinit var persistCheckResult: IPersistCheckResult
 
 
 
@@ -56,8 +58,7 @@ class MainViewModel : CoreMainViewModel() {
 
     override fun onPause() {
         super.onPause()
-        //TODO реализовать сохранение задачи
-        //persistWriteOffTask.saveWriteOffTask(writeOffTaskManager.getWriteOffTask())
+        persistCheckResult.saveCheckResult(checkData)
     }
 
 }
