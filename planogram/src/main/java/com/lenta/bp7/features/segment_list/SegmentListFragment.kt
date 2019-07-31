@@ -68,6 +68,11 @@ class SegmentListFragment : CoreFragment<FragmentSegmentListBinding, SegmentList
         vm.updateSegmentList()
     }
 
+    override fun onPause() {
+        super.onPause()
+        vm.saveUnsentData()
+    }
+
     override fun onToolbarButtonClick(view: View) {
         if (view.id == R.id.b_5) {
             vm.onClickComplete()

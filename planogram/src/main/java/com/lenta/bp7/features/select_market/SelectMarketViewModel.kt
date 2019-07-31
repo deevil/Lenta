@@ -3,6 +3,7 @@ package com.lenta.bp7.features.select_market
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp7.data.CheckType
+import com.lenta.bp7.data.IPersistCheckResult
 import com.lenta.bp7.data.model.CheckData
 import com.lenta.bp7.platform.navigation.IScreenNavigator
 import com.lenta.bp7.repos.IRepoInMemoryHolder
@@ -34,6 +35,8 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
     lateinit var serverTimeRequest: ServerTimeRequest
     @Inject
     lateinit var checkData: CheckData
+    @Inject
+    lateinit var persistCheckResult: IPersistCheckResult
 
     private val markets: MutableLiveData<List<MarketUi>> = MutableLiveData()
     val marketsNames: MutableLiveData<List<String>> = markets.map { markets ->
@@ -92,12 +95,13 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
         timeMonitor.setServerTime(time = serverTime.time, date = serverTime.date)
         checkData.marketNumber = sessionInfo.market ?: "Not found!"
 
-        // TODO Реализовать логику проверки несохраненных данных
-        // После того как будет сделано хранение данных
+        // Раскомментировать для удаление сохраненных результатов
+        //persistCheckResult.clearSavedData()
 
-        val unsavedData = false
+        val savedResult = persistCheckResult.getSavedCheckResult()
+        if (savedResult != null) {
+            checkData.restoreSavedCheckResult(savedResult)
 
-        if (unsavedData) {
             when (checkData.checkType) {
                 CheckType.SELF_CONTROL -> {
                     // Подтверждение - На устройстве обнаружены несохраненные данные в режиме "Самоконтроль ТК" - Назад / Перейти

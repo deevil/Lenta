@@ -1,5 +1,6 @@
 package com.lenta.bp7.data.model
 
+import com.lenta.bp7.data.CheckResultData
 import com.lenta.bp7.data.CheckType
 import com.lenta.shared.platform.constants.Constants.CHECK_DATA_TIME_FORMAT
 import com.lenta.shared.utilities.Logg
@@ -164,6 +165,13 @@ class CheckData(
         return number
     }
 
+    fun restoreSavedCheckResult(checkResultData: CheckResultData) {
+        checkType = checkResultData.checkType
+        countFacings = checkResultData.countFacings
+        checkEmptyPlaces = checkResultData.checkEmptyPlaces
+        segments.addAll(checkResultData.segments)
+    }
+
 
     fun prepareXmlCheckResult(marketIp: String): String {
         // XML со списком неотправленных сегментов
@@ -219,7 +227,6 @@ class CheckData(
 
         return result.toString()
     }
-
 
     // Тестовые данные для быстрой проверки функционала
     private fun generateTestData() {
