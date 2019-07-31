@@ -27,7 +27,7 @@ class JobCardViewModel : CoreViewModel(), OnPositionClickListener {
     private lateinit var tasksItem: TasksItem
 
     lateinit var typesRecount: List<RecountType>
-    lateinit var recountsTitles: List<String>
+    var recountsTitles: MutableLiveData<List<String>> = MutableLiveData(listOf())
 
     val title: String by lazy {
         "${tasksItem.taskType}-${tasksItem.taskNumber}"
@@ -62,15 +62,20 @@ class JobCardViewModel : CoreViewModel(), OnPositionClickListener {
 
 
     fun init(taskNumber: String, typesRecount: List<RecountType>, converterTypeToString: (RecountType) -> String) {
+
         tasksItem = repoInMemoryHolder.tasksListRestInfo.value?.tasks?.first { it.taskNumber == taskNumber }!!
+
         Logg.d { "taskItem $tasksItem" }
 
         this.typesRecount = typesRecount
-        this.recountsTitles = typesRecount
-                .filterIndexed { index, recountType -> if (isStrictList) true else index == 0 }
+
+        this.recountsTitles.postValue(typesRecount
+                .filterIndexed { index, recountType ->
+                    (if (isStrictList) true else index == 0) && (taskManager.getInventoryTask()?.taskDescription?.recountType ?: recountType) == recountType
+                }
                 .map {
                     converterTypeToString(it)
-                }
+                })
 
     }
 

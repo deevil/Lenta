@@ -27,18 +27,21 @@ class JobCardFragment : CoreFragment<FragmentJobCardBinding, JobCardViewModel>()
     override fun getViewModel(): JobCardViewModel {
         provideViewModel(JobCardViewModel::class.java).let {
             getAppComponent()?.inject(it)
-            it.init(
-                    taskNumber = taskNumber,
-                    typesRecount = listOf(
-                            RecountType.Simple,
-                            RecountType.ParallelByStorePlaces,
-                            RecountType.ParallelByPerNo
-                    ),
-                    converterTypeToString = { recountType -> getString(recountType.getDescriptionStringRes()) }
-            )
-
+            setupViewModel(it)
             return it
         }
+    }
+
+    private fun setupViewModel(vm: JobCardViewModel) {
+        vm.init(
+                taskNumber = taskNumber,
+                typesRecount = listOf(
+                        RecountType.Simple,
+                        RecountType.ParallelByStorePlaces,
+                        RecountType.ParallelByPerNo
+                ),
+                converterTypeToString = { recountType -> getString(recountType.getDescriptionStringRes()) }
+        )
     }
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
@@ -57,6 +60,13 @@ class JobCardFragment : CoreFragment<FragmentJobCardBinding, JobCardViewModel>()
                 this.taskNumber = taskNumber
             }
         }
+    }
+
+
+    override fun onResume() {
+        super.onResume()
+        setupViewModel(vm)
+
     }
 
     override fun onToolbarButtonClick(view: View) {
