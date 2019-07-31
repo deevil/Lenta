@@ -13,7 +13,6 @@ import com.lenta.bp7.requests.network.SaveCheckDataRestInfo
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.platform.viewmodel.CoreViewModel
-import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.extentions.map
 import kotlinx.coroutines.launch
@@ -117,20 +116,20 @@ class SegmentListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
                     terminalId = terminalId.value ?: "Not found!",
                     data = checkData.prepareXmlCheckResult(marketIp.value ?: "Not found!"),
                     saveDoc = 1
-            )).either(::handleFailure, ::handleSaveCheckDataSuccess)
+            )).either(::handleDataSendingError, ::handleDataSendingSuccess)
 
             navigator.hideProgress()
         }
     }
 
-    override fun handleFailure(failure: Failure) {
+    private fun handleDataSendingError(failure: Failure) {
         // Сообщение - Ошибка сохранения в LUA
         navigator.showErrorSavingToLua {
             navigator.openSegmentListScreen()
         }
     }
 
-    private fun handleSaveCheckDataSuccess(saveCheckDataRestInfo: SaveCheckDataRestInfo) {
+    private fun handleDataSendingSuccess(saveCheckDataRestInfo: SaveCheckDataRestInfo) {
         // Сообщение - Успешно сохранено в LUA
         navigator.showSuccessfullySavedToLua {
             checkData.removeAllFinishedSegments()
