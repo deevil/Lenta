@@ -47,13 +47,6 @@ open class GoodInfoFragment : CoreFragment<FragmentGoodInfoBinding, BaseProductI
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         onRequestFocus()
-        getBottomToolBarUIModel()?.let { bottomToolbarUiModel ->
-            connectLiveData(vm.enabledApplyButton, bottomToolbarUiModel.uiModelButton4.enabled)
-            connectLiveData(vm.enabledApplyButton, bottomToolbarUiModel.uiModelButton5.enabled)
-            connectLiveData(vm.enabledDetailsButton, bottomToolbarUiModel.uiModelButton3.enabled)
-            connectLiveData(vm.selectedPosition, bottomToolbarUiModel.uiModelButton4.requestFocus)
-        }
-
     }
 
     open fun onRequestFocus() {
@@ -75,6 +68,11 @@ open class GoodInfoFragment : CoreFragment<FragmentGoodInfoBinding, BaseProductI
         bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.details)
         bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.add)
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.apply)
+
+        connectLiveData(vm.enabledApplyButton, bottomToolbarUiModel.uiModelButton4.enabled)
+        connectLiveData(vm.enabledApplyButton, bottomToolbarUiModel.uiModelButton5.enabled)
+        connectLiveData(vm.enabledDetailsButton, bottomToolbarUiModel.uiModelButton3.enabled)
+        connectLiveData(vm.selectedPosition, bottomToolbarUiModel.uiModelButton4.requestFocus)
 
     }
 
