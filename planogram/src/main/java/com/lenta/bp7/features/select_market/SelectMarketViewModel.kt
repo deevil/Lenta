@@ -95,7 +95,7 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
         timeMonitor.setServerTime(time = serverTime.time, date = serverTime.date)
         checkData.marketNumber = sessionInfo.market ?: "Not found!"
 
-        // Раскомментировать для удаление сохраненных результатов
+        // Раскомментировать для удаление сохраненных данных
         //persistCheckResult.clearSavedData()
 
         val savedResult = persistCheckResult.getSavedCheckResult()

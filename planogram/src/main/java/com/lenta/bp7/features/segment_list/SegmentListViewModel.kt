@@ -119,7 +119,7 @@ class SegmentListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     }
 
     fun onClickComplete() {
-        //saveCheckResult()
+        saveCheckResult()
     }
 
     private fun saveCheckResult() {
