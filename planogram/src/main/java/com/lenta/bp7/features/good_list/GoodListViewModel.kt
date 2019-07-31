@@ -35,7 +35,7 @@ class GoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     val numberFieldEnabled: MutableLiveData<Boolean> = MutableLiveData(false)
 
     val applyButtonEnabled: MutableLiveData<Boolean> = goods.map {
-        it?.isNotEmpty() ?: false && checkData.getCurrentShelf()?.status == ShelfStatus.UNFINISHED
+        it?.isNotEmpty() ?: false && checkData.getCurrentShelf()?.getStatus() == ShelfStatus.UNFINISHED
     }
 
     init {
@@ -44,7 +44,7 @@ class GoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
                 segmentNumber.value = it.getCurrentSegment()?.number
                 shelfNumber.value = it.getCurrentShelf()?.number
                 goods.value = it.getCurrentShelf()?.goods
-                numberFieldEnabled.value = it.getCurrentShelf()?.status == ShelfStatus.UNFINISHED
+                numberFieldEnabled.value = it.getCurrentShelf()?.getStatus() == ShelfStatus.UNFINISHED
             }
         }
     }
@@ -114,9 +114,9 @@ class GoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     }
 
     private fun openGoodInfoScreen() {
-        // todo для тестирования разных сценариев проверки. Потом удалить.
-        checkData.countFacings = true
-        checkData.checkEmptyPlaces = true
+        // TODO Раскомментировать для тестирования разных сценариев проверки
+        /*checkData.countFacings = true
+        checkData.checkEmptyPlaces = true*/
 
         if (checkData.countFacings) {
             navigator.openGoodInfoFacingScreen()
@@ -130,13 +130,13 @@ class GoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
         navigator.showSaveShelfScanResults(
                 segmentNumber = segmentNumber.value!!,
                 shelfNumber = shelfNumber.value!!) {
-            checkData.getCurrentShelf()?.status = ShelfStatus.PROCESSED
+            checkData.setCurrentShelfStatus(ShelfStatus.PROCESSED)
             navigator.openShelfListScreen()
         }
     }
 
     fun onClickBack() {
-        if (checkData.getCurrentShelf()?.status != ShelfStatus.UNFINISHED) {
+        if (checkData.getCurrentShelf()?.getStatus() != ShelfStatus.UNFINISHED) {
             navigator.goBack()
             return
         }
@@ -149,7 +149,7 @@ class GoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
             navigator.showShelfDataWillNotBeSaved(
                     segmentNumber = segmentNumber.value!!,
                     shelfNumber = shelfNumber.value!!) {
-                checkData.getCurrentShelf()?.status = ShelfStatus.DELETED
+                checkData.setCurrentShelfStatus(ShelfStatus.DELETED)
                 navigator.openShelfListScreen()
             }
         }

@@ -1,10 +1,12 @@
 package com.lenta.shared.utilities.extentions
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.PackageManager
 import android.net.wifi.WifiManager
 import android.os.Build
+import android.provider.Settings
 import android.text.format.Formatter
 import android.util.TypedValue
 import kotlin.system.exitProcess
@@ -14,6 +16,12 @@ fun Context.getDeviceIp(): String {
     val wm = this.getSystemService(Context.WIFI_SERVICE) as WifiManager
     @Suppress("DEPRECATION")
     return Formatter.formatIpAddress(wm.connectionInfo.ipAddress)
+}
+
+
+@SuppressLint("HardwareIds")
+fun Context.getDeviceId(): String {
+    return Settings.Secure.getString(this.contentResolver, "android_id")
 }
 
 private val outValue by lazy { TypedValue() }

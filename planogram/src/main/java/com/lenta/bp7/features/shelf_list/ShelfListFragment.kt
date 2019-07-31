@@ -21,9 +21,7 @@ import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.utilities.databinding.DataBindingAdapter
 import com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig
 import com.lenta.shared.utilities.databinding.RecyclerViewKeyHandler
-import com.lenta.shared.utilities.extentions.connectLiveData
-import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
-import com.lenta.shared.utilities.extentions.provideViewModel
+import com.lenta.shared.utilities.extentions.*
 
 class ShelfListFragment : CoreFragment<FragmentShelfListBinding, ShelfListViewModel>(),
         ToolbarButtonsClickListener, OnBackPresserListener {
@@ -37,6 +35,10 @@ class ShelfListFragment : CoreFragment<FragmentShelfListBinding, ShelfListViewMo
     override fun getViewModel(): ShelfListViewModel {
         provideViewModel(ShelfListViewModel::class.java).let {
             getAppComponent()?.inject(it)
+
+            it.marketIp.value = context!!.getDeviceIp()
+            it.terminalId.value = context!!.getDeviceId()
+
             return it
         }
     }

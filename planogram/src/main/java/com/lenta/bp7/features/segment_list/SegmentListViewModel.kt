@@ -2,12 +2,18 @@ package com.lenta.bp7.features.segment_list
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.lenta.bp7.data.CheckType
 import com.lenta.bp7.data.model.CheckData
 import com.lenta.bp7.data.model.Segment
 import com.lenta.bp7.data.model.SegmentStatus
 import com.lenta.bp7.platform.navigation.IScreenNavigator
 import com.lenta.bp7.repos.IDatabaseRepo
+import com.lenta.bp7.requests.network.SaveSelfControlDataNetRequest
+import com.lenta.bp7.requests.network.SaveCheckDataParams
+import com.lenta.bp7.requests.network.SaveCheckDataRestInfo
+import com.lenta.bp7.requests.network.SaveExternalAuditDataNetRequest
 import com.lenta.shared.account.ISessionInfo
+import com.lenta.shared.exception.Failure
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.extentions.map
@@ -24,6 +30,10 @@ class SegmentListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     lateinit var database: IDatabaseRepo
     @Inject
     lateinit var checkData: CheckData
+    @Inject
+    lateinit var saveSelfControlDataNetRequest: SaveSelfControlDataNetRequest
+    @Inject
+    lateinit var saveExternalAuditDataNetRequest: SaveExternalAuditDataNetRequest
 
     companion object {
         const val SEGMENT_NUMBER_LENGTH = 7
@@ -31,11 +41,14 @@ class SegmentListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
     val segments: MutableLiveData<List<Segment>> = MutableLiveData()
 
+    val marketIp: MutableLiveData<String> = MutableLiveData("")
+    val terminalId: MutableLiveData<String> = MutableLiveData("")
+
     val marketNumber: MutableLiveData<String> = MutableLiveData("")
     val segmentNumber: MutableLiveData<String> = MutableLiveData("")
 
-    val completeButtonEnabled: MutableLiveData<Boolean> = segments.map {
-        it?.isNotEmpty() ?: false && checkData.isExistUnfinishedSegment()
+    val completeButtonEnabled: MutableLiveData<Boolean> = segments.map { segments ->
+        segments?.isNotEmpty() ?: false && if (segments?.size == 1) segments[0].getStatus() != SegmentStatus.UNFINISHED else true
     }
 
     init {
@@ -68,7 +81,7 @@ class SegmentListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
             if (number.length == SEGMENT_NUMBER_LENGTH) {
                 val segment = segments.value?.find { it.number == number }
                 if (segment != null) {
-                    if (segment.status == SegmentStatus.DELETED) {
+                    if (segment.getStatus() == SegmentStatus.DELETED) {
                         // Выбор - Сегмент удален. Открыть просмотр или создать новый? - Назад / Просмотр / Создать
                         navigator.showSegmentIsDeleted(
                                 reviewCallback = { openExistSegment(segment) },
@@ -99,11 +112,43 @@ class SegmentListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     }
 
     fun onClickComplete() {
-        // todo ЭКРАН отправить неотправленные сегменты
+        saveCheckResult()
+    }
 
-        // todo ЭКРАН сообщение о результате отправки данных
-        // 1. Сообщение об успешной отправке. Выход из приложения.
-        // 2. Отправка не удалась. Вопрос о продолжении работы.
+    private fun saveCheckResult() {
+        viewModelScope.launch {
+            val saveCheckDataParams = SaveCheckDataParams(
+                    shop = checkData.getFormattedMarketNumber(),
+                    terminalId = terminalId.value ?: "Not found!",
+                    data = checkData.prepareXmlCheckResult(marketIp.value ?: "Not found!"),
+                    saveDoc = 1)
+
+            val saveRequestType = when (checkData.checkType) {
+                CheckType.SELF_CONTROL -> saveSelfControlDataNetRequest
+                CheckType.EXTERNAL_AUDIT -> saveExternalAuditDataNetRequest
+            }
+
+            saveRequestType.let { saveRequest ->
+                navigator.showProgress(saveRequest)
+                saveRequest.run(saveCheckDataParams).either(::handleDataSendingError, ::handleDataSendingSuccess)
+                navigator.hideProgress()
+            }
+        }
+    }
+
+    private fun handleDataSendingError(failure: Failure) {
+        // Сообщение - Ошибка сохранения в LUA
+        navigator.showErrorSavingToLua {
+            navigator.openSegmentListScreen()
+        }
+    }
+
+    private fun handleDataSendingSuccess(saveCheckDataRestInfo: SaveCheckDataRestInfo) {
+        // Сообщение - Успешно сохранено в LUA
+        navigator.showSuccessfullySavedToLua {
+            checkData.removeAllFinishedSegments()
+            navigator.openSegmentListScreen()
+        }
     }
 
     fun onClickItemPosition(position: Int) {

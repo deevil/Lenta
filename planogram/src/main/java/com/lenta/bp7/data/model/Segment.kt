@@ -7,13 +7,26 @@ data class Segment(
         val id: Int,
         val storeNumber: String,
         val number: String,
-        val checkDate: Date = Date(),
-        var status: SegmentStatus = SegmentStatus.UNFINISHED,
+        val checkStart: Date = Date(),
+        var checkFinish: Date? = null,
+        private var status: SegmentStatus = SegmentStatus.UNFINISHED,
         val shelves: MutableList<Shelf> = mutableListOf()
 ) {
 
+    fun setStatus(status: SegmentStatus) {
+        this.status = status
+
+        if (status == SegmentStatus.PROCESSED || status == SegmentStatus.DELETED) {
+            checkFinish = Date()
+        }
+    }
+
+    fun getStatus(): SegmentStatus {
+        return status
+    }
+
     fun getFormattedDate(): String {
-        return SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(checkDate)
+        return SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(checkStart)
     }
 
     fun getNumberOfShelves(): Int {

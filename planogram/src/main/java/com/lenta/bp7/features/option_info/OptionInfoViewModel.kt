@@ -30,9 +30,8 @@ class OptionInfoViewModel : CoreViewModel() {
 
     init {
         viewModelScope.launch {
-            val marketNumber = sessionInfo.market
-            isFacings.value = database.getFacingsParam(marketNumber) != Enabled.NO.type
-            isPlaces.value = database.getPlacesParam(marketNumber) != Enabled.NO.type
+            isFacings.value = database.getFacingsParam(checkData.marketNumber) == Enabled.YES.type
+            isPlaces.value = database.getPlacesParam(checkData.marketNumber) == Enabled.YES.type
 
             saveCheckState()
         }

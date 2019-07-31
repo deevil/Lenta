@@ -90,12 +90,12 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
 
     private fun handleSuccessServerTime(serverTime: ServerTime) {
         timeMonitor.setServerTime(time = serverTime.time, date = serverTime.date)
+        checkData.marketNumber = sessionInfo.market ?: "Not found!"
 
         // TODO Реализовать логику проверки несохраненных данных
         // После того как будет сделано хранение данных
 
         val unsavedData = false
-        checkData.checkType = CheckType.EXTERNAL_AUDIT
 
         if (unsavedData) {
             when (checkData.checkType) {
@@ -113,9 +113,7 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
                 }
             }
         } else {
-            // TODO Для простоты тестирования
-            //navigator.openCheckTypeScreen()
-            navigator.openSegmentListScreen()
+            navigator.openCheckTypeScreen()
         }
     }
 

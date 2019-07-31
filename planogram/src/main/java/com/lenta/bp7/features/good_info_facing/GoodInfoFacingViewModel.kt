@@ -25,7 +25,7 @@ class GoodInfoFacingViewModel : CoreViewModel() {
     val facings: MutableLiveData<String> = MutableLiveData("")
 
     val goodIsPresent: MutableLiveData<Boolean> = good.map {
-        it?.status == GoodStatus.CREATED || (it?.facings ?: 0 > 0 && it?.status != GoodStatus.CREATED)
+        it?.getStatus() == GoodStatus.CREATED || (it?.facings ?: 0 > 0 && it?.getStatus() != GoodStatus.CREATED)
     }
 
     val totalFacings: MutableLiveData<Int> = facings.map {
@@ -34,7 +34,7 @@ class GoodInfoFacingViewModel : CoreViewModel() {
         currentFacings + lastFacings
     }
 
-    val facingFieldEnabled: MutableLiveData<Boolean> = good.map { it?.status == GoodStatus.CREATED }
+    val facingFieldEnabled: MutableLiveData<Boolean> = good.map { it?.getStatus() == GoodStatus.CREATED }
 
     val missingButtonEnabled: MutableLiveData<Boolean> = facings.combineLatest(good).map { pair ->
         val emptyCountField = if (pair?.first?.isNotEmpty() == true) pair.first.toInt() == 0 else true
@@ -54,7 +54,7 @@ class GoodInfoFacingViewModel : CoreViewModel() {
     }
 
     private fun currentGoodIsCreated(): Boolean {
-        return checkData.getCurrentGood()?.status == GoodStatus.CREATED
+        return checkData.getCurrentGood()?.getStatus() == GoodStatus.CREATED
     }
 
     fun onClickMissing() {
@@ -87,7 +87,7 @@ class GoodInfoFacingViewModel : CoreViewModel() {
     }
 
     fun onClickBack() {
-        if (checkData.getCurrentGood()?.status == GoodStatus.CREATED) {
+        if (checkData.getCurrentGood()?.getStatus() == GoodStatus.CREATED) {
             checkData.deleteCurrentGood()
         }
         navigator.openGoodListScreen()
