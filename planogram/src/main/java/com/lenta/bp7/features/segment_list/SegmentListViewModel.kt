@@ -2,14 +2,16 @@ package com.lenta.bp7.features.segment_list
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.lenta.bp7.data.CheckType
 import com.lenta.bp7.data.model.CheckData
 import com.lenta.bp7.data.model.Segment
 import com.lenta.bp7.data.model.SegmentStatus
 import com.lenta.bp7.platform.navigation.IScreenNavigator
 import com.lenta.bp7.repos.IDatabaseRepo
-import com.lenta.bp7.requests.network.SaveCheckDataNetRequest
+import com.lenta.bp7.requests.network.SaveSelfControlDataNetRequest
 import com.lenta.bp7.requests.network.SaveCheckDataParams
 import com.lenta.bp7.requests.network.SaveCheckDataRestInfo
+import com.lenta.bp7.requests.network.SaveExternalAuditDataNetRequest
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.platform.viewmodel.CoreViewModel
@@ -29,7 +31,9 @@ class SegmentListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     @Inject
     lateinit var checkData: CheckData
     @Inject
-    lateinit var saveCheckDataNetRequest: SaveCheckDataNetRequest
+    lateinit var saveSelfControlDataNetRequest: SaveSelfControlDataNetRequest
+    @Inject
+    lateinit var saveExternalAuditDataNetRequest: SaveExternalAuditDataNetRequest
 
     companion object {
         const val SEGMENT_NUMBER_LENGTH = 7
@@ -56,6 +60,10 @@ class SegmentListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
     fun updateSegmentList() {
         segments.value = checkData.segments
+
+        if (completeButtonEnabled.value == true) {
+            saveCheckResult()
+        }
     }
 
     override fun onOkInSoftKeyboard(): Boolean {
@@ -108,17 +116,27 @@ class SegmentListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     }
 
     fun onClickComplete() {
-        viewModelScope.launch {
-            navigator.showProgress(saveCheckDataNetRequest)
+        saveCheckResult()
+    }
 
-            saveCheckDataNetRequest.run(SaveCheckDataParams(
+    private fun saveCheckResult() {
+        viewModelScope.launch {
+            val saveCheckDataParams = SaveCheckDataParams(
                     shop = checkData.getFormattedMarketNumber(),
                     terminalId = terminalId.value ?: "Not found!",
                     data = checkData.prepareXmlCheckResult(marketIp.value ?: "Not found!"),
-                    saveDoc = 1
-            )).either(::handleDataSendingError, ::handleDataSendingSuccess)
+                    saveDoc = 1)
 
-            navigator.hideProgress()
+            val saveRequestType = when (checkData.checkType) {
+                CheckType.SELF_CONTROL -> saveSelfControlDataNetRequest
+                CheckType.EXTERNAL_AUDIT -> saveExternalAuditDataNetRequest
+            }
+
+            saveRequestType.let { saveRequest ->
+                navigator.showProgress(saveRequest)
+                saveRequest.run(saveCheckDataParams).either(::handleDataSendingError, ::handleDataSendingSuccess)
+                navigator.hideProgress()
+            }
         }
     }
 

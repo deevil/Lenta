@@ -35,10 +35,6 @@ class ShelfListFragment : CoreFragment<FragmentShelfListBinding, ShelfListViewMo
     override fun getViewModel(): ShelfListViewModel {
         provideViewModel(ShelfListViewModel::class.java).let {
             getAppComponent()?.inject(it)
-
-            it.marketIp.value = context!!.getDeviceIp()
-            it.terminalId.value = context!!.getDeviceId()
-
             return it
         }
     }

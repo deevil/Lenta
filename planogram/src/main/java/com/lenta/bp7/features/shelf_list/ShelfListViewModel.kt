@@ -8,10 +8,6 @@ import com.lenta.bp7.data.model.Shelf
 import com.lenta.bp7.data.model.ShelfStatus
 import com.lenta.bp7.platform.navigation.IScreenNavigator
 import com.lenta.bp7.repos.IDatabaseRepo
-import com.lenta.bp7.requests.network.SaveCheckDataNetRequest
-import com.lenta.bp7.requests.network.SaveCheckDataParams
-import com.lenta.bp7.requests.network.SaveCheckDataRestInfo
-import com.lenta.shared.exception.Failure
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
@@ -27,15 +23,10 @@ class ShelfListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     lateinit var database: IDatabaseRepo
     @Inject
     lateinit var checkData: CheckData
-    @Inject
-    lateinit var saveCheckDataNetRequest: SaveCheckDataNetRequest
 
     val selectionsHelper = SelectionItemsHelper()
 
     val shelves: MutableLiveData<List<Shelf>> = MutableLiveData()
-
-    val marketIp: MutableLiveData<String> = MutableLiveData("")
-    val terminalId: MutableLiveData<String> = MutableLiveData("")
 
     val segmentNumber: MutableLiveData<String> = MutableLiveData()
     val shelfNumber: MutableLiveData<String> = MutableLiveData("")
@@ -129,33 +120,6 @@ class ShelfListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
         // Подтверждение - Сохранить результаты сканирования сегмента, закрыть его для редактирования и переслать? - Назад / Да
         navigator.showSaveSegmentScanResults(segmentNumber.value!!) {
             checkData.setCurrentSegmentStatus(SegmentStatus.PROCESSED)
-
-            viewModelScope.launch {
-                navigator.showProgress(saveCheckDataNetRequest)
-
-                saveCheckDataNetRequest.run(SaveCheckDataParams(
-                        shop = checkData.getFormattedMarketNumber(),
-                        terminalId = terminalId.value ?: "Not found!",
-                        data = checkData.prepareXmlCheckResult(marketIp.value ?: "Not found!"),
-                        saveDoc = 1
-                )).either(::handleDataSendingError, ::handleDataSendingSuccess)
-
-                navigator.hideProgress()
-            }
-        }
-    }
-
-    private fun handleDataSendingError(failure: Failure) {
-        // Сообщение - Ошибка сохранения в LUA
-        navigator.showErrorSavingToLua {
-            navigator.openSegmentListScreen()
-        }
-    }
-
-    private fun handleDataSendingSuccess(saveCheckDataRestInfo: SaveCheckDataRestInfo) {
-        // Сообщение - Успешно сохранено в LUA
-        navigator.showSuccessfullySavedToLua {
-            checkData.removeAllFinishedSegments()
             navigator.openSegmentListScreen()
         }
     }
