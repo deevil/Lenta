@@ -1,6 +1,9 @@
 package com.lenta.bp7.di
 
 import android.content.Context
+import com.google.gson.Gson
+import com.lenta.bp7.data.IPersistCheckResult
+import com.lenta.bp7.data.PersistCheckResult
 import com.lenta.bp7.data.model.CheckData
 import com.lenta.bp7.platform.navigation.IScreenNavigator
 import com.lenta.bp7.platform.navigation.ScreenNavigator
@@ -56,5 +59,11 @@ class AppModule {
     @AppScope
     internal fun provideCheckStoreData(): CheckData {
         return CheckData()
+    }
+
+    @Provides
+    @AppScope
+    internal fun provideIPersistCheckResult(hyperHive: HyperHive, gson: Gson): IPersistCheckResult {
+        return PersistCheckResult(hyperHive, gson)
     }
 }

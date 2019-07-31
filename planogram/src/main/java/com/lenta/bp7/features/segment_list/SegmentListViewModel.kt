@@ -3,15 +3,16 @@ package com.lenta.bp7.features.segment_list
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp7.data.CheckType
+import com.lenta.bp7.data.IPersistCheckResult
 import com.lenta.bp7.data.model.CheckData
 import com.lenta.bp7.data.model.Segment
 import com.lenta.bp7.data.model.SegmentStatus
 import com.lenta.bp7.platform.navigation.IScreenNavigator
 import com.lenta.bp7.repos.IDatabaseRepo
-import com.lenta.bp7.requests.network.SaveSelfControlDataNetRequest
 import com.lenta.bp7.requests.network.SaveCheckDataParams
 import com.lenta.bp7.requests.network.SaveCheckDataRestInfo
 import com.lenta.bp7.requests.network.SaveExternalAuditDataNetRequest
+import com.lenta.bp7.requests.network.SaveSelfControlDataNetRequest
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.platform.viewmodel.CoreViewModel
@@ -34,6 +35,8 @@ class SegmentListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     lateinit var saveSelfControlDataNetRequest: SaveSelfControlDataNetRequest
     @Inject
     lateinit var saveExternalAuditDataNetRequest: SaveExternalAuditDataNetRequest
+    @Inject
+    lateinit var persistCheckResult: IPersistCheckResult
 
     companion object {
         const val SEGMENT_NUMBER_LENGTH = 7
