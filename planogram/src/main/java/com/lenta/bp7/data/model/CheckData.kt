@@ -12,9 +12,9 @@ class CheckData(
         val segments: MutableList<Segment> = mutableListOf()
 ) {
 
-    var marketNumber = "000"
+    lateinit var marketNumber: String
+    lateinit var checkType: CheckType
 
-    var checkType = CheckType.SELF_CONTROL
     var countFacings = false
     var checkEmptyPlaces = false
 
