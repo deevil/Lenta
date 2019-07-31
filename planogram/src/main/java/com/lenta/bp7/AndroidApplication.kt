@@ -1,8 +1,11 @@
 package com.lenta.bp7
 
+import com.lenta.bp7.data.IPersistCheckResult
+import com.lenta.bp7.data.model.CheckData
 import com.lenta.bp7.platform.extentions.getAppComponent
 import com.lenta.shared.CoreApplication
 import com.lenta.shared.settings.DefaultConnectionSettings
+import javax.inject.Inject
 
 class AndroidApplication : CoreApplication() {
     override fun getDefaultConnectionSettings(): DefaultConnectionSettings {
@@ -25,13 +28,17 @@ class AndroidApplication : CoreApplication() {
             getAppComponent(coreComponent).inject(it)
             it.handleException()
         }
-
     }
 }
 
 class ExceptionHandler {
 
+    @Inject
+    lateinit var checkData: CheckData
+    @Inject
+    lateinit var persistCheckResult: IPersistCheckResult
+
     fun handleException() {
-        //TODO need implement
+        persistCheckResult.saveCheckResult(checkData)
     }
 }
