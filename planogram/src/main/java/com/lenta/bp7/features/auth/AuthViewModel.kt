@@ -3,6 +3,7 @@ package com.lenta.bp7.features.auth
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp7.platform.navigation.IScreenNavigator
+import com.lenta.bp7.repos.IDatabaseRepo
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.features.login.CoreAuthViewModel
@@ -11,6 +12,7 @@ import com.lenta.shared.features.login.isValidLoginFields
 import com.lenta.shared.requests.network.Auth
 import com.lenta.shared.requests.network.AuthParams
 import com.lenta.shared.settings.IAppSettings
+import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.getBaseAuth
@@ -27,6 +29,8 @@ class AuthViewModel : CoreAuthViewModel() {
     lateinit var sessionInfo: ISessionInfo
     @Inject
     lateinit var appSettings: IAppSettings
+    @Inject
+    lateinit var database: IDatabaseRepo
 
 
     override val enterEnabled: MutableLiveData<Boolean> by lazy {
@@ -38,14 +42,11 @@ class AuthViewModel : CoreAuthViewModel() {
         viewModelScope.launch {
             progress.value = true
             auth(AuthParams(getLogin(), getPassword())).either(::handleFailure, ::loadPermissions)
-            progress.value = false
         }
     }
 
     private fun loadPermissions(boolean: Boolean) {
         viewModelScope.launch {
-            progress.value = true
-
             getLogin().let { login ->
                 sessionInfo.userName = login
                 sessionInfo.basicAuth = getBaseAuth(login, getPassword())
@@ -53,6 +54,11 @@ class AuthViewModel : CoreAuthViewModel() {
             }
 
             progress.value = false
+
+            // Проверка версии приложения
+            val allowedVersion = database.getAllowedAppVersion()
+            Logg.d { "-----------------------> $allowedVersion" }
+
 
             navigator.openFastDataLoadingScreen()
         }
