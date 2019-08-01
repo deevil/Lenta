@@ -11,6 +11,10 @@ import android.text.format.Formatter
 import android.util.TypedValue
 import kotlin.system.exitProcess
 import android.content.Intent
+import com.lenta.shared.utilities.Logg
+import java.lang.Exception
+import android.content.pm.ApplicationInfo
+
 
 fun Context.getDeviceIp(): String {
     val wm = this.getSystemService(Context.WIFI_SERVICE) as WifiManager
@@ -42,4 +46,27 @@ fun Context.restartApp() {
     val mainIntent = Intent.makeRestartActivityTask(componentName)
     this.startActivity(mainIntent)
     exitProcess(0)
+}
+
+fun Context.openAnotherApp(packageName: String) {
+    val launchIntent = packageManager.getLaunchIntentForPackage(packageName.trim())
+    if (launchIntent != null) {
+        try {
+            startActivity(launchIntent)
+        } catch (e: Exception) {
+            Logg.e { "e: $e" }
+        }
+
+    }
+}
+
+fun Context.getApplicationName(packageName: String): String {
+    val pm = applicationContext.packageManager
+    var applicationInfo: ApplicationInfo?
+    try {
+        applicationInfo = pm.getApplicationInfo(packageName, 0)
+    } catch (e: PackageManager.NameNotFoundException) {
+        applicationInfo = null
+    }
+    return (if (applicationInfo != null) pm.getApplicationLabel(applicationInfo) else "(unknown)") as String
 }

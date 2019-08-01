@@ -20,9 +20,11 @@ import com.lenta.shared.features.settings.SettingsViewModel
 import com.lenta.shared.features.support.SupportViewModel
 import com.lenta.shared.features.tech_login.TechLoginViewModel
 import com.lenta.shared.features.test_environment.PinCodeViewModel
+import com.lenta.shared.only_one_app.LockManager
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
 import com.lenta.shared.platform.battery_state.BatteryStateMonitor
 import com.lenta.shared.platform.battery_state.IBatteryStateMonitor
+import com.lenta.shared.platform.high_priority.MainService
 import com.lenta.shared.platform.navigation.BackFragmentResultHelper
 import com.lenta.shared.platform.navigation.FragmentStack
 import com.lenta.shared.platform.navigation.ICoreNavigator
@@ -71,6 +73,7 @@ interface CoreComponent {
     fun getLogDao(): LogDao
     fun getAnalyticsHelper(): AnalyticsHelper
     fun getFmpRequestsHelper(): FmpRequestsHelper
+    fun getLockManager(): LockManager
 
 
     fun inject(it: FmpSettingsViewModel)
@@ -85,4 +88,5 @@ interface CoreComponent {
     fun inject(dataBindingHelpHolder: DataBindingExtHolder)
     fun inject(coreLoginFragment: CoreLoginFragment)
     fun inject(fragmentStack: FragmentStack)
+    fun inject(mainService: MainService)
 }
