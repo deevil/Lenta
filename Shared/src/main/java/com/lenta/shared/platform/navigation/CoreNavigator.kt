@@ -30,10 +30,12 @@ import com.lenta.shared.platform.activity.ForegroundActivityProvider
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.utilities.extentions.restartApp
 import com.lenta.shared.utilities.extentions.setFragmentResultCode
+import com.mobrun.plugin.api.HyperHive
 import kotlin.system.exitProcess
 
 
 class CoreNavigator constructor(private val context: Context,
+                                private val hyperHive: HyperHive,
                                 private val foregroundActivityProvider: ForegroundActivityProvider,
                                 private val failureInterpreter: IFailureInterpreter,
                                 private val analytics: IAnalytics,
@@ -76,6 +78,8 @@ class CoreNavigator constructor(private val context: Context,
             foregroundActivityProvider.getActivity()?.finish()
             analytics.cleanLogs()
             roomAppDatabase.close()
+            hyperHive.databaseAPI.closeDefaultBase()
+            hyperHive.authAPI.unAuth()
             if (restart) {
                 context.restartApp()
             } else {

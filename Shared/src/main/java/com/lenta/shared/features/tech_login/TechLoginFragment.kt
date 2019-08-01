@@ -33,11 +33,9 @@ class TechLoginFragment : CoreFragment<FragmentTechLoginBinding, TechLoginViewMo
         bottomToolbarUiModel.cleanAll()
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.apply)
-    }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        viewLifecycleOwner.connectLiveData(vm.applyButtonEnabled, getBottomToolBarUIModel()!!.uiModelButton5.enabled)
+        connectLiveData(vm.applyButtonEnabled, bottomToolbarUiModel.uiModelButton5.enabled)
+
     }
 
     override fun getPageNumber(): String =  generateScreenNumber()

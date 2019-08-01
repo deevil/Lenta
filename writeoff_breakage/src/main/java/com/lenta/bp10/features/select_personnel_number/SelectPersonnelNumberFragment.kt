@@ -54,11 +54,8 @@ class SelectPersonnelNumberFragment : CoreFragment<FragmentSelectPersonnelNumber
         bottomToolbarUiModel
                 .uiModelButton1.show(ButtonDecorationInfo.back, enabled = codeConfirmation != null)
 
-    }
+        connectLiveData(vm.nextButtonFocus, bottomToolbarUiModel.uiModelButton5.requestFocus)
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        viewLifecycleOwner.connectLiveData(vm.nextButtonFocus, getBottomToolBarUIModel()!!.uiModelButton5.requestFocus)
     }
 
     override fun onToolbarButtonClick(view: View) {

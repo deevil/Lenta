@@ -48,6 +48,7 @@ class StoragesListFragment : CoreFragment<FragmentStoragesListBinding, StoragesL
         bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.clean)
         bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.update)
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.complete)
+        connectLiveData(source = vm.deleteEnabled, target = getBottomToolBarUIModel()!!.uiModelButton3.enabled)
     }
 
     override fun onToolbarButtonClick(view: View) {
@@ -64,7 +65,6 @@ class StoragesListFragment : CoreFragment<FragmentStoragesListBinding, StoragesL
             it.viewPagerSettings = this
             it.pageSelectionListener = this
         }
-        connectLiveData(source = vm.deleteEnabled, target = getBottomToolBarUIModel()!!.uiModelButton3.enabled)
     }
 
     override fun onResume() {

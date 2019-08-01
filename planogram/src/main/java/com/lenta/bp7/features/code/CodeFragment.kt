@@ -44,11 +44,10 @@ class CodeFragment : CoreFragment<FragmentCodeBinding, CodeViewModel>(), Toolbar
         bottomToolbarUiModel.cleanAll()
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.goOver, enabled = false)
+        connectLiveData(vm.enabledGoOverBtn, bottomToolbarUiModel.uiModelButton5.enabled)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        viewLifecycleOwner.connectLiveData(vm.enabledGoOverBtn, getBottomToolBarUIModel()!!.uiModelButton5.enabled)
-
         binding?.apply {
             etNumber1.addTextChangedListener(EnterCodeTextWatcher(binding?.etNumber2))
             etNumber2.addTextChangedListener(EnterCodeTextWatcher(binding?.etNumber3))
@@ -71,6 +70,6 @@ class EnterCodeTextWatcher(private var nextFocus: EditText?) : TextWatcher {
     }
 
     override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-        nextFocus?.let { it.requestFocus() }
+        nextFocus?.requestFocus()
     }
 }

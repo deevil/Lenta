@@ -56,6 +56,13 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
         page != 0 && selectionCount > 0
     }
 
+    init {
+        viewModelScope.launch {
+            dataSaver.setViewModelScopeFunc(::viewModelScope)
+        }
+
+    }
+
     fun getTitle(): String {
         return "${taskManager.getInventoryTask()?.taskDescription?.getTaskTypeAndNumber()
                 ?: ""} / МХ-${storePlaceManager?.storePlaceNumber}"
@@ -120,7 +127,7 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
                 val matnr = processedGoods.value?.get(it)?.matnr
                 if (matnr != null) {
                     val productInfo = taskManager.getInventoryTask()?.taskRepository?.getProducts()?.findProduct(matnr, storePlaceManager?.storePlaceNumber
-                        ?: "")
+                            ?: "")
                     productInfo?.isPositionCalc = false
                     productInfo?.factCount = 0.0
                 }
