@@ -291,6 +291,15 @@ class ScreenNavigator(
         }
     }
 
+    override fun showDoYouReallyWantToLeave(nextCallback: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.do_you_really_want_to_leave),
+                    pageNumber = "4",
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(nextCallback),
+                    rightButtonDecorationInfo = ButtonDecorationInfo.next))
+        }
+    }
+
     override fun showUnsentDataDetected(exitToAppCallback: () -> Unit, goOverCallback: () -> Unit) {
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.unsent_data_detected),
@@ -345,6 +354,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun showSuccessfullySavedToLua(afterShowCallback: () -> Unit)
     fun showErrorSavingToLua(afterShowCallback: () -> Unit)
     fun showLuaSystemUnavailable(exitCallback: () -> Unit, nextCallback: () -> Unit)
+    fun showDoYouReallyWantToLeave(nextCallback: () -> Unit)
     fun showUnsentDataDetected(exitToAppCallback: () -> Unit, goOverCallback: () -> Unit)
     fun showUnsavedDataDetected(confirmCallback: () -> Unit)
 

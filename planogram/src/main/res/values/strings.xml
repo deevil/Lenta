@@ -41,6 +41,7 @@
     <string name="successfully_saved_to_lua">Успешно сохранено в LUA</string>
     <string name="error_saving_to_lua">Ошибка сохранения в LUA</string>
     <string name="lua_system_unavailable">Система LUA недоступна. Пересылка результатов невозможна. Продолжить работу с ТДС?</string>
+    <string name="do_you_really_want_to_leave">Вы действительно хотите выйти?</string>
     <string name="unsent_data_detected">В ТДС обнаружены неотправленные данные. Хотите перейти к отправке этих данных?</string>
     <string name="unsaved_data_detected">На ТДС обнаружены несохраненные данные. При смене тех. логина они будут утеряны.</string>
 

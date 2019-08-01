@@ -82,8 +82,4 @@ class AuthViewModel : CoreAuthViewModel() {
             password.value = appSettings.techPassword
         }
     }
-
-    fun onClickExit() {
-        Logg.d { "--------------------------------------------------------------" }
-    }
 }
