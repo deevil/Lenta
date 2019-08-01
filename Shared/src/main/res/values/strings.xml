@@ -42,6 +42,7 @@
     <string name="rollback">Откатить</string>
     <string name="tech_login">Технический логин</string>
     <string name="tv_tech_login">Введите данные технического логина для синхронизации справочников</string>
+    <string name="unsaved_data_detected">На ТДС обнаружены несохраненные данные. При смене тех. логина они будут утеряны.</string>
     <string name="select_oper_mode">Выбор режима работы</string>
     <string name="printer_change">Смена принтера</string>
     <string name="printer_not_found">Принтеров для данного ТК не найдено</string>

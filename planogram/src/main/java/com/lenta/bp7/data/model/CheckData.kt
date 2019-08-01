@@ -2,16 +2,19 @@ package com.lenta.bp7.data.model
 
 import com.lenta.bp7.data.CheckResultData
 import com.lenta.bp7.data.CheckType
+import com.lenta.bp7.data.IPersistCheckResult
 import com.lenta.shared.platform.constants.Constants.CHECK_DATA_TIME_FORMAT
 import com.lenta.shared.utilities.Logg
 import org.simpleframework.xml.core.Persister
 import java.io.StringWriter
 import java.text.SimpleDateFormat
 import java.util.*
+import javax.inject.Inject
 
-class CheckData(
-        val segments: MutableList<Segment> = mutableListOf()
+class CheckData @Inject constructor(
+        private val persistCheckResult: IPersistCheckResult
 ) {
+    val segments: MutableList<Segment> = mutableListOf()
 
     lateinit var marketNumber: String
     lateinit var checkType: CheckType
@@ -24,8 +27,27 @@ class CheckData(
     var currentGoodIndex = 0
 
     init {
+        val savedResult = persistCheckResult.getSavedCheckResult()
+        if (savedResult != null) {
+            restoreSavedCheckResult(savedResult)
+        }
+
         //generateTestData()
     }
+
+
+    fun isExistUnsentData(): Boolean {
+        return segments.isNotEmpty()
+    }
+
+    fun saveCheckResult() {
+        persistCheckResult.saveCheckResult(this)
+    }
+
+    fun clearSavedData() {
+        persistCheckResult.clearSavedData()
+    }
+
 
     fun getCurrentSegment(): Segment? {
         return if (segments.isNotEmpty()) {
@@ -266,4 +288,5 @@ class CheckData(
 
         return goods
     }
+
 }

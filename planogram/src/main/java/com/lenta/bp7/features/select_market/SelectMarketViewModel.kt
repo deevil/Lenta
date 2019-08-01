@@ -3,7 +3,6 @@ package com.lenta.bp7.features.select_market
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp7.data.CheckType
-import com.lenta.bp7.data.IPersistCheckResult
 import com.lenta.bp7.data.model.CheckData
 import com.lenta.bp7.platform.navigation.IScreenNavigator
 import com.lenta.bp7.repos.IRepoInMemoryHolder
@@ -35,8 +34,7 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
     lateinit var serverTimeRequest: ServerTimeRequest
     @Inject
     lateinit var checkData: CheckData
-    @Inject
-    lateinit var persistCheckResult: IPersistCheckResult
+
 
     private val markets: MutableLiveData<List<MarketUi>> = MutableLiveData()
     val marketsNames: MutableLiveData<List<String>> = markets.map { markets ->
@@ -96,28 +94,25 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
         checkData.marketNumber = sessionInfo.market ?: "Not found!"
 
         // Раскомментировать для удаление сохраненных данных
-        //persistCheckResult.clearSavedData()
+        //checkData.clearSavedData()
 
-        val savedResult = persistCheckResult.getSavedCheckResult()
-        if (savedResult != null) {
-            checkData.restoreSavedCheckResult(savedResult)
-
+        if (checkData.isExistUnsentData()) {
             when (checkData.checkType) {
                 CheckType.SELF_CONTROL -> {
                     // Подтверждение - На устройстве обнаружены несохраненные данные в режиме "Самоконтроль ТК" - Назад / Перейти
                     navigator.showUnsavedSelfControlDataDetected {
-                        navigator.openCodeScreen()
+                        navigator.openSelectCheckTypeScreen()
                     }
                 }
                 CheckType.EXTERNAL_AUDIT -> {
                     // Подтверждение - На устройстве обнаружены несохраненные данные в режиме "Внешний аудит" - Назад / Перейти
                     navigator.showUnsavedExternalAuditDataDetected {
-                        navigator.openCodeScreen()
+                        navigator.openSelectCheckTypeScreen()
                     }
                 }
             }
         } else {
-            navigator.openCheckTypeScreen()
+            navigator.openSelectCheckTypeScreen()
         }
     }
 

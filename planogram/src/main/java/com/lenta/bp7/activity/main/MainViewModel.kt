@@ -1,7 +1,6 @@
 package com.lenta.bp7.activity.main
 
 import androidx.lifecycle.viewModelScope
-import com.lenta.bp7.data.IPersistCheckResult
 import com.lenta.bp7.data.model.CheckData
 import com.lenta.bp7.platform.navigation.IScreenNavigator
 import com.lenta.shared.features.loading.startProgressTimer
@@ -12,15 +11,13 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class MainViewModel : CoreMainViewModel() {
+
     @Inject
     override lateinit var statusBarUiModel: StatusBarUiModel
     @Inject
     lateinit var screenNavigator: IScreenNavigator
     @Inject
     lateinit var checkData: CheckData
-    @Inject
-    lateinit var persistCheckResult: IPersistCheckResult
-
 
 
     override fun onNewEnter() {
@@ -38,11 +35,10 @@ class MainViewModel : CoreMainViewModel() {
                 startProgressTimer(
                         coroutineScope = this,
                         remainingTime = it.remainingTime,
-                        timeoutInSec = 60
-                )
+                        timeoutInSec = 60)
             }
-
         }
+
         bottomToolbarUiModel.visibility.value = false
     }
 
@@ -58,7 +54,7 @@ class MainViewModel : CoreMainViewModel() {
 
     override fun onPause() {
         super.onPause()
-        persistCheckResult.saveCheckResult(checkData)
+        checkData.saveCheckResult()
     }
 
 }

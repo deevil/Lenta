@@ -30,10 +30,12 @@ import com.lenta.shared.platform.activity.ForegroundActivityProvider
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.utilities.extentions.restartApp
 import com.lenta.shared.utilities.extentions.setFragmentResultCode
+import com.mobrun.plugin.api.HyperHive
 import kotlin.system.exitProcess
 
 
 class CoreNavigator constructor(private val context: Context,
+                                private val hyperHive: HyperHive,
                                 private val foregroundActivityProvider: ForegroundActivityProvider,
                                 private val failureInterpreter: IFailureInterpreter,
                                 private val analytics: IAnalytics,
@@ -76,6 +78,8 @@ class CoreNavigator constructor(private val context: Context,
             foregroundActivityProvider.getActivity()?.finish()
             analytics.cleanLogs()
             roomAppDatabase.close()
+            hyperHive.databaseAPI.closeDefaultBase()
+            hyperHive.authAPI.unAuth()
             if (restart) {
                 context.restartApp()
             } else {
@@ -296,6 +300,15 @@ class CoreNavigator constructor(private val context: Context,
 
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 
+    override fun showUnsavedDataDetected(confirmCallback: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.unsaved_data_detected),
+                    pageNumber = "80",
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(confirmCallback),
+                    rightButtonDecorationInfo = ButtonDecorationInfo.confirm))
+        }
+    }
+
 }
 
 fun ICoreNavigator.runOrPostpone(function: () -> Unit) {
@@ -343,6 +356,7 @@ interface ICoreNavigator {
     fun openNeedUpdateScreen()
     fun openNotImplementedScreenAlert(screenName: String)
     fun closeAllScreen()
+    fun showUnsavedDataDetected(confirmCallback: () -> Unit)
 }
 
 class FunctionsCollector(private val needCollectLiveData: LiveData<Boolean>) {

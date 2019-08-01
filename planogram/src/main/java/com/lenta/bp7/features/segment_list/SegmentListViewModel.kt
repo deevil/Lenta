@@ -3,7 +3,6 @@ package com.lenta.bp7.features.segment_list
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp7.data.CheckType
-import com.lenta.bp7.data.IPersistCheckResult
 import com.lenta.bp7.data.model.CheckData
 import com.lenta.bp7.data.model.Segment
 import com.lenta.bp7.data.model.SegmentStatus
@@ -35,8 +34,7 @@ class SegmentListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     lateinit var saveSelfControlDataNetRequest: SaveSelfControlDataNetRequest
     @Inject
     lateinit var saveExternalAuditDataNetRequest: SaveExternalAuditDataNetRequest
-    @Inject
-    lateinit var persistCheckResult: IPersistCheckResult
+
 
     companion object {
         const val SEGMENT_NUMBER_LENGTH = 7
@@ -157,5 +155,9 @@ class SegmentListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     fun onClickItemPosition(position: Int) {
         checkData.currentSegmentIndex = position
         navigator.openShelfListScreen()
+    }
+
+    fun onClickBack() {
+        navigator.openSelectCheckTypeScreen()
     }
 }

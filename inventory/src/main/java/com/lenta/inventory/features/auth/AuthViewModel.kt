@@ -27,7 +27,6 @@ import javax.inject.Inject
 
 class AuthViewModel : CoreAuthViewModel() {
 
-
     @Inject
     lateinit var auth: Auth
     @Inject

@@ -46,22 +46,16 @@ abstract class CoreMainActivity : CoreActivity<ActivityMainBinding>(), ToolbarBu
 
     @Inject
     lateinit var networkStateMonitor: NetworkStateMonitor
-
     @Inject
     lateinit var batteryStateMonitor: BatteryStateMonitor
-
     @Inject
     lateinit var foregroundActivityProvider: ForegroundActivityProvider
-
     @Inject
     lateinit var scanHelper: IScanHelper
-
     @Inject
     lateinit var priorityAppManager: PriorityAppManager
-
     @Inject
     lateinit var screenNavigator: ICoreNavigator
-
     @Inject
     lateinit var analyticsHelper: AnalyticsHelper
 
@@ -243,12 +237,12 @@ abstract class CoreMainActivity : CoreActivity<ActivityMainBinding>(), ToolbarBu
 
     private fun isHaveBackButton(): Boolean {
         getBottomToolBarUIModel().uiModelButton1.let {
-            return it.buttonDecorationInfo.value == ButtonDecorationInfo.back && it.enabled.value == true && it.visibility.value == true
+            return it.buttonDecorationInfo.value === ButtonDecorationInfo.back && it.enabled.value == true && it.visibility.value == true
         }
     }
 
     private fun isHaveExitButton(): Boolean {
-        return getTopToolbarUIModel().uiModelButton2.buttonDecorationInfo.value == ImageButtonDecorationInfo.exitFromApp
+        return getTopToolbarUIModel().uiModelButton2.buttonDecorationInfo.value === ImageButtonDecorationInfo.exitFromApp
     }
 
     fun getBottomToolBarUIModel(): BottomToolbarUiModel {

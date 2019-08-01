@@ -3,7 +3,7 @@ package com.lenta.bp7.platform.navigation
 import android.content.Context
 import com.lenta.bp7.R
 import com.lenta.bp7.features.auth.AuthFragment
-import com.lenta.bp7.features.check_type.CheckTypeFragment
+import com.lenta.bp7.features.select_check_type.SelectCheckTypeFragment
 import com.lenta.bp7.features.loading.fast.FastDataLoadingFragment
 import com.lenta.bp7.features.option_info.OptionInfoFragment
 import com.lenta.bp7.features.code.CodeFragment
@@ -68,9 +68,9 @@ class ScreenNavigator(
         }
     }
 
-    override fun openCheckTypeScreen() {
+    override fun openSelectCheckTypeScreen() {
         runOrPostpone {
-            getFragmentStack()?.push(CheckTypeFragment())
+            getFragmentStack()?.push(SelectCheckTypeFragment())
         }
     }
 
@@ -291,6 +291,15 @@ class ScreenNavigator(
         }
     }
 
+    override fun showDoYouReallyWantToLeave(nextCallback: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.do_you_really_want_to_leave),
+                    pageNumber = "4",
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(nextCallback),
+                    rightButtonDecorationInfo = ButtonDecorationInfo.next))
+        }
+    }
+
     override fun showUnsentDataDetected(exitToAppCallback: () -> Unit, goOverCallback: () -> Unit) {
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.unsent_data_detected),
@@ -301,15 +310,6 @@ class ScreenNavigator(
                     rightButtonDecorationInfo = ButtonDecorationInfo.goOver))
         }
     }
-
-    override fun showUnsavedDataDetected(confirmCallback: () -> Unit) {
-        runOrPostpone {
-            getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.unsaved_data_detected),
-                    pageNumber = "80",
-                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(confirmCallback),
-                    rightButtonDecorationInfo = ButtonDecorationInfo.confirm))
-        }
-    }
 }
 
 interface IScreenNavigator : ICoreNavigator {
@@ -318,7 +318,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openMainMenuScreen()
     fun openSelectMarketScreen()
     fun openFastDataLoadingScreen()
-    fun openCheckTypeScreen()
+    fun openSelectCheckTypeScreen()
     fun openCodeScreen()
     fun openOptionScreen()
     fun openSegmentListScreen()
@@ -345,7 +345,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun showSuccessfullySavedToLua(afterShowCallback: () -> Unit)
     fun showErrorSavingToLua(afterShowCallback: () -> Unit)
     fun showLuaSystemUnavailable(exitCallback: () -> Unit, nextCallback: () -> Unit)
+    fun showDoYouReallyWantToLeave(nextCallback: () -> Unit)
     fun showUnsentDataDetected(exitToAppCallback: () -> Unit, goOverCallback: () -> Unit)
-    fun showUnsavedDataDetected(confirmCallback: () -> Unit)
 
 }

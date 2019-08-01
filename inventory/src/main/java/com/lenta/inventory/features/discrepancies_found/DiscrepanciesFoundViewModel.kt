@@ -3,6 +3,7 @@ package com.lenta.inventory.features.discrepancies_found
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.inventory.features.goods_list.DataSaver
+import com.lenta.inventory.features.goods_list.SearchProductDelegate
 import com.lenta.inventory.models.RecountType
 import com.lenta.inventory.models.StorePlaceStatus
 import com.lenta.inventory.models.task.IInventoryTaskManager
@@ -24,6 +25,8 @@ class DiscrepanciesFoundViewModel : CoreViewModel() {
     lateinit var taskManager: IInventoryTaskManager
     @Inject
     lateinit var dataSaver: DataSaver
+    @Inject
+    lateinit var searchProductDelegate: SearchProductDelegate
 
     val discrepanciesByGoods: MutableLiveData<List<DiscrepancyVM>> = MutableLiveData()
     val discrepanciesByStorage: MutableLiveData<List<DiscrepancyVM>> = MutableLiveData()
@@ -49,6 +52,7 @@ class DiscrepanciesFoundViewModel : CoreViewModel() {
 
     init {
         viewModelScope.launch {
+            dataSaver.setViewModelScopeFunc(::viewModelScope)
             update()
         }
     }
@@ -173,7 +177,7 @@ class DiscrepanciesFoundViewModel : CoreViewModel() {
             selectedDiscrepancy?.let {
                 val placeCode = if (selectedPage.value == 0) "00" else it.place
                 val productInfo = taskManager.getInventoryTask()?.taskRepository?.getProducts()?.findProduct(it.matnr, placeCode)
-                if (productInfo != null) screenNavigator.openGoodsInfoScreen(productInfo)
+                if (productInfo != null) searchProductDelegate.openTaskProductScreen(productInfo)
             }
         }
     }

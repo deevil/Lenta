@@ -15,6 +15,10 @@ class DataSaver @Inject constructor(
 
     private lateinit var viewModelScope: () -> CoroutineScope
 
+    fun setViewModelScopeFunc(viewModelScope: () -> CoroutineScope) {
+        this.viewModelScope = viewModelScope
+    }
+
     fun saveData() {
         viewModelScope().launch {
             screenNavigator.showProgress(invSendReportNetRequest)

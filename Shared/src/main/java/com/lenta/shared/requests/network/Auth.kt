@@ -21,9 +21,15 @@ class Auth
                     analytics.sendLogs()
                 }
             }
-
         }
+    }
+
+    fun cancelAuthorization() {
+        hyperHive.authAPI.unAuth()
     }
 }
 
-data class AuthParams(val login: String, val password: String)
+data class AuthParams(
+        val login: String,
+        val password: String
+)
