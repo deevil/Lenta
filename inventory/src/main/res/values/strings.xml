@@ -37,7 +37,6 @@
     <string name="secondary">Вторичный</string>
     <string name="from_to">c %s\nпо %s</string>
     <string name="stock_number">Склад %s</string>
-    <string name="simple_recount">Обычный пересчет</string>
     <string name="parallel_by_storeplaces">Параллельный пересчет с МХ</string>
     <string name="parallel_by_per_number">Параллельный пересчёт с таб.номерами</string>
     <string name="confirmation_task_open">Обработка задания начата исполнителем с логином %s на ТСД %s. Все равно продолжить?</string>
@@ -53,6 +52,7 @@
     <string name="confirmation_saving_job">Перевести задание в статус \"Посчитано\" и закрыть его для редактирования</string>
     <string name="confirmation_skipping_discrepancies">В задании остались необработанные товары. Сохранить в статусе \"Опубликовано\" и оставить доступным для продолжения пересчета?</string>
     <string name="confirmation_missing_goods">Вы действительно хотите установить 0 в поле количество для %1$d товаров из списка?</string>
+    <string name="confirmation_delete_goods">Вы действительно хотите удалить %1$d товаров из списка?</string>
     <string name="confirmation_clean_goods">Очистить обработанные товары?</string>
     <string name="confirmation_clean_storages">Очистить обработанные МХ?</string>
     <string name="success_save_report">Успешно сохранено в SAP ERP</string>
@@ -62,4 +62,7 @@
     <string name="brand_other_market">Марка на другом ТК</string>
     <string name="wrong_product_type">Неверный тип продукта</string>
     <string name="confirmation_exit_task">Вы точно хотите выйти из обработки задания?</string>
+    <string name="select_type_code_description">Введено 12 знаков. Какой код вы ввели?</string>
+    <string name="goods_not_for_task">Товар отсутствует в задании</string>
+    <string name="simple_recount">Обычный пересчет</string>
 </resources>

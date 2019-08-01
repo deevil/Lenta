@@ -27,4 +27,22 @@ class TaskProductInfo(materialNumber: String,
         return "${factCount.toStringFormatted()} ${uom.name}"
     }
 
+    companion object {
+        fun from(productInfo: ProductInfo, placeCode: String = "00", factCount: Double = 0.0) : TaskProductInfo {
+            return TaskProductInfo(materialNumber = productInfo.materialNumber,
+                    description = productInfo.description,
+                    uom = productInfo.uom,
+                    type = productInfo.type,
+                    isSet = productInfo.isSet,
+                    sectionId = productInfo.sectionId,
+                    matrixType = productInfo.matrixType,
+                    materialType = productInfo.materialType,
+                    placeCode = placeCode,
+                    factCount = factCount,
+                    isPositionCalc = false,
+                    isExcOld = false
+                    )
+        }
+    }
+
 }
