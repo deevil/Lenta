@@ -19,8 +19,8 @@ class SelectCheckTypeViewModel : CoreViewModel() {
     @Inject
     lateinit var checkData: CheckData
 
-    val selfControlButtonEnabled: MutableLiveData<Boolean> = MutableLiveData(false)
-    val externalAuditButtonEnabled: MutableLiveData<Boolean> = MutableLiveData(false)
+    val selfControlButtonEnabled: MutableLiveData<Boolean> = MutableLiveData(true)
+    val externalAuditButtonEnabled: MutableLiveData<Boolean> = MutableLiveData(true)
 
     init {
         viewModelScope.launch {

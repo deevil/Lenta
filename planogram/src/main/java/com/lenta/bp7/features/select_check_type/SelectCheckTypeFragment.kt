@@ -1,7 +1,7 @@
 package com.lenta.bp7.features.select_check_type
 
 import com.lenta.bp7.R
-import com.lenta.bp7.databinding.FragmentCheckTypeBinding
+import com.lenta.bp7.databinding.FragmentSelectCheckTypeBinding
 import com.lenta.bp7.platform.extentions.getAppComponent
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
@@ -10,7 +10,7 @@ import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
 import com.lenta.shared.utilities.extentions.provideViewModel
 
-class SelectCheckTypeFragment : CoreFragment<FragmentCheckTypeBinding, SelectCheckTypeViewModel>() {
+class SelectCheckTypeFragment : CoreFragment<FragmentSelectCheckTypeBinding, SelectCheckTypeViewModel>() {
 
     override fun getLayoutId(): Int = R.layout.fragment_select_check_type
 
