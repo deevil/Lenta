@@ -46,22 +46,16 @@ abstract class CoreMainActivity : CoreActivity<ActivityMainBinding>(), ToolbarBu
 
     @Inject
     lateinit var networkStateMonitor: NetworkStateMonitor
-
     @Inject
     lateinit var batteryStateMonitor: BatteryStateMonitor
-
     @Inject
     lateinit var foregroundActivityProvider: ForegroundActivityProvider
-
     @Inject
     lateinit var scanHelper: IScanHelper
-
     @Inject
     lateinit var priorityAppManager: PriorityAppManager
-
     @Inject
     lateinit var screenNavigator: ICoreNavigator
-
     @Inject
     lateinit var analyticsHelper: AnalyticsHelper
 
