@@ -42,6 +42,10 @@ class GoodsDetailsStorageViewModel : CoreViewModel() {
         it?.isNotEmpty() ?: false
     }
 
+    val deleteButtonVisibility: MutableLiveData<Boolean> = selectedPage.map {
+        it == 0 && !isGeneralProduct.value!! && !productInfo.value!!.isSet
+    }
+
     init {
         viewModelScope.launch {
             updateGoodsInfo()
@@ -97,12 +101,19 @@ class GoodsDetailsStorageViewModel : CoreViewModel() {
 
     private fun updateNotProcessed() {
         countedNotProssed.postValue(
-                processServiceManager.getInventoryTask()!!.taskRepository.getProducts().getNotProcessedProducts().filter { it.materialNumber == productInfo.value!!.materialNumber }.mapIndexed { index, taskProductInfo ->
-                    GoodsDetailsStorageItem(
-                            number = index + 1,
-                            name = taskProductInfo.placeCode,
-                            quantity = taskProductInfo.factCount.toStringFormatted(),
-                            even = index % 2 == 0
+                processServiceManager.
+                        getInventoryTask()!!.
+                        taskRepository.getProducts().
+                        getNotProcessedProducts().
+                        filter {
+                            it.materialNumber == productInfo.value!!.materialNumber
+                        }.
+                        mapIndexed { index, taskProductInfo ->
+                            GoodsDetailsStorageItem(
+                                        number = index + 1,
+                                        name = taskProductInfo.placeCode,
+                                        quantity = taskProductInfo.factCount.toStringFormatted(),
+                                        even = index % 2 == 0
                     )
                 }.reversed()
         )
@@ -110,12 +121,19 @@ class GoodsDetailsStorageViewModel : CoreViewModel() {
 
     private fun updateProcessed() {
         countedProssed.postValue(
-                processServiceManager.getInventoryTask()!!.taskRepository.getProducts().getProcessedProducts().filter { it.materialNumber == productInfo.value!!.materialNumber }.mapIndexed { index, taskProductInfo ->
-                    GoodsDetailsStorageItem(
-                            number = index + 1,
-                            name = taskProductInfo.placeCode,
-                            quantity = taskProductInfo.factCount.toStringFormatted(),
-                            even = index % 2 == 0
+                processServiceManager.
+                        getInventoryTask()!!.
+                        taskRepository.getProducts().
+                        getProcessedProducts().
+                        filter {
+                            it.materialNumber == productInfo.value!!.materialNumber
+                        }.
+                        mapIndexed { index, taskProductInfo ->
+                            GoodsDetailsStorageItem(
+                                        number = index + 1,
+                                        name = taskProductInfo.placeCode,
+                                        quantity = taskProductInfo.factCount.toStringFormatted(),
+                                        even = index % 2 == 0
                     )
                 }.reversed()
         )

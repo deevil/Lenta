@@ -68,22 +68,13 @@ class GoodsDetailsStorageFragment : CoreFragment<FragmentGoodsDetailsStorageBind
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
-        bottomToolbarUiModel.cleanAll()
-
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
+        bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.delete)
 
         viewLifecycleOwner.apply {
-            vm.selectedPage.observe(viewLifecycleOwner, Observer { pos ->
-                if (pos == 0 && !vm.isGeneralProduct.value!! && !vm.productInfo.value!!.isSet) {
-                    bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.delete, enabled = false)
-                    connectLiveData(vm.deleteButtonEnabled, bottomToolbarUiModel.uiModelButton3.enabled)
-                }
-                else {
-                    bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.delete, visible = false)
-                }
-            })
+            connectLiveData(vm.deleteButtonEnabled, bottomToolbarUiModel.uiModelButton3.enabled)
+            connectLiveData(vm.deleteButtonVisibility, bottomToolbarUiModel.uiModelButton3.visibility)
         }
-
     }
 
     override fun onPageSelected(position: Int) {
