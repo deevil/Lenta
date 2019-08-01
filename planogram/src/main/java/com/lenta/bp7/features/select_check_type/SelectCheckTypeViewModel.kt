@@ -53,7 +53,14 @@ class SelectCheckTypeViewModel : CoreViewModel() {
 
     fun onClickExit() {
         navigator.showDoYouReallyWantToLeave {
-            Logg.d { "-----------------------------" }
+            if (checkData.isExistUnsentData()) {
+                navigator.showUnsentDataDetected(
+                        exitToAppCallback = { navigator.finishApp() },
+                        goOverCallback = { navigator.openSegmentListScreen() }
+                )
+            } else {
+                navigator.finishApp()
+            }
         }
     }
 }
