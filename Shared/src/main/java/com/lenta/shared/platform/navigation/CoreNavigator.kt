@@ -302,17 +302,24 @@ class CoreNavigator constructor(private val context: Context,
 
     override fun openAlertAnotherAppInProcess(packageName: String) {
         runOrPostpone {
-            getFragmentStack()?.push(AlertFragment.create(
-                    message = context.getString(R.string.another_app_need_close, context.getApplicationName(packageName)),
-                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult {
-                        context.openAnotherApp(packageName)
-                        finishApp()
-                    },
-                    pageNumber = "94",
-                    leftButtonDecorationInfo = ButtonDecorationInfo.empty,
-                    rightButtonDecorationInfo = ButtonDecorationInfo.yes
-            )
-            )
+
+            backFragmentResultHelper.setFuncForResult {
+                context.openAnotherApp(packageName)
+                finishApp()
+            }.let { code ->
+                getFragmentStack()?.push(
+                        AlertFragment.create(
+                                message = context.getString(R.string.another_app_need_close, context.getApplicationName(packageName)),
+                                codeConfirmForRight = code,
+                                codeConfirmForExit = code,
+                                pageNumber = "94",
+                                leftButtonDecorationInfo = ButtonDecorationInfo.empty,
+                                rightButtonDecorationInfo = ButtonDecorationInfo.yes
+                        )
+                )
+            }
+
+
         }
     }
 

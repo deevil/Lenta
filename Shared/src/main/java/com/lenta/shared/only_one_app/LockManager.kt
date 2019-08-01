@@ -51,7 +51,7 @@ class LockManager(val context: Context) {
         }
 
         return if (fileInfo.text.isNotBlank() && fileInfo.text != packageName && fileModifiedNow(fileInfo.lastModified)) {
-            fileInfo.text.trim()
+            fileInfo.text
         } else {
             null
         }

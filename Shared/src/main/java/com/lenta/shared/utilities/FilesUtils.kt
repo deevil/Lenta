@@ -36,7 +36,7 @@ fun getStringFromFile(filePath: String): FileInfo {
             val fileInputStream = FileInputStream(file)
             val ret = convertStreamToString(fileInputStream)
             fileInputStream.close()
-            return FileInfo(text = ret, lastModified = file.lastModified())
+            return FileInfo(text = ret.trim(), lastModified = file.lastModified())
         } catch (e: java.lang.Exception) {
             Logg.e { "e: $e" }
         }
