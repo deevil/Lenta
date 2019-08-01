@@ -9,6 +9,7 @@ import com.lenta.bp7.R
 import com.lenta.bp7.databinding.FragmentSegmentListBinding
 import com.lenta.bp7.databinding.ItemSegmentBinding
 import com.lenta.bp7.platform.extentions.getAppComponent
+import com.lenta.shared.platform.activity.OnBackPresserListener
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
@@ -20,7 +21,7 @@ import com.lenta.shared.utilities.databinding.RecyclerViewKeyHandler
 import com.lenta.shared.utilities.extentions.*
 
 class SegmentListFragment : CoreFragment<FragmentSegmentListBinding, SegmentListViewModel>(),
-        ToolbarButtonsClickListener {
+        ToolbarButtonsClickListener, OnBackPresserListener {
 
     private var recyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
 
@@ -104,5 +105,10 @@ class SegmentListFragment : CoreFragment<FragmentSegmentListBinding, SegmentList
                     initPosInfo = recyclerViewKeyHandler?.posInfo?.value
             )
         }
+    }
+
+    override fun onBackPressed(): Boolean {
+        vm.onClickBack()
+        return false
     }
 }

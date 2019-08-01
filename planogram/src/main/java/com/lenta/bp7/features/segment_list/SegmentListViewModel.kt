@@ -158,4 +158,8 @@ class SegmentListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
         checkData.currentSegmentIndex = position
         navigator.openShelfListScreen()
     }
+
+    fun onClickBack() {
+        navigator.openOptionScreen()
+    }
 }
