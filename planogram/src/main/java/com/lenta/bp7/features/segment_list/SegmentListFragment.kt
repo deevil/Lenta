@@ -1,11 +1,8 @@
 package com.lenta.bp7.features.segment_list
 
 import android.os.Bundle
-import android.view.KeyEvent
 import android.view.View
-import android.view.inputmethod.EditorInfo
 import android.widget.AdapterView
-import android.widget.TextView
 import androidx.lifecycle.Observer
 import com.lenta.bp7.BR
 import com.lenta.bp7.R
