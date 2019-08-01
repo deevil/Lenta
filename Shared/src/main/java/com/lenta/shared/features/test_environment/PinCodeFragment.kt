@@ -39,6 +39,7 @@ class PinCodeFragment : CoreFragment<com.lenta.shared.databinding.FragmentPinCod
         bottomToolbarUiModel.cleanAll()
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.goOver, enabled = false)
+        connectLiveData(vm.enabledGoOverBtn, bottomToolbarUiModel.uiModelButton5.enabled)
 
     }
 
@@ -71,7 +72,6 @@ class PinCodeFragment : CoreFragment<com.lenta.shared.databinding.FragmentPinCod
             etPin2.addTextChangedListener(EnterCodeTextWatcher(binding?.etPin3))
             etPin3.addTextChangedListener(EnterCodeTextWatcher(binding?.etPin4))
         }
-        viewLifecycleOwner.connectLiveData(vm.enabledGoOverBtn, getBottomToolBarUIModel()!!.uiModelButton5.enabled)
     }
 
     companion object {
@@ -92,7 +92,7 @@ class EnterCodeTextWatcher(private var nextFocus: EditText?) : TextWatcher {
     }
 
     override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-        nextFocus?.let { it.requestFocus() }
+        nextFocus?.requestFocus()
     }
 
 }

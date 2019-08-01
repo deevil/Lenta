@@ -43,13 +43,10 @@ class GoodInfoFacingFragment : CoreFragment<FragmentGoodInfoFacingBinding, GoodI
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
         bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.missing, enabled = true)
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.apply, enabled = false)
-    }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        viewLifecycleOwner.apply {
-            connectLiveData(vm.missingButtonEnabled, getBottomToolBarUIModel()!!.uiModelButton4.enabled)
-            connectLiveData(vm.applyButtonEnabled, getBottomToolBarUIModel()!!.uiModelButton5.enabled)
-        }
+        connectLiveData(vm.missingButtonEnabled, bottomToolbarUiModel.uiModelButton4.enabled)
+        connectLiveData(vm.applyButtonEnabled, bottomToolbarUiModel.uiModelButton5.enabled)
+
     }
 
     override fun onToolbarButtonClick(view: View) {

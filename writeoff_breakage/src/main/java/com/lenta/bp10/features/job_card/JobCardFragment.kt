@@ -35,15 +35,11 @@ class JobCardFragment : CoreFragment<FragmentJobCardBinding, JobCardViewModel>()
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.next)
 
+        connectLiveData(vm.selectedStorePosition, bottomToolbarUiModel.uiModelButton5.requestFocus)
+        connectLiveData(vm.enabledNextButton, bottomToolbarUiModel.uiModelButton5.enabled)
+
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        getBottomToolBarUIModel()?.let { bottomToolbarUiModel ->
-            connectLiveData(vm.selectedStorePosition, bottomToolbarUiModel.uiModelButton5.requestFocus)
-            connectLiveData(vm.enabledNextButton, bottomToolbarUiModel.uiModelButton5.enabled)
-        }
-    }
 
     override fun onToolbarButtonClick(view: View) {
         when (view.id) {

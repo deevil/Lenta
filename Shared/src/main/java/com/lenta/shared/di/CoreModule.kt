@@ -164,13 +164,14 @@ class CoreModule(val application: Application, val defaultConnectionSettings: De
     @Provides
     @Singleton
     internal fun provideICoreNavigator(context: Context,
+                                       hyperHive: HyperHive,
                                        foregroundActivityProvider: ForegroundActivityProvider,
                                        failureInterpreter: IFailureInterpreter,
                                        analytics: IAnalytics,
                                        analyticsHelper: AnalyticsHelper,
                                        roomAppDatabase: RoomAppDatabase,
                                        backFragmentResultHelper: BackFragmentResultHelper): ICoreNavigator {
-        return CoreNavigator(context, foregroundActivityProvider, failureInterpreter, analytics, analyticsHelper, roomAppDatabase, backFragmentResultHelper)
+        return CoreNavigator(context, hyperHive, foregroundActivityProvider, failureInterpreter, analytics, analyticsHelper, roomAppDatabase, backFragmentResultHelper)
     }
 
     @Provides

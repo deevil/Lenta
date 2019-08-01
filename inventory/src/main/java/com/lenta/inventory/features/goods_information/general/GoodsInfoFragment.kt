@@ -61,11 +61,9 @@ class GoodsInfoFragment : CoreFragment<FragmentGoodsInfoBinding,
         bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.missing)
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.apply)
 
-        viewLifecycleOwner.let {
-            connectLiveData(vm.isStorePlaceNumber, bottomToolbarUiModel.uiModelButton3.visibility)
-            connectLiveData(vm.enabledMissingButton, bottomToolbarUiModel.uiModelButton4.enabled)
-            connectLiveData(vm.enabledApplyButton, bottomToolbarUiModel.uiModelButton5.enabled)
-        }
+        connectLiveData(vm.isStorePlaceNumber, bottomToolbarUiModel.uiModelButton3.visibility)
+        connectLiveData(vm.enabledMissingButton, bottomToolbarUiModel.uiModelButton4.enabled)
+        connectLiveData(vm.enabledApplyButton, bottomToolbarUiModel.uiModelButton5.enabled)
 
     }
 

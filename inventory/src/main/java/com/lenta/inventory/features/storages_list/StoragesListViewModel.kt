@@ -9,16 +9,13 @@ import com.lenta.inventory.models.StorePlaceLockMode
 import com.lenta.inventory.models.StorePlaceStatus
 import com.lenta.inventory.models.task.IInventoryTaskManager
 import com.lenta.inventory.models.task.TaskContents
-import com.lenta.inventory.models.task.TaskDescription
 import com.lenta.inventory.models.task.TaskStorePlaceInfo
 import com.lenta.inventory.platform.navigation.IScreenNavigator
 import com.lenta.inventory.requests.network.TaskContentNetRequest
 import com.lenta.inventory.requests.network.TaskContentParams
-import com.lenta.inventory.requests.network.TasksListRestInfo
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.platform.viewmodel.CoreViewModel
-import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.extentions.combineLatest
@@ -27,7 +24,7 @@ import com.lenta.shared.utilities.extentions.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class StoragesListViewModel: CoreViewModel(), OnOkInSoftKeyboardListener {
+class StoragesListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
     @Inject
     lateinit var taskManager: IInventoryTaskManager
@@ -60,6 +57,7 @@ class StoragesListViewModel: CoreViewModel(), OnOkInSoftKeyboardListener {
 
     init {
         viewModelScope.launch {
+            dataSaver.setViewModelScopeFunc(::viewModelScope)
             updateUnprocessed()
             updateProcessed()
         }
@@ -79,7 +77,7 @@ class StoragesListViewModel: CoreViewModel(), OnOkInSoftKeyboardListener {
 
     private fun updateProcessed() {
         taskManager.getInventoryTask()?.let {
-            val processed = it.getProcessedStorePlaces().mapIndexed{ index, storePlace ->
+            val processed = it.getProcessedStorePlaces().mapIndexed { index, storePlace ->
                 val productsQuantity = it.getProductsQuantityForStorePlace(storePlace.placeCode)
                 StoragePlaceVM.from(storePlace, productsQuantity, index + 1)
             }
@@ -91,7 +89,7 @@ class StoragesListViewModel: CoreViewModel(), OnOkInSoftKeyboardListener {
 
     private fun updateUnprocessed() {
         taskManager.getInventoryTask()?.let {
-            val unprocessed = it.getUnprocessedStorePlaces().mapIndexed{ index, storePlace ->
+            val unprocessed = it.getUnprocessedStorePlaces().mapIndexed { index, storePlace ->
                 val productsQuantity = it.getProductsQuantityForStorePlace(storePlace.placeCode)
                 StoragePlaceVM.from(storePlace, productsQuantity, index + 1)
             }
@@ -103,7 +101,8 @@ class StoragesListViewModel: CoreViewModel(), OnOkInSoftKeyboardListener {
 
     fun onClickClean() {
         screenNavigator.openConfirmationClean(byStorage = true) {
-            val selectedPositions = processedSelectionHelper.selectedPositions.value ?: emptySet<Int>()
+            val selectedPositions = processedSelectionHelper.selectedPositions.value
+                    ?: emptySet<Int>()
             for (position in selectedPositions) {
                 processedStorages.value?.get(position)?.let {
                     taskManager.getInventoryTask()?.clearStorePlaceByNumber(it.storeNumber)
@@ -134,7 +133,8 @@ class StoragesListViewModel: CoreViewModel(), OnOkInSoftKeyboardListener {
             val userNumber = if (recountType == RecountType.ParallelByStorePlaces || sessionInfo.personnelNumber == null) "" else sessionInfo.personnelNumber
             taskContentsRequest(
                     TaskContentParams(ip = context.getDeviceIp(),
-                            taskNumber = taskManager.getInventoryTask()?.taskDescription?.taskNumber ?: "",
+                            taskNumber = taskManager.getInventoryTask()?.taskDescription?.taskNumber
+                                    ?: "",
                             userNumber = userNumber ?: "",
                             additionalDataFlag = "",
                             newProductNumbers = emptyList(),
@@ -164,13 +164,13 @@ class StoragesListViewModel: CoreViewModel(), OnOkInSoftKeyboardListener {
     }
 
     fun onClickItemPosition(position: Int) {
-        var storeNumber : String?
+        var storeNumber: String?
         if (selectedPage.value == 0) {
             storeNumber = unprocessedStorages.value?.get(position)?.storeNumber
         } else {
             storeNumber = processedStorages.value?.get(position)?.storeNumber
         }
-        storeNumber?.let {storePlaceNumber ->
+        storeNumber?.let { storePlaceNumber ->
             screenNavigator.openGoodsListScreen(storePlaceNumber)
         }
     }
@@ -185,7 +185,7 @@ class StoragesListViewModel: CoreViewModel(), OnOkInSoftKeyboardListener {
     }
 
     override fun onOkInSoftKeyboard(): Boolean {
-        if (!storageNumber.value.isNullOrEmpty()){
+        if (!storageNumber.value.isNullOrEmpty()) {
             val storageNumber = storageNumber.value!!
             taskManager.getInventoryTask()?.let {
                 val existingPlace = it.taskRepository.getStorePlace().findStorePlace(storageNumber)
@@ -209,7 +209,7 @@ data class StoragePlaceVM(
         val productsQuantity: Int) {
 
     companion object {
-        fun from(taskStoragePlaceInfo : TaskStorePlaceInfo, productsQuantity: Int, number: Int) : StoragePlaceVM {
+        fun from(taskStoragePlaceInfo: TaskStorePlaceInfo, productsQuantity: Int, number: Int): StoragePlaceVM {
             return StoragePlaceVM(number = number,
                     storeNumber = taskStoragePlaceInfo.placeCode,
                     status = taskStoragePlaceInfo.status,
