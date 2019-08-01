@@ -42,15 +42,9 @@ class SelectPersonnelNumberFragment : CoreFragment<com.lenta.inventory.databindi
             bottomToolbarUiModel
                     .uiModelButton5.requestFocus()
         })
+        connectLiveData(vm.enabledNextButton, bottomToolbarUiModel.uiModelButton5.enabled)
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        getBottomToolBarUIModel()?.let {
-            connectLiveData(vm.enabledNextButton, it.uiModelButton5.enabled)
-        }
-
-    }
 
     override fun onToolbarButtonClick(view: View) {
         if (view.id == R.id.b_5) {

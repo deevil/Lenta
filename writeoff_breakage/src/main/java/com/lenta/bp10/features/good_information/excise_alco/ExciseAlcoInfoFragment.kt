@@ -34,9 +34,6 @@ open class ExciseAlcoInfoFragment : GoodInfoFragment() {
             etWriteOff.disable()
             spinnerWriteOffType.requestFocus()
         }
-        exciseAlcoInfoViewModel?.let {
-            viewLifecycleOwner.connectLiveData(it.rollBackEnabled, getBottomToolBarUIModel()!!.uiModelButton2.enabled)
-        }
     }
 
     override fun onRequestFocus() {
@@ -48,6 +45,7 @@ open class ExciseAlcoInfoFragment : GoodInfoFragment() {
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
         super.setupBottomToolBar(bottomToolbarUiModel)
         bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.rollback)
+        viewLifecycleOwner.connectLiveData(exciseAlcoInfoViewModel!!.rollBackEnabled, bottomToolbarUiModel.uiModelButton2.enabled)
 
     }
 

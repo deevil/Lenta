@@ -56,6 +56,8 @@ class GoodsListFragment : CoreFragment<FragmentGoodsListBinding, GoodsListViewMo
         bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.clean)
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.complete)
 
+        connectLiveData(source = vm.deleteEnabled, target = bottomToolbarUiModel.uiModelButton3.enabled)
+
     }
 
     override fun onToolbarButtonClick(view: View) {
@@ -76,9 +78,6 @@ class GoodsListFragment : CoreFragment<FragmentGoodsListBinding, GoodsListViewMo
             it.viewPagerSettings = this
             it.pageSelectionListener = this
         }
-
-        connectLiveData(source = vm.deleteEnabled, target = getBottomToolBarUIModel()!!.uiModelButton3.enabled)
-
 
     }
 
