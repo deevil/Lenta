@@ -5,7 +5,7 @@ import com.lenta.bp7.activity.main.MainActivity
 import com.lenta.bp7.activity.main.MainViewModel
 import com.lenta.bp7.data.model.CheckData
 import com.lenta.bp7.features.auth.AuthViewModel
-import com.lenta.bp7.features.check_type.CheckTypeViewModel
+import com.lenta.bp7.features.select_check_type.SelectCheckTypeViewModel
 import com.lenta.bp7.features.code.CodeViewModel
 import com.lenta.bp7.features.good_info.GoodInfoViewModel
 import com.lenta.bp7.features.good_info_facing.GoodInfoFacingViewModel
@@ -31,7 +31,7 @@ interface AppComponent {
     fun inject(it: AuthViewModel)
     fun inject(it: SelectMarketViewModel)
     fun inject(it: FastLoadingViewModel)
-    fun inject(it: CheckTypeViewModel)
+    fun inject(it: SelectCheckTypeViewModel)
     fun inject(it: CodeViewModel)
     fun inject(it: OptionInfoViewModel)
     fun inject(it: SegmentListViewModel)

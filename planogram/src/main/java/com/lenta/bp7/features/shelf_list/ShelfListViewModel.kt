@@ -175,7 +175,7 @@ class ShelfListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
     fun onClickBack() {
         if (checkData.getCurrentSegment()?.getStatus() != SegmentStatus.UNFINISHED) {
-            navigator.goBack()
+            navigator.openSegmentListScreen()
             return
         }
 

@@ -137,7 +137,7 @@ class GoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
     fun onClickBack() {
         if (checkData.getCurrentShelf()?.getStatus() != ShelfStatus.UNFINISHED) {
-            navigator.goBack()
+            navigator.openShelfListScreen()
             return
         }
 

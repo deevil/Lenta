@@ -243,12 +243,12 @@ abstract class CoreMainActivity : CoreActivity<ActivityMainBinding>(), ToolbarBu
 
     private fun isHaveBackButton(): Boolean {
         getBottomToolBarUIModel().uiModelButton1.let {
-            return it.buttonDecorationInfo.value == ButtonDecorationInfo.back && it.enabled.value == true && it.visibility.value == true
+            return it.buttonDecorationInfo.value === ButtonDecorationInfo.back && it.enabled.value == true && it.visibility.value == true
         }
     }
 
     private fun isHaveExitButton(): Boolean {
-        return getTopToolbarUIModel().uiModelButton2.buttonDecorationInfo.value == ImageButtonDecorationInfo.exitFromApp
+        return getTopToolbarUIModel().uiModelButton2.buttonDecorationInfo.value === ImageButtonDecorationInfo.exitFromApp
     }
 
     fun getBottomToolBarUIModel(): BottomToolbarUiModel {
