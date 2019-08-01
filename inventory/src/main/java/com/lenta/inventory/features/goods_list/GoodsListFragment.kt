@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.Observer
 import com.lenta.inventory.BR
 import com.lenta.inventory.R
 import com.lenta.inventory.databinding.FragmentGoodsListBinding
@@ -61,7 +62,20 @@ class GoodsListFragment : CoreFragment<FragmentGoodsListBinding, GoodsListViewMo
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
         bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.clean)
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.complete)
-
+        viewLifecycleOwner.apply {
+            vm.selectedPage.observe(this, Observer {
+                if (it == 0) {
+                    if (vm.isStrict()) {
+                        bottomToolbarUiModel.uiModelButton3.clean()
+                    } else {
+                        bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.delete)
+                    }
+                } else {
+                    bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.clean)
+                }
+            })
+        }
+        connectLiveData(source = vm.deleteEnabled, target = getBottomToolBarUIModel()!!.uiModelButton3.enabled)
     }
 
     override fun onToolbarButtonClick(view: View) {
@@ -82,10 +96,6 @@ class GoodsListFragment : CoreFragment<FragmentGoodsListBinding, GoodsListViewMo
             it.viewPagerSettings = this
             it.pageSelectionListener = this
         }
-
-        connectLiveData(source = vm.deleteEnabled, target = getBottomToolBarUIModel()!!.uiModelButton3.enabled)
-
-
     }
 
     override fun onResume() {
@@ -111,21 +121,45 @@ class GoodsListFragment : CoreFragment<FragmentGoodsListBinding, GoodsListViewMo
                             container,
                             false).let { layoutBinding ->
 
+                        val onClickSelectionListener = View.OnClickListener {
+                            (it!!.tag as Int).let { position ->
+                                vm.unprocessedSelectionHelper.revert(position = position)
+                                layoutBinding.rv.adapter?.notifyItemChanged(position)
+                            }
+                        }
+
+                        val implementation = if (vm.isStrict()) {
+                            object : DataBindingAdapter<ItemTileGoodsBinding> {
+                                override fun onCreate(binding: ItemTileGoodsBinding) {
+                                }
+
+                                override fun onBind(binding: ItemTileGoodsBinding, position: Int) {
+                                    binding.tvCounter.tag = position
+                                    unprocessedRecyclerViewKeyHandler?.let {
+                                        binding.root.isSelected = it.isSelected(position)
+                                    }
+                                }
+                            }
+                        } else {
+                            object : DataBindingAdapter<ItemTileProcessedGoodsBinding> {
+                                override fun onCreate(binding: ItemTileProcessedGoodsBinding) {
+                                }
+
+                                override fun onBind(binding: ItemTileProcessedGoodsBinding, position: Int) {
+                                    binding.tvCounter.tag = position
+                                    binding.tvCounter.setOnClickListener(onClickSelectionListener)
+                                    binding.selectedForDelete = vm.unprocessedSelectionHelper.isSelected(position)
+                                    unprocessedRecyclerViewKeyHandler?.let {
+                                        binding.root.isSelected = it.isSelected(position)
+                                    }
+                                }
+                            }
+                        }
+
                         layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
-                                layoutId = R.layout.item_tile_goods,
+                                layoutId = if (vm.isStrict()) R.layout.item_tile_goods else R.layout.item_tile_processed_goods,
                                 itemId = BR.vm,
-                                realisation = object : DataBindingAdapter<ItemTileGoodsBinding> {
-                                    override fun onCreate(binding: ItemTileGoodsBinding) {
-                                    }
-
-                                    override fun onBind(binding: ItemTileGoodsBinding, position: Int) {
-                                        binding.tvCounter.tag = position
-                                        unprocessedRecyclerViewKeyHandler?.let {
-                                            binding.root.isSelected = it.isSelected(position)
-                                        }
-                                    }
-
-                                },
+                                realisation = implementation,
                                 onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
                                     unprocessedRecyclerViewKeyHandler?.let {
                                         if (it.isSelected(position)) {

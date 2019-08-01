@@ -3,6 +3,7 @@ package com.lenta.inventory.features.goods_list
 import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.lenta.inventory.R
 import com.lenta.inventory.models.RecountType
 import com.lenta.inventory.models.StorePlaceLockMode
 import com.lenta.inventory.models.task.IInventoryTaskManager
@@ -52,16 +53,29 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     var justCreated: Boolean = true
 
     val processedSelectionHelper = SelectionItemsHelper()
+    val unprocessedSelectionHelper = SelectionItemsHelper()
 
-    val deleteEnabled: MutableLiveData<Boolean> = selectedPage.combineLatest(processedSelectionHelper.selectedPositions).map {
-        val page = it?.first ?: 0
-        val selectionCount = it?.second?.size ?: 0
-        page != 0 && selectionCount > 0
+    val deleteEnabled: MutableLiveData<Boolean> = selectedPage.combineLatest(unprocessedSelectionHelper.selectedPositions).combineLatest(processedSelectionHelper.selectedPositions).map {
+        val page = it?.first?.first
+        val selectionCount = if (page == 0) it?.first?.second.size else it?.second?.size
+        selectionCount != 0
     }
 
+    fun isStrict(): Boolean {
+        return taskManager.getInventoryTask()!!.taskDescription.isStrict
+    }
+
+
     fun getTitle(): String {
-        return "${taskManager.getInventoryTask()?.taskDescription?.getTaskTypeAndNumber()
-                ?: ""} / МХ-${storePlaceManager?.storePlaceNumber}"
+        when (taskManager.getInventoryTask()!!.taskDescription.recountType) {
+            RecountType.Simple -> return "${taskManager.getInventoryTask()?.taskDescription?.getTaskTypeAndNumber()
+                    ?: ""} / ${context.getString(R.string.simple_recount)}"
+            RecountType.ParallelByStorePlaces -> return "${taskManager.getInventoryTask()?.taskDescription?.getTaskTypeAndNumber()
+                    ?: ""} / МХ-${storePlaceManager?.storePlaceNumber}"
+            RecountType.ParallelByPerNo -> return "${taskManager.getInventoryTask()?.taskDescription?.getTaskTypeAndNumber()
+                    ?: ""} / ${sessionInfo.personnelFullName}"
+        }
+        return taskManager.getInventoryTask()?.taskDescription?.getTaskTypeAndNumber() ?: ""
     }
 
     fun setStorePlaceNumber(storePlaceNumber: String) {
@@ -122,20 +136,33 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     }
 
     fun onClickClean() {
-        screenNavigator.openConfirmationClean {
-            processedSelectionHelper.selectedPositions.value?.forEach {
-                val matnr = processedGoods.value?.get(it)?.matnr
-                if (matnr != null) {
-                    val productInfo = taskManager.getInventoryTask()?.taskRepository?.getProducts()?.findProduct(matnr, storePlaceManager?.storePlaceNumber
-                        ?: "")
-                    productInfo?.isPositionCalc = false
-                    productInfo?.factCount = 0.0
+        if (selectedPage.value == 0) {
+            screenNavigator.openConfirmationDeleteGoods(unprocessedSelectionHelper.selectedPositions.value?.size ?: 0) {
+                unprocessedSelectionHelper.selectedPositions.value?.forEach {
+                    unprocessedGoods.value?.get(it)?.matnr?.let {
+                        taskManager.getInventoryTask()!!.deleteProduct(it)
+                    }
                 }
+                unprocessedSelectionHelper.clearPositions()
+
             }
-            processedSelectionHelper.clearPositions()
-            updateUnprocessed()
-            updateProcessed()
+        } else {
+            screenNavigator.openConfirmationClean {
+                processedSelectionHelper.selectedPositions.value?.forEach {
+                    val matnr = processedGoods.value?.get(it)?.matnr
+                    if (matnr != null) {
+                        val productInfo = taskManager.getInventoryTask()?.taskRepository?.getProducts()?.findProduct(matnr, storePlaceManager?.storePlaceNumber
+                                ?: "")
+                        productInfo?.isPositionCalc = false
+                        productInfo?.factCount = 0.0
+                    }
+                }
+                processedSelectionHelper.clearPositions()
+            }
         }
+
+        updateUnprocessed()
+        updateProcessed()
     }
 
     fun onClickComplete() {
