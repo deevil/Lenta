@@ -29,10 +29,6 @@ class AuthViewModel : CoreAuthViewModel() {
     lateinit var sessionInfo: ISessionInfo
     @Inject
     lateinit var appSettings: IAppSettings
-    @Inject
-    lateinit var database: IDatabaseRepo
-    @Inject
-    lateinit var appUpdateChecker: AppUpdateChecker
 
 
     override val enterEnabled: MutableLiveData<Boolean> by lazy {
@@ -47,7 +43,7 @@ class AuthViewModel : CoreAuthViewModel() {
         }
     }
 
-    private fun loadPermissions(boolean: Boolean) {
+    private fun loadPermissions(@Suppress("UNUSED_PARAMETER") b: Boolean) {
         viewModelScope.launch {
             getLogin().let { login ->
                 sessionInfo.userName = login
@@ -57,14 +53,7 @@ class AuthViewModel : CoreAuthViewModel() {
 
             progress.value = false
 
-            if (appUpdateChecker.isNeedUpdate(database.getAllowedAppVersion())) {
-                auth.cancelAuthorization()
-                navigator.closeAllScreen()
-                navigator.openLoginScreen()
-                navigator.openNeedUpdateScreen()
-            } else {
-                navigator.openFastDataLoadingScreen()
-            }
+            navigator.openFastDataLoadingScreen()
         }
     }
 
