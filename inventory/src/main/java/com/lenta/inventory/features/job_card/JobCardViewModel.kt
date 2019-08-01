@@ -85,7 +85,7 @@ class JobCardViewModel : CoreViewModel(), OnPositionClickListener {
     }
 
     fun onClickNext() {
-        if (taskManager.getInventoryTask() == null) {
+        if (taskManager.getInventoryTask() == null || taskManager.getInventoryTask()?.taskDescription?.recountType != getSelectedTypeRecount()) {
             screenNavigator.openLoadingTaskContentsScreen(tasksItem, getSelectedTypeRecount()
                     ?: RecountType.None)
         } else {

@@ -240,6 +240,16 @@ class ScreenNavigator(
         }
     }
 
+    override fun openConfirmationDeleteGoods(positionsCount: Int, callbackFunc: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.confirmation_delete_goods, positionsCount),
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(callbackFunc),
+                    pageNumber = "93",
+                    rightButtonDecorationInfo = ButtonDecorationInfo.yes))
+        }
+    }
+
+
     override fun openSuccessSaveDataScreen() {
         runOrPostpone {
             getFragmentStack()?.push(
@@ -266,6 +276,23 @@ class ScreenNavigator(
         }
     }
 
+    override fun openSelectTypeCodeScreen(codeConfirmationForSap: Int, codeConfirmationForBarCode: Int) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.select_type_code_description),
+                    iconRes = 0,
+                    codeConfirmForRight = codeConfirmationForBarCode,
+                    codeConfirmForLeft = codeConfirmationForSap,
+                    pageNumber = "90",
+                    leftButtonDecorationInfo = ButtonDecorationInfo.sap,
+                    rightButtonDecorationInfo = ButtonDecorationInfo.barcode)
+            )
+        }
+    }
+
+    override fun openAlertGoodsNotForTaskScreen() {
+        openInfoScreen(context.getString(R.string.goods_not_for_task))
+    }
 
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 
@@ -298,7 +325,10 @@ interface IScreenNavigator : ICoreNavigator {
     fun openConfirmationSavingJobScreen(callbackFunc: () -> Unit)
     fun openConfirmationSkippingDiscrepancies(callbackFunc: () -> Unit)
     fun openConfirmationMissingGoods(positionsCount: Int, callbackFunc: () -> Unit)
+    fun openConfirmationDeleteGoods(positionsCount: Int, callbackFunc: () -> Unit)
     fun openConfirmationClean(byStorage: Boolean = false, callbackFunc: () -> Unit)
     fun openSuccessSaveDataScreen()
     fun openConfirmationExitTask(callbackFunc: () -> Unit)
+    fun openSelectTypeCodeScreen(codeConfirmationForSap: Int, codeConfirmationForBarCode: Int)
+    fun openAlertGoodsNotForTaskScreen()
 }
