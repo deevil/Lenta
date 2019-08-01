@@ -9,10 +9,10 @@ import com.lenta.shared.exception.Failure
 import com.lenta.shared.features.login.CoreAuthViewModel
 import com.lenta.shared.features.login.isEnterEnabled
 import com.lenta.shared.features.login.isValidLoginFields
+import com.lenta.shared.platform.app_update.AppUpdateChecker
 import com.lenta.shared.requests.network.Auth
 import com.lenta.shared.requests.network.AuthParams
 import com.lenta.shared.settings.IAppSettings
-import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.getBaseAuth
@@ -31,6 +31,8 @@ class AuthViewModel : CoreAuthViewModel() {
     lateinit var appSettings: IAppSettings
     @Inject
     lateinit var database: IDatabaseRepo
+    @Inject
+    lateinit var appUpdateChecker: AppUpdateChecker
 
 
     override val enterEnabled: MutableLiveData<Boolean> by lazy {
@@ -55,12 +57,14 @@ class AuthViewModel : CoreAuthViewModel() {
 
             progress.value = false
 
-            // Проверка версии приложения
-            val allowedVersion = database.getAllowedAppVersion()
-            Logg.d { "-----------------------> $allowedVersion" }
-
-
-            navigator.openFastDataLoadingScreen()
+            if (appUpdateChecker.isNeedUpdate(database.getAllowedAppVersion())) {
+                auth.cancelAuthorization()
+                navigator.closeAllScreen()
+                navigator.openLoginScreen()
+                navigator.openNeedUpdateScreen()
+            } else {
+                navigator.openFastDataLoadingScreen()
+            }
         }
     }
 
