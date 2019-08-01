@@ -14,6 +14,7 @@ import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.models.core.ProductType
 import com.lenta.shared.platform.viewmodel.CoreViewModel
+import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
@@ -37,6 +38,8 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     lateinit var taskManager: IInventoryTaskManager
     @Inject
     lateinit var dataSaver: DataSaver
+    @Inject
+    lateinit var searchProductDelegate: SearchProductDelegate
 
     val unprocessedGoods: MutableLiveData<List<ProductInfoVM>> = MutableLiveData()
     val processedGoods: MutableLiveData<List<ProductInfoVM>> = MutableLiveData()
@@ -66,7 +69,11 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     }
 
     init {
-
+        viewModelScope.launch {
+            searchProductDelegate.init(viewModelScope = this@GoodsListViewModel::viewModelScope,
+                    scanResultHandler = this@GoodsListViewModel::handleProductSearchResult,
+                    storePlace = storePlaceManager?.storePlaceNumber ?: "00")
+        }
     }
 
     fun onResume() {
@@ -188,14 +195,17 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     }
 
     fun onScanResult(data: String) {
-        eanCode.value = data
+        searchProductDelegate.searchCode(code = data, fromScan = true)
+    }
+
+    private fun handleProductSearchResult(scanInfoResult: ScanInfoResult?): Boolean {
+        eanCode.postValue("")
+        return false
     }
 
     override fun onOkInSoftKeyboard(): Boolean {
         eanCode.value?.let {
-            val productInfo = taskManager.getInventoryTask()?.taskRepository?.getProducts()?.findProduct(it, storePlaceManager?.storePlaceNumber
-                    ?: "")
-            if (productInfo != null) screenNavigator.openGoodsInfoScreen(productInfo)
+            searchProductDelegate.searchCode(it, fromScan = false)
         }
         return true
     }
@@ -210,24 +220,15 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
         matnr?.let {
             val productInfo = taskManager.getInventoryTask()?.taskRepository?.getProducts()?.findProduct(it, storePlaceManager?.storePlaceNumber
                     ?: "")
-            if (productInfo != null) openProductScreen(productInfo)
+            if (productInfo != null) searchProductDelegate.openTaskProductScreen(productInfo)
         }
     }
 
-    fun openProductScreen(productInfo: TaskProductInfo) {
-        when (productInfo.type) {
-            ProductType.General -> screenNavigator.openGoodsInfoScreen(productInfo)
-            ProductType.ExciseAlcohol -> {
-                if (productInfo.isSet) {
-                    screenNavigator.openSetsInfoScreen(productInfo)
-                    return
-                } else
-                    screenNavigator.openExciseAlcoInfoScreen(productInfo)
-            }
-            else -> screenNavigator.openGoodsInfoScreen(productInfo)
+    fun onResult(code: Int?) {
+        if (searchProductDelegate.handleResultCode(code)) {
+            return
         }
     }
-
 }
 
 data class ProductInfoVM(

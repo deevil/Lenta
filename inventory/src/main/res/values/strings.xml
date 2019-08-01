@@ -37,7 +37,6 @@
     <string name="secondary">Вторичный</string>
     <string name="from_to">c %s\nпо %s</string>
     <string name="stock_number">Склад %s</string>
-    <string name="simple_recount">Обычный пересчет</string>
     <string name="parallel_by_storeplaces">Параллельный пересчет с МХ</string>
     <string name="parallel_by_per_number">Параллельный пересчёт с таб.номерами</string>
     <string name="confirmation_task_open">Обработка задания начата исполнителем с логином %s на ТСД %s. Все равно продолжить?</string>
@@ -62,4 +61,7 @@
     <string name="brand_other_market">Марка на другом ТК</string>
     <string name="wrong_product_type">Неверный тип продукта</string>
     <string name="confirmation_exit_task">Вы точно хотите выйти из обработки задания?</string>
+    <string name="select_type_code_description">Введено 12 знаков. Какой код вы ввели?</string>
+    <string name="goods_not_for_task">Товар отсутствует в задании</string>
+    <string name="simple_recount">Обычный пересчет</string>
 </resources>

@@ -26,6 +26,7 @@ import com.lenta.shared.scan.OnScanResultListener
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.databinding.*
 import com.lenta.shared.utilities.extentions.connectLiveData
+import com.lenta.shared.utilities.extentions.getFragmentResultCode
 import com.lenta.shared.utilities.extentions.provideViewModel
 import com.lenta.shared.utilities.state.state
 
@@ -44,6 +45,11 @@ class GoodsListFragment : CoreFragment<FragmentGoodsListBinding, GoodsListViewMo
             vm.setStorePlaceNumber(storePlaceNumber)
             return vm
         }
+    }
+
+    override fun onFragmentResult(arguments: Bundle) {
+        super.onFragmentResult(arguments)
+        vm.onResult(arguments.getFragmentResultCode())
     }
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
