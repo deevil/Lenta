@@ -26,6 +26,9 @@ import javax.inject.Inject
 
 
 class AuthViewModel : CoreAuthViewModel() {
+    override fun onClickExit() {
+
+    }
 
 
     @Inject
