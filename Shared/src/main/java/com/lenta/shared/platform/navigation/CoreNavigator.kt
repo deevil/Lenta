@@ -318,6 +318,15 @@ class CoreNavigator constructor(private val context: Context,
 
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 
+    override fun showUnsavedDataDetected(confirmCallback: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.unsaved_data_detected),
+                    pageNumber = "80",
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(confirmCallback),
+                    rightButtonDecorationInfo = ButtonDecorationInfo.confirm))
+        }
+    }
+
 }
 
 fun ICoreNavigator.runOrPostpone(function: () -> Unit) {
@@ -366,6 +375,7 @@ interface ICoreNavigator {
     fun openNotImplementedScreenAlert(screenName: String)
     fun closeAllScreen()
     fun openAlertAnotherAppInProcess(packageName: String)
+    fun showUnsavedDataDetected(confirmCallback: () -> Unit)
 }
 
 class FunctionsCollector(private val needCollectLiveData: LiveData<Boolean>) {

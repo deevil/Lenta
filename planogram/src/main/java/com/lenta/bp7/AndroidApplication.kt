@@ -1,6 +1,5 @@
 package com.lenta.bp7
 
-import com.lenta.bp7.data.IPersistCheckResult
 import com.lenta.bp7.data.model.CheckData
 import com.lenta.bp7.platform.extentions.getAppComponent
 import com.lenta.shared.CoreApplication
@@ -16,8 +15,6 @@ class AndroidApplication : CoreApplication() {
                 testServerAddress = "http://9.6.24.46",
                 testEnvironment = "Lenta_LRQ",
                 testProject = "PR_SHARED",
-                //techLogin = "tech_user",
-                //techPassword = "123456"
                 techLogin = "MAKAROV",
                 techPassword = "1q2w3e4r"
         )
@@ -35,10 +32,8 @@ class ExceptionHandler {
 
     @Inject
     lateinit var checkData: CheckData
-    @Inject
-    lateinit var persistCheckResult: IPersistCheckResult
 
     fun handleException() {
-        persistCheckResult.saveCheckResult(checkData)
+        checkData.saveCheckResult()
     }
 }

@@ -19,6 +19,7 @@ class SelectCheckTypeViewModel : CoreViewModel() {
     @Inject
     lateinit var checkData: CheckData
 
+
     val selfControlButtonEnabled: MutableLiveData<Boolean> = MutableLiveData(true)
     val externalAuditButtonEnabled: MutableLiveData<Boolean> = MutableLiveData(true)
 
@@ -47,5 +48,18 @@ class SelectCheckTypeViewModel : CoreViewModel() {
     fun onClickExternalAudit() {
         checkData.checkType = CheckType.EXTERNAL_AUDIT
         navigator.openCodeScreen()
+    }
+
+    fun onClickExit() {
+        navigator.showDoYouReallyWantToLeave {
+            if (checkData.isExistUnsentData()) {
+                navigator.showUnsentDataDetected(
+                        exitToAppCallback = { navigator.finishApp() },
+                        goOverCallback = { navigator.openSegmentListScreen() }
+                )
+            } else {
+                navigator.finishApp()
+            }
+        }
     }
 }

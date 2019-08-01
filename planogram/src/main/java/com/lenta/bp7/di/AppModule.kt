@@ -57,8 +57,8 @@ class AppModule {
 
     @Provides
     @AppScope
-    internal fun provideCheckStoreData(): CheckData {
-        return CheckData()
+    internal fun provideCheckStoreData(persistCheckResult: IPersistCheckResult): CheckData {
+        return CheckData(persistCheckResult)
     }
 
     @Provides
