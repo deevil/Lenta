@@ -1,7 +1,6 @@
 package com.lenta.bp7.activity.main
 
 import androidx.lifecycle.viewModelScope
-import com.lenta.bp7.data.IPersistCheckResult
 import com.lenta.bp7.data.model.CheckData
 import com.lenta.bp7.platform.navigation.IScreenNavigator
 import com.lenta.shared.features.loading.startProgressTimer
@@ -19,8 +18,6 @@ class MainViewModel : CoreMainViewModel() {
     lateinit var screenNavigator: IScreenNavigator
     @Inject
     lateinit var checkData: CheckData
-    @Inject
-    lateinit var persistCheckResult: IPersistCheckResult
 
 
     override fun onNewEnter() {
@@ -57,7 +54,7 @@ class MainViewModel : CoreMainViewModel() {
 
     override fun onPause() {
         super.onPause()
-        persistCheckResult.saveCheckResult(checkData)
+        checkData.saveCheckResult()
     }
 
 }

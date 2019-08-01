@@ -1,6 +1,5 @@
 package com.lenta.bp7
 
-import com.lenta.bp7.data.IPersistCheckResult
 import com.lenta.bp7.data.model.CheckData
 import com.lenta.bp7.platform.extentions.getAppComponent
 import com.lenta.shared.CoreApplication
@@ -35,10 +34,8 @@ class ExceptionHandler {
 
     @Inject
     lateinit var checkData: CheckData
-    @Inject
-    lateinit var persistCheckResult: IPersistCheckResult
 
     fun handleException() {
-        persistCheckResult.saveCheckResult(checkData)
+        checkData.saveCheckResult()
     }
 }
