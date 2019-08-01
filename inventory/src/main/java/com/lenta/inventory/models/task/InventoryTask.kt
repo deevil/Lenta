@@ -5,16 +5,8 @@ import com.lenta.inventory.requests.network.ExciseStampInfo
 import com.lenta.inventory.requests.network.InventoryReport
 import com.lenta.inventory.requests.network.MaterialNumber
 import com.lenta.inventory.requests.network.StorePlace
-import com.lenta.shared.models.core.ProductType
 
 class InventoryTask(val taskDescription: TaskDescription, val taskRepository: ITaskRepository) {
-
-    //фун-ция проверят, является ли продукт акцизным алкоголем
-    fun processExciseAlcoProduct(product: TaskProductInfo): ProcessExciseAlcoProductService? {
-        return if (product.type == ProductType.ExciseAlcohol) {
-            ProcessExciseAlcoProductService(taskDescription, taskRepository, product)
-        } else null
-    }
 
     fun getProcessedStorePlaces(): List<TaskStorePlaceInfo> {
         return taskRepository.getStorePlace().getStorePlaces().filter { it.isProcessed }

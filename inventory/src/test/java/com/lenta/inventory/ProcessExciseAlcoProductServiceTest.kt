@@ -9,7 +9,7 @@ import org.junit.Test
 
 class ProcessExciseAlcoProductServiceTest {
     private lateinit var taskDescription: TaskDescription
-    private lateinit var processServiceManager: IInventoryTaskManager
+    private var processServiceManager = InventoryTaskManager()
     private val storePlace = "00"
     private val materialNumber = "000000000000378167"
     private val boxNumber = "14680001340000845000000001"
@@ -20,7 +20,7 @@ class ProcessExciseAlcoProductServiceTest {
     private var exciseStamp68_2: TaskExciseStamp? =null
     private var exciseStampsForBox_150: List<TaskExciseStamp>? =null
     private var exciseStampsForBox_68: List<TaskExciseStamp>? =null
-    private lateinit var processExciseAlcoProductService: ProcessExciseAlcoProductService
+    private var processExciseAlcoProductService = ProcessExciseAlcoProductService()
 
     fun creatingObjectsForTest() {
         taskDescription = TaskDescription(
@@ -136,9 +136,11 @@ class ProcessExciseAlcoProductServiceTest {
                         isBadStamp = false)
         )
 
-
-        processServiceManager = InventoryTaskManager()
         processServiceManager.newInventoryTask(taskDescription)
+        //инициализация processServiceManager в ProcessGeneralProductService, необходимо, т.к. реализовано через DI
+        processExciseAlcoProductService.processServiceManager = processServiceManager
+
+        processExciseAlcoProductService.newProcessExciseAlcoProductService(product!!)
 
         //добавляем продукт в репозиторий
         processServiceManager.
@@ -150,18 +152,8 @@ class ProcessExciseAlcoProductServiceTest {
         //обнуляем  данный объект, чтобы не было на него ссылок и связей с ним
         product = null
 
-        //создаем тестируемый объект ProcessExciseAlcoProductService
-        processExciseAlcoProductService = ProcessExciseAlcoProductService(
-                taskDescription = taskDescription,
-                taskRepository = processServiceManager.
-                        getInventoryTask()!!.
-                        taskRepository,
-                productInfo = processServiceManager.
-                        getInventoryTask()!!.
-                        taskRepository.
-                        getProducts().
-                        findProduct(materialNumber, storePlace)!!
-        )
+
+
     }
 
     @Test
@@ -173,7 +165,7 @@ class ProcessExciseAlcoProductServiceTest {
         processServiceManager.getInventoryTask()!!.taskRepository.getProducts().findProduct(materialNumber, storePlace)!!.factCount = 5.0
 
         //проверяем фактическое кол-во продукта, должно быть 5
-        Assert.assertEquals(5.0, processExciseAlcoProductService.getFactCount(), 0.0)
+        Assert.assertEquals(5.0, processExciseAlcoProductService.getFactCount()!!, 0.0)
 
     }
 
@@ -438,67 +430,6 @@ class ProcessExciseAlcoProductServiceTest {
     fun isLinkingOldStamps() {
         creatingObjectsForTest()
         Assert.assertFalse(processExciseAlcoProductService.isLinkingOldStamps())
-    }
-
-    @Test
-    fun updateCurrentData() {
-        creatingObjectsForTest()
-
-        //добавляем первую акцизную марку 150 символов продукту
-        processExciseAlcoProductService.addCurrentExciseStamp(exciseStamp150_1!!)
-        //обнуляем  данный объект, чтобы не было на него ссылок и связей с ним
-        exciseStamp150_1 = null
-
-        //добавляем вторую акцизную марку 150 символов продукту
-        processExciseAlcoProductService.addCurrentExciseStamp(exciseStamp150_2!!)
-        //обнуляем  данный объект, чтобы не было на него ссылок и связей с ним
-        exciseStamp150_2 = null
-
-        //добавляем первую акцизную марку 68 символов продукту
-        processExciseAlcoProductService.add(1, exciseStamp68_1!!)
-        //обнуляем  данный объект, чтобы не было на него ссылок и связей с ним
-        exciseStamp68_1 = null
-
-        //добавляем вторую акцизную марку 68 символов продукту
-        processExciseAlcoProductService.add(1, exciseStamp68_2!!)
-        //обнуляем  данный объект, чтобы не было на него ссылок и связей с ним
-        exciseStamp68_2 = null
-
-        //проверяем фактическое кол-во продукта, должно быть 4
-        Assert.assertEquals(4.0, processServiceManager.getInventoryTask()!!.taskRepository.getProducts().findProduct(materialNumber, storePlace)!!.factCount, 0.0)
-
-        //проверяем кол-во марок, должно быть 4
-        Assert.assertEquals(4, processServiceManager.getInventoryTask()!!.taskRepository.getExciseStamps().findExciseStampsOfProduct(materialNumber,storePlace,false).size)
-
-
-        //имитация удаления партионных марок (68 символов) на экране Детали по товару
-        processServiceManager.
-                getInventoryTask()!!.
-                taskRepository.
-                getExciseStamps().
-                findExciseStampsOfProduct(materialNumber, storePlace, false).
-                filter {exciseStamp ->
-                    ExciseStamp.getEgaisVersion(exciseStamp.code) == EgaisStampVersion.V2.version
-                }?.
-                let {listTaskExciseStamp ->
-                    processExciseAlcoProductService.setFactCount(processExciseAlcoProductService.getFactCount() - listTaskExciseStamp.size)
-
-                    processServiceManager.
-                            getInventoryTask()!!.
-                            taskRepository.
-                            getExciseStamps().
-                            deleteExciseStamps(listTaskExciseStamp)
-                }
-
-        //проверяем фактическое кол-во продукта, должно быть 2
-        Assert.assertEquals(2.0, processServiceManager.getInventoryTask()!!.taskRepository.getProducts().findProduct(materialNumber, storePlace)!!.factCount, 0.0)
-
-        //проверяем кол-во марок, должно быть 2
-        Assert.assertEquals(2, processServiceManager.getInventoryTask()!!.taskRepository.getExciseStamps().findExciseStampsOfProduct(materialNumber,storePlace,false).size)
-
-        //проверяем, что продукт помечен как обработанный
-        Assert.assertTrue(processServiceManager.getInventoryTask()!!.taskRepository.getProducts().findProduct(materialNumber, storePlace)!!.isPositionCalc)
-
     }
 
     @Test

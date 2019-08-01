@@ -40,9 +40,8 @@ class ExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
     @Inject
     lateinit var sessionInfo: ISessionInfo
 
-    private val processExciseAlcoProductService: ProcessExciseAlcoProductService by lazy {
-        processServiceManager.getInventoryTask()!!.processExciseAlcoProduct(productInfo.value!!)!!
-    }
+    @Inject
+    lateinit var processExciseAlcoProductService: ProcessExciseAlcoProductService
 
     val iconRes: MutableLiveData<Int> = MutableLiveData(0)
     val textColor: MutableLiveData<Int> = MutableLiveData(0)
@@ -58,6 +57,8 @@ class ExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
     val storePlaceNumber: MutableLiveData<String> = MutableLiveData()
 
     val isStorePlaceNumber: MutableLiveData<Boolean> = storePlaceNumber.map { it != "00" }
+
+    val msgWrongProducType: MutableLiveData<String> = MutableLiveData()
 
     val spinList: MutableLiveData<List<String>> = MutableLiveData()
 
@@ -77,42 +78,47 @@ class ExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
 
     val count: MutableLiveData<String> = MutableLiveData("")
 
-    private val countValue: MutableLiveData<Double> = count.map{ it?.toDoubleOrNull() ?: 0.0 }
+    private val countValue: MutableLiveData<Double> = count.map { it?.toDoubleOrNull() ?: 0.0 }
 
-    private val totalCount: MutableLiveData<Double> by lazy {
-        countValue.map { processExciseAlcoProductService.getFactCount() }
+    private val totalCount: MutableLiveData<Double> = countValue.map {
+        if (isEtCountValue.value!!) {
+            it!!.plus((processExciseAlcoProductService.getFactCount()
+                    ?: productInfo.value!!.factCount))
+        } else {
+            processExciseAlcoProductService.getFactCount() ?: productInfo.value!!.factCount
+        }
     }
 
-    val totalCountWithUom: MutableLiveData<String> by lazy {
-        totalCount.map { "${it.toStringFormatted()} ${productInfo.value!!.uom.name}" }
-    }
+    val totalCountWithUom: MutableLiveData<String> = totalCount.map { "${it.toStringFormatted()} ${productInfo.value!!.uom.name}" }
 
     val enabledApplyButton: MutableLiveData<Boolean> = countValue.combineLatest(totalCount).map {
         it!!.first != 0.0 && it.second > 0.0
     }
 
-    val enabledRollbackButton: MutableLiveData<Boolean> = countValue.map { it ?: 0.0 > 0.0 && isEtCountValue.value == false}
+    val enabledRollbackButton: MutableLiveData<Boolean> = countValue.map { it ?: 0.0 > 0.0 && isEtCountValue.value == false }
 
     val enabledMissingButton: MutableLiveData<Boolean> = totalCount.map { it ?: 0.0 <= 0.0 }
-
-    private val isUpdateData: MutableLiveData<Boolean> = MutableLiveData(false)
 
     init {
         viewModelScope.launch {
             suffix.value = productInfo.value?.uom?.name
             storePlaceNumber.value = productInfo.value!!.placeCode
+            if (processExciseAlcoProductService.newProcessExciseAlcoProductService(productInfo.value!!) == null) {
+                screenNavigator.goBack()
+                screenNavigator.openAlertScreen(
+                        message = msgWrongProducType.value!!,
+                        iconRes = iconRes.value!!,
+                        textColor = textColor.value!!,
+                        pageNumber = "98")
+            }
         }
     }
 
-    fun onResume(){
-        if (isUpdateData.value!!) {
-            processExciseAlcoProductService.updateCurrentData()
-            processExciseAlcoProductService.getLastCountExciseStamp().countLastExciseStamp.let {
-                if (it == 0) "" else it
-            }
-            selectedPosition.value = processExciseAlcoProductService.getLastCountExciseStamp().countType
-            isUpdateData.value = false
+    fun onResume() {
+        count.value = processExciseAlcoProductService.getLastCountExciseStamp().countLastExciseStamp.let {
+            if (it == 0) "" else it.toString()
         }
+        selectedPosition.value = processExciseAlcoProductService.getLastCountExciseStamp().countType
     }
 
     fun onClickRollback() {
@@ -122,7 +128,6 @@ class ExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
     }
 
     fun onClickDetails() {
-        isUpdateData.value = true
         screenNavigator.openGoodsDetailsStorageScreen(productInfo.value!!)
     }
 
@@ -132,20 +137,13 @@ class ExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
     }
 
     fun onClickApply() {
-        if (isEtCountValue.value!!){
-            processExciseAlcoProductService.add(count.value!!.toInt(),
-                    TaskExciseStamp(
-                            materialNumber = productInfo.value!!.materialNumber,
-                            code = scannedStampCode.value!!,
-                            placeCode = productInfo.value!!.placeCode
-                    )
-            )
-        }
+        addPartlyStampIsExcOld()
         processExciseAlcoProductService.apply()
         screenNavigator.goBack()
     }
 
     fun onScanResult(data: String) {
+        addPartlyStampIsExcOld()
         scannedStampCode.value = data
         when (data.length) {
             in 26..50 -> processBox(data)
@@ -155,7 +153,7 @@ class ExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
         }
     }
 
-    private fun processBox(boxNumber: String){
+    private fun processBox(boxNumber: String) {
         if (processExciseAlcoProductService.isTaskAlreadyHasExciseStampBox(boxNumber)) {
             screenNavigator.openAlertDoubleScanStamp()
             return
@@ -175,21 +173,20 @@ class ExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
                             codeEBP = "INV",
                             factCount = ""
 
-                    )).
-                    either(::handleFailure, ::processBoxHandleSuccess)
+                    )).either(::handleFailure, ::processBoxHandleSuccess)
             screenNavigator.hideProgress()
         }
     }
 
-    private fun processBoxHandleSuccess(exciseGoodsRestInfo: ExciseGoodsRestInfo){
+    private fun processBoxHandleSuccess(exciseGoodsRestInfo: ExciseGoodsRestInfo) {
         if (exciseGoodsRestInfo.retCode != "0") {
             screenNavigator.openAlertScreen(message = exciseGoodsRestInfo.errorTxt, iconRes = iconRes.value!!, textColor = textColor.value, pageNumber = "98")
             return
         }
 
-        when (exciseGoodsRestInfo.status.toInt()) {
+        when (exciseGoodsRestInfo.status) {
             InfoStatus.BoxFound.status -> {
-                val boxStamps = exciseGoodsRestInfo.stampsBox.map {stampsBox ->
+                val boxStamps = exciseGoodsRestInfo.stampsBox.map { stampsBox ->
                     TaskExciseStamp(
                             materialNumber = productInfo.value!!.materialNumber,
                             code = stampsBox.exciseStampCode,
@@ -206,18 +203,18 @@ class ExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
         }
     }
 
-    private fun processPdf68(stampCode: String){
+    private fun processPdf68(stampCode: String) {
         if (processExciseAlcoProductService.isTaskAlreadyHasExciseStamp(stampCode)) {
             screenNavigator.openAlertDoubleScanStamp()
             return
-        } else{
+        } else {
             if (processExciseAlcoProductService.isLinkingOldStamps()) {
                 checkExciseStampByCode(stampCode)
-            } else checkExciseStampByAlcoCode(stampCode)
+            } else checkExciseStampByAlcoCode()
         }
     }
 
-    private fun processPdf150(stampCode: String){
+    private fun processPdf150(stampCode: String) {
         if (processExciseAlcoProductService.isTaskAlreadyHasExciseStamp(stampCode)) {
             screenNavigator.openAlertDoubleScanStamp()
             return
@@ -237,19 +234,18 @@ class ExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
                             codeEBP = "INV",
                             factCount = ""
 
-                    )).
-                    either(::handleFailure, ::processPdf150HandleSuccess)
+                    )).either(::handleFailure, ::processPdf150HandleSuccess)
             screenNavigator.hideProgress()
         }
     }
 
-    private fun processPdf150HandleSuccess(exciseGoodsRestInfo: ExciseGoodsRestInfo){
+    private fun processPdf150HandleSuccess(exciseGoodsRestInfo: ExciseGoodsRestInfo) {
         if (exciseGoodsRestInfo.retCode != "0") {
             screenNavigator.openAlertScreen(exciseGoodsRestInfo.errorTxt, iconRes = iconRes.value!!, textColor = textColor.value, pageNumber = "98")
             return
         }
 
-        when (exciseGoodsRestInfo.status.toInt()) {
+        when (exciseGoodsRestInfo.status) {
             InfoStatus.StampFound.status, InfoStatus.StampOverload.status -> {
                 processExciseAlcoProductService.addCurrentExciseStamp(
                         TaskExciseStamp(
@@ -260,8 +256,7 @@ class ExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
                 )
                 count.value = "1"
                 selectedPosition.value = GoodsInfoCountType.VINTAGE.number
-                if (exciseGoodsRestInfo.status.toInt() == InfoStatus.StampOverload.status) {
-                    isUpdateData.value = true
+                if (exciseGoodsRestInfo.status == InfoStatus.StampOverload.status) {
                     screenNavigator.openAlertScreen(exciseGoodsRestInfo.statusTxt, iconRes = iconRes.value!!, textColor = textColor.value, pageNumber = "98")
                 }
             }
@@ -278,7 +273,7 @@ class ExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
 
     fun onPartySignsResult(bundle: Bundle) {
         manufacturerCode.value = manufacturers.value!![bundle.getString("manufacturerCode").toInt()].code
-        bottlingDate.value = bundle.getString("bottlingDate").substring(6,10)+bundle.getString("bottlingDate").substring(3,5)+bundle.getString("bottlingDate").substring(0,2)
+        bottlingDate.value = bundle.getString("bottlingDate").substring(6, 10) + bundle.getString("bottlingDate").substring(3, 5) + bundle.getString("bottlingDate").substring(0, 2)
         viewModelScope.launch {
             screenNavigator.showProgress(titleProgressScreen.value!!)
             obtainingDataExciseGoodsNetRequest(
@@ -294,19 +289,18 @@ class ExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
                             codeEBP = "INV",
                             factCount = ""
 
-                    )).
-                    either(::handleFailure, ::partySignsHandleSuccess)
+                    )).either(::handleFailure, ::partySignsHandleSuccess)
             screenNavigator.hideProgress()
         }
     }
 
-    private fun partySignsHandleSuccess(exciseGoodsRestInfo: ExciseGoodsRestInfo){
+    private fun partySignsHandleSuccess(exciseGoodsRestInfo: ExciseGoodsRestInfo) {
         if (exciseGoodsRestInfo.retCode != "0") {
             screenNavigator.openAlertScreen(exciseGoodsRestInfo.errorTxt, iconRes = iconRes.value!!, textColor = textColor.value, pageNumber = "98")
             return
         }
 
-        when (exciseGoodsRestInfo.status.toInt()) {
+        when (exciseGoodsRestInfo.status) {
             InfoStatus.BatchFound.status, InfoStatus.BatchNotFound.status -> {
                 processExciseAlcoProductService.addCurrentExciseStamp(
                         TaskExciseStamp(
@@ -319,9 +313,7 @@ class ExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
                 )
                 count.value = "1"
                 selectedPosition.value = GoodsInfoCountType.VINTAGE.number
-                if (exciseGoodsRestInfo.status.toInt() == InfoStatus.BatchNotFound.status) {
-
-                    isUpdateData.value = true
+                if (exciseGoodsRestInfo.status == InfoStatus.BatchNotFound.status) {
                     screenNavigator.openAlertScreen(exciseGoodsRestInfo.statusTxt, iconRes = iconRes.value!!, textColor = textColor.value, pageNumber = "98")
                 }
             }
@@ -329,7 +321,7 @@ class ExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
         }
     }
 
-    private fun checkExciseStampByCode(stampCode: String){
+    private fun checkExciseStampByCode(stampCode: String) {
         viewModelScope.launch {
             screenNavigator.showProgress(titleProgressScreen.value!!)
             obtainingDataExciseGoodsNetRequest(
@@ -344,32 +336,29 @@ class ExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
                             mode = "1",
                             codeEBP = "INV",
                             factCount = ""
-                    )).
-                    either(::handleFailure, ::checkExciseStampByCodeHandleSuccess)
+                    )).either(::handleFailure, ::checkExciseStampByCodeHandleSuccess)
             screenNavigator.hideProgress()
         }
     }
 
-    private fun checkExciseStampByCodeHandleSuccess(exciseGoodsRestInfo: ExciseGoodsRestInfo){
+    private fun checkExciseStampByCodeHandleSuccess(exciseGoodsRestInfo: ExciseGoodsRestInfo) {
         if (exciseGoodsRestInfo.retCode != "0") {
             screenNavigator.openAlertScreen(exciseGoodsRestInfo.errorTxt, iconRes = iconRes.value!!, textColor = textColor.value, pageNumber = "98")
             return
         }
 
-        when (exciseGoodsRestInfo.status.toInt()) {
+        when (exciseGoodsRestInfo.status) {
             InfoStatus.StampFound.status, InfoStatus.StampOverload.status -> {
                 processExciseAlcoProductService.add(1,
-                                                    TaskExciseStamp(
-                                                        materialNumber = productInfo.value!!.materialNumber,
-                                                        code = scannedStampCode.value!!,
-                                                        placeCode = productInfo.value!!.placeCode
-                                                    )
+                        TaskExciseStamp(
+                                materialNumber = productInfo.value!!.materialNumber,
+                                code = scannedStampCode.value!!,
+                                placeCode = productInfo.value!!.placeCode
+                        )
                 )
                 count.value = "1"
                 selectedPosition.value = GoodsInfoCountType.PARTLY.number
-                if (exciseGoodsRestInfo.status.toInt() == InfoStatus.StampOverload.status) {
-
-                    isUpdateData.value = true
+                if (exciseGoodsRestInfo.status == InfoStatus.StampOverload.status) {
                     screenNavigator.openAlertScreen(exciseGoodsRestInfo.statusTxt, iconRes = iconRes.value!!, textColor = textColor.value, pageNumber = "98")
                 }
             }
@@ -386,7 +375,7 @@ class ExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
 
     fun onPartySignsStamp68Result(bundle: Bundle) {
         manufacturerCode.value = manufacturers.value!![bundle.getString("manufacturerCode").toInt()].code
-        bottlingDate.value = bundle.getString("bottlingDate").substring(6,10)+bundle.getString("bottlingDate").substring(3,5)+bundle.getString("bottlingDate").substring(0,2)
+        bottlingDate.value = bundle.getString("bottlingDate").substring(6, 10) + bundle.getString("bottlingDate").substring(3, 5) + bundle.getString("bottlingDate").substring(0, 2)
         viewModelScope.launch {
             screenNavigator.showProgress(titleProgressScreen.value!!)
             obtainingDataExciseGoodsNetRequest(
@@ -402,34 +391,31 @@ class ExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
                             codeEBP = "INV",
                             factCount = ""
 
-                    )).
-                    either(::handleFailure, ::partySignsStamp68HandleSuccess)
+                    )).either(::handleFailure, ::partySignsStamp68HandleSuccess)
             screenNavigator.hideProgress()
         }
     }
 
-    private fun partySignsStamp68HandleSuccess(exciseGoodsRestInfo: ExciseGoodsRestInfo){
+    private fun partySignsStamp68HandleSuccess(exciseGoodsRestInfo: ExciseGoodsRestInfo) {
         if (exciseGoodsRestInfo.retCode != "0") {
             screenNavigator.openAlertScreen(exciseGoodsRestInfo.errorTxt, iconRes = iconRes.value!!, textColor = textColor.value, pageNumber = "98")
             return
         }
 
-        when (exciseGoodsRestInfo.status.toInt()) {
+        when (exciseGoodsRestInfo.status) {
             InfoStatus.BatchFound.status, InfoStatus.BatchNotFound.status -> {
                 processExciseAlcoProductService.add(1,
-                                                    TaskExciseStamp(
-                                                        materialNumber = productInfo.value!!.materialNumber,
-                                                        code = scannedStampCode.value!!,
-                                                        placeCode = productInfo.value!!.placeCode,
-                                                        manufacturerCode = manufacturerCode.value!!,
-                                                        bottlingDate = bottlingDate.value!!
-                                                    )
+                        TaskExciseStamp(
+                                materialNumber = productInfo.value!!.materialNumber,
+                                code = scannedStampCode.value!!,
+                                placeCode = productInfo.value!!.placeCode,
+                                manufacturerCode = manufacturerCode.value!!,
+                                bottlingDate = bottlingDate.value!!
+                        )
                 )
                 count.value = "1"
                 selectedPosition.value = GoodsInfoCountType.PARTLY.number
-                if (exciseGoodsRestInfo.status.toInt() == InfoStatus.BatchNotFound.status) {
-
-                    isUpdateData.value = true
+                if (exciseGoodsRestInfo.status == InfoStatus.BatchNotFound.status) {
                     screenNavigator.openAlertScreen(exciseGoodsRestInfo.statusTxt, iconRes = iconRes.value!!, textColor = textColor.value, pageNumber = "98")
                 }
             }
@@ -437,11 +423,12 @@ class ExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
         }
     }
 
-    private fun checkExciseStampByAlcoCode(stampCode: String){
-        if (productInfo.value!!.isExcOld){
+    private fun checkExciseStampByAlcoCode() {
+        if (productInfo.value!!.isExcOld) {
             isEtCountValue.value = true
-        }
-        else {
+            count.value = "1"
+            selectedPosition.value = GoodsInfoCountType.PARTLY.number
+        } else {
             viewModelScope.launch {
                 screenNavigator.showProgress(titleProgressScreen.value!!)
                 alcoCodeNetRequest(null).either(::handleFailure, ::alcoCodeHandleSuccess)
@@ -450,57 +437,50 @@ class ExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
         }
     }
 
-    fun alcoCodeHandleSuccess(alcoCodeRestInfo: List<AlcoCodeRestInfo>){
+    fun alcoCodeHandleSuccess(alcoCodeRestInfo: List<AlcoCodeRestInfo>) {
         alcoCodeRestInfo[0].data.filter { data ->
             data[1] == productInfo.value!!.materialNumber &&
-                    (data[2] == BigInteger(scannedStampCode.value!!.substring(7,19), 36).toString().padStart(19,'0') ||
-                            data[2] == BigInteger(scannedStampCode.value!!.substring(7,19), 36).toString().padStart(20,'0'))
+                    (data[2] == BigInteger(scannedStampCode.value!!.substring(7, 19), 36).toString().padStart(19, '0') ||
+                            data[2] == BigInteger(scannedStampCode.value!!.substring(7, 19), 36).toString().padStart(20, '0'))
         }.isNotEmpty().let {
             if (it) {
                 processExciseAlcoProductService.add(1,
-                                                    TaskExciseStamp(
-                                                        materialNumber = productInfo.value!!.materialNumber,
-                                                        code = scannedStampCode.value!!,
-                                                        placeCode = productInfo.value!!.placeCode
-                                                    )
+                        TaskExciseStamp(
+                                materialNumber = productInfo.value!!.materialNumber,
+                                code = scannedStampCode.value!!,
+                                placeCode = productInfo.value!!.placeCode
+                        )
                 )
                 count.value = "1"
                 selectedPosition.value = GoodsInfoCountType.PARTLY.number
-            }
-            else{
+            } else {
                 screenNavigator.openAlertScreen(message = alcocodeNotFound.value!!, iconRes = iconRes.value!!, textColor = textColor.value, pageNumber = "98")
             }
         }
     }
 
-    private fun processItemByBarcode(data: String){
-        processServiceManager.
-                getInventoryTask()!!.
-                taskRepository.
-                getProducts().
-                findProduct(materialNumber = data, storePlaceNumber = storePlaceNumber.value!!)?.
-                let{
-                    when (it.type){
-                        ProductType.General, ProductType.NonExciseAlcohol -> {
-                            enabledBtn()
-                            screenNavigator.goBack()
-                            screenNavigator.openGoodsInfoScreen(productInfo = it)
-                        }
-                        ProductType.ExciseAlcohol -> {
-                            if (it.isSet){
-                                enabledBtn()
-                                screenNavigator.goBack()
-                                screenNavigator.openSetsInfoScreen(it)
-                            }
-                            else{
-                                enabledBtn()
-                                screenNavigator.goBack()
-                                screenNavigator.openExciseAlcoInfoScreen(it)
-                            }
-                        }
-                    }
-                    return
+    private fun processItemByBarcode(data: String) {
+        processServiceManager.getInventoryTask()!!.taskRepository.getProducts().findProduct(materialNumber = data, storePlaceNumber = storePlaceNumber.value!!)?.let {
+            when (it.type) {
+                ProductType.General, ProductType.NonExciseAlcohol -> {
+                    enabledBtn()
+                    screenNavigator.goBack()
+                    screenNavigator.openGoodsInfoScreen(productInfo = it)
                 }
+                ProductType.ExciseAlcohol -> {
+                    if (it.isSet) {
+                        enabledBtn()
+                        screenNavigator.goBack()
+                        screenNavigator.openSetsInfoScreen(it)
+                    } else {
+                        enabledBtn()
+                        screenNavigator.goBack()
+                        screenNavigator.openExciseAlcoInfoScreen(it)
+                    }
+                }
+            }
+            return
+        }
 
         screenNavigator.openAlertScreen(
                 message = brandOtherMarket.value!!,
@@ -509,23 +489,27 @@ class ExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
                 pageNumber = "98")
     }
 
-    private fun enabledBtn(){
-        if (enabledApplyButton.value!!){
-            if (isEtCountValue.value!!){
-                processExciseAlcoProductService.add(count.value!!.toInt(),
-                        TaskExciseStamp(
-                                materialNumber = productInfo.value!!.materialNumber,
-                                code = scannedStampCode.value!!,
-                                placeCode = productInfo.value!!.placeCode
-                        )
-                )
-            }
+    private fun enabledBtn() {
+        if (enabledApplyButton.value!!) {
+            addPartlyStampIsExcOld()
             processExciseAlcoProductService.apply()
-        }
-        else{
-            if (enabledMissingButton.value!!){
+        } else {
+            if (enabledMissingButton.value!!) {
                 processExciseAlcoProductService.markMissing()
             }
+        }
+    }
+
+    private fun addPartlyStampIsExcOld() {
+        if (isEtCountValue.value!!) {
+            processExciseAlcoProductService.add(count.value!!.toInt(),
+                    TaskExciseStamp(
+                            materialNumber = productInfo.value!!.materialNumber,
+                            code = scannedStampCode.value!!,
+                            placeCode = productInfo.value!!.placeCode
+                    )
+            )
+            isEtCountValue.value = false
         }
     }
 

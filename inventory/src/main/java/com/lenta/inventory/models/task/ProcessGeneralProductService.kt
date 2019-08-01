@@ -18,7 +18,7 @@ class ProcessGeneralProductService@Inject constructor() : IProcessProductService
     private lateinit var productInfo: TaskProductInfo
 
     fun newProcessGeneralProductService(productInfo: TaskProductInfo) : ProcessGeneralProductService? {
-        return if (productInfo.type != ProductType.General || productInfo.type != ProductType.NonExciseAlcohol){
+        return if (productInfo.type == ProductType.General || productInfo.type == ProductType.NonExciseAlcohol){
             this.productInfo = productInfo
             this
         }

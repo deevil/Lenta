@@ -17,7 +17,9 @@ import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.toStringFormatted
 import com.lenta.shared.view.OnPositionClickListener
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.math.BigInteger
 import javax.inject.Inject
 
@@ -111,7 +113,9 @@ class SetsInfoViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKe
             screenNavigator.showProgress(titleProgressScreen.value!!)
             suffix.value = productInfo.value?.uom?.name
             storePlaceNumber.value = productInfo.value!!.placeCode
-            processSetsService.newProcessSetsService(productInfo.value!!)
+            withContext(Dispatchers.IO) {
+                processSetsService.newProcessSetsService(productInfo.value!!)
+            }
             componentsInfo.addAll(processSetsService.getComponentsForSet())
             screenNavigator.hideProgress()
 
