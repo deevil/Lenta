@@ -7,6 +7,10 @@ fun ZmpUtz14V001.getAllowedWobAppVersion(): String? {
     return getParams("WOB_ANDR_ALLOWED_V").firstOrNull()
 }
 
+fun ZmpUtz14V001.getAllowedPleAppVersion(): String? {
+    return getParams("PLE_ANDR_ALLOWED_V").firstOrNull()
+}
+
 fun ZmpUtz14V001.getSelfControlPinCode(): String? {
     return getParams("PLE_INTERNAL_PINCODE").firstOrNull()
 }

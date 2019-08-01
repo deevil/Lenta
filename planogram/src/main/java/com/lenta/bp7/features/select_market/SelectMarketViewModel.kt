@@ -38,6 +38,7 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
     @Inject
     lateinit var persistCheckResult: IPersistCheckResult
 
+
     private val markets: MutableLiveData<List<MarketUi>> = MutableLiveData()
     val marketsNames: MutableLiveData<List<String>> = markets.map { markets ->
         markets?.map { it.number }

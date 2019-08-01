@@ -129,6 +129,12 @@ class DatabaseRepo(hyperHive: HyperHive) : IDatabaseRepo {
             return@withContext settings.getExternalAuditPinCode()
         }
     }
+
+    override suspend fun getAllowedAppVersion(): String? {
+        return withContext(Dispatchers.IO) {
+            return@withContext settings.getAllowedPleAppVersion()
+        }
+    }
 }
 
 interface IDatabaseRepo {
@@ -143,4 +149,5 @@ interface IDatabaseRepo {
     suspend fun getGoodUnitName(unitCode: String?): String?
     suspend fun getGoodInfoByBarCode(barCode: String): GoodInfo?
     suspend fun getGoodInfoBySapCode(sapCode: String): GoodInfo?
+    suspend fun getAllowedAppVersion(): String?
 }
