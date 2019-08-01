@@ -52,6 +52,7 @@ class DiscrepanciesFoundViewModel : CoreViewModel() {
 
     init {
         viewModelScope.launch {
+            dataSaver.setViewModelScopeFunc(::viewModelScope)
             update()
         }
     }

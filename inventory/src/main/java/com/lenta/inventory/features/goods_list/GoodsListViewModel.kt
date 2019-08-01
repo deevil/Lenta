@@ -65,6 +65,12 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
         return taskManager.getInventoryTask()!!.taskDescription.isStrict
     }
 
+    init {
+        viewModelScope.launch {
+            dataSaver.setViewModelScopeFunc(::viewModelScope)
+        }
+
+    }
 
     fun getTitle(): String {
         when (taskManager.getInventoryTask()!!.taskDescription.recountType) {
@@ -144,7 +150,6 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
                     }
                 }
                 unprocessedSelectionHelper.clearPositions()
-
             }
         } else {
             screenNavigator.openConfirmationClean {
@@ -160,7 +165,6 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
                 processedSelectionHelper.clearPositions()
             }
         }
-
         updateUnprocessed()
         updateProcessed()
     }

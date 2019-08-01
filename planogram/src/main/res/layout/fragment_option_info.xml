@@ -68,7 +68,7 @@
                         android:id="@+id/checkBox_facings"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:checked="@={vm.isFacings()}"
+                        android:checked="@={vm.isFacings}"
                         android:clickable="false"
                         android:focusable="false"/>
 
@@ -92,7 +92,7 @@
                         android:id="@+id/checkBox_places"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:checked="@={vm.isPlaces()}"
+                        android:checked="@={vm.isPlaces}"
                         android:clickable="false"
                         android:focusable="false"/>
 
