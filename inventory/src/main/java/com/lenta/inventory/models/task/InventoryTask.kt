@@ -65,7 +65,7 @@ class InventoryTask(val taskDescription: TaskDescription, val taskRepository: IT
     fun getReport(isFinish: Boolean): InventoryReport {
         val taskDescription = taskDescription
         return InventoryReport(
-                tkNumber = taskDescription.stock,
+                tkNumber = taskDescription.tkNumber,
                 ipAdress = taskDescription.lockIP,
                 taskNumber = taskDescription.taskNumber,
                 isFinish = if (isFinish) "X" else "",
@@ -107,7 +107,7 @@ class InventoryTask(val taskDescription: TaskDescription, val taskRepository: IT
     }
 
     private fun getReportsProducts(): List<MaterialNumber> {
-        return (taskRepository.getProducts().getNotProcessedProducts()).map {
+        return (taskRepository.getProducts().getProcessedProducts()).map {
             MaterialNumber(
                     materialNumber = it.materialNumber,
                     storePlaceCode = it.placeCode,

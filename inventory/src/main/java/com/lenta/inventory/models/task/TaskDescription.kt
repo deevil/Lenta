@@ -9,7 +9,7 @@ import javax.inject.Inject
 class TaskDescription (val taskNumber: String,
                        val taskName: String,
                        val taskType: String,
-                       val stock: String,
+                       val tkNumber: String,
                        val isRecount: Boolean,
                        val isStrict: Boolean,
                        val blockType: String,
@@ -48,11 +48,11 @@ class TaskDescription (val taskNumber: String,
     }
 
     companion object {
-        fun from(taskInfo: TasksItem, recountType: RecountType, deadline: String) : TaskDescription {
+        fun from(taskInfo: TasksItem, recountType: RecountType, deadline: String, tkNumber: String) : TaskDescription {
             return TaskDescription(taskNumber = taskInfo.taskNumber,
                     taskName = taskInfo.taskName,
                     taskType = taskInfo.taskType,
-                    stock = taskInfo.stock,
+                    tkNumber = tkNumber,
                     isRecount = taskInfo.isRecount.isNotEmpty(),
                     isStrict = taskInfo.isStrict.isNotEmpty(),
                     blockType = taskInfo.blockType,

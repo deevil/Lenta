@@ -27,7 +27,7 @@ class ProcessExciseAlcoProductServiceTest {
                 taskNumber = "4485",
                 taskName = "12 неделя",
                 taskType = "ВИ",
-                stock = "0001",
+                tkNumber = "0001",
                 isRecount = true,
                 isStrict = true,
                 blockType = "",

@@ -14,7 +14,6 @@ import com.lenta.inventory.platform.navigation.IScreenNavigator
 import com.lenta.inventory.repos.IRepoInMemoryHolder
 import com.lenta.inventory.requests.network.TaskContentNetRequest
 import com.lenta.inventory.requests.network.TaskContentParams
-import com.lenta.inventory.requests.network.TaskContentRestInfo
 import com.lenta.inventory.requests.network.TasksItem
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
@@ -24,7 +23,7 @@ import com.lenta.shared.utilities.extentions.getDeviceIp
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class LoadingTaskContentViewModel: CoreLoadingViewModel() {
+class LoadingTaskContentViewModel : CoreLoadingViewModel() {
     @Inject
     lateinit var screenNavigator: IScreenNavigator
     @Inject
@@ -70,7 +69,12 @@ class LoadingTaskContentViewModel: CoreLoadingViewModel() {
         Logg.d { "taskContents $taskContents" }
         screenNavigator.goBack()
         taskInfo?.let {
-            val taskDescription = TaskDescription.from(it, recountType ?: RecountType.None, taskContents.deadline)
+            val taskDescription = TaskDescription.from(
+                    taskInfo = it,
+                    recountType = recountType ?: RecountType.None,
+                    deadline = taskContents.deadline,
+                    tkNumber = sessionInfo.market!!
+                    )
             taskManager.newInventoryTask(taskDescription)
             taskManager.getInventoryTask()?.updateTaskWithContents(taskContents)
             screenNavigator.openTakenToWorkFragment()
