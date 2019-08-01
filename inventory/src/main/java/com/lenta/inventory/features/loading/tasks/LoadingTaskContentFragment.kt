@@ -3,7 +3,6 @@ package com.lenta.inventory.features.loading.tasks
 import android.os.Bundle
 import android.view.View
 import com.lenta.inventory.R
-import com.lenta.inventory.features.task_list.TaskItemVm
 import com.lenta.inventory.models.RecountType
 import com.lenta.inventory.platform.extentions.getAppComponent
 import com.lenta.inventory.requests.network.TasksItem
@@ -13,11 +12,13 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
 import com.lenta.shared.utilities.extentions.provideViewModel
+import com.lenta.shared.utilities.state.state
 
 class LoadingTaskContentFragment: CoreLoadingFragment() {
 
-    private var taskInfo: TasksItem? = null
-    private var recountType: RecountType? = null
+    private var taskInfo: TasksItem? by state(null)
+
+    private var recountType: RecountType? by state(null)
 
     override fun getPageNumber(): String? {
         return generateScreenNumberFromPostfix("98")

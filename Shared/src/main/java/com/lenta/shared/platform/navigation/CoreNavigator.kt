@@ -28,6 +28,8 @@ import com.lenta.shared.interactor.UseCase
 import com.lenta.shared.models.core.MatrixType
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
+import com.lenta.shared.utilities.extentions.getApplicationName
+import com.lenta.shared.utilities.extentions.openAnotherApp
 import com.lenta.shared.utilities.extentions.restartApp
 import com.lenta.shared.utilities.extentions.setFragmentResultCode
 import com.mobrun.plugin.api.HyperHive
@@ -298,6 +300,29 @@ class CoreNavigator constructor(private val context: Context,
         }
     }
 
+    override fun openAlertAnotherAppInProcess(packageName: String) {
+        runOrPostpone {
+
+            backFragmentResultHelper.setFuncForResult {
+                context.openAnotherApp(packageName)
+                finishApp()
+            }.let { code ->
+                getFragmentStack()?.push(
+                        AlertFragment.create(
+                                message = context.getString(R.string.another_app_need_close, context.getApplicationName(packageName)),
+                                codeConfirmForRight = code,
+                                codeConfirmForExit = code,
+                                pageNumber = "94",
+                                leftButtonDecorationInfo = ButtonDecorationInfo.empty,
+                                rightButtonDecorationInfo = ButtonDecorationInfo.yes
+                        )
+                )
+            }
+
+
+        }
+    }
+
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 
     override fun showUnsavedDataDetected(confirmCallback: () -> Unit) {
@@ -356,6 +381,7 @@ interface ICoreNavigator {
     fun openNeedUpdateScreen()
     fun openNotImplementedScreenAlert(screenName: String)
     fun closeAllScreen()
+    fun openAlertAnotherAppInProcess(packageName: String)
     fun showUnsavedDataDetected(confirmCallback: () -> Unit)
 }
 

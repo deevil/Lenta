@@ -21,7 +21,6 @@ import com.lenta.shared.platform.activity.INumberScreenGenerator
 import com.lenta.shared.platform.activity.OnBackPresserListener
 import com.lenta.shared.platform.battery_state.BatteryStateMonitor
 import com.lenta.shared.platform.fragment.CoreFragment
-import com.lenta.shared.platform.high_priority.PriorityAppManager
 import com.lenta.shared.platform.navigation.FragmentStack
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
@@ -33,13 +32,11 @@ import com.lenta.shared.scan.OnScanResultListener
 import com.lenta.shared.scan.honeywell.HoneywellScanHelper
 import com.lenta.shared.scan.newland.NewLandScanHelper
 import com.lenta.shared.utilities.Logg
-import com.lenta.shared.utilities.extentions.hideKeyboard
-import com.lenta.shared.utilities.extentions.implementationOf
 import javax.inject.Inject
 import com.lenta.shared.platform.navigation.ICoreNavigator
 import com.lenta.shared.scan.zebra.ZebraScanHelper
+import com.lenta.shared.utilities.extentions.*
 import com.lenta.shared.utilities.extentions.hhive.ANALYTICS_HELPER
-import com.lenta.shared.utilities.extentions.isWriteExternalStoragePermissionGranted
 
 
 abstract class CoreMainActivity : CoreActivity<ActivityMainBinding>(), ToolbarButtonsClickListener, INumberScreenGenerator {
@@ -52,8 +49,7 @@ abstract class CoreMainActivity : CoreActivity<ActivityMainBinding>(), ToolbarBu
     lateinit var foregroundActivityProvider: ForegroundActivityProvider
     @Inject
     lateinit var scanHelper: IScanHelper
-    @Inject
-    lateinit var priorityAppManager: PriorityAppManager
+
     @Inject
     lateinit var screenNavigator: ICoreNavigator
     @Inject
@@ -140,7 +136,6 @@ abstract class CoreMainActivity : CoreActivity<ActivityMainBinding>(), ToolbarBu
         honeywellScanHelper.startListen(this)
         newLandScanHelper.startListen(this)
         zebraScanHelper.startListen(this)
-        priorityAppManager.setLowPriority()
         vm.onResume()
     }
 
@@ -157,7 +152,6 @@ abstract class CoreMainActivity : CoreActivity<ActivityMainBinding>(), ToolbarBu
         honeywellScanHelper.stopListen(this)
         newLandScanHelper.stopListen(this)
         zebraScanHelper.stopListen(this)
-        priorityAppManager.setHighPriority()
         vm.onPause()
     }
 

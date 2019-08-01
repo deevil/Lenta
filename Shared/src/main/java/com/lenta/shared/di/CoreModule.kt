@@ -1,10 +1,8 @@
 package com.lenta.shared.di
 
-import android.Manifest
 import android.app.Application
 import android.content.Context
 import android.content.SharedPreferences
-import android.os.Environment
 import android.os.Handler
 import android.preference.PreferenceManager
 import androidx.room.Room
@@ -23,11 +21,13 @@ import com.lenta.shared.analytics.db.dao.LogDao
 import com.lenta.shared.analytics.db.RoomAppDatabase
 import com.lenta.shared.exception.CoreFailureInterpreter
 import com.lenta.shared.exception.IFailureInterpreter
+import com.lenta.shared.only_one_app.LockManager
 import com.lenta.shared.platform.network_state.INetworkStateMonitor
 import com.lenta.shared.platform.network_state.NetworkStateMonitor
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
 import com.lenta.shared.platform.battery_state.BatteryStateMonitor
 import com.lenta.shared.platform.battery_state.IBatteryStateMonitor
+import com.lenta.shared.platform.constants.Constants.DB_PATH
 import com.lenta.shared.platform.navigation.BackFragmentResultHelper
 import com.lenta.shared.platform.navigation.CoreNavigator
 import com.lenta.shared.platform.navigation.ICoreNavigator
@@ -58,7 +58,6 @@ import javax.inject.Singleton
 @Module
 class CoreModule(val application: Application, val defaultConnectionSettings: DefaultConnectionSettings) {
 
-    val dbPath = "${Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS).absolutePath}/FMP/db"
 
     @Provides
     fun provideAppContext() = application.applicationContext!!
@@ -78,15 +77,15 @@ class CoreModule(val application: Application, val defaultConnectionSettings: De
     @Provides
     @Singleton
     internal fun provideHyperHiveState(appContext: Context, appSettings: IAppSettings): HyperHiveState {
-        prepareFolder(dbPath)
+        prepareFolder(DB_PATH)
         val fmpDbName = "resources_${appSettings.getCurrentEnvironment()}_${appSettings.getCurrentProject()}.sqlite"
 
-        Logg.d { "dbPath: $dbPath" }
+        Logg.d { "DB_PATH: $DB_PATH" }
         return HyperHiveState(appContext)
                 .setHostWithSchema(appSettings.getCurrentServerAddress())
                 .setApiVersion(VersionAPI.V_1)
                 .setEnvironmentSlug(appSettings.getCurrentEnvironment())
-                .setDbPathDefault("$dbPath/$fmpDbName")
+                .setDbPathDefault("$DB_PATH/$fmpDbName")
                 .setProjectSlug(appSettings.getCurrentProject())
                 .setVersionProject("app")
                 .setHandler(Handler())
@@ -212,7 +211,7 @@ class CoreModule(val application: Application, val defaultConnectionSettings: De
     @Provides
     @Singleton
     fun provideRoomDB(context: Context): RoomAppDatabase {
-        val logsDbPath = "$dbPath/logs/${context.packageName}"
+        val logsDbPath = "$DB_PATH/logs/${context.packageName}"
 
         prepareFolder(logsDbPath)
 
@@ -253,6 +252,12 @@ class CoreModule(val application: Application, val defaultConnectionSettings: De
     @Singleton
     fun provideAnalyticsHelper(iAnalytics: IAnalytics, context: Context): AnalyticsHelper {
         return AnalyticsHelper(iAnalytics, context)
+    }
+
+    @Provides
+    @Singleton
+    fun provideLockManager(context: Context): LockManager {
+        return LockManager(context)
     }
 
     @Provides

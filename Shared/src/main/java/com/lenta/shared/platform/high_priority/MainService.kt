@@ -10,8 +10,18 @@ import android.os.IBinder
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import com.lenta.shared.R
+import com.lenta.shared.di.CoreInjectHelper
+import com.lenta.shared.only_one_app.LockManager
+import javax.inject.Inject
 
 class MainService : Service() {
+    @Inject
+    lateinit var lockManager: LockManager
+
+    override fun onCreate() {
+        super.onCreate()
+        CoreInjectHelper.provideCoreComponent(this.applicationContext).inject(this)
+    }
 
 
     override fun onBind(intent: Intent): IBinder? {
@@ -23,11 +33,12 @@ class MainService : Service() {
         val action = intent?.action
 
         if (ACTION_HIGH_PRIORITY == action) {
-
             showNotification()
+            lockManager.lock()
 
         } else if (ACTION_LOW_PRIORITY == action) {
             stopForeground(true)
+            lockManager.unlock()
         }
 
 

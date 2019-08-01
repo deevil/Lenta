@@ -1,6 +1,10 @@
 package com.lenta.shared.platform.constants
 
+import android.os.Environment
+
 object Constants {
+
+    val DB_PATH = "${Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS).absolutePath}/FMP/db"
 
     //---------Time formats---------//
     const val TIME_FORMAT_HHmm = "HH:mm"
