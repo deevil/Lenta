@@ -118,7 +118,7 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
                 }
             }
         } else {
-            navigator.openCheckTypeScreen()
+            navigator.openSelectCheckTypeScreen()
         }
     }
 

@@ -160,6 +160,7 @@ class SegmentListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     }
 
     fun onClickBack() {
-        navigator.openOptionScreen()
+        persistCheckResult.saveCheckResult(checkData)
+        navigator.openSelectCheckTypeScreen()
     }
 }

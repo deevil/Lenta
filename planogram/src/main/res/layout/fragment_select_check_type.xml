@@ -2,13 +2,13 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
-        tools:context=".features.check_type.CheckTypeFragment">
+        tools:context=".features.select_check_type.SelectCheckTypeFragment">
 
     <data>
 
         <variable
             name="vm"
-            type="com.lenta.bp7.features.check_type.CheckTypeViewModel"/>
+            type="com.lenta.bp7.features.select_check_type.SelectCheckTypeViewModel"/>
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
