@@ -310,15 +310,6 @@ class ScreenNavigator(
                     rightButtonDecorationInfo = ButtonDecorationInfo.goOver))
         }
     }
-
-    override fun showUnsavedDataDetected(confirmCallback: () -> Unit) {
-        runOrPostpone {
-            getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.unsaved_data_detected),
-                    pageNumber = "80",
-                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(confirmCallback),
-                    rightButtonDecorationInfo = ButtonDecorationInfo.confirm))
-        }
-    }
 }
 
 interface IScreenNavigator : ICoreNavigator {
@@ -356,6 +347,5 @@ interface IScreenNavigator : ICoreNavigator {
     fun showLuaSystemUnavailable(exitCallback: () -> Unit, nextCallback: () -> Unit)
     fun showDoYouReallyWantToLeave(nextCallback: () -> Unit)
     fun showUnsentDataDetected(exitToAppCallback: () -> Unit, goOverCallback: () -> Unit)
-    fun showUnsavedDataDetected(confirmCallback: () -> Unit)
 
 }

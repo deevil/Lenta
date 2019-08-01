@@ -1,6 +1,5 @@
 package com.lenta.shared.features.tech_login
 
-import android.os.Bundle
 import android.view.View
 import com.lenta.shared.R
 import com.lenta.shared.databinding.FragmentTechLoginBinding
@@ -16,8 +15,6 @@ import com.lenta.shared.utilities.extentions.provideViewModel
 class TechLoginFragment : CoreFragment<FragmentTechLoginBinding, TechLoginViewModel>(), ToolbarButtonsClickListener {
 
     override fun getLayoutId(): Int = R.layout.fragment_tech_login
-
-
 
     override fun onToolbarButtonClick(view: View) {
         when (view.id) {
@@ -35,7 +32,6 @@ class TechLoginFragment : CoreFragment<FragmentTechLoginBinding, TechLoginViewMo
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.apply)
 
         connectLiveData(vm.applyButtonEnabled, bottomToolbarUiModel.uiModelButton5.enabled)
-
     }
 
     override fun getPageNumber(): String =  generateScreenNumber()
@@ -46,6 +42,5 @@ class TechLoginFragment : CoreFragment<FragmentTechLoginBinding, TechLoginViewMo
             return it
         }
     }
-
 
 }

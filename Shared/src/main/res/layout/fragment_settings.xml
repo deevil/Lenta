@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:tools="http://schemas.android.com/tools"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+
         <variable
             name="vm"
             type="com.lenta.shared.features.settings.SettingsViewModel"/>
@@ -26,7 +27,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            tools:ignore="ContentDescription" />
+            tools:ignore="ContentDescription"/>
 
         <Button
             android:id="@+id/btn_select_printer"
@@ -35,14 +36,15 @@
             android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp"
             android:layout_marginBottom="16dp"
-            android:onClick="@{(view) -> vm.onClickPrinter()}"
-            android:text="@string/printer_change"
             android:enabled="@{vm.isMainMenu}"
             android:focusable="@{vm.isMainMenu}"
+            android:onClick="@{(view) -> vm.onClickPrinter()}"
+            android:text="@string/printer_change"
             android:textAllCaps="false"
+            android:visibility="@{vm.selectPrinterButtonVisibility}"
             app:layout_constraintBottom_toTopOf="@+id/btn_select_oper_mode"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"/>
 
         <Button
             android:id="@+id/btn_select_oper_mode"
@@ -51,14 +53,15 @@
             android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp"
             android:layout_marginBottom="16dp"
-            android:onClick="@{(view) -> vm.onClickWork()}"
-            android:text="@string/select_oper_mode"
             android:enabled="@{!vm.isMainMenu}"
             android:focusable="@{!vm.isMainMenu}"
+            android:onClick="@{(view) -> vm.onClickWork()}"
+            android:text="@string/select_oper_mode"
+            android:visibility="@{vm.selectOperModeButtonVisibility}"
             app:layout_constraintBottom_toTopOf="@+id/btn_tach_login"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.6"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"/>
 
         <Button
             android:id="@+id/btn_tach_login"
@@ -67,14 +70,14 @@
             android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp"
             android:layout_marginBottom="16dp"
-            android:onClick="@{(view) -> vm.onClickTechLog()}"
-            android:text="@string/tech_login"
             android:enabled="@{!vm.isMainMenu}"
             android:focusable="@{!vm.isMainMenu}"
+            android:onClick="@{(view) -> vm.onClickTechLog()}"
+            android:text="@string/tech_login"
             android:textAllCaps="false"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

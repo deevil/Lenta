@@ -2,6 +2,7 @@ package com.lenta.bp7.features.auth
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.lenta.bp7.data.model.CheckData
 import com.lenta.bp7.platform.navigation.IScreenNavigator
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
@@ -27,7 +28,17 @@ class AuthViewModel : CoreAuthViewModel() {
     lateinit var sessionInfo: ISessionInfo
     @Inject
     lateinit var appSettings: IAppSettings
+    @Inject
+    lateinit var checkData: CheckData
 
+    val packageName: MutableLiveData<String> = MutableLiveData()
+
+    init {
+        viewModelScope.launch {
+            sessionInfo.existUnsavedData = checkData.isExistUnsentData()
+            sessionInfo.packageName = packageName.value
+        }
+    }
 
     override val enterEnabled: MutableLiveData<Boolean> by lazy {
         login.combineLatest(password).map { isValidLoginFields(login = it?.first, password = it?.second) }
