@@ -1,6 +1,5 @@
 package com.lenta.inventory.models.task
 
-import com.lenta.inventory.models.repositories.ITaskRepository
 import com.lenta.shared.di.AppScope
 import com.lenta.shared.models.core.ProductType
 import javax.inject.Inject
@@ -10,10 +9,6 @@ class ProcessGeneralProductService@Inject constructor() : IProcessProductService
 
     @Inject
     lateinit var processServiceManager: IInventoryTaskManager
-
-    private val taskRepository: ITaskRepository by lazy {
-        processServiceManager.getInventoryTask()!!.taskRepository
-    }
 
     private lateinit var productInfo: TaskProductInfo
 
@@ -32,17 +27,17 @@ class ProcessGeneralProductService@Inject constructor() : IProcessProductService
     override fun setFactCount(count: Double){
         if (count >= 0.0) {
             if (count > 0.0) {
-                taskRepository.getProducts().findProduct(productInfo)?.factCount = count
-                taskRepository.getProducts().findProduct(productInfo)?.isPositionCalc = true
+                processServiceManager.getInventoryTask()!!.taskRepository.getProducts().findProduct(productInfo)?.factCount = count
+                processServiceManager.getInventoryTask()!!.taskRepository.getProducts().findProduct(productInfo)?.isPositionCalc = true
             } else {
-                taskRepository.getProducts().findProduct(productInfo)?.factCount = 0.0
-                taskRepository.getProducts().findProduct(productInfo)?.isPositionCalc = false
+                processServiceManager.getInventoryTask()!!.taskRepository.getProducts().findProduct(productInfo)?.factCount = 0.0
+                processServiceManager.getInventoryTask()!!.taskRepository.getProducts().findProduct(productInfo)?.isPositionCalc = false
             }
         }
     }
 
     override fun markMissing(){
-        taskRepository.getProducts().findProduct(productInfo)?.factCount = 0.0
-        taskRepository.getProducts().findProduct(productInfo)?.isPositionCalc = true
+        processServiceManager.getInventoryTask()!!.taskRepository.getProducts().findProduct(productInfo)?.factCount = 0.0
+        processServiceManager.getInventoryTask()!!.taskRepository.getProducts().findProduct(productInfo)?.isPositionCalc = true
     }
 }
