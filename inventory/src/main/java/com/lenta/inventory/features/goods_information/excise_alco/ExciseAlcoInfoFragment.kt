@@ -50,6 +50,7 @@ class ExciseAlcoInfoFragment : CoreFragment<FragmentExciseAlcoInfoBinding, Excis
             vm.brandOtherMarket.value = getString(R.string.brand_other_market)
             vm.iconRes.value = R.drawable.ic_info_pink
             vm.textColor.value = ContextCompat.getColor(context!!, com.lenta.shared.R.color.color_text_dialogWarning)
+            vm.msgWrongProducType.value = getString(R.string.wrong_product_type)
             return vm
         }
     }

@@ -35,17 +35,19 @@ class GoodsDetailsStorageViewModel : CoreViewModel() {
     val countedNotProssed: MutableLiveData<List<GoodsDetailsStorageItem>> = MutableLiveData()
     val categoriesSelectionsHelper = SelectionItemsHelper()
 
-    private val processExciseAlcoProductService: ProcessExciseAlcoProductService by lazy {
-        processServiceManager.getInventoryTask()!!.processExciseAlcoProduct(productInfo.value!!)!!
-    }
+    @Inject
+    lateinit var processExciseAlcoProductService: ProcessExciseAlcoProductService
 
     val deleteButtonEnabled: MutableLiveData<Boolean> = categoriesSelectionsHelper.selectedPositions.map {
         it?.isNotEmpty() ?: false
     }
 
+    val deleteButtonVisibility: MutableLiveData<Boolean> = selectedPage.map {
+        it == 0 && !isGeneralProduct.value!! && !productInfo.value!!.isSet
+    }
+
     init {
         viewModelScope.launch {
-            //searchProductDelegate.init(viewModelScope = this@GoodsListViewModel::viewModelScope)
             updateGoodsInfo()
         }
     }
@@ -61,24 +63,10 @@ class GoodsDetailsStorageViewModel : CoreViewModel() {
     }
 
     private fun updateCategories() {
-        val partlyCount = processServiceManager.
-                                        getInventoryTask()!!.
-                                        taskRepository.
-                                        getExciseStamps().
-                                        findExciseStampsOfProduct(productInfo.value!!).
-                                        filter {
-                                            ExciseStamp.getEgaisVersion(it.code) == EgaisStampVersion.V2.version
-                                        }.size
-        val vintageCount = processServiceManager.
-                                        getInventoryTask()!!.
-                                        taskRepository.
-                                        getExciseStamps().
-                                        findExciseStampsOfProduct(productInfo.value!!).
-                                        filter {
-                                            ExciseStamp.getEgaisVersion(it.code) == EgaisStampVersion.V3.version
-                                        }.size
 
-        Logg.d { "vintageCount ${vintageCount}" }
+        val partlyCount = processExciseAlcoProductService.getCountPartlyStamps()
+
+        val vintageCount = processExciseAlcoProductService.getCountVintageStamps()
 
         val goodsDetailsCategoriesItem: MutableList<GoodsDetailsCategoriesItem> = ArrayList()
 
@@ -115,18 +103,19 @@ class GoodsDetailsStorageViewModel : CoreViewModel() {
         countedNotProssed.postValue(
                 processServiceManager.
                         getInventoryTask()!!.
-                        taskRepository.
-                        getProducts().
+                        taskRepository.getProducts().
                         getNotProcessedProducts().
-                        filter {it.materialNumber == productInfo.value!!.materialNumber}.
+                        filter {
+                            it.materialNumber == productInfo.value!!.materialNumber
+                        }.
                         mapIndexed { index, taskProductInfo ->
                             GoodsDetailsStorageItem(
-                                    number = index + 1,
-                                    name = taskProductInfo.placeCode,
-                                    quantity = taskProductInfo.factCount.toStringFormatted(),
-                                    even = index % 2 == 0
-                            )
-                        }.reversed()
+                                        number = index + 1,
+                                        name = taskProductInfo.placeCode,
+                                        quantity = taskProductInfo.factCount.toStringFormatted(),
+                                        even = index % 2 == 0
+                    )
+                }.reversed()
         )
     }
 
@@ -134,18 +123,19 @@ class GoodsDetailsStorageViewModel : CoreViewModel() {
         countedProssed.postValue(
                 processServiceManager.
                         getInventoryTask()!!.
-                        taskRepository.
-                        getProducts().
+                        taskRepository.getProducts().
                         getProcessedProducts().
-                        filter {it.materialNumber == productInfo.value!!.materialNumber}.
+                        filter {
+                            it.materialNumber == productInfo.value!!.materialNumber
+                        }.
                         mapIndexed { index, taskProductInfo ->
                             GoodsDetailsStorageItem(
-                                    number = index + 1,
-                                    name = taskProductInfo.placeCode,
-                                    quantity = taskProductInfo.factCount.toStringFormatted(),
-                                    even = index % 2 == 0
-                            )
-                        }.reversed()
+                                        number = index + 1,
+                                        name = taskProductInfo.placeCode,
+                                        quantity = taskProductInfo.factCount.toStringFormatted(),
+                                        even = index % 2 == 0
+                    )
+                }.reversed()
         )
     }
 
@@ -154,28 +144,11 @@ class GoodsDetailsStorageViewModel : CoreViewModel() {
     }
 
     fun onClickDelete() {
-        categoriesSelectionsHelper.selectedPositions.value?.map {position ->
-            countedCategories.value!![position].egaisVersion
-        }?.let {
-            it.map {egaisStampVersion ->
-                processServiceManager.
-                        getInventoryTask()!!.
-                        taskRepository.
-                        getExciseStamps().
-                        findExciseStampsOfProduct(productInfo.value!!).
-                        filter {exciseStamp ->
-                            (egaisStampVersion == EgaisStampVersion.V2 && ExciseStamp.getEgaisVersion(exciseStamp.code) == EgaisStampVersion.V2.version) ||
-                                    (egaisStampVersion == EgaisStampVersion.V3 && ExciseStamp.getEgaisVersion(exciseStamp.code) == EgaisStampVersion.V3.version)
-                        }?.
-                        let {listTaskExciseStamp ->
-                            processExciseAlcoProductService.setFactCount(processExciseAlcoProductService.getFactCount() - listTaskExciseStamp.size)
-
-                            processServiceManager.
-                                    getInventoryTask()!!.
-                                    taskRepository.
-                                    getExciseStamps().
-                                    deleteExciseStamps(listTaskExciseStamp)
-                        }
+        categoriesSelectionsHelper.selectedPositions.value?.map { position ->
+            if (countedCategories.value!![position].egaisVersion == EgaisStampVersion.V2) {
+                processExciseAlcoProductService.delAllPartlyStamps()
+            } else {
+                processExciseAlcoProductService.delAllVintageStamps()
             }
         }
         updateGoodsInfo()
