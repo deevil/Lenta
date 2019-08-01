@@ -72,6 +72,18 @@ class GoodsDetailsStorageFragment : CoreFragment<FragmentGoodsDetailsStorageBind
 
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
 
+        viewLifecycleOwner.apply {
+            vm.selectedPage.observe(viewLifecycleOwner, Observer { pos ->
+                if (pos == 0 && !vm.isGeneralProduct.value!! && !vm.productInfo.value!!.isSet) {
+                    bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.delete, enabled = false)
+                    connectLiveData(vm.deleteButtonEnabled, bottomToolbarUiModel.uiModelButton3.enabled)
+                }
+                else {
+                    bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.delete, visible = false)
+                }
+            })
+        }
+
     }
 
     override fun onPageSelected(position: Int) {
@@ -90,20 +102,6 @@ class GoodsDetailsStorageFragment : CoreFragment<FragmentGoodsDetailsStorageBind
             it.viewPagerSettings = this
             it.pageSelectionListener = this
         }
-
-        viewLifecycleOwner.apply {
-            val bottomToolbarUiModel = getBottomToolBarUIModel()!!
-            vm.selectedPage.observe(viewLifecycleOwner, Observer { pos ->
-                if (pos == 0 && !vm.isGeneralProduct.value!! && !vm.productInfo.value!!.isSet) {
-                    bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.delete, enabled = false)
-                    connectLiveData(vm.deleteButtonEnabled, bottomToolbarUiModel.uiModelButton3.enabled)
-                }
-                else {
-                    bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.delete, visible = false)
-                }
-            })
-        }
-
     }
 
     override fun getPagerItemView(container: ViewGroup, position: Int): View {

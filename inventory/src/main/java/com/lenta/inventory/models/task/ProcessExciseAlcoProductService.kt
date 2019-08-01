@@ -3,36 +3,62 @@ package com.lenta.inventory.models.task
 import com.lenta.inventory.features.goods_information.excise_alco.GoodsInfoCountExciseStamps
 import com.lenta.inventory.features.goods_information.excise_alco.GoodsInfoCountType
 import com.lenta.inventory.models.repositories.ITaskRepository
+import com.lenta.shared.di.AppScope
 import com.lenta.shared.models.core.EgaisStampVersion
 import com.lenta.shared.models.core.ExciseStamp
+import com.lenta.shared.models.core.ProductType
+import com.lenta.shared.utilities.Logg
+import javax.inject.Inject
 
-class ProcessExciseAlcoProductService(private val taskDescription: TaskDescription,
-                                      private val taskRepository: ITaskRepository,
-                                      private val productInfo: TaskProductInfo) : IProcessProductService {
+@AppScope
+class ProcessExciseAlcoProductService
+@Inject constructor() : IProcessProductService {
 
-    private var currentProductInfo: TaskProductInfo = productInfo
+    @Inject
+    lateinit var processServiceManager: IInventoryTaskManager
+
+    private val taskDescription: TaskDescription by lazy {
+        processServiceManager.getInventoryTask()!!.taskDescription
+    }
+
+    private val taskRepository: ITaskRepository by lazy {
+        processServiceManager.getInventoryTask()!!.taskRepository
+    }
+
+    private var currentProductInfo: TaskProductInfo? = null
     private val currentExciseStamps: ArrayList<TaskExciseStamp> = ArrayList()
     private val currentCountExciseStamps: ArrayList<GoodsInfoCountExciseStamps> = ArrayList()
 
-    override fun getFactCount(): Double {
-        return  currentProductInfo.factCount
+    fun newProcessExciseAlcoProductService(productInfo: TaskProductInfo) : ProcessExciseAlcoProductService? {
+        return if (productInfo.type == ProductType.ExciseAlcohol){
+            currentProductInfo = productInfo
+            currentExciseStamps.clear()
+            currentCountExciseStamps.clear()
+            this
+        }
+        else null
+    }
+
+    override fun getFactCount(): Double? {
+        return currentProductInfo?.factCount
     }
 
     override fun setFactCount(count: Double){
         if (count >= 0.0) {
             if (count > 0.0) {
-                taskRepository.getProducts().findProduct(productInfo)?.factCount = count
-                taskRepository.getProducts().findProduct(productInfo)?.isPositionCalc = true
+                taskRepository.getProducts().findProduct(currentProductInfo!!)?.factCount = count
+                taskRepository.getProducts().findProduct(currentProductInfo!!)?.isPositionCalc = true
             } else {
-                taskRepository.getProducts().findProduct(productInfo)?.factCount = 0.0
-                taskRepository.getProducts().findProduct(productInfo)?.isPositionCalc = false
+                taskRepository.getProducts().findProduct(currentProductInfo!!)?.factCount = 0.0
+                taskRepository.getProducts().findProduct(currentProductInfo!!)?.isPositionCalc = false
             }
         }
     }
 
     override fun markMissing(){
-        taskRepository.getProducts().findProduct(productInfo)?.factCount = 0.0
-        taskRepository.getProducts().findProduct(productInfo)?.isPositionCalc = true
+        taskRepository.getProducts().findProduct(currentProductInfo!!)?.factCount = 0.0
+        taskRepository.getProducts().findProduct(currentProductInfo!!)?.isPositionCalc = true
+        discard()
     }
 
     //for stamps 150
@@ -43,9 +69,8 @@ class ProcessExciseAlcoProductService(private val taskDescription: TaskDescripti
                     countType = GoodsInfoCountType.VINTAGE.number
                 )
         )
-        currentProductInfo.factCount += 1
+        currentProductInfo!!.factCount += 1
         currentExciseStamps.add(exciseStamp)
-        apply()
     }
 
     //for box
@@ -56,9 +81,8 @@ class ProcessExciseAlcoProductService(private val taskDescription: TaskDescripti
                         countType = GoodsInfoCountType.VINTAGE.number
                 )
         )
-        currentProductInfo.factCount += exciseStamps.size
+        currentProductInfo!!.factCount += exciseStamps.size
         currentExciseStamps.addAll(exciseStamps)
-        apply()
     }
 
     //for stamps 68
@@ -69,18 +93,14 @@ class ProcessExciseAlcoProductService(private val taskDescription: TaskDescripti
                         countType = GoodsInfoCountType.PARTLY.number
                 )
         )
-        currentProductInfo.factCount += count
+        currentProductInfo!!.factCount += count
         currentExciseStamps.add(exciseStamp)
-        apply()
     }
 
     fun rollback() : GoodsInfoCountExciseStamps{
-        currentProductInfo.factCount -= currentCountExciseStamps.last().countLastExciseStamp
-        taskRepository.getProducts().findProduct(productInfo)!!.factCount = currentProductInfo.factCount
-        for (i in 1..currentCountExciseStamps.last().countLastExciseStamp) {
-            taskRepository.getExciseStamps().deleteExciseStamp(currentExciseStamps[currentExciseStamps.lastIndex])
-            currentExciseStamps.removeAt(currentExciseStamps.lastIndex)
-        }
+        currentProductInfo!!.factCount -= currentCountExciseStamps.last().countLastExciseStamp
+        currentProductInfo!!.isPositionCalc = currentProductInfo!!.factCount > 0.0
+        currentExciseStamps.removeAt(currentExciseStamps.lastIndex)
         currentCountExciseStamps.removeAt(currentCountExciseStamps.lastIndex)
         return GoodsInfoCountExciseStamps(
                 countLastExciseStamp = currentCountExciseStamps.let {countExciseStampsList ->
@@ -113,74 +133,14 @@ class ProcessExciseAlcoProductService(private val taskDescription: TaskDescripti
     }
 
     fun apply(){
-        taskRepository.getProducts().findProduct(productInfo)!!.factCount = currentProductInfo.factCount
+        taskRepository.getProducts().findProduct(currentProductInfo!!)!!.factCount = currentProductInfo!!.factCount
         taskRepository.getExciseStamps().addExciseStamps(currentExciseStamps)
-        taskRepository.getProducts().findProduct(productInfo)!!.isPositionCalc = taskRepository.getProducts().findProduct(productInfo)!!.factCount > 0.0
+        taskRepository.getProducts().findProduct(currentProductInfo!!)!!.isPositionCalc = taskRepository.getProducts().findProduct(currentProductInfo!!)!!.factCount > 0.0
+        discard()
     }
 
     fun isLinkingOldStamps(): Boolean{
         return taskDescription.linkOldStamp
-    }
-
-    fun updateCurrentData(){
-        val delExciseStamps: ArrayList<TaskExciseStamp> = ArrayList()
-        delExciseStamps.clear()
-        val delCountExciseStamps: ArrayList<GoodsInfoCountExciseStamps> = ArrayList()
-        delCountExciseStamps.clear()
-
-        currentExciseStamps.forEach { taskExciseStamp ->
-            taskRepository.
-                    getExciseStamps().
-                    findExciseStampsOfProduct(currentProductInfo).
-                    filter {
-                        taskExciseStamp.code == it.code
-                    }.isNullOrEmpty().
-                    let {
-                        if (it) {
-                            delExciseStamps.add(taskExciseStamp)
-                        }
-                    }
-        }
-
-        currentExciseStamps.removeAll(delExciseStamps)
-        delExciseStamps.clear()
-        currentProductInfo.factCount = taskRepository.getProducts().findProduct(currentProductInfo)!!.factCount
-
-        taskRepository.
-                getExciseStamps().
-                findExciseStampsOfProduct(currentProductInfo).
-                filter {
-                    ExciseStamp.getEgaisVersion(it.code) == EgaisStampVersion.V2.version
-                }.isNullOrEmpty().
-                let {
-                    if (it) {
-                        currentCountExciseStamps.filter {countExciseStamps ->
-                            countExciseStamps.countType == GoodsInfoCountType.PARTLY.number
-                        }.let {countExciseStampsList ->
-                            delCountExciseStamps.addAll(countExciseStampsList)
-                        }
-                    }
-                }
-        currentCountExciseStamps.removeAll(delCountExciseStamps)
-        delCountExciseStamps.clear()
-
-        taskRepository.
-                getExciseStamps().
-                findExciseStampsOfProduct(currentProductInfo).
-                filter {
-                    ExciseStamp.getEgaisVersion(it.code) == EgaisStampVersion.V3.version
-                }.isNullOrEmpty().
-                let {
-                    if (it) {
-                        currentCountExciseStamps.filter {countExciseStamps ->
-                            countExciseStamps.countType == GoodsInfoCountType.VINTAGE.number
-                        }.let {countExciseStampsList ->
-                            delCountExciseStamps.addAll(countExciseStampsList)
-                        }
-                    }
-                }
-        currentCountExciseStamps.removeAll(delCountExciseStamps)
-        delCountExciseStamps.clear()
     }
 
     fun getLastCountExciseStamp() : GoodsInfoCountExciseStamps{
@@ -199,8 +159,122 @@ class ProcessExciseAlcoProductService(private val taskDescription: TaskDescripti
     }
 
     fun discard(){
-        taskRepository.getProducts().findProduct(productInfo)!!.factCount -= currentProductInfo.factCount
-        taskRepository.getExciseStamps().deleteExciseStamps(currentExciseStamps)
-        taskRepository.getProducts().findProduct(productInfo)!!.isPositionCalc = taskRepository.getProducts().findProduct(productInfo)!!.factCount > 0.0
+        currentProductInfo = null
+        currentExciseStamps.clear()
+        currentCountExciseStamps.clear()
+    }
+
+    fun getCountPartlyStamps() : Int{
+        var countPartlyStamps = 0
+        currentCountExciseStamps.map {
+            if (it.countType == GoodsInfoCountType.PARTLY.number){
+                countPartlyStamps += it.countLastExciseStamp
+            }
+        }
+
+        countPartlyStamps +=
+                (taskRepository.
+                        getProducts().
+                        findProduct(currentProductInfo!!)!!.
+                        factCount.toInt() -
+                                taskRepository.
+                                    getExciseStamps().
+                                    findExciseStampsOfProduct(currentProductInfo!!).
+                                    filter {
+                                        ExciseStamp.getEgaisVersion(it.code) == EgaisStampVersion.V3.version
+                                    }.size)
+
+        return countPartlyStamps
+    }
+
+    fun getCountVintageStamps() : Int{
+        var countVintageStamps = 0
+        currentCountExciseStamps.map {
+            if (it.countType == GoodsInfoCountType.VINTAGE.number){
+                countVintageStamps += it.countLastExciseStamp
+            }
+        }
+
+        countVintageStamps += taskRepository.
+                                    getExciseStamps().
+                                    findExciseStampsOfProduct(currentProductInfo!!).
+                                    filter {
+                                        ExciseStamp.getEgaisVersion(it.code) == EgaisStampVersion.V3.version
+                                    }.size
+
+        return countVintageStamps
+    }
+
+    fun delAllPartlyStamps(){
+        currentCountExciseStamps.filter { goodsInfoCountExciseStamps ->
+            goodsInfoCountExciseStamps.countType == GoodsInfoCountType.PARTLY.number
+        }.let {
+            currentCountExciseStamps.removeAll(it)
+        }
+
+        currentExciseStamps.filter { taskExciseStamp ->
+            ExciseStamp.getEgaisVersion(taskExciseStamp.code) == EgaisStampVersion.V2.version
+        }.let {
+            currentExciseStamps.removeAll(it)
+        }
+
+        taskRepository.
+                getExciseStamps().
+                findExciseStampsOfProduct(currentProductInfo!!).
+                map {
+                    if (ExciseStamp.getEgaisVersion(it.code) == EgaisStampVersion.V2.version){
+                        taskRepository.getExciseStamps().deleteExciseStamp(it)
+                    }
+                }
+
+        val countPartlyStamps =
+                (taskRepository.
+                        getProducts().
+                        findProduct(currentProductInfo!!)!!.
+                        factCount.toInt()
+                        -
+                        taskRepository.
+                                getExciseStamps().
+                                findExciseStampsOfProduct(currentProductInfo!!).
+                                filter {
+                                    ExciseStamp.getEgaisVersion(it.code) == EgaisStampVersion.V3.version
+                                }.size)
+        setFactCount(taskRepository.getProducts().findProduct(currentProductInfo!!)!!.factCount - countPartlyStamps)
+
+        currentProductInfo!!.factCount = (getCountPartlyStamps() + getCountVintageStamps()).toDouble()
+    }
+
+    fun delAllVintageStamps(){
+        currentCountExciseStamps.filter { goodsInfoCountExciseStamps ->
+            goodsInfoCountExciseStamps.countType == GoodsInfoCountType.VINTAGE.number
+        }.let {
+            currentCountExciseStamps.removeAll(it)
+        }
+
+        currentExciseStamps.filter { taskExciseStamp ->
+            ExciseStamp.getEgaisVersion(taskExciseStamp.code) == EgaisStampVersion.V3.version
+        }.let {
+            currentExciseStamps.removeAll(it)
+        }
+
+        val countVintageStamps = taskRepository.
+                                            getExciseStamps().
+                                            findExciseStampsOfProduct(currentProductInfo!!).
+                                            filter {
+                                                ExciseStamp.getEgaisVersion(it.code) == EgaisStampVersion.V3.version
+                                            }.size
+
+        taskRepository.
+                getExciseStamps().
+                findExciseStampsOfProduct(currentProductInfo!!).
+                map {
+                    if (ExciseStamp.getEgaisVersion(it.code) == EgaisStampVersion.V3.version){
+                        taskRepository.getExciseStamps().deleteExciseStamp(it)
+                    }
+                }
+
+        setFactCount(taskRepository.getProducts().findProduct(currentProductInfo!!)!!.factCount - countVintageStamps)
+
+        currentProductInfo!!.factCount = (getCountPartlyStamps() + getCountVintageStamps()).toDouble()
     }
 }

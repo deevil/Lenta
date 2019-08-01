@@ -35,9 +35,8 @@ class GoodsDetailsStorageViewModel : CoreViewModel() {
     val countedNotProssed: MutableLiveData<List<GoodsDetailsStorageItem>> = MutableLiveData()
     val categoriesSelectionsHelper = SelectionItemsHelper()
 
-    private val processExciseAlcoProductService: ProcessExciseAlcoProductService by lazy {
-        processServiceManager.getInventoryTask()!!.processExciseAlcoProduct(productInfo.value!!)!!
-    }
+    @Inject
+    lateinit var processExciseAlcoProductService: ProcessExciseAlcoProductService
 
     val deleteButtonEnabled: MutableLiveData<Boolean> = categoriesSelectionsHelper.selectedPositions.map {
         it?.isNotEmpty() ?: false
@@ -45,7 +44,6 @@ class GoodsDetailsStorageViewModel : CoreViewModel() {
 
     init {
         viewModelScope.launch {
-            //searchProductDelegate.init(viewModelScope = this@GoodsListViewModel::viewModelScope)
             updateGoodsInfo()
         }
     }
@@ -61,24 +59,10 @@ class GoodsDetailsStorageViewModel : CoreViewModel() {
     }
 
     private fun updateCategories() {
-        val partlyCount = processServiceManager.
-                                        getInventoryTask()!!.
-                                        taskRepository.
-                                        getExciseStamps().
-                                        findExciseStampsOfProduct(productInfo.value!!).
-                                        filter {
-                                            ExciseStamp.getEgaisVersion(it.code) == EgaisStampVersion.V2.version
-                                        }.size
-        val vintageCount = processServiceManager.
-                                        getInventoryTask()!!.
-                                        taskRepository.
-                                        getExciseStamps().
-                                        findExciseStampsOfProduct(productInfo.value!!).
-                                        filter {
-                                            ExciseStamp.getEgaisVersion(it.code) == EgaisStampVersion.V3.version
-                                        }.size
 
-        Logg.d { "vintageCount ${vintageCount}" }
+        val partlyCount = processExciseAlcoProductService.getCountPartlyStamps()
+
+        val vintageCount = processExciseAlcoProductService.getCountVintageStamps()
 
         val goodsDetailsCategoriesItem: MutableList<GoodsDetailsCategoriesItem> = ArrayList()
 
@@ -155,27 +139,12 @@ class GoodsDetailsStorageViewModel : CoreViewModel() {
 
     fun onClickDelete() {
         categoriesSelectionsHelper.selectedPositions.value?.map {position ->
-            countedCategories.value!![position].egaisVersion
-        }?.let {
-            it.map {egaisStampVersion ->
-                processServiceManager.
-                        getInventoryTask()!!.
-                        taskRepository.
-                        getExciseStamps().
-                        findExciseStampsOfProduct(productInfo.value!!).
-                        filter {exciseStamp ->
-                            (egaisStampVersion == EgaisStampVersion.V2 && ExciseStamp.getEgaisVersion(exciseStamp.code) == EgaisStampVersion.V2.version) ||
-                                    (egaisStampVersion == EgaisStampVersion.V3 && ExciseStamp.getEgaisVersion(exciseStamp.code) == EgaisStampVersion.V3.version)
-                        }?.
-                        let {listTaskExciseStamp ->
-                            processExciseAlcoProductService.setFactCount(processExciseAlcoProductService.getFactCount() - listTaskExciseStamp.size)
-
-                            processServiceManager.
-                                    getInventoryTask()!!.
-                                    taskRepository.
-                                    getExciseStamps().
-                                    deleteExciseStamps(listTaskExciseStamp)
-                        }
+            if (countedCategories.value!![position].egaisVersion == EgaisStampVersion.V2){
+                processExciseAlcoProductService.delAllPartlyStamps()
+            }
+            else
+            {
+                processExciseAlcoProductService.delAllVintageStamps()
             }
         }
         updateGoodsInfo()

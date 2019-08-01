@@ -47,6 +47,8 @@ class ProcessSetsService@Inject constructor() : IProcessProductService {
 
     fun newProcessSetsService(productInfo: TaskProductInfo) : ProcessSetsService {
         this.productInfo = productInfo
+        currentAllExciseStamps.clear()
+        currentComponentExciseStamps.clear()
         setComponentsForSet()
         return this
     }
@@ -87,7 +89,7 @@ class ProcessSetsService@Inject constructor() : IProcessProductService {
                         number = data.matnr,
                         name = it.name,
                         count = data.menge.toString(),
-                        uom = Uom(code = uomInfo!!.uom, name = uomInfo!!.name),
+                        uom = Uom(code = uomInfo!!.uom, name = uomInfo.name),
                         matrixType = getMatrixType(it.matrType),
                         sectionId = it.abtnr,
                         typeProduct = getProductType(it.isAlco == "X", it.isExc == "X"),
