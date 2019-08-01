@@ -97,39 +97,27 @@ class GoodsDetailsStorageViewModel : CoreViewModel() {
 
     private fun updateNotProcessed() {
         countedNotProssed.postValue(
-                processServiceManager.
-                        getInventoryTask()!!.
-                        taskRepository.
-                        getProducts().
-                        getNotProcessedProducts().
-                        filter {it.materialNumber == productInfo.value!!.materialNumber}.
-                        mapIndexed { index, taskProductInfo ->
-                            GoodsDetailsStorageItem(
-                                    number = index + 1,
-                                    name = taskProductInfo.placeCode,
-                                    quantity = taskProductInfo.factCount.toStringFormatted(),
-                                    even = index % 2 == 0
-                            )
-                        }.reversed()
+                processServiceManager.getInventoryTask()!!.taskRepository.getProducts().getNotProcessedProducts().filter { it.materialNumber == productInfo.value!!.materialNumber }.mapIndexed { index, taskProductInfo ->
+                    GoodsDetailsStorageItem(
+                            number = index + 1,
+                            name = taskProductInfo.placeCode,
+                            quantity = taskProductInfo.factCount.toStringFormatted(),
+                            even = index % 2 == 0
+                    )
+                }.reversed()
         )
     }
 
     private fun updateProcessed() {
         countedProssed.postValue(
-                processServiceManager.
-                        getInventoryTask()!!.
-                        taskRepository.
-                        getProducts().
-                        getProcessedProducts().
-                        filter {it.materialNumber == productInfo.value!!.materialNumber}.
-                        mapIndexed { index, taskProductInfo ->
-                            GoodsDetailsStorageItem(
-                                    number = index + 1,
-                                    name = taskProductInfo.placeCode,
-                                    quantity = taskProductInfo.factCount.toStringFormatted(),
-                                    even = index % 2 == 0
-                            )
-                        }.reversed()
+                processServiceManager.getInventoryTask()!!.taskRepository.getProducts().getProcessedProducts().filter { it.materialNumber == productInfo.value!!.materialNumber }.mapIndexed { index, taskProductInfo ->
+                    GoodsDetailsStorageItem(
+                            number = index + 1,
+                            name = taskProductInfo.placeCode,
+                            quantity = taskProductInfo.factCount.toStringFormatted(),
+                            even = index % 2 == 0
+                    )
+                }.reversed()
         )
     }
 
@@ -138,12 +126,10 @@ class GoodsDetailsStorageViewModel : CoreViewModel() {
     }
 
     fun onClickDelete() {
-        categoriesSelectionsHelper.selectedPositions.value?.map {position ->
-            if (countedCategories.value!![position].egaisVersion == EgaisStampVersion.V2){
+        categoriesSelectionsHelper.selectedPositions.value?.map { position ->
+            if (countedCategories.value!![position].egaisVersion == EgaisStampVersion.V2) {
                 processExciseAlcoProductService.delAllPartlyStamps()
-            }
-            else
-            {
+            } else {
                 processExciseAlcoProductService.delAllVintageStamps()
             }
         }
