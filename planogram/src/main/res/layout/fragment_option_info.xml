@@ -62,15 +62,15 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="5dp"
+                    android:gravity="center_vertical"
                     android:orientation="horizontal">
 
-                    <CheckBox
-                        android:id="@+id/checkBox_facings"
+                    <ImageView
+                        android:id="@+id/facings_icon"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:checked="@={vm.isFacings}"
-                        android:clickable="false"
-                        android:focusable="false"/>
+                        android:src="@{vm.isFacings ? @drawable/ic_options_on_40dp : @drawable/ic_options_off_40dp}"
+                        tools:src="@drawable/ic_options_off_40dp"/>
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -78,6 +78,7 @@
                         android:layout_marginStart="10dp"
                         android:ellipsize="end"
                         android:maxLines="1"
+                        android:paddingBottom="1dp"
                         android:text="@string/with_counting_facings"
                         android:textSize="17sp"/>
 
@@ -86,15 +87,15 @@
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
                     android:orientation="horizontal">
 
-                    <CheckBox
-                        android:id="@+id/checkBox_places"
+                    <ImageView
+                        android:id="@+id/places_icon"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:checked="@={vm.isPlaces}"
-                        android:clickable="false"
-                        android:focusable="false"/>
+                        android:src="@{vm.isPlaces ? @drawable/ic_options_on_40dp : @drawable/ic_options_off_40dp}"
+                        tools:src="@drawable/ic_options_off_40dp"/>
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -102,6 +103,7 @@
                         android:layout_marginStart="10dp"
                         android:ellipsize="end"
                         android:maxLines="1"
+                        android:paddingBottom="1dp"
                         android:text="@string/with_control_of_empty_places"
                         android:textSize="17sp"/>
 
