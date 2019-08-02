@@ -107,6 +107,7 @@
             android:maxLength="12"
             android:text="@={vm.shelfNumber}"
             app:onOkInSoftKeyboard="@{vm}"
+            app:requestFocus="@{vm.requestFocusToShelfNumber}"
             tools:ignore="Autofill"/>
 
     </LinearLayout>

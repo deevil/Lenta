@@ -43,6 +43,7 @@ class ShelfListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
     val segmentNumber: MutableLiveData<String> = MutableLiveData()
     val shelfNumber: MutableLiveData<String> = MutableLiveData("")
+    val requestFocusToShelfNumber: MutableLiveData<Boolean> = MutableLiveData(true)
 
     val numberFieldEnabled: MutableLiveData<Boolean> = MutableLiveData(false)
 

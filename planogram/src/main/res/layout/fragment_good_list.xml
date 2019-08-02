@@ -30,10 +30,10 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingTop="8dp"
-                android:paddingBottom="8dp"
                 android:gravity="center_vertical"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp">
 
                 <LinearLayout
                     style="@style/LinearCellStyle"
@@ -109,6 +109,7 @@
             android:maxLength="14"
             android:text="@={vm.goodNumber}"
             app:onOkInSoftKeyboard="@{vm}"
+            app:requestFocus="@{vm.requestFocusToGoodNumber}"
             tools:ignore="Autofill"/>
 
     </LinearLayout>

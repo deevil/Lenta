@@ -29,6 +29,7 @@ abstract class CoreLoginFragment : CoreFragment<com.lenta.shared.databinding.Fra
         bottomToolbarUiModel.cleanAll()
         bottomToolbarUiModel.uiModelButton5.let { buttonUiModel ->
             buttonUiModel.show(ButtonDecorationInfo.enterToApp)
+            buttonUiModel.requestFocus()
             vm.enterEnabled.observe(this, Observer { buttonUiModel.enabled.value = it })
         }
     }
