@@ -1,41 +1,18 @@
 package com.lenta.inventory.requests.network
 
-import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
-import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.fmp.ObjectRawStatus
 import com.lenta.shared.functional.Either
 import com.lenta.shared.interactor.UseCase
-import com.lenta.shared.utilities.extentions.hhive.getFailure
-import com.lenta.shared.utilities.extentions.hhive.isNotBad
-import com.mobrun.plugin.api.HyperHive
-import com.mobrun.plugin.api.callparams.WebCallParams
+import com.lenta.shared.requests.FmpRequestsHelper
+import com.lenta.shared.requests.SapResponse
 import javax.inject.Inject
 
 class PermissionsRequest
-@Inject constructor(private val hyperHive: HyperHive, private val gson: Gson, private val sessionInfo: ISessionInfo) : UseCase<PermissionsResult, PermissionsParams>() {
+@Inject constructor(private val fmpRequestsHelper: FmpRequestsHelper) : UseCase<PermissionsResult, PermissionsParams>() {
     override suspend fun run(params: PermissionsParams): Either<Failure, PermissionsResult> {
-        //TODO (DB) нужно добавить поддержку логина пользователя когда доработают ФМ модуль
-        val webCallParams = WebCallParams().apply {
-            data = gson.toJson(params)
-            headers = mapOf(
-                    "X-SUP-DOMAIN" to "DM-MAIN",
-                    "Content-Type" to "application/json",
-                    "Web-Authorization" to sessionInfo.basicAuth
-            )
-        }
-        val status = hyperHive.requestAPI.web("ZMP_UTZ_99_V001", webCallParams, PermissionInventoryStatus::class.java).execute()
-        if (status.isNotBad()) {
-            val errorText = status.result?.raw?.errorText
-            return if (errorText.isNullOrEmpty()) {
-                Either.Right(status.result!!.raw!!)
-            } else {
-                Either.Left(Failure.SapError(errorText))
-            }
-
-        }
-        return Either.Left(status.getFailure())
+        return fmpRequestsHelper.restRequest("ZMP_UTZ_99_V001", params, PermissionInventoryStatus::class.java)
     }
 }
 
@@ -53,10 +30,10 @@ data class PermissionsResult(
         @SerializedName("EV_AUTH_PLACE")
         val authPlace: String,
         @SerializedName("EV_ERROR_TEXT")
-        val errorText: String,
+        override val errorText: String,
         @SerializedName("EV_RETCODE")
-        val retCode: String
-)
+        override val retCode: Int
+) : SapResponse
 
 data class Market(
         @SerializedName("WERKS")
