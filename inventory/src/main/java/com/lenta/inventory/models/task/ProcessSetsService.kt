@@ -1,7 +1,6 @@
 package com.lenta.inventory.models.task
 
 import com.lenta.inventory.features.goods_information.sets.SetComponentInfo
-import com.lenta.inventory.models.repositories.ITaskRepository
 import com.lenta.shared.di.AppScope
 import com.lenta.shared.fmp.resources.dao_ext.getComponentsForSet
 import com.lenta.shared.fmp.resources.dao_ext.getProductInfo
@@ -24,9 +23,6 @@ class ProcessSetsService@Inject constructor() : IProcessProductService {
     @Inject
     lateinit var processServiceManager: IInventoryTaskManager
 
-    private val taskRepository: ITaskRepository by lazy {
-        processServiceManager.getInventoryTask()!!.taskRepository!!
-    }
     private lateinit var productInfo: TaskProductInfo
 
     private val currentComponentExciseStamps: ArrayList<TaskExciseStamp> = ArrayList()
@@ -60,18 +56,18 @@ class ProcessSetsService@Inject constructor() : IProcessProductService {
     override fun setFactCount(count: Double){
         if (count >= 0.0) {
             if (count > 0.0) {
-                taskRepository.getProducts().findProduct(productInfo)?.factCount = count
-                taskRepository.getProducts().findProduct(productInfo)?.isPositionCalc = true
+                processServiceManager.getInventoryTask()!!.taskRepository.getProducts().findProduct(productInfo)?.factCount = count
+                processServiceManager.getInventoryTask()!!.taskRepository.getProducts().findProduct(productInfo)?.isPositionCalc = true
             } else {
-                taskRepository.getProducts().findProduct(productInfo)?.factCount = 0.0
-                taskRepository.getProducts().findProduct(productInfo)?.isPositionCalc = false
+                processServiceManager.getInventoryTask()!!.taskRepository.getProducts().findProduct(productInfo)?.factCount = 0.0
+                processServiceManager.getInventoryTask()!!.taskRepository.getProducts().findProduct(productInfo)?.isPositionCalc = false
             }
         }
     }
 
     override fun markMissing(){
-        taskRepository.getProducts().findProduct(productInfo)?.factCount = 0.0
-        taskRepository.getProducts().findProduct(productInfo)?.isPositionCalc = true
+        processServiceManager.getInventoryTask()!!.taskRepository.getProducts().findProduct(productInfo)?.factCount = 0.0
+        processServiceManager.getInventoryTask()!!.taskRepository.getProducts().findProduct(productInfo)?.isPositionCalc = true
     }
 
     fun getComponentsForSet() : List<SetComponentInfo>{
@@ -102,7 +98,13 @@ class ProcessSetsService@Inject constructor() : IProcessProductService {
 
     fun getCountExciseStampsForComponent(componentsInfo: SetComponentInfo) : Int{
         return currentAllExciseStamps.filter {it.materialNumber == componentsInfo.number}.size +
-                taskRepository.getExciseStamps().findExciseStampsOfProduct(productInfo).filter {it.materialNumber == componentsInfo.number}.size
+                processServiceManager.
+                        getInventoryTask()!!.
+                        taskRepository.
+                        getExciseStamps().
+                        findExciseStampsOfProduct(productInfo).
+                        filter {it.materialNumber == componentsInfo.number}.
+                        size
     }
 
     fun clearExciseStampsForComponent(componentsInfo: SetComponentInfo){
@@ -112,12 +114,16 @@ class ProcessSetsService@Inject constructor() : IProcessProductService {
             }
         }
 
-        taskRepository.getExciseStamps().findExciseStampsOfProduct(productInfo).
+        processServiceManager.
+                getInventoryTask()!!.
+                taskRepository.
+                getExciseStamps().
+                findExciseStampsOfProduct(productInfo).
                 filter {stamp ->
                     stamp.materialNumber == componentsInfo.number
                 }.
                 let {stamps ->
-                    taskRepository.getExciseStamps().deleteExciseStamps(stamps)
+                    processServiceManager.getInventoryTask()!!.taskRepository.getExciseStamps().deleteExciseStamps(stamps)
                 }
     }
 
@@ -141,7 +147,7 @@ class ProcessSetsService@Inject constructor() : IProcessProductService {
 
     fun apply(factCount: Double){
         setFactCount(factCount)
-        taskRepository.getExciseStamps().addExciseStamps(currentAllExciseStamps)
+        processServiceManager.getInventoryTask()!!.taskRepository.getExciseStamps().addExciseStamps(currentAllExciseStamps)
         currentAllExciseStamps.clear()
         currentComponentExciseStamps.clear()
     }
@@ -156,7 +162,7 @@ class ProcessSetsService@Inject constructor() : IProcessProductService {
             stamp.code == stampCode
         } || currentAllExciseStamps.any { stamp ->
             stamp.code == stampCode
-        } || taskRepository.getExciseStamps().getExciseStamps().any {stamp ->
+        } || processServiceManager.getInventoryTask()!!.taskRepository.getExciseStamps().getExciseStamps().any {stamp ->
             stamp.code == stampCode
         }
     }
