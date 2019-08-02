@@ -102,9 +102,9 @@ class SearchProductDelegate @Inject constructor(
     private fun handleSearchResultOrOpenProductScreen() {
         scanInfoResult?.let { infoResult ->
 
-            val productExists = taskManager.getInventoryTask()!!.taskRepository.getProducts().findProduct(infoResult.productInfo.materialNumber, storePlaceCode) != null
-            if (!productExists) {
-                val taskProductInfo = TaskProductInfo.from(infoResult.productInfo, storePlaceCode, 0.0)
+            var taskProductInfo = taskManager.getInventoryTask()!!.taskRepository.getProducts().findProduct(infoResult.productInfo.materialNumber, storePlaceCode)
+            if (taskProductInfo == null) {
+                taskProductInfo = TaskProductInfo.from(infoResult.productInfo, storePlaceCode, 0.0)
                 taskManager.getInventoryTask()!!.taskRepository.getProducts().addProduct(taskProductInfo)
             }
 
@@ -114,7 +114,7 @@ class SearchProductDelegate @Inject constructor(
                 }
             }
             with(infoResult) {
-                openProductScreen(productInfo,
+                openProductScreen(taskProductInfo,
                         if (productInfo.type == ProductType.ExciseAlcohol && !productInfo.isSet) 0.0 else quantity)
             }
 
@@ -157,14 +157,14 @@ class SearchProductDelegate @Inject constructor(
                     screenNavigator.openSetsInfoScreen(taskProductInfo)
                     return
                 } else
-                    screenNavigator.openExciseAlcoInfoScreen(taskProductInfo)
+                    Logg.d { "taskProductInfo: $taskProductInfo" }
+                screenNavigator.openExciseAlcoInfoScreen(taskProductInfo)
             }
             else -> screenNavigator.openGoodsInfoScreen(taskProductInfo)
         }
     }
 
-    private fun openProductScreen(productInfo: ProductInfo, quantity: Double) {
-        val taskProductInfo = TaskProductInfo.from(productInfo, storePlaceCode, quantity)
+    private fun openProductScreen(taskProductInfo: TaskProductInfo, quantity: Double) {
         openTaskProductScreen(taskProductInfo)
     }
 
