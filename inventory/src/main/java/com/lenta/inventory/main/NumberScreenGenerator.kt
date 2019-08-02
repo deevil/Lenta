@@ -40,7 +40,7 @@ class NumberScreenGenerator @Inject constructor() : INumberScreenGenerator {
             is TechLoginFragment -> "55"
             is PinCodeFragment -> "56"
             is FailurePinCodeFragment -> "96"
-            is GoodsInfoFragment -> "10"
+            is GoodsInfoFragment -> "09"
             is ExciseAlcoInfoFragment -> "16"
             is GoodsDetailsStorageFragment -> "22"
             is SetsInfoFragment -> "24"
