@@ -120,6 +120,10 @@ class TaskListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
     }
 
+    fun onResume() {
+        onClickUpdate()
+    }
+
 }
 
 
