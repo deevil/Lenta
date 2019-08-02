@@ -27,6 +27,8 @@ class TaskListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     @Inject
     lateinit var screenNavigator: IScreenNavigator
 
+    private var isNeedUpdateOnResume = false
+
     val filter = MutableLiveData("")
 
     val tkNumber: String by lazy {
@@ -94,9 +96,13 @@ class TaskListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
         tasks.value?.getOrNull(position)?.let { taskItem ->
 
             when (taskItem.statusTask) {
-                StatusTask.BlockedMe -> openConfirmationScreen(taskItem.taskNumber)
+                StatusTask.BlockedMe -> openConfirmationScreen(taskItem.taskNumber).apply {
+                    isNeedUpdateOnResume = true
+                }
                 StatusTask.BlockedNotMe -> return
-                else -> screenNavigator.openJobCard(taskItem.taskNumber)
+                else -> screenNavigator.openJobCard(taskItem.taskNumber).apply {
+                    isNeedUpdateOnResume = true
+                }
             }
         }
 
@@ -121,7 +127,10 @@ class TaskListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     }
 
     fun onResume() {
-        onClickUpdate()
+        if (isNeedUpdateOnResume) {
+            onClickUpdate()
+        }
+        isNeedUpdateOnResume = false
     }
 
 }
