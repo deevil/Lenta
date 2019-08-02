@@ -43,7 +43,10 @@ abstract class CoreMessageFragment : CoreFragment<LayoutMessageBinding, MessageV
         }
         bottomToolbarUiModel.uiModelButton1.show(leftButtonDecorationInfo)
         if (codeConfirmForRight != null) {
-            bottomToolbarUiModel.uiModelButton5.show(rightButtonDecorationInfo)
+            bottomToolbarUiModel.uiModelButton5.apply {
+                show(rightButtonDecorationInfo)
+                requestFocus()
+            }
         }
 
         buttonDecorationInfo2?.let {
