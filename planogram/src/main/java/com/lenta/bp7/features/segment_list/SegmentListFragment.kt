@@ -111,4 +111,5 @@ class SegmentListFragment : CoreFragment<FragmentSegmentListBinding, SegmentList
         vm.onClickBack()
         return false
     }
+
 }

@@ -106,6 +106,7 @@
             android:text="@={vm.segmentNumber}"
             app:maskPattern='@{"[000]-[000]"}'
             app:onOkInSoftKeyboard="@{vm}"
+            app:requestFocus="@{vm.requestFocusToSegmentNumber}"
             tools:ignore="Autofill"/>
 
     </LinearLayout>
