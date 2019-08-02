@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
         tools:context=".features.good_info_facing.GoodInfoFacingFragment">
 
@@ -41,16 +42,17 @@
 
                     <EditText
                         android:id="@+id/et_enter_facing_count"
-                        android:enabled="@{vm.facingFieldEnabled}"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_margin="8dp"
                         android:digits="0123456789"
+                        android:enabled="@{vm.facingFieldEnabled}"
                         android:hint="@string/enter_quantity"
                         android:inputType="number"
                         android:maxLength="3"
                         android:text="@={vm.facings}"
                         android:textSize="14sp"
+                        app:onOkInSoftKeyboard="@{vm}"
                         tools:ignore="Autofill"/>
 
                 </LinearLayout>

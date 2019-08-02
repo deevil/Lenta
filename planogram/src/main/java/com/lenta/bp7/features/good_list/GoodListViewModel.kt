@@ -31,6 +31,7 @@ class GoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     val segmentNumber: MutableLiveData<String> = MutableLiveData()
     val shelfNumber: MutableLiveData<String> = MutableLiveData()
     val goodNumber: MutableLiveData<String> = MutableLiveData("")
+    val requestFocusToGoodNumber: MutableLiveData<Boolean> = MutableLiveData(true)
 
     val numberFieldEnabled: MutableLiveData<Boolean> = MutableLiveData(false)
 

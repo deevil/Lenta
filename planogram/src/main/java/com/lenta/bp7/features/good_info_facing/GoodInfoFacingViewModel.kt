@@ -7,18 +7,19 @@ import com.lenta.bp7.data.model.Good
 import com.lenta.bp7.data.model.GoodStatus
 import com.lenta.bp7.platform.navigation.IScreenNavigator
 import com.lenta.shared.platform.viewmodel.CoreViewModel
+import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.map
 import kotlinx.coroutines.launch
-import java.lang.IllegalArgumentException
 import javax.inject.Inject
 
-class GoodInfoFacingViewModel : CoreViewModel() {
+class GoodInfoFacingViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
     @Inject
     lateinit var navigator: IScreenNavigator
     @Inject
     lateinit var checkData: CheckData
+
 
     val good: MutableLiveData<Good> = MutableLiveData()
 
@@ -55,6 +56,11 @@ class GoodInfoFacingViewModel : CoreViewModel() {
 
     private fun currentGoodIsCreated(): Boolean {
         return checkData.getCurrentGood()?.getStatus() == GoodStatus.CREATED
+    }
+
+    override fun onOkInSoftKeyboard(): Boolean {
+        onClickApply()
+        return true
     }
 
     fun onClickMissing() {

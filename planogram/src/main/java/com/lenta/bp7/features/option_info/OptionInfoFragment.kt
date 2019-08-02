@@ -33,7 +33,10 @@ class OptionInfoFragment : CoreFragment<FragmentOptionInfoBinding, OptionInfoVie
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
-        bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.next)
+        bottomToolbarUiModel.uiModelButton5.apply {
+            show(ButtonDecorationInfo.next)
+            requestFocus()
+        }
     }
 
     override fun onToolbarButtonClick(view: View) {

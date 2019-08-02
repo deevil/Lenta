@@ -47,6 +47,7 @@ class SegmentListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
     val marketNumber: MutableLiveData<String> = MutableLiveData("")
     val segmentNumber: MutableLiveData<String> = MutableLiveData("")
+    val requestFocusToSegmentNumber: MutableLiveData<Boolean> = MutableLiveData(true)
 
     val completeButtonEnabled: MutableLiveData<Boolean> = segments.map { segments ->
         segments?.isNotEmpty() ?: false && if (segments?.size == 1) segments[0].getStatus() != SegmentStatus.UNFINISHED else true
@@ -160,4 +161,5 @@ class SegmentListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     fun onClickBack() {
         navigator.openSelectCheckTypeScreen()
     }
+
 }
