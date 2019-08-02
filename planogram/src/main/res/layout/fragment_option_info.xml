@@ -79,8 +79,9 @@
                         android:ellipsize="end"
                         android:maxLines="1"
                         android:paddingBottom="1dp"
-                        android:text="@string/with_counting_facings"
-                        android:textSize="17sp"/>
+                        android:text="@{vm.isFacings ? @string/with_count_facings : @string/without_count_facings}"
+                        android:textSize="17sp"
+                        tools:text="@string/without_count_facings"/>
 
                 </LinearLayout>
 
@@ -104,8 +105,9 @@
                         android:ellipsize="end"
                         android:maxLines="1"
                         android:paddingBottom="1dp"
-                        android:text="@string/with_control_of_empty_places"
-                        android:textSize="17sp"/>
+                        android:text="@{vm.isPlaces ? @string/with_control_places : @string/without_control_places}"
+                        android:textSize="17sp"
+                        tools:text="@string/without_control_places"/>
 
                 </LinearLayout>
 
