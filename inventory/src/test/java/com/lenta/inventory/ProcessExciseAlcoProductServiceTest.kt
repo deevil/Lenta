@@ -1,5 +1,6 @@
 package com.lenta.inventory
 
+import com.lenta.inventory.di.BaseUnitTest
 import com.lenta.inventory.di.DaggerTestComponent
 import com.lenta.inventory.features.goods_information.excise_alco.GoodsInfoCountType
 import com.lenta.inventory.models.RecountType
@@ -10,7 +11,7 @@ import org.junit.Before
 import org.junit.Test
 import javax.inject.Inject
 
-class ProcessExciseAlcoProductServiceTest {
+class ProcessExciseAlcoProductServiceTest : BaseUnitTest() {
     @Inject
     lateinit var processServiceManager: IInventoryTaskManager
 
@@ -20,6 +21,7 @@ class ProcessExciseAlcoProductServiceTest {
     @Before
     fun setup() {
         DaggerTestComponent.builder().build().inject(this)
+        creatingObjectsForTest()
     }
 
     private lateinit var taskDescription: TaskDescription
@@ -141,8 +143,6 @@ class ProcessExciseAlcoProductServiceTest {
     @Test
     fun setFactCount() {
 
-        creatingObjectsForTest()
-
         //устанавливаем FactCount для продукта = 7 (нажатие на кнопку "Применить")
         processExciseAlcoProductService.setFactCount(7.0)
 
@@ -153,8 +153,6 @@ class ProcessExciseAlcoProductServiceTest {
 
     @Test
     fun markMissing() {
-
-        creatingObjectsForTest()
 
         //помечаем, что продукт отсутствует (нажатие на кнопку "Отсутствует")
         processExciseAlcoProductService.markMissing()
@@ -170,8 +168,6 @@ class ProcessExciseAlcoProductServiceTest {
     //for stamps 150
     @Test
     fun addCurrentExciseStamp() {
-
-        creatingObjectsForTest()
 
         //добавляем первую акцизную марку 150 символов продукту
         processExciseAlcoProductService.addCurrentExciseStamp(exciseStamp150_1)
@@ -196,8 +192,6 @@ class ProcessExciseAlcoProductServiceTest {
     @Test
     fun addCurrentExciseStamps() {
 
-        creatingObjectsForTest()
-
         //добавляем две акцизные марки 150 символов для коробки продукту
         processExciseAlcoProductService.addCurrentExciseStamps(exciseStampsForBox_150)
 
@@ -211,8 +205,6 @@ class ProcessExciseAlcoProductServiceTest {
     //for stamps 68
     @Test
     fun add() {
-
-        creatingObjectsForTest()
 
         //добавляем первую акцизную марку 68 символов продукту
         processExciseAlcoProductService.add(1, exciseStamp68_1)
@@ -235,8 +227,6 @@ class ProcessExciseAlcoProductServiceTest {
 
     @Test
     fun rollback() {
-
-        creatingObjectsForTest()
 
         //добавляем 1 акцизную марку 150 символов продукту
         processExciseAlcoProductService.addCurrentExciseStamp(exciseStamp150_1)
@@ -285,8 +275,6 @@ class ProcessExciseAlcoProductServiceTest {
     @Test
     fun isTaskAlreadyHasExciseStamp() {
 
-        creatingObjectsForTest()
-
         //проверяем добавлена ли марка, должно быть FALSE
         Assert.assertFalse(processExciseAlcoProductService.isTaskAlreadyHasExciseStamp(exciseStamp150_1.code))
 
@@ -300,8 +288,6 @@ class ProcessExciseAlcoProductServiceTest {
     @Test
     fun isTaskAlreadyHasExciseStampBox() {
 
-        creatingObjectsForTest()
-
         //проверяем добавлены ли акцизные марки для коробки, должно быть FALSE
         Assert.assertFalse(processExciseAlcoProductService.isTaskAlreadyHasExciseStampBox(boxNumber))
 
@@ -314,8 +300,6 @@ class ProcessExciseAlcoProductServiceTest {
 
     @Test
     fun apply() {
-
-        creatingObjectsForTest()
 
         //добавляем первую акцизную марку 150 символов продукту
         processExciseAlcoProductService.addCurrentExciseStamp(exciseStamp150_1)
@@ -342,14 +326,11 @@ class ProcessExciseAlcoProductServiceTest {
 
     @Test
     fun isLinkingOldStamps() {
-        creatingObjectsForTest()
         Assert.assertFalse(processExciseAlcoProductService.isLinkingOldStamps())
     }
 
     @Test
     fun getLastCountExciseStamp() {
-        creatingObjectsForTest()
-
         //добавляем первую акцизную марку 150 символов продукту
         processExciseAlcoProductService.addCurrentExciseStamp(exciseStamp150_1)
 
@@ -392,8 +373,6 @@ class ProcessExciseAlcoProductServiceTest {
 
     @Test
     fun discard() {
-        creatingObjectsForTest()
-
         //добавляем первую акцизную марку 150 символов продукту
         processExciseAlcoProductService.addCurrentExciseStamp(exciseStamp150_1)
 
@@ -415,8 +394,6 @@ class ProcessExciseAlcoProductServiceTest {
 
     @Test
     fun getCountPartlyStamps() {
-        creatingObjectsForTest()
-
         //добавляем первую акцизную марку 68 символов продукту
         processExciseAlcoProductService.add(1, exciseStamp68_1)
 
@@ -429,8 +406,6 @@ class ProcessExciseAlcoProductServiceTest {
 
     @Test
     fun getCountVintageStamps() {
-        creatingObjectsForTest()
-
         //добавляем первую акцизную марку 150 символов продукту
         processExciseAlcoProductService.addCurrentExciseStamp(exciseStamp150_1)
 
@@ -446,8 +421,6 @@ class ProcessExciseAlcoProductServiceTest {
 
     @Test
     fun delAllPartlyStamps() {
-        creatingObjectsForTest()
-
         //добавляем первую акцизную марку 150 символов продукту
         processExciseAlcoProductService.addCurrentExciseStamp(exciseStamp150_1)
 
@@ -481,8 +454,6 @@ class ProcessExciseAlcoProductServiceTest {
 
     @Test
     fun delAllVintageStamps() {
-        creatingObjectsForTest()
-
         //добавляем первую акцизную марку 150 символов продукту
         processExciseAlcoProductService.addCurrentExciseStamp(exciseStamp150_1)
 

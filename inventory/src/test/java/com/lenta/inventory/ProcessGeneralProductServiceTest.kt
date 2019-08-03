@@ -1,23 +1,34 @@
 package com.lenta.inventory
 
+import com.lenta.inventory.di.BaseUnitTest
+import com.lenta.inventory.di.DaggerTestComponent
 import com.lenta.inventory.models.RecountType
-import com.lenta.inventory.models.task.InventoryTaskManager
-import com.lenta.inventory.models.task.ProcessGeneralProductService
-import com.lenta.inventory.models.task.TaskDescription
-import com.lenta.inventory.models.task.TaskProductInfo
+import com.lenta.inventory.models.task.*
 import com.lenta.shared.models.core.GisControl
 import com.lenta.shared.models.core.MatrixType
 import com.lenta.shared.models.core.ProductType
 import com.lenta.shared.models.core.Uom
 import org.junit.Assert
+import org.junit.Before
 import org.junit.Test
+import javax.inject.Inject
 
-class ProcessGeneralProductServiceTest {
+class ProcessGeneralProductServiceTest : BaseUnitTest() {
+
+    @Inject
+    lateinit var processServiceManager: IInventoryTaskManager
+
+    @Inject
+    lateinit var processGeneralProductService: ProcessGeneralProductService
+
+    @Before
+    fun setup() {
+        DaggerTestComponent.builder().build().inject(this)
+        creatingObjectsForTest()
+    }
 
     private val materialNumber = "000000000000000021"
     lateinit var taskDescription: TaskDescription
-    private var processServiceManager = InventoryTaskManager()
-    private var processGeneralProductService = ProcessGeneralProductService()
 
     fun creatingObjectsForTest() {
         taskDescription = TaskDescription(
@@ -41,17 +52,13 @@ class ProcessGeneralProductServiceTest {
         )
 
         processServiceManager.newInventoryTask(taskDescription)
-        //инициализация processServiceManager в ProcessGeneralProductService, необходимо, т.к. реализовано через DI
-        processGeneralProductService.processServiceManager = processServiceManager
 
     }
 
     @Test
     fun getFactCount() {
 
-        creatingObjectsForTest()
-
-        var product1: TaskProductInfo? = TaskProductInfo(
+        val product1 = TaskProductInfo(
                 materialNumber = materialNumber,
                 description = "Р/к горбуша (Россия) 230/250г",
                 uom = Uom("ST", "шт"),
@@ -71,12 +78,9 @@ class ProcessGeneralProductServiceTest {
                 getInventoryTask()!!.
                 taskRepository.
                 getProducts().
-                addProduct(product1!!)
+                addProduct(product1)
 
         processGeneralProductService.newProcessGeneralProductService(product1)
-
-        //обнуляем данный объект, чтобы не было на него ссылок и связей с ним
-        product1 = null
 
         //проверяем фактическое кол-во продукта, должно быть 5 (отображения Итого на экране)
         Assert.assertEquals(5.0, processGeneralProductService.getFactCount(), 0.0)
@@ -86,9 +90,7 @@ class ProcessGeneralProductServiceTest {
     @Test
     fun setFactCount() {
 
-        creatingObjectsForTest()
-
-        var product1: TaskProductInfo? = TaskProductInfo(
+        val product1 = TaskProductInfo(
                 materialNumber = materialNumber,
                 description = "Р/к горбуша (Россия) 230/250г",
                 uom = Uom("ST", "шт"),
@@ -103,7 +105,7 @@ class ProcessGeneralProductServiceTest {
                 isExcOld = false
         )
 
-        var product2: TaskProductInfo? = TaskProductInfo(
+        val product2 = TaskProductInfo(
                 materialNumber = materialNumber,
                 description = "Р/к горбуша (Россия) 230/250г",
                 uom = Uom("ST", "шт"),
@@ -123,20 +125,16 @@ class ProcessGeneralProductServiceTest {
                 getInventoryTask()!!.
                 taskRepository.
                 getProducts().
-                addProduct(product1!!)
+                addProduct(product1)
 
         //добавляем продукт 2 в репозиторий
         processServiceManager.
                 getInventoryTask()!!.
                 taskRepository.
                 getProducts().
-                addProduct(product2!!)
+                addProduct(product2)
 
         processGeneralProductService.newProcessGeneralProductService(product1)
-
-        //обнуляем данные объект, чтобы не было на них ссылок и связей с ними
-        product1 = null
-        product2 = null
 
         //устанавливаем продукту с МХ=1 в репозитории фактическое количество (5), и помечаем, что продукт обработан
         processGeneralProductService.setFactCount(5.0)
@@ -176,9 +174,7 @@ class ProcessGeneralProductServiceTest {
     @Test
     fun markMissing() {
 
-        creatingObjectsForTest()
-
-        var product1: TaskProductInfo? = TaskProductInfo(
+        val product1 = TaskProductInfo(
                 materialNumber = materialNumber,
                 description = "Р/к горбуша (Россия) 230/250г",
                 uom = Uom("ST", "шт"),
@@ -198,12 +194,9 @@ class ProcessGeneralProductServiceTest {
                 getInventoryTask()!!.
                 taskRepository.
                 getProducts().
-                addProduct(product1!!)
+                addProduct(product1)
 
         processGeneralProductService.newProcessGeneralProductService(product1)
-
-        //обнуляем  данный объект, чтобы не было на него ссылок и связей с ним
-        product1 = null
 
         //помечаем, что продукт отсутствует
         processGeneralProductService.markMissing()
