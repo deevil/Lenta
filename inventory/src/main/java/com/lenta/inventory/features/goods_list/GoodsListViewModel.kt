@@ -57,8 +57,13 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
     val deleteEnabled: MutableLiveData<Boolean> = selectedPage.combineLatest(unprocessedSelectionHelper.selectedPositions).combineLatest(processedSelectionHelper.selectedPositions).map {
         val page = it?.first?.first
-        val selectionCount = if (page == 0) it?.first?.second.size else it?.second?.size
-        selectionCount != 0
+        if (page == 0) {
+            val selectedCount = it?.first?.second.size
+            selectedCount != 0 && selectedCount != unprocessedGoods.value?.size
+        } else {
+            val selectedCount = it?.second?.size
+            selectedCount != 0 && selectedCount != processedGoods.value?.size
+        }
     }
 
     fun isStrict(): Boolean {
@@ -106,6 +111,9 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
         }
         updateUnprocessed()
         updateProcessed()
+        viewModelScope.launch {
+            selectedPage.value = if (unprocessedGoods.value?.size == 0) 1 else 0
+        }
     }
 
     override fun handleFailure(failure: Failure) {
