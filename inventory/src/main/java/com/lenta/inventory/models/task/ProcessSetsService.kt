@@ -16,7 +16,7 @@ import com.mobrun.plugin.api.HyperHive
 import javax.inject.Inject
 
 @AppScope
-class ProcessSetsService@Inject constructor() : IProcessProductService {
+class ProcessSetsService @Inject constructor() : IProcessProductService {
 
     @Inject
     lateinit var hyperHive: HyperHive
@@ -41,22 +41,21 @@ class ProcessSetsService@Inject constructor() : IProcessProductService {
         ZmpUtz07V001(hyperHive)
     }
 
-    fun newProcessSetsService(productInfo: TaskProductInfo) : ProcessSetsService? {
-        return if (productInfo.type == ProductType.ExciseAlcohol && productInfo.isSet){
+    fun newProcessSetsService(productInfo: TaskProductInfo): ProcessSetsService? {
+        return if (productInfo.type == ProductType.ExciseAlcohol && productInfo.isSet) {
             currentProductInfo = productInfo
             currentAllExciseStamps.clear()
             currentComponentExciseStamps.clear()
             setComponentsForSet()
             return this
-        }
-        else null
+        } else null
     }
 
     override fun getFactCount(): Double? {
         return currentProductInfo?.factCount
     }
 
-    override fun setFactCount(count: Double){
+    override fun setFactCount(count: Double) {
         if (count >= 0.0) {
             if (count > 0.0) {
                 processServiceManager.getInventoryTask()!!.taskRepository.getProducts().findProduct(currentProductInfo!!)?.factCount = count
@@ -68,20 +67,20 @@ class ProcessSetsService@Inject constructor() : IProcessProductService {
         }
     }
 
-    override fun markMissing(){
+    override fun markMissing() {
         processServiceManager.getInventoryTask()!!.taskRepository.getProducts().findProduct(currentProductInfo!!)?.factCount = 0.0
         processServiceManager.getInventoryTask()!!.taskRepository.getProducts().findProduct(currentProductInfo!!)?.isPositionCalc = true
         discard()
     }
 
-    fun getComponentsForSet() : List<SetComponentInfo>{
+    fun getComponentsForSet(): List<SetComponentInfo> {
         return componentsInfo
     }
 
-    private fun setComponentsForSet() : List<SetComponentInfo>{
+    private fun setComponentsForSet(): List<SetComponentInfo> {
         componentsInfo.clear()
 
-        zmpUtz46V001.getComponentsForSet(currentProductInfo!!.materialNumber).map {data ->
+        zmpUtz46V001.getComponentsForSet(currentProductInfo!!.materialNumber).map { data ->
             zfmpUtz48V001.getProductInfo(data.matnrOsn).map {
                 val uomInfo = zmpUtz07V001.getUomInfo(data.meins)
                 componentsInfo.add(SetComponentInfo(
@@ -100,11 +99,15 @@ class ProcessSetsService@Inject constructor() : IProcessProductService {
         return componentsInfo
     }
 
-    fun getCountExciseStampsForComponent(componentsInfo: SetComponentInfo) : Int{
-        return currentComponentExciseStamps.filter {it.materialNumber == componentsInfo.number}.size
+    fun getCountExciseStampsForComponents(): Int {
+        return currentComponentExciseStamps.size
     }
 
-    fun clearExciseStampsForComponent(componentsInfo: SetComponentInfo){
+    fun getCountExciseStampsForComponent(componentsInfo: SetComponentInfo): Int {
+        return currentComponentExciseStamps.filter { it.materialNumber == componentsInfo.number }.size
+    }
+
+    fun clearExciseStampsForComponent(componentsInfo: SetComponentInfo) {
         currentComponentExciseStamps.filter { stamp ->
             stamp.materialNumber == componentsInfo.number
         }.let {
@@ -112,40 +115,40 @@ class ProcessSetsService@Inject constructor() : IProcessProductService {
         }
     }
 
-    fun addCurrentComponentExciseStamp(exciseStamp: TaskExciseStamp){
+    fun addCurrentComponentExciseStamp(exciseStamp: TaskExciseStamp) {
         currentComponentExciseStamps.add(exciseStamp)
     }
 
-    fun rollback() : Int{
+    fun rollback(): Int {
         currentComponentExciseStamps.removeAt(currentComponentExciseStamps.lastIndex)
         return currentComponentExciseStamps.size
     }
 
-    fun applyComponentsExciseStamps(){
+    fun applyComponentsExciseStamps() {
         currentAllExciseStamps.addAll(currentComponentExciseStamps)
         currentComponentExciseStamps.clear()
     }
 
-    fun apply(factCount: Double){
+    fun apply(factCount: Double) {
         setFactCount(factCount)
         processServiceManager.getInventoryTask()!!.taskRepository.getExciseStamps().addExciseStamps(currentAllExciseStamps)
         currentAllExciseStamps.clear()
         currentComponentExciseStamps.clear()
     }
 
-    fun discard(){
+    fun discard() {
         currentProductInfo = null
         componentsInfo.clear()
         currentAllExciseStamps.clear()
         currentComponentExciseStamps.clear()
     }
 
-    fun isTaskAlreadyHasExciseStamp(stampCode: String): Boolean{
+    fun isTaskAlreadyHasExciseStamp(stampCode: String): Boolean {
         return currentComponentExciseStamps.any { stamp ->
             stamp.code == stampCode
         } || currentAllExciseStamps.any { stamp ->
             stamp.code == stampCode
-        } || processServiceManager.getInventoryTask()!!.taskRepository.getExciseStamps().getExciseStamps().any {stamp ->
+        } || processServiceManager.getInventoryTask()!!.taskRepository.getExciseStamps().getExciseStamps().any { stamp ->
             stamp.code == stampCode
         }
     }

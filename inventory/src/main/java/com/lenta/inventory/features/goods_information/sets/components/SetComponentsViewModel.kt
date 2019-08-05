@@ -85,42 +85,7 @@ class SetComponentsViewModel : CoreViewModel(), OnPositionClickListener {
         countValue.value = processSetsService.rollback().toDouble()
     }
 
-    //todo
     fun onClickApply() {
-        if (componentInfo.value!!.number.substring(componentInfo.value!!.number.length - 6) == "382322") {
-            processSetsService.addCurrentComponentExciseStamp(
-                    TaskExciseStamp(
-                            materialNumber = componentInfo.value!!.number,
-                            code = "951869302882400418200O46BLILJ3I8DPM0DV1NT3PAFZR9M13NK6CD9LOQKOE0VX143NMT2JZSTII5RQG0A5N5YVB8BG90UPAC5BTDNALGLOH9YH8SP1QV6RJ9YTFIIQAG2RFX73JKZLAM3C5060",
-                            placeCode = componentInfo.value!!.placeCode,
-                            setMaterialNumber = componentInfo.value!!.setNumber
-                    )
-            )
-            count.value = "1"
-            countValue.value = countValue.value!!.plus(1.0)
-        } else {
-            processSetsService.addCurrentComponentExciseStamp(
-                    TaskExciseStamp(
-                            materialNumber = componentInfo.value!!.number,
-                            code = "751869302882400418200O46BLILJ3I8DPM0DV1NT3PAFZR9M13NK6CD9LOQKOE0VX143NMT2JZSTII5RQG0A5N5YVB8BG90UPAC5BTDNALGLOH9YH8SP1QV6RJ9YTFIIQAG2RFX73JKZLAM3C5060",
-                            placeCode = componentInfo.value!!.placeCode,
-                            setMaterialNumber = componentInfo.value!!.setNumber
-                    )
-            )
-            processSetsService.addCurrentComponentExciseStamp(
-                    TaskExciseStamp(
-                            materialNumber = componentInfo.value!!.number,
-                            code = "851869302882400418200O46BLILJ3I8DPM0DV1NT3PAFZR9M13NK6CD9LOQKOE0VX143NMT2JZSTII5RQG0A5N5YVB8BG90UPAC5BTDNALGLOH9YH8SP1QV6RJ9YTFIIQAG2RFX73JKZLAM3C5060",
-                            placeCode = componentInfo.value!!.placeCode,
-                            setMaterialNumber = componentInfo.value!!.setNumber
-                    )
-            )
-            count.value = "2"
-            countValue.value = countValue.value!!.plus(2.0)
-        }
-
-
-        //processSetsService.applyComponent()
         screenNavigator.goBack()
     }
 

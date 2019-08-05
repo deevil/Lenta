@@ -69,7 +69,7 @@ class SetComponentsFragment : CoreFragment<FragmentSetComponentsBinding, SetComp
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.apply)
 
         connectLiveData(vm.enabledRollbackButton, bottomToolbarUiModel.uiModelButton2.enabled)
-        //connectLiveData(vm.enabledApplyButton, bottomToolbarUiModel.uiModelButton5.enabled)
+        connectLiveData(vm.enabledApplyButton, bottomToolbarUiModel.uiModelButton5.enabled)
     }
 
     override fun onToolbarButtonClick(view: View) {

@@ -44,7 +44,6 @@ class SetsInfoViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKe
     val iconRes: MutableLiveData<Int> = MutableLiveData(0)
     val textColor: MutableLiveData<Int> = MutableLiveData(0)
     val msgWrongProducType: MutableLiveData<String> = MutableLiveData()
-    private var countAllExciseStampsScannedSet: MutableLiveData<Int> = MutableLiveData(0)
     val productInfo: MutableLiveData<TaskProductInfo> = MutableLiveData()
     private val componentsInfo: ArrayList<SetComponentInfo> = ArrayList()
     val titleProgressScreen: MutableLiveData<String> = MutableLiveData()
@@ -72,7 +71,6 @@ class SetsInfoViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKe
 
     val totalCountWithUom: MutableLiveData<String> = totalCount.map { "${it.toStringFormatted()} ${productInfo.value!!.uom.name}" }
 
-
     val componentsItem: MutableLiveData<List<ComponentItem>> = countValue.map {
         componentsInfo.mapIndexed { index, componentInfo ->
             val countExciseStampForComponent = processSetsService.getCountExciseStampsForComponent(componentInfo)
@@ -89,14 +87,16 @@ class SetsInfoViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKe
         }
     }
 
-    val enabledMissingButton: MutableLiveData<Boolean> = totalCount.map { it ?: 0.0 <= 1.0 }
+    val enabledMissingButton: MutableLiveData<Boolean> = totalCount.map {
+        it ?: 0.0 == 0.0
+    }
 
     val visibilityMissingButton: MutableLiveData<Boolean> = selectedPage.map {
         it == 0
     }
 
-    val enabledApplyButton: MutableLiveData<Boolean> = componentsItem.map {
-        isAllExciseStampsScannedSet() && countValue.value ?: 0.0 != 0.0
+    val enabledApplyButton: MutableLiveData<Boolean> = totalCount.map {
+        ((it ?: 0.0) > 0.0 && processSetsService.getCountExciseStampsForComponents() == 0)
     }
 
     val enabledCleanButton: MutableLiveData<Boolean> = selectedPage
@@ -133,7 +133,12 @@ class SetsInfoViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKe
         }
     }
 
-    private fun isAllExciseStampsScannedSet(): Boolean {
+    private fun updateComponents() {
+        countValue.value = countValue.value
+        componentsSelectionsHelper.clearPositions()
+    }
+
+    fun onResume() {
         var totalCountComponents = 0.0
         var totalCountExciseStampForComponents = 0
         componentsInfo.map { componentInfo ->
@@ -141,25 +146,12 @@ class SetsInfoViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKe
             totalCountExciseStampForComponents += processSetsService.getCountExciseStampsForComponent(componentInfo)
         }
         if (totalCountComponents == totalCountExciseStampForComponents.toDouble() && totalCountExciseStampForComponents != 0) {
-            countAllExciseStampsScannedSet.value = totalCountExciseStampForComponents
-            return true
-        }
-        return false
-    }
-
-    private fun updateComponents() {
-        countValue.value = countValue.value
-        componentsSelectionsHelper.clearPositions()
-    }
-
-    fun onResume() {
-        if (isAllExciseStampsScannedSet() && countAllExciseStampsScannedSet.value!! > 0.0) {
             processSetsService.applyComponentsExciseStamps()
             count.value = "1"
             countValue.value = countValue.value!!.plus(1.0)
-            countAllExciseStampsScannedSet.value = 0
             selectedPage.value = 0
         }
+
         updateComponents()
     }
 
