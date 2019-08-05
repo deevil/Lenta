@@ -8,6 +8,7 @@ import com.lenta.shared.fmp.resources.dao_ext.getUomInfo
 import com.lenta.shared.fmp.resources.fast.ZmpUtz07V001
 import com.lenta.shared.fmp.resources.slow.ZfmpUtz48V001
 import com.lenta.shared.fmp.resources.slow.ZmpUtz46V001
+import com.lenta.shared.models.core.ProductType
 import com.lenta.shared.models.core.Uom
 import com.lenta.shared.models.core.getMatrixType
 import com.lenta.shared.models.core.getProductType
@@ -23,8 +24,7 @@ class ProcessSetsService@Inject constructor() : IProcessProductService {
     @Inject
     lateinit var processServiceManager: IInventoryTaskManager
 
-    private lateinit var productInfo: TaskProductInfo
-
+    private var currentProductInfo: TaskProductInfo? = null
     private val currentComponentExciseStamps: ArrayList<TaskExciseStamp> = ArrayList()
     private val currentAllExciseStamps: ArrayList<TaskExciseStamp> = ArrayList()
     private val componentsInfo: ArrayList<SetComponentInfo> = ArrayList()
@@ -41,33 +41,37 @@ class ProcessSetsService@Inject constructor() : IProcessProductService {
         ZmpUtz07V001(hyperHive)
     }
 
-    fun newProcessSetsService(productInfo: TaskProductInfo) : ProcessSetsService {
-        this.productInfo = productInfo
-        currentAllExciseStamps.clear()
-        currentComponentExciseStamps.clear()
-        setComponentsForSet()
-        return this
+    fun newProcessSetsService(productInfo: TaskProductInfo) : ProcessSetsService? {
+        return if (productInfo.type == ProductType.ExciseAlcohol && productInfo.isSet){
+            currentProductInfo = productInfo
+            currentAllExciseStamps.clear()
+            currentComponentExciseStamps.clear()
+            setComponentsForSet()
+            return this
+        }
+        else null
     }
 
-    override fun getFactCount(): Double {
-        return  productInfo.factCount
+    override fun getFactCount(): Double? {
+        return currentProductInfo?.factCount
     }
 
     override fun setFactCount(count: Double){
         if (count >= 0.0) {
             if (count > 0.0) {
-                processServiceManager.getInventoryTask()!!.taskRepository.getProducts().findProduct(productInfo)?.factCount = count
-                processServiceManager.getInventoryTask()!!.taskRepository.getProducts().findProduct(productInfo)?.isPositionCalc = true
+                processServiceManager.getInventoryTask()!!.taskRepository.getProducts().findProduct(currentProductInfo!!)?.factCount = count
+                processServiceManager.getInventoryTask()!!.taskRepository.getProducts().findProduct(currentProductInfo!!)?.isPositionCalc = true
             } else {
-                processServiceManager.getInventoryTask()!!.taskRepository.getProducts().findProduct(productInfo)?.factCount = 0.0
-                processServiceManager.getInventoryTask()!!.taskRepository.getProducts().findProduct(productInfo)?.isPositionCalc = false
+                processServiceManager.getInventoryTask()!!.taskRepository.getProducts().findProduct(currentProductInfo!!)?.factCount = 0.0
+                processServiceManager.getInventoryTask()!!.taskRepository.getProducts().findProduct(currentProductInfo!!)?.isPositionCalc = false
             }
         }
     }
 
     override fun markMissing(){
-        processServiceManager.getInventoryTask()!!.taskRepository.getProducts().findProduct(productInfo)?.factCount = 0.0
-        processServiceManager.getInventoryTask()!!.taskRepository.getProducts().findProduct(productInfo)?.isPositionCalc = true
+        processServiceManager.getInventoryTask()!!.taskRepository.getProducts().findProduct(currentProductInfo!!)?.factCount = 0.0
+        processServiceManager.getInventoryTask()!!.taskRepository.getProducts().findProduct(currentProductInfo!!)?.isPositionCalc = true
+        discard()
     }
 
     fun getComponentsForSet() : List<SetComponentInfo>{
@@ -77,7 +81,7 @@ class ProcessSetsService@Inject constructor() : IProcessProductService {
     private fun setComponentsForSet() : List<SetComponentInfo>{
         componentsInfo.clear()
 
-        zmpUtz46V001.getComponentsForSet(productInfo.materialNumber).map {data ->
+        zmpUtz46V001.getComponentsForSet(currentProductInfo!!.materialNumber).map {data ->
             zfmpUtz48V001.getProductInfo(data.matnrOsn).map {
                 val uomInfo = zmpUtz07V001.getUomInfo(data.meins)
                 componentsInfo.add(SetComponentInfo(
@@ -89,7 +93,7 @@ class ProcessSetsService@Inject constructor() : IProcessProductService {
                         matrixType = getMatrixType(it.matrType),
                         sectionId = it.abtnr,
                         typeProduct = getProductType(it.isAlco == "X", it.isExc == "X"),
-                        placeCode = productInfo.placeCode
+                        placeCode = currentProductInfo!!.placeCode
                 ))
             }
         }
@@ -97,37 +101,18 @@ class ProcessSetsService@Inject constructor() : IProcessProductService {
     }
 
     fun getCountExciseStampsForComponent(componentsInfo: SetComponentInfo) : Int{
-        return currentAllExciseStamps.filter {it.materialNumber == componentsInfo.number}.size +
-                processServiceManager.
-                        getInventoryTask()!!.
-                        taskRepository.
-                        getExciseStamps().
-                        findExciseStampsOfProduct(productInfo).
-                        filter {it.materialNumber == componentsInfo.number}.
-                        size
+        return currentComponentExciseStamps.filter {it.materialNumber == componentsInfo.number}.size
     }
 
     fun clearExciseStampsForComponent(componentsInfo: SetComponentInfo){
-        currentAllExciseStamps.map {stamp ->
-            if (stamp.materialNumber == componentsInfo.number){
-                currentAllExciseStamps.remove(stamp)
-            }
+        currentComponentExciseStamps.filter { stamp ->
+            stamp.materialNumber == componentsInfo.number
+        }.let {
+            currentComponentExciseStamps.removeAll(it)
         }
-
-        processServiceManager.
-                getInventoryTask()!!.
-                taskRepository.
-                getExciseStamps().
-                findExciseStampsOfProduct(productInfo).
-                filter {stamp ->
-                    stamp.materialNumber == componentsInfo.number
-                }.
-                let {stamps ->
-                    processServiceManager.getInventoryTask()!!.taskRepository.getExciseStamps().deleteExciseStamps(stamps)
-                }
     }
 
-    fun addCurrentComponentExciseStamps(exciseStamp: TaskExciseStamp){
+    fun addCurrentComponentExciseStamp(exciseStamp: TaskExciseStamp){
         currentComponentExciseStamps.add(exciseStamp)
     }
 
@@ -136,12 +121,8 @@ class ProcessSetsService@Inject constructor() : IProcessProductService {
         return currentComponentExciseStamps.size
     }
 
-    fun applyComponent(){
+    fun applyComponentsExciseStamps(){
         currentAllExciseStamps.addAll(currentComponentExciseStamps)
-        currentComponentExciseStamps.clear()
-    }
-
-    fun discardComponent(){
         currentComponentExciseStamps.clear()
     }
 
@@ -153,6 +134,8 @@ class ProcessSetsService@Inject constructor() : IProcessProductService {
     }
 
     fun discard(){
+        currentProductInfo = null
+        componentsInfo.clear()
         currentAllExciseStamps.clear()
         currentComponentExciseStamps.clear()
     }
