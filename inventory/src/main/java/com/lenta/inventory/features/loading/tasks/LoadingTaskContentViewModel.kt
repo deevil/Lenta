@@ -3,11 +3,8 @@ package com.lenta.inventory.features.loading.tasks
 import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.lenta.inventory.features.task_list.TaskItemVm
 import com.lenta.inventory.models.RecountType
-import com.lenta.inventory.models.StorePlaceLockMode
 import com.lenta.inventory.models.task.IInventoryTaskManager
-import com.lenta.inventory.models.task.InventoryTaskManager
 import com.lenta.inventory.models.task.TaskContents
 import com.lenta.inventory.models.task.TaskDescription
 import com.lenta.inventory.platform.navigation.IScreenNavigator
@@ -55,7 +52,7 @@ class LoadingTaskContentViewModel : CoreLoadingViewModel() {
                     additionalDataFlag = "",
                     newProductNumbers = emptyList(),
                     numberRelock = "",
-                    mode = recountType?.recountType ?: "")).either(::handleFailure, ::handleSuccess)
+                    mode = "1")).either(::handleFailure, ::handleSuccess)
             progress.value = false
         }
     }

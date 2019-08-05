@@ -6,6 +6,7 @@ import com.lenta.shared.fmp.ObjectRawStatus
 import com.lenta.shared.functional.Either
 import com.lenta.shared.interactor.UseCase
 import com.lenta.shared.requests.FmpRequestsHelper
+import com.lenta.shared.requests.SapResponse
 import javax.inject.Inject
 
 class InvSendReportNetRequest
@@ -26,11 +27,11 @@ data class InvSendReportResponse(
         @SerializedName("EV_TIME_OF_PROC")
         val timeOfProcess: String,
         @SerializedName("EV_ERROR_TEXT")
-        val errorText: String,
+        override val errorText: String,
         @SerializedName("EV_RETCODE")
-        val retCode: String
+        override val retCode: Int
 
-)
+) : SapResponse
 
 //ET_PLACES_NOT_SAVE
 data class PlaceInfo(

@@ -148,6 +148,7 @@ class GoodsListFragment : CoreFragment<FragmentGoodsListBinding, GoodsListViewMo
                                 override fun onBind(binding: ItemTileProcessedGoodsBinding, position: Int) {
                                     binding.tvCounter.tag = position
                                     binding.tvCounter.setOnClickListener(onClickSelectionListener)
+                                    binding.tvPlan.visibility = View.INVISIBLE
                                     binding.selectedForDelete = vm.unprocessedSelectionHelper.isSelected(position)
                                     unprocessedRecyclerViewKeyHandler?.let {
                                         binding.root.isSelected = it.isSelected(position)

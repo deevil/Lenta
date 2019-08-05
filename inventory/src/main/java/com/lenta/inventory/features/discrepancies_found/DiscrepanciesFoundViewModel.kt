@@ -36,12 +36,6 @@ class DiscrepanciesFoundViewModel : CoreViewModel() {
     val byGoodsSelectionHelper = SelectionItemsHelper()
     val byStorageSelectionHelper = SelectionItemsHelper()
 
-    val absentEnabled: MutableLiveData<Boolean> = selectedPage.combineLatest(byGoodsSelectionHelper.selectedPositions).combineLatest(byStorageSelectionHelper.selectedPositions).map {
-        val page = it?.first?.first ?: 0
-        val selectionCount = if (page == 0) it?.first?.second?.size ?: 0 else it?.second?.size ?: 0
-        selectionCount > 0
-    }
-
     val untieDeleteEnabled: MutableLiveData<Boolean> = selectedPage.combineLatest(byGoodsSelectionHelper.selectedPositions).combineLatest(byStorageSelectionHelper.selectedPositions).map {
         val page = it?.first?.first ?: 0
         val selectionCount = if (page == 0) it?.first?.second?.size ?: 0 else it?.second?.size ?: 0
@@ -99,11 +93,19 @@ class DiscrepanciesFoundViewModel : CoreViewModel() {
     }
 
     fun onClickMissing() {
-        val count: Int
+        var count: Int
         if (selectedPage.value == 0) {
             count = byGoodsSelectionHelper.selectedPositions.value?.size ?: 0
+            if (count == 0) {
+                byGoodsSelectionHelper.addAll(discrepanciesByGoods.value ?: emptyList())
+                count = byGoodsSelectionHelper.selectedPositions.value?.size ?: 0
+            }
         } else {
             count = byStorageSelectionHelper.selectedPositions.value?.size ?: 0
+            if (count == 0) {
+                byStorageSelectionHelper.addAll(discrepanciesByStorage.value ?: emptyList())
+                count = byStorageSelectionHelper.selectedPositions.value?.size ?: 0
+            }
         }
 
         screenNavigator.openConfirmationMissingGoods(count) {

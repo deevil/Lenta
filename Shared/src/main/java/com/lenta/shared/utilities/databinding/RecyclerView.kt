@@ -2,6 +2,7 @@ package com.lenta.shared.utilities.databinding
 
 
 import android.annotation.SuppressLint
+import android.os.Build
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewConfiguration
@@ -50,6 +51,15 @@ fun <ItemType, BindingType : ViewDataBinding> setupRecyclerView(recyclerView: Re
         val mLayoutManager: RecyclerView.LayoutManager = LinearLayoutManager(recyclerView.context)
         recyclerView.layoutManager = mLayoutManager
         recyclerView.itemAnimator = null
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            recyclerView.touchscreenBlocksFocus = true
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            recyclerView.defaultFocusHighlightEnabled = false
+        }
+
 
         dataBindingRecyclerViewConfig.let {
             recyclerView.adapter = DataBindingRecyclerAdapter(
@@ -216,6 +226,7 @@ class RecyclerViewKeyHandler<T>(private val rv: RecyclerView,
 
     fun selectPosition(position: Int) {
         posInfo.value = PosInfo(currentPos = position, lastPos = posInfo.value!!.currentPos, isManualClick = true)
+        rv.requestFocus()
     }
 
     fun isSelected(pos: Int): Boolean {
