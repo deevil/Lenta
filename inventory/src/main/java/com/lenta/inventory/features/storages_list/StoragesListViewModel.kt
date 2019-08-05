@@ -139,7 +139,7 @@ class StoragesListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
                             additionalDataFlag = "",
                             newProductNumbers = emptyList(),
                             numberRelock = "",
-                            mode = recountType?.recountType ?: "")
+                            mode = "1")
             )
                     .either(::handleFailure, ::handleUpdateSuccess)
             screenNavigator.hideProgress()
