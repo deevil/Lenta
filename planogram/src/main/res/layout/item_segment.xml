@@ -105,7 +105,7 @@
                     android:id="@+id/tv_shelves_count"
                     style="@style/CellTextStyle"
                     android:layout_marginStart="8dp"
-                    android:text="@{String.valueOf(segment.numberOfShelves)}"
+                    android:text="@{String.valueOf(segment.shelves.size())}"
                     tools:text="5"/>
 
             </LinearLayout>

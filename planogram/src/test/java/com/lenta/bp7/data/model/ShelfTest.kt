@@ -48,9 +48,9 @@ internal class ShelfTest {
     }
 
     @Test
-    fun `Get short formatted time`() {
-        val formattedTime = SimpleDateFormat("HH:mm", Locale.getDefault()).format(shelf?.checkStart)
-        assertEquals(formattedTime, shelf?.getFormattedTime())
+    fun `Get formatted start time`() {
+        val formattedStartTime = SimpleDateFormat("HH:mm", Locale.getDefault()).format(shelf?.checkStart)
+        assertEquals(formattedStartTime, shelf?.getFormattedTime())
     }
 
 }
