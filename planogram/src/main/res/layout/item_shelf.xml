@@ -112,7 +112,7 @@
                     android:id="@+id/tv_goods_count"
                     style="@style/CellTextStyle"
                     android:layout_marginStart="8dp"
-                    android:text="@{String.valueOf(shelf.numberOfGoods)}"
+                    android:text="@{String.valueOf(shelf.goods.size())}"
                     tools:text="27"/>
 
             </LinearLayout>
