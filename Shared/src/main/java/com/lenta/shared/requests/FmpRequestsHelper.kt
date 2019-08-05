@@ -45,7 +45,7 @@ class FmpRequestsHelper(val hyperHive: HyperHive,
                 val resultData = status.result?.raw
                 if (resultData is SapResponse && resultData.retCode != 0) {
                     val errorText = resultData.errorText ?: ""
-                    analyticsHelper.onRetCodeNotEmpty("errorText: ${resultData.errorText}, retCode: ${resultData.retCode}")
+                    analyticsHelper.onRetCodeNotEmpty("errorText: ${resultData.errorText}, retCode: ${resultData.retCode}, sent data: ${webCallParams.data}")
                     Either.Left(Failure.SapError(errorText))
                 } else {
                     Either.Right(status.result!!.raw!!)
