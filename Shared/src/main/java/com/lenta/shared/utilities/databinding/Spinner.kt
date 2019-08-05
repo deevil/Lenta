@@ -9,7 +9,7 @@ import androidx.databinding.BindingAdapter
 import com.lenta.shared.view.OnPositionClickListener
 
 @BindingAdapter(value = ["items", "position", "onPositionClickListener", "android:enabled"], requireAll = false)
-fun setupSpinner(spinner: Spinner, items: List<String>?, position: Int?, onPositionClickListener: OnPositionClickListener, enabled: Boolean?) {
+fun setupSpinner(spinner: Spinner, items: List<String>?, position: Int?, onPositionClickListener: OnPositionClickListener?, enabled: Boolean?) {
     var adapter: ArrayAdapter<String>
     if (spinner.adapter == null) {
         val mutableList: MutableList<String> = (items ?: listOf()).toMutableList()
@@ -18,6 +18,9 @@ fun setupSpinner(spinner: Spinner, items: List<String>?, position: Int?, onPosit
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         spinner.adapter = adapter
         spinner.setSelection(position ?: 0)
+    }
+
+    if (spinner.onItemSelectedListener == null && onPositionClickListener != null) {
         spinner.postDelayed({
             spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
                 override fun onItemSelected(adapterView: AdapterView<*>, view: View, position: Int, l: Long) {
@@ -29,6 +32,7 @@ fun setupSpinner(spinner: Spinner, items: List<String>?, position: Int?, onPosit
             }
         }, 500)
     }
+
     @Suppress("UNCHECKED_CAST")
     adapter = (spinner.adapter as ArrayAdapter<String>)
     adapter.clear()
