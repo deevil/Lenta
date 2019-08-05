@@ -56,6 +56,10 @@ fun <ItemType, BindingType : ViewDataBinding> setupRecyclerView(recyclerView: Re
             recyclerView.touchscreenBlocksFocus = true
         }
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            recyclerView.defaultFocusHighlightEnabled = false
+        }
+
 
         dataBindingRecyclerViewConfig.let {
             recyclerView.adapter = DataBindingRecyclerAdapter(
@@ -222,6 +226,7 @@ class RecyclerViewKeyHandler<T>(private val rv: RecyclerView,
 
     fun selectPosition(position: Int) {
         posInfo.value = PosInfo(currentPos = position, lastPos = posInfo.value!!.currentPos, isManualClick = true)
+        rv.requestFocus()
     }
 
     fun isSelected(pos: Int): Boolean {
