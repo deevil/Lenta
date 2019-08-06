@@ -41,14 +41,12 @@ class AuthViewModelTest {
         authViewModel.auth = mock()
         authViewModel.appSettings = mock()
         authViewModel.sessionInfo = mock()
-        authViewModel.permissionsRequest = mock()
         authViewModel.navigator = mock()
 
 
         println(authViewModel)
         println(authViewModel.appSettings)
         println(authViewModel.sessionInfo)
-        println(authViewModel.permissionsRequest)
         println(authViewModel.navigator)
 
 

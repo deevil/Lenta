@@ -1,6 +1,6 @@
-package com.lenta.inventory
+package com.lenta.bp9
 
-import com.lenta.bp10.platform.extentions.getAppComponent
+import com.lenta.bp9.platform.extentions.getAppComponent
 import com.lenta.shared.CoreApplication
 import com.lenta.shared.settings.DefaultConnectionSettings
 
@@ -13,8 +13,8 @@ class AndroidApplication : CoreApplication() {
                 testServerAddress = "http://9.6.24.46",
                 testEnvironment = "Lenta_LRQ",
                 testProject = "PR_SHARED",
-                techLogin = "MAKAROV",
-                techPassword = "1q2w3e4r"
+                techLogin = "tech_user",
+                techPassword = "123456"
         )
     }
 
