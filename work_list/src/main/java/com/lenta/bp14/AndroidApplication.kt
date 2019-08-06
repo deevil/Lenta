@@ -1,6 +1,6 @@
-package com.lenta.inventory
+package com.lenta.bp14
 
-import com.lenta.bp10.platform.extentions.getAppComponent
+import com.lenta.bp14.platform.extentions.getAppComponent
 import com.lenta.shared.CoreApplication
 import com.lenta.shared.settings.DefaultConnectionSettings
 

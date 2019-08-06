@@ -1,8 +1,7 @@
 package com.lenta.inventory.repos
 
 import androidx.lifecycle.MutableLiveData
-import com.lenta.inventory.requests.network.PermissionsResult
-import com.lenta.inventory.requests.network.TaskContentRestInfo
+import com.lenta.shared.requests.PermissionsResult
 import com.lenta.inventory.requests.network.TasksListRestInfo
 
 class RepoInMemoryHolder : IRepoInMemoryHolder {

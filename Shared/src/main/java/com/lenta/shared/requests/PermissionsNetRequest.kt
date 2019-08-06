@@ -1,12 +1,10 @@
-package com.lenta.inventory.requests.network
+package com.lenta.shared.requests
 
 import com.google.gson.annotations.SerializedName
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.fmp.ObjectRawStatus
 import com.lenta.shared.functional.Either
 import com.lenta.shared.interactor.UseCase
-import com.lenta.shared.requests.FmpRequestsHelper
-import com.lenta.shared.requests.SapResponse
 import javax.inject.Inject
 
 class PermissionsRequest
