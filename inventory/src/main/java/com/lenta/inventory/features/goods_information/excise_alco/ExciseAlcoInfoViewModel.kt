@@ -134,18 +134,8 @@ class ExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
         selectedPosition.value = countLastExciseStamp.countType
     }
 
-    var test = 0
     fun onClickDetails() {
-        if (test == 1) {
-            onScanResult("951869302882400418200O46BLILJ3I8DPM0DV1NT3PAFZR9M13NK6CD9LOQKOE0VX143NMT2JZSTII5RQG0A5N5YVB8BG90UPAC5BTDNALGLOH9YH8SP1QV6RJ9YTFIIQAG2RFX73JKZLAM3C5060")
-            test = 2
-        }
-        if (test == 0) {
-            onScanResult("22N0000154KNI691XDC380V71231001511013ZZ012345678901234567890123456ZZ")
-            test = 1
-        }
-
-        //screenNavigator.openGoodsDetailsStorageScreen(productInfo.value!!)
+        screenNavigator.openGoodsDetailsStorageScreen(productInfo.value!!)
     }
 
     fun onClickMissing() {
