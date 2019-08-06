@@ -28,10 +28,6 @@ data class Shelf(
         return SimpleDateFormat("HH:mm", Locale.getDefault()).format(checkStart)
     }
 
-    fun getNumberOfGoods(): Int {
-        return goods.size
-    }
-
 }
 
 enum class ShelfStatus {

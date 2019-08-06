@@ -29,10 +29,6 @@ data class Segment(
         return SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(checkStart)
     }
 
-    fun getNumberOfShelves(): Int {
-        return shelves.size
-    }
-
 }
 
 enum class SegmentStatus {

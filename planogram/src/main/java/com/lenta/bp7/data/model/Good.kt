@@ -1,8 +1,5 @@
 package com.lenta.bp7.data.model
 
-import org.simpleframework.xml.Root
-
-@Root(name = "goods")
 data class Good(
         val id: Int,
         val sapCode: String,
