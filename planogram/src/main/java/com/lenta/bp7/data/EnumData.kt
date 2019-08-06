@@ -14,3 +14,8 @@ enum class CheckType {
     SELF_CONTROL,
     EXTERNAL_AUDIT,
 }
+
+enum class SapCodeType {
+    MATERIAL,
+    MATCODE,
+}
