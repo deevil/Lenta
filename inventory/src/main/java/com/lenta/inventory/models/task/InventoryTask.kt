@@ -23,8 +23,7 @@ class InventoryTask(val taskDescription: TaskDescription, val taskRepository: IT
     //Вызывается в двух случаях:
     //1. Нестрогий список, обычный пересчет, товар по умолчанию находится в общем МХ 00
     //2. Строгий список, пересчет по МХ, по нажатию "Отвязать", удаляем товар в конкретном заданном МХ
-    fun deleteProduct(productNumber: String, storePlaceNumber: String = "00")
-    {
+    fun deleteProduct(productNumber: String, storePlaceNumber: String = "00") {
         taskRepository.getProducts().findProduct(productNumber, storePlaceNumber)?.let {
             taskRepository.getProducts().deleteProduct(it)
         }
@@ -53,21 +52,21 @@ class InventoryTask(val taskDescription: TaskDescription, val taskRepository: IT
         }
     }
 
-    //TODO предварительная версия. Логика будет уточнятся дополнятся
-    fun getReport(isFinish: Boolean): InventoryReport {
+    fun getReport(isFinish: Boolean, ip: String, personnelNumber: String, isRecount: Boolean): InventoryReport {
         val taskDescription = taskDescription
         return InventoryReport(
                 tkNumber = taskDescription.tkNumber,
-                ipAdress = taskDescription.lockIP,
+                ipAdress = ip,
                 taskNumber = taskDescription.taskNumber,
                 isFinish = if (isFinish) "X" else "",
-                personnelNumber = taskDescription.lockUser,
+                personnelNumber = personnelNumber,
                 storePlacesForDelete = getReportsStorePlaces(),
                 products = getReportsProducts(),
                 stamps = getReportStamps(),
-                isRecount = ""
+                isRecount = if (isRecount) "X" else ""
         )
     }
+
     //TODO предварительная версия. Логика будет уточнятся дополнятся
     private fun getReportStamps(): List<ExciseStampInfo> {
         return taskRepository.getExciseStamps()
@@ -105,7 +104,7 @@ class InventoryTask(val taskDescription: TaskDescription, val taskRepository: IT
                     storePlaceCode = it.placeCode,
                     factQuantity = it.factCount.toString(),
                     positionCounted = if (it.isPositionCalc) "X" else "",
-                    isDel = if (it.factCount > 0.0) "" else "X",
+                    isDel = if (!it.isPositionCalc && it.factCount == 0.0) "X" else "",
                     isSet = if (it.isSet) "X" else "",
                     isExcOld = if (it.isExcOld) "X" else ""
             )
@@ -154,11 +153,11 @@ class InventoryTask(val taskDescription: TaskDescription, val taskRepository: IT
         updateExciseStamps(taskContents.exciseStamps)
     }
 
-    fun hasDiscrepancies() : Boolean {
+    fun hasDiscrepancies(): Boolean {
         return getDiscrepancies().isNotEmpty()
     }
 
-    fun getDiscrepancies() : List<TaskProductInfo> {
+    fun getDiscrepancies(): List<TaskProductInfo> {
         return taskRepository.getProducts().getNotProcessedProducts()
     }
 }
