@@ -1,19 +1,19 @@
-package com.lenta.inventory.features.auth
+package com.lenta.bp9.features.auth
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.lenta.inventory.platform.navigation.IScreenNavigator
-import com.lenta.inventory.repos.IRepoInMemoryHolder
-import com.lenta.shared.requests.PermissionsParams
+import com.lenta.bp9.platform.navigation.IScreenNavigator
+import com.lenta.bp9.repos.IRepoInMemoryHolder
 import com.lenta.shared.utilities.runIfDebug
-import com.lenta.shared.requests.PermissionsRequest
-import com.lenta.shared.requests.PermissionsResult
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.exception.IFailureInterpreter
 import com.lenta.shared.features.login.CoreAuthViewModel
 import com.lenta.shared.features.login.isEnterEnabled
 import com.lenta.shared.features.login.isValidLoginFields
+import com.lenta.shared.requests.PermissionsParams
+import com.lenta.shared.requests.PermissionsRequest
+import com.lenta.shared.requests.PermissionsResult
 import com.lenta.shared.requests.network.Auth
 import com.lenta.shared.requests.network.AuthParams
 import com.lenta.shared.settings.IAppSettings
