@@ -129,7 +129,6 @@ class ExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
 
     fun onClickRollback() {
         isCheckExciseStampByAlcoCode.value = false
-        scannedStampCode.value = ""
         val countLastExciseStamp = processExciseAlcoProductService.rollback()
         count.value = if (countLastExciseStamp.countLastExciseStamp == 0) "" else countLastExciseStamp.countLastExciseStamp.toString()
         selectedPosition.value = countLastExciseStamp.countType
