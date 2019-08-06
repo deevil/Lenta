@@ -83,13 +83,11 @@ class SetsInfoFragment : CoreFragment<FragmentSetsInfoBinding, SetsInfoViewModel
         bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.missing)
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.apply, enabled = false)
 
-        viewLifecycleOwner.apply {
-            connectLiveData(vm.enabledCleanButton, bottomToolbarUiModel.uiModelButton3.enabled)
-            connectLiveData(vm.visibilityCleanButton, bottomToolbarUiModel.uiModelButton3.visibility)
-            connectLiveData(vm.enabledMissingButton, bottomToolbarUiModel.uiModelButton4.enabled)
-            connectLiveData(vm.visibilityMissingButton, bottomToolbarUiModel.uiModelButton4.visibility)
-            connectLiveData(vm.enabledApplyButton, bottomToolbarUiModel.uiModelButton5.enabled)
-        }
+        connectLiveData(vm.enabledCleanButton, bottomToolbarUiModel.uiModelButton3.enabled)
+        connectLiveData(vm.visibilityCleanButton, bottomToolbarUiModel.uiModelButton3.visibility)
+        connectLiveData(vm.enabledMissingButton, bottomToolbarUiModel.uiModelButton4.enabled)
+        connectLiveData(vm.visibilityMissingButton, bottomToolbarUiModel.uiModelButton4.visibility)
+        connectLiveData(vm.enabledApplyButton, bottomToolbarUiModel.uiModelButton5.enabled)
     }
 
     override fun onToolbarButtonClick(view: View) {

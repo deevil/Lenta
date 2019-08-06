@@ -71,10 +71,8 @@ class GoodsDetailsStorageFragment : CoreFragment<FragmentGoodsDetailsStorageBind
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
         bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.delete)
 
-        viewLifecycleOwner.apply {
-            connectLiveData(vm.deleteButtonEnabled, bottomToolbarUiModel.uiModelButton3.enabled)
-            connectLiveData(vm.deleteButtonVisibility, bottomToolbarUiModel.uiModelButton3.visibility)
-        }
+        connectLiveData(vm.deleteButtonEnabled, bottomToolbarUiModel.uiModelButton3.enabled)
+        connectLiveData(vm.deleteButtonVisibility, bottomToolbarUiModel.uiModelButton3.visibility)
     }
 
     override fun onPageSelected(position: Int) {
