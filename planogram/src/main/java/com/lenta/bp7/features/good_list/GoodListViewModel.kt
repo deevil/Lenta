@@ -84,6 +84,9 @@ class GoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
                 if (goodInfo != null) {
                     checkData.addGood(goodInfo)
                     openGoodInfoScreen()
+                } else {
+                    // Сообщение - Данный товар не найден в справочнике
+                    navigator.showGoodNotFound()
                 }
             }
         }

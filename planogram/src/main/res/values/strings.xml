@@ -45,6 +45,7 @@
     <string name="lua_system_unavailable">Система LUA недоступна. Пересылка результатов невозможна. Продолжить работу с ТДС?</string>
     <string name="do_you_really_want_to_leave">Вы действительно хотите выйти?</string>
     <string name="unsent_data_detected">В ТДС обнаружены неотправленные данные. Хотите перейти к отправке этих данных?</string>
+    <string name="good_not_found_in_database">Данный товар не найден в справочнике</string>
 
 
     <!-- Заголовки экранов -->
