@@ -37,6 +37,10 @@ android {
         }
     }
 
+    testOptions {
+        unitTests.returnDefaultValues = true
+    }
+
     packagingOptions {
         pickFirst 'META-INF/kotlinx-io.kotlin_module'
         pickFirst 'META-INF/atomicfu.kotlin_module'
@@ -77,5 +81,8 @@ dependencies {
     // Support for older JUnit versions
     testImplementation "junit:junit:4.12"
     testRuntimeOnly "org.junit.vintage:junit-vintage-engine:5.3.2"
+
+    // Mockito
+    testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:2.1.0"
 
 }
