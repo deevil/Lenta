@@ -1,6 +1,7 @@
 package com.lenta.bp7.repos
 
 import com.lenta.bp7.data.Enabled
+import com.lenta.bp7.data.SapCodeType
 import com.lenta.bp7.data.StoreRetailType
 import com.lenta.bp7.data.model.GoodInfo
 import com.lenta.shared.di.AppScope
@@ -8,10 +9,10 @@ import com.lenta.shared.fmp.resources.dao_ext.*
 import com.lenta.shared.fmp.resources.fast.ZmpUtz07V001
 import com.lenta.shared.fmp.resources.fast.ZmpUtz14V001
 import com.lenta.shared.fmp.resources.fast.ZmpUtz23V001
-import com.lenta.shared.fmp.resources.slow.ZmpUtz24V001
+import com.lenta.shared.fmp.resources.slow.ZfmpUtz48V001
 import com.lenta.shared.fmp.resources.slow.ZmpUtz25V001
 import com.lenta.shared.requests.combined.scan_info.pojo.EanInfo
-import com.lenta.shared.requests.combined.scan_info.pojo.MaterialInfo
+import com.lenta.shared.requests.combined.scan_info.pojo.ProductInfo
 import com.lenta.shared.utilities.Logg
 import com.mobrun.plugin.api.HyperHive
 import kotlinx.coroutines.Dispatchers
@@ -23,7 +24,7 @@ class DatabaseRepo(hyperHive: HyperHive) : IDatabaseRepo {
     private val units: ZmpUtz07V001 by lazy { ZmpUtz07V001(hyperHive) } // Единицы измерения
     private val settings: ZmpUtz14V001 by lazy { ZmpUtz14V001(hyperHive) } // Настройки
     private val stores: ZmpUtz23V001 by lazy { ZmpUtz23V001(hyperHive) } // Список магазинов
-    private val goodInfo: ZmpUtz24V001 by lazy { ZmpUtz24V001(hyperHive) } // Информация о товаре
+    private val goodInfo: ZfmpUtz48V001 by lazy { ZfmpUtz48V001(hyperHive) } // Информация о товаре
     private val barCodeInfo: ZmpUtz25V001 by lazy { ZmpUtz25V001(hyperHive) } // Информация о штрих-коде
 
     override suspend fun getGoodInfoByBarCode(barCode: String): GoodInfo? {
@@ -32,7 +33,7 @@ class DatabaseRepo(hyperHive: HyperHive) : IDatabaseRepo {
             if (eanInfo == null) {
                 return@withContext null
             } else {
-                val materialInfo = getMaterialInfo(eanInfo.materialNumber)
+                val materialInfo = getProductInfoByMaterial(eanInfo.materialNumber)
                 val unitName = getGoodUnitName(materialInfo?.buom)
                 return@withContext GoodInfo(
                         sapCode = eanInfo.materialNumber,
@@ -44,19 +45,22 @@ class DatabaseRepo(hyperHive: HyperHive) : IDatabaseRepo {
         }
     }
 
-    override suspend fun getGoodInfoBySapCode(sapCode: String): GoodInfo? {
+    override suspend fun getGoodInfoBySapCode(sapCode: String, type: SapCodeType): GoodInfo? {
         return withContext(Dispatchers.IO) {
-            val eanInfo = getEanInfoBySapCode(sapCode)
+            val productInfo = when (type) {
+                SapCodeType.MATERIAL -> getProductInfoByMaterial(sapCode)
+                SapCodeType.MATCODE -> getProductInfoByMatcode(sapCode)
+            }
+            val eanInfo = getEanInfoBySapCode(productInfo?.material)
             if (eanInfo == null) {
                 return@withContext null
             } else {
-                val materialInfo = getMaterialInfo(eanInfo.materialNumber)
-                val unitName = getGoodUnitName(materialInfo?.buom)
+                val unitName = getGoodUnitName(productInfo?.buom)
                 return@withContext GoodInfo(
                         sapCode = sapCode,
                         barCode = eanInfo.ean,
-                        name = materialInfo?.name ?: "Not found!",
-                        unitsCode = materialInfo?.buom ?: "Not found!",
+                        name = productInfo?.name ?: "Not found!",
+                        unitsCode = productInfo?.buom ?: "Not found!",
                         units = unitName ?: "Not found!")
             }
         }
@@ -74,9 +78,15 @@ class DatabaseRepo(hyperHive: HyperHive) : IDatabaseRepo {
         }
     }
 
-    override suspend fun getMaterialInfo(sapCode: String?): MaterialInfo? {
+    override suspend fun getProductInfoByMaterial(material: String?): ProductInfo? {
         return withContext(Dispatchers.IO) {
-            return@withContext goodInfo.getGoodInfo(sapCode)?.toGoodInfo()
+            return@withContext goodInfo.getProductInfoByMaterial(material)?.toMaterialInfo()
+        }
+    }
+
+    override suspend fun getProductInfoByMatcode(matcode: String?): ProductInfo? {
+        return withContext(Dispatchers.IO) {
+            return@withContext goodInfo.getProductInfoByMatcode(matcode)?.toMaterialInfo()
         }
     }
 
@@ -145,9 +155,10 @@ interface IDatabaseRepo {
     suspend fun getExternalAuditPinCode(): String?
     suspend fun getEanInfoByBarCode(barCode: String?): EanInfo?
     suspend fun getEanInfoBySapCode(sapCode: String?): EanInfo?
-    suspend fun getMaterialInfo(sapCode: String?): MaterialInfo?
+    suspend fun getProductInfoByMaterial(material: String?): ProductInfo?
+    suspend fun getProductInfoByMatcode(matcode: String?): ProductInfo?
     suspend fun getGoodUnitName(unitCode: String?): String?
     suspend fun getGoodInfoByBarCode(barCode: String): GoodInfo?
-    suspend fun getGoodInfoBySapCode(sapCode: String): GoodInfo?
+    suspend fun getGoodInfoBySapCode(sapCode: String, type: SapCodeType): GoodInfo?
     suspend fun getAllowedAppVersion(): String?
 }

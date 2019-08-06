@@ -310,6 +310,14 @@ class ScreenNavigator(
                     rightButtonDecorationInfo = ButtonDecorationInfo.goOver))
         }
     }
+
+    override fun showGoodNotFound() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.good_not_found_in_database),
+                    pageNumber = "100",
+                    timeAutoExitInMillis = 2000))
+        }
+    }
 }
 
 interface IScreenNavigator : ICoreNavigator {
@@ -347,5 +355,6 @@ interface IScreenNavigator : ICoreNavigator {
     fun showLuaSystemUnavailable(exitCallback: () -> Unit, nextCallback: () -> Unit)
     fun showDoYouReallyWantToLeave(nextCallback: () -> Unit)
     fun showUnsentDataDetected(exitToAppCallback: () -> Unit, goOverCallback: () -> Unit)
+    fun showGoodNotFound()
 
 }

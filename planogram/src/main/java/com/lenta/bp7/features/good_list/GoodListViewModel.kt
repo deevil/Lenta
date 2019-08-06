@@ -2,6 +2,7 @@ package com.lenta.bp7.features.good_list
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.lenta.bp7.data.SapCodeType
 import com.lenta.bp7.data.model.*
 import com.lenta.bp7.platform.navigation.IScreenNavigator
 import com.lenta.bp7.repos.IDatabaseRepo
@@ -80,10 +81,16 @@ class GoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
         goodNumber.value.let { number ->
             Logg.d { "Entered SAP-code: $number" }
             viewModelScope.launch {
-                val goodInfo = database.getGoodInfoBySapCode(if (number!!.length == SAP_LENGTH) "000000000000$number" else "000000$number")
+                val goodInfo: GoodInfo? = when (number!!.length) {
+                    SAP_LENGTH -> database.getGoodInfoBySapCode("000000000000$number", SapCodeType.MATERIAL)
+                    else -> database.getGoodInfoBySapCode(number, SapCodeType.MATCODE)
+                }
                 if (goodInfo != null) {
                     checkData.addGood(goodInfo)
                     openGoodInfoScreen()
+                } else {
+                    // Сообщение - Данный товар не найден в справочнике
+                    navigator.showGoodNotFound()
                 }
             }
         }
@@ -142,14 +149,14 @@ class GoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
             return
         }
 
-        if (goods.value?.isEmpty() == true) {
-            checkData.deleteCurrentShelf()
-            navigator.goBack()
-        } else {
-            // Подтверждение - Данные полки не будут сохранены - Назад / Подтвердить
-            navigator.showShelfDataWillNotBeSaved(
-                    segmentNumber = segmentNumber.value!!,
-                    shelfNumber = shelfNumber.value!!) {
+        // Подтверждение - Данные полки не будут сохранены - Назад / Подтвердить
+        navigator.showShelfDataWillNotBeSaved(
+                segmentNumber = segmentNumber.value!!,
+                shelfNumber = shelfNumber.value!!) {
+            if (goods.value?.isEmpty() == true) {
+                checkData.deleteCurrentShelf()
+                navigator.openShelfListScreen()
+            } else {
                 checkData.setCurrentShelfStatus(ShelfStatus.DELETED)
                 navigator.openShelfListScreen()
             }
