@@ -92,7 +92,8 @@ class TaskContentNetRequest
                 placeCode = storePlaceCode,
                 factCount = factQuantity.toDouble(),
                 isPositionCalc = positionCounted.isNotEmpty(),
-                isExcOld = isExcOld == "X"
+                isExcOld = isExcOld == "X",
+                isDel = isDel.isNotEmpty()
         )
     }
 

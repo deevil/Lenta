@@ -17,20 +17,22 @@ class InventoryTask(val taskDescription: TaskDescription, val taskRepository: IT
     }
 
     fun getProductsQuantityForStorePlace(storePlaceNumber: String): Int {
-        return taskRepository.getProducts().getProducts().count { it.placeCode == storePlaceNumber }
+        return taskRepository.getProducts().getProducts().count { it.placeCode == storePlaceNumber && !it.isDel }
     }
 
     //Вызывается в двух случаях:
     //1. Нестрогий список, обычный пересчет, товар по умолчанию находится в общем МХ 00
-    //2. Строгий список, пересчет по МХ, по нажатию "Отвязать", удаляем товар в конкретном заданном МХ
     fun deleteProduct(productNumber: String, storePlaceNumber: String = "00") {
-        taskRepository.getProducts().findProduct(productNumber, storePlaceNumber)?.let {
-            taskRepository.getProducts().deleteProduct(it)
+     taskRepository.getProducts().findProduct(productNumber, storePlaceNumber)?.let {
+            it.isDel = true
         }
     }
 
+    //2. Строгий список, пересчет по МХ, по нажатию "Отвязать", удаляем товар в конкретном заданном МХ
     fun untieProduct(productNumber: String, storePlaceNumber: String) {
-        deleteProduct(productNumber, storePlaceNumber)
+        taskRepository.getProducts().findProduct(productNumber, storePlaceNumber)?.let {
+            taskRepository.getProducts().deleteProduct(it)
+        }
         //TODO: сохранять список отвязанных товаров для передачи в сохранение
     }
 
@@ -104,7 +106,7 @@ class InventoryTask(val taskDescription: TaskDescription, val taskRepository: IT
                     storePlaceCode = it.placeCode,
                     factQuantity = it.factCount.toString(),
                     positionCounted = if (it.isPositionCalc) "X" else "",
-                    isDel = if (!it.isPositionCalc && it.factCount == 0.0) "X" else "",
+                    isDel = if (it.isDel) "X" else "",
                     isSet = if (it.isSet) "X" else "",
                     isExcOld = if (it.isExcOld) "X" else ""
             )
