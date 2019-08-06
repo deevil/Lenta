@@ -27,7 +27,7 @@ class TaskListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     @Inject
     lateinit var screenNavigator: IScreenNavigator
 
-    private var isNeedUpdateOnResume = false
+    private var isNeedUpdateOnResume = true
 
     val filter = MutableLiveData("")
 
