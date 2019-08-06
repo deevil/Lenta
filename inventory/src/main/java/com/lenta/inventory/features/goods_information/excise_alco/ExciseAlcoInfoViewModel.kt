@@ -95,9 +95,9 @@ class ExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
         it!!.first != 0.0 && it.second > 0.0
     }
 
-    val enabledRollbackButton: MutableLiveData<Boolean> = countValue.map { it ?: 0.0 > 0.0 }
+    val enabledRollbackButton: MutableLiveData<Boolean> = countValue.map { it ?: 0.0 > 0.0 || isCheckExciseStampByAlcoCode.value == true }
 
-    val enabledMissingButton: MutableLiveData<Boolean> = totalCount.map { it ?: 0.0 <= 0.0 }
+    val enabledMissingButton: MutableLiveData<Boolean> = totalCount.map { it ?: 0.0 == 0.0 && isCheckExciseStampByAlcoCode.value == false }
 
     init {
         viewModelScope.launch {
@@ -134,8 +134,18 @@ class ExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
         selectedPosition.value = countLastExciseStamp.countType
     }
 
+    var test = 0
     fun onClickDetails() {
-        screenNavigator.openGoodsDetailsStorageScreen(productInfo.value!!)
+        if (test == 1) {
+            onScanResult("951869302882400418200O46BLILJ3I8DPM0DV1NT3PAFZR9M13NK6CD9LOQKOE0VX143NMT2JZSTII5RQG0A5N5YVB8BG90UPAC5BTDNALGLOH9YH8SP1QV6RJ9YTFIIQAG2RFX73JKZLAM3C5060")
+            test = 2
+        }
+        if (test == 0) {
+            onScanResult("22N0000154KNI691XDC380V71231001511013ZZ012345678901234567890123456ZZ")
+            test = 1
+        }
+
+        //screenNavigator.openGoodsDetailsStorageScreen(productInfo.value!!)
     }
 
     fun onClickMissing() {
@@ -526,13 +536,15 @@ class ExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
     private fun addPartlyStampIsExcOld() {
         if (isCheckExciseStampByAlcoCode.value!!) {
             rollbackExciseStampByAlcoCode()
-            processExciseAlcoProductService.add(count.value!!.toInt(),
-                    TaskExciseStamp(
-                            materialNumber = productInfo.value!!.materialNumber,
-                            code = scannedStampCode.value!!,
-                            placeCode = productInfo.value!!.placeCode
-                    )
-            )
+            if (enabledApplyButton.value!!) {
+                processExciseAlcoProductService.add(count.value!!.toInt(),
+                        TaskExciseStamp(
+                                materialNumber = productInfo.value!!.materialNumber,
+                                code = scannedStampCode.value!!,
+                                placeCode = productInfo.value!!.placeCode
+                        )
+                )
+            }
             isCheckExciseStampByAlcoCode.value = false
         }
     }

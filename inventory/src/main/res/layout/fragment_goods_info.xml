@@ -69,6 +69,7 @@
             android:ellipsize="end"
             android:inputType="numberDecimal"
             android:maxLines="1"
+            android:maxLength="6"
             app:requestFocus="@{true}"
             android:text="@={vm.count}"
             app:digitsForUom="@{vm.productInfo.uom}"
