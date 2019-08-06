@@ -68,6 +68,8 @@
             android:ellipsize="end"
             android:inputType="numberDecimal"
             android:maxLines="1"
+            android:maxLength="6"
+            android:imeOptions="normal"
             android:enabled="@{vm.isCheckExciseStampByAlcoCode}"
             android:text="@={vm.count}"
             app:digitsForUom="@{vm.productInfo.uom}"
