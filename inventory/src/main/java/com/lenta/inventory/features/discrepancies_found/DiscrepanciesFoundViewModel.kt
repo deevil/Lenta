@@ -63,6 +63,8 @@ class DiscrepanciesFoundViewModel : CoreViewModel() {
 
     fun onResume() {
         update()
+        byGoodsSelectionHelper.clearPositions()
+        byStorageSelectionHelper.clearPositions()
     }
 
     fun update() {

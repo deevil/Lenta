@@ -115,6 +115,8 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
         }
         updateUnprocessed()
         updateProcessed()
+        processedSelectionHelper.clearPositions()
+        unprocessedSelectionHelper.clearPositions()
         viewModelScope.launch {
             selectedPage.value = if (unprocessedGoods.value?.size == 0) 1 else 0
         }
