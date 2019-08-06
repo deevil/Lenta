@@ -104,7 +104,7 @@ class InventoryTask(val taskDescription: TaskDescription, val taskRepository: IT
                     storePlaceCode = it.placeCode,
                     factQuantity = it.factCount.toString(),
                     positionCounted = if (it.isPositionCalc) "X" else "",
-                    isDel = if (it.factCount > 0.0) "" else "X",
+                    isDel = if (!it.isPositionCalc && it.factCount == 0.0) "X" else "",
                     isSet = if (it.isSet) "X" else "",
                     isExcOld = if (it.isExcOld) "X" else ""
             )

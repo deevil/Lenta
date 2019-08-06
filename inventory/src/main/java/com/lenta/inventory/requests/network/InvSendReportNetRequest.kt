@@ -7,12 +7,14 @@ import com.lenta.shared.functional.Either
 import com.lenta.shared.interactor.UseCase
 import com.lenta.shared.requests.FmpRequestsHelper
 import com.lenta.shared.requests.SapResponse
+import com.lenta.shared.utilities.Logg
 import javax.inject.Inject
 
 class InvSendReportNetRequest
 @Inject constructor(private val fmpRequestsHelper: FmpRequestsHelper) : UseCase<InvSendReportResponse, InventoryReport>() {
 
     override suspend fun run(params: InventoryReport): Either<Failure, InvSendReportResponse> {
+        Logg.d { "InventoryReport: $params" }
         return fmpRequestsHelper.restRequest("ZMP_UTZ_93_V001", params, InvSendReportStatus::class.java)
     }
 }
