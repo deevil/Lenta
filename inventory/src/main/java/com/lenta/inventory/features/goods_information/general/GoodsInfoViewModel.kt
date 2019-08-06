@@ -2,6 +2,7 @@ package com.lenta.inventory.features.goods_information.general
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.lenta.inventory.features.goods_list.SearchProductDelegate
 import com.lenta.inventory.models.task.IInventoryTaskManager
 import com.lenta.inventory.models.task.ProcessGeneralProductService
 import com.lenta.inventory.models.task.TaskProductInfo
@@ -25,6 +26,9 @@ class GoodsInfoViewModel : MessageViewModel(), OnPositionClickListener {
 
     @Inject
     lateinit var processGeneralProductService: ProcessGeneralProductService
+
+    @Inject
+    lateinit var searchProductDelegate: SearchProductDelegate
 
     val productInfo: MutableLiveData<TaskProductInfo> = MutableLiveData()
     val storePlaceNumber: MutableLiveData<String> = MutableLiveData()
@@ -76,7 +80,8 @@ class GoodsInfoViewModel : MessageViewModel(), OnPositionClickListener {
     }
 
     fun onScanResult(data: String) {
-        processServiceManager.
+        searchProductDelegate.searchCode(code = data, fromScan = true)
+        /**processServiceManager.
                 getInventoryTask()!!.
                 taskRepository.
                 getProducts().
@@ -102,7 +107,7 @@ class GoodsInfoViewModel : MessageViewModel(), OnPositionClickListener {
                         }
                     }
                     return
-                }
+                }*/
 
         screenNavigator.openAlertScreen(
                                     message = message,
