@@ -1,38 +1,22 @@
 package com.lenta.inventory.requests.network
 
-import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
-import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.fmp.ObjectRawStatus
-import com.lenta.shared.fmp.toFmpObjectRawStatusEither
 import com.lenta.shared.functional.Either
 import com.lenta.shared.interactor.UseCase
-import com.mobrun.plugin.api.HyperHive
-import com.mobrun.plugin.api.callparams.WebCallParams
+import com.lenta.shared.requests.FmpRequestsHelper
+import com.lenta.shared.requests.SapResponse
 import javax.inject.Inject
 
 class TaskListNetRequest
-@Inject constructor(private val hyperHive: HyperHive, private val gson: Gson, private val sessionInfo: ISessionInfo) : UseCase<TasksListRestInfo, TasksListParams>(){
+@Inject constructor(private val fmpRequestsHelper: FmpRequestsHelper) : UseCase<TasksListRestInfo, TasksListParams>() {
     override suspend fun run(params: TasksListParams): Either<Failure, TasksListRestInfo> {
-
-        val webCallParams = WebCallParams().apply {
-            data = gson.toJson(params)
-            headers = mapOf(
-                    "X-SUP-DOMAIN" to "DM-MAIN",
-                    "Content-Type" to "application/json",
-                    "Web-Authorization" to sessionInfo.basicAuth
-            )
-        }
-
-        /**val resString = hyperHive.requestAPI.web("ZMP_UTZ_91_V001", webCallParams). execute()
-        Logg.d { "resString: $resString" }*/
-        val res = hyperHive.requestAPI.web("ZMP_UTZ_91_V001", webCallParams).execute().toFmpObjectRawStatusEither(TasksListStatus::class.java, gson)
-
-        return res
+        return fmpRequestsHelper.restRequest("ZMP_UTZ_91_V001", params, TasksListStatus::class.java)
     }
 
 }
+
 data class TasksListParams(
         @SerializedName("IV_WERKS")
         val werks: String,

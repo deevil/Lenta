@@ -53,7 +53,6 @@ class DiscrepanciesFoundFragment : CoreFragment<FragmentDiscrepanciesFoundBindin
         bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.missing)
         bottomToolbarUiModel.uiModelButton5.show(if (vm.isNotEmpty.value == true) ButtonDecorationInfo.skip else ButtonDecorationInfo.complete)
 
-        connectLiveData(source = vm.absentEnabled, target = getBottomToolBarUIModel()!!.uiModelButton4.enabled)
         connectLiveData(source = vm.untieDeleteEnabled, target = getBottomToolBarUIModel()!!.uiModelButton2.enabled)
     }
 

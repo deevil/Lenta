@@ -23,14 +23,12 @@ class SetComponentsFragment : CoreFragment<FragmentSetComponentsBinding, SetComp
         OnScanResultListener,
         ToolbarButtonsClickListener {
 
-    private var targetTotalCount by state<Double?>(null)
     private var componentInfo by state<SetComponentInfo?>(null)
     private var isStamp = false
 
     companion object {
-        fun create(componentInfo: SetComponentInfo, targetTotalCount: Double, isStamp: Boolean = false): SetComponentsFragment {
+        fun create(componentInfo: SetComponentInfo, isStamp: Boolean = false): SetComponentsFragment {
             SetComponentsFragment().let {
-                it.targetTotalCount = targetTotalCount
                 it.componentInfo = componentInfo
                 it.isStamp = isStamp
                 return it
@@ -46,7 +44,6 @@ class SetComponentsFragment : CoreFragment<FragmentSetComponentsBinding, SetComp
     override fun getViewModel(): SetComponentsViewModel {
         provideViewModel(SetComponentsViewModel::class.java).let { vm ->
             getAppComponent()?.inject(vm)
-            vm.targetTotalCount.value = targetTotalCount
             vm.componentInfo.value = componentInfo
             vm.isStamp.value = isStamp
             vm.limitExceeded.value = getString(R.string.limit_exceeded)

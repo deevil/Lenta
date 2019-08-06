@@ -24,11 +24,9 @@ class DataSaver @Inject constructor(
             screenNavigator.showProgress(invSendReportNetRequest)
             taskManager.getInventoryTask()?.let { task ->
                 invSendReportNetRequest(task.getReport(isFinish = true)).either(::handleFailure) {
-                    if (it.retCode != "0") {
-                        screenNavigator.openInfoScreen(it.errorText)
-                    } else {
-                        screenNavigator.openSuccessSaveDataScreen()
-                    }
+                    screenNavigator.closeAllScreen()
+                    screenNavigator.openTasksList()
+                    screenNavigator.openSuccessSaveDataScreen()
                 }
             }
             screenNavigator.hideProgress()

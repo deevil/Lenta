@@ -71,7 +71,18 @@ class JobCardViewModel : CoreViewModel(), OnPositionClickListener {
 
         this.recountsTitles.postValue(typesRecount
                 .filterIndexed { index, recountType ->
-                    (if (isStrictList) true else index == 0) && (taskManager.getInventoryTask()?.taskDescription?.recountType ?: recountType) == recountType
+                    var res: Boolean
+                    res = (if (isStrictList) true else index == 0) && (taskManager.getInventoryTask()?.taskDescription?.recountType
+                            ?: recountType) == recountType
+                    if (res && (tasksItem.notFinish == "X" || tasksItem.mode == "2" || tasksItem.mode == "3")) {
+                        res = when (tasksItem.mode) {
+                            "1" -> index == 0
+                            "2" -> index == 1
+                            "3" -> index == 2
+                            else -> false
+                        }
+                    }
+                    res
                 }
                 .map {
                     converterTypeToString(it)

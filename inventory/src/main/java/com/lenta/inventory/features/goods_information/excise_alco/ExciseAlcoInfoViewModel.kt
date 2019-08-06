@@ -50,7 +50,7 @@ class ExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
 
     private val scannedStampCode: MutableLiveData<String> = MutableLiveData()
 
-    val isEtCountValue: MutableLiveData<Boolean> = MutableLiveData(false)
+    val isCheckExciseStampByAlcoCode: MutableLiveData<Boolean> = MutableLiveData(false)
 
     val productInfo: MutableLiveData<TaskProductInfo> = MutableLiveData()
 
@@ -81,7 +81,7 @@ class ExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
     private val countValue: MutableLiveData<Double> = count.map { it?.toDoubleOrNull() ?: 0.0 }
 
     private val totalCount: MutableLiveData<Double> = countValue.map {
-        if (isEtCountValue.value!!) {
+        if (isCheckExciseStampByAlcoCode.value!!) {
             it!!.plus((processExciseAlcoProductService.getFactCount()
                     ?: productInfo.value!!.factCount))
         } else {
@@ -95,7 +95,7 @@ class ExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
         it!!.first != 0.0 && it.second > 0.0
     }
 
-    val enabledRollbackButton: MutableLiveData<Boolean> = countValue.map { it ?: 0.0 > 0.0 && isEtCountValue.value == false }
+    val enabledRollbackButton: MutableLiveData<Boolean> = countValue.map { it ?: 0.0 > 0.0 && isCheckExciseStampByAlcoCode.value == false }
 
     val enabledMissingButton: MutableLiveData<Boolean> = totalCount.map { it ?: 0.0 <= 0.0 }
 
@@ -115,10 +115,12 @@ class ExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
     }
 
     fun onResume() {
-        count.value = processExciseAlcoProductService.getLastCountExciseStamp().countLastExciseStamp.let {
-            if (it == 0) "" else it.toString()
+        if (isCheckExciseStampByAlcoCode.value == false) {
+            count.value = processExciseAlcoProductService.getLastCountExciseStamp().countLastExciseStamp.let {
+                if (it == 0) "" else it.toString()
+            }
+            selectedPosition.value = processExciseAlcoProductService.getLastCountExciseStamp().countType
         }
-        selectedPosition.value = processExciseAlcoProductService.getLastCountExciseStamp().countType
     }
 
     fun onClickRollback() {
@@ -143,6 +145,10 @@ class ExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
     }
 
     fun onScanResult(data: String) {
+        if (isCheckExciseStampByAlcoCode.value == true && data == scannedStampCode.value) {
+            screenNavigator.openAlertDoubleScanStamp()
+            return
+        }
         addPartlyStampIsExcOld()
         scannedStampCode.value = data
         when (data.length) {
@@ -425,7 +431,7 @@ class ExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
 
     private fun checkExciseStampByAlcoCode() {
         if (productInfo.value!!.isExcOld) {
-            isEtCountValue.value = true
+            isCheckExciseStampByAlcoCode.value = true
             count.value = "1"
             selectedPosition.value = GoodsInfoCountType.PARTLY.number
         } else {
@@ -501,7 +507,7 @@ class ExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
     }
 
     private fun addPartlyStampIsExcOld() {
-        if (isEtCountValue.value!!) {
+        if (isCheckExciseStampByAlcoCode.value!!) {
             processExciseAlcoProductService.add(count.value!!.toInt(),
                     TaskExciseStamp(
                             materialNumber = productInfo.value!!.materialNumber,
@@ -509,7 +515,7 @@ class ExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
                             placeCode = productInfo.value!!.placeCode
                     )
             )
-            isEtCountValue.value = false
+            isCheckExciseStampByAlcoCode.value = false
         }
     }
 

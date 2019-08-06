@@ -51,6 +51,7 @@ dependencies {
 
     // Dagger2
     kapt deps.dagger.compiler
+    kaptTest deps.dagger.compiler
 
     testImplementation deps.junit
     /*androidTestImplementation 'androidx.test:runner:1.2.0-alpha03'

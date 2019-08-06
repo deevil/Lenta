@@ -10,6 +10,7 @@ import com.lenta.inventory.requests.network.*
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.platform.viewmodel.CoreViewModel
+import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.toStringFormatted
 import com.lenta.shared.view.OnPositionClickListener
@@ -41,11 +42,15 @@ class SetComponentsViewModel : CoreViewModel(), OnPositionClickListener {
     val isStorePlaceNumber: MutableLiveData<Boolean> = storePlaceNumber.map { it != "00" }
     val limitExceeded: MutableLiveData<String> = MutableLiveData()
     val selectedPosition: MutableLiveData<Int> = MutableLiveData(0)
-    val targetTotalCount: MutableLiveData<Double> = MutableLiveData()
     val count: MutableLiveData<String> = MutableLiveData("0")
     private val countValue: MutableLiveData<Double> = MutableLiveData(0.0)
-    private val totalCount: MutableLiveData<Double> = countValue.map { (it ?: 0.0) + processSetsService.getCountExciseStampsForComponent(componentInfo.value!!)}
-    val totalCountWithUom: MutableLiveData<String> = totalCount.map { "${it.toStringFormatted()} из ${((componentInfo.value!!.count).toDouble() * targetTotalCount.value!!).toStringFormatted()}" }
+    private val totalCount: MutableLiveData<Double> = countValue.map {
+        processSetsService.getCountExciseStampsForComponent(componentInfo.value!!).toDouble()
+    }
+    val totalCountWithUom: MutableLiveData<String> = totalCount.map {
+        "${it.toStringFormatted()} из ${((componentInfo.value!!.count).toDouble()).toStringFormatted()}"
+    }
+
     val suffix: MutableLiveData<String> = MutableLiveData()
     val spinList: MutableLiveData<List<String>> = MutableLiveData()
     val titleProgressScreen: MutableLiveData<String> = MutableLiveData()
@@ -61,7 +66,7 @@ class SetComponentsViewModel : CoreViewModel(), OnPositionClickListener {
     }
 
     val enabledApplyButton: MutableLiveData<Boolean> = totalCount.map {
-        (it ?: 0.0) >= (componentInfo.value!!.count).toDouble() * targetTotalCount.value!!
+        (it ?: 0.0) >= (componentInfo.value!!.count).toDouble()
     }
 
     init {
@@ -81,12 +86,11 @@ class SetComponentsViewModel : CoreViewModel(), OnPositionClickListener {
     }
 
     fun onClickApply() {
-        processSetsService.applyComponent()
         screenNavigator.goBack()
     }
 
     fun onBackPressed() {
-        processSetsService.discardComponent()
+        processSetsService.clearExciseStampsForComponent(componentInfo.value!!)
     }
 
     fun onScanResult(data: String) {
@@ -98,8 +102,8 @@ class SetComponentsViewModel : CoreViewModel(), OnPositionClickListener {
         }
     }
 
-    private fun processPdf150(stampCode: String){
-        if ( totalCount.value!! >= ((componentInfo.value!!.count).toDouble() * targetTotalCount.value!!) ) {
+    private fun processPdf150(stampCode: String) {
+        if (totalCount.value!! >= (componentInfo.value!!.count).toDouble() ) {
             count.value = "0"
             screenNavigator.openAlertScreen(limitExceeded.value!!, iconRes = iconRes.value!!, textColor = textColor.value, pageNumber = "98")
             return
@@ -126,13 +130,12 @@ class SetComponentsViewModel : CoreViewModel(), OnPositionClickListener {
                             codeEBP = "INV",
                             factCount = ""
 
-                    )).
-                    either(::handleFailure, ::processPdf150HandleSuccess)
+                    )).either(::handleFailure, ::processPdf150HandleSuccess)
             screenNavigator.hideProgress()
         }
     }
 
-    private fun processPdf150HandleSuccess(exciseGoodsRestInfo: ExciseGoodsRestInfo){
+    private fun processPdf150HandleSuccess(exciseGoodsRestInfo: ExciseGoodsRestInfo) {
         if (exciseGoodsRestInfo.retCode != "0") {
             count.value = "0"
             screenNavigator.openAlertScreen(exciseGoodsRestInfo.errorTxt, iconRes = iconRes.value!!, textColor = textColor.value, pageNumber = "98")
@@ -140,25 +143,24 @@ class SetComponentsViewModel : CoreViewModel(), OnPositionClickListener {
         }
 
         if (exciseGoodsRestInfo.materialNumber == componentInfo.value!!.number) {
-            processSetsService.addCurrentComponentExciseStamps(
-                                                    TaskExciseStamp(
-                                                            materialNumber = componentInfo.value!!.number,
-                                                            code = scannedStampCode.value!!,
-                                                            placeCode = componentInfo.value!!.placeCode,
-                                                            setMaterialNumber = componentInfo.value!!.setNumber
-                                                    )
+            processSetsService.addCurrentComponentExciseStamp(
+                    TaskExciseStamp(
+                            materialNumber = componentInfo.value!!.number,
+                            code = scannedStampCode.value!!,
+                            placeCode = componentInfo.value!!.placeCode,
+                            setMaterialNumber = componentInfo.value!!.setNumber
+                    )
             )
             count.value = "1"
             countValue.value = countValue.value!!.plus(1.0)
-        }
-        else {
+        } else {
             count.value = "0"
             screenNavigator.openAlertScreen(stampAnotherProduct.value!!, iconRes = iconRes.value!!, textColor = textColor.value, pageNumber = "98")
         }
     }
 
-    private fun processPdf68(stampCode: String){
-        if ( totalCount.value!! >= ((componentInfo.value!!.count).toDouble() * targetTotalCount.value!!) ) {
+    private fun processPdf68(stampCode: String) {
+        if (totalCount.value!! >= (componentInfo.value!!.count).toDouble()) {
             count.value = "0"
             screenNavigator.openAlertScreen(limitExceeded.value!!, iconRes = iconRes.value!!, textColor = textColor.value, pageNumber = "98")
             return
@@ -177,14 +179,14 @@ class SetComponentsViewModel : CoreViewModel(), OnPositionClickListener {
         }
     }
 
-    private fun alcoCodeHandleSuccess(alcoCodeRestInfo: List<AlcoCodeRestInfo>){
+    private fun alcoCodeHandleSuccess(alcoCodeRestInfo: List<AlcoCodeRestInfo>) {
         alcoCodeRestInfo[0].data.filter { data ->
             data[1] == componentInfo.value!!.number &&
-                    (data[2] == BigInteger(scannedStampCode.value!!.substring(7,19), 36).toString().padStart(19,'0') ||
-                            data[2] == BigInteger(scannedStampCode.value!!.substring(7,19), 36).toString().padStart(20,'0'))
+                    (data[2] == BigInteger(scannedStampCode.value!!.substring(7, 19), 36).toString().padStart(19, '0') ||
+                            data[2] == BigInteger(scannedStampCode.value!!.substring(7, 19), 36).toString().padStart(20, '0'))
         }.isNotEmpty().let {
             if (it) {
-                processSetsService.addCurrentComponentExciseStamps(
+                processSetsService.addCurrentComponentExciseStamp(
                         TaskExciseStamp(
                                 materialNumber = componentInfo.value!!.number,
                                 code = scannedStampCode.value!!,
@@ -194,19 +196,18 @@ class SetComponentsViewModel : CoreViewModel(), OnPositionClickListener {
                 )
                 count.value = "1"
                 countValue.value = countValue.value!!.plus(1.0)
-            }
-            else{
+            } else {
                 count.value = "0"
                 screenNavigator.openAlertScreen(alcocodeNotFound.value!!, iconRes = iconRes.value!!, textColor = textColor.value, pageNumber = "98")
             }
         }
     }
 
-    private fun processItemByBarcode(eanCode: String){
-        processSetsService.getComponentsForSet().filter {component ->
+    private fun processItemByBarcode(eanCode: String) {
+        processSetsService.getComponentsForSet().filter { component ->
             component.number == eanCode
         }.map {
-            processSetsService.discardComponent()
+            processSetsService.clearExciseStampsForComponent(componentInfo.value!!)
             componentInfo.value = it
             count.value = "0"
             countValue.value = 0.0

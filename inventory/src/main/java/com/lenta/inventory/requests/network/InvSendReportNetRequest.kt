@@ -1,38 +1,19 @@
 package com.lenta.inventory.requests.network
 
-import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
-import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.fmp.ObjectRawStatus
-import com.lenta.shared.fmp.toFmpObjectRawStatusEither
 import com.lenta.shared.functional.Either
 import com.lenta.shared.interactor.UseCase
-import com.lenta.shared.utilities.extentions.hhive.ANALYTICS_HELPER
-import com.mobrun.plugin.api.HyperHive
-import com.mobrun.plugin.api.callparams.WebCallParams
+import com.lenta.shared.requests.FmpRequestsHelper
+import com.lenta.shared.requests.SapResponse
 import javax.inject.Inject
 
 class InvSendReportNetRequest
-@Inject constructor(private val hyperHive: HyperHive,
-                    private val gson: Gson,
-                    private val sessionInfo: ISessionInfo) : UseCase<InvSendReportResponse, InventoryReport>() {
+@Inject constructor(private val fmpRequestsHelper: FmpRequestsHelper) : UseCase<InvSendReportResponse, InventoryReport>() {
 
     override suspend fun run(params: InventoryReport): Either<Failure, InvSendReportResponse> {
-        val webCallParams = WebCallParams().apply {
-            data = gson.toJson(params)
-            headers = mapOf(
-                    "X-SUP-DOMAIN" to "DM-MAIN",
-                    "Content-Type" to "application/json",
-                    "Web-Authorization" to sessionInfo.basicAuth
-            )
-        }
-
-        val resName = "ZMP_UTZ_93_V001"
-        return hyperHive.requestAPI.web(resName, webCallParams.apply {
-            ANALYTICS_HELPER?.onStartFmpRequest(resName, "headers: ${this.headers}, data: ${this.data}")
-        }).execute().toFmpObjectRawStatusEither(InvSendReportStatus::class.java, gson, resourceName = resName)
-
+        return fmpRequestsHelper.restRequest("ZMP_UTZ_93_V001", params, InvSendReportStatus::class.java)
     }
 }
 
@@ -46,11 +27,11 @@ data class InvSendReportResponse(
         @SerializedName("EV_TIME_OF_PROC")
         val timeOfProcess: String,
         @SerializedName("EV_ERROR_TEXT")
-        val errorText: String,
+        override val errorText: String,
         @SerializedName("EV_RETCODE")
-        val retCode: String
+        override val retCode: Int
 
-)
+) : SapResponse
 
 //ET_PLACES_NOT_SAVE
 data class PlaceInfo(

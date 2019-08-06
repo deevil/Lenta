@@ -68,7 +68,7 @@
             android:ellipsize="end"
             android:inputType="numberDecimal"
             android:maxLines="1"
-            android:enabled="@{vm.isEtCountValue}"
+            android:enabled="@{vm.isCheckExciseStampByAlcoCode}"
             android:text="@={vm.count}"
             app:digitsForUom="@{vm.productInfo.uom}"
             app:layout_constraintEnd_toEndOf="parent"
