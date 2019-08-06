@@ -145,14 +145,14 @@ class GoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
             return
         }
 
-        if (goods.value?.isEmpty() == true) {
-            checkData.deleteCurrentShelf()
-            navigator.goBack()
-        } else {
-            // Подтверждение - Данные полки не будут сохранены - Назад / Подтвердить
-            navigator.showShelfDataWillNotBeSaved(
-                    segmentNumber = segmentNumber.value!!,
-                    shelfNumber = shelfNumber.value!!) {
+        // Подтверждение - Данные полки не будут сохранены - Назад / Подтвердить
+        navigator.showShelfDataWillNotBeSaved(
+                segmentNumber = segmentNumber.value!!,
+                shelfNumber = shelfNumber.value!!) {
+            if (goods.value?.isEmpty() == true) {
+                checkData.deleteCurrentShelf()
+                navigator.openShelfListScreen()
+            } else {
                 checkData.setCurrentShelfStatus(ShelfStatus.DELETED)
                 navigator.openShelfListScreen()
             }
