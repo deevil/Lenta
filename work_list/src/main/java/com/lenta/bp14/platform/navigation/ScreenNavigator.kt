@@ -32,6 +32,10 @@ class ScreenNavigator(
         openNotImplementedScreenAlert("Главное меню")
     }
 
+    override fun openFastDataLoadingScreen() {
+        openNotImplementedScreenAlert("Загрузка быстрых ресурсов")
+    }
+
     override fun openLoginScreen() {
         runOrPostpone {
             getFragmentStack()?.push(AuthFragment())
@@ -48,5 +52,6 @@ interface IScreenNavigator : ICoreNavigator {
     fun openSelectMarketScreen()
     fun openMainMenuScreen()
     fun openLoginScreen()
+    fun openFastDataLoadingScreen()
 
 }
