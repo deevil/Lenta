@@ -3,12 +3,12 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'io.fabric'
 
-def prefixAppVersion = "10"
+def prefixAppVersion = "9"
 
 android {
     compileSdkVersion build_versions.target_sdk
     defaultConfig {
-        applicationId "com.lenta.bp10"
+        applicationId "com.lenta.bp9"
         minSdkVersion build_versions.min_sdk
         targetSdkVersion build_versions.target_sdk
         versionCode getCodeVersion()
@@ -30,14 +30,10 @@ android {
     applicationVariants.all { variant ->
         if (variant.buildType.name == "release") {
             variant.outputs.all {
-                def name = outputFileName.replace("app-", "LentaWriteOff-")
+                def name = outputFileName.replace("app-", "LentaGoodsReceiving-")
                 outputFileName = name.replace(".apk", "-${variant.versionName}-${variant.versionCode}.apk")
             }
         }
-    }
-
-    testOptions {
-        unitTests.returnDefaultValues = true
     }
 
     packagingOptions {
@@ -63,15 +59,6 @@ dependencies {
         transitive = true
     }
 
-    testImplementation 'org.mockito:mockito-core:2.23.0'
-    testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:2.1.0"
-    testImplementation("io.mockk:mockk:1.9")
-    testImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.3.0-M1'
-    testImplementation 'android.arch.core:core-testing:1.1.1'
 
 
 }
-
-
-
-
