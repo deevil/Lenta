@@ -130,9 +130,9 @@ class ScreenNavigator(
         }
     }
 
-    override fun openSetComponentsScreen(componentInfo: SetComponentInfo, targetTotalCount: Double, isStamp: Boolean) {
+    override fun openSetComponentsScreen(componentInfo: SetComponentInfo, isStamp: Boolean) {
         runOrPostpone {
-            getFragmentStack()?.push(SetComponentsFragment.create(componentInfo, targetTotalCount, isStamp))
+            getFragmentStack()?.push(SetComponentsFragment.create(componentInfo, isStamp))
         }
     }
 
@@ -309,7 +309,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openGoodsDetailsStorageScreen(productInfo: TaskProductInfo)
     fun openGoodsListScreen(storePlaceNumber: String)
     fun openSetsInfoScreen(productInfo: TaskProductInfo)
-    fun openSetComponentsScreen(componentInfo: SetComponentInfo, targetTotalCount: Double, isStamp: Boolean)
+    fun openSetComponentsScreen(componentInfo: SetComponentInfo, isStamp: Boolean)
     fun openStoragesList()
     fun openDiscrepanciesScreen()
     fun openTasksList()
