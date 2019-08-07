@@ -31,8 +31,8 @@ class GoodInfoFacingViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
     val totalFacings: MutableLiveData<Int> = facings.map {
         val currentFacings = if (it?.isNotEmpty() == true) it.toInt() else 0
-        val lastFacings = checkData.getPreviousGoodFacings()
-        currentFacings + lastFacings
+        val previousFacings = if (checkData.isFirstGood(good.value)) checkData.getPreviousSameGoodFacings() else 0
+        currentFacings + previousFacings
     }
 
     val facingFieldEnabled: MutableLiveData<Boolean> = good.map { it?.getStatus() == GoodStatus.CREATED }
