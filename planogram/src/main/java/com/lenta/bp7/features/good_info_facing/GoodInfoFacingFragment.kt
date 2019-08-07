@@ -1,6 +1,5 @@
 package com.lenta.bp7.features.good_info_facing
 
-import android.os.Bundle
 import android.view.View
 import androidx.lifecycle.Observer
 import com.lenta.bp7.R
@@ -13,12 +12,13 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
+import com.lenta.shared.scan.OnScanResultListener
 import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
 import com.lenta.shared.utilities.extentions.provideViewModel
 
 class GoodInfoFacingFragment : CoreFragment<FragmentGoodInfoFacingBinding, GoodInfoFacingViewModel>(),
-        ToolbarButtonsClickListener, OnBackPresserListener {
+        ToolbarButtonsClickListener, OnBackPresserListener, OnScanResultListener {
 
     override fun getLayoutId(): Int = R.layout.fragment_good_info_facing
 
@@ -59,5 +59,9 @@ class GoodInfoFacingFragment : CoreFragment<FragmentGoodInfoFacingBinding, GoodI
     override fun onBackPressed(): Boolean {
         vm.onClickBack()
         return false
+    }
+
+    override fun onScanResult(data: String) {
+        vm.onScanResult(data)
     }
 }

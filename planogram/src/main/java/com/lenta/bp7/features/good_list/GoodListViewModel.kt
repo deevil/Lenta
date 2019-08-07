@@ -172,6 +172,6 @@ class GoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
     fun onScanResult(data: String) {
         goodNumber.value = data
-        checkEnteredNumber()
+        addGoodByBarCode()
     }
 }
