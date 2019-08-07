@@ -42,9 +42,8 @@ class GoodsInfoFragment : CoreFragment<FragmentGoodsInfoBinding,
             getAppComponent()?.inject(vm)
             vm.productInfo.value = this.productInfo
             vm.spinList.value = listOf(getString(R.string.quantity))
-            vm.iconRes = R.drawable.ic_info_pink
-            vm.textColor = ContextCompat.getColor(context!!, com.lenta.shared.R.color.color_text_dialogWarning)
-            vm.message = getString(R.string.good_not_found)
+            vm.iconRes.value = R.drawable.ic_info_pink
+            vm.textColor.value = ContextCompat.getColor(context!!, com.lenta.shared.R.color.color_text_dialogWarning)
             vm.msgWrongProducType.value = getString(R.string.wrong_product_type)
             return vm
         }

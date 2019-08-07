@@ -3,6 +3,7 @@ package com.lenta.inventory.features.goods_information.sets
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.inventory.features.goods_details_storage.ComponentItem
+import com.lenta.inventory.features.goods_list.SearchProductDelegate
 import com.lenta.inventory.models.task.ProcessSetsService
 import com.lenta.inventory.models.task.TaskExciseStamp
 import com.lenta.inventory.models.task.TaskProductInfo
@@ -11,6 +12,7 @@ import com.lenta.inventory.requests.network.*
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.platform.viewmodel.CoreViewModel
+import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
@@ -40,6 +42,9 @@ class SetsInfoViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKe
 
     @Inject
     lateinit var alcoCodeNetRequest: AlcoCodeNetRequest
+
+    @Inject
+    lateinit var searchProductDelegate: SearchProductDelegate
 
     val iconRes: MutableLiveData<Int> = MutableLiveData(0)
     val textColor: MutableLiveData<Int> = MutableLiveData(0)
@@ -117,6 +122,9 @@ class SetsInfoViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKe
             screenNavigator.showProgress(titleProgressScreen.value!!)
             suffix.value = productInfo.value?.uom?.name
             storePlaceNumber.value = productInfo.value!!.placeCode
+            searchProductDelegate.init(viewModelScope = this@SetsInfoViewModel::viewModelScope,
+                    scanResultHandler = this@SetsInfoViewModel::handleProductSearchResult,
+                    storePlace = storePlaceNumber.value ?: "00")
             withContext(Dispatchers.IO) {
                 if (processSetsService.newProcessSetsService(productInfo.value!!) == null) {
                     screenNavigator.goBack()
@@ -131,6 +139,17 @@ class SetsInfoViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKe
             screenNavigator.hideProgress()
 
         }
+    }
+
+    private fun handleProductSearchResult(scanInfoResult: ScanInfoResult?): Boolean {
+        if (selectedPage.value == 0) {
+            enabledBtn()
+            screenNavigator.goBack()
+        }
+        else {
+            processItemByBarcode(scannedStampCode.value!!)
+        }
+        return false
     }
 
     private fun updateComponents() {
@@ -177,7 +196,7 @@ class SetsInfoViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKe
         when (data.length) {
             68 -> processPdf68(data)
             150 -> processPdf150(data)
-            else -> processItemByBarcode(data)
+            else -> searchProductDelegate.searchCode(code = data, fromScan = true)
         }
     }
 
@@ -305,6 +324,16 @@ class SetsInfoViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKe
         }
 
         screenNavigator.openAlertScreen(componentNotFound.value!!, iconRes = iconRes.value!!, textColor = textColor.value, pageNumber = "98")
+    }
+
+    private fun enabledBtn() {
+        if (enabledApplyButton.value!!) {
+            processSetsService.apply(totalCount.value!!)
+        } else {
+            if (enabledMissingButton.value!!) {
+                processSetsService.markMissing()
+            }
+        }
     }
 
     fun onPageSelected(position: Int) {
