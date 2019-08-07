@@ -39,11 +39,7 @@ class ScreenNavigator(
     }
 
     override fun openFirstScreen() {
-        if (authenticator.isAuthorized()) {
-            openSelectCheckTypeScreen()
-        } else {
-            openLoginScreen()
-        }
+        openLoginScreen()
     }
 
     override fun openLoginScreen() {
