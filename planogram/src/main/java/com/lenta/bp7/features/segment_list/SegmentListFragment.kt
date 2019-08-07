@@ -61,6 +61,7 @@ class SegmentListFragment : CoreFragment<FragmentSegmentListBinding, SegmentList
     override fun onResume() {
         super.onResume()
         vm.updateSegmentList()
+        vm.saveCheckResultToDatabase()
     }
 
     override fun onToolbarButtonClick(view: View) {

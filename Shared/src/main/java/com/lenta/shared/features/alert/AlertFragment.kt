@@ -31,10 +31,11 @@ class AlertFragment : CoreMessageFragment() {
         topToolbarUiModel.uiModelButton2.visibility.value = false
     }
 
-
     companion object {
         fun create(
                 message: String,
+                title: String? = null,
+                description: String? = null,
                 iconRes: Int = 0,
                 textColor: Int? = null,
                 pageNumber: String? = null,
@@ -53,6 +54,8 @@ class AlertFragment : CoreMessageFragment() {
         ): AlertFragment {
             return AlertFragment().apply {
                 this.message = message
+                this.title = title
+                this.description = description
                 this.iconRes = iconRes
                 this.textColor = textColor
                 this.codeConfirmForExit = codeConfirmForExit
@@ -63,6 +66,7 @@ class AlertFragment : CoreMessageFragment() {
                 this.codeConfirmForLeft = codeConfirmForLeft
                 this.pageNumb = pageNumber
                 this.timeAutoExitInMillis = timeAutoExitInMillis
+
                 leftButtonDecorationInfo?.let {
                     this.leftButtonDecorationInfo = it
                 }
@@ -78,7 +82,6 @@ class AlertFragment : CoreMessageFragment() {
                 rightButtonDecorationInfo?.let {
                     this.rightButtonDecorationInfo = it
                 }
-
             }
         }
     }

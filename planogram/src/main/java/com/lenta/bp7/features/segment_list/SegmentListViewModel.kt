@@ -64,6 +64,10 @@ class SegmentListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
         segments.value = checkData.segments
     }
 
+    fun saveCheckResultToDatabase() {
+        checkData.saveCheckResult()
+    }
+
     override fun onOkInSoftKeyboard(): Boolean {
         if (checkData.isExistUnfinishedSegment()) {
             // Подтверждение - Обнаружен незавершенный сегмент. Начало работы с новым сегментом невозможно. Перейти к обработке сегмента? - Назад / Перейти
@@ -139,14 +143,14 @@ class SegmentListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     }
 
     private fun handleDataSendingError(failure: Failure) {
-        // Сообщение - Ошибка сохранения в LUA
+        // Сообщение - Ошибка сохранения в LAU
         navigator.showErrorSavingToLua {
             navigator.openSegmentListScreen()
         }
     }
 
     private fun handleDataSendingSuccess(saveCheckDataRestInfo: SaveCheckDataRestInfo) {
-        // Сообщение - Успешно сохранено в LUA
+        // Сообщение - Успешно сохранено в LAU
         navigator.showSuccessfullySavedToLua {
             checkData.removeAllFinishedSegments()
             navigator.openSegmentListScreen()

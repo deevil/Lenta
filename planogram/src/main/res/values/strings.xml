@@ -63,6 +63,7 @@
     <string name="description_list_of_processed_selves">Список обработанных полок</string>
     <string name="description_list_of_processed_goods">Список обработанных товаров</string>
     <string name="description_info_about_good">Информация о товаре</string>
+    <string name="unfinished_data">Незавершённые данные</string>
 
 
     <!-- Заголовки списков -->
