@@ -38,13 +38,9 @@ class ScreenNavigator(
         }
     }
 
-    override fun openMainMenuScreen() {
-        openNotImplementedScreenAlert("Главное меню")
-    }
-
     override fun openFirstScreen() {
         if (authenticator.isAuthorized()) {
-            openMainMenuScreen()
+            openSelectCheckTypeScreen()
         } else {
             openLoginScreen()
         }
@@ -325,7 +321,6 @@ class ScreenNavigator(
 interface IScreenNavigator : ICoreNavigator {
     fun openFirstScreen()
     fun openLoginScreen()
-    fun openMainMenuScreen()
     fun openSelectMarketScreen()
     fun openFastDataLoadingScreen()
     fun openSelectCheckTypeScreen()
