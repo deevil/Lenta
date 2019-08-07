@@ -1,6 +1,5 @@
 package com.lenta.bp7.features.good_info
 
-import android.os.Bundle
 import android.view.View
 import androidx.lifecycle.Observer
 import com.lenta.bp7.R
@@ -13,12 +12,13 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
+import com.lenta.shared.scan.OnScanResultListener
 import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
 import com.lenta.shared.utilities.extentions.provideViewModel
 
 class GoodInfoFragment : CoreFragment<FragmentGoodInfoBinding, GoodInfoViewModel>(),
-        ToolbarButtonsClickListener, OnBackPresserListener {
+        ToolbarButtonsClickListener, OnBackPresserListener, OnScanResultListener {
 
     override fun getLayoutId(): Int = R.layout.fragment_good_info
 
@@ -49,7 +49,6 @@ class GoodInfoFragment : CoreFragment<FragmentGoodInfoBinding, GoodInfoViewModel
 
     }
 
-
     override fun onToolbarButtonClick(view: View) {
         when (view.id) {
             R.id.b_4 -> vm.onClickMissing()
@@ -60,5 +59,9 @@ class GoodInfoFragment : CoreFragment<FragmentGoodInfoBinding, GoodInfoViewModel
     override fun onBackPressed(): Boolean {
         vm.onClickBack()
         return false
+    }
+
+    override fun onScanResult(data: String) {
+        vm.onScanResult(data)
     }
 }

@@ -67,4 +67,10 @@ class GoodInfoViewModel : CoreViewModel() {
         }
         navigator.openGoodListScreen()
     }
+
+    fun onScanResult(data: String) {
+        // Реализоваь логику
+        // ...
+
+    }
 }

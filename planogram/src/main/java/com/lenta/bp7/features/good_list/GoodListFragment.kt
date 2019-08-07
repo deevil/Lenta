@@ -16,6 +16,7 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
+import com.lenta.shared.scan.OnScanResultListener
 import com.lenta.shared.utilities.databinding.DataBindingAdapter
 import com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig
 import com.lenta.shared.utilities.databinding.RecyclerViewKeyHandler
@@ -24,7 +25,7 @@ import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
 import com.lenta.shared.utilities.extentions.provideViewModel
 
 class GoodListFragment : CoreFragment<FragmentGoodListBinding, GoodListViewModel>(),
-        ToolbarButtonsClickListener, OnBackPresserListener {
+        ToolbarButtonsClickListener, OnBackPresserListener, OnScanResultListener {
 
     private var recyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
 
@@ -116,5 +117,9 @@ class GoodListFragment : CoreFragment<FragmentGoodListBinding, GoodListViewModel
     override fun onBackPressed(): Boolean {
         vm.onClickBack()
         return false
+    }
+
+    override fun onScanResult(data: String) {
+        vm.onScanResult(data)
     }
 }

@@ -99,4 +99,10 @@ class GoodInfoFacingViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
         }
         navigator.openGoodListScreen()
     }
+
+    fun onScanResult(data: String) {
+        // Реализоваь логику
+        // ...
+
+    }
 }
