@@ -39,17 +39,24 @@ class GoodListViewModel : AddGoodViewModel(), OnOkInSoftKeyboardListener {
 
     fun updateGoodList() {
         goods.value = checkData.getCurrentShelf()?.goods
+        goodNumber.value = ""
     }
 
     override fun onOkInSoftKeyboard(): Boolean {
-        checkEnteredNumber()
+        checkEnteredNumber(goodNumber.value ?: "")
         return true
     }
 
-    private fun checkEnteredNumber() {
-        goodNumber.value.let { number ->
-            if (number?.isNotEmpty() == true && number.length >= COMMON_SAP_LENGTH) {
-                when (number.length) {
+    private fun checkEnteredNumber(number: String) {
+        number.length.let { length ->
+            if (length < COMMON_SAP_LENGTH) {
+                // Сообщение - Данный товар не найден в справочнике
+                navigator.showGoodNotFound()
+                return
+            }
+
+            if (length >= COMMON_SAP_LENGTH) {
+                when (length) {
                     COMMON_SAP_LENGTH -> addGoodBySapCode(number)
                     SAP_OR_BAR_LENGTH -> {
                         // Выбор - Введено 12 знаков. Какой код вы ввели? - SAP-код / Штрихкод
