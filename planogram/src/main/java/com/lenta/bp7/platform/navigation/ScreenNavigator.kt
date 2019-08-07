@@ -204,6 +204,7 @@ class ScreenNavigator(
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.unsaved_self_control_data_detected),
                     pageNumber = "70",
+                    description = context.getString(R.string.unfinished_data),
                     codeConfirmForRight = backFragmentResultHelper.setFuncForResult(goOverCallback),
                     rightButtonDecorationInfo = ButtonDecorationInfo.goOver))
         }
@@ -213,6 +214,7 @@ class ScreenNavigator(
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.unsaved_external_audit_data_detected),
                     pageNumber = "4",
+                    description = context.getString(R.string.unfinished_data),
                     codeConfirmForRight = backFragmentResultHelper.setFuncForResult(goOverCallback),
                     rightButtonDecorationInfo = ButtonDecorationInfo.goOver))
         }

@@ -40,11 +40,11 @@
     <string name="unknown_good_barcode">ШК %1$s\n\nНеизвестный штрихкод. Товар определить не удалось. Все равно использовать этот штрихкод?</string>
     <string name="shelf_is_deleted">Полка удалена. Открыть просмотр или создать новую?</string>
     <string name="segment_is_deleted">Сегмент удален. Открыть просмотр или создать новый?</string>
-    <string name="successfully_saved_to_lua">Успешно сохранено в LUA</string>
-    <string name="error_saving_to_lua">Ошибка сохранения в LUA</string>
-    <string name="lua_system_unavailable">Система LUA недоступна. Пересылка результатов невозможна. Продолжить работу с ТДС?</string>
+    <string name="successfully_saved_to_lua">Успешно сохранено в LAU</string>
+    <string name="error_saving_to_lua">Ошибка сохранения в LAU</string>
+    <string name="lua_system_unavailable">Система LAU недоступна. Пересылка результатов невозможна. Продолжить работу с ТДС?</string>
     <string name="do_you_really_want_to_leave">Вы действительно хотите выйти?</string>
-    <string name="unsent_data_detected">В ТДС обнаружены неотправленные данные. Хотите перейти к отправке этих данных?</string>
+    <string name="unsent_data_detected">На ТДС обнаружены неотправленные данные. Хотите перейти к отправке этих данных?</string>
     <string name="good_not_found_in_database">Данный товар не найден в справочнике</string>
 
 
@@ -63,6 +63,7 @@
     <string name="description_list_of_processed_selves">Список обработанных полок</string>
     <string name="description_list_of_processed_goods">Список обработанных товаров</string>
     <string name="description_info_about_good">Информация о товаре</string>
+    <string name="unfinished_data">Незавершённые данные</string>
 
 
     <!-- Заголовки списков -->

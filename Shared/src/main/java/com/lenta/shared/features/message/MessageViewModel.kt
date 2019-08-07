@@ -14,12 +14,11 @@ open class MessageViewModel : CoreViewModel() {
 
     @Inject
     lateinit var goBackWithDelay: DelayGoBack
-
     @Inject
     lateinit var coreNavigator: ICoreNavigator
-
     @Inject
     lateinit var analyticsHelper: AnalyticsHelper
+
 
     lateinit var message: String
 
@@ -35,20 +34,17 @@ open class MessageViewModel : CoreViewModel() {
     var timeAutoExitInMillis: Int? = null
 
     init {
-
         viewModelScope.launch {
             timeAutoExitInMillis?.let { delayInMillis ->
                 if (codeConfirmForRight == null) {
                     goBackWithDelay(params = GoBackParams(
                             timeInMillis = delayInMillis.toLong(),
-                            codeForBackResult = codeConfirmForExit
-                    ))
+                            codeForBackResult = codeConfirmForExit))
                 }
             }
 
             analyticsHelper.infoScreenMessage(message)
         }
-
     }
 
     open fun onClickRightButton() {
@@ -88,7 +84,6 @@ open class MessageViewModel : CoreViewModel() {
         return false
 
     }
-
 
 }
 

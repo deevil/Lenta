@@ -164,7 +164,9 @@ class GoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     }
 
     fun onClickItemPosition(position: Int) {
-        checkData.currentGoodIndex = position
-        openGoodInfoScreen()
+        if (checkData.getCurrentShelf()?.getStatus() == ShelfStatus.UNFINISHED) {
+            checkData.currentGoodIndex = position
+            openGoodInfoScreen()
+        }
     }
 }

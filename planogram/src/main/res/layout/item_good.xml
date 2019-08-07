@@ -90,7 +90,7 @@
                     android:id="@+id/tv_goods_count"
                     style="@style/CellTextStyle"
                     android:layout_marginStart="8dp"
-                    android:text="@{good.numberOfFacing}"
+                    android:text="@{good.facingOrPlus}"
                     tools:text="0"/>
 
             </LinearLayout>

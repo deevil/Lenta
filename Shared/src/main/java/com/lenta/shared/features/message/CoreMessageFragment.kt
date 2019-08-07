@@ -14,6 +14,8 @@ import com.lenta.shared.utilities.state.state
 
 abstract class CoreMessageFragment : CoreFragment<LayoutMessageBinding, MessageViewModel>(), ToolbarButtonsClickListener, OnBackPresserListener {
     protected var message by state("")
+    protected var title by state<String?>(null)
+    protected var description by state<String?>(null)
     protected var iconRes by state(0)
     protected var textColor by state<Int?>(null)
     protected var codeConfirmForExit by state<Int?>(null)
@@ -34,6 +36,9 @@ abstract class CoreMessageFragment : CoreFragment<LayoutMessageBinding, MessageV
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
         topToolbarUiModel.visibility.value = true
+
+        if(title?.isNotEmpty() == true) topToolbarUiModel.title.value = title
+        if(description?.isNotEmpty() == true) topToolbarUiModel.description.value = description
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {

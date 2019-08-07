@@ -84,6 +84,26 @@ class CheckData @Inject constructor(
         } else null
     }
 
+    fun getFirstGood(): Good? {
+        return if (getCurrentShelf()?.goods?.isNotEmpty() == true) {
+            segments[currentSegmentIndex].let { segment ->
+                segment.shelves[currentShelfIndex].let { shelf ->
+                    shelf.goods[0]
+                }
+            }
+        } else null
+    }
+
+    fun getSecondGood(): Good? {
+        return if (getCurrentShelf()?.goods?.size ?: 0 > 1) {
+            segments[currentSegmentIndex].let { segment ->
+                segment.shelves[currentShelfIndex].let { shelf ->
+                    shelf.goods[1]
+                }
+            }
+        } else null
+    }
+
     fun addSegment(storeNumber: String, segmentNumber: String) {
         segments.add(0, Segment(
                 id = segments.lastIndex + 2,
@@ -174,9 +194,12 @@ class CheckData @Inject constructor(
         currentSegmentIndex = segments.indexOf(segments.find { it.getStatus() == SegmentStatus.UNFINISHED })
     }
 
-    fun getPreviousGoodFacings(): Int {
-        return if (getCurrentGood()?.barCode == getPreviousGood()?.barCode) getPreviousGood()?.facings
-                ?: 0 else 0
+    fun isFirstGood(good: Good?): Boolean {
+        return good?.barCode == getCurrentShelf()?.goods?.get(0)?.barCode
+    }
+
+    fun getPreviousSameGoodFacings(): Int {
+        return if (getFirstGood()?.barCode == getSecondGood()?.barCode) getSecondGood()?.facings ?: 0 else 0
     }
 
     fun getFormattedMarketNumber(): String {
