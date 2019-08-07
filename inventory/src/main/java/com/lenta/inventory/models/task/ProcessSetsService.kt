@@ -81,7 +81,7 @@ class ProcessSetsService @Inject constructor() : IProcessProductService {
         componentsInfo.clear()
 
         zmpUtz46V001.getComponentsForSet(currentProductInfo!!.materialNumber).map { data ->
-            zfmpUtz48V001.getProductInfo(data.matnrOsn).map {
+            zfmpUtz48V001.getProductInfo(data.matnr).map {
                 val uomInfo = zmpUtz07V001.getUomInfo(data.meins)
                 componentsInfo.add(SetComponentInfo(
                         setNumber = data.matnrOsn,

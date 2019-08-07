@@ -78,7 +78,7 @@
             tools:text="1" />
 
         <TextView
-            android:id="@+id/tv_good_title"
+            android:id="@+id/tv_component_title"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
