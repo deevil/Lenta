@@ -51,6 +51,7 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
     var storePlaceManager: StorePlaceProcessing? = null
     var justCreated: Boolean = true
+    var lastPage: Int = 0
 
     val processedSelectionHelper = SelectionItemsHelper()
     val unprocessedSelectionHelper = SelectionItemsHelper()
@@ -118,7 +119,7 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
         processedSelectionHelper.clearPositions()
         unprocessedSelectionHelper.clearPositions()
         viewModelScope.launch {
-            selectedPage.value = if (unprocessedGoods.value?.size == 0) 1 else 0
+            moveToPreviousPageIfNeeded()
         }
     }
 
@@ -164,23 +165,21 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
             }
             unprocessedSelectionHelper.clearPositions()
         } else {
-            screenNavigator.openConfirmationClean {
-                processedSelectionHelper.selectedPositions.value?.forEach {
-                    val matnr = processedGoods.value?.get(it)?.matnr
-                    if (matnr != null) {
-                        val productInfo = taskManager.getInventoryTask()?.taskRepository?.getProducts()?.findProduct(matnr, storePlaceManager?.storePlaceNumber
+            processedSelectionHelper.selectedPositions.value?.forEach {
+                val matnr = processedGoods.value?.get(it)?.matnr
+                if (matnr != null) {
+                    val productInfo = taskManager.getInventoryTask()?.taskRepository?.getProducts()?.findProduct(matnr, storePlaceManager?.storePlaceNumber
                                 ?: "")
-                        productInfo?.isPositionCalc = false
-                        productInfo?.factCount = 0.0
-                    }
+                    productInfo?.isPositionCalc = false
+                    productInfo?.factCount = 0.0
                 }
-                processedSelectionHelper.clearPositions()
             }
+            processedSelectionHelper.clearPositions()
         }
         updateUnprocessed()
         updateProcessed()
         viewModelScope.launch {
-            selectedPage.value = if (unprocessedGoods.value?.size == 0) 1 else 0
+            moveToPreviousPageIfNeeded()
         }
     }
 
@@ -233,6 +232,7 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
     fun onPageSelected(position: Int) {
         selectedPage.value = position
+        lastPage = position
     }
 
     fun onDigitPressed(digit: Int) {
@@ -273,6 +273,14 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     fun onResult(code: Int?) {
         if (searchProductDelegate.handleResultCode(code)) {
             return
+        }
+    }
+
+    private fun moveToPreviousPageIfNeeded() {
+        if (lastPage == 0) {
+            selectedPage.value = if (unprocessedGoods.value?.size == 0) 1 else 0
+        } else {
+            selectedPage.value = if (processedGoods.value?.size == 0) 0 else 1
         }
     }
 }
