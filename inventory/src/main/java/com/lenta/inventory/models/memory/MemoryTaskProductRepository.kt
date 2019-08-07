@@ -58,10 +58,10 @@ class MemoryTaskProductRepository : ITaskProductRepository {
     }
 
     override fun getNotProcessedProducts(storePlaceNumber: String?): List<TaskProductInfo> {
-        return productInfo.filter { (storePlaceNumber == null || it.placeCode == storePlaceNumber) && !it.isPositionCalc }
+        return productInfo.filter { (storePlaceNumber == null || it.placeCode == storePlaceNumber) && !it.isPositionCalc && !it.isDel }
     }
     override fun getProcessedProducts(storePlaceNumber: String?): List<TaskProductInfo> {
-        return productInfo.filter { (storePlaceNumber == null || it.placeCode == storePlaceNumber) && it.isPositionCalc }
+        return productInfo.filter { (storePlaceNumber == null || it.placeCode == storePlaceNumber) && it.isPositionCalc && !it.isDel }
     }
 
     override fun clear() {
