@@ -170,8 +170,14 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
                     if (matnr != null) {
                         val productInfo = taskManager.getInventoryTask()?.taskRepository?.getProducts()?.findProduct(matnr, storePlaceManager?.storePlaceNumber
                                 ?: "")
-                        productInfo?.isPositionCalc = false
-                        productInfo?.factCount = 0.0
+
+                        if (productInfo != null) {
+                            taskManager.
+                                    getInventoryTask()!!.
+                                    taskRepository.
+                                    getProducts().
+                                    changeProduct(TaskProductInfo.changeCopy(productInfo, factCount = 0.0, isPositionCalc = false))
+                        }
                     }
                 }
                 processedSelectionHelper.clearPositions()

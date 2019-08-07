@@ -135,24 +135,65 @@ class ProcessExciseAlcoProductServiceTest : BaseUnitTest() {
                 getInventoryTask()!!.
                 taskRepository.
                 getProducts().
-                addProduct(TaskProductInfo.from(product, storePlace, 0.0))
+                addProduct(product)
 
-        processExciseAlcoProductService.newProcessExciseAlcoProductService(TaskProductInfo.from(product, storePlace, 0.0))
+        //добавляем продукт с другим МХ в репозиторий
+        processServiceManager.
+                getInventoryTask()!!.
+                taskRepository.
+                getProducts().
+                addProduct(TaskProductInfo.changeCopy(product, placeCode = "100"))
+
+        processExciseAlcoProductService.newProcessExciseAlcoProductService(TaskProductInfo.changeCopy(product))
     }
 
     @Test
     fun setFactCount() {
 
+        //проверяем фактическое кол-во продукта в репозитории, должно быть 0
+        Assert.assertEquals(0.0, processServiceManager.getInventoryTask()!!.taskRepository.getProducts().findProduct(materialNumber, storePlace)!!.factCount, 0.0)
+
+        //проверяем, что продукт в репозитории помечен как не обработанный
+        Assert.assertFalse(processServiceManager.getInventoryTask()!!.taskRepository.getProducts().findProduct(materialNumber, storePlace)!!.isPositionCalc)
+
         //устанавливаем FactCount для продукта = 7 (нажатие на кнопку "Применить")
         processExciseAlcoProductService.setFactCount(7.0)
 
-        //проверяем фактическое кол-во продукта, должно быть 7
+        //устанавливаем отрицательное кол-во продуктов -1
+        processExciseAlcoProductService.setFactCount(-1.0)
+
+        //проверяем фактическое кол-во продукта в репозитории, должно быть 7
         Assert.assertEquals(7.0, processServiceManager.getInventoryTask()!!.taskRepository.getProducts().findProduct(materialNumber, storePlace)!!.factCount, 0.0)
+
+        //проверяем, что продукт в репозитории помечен как обработанный
+        Assert.assertTrue(processServiceManager.getInventoryTask()!!.taskRepository.getProducts().findProduct(materialNumber, storePlace)!!.isPositionCalc)
+
+        //устанавливаем кол-во продуктов в ноль
+        processExciseAlcoProductService.setFactCount(0.0)
+
+        //проверяем кол-во продуктов в репозитории, должно быть 0
+        Assert.assertEquals(0.0, processServiceManager.getInventoryTask()!!.taskRepository.getProducts().findProduct(materialNumber, storePlace)!!.factCount, 0.0)
+
+        //проверяем, что продукт в репозитории стал помечен как не обработанный
+        Assert.assertFalse(processServiceManager.getInventoryTask()!!.taskRepository.getProducts().findProduct(materialNumber, storePlace)!!.isPositionCalc)
+
+        //проверяем, что в репозитории 2 продукта
+        Assert.assertTrue(processServiceManager.getInventoryTask()!!.taskRepository.getProducts().getProducts().size == 2)
+
 
     }
 
     @Test
     fun markMissing() {
+
+        //проверяем фактическое кол-во продукта в репозитории, должно быть 0
+        Assert.assertEquals(0.0, processServiceManager.getInventoryTask()!!.taskRepository.getProducts().findProduct(materialNumber, storePlace)!!.factCount, 0.0)
+
+        //проверяем, что продукт в репозитории помечен как не обработанный
+        Assert.assertFalse(processServiceManager.getInventoryTask()!!.taskRepository.getProducts().findProduct(materialNumber, storePlace)!!.isPositionCalc)
+
+        //устанавливаем FactCount для продукта = 7 (чтобы потом проверить, что стало 0)
+        processExciseAlcoProductService.setFactCount(7.0)
 
         //помечаем, что продукт отсутствует (нажатие на кнопку "Отсутствует")
         processExciseAlcoProductService.markMissing()
@@ -301,15 +342,22 @@ class ProcessExciseAlcoProductServiceTest : BaseUnitTest() {
     @Test
     fun apply() {
 
+        //проверяем фактическое кол-во продукта в репозитории, должно быть 0
+        Assert.assertEquals(0.0, processServiceManager.getInventoryTask()!!.taskRepository.getProducts().findProduct(materialNumber, storePlace)!!.factCount, 0.0)
+
+        //проверяем, что продукт в репозитории помечен как не обработанный
+        Assert.assertFalse(processServiceManager.getInventoryTask()!!.taskRepository.getProducts().findProduct(materialNumber, storePlace)!!.isPositionCalc)
+
         //добавляем первую акцизную марку 150 символов продукту
         processExciseAlcoProductService.addCurrentExciseStamp(exciseStamp150_1)
 
         //добавляем вторую акцизную марку 150 символов продукту
         processExciseAlcoProductService.addCurrentExciseStamp(exciseStamp150_2)
 
+        //вызываем apply()
         processExciseAlcoProductService.apply()
 
-        //проверяем фактическое кол-во продукта, должно быть 2
+        //проверяем фактическое кол-во продукта в репозитории, должно быть 2
         Assert.assertEquals(2.0,
                 processServiceManager.
                     getInventoryTask()!!.
@@ -320,8 +368,18 @@ class ProcessExciseAlcoProductServiceTest : BaseUnitTest() {
                 0.0
         )
 
-        //проверяем кол-во марок, должно быть 2
-        Assert.assertEquals(2, processServiceManager.getInventoryTask()!!.taskRepository.getExciseStamps().getExciseStamps().size)
+        //проверяем кол-во марок для продукта в репозитории, должно быть 2
+        Assert.assertEquals(2, processServiceManager.
+                                                    getInventoryTask()!!.
+                                                    taskRepository.
+                                                    getExciseStamps().
+                                                    getExciseStamps().
+                                                    size
+        )
+
+        //проверяем, что продукт в репозитории помечен как обработанный
+        Assert.assertTrue(processServiceManager.getInventoryTask()!!.taskRepository.getProducts().findProduct(materialNumber, storePlace)!!.isPositionCalc)
+
     }
 
     @Test

@@ -15,9 +15,9 @@ class TaskProductInfo(materialNumber: String,
                       matrixType: MatrixType,
                       materialType: String,
                       val placeCode: String,
-                      var factCount: Double = 0.0,
-                      var isPositionCalc: Boolean,
-                      var isDel: Boolean = false,
+                      val factCount: Double = 0.0,
+                      val isPositionCalc: Boolean,
+                      val isDel: Boolean = false,
                       val isExcOld: Boolean) : ProductInfo(materialNumber, description, uom, type, isSet, sectionId, matrixType, materialType) {
 
     fun getDisplayName() : String {
@@ -29,20 +29,36 @@ class TaskProductInfo(materialNumber: String,
     }
 
     companion object {
-        fun from(productInfo: ProductInfo, placeCode: String = "00", factCount: Double = 0.0) : TaskProductInfo {
-            return TaskProductInfo(materialNumber = productInfo.materialNumber,
-                    description = productInfo.description,
-                    uom = productInfo.uom,
-                    type = productInfo.type,
-                    isSet = productInfo.isSet,
-                    sectionId = productInfo.sectionId,
-                    matrixType = productInfo.matrixType,
-                    materialType = productInfo.materialType,
-                    placeCode = placeCode,
-                    factCount = factCount,
-                    isPositionCalc = false,
-                    isExcOld = false
-                    )
+
+        fun changeCopy(productInfo: TaskProductInfo,
+                   materialNumber: String = productInfo.materialNumber,
+                   description: String = productInfo.description,
+                   uom: Uom = productInfo.uom,
+                   type:ProductType = productInfo.type,
+                   isSet: Boolean = productInfo.isSet,
+                   sectionId: String = productInfo.sectionId,
+                   matrixType: MatrixType = productInfo.matrixType,
+                   materialType: String = productInfo.materialType,
+                   placeCode: String = productInfo.placeCode,
+                   factCount: Double = productInfo.factCount,
+                   isPositionCalc: Boolean = productInfo.isPositionCalc,
+                   isDel: Boolean = productInfo.isDel,
+                   isExcOld: Boolean = productInfo.isExcOld) : TaskProductInfo {
+            return TaskProductInfo(
+                            materialNumber = materialNumber,
+                            description = description,
+                            uom = uom,
+                            type = type,
+                            isSet = isSet,
+                            sectionId = sectionId,
+                            matrixType = matrixType,
+                            materialType = materialType,
+                            placeCode = placeCode,
+                            factCount = factCount,
+                            isPositionCalc = isPositionCalc,
+                            isDel = isDel,
+                            isExcOld = isExcOld
+            )
         }
     }
 
