@@ -2,24 +2,15 @@ package com.lenta.bp7.features.good_info_facing
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.lenta.bp7.data.model.CheckData
 import com.lenta.bp7.data.model.Good
 import com.lenta.bp7.data.model.GoodStatus
-import com.lenta.bp7.platform.navigation.IScreenNavigator
-import com.lenta.shared.platform.viewmodel.CoreViewModel
+import com.lenta.bp7.features.other.AddGoodViewModel
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.map
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
-class GoodInfoFacingViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
-
-    @Inject
-    lateinit var navigator: IScreenNavigator
-    @Inject
-    lateinit var checkData: CheckData
-
+class GoodInfoFacingViewModel : AddGoodViewModel(), OnOkInSoftKeyboardListener {
 
     val good: MutableLiveData<Good> = MutableLiveData()
 
@@ -101,8 +92,10 @@ class GoodInfoFacingViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     }
 
     fun onScanResult(data: String) {
-        // Реализоваь логику
-        // ...
-
+        if (applyButtonEnabled.value == true) {
+            checkData.getCurrentGood()?.facings = facings.value!!.toInt()
+            checkData.setCurrentGoodStatus(GoodStatus.PROCESSED)
+            addGoodByBarCode(data)
+        }
     }
 }
