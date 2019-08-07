@@ -16,4 +16,9 @@ object Constants {
     //---------Date formats---------//
     const val DATE_FORMAT_ddmmyy = "dd.MM.yy"
     const val DATE_FORMAT_yyyy_mm_dd = "yyyy-MM-dd"
+
+    // Entered sap-code length
+    const val COMMON_SAP_LENGTH = 6
+    const val SAP_OR_BAR_LENGTH = 12
+
 }

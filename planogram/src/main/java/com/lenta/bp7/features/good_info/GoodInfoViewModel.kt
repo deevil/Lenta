@@ -2,21 +2,13 @@ package com.lenta.bp7.features.good_info
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.lenta.bp7.data.model.CheckData
 import com.lenta.bp7.data.model.Good
 import com.lenta.bp7.data.model.GoodStatus
-import com.lenta.bp7.platform.navigation.IScreenNavigator
-import com.lenta.shared.platform.viewmodel.CoreViewModel
+import com.lenta.bp7.features.other.AddGoodViewModel
 import com.lenta.shared.utilities.extentions.map
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
-class GoodInfoViewModel : CoreViewModel() {
-
-    @Inject
-    lateinit var navigator: IScreenNavigator
-    @Inject
-    lateinit var checkData: CheckData
+class GoodInfoViewModel : AddGoodViewModel() {
 
     val good: MutableLiveData<Good> = MutableLiveData()
 
@@ -69,8 +61,9 @@ class GoodInfoViewModel : CoreViewModel() {
     }
 
     fun onScanResult(data: String) {
-        // Реализоваь логику
-        // ...
-
+        if (applyButtonEnabled.value == true) {
+            checkData.setCurrentGoodStatus(GoodStatus.PROCESSED)
+            addGoodByBarCode(data)
+        }
     }
 }
