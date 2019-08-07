@@ -294,6 +294,10 @@ class ScreenNavigator(
         openInfoScreen(context.getString(R.string.goods_not_for_task))
     }
 
+    override fun openAlertWrongGoodsType() {
+        openInfoScreen(context.getString(R.string.alco_forbidden))
+    }
+
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 
 }
@@ -331,4 +335,5 @@ interface IScreenNavigator : ICoreNavigator {
     fun openConfirmationExitTask(callbackFunc: () -> Unit)
     fun openSelectTypeCodeScreen(codeConfirmationForSap: Int, codeConfirmationForBarCode: Int)
     fun openAlertGoodsNotForTaskScreen()
+    fun openAlertWrongGoodsType()
 }

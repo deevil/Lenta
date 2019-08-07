@@ -7,8 +7,8 @@ import com.lenta.inventory.models.task.IInventoryTaskManager
 import com.lenta.inventory.models.task.ProcessGeneralProductService
 import com.lenta.inventory.models.task.TaskProductInfo
 import com.lenta.inventory.platform.navigation.IScreenNavigator
-import com.lenta.shared.features.message.MessageViewModel
-import com.lenta.shared.models.core.ProductType
+import com.lenta.shared.platform.viewmodel.CoreViewModel
+import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.toStringFormatted
@@ -16,7 +16,7 @@ import com.lenta.shared.view.OnPositionClickListener
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class GoodsInfoViewModel : MessageViewModel(), OnPositionClickListener {
+class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
 
     @Inject
     lateinit var screenNavigator: IScreenNavigator
@@ -32,6 +32,8 @@ class GoodsInfoViewModel : MessageViewModel(), OnPositionClickListener {
 
     val productInfo: MutableLiveData<TaskProductInfo> = MutableLiveData()
     val storePlaceNumber: MutableLiveData<String> = MutableLiveData()
+    val iconRes: MutableLiveData<Int> = MutableLiveData(0)
+    val textColor: MutableLiveData<Int> = MutableLiveData(0)
     val msgWrongProducType: MutableLiveData<String> = MutableLiveData()
     val isStorePlaceNumber: MutableLiveData<Boolean> = storePlaceNumber.map { it != "00" }
     val spinList: MutableLiveData<List<String>> = MutableLiveData()
@@ -54,15 +56,24 @@ class GoodsInfoViewModel : MessageViewModel(), OnPositionClickListener {
         viewModelScope.launch {
             suffix.value = productInfo.value?.uom?.name
             storePlaceNumber.value = productInfo.value?.placeCode
+            searchProductDelegate.init(viewModelScope = this@GoodsInfoViewModel::viewModelScope,
+                    scanResultHandler = this@GoodsInfoViewModel::handleProductSearchResult,
+                    storePlace = storePlaceNumber.value ?: "00")
             if (processGeneralProductService.newProcessGeneralProductService(productInfo.value!!) == null){
                 screenNavigator.goBack()
                 screenNavigator.openAlertScreen(
                         message = msgWrongProducType.value!!,
-                        iconRes = iconRes,
-                        textColor = textColor,
+                        iconRes = iconRes.value!!,
+                        textColor = textColor.value!!,
                         pageNumber = "98")
             }
         }
+    }
+
+    private fun handleProductSearchResult(scanInfoResult: ScanInfoResult?): Boolean {
+        enabledBtn()
+        screenNavigator.goBack()
+        return false
     }
 
     fun onClickDetails(){
@@ -81,39 +92,6 @@ class GoodsInfoViewModel : MessageViewModel(), OnPositionClickListener {
 
     fun onScanResult(data: String) {
         searchProductDelegate.searchCode(code = data, fromScan = true)
-        /**processServiceManager.
-                getInventoryTask()!!.
-                taskRepository.
-                getProducts().
-                findProduct(materialNumber = data, storePlaceNumber = storePlaceNumber.value!!)?.
-                let{
-                    when (it.type){
-                        ProductType.General, ProductType.NonExciseAlcohol -> {
-                            enabledBtn()
-                            screenNavigator.goBack()
-                            screenNavigator.openGoodsInfoScreen(productInfo = it)
-                        }
-                        ProductType.ExciseAlcohol -> {
-                            if (it.isSet){
-                                enabledBtn()
-                                screenNavigator.goBack()
-                                screenNavigator.openSetsInfoScreen(it)
-                            }
-                            else{
-                                enabledBtn()
-                                screenNavigator.goBack()
-                                screenNavigator.openExciseAlcoInfoScreen(it)
-                            }
-                        }
-                    }
-                    return
-                }*/
-
-        screenNavigator.openAlertScreen(
-                                    message = message,
-                                    iconRes = iconRes,
-                                    textColor = textColor,
-                                    pageNumber = "98")
     }
 
     private fun enabledBtn(){

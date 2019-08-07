@@ -3,6 +3,7 @@ package com.lenta.inventory.features.goods_information.excise_alco
 import android.os.Bundle
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.lenta.inventory.features.goods_list.SearchProductDelegate
 import com.lenta.inventory.models.InfoStatus
 import com.lenta.inventory.models.task.IInventoryTaskManager
 import com.lenta.inventory.models.task.ProcessExciseAlcoProductService
@@ -15,6 +16,7 @@ import com.lenta.shared.exception.Failure
 import com.lenta.shared.models.core.Manufacturer
 import com.lenta.shared.models.core.ProductType
 import com.lenta.shared.platform.viewmodel.CoreViewModel
+import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.toStringFormatted
@@ -43,10 +45,12 @@ class ExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
     @Inject
     lateinit var processExciseAlcoProductService: ProcessExciseAlcoProductService
 
+    @Inject
+    lateinit var searchProductDelegate: SearchProductDelegate
+
     val iconRes: MutableLiveData<Int> = MutableLiveData(0)
     val textColor: MutableLiveData<Int> = MutableLiveData(0)
     val alcocodeNotFound: MutableLiveData<String> = MutableLiveData()
-    val brandOtherMarket: MutableLiveData<String> = MutableLiveData()
 
     private val scannedStampCode: MutableLiveData<String> = MutableLiveData()
 
@@ -103,6 +107,9 @@ class ExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
         viewModelScope.launch {
             suffix.value = productInfo.value?.uom?.name
             storePlaceNumber.value = productInfo.value!!.placeCode
+            searchProductDelegate.init(viewModelScope = this@ExciseAlcoInfoViewModel::viewModelScope,
+                    scanResultHandler = this@ExciseAlcoInfoViewModel::handleProductSearchResult,
+                    storePlace = storePlaceNumber.value ?: "00")
             if (processExciseAlcoProductService.newProcessExciseAlcoProductService(productInfo.value!!) == null) {
                 screenNavigator.goBack()
                 screenNavigator.openAlertScreen(
@@ -112,6 +119,12 @@ class ExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
                         pageNumber = "98")
             }
         }
+    }
+
+    private fun handleProductSearchResult(scanInfoResult: ScanInfoResult?): Boolean {
+        enabledBtn()
+        screenNavigator.goBack()
+        return false
     }
 
     fun onResume() {
@@ -160,7 +173,7 @@ class ExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
             in 26..50 -> processBox(data)
             68 -> processPdf68(data)
             150 -> processPdf150(data)
-            else -> processItemByBarcode(data)
+            else -> searchProductDelegate.searchCode(code = data, fromScan = true)
         }
     }
 
@@ -475,41 +488,6 @@ class ExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
                 screenNavigator.openAlertScreen(message = alcocodeNotFound.value!!, iconRes = iconRes.value!!, textColor = textColor.value, pageNumber = "98")
             }
         }
-    }
-
-    private fun processItemByBarcode(data: String) {
-        processServiceManager.
-                getInventoryTask()!!.
-                taskRepository.
-                getProducts().
-                findProduct(materialNumber = data, storePlaceNumber = storePlaceNumber.value!!)?.
-                let {
-                    when (it.type) {
-                        ProductType.General, ProductType.NonExciseAlcohol -> {
-                            enabledBtn()
-                            screenNavigator.goBack()
-                            screenNavigator.openGoodsInfoScreen(productInfo = it)
-                        }
-                        ProductType.ExciseAlcohol -> {
-                            if (it.isSet) {
-                                enabledBtn()
-                                screenNavigator.goBack()
-                                screenNavigator.openSetsInfoScreen(it)
-                            } else {
-                                enabledBtn()
-                                screenNavigator.goBack()
-                                screenNavigator.openExciseAlcoInfoScreen(it)
-                            }
-                        }
-                    }
-                    return
-        }
-
-        screenNavigator.openAlertScreen(
-                message = brandOtherMarket.value!!,
-                iconRes = iconRes.value!!,
-                textColor = textColor.value,
-                pageNumber = "98")
     }
 
     private fun enabledBtn() {

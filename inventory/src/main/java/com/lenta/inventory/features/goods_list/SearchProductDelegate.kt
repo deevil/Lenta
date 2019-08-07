@@ -7,6 +7,7 @@ import com.lenta.inventory.platform.requestCodeTypeBarCode
 import com.lenta.inventory.platform.requestCodeTypeSap
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
+import com.lenta.shared.models.core.GisControl
 import com.lenta.shared.models.core.ProductInfo
 import com.lenta.shared.models.core.ProductType
 import com.lenta.shared.models.core.isNormal
@@ -144,7 +145,17 @@ class SearchProductDelegate @Inject constructor(
                 screenNavigator.openAlertGoodsNotForTaskScreen()
                 return
             } else {
-                handleSearchResultOrOpenProductScreen()
+                val alcoCheckOK: Boolean
+                if (it.productInfo.type == ProductType.ExciseAlcohol || it.productInfo.type == ProductType.NonExciseAlcohol) {
+                    alcoCheckOK = taskManager.getInventoryTask()!!.taskDescription.gis == GisControl.Alcohol
+                } else {
+                    alcoCheckOK = taskManager.getInventoryTask()!!.taskDescription.gis == GisControl.GeneralProduct
+                }
+                if (!alcoCheckOK) {
+                    screenNavigator.openAlertWrongGoodsType()
+                } else {
+                    handleSearchResultOrOpenProductScreen()
+                }
             }
         }
     }

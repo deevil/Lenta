@@ -64,5 +64,6 @@
     <string name="confirmation_exit_task">Вы точно хотите выйти из обработки задания?</string>
     <string name="select_type_code_description">Введено 12 знаков. Какой код вы ввели?</string>
     <string name="goods_not_for_task">Товар отсутствует в задании</string>
+    <string name="alco_forbidden">Тип товара не соответствует настройкам задания</string>
     <string name="simple_recount">Обычный пересчет</string>
 </resources>

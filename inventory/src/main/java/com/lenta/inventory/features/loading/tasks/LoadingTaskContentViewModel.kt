@@ -3,6 +3,7 @@ package com.lenta.inventory.features.loading.tasks
 import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.lenta.inventory.features.task_list.StatusTask
 import com.lenta.inventory.models.RecountType
 import com.lenta.inventory.models.task.IInventoryTaskManager
 import com.lenta.inventory.models.task.TaskContents
@@ -46,12 +47,19 @@ class LoadingTaskContentViewModel : CoreLoadingViewModel() {
         viewModelScope.launch {
             progress.value = true
             val userNumber = if (recountType == RecountType.ParallelByStorePlaces || sessionInfo.personnelNumber == null) "" else sessionInfo.personnelNumber
+            var needsRelock = false
+            if (recountType == RecountType.Simple) {
+                taskInfo?.let {
+                    val status = StatusTask.from(it, sessionInfo.userName ?: "")
+                    needsRelock = status == StatusTask.BlockedMe
+                }
+            }
             taskContentRequest(TaskContentParams(ip = context.getDeviceIp(),
                     taskNumber = taskInfo?.taskNumber ?: "",
                     userNumber = userNumber ?: "",
                     additionalDataFlag = "",
                     newProductNumbers = emptyList(),
-                    numberRelock = "",
+                    numberRelock = if (needsRelock) "X" else "",
                     mode = "1")).either(::handleFailure, ::handleSuccess)
             progress.value = false
         }

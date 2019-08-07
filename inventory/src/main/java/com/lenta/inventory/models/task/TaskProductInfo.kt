@@ -17,6 +17,7 @@ class TaskProductInfo(materialNumber: String,
                       val placeCode: String,
                       var factCount: Double = 0.0,
                       var isPositionCalc: Boolean,
+                      var isDel: Boolean = false,
                       val isExcOld: Boolean) : ProductInfo(materialNumber, description, uom, type, isSet, sectionId, matrixType, materialType) {
 
     fun getDisplayName() : String {

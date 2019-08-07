@@ -47,7 +47,6 @@ class ExciseAlcoInfoFragment : CoreFragment<FragmentExciseAlcoInfoBinding, Excis
             vm.textErrorUnknownStatus.value = getString(R.string.text_error_unknown_status)
             vm.titleProgressScreen.value = getString(R.string.data_loading)
             vm.alcocodeNotFound.value = getString(R.string.alcocode_not_found)
-            vm.brandOtherMarket.value = getString(R.string.brand_other_market)
             vm.iconRes.value = R.drawable.ic_info_pink
             vm.textColor.value = ContextCompat.getColor(context!!, com.lenta.shared.R.color.color_text_dialogWarning)
             vm.msgWrongProducType.value = getString(R.string.wrong_product_type)

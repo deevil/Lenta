@@ -55,14 +55,18 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     val processedSelectionHelper = SelectionItemsHelper()
     val unprocessedSelectionHelper = SelectionItemsHelper()
 
-    val deleteEnabled: MutableLiveData<Boolean> = selectedPage.combineLatest(unprocessedSelectionHelper.selectedPositions).combineLatest(processedSelectionHelper.selectedPositions).map {
+    val deleteEnabled: MutableLiveData<Boolean> = selectedPage
+            .combineLatest(unprocessedSelectionHelper.selectedPositions.combineLatest(processedSelectionHelper.selectedPositions))
+            .combineLatest(unprocessedGoods.combineLatest(processedGoods))
+            .map {
         val page = it?.first?.first
         if (page == 0) {
-            val selectedCount = it?.first?.second.size
-            selectedCount != 0 && selectedCount != unprocessedGoods.value?.size
+            val selectedCount = it?.first?.second?.first.size
+            val totalCount = (it?.second?.first?.size ?: 0) + (it?.second?.second?.size ?: 0)
+            selectedCount != 0 && selectedCount != totalCount
         } else {
-            val selectedCount = it?.second?.size
-            selectedCount != 0 && selectedCount != processedGoods.value?.size
+            val selectedCount = it?.first?.second?.second?.size
+            selectedCount != 0
         }
     }
 
@@ -111,6 +115,8 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
         }
         updateUnprocessed()
         updateProcessed()
+        processedSelectionHelper.clearPositions()
+        unprocessedSelectionHelper.clearPositions()
         viewModelScope.launch {
             selectedPage.value = if (unprocessedGoods.value?.size == 0) 1 else 0
         }
@@ -151,14 +157,12 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
     fun onClickClean() {
         if (selectedPage.value == 0) {
-            screenNavigator.openConfirmationDeleteGoods(unprocessedSelectionHelper.selectedPositions.value?.size ?: 0) {
-                unprocessedSelectionHelper.selectedPositions.value?.forEach {
-                    unprocessedGoods.value?.get(it)?.matnr?.let {
-                        taskManager.getInventoryTask()!!.deleteProduct(it)
-                    }
+            unprocessedSelectionHelper.selectedPositions.value?.forEach {
+                unprocessedGoods.value?.get(it)?.matnr?.let {
+                    taskManager.getInventoryTask()!!.deleteProduct(it)
                 }
-                unprocessedSelectionHelper.clearPositions()
             }
+            unprocessedSelectionHelper.clearPositions()
         } else {
             screenNavigator.openConfirmationClean {
                 processedSelectionHelper.selectedPositions.value?.forEach {
@@ -175,6 +179,9 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
         }
         updateUnprocessed()
         updateProcessed()
+        viewModelScope.launch {
+            selectedPage.value = if (unprocessedGoods.value?.size == 0) 1 else 0
+        }
     }
 
     fun onClickComplete() {

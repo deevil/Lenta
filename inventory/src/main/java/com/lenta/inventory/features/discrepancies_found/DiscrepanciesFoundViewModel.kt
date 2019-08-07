@@ -30,16 +30,26 @@ class DiscrepanciesFoundViewModel : CoreViewModel() {
 
     val discrepanciesByGoods: MutableLiveData<List<DiscrepancyVM>> = MutableLiveData()
     val discrepanciesByStorage: MutableLiveData<List<DiscrepancyVM>> = MutableLiveData()
+    val processedGoods: MutableLiveData<List<TaskProductInfo>> = MutableLiveData()
 
     var selectedPage = MutableLiveData(0)
 
     val byGoodsSelectionHelper = SelectionItemsHelper()
     val byStorageSelectionHelper = SelectionItemsHelper()
 
-    val untieDeleteEnabled: MutableLiveData<Boolean> = selectedPage.combineLatest(byGoodsSelectionHelper.selectedPositions).combineLatest(byStorageSelectionHelper.selectedPositions).map {
+    val untieDeleteEnabled: MutableLiveData<Boolean> = selectedPage
+            .combineLatest(byGoodsSelectionHelper.selectedPositions.combineLatest(byStorageSelectionHelper.selectedPositions))
+            .combineLatest(processedGoods.combineLatest(discrepanciesByGoods)).map {
         val page = it?.first?.first ?: 0
-        val selectionCount = if (page == 0) it?.first?.second?.size ?: 0 else it?.second?.size ?: 0
-        selectionCount > 0 && (page != 0 || !(taskManager.getInventoryTask()?.taskDescription?.isStrict ?: true))
+        val selectionCount = if (page == 0) it?.first?.second?.first?.size ?: 0 else it?.first?.second?.second?.size ?: 0
+        if (page == 0) {
+            val isStrict = taskManager.getInventoryTask()?.taskDescription?.isStrict == true
+            val allSelected = selectionCount == it?.second?.second?.size
+            val allUnprocessed = it?.second?.first?.size == 0
+            selectionCount > 0 && !isStrict && !(allSelected && allUnprocessed)
+        } else {
+            selectionCount > 0
+        }
     }
 
     val isNotEmpty: MutableLiveData<Boolean> = discrepanciesByGoods.map { it?.size != 0 }
@@ -53,12 +63,14 @@ class DiscrepanciesFoundViewModel : CoreViewModel() {
 
     fun onResume() {
         update()
+        byGoodsSelectionHelper.clearPositions()
+        byStorageSelectionHelper.clearPositions()
     }
 
     fun update() {
         updateByGoods()
         updateByStorage()
-
+        processedGoods.value = taskManager.getInventoryTask()?.taskRepository?.getProducts()?.getProcessedProducts()
     }
 
     fun updateByGoods() {
