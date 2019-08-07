@@ -23,8 +23,12 @@ data class Good(
         return sapCode.takeLast(6)
     }
 
-    fun getNumberOfFacing(): String? {
+    fun getFacingOrPlus(): String? {
         return if ((status == GoodStatus.CREATED || status == GoodStatus.PROCESSED) && facings == 0) "+" else facings.toString()
+    }
+
+    fun getFacingOrEmpty(): String? {
+        return if (facings == 0) "" else facings.toString()
     }
 
 }

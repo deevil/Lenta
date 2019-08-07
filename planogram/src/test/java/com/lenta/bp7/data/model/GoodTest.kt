@@ -67,20 +67,20 @@ internal class GoodTest {
     fun `Empty facings with CREATED status`() {
         good?.facings = 0
         good?.setStatus(GoodStatus.CREATED)
-        assertEquals("+", good?.getNumberOfFacing())
+        assertEquals("+", good?.getFacingOrPlus())
     }
 
     @Test
     fun `Empty facings with PROCESSED status`() {
         good?.facings = 0
         good?.setStatus(GoodStatus.PROCESSED)
-        assertEquals("+", good?.getNumberOfFacing())
+        assertEquals("+", good?.getFacingOrPlus())
     }
 
     @Test
     fun `Not empty facings`() {
         good?.facings = 12
-        assertEquals("12", good?.getNumberOfFacing())
+        assertEquals("12", good?.getFacingOrPlus())
     }
 
 }

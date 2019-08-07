@@ -175,8 +175,7 @@ class CheckData @Inject constructor(
     }
 
     fun getPreviousGoodFacings(): Int {
-        return if (getCurrentGood()?.barCode == getPreviousGood()?.barCode) getPreviousGood()?.facings
-                ?: 0 else 0
+        return if (getCurrentGood()?.barCode == getPreviousGood()?.barCode) getPreviousGood()?.facings ?: 0 else 0
     }
 
     fun getFormattedMarketNumber(): String {

@@ -51,6 +51,7 @@ class GoodInfoFacingViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     init {
         viewModelScope.launch {
             good.value = checkData.getCurrentGood()
+            facings.value = checkData.getCurrentGood()?.getFacingOrEmpty()
         }
     }
 
