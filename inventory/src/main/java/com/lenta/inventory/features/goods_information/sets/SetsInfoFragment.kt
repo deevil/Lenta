@@ -59,7 +59,6 @@ class SetsInfoFragment : CoreFragment<FragmentSetsInfoBinding, SetsInfoViewModel
             vm.productInfo.value = productInfo
             vm.spinList.value = listOf(getString(R.string.quantity))
             vm.titleProgressScreen.value = getString(R.string.data_loading)
-            vm.componentNotFound.value = getString(R.string.component_not_found)
             vm.stampAnotherProduct.value = getString(R.string.stamp_another_product)
             vm.alcocodeNotFound.value = getString(R.string.alcocode_not_found)
             vm.limitExceeded.value = getString(R.string.limit_exceeded)
@@ -150,9 +149,10 @@ class SetsInfoFragment : CoreFragment<FragmentSetsInfoBinding, SetsInfoViewModel
                         }
                     }
 
-                    val onClickGoodTitle = View.OnClickListener {v ->
-                        vm.searchCode.value = (v as TextView).text.substring(0,6)
-                        vm.onOkInSoftKeyboard()
+                    val onClickComponentTitle = View.OnClickListener {
+                        (it!!.tag as Int).let { position ->
+                            vm.onClickComponentTitle(position)
+                        }
                     }
 
                     layoutBinding.lifecycleOwner = viewLifecycleOwner
@@ -166,7 +166,8 @@ class SetsInfoFragment : CoreFragment<FragmentSetsInfoBinding, SetsInfoViewModel
                                 override fun onBind(binding: ItemTileSetsInfoBinding, position: Int) {
                                     binding.tvCounter.tag = position
                                     binding.tvCounter.setOnClickListener(onClickSelectionListener)
-                                    binding.tvGoodTitle.setOnClickListener(onClickGoodTitle)
+                                    binding.tvComponentTitle.tag = position
+                                    binding.tvComponentTitle.setOnClickListener(onClickComponentTitle)
                                     binding.selectedForDelete = vm.componentsSelectionsHelper.isSelected(position)
                                 }
 

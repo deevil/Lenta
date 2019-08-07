@@ -13,9 +13,7 @@ import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
-import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.SelectionItemsHelper
-import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.toStringFormatted
@@ -26,7 +24,7 @@ import kotlinx.coroutines.withContext
 import java.math.BigInteger
 import javax.inject.Inject
 
-class SetsInfoViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboardListener {
+class SetsInfoViewModel : CoreViewModel(), OnPositionClickListener {
 
     @Inject
     lateinit var screenNavigator: IScreenNavigator
@@ -64,7 +62,6 @@ class SetsInfoViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKe
     val suffix: MutableLiveData<String> = MutableLiveData()
     val stampAnotherProduct: MutableLiveData<String> = MutableLiveData()
     val alcocodeNotFound: MutableLiveData<String> = MutableLiveData()
-    val componentNotFound: MutableLiveData<String> = MutableLiveData()
     private val scannedStampCode: MutableLiveData<String> = MutableLiveData()
     private var countRunRest = 0
     private val arrExciseGoodsRestInfo: ArrayList<ExciseGoodsRestInfo> = ArrayList()
@@ -142,13 +139,8 @@ class SetsInfoViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKe
     }
 
     private fun handleProductSearchResult(scanInfoResult: ScanInfoResult?): Boolean {
-        if (selectedPage.value == 0) {
-            enabledBtn()
-            screenNavigator.goBack()
-        }
-        else {
-            processItemByBarcode(scannedStampCode.value!!)
-        }
+        enabledBtn()
+        screenNavigator.goBack()
         return false
     }
 
@@ -196,7 +188,7 @@ class SetsInfoViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKe
         when (data.length) {
             68 -> processPdf68(data)
             150 -> processPdf150(data)
-            else -> searchProductDelegate.searchCode(code = data, fromScan = true)
+            else -> processItemByBarcode(data)
         }
     }
 
@@ -312,7 +304,7 @@ class SetsInfoViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKe
 
     private fun processItemByBarcode(searchCode: String) {
         componentsInfo.filter {
-            it.number.substring(it.number.length - 6) == searchCode
+            it.number == searchCode
         }.map { componentInfo ->
             val countExciseStampForComponent = processSetsService.getCountExciseStampsForComponent(componentInfo)
             if (countExciseStampForComponent >= (componentInfo.count).toDouble()) {
@@ -323,7 +315,7 @@ class SetsInfoViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKe
             return
         }
 
-        screenNavigator.openAlertScreen(componentNotFound.value!!, iconRes = iconRes.value!!, textColor = textColor.value, pageNumber = "98")
+        searchProductDelegate.searchCode(code = searchCode, fromScan = true)
     }
 
     private fun enabledBtn() {
@@ -345,9 +337,8 @@ class SetsInfoViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKe
         processSetsService.discard()
     }
 
-    override fun onOkInSoftKeyboard(): Boolean {
-        onScanResult(searchCode.value ?: "")
-        return true
+    fun onClickComponentTitle(position: Int) {
+        processItemByBarcode(componentsInfo[position].number)
     }
 
     override fun onClickPosition(position: Int) {
