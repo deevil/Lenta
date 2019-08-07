@@ -169,4 +169,9 @@ class GoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
             openGoodInfoScreen()
         }
     }
+
+    fun onScanResult(data: String) {
+        goodNumber.value = data
+        checkEnteredNumber()
+    }
 }
