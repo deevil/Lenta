@@ -11,6 +11,7 @@ class MainMenuViewModel : CoreViewModel() {
 
 
     fun onClickWorkWithTask() {
+        screenNavigator.openTaskListScreen()
     }
 
     fun onClickCreateTask() {

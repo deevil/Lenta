@@ -13,7 +13,6 @@ import com.lenta.inventory.databinding.FragmentGoodsListBinding
 import com.lenta.inventory.databinding.ItemTileGoodsBinding
 import com.lenta.inventory.databinding.ItemTileProcessedGoodsBinding
 import com.lenta.inventory.databinding.LayoutGoodsProcessedBinding
-import com.lenta.inventory.models.task.StorePlaceProcessing
 import com.lenta.inventory.platform.extentions.getAppComponent
 import com.lenta.shared.keys.KeyCode
 import com.lenta.shared.keys.OnKeyDownListener

@@ -5,6 +5,7 @@ import com.lenta.bp14.features.auth.AuthFragment
 import com.lenta.bp14.features.loading.fast.FastDataLoadingFragment
 import com.lenta.bp14.features.main_menu.MainMenuFragment
 import com.lenta.bp14.features.select_market.SelectMarketFragment
+import com.lenta.bp14.features.task_list.TaskListFragment
 import com.lenta.shared.account.IAuthenticator
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
 import com.lenta.shared.platform.navigation.ICoreNavigator
@@ -51,6 +52,12 @@ class ScreenNavigator(
         }
     }
 
+    override fun openTaskListScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(TaskListFragment())
+        }
+    }
+
 
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 
@@ -62,5 +69,6 @@ interface IScreenNavigator : ICoreNavigator {
     fun openMainMenuScreen()
     fun openLoginScreen()
     fun openFastDataLoadingScreen()
+    fun openTaskListScreen()
 
 }
