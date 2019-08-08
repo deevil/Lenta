@@ -27,10 +27,6 @@ data class Good(
         return if ((status == GoodStatus.CREATED || status == GoodStatus.PROCESSED) && facings == 0) "+" else facings.toString()
     }
 
-    fun getFacingOrEmpty(): String? {
-        return if (facings == 0) "" else facings.toString()
-    }
-
 }
 
 data class GoodInfo(
