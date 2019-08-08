@@ -29,7 +29,8 @@ class FastResourcesMultiRequest @Inject constructor(val hyperHive: HyperHive) : 
 
                 ZmpUtz25V001.NAME_RESOURCE to ZmpUtz25V001(hyperHive).newRequest(),
                 ZmpUtz30V001.NAME_RESOURCE to ZmpUtz30V001(hyperHive).newRequest(),
-                ZmpUtz46V001.NAME_RESOURCE to ZmpUtz46V001(hyperHive).newRequest()
+                ZmpUtz46V001.NAME_RESOURCE to ZmpUtz46V001(hyperHive).newRequest(),
+                ZfmpUtz48V001.NAME_RESOURCE to ZfmpUtz48V001(hyperHive).newRequest()
         )
     }
 
