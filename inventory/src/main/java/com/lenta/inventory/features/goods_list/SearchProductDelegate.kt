@@ -105,22 +105,19 @@ class SearchProductDelegate @Inject constructor(
 
             var taskProductInfo = taskManager.getInventoryTask()!!.taskRepository.getProducts().findProduct(infoResult.productInfo.materialNumber, storePlaceCode)
             if (taskProductInfo == null) {
-                taskProductInfo = TaskProductInfo.
-                                    changeCopy(
-                                        TaskProductInfo(
-                                                materialNumber = infoResult.productInfo.materialNumber,
-                                                description = infoResult.productInfo.description,
-                                                uom = infoResult.productInfo.uom,
-                                                type = infoResult.productInfo.type,
-                                                isSet = infoResult.productInfo.isSet,
-                                                sectionId = infoResult.productInfo.sectionId,
-                                                matrixType = infoResult.productInfo.matrixType,
-                                                materialType = infoResult.productInfo.materialType,
-                                                placeCode = storePlaceCode,
-                                                factCount = 0.0,
-                                                isPositionCalc = false,
-                                                isExcOld = false
-                                        )
+                taskProductInfo = TaskProductInfo(materialNumber = infoResult.productInfo.materialNumber,
+                                                  description = infoResult.productInfo.description,
+                                                  uom = infoResult.productInfo.uom,
+                                                  type = infoResult.productInfo.type,
+                                                  isSet = infoResult.productInfo.isSet,
+                                                  sectionId = infoResult.productInfo.sectionId,
+                                                  matrixType = infoResult.productInfo.matrixType,
+                                                  materialType = infoResult.productInfo.materialType,
+                                                  placeCode = storePlaceCode,
+                                                  factCount = 0.0,
+                                                  isPositionCalc = false,
+                                                  isExcOld = false
+
                 )
 
                 taskManager.getInventoryTask()!!.taskRepository.getProducts().addProduct(taskProductInfo)

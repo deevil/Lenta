@@ -14,7 +14,7 @@ class ProcessGeneralProductService@Inject constructor() : IProcessProductService
 
     fun newProcessGeneralProductService(productInfo: TaskProductInfo) : ProcessGeneralProductService? {
         return if (productInfo.type == ProductType.General || productInfo.type == ProductType.NonExciseAlcohol){
-            this.productInfo = TaskProductInfo.changeCopy((productInfo))
+            this.productInfo = productInfo.сopy()
             this
         }
         else null
@@ -31,13 +31,13 @@ class ProcessGeneralProductService@Inject constructor() : IProcessProductService
                         getInventoryTask()!!.
                         taskRepository.
                         getProducts().
-                        changeProduct(TaskProductInfo.changeCopy(productInfo, factCount = count, isPositionCalc = true))
+                        changeProduct(productInfo.сopy(factCount = count, isPositionCalc = true))
             } else {
                 processServiceManager.
                         getInventoryTask()!!.
                         taskRepository.
                         getProducts().
-                        changeProduct(TaskProductInfo.changeCopy(productInfo, factCount = 0.0, isPositionCalc = false))
+                        changeProduct(productInfo.сopy(factCount = 0.0, isPositionCalc = false))
             }
         }
     }
@@ -47,6 +47,6 @@ class ProcessGeneralProductService@Inject constructor() : IProcessProductService
                 getInventoryTask()!!.
                 taskRepository.
                 getProducts().
-                changeProduct(TaskProductInfo.changeCopy(productInfo, factCount = 0.0, isPositionCalc = true))
+                changeProduct(productInfo.сopy(factCount = 0.0, isPositionCalc = true))
     }
 }
