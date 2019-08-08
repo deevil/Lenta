@@ -2,6 +2,7 @@ package com.lenta.bp9.platform.navigation
 
 import android.content.Context
 import com.lenta.bp9.features.auth.AuthFragment
+import com.lenta.bp9.features.task_list.TaskListFragment
 import com.lenta.shared.account.IAuthenticator
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
 import com.lenta.shared.platform.navigation.ICoreNavigator
@@ -38,6 +39,11 @@ class ScreenNavigator(
         }
     }
 
+    override fun openTaskListScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(TaskListFragment())
+        }
+    }
 
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 
@@ -48,5 +54,5 @@ interface IScreenNavigator : ICoreNavigator {
     fun openSelectMarketScreen()
     fun openMainMenuScreen()
     fun openLoginScreen()
-
+    fun openTaskListScreen()
 }
