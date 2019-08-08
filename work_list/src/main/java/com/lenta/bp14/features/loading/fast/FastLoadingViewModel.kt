@@ -41,22 +41,24 @@ class FastLoadingViewModel : CoreLoadingViewModel() {
         viewModelScope.launch {
             progress.value = true
             fastResourcesNetRequest(null).either(::handleFailure, ::loadStores)
-            progress.value = false
         }
     }
 
     private fun loadStores(@Suppress("UNUSED_PARAMETER") b: Boolean) {
         viewModelScope.launch {
+            progress.value = true
             storesRequest(null).either(::handleFailure, ::handleSuccess)
         }
     }
 
     override fun handleFailure(failure: Failure) {
+        progress.value = false
         navigator.openLoginScreen()
         navigator.openAlertScreen(failureInterpreter.getFailureDescription(failure).message)
     }
 
     private fun handleSuccess(storesRequestResult: StoresRequestResult) {
+        progress.value = true
         repoInMemoryHolder.storesRequestResult = storesRequestResult
 
         //TODO добавить проверку необходимости обновления
