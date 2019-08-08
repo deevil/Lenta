@@ -15,7 +15,7 @@ class ObtainingDataExciseGoodsNetRequest
 
         return fmpRequestsHelper.restRequest(
                 resourceName = "ZMP_UTZ_100_V001",
-                data = null,
+                data = params,
                 clazz = ExciseGoodsStatus::class.java
         )
     }

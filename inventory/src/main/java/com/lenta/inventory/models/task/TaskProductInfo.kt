@@ -28,7 +28,7 @@ class TaskProductInfo(materialNumber: String,
         return "${factCount.toStringFormatted()} ${uom.name}"
     }
 
-    fun сopy(materialNumber: String = this.materialNumber,
+    fun copy(materialNumber: String = this.materialNumber,
             description: String = this.description,
             uom: Uom = this.uom,
             type:ProductType = this.type,

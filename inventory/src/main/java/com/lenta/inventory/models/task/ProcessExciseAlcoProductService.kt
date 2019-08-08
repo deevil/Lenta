@@ -21,7 +21,7 @@ class ProcessExciseAlcoProductService
 
     fun newProcessExciseAlcoProductService(productInfo: TaskProductInfo) : ProcessExciseAlcoProductService? {
         return if (productInfo.type == ProductType.ExciseAlcohol){
-            currentProductInfo = productInfo.сopy()
+            currentProductInfo = productInfo.copy()
             currentExciseStamps.clear()
             currentCountExciseStamps.clear()
             this
@@ -40,13 +40,13 @@ class ProcessExciseAlcoProductService
                         getInventoryTask()!!.
                         taskRepository.
                         getProducts().
-                        changeProduct(currentProductInfo!!.сopy(factCount = count, isPositionCalc = true))
+                        changeProduct(currentProductInfo!!.copy(factCount = count, isPositionCalc = true))
             } else {
                 processServiceManager.
                         getInventoryTask()!!.
                         taskRepository.
                         getProducts().
-                        changeProduct(currentProductInfo!!.сopy(factCount = 0.0, isPositionCalc = false))
+                        changeProduct(currentProductInfo!!.copy(factCount = 0.0, isPositionCalc = false))
             }
         }
     }
@@ -56,7 +56,7 @@ class ProcessExciseAlcoProductService
                 getInventoryTask()!!.
                 taskRepository.
                 getProducts().
-                changeProduct(currentProductInfo!!.сopy(factCount = 0.0, isPositionCalc = true))
+                changeProduct(currentProductInfo!!.copy(factCount = 0.0, isPositionCalc = true))
         discard()
     }
 
@@ -68,7 +68,7 @@ class ProcessExciseAlcoProductService
                     countType = GoodsInfoCountType.VINTAGE.number
                 )
         )
-        currentProductInfo = currentProductInfo!!.сopy(factCount = currentProductInfo!!.factCount + 1)
+        currentProductInfo = currentProductInfo!!.copy(factCount = currentProductInfo!!.factCount + 1)
         currentExciseStamps.add(exciseStamp)
     }
 
@@ -80,7 +80,7 @@ class ProcessExciseAlcoProductService
                         countType = GoodsInfoCountType.VINTAGE.number
                 )
         )
-        currentProductInfo = currentProductInfo!!.сopy(factCount = currentProductInfo!!.factCount + exciseStamps.size)
+        currentProductInfo = currentProductInfo!!.copy(factCount = currentProductInfo!!.factCount + exciseStamps.size)
         currentExciseStamps.addAll(exciseStamps)
     }
 
@@ -92,13 +92,13 @@ class ProcessExciseAlcoProductService
                         countType = GoodsInfoCountType.PARTLY.number
                 )
         )
-        currentProductInfo = currentProductInfo!!.сopy(factCount = currentProductInfo!!.factCount + count)
+        currentProductInfo = currentProductInfo!!.copy(factCount = currentProductInfo!!.factCount + count)
         currentExciseStamps.add(exciseStamp)
     }
 
     fun rollback() : GoodsInfoCountExciseStamps{
         currentProductInfo = currentProductInfo!!.
-                                            сopy(
+                                            copy(
                                                 factCount = currentProductInfo!!.factCount - currentCountExciseStamps.last().countLastExciseStamp,
                                                 isPositionCalc = currentProductInfo!!.factCount > 0.0
         )
@@ -139,7 +139,7 @@ class ProcessExciseAlcoProductService
                 getInventoryTask()!!.
                 taskRepository.
                 getProducts().
-                changeProduct(currentProductInfo!!.сopy(isPositionCalc = currentProductInfo!!.factCount > 0.0))
+                changeProduct(currentProductInfo!!.copy(isPositionCalc = currentProductInfo!!.factCount > 0.0))
 
         processServiceManager.getInventoryTask()!!.taskRepository.getExciseStamps().addExciseStamps(currentExciseStamps)
         discard()
@@ -268,7 +268,7 @@ class ProcessExciseAlcoProductService
                             findProduct(currentProductInfo!!)!!.
                             factCount - countPartlyStamps)
 
-        currentProductInfo = currentProductInfo!!.сopy(factCount = currentProductInfo!!.factCount + getCountPartlyStamps() + getCountVintageStamps())
+        currentProductInfo = currentProductInfo!!.copy(factCount = currentProductInfo!!.factCount + getCountPartlyStamps() + getCountVintageStamps())
     }
 
     fun delAllVintageStamps(){
@@ -306,6 +306,6 @@ class ProcessExciseAlcoProductService
 
         setFactCount(processServiceManager.getInventoryTask()!!.taskRepository.getProducts().findProduct(currentProductInfo!!)!!.factCount - countVintageStamps)
 
-        currentProductInfo = currentProductInfo!!.сopy(factCount = currentProductInfo!!.factCount + getCountPartlyStamps() + getCountVintageStamps())
+        currentProductInfo = currentProductInfo!!.copy(factCount = currentProductInfo!!.factCount + getCountPartlyStamps() + getCountVintageStamps())
     }
 }
