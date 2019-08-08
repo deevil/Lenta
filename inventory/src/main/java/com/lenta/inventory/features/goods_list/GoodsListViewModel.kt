@@ -176,7 +176,7 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
                                     getInventoryTask()!!.
                                     taskRepository.
                                     getProducts().
-                                    changeProduct(productInfo.сopy(factCount = 0.0, isPositionCalc = false))
+                                    changeProduct(productInfo.copy(factCount = 0.0, isPositionCalc = false))
                         }
                 }
             }

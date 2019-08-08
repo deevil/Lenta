@@ -1,10 +1,10 @@
 package com.lenta.inventory.models
 
 enum class InfoStatus(val status: String) {
-    StampFound ("1"),
-    StampOverload ("2"),
-    StampOfOtherProduct ("3"),
-    StampNotFound ("4"),
+    StampFound ("01"),
+    StampOverload ("02"),
+    StampOfOtherProduct ("03"),
+    StampNotFound ("04"),
     BoxFound ("100"),
     BoxWithProblem("101"),
     BatchFound ("200"),

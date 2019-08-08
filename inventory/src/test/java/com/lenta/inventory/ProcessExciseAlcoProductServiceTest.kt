@@ -142,9 +142,9 @@ class ProcessExciseAlcoProductServiceTest : BaseUnitTest() {
                 getInventoryTask()!!.
                 taskRepository.
                 getProducts().
-                addProduct(product.сopy(placeCode = "100"))
+                addProduct(product.copy(placeCode = "100"))
 
-        processExciseAlcoProductService.newProcessExciseAlcoProductService(product.сopy())
+        processExciseAlcoProductService.newProcessExciseAlcoProductService(product.copy())
     }
 
     @Test

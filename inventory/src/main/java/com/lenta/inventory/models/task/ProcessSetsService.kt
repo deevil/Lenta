@@ -43,7 +43,7 @@ class ProcessSetsService @Inject constructor() : IProcessProductService {
 
     fun newProcessSetsService(productInfo: TaskProductInfo): ProcessSetsService? {
         return if (productInfo.type == ProductType.ExciseAlcohol && productInfo.isSet) {
-            currentProductInfo = productInfo.сopy()
+            currentProductInfo = productInfo.copy()
             currentAllExciseStamps.clear()
             currentComponentExciseStamps.clear()
             setComponentsForSet()
@@ -62,13 +62,13 @@ class ProcessSetsService @Inject constructor() : IProcessProductService {
                         getInventoryTask()!!.
                         taskRepository.
                         getProducts().
-                        changeProduct(currentProductInfo!!.сopy(factCount = count, isPositionCalc = true))
+                        changeProduct(currentProductInfo!!.copy(factCount = count, isPositionCalc = true))
             } else {
                 processServiceManager.
                         getInventoryTask()!!.
                         taskRepository.
                         getProducts().
-                        changeProduct(currentProductInfo!!.сopy(factCount = 0.0, isPositionCalc = false))
+                        changeProduct(currentProductInfo!!.copy(factCount = 0.0, isPositionCalc = false))
             }
         }
     }
@@ -78,7 +78,7 @@ class ProcessSetsService @Inject constructor() : IProcessProductService {
                 getInventoryTask()!!.
                 taskRepository.
                 getProducts().
-                changeProduct(currentProductInfo!!.сopy(factCount = 0.0, isPositionCalc = true))
+                changeProduct(currentProductInfo!!.copy(factCount = 0.0, isPositionCalc = true))
         discard()
     }
 
