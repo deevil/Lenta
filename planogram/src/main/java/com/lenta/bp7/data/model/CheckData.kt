@@ -170,12 +170,14 @@ class CheckData @Inject constructor(
     }
 
     private fun removeCurrentGoodIfSamePrevious() {
-        val current = getCurrentGood()
-        val previous = getPreviousGood()
-        if (current != null && previous != null) {
-            if (current.barCode == previous.barCode && current.getStatus() == previous.getStatus()) {
-                getPreviousGood()!!.facings += getCurrentGood()!!.facings
-                deleteCurrentGood()
+        if (getCurrentGood()?.barCode == getFirstGood()?.barCode) {
+            val first = getFirstGood()
+            val second = getSecondGood()
+            if (first != null && second != null) {
+                if (first.barCode == second.barCode && first.getStatus() == second.getStatus()) {
+                    getSecondGood()!!.facings += getFirstGood()!!.facings
+                    deleteCurrentGood()
+                }
             }
         }
     }
@@ -194,8 +196,8 @@ class CheckData @Inject constructor(
         currentSegmentIndex = segments.indexOf(segments.find { it.getStatus() == SegmentStatus.UNFINISHED })
     }
 
-    fun isFirstGood(good: Good?): Boolean {
-        return good?.barCode == getCurrentShelf()?.goods?.get(0)?.barCode
+    fun isFirstCurrentGood(): Boolean {
+        return getCurrentGood()?.barCode == getFirstGood()?.barCode
     }
 
     fun getPreviousSameGoodFacings(): Int {

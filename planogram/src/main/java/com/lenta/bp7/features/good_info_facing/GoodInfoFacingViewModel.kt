@@ -22,7 +22,7 @@ class GoodInfoFacingViewModel : AddGoodViewModel(), OnOkInSoftKeyboardListener {
 
     val totalFacings: MutableLiveData<Int> = facings.map {
         val currentFacings = if (it?.isNotEmpty() == true) it.toInt() else 0
-        val previousFacings = if (checkData.isFirstGood(good.value)) checkData.getPreviousSameGoodFacings() else 0
+        val previousFacings = if (checkData.isFirstCurrentGood()) checkData.getPreviousSameGoodFacings() else 0
         currentFacings + previousFacings
     }
 

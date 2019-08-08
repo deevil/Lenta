@@ -46,7 +46,6 @@ class GoodInfoFacingFragment : CoreFragment<FragmentGoodInfoFacingBinding, GoodI
 
         connectLiveData(vm.missingButtonEnabled, bottomToolbarUiModel.uiModelButton4.enabled)
         connectLiveData(vm.applyButtonEnabled, bottomToolbarUiModel.uiModelButton5.enabled)
-
     }
 
     override fun onToolbarButtonClick(view: View) {
