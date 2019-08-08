@@ -3,6 +3,7 @@ package com.lenta.bp14.di
 import com.lenta.bp14.ExceptionHandler
 import com.lenta.bp14.features.auth.AuthViewModel
 import com.lenta.bp14.features.loading.fast.FastLoadingViewModel
+import com.lenta.bp14.features.main_menu.MainMenuViewModel
 import com.lenta.bp14.features.select_market.SelectMarketViewModel
 import com.lenta.bp14.main.MainActivity
 import com.lenta.bp14.main.MainViewModel
@@ -19,5 +20,6 @@ interface AppComponent {
     fun inject(it: AuthViewModel)
     fun inject(it: FastLoadingViewModel)
     fun inject(it: SelectMarketViewModel)
+    fun inject(it: MainMenuViewModel)
 
 }
