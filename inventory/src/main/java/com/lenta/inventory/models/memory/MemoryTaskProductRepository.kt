@@ -1,5 +1,7 @@
 package com.lenta.inventory.models.memory
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import com.lenta.inventory.models.repositories.ITaskProductRepository
 import com.lenta.inventory.models.task.TaskProductInfo
 import com.lenta.shared.utilities.Logg
@@ -26,6 +28,11 @@ class MemoryTaskProductRepository : ITaskProductRepository {
         }
     }
 
+    override fun changeProduct(product: TaskProductInfo) {
+        deleteProduct(product)
+        addProduct(product)
+    }
+
     override fun addProduct(product: TaskProductInfo): Boolean {
         var index = -1
         for (i in productInfo.indices) {
@@ -42,19 +49,25 @@ class MemoryTaskProductRepository : ITaskProductRepository {
                 productInfo.removeAt(index)
                 productInfo.add(it)
             }
-
         }
 
         return false
     }
 
     override fun deleteProduct(product: TaskProductInfo): Boolean {
-        productInfo.filter {taskProductInfo ->
-            product.materialNumber == taskProductInfo.materialNumber && product.placeCode == taskProductInfo.placeCode
-        }.map {
-            return productInfo.remove(it)
+        var index = -1
+        for (i in productInfo.indices) {
+            if (product.materialNumber == productInfo[i].materialNumber && product.placeCode == productInfo[i].placeCode) {
+                index = i
+            }
         }
-        return false
+
+        if (index == -1) {
+            return false
+        }
+
+        productInfo.removeAt(index)
+        return true
     }
 
     override fun getNotProcessedProducts(storePlaceNumber: String?): List<TaskProductInfo> {

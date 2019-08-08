@@ -24,7 +24,7 @@ class InventoryTask(val taskDescription: TaskDescription, val taskRepository: IT
     //1. Нестрогий список, обычный пересчет, товар по умолчанию находится в общем МХ 00
     fun deleteProduct(productNumber: String, storePlaceNumber: String = "00") {
      taskRepository.getProducts().findProduct(productNumber, storePlaceNumber)?.let {
-            it.isDel = true
+         taskRepository.getProducts().changeProduct(it.сopy(isDel = true))
         }
     }
 
@@ -41,15 +41,13 @@ class InventoryTask(val taskDescription: TaskDescription, val taskRepository: IT
     fun markProductMissing(productNumber: String, storePlaceNumber: String? = null) {
         if (storePlaceNumber != null) {
             taskRepository.getProducts().findProduct(productNumber, storePlaceNumber)?.let {
-                it.isPositionCalc = true
-                it.factCount = 0.0
+                taskRepository.getProducts().changeProduct(it.сopy(factCount = 0.0, isPositionCalc = true))
             }
         } else {
             taskRepository.getProducts().getProducts().filter {
                 it.materialNumber == productNumber
             }.forEach {
-                it.factCount = 0.0
-                it.isPositionCalc = true
+                taskRepository.getProducts().changeProduct(it.сopy(factCount = 0.0, isPositionCalc = true))
             }
         }
     }
@@ -139,8 +137,7 @@ class InventoryTask(val taskDescription: TaskDescription, val taskRepository: IT
     fun clearStorePlace(storePlace: TaskStorePlaceInfo): InventoryTask {
         storePlace.isProcessed = false
         taskRepository.getProducts().getProcessedProducts(storePlace.placeCode).forEach {
-            it.isPositionCalc = false
-            it.factCount = 0.0
+            taskRepository.getProducts().changeProduct(it.сopy(factCount = 0.0, isPositionCalc = false))
         }
         return this
     }
