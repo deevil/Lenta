@@ -35,75 +35,6 @@ class CheckData @Inject constructor(
         //generateTestData()
     }
 
-
-    fun isExistUnsentData(): Boolean {
-        return segments.isNotEmpty()
-    }
-
-    fun saveCheckResult() {
-        persistCheckResult.saveCheckResult(this)
-    }
-
-    fun clearSavedData() {
-        persistCheckResult.clearSavedData()
-    }
-
-
-    fun getCurrentSegment(): Segment? {
-        return if (segments.isNotEmpty()) {
-            segments[currentSegmentIndex]
-        } else null
-    }
-
-    fun getCurrentShelf(): Shelf? {
-        return if (getCurrentSegment()?.shelves?.isNotEmpty() == true) {
-            segments[currentSegmentIndex].let { segment ->
-                segment.shelves[currentShelfIndex]
-            }
-        } else null
-
-    }
-
-    fun getCurrentGood(): Good? {
-        return if (getCurrentShelf()?.goods?.isNotEmpty() == true) {
-            segments[currentSegmentIndex].let { segment ->
-                segment.shelves[currentShelfIndex].let { shelf ->
-                    shelf.goods[currentGoodIndex]
-                }
-            }
-        } else null
-    }
-
-    fun getPreviousGood(): Good? {
-        return if (getCurrentShelf()?.goods?.size ?: 0 > 1) {
-            segments[currentSegmentIndex].let { segment ->
-                segment.shelves[currentShelfIndex].let { shelf ->
-                    shelf.goods[currentGoodIndex + 1]
-                }
-            }
-        } else null
-    }
-
-    fun getFirstGood(): Good? {
-        return if (getCurrentShelf()?.goods?.isNotEmpty() == true) {
-            segments[currentSegmentIndex].let { segment ->
-                segment.shelves[currentShelfIndex].let { shelf ->
-                    shelf.goods[0]
-                }
-            }
-        } else null
-    }
-
-    fun getSecondGood(): Good? {
-        return if (getCurrentShelf()?.goods?.size ?: 0 > 1) {
-            segments[currentSegmentIndex].let { segment ->
-                segment.shelves[currentShelfIndex].let { shelf ->
-                    shelf.goods[1]
-                }
-            }
-        } else null
-    }
-
     fun addSegment(storeNumber: String, segmentNumber: String) {
         segments.add(0, Segment(
                 id = segments.lastIndex + 2,
@@ -133,6 +64,76 @@ class CheckData @Inject constructor(
         }
         currentGoodIndex = 0
     }
+
+    fun getCurrentSegment(): Segment? {
+        return if (segments.isNotEmpty()) {
+            segments[currentSegmentIndex]
+        } else null
+    }
+
+    fun getCurrentShelf(): Shelf? {
+        return if (getCurrentSegment()?.shelves?.isNotEmpty() == true) {
+            segments[currentSegmentIndex].let { segment ->
+                segment.shelves[currentShelfIndex]
+            }
+        } else null
+
+    }
+
+    fun getCurrentGood(): Good? {
+        return if (getCurrentShelf()?.goods?.isNotEmpty() == true) {
+            segments[currentSegmentIndex].let { segment ->
+                segment.shelves[currentShelfIndex].let { shelf ->
+                    shelf.goods[currentGoodIndex]
+                }
+            }
+        } else null
+    }
+
+    fun getPreviousGood(): Good? {
+        return if (getCurrentShelf()?.goods?.isNotEmpty() == true) {
+            segments[currentSegmentIndex].let { segment ->
+                segment.shelves[currentShelfIndex].let { shelf ->
+                    val previousIndex = currentGoodIndex + 1
+                    if (previousIndex < shelf.goods.size) shelf.goods[previousIndex] else null
+                }
+            }
+        } else null
+    }
+
+    fun getFirstGood(): Good? {
+        return if (getCurrentShelf()?.goods?.isNotEmpty() == true) {
+            segments[currentSegmentIndex].let { segment ->
+                segment.shelves[currentShelfIndex].let { shelf ->
+                    shelf.goods[0]
+                }
+            }
+        } else null
+    }
+
+    fun getSecondGood(): Good? {
+        return if (getCurrentShelf()?.goods?.size ?: 0 > 1) {
+            segments[currentSegmentIndex].let { segment ->
+                segment.shelves[currentShelfIndex].let { shelf ->
+                    shelf.goods[1]
+                }
+            }
+        } else null
+    }
+
+
+    fun isExistUnsentData(): Boolean {
+        return segments.isNotEmpty()
+    }
+
+    fun saveCheckResult() {
+        persistCheckResult.saveCheckResult(this)
+    }
+
+    fun clearSavedData() {
+        persistCheckResult.clearSavedData()
+    }
+
 
     fun deleteCurrentSegment() {
         segments.removeAt(currentSegmentIndex)
@@ -201,7 +202,8 @@ class CheckData @Inject constructor(
     }
 
     fun getPreviousSameGoodFacings(): Int {
-        return if (getFirstGood()?.barCode == getSecondGood()?.barCode) getSecondGood()?.facings ?: 0 else 0
+        return if (getFirstGood()?.barCode == getSecondGood()?.barCode) getSecondGood()?.facings
+                ?: 0 else 0
     }
 
     fun getFormattedMarketNumber(): String {
