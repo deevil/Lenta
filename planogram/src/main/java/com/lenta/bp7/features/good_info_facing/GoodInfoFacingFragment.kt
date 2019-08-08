@@ -6,7 +6,7 @@ import com.lenta.bp7.R
 import com.lenta.bp7.data.model.Good
 import com.lenta.bp7.databinding.FragmentGoodInfoFacingBinding
 import com.lenta.bp7.platform.extentions.getAppComponent
-import com.lenta.bp7.util.doItAfterFirstTextChanged
+import com.lenta.bp7.util.afterFirstTextChanged
 import com.lenta.shared.platform.activity.OnBackPresserListener
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
@@ -62,7 +62,7 @@ class GoodInfoFacingFragment : CoreFragment<FragmentGoodInfoFacingBinding, GoodI
     }
 
     private fun initFacingsField() {
-        binding?.etEnterFacingCount?.doItAfterFirstTextChanged {
+        binding?.etEnterFacingCount?.afterFirstTextChanged {
             binding?.etEnterFacingCount?.setSelection(0, it.length)
         }
     }
