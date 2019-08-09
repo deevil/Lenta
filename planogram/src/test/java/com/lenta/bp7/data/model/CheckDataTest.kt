@@ -19,7 +19,7 @@ internal class CheckDataTest {
 
     private val customSegmentNumber = "XXX-XXX"
     private val customShelfNumber = "XXX"
-    private val customGoodBarCode = "XXXXXXXXXXXXX"
+    private val customGoodEan = "XXXXXXXX"
 
     @BeforeEach
     fun createCheckData() {
@@ -52,13 +52,15 @@ internal class CheckDataTest {
     }
 
     private fun getCustomGoodInfo(
-            sapCode: String = "000000000000" + (100000..999999).random(),
-            barCode: String = "" + (10000000..99999999999999).random(),
+            ean: String = "" + (10000000..99999999999999).random(),
+            material: String = "000000000000" + (100000..999999).random(),
+            matcode: String = "" + (100000000000..999999999999).random(),
+            enteredCode: EnteredCode = EnteredCode.EAN,
             name: String = "Good " + (1..999).random(),
             unitsCode: String = "ST",
             units: String = "шт"
     ): GoodInfo {
-        return GoodInfo(sapCode, barCode, name, unitsCode, units)
+        return GoodInfo(ean, material, matcode, enteredCode, name, unitsCode, units)
     }
 
     @Test
@@ -146,17 +148,17 @@ internal class CheckDataTest {
     @Test
     fun `Get current (last added) good`() {
         for (i in 1..3) addGood()
-        addGood(GoodInfo(barCode = customGoodBarCode)) // Текущий товар
-        assertEquals(customGoodBarCode, checkData?.getCurrentGood()?.barCode)
+        addGood(getCustomGoodInfo(ean = customGoodEan)) // Текущий товар
+        assertEquals(customGoodEan, checkData?.getCurrentGood()?.ean)
     }
 
     @Test
     fun `Get changed current good`() {
         addGood()
-        addGood(GoodInfo(barCode = customGoodBarCode))
+        addGood(getCustomGoodInfo(ean = customGoodEan))
         addGood() // Текущий товар
         checkData?.currentGoodIndex = 1 // Меняем текущий товар
-        assertEquals(customGoodBarCode, checkData?.getCurrentGood()?.barCode)
+        assertEquals(customGoodEan, checkData?.getCurrentGood()?.ean)
     }
 
     @Test
@@ -166,18 +168,18 @@ internal class CheckDataTest {
 
     @Test
     fun `Get previous good with first current element`() {
-        addGood(getCustomGoodInfo(barCode = customGoodBarCode)) // Предыдущий товар
+        addGood(getCustomGoodInfo(ean = customGoodEan)) // Предыдущий товар
         addGood() // Текущий товар
-        assertEquals(customGoodBarCode, checkData?.getPreviousGood()?.barCode)
+        assertEquals(customGoodEan, checkData?.getPreviousGood()?.ean)
     }
 
     @Test
     fun `Get previous good with changed current element`() {
-        addGood(getCustomGoodInfo(barCode = customGoodBarCode))
+        addGood(getCustomGoodInfo(ean = customGoodEan))
         addGood() // Предыдущий товар
         addGood() // Текущий товар
         checkData?.currentGoodIndex = 1 // Меняем текущий товар
-        assertEquals(customGoodBarCode, checkData?.getPreviousGood()?.barCode)
+        assertEquals(customGoodEan, checkData?.getPreviousGood()?.ean)
     }
 
     @Test
