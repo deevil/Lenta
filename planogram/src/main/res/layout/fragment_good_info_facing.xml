@@ -53,6 +53,7 @@
                         android:text="@={vm.facings}"
                         android:textSize="14sp"
                         app:onOkInSoftKeyboard="@{vm}"
+                        app:selectText="@{vm.selectFacingsField}"
                         tools:ignore="Autofill"/>
 
                 </LinearLayout>

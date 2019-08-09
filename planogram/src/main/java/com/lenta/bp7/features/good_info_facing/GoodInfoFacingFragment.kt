@@ -58,7 +58,7 @@ class GoodInfoFacingFragment : CoreFragment<FragmentGoodInfoFacingBinding, GoodI
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        initFacingsField()
+        //initFacingsField()
     }
 
     private fun initFacingsField() {

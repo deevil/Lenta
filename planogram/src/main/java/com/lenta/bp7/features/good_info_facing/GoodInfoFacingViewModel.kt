@@ -16,6 +16,11 @@ class GoodInfoFacingViewModel : AddGoodViewModel(), OnOkInSoftKeyboardListener {
 
     val facings: MutableLiveData<String> = MutableLiveData("")
 
+    // TODO Как определить, что это в первый раз?
+    val selectFacingsField: MutableLiveData<Boolean> = facings.map {
+        it.equals("1")
+    }
+
     val goodIsPresent: MutableLiveData<Boolean> = good.map {
         it?.getStatus() == GoodStatus.CREATED || (it?.facings ?: 0 > 0 && it?.getStatus() != GoodStatus.CREATED)
     }
