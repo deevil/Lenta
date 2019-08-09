@@ -123,20 +123,6 @@ class CheckData @Inject constructor(
         } else null
     }
 
-
-    fun isExistUnsentData(): Boolean {
-        return segments.isNotEmpty()
-    }
-
-    fun saveCheckResult() {
-        persistCheckResult.saveCheckResult(this)
-    }
-
-    fun clearSavedData() {
-        persistCheckResult.clearSavedData()
-    }
-
-
     fun deleteCurrentSegment() {
         segments.removeAt(currentSegmentIndex)
         currentSegmentIndex = 0
@@ -151,6 +137,23 @@ class CheckData @Inject constructor(
         getCurrentShelf()?.goods?.removeAt(currentGoodIndex)
         currentGoodIndex = 0
     }
+
+
+
+    fun isExistUnsentData(): Boolean {
+        return segments.isNotEmpty()
+    }
+
+    fun saveCheckResult() {
+        persistCheckResult.saveCheckResult(this)
+    }
+
+    fun clearSavedData() {
+        persistCheckResult.clearSavedData()
+    }
+
+
+
 
     fun removeAllFinishedSegments() {
         val unfinishedSegment = segments.find { it.getStatus() == SegmentStatus.UNFINISHED }

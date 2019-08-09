@@ -1,14 +1,12 @@
 package com.lenta.bp7.data.model
 
 import com.lenta.shared.platform.constants.Constants.CHECK_DATA_TIME_FORMAT
-import org.simpleframework.xml.Attribute
-import org.simpleframework.xml.ElementList
-import org.simpleframework.xml.Path
-import org.simpleframework.xml.Root
+import org.simpleframework.xml.*
 import java.text.SimpleDateFormat
 import java.util.*
 
 @Root(strict = false, name = "DisplayOfGoods")
+@Order(attributes = ["documentDate", "id", "gid"])
 data class DisplayOfGoods @JvmOverloads constructor(
         @field:Attribute(name = "documentDate")
         var sendDateTime: String = SimpleDateFormat(CHECK_DATA_TIME_FORMAT, Locale.getDefault()).format(Date()),
@@ -23,6 +21,7 @@ data class DisplayOfGoods @JvmOverloads constructor(
 }
 
 @Root(name = "equipment")
+@Order(attributes = ["number", "startTime", "completionTime", "canceled"])
 data class SegmentSend @JvmOverloads constructor(
         @field:Attribute(name = "number")
         var number: String,
@@ -39,6 +38,7 @@ data class SegmentSend @JvmOverloads constructor(
 }
 
 @Root(name = "shelf")
+@Order(attributes = ["number", "startTime", "completionTime", "counted", "canceled"])
 data class ShelfSend @JvmOverloads constructor(
         @field:Attribute(name = "number")
         var number: String,
@@ -57,6 +57,7 @@ data class ShelfSend @JvmOverloads constructor(
 }
 
 @Root(strict = false, name = "goods")
+@Order(attributes = ["SAPCode", "barcode", "count", "labeled"])
 data class GoodSend @JvmOverloads constructor(
         @field:Attribute(name = "SAPCode")
         var sapCodeForSend: String,
