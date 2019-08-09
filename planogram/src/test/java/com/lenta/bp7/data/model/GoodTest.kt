@@ -18,6 +18,8 @@ internal class GoodTest {
     private val unitsCode = "ST"
     private val units = "шт"
 
+    private val customGoodEan = "XXXXXXXX"
+
     @BeforeEach
     fun createGood() {
         good = Good(
@@ -34,6 +36,21 @@ internal class GoodTest {
     @AfterEach
     fun deleteGood() {
         good = null
+    }
+
+    private fun createCustomGood(
+            id: Int = 0,
+            ean: String = "" + (10000000..99999999999999).random(),
+            material: String = "000000000000" + (100000..999999).random(),
+            matcode: String = "" + (100000000000..999999999999).random(),
+            enteredCode: EnteredCode = EnteredCode.EAN,
+            name: String = "Good " + (1..999).random(),
+            facings: Int = (1..15).random(),
+            unitsCode: String = "ST",
+            units: String = "шт",
+            status: GoodStatus = GoodStatus.CREATED
+    ): Good {
+        return Good(id, ean, material, matcode, enteredCode, name, facings, unitsCode, units, status)
     }
 
     @Test
@@ -90,15 +107,15 @@ internal class GoodTest {
     }
 
     @Test
-    fun `Get facings from facingsOrEmpty`() {
-        good?.facings = 13
-        assertEquals("13", good?.getFacingOrEmpty())
+    fun `Get ean from getEanOrEmpty`() {
+        good = createCustomGood(ean = customGoodEan)
+        assertEquals(customGoodEan, good?.getEanOrEmpty())
     }
 
     @Test
-    fun `Get empty from facingsOrEmpty`() {
-        good?.facings = 0
-        assertEquals("", good?.getFacingOrEmpty())
+    fun `Get empty from getEanOrEmpty`() {
+        good = createCustomGood(ean = "")
+        assertEquals("", good?.getEanOrEmpty())
     }
 
 }
