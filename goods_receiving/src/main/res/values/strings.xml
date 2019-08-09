@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Приемка товаров</string>
+    <string name="receipt_task">Задание на приемку</string>
+    <string name="recount_task">Задание на пересчет</string>
 </resources>

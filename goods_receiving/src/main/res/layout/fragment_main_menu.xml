@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".features.main_menu.MainMenuFragment">
+
+    <data>
+
+        <variable
+            name="vm"
+            type="com.lenta.bp9.features.main_menu.MainMenuViewModel" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/tv_user"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            android:background="?selectableItemBackground"
+            android:clickable="true"
+            android:drawableEnd="@drawable/ic_keyboard_arrow_right_white_16dp"
+            android:ellipsize="end"
+            android:focusable="true"
+            android:gravity="center"
+            android:maxLines="1"
+            android:onClick="@{(v) -> vm.onClickUser()}"
+            android:padding="8dp"
+            android:text='@{vm.fio}'
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Приемов Тест Тестович" />
+
+        <ImageView
+            android:id="@+id/iv_logo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="98dp"
+            android:layout_marginEnd="8dp"
+            android:src="@drawable/logo_lenta"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="ContentDescription" />
+
+        <Button
+            android:id="@+id/b_create_recount_task"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="8dp"
+            android:layoutDirection="rtl"
+            android:onClick="@{(view) -> vm.onClickRecountTask()}"
+            android:text="@string/recount_task"
+            android:textAllCaps="false"
+            app:icon="@drawable/ic_detail"
+            app:iconGravity="end"
+            app:layout_constraintBottom_toTopOf="@+id/b_create_receipt_task"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:requestFocus="@{vm.fio}" />
+
+        <Button
+            android:id="@+id/b_create_receipt_task"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="16dp"
+            android:layoutDirection="rtl"
+            android:onClick="@{(view) -> vm.onClickReceiptTask()}"
+            android:text="@string/receipt_task"
+            android:textAllCaps="false"
+            app:icon="@drawable/ic_detail"
+            app:iconGravity="end"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:requestFocus="@{vm.fio}" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>

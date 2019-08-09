@@ -2,6 +2,10 @@ package com.lenta.bp9.platform.navigation
 
 import android.content.Context
 import com.lenta.bp9.features.auth.AuthFragment
+import com.lenta.bp9.features.loading.fast.FastDataLoadingFragment
+import com.lenta.bp9.features.main_menu.MainMenuFragment
+import com.lenta.bp9.features.select_market.SelectMarketFragment
+import com.lenta.bp9.features.select_personnel_number.SelectPersonnelNumberFragment
 import com.lenta.shared.account.IAuthenticator
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
 import com.lenta.shared.platform.navigation.ICoreNavigator
@@ -25,16 +29,32 @@ class ScreenNavigator(
     }
 
     override fun openSelectMarketScreen() {
-        openNotImplementedScreenAlert("Выбор ТК")
+        runOrPostpone {
+            getFragmentStack()?.replace(SelectMarketFragment())
+        }
     }
 
     override fun openMainMenuScreen() {
-        openNotImplementedScreenAlert("Главное меню")
+        runOrPostpone {
+            getFragmentStack()?.replace(MainMenuFragment())
+        }
     }
 
     override fun openLoginScreen() {
         runOrPostpone {
             getFragmentStack()?.push(AuthFragment())
+        }
+    }
+
+    override fun openFastDataLoadingScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(FastDataLoadingFragment())
+        }
+    }
+
+    override fun openSelectionPersonnelNumberScreen() {
+        runOrPostpone {
+            getFragmentStack()?.replace(SelectPersonnelNumberFragment())
         }
     }
 
@@ -48,5 +68,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openSelectMarketScreen()
     fun openMainMenuScreen()
     fun openLoginScreen()
+    fun openFastDataLoadingScreen()
+    fun openSelectionPersonnelNumberScreen()
 
 }
