@@ -29,6 +29,10 @@ data class Good(
         return if ((status == GoodStatus.CREATED || status == GoodStatus.PROCESSED) && facings == 0) "+" else facings.toString()
     }
 
+    fun getEanOrEmpty(): String {
+        return if (enteredCode == EnteredCode.EAN) ean ?: "Not found!" else ""
+    }
+
 }
 
 data class GoodInfo(
