@@ -1,6 +1,7 @@
 package com.lenta.bp14.features.task_list
 
 import androidx.lifecycle.MutableLiveData
+import com.lenta.bp14.platform.navigation.IScreenNavigator
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.Logg
@@ -10,9 +11,8 @@ import javax.inject.Inject
 
 class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyboardListener {
 
-    override fun onOkInSoftKeyboard(): Boolean {
-        return true
-    }
+    @Inject
+    lateinit var screenNavigator: IScreenNavigator
 
     @Inject
     lateinit var sessionInfo: ISessionInfo
@@ -20,6 +20,10 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
     val selectedPage = MutableLiveData(0)
 
     val unprocessedTasks = MutableLiveData<List<TaskInfoVM>>(getTestItems())
+
+    override fun onOkInSoftKeyboard(): Boolean {
+        return true
+    }
 
     private fun getTestItems(): List<TaskInfoVM>? {
         return listOf(
@@ -69,6 +73,10 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
 
     fun onClickSave() {
 
+    }
+
+    fun onClickUnrocessedTask(position: Int) {
+        screenNavigator.openJobCardScreen(taskNumber = "100")
     }
 }
 

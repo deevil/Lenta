@@ -2,6 +2,7 @@ package com.lenta.bp14.platform.navigation
 
 import android.content.Context
 import com.lenta.bp14.features.auth.AuthFragment
+import com.lenta.bp14.features.job_card.JobCardFragment
 import com.lenta.bp14.features.loading.fast.FastDataLoadingFragment
 import com.lenta.bp14.features.main_menu.MainMenuFragment
 import com.lenta.bp14.features.select_market.SelectMarketFragment
@@ -58,6 +59,12 @@ class ScreenNavigator(
         }
     }
 
+    override fun openJobCardScreen(taskNumber: String) {
+        runOrPostpone {
+            getFragmentStack()?.push(JobCardFragment.create(taskNumber = taskNumber))
+        }
+    }
+
 
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 
@@ -70,5 +77,6 @@ interface IScreenNavigator : ICoreNavigator {
     fun openLoginScreen()
     fun openFastDataLoadingScreen()
     fun openTaskListScreen()
+    fun openJobCardScreen(taskNumber: String)
 
 }

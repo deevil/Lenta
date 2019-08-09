@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
 import androidx.databinding.DataBindingUtil
 import com.lenta.bp14.BR
 import com.lenta.bp14.R
@@ -20,6 +21,7 @@ import com.lenta.shared.utilities.databinding.ViewPagerSettings
 import com.lenta.shared.utilities.extentions.provideViewModel
 
 class TaskListFragment : CoreFragment<FragmentTaskListBinding, TaskListViewModel>(), ViewPagerSettings, ToolbarButtonsClickListener {
+
     override fun getPagerItemView(container: ViewGroup, position: Int): View {
         return if (position == 0) {
             DataBindingUtil
@@ -30,7 +32,10 @@ class TaskListFragment : CoreFragment<FragmentTaskListBinding, TaskListViewModel
 
                         layoutBinding.rvConfig = DataBindingRecyclerViewConfig<LayoutTaskListBinding>(
                                 layoutId = R.layout.item_tile_tasks,
-                                itemId = BR.vm
+                                itemId = BR.vm,
+                                onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
+                                    vm.onClickUnrocessedTask(position)
+                                }
                         )
 
                         layoutBinding.vm = vm

@@ -123,4 +123,5 @@
     <string name="tags">Признаки</string>
     <string name="tag">Признак</string>
     <string name="goods">Товаров</string>
+    <string name="comment">Комментарий</string>
 </resources>
