@@ -1,8 +1,8 @@
 package com.lenta.bp7.repos
 
 import com.lenta.bp7.data.Enabled
-import com.lenta.bp7.data.SapCodeType
 import com.lenta.bp7.data.StoreRetailType
+import com.lenta.bp7.data.model.EnteredCode
 import com.lenta.bp7.data.model.GoodInfo
 import com.lenta.shared.di.AppScope
 import com.lenta.shared.fmp.resources.dao_ext.*
@@ -27,38 +27,19 @@ class DatabaseRepo(hyperHive: HyperHive) : IDatabaseRepo {
     private val goodInfo: ZfmpUtz48V001 by lazy { ZfmpUtz48V001(hyperHive) } // Информация о товаре
     private val barCodeInfo: ZmpUtz25V001 by lazy { ZmpUtz25V001(hyperHive) } // Информация о штрих-коде
 
-    override suspend fun getGoodInfoByBarCode(barCode: String): GoodInfo? {
+    override suspend fun getGoodInfoByEan(ean: String): GoodInfo? {
         return withContext(Dispatchers.IO) {
-            val eanInfo = getEanInfoByBarCode(barCode)
+            val eanInfo = getEanInfoByEan(ean)
             if (eanInfo == null) {
                 return@withContext null
             } else {
-                val materialInfo = getProductInfoByMaterial(eanInfo.materialNumber)
-                val unitName = getGoodUnitName(materialInfo?.buom)
-                return@withContext GoodInfo(
-                        sapCode = eanInfo.materialNumber,
-                        barCode = barCode,
-                        name = materialInfo?.name ?: "Not found!",
-                        unitsCode = materialInfo?.buom ?: "Not found!",
-                        units = unitName ?: "Not found!")
-            }
-        }
-    }
-
-    override suspend fun getGoodInfoBySapCode(sapCode: String, type: SapCodeType): GoodInfo? {
-        return withContext(Dispatchers.IO) {
-            val productInfo = when (type) {
-                SapCodeType.MATERIAL -> getProductInfoByMaterial(sapCode)
-                SapCodeType.MATCODE -> getProductInfoByMatcode(sapCode)
-            }
-            val eanInfo = getEanInfoBySapCode(productInfo?.material)
-            if (eanInfo == null) {
-                return@withContext null
-            } else {
+                val productInfo = getProductInfoByMaterial(eanInfo.materialNumber)
                 val unitName = getGoodUnitName(productInfo?.buom)
                 return@withContext GoodInfo(
-                        sapCode = sapCode,
-                        barCode = eanInfo.ean,
+                        ean = ean,
+                        material = eanInfo.materialNumber,
+                        matcode = productInfo?.matcode ?: "Not found!",
+                        enteredCode = EnteredCode.EAN,
                         name = productInfo?.name ?: "Not found!",
                         unitsCode = productInfo?.buom ?: "Not found!",
                         units = unitName ?: "Not found!")
@@ -66,13 +47,53 @@ class DatabaseRepo(hyperHive: HyperHive) : IDatabaseRepo {
         }
     }
 
-    override suspend fun getEanInfoByBarCode(barCode: String?): EanInfo? {
+    override suspend fun getGoodInfoByMaterial(material: String): GoodInfo? {
+        return withContext(Dispatchers.IO) {
+            val productInfo = getProductInfoByMaterial(material)
+            if (productInfo == null) {
+                return@withContext null
+            } else {
+                val eanInfo = getEanInfoByMaterial(productInfo.material)
+                val unitName = getGoodUnitName(productInfo.buom)
+                return@withContext GoodInfo(
+                        ean = eanInfo?.ean ?: "Not found!",
+                        material = material,
+                        matcode = productInfo.matcode,
+                        enteredCode = EnteredCode.MATERIAL,
+                        name = productInfo.name,
+                        unitsCode = productInfo.buom,
+                        units = unitName ?: "Not found!")
+            }
+        }
+    }
+
+    override suspend fun getGoodInfoByMatcode(matcode: String): GoodInfo? {
+        return withContext(Dispatchers.IO) {
+            val productInfo = getProductInfoByMatcode(matcode)
+            if (productInfo == null) {
+                return@withContext null
+            } else {
+                val eanInfo = getEanInfoByMaterial(productInfo.material)
+                val unitName = getGoodUnitName(productInfo.buom)
+                return@withContext GoodInfo(
+                        ean = eanInfo?.ean ?: "Not found!",
+                        material = productInfo.material,
+                        matcode = matcode,
+                        enteredCode = EnteredCode.MATCODE,
+                        name = productInfo.name,
+                        unitsCode = productInfo.buom,
+                        units = unitName ?: "Not found!")
+            }
+        }
+    }
+
+    override suspend fun getEanInfoByEan(barCode: String?): EanInfo? {
         return withContext(Dispatchers.IO) {
             return@withContext barCodeInfo.getEanInfo(barCode)?.toEanInfo()
         }
     }
 
-    override suspend fun getEanInfoBySapCode(sapCode: String?): EanInfo? {
+    override suspend fun getEanInfoByMaterial(sapCode: String?): EanInfo? {
         return withContext(Dispatchers.IO) {
             return@withContext barCodeInfo.getEanInfoFromMaterial(sapCode)?.toEanInfo()
         }
@@ -153,12 +174,13 @@ interface IDatabaseRepo {
     suspend fun getPlacesParam(marketNumber: String?): String?
     suspend fun getSelfControlPinCode(): String?
     suspend fun getExternalAuditPinCode(): String?
-    suspend fun getEanInfoByBarCode(barCode: String?): EanInfo?
-    suspend fun getEanInfoBySapCode(sapCode: String?): EanInfo?
+    suspend fun getEanInfoByEan(barCode: String?): EanInfo?
+    suspend fun getEanInfoByMaterial(sapCode: String?): EanInfo?
     suspend fun getProductInfoByMaterial(material: String?): ProductInfo?
     suspend fun getProductInfoByMatcode(matcode: String?): ProductInfo?
     suspend fun getGoodUnitName(unitCode: String?): String?
-    suspend fun getGoodInfoByBarCode(barCode: String): GoodInfo?
-    suspend fun getGoodInfoBySapCode(sapCode: String, type: SapCodeType): GoodInfo?
+    suspend fun getGoodInfoByEan(ean: String): GoodInfo?
+    suspend fun getGoodInfoByMaterial(material: String): GoodInfo?
+    suspend fun getGoodInfoByMatcode(matcode: String): GoodInfo?
     suspend fun getAllowedAppVersion(): String?
 }
