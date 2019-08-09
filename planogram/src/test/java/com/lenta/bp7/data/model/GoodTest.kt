@@ -66,7 +66,7 @@ internal class GoodTest {
 
     @Test
     fun `Get last six digit of sap-code`() {
-        assertEquals(6, good?.getFormattedSapCode()?.length)
+        assertEquals(6, good?.getFormattedMaterial()?.length)
     }
 
     @Test

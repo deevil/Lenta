@@ -61,7 +61,7 @@ class GoodInfoFacingViewModel : AddGoodViewModel(), OnOkInSoftKeyboardListener {
         if (checkData.checkEmptyPlaces) {
             // Выбор - Пустое место оформлено правильно? - Назад / Нет / Да
             navigator.showIsEmptyPlaceDecoratedCorrectly(
-                    sapCode = good.value?.getFormattedSapCode() ?: "Not found!",
+                    material = good.value?.getFormattedMaterial() ?: "Not found!",
                     name = good.value?.name ?: "Not found!",
                     segmentNumber = checkData.getCurrentSegment()!!.number,
                     shelfNumber = checkData.getCurrentShelf()!!.number,

@@ -21,7 +21,7 @@ data class Good(
         return status
     }
 
-    fun getFormattedSapCode(): String? {
+    fun getFormattedMaterial(): String? {
         return material?.takeLast(6)
     }
 
