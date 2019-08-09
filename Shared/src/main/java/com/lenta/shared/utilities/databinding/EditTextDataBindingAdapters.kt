@@ -60,6 +60,15 @@ fun requestFocus(editText: EditText, @Suppress("UNUSED_PARAMETER") requestFocus:
 
 }
 
+@BindingAdapter("selectText")
+fun selectText(editText: EditText, isSelect: Boolean?) {
+    if (editText.isEnabled && isSelect == true) {
+        editText.requestFocus()
+        editText.setSelection(0, editText.text.length)
+    }
+
+}
+
 @BindingAdapter(value = ["disabled"])
 fun setDisabled(editText: EditText, disabled: Boolean?) {
     if (disabled == null) {

@@ -118,4 +118,11 @@
     <string name="db_error">Ошибка базы данных</string>
     <string name="one_of">%s из %s</string>
     <string name="another_app_need_close">Запущено приложение: \"%s\". Одновременная работа не поддерживается. Пожалуйста закройте его и войдите в это приложение заново.</string>
+    <string name="filter">Фильтр</string>
+    <string name="search">Поиск</string>
+    <string name="task">Задание</string>
+    <string name="tags">Признаки</string>
+    <string name="tag">Признак</string>
+    <string name="goods">Товаров</string>
+    <string name="comment">Комментарий</string>
 </resources>
