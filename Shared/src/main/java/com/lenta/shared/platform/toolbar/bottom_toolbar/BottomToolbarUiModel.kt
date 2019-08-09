@@ -54,6 +54,10 @@ data class ButtonDecorationInfo(
 ) {
     companion object {
 
+        val filter: ButtonDecorationInfo by lazy {
+            ButtonDecorationInfo(R.drawable.ic_filter_white_24, R.string.filter)
+        }
+
         val update: ButtonDecorationInfo by lazy {
             ButtonDecorationInfo(R.drawable.ic_sync_white_24dp, R.string.update)
         }
