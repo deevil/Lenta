@@ -3,7 +3,6 @@ package com.lenta.bp9.features.task_list
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.lenta.bp9.models.task.DirectSupplierTask
 import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.bp9.repos.IRepoInMemoryHolder
 import com.lenta.shared.account.ISessionInfo
@@ -31,16 +30,7 @@ class TaskListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
         sessionInfo.market ?: ""
     }
 
-    val tasks: LiveData<List<TaskItemVm>> by lazy {
-        repoInMemoryHolder.tasksListRestInfo.map {
-            it!!.tasks
-                    .mapIndexed { index, task ->
-                        TaskItemVm(
-                                taskNumber = task.taskNumber
-                        )
-                    }
-        }
-    }
+    val tasks: LiveData<List<TaskItemVm>> = MutableLiveData()
 
     val tasksCount by lazy {
         tasks.map { tasks.value?.size ?: 0 }

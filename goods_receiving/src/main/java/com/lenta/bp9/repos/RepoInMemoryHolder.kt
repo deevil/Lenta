@@ -1,16 +1,16 @@
 package com.lenta.bp9.repos
 
-import androidx.lifecycle.MutableLiveData
-import com.lenta.bp9.models.task.DirectSupplierTaskListRestInfo
+import com.lenta.bp9.models.task.TaskList
 import com.lenta.shared.requests.PermissionsResult
 
 class RepoInMemoryHolder : IRepoInMemoryHolder {
     override var permissions: PermissionsResult? = null
-    override var tasksListRestInfo: MutableLiveData<DirectSupplierTaskListRestInfo> = MutableLiveData()
-
+    override var taskList: TaskList? = null
+    override var lastSearchResult: TaskList? = null
 }
 
 interface IRepoInMemoryHolder {
     var permissions: PermissionsResult?
-    var tasksListRestInfo: MutableLiveData<DirectSupplierTaskListRestInfo>
+    var taskList: TaskList?
+    var lastSearchResult: TaskList?
 }

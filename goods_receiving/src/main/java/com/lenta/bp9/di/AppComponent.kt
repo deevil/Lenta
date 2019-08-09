@@ -2,6 +2,7 @@ package com.lenta.bp9.di
 
 import com.lenta.bp9.ExceptionHandler
 import com.lenta.bp9.features.auth.AuthViewModel
+import com.lenta.bp9.features.loading.tasks.LoadingTasksViewModel
 import com.lenta.bp9.features.task_list.TaskListViewModel
 import com.lenta.bp9.main.MainActivity
 import com.lenta.bp9.main.MainViewModel
@@ -17,4 +18,5 @@ interface AppComponent {
     fun inject(it: ExceptionHandler)
     fun inject(it: AuthViewModel)
     fun inject(it: TaskListViewModel)
+    fun inject(it: LoadingTasksViewModel)
 }

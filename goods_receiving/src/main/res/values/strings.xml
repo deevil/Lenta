@@ -7,4 +7,5 @@
     <string name="to_process">К обработке</string>
     <string name="search">Поиск</string>
     <string name="postponed">Отложенные</string>
+    <string name="tasks_loading">Загрузка заданий</string>
 </resources>
