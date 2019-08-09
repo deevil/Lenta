@@ -1,6 +1,8 @@
 package com.lenta.bp9.di
 
 import android.content.Context
+import com.lenta.bp9.model.task.IReceivingTaskManager
+import com.lenta.bp9.model.task.ReceivingTaskManager
 import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.bp9.platform.navigation.ScreenNavigator
 import com.lenta.bp9.repos.IRepoInMemoryHolder
@@ -36,5 +38,10 @@ class AppModule {
         return RepoInMemoryHolder()
     }
 
+    @Provides
+    @AppScope
+    internal fun provideReceivingTaskManager(): IReceivingTaskManager {
+        return ReceivingTaskManager()
+    }
 
 }

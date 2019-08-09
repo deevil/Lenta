@@ -43,7 +43,7 @@ class ProcessSetsService @Inject constructor() : IProcessProductService {
 
     fun newProcessSetsService(productInfo: TaskProductInfo): ProcessSetsService? {
         return if (productInfo.type == ProductType.ExciseAlcohol && productInfo.isSet) {
-            currentProductInfo = productInfo
+            currentProductInfo = productInfo.copy()
             currentAllExciseStamps.clear()
             currentComponentExciseStamps.clear()
             setComponentsForSet()
@@ -58,18 +58,27 @@ class ProcessSetsService @Inject constructor() : IProcessProductService {
     override fun setFactCount(count: Double) {
         if (count >= 0.0) {
             if (count > 0.0) {
-                processServiceManager.getInventoryTask()!!.taskRepository.getProducts().findProduct(currentProductInfo!!)?.factCount = count
-                processServiceManager.getInventoryTask()!!.taskRepository.getProducts().findProduct(currentProductInfo!!)?.isPositionCalc = true
+                processServiceManager.
+                        getInventoryTask()!!.
+                        taskRepository.
+                        getProducts().
+                        changeProduct(currentProductInfo!!.copy(factCount = count, isPositionCalc = true))
             } else {
-                processServiceManager.getInventoryTask()!!.taskRepository.getProducts().findProduct(currentProductInfo!!)?.factCount = 0.0
-                processServiceManager.getInventoryTask()!!.taskRepository.getProducts().findProduct(currentProductInfo!!)?.isPositionCalc = false
+                processServiceManager.
+                        getInventoryTask()!!.
+                        taskRepository.
+                        getProducts().
+                        changeProduct(currentProductInfo!!.copy(factCount = 0.0, isPositionCalc = false))
             }
         }
     }
 
     override fun markMissing() {
-        processServiceManager.getInventoryTask()!!.taskRepository.getProducts().findProduct(currentProductInfo!!)?.factCount = 0.0
-        processServiceManager.getInventoryTask()!!.taskRepository.getProducts().findProduct(currentProductInfo!!)?.isPositionCalc = true
+        processServiceManager.
+                getInventoryTask()!!.
+                taskRepository.
+                getProducts().
+                changeProduct(currentProductInfo!!.copy(factCount = 0.0, isPositionCalc = true))
         discard()
     }
 

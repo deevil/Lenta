@@ -14,7 +14,9 @@ class GoodInfoFacingViewModel : AddGoodViewModel(), OnOkInSoftKeyboardListener {
 
     val good: MutableLiveData<Good> = MutableLiveData()
 
-    val facings: MutableLiveData<String> = MutableLiveData("")
+    val facings: MutableLiveData<String> = MutableLiveData()
+
+    val selectFacingsField: MutableLiveData<Boolean> = MutableLiveData()
 
     val goodIsPresent: MutableLiveData<Boolean> = good.map {
         it?.getStatus() == GoodStatus.CREATED || (it?.facings ?: 0 > 0 && it?.getStatus() != GoodStatus.CREATED)
@@ -42,7 +44,12 @@ class GoodInfoFacingViewModel : AddGoodViewModel(), OnOkInSoftKeyboardListener {
     init {
         viewModelScope.launch {
             good.value = checkData.getCurrentGood()
-            facings.value = checkData.getCurrentGood()?.getFacingOrEmpty()
+
+            val goodFacings = checkData.getCurrentGood()?.facings
+            facings.value = "" + if (goodFacings != 0) goodFacings else 1
+
+            selectFacingsField.value = true
+
         }
     }
 
@@ -59,7 +66,7 @@ class GoodInfoFacingViewModel : AddGoodViewModel(), OnOkInSoftKeyboardListener {
         if (checkData.checkEmptyPlaces) {
             // Выбор - Пустое место оформлено правильно? - Назад / Нет / Да
             navigator.showIsEmptyPlaceDecoratedCorrectly(
-                    sapCode = good.value?.getFormattedSapCode() ?: "Not found!",
+                    material = good.value?.getFormattedMaterial() ?: "Not found!",
                     name = good.value?.name ?: "Not found!",
                     segmentNumber = checkData.getCurrentSegment()!!.number,
                     shelfNumber = checkData.getCurrentShelf()!!.number,
@@ -95,7 +102,7 @@ class GoodInfoFacingViewModel : AddGoodViewModel(), OnOkInSoftKeyboardListener {
         if (applyButtonEnabled.value == true) {
             checkData.getCurrentGood()?.facings = facings.value!!.toInt()
             checkData.setCurrentGoodStatus(GoodStatus.PROCESSED)
-            addGoodByBarCode(data)
+            addGoodByEan(data)
         }
     }
 }

@@ -136,11 +136,11 @@ class ProcessGeneralProductServiceTest : BaseUnitTest() {
 
         processGeneralProductService.newProcessGeneralProductService(product1)
 
-        //устанавливаем продукту с МХ=1 в репозитории фактическое количество (5), и помечаем, что продукт обработан
-        processGeneralProductService.setFactCount(5.0)
+        //устанавливаем продукту с МХ=1 в репозитории фактическое количество (3), и помечаем, что продукт обработан
+        processGeneralProductService.setFactCount(3.0)
 
-        //проверяем кол-во продуктов, должно быть 5
-        Assert.assertEquals(5.0, processServiceManager.getInventoryTask()!!.taskRepository.getProducts().findProduct(materialNumber, "1")!!.factCount, 0.0)
+        //проверяем кол-во продуктов, должно быть 3
+        Assert.assertEquals(3.0, processServiceManager.getInventoryTask()!!.taskRepository.getProducts().findProduct(materialNumber, "1")!!.factCount, 0.0)
 
         //проверяем, что продукт помечен как обработанный
         Assert.assertTrue(processServiceManager.getInventoryTask()!!.taskRepository.getProducts().findProduct(materialNumber, "1")!!.isPositionCalc)
@@ -148,11 +148,11 @@ class ProcessGeneralProductServiceTest : BaseUnitTest() {
         //устанавливаем отрицательное кол-во продуктов -1
         processGeneralProductService.setFactCount(-1.0)
 
-        //проверяем кол-во продуктов, должно остаться 5
-        Assert.assertEquals(5.0, processServiceManager.getInventoryTask()!!.taskRepository.getProducts().findProduct(materialNumber, "1")!!.factCount, 0.0)
+        //проверяем кол-во продуктов, должно остаться 3
+        Assert.assertEquals(3.0, processServiceManager.getInventoryTask()!!.taskRepository.getProducts().findProduct(materialNumber, "1")!!.factCount, 0.0)
 
-        //проверяем кол-во продуктов через ф-цию getFactCount, должно остаться 5
-        Assert.assertEquals(5.0, processGeneralProductService.getFactCount(), 0.0)
+        //проверяем кол-во продуктов через ф-цию getFactCount, должно остаться 0
+        Assert.assertEquals(0.0, processGeneralProductService.getFactCount(), 0.0)
 
         //устанавливаем кол-во продуктов в ноль
         processGeneralProductService.setFactCount(0.0)
@@ -169,6 +169,8 @@ class ProcessGeneralProductServiceTest : BaseUnitTest() {
         //проверяем, что продукт с МХ=2 остался помечен как не обработанный
         Assert.assertFalse(processServiceManager.getInventoryTask()!!.taskRepository.getProducts().findProduct(materialNumber, "2")!!.isPositionCalc)
 
+        //проверяем, что в репозитории 2 продукта
+        Assert.assertTrue(processServiceManager.getInventoryTask()!!.taskRepository.getProducts().getProducts().size == 2)
     }
 
     @Test
@@ -198,6 +200,15 @@ class ProcessGeneralProductServiceTest : BaseUnitTest() {
 
         processGeneralProductService.newProcessGeneralProductService(product1)
 
+        //проверяем кол-во продуктов, должно быть 0
+        Assert.assertEquals(0.0, processServiceManager.getInventoryTask()!!.taskRepository.getProducts().findProduct(materialNumber, "00")!!.factCount, 0.0)
+
+        //проверяем, что продукт помечен как не обработанный
+        Assert.assertFalse(processServiceManager.getInventoryTask()!!.taskRepository.getProducts().findProduct(materialNumber, "00")!!.isPositionCalc)
+
+        //устанавливаем FactCount для продукта = 7 (чтобы потом проверить, что стало 0)
+        processGeneralProductService.setFactCount(7.0)
+
         //помечаем, что продукт отсутствует
         processGeneralProductService.markMissing()
 
@@ -208,4 +219,5 @@ class ProcessGeneralProductServiceTest : BaseUnitTest() {
         Assert.assertTrue(processServiceManager.getInventoryTask()!!.taskRepository.getProducts().findProduct(materialNumber, "00")!!.isPositionCalc)
 
     }
+
 }

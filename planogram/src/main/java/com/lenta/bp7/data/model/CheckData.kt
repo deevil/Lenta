@@ -56,8 +56,10 @@ class CheckData @Inject constructor(
         getCurrentShelf()!!.goods.let {
             it.add(0, Good(
                     id = it.lastIndex + 2,
-                    sapCode = goodInfo.sapCode,
-                    barCode = goodInfo.barCode,
+                    ean = goodInfo.ean,
+                    material = goodInfo.material,
+                    matcode = goodInfo.matcode,
+                    enteredCode = goodInfo.enteredCode,
                     name = goodInfo.name,
                     unitsCode = goodInfo.unitsCode,
                     units = goodInfo.units))
@@ -171,11 +173,11 @@ class CheckData @Inject constructor(
     }
 
     private fun removeCurrentGoodIfSamePrevious() {
-        if (getCurrentGood()?.barCode == getFirstGood()?.barCode) {
+        if (getCurrentGood()?.ean == getFirstGood()?.ean) {
             val first = getFirstGood()
             val second = getSecondGood()
             if (first != null && second != null) {
-                if (first.barCode == second.barCode && first.getStatus() == second.getStatus()) {
+                if (first.ean == second.ean && first.getStatus() == second.getStatus()) {
                     getSecondGood()!!.facings += getFirstGood()!!.facings
                     deleteCurrentGood()
                 }
@@ -198,12 +200,11 @@ class CheckData @Inject constructor(
     }
 
     fun isFirstCurrentGood(): Boolean {
-        return getCurrentGood()?.barCode == getFirstGood()?.barCode
+        return getCurrentGood()?.ean == getFirstGood()?.ean
     }
 
     fun getPreviousSameGoodFacings(): Int {
-        return if (getFirstGood()?.barCode == getSecondGood()?.barCode) getSecondGood()?.facings
-                ?: 0 else 0
+        return if (getFirstGood()?.ean == getSecondGood()?.ean) getSecondGood()?.facings ?: 0 else 0
     }
 
     fun getFormattedMarketNumber(): String {
@@ -248,8 +249,8 @@ class CheckData @Inject constructor(
 
                     for (good in shelf.goods) {
                         val goodSend = GoodSend(
-                                sapCodeForSend = good.getFormattedSapCode() + "_${good.unitsCode}",
-                                barCode = good.barCode,
+                                sapCodeForSend = good.getFormattedMaterial() + "_${good.unitsCode}",
+                                barCode = if (good.enteredCode == EnteredCode.EAN) good.ean ?: "Not found!" else "",
                                 count = if (countFacings) good.facings else null,
                                 labeled = if (checkEmptyPlaces) {
                                     when (good.getStatus()) {
@@ -305,8 +306,10 @@ class CheckData @Inject constructor(
         val goods: MutableList<Good> = mutableListOf()
         goods.add(0, Good(
                 id = 0,
-                sapCode = "000000000000" + (100000..999999).random().toString(),
-                barCode = (100000000000..999999999999).random().toString(),
+                ean = (10000000..999999999999).random().toString(),
+                material = "000000000000" + (100000..999999).random().toString(),
+                matcode = (100000000000..999999999999).random().toString(),
+                enteredCode = EnteredCode.EAN,
                 name = "Test 1",
                 status = GoodStatus.PROCESSED,
                 facings = 111,
