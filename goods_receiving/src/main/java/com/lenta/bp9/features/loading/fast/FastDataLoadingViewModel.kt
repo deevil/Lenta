@@ -53,8 +53,6 @@ class FastDataLoadingViewModel : CoreLoadingViewModel() {
         }
     }
 
-
-
     override fun handleFailure(failure: Failure) {
         screenNavigator.openAlertScreen(failureInterpreter.getFailureDescription(failure).message)
     }
