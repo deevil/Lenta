@@ -35,19 +35,37 @@ class CheckData @Inject constructor(
         //generateTestData()
     }
 
-
-    fun isExistUnsentData(): Boolean {
-        return segments.isNotEmpty()
+    fun addSegment(storeNumber: String, segmentNumber: String) {
+        segments.add(0, Segment(
+                id = segments.lastIndex + 2,
+                storeNumber = storeNumber,
+                number = segmentNumber))
+        currentSegmentIndex = 0
     }
 
-    fun saveCheckResult() {
-        persistCheckResult.saveCheckResult(this)
+    fun addShelf(shelfNumber: String) {
+        getCurrentSegment()!!.shelves.let {
+            it.add(0, Shelf(
+                    id = it.lastIndex + 2,
+                    number = shelfNumber))
+        }
+        currentShelfIndex = 0
     }
 
-    fun clearSavedData() {
-        persistCheckResult.clearSavedData()
+    fun addGood(goodInfo: GoodInfo) {
+        getCurrentShelf()!!.goods.let {
+            it.add(0, Good(
+                    id = it.lastIndex + 2,
+                    ean = goodInfo.ean,
+                    material = goodInfo.material,
+                    matcode = goodInfo.matcode,
+                    enteredCode = goodInfo.enteredCode,
+                    name = goodInfo.name,
+                    unitsCode = goodInfo.unitsCode,
+                    units = goodInfo.units))
+        }
+        currentGoodIndex = 0
     }
-
 
     fun getCurrentSegment(): Segment? {
         return if (segments.isNotEmpty()) {
@@ -105,37 +123,19 @@ class CheckData @Inject constructor(
         } else null
     }
 
-    fun addSegment(storeNumber: String, segmentNumber: String) {
-        segments.add(0, Segment(
-                id = segments.lastIndex + 2,
-                storeNumber = storeNumber,
-                number = segmentNumber))
-        currentSegmentIndex = 0
+
+    fun isExistUnsentData(): Boolean {
+        return segments.isNotEmpty()
     }
 
-    fun addShelf(shelfNumber: String) {
-        getCurrentSegment()!!.shelves.let {
-            it.add(0, Shelf(
-                    id = it.lastIndex + 2,
-                    number = shelfNumber))
-        }
-        currentShelfIndex = 0
+    fun saveCheckResult() {
+        persistCheckResult.saveCheckResult(this)
     }
 
-    fun addGood(goodInfo: GoodInfo) {
-        getCurrentShelf()!!.goods.let {
-            it.add(0, Good(
-                    id = it.lastIndex + 2,
-                    ean = goodInfo.ean,
-                    material = goodInfo.material,
-                    matcode = goodInfo.matcode,
-                    enteredCode = goodInfo.enteredCode,
-                    name = goodInfo.name,
-                    unitsCode = goodInfo.unitsCode,
-                    units = goodInfo.units))
-        }
-        currentGoodIndex = 0
+    fun clearSavedData() {
+        persistCheckResult.clearSavedData()
     }
+
 
     fun deleteCurrentSegment() {
         segments.removeAt(currentSegmentIndex)

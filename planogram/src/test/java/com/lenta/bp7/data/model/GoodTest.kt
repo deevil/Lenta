@@ -70,23 +70,35 @@ internal class GoodTest {
     }
 
     @Test
-    fun `Empty facings with CREATED status`() {
+    fun `Get facings from facingsOrPlus`() {
+        good?.facings = 12
+        assertEquals("12", good?.getFacingOrPlus())
+    }
+
+    @Test
+    fun `Get plus from facingsOrPlus with CREATED status`() {
         good?.facings = 0
         good?.setStatus(GoodStatus.CREATED)
         assertEquals("+", good?.getFacingOrPlus())
     }
 
     @Test
-    fun `Empty facings with PROCESSED status`() {
+    fun `Get plus from facingsOrPlus with PROCESSED status`() {
         good?.facings = 0
         good?.setStatus(GoodStatus.PROCESSED)
         assertEquals("+", good?.getFacingOrPlus())
     }
 
     @Test
-    fun `Not empty facings`() {
-        good?.facings = 12
-        assertEquals("12", good?.getFacingOrPlus())
+    fun `Get facings from facingsOrEmpty`() {
+        good?.facings = 13
+        assertEquals("13", good?.getFacingOrEmpty())
+    }
+
+    @Test
+    fun `Get empty from facingsOrEmpty`() {
+        good?.facings = 0
+        assertEquals("", good?.getFacingOrEmpty())
     }
 
 }
