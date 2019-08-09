@@ -97,7 +97,7 @@ class GoodInfoFacingViewModel : AddGoodViewModel(), OnOkInSoftKeyboardListener {
         if (applyButtonEnabled.value == true) {
             checkData.getCurrentGood()?.facings = facings.value!!.toInt()
             checkData.setCurrentGoodStatus(GoodStatus.PROCESSED)
-            addGoodByBarCode(data)
+            addGoodByEan(data)
         }
     }
 }

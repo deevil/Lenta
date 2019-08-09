@@ -138,7 +138,7 @@
                         android:layout_height="wrap_content"
                         android:paddingStart="10dp"
                         android:paddingEnd="10dp"
-                        android:text="@{vm.good.barCode}"
+                        android:text="@{vm.good.ean}"
                         android:textSize="14sp"
                         tools:text="12345678912"/>
 

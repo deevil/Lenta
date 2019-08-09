@@ -10,8 +10,10 @@ internal class GoodTest {
     private var good: Good? = null
 
     private val id = 0
-    private val sapCode = "000000000000000021"
-    private val barCode = "4605996001633"
+    private val ean = "4605996001633"
+    private val material = "000000000000000021"
+    private val matcode = "370105000021"
+    private val enteredCode = EnteredCode.EAN
     private val name = "Р/к горбуша (Россия) 230/250г"
     private val unitsCode = "ST"
     private val units = "шт"
@@ -20,8 +22,10 @@ internal class GoodTest {
     fun createGood() {
         good = Good(
                 id = id,
-                sapCode = sapCode,
-                barCode = barCode,
+                ean = ean,
+                material = material,
+                matcode = matcode,
+                enteredCode = enteredCode,
                 name = name,
                 unitsCode = unitsCode,
                 units = units)
@@ -36,8 +40,10 @@ internal class GoodTest {
     fun `Good creation`() {
         assertAll("good",
                 Executable { assertEquals(id, good?.id) },
-                Executable { assertEquals(sapCode, good?.sapCode) },
-                Executable { assertEquals(barCode, good?.barCode) },
+                Executable { assertEquals(ean, good?.ean) },
+                Executable { assertEquals(material, good?.material) },
+                Executable { assertEquals(matcode, good?.matcode) },
+                Executable { assertEquals(enteredCode, good?.enteredCode) },
                 Executable { assertEquals(name, good?.name) },
                 Executable { assertEquals(unitsCode, good?.unitsCode) },
                 Executable { assertEquals(units, good?.units) },

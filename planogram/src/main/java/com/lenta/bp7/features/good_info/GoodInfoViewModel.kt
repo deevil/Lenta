@@ -63,7 +63,7 @@ class GoodInfoViewModel : AddGoodViewModel() {
     fun onScanResult(data: String) {
         if (applyButtonEnabled.value == true) {
             checkData.setCurrentGoodStatus(GoodStatus.PROCESSED)
-            addGoodByBarCode(data)
+            addGoodByEan(data)
         }
     }
 }
