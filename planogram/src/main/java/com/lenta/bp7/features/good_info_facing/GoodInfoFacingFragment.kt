@@ -1,5 +1,6 @@
 package com.lenta.bp7.features.good_info_facing
 
+import android.os.Bundle
 import android.view.View
 import androidx.lifecycle.Observer
 import com.lenta.bp7.R
@@ -56,8 +57,7 @@ class GoodInfoFacingFragment : CoreFragment<FragmentGoodInfoFacingBinding, GoodI
         }
     }
 
-    override fun onResume() {
-        super.onResume()
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         initFacingsField()
     }
 
