@@ -4,6 +4,7 @@ import com.lenta.bp9.ExceptionHandler
 import com.lenta.bp9.features.auth.AuthViewModel
 import com.lenta.bp9.features.loading.fast.FastDataLoadingFragment
 import com.lenta.bp9.features.loading.fast.FastDataLoadingViewModel
+import com.lenta.bp9.features.main_menu.MainMenuViewModel
 import com.lenta.bp9.features.select_market.SelectMarketViewModel
 import com.lenta.bp9.features.select_personnel_number.SelectPersonnelNumberViewModel
 import com.lenta.bp9.main.MainActivity
@@ -22,5 +23,6 @@ interface AppComponent {
     fun inject(it: SelectMarketViewModel)
     fun inject(it: FastDataLoadingViewModel)
     fun inject(it: SelectPersonnelNumberViewModel)
+    fun inject(it: MainMenuViewModel)
 
 }

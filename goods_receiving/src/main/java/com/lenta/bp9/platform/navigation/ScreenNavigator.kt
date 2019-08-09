@@ -3,6 +3,7 @@ package com.lenta.bp9.platform.navigation
 import android.content.Context
 import com.lenta.bp9.features.auth.AuthFragment
 import com.lenta.bp9.features.loading.fast.FastDataLoadingFragment
+import com.lenta.bp9.features.main_menu.MainMenuFragment
 import com.lenta.bp9.features.select_market.SelectMarketFragment
 import com.lenta.bp9.features.select_personnel_number.SelectPersonnelNumberFragment
 import com.lenta.shared.account.IAuthenticator
@@ -34,7 +35,9 @@ class ScreenNavigator(
     }
 
     override fun openMainMenuScreen() {
-        openNotImplementedScreenAlert("Главное меню")
+        runOrPostpone {
+            getFragmentStack()?.replace(MainMenuFragment())
+        }
     }
 
     override fun openLoginScreen() {
