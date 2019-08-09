@@ -1,7 +1,7 @@
 package com.lenta.bp9.model.task
 
 //ТП. Таблица 75 ZSGRZ_TASK_EXCH Структура карточки задания
-class TaskDescription(val currentStatusCode: String,   //Код текущего статуса (CUR_STAT)
+data class TaskDescription(val currentStatusCode: String,   //Код текущего статуса (CUR_STAT)
                       val currentStatusText: String,   //Текс текущего статуса (CUR_ST_TEXT)
                       val currentStatusDate: String,   //Дата текущего статуса (CUR_ST_DATE)
                       val currentStatusTime: String,   //Время текущего статуса (CUR_ST_TIME)
@@ -25,57 +25,6 @@ class TaskDescription(val currentStatusCode: String,   //Код текущего
                       val isRecount: Boolean,          //Индикатор: Пересчетная ГЕ (IS_COUNT)
                       val isOwnTransport: Boolean     //Индикатор: Собственный транспорт (IS_OWN)
                      ) {
-
-    fun copy(currentStatusCode: String = this.currentStatusCode,
-             currentStatusText: String = this.currentStatusText,
-             currentStatusDate: String = this.currentStatusDate,
-             currentStatusTime: String = this.currentStatusTime,
-             nextStatusText: String = this.nextStatusText,
-             ttnNumber: String = this.ttnNumber,
-             orderNumber: String = this.orderNumber,
-             deliveryNumber: String = this.deliveryNumber,
-             plannedDeliveryDate: String = this.plannedDeliveryDate,
-             plannedDeliveryTime: String = this.plannedDeliveryTime,
-             actualArrivalDate: String = this.actualArrivalDate,
-             actualArrivalTime: String = this.actualArrivalTime,
-             quantityPositions: String = this.quantityPositions,
-             isOverdue: Boolean = this.isOverdue,
-             isSpecialControlGoods: Boolean = this.isSpecialControlGoods,
-             isRawMaterials: Boolean = this.isRawMaterials,
-             isUFF: Boolean = this.isUFF,
-             isAlco: Boolean = this.isAlco,
-             isSupplierReturnAvailability: Boolean = this.isSupplierReturnAvailability,
-             isNotEDI: Boolean = this.isNotEDI,
-             isPromo: Boolean = this.isPromo,
-             isRecount: Boolean = this.isRecount,
-             isOwnTransport: Boolean = this.isOwnTransport) : TaskDescription {
-        return TaskDescription(
-                currentStatusCode = currentStatusCode,
-                currentStatusText = currentStatusText,
-                currentStatusDate = currentStatusDate,
-                currentStatusTime = currentStatusTime,
-                nextStatusText = nextStatusText,
-                ttnNumber = ttnNumber,
-                orderNumber = orderNumber,
-                deliveryNumber = deliveryNumber,
-                plannedDeliveryDate = plannedDeliveryDate,
-                plannedDeliveryTime = plannedDeliveryTime,
-                actualArrivalDate = actualArrivalDate,
-                actualArrivalTime = actualArrivalTime,
-                quantityPositions = quantityPositions,
-                isOverdue = isOverdue,
-                isSpecialControlGoods = isSpecialControlGoods,
-                isRawMaterials = isRawMaterials,
-                isUFF = isUFF,
-                isAlco = isAlco,
-                isSupplierReturnAvailability = isSupplierReturnAvailability,
-                isNotEDI = isNotEDI,
-                isPromo = isPromo,
-                isRecount = isRecount,
-                isOwnTransport = isOwnTransport
-        )
-    }
-
 }
 
 
