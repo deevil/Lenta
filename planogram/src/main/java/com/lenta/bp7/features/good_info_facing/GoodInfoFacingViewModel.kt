@@ -19,11 +19,11 @@ class GoodInfoFacingViewModel : AddGoodViewModel(), OnOkInSoftKeyboardListener {
     val selectFacingsField: MutableLiveData<Boolean> = MutableLiveData()
 
     val goodIsPresent: MutableLiveData<Boolean> = good.map {
-        goodJustCreated() || (it?.facings ?: 0 > 0 && !goodJustCreated())
+        isGoodJustCreated() || (it?.facings ?: 0 > 0 && !isGoodJustCreated())
     }
 
     val totalFacings: MutableLiveData<Int> = facings.map {
-        if (goodJustCreated()) {
+        if (isGoodJustCreated()) {
             val currentFacings = if (it?.isNotEmpty() == true) it.toInt() else 0
             val previousFacings = if (checkData.isFirstCurrentGood()) checkData.getPreviousSameGoodFacings() else 0
             currentFacings + previousFacings
@@ -32,28 +32,28 @@ class GoodInfoFacingViewModel : AddGoodViewModel(), OnOkInSoftKeyboardListener {
         }
     }
 
-    val facingFieldEnabled: MutableLiveData<Boolean> = good.map { goodJustCreated() }
+    val facingFieldEnabled: MutableLiveData<Boolean> = good.map { isGoodJustCreated() }
 
     val missingButtonEnabled: MutableLiveData<Boolean> = facings.combineLatest(good).map { pair ->
         val emptyCountField = if (pair?.first?.isNotEmpty() == true) pair.first.toInt() == 0 else true
         val alreadyExistFacings = if (pair?.second != null) pair.second.facings > 0 else false
-        emptyCountField && !alreadyExistFacings && goodJustCreated()
+        emptyCountField && !alreadyExistFacings && isGoodJustCreated()
     }
 
     val applyButtonEnabled: MutableLiveData<Boolean> = facings.map {
         val isNotEmpty = if (it?.isNotEmpty() == true) it.toInt() > 0 else false
-        isNotEmpty && goodJustCreated()
+        isNotEmpty && isGoodJustCreated()
     }
 
     init {
         viewModelScope.launch {
             good.value = checkData.getCurrentGood()
-            facings.value = "" + if (goodJustCreated()) 1 else checkData.getCurrentGood()?.facings
+            facings.value = "" + if (isGoodJustCreated()) 1 else checkData.getCurrentGood()?.facings
             selectFacingsField.value = true
         }
     }
 
-    private fun goodJustCreated(): Boolean {
+    private fun isGoodJustCreated(): Boolean {
         return checkData.getCurrentGood()?.getStatus() == GoodStatus.CREATED
     }
 
