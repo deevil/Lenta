@@ -4,6 +4,7 @@ import android.content.Context
 import com.lenta.bp9.features.auth.AuthFragment
 import com.lenta.bp9.features.loading.fast.FastDataLoadingFragment
 import com.lenta.bp9.features.select_market.SelectMarketFragment
+import com.lenta.bp9.features.select_personnel_number.SelectPersonnelNumberFragment
 import com.lenta.shared.account.IAuthenticator
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
 import com.lenta.shared.platform.navigation.ICoreNavigator
@@ -48,6 +49,12 @@ class ScreenNavigator(
         }
     }
 
+    override fun openSelectionPersonnelNumberScreen() {
+        runOrPostpone {
+            getFragmentStack()?.replace(SelectPersonnelNumberFragment())
+        }
+    }
+
 
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 
@@ -59,5 +66,6 @@ interface IScreenNavigator : ICoreNavigator {
     fun openMainMenuScreen()
     fun openLoginScreen()
     fun openFastDataLoadingScreen()
+    fun openSelectionPersonnelNumberScreen()
 
 }
