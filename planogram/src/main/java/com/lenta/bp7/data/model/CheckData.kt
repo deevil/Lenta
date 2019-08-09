@@ -78,7 +78,9 @@ class CheckData @Inject constructor(
         return if (getCurrentShelf()?.goods?.size ?: 0 > 1) {
             segments[currentSegmentIndex].let { segment ->
                 segment.shelves[currentShelfIndex].let { shelf ->
-                    shelf.goods[currentGoodIndex + 1]
+                    val previousIndex = currentGoodIndex + 1
+                    if (previousIndex) shelf.goods[currentGoodIndex + 1]
+                    else null
                 }
             }
         } else null
@@ -203,7 +205,7 @@ class CheckData @Inject constructor(
     }
 
     fun getPreviousSameGoodFacings(): Int {
-        return if (getFirstGood()?.ean == getSecondGood()?.ean) getSecondGood()?.facings ?: 0 else 0
+        return if (getCurrentGood()?.ean == getPreviousGood()?.ean) getPreviousGood()?.facings ?: 0 else 0
     }
 
     fun getFormattedMarketNumber(): String {
