@@ -14,7 +14,9 @@ class GoodInfoFacingViewModel : AddGoodViewModel(), OnOkInSoftKeyboardListener {
 
     val good: MutableLiveData<Good> = MutableLiveData()
 
-    val facings: MutableLiveData<String> = MutableLiveData("")
+    val facings: MutableLiveData<String> = MutableLiveData()
+
+    val selectFacingsField: MutableLiveData<Boolean> = MutableLiveData()
 
     val goodIsPresent: MutableLiveData<Boolean> = good.map {
         it?.getStatus() == GoodStatus.CREATED || (it?.facings ?: 0 > 0 && it?.getStatus() != GoodStatus.CREATED)
@@ -45,6 +47,9 @@ class GoodInfoFacingViewModel : AddGoodViewModel(), OnOkInSoftKeyboardListener {
 
             val goodFacings = checkData.getCurrentGood()?.facings
             facings.value = "" + if (goodFacings != 0) goodFacings else 1
+
+            selectFacingsField.value = true
+
         }
     }
 
