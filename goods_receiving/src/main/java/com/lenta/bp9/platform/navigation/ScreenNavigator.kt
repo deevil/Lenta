@@ -2,6 +2,10 @@ package com.lenta.bp9.platform.navigation
 
 import android.content.Context
 import com.lenta.bp9.features.auth.AuthFragment
+import com.lenta.bp9.features.loading.tasks.LoadingTasksFragment
+import com.lenta.bp9.features.task_list.TaskListFragment
+import com.lenta.bp9.features.loading.tasks.TaskListLoadingMode
+import com.lenta.bp9.requests.TaskListSearchParams
 import com.lenta.bp9.features.loading.fast.FastDataLoadingFragment
 import com.lenta.bp9.features.main_menu.MainMenuFragment
 import com.lenta.bp9.features.select_market.SelectMarketFragment
@@ -46,6 +50,18 @@ class ScreenNavigator(
         }
     }
 
+    override fun openTaskListScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(TaskListFragment())
+        }
+    }
+
+    override fun openTaskListLoadingScreen(mode: TaskListLoadingMode, searchParams: TaskListSearchParams?) {
+        runOrPostpone {
+            getFragmentStack()?.push(LoadingTasksFragment.create(searchParams, mode))
+        }
+    }
+
     override fun openFastDataLoadingScreen() {
         runOrPostpone {
             getFragmentStack()?.push(FastDataLoadingFragment())
@@ -58,7 +74,6 @@ class ScreenNavigator(
         }
     }
 
-
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 
 }
@@ -68,7 +83,8 @@ interface IScreenNavigator : ICoreNavigator {
     fun openSelectMarketScreen()
     fun openMainMenuScreen()
     fun openLoginScreen()
+    fun openTaskListScreen()
+    fun openTaskListLoadingScreen(mode: TaskListLoadingMode, searchParams: TaskListSearchParams? = null)
     fun openFastDataLoadingScreen()
     fun openSelectionPersonnelNumberScreen()
-
 }

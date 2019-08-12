@@ -2,6 +2,7 @@ package com.lenta.bp9.features.main_menu
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.lenta.bp9.features.loading.tasks.TaskListLoadingMode
 import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
@@ -24,7 +25,7 @@ class MainMenuViewModel : CoreViewModel() {
     }
 
     fun onClickReceiptTask() {
-        
+        screenNavigator.openTaskListLoadingScreen(TaskListLoadingMode.Receiving)
     }
 
     fun onClickRecountTask() {
