@@ -42,11 +42,10 @@ class LoadingTasksViewModel : CoreLoadingViewModel() {
     init {
         viewModelScope.launch {
             progress.value = true
-            //TODO: Использовать реальные номер ТК и пользователя, когда процесс логина будет готов
             val params = TaskListParams(type = mode.taskListLoadingModeString,
                     ip = context.getDeviceIp(),
-                    storeNumber = "0020",
-                    userNumber = "271296",
+                    storeNumber = sessionInfo.market ?: "",
+                    userNumber = sessionInfo.personnelNumber ?: "",
                     searchParams = searchParams
                     )
             taskListNetRequest(params).either(::handleFailure, ::handleSuccess)

@@ -104,8 +104,8 @@ class TaskListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
             screenNavigator.showProgress(taskListNetRequest)
             taskListNetRequest(
                     TaskListParams(
-                            storeNumber = "0020",
-                            userNumber = "271296",
+                            storeNumber = sessionInfo.market ?: "",
+                            userNumber = sessionInfo.personnelNumber ?: "",
                             searchParams = null,
                             ip = context.getDeviceIp(),
                             type = TaskListLoadingMode.Receiving.taskListLoadingModeString

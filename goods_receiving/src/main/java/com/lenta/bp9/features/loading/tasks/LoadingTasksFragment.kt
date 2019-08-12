@@ -32,7 +32,7 @@ class LoadingTasksFragment : CoreLoadingFragment() {
     }
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
-        topToolbarUiModel.description.value = getString(R.string.job_card)
+        topToolbarUiModel.description.value = getString(R.string.tasks_loading)
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
