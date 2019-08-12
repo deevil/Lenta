@@ -44,22 +44,17 @@ internal class CheckDataTest {
         checkData?.addShelf(number)
     }
 
-    private fun addGood(goodInfo: GoodInfo = getCustomGoodInfo()) {
-        if (checkData?.getCurrentSegment() == null) addSegment()
-        if (checkData?.getCurrentShelf() == null) addShelf()
-        checkData?.addGood(goodInfo)
-    }
-
-    private fun getCustomGoodInfo(
+    private fun addGood(
             ean: String = "" + (10000000..99999999999999).random(),
             material: String = "000000000000" + (100000..999999).random(),
             matcode: String = "" + (100000000000..999999999999).random(),
             enteredCode: EnteredCode = EnteredCode.EAN,
             name: String = "Good " + (1..999).random(),
             unitsCode: String = "ST",
-            units: String = "шт"
-    ): GoodInfo {
-        return GoodInfo(ean, material, matcode, enteredCode, name, unitsCode, units)
+            units: String = "шт") {
+        if (checkData?.getCurrentSegment() == null) addSegment()
+        if (checkData?.getCurrentShelf() == null) addShelf()
+        checkData?.addGood(GoodInfo(ean, material, matcode, enteredCode, name, unitsCode, units))
     }
 
     @Test
@@ -147,14 +142,14 @@ internal class CheckDataTest {
     @Test
     fun `Get current (last added) good`() {
         for (i in 1..3) addGood()
-        addGood(getCustomGoodInfo(ean = customGoodEan)) // Текущий товар
+        addGood(ean = customGoodEan) // Текущий товар
         assertEquals(customGoodEan, checkData?.getCurrentGood()?.ean)
     }
 
     @Test
     fun `Get changed current good`() {
         addGood()
-        addGood(getCustomGoodInfo(ean = customGoodEan))
+        addGood(ean = customGoodEan)
         addGood() // Текущий товар
         checkData?.currentGoodIndex = 1 // Меняем текущий товар
         assertEquals(customGoodEan, checkData?.getCurrentGood()?.ean)
@@ -167,14 +162,14 @@ internal class CheckDataTest {
 
     @Test
     fun `Get previous good with first current element`() {
-        addGood(getCustomGoodInfo(ean = customGoodEan)) // Предыдущий товар
+        addGood(ean = customGoodEan) // Предыдущий товар
         addGood() // Текущий товар
         assertEquals(customGoodEan, checkData?.getPreviousGood()?.ean)
     }
 
     @Test
     fun `Get previous good with changed current element`() {
-        addGood(getCustomGoodInfo(ean = customGoodEan))
+        addGood(ean = customGoodEan)
         addGood() // Предыдущий товар
         addGood() // Текущий товар
         checkData?.currentGoodIndex = 1 // Меняем текущий товар
@@ -197,7 +192,7 @@ internal class CheckDataTest {
     @Test
     fun `Get first good from list`() {
         addGood() // Второй товар в списке
-        addGood(getCustomGoodInfo(ean = customGoodEan)) // Первый товар в списке
+        addGood(ean = customGoodEan) // Первый товар в списке
         assertEquals(customGoodEan, checkData?.getFirstGood()?.ean)
     }
 
@@ -208,7 +203,7 @@ internal class CheckDataTest {
 
     @Test
     fun `Get second good from list`() {
-        addGood(getCustomGoodInfo(ean = customGoodEan)) // Второй товар в списке
+        addGood(ean = customGoodEan) // Второй товар в списке
         addGood() // Первый товар в списке
         assertEquals(customGoodEan, checkData?.getSecondGood()?.ean)
     }
@@ -250,7 +245,7 @@ internal class CheckDataTest {
 
     @Test
     fun `Delete current good`() {
-        addGood(getCustomGoodInfo(ean = customGoodEan))
+        addGood(ean = customGoodEan)
         addGood() // Текущий товар
         checkData?.currentGoodIndex = 1 // Меняем текущий товар
         checkData?.deleteCurrentGood()
@@ -328,6 +323,70 @@ internal class CheckDataTest {
         checkData?.setUnfinishedSegmentAsCurrent() // Делаем незавершенный сегмент текущим (индекс 1)
         assertEquals(1, checkData?.currentSegmentIndex)
     }
+
+    @Test
+    fun `Remove all finished segments`() {
+        addSegment(number = customSegmentNumber)
+        addSegment()
+        checkData?.getCurrentSegment()?.setStatus(SegmentStatus.PROCESSED)
+        addSegment()
+        checkData?.getCurrentSegment()?.setStatus(SegmentStatus.DELETED)
+        checkData?.removeAllFinishedSegments()
+        assertEquals(1, checkData?.segments?.size)
+        assertEquals(customSegmentNumber, checkData?.getCurrentSegment()?.number)
+    }
+
+    @Test
+    fun `Current good at the top of the list`() {
+        addGood()
+        addGood(ean = customGoodEan) // Текущий товар
+        assertTrue(checkData?.getFirstGood()?.ean == customGoodEan)
+    }
+
+    @Test
+    fun `Current good is not at the top of the list`() {
+        addGood(ean = customGoodEan)
+        addGood() // Текущий товар
+        checkData?.currentGoodIndex = 1 // Меняем текущий товар
+        assertFalse(checkData?.getFirstGood()?.ean == customGoodEan)
+    }
+
+    @Test
+    fun `Get previous good facings if same good`() {
+        addGood(ean = customGoodEan) // Одинаковый предыдущий товар
+        checkData?.getCurrentGood()?.facings = 15
+        addGood(ean = customGoodEan) // Текущий товар
+        checkData?.getCurrentGood()?.facings = 17
+        assertEquals(15, checkData?.getPreviousSameGoodFacings())
+    }
+
+    @Test
+    fun `Get previous good facings if not same good`() {
+        addGood() // Предыдущий товар
+        checkData?.getCurrentGood()?.facings = 15
+        addGood() // Текущий товар
+        checkData?.getCurrentGood()?.facings = 17
+        assertEquals(0, checkData?.getPreviousSameGoodFacings())
+    }
+
+    @Test
+    fun `Remove current good if same previous`() {
+        addGood(ean = customGoodEan) // Одинаковый предыдущий товар
+        addGood(ean = customGoodEan) // Текущий товар
+        checkData?.removeCurrentGoodIfSamePrevious()
+        assertEquals(1, checkData?.getCurrentShelf()?.goods?.size)
+    }
+
+    @Test
+    fun `Remove current good if not same previous`() {
+        addGood() // Предыдущий товар
+        addGood() // Текущий товар
+        checkData?.removeCurrentGoodIfSamePrevious()
+        assertEquals(2, checkData?.getCurrentShelf()?.goods?.size)
+    }
+
+
+
 
 
 

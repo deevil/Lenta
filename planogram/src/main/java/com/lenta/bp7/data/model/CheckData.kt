@@ -186,11 +186,15 @@ class CheckData @Inject constructor(
         if (unfinishedSegment != null) segments.add(unfinishedSegment)
     }
 
+    fun isFirstCurrentGood(): Boolean {
+        return getCurrentGood()?.ean == getFirstGood()?.ean
+    }
 
+    fun getPreviousSameGoodFacings(): Int {
+        return if (getFirstGood()?.ean == getSecondGood()?.ean) getSecondGood()?.facings ?: 0 else 0
+    }
 
-
-
-    private fun removeCurrentGoodIfSamePrevious() {
+    fun removeCurrentGoodIfSamePrevious() {
         if (getCurrentGood()?.ean == getFirstGood()?.ean) {
             val first = getFirstGood()
             val second = getSecondGood()
@@ -201,15 +205,6 @@ class CheckData @Inject constructor(
                 }
             }
         }
-    }
-
-    fun isFirstCurrentGood(): Boolean {
-        return getCurrentGood()?.ean == getFirstGood()?.ean
-    }
-
-    fun getPreviousSameGoodFacings(): Int {
-        return if (getFirstGood()?.ean == getSecondGood()?.ean) getSecondGood()?.facings
-                ?: 0 else 0
     }
 
 
@@ -229,6 +224,7 @@ class CheckData @Inject constructor(
         persistCheckResult.clearSavedData()
     }
 
+
     fun getFormattedMarketNumber(): String {
         var number = marketNumber
         while (number.startsWith("0")) {
@@ -236,7 +232,6 @@ class CheckData @Inject constructor(
         }
         return number
     }
-
 
     fun prepareXmlCheckResult(marketIp: String): String {
         // XML со списком неотправленных сегментов
