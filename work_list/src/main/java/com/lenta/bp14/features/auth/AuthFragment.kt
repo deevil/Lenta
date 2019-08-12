@@ -4,13 +4,16 @@ import android.os.Bundle
 import android.view.View
 import com.lenta.bp14.platform.extentions.getAppComponent
 import com.lenta.bp14.platform.extentions.getAppTitle
+import com.lenta.shared.R
 import com.lenta.shared.features.login.CoreAuthViewModel
 import com.lenta.shared.features.login.CoreLoginFragment
+import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
+import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.top_toolbar.ImageButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
+import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
 import com.lenta.shared.utilities.extentions.provideViewModel
-import com.lenta.shared.utilities.extentions.setInvisible
 
 class AuthFragment : CoreLoginFragment() {
 
@@ -35,17 +38,23 @@ class AuthFragment : CoreLoginFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         vm.appTitle.value = getAppTitle()
-        hideLoginAndPassword()
     }
 
-    private fun hideLoginAndPassword() {
-        binding?.layoutLogin?.apply {
-            tvLogin.setInvisible()
-            etLogin.setInvisible()
-            tvPassword.setInvisible()
-            etPassword.setInvisible()
+    override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
+        super.setupBottomToolBar(bottomToolbarUiModel)
+        bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.skip)
+        connectLiveData(vm.enterEnabled, bottomToolbarUiModel.uiModelButton4.enabled)
+    }
+
+
+    override fun onToolbarButtonClick(view: View) {
+        when (view.id) {
+            R.id.b_5 -> vm.onClickEnter()
+            R.id.b_4 -> (vm as AuthViewModel).onClickSkip()
+            R.id.b_topbar_1 -> vm.onClickAuxiliaryMenu()
         }
     }
+
 
 
 
