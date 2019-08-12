@@ -208,23 +208,6 @@ class CheckData @Inject constructor(
     }
 
 
-
-    fun saveCheckResult() {
-        persistCheckResult.saveCheckResult(this)
-    }
-
-    fun restoreSavedCheckResult(checkResultData: CheckResultData) {
-        checkType = checkResultData.checkType
-        countFacings = checkResultData.countFacings
-        checkEmptyPlaces = checkResultData.checkEmptyPlaces
-        segments.addAll(checkResultData.segments)
-    }
-
-    fun clearSavedData() {
-        persistCheckResult.clearSavedData()
-    }
-
-
     fun getFormattedMarketNumber(): String {
         var number = marketNumber
         while (number.startsWith("0")) {
@@ -289,45 +272,20 @@ class CheckData @Inject constructor(
         return result.toString()
     }
 
-    // Тестовые данные для быстрой проверки функционала
-    private fun generateTestData() {
-        Logg.d { "Test data generation for CheckData" }
-        segments.add(0, Segment(
-                id = 0,
-                number = "111-111",
-                storeNumber = marketNumber,
-                checkFinish = Date(),
-                status = SegmentStatus.PROCESSED,
-                shelves = createShelvesList()))
+
+    fun saveCheckResult() {
+        persistCheckResult.saveCheckResult(this)
     }
 
-    private fun createShelvesList(): MutableList<Shelf> {
-        val shelves: MutableList<Shelf> = mutableListOf()
-        shelves.add(0, Shelf(
-                id = 0,
-                checkFinish = Date(),
-                number = "111",
-                status = ShelfStatus.PROCESSED,
-                goods = createGoodsList()))
-
-        return shelves
+    fun restoreSavedCheckResult(checkResultData: CheckResultData) {
+        checkType = checkResultData.checkType
+        countFacings = checkResultData.countFacings
+        checkEmptyPlaces = checkResultData.checkEmptyPlaces
+        segments.addAll(checkResultData.segments)
     }
 
-    private fun createGoodsList(): MutableList<Good> {
-        val goods: MutableList<Good> = mutableListOf()
-        goods.add(0, Good(
-                id = 0,
-                ean = (10000000..999999999999).random().toString(),
-                material = "000000000000" + (100000..999999).random().toString(),
-                matcode = (100000000000..999999999999).random().toString(),
-                enteredCode = EnteredCode.EAN,
-                name = "Test 1",
-                status = GoodStatus.PROCESSED,
-                facings = 111,
-                unitsCode = "ST",
-                units = "шт"))
-
-        return goods
+    fun clearSavedData() {
+        persistCheckResult.clearSavedData()
     }
 
 }
