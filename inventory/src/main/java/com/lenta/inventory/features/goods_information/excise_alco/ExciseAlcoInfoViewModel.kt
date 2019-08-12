@@ -230,8 +230,9 @@ class ExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
     private fun processPdf68(stampCode: String) {
         if (processExciseAlcoProductService.isTaskAlreadyHasExciseStamp(stampCode)) {
             screenNavigator.openAlertDoubleScanStamp()
-            return
-        } else checkExciseStampByCode(stampCode)
+        } else{
+            checkExciseStampByCode(stampCode)
+        }
     }
 
     private fun processPdf150(stampCode: String) {
