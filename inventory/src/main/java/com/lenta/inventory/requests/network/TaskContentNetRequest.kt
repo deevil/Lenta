@@ -74,7 +74,8 @@ class TaskContentNetRequest
                     return Either.Right(TaskContents(products = products,
                             storePlaces = storePlaces,
                             exciseStamps = exciseStamps,
-                            deadline = it.timeToProcess)
+                            deadline = it.timeToProcess,
+                            linkOldStamp = it.linkOldStamps.isNotEmpty())
                     )
                 } else {
                     return  Either.Left(Failure.SapError(it.error))
@@ -163,6 +164,8 @@ data class TaskContentRestInfo(
         val setsList: List<TaskSet>, //Список наборов
         @SerializedName("ET_ALCOD_LIST")
         val alcoCodesList: List<TaskAlcoCode>, //Список алкокодов
+        @SerializedName("EV_LINK_OLD_MARK")
+        val linkOldStamps: String,
         @SerializedName("EV_ERROR_TEXT")
         val error: String, //Текст ошибки
         @SerializedName("EV_RETCODE")
