@@ -392,13 +392,19 @@ internal class CheckDataTest {
 
     @Test
     fun `Creation xml with check results`() {
+        // Проверочные данные
+        addSegment(status = SegmentStatus.PROCESSED)
+        addShelf(status = ShelfStatus.PROCESSED)
+        addGood(status = GoodStatus.PROCESSED)
+        addGood(status = GoodStatus.MISSING_RIGHT)
+        addGood(status = GoodStatus.PROCESSED)
+        addShelf(status = ShelfStatus.DELETED)
+        addGood(status = GoodStatus.MISSING_RIGHT)
+        addGood(status = GoodStatus.MISSING_WRONG)
+        addGood(status = GoodStatus.PROCESSED)
 
+        val xmlResult = checkData?.prepareXmlCheckResult("1.1.1.1")
+        assertTrue(xmlResult?.isNotEmpty() == true)
     }
 
-
-
-
-    @Test
-    fun `Dummy`() {
-    }
 }
