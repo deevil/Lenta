@@ -190,6 +190,29 @@ internal class CheckDataTest {
         assertEquals(null, checkData?.getPreviousGood())
     }
 
+    @Test
+    fun `Get first good from empty list`() {
+        assertEquals(null, checkData?.getFirstGood()?.ean)
+    }
+
+    @Test
+    fun `Get first good from list`() {
+        addGood() // Второй товар в списке
+        addGood(getCustomGoodInfo(ean = customGoodEan)) // Первый товар в списке
+        assertEquals(customGoodEan, checkData?.getFirstGood()?.ean)
+    }
+
+    @Test
+    fun `Get second good from empty list`() {
+        assertEquals(null, checkData?.getSecondGood()?.ean)
+    }
+
+    @Test
+    fun `Get second good from list`() {
+        addGood(getCustomGoodInfo(ean = customGoodEan)) // Второй товар в списке
+        addGood() // Первый товар в списке
+        assertEquals(customGoodEan, checkData?.getSecondGood()?.ean)
+    }
 
 
 
