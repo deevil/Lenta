@@ -63,14 +63,22 @@ class TaskContentNetRequest
 
         if (status.isNotBad()) {
             status.result?.raw?.let {
-                val products = it.productsList.mapNotNull {
-                    val materialInfo = zmpUtz30V001.getMaterial(it.materialNumber)
-                    val uomInfo = zmpUtz07V001.getUomInfo(materialInfo?.buom)
-                    it.ProductInfo(materialInfo, uomInfo)
+                if (it.retcode == "0") {
+                    val products = it.productsList.mapNotNull {
+                        val materialInfo = zmpUtz30V001.getMaterial(it.materialNumber)
+                        val uomInfo = zmpUtz07V001.getUomInfo(materialInfo?.buom)
+                        it.ProductInfo(materialInfo, uomInfo)
+                    }
+                    val storePlaces = it.storePlacesList.mapNotNull { it.StorePlaceInfo() }
+                    val exciseStamps = it.stampsList.mapNotNull { it.ExciseStamp() }
+                    return Either.Right(TaskContents(products = products,
+                            storePlaces = storePlaces,
+                            exciseStamps = exciseStamps,
+                            deadline = it.timeToProcess)
+                    )
+                } else {
+                    return  Either.Left(Failure.SapError(it.error))
                 }
-                val storePlaces = it.storePlacesList.mapNotNull { it.StorePlaceInfo() }
-                val exciseStamps = it.stampsList.mapNotNull { it.ExciseStamp() }
-                return Either.Right(TaskContents(products = products, storePlaces = storePlaces, exciseStamps = exciseStamps, deadline = it.timeToProcess))
             }
         }
 

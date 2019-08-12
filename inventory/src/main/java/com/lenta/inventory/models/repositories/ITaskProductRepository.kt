@@ -11,6 +11,6 @@ interface ITaskProductRepository {
     fun updateProducts(newProducts: List<TaskProductInfo>)
     fun deleteProduct(product: TaskProductInfo): Boolean
     fun getNotProcessedProducts(storePlaceNumber: String? = null): List<TaskProductInfo>
-    fun getProcessedProducts(storePlaceNumber: String? = null): List<TaskProductInfo>
+    fun getProcessedProducts(storePlaceNumber: String? = null, includingDeleted: Boolean = false): List<TaskProductInfo>
     fun clear()
 }

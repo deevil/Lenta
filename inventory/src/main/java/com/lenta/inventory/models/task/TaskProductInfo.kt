@@ -18,6 +18,7 @@ class TaskProductInfo(materialNumber: String,
                       val factCount: Double = 0.0,
                       val isPositionCalc: Boolean,
                       val isDel: Boolean = false,
+                      val isAddedManually: Boolean = false,
                       val isExcOld: Boolean) : ProductInfo(materialNumber, description, uom, type, isSet, sectionId, matrixType, materialType) {
 
     fun getDisplayName() : String {
