@@ -48,7 +48,7 @@ class TaskDescription (val taskNumber: String,
     }
 
     companion object {
-        fun from(taskInfo: TasksItem, recountType: RecountType, deadline: String, tkNumber: String) : TaskDescription {
+        fun from(taskInfo: TasksItem, recountType: RecountType, deadline: String, tkNumber: String, linkOldStamp: Boolean) : TaskDescription {
             return TaskDescription(taskNumber = taskInfo.taskNumber,
                     taskName = taskInfo.taskName,
                     taskType = taskInfo.taskType,
@@ -65,7 +65,7 @@ class TaskDescription (val taskNumber: String,
                     taskDeadLine = deadline,
                     recountType = recountType,
                     gis = if (taskInfo.gis == "A") GisControl.Alcohol else GisControl.GeneralProduct,
-                    linkOldStamp = false) //TODO: в 91 ресте должен возвращаться данный параметр, уточнить
+                    linkOldStamp = linkOldStamp)
         }
     }
 }
