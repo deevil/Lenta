@@ -53,6 +53,7 @@
                         android:text="@={vm.facings}"
                         android:textSize="14sp"
                         app:onOkInSoftKeyboard="@{vm}"
+                        app:selectText="@{vm.selectFacingsField}"
                         tools:ignore="Autofill"/>
 
                 </LinearLayout>
@@ -138,7 +139,7 @@
                         android:layout_height="wrap_content"
                         android:paddingStart="10dp"
                         android:paddingEnd="10dp"
-                        android:text="@{vm.good.barCode}"
+                        android:text="@{vm.good.eanOrEmpty}"
                         android:textSize="14sp"
                         tools:text="12345678912"/>
 
@@ -151,15 +152,11 @@
 
         </LinearLayout>
 
-        <ImageButton
-            android:id="@+id/b_scan"
+        <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end|bottom"
             android:layout_margin="10dp"
-            android:background="?selectableItemBackground"
-            android:clickable="false"
-            android:focusable="false"
             android:padding="8dp"
             android:src="@drawable/ic_scan_barcode"
             tools:ignore="ContentDescription"/>

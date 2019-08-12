@@ -14,39 +14,46 @@ class GoodInfoFacingViewModel : AddGoodViewModel(), OnOkInSoftKeyboardListener {
 
     val good: MutableLiveData<Good> = MutableLiveData()
 
-    val facings: MutableLiveData<String> = MutableLiveData("")
+    val facings: MutableLiveData<String> = MutableLiveData()
+
+    val selectFacingsField: MutableLiveData<Boolean> = MutableLiveData()
 
     val goodIsPresent: MutableLiveData<Boolean> = good.map {
-        it?.getStatus() == GoodStatus.CREATED || (it?.facings ?: 0 > 0 && it?.getStatus() != GoodStatus.CREATED)
+        isGoodJustCreated() || (it?.facings ?: 0 > 0 && !isGoodJustCreated())
     }
 
     val totalFacings: MutableLiveData<Int> = facings.map {
-        val currentFacings = if (it?.isNotEmpty() == true) it.toInt() else 0
-        val previousFacings = if (checkData.isFirstCurrentGood()) checkData.getPreviousSameGoodFacings() else 0
-        currentFacings + previousFacings
+        if (isGoodJustCreated()) {
+            val currentFacings = if (it?.isNotEmpty() == true) it.toInt() else 0
+            val previousFacings = if (checkData.isFirstCurrentGood()) checkData.getPreviousSameGoodFacings() else 0
+            currentFacings + previousFacings
+        } else {
+            good.value?.facings
+        }
     }
 
-    val facingFieldEnabled: MutableLiveData<Boolean> = good.map { it?.getStatus() == GoodStatus.CREATED }
+    val facingFieldEnabled: MutableLiveData<Boolean> = good.map { isGoodJustCreated() }
 
     val missingButtonEnabled: MutableLiveData<Boolean> = facings.combineLatest(good).map { pair ->
         val emptyCountField = if (pair?.first?.isNotEmpty() == true) pair.first.toInt() == 0 else true
         val alreadyExistFacings = if (pair?.second != null) pair.second.facings > 0 else false
-        emptyCountField && !alreadyExistFacings && currentGoodIsCreated()
+        emptyCountField && !alreadyExistFacings && isGoodJustCreated()
     }
 
     val applyButtonEnabled: MutableLiveData<Boolean> = facings.map {
         val isNotEmpty = if (it?.isNotEmpty() == true) it.toInt() > 0 else false
-        isNotEmpty && currentGoodIsCreated()
+        isNotEmpty && isGoodJustCreated()
     }
 
     init {
         viewModelScope.launch {
             good.value = checkData.getCurrentGood()
-            facings.value = checkData.getCurrentGood()?.getFacingOrEmpty()
+            facings.value = "" + if (isGoodJustCreated()) 1 else checkData.getCurrentGood()?.facings
+            selectFacingsField.value = true
         }
     }
 
-    private fun currentGoodIsCreated(): Boolean {
+    private fun isGoodJustCreated(): Boolean {
         return checkData.getCurrentGood()?.getStatus() == GoodStatus.CREATED
     }
 
@@ -59,7 +66,7 @@ class GoodInfoFacingViewModel : AddGoodViewModel(), OnOkInSoftKeyboardListener {
         if (checkData.checkEmptyPlaces) {
             // Выбор - Пустое место оформлено правильно? - Назад / Нет / Да
             navigator.showIsEmptyPlaceDecoratedCorrectly(
-                    sapCode = good.value?.getFormattedSapCode() ?: "Not found!",
+                    material = good.value?.getFormattedMaterial() ?: "Not found!",
                     name = good.value?.name ?: "Not found!",
                     segmentNumber = checkData.getCurrentSegment()!!.number,
                     shelfNumber = checkData.getCurrentShelf()!!.number,
@@ -95,7 +102,7 @@ class GoodInfoFacingViewModel : AddGoodViewModel(), OnOkInSoftKeyboardListener {
         if (applyButtonEnabled.value == true) {
             checkData.getCurrentGood()?.facings = facings.value!!.toInt()
             checkData.setCurrentGoodStatus(GoodStatus.PROCESSED)
-            addGoodByBarCode(data)
+            addGoodByEan(data)
         }
     }
 }

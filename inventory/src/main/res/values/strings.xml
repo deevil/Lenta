@@ -1,11 +1,9 @@
 <resources>
     <string name="app_name">Инвентаризация</string>
-    <string name="choose_tabnumber_description">Укажите табельный номер для учёта исполнителя</string>
     <string name="work_with_tasks">Работа с заданиями</string>
     <string name="storage_place">Место хранения</string>
     <string name="storage_place_abbr">МХ</string>
     <string name="quantity">Количество</string>
-    <string name="goods">Товаров</string>
     <string name="status">Статус</string>
     <string name="categories">Категории</string>
     <string name="processed">Обработанные</string>
@@ -21,8 +19,6 @@
     <string name="byGoods">По товару</string>
     <string name="byStorage">По МХ</string>
     <string name="place">Место</string>
-    <string name="task">Задание</string>
-    <string name="tags">Признаки</string>
     <string name="task_list_count">Список заданий (%d)</string>
     <string name="task_list">Список заданий</string>
     <string name="recount">Пересчёт</string>

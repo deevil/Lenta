@@ -10,18 +10,24 @@ internal class GoodTest {
     private var good: Good? = null
 
     private val id = 0
-    private val sapCode = "000000000000000021"
-    private val barCode = "4605996001633"
+    private val ean = "4605996001633"
+    private val material = "000000000000000021"
+    private val matcode = "370105000021"
+    private val enteredCode = EnteredCode.EAN
     private val name = "Р/к горбуша (Россия) 230/250г"
     private val unitsCode = "ST"
     private val units = "шт"
+
+    private val customGoodEan = "XXXXXXXX"
 
     @BeforeEach
     fun createGood() {
         good = Good(
                 id = id,
-                sapCode = sapCode,
-                barCode = barCode,
+                ean = ean,
+                material = material,
+                matcode = matcode,
+                enteredCode = enteredCode,
                 name = name,
                 unitsCode = unitsCode,
                 units = units)
@@ -32,12 +38,29 @@ internal class GoodTest {
         good = null
     }
 
+    private fun createCustomGood(
+            id: Int = 0,
+            ean: String = "" + (10000000..99999999999999).random(),
+            material: String = "000000000000" + (100000..999999).random(),
+            matcode: String = "" + (100000000000..999999999999).random(),
+            enteredCode: EnteredCode = EnteredCode.EAN,
+            name: String = "Good " + (1..999).random(),
+            facings: Int = (1..15).random(),
+            unitsCode: String = "ST",
+            units: String = "шт",
+            status: GoodStatus = GoodStatus.CREATED
+    ): Good {
+        return Good(id, ean, material, matcode, enteredCode, name, facings, unitsCode, units, status)
+    }
+
     @Test
     fun `Good creation`() {
         assertAll("good",
                 Executable { assertEquals(id, good?.id) },
-                Executable { assertEquals(sapCode, good?.sapCode) },
-                Executable { assertEquals(barCode, good?.barCode) },
+                Executable { assertEquals(ean, good?.ean) },
+                Executable { assertEquals(material, good?.material) },
+                Executable { assertEquals(matcode, good?.matcode) },
+                Executable { assertEquals(enteredCode, good?.enteredCode) },
                 Executable { assertEquals(name, good?.name) },
                 Executable { assertEquals(unitsCode, good?.unitsCode) },
                 Executable { assertEquals(units, good?.units) },
@@ -60,27 +83,39 @@ internal class GoodTest {
 
     @Test
     fun `Get last six digit of sap-code`() {
-        assertEquals(6, good?.getFormattedSapCode()?.length)
+        assertEquals(6, good?.getFormattedMaterial()?.length)
     }
 
     @Test
-    fun `Empty facings with CREATED status`() {
+    fun `Get facings from facingsOrPlus`() {
+        good?.facings = 12
+        assertEquals("12", good?.getFacingOrPlus())
+    }
+
+    @Test
+    fun `Get plus from facingsOrPlus with CREATED status`() {
         good?.facings = 0
         good?.setStatus(GoodStatus.CREATED)
         assertEquals("+", good?.getFacingOrPlus())
     }
 
     @Test
-    fun `Empty facings with PROCESSED status`() {
+    fun `Get plus from facingsOrPlus with PROCESSED status`() {
         good?.facings = 0
         good?.setStatus(GoodStatus.PROCESSED)
         assertEquals("+", good?.getFacingOrPlus())
     }
 
     @Test
-    fun `Not empty facings`() {
-        good?.facings = 12
-        assertEquals("12", good?.getFacingOrPlus())
+    fun `Get ean from getEanOrEmpty`() {
+        good = createCustomGood(ean = customGoodEan)
+        assertEquals(customGoodEan, good?.getEanOrEmpty())
+    }
+
+    @Test
+    fun `Get empty from getEanOrEmpty`() {
+        good = createCustomGood(ean = "")
+        assertEquals("", good?.getEanOrEmpty())
     }
 
 }

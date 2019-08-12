@@ -2,8 +2,10 @@ package com.lenta.bp7.data.model
 
 data class Good(
         val id: Int,
-        val sapCode: String,
-        val barCode: String,
+        val ean: String?,
+        val material: String?,
+        val matcode: String?,
+        val enteredCode: EnteredCode,
         val name: String,
         var facings: Int = 0,
         val unitsCode: String,
@@ -19,23 +21,25 @@ data class Good(
         return status
     }
 
-    fun getFormattedSapCode(): String {
-        return sapCode.takeLast(6)
+    fun getFormattedMaterial(): String? {
+        return material?.takeLast(6)
     }
 
     fun getFacingOrPlus(): String? {
         return if ((status == GoodStatus.CREATED || status == GoodStatus.PROCESSED) && facings == 0) "+" else facings.toString()
     }
 
-    fun getFacingOrEmpty(): String? {
-        return if (facings == 0) "" else facings.toString()
+    fun getEanOrEmpty(): String {
+        return if (enteredCode == EnteredCode.EAN) ean ?: "Not found!" else ""
     }
 
 }
 
 data class GoodInfo(
-        val sapCode: String = "000000",
-        val barCode: String,
+        val ean: String,
+        val material: String = "000000000000000000",
+        val matcode: String = "000000000000",
+        val enteredCode: EnteredCode,
         val name: String = "<НЕ ОПРЕДЕЛЕН>",
         val unitsCode: String = "ST",
         val units: String = "шт"
@@ -46,4 +50,10 @@ enum class GoodStatus {
     PROCESSED,
     MISSING_WRONG,
     MISSING_RIGHT
+}
+
+enum class EnteredCode {
+    EAN,
+    MATERIAL,
+    MATCODE
 }

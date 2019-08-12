@@ -6,6 +6,10 @@ import com.lenta.bp9.features.loading.tasks.LoadingTasksFragment
 import com.lenta.bp9.features.task_list.TaskListFragment
 import com.lenta.bp9.features.loading.tasks.TaskListLoadingMode
 import com.lenta.bp9.requests.TaskListSearchParams
+import com.lenta.bp9.features.loading.fast.FastDataLoadingFragment
+import com.lenta.bp9.features.main_menu.MainMenuFragment
+import com.lenta.bp9.features.select_market.SelectMarketFragment
+import com.lenta.bp9.features.select_personnel_number.SelectPersonnelNumberFragment
 import com.lenta.shared.account.IAuthenticator
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
 import com.lenta.shared.platform.navigation.ICoreNavigator
@@ -29,11 +33,15 @@ class ScreenNavigator(
     }
 
     override fun openSelectMarketScreen() {
-        openNotImplementedScreenAlert("Выбор ТК")
+        runOrPostpone {
+            getFragmentStack()?.replace(SelectMarketFragment())
+        }
     }
 
     override fun openMainMenuScreen() {
-        openNotImplementedScreenAlert("Главное меню")
+        runOrPostpone {
+            getFragmentStack()?.replace(MainMenuFragment())
+        }
     }
 
     override fun openLoginScreen() {
@@ -54,6 +62,18 @@ class ScreenNavigator(
         }
     }
 
+    override fun openFastDataLoadingScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(FastDataLoadingFragment())
+        }
+    }
+
+    override fun openSelectionPersonnelNumberScreen() {
+        runOrPostpone {
+            getFragmentStack()?.replace(SelectPersonnelNumberFragment())
+        }
+    }
+
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 
 }
@@ -65,4 +85,6 @@ interface IScreenNavigator : ICoreNavigator {
     fun openLoginScreen()
     fun openTaskListScreen()
     fun openTaskListLoadingScreen(mode: TaskListLoadingMode, searchParams: TaskListSearchParams? = null)
+    fun openFastDataLoadingScreen()
+    fun openSelectionPersonnelNumberScreen()
 }

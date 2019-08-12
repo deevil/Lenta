@@ -4,6 +4,7 @@
     <string name="text_dialog_close_app">Вы действительно хотите выйти из приложения?</string>
     <string name="head_dialogIncompleteData">Незавершенные данные</string>
     <string name="text_dialogIncompleteData">На устройстве обнаружены несохраненные данные. Перейти к данным?</string>
+    <string name="choose_tabnumber_description">Укажите табельный номер для учёта исполнителя</string>
     <string name="sap_login">SAP-логин</string>
     <string name="password">Пароль</string>
     <string name="back">Назад</string>
@@ -117,4 +118,11 @@
     <string name="db_error">Ошибка базы данных</string>
     <string name="one_of">%s из %s</string>
     <string name="another_app_need_close">Запущено приложение: \"%s\". Одновременная работа не поддерживается. Пожалуйста закройте его и войдите в это приложение заново.</string>
+    <string name="filter">Фильтр</string>
+    <string name="search">Поиск</string>
+    <string name="task">Задание</string>
+    <string name="tags">Признаки</string>
+    <string name="tag">Признак</string>
+    <string name="goods">Товаров</string>
+    <string name="comment">Комментарий</string>
 </resources>

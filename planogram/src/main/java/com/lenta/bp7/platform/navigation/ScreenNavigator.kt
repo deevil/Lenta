@@ -136,9 +136,9 @@ class ScreenNavigator(
         }
     }
 
-    override fun showIsEmptyPlaceDecoratedCorrectly(sapCode: String, name: String, segmentNumber: String, shelfNumber: String, noCallback: () -> Unit, yesCallback: () -> Unit) {
+    override fun showIsEmptyPlaceDecoratedCorrectly(material: String, name: String, segmentNumber: String, shelfNumber: String, noCallback: () -> Unit, yesCallback: () -> Unit) {
         runOrPostpone {
-            getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.is_empty_place_decorated_correctly, sapCode, name, segmentNumber, shelfNumber),
+            getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.is_empty_place_decorated_correctly, material, name, segmentNumber, shelfNumber),
                     pageNumber = "16",
                     codeConfirmForButton4 = backFragmentResultHelper.setFuncForResult(noCallback),
                     codeConfirmForRight = backFragmentResultHelper.setFuncForResult(yesCallback),
@@ -331,7 +331,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun showShelfDataWillNotBeSaved(segmentNumber: String, shelfNumber: String, confirmCallback: () -> Unit)
     fun showSaveShelfScanResults(segmentNumber: String, shelfNumber: String, yesCallback: () -> Unit)
     fun showSaveSegmentScanResults(segmentNumber: String, yesCallback: () -> Unit)
-    fun showIsEmptyPlaceDecoratedCorrectly(sapCode: String, name: String, segmentNumber: String, shelfNumber: String, noCallback: () -> Unit, yesCallback: () -> Unit)
+    fun showIsEmptyPlaceDecoratedCorrectly(material: String, name: String, segmentNumber: String, shelfNumber: String, noCallback: () -> Unit, yesCallback: () -> Unit)
     fun showSegmentStarted(segmentNumber: String, isFacings: Boolean, afterShowCallback: () -> Unit)
     fun showShelfStarted(segmentNumber: String, shelfNumber: String, afterShowCallback: () -> Unit)
     fun showDeleteDataOnSegment(storeNumber: String, segmentNumber: String, deleteCallback: () -> Unit)

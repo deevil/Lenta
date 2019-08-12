@@ -57,14 +57,14 @@ class GoodListViewModel : AddGoodViewModel(), OnOkInSoftKeyboardListener {
 
             if (length >= COMMON_SAP_LENGTH) {
                 when (length) {
-                    COMMON_SAP_LENGTH -> addGoodBySapCode(number)
+                    COMMON_SAP_LENGTH -> addGoodByMaterial(number)
                     SAP_OR_BAR_LENGTH -> {
                         // Выбор - Введено 12 знаков. Какой код вы ввели? - SAP-код / Штрихкод
                         navigator.showTwelveCharactersEntered(
-                                sapCallback = { addGoodBySapCode(number) },
-                                barCallback = { addGoodByBarCode(number) })
+                                sapCallback = { addGoodByMatcode(number) },
+                                barCallback = { addGoodByEan(number) })
                     }
-                    else -> addGoodByBarCode(number)
+                    else -> addGoodByEan(number)
                 }
             }
         }
@@ -108,6 +108,6 @@ class GoodListViewModel : AddGoodViewModel(), OnOkInSoftKeyboardListener {
     }
 
     fun onScanResult(data: String) {
-        addGoodByBarCode(data)
+        addGoodByEan(data)
     }
 }
