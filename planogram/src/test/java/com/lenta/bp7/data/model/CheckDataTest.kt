@@ -258,10 +258,76 @@ internal class CheckDataTest {
         assertEquals(0, checkData?.currentGoodIndex)
     }
 
+    @Test
+    fun `Change current segment status`() {
+        addSegment()
+        checkData?.getCurrentSegment()?.setStatus(SegmentStatus.PROCESSED)
+        assertEquals(SegmentStatus.PROCESSED, checkData?.getCurrentSegment()?.getStatus())
+    }
 
+    @Test
+    fun `Change current shelf status`() {
+        addShelf()
+        checkData?.getCurrentShelf()?.setStatus(ShelfStatus.PROCESSED)
+        assertEquals(ShelfStatus.PROCESSED, checkData?.getCurrentShelf()?.getStatus())
+    }
 
+    @Test
+    fun `Change current good status`() {
+        addGood()
+        checkData?.getCurrentGood()?.setStatus(GoodStatus.PROCESSED)
+        assertEquals(GoodStatus.PROCESSED, checkData?.getCurrentGood()?.getStatus())
+    }
 
+    @Test
+    fun `Set deleted shelf status by index`() {
+        addShelf()
+        addShelf()
+        checkData?.setShelfStatusDeletedByIndex(0)
+        checkData?.setShelfStatusDeletedByIndex(1)
+        assertEquals(ShelfStatus.DELETED, checkData?.getCurrentSegment()?.shelves?.get(0)?.getStatus())
+        assertEquals(ShelfStatus.DELETED, checkData?.getCurrentSegment()?.shelves?.get(1)?.getStatus())
+    }
 
+    @Test
+    fun `Set deleted shelf status by wrong index`() {
+        addShelf() // Максимальный индекс - 0
+        assertDoesNotThrow { checkData?.setShelfStatusDeletedByIndex(1) }
+        assertDoesNotThrow { checkData?.setShelfStatusDeletedByIndex(2) }
+    }
+
+    @Test
+    fun `Exist unsent data with empty data`() {
+        assertEquals(false, checkData?.isExistUnsentData())
+    }
+
+    @Test
+    fun `Exist unsent data with data`() {
+        addSegment()
+        assertEquals(true, checkData?.isExistUnsentData())
+    }
+
+    @Test
+    fun `Not exist unfinished segments`() {
+        addSegment()
+        checkData?.getCurrentSegment()?.setStatus(SegmentStatus.PROCESSED)
+        assertEquals(false, checkData?.isExistUnfinishedSegment())
+    }
+
+    @Test
+    fun `Exist unfinished segments`() {
+        addSegment()
+        assertEquals(true, checkData?.isExistUnfinishedSegment())
+    }
+
+    @Test
+    fun `Set unfinished segment as current`() {
+        addSegment() // Незавершенный сегмент
+        addSegment() // Текущий сегмент
+        checkData?.getCurrentSegment()?.setStatus(SegmentStatus.PROCESSED)
+        checkData?.setUnfinishedSegmentAsCurrent() // Делаем незавершенный сегмент текущим (индекс 1)
+        assertEquals(1, checkData?.currentSegmentIndex)
+    }
 
 
 

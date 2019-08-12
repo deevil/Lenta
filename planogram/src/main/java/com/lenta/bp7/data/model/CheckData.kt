@@ -148,27 +148,6 @@ class CheckData @Inject constructor(
         }
     }
 
-
-    fun isExistUnsentData(): Boolean {
-        return segments.isNotEmpty()
-    }
-
-    fun saveCheckResult() {
-        persistCheckResult.saveCheckResult(this)
-    }
-
-    fun clearSavedData() {
-        persistCheckResult.clearSavedData()
-    }
-
-
-    fun removeAllFinishedSegments() {
-        val unfinishedSegment = segments.find { it.getStatus() == SegmentStatus.UNFINISHED }
-
-        segments.clear()
-        if (unfinishedSegment != null) segments.add(unfinishedSegment)
-    }
-
     fun setCurrentSegmentStatus(status: SegmentStatus) {
         getCurrentSegment()?.setStatus(status)
     }
@@ -181,6 +160,35 @@ class CheckData @Inject constructor(
         getCurrentGood()?.setStatus(status)
         removeCurrentGoodIfSamePrevious()
     }
+
+    fun setShelfStatusDeletedByIndex(shelfIndex: Int) {
+        if (getCurrentSegment()?.shelves?.size ?: 0 > shelfIndex) {
+            getCurrentSegment()!!.shelves[shelfIndex].setStatus(ShelfStatus.DELETED)
+        }
+    }
+
+    fun isExistUnsentData(): Boolean {
+        return segments.isNotEmpty()
+    }
+
+    fun isExistUnfinishedSegment(): Boolean {
+        return segments.find { it.getStatus() == SegmentStatus.UNFINISHED } != null
+    }
+
+    fun setUnfinishedSegmentAsCurrent() {
+        currentSegmentIndex = segments.indexOf(segments.find { it.getStatus() == SegmentStatus.UNFINISHED })
+    }
+
+    fun removeAllFinishedSegments() {
+        val unfinishedSegment = segments.find { it.getStatus() == SegmentStatus.UNFINISHED }
+
+        segments.clear()
+        if (unfinishedSegment != null) segments.add(unfinishedSegment)
+    }
+
+
+
+
 
     private fun removeCurrentGoodIfSamePrevious() {
         if (getCurrentGood()?.ean == getFirstGood()?.ean) {
@@ -195,20 +203,6 @@ class CheckData @Inject constructor(
         }
     }
 
-    fun setShelfStatusDeletedByIndex(shelfIndex: Int) {
-        if (getCurrentSegment()?.shelves?.size ?: 0 >= shelfIndex) {
-            getCurrentSegment()!!.shelves[shelfIndex].setStatus(ShelfStatus.DELETED)
-        }
-    }
-
-    fun isExistUnfinishedSegment(): Boolean {
-        return segments.find { it.getStatus() == SegmentStatus.UNFINISHED } != null
-    }
-
-    fun setUnfinishedSegmentAsCurrent() {
-        currentSegmentIndex = segments.indexOf(segments.find { it.getStatus() == SegmentStatus.UNFINISHED })
-    }
-
     fun isFirstCurrentGood(): Boolean {
         return getCurrentGood()?.ean == getFirstGood()?.ean
     }
@@ -218,12 +212,10 @@ class CheckData @Inject constructor(
                 ?: 0 else 0
     }
 
-    fun getFormattedMarketNumber(): String {
-        var number = marketNumber
-        while (number.startsWith("0")) {
-            number = number.substring(1)
-        }
-        return number
+
+
+    fun saveCheckResult() {
+        persistCheckResult.saveCheckResult(this)
     }
 
     fun restoreSavedCheckResult(checkResultData: CheckResultData) {
@@ -231,6 +223,18 @@ class CheckData @Inject constructor(
         countFacings = checkResultData.countFacings
         checkEmptyPlaces = checkResultData.checkEmptyPlaces
         segments.addAll(checkResultData.segments)
+    }
+
+    fun clearSavedData() {
+        persistCheckResult.clearSavedData()
+    }
+
+    fun getFormattedMarketNumber(): String {
+        var number = marketNumber
+        while (number.startsWith("0")) {
+            number = number.substring(1)
+        }
+        return number
     }
 
 
