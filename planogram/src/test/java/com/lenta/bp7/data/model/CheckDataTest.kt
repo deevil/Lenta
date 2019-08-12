@@ -4,10 +4,9 @@ import com.lenta.bp7.data.CheckType
 import com.lenta.bp7.data.IPersistCheckResult
 import com.nhaarman.mockitokotlin2.mock
 import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-
-import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.function.Executable
 
 internal class CheckDataTest {
@@ -213,6 +212,56 @@ internal class CheckDataTest {
         addGood() // Первый товар в списке
         assertEquals(customGoodEan, checkData?.getSecondGood()?.ean)
     }
+
+    @Test
+    fun `Delete current segment from empty list`() {
+        assertDoesNotThrow { checkData?.deleteCurrentSegment() }
+    }
+
+    @Test
+    fun `Delete current shelf from empty list`() {
+        assertDoesNotThrow { checkData?.deleteCurrentShelf() }
+    }
+
+    @Test
+    fun `Delete current good from empty list`() {
+        assertDoesNotThrow { checkData?.deleteCurrentGood() }
+    }
+
+    @Test
+    fun `Delete current segment`() {
+        addSegment(number = customSegmentNumber)
+        addSegment() // Текущий сегмент
+        checkData?.currentSegmentIndex = 1 // Меняем текущий сегмент
+        checkData?.deleteCurrentSegment()
+        assertEquals(null, checkData?.segments?.find { it.number == customSegmentNumber })
+        assertEquals(0, checkData?.currentSegmentIndex)
+    }
+
+    @Test
+    fun `Delete current shelf`() {
+        addShelf(number = customShelfNumber)
+        addShelf() // Текущая полка
+        checkData?.currentShelfIndex = 1 // Меняем текущую полку
+        checkData?.deleteCurrentShelf()
+        assertEquals(null, checkData?.getCurrentSegment()?.shelves?.find { it.number == customShelfNumber })
+        assertEquals(0, checkData?.currentShelfIndex)
+    }
+
+    @Test
+    fun `Delete current good`() {
+        addGood(getCustomGoodInfo(ean = customGoodEan))
+        addGood() // Текущий товар
+        checkData?.currentGoodIndex = 1 // Меняем текущий товар
+        checkData?.deleteCurrentGood()
+        assertEquals(null, checkData?.getCurrentShelf()?.goods?.find { it.ean == customGoodEan })
+        assertEquals(0, checkData?.currentGoodIndex)
+    }
+
+
+
+
+
 
 
 

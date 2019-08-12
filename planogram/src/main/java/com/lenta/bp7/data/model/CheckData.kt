@@ -124,20 +124,29 @@ class CheckData @Inject constructor(
     }
 
     fun deleteCurrentSegment() {
-        segments.removeAt(currentSegmentIndex)
-        currentSegmentIndex = 0
+        if (segments.isNotEmpty()) {
+            segments.removeAt(currentSegmentIndex)
+            currentSegmentIndex = 0
+        }
     }
 
     fun deleteCurrentShelf() {
-        getCurrentSegment()?.shelves?.removeAt(currentShelfIndex)
-        currentShelfIndex = 0
+        getCurrentSegment()?.apply {
+            if (shelves.isNotEmpty()) {
+                shelves.removeAt(currentShelfIndex)
+                currentShelfIndex = 0
+            }
+        }
     }
 
     fun deleteCurrentGood() {
-        getCurrentShelf()?.goods?.removeAt(currentGoodIndex)
-        currentGoodIndex = 0
+        getCurrentShelf()?.apply {
+            if (goods.isNotEmpty()) {
+                goods.removeAt(currentGoodIndex)
+                currentGoodIndex = 0
+            }
+        }
     }
-
 
 
     fun isExistUnsentData(): Boolean {
@@ -151,8 +160,6 @@ class CheckData @Inject constructor(
     fun clearSavedData() {
         persistCheckResult.clearSavedData()
     }
-
-
 
 
     fun removeAllFinishedSegments() {
@@ -207,7 +214,8 @@ class CheckData @Inject constructor(
     }
 
     fun getPreviousSameGoodFacings(): Int {
-        return if (getFirstGood()?.ean == getSecondGood()?.ean) getSecondGood()?.facings ?: 0 else 0
+        return if (getFirstGood()?.ean == getSecondGood()?.ean) getSecondGood()?.facings
+                ?: 0 else 0
     }
 
     fun getFormattedMarketNumber(): String {
@@ -253,7 +261,8 @@ class CheckData @Inject constructor(
                     for (good in shelf.goods) {
                         val goodSend = GoodSend(
                                 sapCodeForSend = good.getFormattedMaterial() + "_${good.unitsCode}",
-                                barCode = if (good.enteredCode == EnteredCode.EAN) good.ean ?: "Not found!" else "",
+                                barCode = if (good.enteredCode == EnteredCode.EAN) good.ean
+                                        ?: "Not found!" else "",
                                 count = if (countFacings) good.facings else null,
                                 labeled = if (checkEmptyPlaces) {
                                     when (good.getStatus()) {
