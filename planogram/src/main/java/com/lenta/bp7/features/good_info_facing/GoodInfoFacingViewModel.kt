@@ -48,7 +48,7 @@ class GoodInfoFacingViewModel : AddGoodViewModel(), OnOkInSoftKeyboardListener {
     init {
         viewModelScope.launch {
             good.value = checkData.getCurrentGood()
-            facings.value = "" + if (isGoodJustCreated()) 1 else checkData.getCurrentGood()?.facings
+            facings.value = "" + if (isGoodJustCreated()) 1 else good.value?.facings
             selectFacingsField.value = true
         }
     }
