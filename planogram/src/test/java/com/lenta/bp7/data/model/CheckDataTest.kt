@@ -35,13 +35,19 @@ internal class CheckDataTest {
         checkData = null
     }
 
-    private fun addSegment(number: String = "" + (100..999).random() + "-" + (100..999).random()) {
+    private fun addSegment(
+            number: String = "" + (100..999).random() + "-" + (100..999).random(),
+            status: SegmentStatus = SegmentStatus.UNFINISHED) {
         checkData?.addSegment(marketNumber, number)
+        checkData?.getCurrentSegment()?.setStatus(status)
     }
 
-    private fun addShelf(number: String = "" + (1..999).random()) {
+    private fun addShelf(
+            number: String = "" + (1..999).random(),
+            status: ShelfStatus = ShelfStatus.UNFINISHED) {
         if (checkData?.getCurrentSegment() == null) addSegment()
         checkData?.addShelf(number)
+        checkData?.getCurrentShelf()?.setStatus(status)
     }
 
     private fun addGood(
@@ -50,11 +56,15 @@ internal class CheckDataTest {
             matcode: String = "" + (100000000000..999999999999).random(),
             enteredCode: EnteredCode = EnteredCode.EAN,
             name: String = "Good " + (1..999).random(),
+            facings: Int = (1..99).random(),
             unitsCode: String = "ST",
-            units: String = "шт") {
+            units: String = "шт",
+            status: GoodStatus = GoodStatus.CREATED) {
         if (checkData?.getCurrentSegment() == null) addSegment()
         if (checkData?.getCurrentShelf() == null) addShelf()
         checkData?.addGood(GoodInfo(ean, material, matcode, enteredCode, name, unitsCode, units))
+        checkData?.getCurrentGood()?.facings = facings
+        checkData?.getCurrentGood()?.setStatus(status)
     }
 
     @Test
@@ -255,22 +265,19 @@ internal class CheckDataTest {
 
     @Test
     fun `Change current segment status`() {
-        addSegment()
-        checkData?.getCurrentSegment()?.setStatus(SegmentStatus.PROCESSED)
+        addSegment(status = SegmentStatus.PROCESSED)
         assertEquals(SegmentStatus.PROCESSED, checkData?.getCurrentSegment()?.getStatus())
     }
 
     @Test
     fun `Change current shelf status`() {
-        addShelf()
-        checkData?.getCurrentShelf()?.setStatus(ShelfStatus.PROCESSED)
+        addShelf(status = ShelfStatus.PROCESSED)
         assertEquals(ShelfStatus.PROCESSED, checkData?.getCurrentShelf()?.getStatus())
     }
 
     @Test
     fun `Change current good status`() {
-        addGood()
-        checkData?.getCurrentGood()?.setStatus(GoodStatus.PROCESSED)
+        addGood(status = GoodStatus.PROCESSED)
         assertEquals(GoodStatus.PROCESSED, checkData?.getCurrentGood()?.getStatus())
     }
 
@@ -304,8 +311,7 @@ internal class CheckDataTest {
 
     @Test
     fun `Not exist unfinished segments`() {
-        addSegment()
-        checkData?.getCurrentSegment()?.setStatus(SegmentStatus.PROCESSED)
+        addSegment(status = SegmentStatus.PROCESSED)
         assertEquals(false, checkData?.isExistUnfinishedSegment())
     }
 
@@ -318,8 +324,7 @@ internal class CheckDataTest {
     @Test
     fun `Set unfinished segment as current`() {
         addSegment() // Незавершенный сегмент
-        addSegment() // Текущий сегмент
-        checkData?.getCurrentSegment()?.setStatus(SegmentStatus.PROCESSED)
+        addSegment(status = SegmentStatus.PROCESSED) // Текущий сегмент
         checkData?.setUnfinishedSegmentAsCurrent() // Делаем незавершенный сегмент текущим (индекс 1)
         assertEquals(1, checkData?.currentSegmentIndex)
     }
@@ -327,10 +332,8 @@ internal class CheckDataTest {
     @Test
     fun `Remove all finished segments`() {
         addSegment(number = customSegmentNumber)
-        addSegment()
-        checkData?.getCurrentSegment()?.setStatus(SegmentStatus.PROCESSED)
-        addSegment()
-        checkData?.getCurrentSegment()?.setStatus(SegmentStatus.DELETED)
+        addSegment(status = SegmentStatus.PROCESSED)
+        addSegment(status = SegmentStatus.DELETED)
         checkData?.removeAllFinishedSegments()
         assertEquals(1, checkData?.segments?.size)
         assertEquals(customSegmentNumber, checkData?.getCurrentSegment()?.number)
@@ -353,19 +356,15 @@ internal class CheckDataTest {
 
     @Test
     fun `Get previous good facings if same good`() {
-        addGood(ean = customGoodEan) // Одинаковый предыдущий товар
-        checkData?.getCurrentGood()?.facings = 15
-        addGood(ean = customGoodEan) // Текущий товар
-        checkData?.getCurrentGood()?.facings = 17
+        addGood(ean = customGoodEan, facings = 15) // Одинаковый предыдущий товар
+        addGood(ean = customGoodEan, facings = 17) // Текущий товар
         assertEquals(15, checkData?.getPreviousSameGoodFacings())
     }
 
     @Test
     fun `Get previous good facings if not same good`() {
-        addGood() // Предыдущий товар
-        checkData?.getCurrentGood()?.facings = 15
-        addGood() // Текущий товар
-        checkData?.getCurrentGood()?.facings = 17
+        addGood(facings = 15) // Предыдущий товар
+        addGood(facings = 17) // Текущий товар
         assertEquals(0, checkData?.getPreviousSameGoodFacings())
     }
 
@@ -385,9 +384,16 @@ internal class CheckDataTest {
         assertEquals(2, checkData?.getCurrentShelf()?.goods?.size)
     }
 
+    @Test
+    fun `Get market number without zeros`() {
+        checkData?.marketNumber = "0012"
+        assertEquals("12", checkData?.getFormattedMarketNumber())
+    }
 
+    @Test
+    fun `Creation xml with check results`() {
 
-
+    }
 
 
 
