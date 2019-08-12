@@ -4,7 +4,7 @@ import android.content.Context
 import com.lenta.bp9.features.auth.AuthFragment
 import com.lenta.bp9.features.loading.tasks.LoadingTasksFragment
 import com.lenta.bp9.features.task_list.TaskListFragment
-import com.lenta.bp9.models.task.TaskListLoadingMode
+import com.lenta.bp9.features.loading.tasks.TaskListLoadingMode
 import com.lenta.bp9.requests.TaskListSearchParams
 import com.lenta.shared.account.IAuthenticator
 import com.lenta.shared.platform.activity.ForegroundActivityProvider

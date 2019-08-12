@@ -3,8 +3,7 @@ package com.lenta.bp9.features.loading.tasks
 import android.os.Bundle
 import android.view.View
 import com.lenta.bp9.R
-import com.lenta.bp9.models.task.TaskListLoadingMode
-import com.lenta.bp9.models.task.TaskType
+import com.lenta.bp9.features.loading.tasks.TaskListLoadingMode
 import com.lenta.bp9.platform.extentions.getAppComponent
 import com.lenta.bp9.requests.TaskListSearchParams
 import com.lenta.shared.features.loading.CoreLoadingFragment

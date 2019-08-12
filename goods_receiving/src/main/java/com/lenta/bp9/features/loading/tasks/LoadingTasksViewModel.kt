@@ -4,7 +4,7 @@ import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp9.models.task.TaskList
-import com.lenta.bp9.models.task.TaskListLoadingMode
+import com.lenta.bp9.features.loading.tasks.TaskListLoadingMode
 import com.lenta.bp9.models.task.TaskType
 import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.bp9.repos.IRepoInMemoryHolder
@@ -55,27 +55,22 @@ class LoadingTasksViewModel : CoreLoadingViewModel() {
     }
 
     override fun handleFailure(failure: Failure) {
-        screenNavigator.openMainMenuScreen()
+        if (searchParams == null) {
+            screenNavigator.openMainMenuScreen()
+        } else {
+            screenNavigator.goBack()
+        }
         screenNavigator.openAlertScreen(failure)
     }
 
     private fun handleSuccess(taskList: TaskList) {
         Logg.d { "taskList $taskList" }
-        if (taskList.retcode != "0") {
-            if (searchParams == null) {
-                screenNavigator.openMainMenuScreen()
-            } else {
-                screenNavigator.goBack()
-            }
-            screenNavigator.openAlertScreen(taskList.error)
+        screenNavigator.goBack()
+        if (searchParams == null) {
+            repoInMemoryHolder.taskList.value = taskList
+            screenNavigator.openTaskListScreen()
         } else {
-            screenNavigator.goBack()
-            if (searchParams == null) {
-                repoInMemoryHolder.taskList = taskList
-                screenNavigator.openTaskListScreen()
-            } else {
-                repoInMemoryHolder.lastSearchResult = taskList
-            }
+            repoInMemoryHolder.lastSearchResult.value = taskList
         }
     }
 

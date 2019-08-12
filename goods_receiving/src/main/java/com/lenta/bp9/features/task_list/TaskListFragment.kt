@@ -6,13 +6,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
+import androidx.databinding.ViewDataBinding
 import com.lenta.bp9.BR
 import com.lenta.bp9.R
-import com.lenta.bp9.databinding.FragmentTaskListBinding
-import com.lenta.bp9.databinding.ItemTileTasksBinding
-import com.lenta.bp9.databinding.LayoutTasksBinding
+import com.lenta.bp9.databinding.*
 import com.lenta.bp9.platform.extentions.getAppComponent
 import com.lenta.shared.keys.KeyCode
 import com.lenta.shared.keys.OnKeyDownListener
@@ -78,7 +75,10 @@ class TaskListFragment : CoreFragment<FragmentTaskListBinding, TaskListViewModel
     }
 
     override fun onKeyDown(keyCode: KeyCode): Boolean {
-        return false
+        keyCode.digit?.let { digit ->
+            vm.onDigitPressed(digit)
+        }
+        return true
     }
 
 
@@ -98,38 +98,19 @@ class TaskListFragment : CoreFragment<FragmentTaskListBinding, TaskListViewModel
 
     override fun countTab(): Int = 3
 
-    private fun rvKeyHandlerForPage(page: Int): RecyclerViewKeyHandler<*>?
-    {
-        return when (page) {
-            0 -> toProcessRecyclerViewKeyHandler
-            1 -> searchRecyclerViewKeyHandler
-            2 -> postponedRecyclerViewKeyHandler
-            else -> null
-        }
-    }
-
-    private fun setRecycleViewKeyHandlerForPage(page: Int, rvKeyHandler: RecyclerViewKeyHandler<*>?) {
-        when (page) {
-            0 -> toProcessRecyclerViewKeyHandler = rvKeyHandler
-            1 -> searchRecyclerViewKeyHandler = rvKeyHandler
-            2 -> postponedRecyclerViewKeyHandler = rvKeyHandler
-        }
-    }
-
-    private fun dataForPage(page: Int) : LiveData<List<TaskItemVm>> {
-        return when (page) {
-            0 -> vm.tasks
-            1 -> vm.tasks
-            2 -> vm.tasks
-            else -> MutableLiveData(emptyList())
-        }
-    }
-
     override fun getPagerItemView(container: ViewGroup, position: Int): View {
+        return when (position) {
+            0 -> configureToProcessPage(container)
+            1 -> configureSearchPage(container)
+            2 -> configurePostponedPage(container)
+            else -> configureToProcessPage(container)
+        }
+    }
 
+    private fun configureToProcessPage(container: ViewGroup): View {
         DataBindingUtil
-                .inflate<LayoutTasksBinding>(LayoutInflater.from(container.context),
-                        R.layout.layout_tasks,
+                .inflate<LayoutTasksToProcessBinding>(LayoutInflater.from(container.context),
+                        R.layout.layout_tasks_to_process,
                         container,
                         false).let { layoutBinding ->
 
@@ -142,13 +123,13 @@ class TaskListFragment : CoreFragment<FragmentTaskListBinding, TaskListViewModel
 
                                 override fun onBind(binding: ItemTileTasksBinding, position: Int) {
                                     binding.tvCounter.tag = position
-                                    rvKeyHandlerForPage(position)?.let {
+                                    toProcessRecyclerViewKeyHandler?.let {
                                         binding.root.isSelected = it.isSelected(position)
                                     }
                                 }
                             },
                             onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
-                                rvKeyHandlerForPage(position)?.let {
+                                toProcessRecyclerViewKeyHandler?.let {
                                     if (it.isSelected(position)) {
                                         vm.onClickItemPosition(position)
                                     } else {
@@ -162,13 +143,102 @@ class TaskListFragment : CoreFragment<FragmentTaskListBinding, TaskListViewModel
                     layoutBinding.lifecycleOwner = viewLifecycleOwner
                     val rvKeyHandler = RecyclerViewKeyHandler(
                             rv = layoutBinding.rv,
-                            items = dataForPage(position),
+                            items = vm.getTasksForPage(0),
                             lifecycleOwner = layoutBinding.lifecycleOwner!!,
-                            initPosInfo = rvKeyHandlerForPage(position)?.posInfo?.value
+                            initPosInfo = toProcessRecyclerViewKeyHandler?.posInfo?.value
                     )
-                    setRecycleViewKeyHandlerForPage(position, rvKeyHandler)
+                    toProcessRecyclerViewKeyHandler = rvKeyHandler
                     return layoutBinding.root
                 }
     }
 
+    private fun configureSearchPage(container: ViewGroup): View {
+        DataBindingUtil
+                .inflate<LayoutTasksSeachBinding>(LayoutInflater.from(container.context),
+                        R.layout.layout_tasks_seach,
+                        container,
+                        false).let { layoutBinding ->
+
+                    layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
+                            layoutId = R.layout.item_tile_tasks,
+                            itemId = BR.vm,
+                            realisation = object : DataBindingAdapter<ItemTileTasksBinding> {
+                                override fun onCreate(binding: ItemTileTasksBinding) {
+                                }
+
+                                override fun onBind(binding: ItemTileTasksBinding, position: Int) {
+                                    binding.tvCounter.tag = position
+                                    searchRecyclerViewKeyHandler?.let {
+                                        binding.root.isSelected = it.isSelected(position)
+                                    }
+                                }
+                            },
+                            onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
+                                searchRecyclerViewKeyHandler?.let {
+                                    if (it.isSelected(position)) {
+                                        vm.onClickItemPosition(position)
+                                    } else {
+                                        it.selectPosition(position)
+                                    }
+                                }
+                            }
+                    )
+
+                    layoutBinding.vm = vm
+                    layoutBinding.lifecycleOwner = viewLifecycleOwner
+                    val rvKeyHandler = RecyclerViewKeyHandler(
+                            rv = layoutBinding.rv,
+                            items = vm.getTasksForPage(1),
+                            lifecycleOwner = layoutBinding.lifecycleOwner!!,
+                            initPosInfo = searchRecyclerViewKeyHandler?.posInfo?.value
+                    )
+                    searchRecyclerViewKeyHandler = rvKeyHandler
+                    return layoutBinding.root
+                }
+    }
+
+    private fun configurePostponedPage(container: ViewGroup): View {
+        DataBindingUtil
+                .inflate<LayoutTasksPostponedBinding>(LayoutInflater.from(container.context),
+                        R.layout.layout_tasks_postponed,
+                        container,
+                        false).let { layoutBinding ->
+
+                    layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
+                            layoutId = R.layout.item_tile_tasks,
+                            itemId = BR.vm,
+                            realisation = object : DataBindingAdapter<ItemTileTasksBinding> {
+                                override fun onCreate(binding: ItemTileTasksBinding) {
+                                }
+
+                                override fun onBind(binding: ItemTileTasksBinding, position: Int) {
+                                    binding.tvCounter.tag = position
+                                    postponedRecyclerViewKeyHandler?.let {
+                                        binding.root.isSelected = it.isSelected(position)
+                                    }
+                                }
+                            },
+                            onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
+                                postponedRecyclerViewKeyHandler?.let {
+                                    if (it.isSelected(position)) {
+                                        vm.onClickItemPosition(position)
+                                    } else {
+                                        it.selectPosition(position)
+                                    }
+                                }
+                            }
+                    )
+
+                    layoutBinding.vm = vm
+                    layoutBinding.lifecycleOwner = viewLifecycleOwner
+                    val rvKeyHandler = RecyclerViewKeyHandler(
+                            rv = layoutBinding.rv,
+                            items = vm.getTasksForPage(2),
+                            lifecycleOwner = layoutBinding.lifecycleOwner!!,
+                            initPosInfo = postponedRecyclerViewKeyHandler?.posInfo?.value
+                    )
+                    postponedRecyclerViewKeyHandler = rvKeyHandler
+                    return layoutBinding.root
+                }
+    }
 }

@@ -16,4 +16,9 @@ class TaskInfo(val position: String, //Номер по порядку (отфо�
                val documentNumber: String, //Номер документа закупки
                val transportationOTM: String) { //Транспортировка ОТМ
 
+    fun matchesFilter(filter: String): Boolean {
+        return taskNumber.contains(filter, true) ||
+                documentNumber.contains(filter, true) ||
+                transportationOTM.contains(filter, true)
+    }
 }

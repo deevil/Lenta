@@ -44,7 +44,11 @@ class TaskListNetRequest
 
         if (status.isNotBad()) {
             status.result?.raw?.let {
-                return Either.Right(it.taskList())
+                if (it.retcode == "0") {
+                    return Either.Right(it.taskList())
+                } else {
+                    return Either.Left(Failure.SapError(it.error))
+                }
             }
         }
 
@@ -73,9 +77,7 @@ class TaskListNetRequest
     fun TaskListRestInfo.taskList(): TaskList {
         val tasks = taskList.map { it.taskInfo() }
         return TaskList(tasks = tasks,
-                taskCount = taskCount.toInt(),
-                error = error,
-                retcode = retcode
+                taskCount = taskCount.toInt()
         )
     }
 }
