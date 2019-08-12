@@ -10,6 +10,7 @@ import com.lenta.bp14.BR
 import com.lenta.bp14.R
 import com.lenta.bp14.databinding.FragmentTaskListBinding
 import com.lenta.bp14.databinding.LayoutTaskListBinding
+import com.lenta.bp14.databinding.LayoutTaskListFilteredBinding
 import com.lenta.bp14.platform.extentions.getAppComponent
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
@@ -34,16 +35,33 @@ class TaskListFragment : CoreFragment<FragmentTaskListBinding, TaskListViewModel
                                 layoutId = R.layout.item_tile_tasks,
                                 itemId = BR.vm,
                                 onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
-                                    vm.onClickUnrocessedTask(position)
+                                    vm.onClickUnprocessedTask(position)
                                 }
                         )
 
                         layoutBinding.vm = vm
                         layoutBinding.lifecycleOwner = viewLifecycleOwner
-                        return layoutBinding.root
+                        layoutBinding.root
                     }
         } else {
-            View(context)
+            DataBindingUtil
+                    .inflate<LayoutTaskListFilteredBinding>(LayoutInflater.from(container.context),
+                            R.layout.layout_task_list_filtered,
+                            container,
+                            false).let { layoutBinding ->
+
+                        layoutBinding.rvConfig = DataBindingRecyclerViewConfig<LayoutTaskListBinding>(
+                                layoutId = R.layout.item_tile_tasks,
+                                itemId = BR.vm,
+                                onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
+                                    vm.onClickProcessedTask(position)
+                                }
+                        )
+
+                        layoutBinding.vm = vm
+                        layoutBinding.lifecycleOwner = viewLifecycleOwner
+                        layoutBinding.root
+                    }
         }
     }
 
