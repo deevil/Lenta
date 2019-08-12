@@ -24,7 +24,11 @@ class InventoryTask(val taskDescription: TaskDescription, val taskRepository: IT
     //1. Нестрогий список, обычный пересчет, товар по умолчанию находится в общем МХ 00
     fun deleteProduct(productNumber: String, storePlaceNumber: String = "00") {
      taskRepository.getProducts().findProduct(productNumber, storePlaceNumber)?.let {
-         taskRepository.getProducts().changeProduct(it.copy(isDel = true))
+         if (it.isAddedManually) {
+             taskRepository.getProducts().deleteProduct(it)
+         } else {
+             taskRepository.getProducts().changeProduct(it.copy(isDel = true))
+         }
         }
     }
 
@@ -98,7 +102,7 @@ class InventoryTask(val taskDescription: TaskDescription, val taskRepository: IT
     }
 
     private fun getReportsProducts(): List<MaterialNumber> {
-        return (taskRepository.getProducts().getProcessedProducts()).map {
+        return (taskRepository.getProducts().getProcessedProducts(includingDeleted = true)).map {
             MaterialNumber(
                     materialNumber = it.materialNumber,
                     storePlaceCode = it.placeCode,

@@ -2,6 +2,13 @@ package com.lenta.bp9.di
 
 import com.lenta.bp9.ExceptionHandler
 import com.lenta.bp9.features.auth.AuthViewModel
+import com.lenta.bp9.features.loading.tasks.LoadingTasksViewModel
+import com.lenta.bp9.features.task_list.TaskListViewModel
+import com.lenta.bp9.features.loading.fast.FastDataLoadingFragment
+import com.lenta.bp9.features.loading.fast.FastDataLoadingViewModel
+import com.lenta.bp9.features.main_menu.MainMenuViewModel
+import com.lenta.bp9.features.select_market.SelectMarketViewModel
+import com.lenta.bp9.features.select_personnel_number.SelectPersonnelNumberViewModel
 import com.lenta.bp9.main.MainActivity
 import com.lenta.bp9.main.MainViewModel
 import com.lenta.shared.di.AppScope
@@ -15,5 +22,10 @@ interface AppComponent {
     fun inject(mainViewModel: MainViewModel)
     fun inject(it: ExceptionHandler)
     fun inject(it: AuthViewModel)
-
+    fun inject(it: TaskListViewModel)
+    fun inject(it: LoadingTasksViewModel)
+    fun inject(it: SelectMarketViewModel)
+    fun inject(it: FastDataLoadingViewModel)
+    fun inject(it: SelectPersonnelNumberViewModel)
+    fun inject(it: MainMenuViewModel)
 }

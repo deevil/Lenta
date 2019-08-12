@@ -116,8 +116,8 @@ class SearchProductDelegate @Inject constructor(
                                                   placeCode = storePlaceCode,
                                                   factCount = 0.0,
                                                   isPositionCalc = false,
-                                                  isExcOld = false
-
+                                                  isExcOld = false,
+                                                  isAddedManually = true
                 )
 
                 taskManager.getInventoryTask()!!.taskRepository.getProducts().addProduct(taskProductInfo)

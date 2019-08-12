@@ -20,6 +20,7 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
     val selectedPage = MutableLiveData(0)
 
     val unprocessedTasks = MutableLiveData<List<TaskInfoVM>>(getTestItems())
+    val filteredTasks = MutableLiveData<List<TaskInfoVM>>(getTestItems())
 
     override fun onOkInSoftKeyboard(): Boolean {
         return true
@@ -75,7 +76,11 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
 
     }
 
-    fun onClickUnrocessedTask(position: Int) {
+    fun onClickUnprocessedTask(position: Int) {
+        screenNavigator.openJobCardScreen(taskNumber = "100")
+    }
+
+    fun onClickProcessedTask(position: Int) {
         screenNavigator.openJobCardScreen(taskNumber = "100")
     }
 }

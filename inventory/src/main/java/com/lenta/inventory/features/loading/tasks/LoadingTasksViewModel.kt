@@ -54,5 +54,4 @@ class LoadingTasksViewModel : CoreLoadingViewModel() {
     override fun clean() {
         progress.postValue(false)
     }
-
 }

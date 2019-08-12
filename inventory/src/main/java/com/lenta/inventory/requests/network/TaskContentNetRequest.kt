@@ -63,14 +63,23 @@ class TaskContentNetRequest
 
         if (status.isNotBad()) {
             status.result?.raw?.let {
-                val products = it.productsList.mapNotNull {
-                    val materialInfo = zmpUtz30V001.getMaterial(it.materialNumber)
-                    val uomInfo = zmpUtz07V001.getUomInfo(materialInfo?.buom)
-                    it.ProductInfo(materialInfo, uomInfo)
+                if (it.retcode == "0") {
+                    val products = it.productsList.mapNotNull {
+                        val materialInfo = zmpUtz30V001.getMaterial(it.materialNumber)
+                        val uomInfo = zmpUtz07V001.getUomInfo(materialInfo?.buom)
+                        it.ProductInfo(materialInfo, uomInfo)
+                    }
+                    val storePlaces = it.storePlacesList.mapNotNull { it.StorePlaceInfo() }
+                    val exciseStamps = it.stampsList.mapNotNull { it.ExciseStamp() }
+                    return Either.Right(TaskContents(products = products,
+                            storePlaces = storePlaces,
+                            exciseStamps = exciseStamps,
+                            deadline = it.timeToProcess,
+                            linkOldStamp = it.linkOldStamps.isNotEmpty())
+                    )
+                } else {
+                    return  Either.Left(Failure.SapError(it.error))
                 }
-                val storePlaces = it.storePlacesList.mapNotNull { it.StorePlaceInfo() }
-                val exciseStamps = it.stampsList.mapNotNull { it.ExciseStamp() }
-                return Either.Right(TaskContents(products = products, storePlaces = storePlaces, exciseStamps = exciseStamps, deadline = it.timeToProcess))
             }
         }
 
@@ -155,6 +164,8 @@ data class TaskContentRestInfo(
         val setsList: List<TaskSet>, //Список наборов
         @SerializedName("ET_ALCOD_LIST")
         val alcoCodesList: List<TaskAlcoCode>, //Список алкокодов
+        @SerializedName("EV_LINK_OLD_MARK")
+        val linkOldStamps: String,
         @SerializedName("EV_ERROR_TEXT")
         val error: String, //Текст ошибки
         @SerializedName("EV_RETCODE")
