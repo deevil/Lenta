@@ -124,42 +124,28 @@ class CheckData @Inject constructor(
     }
 
     fun deleteCurrentSegment() {
-        segments.removeAt(currentSegmentIndex)
-        currentSegmentIndex = 0
+        if (segments.isNotEmpty()) {
+            segments.removeAt(currentSegmentIndex)
+            currentSegmentIndex = 0
+        }
     }
 
     fun deleteCurrentShelf() {
-        getCurrentSegment()?.shelves?.removeAt(currentShelfIndex)
-        currentShelfIndex = 0
+        getCurrentSegment()?.apply {
+            if (shelves.isNotEmpty()) {
+                shelves.removeAt(currentShelfIndex)
+                currentShelfIndex = 0
+            }
+        }
     }
 
     fun deleteCurrentGood() {
-        getCurrentShelf()?.goods?.removeAt(currentGoodIndex)
-        currentGoodIndex = 0
-    }
-
-
-
-    fun isExistUnsentData(): Boolean {
-        return segments.isNotEmpty()
-    }
-
-    fun saveCheckResult() {
-        persistCheckResult.saveCheckResult(this)
-    }
-
-    fun clearSavedData() {
-        persistCheckResult.clearSavedData()
-    }
-
-
-
-
-    fun removeAllFinishedSegments() {
-        val unfinishedSegment = segments.find { it.getStatus() == SegmentStatus.UNFINISHED }
-
-        segments.clear()
-        if (unfinishedSegment != null) segments.add(unfinishedSegment)
+        getCurrentShelf()?.apply {
+            if (goods.isNotEmpty()) {
+                goods.removeAt(currentGoodIndex)
+                currentGoodIndex = 0
+            }
+        }
     }
 
     fun setCurrentSegmentStatus(status: SegmentStatus) {
@@ -175,7 +161,40 @@ class CheckData @Inject constructor(
         removeCurrentGoodIfSamePrevious()
     }
 
-    private fun removeCurrentGoodIfSamePrevious() {
+    fun setShelfStatusDeletedByIndex(shelfIndex: Int) {
+        if (getCurrentSegment()?.shelves?.size ?: 0 > shelfIndex) {
+            getCurrentSegment()!!.shelves[shelfIndex].setStatus(ShelfStatus.DELETED)
+        }
+    }
+
+    fun isExistUnsentData(): Boolean {
+        return segments.isNotEmpty()
+    }
+
+    fun isExistUnfinishedSegment(): Boolean {
+        return segments.find { it.getStatus() == SegmentStatus.UNFINISHED } != null
+    }
+
+    fun setUnfinishedSegmentAsCurrent() {
+        currentSegmentIndex = segments.indexOf(segments.find { it.getStatus() == SegmentStatus.UNFINISHED })
+    }
+
+    fun removeAllFinishedSegments() {
+        val unfinishedSegment = segments.find { it.getStatus() == SegmentStatus.UNFINISHED }
+
+        segments.clear()
+        if (unfinishedSegment != null) segments.add(unfinishedSegment)
+    }
+
+    fun isFirstCurrentGood(): Boolean {
+        return getCurrentGood()?.ean == getFirstGood()?.ean
+    }
+
+    fun getPreviousSameGoodFacings(): Int {
+        return if (getFirstGood()?.ean == getSecondGood()?.ean) getSecondGood()?.facings ?: 0 else 0
+    }
+
+    fun removeCurrentGoodIfSamePrevious() {
         if (getCurrentGood()?.ean == getFirstGood()?.ean) {
             val first = getFirstGood()
             val second = getSecondGood()
@@ -188,27 +207,6 @@ class CheckData @Inject constructor(
         }
     }
 
-    fun setShelfStatusDeletedByIndex(shelfIndex: Int) {
-        if (getCurrentSegment()?.shelves?.size ?: 0 >= shelfIndex) {
-            getCurrentSegment()!!.shelves[shelfIndex].setStatus(ShelfStatus.DELETED)
-        }
-    }
-
-    fun isExistUnfinishedSegment(): Boolean {
-        return segments.find { it.getStatus() == SegmentStatus.UNFINISHED } != null
-    }
-
-    fun setUnfinishedSegmentAsCurrent() {
-        currentSegmentIndex = segments.indexOf(segments.find { it.getStatus() == SegmentStatus.UNFINISHED })
-    }
-
-    fun isFirstCurrentGood(): Boolean {
-        return getCurrentGood()?.ean == getFirstGood()?.ean
-    }
-
-    fun getPreviousSameGoodFacings(): Int {
-        return if (getFirstGood()?.ean == getSecondGood()?.ean) getSecondGood()?.facings ?: 0 else 0
-    }
 
     fun getFormattedMarketNumber(): String {
         var number = marketNumber
@@ -217,14 +215,6 @@ class CheckData @Inject constructor(
         }
         return number
     }
-
-    fun restoreSavedCheckResult(checkResultData: CheckResultData) {
-        checkType = checkResultData.checkType
-        countFacings = checkResultData.countFacings
-        checkEmptyPlaces = checkResultData.checkEmptyPlaces
-        segments.addAll(checkResultData.segments)
-    }
-
 
     fun prepareXmlCheckResult(marketIp: String): String {
         // XML со списком неотправленных сегментов
@@ -253,7 +243,8 @@ class CheckData @Inject constructor(
                     for (good in shelf.goods) {
                         val goodSend = GoodSend(
                                 sapCodeForSend = good.getFormattedMaterial() + "_${good.unitsCode}",
-                                barCode = if (good.enteredCode == EnteredCode.EAN) good.ean ?: "Not found!" else "",
+                                barCode = if (good.enteredCode == EnteredCode.EAN) good.ean
+                                        ?: "Not found!" else "",
                                 count = if (countFacings) good.facings else null,
                                 labeled = if (checkEmptyPlaces) {
                                     when (good.getStatus()) {
@@ -281,45 +272,20 @@ class CheckData @Inject constructor(
         return result.toString()
     }
 
-    // Тестовые данные для быстрой проверки функционала
-    private fun generateTestData() {
-        Logg.d { "Test data generation for CheckData" }
-        segments.add(0, Segment(
-                id = 0,
-                number = "111-111",
-                storeNumber = marketNumber,
-                checkFinish = Date(),
-                status = SegmentStatus.PROCESSED,
-                shelves = createShelvesList()))
+
+    fun saveCheckResult() {
+        persistCheckResult.saveCheckResult(this)
     }
 
-    private fun createShelvesList(): MutableList<Shelf> {
-        val shelves: MutableList<Shelf> = mutableListOf()
-        shelves.add(0, Shelf(
-                id = 0,
-                checkFinish = Date(),
-                number = "111",
-                status = ShelfStatus.PROCESSED,
-                goods = createGoodsList()))
-
-        return shelves
+    fun restoreSavedCheckResult(checkResultData: CheckResultData) {
+        checkType = checkResultData.checkType
+        countFacings = checkResultData.countFacings
+        checkEmptyPlaces = checkResultData.checkEmptyPlaces
+        segments.addAll(checkResultData.segments)
     }
 
-    private fun createGoodsList(): MutableList<Good> {
-        val goods: MutableList<Good> = mutableListOf()
-        goods.add(0, Good(
-                id = 0,
-                ean = (10000000..999999999999).random().toString(),
-                material = "000000000000" + (100000..999999).random().toString(),
-                matcode = (100000000000..999999999999).random().toString(),
-                enteredCode = EnteredCode.EAN,
-                name = "Test 1",
-                status = GoodStatus.PROCESSED,
-                facings = 111,
-                unitsCode = "ST",
-                units = "шт"))
-
-        return goods
+    fun clearSavedData() {
+        persistCheckResult.clearSavedData()
     }
 
 }
