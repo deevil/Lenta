@@ -78,7 +78,8 @@ class LoadingTaskContentViewModel : CoreLoadingViewModel() {
                     taskInfo = it,
                     recountType = recountType ?: RecountType.None,
                     deadline = taskContents.deadline,
-                    tkNumber = sessionInfo.market!!
+                    tkNumber = sessionInfo.market!!,
+                    linkOldStamp = taskContents.linkOldStamp
                     )
             taskManager.newInventoryTask(taskDescription)
             taskManager.getInventoryTask()?.updateTaskWithContents(taskContents)
