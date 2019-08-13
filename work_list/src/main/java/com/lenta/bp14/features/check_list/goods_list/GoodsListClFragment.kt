@@ -8,6 +8,7 @@ import androidx.databinding.DataBindingUtil
 import com.lenta.bp14.BR
 import com.lenta.bp14.R
 import com.lenta.bp14.databinding.FragmentGoodsListClBinding
+import com.lenta.bp14.databinding.ItemTileGoodsClBinding
 import com.lenta.bp14.databinding.LayoutGoodsListClBinding
 import com.lenta.bp14.platform.extentions.getAppComponent
 import com.lenta.shared.platform.fragment.CoreFragment
@@ -61,7 +62,7 @@ class GoodsListClFragment : CoreFragment<FragmentGoodsListClBinding, GoodsListCl
                         container,
                         false).let { layoutBinding ->
 
-                    layoutBinding.rvConfig = DataBindingRecyclerViewConfig<LayoutGoodsListClBinding>(
+                    layoutBinding.rvConfig = DataBindingRecyclerViewConfig<ItemTileGoodsClBinding>(
                             layoutId = R.layout.item_tile_goods_cl,
                             itemId = BR.vm
                     )
