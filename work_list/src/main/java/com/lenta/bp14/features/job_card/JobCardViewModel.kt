@@ -34,7 +34,7 @@ class JobCardViewModel : CoreViewModel() {
     }
 
     fun onClickNext() {
-        screenNavigator.openNotImplementedScreenAlert("Следующий экран")
+        screenNavigator.openCheckListGoodsList()
     }
 
     val onClickTaskTypes = object : OnPositionClickListener {
