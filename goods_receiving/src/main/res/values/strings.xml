@@ -11,4 +11,6 @@
     <string name="filter_hint">Введите заказ / транспортировку</string>
     <string name="receipt_task">Задание на приемку</string>
     <string name="recount_task">Задание на пересчет</string>
+    <string name="user_no_rights">У пользователя (%1$s) нет прав на работу с МП</string>
+    <string name="error_registering_server">Ошибка регистрации на сервере</string>
 </resources>

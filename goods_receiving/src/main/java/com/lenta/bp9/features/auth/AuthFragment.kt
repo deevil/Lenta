@@ -2,6 +2,7 @@ package com.lenta.bp9.features.auth
 
 import android.os.Bundle
 import android.view.View
+import androidx.core.content.ContextCompat
 import com.lenta.bp9.R
 import com.lenta.bp9.platform.extentions.getAppComponent
 import com.lenta.bp9.platform.extentions.getAppTitle
@@ -18,6 +19,7 @@ class AuthFragment : CoreLoginFragment() {
     override fun getViewModel(): CoreAuthViewModel {
         provideViewModel(AuthViewModel::class.java).let {
             getAppComponent()?.inject(it)
+            it.msgUserNoRights.value = getString(R.string.user_no_rights)
             return it
         }
     }
