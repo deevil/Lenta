@@ -34,7 +34,7 @@ class JobCardViewModel : CoreViewModel() {
     }
 
     fun onClickNext() {
-        screenNavigator.openListOfDifferencesScreen()
+        screenNavigator.openReportResultScreen()
     }
 
     val onClickTaskTypes = object : OnPositionClickListener {
