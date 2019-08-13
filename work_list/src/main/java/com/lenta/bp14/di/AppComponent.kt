@@ -2,6 +2,7 @@ package com.lenta.bp14.di
 
 import com.lenta.bp14.ExceptionHandler
 import com.lenta.bp14.features.auth.AuthViewModel
+import com.lenta.bp14.features.check_list.goods_list.GoodsListClViewModel
 import com.lenta.bp14.features.job_card.JobCardViewModel
 import com.lenta.bp14.features.loading.fast.FastLoadingViewModel
 import com.lenta.bp14.features.main_menu.MainMenuViewModel
@@ -25,5 +26,6 @@ interface AppComponent {
     fun inject(it: MainMenuViewModel)
     fun inject(it: TaskListViewModel)
     fun inject(it: JobCardViewModel)
+    fun inject(it: GoodsListClViewModel)
 
 }
