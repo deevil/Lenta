@@ -44,7 +44,7 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
             markets.value?.getOrNull(position)?.address
         }
     }
-    val marketOverIP: MutableLiveData<String> = MutableLiveData()
+    private val marketOverIP: MutableLiveData<String> = MutableLiveData()
     val titleProgressScreen: MutableLiveData<String> = MutableLiveData()
     val deviceIp: MutableLiveData<String> = MutableLiveData()
 
