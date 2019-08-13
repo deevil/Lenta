@@ -123,6 +123,8 @@
     <string name="task">Задание</string>
     <string name="tags">Признаки</string>
     <string name="tag">Признак</string>
-    <string name="goods">Товаров</string>
+    <string name="of_goods">Товаров</string>
+    <string name="goods">Товары</string>
     <string name="comment">Комментарий</string>
+    <string name="list_of_goods">Список товаров</string>
 </resources>

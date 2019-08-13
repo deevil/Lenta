@@ -2,6 +2,7 @@ package com.lenta.bp14.platform.navigation
 
 import android.content.Context
 import com.lenta.bp14.features.auth.AuthFragment
+import com.lenta.bp14.features.check_list.goods_list.GoodsListClFragment
 import com.lenta.bp14.features.job_card.JobCardFragment
 import com.lenta.bp14.features.loading.fast.FastDataLoadingFragment
 import com.lenta.bp14.features.main_menu.MainMenuFragment
@@ -65,6 +66,12 @@ class ScreenNavigator(
         }
     }
 
+    override fun openCheckListGoodsList() {
+        runOrPostpone {
+            getFragmentStack()?.push(GoodsListClFragment())
+        }
+    }
+
 
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 
@@ -78,5 +85,5 @@ interface IScreenNavigator : ICoreNavigator {
     fun openFastDataLoadingScreen()
     fun openTaskListScreen()
     fun openJobCardScreen(taskNumber: String)
-
+    fun openCheckListGoodsList()
 }
