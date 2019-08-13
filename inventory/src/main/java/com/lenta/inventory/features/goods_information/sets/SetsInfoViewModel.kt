@@ -54,7 +54,6 @@ class SetsInfoViewModel : CoreViewModel(), OnPositionClickListener {
     val isStorePlaceNumber: MutableLiveData<Boolean> = storePlaceNumber.map { it != "00" }
     var selectedPage = MutableLiveData(0)
     val componentsSelectionsHelper = SelectionItemsHelper()
-    val searchCode: MutableLiveData<String> = MutableLiveData()
     val spinList: MutableLiveData<List<String>> = MutableLiveData()
     val selectedPosition: MutableLiveData<Int> = MutableLiveData(0)
     val count: MutableLiveData<String> = MutableLiveData("0")
@@ -304,7 +303,7 @@ class SetsInfoViewModel : CoreViewModel(), OnPositionClickListener {
 
     private fun processItemByBarcode(searchCode: String) {
         componentsInfo.filter {
-            it.number == searchCode
+            it.number == searchCode || it.ean == searchCode
         }.map { componentInfo ->
             val countExciseStampForComponent = processSetsService.getCountExciseStampsForComponent(componentInfo)
             if (countExciseStampForComponent >= (componentInfo.count).toDouble()) {
@@ -315,7 +314,7 @@ class SetsInfoViewModel : CoreViewModel(), OnPositionClickListener {
             return
         }
 
-        searchProductDelegate.searchCode(code = searchCode, fromScan = true)
+        searchProductDelegate.searchCode(code = searchCode, fromScan = true, isBarCode = true)
     }
 
     private fun enabledBtn() {

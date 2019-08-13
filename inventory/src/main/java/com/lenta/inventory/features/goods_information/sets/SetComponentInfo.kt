@@ -8,6 +8,7 @@ data class SetComponentInfo(
         val setNumber: String, // Номер товара
         val number: String, //Номер компонента
         val name: String, //Наименование компонента
+        val ean: String, //ШК компонента
         val count: String, //Количество вложенного (компонента в наборе)
         val uom: Uom, //Базисная единица измерения
         val matrixType: MatrixType,

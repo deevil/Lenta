@@ -205,7 +205,7 @@ class SetComponentsViewModel : CoreViewModel(), OnPositionClickListener {
 
     private fun processItemByBarcode(eanCode: String) {
         processSetsService.getComponentsForSet().filter { component ->
-            component.number == eanCode
+            component.ean == eanCode
         }.map {
             processSetsService.clearExciseStampsForComponent(componentInfo.value!!)
             componentInfo.value = it

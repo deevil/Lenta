@@ -2,11 +2,10 @@ package com.lenta.inventory.models.task
 
 import com.lenta.inventory.features.goods_information.sets.SetComponentInfo
 import com.lenta.shared.di.AppScope
-import com.lenta.shared.fmp.resources.dao_ext.getComponentsForSet
-import com.lenta.shared.fmp.resources.dao_ext.getProductInfo
-import com.lenta.shared.fmp.resources.dao_ext.getUomInfo
+import com.lenta.shared.fmp.resources.dao_ext.*
 import com.lenta.shared.fmp.resources.fast.ZmpUtz07V001
 import com.lenta.shared.fmp.resources.slow.ZfmpUtz48V001
+import com.lenta.shared.fmp.resources.slow.ZmpUtz25V001
 import com.lenta.shared.fmp.resources.slow.ZmpUtz46V001
 import com.lenta.shared.models.core.ProductType
 import com.lenta.shared.models.core.Uom
@@ -28,6 +27,10 @@ class ProcessSetsService @Inject constructor() : IProcessProductService {
     private val currentComponentExciseStamps: ArrayList<TaskExciseStamp> = ArrayList()
     private val currentAllExciseStamps: ArrayList<TaskExciseStamp> = ArrayList()
     private val componentsInfo: ArrayList<SetComponentInfo> = ArrayList()
+
+    private val zmpUtz25V001: ZmpUtz25V001 by lazy {
+        ZmpUtz25V001(hyperHive)
+    }
 
     private val zmpUtz46V001: ZmpUtz46V001 by lazy {
         ZmpUtz46V001(hyperHive)
@@ -96,6 +99,7 @@ class ProcessSetsService @Inject constructor() : IProcessProductService {
                         setNumber = data.matnrOsn,
                         number = data.matnr,
                         name = it.name,
+                        ean = zmpUtz25V001.getEanInfoFromMaterial(data.matnr)?.toEanInfo()!!.ean,
                         count = data.menge.toString(),
                         uom = Uom(code = uomInfo!!.uom, name = uomInfo.name),
                         matrixType = getMatrixType(it.matrType),
