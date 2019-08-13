@@ -41,8 +41,6 @@ class AuthViewModel : CoreAuthViewModel() {
     lateinit var repoInMemoryHolder: IRepoInMemoryHolder
 
     val msgUserNoRights: MutableLiveData<String> = MutableLiveData()
-    val iconRes: MutableLiveData<Int> = MutableLiveData(0)
-    val textColor: MutableLiveData<Int> = MutableLiveData(0)
 
     init {
         viewModelScope.launch {
@@ -91,12 +89,7 @@ class AuthViewModel : CoreAuthViewModel() {
     private fun handleAuthSuccess(permissionsGrzResult: PermissionsGrzResult) {
 
         if (permissionsGrzResult.markets.isEmpty()) {
-            navigator.openAlertScreen(String.format(msgUserNoRights.value!!, getLogin()),
-                    iconRes = iconRes.value!!,
-                    textColor = textColor.value,
-                    pageNumber = "96",
-                    timeAutoExitInMillis = 3000
-            )
+            navigator.openAlertNotPermissions(String.format(msgUserNoRights.value!!, getLogin()))
             return
         }
 
