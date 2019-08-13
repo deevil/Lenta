@@ -2,11 +2,20 @@ package com.lenta.bp9.features.select_market
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.lenta.bp9.AndroidApplication
 import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.bp9.repos.IRepoInMemoryHolder
+import com.lenta.bp9.requests.network.MarketOverIPParams
+import com.lenta.bp9.requests.network.MarketOverIPRequest
+import com.lenta.bp9.requests.network.MarketOverIPRestInfo
 import com.lenta.shared.account.ISessionInfo
+import com.lenta.shared.di.CoreComponent
+import com.lenta.shared.exception.Failure
+import com.lenta.shared.platform.network_state.INetworkStateMonitor
+import com.lenta.shared.platform.network_state.NetworkStateMonitor
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.settings.IAppSettings
+import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.view.OnPositionClickListener
 import kotlinx.coroutines.launch
@@ -22,6 +31,8 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
     lateinit var appSettings: IAppSettings
     @Inject
     lateinit var repoInMemoryHolder : IRepoInMemoryHolder
+    @Inject
+    lateinit var marketOverIPRequest: MarketOverIPRequest
 
     private val markets: MutableLiveData<List<MarketUI>> = MutableLiveData()
     val marketsNames: MutableLiveData<List<String>> = markets.map { markets ->
@@ -33,45 +44,66 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
             markets.value?.getOrNull(position)?.address
         }
     }
+    val marketOverIP: MutableLiveData<String> = MutableLiveData()
+    val titleProgressScreen: MutableLiveData<String> = MutableLiveData()
+    val deviceIp: MutableLiveData<String> = MutableLiveData()
 
     init {
         viewModelScope.launch {
+            screenNavigator.showProgress(titleProgressScreen.value!!)
 
             repoInMemoryHolder.permissions?.markets?.let { list ->
 
                 markets.value = list.map { MarketUI(number = it.number, address = it.address) }
 
-                if (selectedPosition.value == null) {
-                    if (appSettings.lastTK != null) {
-                        list.forEachIndexed { index, market ->
-                            if (market.number == appSettings.lastTK) {
-                                onClickPosition(index)
-                            }
-                        }
-                    } else {
-                        onClickPosition(0)
-                    }
-                }
                 if (list.size == 1) {
                     onClickNext()
+                } else {
+                    marketOverIPRequest(
+                            MarketOverIPParams(
+                                    ipAdress = deviceIp.value ?: "0.0.0.0",
+                                    mode = "1",
+                                    werks = "")).either(::handleFailure, ::handleMarketOverIPSuccess)
                 }
             }
+            screenNavigator.hideProgress()
+        }
+    }
 
+    private fun handleMarketOverIPSuccess(marketOverIPRestInfo: MarketOverIPRestInfo) {
+        marketOverIP.value = marketOverIPRestInfo.marketNumber
+        repoInMemoryHolder.permissions?.markets?.let { list ->
 
+            list.forEachIndexed { index, market ->
+                if (market.number == marketOverIPRestInfo.marketNumber) {
+                    onClickPosition(index)
+                }
+            }
         }
     }
 
     fun onClickNext() {
-        markets.value?.getOrNull(selectedPosition.value ?: -1)?.number?.let {
-            if (appSettings.lastTK != it) {
-                clearPrinters()
-            }
-            sessionInfo.printer = appSettings.printer
-            sessionInfo.market = it
-            appSettings.lastTK = it
-        }
+        viewModelScope.launch {
+            screenNavigator.showProgress(titleProgressScreen.value!!)
+            markets.value?.getOrNull(selectedPosition.value ?: -1)?.number?.let {
+                if (appSettings.lastTK != it) {
+                    clearPrinters()
+                }
+                sessionInfo.printer = appSettings.printer
+                sessionInfo.market = it
+                appSettings.lastTK = it
+                if (it != marketOverIP.value){
 
-        screenNavigator.openFastDataLoadingScreen()
+                    marketOverIPRequest(
+                            MarketOverIPParams(
+                                    ipAdress = deviceIp.value ?: "0.0.0.0",
+                                    mode = "2",
+                                    werks = it)).either(::handleFailure){ }
+                }
+            }
+            screenNavigator.hideProgress()
+            screenNavigator.openFastDataLoadingScreen()
+        }
     }
 
     private fun clearPrinters() {

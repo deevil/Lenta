@@ -4,6 +4,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.bp9.repos.IRepoInMemoryHolder
+import com.lenta.bp9.requests.network.PermissionsGrzRequest
+import com.lenta.bp9.requests.network.PermissionsGrzResult
 import com.lenta.shared.utilities.runIfDebug
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
@@ -11,9 +13,6 @@ import com.lenta.shared.exception.IFailureInterpreter
 import com.lenta.shared.features.login.CoreAuthViewModel
 import com.lenta.shared.features.login.isEnterEnabled
 import com.lenta.shared.features.login.isValidLoginFields
-import com.lenta.shared.requests.PermissionsParams
-import com.lenta.shared.requests.PermissionsRequest
-import com.lenta.shared.requests.PermissionsResult
 import com.lenta.shared.requests.network.Auth
 import com.lenta.shared.requests.network.AuthParams
 import com.lenta.shared.settings.IAppSettings
@@ -30,17 +29,20 @@ class AuthViewModel : CoreAuthViewModel() {
     @Inject
     lateinit var auth: Auth
     @Inject
-    lateinit var permissionsRequest: PermissionsRequest
+    lateinit var permissionsGrzRequest: PermissionsGrzRequest
     @Inject
     lateinit var navigator: IScreenNavigator
-    @Inject
-    lateinit var failureInterpreter: IFailureInterpreter
     @Inject
     lateinit var sessionInfo: ISessionInfo
     @Inject
     lateinit var appSettings: IAppSettings
     @Inject
     lateinit var repoInMemoryHolder: IRepoInMemoryHolder
+
+    val msgUserNoRights: MutableLiveData<String> = MutableLiveData()
+    /**val msgErrorRegisteringServer: MutableLiveData<String> = MutableLiveData()*/
+    val iconRes: MutableLiveData<Int> = MutableLiveData(0)
+    val textColor: MutableLiveData<Int> = MutableLiveData(0)
 
     init {
         viewModelScope.launch {
@@ -54,11 +56,9 @@ class AuthViewModel : CoreAuthViewModel() {
                 if (login.value == "MAKAROV") {
                     password.value = "1q2w3e4r"
                 }
-
             }
         }
     }
-
 
     override val enterEnabled: MutableLiveData<Boolean> by lazy {
         login.combineLatest(password).map { isValidLoginFields(login = it?.first, password = it?.second) }
@@ -83,24 +83,51 @@ class AuthViewModel : CoreAuthViewModel() {
 
         viewModelScope.launch {
             progress.value = true
-            permissionsRequest(PermissionsParams(login = "")).either(::handleFailure, ::handleAuthSuccess)
+            permissionsGrzRequest(null).either(::handleFailure, ::handleAuthSuccess)
             progress.value = false
         }
     }
 
-    private fun handleAuthSuccess(permissionsResult: PermissionsResult) {
+    private fun handleAuthSuccess(permissionsGrzResult: PermissionsGrzResult) {
 
-        repoInMemoryHolder.permissions = permissionsResult
+        if (permissionsGrzResult.markets.isEmpty()) {
+            navigator.openAlertScreen(String.format(msgUserNoRights.value!!, getLogin()),
+                    iconRes = iconRes.value!!,
+                    textColor = textColor.value,
+                    pageNumber = "96",
+                    timeAutoExitInMillis = 3000
+            )
+            return
+        }
 
-
+        repoInMemoryHolder.permissions = permissionsGrzResult
 
         navigator.openSelectMarketScreen()
+
+        /**Logg.d { "test ${appSettings.techLogin}" }
+        Logg.d { "test ${appSettings.techPassword}" }
+        //todo необходимо завести техпользователь на сервере
+        viewModelScope.launch {
+            progress.value = true
+            //auth(AuthParams(appSettings.techLogin, appSettings.techPassword)).either(::handleTechAuthFailure, ::handleTechAuthSuccess)
+            auth(AuthParams(appSettings.techLogin, appSettings.techPassword)).either({
+                navigator.openAlertScreen(msgErrorRegisteringServer.value!!,
+                        iconRes = iconRes.value!!,
+                        textColor = textColor.value,
+                        pageNumber = "96",
+                        timeAutoExitInMillis = 3000
+                )
+            },
+                    { navigator.openSelectMarketScreen() }
+            )
+            progress.value = false
+        }*/
     }
 
     override fun handleFailure(failure: Failure) {
         super.handleFailure(failure)
         progress.value = false
-        navigator.openAlertScreen(failure, pageNumber = "97")
+        navigator.openAlertScreen(failure, pageNumber = "96")
     }
 
 

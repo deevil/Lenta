@@ -11,6 +11,7 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.ImageButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
+import com.lenta.shared.utilities.extentions.getDeviceIp
 import com.lenta.shared.utilities.extentions.provideViewModel
 
 class SelectMarketFragment : CoreFragment<FragmentSelectMarketBinding, SelectMarketViewModel>(), ToolbarButtonsClickListener {
@@ -22,6 +23,8 @@ class SelectMarketFragment : CoreFragment<FragmentSelectMarketBinding, SelectMar
     override fun getViewModel(): SelectMarketViewModel {
         provideViewModel(SelectMarketViewModel::class.java).let {
             getAppComponent()?.inject(it)
+            it.titleProgressScreen.value = getString(R.string.data_loading)
+            it.deviceIp.value = context?.getDeviceIp()
             return it
         }
     }
