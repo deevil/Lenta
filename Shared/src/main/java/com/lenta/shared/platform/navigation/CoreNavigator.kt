@@ -91,7 +91,6 @@ class CoreNavigator constructor(private val context: Context,
 
     }
 
-
     override fun openAlertScreen(message: String,
                                  iconRes: Int,
                                  textColor: Int?,

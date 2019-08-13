@@ -35,6 +35,7 @@ class DataSaver @Inject constructor(
                                 personnelNumber = sessionInfo.personnelNumber!!,
                                 isRecount = false
                         )).either(::handleFailure) {
+                    taskManager.clearTask()
                     screenNavigator.closeAllScreen()
                     screenNavigator.openTasksList()
                     screenNavigator.openSuccessSaveDataScreen()

@@ -59,7 +59,7 @@ abstract class CoreMainViewModel : CoreViewModel() {
     init {
         viewModelScope.launch {
             autoExitManager = AutoExitManager {
-                coreNavigator.finishApp(restart = true)
+                coreNavigator.finishApp(restart = false)
             }.apply {
                 autoExitTimeInMinutes = withContext(Dispatchers.IO) {
                     return@withContext zmpUtz14V001.getAutoExitTimeInMinutes().apply {

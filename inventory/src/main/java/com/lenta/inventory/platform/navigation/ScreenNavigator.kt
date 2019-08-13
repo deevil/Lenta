@@ -309,6 +309,31 @@ class ScreenNavigator(
         openInfoScreen(context.getString(R.string.alco_forbidden))
     }
 
+    override fun openAlertStampOverload(message: String, callbackFunc: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(
+                    AlertFragment.create(
+                            message = message,
+                            iconRes = R.drawable.ic_info_pink,
+                            textColor = ContextCompat.getColor(context, com.lenta.shared.R.color.color_text_dialogWarning),
+                            pageNumber = "98",
+                            isVisibleLeftButton = false,
+                            codeConfirmForRight = backFragmentResultHelper.setFuncForResult(callbackFunc),
+                            rightButtonDecorationInfo = ButtonDecorationInfo.next
+                    )
+            )
+        }
+    }
+
+    override fun openAlertInfoScreen(message: String) {
+        openAlertScreen(message = message,
+                iconRes = R.drawable.ic_info_pink,
+                textColor = ContextCompat.getColor(context, R.color.color_text_dialogWarning),
+                pageNumber = "98"
+        )
+    }
+
+
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 
 }
@@ -348,4 +373,6 @@ interface IScreenNavigator : ICoreNavigator {
     fun openSelectTypeCodeScreen(codeConfirmationForSap: Int, codeConfirmationForBarCode: Int)
     fun openAlertGoodsNotForTaskScreen()
     fun openAlertWrongGoodsType()
+    fun openAlertStampOverload(message: String, callbackFunc: () -> Unit)
+    fun openAlertInfoScreen(message: String)
 }

@@ -43,6 +43,7 @@ class PartySignsFragment : CoreFragment<FragmentPartySignsBinding, PartySignsVie
             getAppComponent()?.inject(vm)
             vm.manufacturersName.value = manufacturers
             vm.stampLength.value = stampLength
+            vm.dateNotSpecified.value = getString(R.string.date_not_specified)
             return vm
         }
     }
