@@ -47,8 +47,6 @@ class ExciseAlcoInfoFragment : CoreFragment<FragmentExciseAlcoInfoBinding, Excis
             vm.textErrorUnknownStatus.value = getString(R.string.text_error_unknown_status)
             vm.titleProgressScreen.value = getString(R.string.data_loading)
             vm.alcocodeNotFound.value = getString(R.string.alcocode_not_found)
-            vm.iconRes.value = R.drawable.ic_info_pink
-            vm.textColor.value = ContextCompat.getColor(context!!, com.lenta.shared.R.color.color_text_dialogWarning)
             vm.msgWrongProducType.value = getString(R.string.wrong_product_type)
             return vm
         }
@@ -88,7 +86,8 @@ class ExciseAlcoInfoFragment : CoreFragment<FragmentExciseAlcoInfoBinding, Excis
         super.onFragmentResult(arguments)
         if (arguments["stampLength"] == 150) {
             vm.onPartySignsResult(arguments)
-        } else {
+        }
+        if (arguments["stampLength"] == 68) {
             vm.onPartySignsStamp68Result(arguments)
         }
     }

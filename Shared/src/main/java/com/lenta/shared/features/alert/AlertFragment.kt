@@ -45,7 +45,8 @@ class AlertFragment : CoreMessageFragment() {
                 codeConfirmForButton4: Int? = null,
                 codeConfirmForLeft: Int? = null,
                 codeConfirmForExit: Int? = null,
-                isEnabledLeftButton: Boolean = true,
+                isVisibleLeftButton: Boolean = true,
+                isForceVisibleRigthButton: Boolean = false,
                 leftButtonDecorationInfo: ButtonDecorationInfo? = null,
                 buttonDecorationInfo2: ButtonDecorationInfo? = null,
                 buttonDecorationInfo3: ButtonDecorationInfo? = null,
@@ -65,7 +66,8 @@ class AlertFragment : CoreMessageFragment() {
                 this.codeConfirmForButton3 = codeConfirmForButton3
                 this.codeConfirmForButton4 = codeConfirmForButton4
                 this.codeConfirmForLeft = codeConfirmForLeft
-                this.isEnabledLeftButton = isEnabledLeftButton
+                this.isVisibleLeftButton = isVisibleLeftButton
+                this.isForceVisibleRigthButton = isForceVisibleRigthButton
                 this.pageNumb = pageNumber
                 this.timeAutoExitInMillis = timeAutoExitInMillis
 

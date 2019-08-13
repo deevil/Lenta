@@ -96,10 +96,7 @@ class CoreNavigator constructor(private val context: Context,
                                  textColor: Int?,
                                  pageNumber: String?,
                                  timeAutoExitInMillis: Int?,
-                                 onlyIfFirstAlert: Boolean,
-                                 isEnabledLeftButton: Boolean,
-                                 codeConfirmForRight: Int?,
-                                 rightButtonDecorationInfo: ButtonDecorationInfo?) {
+                                 onlyIfFirstAlert: Boolean) {
         runOrPostpone {
             getFragmentStack()?.let {
 
@@ -112,10 +109,7 @@ class CoreNavigator constructor(private val context: Context,
                         iconRes = iconRes,
                         textColor = textColor,
                         pageNumber = pageNumber,
-                        timeAutoExitInMillis = timeAutoExitInMillis,
-                        isEnabledLeftButton = isEnabledLeftButton,
-                        codeConfirmForRight = codeConfirmForRight,
-                        rightButtonDecorationInfo = rightButtonDecorationInfo
+                        timeAutoExitInMillis = timeAutoExitInMillis
                 )
                 it.push(fragment, CustomAnimation.vertical)
 
@@ -357,10 +351,7 @@ interface ICoreNavigator {
                         textColor: Int? = null,
                         pageNumber: String? = null,
                         timeAutoExitInMillis: Int? = null,
-                        onlyIfFirstAlert: Boolean = false,
-                        isEnabledLeftButton: Boolean = true,
-                        codeConfirmForRight: Int? = null,
-                        rightButtonDecorationInfo: ButtonDecorationInfo? = null)
+                        onlyIfFirstAlert: Boolean = false)
 
     fun openAlertScreen(failure: Failure, pageNumber: String = "96")
     fun openSupportScreen()

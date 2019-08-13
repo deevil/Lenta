@@ -24,7 +24,8 @@ abstract class CoreMessageFragment : CoreFragment<LayoutMessageBinding, MessageV
     protected var codeConfirmForButton3 by state<Int?>(null)
     protected var codeConfirmForButton4 by state<Int?>(null)
     protected var codeConfirmForLeft by state<Int?>(null)
-    protected var isEnabledLeftButton by state<Boolean>(true)
+    protected var isVisibleLeftButton by state<Boolean>(true)
+    protected var isForceVisibleRigthButton by state<Boolean>(false)
     protected var pageNumb by state<String?>(null)
     protected var leftButtonDecorationInfo by state(ButtonDecorationInfo.back)
     protected var buttonDecorationInfo2: ButtonDecorationInfo? by state(null)
@@ -48,11 +49,11 @@ abstract class CoreMessageFragment : CoreFragment<LayoutMessageBinding, MessageV
             return
         }
 
-        if (isEnabledLeftButton) {
+        if (isVisibleLeftButton) {
             bottomToolbarUiModel.uiModelButton1.show(leftButtonDecorationInfo)
         }
 
-        if (codeConfirmForRight != null) {
+        if (codeConfirmForRight != null || isForceVisibleRigthButton) {
             bottomToolbarUiModel.uiModelButton5.apply {
                 show(rightButtonDecorationInfo)
                 requestFocus()

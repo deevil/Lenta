@@ -49,8 +49,6 @@ class ExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
     @Inject
     lateinit var searchProductDelegate: SearchProductDelegate
 
-    val iconRes: MutableLiveData<Int> = MutableLiveData(0)
-    val textColor: MutableLiveData<Int> = MutableLiveData(0)
     val alcocodeNotFound: MutableLiveData<String> = MutableLiveData()
 
     private val scannedStampCode: MutableLiveData<String> = MutableLiveData()
@@ -113,11 +111,7 @@ class ExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
                     storePlace = storePlaceNumber.value ?: "00")
             if (processExciseAlcoProductService.newProcessExciseAlcoProductService(productInfo.value!!) == null) {
                 screenNavigator.goBack()
-                screenNavigator.openAlertScreen(
-                        message = msgWrongProducType.value!!,
-                        iconRes = iconRes.value!!,
-                        textColor = textColor.value!!,
-                        pageNumber = "98")
+                screenNavigator.openAlertInfoScreen(message = msgWrongProducType.value!!)
             }
         }
     }
@@ -137,7 +131,7 @@ class ExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
         }
     }
 
-    fun rollbackExciseStampByAlcoCode() {
+    private fun rollbackExciseStampByAlcoCode() {
         processExciseAlcoProductService.rollback()
     }
 
@@ -149,7 +143,9 @@ class ExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
     }
 
     fun onClickDetails() {
-        screenNavigator.openGoodsDetailsStorageScreen(productInfo.value!!)
+        //todo
+        onScanResult("18460128053553011844468LPLCZIP6JYZRWRMVVSTV4UZO1FDL13N6BJP2CJSDOCRG6020PLST8R0SYNOMQB50BLT2P3JB5YVDPYZY11KZOGZJJOEOE207Q5TS7DVCYIHO9A29L6YFH84EBJJA500")
+        //screenNavigator.openGoodsDetailsStorageScreen(productInfo.value!!)
     }
 
     fun onClickMissing() {
@@ -205,7 +201,7 @@ class ExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
 
     private fun processBoxHandleSuccess(exciseGoodsRestInfo: ExciseGoodsRestInfo) {
         if (exciseGoodsRestInfo.retCode != "0") {
-            screenNavigator.openAlertScreen(message = exciseGoodsRestInfo.errorTxt, iconRes = iconRes.value!!, textColor = textColor.value, pageNumber = "98")
+            screenNavigator.openAlertInfoScreen(exciseGoodsRestInfo.errorTxt)
             return
         }
 
@@ -223,8 +219,8 @@ class ExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
                 count.value = boxStamps.size.toString()
                 selectedPosition.value = GoodsInfoCountType.VINTAGE.number
             }
-            InfoStatus.BoxWithProblem.status -> screenNavigator.openAlertScreen(exciseGoodsRestInfo.statusTxt, iconRes = iconRes.value!!, textColor = textColor.value, pageNumber = "98")
-            else -> screenNavigator.openAlertScreen(textErrorUnknownStatus.value!!, iconRes = iconRes.value!!, textColor = textColor.value, pageNumber = "98")
+            InfoStatus.BoxWithProblem.status -> screenNavigator.openAlertInfoScreen(exciseGoodsRestInfo.statusTxt)
+            else -> screenNavigator.openAlertInfoScreen(textErrorUnknownStatus.value!!)
         }
     }
 
@@ -262,13 +258,14 @@ class ExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
     }
 
     private fun processPdf150HandleSuccess(exciseGoodsRestInfo: ExciseGoodsRestInfo) {
+        //todo
+        manufacturers.value = exciseGoodsRestInfo.manufacturers
+        //screenNavigator.openAlertStampOverload(message = exciseGoodsRestInfo.statusTxt) {}
+        screenNavigator.openPartySignsScreen("${productInfo.value!!.getMaterialLastSix()} ${productInfo.value!!.description}", exciseGoodsRestInfo.manufacturers.map { it.name }, 150)
+        return
+
         if (exciseGoodsRestInfo.retCode != "0") {
-            screenNavigator.openAlertScreen(
-                    message = exciseGoodsRestInfo.errorTxt,
-                    iconRes = iconRes.value!!,
-                    textColor = textColor.value,
-                    pageNumber = "98"
-            )
+            screenNavigator.openAlertInfoScreen(exciseGoodsRestInfo.errorTxt)
             return
         }
 
@@ -284,25 +281,17 @@ class ExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
                 count.value = "1"
                 selectedPosition.value = GoodsInfoCountType.VINTAGE.number
                 if (exciseGoodsRestInfo.status == InfoStatus.StampOverload.status) {
-                    screenNavigator.openAlertScreen(
-                            message = exciseGoodsRestInfo.statusTxt,
-                            iconRes = iconRes.value!!,
-                            textColor = textColor.value,
-                            pageNumber = "98",
-                            isEnabledLeftButton = false,
-                            codeConfirmForRight = 0,
-                            rightButtonDecorationInfo = ButtonDecorationInfo.next
-                    )
+                    screenNavigator.openAlertStampOverload(message = exciseGoodsRestInfo.statusTxt){}
                 }
             }
             InfoStatus.StampOfOtherProduct.status -> {
-                screenNavigator.openAlertScreen(exciseGoodsRestInfo.statusTxt, iconRes = iconRes.value!!, textColor = textColor.value, pageNumber = "98")
+                screenNavigator.openAlertInfoScreen(exciseGoodsRestInfo.statusTxt)
             }
             InfoStatus.StampNotFound.status -> {
                 manufacturers.value = exciseGoodsRestInfo.manufacturers
                 screenNavigator.openPartySignsScreen("${productInfo.value!!.getMaterialLastSix()} ${productInfo.value!!.description}", exciseGoodsRestInfo.manufacturers.map { it.name }, 150)
             }
-            else -> screenNavigator.openAlertScreen(textErrorUnknownStatus.value!!, iconRes = iconRes.value!!, textColor = textColor.value, pageNumber = "98")
+            else -> screenNavigator.openAlertInfoScreen(textErrorUnknownStatus.value!!)
         }
     }
 
@@ -331,7 +320,7 @@ class ExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
 
     private fun partySignsHandleSuccess(exciseGoodsRestInfo: ExciseGoodsRestInfo) {
         if (exciseGoodsRestInfo.retCode != "0") {
-            screenNavigator.openAlertScreen(exciseGoodsRestInfo.errorTxt, iconRes = iconRes.value!!, textColor = textColor.value, pageNumber = "98")
+            screenNavigator.openAlertInfoScreen(exciseGoodsRestInfo.errorTxt)
             return
         }
 
@@ -349,10 +338,10 @@ class ExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
                 count.value = "1"
                 selectedPosition.value = GoodsInfoCountType.VINTAGE.number
                 if (exciseGoodsRestInfo.status == InfoStatus.BatchNotFound.status) {
-                    screenNavigator.openAlertScreen(exciseGoodsRestInfo.statusTxt, iconRes = iconRes.value!!, textColor = textColor.value, pageNumber = "98")
+                    screenNavigator.openAlertStampOverload(exciseGoodsRestInfo.statusTxt){}
                 }
             }
-            else -> screenNavigator.openAlertScreen(textErrorUnknownStatus.value!!, iconRes = iconRes.value!!, textColor = textColor.value, pageNumber = "98")
+            else -> screenNavigator.openAlertInfoScreen(textErrorUnknownStatus.value!!)
         }
     }
 
@@ -378,7 +367,7 @@ class ExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
 
     private fun checkExciseStampByCodeHandleSuccess(exciseGoodsRestInfo: ExciseGoodsRestInfo) {
         if (exciseGoodsRestInfo.retCode != "0") {
-            screenNavigator.openAlertScreen(exciseGoodsRestInfo.errorTxt, iconRes = iconRes.value!!, textColor = textColor.value, pageNumber = "98")
+            screenNavigator.openAlertInfoScreen(exciseGoodsRestInfo.errorTxt)
             return
         }
 
@@ -394,25 +383,17 @@ class ExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
                 count.value = "1"
                 selectedPosition.value = GoodsInfoCountType.PARTLY.number
                 if (exciseGoodsRestInfo.status == InfoStatus.StampOverload.status) {
-                    screenNavigator.openAlertScreen(
-                            message = exciseGoodsRestInfo.statusTxt,
-                            iconRes = iconRes.value!!,
-                            textColor = textColor.value,
-                            pageNumber = "98",
-                            isEnabledLeftButton = false,
-                            codeConfirmForRight = 0,
-                            rightButtonDecorationInfo = ButtonDecorationInfo.next
-                    )
+                    screenNavigator.openAlertStampOverload(message = exciseGoodsRestInfo.statusTxt){}
                 }
             }
             InfoStatus.StampOfOtherProduct.status -> {
-                screenNavigator.openAlertScreen(exciseGoodsRestInfo.statusTxt, iconRes = iconRes.value!!, textColor = textColor.value, pageNumber = "98")
+                screenNavigator.openAlertInfoScreen(exciseGoodsRestInfo.statusTxt)
             }
             InfoStatus.StampNotFound.status -> {
                 manufacturers.value = exciseGoodsRestInfo.manufacturers
                 screenNavigator.openPartySignsScreen("${productInfo.value!!.getMaterialLastSix()} ${productInfo.value!!.description}", exciseGoodsRestInfo.manufacturers.map { it.name }, 68)
             }
-            else -> screenNavigator.openAlertScreen(textErrorUnknownStatus.value!!, iconRes = iconRes.value!!, textColor = textColor.value, pageNumber = "98")
+            else -> screenNavigator.openAlertInfoScreen(textErrorUnknownStatus.value!!)
         }
     }
 
@@ -441,7 +422,7 @@ class ExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
 
     private fun partySignsStamp68HandleSuccess(exciseGoodsRestInfo: ExciseGoodsRestInfo) {
         if (exciseGoodsRestInfo.retCode != "0") {
-            screenNavigator.openAlertScreen(exciseGoodsRestInfo.errorTxt, iconRes = iconRes.value!!, textColor = textColor.value, pageNumber = "98")
+            screenNavigator.openAlertInfoScreen(exciseGoodsRestInfo.errorTxt)
             return
         }
 
@@ -459,10 +440,10 @@ class ExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
                 count.value = "1"
                 selectedPosition.value = GoodsInfoCountType.PARTLY.number
                 if (exciseGoodsRestInfo.status == InfoStatus.BatchNotFound.status) {
-                    screenNavigator.openAlertScreen(exciseGoodsRestInfo.statusTxt, iconRes = iconRes.value!!, textColor = textColor.value, pageNumber = "98")
+                    screenNavigator.openAlertStampOverload(exciseGoodsRestInfo.statusTxt){}
                 }
             }
-            else -> screenNavigator.openAlertScreen(textErrorUnknownStatus.value!!, iconRes = iconRes.value!!, textColor = textColor.value, pageNumber = "98")
+            else -> screenNavigator.openAlertInfoScreen(textErrorUnknownStatus.value!!)
         }
     }
 
@@ -504,7 +485,7 @@ class ExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
                 count.value = "1"
                 selectedPosition.value = GoodsInfoCountType.PARTLY.number
             } else {
-                screenNavigator.openAlertScreen(message = alcocodeNotFound.value!!, iconRes = iconRes.value!!, textColor = textColor.value, pageNumber = "98")
+                screenNavigator.openAlertInfoScreen(alcocodeNotFound.value!!)
             }
         }
     }
