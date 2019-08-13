@@ -20,7 +20,6 @@ class AuthFragment : CoreLoginFragment() {
         provideViewModel(AuthViewModel::class.java).let {
             getAppComponent()?.inject(it)
             it.msgUserNoRights.value = getString(R.string.user_no_rights)
-            /**it.msgErrorRegisteringServer.value = getString(R.string.error_registering_server)*/
             it.iconRes.value = R.drawable.ic_info_pink
             it.textColor.value = ContextCompat.getColor(context!!, com.lenta.shared.R.color.color_text_dialogWarning)
             return it

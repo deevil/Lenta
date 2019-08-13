@@ -40,7 +40,6 @@ class AuthViewModel : CoreAuthViewModel() {
     lateinit var repoInMemoryHolder: IRepoInMemoryHolder
 
     val msgUserNoRights: MutableLiveData<String> = MutableLiveData()
-    /**val msgErrorRegisteringServer: MutableLiveData<String> = MutableLiveData()*/
     val iconRes: MutableLiveData<Int> = MutableLiveData(0)
     val textColor: MutableLiveData<Int> = MutableLiveData(0)
 
@@ -103,25 +102,6 @@ class AuthViewModel : CoreAuthViewModel() {
         repoInMemoryHolder.permissions = permissionsGrzResult
 
         navigator.openSelectMarketScreen()
-
-        /**Logg.d { "test ${appSettings.techLogin}" }
-        Logg.d { "test ${appSettings.techPassword}" }
-        //todo необходимо завести техпользователь на сервере
-        viewModelScope.launch {
-            progress.value = true
-            //auth(AuthParams(appSettings.techLogin, appSettings.techPassword)).either(::handleTechAuthFailure, ::handleTechAuthSuccess)
-            auth(AuthParams(appSettings.techLogin, appSettings.techPassword)).either({
-                navigator.openAlertScreen(msgErrorRegisteringServer.value!!,
-                        iconRes = iconRes.value!!,
-                        textColor = textColor.value,
-                        pageNumber = "96",
-                        timeAutoExitInMillis = 3000
-                )
-            },
-                    { navigator.openSelectMarketScreen() }
-            )
-            progress.value = false
-        }*/
     }
 
     override fun handleFailure(failure: Failure) {
