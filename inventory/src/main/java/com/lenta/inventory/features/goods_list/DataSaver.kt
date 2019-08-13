@@ -24,13 +24,13 @@ class DataSaver @Inject constructor(
         this.viewModelScope = viewModelScope
     }
 
-    fun saveData() {
+    fun saveData(final: Boolean) {
         viewModelScope().launch {
             screenNavigator.showProgress(invSendReportNetRequest)
             taskManager.getInventoryTask()?.let { task ->
                 invSendReportNetRequest(
                         task.getReport(
-                                isFinish = true,
+                                isFinish = final,
                                 ip = context.getDeviceIp(),
                                 personnelNumber = sessionInfo.personnelNumber!!,
                                 isRecount = false

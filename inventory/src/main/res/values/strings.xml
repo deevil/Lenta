@@ -47,6 +47,7 @@
     <string name="taken_to_work_info">Задание %1$s принято в работу. До окончания пересчета осталось %2$s часов</string>
     <string name="confirmation_saving_job">Перевести задание в статус \"Посчитано\" и закрыть его для редактирования</string>
     <string name="confirmation_skipping_discrepancies">В задании остались необработанные товары. Сохранить в статусе \"Опубликовано\" и оставить доступным для продолжения пересчета?</string>
+    <string name="confirmation_skipping_discrepancies_recount">В задание остались необработанные товары. Оставить задание доступным для пересчёта"Опубликовано" или закрыть "Посчитано"?</string>
     <string name="confirmation_missing_goods">Вы действительно хотите установить 0 в поле количество для %1$d товаров из списка?</string>
     <string name="confirmation_delete_goods">Вы действительно хотите удалить %1$d товаров из списка?</string>
     <string name="confirmation_clean_goods">Очистить обработанные товары?</string>

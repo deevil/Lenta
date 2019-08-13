@@ -173,6 +173,14 @@ data class ButtonDecorationInfo(
         val untie: ButtonDecorationInfo by lazy {
             ButtonDecorationInfo(R.drawable.ic_rollback_white_24dp, R.string.untie) //TODO: proper image
         }
+
+        val published: ButtonDecorationInfo by lazy {
+            ButtonDecorationInfo(R.drawable.ic_published, R.string.published)
+        }
+
+        val counted: ButtonDecorationInfo by lazy {
+            ButtonDecorationInfo(R.drawable.ic_counted, R.string.counted)
+        }
     }
 }
 

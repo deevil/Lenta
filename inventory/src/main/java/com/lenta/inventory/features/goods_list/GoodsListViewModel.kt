@@ -203,7 +203,7 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
                 screenNavigator.openDiscrepanciesScreen()
             } else {
                 screenNavigator.openConfirmationSavingJobScreen {
-                    dataSaver.saveData()
+                    dataSaver.saveData(true)
                 }
             }
         }
