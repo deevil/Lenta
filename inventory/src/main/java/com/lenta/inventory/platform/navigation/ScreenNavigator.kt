@@ -307,7 +307,6 @@ class ScreenNavigator(
                             textColor = ContextCompat.getColor(context, com.lenta.shared.R.color.color_text_dialogWarning),
                             pageNumber = "98",
                             isVisibleLeftButton = false,
-                            isForceVisibleRigthButton = true,
                             codeConfirmForRight = backFragmentResultHelper.setFuncForResult(callbackFunc),
                             rightButtonDecorationInfo = ButtonDecorationInfo.next
                     )

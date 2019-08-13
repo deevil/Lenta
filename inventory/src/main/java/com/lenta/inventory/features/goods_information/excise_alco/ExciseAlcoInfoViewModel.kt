@@ -143,9 +143,7 @@ class ExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
     }
 
     fun onClickDetails() {
-        //todo
-        onScanResult("18460128053553011844468LPLCZIP6JYZRWRMVVSTV4UZO1FDL13N6BJP2CJSDOCRG6020PLST8R0SYNOMQB50BLT2P3JB5YVDPYZY11KZOGZJJOEOE207Q5TS7DVCYIHO9A29L6YFH84EBJJA500")
-        //screenNavigator.openGoodsDetailsStorageScreen(productInfo.value!!)
+        screenNavigator.openGoodsDetailsStorageScreen(productInfo.value!!)
     }
 
     fun onClickMissing() {
@@ -258,12 +256,6 @@ class ExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
     }
 
     private fun processPdf150HandleSuccess(exciseGoodsRestInfo: ExciseGoodsRestInfo) {
-        //todo
-        manufacturers.value = exciseGoodsRestInfo.manufacturers
-        //screenNavigator.openAlertStampOverload(message = exciseGoodsRestInfo.statusTxt) {}
-        screenNavigator.openPartySignsScreen("${productInfo.value!!.getMaterialLastSix()} ${productInfo.value!!.description}", exciseGoodsRestInfo.manufacturers.map { it.name }, 150)
-        return
-
         if (exciseGoodsRestInfo.retCode != "0") {
             screenNavigator.openAlertInfoScreen(exciseGoodsRestInfo.errorTxt)
             return
@@ -295,9 +287,9 @@ class ExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
         }
     }
 
-    fun onPartySignsResult(bundle: Bundle) {
-        manufacturerCode.value = manufacturers.value!![bundle.getString("manufacturerCode").toInt()].code
-        bottlingDate.value = bundle.getString("bottlingDate").substring(6, 10) + bundle.getString("bottlingDate").substring(3, 5) + bundle.getString("bottlingDate").substring(0, 2)
+    fun onPartySignsResult(_manufacturerCode: String, _bottlingDate: String) {
+        manufacturerCode.value = manufacturers.value!![_manufacturerCode.toInt()].code
+        bottlingDate.value = _bottlingDate.substring(6, 10) + _bottlingDate.substring(3, 5) + _bottlingDate.substring(0, 2)
         viewModelScope.launch {
             screenNavigator.showProgress(titleProgressScreen.value!!)
             obtainingDataExciseGoodsNetRequest(
@@ -397,9 +389,9 @@ class ExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
         }
     }
 
-    fun onPartySignsStamp68Result(bundle: Bundle) {
-        manufacturerCode.value = manufacturers.value!![bundle.getString("manufacturerCode").toInt()].code
-        bottlingDate.value = bundle.getString("bottlingDate").substring(6, 10) + bundle.getString("bottlingDate").substring(3, 5) + bundle.getString("bottlingDate").substring(0, 2)
+    fun onPartySignsStamp68Result(_manufacturerCode: String, _bottlingDate: String) {
+        manufacturerCode.value = manufacturers.value!![_manufacturerCode.toInt()].code
+        bottlingDate.value = _bottlingDate.substring(6, 10) + _bottlingDate.substring(3, 5) + _bottlingDate.substring(0, 2)
         viewModelScope.launch {
             screenNavigator.showProgress(titleProgressScreen.value!!)
             obtainingDataExciseGoodsNetRequest(

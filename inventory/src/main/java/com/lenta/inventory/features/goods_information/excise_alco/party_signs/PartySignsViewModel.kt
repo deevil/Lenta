@@ -20,12 +20,18 @@ class PartySignsViewModel : CoreViewModel(), OnPositionClickListener {
 
     val bottlingDate: MutableLiveData<String> = MutableLiveData("")
 
+    val dateNotSpecified: MutableLiveData<String> = MutableLiveData()
+
     fun onClickNext(){
-        screenNavigator.goBackWithArgs(Bundle().apply {
-            putInt("stampLength", stampLength.value!!)
-            putString("manufacturerCode", selectedPosition.value.toString())
-            putString("bottlingDate", bottlingDate.value)
-        })
+        if (bottlingDate.value.isNullOrEmpty()) {
+            screenNavigator.openInfoScreen(dateNotSpecified.value!!)
+        } else {
+            screenNavigator.goBackWithArgs(Bundle().apply {
+                putInt("stampLength", stampLength.value!!)
+                putString("manufacturerCode", selectedPosition.value.toString())
+                putString("bottlingDate", bottlingDate.value)
+            })
+        }
     }
 
     override fun onClickPosition(position: Int) {

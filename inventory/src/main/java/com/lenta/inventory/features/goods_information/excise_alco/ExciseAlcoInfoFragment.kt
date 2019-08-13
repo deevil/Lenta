@@ -85,10 +85,10 @@ class ExciseAlcoInfoFragment : CoreFragment<FragmentExciseAlcoInfoBinding, Excis
     override fun onFragmentResult(arguments: Bundle) {
         super.onFragmentResult(arguments)
         if (arguments["stampLength"] == 150) {
-            vm.onPartySignsResult(arguments)
+            vm.onPartySignsResult(arguments.getString("manufacturerCode")!!, arguments.getString("bottlingDate")!!)
         }
         if (arguments["stampLength"] == 68) {
-            vm.onPartySignsStamp68Result(arguments)
+            vm.onPartySignsStamp68Result(arguments.getString("manufacturerCode")!!, arguments.getString("bottlingDate")!!)
         }
     }
 
