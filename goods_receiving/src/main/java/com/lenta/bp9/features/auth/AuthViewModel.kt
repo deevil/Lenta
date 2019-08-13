@@ -13,6 +13,7 @@ import com.lenta.shared.exception.IFailureInterpreter
 import com.lenta.shared.features.login.CoreAuthViewModel
 import com.lenta.shared.features.login.isEnterEnabled
 import com.lenta.shared.features.login.isValidLoginFields
+import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.requests.network.Auth
 import com.lenta.shared.requests.network.AuthParams
 import com.lenta.shared.settings.IAppSettings

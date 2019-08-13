@@ -91,13 +91,15 @@ class CoreNavigator constructor(private val context: Context,
 
     }
 
-
     override fun openAlertScreen(message: String,
                                  iconRes: Int,
                                  textColor: Int?,
                                  pageNumber: String?,
                                  timeAutoExitInMillis: Int?,
-                                 onlyIfFirstAlert: Boolean) {
+                                 onlyIfFirstAlert: Boolean,
+                                 isEnabledLeftButton: Boolean,
+                                 codeConfirmForRight: Int?,
+                                 rightButtonDecorationInfo: ButtonDecorationInfo?) {
         runOrPostpone {
             getFragmentStack()?.let {
 
@@ -110,7 +112,10 @@ class CoreNavigator constructor(private val context: Context,
                         iconRes = iconRes,
                         textColor = textColor,
                         pageNumber = pageNumber,
-                        timeAutoExitInMillis = timeAutoExitInMillis
+                        timeAutoExitInMillis = timeAutoExitInMillis,
+                        isEnabledLeftButton = isEnabledLeftButton,
+                        codeConfirmForRight = codeConfirmForRight,
+                        rightButtonDecorationInfo = rightButtonDecorationInfo
                 )
                 it.push(fragment, CustomAnimation.vertical)
 
@@ -352,7 +357,10 @@ interface ICoreNavigator {
                         textColor: Int? = null,
                         pageNumber: String? = null,
                         timeAutoExitInMillis: Int? = null,
-                        onlyIfFirstAlert: Boolean = false)
+                        onlyIfFirstAlert: Boolean = false,
+                        isEnabledLeftButton: Boolean = true,
+                        codeConfirmForRight: Int? = null,
+                        rightButtonDecorationInfo: ButtonDecorationInfo? = null)
 
     fun openAlertScreen(failure: Failure, pageNumber: String = "96")
     fun openSupportScreen()

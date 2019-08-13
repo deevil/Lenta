@@ -24,6 +24,7 @@ abstract class CoreMessageFragment : CoreFragment<LayoutMessageBinding, MessageV
     protected var codeConfirmForButton3 by state<Int?>(null)
     protected var codeConfirmForButton4 by state<Int?>(null)
     protected var codeConfirmForLeft by state<Int?>(null)
+    protected var isEnabledLeftButton by state<Boolean>(true)
     protected var pageNumb by state<String?>(null)
     protected var leftButtonDecorationInfo by state(ButtonDecorationInfo.back)
     protected var buttonDecorationInfo2: ButtonDecorationInfo? by state(null)
@@ -46,7 +47,11 @@ abstract class CoreMessageFragment : CoreFragment<LayoutMessageBinding, MessageV
             bottomToolbarUiModel.visibility.value = false
             return
         }
-        bottomToolbarUiModel.uiModelButton1.show(leftButtonDecorationInfo)
+
+        if (isEnabledLeftButton) {
+            bottomToolbarUiModel.uiModelButton1.show(leftButtonDecorationInfo)
+        }
+
         if (codeConfirmForRight != null) {
             bottomToolbarUiModel.uiModelButton5.apply {
                 show(rightButtonDecorationInfo)

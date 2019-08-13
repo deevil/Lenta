@@ -14,6 +14,7 @@ import com.lenta.inventory.requests.network.*
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.models.core.Manufacturer
+import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
 import com.lenta.shared.utilities.Logg
@@ -262,7 +263,12 @@ class ExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
 
     private fun processPdf150HandleSuccess(exciseGoodsRestInfo: ExciseGoodsRestInfo) {
         if (exciseGoodsRestInfo.retCode != "0") {
-            screenNavigator.openAlertScreen(exciseGoodsRestInfo.errorTxt, iconRes = iconRes.value!!, textColor = textColor.value, pageNumber = "98")
+            screenNavigator.openAlertScreen(
+                    message = exciseGoodsRestInfo.errorTxt,
+                    iconRes = iconRes.value!!,
+                    textColor = textColor.value,
+                    pageNumber = "98"
+            )
             return
         }
 
@@ -278,7 +284,15 @@ class ExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
                 count.value = "1"
                 selectedPosition.value = GoodsInfoCountType.VINTAGE.number
                 if (exciseGoodsRestInfo.status == InfoStatus.StampOverload.status) {
-                    screenNavigator.openAlertScreen(exciseGoodsRestInfo.statusTxt, iconRes = iconRes.value!!, textColor = textColor.value, pageNumber = "98")
+                    screenNavigator.openAlertScreen(
+                            message = exciseGoodsRestInfo.statusTxt,
+                            iconRes = iconRes.value!!,
+                            textColor = textColor.value,
+                            pageNumber = "98",
+                            isEnabledLeftButton = false,
+                            codeConfirmForRight = 0,
+                            rightButtonDecorationInfo = ButtonDecorationInfo.next
+                    )
                 }
             }
             InfoStatus.StampOfOtherProduct.status -> {
@@ -380,7 +394,15 @@ class ExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
                 count.value = "1"
                 selectedPosition.value = GoodsInfoCountType.PARTLY.number
                 if (exciseGoodsRestInfo.status == InfoStatus.StampOverload.status) {
-                    screenNavigator.openAlertScreen(exciseGoodsRestInfo.statusTxt, iconRes = iconRes.value!!, textColor = textColor.value, pageNumber = "98")
+                    screenNavigator.openAlertScreen(
+                            message = exciseGoodsRestInfo.statusTxt,
+                            iconRes = iconRes.value!!,
+                            textColor = textColor.value,
+                            pageNumber = "98",
+                            isEnabledLeftButton = false,
+                            codeConfirmForRight = 0,
+                            rightButtonDecorationInfo = ButtonDecorationInfo.next
+                    )
                 }
             }
             InfoStatus.StampOfOtherProduct.status -> {
