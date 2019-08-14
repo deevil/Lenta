@@ -2,7 +2,10 @@ package com.lenta.inventory.models.task
 
 import com.lenta.inventory.features.goods_information.sets.SetComponentInfo
 import com.lenta.shared.di.AppScope
-import com.lenta.shared.fmp.resources.dao_ext.*
+import com.lenta.shared.fmp.resources.dao_ext.getComponentsForSet
+import com.lenta.shared.fmp.resources.dao_ext.getEansFromMaterial
+import com.lenta.shared.fmp.resources.dao_ext.getProductInfo
+import com.lenta.shared.fmp.resources.dao_ext.getUomInfo
 import com.lenta.shared.fmp.resources.fast.ZmpUtz07V001
 import com.lenta.shared.fmp.resources.slow.ZfmpUtz48V001
 import com.lenta.shared.fmp.resources.slow.ZmpUtz25V001
@@ -11,7 +14,6 @@ import com.lenta.shared.models.core.ProductType
 import com.lenta.shared.models.core.Uom
 import com.lenta.shared.models.core.getMatrixType
 import com.lenta.shared.models.core.getProductType
-import com.lenta.shared.requests.combined.scan_info.pojo.EanInfo
 import com.mobrun.plugin.api.HyperHive
 import javax.inject.Inject
 
@@ -100,7 +102,9 @@ class ProcessSetsService @Inject constructor() : IProcessProductService {
                         setNumber = data.matnrOsn,
                         number = data.matnr,
                         name = it.name,
-                        ean = listOf(zmpUtz25V001.getEanInfoFromMaterial(data.matnr)?.ean),
+                        ean = zmpUtz25V001.getEansFromMaterial(data.matnr).map {eans ->
+                            eans.ean
+                        },
                         count = data.menge.toString(),
                         uom = Uom(code = uomInfo!!.uom, name = uomInfo.name),
                         matrixType = getMatrixType(it.matrType),
@@ -113,11 +117,12 @@ class ProcessSetsService @Inject constructor() : IProcessProductService {
         return componentsInfo
     }
 
-
-    fun isHaveEanForComponent(matrial: String, ean:String) :Boolean {
-        return componentsInfo.filter {
-            it.ean[0] == ean && it.number == matrial
-        }.isNotEmpty()
+    fun isHaveEanForComponent(material: String, ean:String) :Boolean {
+        return componentsInfo.any { componentInfo ->
+            componentInfo.number == material && componentInfo.ean.any {
+                it == ean
+            }
+        }
     }
 
     fun getCountExciseStampsForComponents(): Int {

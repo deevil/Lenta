@@ -13,6 +13,7 @@ import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
+import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.map
@@ -166,10 +167,8 @@ class SetsInfoViewModel : CoreViewModel(), OnPositionClickListener {
     }
 
     fun onClickMissing() {
-        //todo
-        onScanResult("5010752001427")
-        //processSetsService.markMissing()
-        //screenNavigator.goBack()
+        processSetsService.markMissing()
+        screenNavigator.goBack()
     }
 
     fun onClickApply() {
