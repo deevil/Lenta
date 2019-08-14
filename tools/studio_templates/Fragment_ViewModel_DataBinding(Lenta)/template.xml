@@ -20,6 +20,13 @@
         help="The name of the fragment class to create" />
 
     <parameter
+        id="numberOfTabs"
+        name="Number of tabs"
+        type="string"
+        default="0"
+        help="The number of tabs. If 0 then no tabs" />
+
+    <parameter
         id="layoutName"
         name="Fragment Layout Name"
         type="string"
