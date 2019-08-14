@@ -11,6 +11,7 @@ import com.lenta.shared.models.core.ProductType
 import com.lenta.shared.models.core.Uom
 import com.lenta.shared.models.core.getMatrixType
 import com.lenta.shared.models.core.getProductType
+import com.lenta.shared.requests.combined.scan_info.pojo.EanInfo
 import com.mobrun.plugin.api.HyperHive
 import javax.inject.Inject
 
@@ -99,7 +100,7 @@ class ProcessSetsService @Inject constructor() : IProcessProductService {
                         setNumber = data.matnrOsn,
                         number = data.matnr,
                         name = it.name,
-                        ean = zmpUtz25V001.getEanInfoFromMaterial(data.matnr)?.toEanInfo()!!.ean,
+                        ean = listOf(zmpUtz25V001.getEanInfoFromMaterial(data.matnr)?.ean),
                         count = data.menge.toString(),
                         uom = Uom(code = uomInfo!!.uom, name = uomInfo.name),
                         matrixType = getMatrixType(it.matrType),
@@ -110,6 +111,13 @@ class ProcessSetsService @Inject constructor() : IProcessProductService {
             }
         }
         return componentsInfo
+    }
+
+
+    fun isHaveEanForComponent(matrial: String, ean:String) :Boolean {
+        return componentsInfo.filter {
+            it.ean[0] == ean && it.number == matrial
+        }.isNotEmpty()
     }
 
     fun getCountExciseStampsForComponents(): Int {

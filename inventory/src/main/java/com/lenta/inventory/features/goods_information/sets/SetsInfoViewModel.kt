@@ -166,8 +166,10 @@ class SetsInfoViewModel : CoreViewModel(), OnPositionClickListener {
     }
 
     fun onClickMissing() {
-        processSetsService.markMissing()
-        screenNavigator.goBack()
+        //todo
+        onScanResult("5010752001427")
+        //processSetsService.markMissing()
+        //screenNavigator.goBack()
     }
 
     fun onClickApply() {
@@ -303,7 +305,7 @@ class SetsInfoViewModel : CoreViewModel(), OnPositionClickListener {
 
     private fun processItemByBarcode(searchCode: String) {
         componentsInfo.filter {
-            it.number == searchCode || it.ean == searchCode
+            it.number == searchCode || processSetsService.isHaveEanForComponent(it.number, searchCode)
         }.map { componentInfo ->
             val countExciseStampForComponent = processSetsService.getCountExciseStampsForComponent(componentInfo)
             if (countExciseStampForComponent >= (componentInfo.count).toDouble()) {
