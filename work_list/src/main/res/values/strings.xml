@@ -14,5 +14,12 @@
     <string name="printer_type">Тип принтера</string>
     <string name="price_tag_type">Тип ценника</string>
     <string name="device_ip">IP адрес ТСД</string>
+    <string name="quantity">Количество</string>
+    <string name="total_quantity">Итого: 1 шт.</string>
+    <string name="comment">Комментарий</string>
+    <string name="total_shelf_life">Общий СГ</string>
+    <string name="remaining_shelf_life">Остаточный СГ</string>
+    <string name="barcode_units">Штрихкод/ЕИ ШК</string>
+    <string name="gt_gz">ГТ/ГЗ</string>
 
 </resources>

@@ -32,7 +32,7 @@
                     android:layout_weight="1">
 
                     <TextView
-                        style="@style/CellTitleStyle"
+                        style="@style/CellTextViewStyle"
                         android:text="@string/copy_quantity"/>
 
                 </LinearLayout>
@@ -85,7 +85,7 @@
                     android:layout_weight="1">
 
                     <TextView
-                        style="@style/CellTitleStyle"
+                        style="@style/CellTextViewStyle"
                         android:text="@string/printer_type"/>
 
                 </LinearLayout>
@@ -124,7 +124,7 @@
                     android:layout_weight="1">
 
                     <TextView
-                        style="@style/CellTitleStyle"
+                        style="@style/CellTextViewStyle"
                         android:text="@string/price_tag_type"/>
 
                 </LinearLayout>
@@ -171,7 +171,7 @@
                         android:layout_weight="1">
 
                         <TextView
-                            style="@style/CellTitleStyle"
+                            style="@style/CellTextViewStyle"
                             android:text="@string/device_ip"/>
 
                     </LinearLayout>
