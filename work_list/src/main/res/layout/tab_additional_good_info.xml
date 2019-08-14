@@ -24,11 +24,11 @@
                 android:layout_weight="1">
 
                 <TextView
-                    style="@style/CellTextViewStyle"
+                    style="@style/CellTextStyle"
                     android:text="@string/storage_locations"/>
 
                 <TextView
-                    style="@style/CellTextViewStyle"
+                    style="@style/CellTextStyle"
                     android:text="@string/pnz"/>
 
             </LinearLayout>
@@ -41,11 +41,11 @@
                 android:layout_weight="2">
 
                 <TextView
-                    style="@style/CellTextViewStyle"
+                    style="@style/CellTextStyle"
                     android:text="125635; 652148; 635894"/>
 
                 <TextView
-                    style="@style/CellTextViewStyle"
+                    style="@style/CellTextStyle"
                     android:text="50 шт."/>
 
 
@@ -66,11 +66,11 @@
                 android:layout_weight="1">
 
                 <TextView
-                    style="@style/CellTextViewStyle"
+                    style="@style/CellTextStyle"
                     android:text="@string/inventory_of_goods"/>
 
                 <TextView
-                    style="@style/CellTextViewStyle"
+                    style="@style/CellTextStyle"
                     android:text="@string/goods_arrival"/>
 
             </LinearLayout>
@@ -83,11 +83,11 @@
                 android:layout_weight="2">
 
                 <TextView
-                    style="@style/CellTextViewStyle"
+                    style="@style/CellTextStyle"
                     android:text="19.07.19 (-25 шт.)"/>
 
                 <TextView
-                    style="@style/CellTextViewStyle"
+                    style="@style/CellTextStyle"
                     android:text="29.07.19 (+50 шт; Z5)"/>
 
 
@@ -108,11 +108,11 @@
                 android:layout_weight="1">
 
                 <TextView
-                    style="@style/CellTextViewStyle"
+                    style="@style/CellTextStyle"
                     android:text="@string/price_with_dk"/>
 
                 <TextView
-                    style="@style/CellTextViewStyle"
+                    style="@style/CellTextStyle"
                     android:text="@string/price_without_dk"/>
 
             </LinearLayout>
@@ -125,11 +125,11 @@
                 android:layout_weight="2">
 
                 <TextView
-                    style="@style/CellTextViewStyle"
+                    style="@style/CellTextStyle"
                     android:text="100р."/>
 
                 <TextView
-                    style="@style/CellTextViewStyle"
+                    style="@style/CellTextStyle"
                     android:text="140р."/>
 
 
@@ -150,7 +150,7 @@
                 android:layout_weight="1">
 
                 <TextView
-                    style="@style/CellTextViewStyle"
+                    style="@style/CellTextStyle"
                     android:text="@string/promotions"/>
 
             </LinearLayout>
@@ -163,11 +163,11 @@
                 android:layout_weight="2">
 
                 <TextView
-                    style="@style/CellTextViewStyle"
+                    style="@style/CellTextStyle"
                     android:text="Распродажа кукурузы ТК 0007"/>
 
                 <TextView
-                    style="@style/CellTextViewStyle"
+                    style="@style/CellTextStyle"
                     android:text="Период 30.05.19 - 12.09.19"/>
 
             </LinearLayout>

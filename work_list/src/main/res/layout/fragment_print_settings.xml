@@ -32,7 +32,7 @@
                     android:layout_weight="1">
 
                     <TextView
-                        style="@style/CellTextViewStyle"
+                        style="@style/CellTextStyle"
                         android:text="@string/copy_quantity"/>
 
                 </LinearLayout>
@@ -85,7 +85,7 @@
                     android:layout_weight="1">
 
                     <TextView
-                        style="@style/CellTextViewStyle"
+                        style="@style/CellTextStyle"
                         android:text="@string/printer_type"/>
 
                 </LinearLayout>
@@ -102,10 +102,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_margin="8dp"
-                        android:entries="@array/printer_name"
-                        app:items="@{vm.printerNames}"
-                        app:onPositionClickListener="@{vm}"
-                        app:position="@{vm.selectedPosition}"/>
+                        android:entries="@array/printer_name"/>
 
                 </LinearLayout>
 
@@ -124,7 +121,7 @@
                     android:layout_weight="1">
 
                     <TextView
-                        style="@style/CellTextViewStyle"
+                        style="@style/CellTextStyle"
                         android:text="@string/price_tag_type"/>
 
                 </LinearLayout>
@@ -141,10 +138,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_margin="8dp"
-                        android:entries="@array/price_tag_name"
-                        app:items="@{vm.printerNames}"
-                        app:onPositionClickListener="@{vm}"
-                        app:position="@{vm.selectedPosition}"/>
+                        android:entries="@array/price_tag_name"/>
 
                 </LinearLayout>
 
@@ -154,7 +148,7 @@
                 style="@style/HorizontalDivider"/>
 
 
-            <!-- Тип ценника -->
+            <!-- IP устройства -->
             <LinearLayout
                 android:id="@+id/ip_device_container"
                 android:layout_width="match_parent"
@@ -171,7 +165,7 @@
                         android:layout_weight="1">
 
                         <TextView
-                            style="@style/CellTextViewStyle"
+                            style="@style/CellTextStyle"
                             android:text="@string/device_ip"/>
 
                     </LinearLayout>
@@ -219,14 +213,10 @@
                 android:layout_margin="8dp"
                 android:layout_weight="1"
                 android:digits="0123456789"
-                android:enabled="@{vm.numberFieldEnabled}"
                 android:hint="@string/enter_item_number_or_barcode"
                 android:imeOptions="actionGo"
                 android:inputType="number"
                 android:maxLength="14"
-                android:text="@={vm.goodNumber}"
-                app:onOkInSoftKeyboard="@{vm}"
-                app:requestFocus="@{vm.requestFocusToGoodNumber}"
                 tools:ignore="Autofill"/>
 
             <ImageView

@@ -26,11 +26,11 @@
                 android:layout_weight="1">
 
                 <TextView
-                    style="@style/CellTextViewStyle"
+                    style="@style/CellTextStyle"
                     android:text="@string/quantity"/>
 
                 <TextView
-                    style="@style/CellTextViewStyle"
+                    style="@style/CellTextStyle"
                     android:text="@string/total_quantity"/>
 
             </LinearLayout>
@@ -69,7 +69,7 @@
                 android:layout_weight="1">
 
                 <TextView
-                    style="@style/CellTextViewStyle"
+                    style="@style/CellTextStyle"
                     android:text="@string/comment"/>
 
             </LinearLayout>
@@ -86,10 +86,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="8dp"
-                    android:entries="@array/selected_comment"
-                    app:items="@{vm.printerNames}"
-                    app:onPositionClickListener="@{vm}"
-                    app:position="@{vm.selectedPosition}"/>
+                    android:entries="@array/selected_comment"/>
 
             </LinearLayout>
 
@@ -112,10 +109,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="8dp"
-                    android:entries="@array/shelf_life"
-                    app:items="@{vm.printerNames}"
-                    app:onPositionClickListener="@{vm}"
-                    app:position="@{vm.selectedPosition}"/>
+                    android:entries="@array/shelf_life"/>
 
             </LinearLayout>
 
@@ -189,11 +183,11 @@
                 android:layout_weight="1">
 
                 <TextView
-                    style="@style/CellTextViewStyle"
+                    style="@style/CellTextStyle"
                     android:text="@string/total_shelf_life"/>
 
                 <TextView
-                    style="@style/CellTextViewStyle"
+                    style="@style/CellTextStyle"
                     android:text="@string/remaining_shelf_life"/>
 
             </LinearLayout>
@@ -206,11 +200,11 @@
                 android:layout_weight="2">
 
                 <TextView
-                    style="@style/CellTextViewStyle"
+                    style="@style/CellTextStyle"
                     android:text="10 сут."/>
 
                 <TextView
-                    style="@style/CellTextViewStyle"
+                    style="@style/CellTextStyle"
                     android:text="2 сут."/>
 
 
@@ -231,11 +225,11 @@
                 android:layout_weight="1">
 
                 <TextView
-                    style="@style/CellTextViewStyle"
+                    style="@style/CellTextStyle"
                     android:text="@string/barcode_units"/>
 
                 <TextView
-                    style="@style/CellTextViewStyle"
+                    style="@style/CellTextStyle"
                     android:text="@string/gt_gz"/>
 
             </LinearLayout>
@@ -248,11 +242,11 @@
                 android:layout_weight="2">
 
                 <TextView
-                    style="@style/CellTextViewStyle"
+                    style="@style/CellTextStyle"
                     android:text="2365248900015/КОР"/>
 
                 <TextView
-                    style="@style/CellTextViewStyle"
+                    style="@style/CellTextStyle"
                     android:text="952365/1111"/>
 
             </LinearLayout>
