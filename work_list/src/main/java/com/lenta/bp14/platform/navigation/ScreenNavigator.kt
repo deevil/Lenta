@@ -10,6 +10,7 @@ import com.lenta.bp14.features.main_menu.MainMenuFragment
 import com.lenta.bp14.features.report_result.ReportResultFragment
 import com.lenta.bp14.features.select_market.SelectMarketFragment
 import com.lenta.bp14.features.task_list.TaskListFragment
+import com.lenta.bp14.features.work_list.details_of_goods.DetailsOfGoodsFragment
 import com.lenta.shared.account.IAuthenticator
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
 import com.lenta.shared.platform.navigation.ICoreNavigator
@@ -87,6 +88,12 @@ class ScreenNavigator(
     }
 
 
+    override fun openDetailsOfGoodsScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(DetailsOfGoodsFragment())
+        }
+    }
+
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 
 }
@@ -102,4 +109,5 @@ interface IScreenNavigator : ICoreNavigator {
     fun openCheckListGoodsList()
     fun openListOfDifferencesScreen()
     fun openReportResultScreen()
+    fun openDetailsOfGoodsScreen()
 }

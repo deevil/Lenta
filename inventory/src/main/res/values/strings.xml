@@ -8,7 +8,6 @@
     <string name="categories">Категории</string>
     <string name="processed">Обработанные</string>
     <string name="not_processed">К обработке</string>
-    <string name="goods_of_details">Детали по товару</string>
     <string name="goods_of_details_store_place">Детали по товару и местам хранения</string>
     <string name="goods_store_place">МХ товара</string>
     <string name="enter_storage_place_number">Введите номер МХ</string>
