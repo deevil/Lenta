@@ -309,6 +309,20 @@ class ScreenNavigator(
         openInfoScreen(context.getString(R.string.alco_forbidden))
     }
 
+    override fun openMinUpdateSalesDialogScreen(minUpdSales: Long, functionForLeft: () -> Unit, functionForRight: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.min_update_sells_alert, minUpdSales),
+                    iconRes = 0,
+                    codeConfirmForLeft = backFragmentResultHelper.setFuncForResult(functionForLeft),
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(functionForRight),
+                    pageNumber = "93",
+                    leftButtonDecorationInfo = ButtonDecorationInfo.back,
+                    rightButtonDecorationInfo = ButtonDecorationInfo.next)
+            )
+        }
+    }
+
     override fun openAlertStampOverload(message: String, callbackFunc: () -> Unit) {
         runOrPostpone {
             getFragmentStack()?.push(
@@ -375,4 +389,5 @@ interface IScreenNavigator : ICoreNavigator {
     fun openAlertWrongGoodsType()
     fun openAlertStampOverload(message: String, callbackFunc: () -> Unit)
     fun openAlertInfoScreen(message: String)
+    fun openMinUpdateSalesDialogScreen(minUpdSales: Long, functionForLeft: () -> Unit, functionForRight: () -> Unit)
 }

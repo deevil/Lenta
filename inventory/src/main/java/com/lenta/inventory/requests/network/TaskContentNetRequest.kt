@@ -75,10 +75,12 @@ class TaskContentNetRequest
                             storePlaces = storePlaces,
                             exciseStamps = exciseStamps,
                             deadline = it.timeToProcess,
-                            linkOldStamp = it.linkOldStamps.isNotEmpty())
+                            linkOldStamp = it.linkOldStamps.isNotEmpty(),
+                            minUpdSales = it.minUpdSales.trim().toLongOrNull()
+                    )
                     )
                 } else {
-                    return  Either.Left(Failure.SapError(it.error))
+                    return Either.Left(Failure.SapError(it.error))
                 }
             }
         }
@@ -153,7 +155,7 @@ data class TaskContentRestInfo(
         @SerializedName("ET_PLACES_INFO")
         val storePlacesList: List<TaskStorePlaceRestInfo>, //УТЗ ТСД. Инв.: Таблица информации по МХ задания
         @SerializedName("EV_MIN_UPD_SALES")
-        val minUpdSales: String, //Натуральное число ??
+        val minUpdSales: String, //Данные о продажах не поступали с касс более ..
         @SerializedName("EV_TIME_OF_PROC")
         val timeToProcess: String, //УТЗ ТСД. Инв.: Время на обработку задания (строка)
         @SerializedName("ET_TASK_MARK_LIST")
