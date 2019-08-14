@@ -28,6 +28,8 @@ import com.lenta.shared.platform.activity.ForegroundActivityProvider
 import com.lenta.shared.platform.battery_state.BatteryStateMonitor
 import com.lenta.shared.platform.battery_state.IBatteryStateMonitor
 import com.lenta.shared.platform.constants.Constants.DB_PATH
+import com.lenta.shared.platform.device_info.AndroidDeviceInfo
+import com.lenta.shared.platform.device_info.DeviceInfo
 import com.lenta.shared.platform.navigation.BackFragmentResultHelper
 import com.lenta.shared.platform.navigation.CoreNavigator
 import com.lenta.shared.platform.navigation.ICoreNavigator
@@ -273,6 +275,12 @@ class CoreModule(val application: Application, val defaultConnectionSettings: De
                 gson = gson,
                 analyticsHelper = analyticsHelper
         )
+    }
+
+    @Provides
+    @Singleton
+    fun provideDeviceInfo(context: Context): DeviceInfo {
+        return AndroidDeviceInfo(context)
     }
 
 
