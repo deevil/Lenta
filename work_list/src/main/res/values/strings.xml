@@ -1,8 +1,18 @@
 <resources>
+
     <string name="app_name">Рабочий список</string>
     <string name="work_with_tasks">Работа с заданиями</string>
     <string name="create_task">Создать задание</string>
     <string name="print_labels">Печать ценников</string>
     <string name="not_processed">К обработке</string>
     <string name="task_list">Список заданий</string>
+
+    <string name="specify_product">Укажите товар</string>
+    <string name="print_settings">Настройка печати</string>
+
+    <string name="copy_quantity">Кол-во копий</string>
+    <string name="printer_type">Тип принтера</string>
+    <string name="price_tag_type">Тип ценника</string>
+    <string name="device_ip">IP адрес ТСД</string>
+
 </resources>

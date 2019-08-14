@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="printer_name">
+        <item>DataMax</item>
+        <item>Zebra</item>
+    </string-array>
+
+    <string-array name="price_tag_name">
+        <item>Регуляр</item>
+        <item>Акция</item>
+        <item>Распродажа</item>
+    </string-array>
+
+</resources>
