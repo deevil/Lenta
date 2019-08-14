@@ -34,7 +34,7 @@ class JobCardViewModel : CoreViewModel() {
     }
 
     fun onClickNext() {
-        screenNavigator.openCheckListGoodsList()
+        screenNavigator.openReportResultScreen()
     }
 
     val onClickTaskTypes = object : OnPositionClickListener {
