@@ -60,6 +60,8 @@
     <string name="skip">Пропустить</string>
     <string name="refresh">Обновить</string>
     <string name="untie">Отвязать</string>
+    <string name="published">Опубликовано</string>
+    <string name="counted">Посчитано</string>
     <string name="number">№</string>
     <string name="good">Товар</string>
     <string name="quantity">Количество</string>

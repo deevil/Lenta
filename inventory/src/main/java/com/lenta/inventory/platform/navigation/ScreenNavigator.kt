@@ -221,6 +221,17 @@ class ScreenNavigator(
         }
     }
 
+    override fun openConfirmationSkippingDiscrepanciesRecount(rightCallbackFunc: () -> Unit, middleCallbackFunc: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.confirmation_skipping_discrepancies_recount),
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(rightCallbackFunc),
+                    codeConfirmForButton3 = backFragmentResultHelper.setFuncForResult(middleCallbackFunc),
+                    pageNumber = "94",
+                    rightButtonDecorationInfo = ButtonDecorationInfo.counted,
+                    buttonDecorationInfo3 = ButtonDecorationInfo.published))
+        }
+    }
+
     override fun openConfirmationClean(byStorage: Boolean, callbackFunc: () -> Unit) {
         runOrPostpone {
             val message = if (byStorage) context.getString(R.string.confirmation_clean_storages) else context.getString(R.string.confirmation_clean_goods)
@@ -353,6 +364,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openTakenToWorkFragment()
     fun openConfirmationSavingJobScreen(callbackFunc: () -> Unit)
     fun openConfirmationSkippingDiscrepancies(callbackFunc: () -> Unit)
+    fun openConfirmationSkippingDiscrepanciesRecount(rightCallbackFunc: () -> Unit, middleCallbackFunc: () -> Unit)
     fun openConfirmationMissingGoods(positionsCount: Int, callbackFunc: () -> Unit)
     fun openConfirmationDeleteGoods(positionsCount: Int, callbackFunc: () -> Unit)
     fun openConfirmationClean(byStorage: Boolean = false, callbackFunc: () -> Unit)

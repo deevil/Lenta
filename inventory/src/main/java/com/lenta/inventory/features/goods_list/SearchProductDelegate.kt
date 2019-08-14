@@ -30,6 +30,8 @@ class SearchProductDelegate @Inject constructor(
 
     private var scanInfoResult: ScanInfoResult? = null
 
+    private var searchFromScan: Boolean = false
+
     private lateinit var viewModelScope: () -> CoroutineScope
 
     private var scanResultHandler: ((ScanInfoResult?) -> Boolean)? = null
@@ -60,7 +62,7 @@ class SearchProductDelegate @Inject constructor(
     fun searchCode(code: String, fromScan: Boolean, isBarCode: Boolean? = null) {
 
         Logg.d { "hashCode: ${hashCode()}" }
-
+        searchFromScan = fromScan
         if (isBarCode == null && code.length == 12) {
             codeWith12Digits = code
             screenNavigator.openSelectTypeCodeScreen(requestCodeTypeSap, requestCodeTypeBarCode)
@@ -128,11 +130,11 @@ class SearchProductDelegate @Inject constructor(
                     return
                 }
             }
-            with(infoResult) {
-                openProductScreen(taskProductInfo,
-                        if (productInfo.type == ProductType.ExciseAlcohol && !productInfo.isSet) 0.0 else quantity)
-            }
 
+            if (searchFromScan && taskProductInfo.type != ProductType.ExciseAlcohol && !taskProductInfo.isSet) {
+                taskManager.getInventoryTask()!!.taskRepository.getProducts().changeProduct(taskProductInfo.copy(factCount = infoResult.quantity + taskProductInfo.factCount))
+            }
+            openTaskProductScreen(taskProductInfo)
         }
     }
 
@@ -188,9 +190,4 @@ class SearchProductDelegate @Inject constructor(
             else -> screenNavigator.openGoodsInfoScreen(taskProductInfo)
         }
     }
-
-    private fun openProductScreen(taskProductInfo: TaskProductInfo, quantity: Double) {
-        openTaskProductScreen(taskProductInfo)
-    }
-
 }

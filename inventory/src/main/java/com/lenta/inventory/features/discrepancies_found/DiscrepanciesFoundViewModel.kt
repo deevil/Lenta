@@ -142,12 +142,19 @@ class DiscrepanciesFoundViewModel : CoreViewModel() {
 
     fun onClickSkip() {
         if (isNotEmpty.value == true) {
-            screenNavigator.openConfirmationSkippingDiscrepancies {
-                dataSaver.saveData()
+            if (taskManager.getInventoryTask()!!.taskDescription.isRecount) {
+                screenNavigator.openConfirmationSkippingDiscrepanciesRecount({ dataSaver.saveData(true) }) {
+                    dataSaver.saveData(false)
+                }
+            } else {
+                screenNavigator.openConfirmationSkippingDiscrepancies {
+                    dataSaver.saveData(false)
+                }
             }
+
         } else {
             screenNavigator.openConfirmationSavingJobScreen {
-                dataSaver.saveData()
+                dataSaver.saveData(true)
             }
         }
     }
