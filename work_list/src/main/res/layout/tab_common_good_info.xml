@@ -179,6 +179,7 @@
         <View
             style="@style/HorizontalDivider"/>
 
+
         <!-- Оставшийся срок годности -->
         <LinearLayout
             style="@style/LinearRowStyle">

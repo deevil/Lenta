@@ -21,5 +21,12 @@
     <string name="remaining_shelf_life">Остаточный СГ</string>
     <string name="barcode_units">Штрихкод/ЕИ ШК</string>
     <string name="gt_gz">ГТ/ГЗ</string>
+    <string name="promotions">Промо-акции</string>
+    <string name="price_without_dk">Цена без ДК</string>
+    <string name="price_with_dk">Цена с ДК</string>
+    <string name="goods_arrival">Приход</string>
+    <string name="inventory_of_goods">Инвентаризиция</string>
+    <string name="pnz">ПНЗ</string>
+    <string name="storage_locations">Места хранения</string>
 
 </resources>
