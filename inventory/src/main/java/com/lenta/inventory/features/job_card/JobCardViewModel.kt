@@ -84,11 +84,11 @@ class JobCardViewModel : CoreViewModel(), OnPositionClickListener {
             var res: Boolean
             res = (if (isStrictList) true else index == 0) && (taskManager.getInventoryTask()?.taskDescription?.recountType
                     ?: recountType) == recountType
-            if (res && (tasksItem.notFinish == "X" || tasksItem.mode == "2" || tasksItem.mode == "3")) {
+            if (res && (tasksItem.notFinish == "X" || RecountType.values().any { it != RecountType.None && it.recountType == tasksItem.mode })) {
                 res = when (tasksItem.mode) {
-                    "1" -> index == 0
-                    "2" -> index == 1
-                    "3" -> index == 2
+                    RecountType.Simple.recountType -> index == 0
+                    RecountType.ParallelByStorePlaces.recountType -> index == 1
+                    RecountType.ParallelByPerNo.recountType -> index == 2
                     else -> false
                 }
             }
