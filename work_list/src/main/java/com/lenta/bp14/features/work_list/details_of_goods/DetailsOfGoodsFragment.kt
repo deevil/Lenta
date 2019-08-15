@@ -7,10 +7,7 @@ import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import com.lenta.bp14.BR
 import com.lenta.bp14.R
-import com.lenta.bp14.databinding.FragmentDetailsOfGoodsBinding
-import com.lenta.bp14.databinding.ItemTileExpirationBinding
-import com.lenta.bp14.databinding.LayoutExpirationDatesListBinding
-import com.lenta.bp14.databinding.LayoutTaskListBinding
+import com.lenta.bp14.databinding.*
 import com.lenta.bp14.platform.extentions.getAppComponent
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
@@ -75,12 +72,26 @@ class DetailsOfGoodsFragment : CoreFragment<FragmentDetailsOfGoodsBinding, Detai
                     }
         }
 
-        return View(context)
+        DataBindingUtil
+                .inflate<LayoutCommentsListBinding>(LayoutInflater.from(container.context),
+                        R.layout.layout_comments_list,
+                        container,
+                        false).let { layoutBinding ->
+
+                    layoutBinding.rvConfig = DataBindingRecyclerViewConfig<ItemTileExpirationBinding>(
+                            layoutId = R.layout.item_tile_comment,
+                            itemId = BR.vm
+                    )
+
+                    layoutBinding.vm = vm
+                    layoutBinding.lifecycleOwner = viewLifecycleOwner
+                    return layoutBinding.root
+                }
 
     }
 
     override fun getTextTitle(position: Int): String {
-        return "position: $position"
+        return getString(if (position == 0) R.string.expiration_dates else R.string.comments)
     }
 
     override fun countTab() = 2

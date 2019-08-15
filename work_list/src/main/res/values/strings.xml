@@ -33,5 +33,6 @@
     <string name="period_kip">Период КИП</string>
     <string name="provider">Поставщик</string>
     <string name="expiration_date_abbreviation">СГ</string>
+    <string name="expiration_dates">Сроки годности</string>
 
 </resources>
