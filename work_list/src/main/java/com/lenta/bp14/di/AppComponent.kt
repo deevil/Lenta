@@ -3,10 +3,12 @@ package com.lenta.bp14.di
 import com.lenta.bp14.ExceptionHandler
 import com.lenta.bp14.features.auth.AuthViewModel
 import com.lenta.bp14.features.check_list.goods_list.GoodsListClViewModel
+import com.lenta.bp14.features.good_info.GoodInfoViewModel
 import com.lenta.bp14.features.job_card.JobCardViewModel
 import com.lenta.bp14.features.list_of_differences.ListOfDifferencesViewModel
 import com.lenta.bp14.features.loading.fast.FastLoadingViewModel
 import com.lenta.bp14.features.main_menu.MainMenuViewModel
+import com.lenta.bp14.features.print_settings.PrintSettingsViewModel
 import com.lenta.bp14.features.report_result.ReportResultViewModel
 import com.lenta.bp14.features.select_market.SelectMarketViewModel
 import com.lenta.bp14.features.task_list.TaskListViewModel
@@ -31,5 +33,7 @@ interface AppComponent {
     fun inject(it: GoodsListClViewModel)
     fun inject(it: ListOfDifferencesViewModel)
     fun inject(it: ReportResultViewModel)
+    fun inject(it: PrintSettingsViewModel)
+    fun inject(it: GoodInfoViewModel)
 
 }

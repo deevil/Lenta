@@ -16,4 +16,7 @@
 
     <integer name="details_title_weight">4</integer>
     <integer name="details_value_weight">5</integer>
+
+    <dimen name="common_row_height">57dp</dimen> // Высота строки в табличных макетах
+
 </resources>

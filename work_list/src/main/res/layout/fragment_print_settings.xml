@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        tools:context=".features.print_settings.PrintSettingsFragment">
+
+    <data>
+
+        <variable
+            name="vm"
+            type="com.lenta.bp14.features.print_settings.PrintSettingsViewModel"/>
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+
+            <!-- Количество копий -->
+            <LinearLayout
+                style="@style/LinearRowStyle">
+
+                <LinearLayout
+                    style="@style/LinearCellStyle"
+                    android:layout_weight="1">
+
+                    <TextView
+                        style="@style/CellTextStyle"
+                        android:text="@string/copy_quantity"/>
+
+                </LinearLayout>
+
+                <View
+                    style="@style/VerticalDivider"/>
+
+                <LinearLayout
+                    style="@style/LinearCellStyle"
+                    android:layout_weight="2"
+                    android:orientation="horizontal">
+
+                    <EditText
+                        android:id="@+id/et_price_tag_quantity"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="8dp"
+                        android:layout_weight="1"
+                        android:paddingStart="10dp"
+                        android:paddingEnd="10dp"
+                        android:textSize="14sp"
+                        tools:text="2"/>
+
+                    <ImageButton
+                        android:id="@+id/btn_reduce_quantity"
+                        android:layout_width="37dp"
+                        android:layout_height="40dp"
+                        android:layout_marginEnd="8dp"
+                        android:src="@drawable/ic_remove_white_24dp"/>
+
+                    <ImageButton
+                        android:id="@+id/btn_increase_quantity"
+                        android:layout_width="37dp"
+                        android:layout_height="40dp"
+                        android:layout_marginEnd="8dp"
+                        android:src="@drawable/ic_add_white_24dp"/>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <View
+                style="@style/HorizontalDivider"/>
+
+
+            <!-- Тип принтера -->
+            <LinearLayout
+                style="@style/LinearRowStyle">
+
+                <LinearLayout
+                    style="@style/LinearCellStyle"
+                    android:layout_weight="1">
+
+                    <TextView
+                        style="@style/CellTextStyle"
+                        android:text="@string/printer_type"/>
+
+                </LinearLayout>
+
+                <View
+                    style="@style/VerticalDivider"/>
+
+                <LinearLayout
+                    style="@style/LinearCellStyle"
+                    android:layout_weight="2">
+
+                    <com.lenta.shared.view.ClickableSpinner
+                        android:id="@+id/spin_printer"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="8dp"
+                        android:entries="@array/printer_name"/>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <View
+                style="@style/HorizontalDivider"/>
+
+
+            <!-- Тип ценника -->
+            <LinearLayout
+                style="@style/LinearRowStyle">
+
+                <LinearLayout
+                    style="@style/LinearCellStyle"
+                    android:layout_weight="1">
+
+                    <TextView
+                        style="@style/CellTextStyle"
+                        android:text="@string/price_tag_type"/>
+
+                </LinearLayout>
+
+                <View
+                    style="@style/VerticalDivider"/>
+
+                <LinearLayout
+                    style="@style/LinearCellStyle"
+                    android:layout_weight="2">
+
+                    <com.lenta.shared.view.ClickableSpinner
+                        android:id="@+id/spin_price_tag"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="8dp"
+                        android:entries="@array/price_tag_name"/>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <View
+                style="@style/HorizontalDivider"/>
+
+
+            <!-- IP устройства -->
+            <LinearLayout
+                android:id="@+id/ip_device_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone"
+                tools:visibility="visible">
+
+                <LinearLayout
+                    style="@style/LinearRowStyle">
+
+                    <LinearLayout
+                        style="@style/LinearCellStyle"
+                        android:layout_weight="1">
+
+                        <TextView
+                            style="@style/CellTextStyle"
+                            android:text="@string/device_ip"/>
+
+                    </LinearLayout>
+
+                    <View
+                        style="@style/VerticalDivider"/>
+
+                    <LinearLayout
+                        style="@style/LinearCellStyle"
+                        android:layout_weight="2">
+
+                        <EditText
+                            android:id="@+id/et_device_ip"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="8dp"
+                            android:paddingStart="10dp"
+                            android:paddingEnd="10dp"
+                            android:textSize="14sp"
+                            tools:text="10.254.25.12"/>
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <View
+                    style="@style/HorizontalDivider"/>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+
+        <!-- Ввод номера товара -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/et_good_number"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:layout_weight="1"
+                android:digits="0123456789"
+                android:hint="@string/enter_item_number_or_barcode"
+                android:imeOptions="actionGo"
+                android:inputType="number"
+                android:maxLength="14"
+                tools:ignore="Autofill"/>
+
+            <ImageView
+                android:id="@+id/btn_qrcode"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:src="@drawable/ic_scan_barcode"/>
+
+            <ImageView
+                android:id="@+id/btn_barcode"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:src="@drawable/ic_scan_barcode"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</layout>

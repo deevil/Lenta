@@ -21,20 +21,20 @@
             android:orientation="vertical">
 
             <LinearLayout
-                style="@style/LinearGoodInfoRowStyle">
+                style="@style/LinearRowStyle">
 
                 <LinearLayout
                     style="@style/LinearCellStyle"
                     android:layout_weight="1">
 
                     <TextView
-                        style="@style/GoodInfoCellTextStyle"
+                        style="@style/CellTextStyle"
                         android:text="@string/number_of_facings"/>
 
                 </LinearLayout>
 
                 <View
-                    style="@style/RowVerticalDivider"/>
+                    style="@style/VerticalDivider"/>
 
                 <LinearLayout
                     style="@style/LinearCellStyle"
@@ -61,23 +61,23 @@
             </LinearLayout>
 
             <View
-                style="@style/RowHorizontalDivider"/>
+                style="@style/HorizontalDivider"/>
 
             <LinearLayout
-                style="@style/LinearGoodInfoRowStyle">
+                style="@style/LinearRowStyle">
 
                 <LinearLayout
                     style="@style/LinearCellStyle"
                     android:layout_weight="1">
 
                     <TextView
-                        style="@style/GoodInfoCellTextStyle"
+                        style="@style/CellTextStyle"
                         android:text="@string/total_facings"/>
 
                 </LinearLayout>
 
                 <View
-                    style="@style/RowVerticalDivider"/>
+                    style="@style/VerticalDivider"/>
 
                 <LinearLayout
                     style="@style/LinearCellStyle"
@@ -98,36 +98,36 @@
             </LinearLayout>
 
             <View
-                style="@style/RowHorizontalDivider"/>
+                style="@style/HorizontalDivider"/>
 
             <LinearLayout
-                style="@style/LinearGoodInfoRowStyle">
+                style="@style/LinearRowStyle">
 
                 <TextView
-                    style="@style/GoodInfoCellTextStyle"
+                    style="@style/CellTextStyle"
                     android:text="@{vm.goodIsPresent ? @string/good_on_shelf : @string/good_is_missing}"
                     tools:text="@string/good_on_shelf"/>
 
             </LinearLayout>
 
             <View
-                style="@style/RowHorizontalDivider"/>
+                style="@style/HorizontalDivider"/>
 
             <LinearLayout
-                style="@style/LinearGoodInfoRowStyle">
+                style="@style/LinearRowStyle">
 
                 <LinearLayout
                     style="@style/LinearCellStyle"
                     android:layout_weight="1">
 
                     <TextView
-                        style="@style/GoodInfoCellTextStyle"
+                        style="@style/CellTextStyle"
                         android:text="@string/goods_barcode"/>
 
                 </LinearLayout>
 
                 <View
-                    style="@style/RowVerticalDivider"/>
+                    style="@style/VerticalDivider"/>
 
                 <LinearLayout
                     style="@style/LinearCellStyle"
@@ -148,7 +148,7 @@
             </LinearLayout>
 
             <View
-                style="@style/RowHorizontalDivider"/>
+                style="@style/HorizontalDivider"/>
 
         </LinearLayout>
 
