@@ -6,6 +6,7 @@ import com.lenta.shared.di.AppScope
 import com.lenta.shared.models.core.EgaisStampVersion
 import com.lenta.shared.models.core.ExciseStamp
 import com.lenta.shared.models.core.ProductType
+import com.lenta.shared.utilities.Logg
 import javax.inject.Inject
 
 @AppScope
@@ -145,10 +146,6 @@ class ProcessExciseAlcoProductService
         discard()
     }
 
-    fun isLinkingOldStamps(): Boolean{
-        return processServiceManager.getInventoryTask()!!.taskDescription.linkOldStamp
-    }
-
     fun getLastCountExciseStamp() : GoodsInfoCountExciseStamps{
         return GoodsInfoCountExciseStamps(
                 countLastExciseStamp = currentCountExciseStamps.let {countExciseStampsList ->
@@ -218,6 +215,8 @@ class ProcessExciseAlcoProductService
     }
 
     fun delAllPartlyStamps(){
+        currentProductInfo = currentProductInfo!!.copy(factCount = currentProductInfo!!.factCount - getCountPartlyStamps())
+
         currentCountExciseStamps.filter { goodsInfoCountExciseStamps ->
             goodsInfoCountExciseStamps.countType == GoodsInfoCountType.PARTLY.number
         }.let {
@@ -261,17 +260,18 @@ class ProcessExciseAlcoProductService
                                 filter {
                                     ExciseStamp.getEgaisVersion(it.code) == EgaisStampVersion.V3.version
                                 }.size)
+
         setFactCount(processServiceManager.
                             getInventoryTask()!!.
                             taskRepository.
                             getProducts().
                             findProduct(currentProductInfo!!)!!.
                             factCount - countPartlyStamps)
-
-        currentProductInfo = currentProductInfo!!.copy(factCount = currentProductInfo!!.factCount + getCountPartlyStamps() + getCountVintageStamps())
     }
 
     fun delAllVintageStamps(){
+        currentProductInfo = currentProductInfo!!.copy(factCount = currentProductInfo!!.factCount - getCountVintageStamps())
+
         currentCountExciseStamps.filter { goodsInfoCountExciseStamps ->
             goodsInfoCountExciseStamps.countType == GoodsInfoCountType.VINTAGE.number
         }.let {
@@ -284,7 +284,7 @@ class ProcessExciseAlcoProductService
             currentExciseStamps.removeAll(it)
         }
 
-        val countVintageStamps = processServiceManager.
+        val countVintageStampsRepository = processServiceManager.
                                             getInventoryTask()!!.
                                             taskRepository.
                                             getExciseStamps().
@@ -304,8 +304,7 @@ class ProcessExciseAlcoProductService
                     }
                 }
 
-        setFactCount(processServiceManager.getInventoryTask()!!.taskRepository.getProducts().findProduct(currentProductInfo!!)!!.factCount - countVintageStamps)
+        setFactCount(processServiceManager.getInventoryTask()!!.taskRepository.getProducts().findProduct(currentProductInfo!!)!!.factCount - countVintageStampsRepository)
 
-        currentProductInfo = currentProductInfo!!.copy(factCount = currentProductInfo!!.factCount + getCountPartlyStamps() + getCountVintageStamps())
     }
 }
