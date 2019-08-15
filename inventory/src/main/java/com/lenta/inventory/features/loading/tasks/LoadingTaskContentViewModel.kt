@@ -59,12 +59,12 @@ class LoadingTaskContentViewModel : CoreLoadingViewModel() {
                 }
             }
             taskContentRequest(TaskContentParams(ip = context.getDeviceIp(),
-                    taskNumber = taskInfo?.taskNumber ?: "",
+                    taskNumber = taskInfo.taskNumber,
                     userNumber = userNumber ?: "",
                     additionalDataFlag = "",
                     newProductNumbers = emptyList(),
                     numberRelock = if (needsRelock) "X" else "",
-                    mode = "1")).either(::handleFailure, ::handleSuccess)
+                    mode = recountType.recountType)).either(::handleFailure, ::handleSuccess)
             progress.value = false
         }
     }

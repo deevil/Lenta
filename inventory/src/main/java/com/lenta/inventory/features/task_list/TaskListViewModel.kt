@@ -3,6 +3,7 @@ package com.lenta.inventory.features.task_list
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.lenta.inventory.models.RecountType
 import com.lenta.inventory.platform.navigation.IScreenNavigator
 import com.lenta.inventory.repos.IRepoInMemoryHolder
 import com.lenta.inventory.requests.network.TaskListNetRequest
@@ -159,7 +160,7 @@ enum class StatusTask {
         fun from(taskItem: TasksItem, userName: String): StatusTask {
             return when {
                 taskItem.notFinish.isNotBlank() -> Processed
-                taskItem.mode == "2" || taskItem.mode == "3" -> Parallels
+                taskItem.mode == RecountType.ParallelByStorePlaces.recountType || taskItem.mode == RecountType.ParallelByPerNo.recountType -> Parallels
                 taskItem.blockType == "1" && taskItem.lockUser == userName -> BlockedMe
                 taskItem.blockType == "1" || taskItem.blockType == "2" -> BlockedNotMe
                 else -> Free

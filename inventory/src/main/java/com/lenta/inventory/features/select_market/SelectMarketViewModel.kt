@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.lenta.inventory.platform.navigation.IScreenNavigator
 import com.lenta.inventory.repos.IRepoInMemoryHolder
 import com.lenta.shared.account.ISessionInfo
+import com.lenta.shared.features.printer_change.PrinterManager
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.settings.IAppSettings
 import com.lenta.shared.utilities.extentions.map
@@ -20,7 +21,9 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
     @Inject
     lateinit var appSettings: IAppSettings
     @Inject
-    lateinit var repoInMemoryHolder : IRepoInMemoryHolder
+    lateinit var repoInMemoryHolder: IRepoInMemoryHolder
+    @Inject
+    lateinit var printerManager: PrinterManager
 
 
     private val markets: MutableLiveData<List<MarketUi>> = MutableLiveData()
@@ -65,23 +68,18 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
     }
 
 
-
     fun onClickNext() {
-        markets.value?.getOrNull(selectedPosition.value ?: -1)?.number?.let {
-            if (appSettings.lastTK != it) {
-                clearPrinters()
+        viewModelScope.launch {
+            markets.value?.getOrNull(selectedPosition.value ?: -1)?.number?.let { tkNumber ->
+                if (appSettings.lastTK != tkNumber) {
+                    printerManager.setDefaultPrinterForTk(tkNumber)
+                }
+                sessionInfo.market = tkNumber
+                appSettings.lastTK = tkNumber
             }
-            sessionInfo.printer = appSettings.printer
-            sessionInfo.market = it
-            appSettings.lastTK = it
+            screenNavigator.openFastDataLoadingScreen()
         }
 
-        screenNavigator.openFastDataLoadingScreen()
-    }
-
-    private fun clearPrinters() {
-        appSettings.printer = null
-        sessionInfo.printer = null
     }
 
 
