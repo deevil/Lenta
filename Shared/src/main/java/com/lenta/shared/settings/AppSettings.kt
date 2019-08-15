@@ -3,11 +3,10 @@ package com.lenta.shared.settings
 import android.annotation.SuppressLint
 import android.content.SharedPreferences
 import androidx.lifecycle.MutableLiveData
-import javax.inject.Inject
 
 @Suppress("NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
 @SuppressLint("ApplySharedPref")
-class AppSettings @Inject constructor(
+class AppSettings(
         val sharedPrefferences: SharedPreferences,
         val defaultConnectionSettings: DefaultConnectionSettings
 ) : IAppSettings {

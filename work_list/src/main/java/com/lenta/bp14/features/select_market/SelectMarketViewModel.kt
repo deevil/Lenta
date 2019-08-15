@@ -5,6 +5,8 @@ import androidx.lifecycle.viewModelScope
 import com.lenta.bp14.platform.navigation.IScreenNavigator
 import com.lenta.bp14.repos.IRepoInMemoryHolder
 import com.lenta.shared.account.ISessionInfo
+import com.lenta.shared.exception.Failure
+import com.lenta.shared.features.printer_change.PrinterManager
 import com.lenta.shared.platform.time.ITimeMonitor
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.network.ServerTime
@@ -30,6 +32,8 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
     lateinit var timeMonitor: ITimeMonitor
     @Inject
     lateinit var serverTimeRequest: ServerTimeRequest
+    @Inject
+    lateinit var printerManager: PrinterManager
 
 
     private val markets: MutableLiveData<List<MarketUi>> = MutableLiveData()
@@ -68,31 +72,31 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
     }
 
     fun onClickNext() {
-        markets.value?.getOrNull(selectedPosition.value ?: -1)?.number?.let {
-            if (appSettings.lastTK != it) {
-                clearPrinters()
-            }
-            sessionInfo.printer = appSettings.printer
-            sessionInfo.market = it
-            appSettings.lastTK = it
-
-            viewModelScope.launch {
+        viewModelScope.launch {
+            markets.value?.getOrNull(selectedPosition.value ?: -1)?.number?.let { tkNumber ->
+                if (appSettings.lastTK != tkNumber) {
+                    printerManager.setDefaultPrinterForTk(tkNumber)
+                }
+                sessionInfo.market = tkNumber
+                appSettings.lastTK = tkNumber
                 navigator.showProgress(serverTimeRequest)
                 serverTimeRequest(ServerTimeRequestParam(sessionInfo.market
                         ?: "")).either(::handleFailure, ::handleSuccessServerTime)
-                navigator.hideProgress()
+
             }
         }
+
+    }
+
+    override fun handleFailure(failure: Failure) {
+        super.handleFailure(failure)
+        navigator.hideProgress()
     }
 
     private fun handleSuccessServerTime(serverTime: ServerTime) {
+        navigator.hideProgress()
         timeMonitor.setServerTime(time = serverTime.time, date = serverTime.date)
         navigator.openMainMenuScreen()
-    }
-
-    private fun clearPrinters() {
-        appSettings.printer = null
-        sessionInfo.printer = null
     }
 
     override fun onClickPosition(position: Int) {
