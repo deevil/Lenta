@@ -9,13 +9,9 @@ import com.lenta.bp9.requests.network.MarketOverIPParams
 import com.lenta.bp9.requests.network.MarketOverIPRequest
 import com.lenta.bp9.requests.network.MarketOverIPRestInfo
 import com.lenta.shared.account.ISessionInfo
-import com.lenta.shared.di.CoreComponent
-import com.lenta.shared.exception.Failure
-import com.lenta.shared.platform.network_state.INetworkStateMonitor
-import com.lenta.shared.platform.network_state.NetworkStateMonitor
+import com.lenta.shared.features.printer_change.PrinterManager
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.settings.IAppSettings
-import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.view.OnPositionClickListener
 import kotlinx.coroutines.launch
@@ -30,9 +26,11 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
     @Inject
     lateinit var appSettings: IAppSettings
     @Inject
-    lateinit var repoInMemoryHolder : IRepoInMemoryHolder
+    lateinit var repoInMemoryHolder: IRepoInMemoryHolder
     @Inject
     lateinit var marketOverIPRequest: MarketOverIPRequest
+    @Inject
+    lateinit var printerManager: PrinterManager
 
     private val markets: MutableLiveData<List<MarketUI>> = MutableLiveData()
     val marketsNames: MutableLiveData<List<String>> = markets.map { markets ->
@@ -85,30 +83,24 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
     fun onClickNext() {
         viewModelScope.launch {
             screenNavigator.showProgress(titleProgressScreen.value!!)
-            markets.value?.getOrNull(selectedPosition.value ?: -1)?.number?.let {
-                if (appSettings.lastTK != it) {
-                    clearPrinters()
+            markets.value?.getOrNull(selectedPosition.value ?: -1)?.number?.let { tkNumber ->
+                if (appSettings.lastTK != tkNumber) {
+                    printerManager.setDefaultPrinterForTk(tkNumber)
                 }
-                sessionInfo.printer = appSettings.printer
-                sessionInfo.market = it
-                appSettings.lastTK = it
-                if (it != marketOverIP.value){
+                sessionInfo.market = tkNumber
+                appSettings.lastTK = tkNumber
+                if (tkNumber != marketOverIP.value) {
 
                     marketOverIPRequest(
                             MarketOverIPParams(
                                     ipAdress = deviceIp.value ?: "0.0.0.0",
                                     mode = "2",
-                                    werks = it)).either(::handleFailure){ }
+                                    werks = tkNumber)).either(::handleFailure) { }
                 }
             }
             screenNavigator.hideProgress()
             screenNavigator.openFastDataLoadingScreen()
         }
-    }
-
-    private fun clearPrinters() {
-        appSettings.printer = null
-        sessionInfo.printer = null
     }
 
 
