@@ -181,6 +181,14 @@ data class ButtonDecorationInfo(
         val counted: ButtonDecorationInfo by lazy {
             ButtonDecorationInfo(R.drawable.ic_counted, R.string.counted)
         }
+
+        val find: ButtonDecorationInfo by lazy {
+            ButtonDecorationInfo(R.drawable.ic_find, R.string.find)
+        }
+
+        val search: ButtonDecorationInfo by lazy {
+            ButtonDecorationInfo(R.drawable.ic_search, R.string.search)
+        }
     }
 }
 

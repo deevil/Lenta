@@ -99,20 +99,24 @@ class TaskListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
     }
 
-    fun onClickUpdate() {
-        viewModelScope.launch {
-            screenNavigator.showProgress(taskListNetRequest)
-            taskListNetRequest(
-                    TaskListParams(
-                            storeNumber = sessionInfo.market ?: "",
-                            userNumber = sessionInfo.personnelNumber ?: "",
-                            searchParams = null,
-                            ip = context.getDeviceIp(),
-                            type = TaskListLoadingMode.Receiving.taskListLoadingModeString
-                    )
-            )
-                    .either(::handleFailure, ::handleUpdateSuccess)
-            screenNavigator.hideProgress()
+    fun onClickRight() {
+        if (selectedPage.value == 1) {
+            screenNavigator.openTaskSearchScreen()
+        } else {
+            viewModelScope.launch {
+                screenNavigator.showProgress(taskListNetRequest)
+                taskListNetRequest(
+                        TaskListParams(
+                                storeNumber = sessionInfo.market ?: "",
+                                userNumber = sessionInfo.personnelNumber ?: "",
+                                searchParams = null,
+                                ip = context.getDeviceIp(),
+                                type = TaskListLoadingMode.Receiving.taskListLoadingModeString
+                        )
+                )
+                        .either(::handleFailure, ::handleUpdateSuccess)
+                screenNavigator.hideProgress()
+            }
         }
     }
 
@@ -144,7 +148,7 @@ class TaskListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     }
 
     fun onPageSelected(position: Int) {
-
+        selectedPage.value = position
     }
 
     fun onClickItemPosition(position: Int) {

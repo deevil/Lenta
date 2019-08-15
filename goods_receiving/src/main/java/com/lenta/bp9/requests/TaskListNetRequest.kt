@@ -97,19 +97,19 @@ data class TaskListParams(
 
 data class TaskListSearchParams(
         @SerializedName("TASK_NUM")
-        val taskNumber: String,
+        val taskNumber: String?,
         @SerializedName("LIFNR")
-        val supplierNumber: String,
+        val supplierNumber: String?,
         @SerializedName("EBELN")
-        val documentNumber: String,
+        val documentNumber: String?,
         @SerializedName("ZTTN")
-        val invoiceNumber: String,
+        val invoiceNumber: String?,
         @SerializedName("TRNUM")
-        val transportNumber: String,
+        val transportNumber: String?,
         @SerializedName("EXIDV_TOP")
-        val numberGE: String,
+        val numberGE: String?,
         @SerializedName("EXIDV")
-        val numberEO: String
+        val numberEO: String?
 )
 
 class TaskContentStatus : ObjectRawStatus<TaskListRestInfo>()

@@ -14,4 +14,10 @@
     <string name="receipt_task">Задания на приемку</string>
     <string name="user_no_rights">У пользователя (%1$s) нет прав на работу с МП</string>
     <string name="error_registering_server">Ошибка регистрации на сервере</string>
+    <string name="supplier">Поставщик</string>
+    <string name="order">Заказ</string>
+    <string name="invoice">Накладная</string>
+    <string name="transportation">Транспортировка</string>
+    <string name="numberGE">Номер ГЕ</string>
+    <string name="numberEO">Номер ЕО</string>
 </resources>

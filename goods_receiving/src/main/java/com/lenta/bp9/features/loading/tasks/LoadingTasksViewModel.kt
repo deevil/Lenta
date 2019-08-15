@@ -70,6 +70,7 @@ class LoadingTasksViewModel : CoreLoadingViewModel() {
             screenNavigator.openTaskListScreen()
         } else {
             repoInMemoryHolder.lastSearchResult.value = taskList
+            screenNavigator.goBack()
         }
     }
 
