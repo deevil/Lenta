@@ -196,7 +196,7 @@ class StoragesListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
             taskManager.getInventoryTask()?.let {
                 val existingPlace = it.taskRepository.getStorePlace().findStorePlace(storageNumber)
                 if (existingPlace == null) {
-                    it.taskRepository.getStorePlace().addStorePlace(TaskStorePlaceInfo(placeCode = storageNumber, lockIP = "", lockUser = "", status = StorePlaceStatus.None))
+                    it.taskRepository.getStorePlace().addStorePlace(TaskStorePlaceInfo(placeCode = storageNumber, lockIP = "", lockUser = "", status = StorePlaceStatus.None, addedManually = true))
                     updateUnprocessed()
                 }
                 needsUpdate = false
