@@ -225,15 +225,13 @@
             android:layout_height="36sp"
             android:layout_marginStart="16dp"
             android:layout_marginBottom="24dp"
-            android:background="@drawable/bg_white_circle"
             android:clickable="true"
             android:focusable="true"
-            android:fontFamily="@font/tahoma_bold"
+            style="@style/NumberSectionTxt"
             android:foreground="?selectableItemBackground"
             android:gravity="center"
             android:onClick="@{(v) -> vm.screenNavigator.openSectionInfoScreen(vm.productInfo.sectionId)}"
             android:text='@{"" + vm.productInfo.sectionId}'
-            android:textSize="16sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@+id/tv_matrix"
             tools:text="02" />
