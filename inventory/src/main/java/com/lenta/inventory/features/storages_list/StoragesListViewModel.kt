@@ -3,6 +3,7 @@ package com.lenta.inventory.features.storages_list
 import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.lenta.inventory.R
 import com.lenta.inventory.features.goods_list.DataSaver
 import com.lenta.inventory.models.RecountType
 import com.lenta.inventory.models.StorePlaceLockMode
@@ -164,14 +165,19 @@ class StoragesListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     }
 
     fun onClickItemPosition(position: Int) {
-        var storeNumber: String?
+        val storeNumber: String?
         if (selectedPage.value == 0) {
             storeNumber = unprocessedStorages.value?.get(position)?.storeNumber
         } else {
             storeNumber = processedStorages.value?.get(position)?.storeNumber
         }
         storeNumber?.let { storePlaceNumber ->
-            screenNavigator.openGoodsListScreen(storePlaceNumber)
+            val storePlace = taskManager.getInventoryTask()!!.taskRepository.getStorePlace().findStorePlace(storePlaceNumber)
+            if (storePlace?.status != StorePlaceStatus.Finished) {
+                screenNavigator.openGoodsListScreen(storePlaceNumber)
+            } else {
+                screenNavigator.openAlertScreen(context.getString(R.string.already_counted))
+            }
         }
     }
 

@@ -63,4 +63,5 @@
     <string name="alco_forbidden">Тип товара не соответствует настройкам задания</string>
     <string name="simple_recount">Обычный пересчет</string>
     <string name="date_not_specified">Не указана дата розлива</string>
+    <string name="already_counted">МХ уже посчитано</string>
 </resources>
