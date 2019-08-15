@@ -201,8 +201,8 @@
     </style>
 
     <style name="NumberSectionTxt">
-        <item name="android:textSize">20sp</item>
-        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:fontFamily">@font/tahoma_bold</item>
         <item name="android:textColor">@color/colorNumSectionTxt</item>
         <item name="android:background">@drawable/bg_white_circle</item>
     </style>
