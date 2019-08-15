@@ -5,17 +5,17 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.inventory.features.task_list.StatusTask
 import com.lenta.inventory.models.RecountType
+import com.lenta.inventory.models.StorePlaceLockMode
 import com.lenta.inventory.models.task.IInventoryTaskManager
 import com.lenta.inventory.models.task.TaskContents
 import com.lenta.inventory.models.task.TaskDescription
 import com.lenta.inventory.platform.navigation.IScreenNavigator
 import com.lenta.inventory.repos.IRepoInMemoryHolder
-import com.lenta.inventory.requests.network.TaskContentNetRequest
-import com.lenta.inventory.requests.network.TaskContentParams
-import com.lenta.inventory.requests.network.TasksItem
+import com.lenta.inventory.requests.network.*
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.features.loading.CoreLoadingViewModel
+import com.lenta.shared.platform.device_info.DeviceInfo
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.getDeviceIp
 import kotlinx.coroutines.launch
@@ -34,9 +34,13 @@ class LoadingTaskContentViewModel : CoreLoadingViewModel() {
     lateinit var repoInMemoryHolder: IRepoInMemoryHolder
     @Inject
     lateinit var taskManager: IInventoryTaskManager
+    @Inject
+    lateinit var storePlaceLockNetRequest: StorePlaceLockNetRequest
+    @Inject
+    lateinit var deviceInfo: DeviceInfo
 
-    var taskInfo: TasksItem? = null
-    var recountType: RecountType? = null
+    lateinit var taskInfo: TasksItem
+    lateinit var recountType: RecountType
 
     override val title: MutableLiveData<String> = MutableLiveData()
     override val progress: MutableLiveData<Boolean> = MutableLiveData(true)
@@ -55,12 +59,12 @@ class LoadingTaskContentViewModel : CoreLoadingViewModel() {
                 }
             }
             taskContentRequest(TaskContentParams(ip = context.getDeviceIp(),
-                    taskNumber = taskInfo?.taskNumber ?: "",
+                    taskNumber = taskInfo.taskNumber,
                     userNumber = userNumber ?: "",
                     additionalDataFlag = "",
                     newProductNumbers = emptyList(),
                     numberRelock = if (needsRelock) "X" else "",
-                    mode = recountType?.recountType ?: "1")).either(::handleFailure, ::handleSuccess)
+                    mode = recountType.recountType)).either(::handleFailure, ::handleSuccess)
             progress.value = false
         }
     }
@@ -72,19 +76,54 @@ class LoadingTaskContentViewModel : CoreLoadingViewModel() {
 
     private fun handleSuccess(taskContents: TaskContents) {
         Logg.d { "taskContents $taskContents" }
-        screenNavigator.goBack()
-        taskInfo?.let {
-            val taskDescription = TaskDescription.from(
-                    taskInfo = it,
-                    recountType = recountType ?: RecountType.None,
-                    deadline = taskContents.deadline,
-                    tkNumber = sessionInfo.market!!,
-                    linkOldStamp = taskContents.linkOldStamp
-                    )
-            taskManager.newInventoryTask(taskDescription)
-            taskManager.getInventoryTask()?.updateTaskWithContents(taskContents)
-            screenNavigator.openTakenToWorkFragment()
+
+        if (taskContents.minUpdSales != null) {
+            screenNavigator.openMinUpdateSalesDialogScreen(
+                    minUpdSales = taskContents.minUpdSales,
+                    functionForLeft = {
+                        unlockTaskAndGoBack()
+                    },
+                    functionForRight = {
+                        openTakenToWorkScreen(taskContents)
+                    }
+            )
+        } else {
+            openTakenToWorkScreen(taskContents)
         }
+
+    }
+
+    private fun unlockTaskAndGoBack() {
+        viewModelScope.launch {
+            storePlaceLockNetRequest(StorePlaceLockParams(
+                    ip = deviceInfo.getDeviceIp(),
+                    taskNumber = taskInfo.taskNumber,
+                    storePlaceCode = "00",
+                    mode = StorePlaceLockMode.Unlock.mode,
+                    userNumber = ""
+            )).either(fnL = ::handleFailure) {
+                Logg.d { "restInfo: $it" }
+                taskManager.clearTask()
+                screenNavigator.goBack()
+                screenNavigator.goBack()
+                screenNavigator.hideProgress()
+            }
+        }
+
+    }
+
+    private fun openTakenToWorkScreen(taskContents: TaskContents) {
+        screenNavigator.goBack()
+        val taskDescription = TaskDescription.from(
+                taskInfo = taskInfo,
+                recountType = recountType,
+                deadline = taskContents.deadline,
+                tkNumber = sessionInfo.market!!,
+                linkOldStamp = taskContents.linkOldStamp
+        )
+        taskManager.newInventoryTask(taskDescription)
+        taskManager.getInventoryTask()?.updateTaskWithContents(taskContents)
+        screenNavigator.openTakenToWorkFragment()
     }
 
     override fun clean() {

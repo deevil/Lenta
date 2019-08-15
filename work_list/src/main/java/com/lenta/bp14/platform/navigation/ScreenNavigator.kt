@@ -4,8 +4,10 @@ import android.content.Context
 import com.lenta.bp14.features.auth.AuthFragment
 import com.lenta.bp14.features.check_list.goods_list.GoodsListClFragment
 import com.lenta.bp14.features.job_card.JobCardFragment
+import com.lenta.bp14.features.list_of_differences.ListOfDifferencesFragment
 import com.lenta.bp14.features.loading.fast.FastDataLoadingFragment
 import com.lenta.bp14.features.main_menu.MainMenuFragment
+import com.lenta.bp14.features.report_result.ReportResultFragment
 import com.lenta.bp14.features.select_market.SelectMarketFragment
 import com.lenta.bp14.features.task_list.TaskListFragment
 import com.lenta.shared.account.IAuthenticator
@@ -72,6 +74,18 @@ class ScreenNavigator(
         }
     }
 
+    override fun openListOfDifferencesScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(ListOfDifferencesFragment())
+        }
+    }
+
+    override fun openReportResultScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(ReportResultFragment())
+        }
+    }
+
 
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 
@@ -86,4 +100,6 @@ interface IScreenNavigator : ICoreNavigator {
     fun openTaskListScreen()
     fun openJobCardScreen(taskNumber: String)
     fun openCheckListGoodsList()
+    fun openListOfDifferencesScreen()
+    fun openReportResultScreen()
 }

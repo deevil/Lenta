@@ -24,6 +24,7 @@
             android:gravity="center"
             android:text="@{vm.sectionNumber}"
             android:textSize="24sp"
+            android:textColor="@color/colorNumSectionTxt"
             app:layout_constraintBottom_toTopOf="@+id/tv_message"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"

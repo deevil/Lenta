@@ -37,7 +37,7 @@
             </LinearLayout>
 
             <View
-                style="@style/RowVerticalDivider"/>
+                style="@style/VerticalDivider"/>
 
             <LinearLayout
                 style="@style/LinearCellStyle"
@@ -79,7 +79,7 @@
             </LinearLayout>
 
             <View
-                style="@style/RowVerticalDivider"/>
+                style="@style/VerticalDivider"/>
 
             <LinearLayout
                 style="@style/LinearCellStyle"
@@ -95,7 +95,7 @@
             </LinearLayout>
 
             <View
-                style="@style/RowVerticalDivider"/>
+                style="@style/VerticalDivider"/>
 
             <LinearLayout
                 style="@style/LinearCellStyle"

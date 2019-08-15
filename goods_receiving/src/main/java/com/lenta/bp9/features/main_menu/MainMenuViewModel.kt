@@ -24,6 +24,10 @@ class MainMenuViewModel : CoreViewModel() {
         }
     }
 
+    fun onClickShipmentTask() {
+
+    }
+
     fun onClickReceiptTask() {
         screenNavigator.openTaskListLoadingScreen(TaskListLoadingMode.Receiving)
     }

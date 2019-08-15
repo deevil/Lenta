@@ -14,7 +14,7 @@ import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
 import com.lenta.shared.utilities.extentions.provideViewModel
 import com.lenta.shared.utilities.state.state
 
-class LoadingTaskContentFragment: CoreLoadingFragment() {
+class LoadingTaskContentFragment : CoreLoadingFragment() {
 
     private var taskInfo: TasksItem? by state(null)
 
@@ -27,15 +27,14 @@ class LoadingTaskContentFragment: CoreLoadingFragment() {
     override fun getViewModel(): CoreLoadingViewModel {
         provideViewModel(LoadingTaskContentViewModel::class.java).let {
             getAppComponent()?.inject(it)
-            it.taskInfo = taskInfo
-            it.recountType = recountType
+            it.taskInfo = taskInfo!!
+            it.recountType = recountType!!
             return it
         }
     }
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
-        topToolbarUiModel.title.value = taskInfo?.taskName
-        topToolbarUiModel.description.value = getString(R.string.data_loading)
+        topToolbarUiModel.description.value = getString(R.string.job_card)
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {

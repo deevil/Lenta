@@ -9,8 +9,14 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.utilities.extentions.provideViewModel
 </#if>
+<#if numberOfTabs != "0">
+import android.os.Bundle
+import com.lenta.shared.utilities.databinding.ViewPagerSettings
+import android.view.ViewGroup
+import android.view.View
+</#if>
 
-class ${className} : CoreFragment<${underscoreToCamelCase(layoutName)}Binding, ${viewModelName}>() {
+class ${className} : CoreFragment<${underscoreToCamelCase(layoutName)}Binding, ${viewModelName}>()<#if numberOfTabs != "0">, ViewPagerSettings</#if> {
 
     override fun getLayoutId(): Int = R.layout.${layoutName}
 
@@ -32,6 +38,26 @@ class ${className} : CoreFragment<${underscoreToCamelCase(layoutName)}Binding, $
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
+
+    <#if numberOfTabs != "0">
+    override fun getPagerItemView(container: ViewGroup, position: Int): View {
+        return View(context)
+    }
+
+    override fun getTextTitle(position: Int): String {
+        return "Title: $position"
+    }
+
+    override fun countTab(): Int {
+        return ${numberOfTabs}
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        binding?.viewPagerSettings = this
+    }
+
+    </#if>
 
     
 

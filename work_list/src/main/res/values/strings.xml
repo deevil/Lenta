@@ -1,8 +1,36 @@
 <resources>
+
     <string name="app_name">Рабочий список</string>
     <string name="work_with_tasks">Работа с заданиями</string>
     <string name="create_task">Создать задание</string>
     <string name="print_labels">Печать ценников</string>
     <string name="not_processed">К обработке</string>
     <string name="task_list">Список заданий</string>
+
+    <string name="specify_product">Укажите товар</string>
+    <string name="print_settings">Настройка печати</string>
+
+    <string name="copy_quantity">Кол-во копий</string>
+    <string name="printer_type">Тип принтера</string>
+    <string name="price_tag_type">Тип ценника</string>
+    <string name="device_ip">IP адрес ТСД</string>
+    <string name="quantity">Количество</string>
+    <string name="total_quantity">Итого: 1 шт.</string>
+    <string name="comment">Комментарий</string>
+    <string name="total_shelf_life">Общий СГ</string>
+    <string name="remaining_shelf_life">Остаточный СГ</string>
+    <string name="barcode_units">Штрихкод/ЕИ ШК</string>
+    <string name="gt_gz">ГТ/ГЗ</string>
+    <string name="promotions">Промо-акции</string>
+    <string name="price_without_dk">Цена без ДК</string>
+    <string name="price_with_dk">Цена с ДК</string>
+    <string name="goods_arrival">Приход</string>
+    <string name="inventory_of_goods">Инвентаризиция</string>
+    <string name="pnz">ПНЗ</string>
+    <string name="storage_locations">Места хранения</string>
+    <string name="number">№</string>
+    <string name="storage">Склад</string>
+    <string name="period_kip">Период КИП</string>
+    <string name="provider">Поставщик</string>
+
 </resources>

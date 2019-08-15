@@ -6,6 +6,7 @@ import com.lenta.shared.fmp.ObjectRawStatus
 import com.lenta.shared.functional.Either
 import com.lenta.shared.interactor.UseCase
 import com.lenta.shared.requests.FmpRequestsHelper
+import com.lenta.shared.requests.SapResponse
 import com.lenta.shared.utilities.Logg
 import javax.inject.Inject
 
@@ -32,9 +33,9 @@ data class StorePlaceLockParams(
 
 data class StorePlaceLockRestInfo(
         @SerializedName("EV_ERROR_TEXT")
-        val error: String, //Текст ошибки
+        override val errorText: String, //Текст ошибки
         @SerializedName("EV_RETCODE")
-        val retcode: String //Код возврата для ABAP-операторов
-)
+        override val retCode: Int //Код возврата для ABAP-операторов
+) : SapResponse
 
 class StorePlaceLockStatus : ObjectRawStatus<StorePlaceLockRestInfo>()

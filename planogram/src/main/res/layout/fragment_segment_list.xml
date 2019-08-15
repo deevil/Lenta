@@ -40,7 +40,7 @@
                     android:layout_weight="@integer/size_column_1">
 
                     <TextView
-                        style="@style/CellTitleTextStyle"
+                        style="@style/ColumnTitleStyle"
                         android:text="@string/number"/>
 
                 </LinearLayout>
@@ -50,7 +50,7 @@
                     android:layout_weight="@integer/size_column_2">
 
                     <TextView
-                        style="@style/CellTitleTextStyle"
+                        style="@style/ColumnTitleStyle"
                         android:text="@string/column_title_segment_number_date"/>
 
                 </LinearLayout>
@@ -60,7 +60,7 @@
                     android:layout_weight="@integer/size_column_3">
 
                     <TextView
-                        style="@style/CellTitleTextStyle"
+                        style="@style/ColumnTitleStyle"
                         android:text="@string/column_title_status"/>
 
                 </LinearLayout>
@@ -70,7 +70,7 @@
                     android:layout_weight="@integer/size_column_4">
 
                     <TextView
-                        style="@style/CellTitleTextStyle"
+                        style="@style/ColumnTitleStyle"
                         android:text="@string/column_title_shelves"/>
 
                 </LinearLayout>
@@ -78,7 +78,7 @@
             </LinearLayout>
 
             <View
-                style="@style/RowHorizontalDivider"/>
+                style="@style/HorizontalDivider"/>
 
         </LinearLayout>
 

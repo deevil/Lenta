@@ -46,7 +46,6 @@ class ExciseAlcoInfoFragment : CoreFragment<FragmentExciseAlcoInfoBinding, Excis
             vm.spinList.value = listOf(getString(R.string.quantity), getString(R.string.partly), getString(R.string.vintage))
             vm.textErrorUnknownStatus.value = getString(R.string.text_error_unknown_status)
             vm.titleProgressScreen.value = getString(R.string.data_loading)
-            vm.alcocodeNotFound.value = getString(R.string.alcocode_not_found)
             vm.msgWrongProducType.value = getString(R.string.wrong_product_type)
             return vm
         }

@@ -38,8 +38,8 @@ class FmpRequestsHelper(val hyperHive: HyperHive,
         var result: Either<Failure, S>
 
         try {
+            Logg.d { "status: $statusString" }
             val status = gson.fromJson(statusString, clazz)
-            Logg.d { "status: $status" }
             result = if (status.isNotBad()) {
                 analyticsHelper.onFinishFmpRequest(resourceName = resourceName)
                 val resultData = status.result?.raw

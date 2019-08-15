@@ -129,4 +129,5 @@
     <string name="goods">Товары</string>
     <string name="comment">Комментарий</string>
     <string name="list_of_goods">Список товаров</string>
+    <string name="list_of_differences">Список расхождений</string>
 </resources>
