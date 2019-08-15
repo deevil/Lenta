@@ -146,7 +146,7 @@ class ProcessExciseAlcoProductServiceTest : BaseUnitTest() {
 
         processExciseAlcoProductService.newProcessExciseAlcoProductService(product.copy())
     }
-/**
+
     @Test
     fun setFactCount() {
 
@@ -383,11 +383,6 @@ class ProcessExciseAlcoProductServiceTest : BaseUnitTest() {
     }
 
     @Test
-    fun isLinkingOldStamps() {
-        Assert.assertFalse(processExciseAlcoProductService.isLinkingOldStamps())
-    }
-
-    @Test
     fun getLastCountExciseStamp() {
         //добавляем первую акцизную марку 150 символов продукту
         processExciseAlcoProductService.addCurrentExciseStamp(exciseStamp150_1)
@@ -475,7 +470,7 @@ class ProcessExciseAlcoProductServiceTest : BaseUnitTest() {
 
         //проверяем getCountVintageStamps, кол-во марок, должно быть 4
         Assert.assertEquals(4, processExciseAlcoProductService.getCountVintageStamps())
-    }*/
+    }
 
     @Test
     fun delAllPartlyStamps() {
