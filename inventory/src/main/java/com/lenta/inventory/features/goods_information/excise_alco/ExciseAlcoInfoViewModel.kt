@@ -1,6 +1,5 @@
 package com.lenta.inventory.features.goods_information.excise_alco
 
-import android.os.Bundle
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.inventory.features.goods_list.SearchProductDelegate
@@ -14,10 +13,8 @@ import com.lenta.inventory.requests.network.*
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.models.core.Manufacturer
-import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
-import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.toStringFormatted
@@ -142,8 +139,23 @@ class ExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
         selectedPosition.value = countLastExciseStamp.countType
     }
 
+    //todo
+    var test = 0
     fun onClickDetails() {
-        screenNavigator.openGoodsDetailsStorageScreen(productInfo.value!!)
+        //todo
+        if (test == 2) {
+            onScanResult("209688161841890418581L922K5BYNXJ4SZELUZZQZUP6XHHEVQ9T5SYXRNDPURYR0H731SWX7QNCUCNR9T3B0NF9WZPEB1V6V5NGUUFPITG9N1R14QCHB0GT6SOH9SZZD7J8I6X0NEGAZHLZ49809")
+            test = 3
+        }
+        if (test == 1) {
+            onScanResult("209688161841890418581L922K5BYNXJ4SZELUZZQZUP6XHHEVQ9T5SYXRNDPURYR0H731SWX7QNCUCNR9T3B0NF9WZPEB1V6V5NGUUFPITG9N1R14QCHB0GT6SOH9SZZD7J8I6X0NEGAZHLZ49805")
+            test = 2
+        }
+        if (test == 0) {
+            onScanResult("209688161841890418581L922K5BYNXJ4SZELUZZQZUP6XHHEVQ9T5SYXRNDPURYR0H731SWX7QNCUCNR9T3B0NF9WZPEB1V6V5NGUUFPITG9N1R14QCHB0GT6SOH9SZZD7J8I6X0NEGAZHLZ49800")
+            test = 1
+        }
+        //screenNavigator.openGoodsDetailsStorageScreen(productInfo.value!!)
     }
 
     fun onClickMissing() {
@@ -225,7 +237,7 @@ class ExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
     private fun processPdf68(stampCode: String) {
         if (processExciseAlcoProductService.isTaskAlreadyHasExciseStamp(stampCode)) {
             screenNavigator.openAlertDoubleScanStamp()
-        } else{
+        } else {
             checkExciseStampByCode(stampCode)
         }
     }
@@ -273,7 +285,7 @@ class ExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
                 count.value = "1"
                 selectedPosition.value = GoodsInfoCountType.VINTAGE.number
                 if (exciseGoodsRestInfo.status == InfoStatus.StampOverload.status) {
-                    screenNavigator.openAlertStampOverload(message = exciseGoodsRestInfo.statusTxt){}
+                    screenNavigator.openAlertStampOverload(message = exciseGoodsRestInfo.statusTxt) {}
                 }
             }
             InfoStatus.StampOfOtherProduct.status -> {
@@ -330,7 +342,7 @@ class ExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
                 count.value = "1"
                 selectedPosition.value = GoodsInfoCountType.VINTAGE.number
                 if (exciseGoodsRestInfo.status == InfoStatus.BatchNotFound.status) {
-                    screenNavigator.openAlertStampOverload(exciseGoodsRestInfo.statusTxt){}
+                    screenNavigator.openAlertStampOverload(exciseGoodsRestInfo.statusTxt) {}
                 }
             }
             else -> screenNavigator.openAlertInfoScreen(textErrorUnknownStatus.value!!)
@@ -375,7 +387,7 @@ class ExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
                 count.value = "1"
                 selectedPosition.value = GoodsInfoCountType.PARTLY.number
                 if (exciseGoodsRestInfo.status == InfoStatus.StampOverload.status) {
-                    screenNavigator.openAlertStampOverload(message = exciseGoodsRestInfo.statusTxt){}
+                    screenNavigator.openAlertStampOverload(message = exciseGoodsRestInfo.statusTxt) {}
                 }
             }
             InfoStatus.StampOfOtherProduct.status -> {
@@ -432,7 +444,7 @@ class ExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
                 count.value = "1"
                 selectedPosition.value = GoodsInfoCountType.PARTLY.number
                 if (exciseGoodsRestInfo.status == InfoStatus.BatchNotFound.status) {
-                    screenNavigator.openAlertStampOverload(exciseGoodsRestInfo.statusTxt){}
+                    screenNavigator.openAlertStampOverload(exciseGoodsRestInfo.statusTxt) {}
                 }
             }
             else -> screenNavigator.openAlertInfoScreen(textErrorUnknownStatus.value!!)
@@ -518,6 +530,10 @@ class ExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
     }
 
     fun onBackPressed() {
+        if (enabledRollbackButton.value!!) {
+            processExciseAlcoProductService.rollback()
+            processExciseAlcoProductService.apply()
+        }
         processExciseAlcoProductService.discard()
     }
 }
