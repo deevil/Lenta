@@ -53,7 +53,7 @@
 
                     <TextView
                         style="@style/ColumnTitleStyle"
-                        android:text="@string/provider"/>
+                        android:text="@string/storage"/>
 
                 </LinearLayout>
 
@@ -63,7 +63,7 @@
 
                     <TextView
                         style="@style/ColumnTitleStyle"
-                        android:text="@string/period_kip"/>
+                        android:text="@string/quantity"/>
 
                 </LinearLayout>
 
@@ -75,14 +75,14 @@
         </LinearLayout>
 
 
-        <!-- Список поставщиков -->
+        <!-- Список остатков -->
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
             app:rv_config="@{rvConfig}"
-            tools:listitem="@layout/item_good_provider"/>
+            tools:listitem="@layout/item_stock"/>
 
     </LinearLayout>
 

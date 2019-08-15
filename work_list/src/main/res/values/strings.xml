@@ -28,5 +28,9 @@
     <string name="inventory_of_goods">Инвентаризиция</string>
     <string name="pnz">ПНЗ</string>
     <string name="storage_locations">Места хранения</string>
+    <string name="number">№</string>
+    <string name="storage">Склад</string>
+    <string name="period_kip">Период КИП</string>
+    <string name="provider">Поставщик</string>
 
 </resources>
