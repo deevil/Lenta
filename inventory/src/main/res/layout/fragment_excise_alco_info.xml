@@ -70,7 +70,7 @@
             android:maxLines="1"
             android:maxLength="6"
             android:imeOptions="normal"
-            android:enabled="@{vm.isCheckExciseStampByAlcoCode}"
+            android:enabled="false"
             android:text="@={vm.count}"
             app:digitsForUom="@{vm.productInfo.uom}"
             app:layout_constraintEnd_toEndOf="parent"
