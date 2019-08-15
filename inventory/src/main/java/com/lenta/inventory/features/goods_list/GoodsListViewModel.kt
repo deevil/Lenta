@@ -284,7 +284,7 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
     private fun moveToPreviousPageIfNeeded() {
         if (lastPage == 0) {
-            selectedPage.value = if (unprocessedGoods.value?.size == 0) 1 else 0
+            selectedPage.value = if (unprocessedGoods.value?.size == 0 && processedGoods.value?.size != 0) 1 else 0
         } else {
             selectedPage.value = if (processedGoods.value?.size == 0) 0 else 1
         }
