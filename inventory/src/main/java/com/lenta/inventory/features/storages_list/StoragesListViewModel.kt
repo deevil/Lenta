@@ -53,7 +53,7 @@ class StoragesListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
         page != 0 && selectionCount > 0
     }
 
-    private var justLoaded: Boolean = true
+    private var needsUpdate: Boolean = false
 
     init {
         viewModelScope.launch {
@@ -64,10 +64,10 @@ class StoragesListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     }
 
     fun onResume() {
-        if (!justLoaded) {
+        if (needsUpdate) {
             onClickRefresh()
         } else {
-            justLoaded = false
+            needsUpdate = true
         }
     }
 
@@ -139,7 +139,7 @@ class StoragesListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
                             additionalDataFlag = "",
                             newProductNumbers = emptyList(),
                             numberRelock = "",
-                            mode = "1")
+                            mode = "3")
             )
                     .either(::handleFailure, ::handleUpdateSuccess)
             screenNavigator.hideProgress()
@@ -193,6 +193,7 @@ class StoragesListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
                     it.taskRepository.getStorePlace().addStorePlace(TaskStorePlaceInfo(placeCode = storageNumber, lockIP = "", lockUser = "", status = StorePlaceStatus.None))
                     updateUnprocessed()
                 }
+                needsUpdate = false
                 screenNavigator.openLoadingStorePlaceLockScreen(StorePlaceLockMode.Lock, storageNumber)
             }
         }

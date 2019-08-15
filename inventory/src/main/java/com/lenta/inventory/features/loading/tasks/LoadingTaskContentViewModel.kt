@@ -60,7 +60,7 @@ class LoadingTaskContentViewModel : CoreLoadingViewModel() {
                     additionalDataFlag = "",
                     newProductNumbers = emptyList(),
                     numberRelock = if (needsRelock) "X" else "",
-                    mode = "1")).either(::handleFailure, ::handleSuccess)
+                    mode = recountType?.recountType ?: "1")).either(::handleFailure, ::handleSuccess)
             progress.value = false
         }
     }
