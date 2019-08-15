@@ -13,6 +13,7 @@ import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
+import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.map
@@ -54,7 +55,6 @@ class SetsInfoViewModel : CoreViewModel(), OnPositionClickListener {
     val isStorePlaceNumber: MutableLiveData<Boolean> = storePlaceNumber.map { it != "00" }
     var selectedPage = MutableLiveData(0)
     val componentsSelectionsHelper = SelectionItemsHelper()
-    val searchCode: MutableLiveData<String> = MutableLiveData()
     val spinList: MutableLiveData<List<String>> = MutableLiveData()
     val selectedPosition: MutableLiveData<Int> = MutableLiveData(0)
     val count: MutableLiveData<String> = MutableLiveData("0")
@@ -304,7 +304,7 @@ class SetsInfoViewModel : CoreViewModel(), OnPositionClickListener {
 
     private fun processItemByBarcode(searchCode: String) {
         componentsInfo.filter {
-            it.number == searchCode
+            it.number == searchCode || processSetsService.isHaveEanForComponent(it.number, searchCode)
         }.map { componentInfo ->
             val countExciseStampForComponent = processSetsService.getCountExciseStampsForComponent(componentInfo)
             if (countExciseStampForComponent >= (componentInfo.count).toDouble()) {
@@ -315,7 +315,7 @@ class SetsInfoViewModel : CoreViewModel(), OnPositionClickListener {
             return
         }
 
-        searchProductDelegate.searchCode(code = searchCode, fromScan = true)
+        searchProductDelegate.searchCode(code = searchCode, fromScan = true, isBarCode = true)
     }
 
     private fun enabledBtn() {
