@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.Observer
 import com.lenta.inventory.BR
 import com.lenta.inventory.R
 import com.lenta.inventory.databinding.*
@@ -49,6 +50,15 @@ class StoragesListFragment : CoreFragment<FragmentStoragesListBinding, StoragesL
         bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.update)
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.complete)
         connectLiveData(source = vm.deleteEnabled, target = getBottomToolBarUIModel()!!.uiModelButton3.enabled)
+        viewLifecycleOwner.apply {
+            vm.selectedPage.observe(this, Observer {
+                if (it == 0) {
+                    bottomToolbarUiModel.uiModelButton3.clean()
+                } else {
+                    bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.clean)
+                }
+            })
+        }
     }
 
     override fun onToolbarButtonClick(view: View) {
