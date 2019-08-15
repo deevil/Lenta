@@ -20,7 +20,8 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <!-- Наименование колонок -->
+
+        <!-- Наименования колонок -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -73,6 +74,7 @@
 
         </LinearLayout>
 
+
         <!-- Список товаров -->
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv"
@@ -80,7 +82,7 @@
             android:layout_height="0dp"
             android:layout_weight="1"
             app:rv_config="@{rvConfig}"
-            tools:listitem="@layout/item_good"/>
+            tools:listitem="@layout/item_good_provider"/>
 
     </LinearLayout>
 
