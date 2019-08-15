@@ -24,6 +24,7 @@ import com.lenta.shared.only_one_app.LockManager
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
 import com.lenta.shared.platform.battery_state.BatteryStateMonitor
 import com.lenta.shared.platform.battery_state.IBatteryStateMonitor
+import com.lenta.shared.platform.device_info.DeviceInfo
 import com.lenta.shared.platform.high_priority.MainService
 import com.lenta.shared.platform.navigation.BackFragmentResultHelper
 import com.lenta.shared.platform.navigation.FragmentStack
@@ -74,6 +75,7 @@ interface CoreComponent {
     fun getAnalyticsHelper(): AnalyticsHelper
     fun getFmpRequestsHelper(): FmpRequestsHelper
     fun getLockManager(): LockManager
+    fun getDeviceInfo(): DeviceInfo
 
 
     fun inject(it: FmpSettingsViewModel)

@@ -62,5 +62,6 @@
     <string name="goods_not_for_task">Товар отсутствует в задании</string>
     <string name="alco_forbidden">Тип товара не соответствует настройкам задания</string>
     <string name="simple_recount">Обычный пересчет</string>
+    <string name="min_update_sells_alert">Данные о продажах не поступали с касс более %d минут. Плановые остатки могут быть неточными. Начать пересчет?</string>
     <string name="date_not_specified">Не указана дата розлива</string>
 </resources>

@@ -1,17 +1,24 @@
 package com.lenta.inventory.features.job_card
 
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import com.lenta.inventory.models.RecountType
+import com.lenta.inventory.models.StorePlaceLockMode
 import com.lenta.inventory.models.task.IInventoryTaskManager
 import com.lenta.inventory.platform.navigation.IScreenNavigator
 import com.lenta.inventory.repos.IRepoInMemoryHolder
+import com.lenta.inventory.requests.network.StorePlaceLockNetRequest
+import com.lenta.inventory.requests.network.StorePlaceLockParams
 import com.lenta.inventory.requests.network.TasksItem
+import com.lenta.shared.exception.Failure
 import com.lenta.shared.models.core.ProductType
 import com.lenta.shared.platform.constants.Constants
+import com.lenta.shared.platform.device_info.DeviceInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.date_time.DateTimeUtil.convertTimeString
 import com.lenta.shared.view.OnPositionClickListener
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class JobCardViewModel : CoreViewModel(), OnPositionClickListener {
@@ -23,6 +30,12 @@ class JobCardViewModel : CoreViewModel(), OnPositionClickListener {
 
     @Inject
     lateinit var taskManager: IInventoryTaskManager
+
+    @Inject
+    lateinit var storePlaceLockNetRequest: StorePlaceLockNetRequest
+
+    @Inject
+    lateinit var deviceInfo: DeviceInfo
 
     private lateinit var tasksItem: TasksItem
 
@@ -67,23 +80,22 @@ class JobCardViewModel : CoreViewModel(), OnPositionClickListener {
 
         Logg.d { "taskItem $tasksItem" }
 
-        this.typesRecount = typesRecount
-
-        this.recountsTitles.postValue(typesRecount
-                .filterIndexed { index, recountType ->
-                    var res: Boolean
-                    res = (if (isStrictList) true else index == 0) && (taskManager.getInventoryTask()?.taskDescription?.recountType
-                            ?: recountType) == recountType
-                    if (res && (tasksItem.notFinish == "X" || tasksItem.mode == "2" || tasksItem.mode == "3")) {
-                        res = when (tasksItem.mode) {
-                            "1" -> index == 0
-                            "2" -> index == 1
-                            "3" -> index == 2
-                            else -> false
-                        }
-                    }
-                    res
+        this.typesRecount = typesRecount.filterIndexed { index, recountType ->
+            var res: Boolean
+            res = (if (isStrictList) true else index == 0) && (taskManager.getInventoryTask()?.taskDescription?.recountType
+                    ?: recountType) == recountType
+            if (res && (tasksItem.notFinish == "X" || tasksItem.mode == "2" || tasksItem.mode == "3")) {
+                res = when (tasksItem.mode) {
+                    "1" -> index == 0
+                    "2" -> index == 1
+                    "3" -> index == 2
+                    else -> false
                 }
+            }
+            res
+        }
+
+        this.recountsTitles.postValue(this.typesRecount
                 .map {
                     converterTypeToString(it)
                 })
@@ -110,7 +122,8 @@ class JobCardViewModel : CoreViewModel(), OnPositionClickListener {
     }
 
     private fun getSelectedTypeRecount(): RecountType? {
-        return typesRecount.getOrNull(selectedPosition.value ?: -1)
+        return if (typesRecount.size == 1) typesRecount[0] else typesRecount.getOrNull(selectedPosition.value
+                ?: -1)
     }
 
     private fun convertTime(dateString: String): String {
@@ -123,11 +136,35 @@ class JobCardViewModel : CoreViewModel(), OnPositionClickListener {
         }
 
         screenNavigator.openConfirmationExitTask {
-            taskManager.clearTask()
-            screenNavigator.goBack()
+            unlockTask()
         }
 
         return false
+
+    }
+
+    private fun unlockTask() {
+        viewModelScope.launch {
+            screenNavigator.showProgress(storePlaceLockNetRequest)
+            storePlaceLockNetRequest(StorePlaceLockParams(
+                    ip = deviceInfo.getDeviceIp(),
+                    taskNumber = tasksItem.taskNumber,
+                    storePlaceCode = "00",
+                    mode = StorePlaceLockMode.Unlock.mode,
+                    userNumber = ""
+            )).either(fnL = ::handleFailure) {
+                Logg.d { "restInfo: $it" }
+                taskManager.clearTask()
+                screenNavigator.goBack()
+                screenNavigator.hideProgress()
+            }
+        }
+    }
+
+
+    override fun handleFailure(failure: Failure) {
+        screenNavigator.hideProgress()
+        screenNavigator.openAlertScreen(failure)
 
     }
 
