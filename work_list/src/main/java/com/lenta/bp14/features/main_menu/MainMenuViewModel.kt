@@ -18,6 +18,7 @@ class MainMenuViewModel : CoreViewModel() {
     }
 
     fun onClickPrint() {
+        screenNavigator.openPrintSettingsScreen()
     }
 
 

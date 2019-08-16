@@ -7,6 +7,7 @@ import com.lenta.bp14.features.job_card.JobCardFragment
 import com.lenta.bp14.features.list_of_differences.ListOfDifferencesFragment
 import com.lenta.bp14.features.loading.fast.FastDataLoadingFragment
 import com.lenta.bp14.features.main_menu.MainMenuFragment
+import com.lenta.bp14.features.print_settings.PrintSettingsFragment
 import com.lenta.bp14.features.report_result.ReportResultFragment
 import com.lenta.bp14.features.select_market.SelectMarketFragment
 import com.lenta.bp14.features.task_list.TaskListFragment
@@ -86,6 +87,11 @@ class ScreenNavigator(
         }
     }
 
+    override fun openPrintSettingsScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(PrintSettingsFragment())
+        }
+    }
 
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 
@@ -102,4 +108,5 @@ interface IScreenNavigator : ICoreNavigator {
     fun openCheckListGoodsList()
     fun openListOfDifferencesScreen()
     fun openReportResultScreen()
+    fun openPrintSettingsScreen()
 }
