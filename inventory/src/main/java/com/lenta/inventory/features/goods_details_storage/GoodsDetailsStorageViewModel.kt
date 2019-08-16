@@ -55,9 +55,20 @@ class GoodsDetailsStorageViewModel : CoreViewModel() {
     }
 
     private fun updateGoodsInfo() {
+        if (isGeneralProduct.value!! || productInfo.value!!.isSet) {
+            updateNotProcessed()
+            updateProcessed()
+            return
+        }
+
+        if (isStorePlace.value!!) {
+            updateCategories()
+            updateNotProcessed()
+            updateProcessed()
+            return
+        }
+
         updateCategories()
-        updateNotProcessed()
-        updateProcessed()
     }
 
     private fun updateCategories() {
