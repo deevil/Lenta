@@ -72,7 +72,7 @@ class AnalyticsHelper(
         analytics.logTrace(message = "Сообщение пользователю: $message")
     }
 
-    fun infoXmlCheckResult(xmlString: String) {
+    fun logXmlCheckResult(xmlString: String) {
         analytics.logTrace(message = "Результат проверки: $xmlString")
     }
 

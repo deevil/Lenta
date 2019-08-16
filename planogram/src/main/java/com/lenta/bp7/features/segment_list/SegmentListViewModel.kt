@@ -13,6 +13,7 @@ import com.lenta.bp7.requests.network.SaveCheckDataRestInfo
 import com.lenta.bp7.requests.network.SaveExternalAuditDataNetRequest
 import com.lenta.bp7.requests.network.SaveSelfControlDataNetRequest
 import com.lenta.shared.account.ISessionInfo
+import com.lenta.shared.analytics.AnalyticsHelper
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
@@ -34,6 +35,8 @@ class SegmentListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     lateinit var saveSelfControlDataNetRequest: SaveSelfControlDataNetRequest
     @Inject
     lateinit var saveExternalAuditDataNetRequest: SaveExternalAuditDataNetRequest
+    @Inject
+    lateinit var analyticsHelper: AnalyticsHelper
 
 
     companion object {
@@ -123,10 +126,13 @@ class SegmentListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
     private fun saveCheckResult() {
         viewModelScope.launch {
+            val checkResult = checkData.prepareXmlCheckResult(marketIp.value ?: "Not found!")
+            analyticsHelper.logXmlCheckResult(checkResult)
+
             val saveCheckDataParams = SaveCheckDataParams(
                     shop = checkData.getFormattedMarketNumber(),
                     terminalId = terminalId.value ?: "Not found!",
-                    data = checkData.prepareXmlCheckResult(marketIp.value ?: "Not found!"),
+                    data = checkResult,
                     saveDoc = 1)
 
             val saveRequestType = when (checkData.checkType) {

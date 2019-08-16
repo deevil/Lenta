@@ -13,8 +13,7 @@ import java.util.*
 import javax.inject.Inject
 
 class CheckData @Inject constructor(
-        private val persistCheckResult: IPersistCheckResult,
-        private var analyticsHelper: AnalyticsHelper
+        private val persistCheckResult: IPersistCheckResult
 ) {
     val segments: MutableList<Segment> = mutableListOf()
 
@@ -269,9 +268,7 @@ class CheckData @Inject constructor(
         val serializer = Persister()
         val result = StringWriter()
         serializer.write(displayOfGoods, result)
-
         Logg.d { "displayOfGoods --> $result" }
-        analyticsHelper.infoXmlCheckResult(result.toString())
 
         return result.toString()
     }
