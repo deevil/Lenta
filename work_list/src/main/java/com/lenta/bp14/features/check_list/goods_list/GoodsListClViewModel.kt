@@ -48,8 +48,7 @@ class GoodsListClViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     }
 
     override fun onPageSelected(position: Int) {
-
-
+        selectedPage.value = position
     }
 
     override fun onOkInSoftKeyboard(): Boolean {
