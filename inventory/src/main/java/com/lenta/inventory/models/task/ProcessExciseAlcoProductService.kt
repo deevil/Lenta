@@ -103,7 +103,13 @@ class ProcessExciseAlcoProductService
                                                 factCount = currentProductInfo!!.factCount - currentCountExciseStamps.last().countLastExciseStamp,
                                                 isPositionCalc = currentProductInfo!!.factCount > 0.0
         )
-        currentExciseStamps.removeAt(currentExciseStamps.lastIndex)
+
+        currentCountExciseStamps.last().let {
+            for (i in 1..it.countLastExciseStamp) {
+                currentExciseStamps.removeAt(currentExciseStamps.lastIndex)
+            }
+        }
+
         currentCountExciseStamps.removeAt(currentCountExciseStamps.lastIndex)
         return GoodsInfoCountExciseStamps(
                 countLastExciseStamp = currentCountExciseStamps.let {countExciseStampsList ->
