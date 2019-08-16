@@ -21,7 +21,7 @@ data class DisplayOfGoods @JvmOverloads constructor(
 }
 
 @Root(name = "equipment")
-@Order(attributes = ["number", "startTime", "completionTime", "canceled"])
+@Order(attributes = ["number", "startTime", "completionTime", "cancelled"])
 data class SegmentSend @JvmOverloads constructor(
         @field:Attribute(name = "number")
         var number: String,
@@ -38,7 +38,7 @@ data class SegmentSend @JvmOverloads constructor(
 }
 
 @Root(name = "shelf")
-@Order(attributes = ["number", "startTime", "completionTime", "counted", "canceled"])
+@Order(attributes = ["number", "startTime", "completionTime", "counted", "cancelled"])
 data class ShelfSend @JvmOverloads constructor(
         @field:Attribute(name = "number")
         var number: String,
