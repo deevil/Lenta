@@ -17,8 +17,10 @@ class PrintSettingsViewModel : CoreViewModel(), OnPositionClickListener {
     }
 
     val numberOfCopies: MutableLiveData<String> = MutableLiveData("1")
-    val selectedPosition: MutableLiveData<Int> = MutableLiveData(0)
+    val selectedPrinterType: MutableLiveData<Int> = MutableLiveData(0)
+    val selectedPriceTagType: MutableLiveData<Int> = MutableLiveData(0)
     val ipAddressVisibility: MutableLiveData<Boolean> = MutableLiveData(false)
+    val ipAddress: MutableLiveData<String> = MutableLiveData("10.254.25.12")
 
     fun increaseNumberOfCopies() {
         val copy = numberOfCopies.value?.toInt() ?: 0
@@ -27,18 +29,24 @@ class PrintSettingsViewModel : CoreViewModel(), OnPositionClickListener {
 
     fun reduceNumberOfCopies() {
         val copy = numberOfCopies.value?.toInt() ?: 0
-        if (copy > 1) {
-            numberOfCopies.value = "" + (copy - 1)
-        }
+        if (copy > 1) numberOfCopies.value = "" + (copy - 1)
     }
 
     override fun onClickPosition(position: Int) {
-        selectedPosition.value = position
+        selectedPrinterType.value = position
 
         when (position) {
             DATAMAX -> ipAddressVisibility.value = false
             ZEBRA -> ipAddressVisibility.value = true
         }
+    }
+
+    fun scanQrCode() {
+
+    }
+
+    fun scanBarCode() {
+
     }
 
 }

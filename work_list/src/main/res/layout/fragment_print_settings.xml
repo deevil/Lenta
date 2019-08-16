@@ -109,7 +109,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_margin="8dp"
-                        app:position="@={vm.selectedPosition}"
+                        app:position="@{vm.selectedPrinterType}"
                         app:onPositionClickListener="@{vm}"
                         android:entries="@array/printer_name"/>
 
@@ -147,6 +147,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_margin="8dp"
+                        app:position="@{vm.selectedPriceTagType}"
                         android:entries="@array/price_tag_name"/>
 
                 </LinearLayout>
@@ -194,6 +195,7 @@
                             android:paddingStart="10dp"
                             android:paddingEnd="10dp"
                             android:textSize="14sp"
+                            android:text="@={vm.ipAddress}"
                             tools:text="10.254.25.12"/>
 
                     </LinearLayout>
@@ -233,6 +235,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
+                android:onClick="@{(view) -> vm.scanQrCode()}"
                 android:src="@drawable/ic_scan_barcode"/>
 
             <ImageView
@@ -240,6 +243,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
+                android:onClick="@{(view) -> vm.scanBarCode()}"
                 android:src="@drawable/ic_scan_barcode"/>
 
         </LinearLayout>
