@@ -223,7 +223,7 @@ class CheckData @Inject constructor(
                 marketIp = marketIp
         )
 
-        for (segment in segments.reversed()) {
+        for (segment in segments) {
             if (segment.getStatus() != SegmentStatus.UNFINISHED) {
                 val segmentSend = SegmentSend(
                         number = segment.number,
@@ -232,7 +232,7 @@ class CheckData @Inject constructor(
                         canceled = if (segment.getStatus() == SegmentStatus.DELETED) 1 else null
                 )
 
-                for (shelf in segment.shelves.reversed()) {
+                for (shelf in segment.shelves) {
                     val shelfSend = ShelfSend(
                             number = shelf.number,
                             startTime = SimpleDateFormat(CHECK_DATA_TIME_FORMAT, Locale.getDefault()).format(shelf.checkStart),
@@ -241,24 +241,26 @@ class CheckData @Inject constructor(
                             canceled = if (shelf.getStatus() == ShelfStatus.DELETED) 1 else null
                     )
 
-                    for (good in shelf.goods.reversed()) {
-                        val goodSend = GoodSend(
-                                sapCodeForSend = good.getFormattedMaterial() + "_${good.unitsCode}",
-                                barCode = if (good.enteredCode == EnteredCode.EAN) good.ean
-                                        ?: "Not found!" else "",
-                                count = if (countFacings) good.facings else null,
-                                labeled = if (checkEmptyPlaces && good.facings == 0) {
-                                    if (good.getStatus() == GoodStatus.MISSING_WRONG) 0 else 1
-                                } else null
-                        )
+                    if (shelf.getStatus() != ShelfStatus.DELETED) {
+                        for (good in shelf.goods) {
+                            val goodSend = GoodSend(
+                                    sapCodeForSend = good.getFormattedMaterial() + "_${good.unitsCode}",
+                                    barCode = if (good.enteredCode == EnteredCode.EAN) good.ean
+                                            ?: "Not found!" else "",
+                                    count = if (countFacings) good.facings else null,
+                                    labeled = if (checkEmptyPlaces && good.facings == 0) {
+                                        if (good.getStatus() == GoodStatus.MISSING_WRONG) 0 else 1
+                                    } else null
+                            )
 
-                        shelfSend.goods.add(goodSend)
+                            shelfSend.goods.add(0, goodSend)
+                        }
                     }
 
-                    segmentSend.shelves.add(shelfSend)
+                    segmentSend.shelves.add(0, shelfSend)
                 }
 
-                displayOfGoods.segments.add(segmentSend)
+                displayOfGoods.segments.add(0, segmentSend)
             }
         }
 
