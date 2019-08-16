@@ -264,6 +264,11 @@ abstract class CoreMainActivity : CoreActivity<ActivityMainBinding>(), ToolbarBu
 
     abstract fun onClickExit()
 
+    override fun onUserInteraction() {
+        super.onUserInteraction()
+        vm.onUserInteraction()
+    }
+
 }
 
 
