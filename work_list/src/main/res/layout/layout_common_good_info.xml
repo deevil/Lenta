@@ -30,7 +30,8 @@
 
                 <TextView
                     style="@style/CellTextStyle"
-                    android:text="@string/total_quantity"/>
+                    android:text="@{@string/total_quantity(vm.totalQuantity)}"
+                    tools:text="Итого: 7 шт."/>
 
             </LinearLayout>
 
@@ -46,10 +47,13 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="8dp"
+                    android:digits="0123456789"
+                    android:inputType="number"
                     android:paddingStart="10dp"
                     android:paddingEnd="10dp"
+                    android:text="@={vm.quantity}"
                     android:textSize="14sp"
-                    tools:text="1 ШТ."/>
+                    tools:text="1"/>
 
             </LinearLayout>
 
@@ -159,8 +163,8 @@
 
                     <View
                         android:layout_width="0dp"
-                        android:layout_margin="8dp"
                         android:layout_height="match_parent"
+                        android:layout_margin="8dp"
                         android:layout_weight="1"/>
 
                 </LinearLayout>
