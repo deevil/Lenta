@@ -301,8 +301,6 @@ class ExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
                                 bottlingDate = bottlingDate.value!!
                         )
                 )
-                count.value = "1"
-                selectedPosition.value = GoodsInfoCountType.VINTAGE.number
                 if (exciseGoodsRestInfo.status == InfoStatus.BatchNotFound.status) {
                     screenNavigator.openAlertStampOverload(exciseGoodsRestInfo.statusTxt) {}
                 }
@@ -403,8 +401,6 @@ class ExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
                                 bottlingDate = bottlingDate.value!!
                         )
                 )
-                count.value = "1"
-                selectedPosition.value = GoodsInfoCountType.PARTLY.number
                 if (exciseGoodsRestInfo.status == InfoStatus.BatchNotFound.status) {
                     screenNavigator.openAlertStampOverload(exciseGoodsRestInfo.statusTxt) {}
                 }

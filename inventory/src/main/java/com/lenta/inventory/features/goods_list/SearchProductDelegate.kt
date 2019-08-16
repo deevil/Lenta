@@ -1,5 +1,7 @@
 package com.lenta.inventory.features.goods_list
 
+import android.content.Context
+import com.lenta.inventory.R
 import com.lenta.inventory.models.task.IInventoryTaskManager
 import com.lenta.inventory.models.task.TaskProductInfo
 import com.lenta.inventory.platform.navigation.IScreenNavigator
@@ -7,6 +9,8 @@ import com.lenta.inventory.platform.requestCodeTypeBarCode
 import com.lenta.inventory.platform.requestCodeTypeSap
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
+import com.lenta.shared.fmp.resources.dao_ext.getAllowedMatTypesINV
+import com.lenta.shared.fmp.resources.fast.ZmpUtz14V001
 import com.lenta.shared.models.core.GisControl
 import com.lenta.shared.models.core.ProductInfo
 import com.lenta.shared.models.core.ProductType
@@ -25,8 +29,13 @@ class SearchProductDelegate @Inject constructor(
         private val screenNavigator: IScreenNavigator,
         private val scanInfoRequest: ScanInfoRequest,
         private val taskManager: IInventoryTaskManager,
-        private val sessionInfo: ISessionInfo
+        private val sessionInfo: ISessionInfo,
+        private val context: Context
 ) {
+
+    private val ZmpUtz14V001: ZmpUtz14V001 by lazy {
+        ZmpUtz14V001(hyperHive)
+    }
 
     private var scanInfoResult: ScanInfoResult? = null
 
@@ -46,7 +55,8 @@ class SearchProductDelegate @Inject constructor(
                 screenNavigator,
                 scanInfoRequest,
                 taskManager,
-                sessionInfo
+                sessionInfo,
+                context
         )
         searchProductDelegate.init(viewModelScope, scanResultHandler, storePlaceCode)
         return searchProductDelegate
@@ -160,19 +170,25 @@ class SearchProductDelegate @Inject constructor(
             if (isStrict && !productExists) {
                 screenNavigator.openAlertGoodsNotForTaskScreen()
                 return
-            } else {
-                val alcoCheckOK: Boolean
-                if (it.productInfo.type == ProductType.ExciseAlcohol || it.productInfo.type == ProductType.NonExciseAlcohol) {
-                    alcoCheckOK = taskManager.getInventoryTask()!!.taskDescription.gis == GisControl.Alcohol
-                } else {
-                    alcoCheckOK = taskManager.getInventoryTask()!!.taskDescription.gis == GisControl.GeneralProduct
-                }
-                if (!alcoCheckOK) {
-                    screenNavigator.openAlertWrongGoodsType()
-                } else {
-                    handleSearchResultOrOpenProductScreen()
-                }
             }
+
+            val alcoCheckOK: Boolean
+            if (it.productInfo.type == ProductType.ExciseAlcohol || it.productInfo.type == ProductType.NonExciseAlcohol) {
+                alcoCheckOK = taskManager.getInventoryTask()!!.taskDescription.gis == GisControl.Alcohol
+            } else {
+                alcoCheckOK = taskManager.getInventoryTask()!!.taskDescription.gis == GisControl.GeneralProduct
+            }
+            if (!alcoCheckOK) {
+                screenNavigator.openAlertWrongGoodsType()
+                return
+            }
+
+            if (ZmpUtz14V001.getAllowedMatTypesINV().contains(it.productInfo.materialType)) {
+                handleSearchResultOrOpenProductScreen()
+            } else {
+                screenNavigator.openAlertScreen(context.getString(R.string.unsupported_mattype, it.productInfo.getMaterialLastSix(), it.productInfo.materialType))
+            }
+
         }
     }
 

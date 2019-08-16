@@ -1,5 +1,6 @@
 package com.lenta.inventory.models.task
 
+import com.lenta.inventory.models.RecountType
 import com.lenta.inventory.models.repositories.ITaskRepository
 import com.lenta.inventory.requests.network.ExciseStampInfo
 import com.lenta.inventory.requests.network.InventoryReport
@@ -161,6 +162,6 @@ class InventoryTask(val taskDescription: TaskDescription, val taskRepository: IT
     }
 
     fun getDiscrepancies(): List<TaskProductInfo> {
-        return taskRepository.getProducts().getNotProcessedProducts()
+        return taskRepository.getProducts().getNotProcessedProducts().filter { !(taskDescription.recountType == RecountType.ParallelByStorePlaces) || it.placeCode != "00" }
     }
 }

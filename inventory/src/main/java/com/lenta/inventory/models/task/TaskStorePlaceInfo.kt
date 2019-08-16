@@ -6,6 +6,7 @@ class TaskStorePlaceInfo(val placeCode: String,	//Код места хранен
                          val status: StorePlaceStatus,
                          val lockUser: String,	//Имя пользователя
                          val lockIP: String,
-                         var isProcessed: Boolean = false
+                         var isProcessed: Boolean = false,
+                         var addedManually: Boolean = false
                         ) {
 }

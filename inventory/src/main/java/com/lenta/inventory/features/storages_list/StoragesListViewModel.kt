@@ -3,6 +3,7 @@ package com.lenta.inventory.features.storages_list
 import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.lenta.inventory.R
 import com.lenta.inventory.features.goods_list.DataSaver
 import com.lenta.inventory.models.RecountType
 import com.lenta.inventory.models.StorePlaceLockMode
@@ -53,7 +54,7 @@ class StoragesListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
         page != 0 && selectionCount > 0
     }
 
-    private var justLoaded: Boolean = true
+    private var needsUpdate: Boolean = false
 
     init {
         viewModelScope.launch {
@@ -64,10 +65,10 @@ class StoragesListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     }
 
     fun onResume() {
-        if (!justLoaded) {
+        if (needsUpdate) {
             onClickRefresh()
         } else {
-            justLoaded = false
+            needsUpdate = true
         }
     }
 
@@ -139,7 +140,7 @@ class StoragesListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
                             additionalDataFlag = "",
                             newProductNumbers = emptyList(),
                             numberRelock = "",
-                            mode = "1")
+                            mode = "3")
             )
                     .either(::handleFailure, ::handleUpdateSuccess)
             screenNavigator.hideProgress()
@@ -164,14 +165,19 @@ class StoragesListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     }
 
     fun onClickItemPosition(position: Int) {
-        var storeNumber: String?
+        val storeNumber: String?
         if (selectedPage.value == 0) {
             storeNumber = unprocessedStorages.value?.get(position)?.storeNumber
         } else {
             storeNumber = processedStorages.value?.get(position)?.storeNumber
         }
         storeNumber?.let { storePlaceNumber ->
-            screenNavigator.openGoodsListScreen(storePlaceNumber)
+            val storePlace = taskManager.getInventoryTask()!!.taskRepository.getStorePlace().findStorePlace(storePlaceNumber)
+            if (storePlace?.status != StorePlaceStatus.Finished) {
+                screenNavigator.openGoodsListScreen(storePlaceNumber)
+            } else {
+                screenNavigator.openAlertScreen(context.getString(R.string.already_counted))
+            }
         }
     }
 
@@ -190,9 +196,10 @@ class StoragesListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
             taskManager.getInventoryTask()?.let {
                 val existingPlace = it.taskRepository.getStorePlace().findStorePlace(storageNumber)
                 if (existingPlace == null) {
-                    it.taskRepository.getStorePlace().addStorePlace(TaskStorePlaceInfo(placeCode = storageNumber, lockIP = "", lockUser = "", status = StorePlaceStatus.None))
+                    it.taskRepository.getStorePlace().addStorePlace(TaskStorePlaceInfo(placeCode = storageNumber, lockIP = "", lockUser = "", status = StorePlaceStatus.None, addedManually = true))
                     updateUnprocessed()
                 }
+                needsUpdate = false
                 screenNavigator.openLoadingStorePlaceLockScreen(StorePlaceLockMode.Lock, storageNumber)
             }
         }
