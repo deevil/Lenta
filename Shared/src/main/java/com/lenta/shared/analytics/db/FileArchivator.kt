@@ -5,13 +5,14 @@ import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.date_time.DateTimeUtil
 import com.lenta.shared.utilities.prepareFolder
 import java.io.File
+import java.lang.Exception
 
 class FileArchivator(private val filePath: String,
                      private val archivePath: String,
                      private val sizeLimitInKb: Int = 1024,
                      private val archivesCountLimit: Int = 10) {
 
-    fun backup() : Boolean {
+    fun backup(): Boolean {
 
         val file = File(filePath)
 
@@ -24,18 +25,26 @@ class FileArchivator(private val filePath: String,
         Logg.d { "fileSizeInKb: $fileSizeInKb" }
 
         if (fileSizeInKb > sizeLimitInKb) {
-            createBackup(file)
-            return true
+            return createBackup(file)
         }
 
         return false
 
     }
 
-    private fun createBackup(file: File) {
+    private fun createBackup(file: File) : Boolean {
         prepareFolder(archivePath)
-        file.copyTo(File("$archivePath/${getArchiveFileName(file)}"))
-        checkArchivesFiles()
+        try {
+            val backupFile = File("$archivePath/${getArchiveFileName(file)}")
+            Logg.d { "backupFile :${backupFile.absolutePath}" }
+            file.copyTo(backupFile)
+            checkArchivesFiles()
+            return true
+        } catch (exception: Exception) {
+            Logg.e { "createBackup exception: $exception" }
+            return false
+        }
+
     }
 
     private fun checkArchivesFiles() {
