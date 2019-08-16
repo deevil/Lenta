@@ -241,20 +241,18 @@ class CheckData @Inject constructor(
                             canceled = if (shelf.getStatus() == ShelfStatus.DELETED) 1 else null
                     )
 
-                    if (shelf.getStatus() != ShelfStatus.DELETED) {
-                        for (good in shelf.goods) {
-                            val goodSend = GoodSend(
-                                    sapCodeForSend = good.getFormattedMaterial() + "_${good.unitsCode}",
-                                    barCode = if (good.enteredCode == EnteredCode.EAN) good.ean
-                                            ?: "Not found!" else "",
-                                    count = if (countFacings) good.facings else null,
-                                    labeled = if (checkEmptyPlaces && good.facings == 0) {
-                                        if (good.getStatus() == GoodStatus.MISSING_WRONG) 0 else 1
-                                    } else null
-                            )
+                    for (good in shelf.goods) {
+                        val goodSend = GoodSend(
+                                sapCodeForSend = good.getFormattedMaterial() + "_${good.unitsCode}",
+                                barCode = if (good.enteredCode == EnteredCode.EAN) good.ean
+                                        ?: "Not found!" else "",
+                                count = if (countFacings) good.facings else null,
+                                labeled = if (checkEmptyPlaces && good.facings == 0) {
+                                    if (good.getStatus() == GoodStatus.MISSING_WRONG) 0 else 1
+                                } else null
+                        )
 
-                            shelfSend.goods.add(0, goodSend)
-                        }
+                        shelfSend.goods.add(0, goodSend)
                     }
 
                     segmentSend.shelves.add(0, shelfSend)
