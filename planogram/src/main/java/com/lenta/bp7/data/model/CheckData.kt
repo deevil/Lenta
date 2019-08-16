@@ -3,6 +3,7 @@ package com.lenta.bp7.data.model
 import com.lenta.bp7.data.CheckResultData
 import com.lenta.bp7.data.CheckType
 import com.lenta.bp7.data.IPersistCheckResult
+import com.lenta.shared.analytics.AnalyticsHelper
 import com.lenta.shared.platform.constants.Constants.CHECK_DATA_TIME_FORMAT
 import com.lenta.shared.utilities.Logg
 import org.simpleframework.xml.core.Persister
