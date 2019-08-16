@@ -3,6 +3,7 @@ package com.lenta.bp7.data.model
 import com.lenta.bp7.data.CheckResultData
 import com.lenta.bp7.data.CheckType
 import com.lenta.bp7.data.IPersistCheckResult
+import com.lenta.shared.analytics.AnalyticsHelper
 import com.lenta.shared.platform.constants.Constants.CHECK_DATA_TIME_FORMAT
 import com.lenta.shared.utilities.Logg
 import org.simpleframework.xml.core.Persister
@@ -12,7 +13,8 @@ import java.util.*
 import javax.inject.Inject
 
 class CheckData @Inject constructor(
-        private val persistCheckResult: IPersistCheckResult
+        private val persistCheckResult: IPersistCheckResult,
+        private var analyticsHelper: AnalyticsHelper
 ) {
     val segments: MutableList<Segment> = mutableListOf()
 
@@ -267,7 +269,9 @@ class CheckData @Inject constructor(
         val serializer = Persister()
         val result = StringWriter()
         serializer.write(displayOfGoods, result)
+
         Logg.d { "displayOfGoods --> $result" }
+        analyticsHelper.infoXmlCheckResult(result.toString())
 
         return result.toString()
     }
