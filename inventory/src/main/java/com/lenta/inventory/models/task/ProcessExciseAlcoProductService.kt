@@ -6,7 +6,6 @@ import com.lenta.shared.di.AppScope
 import com.lenta.shared.models.core.EgaisStampVersion
 import com.lenta.shared.models.core.ExciseStamp
 import com.lenta.shared.models.core.ProductType
-import com.lenta.shared.utilities.Logg
 import javax.inject.Inject
 
 @AppScope
