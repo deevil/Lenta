@@ -11,6 +11,11 @@
     <string name="print_settings">Настройка печати</string>
     <string name="product_information">Информация о товаре</string>
 
+    <string name="common_good_info_title">Общая</string>
+    <string name="additional_good_info_title">Доп. инфо</string>
+    <string name="good_providers_list_title">Поставщики</string>
+    <string name="stocks_list_title">Остатки</string>
+
     <string name="copy_quantity">Кол-во копий</string>
     <string name="printer_type">Тип принтера</string>
     <string name="price_tag_type">Тип ценника</string>

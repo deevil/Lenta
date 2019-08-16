@@ -17,6 +17,7 @@ import com.lenta.bp14.BR
 import com.lenta.bp14.data.model.Good
 import com.lenta.bp14.databinding.*
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
+import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig
 import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
 
@@ -43,9 +44,9 @@ class GoodInfoWorkListFragment : CoreFragment<FragmentGoodInfoWorkListBinding, G
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
-        bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.details)
-        bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.deliveries)
-        bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.sales)
+        bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.details)
+        bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.deliveries)
+        bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.sales)
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.apply)
     }
 
@@ -106,7 +107,16 @@ class GoodInfoWorkListFragment : CoreFragment<FragmentGoodInfoWorkListBinding, G
     }
 
     override fun getTextTitle(position: Int): String {
-        return "Title: $position"
+        return when (position) {
+            0 -> getString(R.string.common_good_info_title)
+            1 -> getString(R.string.additional_good_info_title)
+            2 -> getString(R.string.good_providers_list_title)
+            3 -> getString(R.string.stocks_list_title)
+            else -> {
+                Logg.d { "Wrong pager position!" }
+                "Error"
+            }
+        }
     }
 
     override fun countTab() = 4
