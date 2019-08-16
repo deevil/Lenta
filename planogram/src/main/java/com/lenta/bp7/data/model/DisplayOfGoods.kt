@@ -29,8 +29,8 @@ data class SegmentSend @JvmOverloads constructor(
         var startTime: String,
         @field:Attribute(name = "completionTime")
         var completionTime: String,
-        @field:Attribute(name = "canceled")
-        var canceled: Int,
+        @field:Attribute(name = "canceled", required = false)
+        var canceled: Int?,
         @Path("shelf") @field:ElementList(name = "shelf", inline = true)
         var shelves: MutableList<ShelfSend> = mutableListOf()
 ) {

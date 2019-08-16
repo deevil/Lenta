@@ -223,16 +223,16 @@ class CheckData @Inject constructor(
                 marketIp = marketIp
         )
 
-        for (segment in segments) {
+        for (segment in segments.reversed()) {
             if (segment.getStatus() != SegmentStatus.UNFINISHED) {
                 val segmentSend = SegmentSend(
                         number = segment.number,
                         startTime = SimpleDateFormat(CHECK_DATA_TIME_FORMAT, Locale.getDefault()).format(segment.checkStart),
                         completionTime = SimpleDateFormat(CHECK_DATA_TIME_FORMAT, Locale.getDefault()).format(segment.checkFinish),
-                        canceled = if (segment.getStatus() == SegmentStatus.DELETED) 1 else 0
+                        canceled = if (segment.getStatus() == SegmentStatus.DELETED) 1 else null
                 )
 
-                for (shelf in segment.shelves) {
+                for (shelf in segment.shelves.reversed()) {
                     val shelfSend = ShelfSend(
                             number = shelf.number,
                             startTime = SimpleDateFormat(CHECK_DATA_TIME_FORMAT, Locale.getDefault()).format(shelf.checkStart),
@@ -241,7 +241,7 @@ class CheckData @Inject constructor(
                             canceled = if (shelf.getStatus() == ShelfStatus.DELETED) 1 else null
                     )
 
-                    for (good in shelf.goods) {
+                    for (good in shelf.goods.reversed()) {
                         val goodSend = GoodSend(
                                 sapCodeForSend = good.getFormattedMaterial() + "_${good.unitsCode}",
                                 barCode = if (good.enteredCode == EnteredCode.EAN) good.ean
