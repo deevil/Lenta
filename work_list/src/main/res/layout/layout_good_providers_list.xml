@@ -7,7 +7,7 @@
 
         <variable
             name="vm"
-            type="com.lenta.bp14.features.good_info.GoodInfoViewModel"/>
+            type="com.lenta.bp14.features.good_info_work_list.GoodInfoWorkListViewModel"/>
 
         <variable
             name="rvConfig"

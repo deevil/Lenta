@@ -9,6 +9,7 @@
 
     <string name="specify_product">Укажите товар</string>
     <string name="print_settings">Настройка печати</string>
+    <string name="product_information">Информация о товаре</string>
 
     <string name="copy_quantity">Кол-во копий</string>
     <string name="printer_type">Тип принтера</string>
