@@ -238,7 +238,7 @@ class CheckData @Inject constructor(
                             startTime = SimpleDateFormat(CHECK_DATA_TIME_FORMAT, Locale.getDefault()).format(shelf.checkStart),
                             completionTime = SimpleDateFormat(CHECK_DATA_TIME_FORMAT, Locale.getDefault()).format(shelf.checkFinish),
                             counted = if (countFacings) 1 else 0,
-                            canceled = if (shelf.getStatus() == ShelfStatus.DELETED) 1 else 0
+                            canceled = if (shelf.getStatus() == ShelfStatus.DELETED) 1 else null
                     )
 
                     for (good in shelf.goods) {
@@ -247,11 +247,8 @@ class CheckData @Inject constructor(
                                 barCode = if (good.enteredCode == EnteredCode.EAN) good.ean
                                         ?: "Not found!" else "",
                                 count = if (countFacings) good.facings else null,
-                                labeled = if (checkEmptyPlaces) {
-                                    when (good.getStatus()) {
-                                        GoodStatus.MISSING_WRONG -> 0
-                                        else -> 1
-                                    }
+                                labeled = if (checkEmptyPlaces && good.facings == 0) {
+                                    if (good.getStatus() == GoodStatus.MISSING_WRONG) 0 else 1
                                 } else null
                         )
 

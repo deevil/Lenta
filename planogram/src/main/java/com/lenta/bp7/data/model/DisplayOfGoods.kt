@@ -48,8 +48,8 @@ data class ShelfSend @JvmOverloads constructor(
         var completionTime: String,
         @field:Attribute(name = "counted")
         var counted: Int,
-        @field:Attribute(name = "canceled")
-        var canceled: Int,
+        @field:Attribute(name = "canceled", required = false)
+        var canceled: Int?,
         @Path("goods") @field:ElementList(name = "goods", inline = true)
         var goods: MutableList<GoodSend> = mutableListOf()
 ) {
