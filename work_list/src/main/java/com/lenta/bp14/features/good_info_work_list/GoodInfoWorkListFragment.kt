@@ -40,6 +40,10 @@ class GoodInfoWorkListFragment : CoreFragment<FragmentGoodInfoWorkListBinding, G
         vm.good.observe(this, Observer<Good> { good ->
             topToolbarUiModel.title.value = "${good.getFormattedMaterial()} ${good.name}"
         })
+
+        vm.shelfLifePosition.observe(this, Observer<Int> { position ->
+            Logg.d { "Selected position: $position" }
+        })
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {

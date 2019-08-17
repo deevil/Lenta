@@ -40,5 +40,6 @@
     <string name="provider">Поставщик</string>
     <string name="expiration_date_abbreviation">СГ</string>
     <string name="expiration_dates">Сроки годности</string>
+    <string name="shelf_life_days_left">%1$d сут.</string>
 
 </resources>
