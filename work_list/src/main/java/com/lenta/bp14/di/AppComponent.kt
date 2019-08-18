@@ -3,7 +3,7 @@ package com.lenta.bp14.di
 import com.lenta.bp14.ExceptionHandler
 import com.lenta.bp14.features.auth.AuthViewModel
 import com.lenta.bp14.features.check_list.goods_list.GoodsListClViewModel
-import com.lenta.bp14.features.good_info_work_list.GoodInfoWorkListViewModel
+import com.lenta.bp14.features.work_list.good_info.GoodInfoWlViewModel
 import com.lenta.bp14.features.job_card.JobCardViewModel
 import com.lenta.bp14.features.list_of_differences.ListOfDifferencesViewModel
 import com.lenta.bp14.features.loading.fast.FastLoadingViewModel
@@ -35,7 +35,7 @@ interface AppComponent {
     fun inject(it: ListOfDifferencesViewModel)
     fun inject(it: ReportResultViewModel)
     fun inject(it: PrintSettingsViewModel)
-    fun inject(it: GoodInfoWorkListViewModel)
+    fun inject(it: GoodInfoWlViewModel)
     fun inject(it: DetailsOfGoodsViewModel)
 
 }

@@ -1,4 +1,4 @@
-package com.lenta.bp14.features.good_info_work_list
+package com.lenta.bp14.features.work_list.good_info
 
 import com.lenta.bp14.R
 import com.lenta.bp14.platform.extentions.getAppComponent
@@ -21,14 +21,14 @@ import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig
 import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
 
-class GoodInfoWorkListFragment : CoreFragment<FragmentGoodInfoWorkListBinding, GoodInfoWorkListViewModel>(), ViewPagerSettings {
+class GoodInfoWlFragment : CoreFragment<FragmentGoodInfoWlBinding, GoodInfoWlViewModel>(), ViewPagerSettings {
 
-    override fun getLayoutId(): Int = R.layout.fragment_good_info_work_list
+    override fun getLayoutId(): Int = R.layout.fragment_good_info_wl
 
     override fun getPageNumber(): String? = generateScreenNumberFromPostfix("15")
 
-    override fun getViewModel(): GoodInfoWorkListViewModel {
-        provideViewModel(GoodInfoWorkListViewModel::class.java).let {
+    override fun getViewModel(): GoodInfoWlViewModel {
+        provideViewModel(GoodInfoWlViewModel::class.java).let {
             getAppComponent()?.inject(it)
             return it
         }

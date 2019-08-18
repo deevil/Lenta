@@ -1,4 +1,4 @@
-package com.lenta.bp14.features.good_info_work_list
+package com.lenta.bp14.features.work_list.good_info
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
@@ -14,7 +14,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
 
-class GoodInfoWorkListViewModel : CoreViewModel(), PageSelectionListener {
+class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
 
     val selectedPage = MutableLiveData(0)
 
