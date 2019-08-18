@@ -143,6 +143,7 @@ class InventoryTask(val taskDescription: TaskDescription, val taskRepository: IT
         storePlace.isProcessed = false
         taskRepository.getProducts().getProcessedProducts(storePlace.placeCode).forEach {
             taskRepository.getProducts().changeProduct(it.copy(factCount = 0.0, isPositionCalc = false))
+            taskRepository.getExciseStamps().deleteExciseStampsForProduct(it)
         }
         return this
     }
@@ -162,6 +163,6 @@ class InventoryTask(val taskDescription: TaskDescription, val taskRepository: IT
     }
 
     fun getDiscrepancies(): List<TaskProductInfo> {
-        return taskRepository.getProducts().getNotProcessedProducts().filter { !(taskDescription.recountType == RecountType.ParallelByStorePlaces) || it.placeCode != "00" }
+        return taskRepository.getProducts().getNotProcessedProducts()
     }
 }
