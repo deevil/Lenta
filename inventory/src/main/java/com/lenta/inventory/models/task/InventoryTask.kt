@@ -163,6 +163,13 @@ class InventoryTask(val taskDescription: TaskDescription, val taskRepository: IT
     }
 
     fun getDiscrepancies(): List<TaskProductInfo> {
-        return taskRepository.getProducts().getNotProcessedProducts()
+        if (taskDescription.recountType == RecountType.ParallelByStorePlaces) {
+            val processedProducts = taskRepository.getProducts().getProcessedProducts()
+            return taskRepository.getProducts().getNotProcessedProducts().filter { productInfo ->
+                processedProducts.findLast { it.materialNumber == productInfo.materialNumber && it.placeCode != "00" } == null
+            }
+        } else {
+            return taskRepository.getProducts().getNotProcessedProducts()
+        }
     }
 }
