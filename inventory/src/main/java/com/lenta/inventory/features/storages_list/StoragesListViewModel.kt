@@ -69,9 +69,6 @@ class StoragesListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     fun onResume() {
         if (needsUpdate) {
             onClickRefresh()
-            viewModelScope.launch {
-                moveToPreviousPageIfNeeded()
-            }
         } else {
             needsUpdate = true
         }
@@ -165,6 +162,9 @@ class StoragesListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
             it.updateTaskWithContents(taskContents)
             updateProcessed()
             updateUnprocessed()
+            viewModelScope.launch {
+                moveToPreviousPageIfNeeded()
+            }
         }
     }
 
