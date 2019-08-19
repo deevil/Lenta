@@ -1,8 +1,12 @@
 <resources>
 
     <!-- Пропорции колонок для списка поставщиков -->
-    <integer name="good_provider_column_1">10</integer>
-    <integer name="good_provider_column_2">22</integer>
-    <integer name="good_provider_column_3">33</integer>
+    <integer name="good_provider_wl_column_1">10</integer>
+    <integer name="good_provider_wl_column_2">22</integer>
+    <integer name="good_provider_wl_column_3">33</integer>
+
+    <!-- Пропорции колонок для списка поставщиков -->
+    <integer name="goods_list_wl_column_1">10</integer>
+    <integer name="goods_list_wl_column_2">55</integer>
 
 </resources>

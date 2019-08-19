@@ -55,6 +55,7 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
     init {
         viewModelScope.launch {
             good.value = Good(
+                    id = 0,
                     material = "000000000000254128",
                     name = "Кукуруза",
                     total = 5

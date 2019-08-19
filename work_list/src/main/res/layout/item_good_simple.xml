@@ -1,12 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools">
+        xmlns:tools="http://schemas.android.com/tools"
+    >
 
     <data>
 
         <variable
             name="good"
-            type="com.lenta.bp14.data.model.GoodProvider"/>
+            type="com.lenta.bp14.data.model.Good"/>
+
+        <variable
+            name="selectedForDelete"
+            type="Boolean"/>
 
     </data>
 
@@ -24,11 +29,12 @@
 
             <LinearLayout
                 style="@style/LinearCellStyle"
-                android:layout_weight="@integer/good_provider_wl_column_1">
+                android:layout_weight="@integer/goods_list_wl_column_1">
 
                 <TextView
                     android:id="@+id/tv_item_number"
                     style="@style/CellTextStyle"
+                    android:text="@{String.valueOf(good.id)}"
                     android:layout_width="wrap_content"
                     tools:text="1"/>
 
@@ -39,26 +45,18 @@
 
             <LinearLayout
                 style="@style/LinearCellStyle"
-                android:layout_weight="@integer/good_provider_wl_column_2">
+                android:layout_weight="@integer/goods_list_wl_column_2"
+                android:orientation="horizontal">
 
                 <TextView
-                    android:id="@+id/tv_storage_number"
+                    android:id="@+id/tv_good_number_name"
                     style="@style/CellTextStyle"
-                    tools:text="0001"/>
-
-            </LinearLayout>
-
-            <View
-                style="@style/VerticalDivider"/>
-
-            <LinearLayout
-                style="@style/LinearCellStyle"
-                android:layout_weight="@integer/good_provider_wl_column_3">
-
-                <TextView
-                    android:id="@+id/tv_good_quantity"
-                    style="@style/CellTextStyle"
-                    tools:text="25 шт."/>
+                    android:layout_width="0dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_weight="1"
+                    android:maxLines="2"
+                    android:text="@{@string/one_space_two(good.formattedMaterial, good.name)}"
+                    tools:text="000021 Масло"/>
 
             </LinearLayout>
 

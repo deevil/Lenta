@@ -13,6 +13,7 @@ import com.lenta.bp14.features.report_result.ReportResultViewModel
 import com.lenta.bp14.features.select_market.SelectMarketViewModel
 import com.lenta.bp14.features.task_list.TaskListViewModel
 import com.lenta.bp14.features.work_list.details_of_goods.DetailsOfGoodsViewModel
+import com.lenta.bp14.features.work_list.goods_list.GoodsListWlViewModel
 import com.lenta.bp14.main.MainActivity
 import com.lenta.bp14.main.MainViewModel
 import com.lenta.shared.di.AppScope
@@ -35,6 +36,7 @@ interface AppComponent {
     fun inject(it: ListOfDifferencesViewModel)
     fun inject(it: ReportResultViewModel)
     fun inject(it: PrintSettingsViewModel)
+    fun inject(it: GoodsListWlViewModel)
     fun inject(it: GoodInfoWlViewModel)
     fun inject(it: DetailsOfGoodsViewModel)
 

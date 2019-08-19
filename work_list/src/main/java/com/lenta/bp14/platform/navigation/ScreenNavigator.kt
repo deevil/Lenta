@@ -13,6 +13,7 @@ import com.lenta.bp14.features.report_result.ReportResultFragment
 import com.lenta.bp14.features.select_market.SelectMarketFragment
 import com.lenta.bp14.features.task_list.TaskListFragment
 import com.lenta.bp14.features.work_list.details_of_goods.DetailsOfGoodsFragment
+import com.lenta.bp14.features.work_list.goods_list.GoodsListWlFragment
 import com.lenta.shared.account.IAuthenticator
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
 import com.lenta.shared.platform.navigation.ICoreNavigator
@@ -101,9 +102,15 @@ class ScreenNavigator(
         }
     }
 
-    override fun openGoodInfoWorkListScreen() {
+    override fun openGoodInfoWlScreen() {
         runOrPostpone {
             getFragmentStack()?.push(GoodInfoWlFragment())
+        }
+    }
+
+    override fun openGoodsListWlScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(GoodsListWlFragment())
         }
     }
 
@@ -124,5 +131,6 @@ interface IScreenNavigator : ICoreNavigator {
     fun openReportResultScreen()
     fun openPrintSettingsScreen()
     fun openDetailsOfGoodsScreen()
-    fun openGoodInfoWorkListScreen()
+    fun openGoodInfoWlScreen()
+    fun openGoodsListWlScreen()
 }

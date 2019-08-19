@@ -7,14 +7,20 @@
     <string name="not_processed">К обработке</string>
     <string name="task_list">Список заданий</string>
 
+    <!-- Подзаголовки экранов -->
     <string name="specify_product">Укажите товар</string>
     <string name="print_settings">Настройка печати</string>
     <string name="product_information">Информация о товаре</string>
+    <string name="goods_list">Список товаров</string>
 
+    <!-- Заголовки вкладок -->
     <string name="common_good_info_title">Общая</string>
     <string name="additional_good_info_title">Доп. инфо</string>
     <string name="good_providers_list_title">Поставщики</string>
     <string name="stocks_list_title">Остатки</string>
+    <string name="processed">Обработанные</string>
+    <string name="search">Поиск</string>
+
 
     <string name="copy_quantity">Кол-во копий</string>
     <string name="printer_type">Тип принтера</string>
@@ -41,5 +47,7 @@
     <string name="expiration_date_abbreviation">СГ</string>
     <string name="expiration_dates">Сроки годности</string>
     <string name="shelf_life_days_left">%1$d сут.</string>
+    <string name="goods">Товары</string>
+    <string name="one_space_two">%1$s %2$s</string>
 
 </resources>

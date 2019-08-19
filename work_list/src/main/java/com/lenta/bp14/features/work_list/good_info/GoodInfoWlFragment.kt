@@ -35,14 +35,10 @@ class GoodInfoWlFragment : CoreFragment<FragmentGoodInfoWlBinding, GoodInfoWlVie
     }
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
-        topToolbarUiModel.description.value = getString(R.string.product_information)
+        topToolbarUiModel.description.value = getString(R.string.goods_list)
 
         vm.good.observe(this, Observer<Good> { good ->
             topToolbarUiModel.title.value = "${good.getFormattedMaterial()} ${good.name}"
-        })
-
-        vm.shelfLifePosition.observe(this, Observer<Int> { position ->
-            Logg.d { "Selected position: $position" }
         })
     }
 
