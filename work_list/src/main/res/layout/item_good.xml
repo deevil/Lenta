@@ -28,7 +28,7 @@
 
             <LinearLayout
                 style="@style/LinearCellStyle"
-                android:layout_weight="@integer/goods_list_wl_column_1">
+                android:layout_weight="@integer/number_good_column_1">
 
                 <TextView
                     android:id="@+id/tv_item_number"
@@ -44,7 +44,7 @@
 
             <LinearLayout
                 style="@style/LinearCellStyle"
-                android:layout_weight="@integer/goods_list_wl_column_2"
+                android:layout_weight="@integer/number_good_column_2"
                 android:orientation="horizontal">
 
                 <TextView

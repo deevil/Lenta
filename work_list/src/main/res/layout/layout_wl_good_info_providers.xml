@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools">
 
     <data>
@@ -36,7 +37,7 @@
 
                 <LinearLayout
                     style="@style/LinearCellStyle"
-                    android:layout_weight="@integer/good_provider_wl_column_1">
+                    android:layout_weight="@integer/number_provider_period_column_1">
 
                     <TextView
                         style="@style/ColumnTitleStyle"
@@ -48,21 +49,21 @@
 
                 <LinearLayout
                     style="@style/LinearCellStyle"
-                    android:layout_weight="@integer/good_provider_wl_column_2">
+                    android:layout_weight="@integer/number_provider_period_column_2">
 
                     <TextView
                         style="@style/ColumnTitleStyle"
-                        android:text="@string/storage"/>
+                        android:text="@string/provider"/>
 
                 </LinearLayout>
 
                 <LinearLayout
                     style="@style/LinearCellStyle"
-                    android:layout_weight="@integer/good_provider_wl_column_3">
+                    android:layout_weight="@integer/number_provider_period_column_3">
 
                     <TextView
                         style="@style/ColumnTitleStyle"
-                        android:text="@string/quantity"/>
+                        android:text="@string/period_kip"/>
 
                 </LinearLayout>
 
@@ -74,13 +75,13 @@
         </LinearLayout>
 
 
-        <!-- Список остатков -->
+        <!-- Список поставщиков -->
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            tools:listitem="@layout/item_stock"/>
+            tools:listitem="@layout/item_good_provider_period"/>
 
     </LinearLayout>
 

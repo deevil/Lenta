@@ -36,7 +36,7 @@
 
                 <LinearLayout
                     style="@style/LinearCellStyle"
-                    android:layout_weight="@integer/goods_list_wl_column_1">
+                    android:layout_weight="@integer/number_good_column_1">
 
                     <TextView
                         style="@style/ColumnTitleStyle"
@@ -48,7 +48,7 @@
 
                 <LinearLayout
                     style="@style/LinearCellStyle"
-                    android:layout_weight="@integer/goods_list_wl_column_2">
+                    android:layout_weight="@integer/number_good_column_2">
 
                     <TextView
                         style="@style/ColumnTitleStyle"
