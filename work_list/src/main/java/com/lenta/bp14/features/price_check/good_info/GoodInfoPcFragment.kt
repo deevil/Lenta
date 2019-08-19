@@ -6,15 +6,14 @@ import com.lenta.bp14.platform.extentions.getAppComponent
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
+import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
 import com.lenta.shared.utilities.extentions.provideViewModel
 
 class GoodInfoPcFragment : CoreFragment<FragmentGoodInfoPcBinding, GoodInfoPcViewModel>() {
 
     override fun getLayoutId(): Int = R.layout.fragment_good_info_pc
 
-    override fun getPageNumber(): String {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    override fun getPageNumber(): String? = generateScreenNumberFromPostfix("42")
 
     override fun getViewModel(): GoodInfoPcViewModel {
         provideViewModel(GoodInfoPcViewModel::class.java).let {
