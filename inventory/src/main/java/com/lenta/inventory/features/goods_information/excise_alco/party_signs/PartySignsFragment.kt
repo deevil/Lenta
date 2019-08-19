@@ -11,6 +11,7 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.utilities.DateInputMask
+import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.generateScreenNumber
 import com.lenta.shared.utilities.extentions.provideViewModel
 import com.lenta.shared.utilities.state.state
@@ -43,7 +44,6 @@ class PartySignsFragment : CoreFragment<FragmentPartySignsBinding, PartySignsVie
             getAppComponent()?.inject(vm)
             vm.manufacturersName.value = manufacturers
             vm.stampLength.value = stampLength
-            vm.dateNotSpecified.value = getString(R.string.date_not_specified)
             return vm
         }
     }
@@ -61,6 +61,8 @@ class PartySignsFragment : CoreFragment<FragmentPartySignsBinding, PartySignsVie
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.next)
+
+        connectLiveData(vm.enabledNextBtn, bottomToolbarUiModel.uiModelButton5.enabled)
     }
 
     override fun onToolbarButtonClick(view: View) {

@@ -282,8 +282,11 @@ class ProcessExciseAlcoProductServiceTest : BaseUnitTest() {
         //проверяем фактическое кол-во продукта, должно быть 4 (1 марка 150 символов, 1 марка 68 символов, 2 марки по 150 символов для коробки)
         Assert.assertEquals(4.0, processExciseAlcoProductService.getFactCount()!!, 0.0)
 
-        //проверяем кол-во марок, должно быть 4
-        Assert.assertEquals(4, processExciseAlcoProductService.getCountVintageStamps() + processExciseAlcoProductService.getCountPartlyStamps())
+        //проверяем кол-во марочных марок, должно быть 3
+        Assert.assertEquals(3, processExciseAlcoProductService.getCountVintageStamps())
+
+        //проверяем кол-во партионных марок, должно быть 1
+        Assert.assertEquals(1, processExciseAlcoProductService.getCountPartlyStamps())
 
         //делаем rollback
         processExciseAlcoProductService.rollback()
@@ -291,8 +294,14 @@ class ProcessExciseAlcoProductServiceTest : BaseUnitTest() {
         //проверяем фактическое кол-во продукта, должно быть 2 (удалились добавленные две марки по 150 символов для коробки)
         Assert.assertEquals(2.0, processExciseAlcoProductService.getFactCount()!!, 0.0)
 
-        //проверяем кол-во марок, должно быть 2 (удалились добавленные две марки по 150 символов для коробки)
-        Assert.assertEquals(2, processExciseAlcoProductService.getCountVintageStamps() + processExciseAlcoProductService.getCountPartlyStamps())
+        //проверяем кол-во марочных марок, должно быть 1
+        Assert.assertEquals(1, processExciseAlcoProductService.getCountVintageStamps())
+
+        //проверяем кол-во партионных марок, должно быть 1
+        Assert.assertEquals(1, processExciseAlcoProductService.getCountPartlyStamps())
+
+        //проверяем, что марки коробки удалились
+        Assert.assertFalse(processExciseAlcoProductService.isTaskAlreadyHasExciseStampBox(boxNumber))
 
         //делаем еще один rollback
         processExciseAlcoProductService.rollback()
@@ -300,8 +309,14 @@ class ProcessExciseAlcoProductServiceTest : BaseUnitTest() {
         //проверяем фактическое кол-во продукта, должно быть 1 (удалилась марка 68 символов)
         Assert.assertEquals(1.0, processExciseAlcoProductService.getFactCount()!!, 0.0)
 
-        //проверяем кол-во марок, должно быть 1 (удалилась марка 68 символов)
-        Assert.assertEquals(1, processExciseAlcoProductService.getCountVintageStamps() + processExciseAlcoProductService.getCountPartlyStamps())
+        //проверяем кол-во марочных марок, должно быть 1
+        Assert.assertEquals(1, processExciseAlcoProductService.getCountVintageStamps())
+
+        //проверяем кол-во партионных марок, должно быть 0 (марка 68 символов должна была удалиться)
+        Assert.assertEquals(0, processExciseAlcoProductService.getCountPartlyStamps())
+
+        //проверяем, что марка exciseStamp68_1 удалилась
+        Assert.assertFalse(processExciseAlcoProductService.isTaskAlreadyHasExciseStamp(exciseStamp68_1.code))
 
         //делаем еще один rollback
         processExciseAlcoProductService.rollback()
@@ -309,8 +324,14 @@ class ProcessExciseAlcoProductServiceTest : BaseUnitTest() {
         //проверяем фактическое кол-во продукта, должно быть 0 (удалилась марка 150 символов)
         Assert.assertEquals(0.0, processExciseAlcoProductService.getFactCount()!!, 0.0)
 
-        //проверяем кол-во марок, должно быть 0 (удалилась марка 150 символов)
-        Assert.assertEquals(0, processExciseAlcoProductService.getCountVintageStamps() + processExciseAlcoProductService.getCountPartlyStamps())
+        //проверяем кол-во марочных марок, должно быть 0 (марка 150 символов должна была удалиться)
+        Assert.assertEquals(0, processExciseAlcoProductService.getCountVintageStamps())
+
+        //проверяем кол-во партионных марок, должно быть 0
+        Assert.assertEquals(0, processExciseAlcoProductService.getCountPartlyStamps())
+
+        //проверяем, что марка exciseStamp150_1 удалилась
+        Assert.assertFalse(processExciseAlcoProductService.isTaskAlreadyHasExciseStamp(exciseStamp150_1.code))
     }
 
     @Test
