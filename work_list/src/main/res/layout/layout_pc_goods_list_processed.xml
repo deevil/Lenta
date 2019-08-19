@@ -2,17 +2,18 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context="com.lenta.bp14.features.work_list.goods_list.GoodsListWlFragment">
+    tools:context="com.lenta.bp14.features.price_check.goods_list.GoodsListPcFragment">
 
     <data>
 
         <variable
             name="vm"
-            type="com.lenta.bp14.features.work_list.goods_list.GoodsListWlViewModel" />
+            type="com.lenta.bp14.features.price_check.goods_list.GoodsListPcViewModel" />
 
         <variable
             name="rvConfig"
             type="com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig" />
+
     </data>
 
     <LinearLayout
@@ -36,7 +37,7 @@
 
                 <LinearLayout
                     style="@style/LinearCellStyle"
-                    android:layout_weight="@integer/goods_list_wl_column_1">
+                    android:layout_weight="@integer/number_good_check_column_1">
 
                     <TextView
                         style="@style/ColumnTitleStyle"
@@ -48,11 +49,21 @@
 
                 <LinearLayout
                     style="@style/LinearCellStyle"
-                    android:layout_weight="@integer/goods_list_wl_column_2">
+                    android:layout_weight="@integer/number_good_check_column_2">
 
                     <TextView
                         style="@style/ColumnTitleStyle"
                         android:text="@string/goods"/>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    style="@style/LinearCellStyle"
+                    android:layout_weight="@integer/number_good_check_column_3">
+
+                    <TextView
+                        style="@style/ColumnTitleStyle"
+                        android:text="@string/check"/>
 
                 </LinearLayout>
 
@@ -76,7 +87,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/layout_titles"
             app:rv_config="@{rvConfig}"
-            tools:listitem="@layout/item_good" />
+            tools:listitem="@layout/item_number_good_check_selectable" />
 
         <!-- Ввод номера товара -->
         <LinearLayout

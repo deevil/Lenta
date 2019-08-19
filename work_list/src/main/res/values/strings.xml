@@ -49,5 +49,6 @@
     <string name="shelf_life_days_left">%1$d сут.</string>
     <string name="goods">Товары</string>
     <string name="one_space_two">%1$s %2$s</string>
+    <string name="check">Сверка</string>
 
 </resources>

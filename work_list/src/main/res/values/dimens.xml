@@ -9,4 +9,9 @@
     <integer name="goods_list_wl_column_1">10</integer>
     <integer name="goods_list_wl_column_2">55</integer>
 
+    <!-- Колонки - № / Товары / Сверка -->
+    <integer name="number_good_check_column_1">10</integer>
+    <integer name="number_good_check_column_2">35</integer>
+    <integer name="number_good_check_column_3">15</integer>
+
 </resources>
