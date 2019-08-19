@@ -67,6 +67,7 @@ abstract class CoreFragment<T : ViewDataBinding, S : CoreViewModel> : Fragment()
 
     override fun onResume() {
         super.onResume()
+        Logg.d { "onResume $this" }
         arguments?.let { arguments ->
             arguments.getBundle(FragmentStack.SAVE_TAG_FOR_ARGUMENTS)?.let {
                 onFragmentResult(it)
