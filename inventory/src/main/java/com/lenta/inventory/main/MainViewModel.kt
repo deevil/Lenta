@@ -58,6 +58,10 @@ class MainViewModel : CoreMainViewModel() {
         //persistWriteOffTask.saveWriteOffTask(writeOffTaskManager.getWriteOffTask())
     }
 
+    override fun preparingForExit() {
+        //TODO реализовать сохранение задачи
+    }
+
 
 
 }
