@@ -261,14 +261,15 @@ class ScreenNavigator(
     }
 
 
-    override fun openSuccessSaveDataScreen() {
+    override fun openSuccessSaveDataScreen(callbackFunc: () -> Unit) {
         runOrPostpone {
             getFragmentStack()?.push(
                     AlertFragment.create(
                             iconRes = R.drawable.ic_done_green_80dp,
                             message = context.getString(R.string.success_save_report),
                             timeAutoExitInMillis = 3000,
-                            leftButtonDecorationInfo = ButtonDecorationInfo.empty
+                            leftButtonDecorationInfo = ButtonDecorationInfo.empty,
+                            codeConfirmForExit = backFragmentResultHelper.setFuncForResult(callbackFunc)
                     )
             )
         }
@@ -382,7 +383,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openConfirmationMissingGoods(positionsCount: Int, callbackFunc: () -> Unit)
     fun openConfirmationDeleteGoods(positionsCount: Int, callbackFunc: () -> Unit)
     fun openConfirmationClean(byStorage: Boolean = false, callbackFunc: () -> Unit)
-    fun openSuccessSaveDataScreen()
+    fun openSuccessSaveDataScreen(callbackFunc: () -> Unit)
     fun openConfirmationExitTask(callbackFunc: () -> Unit)
     fun openSelectTypeCodeScreen(codeConfirmationForSap: Int, codeConfirmationForBarCode: Int)
     fun openAlertGoodsNotForTaskScreen()
