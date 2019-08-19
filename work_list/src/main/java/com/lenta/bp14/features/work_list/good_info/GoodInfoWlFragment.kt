@@ -35,7 +35,7 @@ class GoodInfoWlFragment : CoreFragment<FragmentGoodInfoWlBinding, GoodInfoWlVie
     }
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
-        topToolbarUiModel.description.value = getString(R.string.goods_list)
+        topToolbarUiModel.description.value = getString(R.string.goods_info)
 
         vm.good.observe(this, Observer<Good> { good ->
             topToolbarUiModel.title.value = "${good.getFormattedMaterial()} ${good.name}"
@@ -52,8 +52,8 @@ class GoodInfoWlFragment : CoreFragment<FragmentGoodInfoWlBinding, GoodInfoWlVie
 
     override fun getPagerItemView(container: ViewGroup, position: Int): View {
         if (position == 0) {
-            DataBindingUtil.inflate<LayoutCommonGoodInfoBinding>(LayoutInflater.from(container.context),
-                    R.layout.layout_common_good_info,
+            DataBindingUtil.inflate<LayoutWlGoodInfoCommonBinding>(LayoutInflater.from(container.context),
+                    R.layout.layout_wl_good_info_common,
                     container,
                     false).let { layoutBinding ->
 
@@ -64,8 +64,8 @@ class GoodInfoWlFragment : CoreFragment<FragmentGoodInfoWlBinding, GoodInfoWlVie
         }
 
         if (position == 1) {
-            DataBindingUtil.inflate<LayoutAdditionalGoodInfoBinding>(LayoutInflater.from(container.context),
-                    R.layout.layout_additional_good_info,
+            DataBindingUtil.inflate<LayoutWlGoodInfoAdditionalBinding>(LayoutInflater.from(container.context),
+                    R.layout.layout_wl_good_info_additional,
                     container,
                     false).let { layoutBinding ->
 
@@ -76,13 +76,13 @@ class GoodInfoWlFragment : CoreFragment<FragmentGoodInfoWlBinding, GoodInfoWlVie
         }
 
         if (position == 2) {
-            DataBindingUtil.inflate<LayoutGoodProvidersListBinding>(LayoutInflater.from(container.context),
-                    R.layout.layout_good_providers_list,
+            DataBindingUtil.inflate<LayoutWlGoodInfoProvidersBinding>(LayoutInflater.from(container.context),
+                    R.layout.layout_wl_good_info_providers,
                     container,
                     false).let { layoutBinding ->
 
-                layoutBinding.rvConfig = DataBindingRecyclerViewConfig<ItemGoodProviderBinding>(
-                        layoutId = R.layout.item_good_provider,
+                layoutBinding.rvConfig = DataBindingRecyclerViewConfig<ItemGoodProviderPeriodBinding>(
+                        layoutId = R.layout.item_good_provider_period,
                         itemId = BR.vm)
 
                 layoutBinding.vm = vm
@@ -91,13 +91,13 @@ class GoodInfoWlFragment : CoreFragment<FragmentGoodInfoWlBinding, GoodInfoWlVie
             }
         }
 
-        DataBindingUtil.inflate<LayoutStocksListBinding>(LayoutInflater.from(container.context),
-                R.layout.layout_stocks_list,
+        DataBindingUtil.inflate<LayoutWlGoodInfoStocksBinding>(LayoutInflater.from(container.context),
+                R.layout.layout_wl_good_info_stocks,
                 container,
                 false).let { layoutBinding ->
 
-            layoutBinding.rvConfig = DataBindingRecyclerViewConfig<ItemStockBinding>(
-                    layoutId = R.layout.item_stock,
+            layoutBinding.rvConfig = DataBindingRecyclerViewConfig<ItemStorageStockBinding>(
+                    layoutId = R.layout.item_storage_stock,
                     itemId = BR.vm)
 
             layoutBinding.vm = vm

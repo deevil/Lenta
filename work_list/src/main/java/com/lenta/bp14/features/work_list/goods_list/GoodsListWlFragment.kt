@@ -8,10 +8,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import com.lenta.bp14.BR
 import com.lenta.bp14.R
-import com.lenta.bp14.databinding.FragmentGoodsListWlBinding
-import com.lenta.bp14.databinding.ItemGoodBinding
-import com.lenta.bp14.databinding.ItemGoodSimpleBinding
-import com.lenta.bp14.databinding.LayoutGoodsListWlBinding
+import com.lenta.bp14.databinding.*
 import com.lenta.bp14.platform.extentions.getAppComponent
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
@@ -39,7 +36,7 @@ class GoodsListWlFragment : CoreFragment<FragmentGoodsListWlBinding, GoodsListWl
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
         topToolbarUiModel.description.value = getString(R.string.product_information)
 
-        vm.workListName.observe(this, Observer<String> { name ->
+        vm.taskName.observe(this, Observer<String> { name ->
             topToolbarUiModel.title.value = name
         })
     }
@@ -51,18 +48,18 @@ class GoodsListWlFragment : CoreFragment<FragmentGoodsListWlBinding, GoodsListWl
     }
 
     override fun getPagerItemView(container: ViewGroup, position: Int): View {
-            DataBindingUtil.inflate<LayoutGoodsListWlBinding>(LayoutInflater.from(container.context),
-                    R.layout.layout_goods_list_wl,
+            DataBindingUtil.inflate<LayoutWlGoodsListBinding>(LayoutInflater.from(container.context),
+                    R.layout.layout_wl_goods_list,
                     container,
                     false).let { layoutBinding ->
 
                 if (position == 0) {
-                    layoutBinding.rvConfig = DataBindingRecyclerViewConfig<ItemGoodBinding>(
-                            layoutId = R.layout.item_good,
+                    layoutBinding.rvConfig = DataBindingRecyclerViewConfig<ItemGoodSelectableBinding>(
+                            layoutId = R.layout.item_good_selectable,
                             itemId = BR.good)
                 } else {
-                    layoutBinding.rvConfig = DataBindingRecyclerViewConfig<ItemGoodSimpleBinding>(
-                            layoutId = R.layout.item_good_simple,
+                    layoutBinding.rvConfig = DataBindingRecyclerViewConfig<ItemGoodBinding>(
+                            layoutId = R.layout.item_good,
                             itemId = BR.good)
                 }
 

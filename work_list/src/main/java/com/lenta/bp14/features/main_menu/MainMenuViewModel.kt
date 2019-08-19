@@ -21,7 +21,8 @@ class MainMenuViewModel : CoreViewModel() {
         // Тестирование запуска различных экранов
         //screenNavigator.openPrintSettingsScreen()
         //screenNavigator.openGoodInfoWlScreen()
-        screenNavigator.openGoodsListWlScreen()
+        //screenNavigator.openGoodsListWlScreen()
+        screenNavigator.openGoodListPcScreen()
     }
 
 
