@@ -35,7 +35,7 @@ class GoodInfoWlFragment : CoreFragment<FragmentGoodInfoWlBinding, GoodInfoWlVie
     }
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
-        topToolbarUiModel.description.value = getString(R.string.goods_list)
+        topToolbarUiModel.description.value = getString(R.string.goods_info)
 
         vm.good.observe(this, Observer<Good> { good ->
             topToolbarUiModel.title.value = "${good.getFormattedMaterial()} ${good.name}"

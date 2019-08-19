@@ -1,10 +1,13 @@
 package com.lenta.bp14.features.price_check.good_info
 
+import androidx.lifecycle.Observer
 import com.lenta.bp14.R
+import com.lenta.bp14.data.model.Good
 import com.lenta.bp14.databinding.FragmentGoodInfoPcBinding
 import com.lenta.bp14.platform.extentions.getAppComponent
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
+import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
 import com.lenta.shared.utilities.extentions.provideViewModel
@@ -23,12 +26,18 @@ class GoodInfoPcFragment : CoreFragment<FragmentGoodInfoPcBinding, GoodInfoPcVie
     }
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        topToolbarUiModel.description.value = getString(R.string.goods_info)
+
+        vm.good.observe(this, Observer<Good> { good ->
+            topToolbarUiModel.title.value = "${good.getFormattedMaterial()} ${good.name}"
+        })
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
+        bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.missing)
+        bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.error)
+        bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.correct)
     }
-
 
 }

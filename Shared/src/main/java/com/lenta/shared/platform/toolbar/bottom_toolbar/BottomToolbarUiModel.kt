@@ -94,6 +94,10 @@ data class ButtonDecorationInfo(
             ButtonDecorationInfo(R.drawable.ic_done_white_24dp, R.string.confirm)
         }
 
+        val correct: ButtonDecorationInfo by lazy {
+            ButtonDecorationInfo(R.drawable.ic_done_white_24dp, R.string.correct)
+        }
+
         val review: ButtonDecorationInfo by lazy {
             ButtonDecorationInfo(R.drawable.ic_visibility_white_24dp, R.string.review)
         }
@@ -188,6 +192,10 @@ data class ButtonDecorationInfo(
 
         val sales: ButtonDecorationInfo by lazy {
             ButtonDecorationInfo(R.drawable.ic_shopping_cart_white_24dp, R.string.sales)
+        }
+
+        val error: ButtonDecorationInfo by lazy {
+            ButtonDecorationInfo(R.drawable.ic_error_outline_white_24dp, R.string.error)
         }
     }
 }
