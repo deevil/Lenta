@@ -1,9 +1,12 @@
 package com.lenta.inventory.models.repositories
 
 import com.lenta.inventory.models.task.TaskProductInfo
+import com.lenta.inventory.requests.network.UntiedProduct
 
 interface ITaskProductRepository {
     fun getProducts(): List<TaskProductInfo>
+    fun getUntiedProducts(): List<TaskProductInfo>
+    fun untieProduct(product: TaskProductInfo): Boolean
     fun findProduct(product: TaskProductInfo): TaskProductInfo?
     fun findProduct(materialNumber: String, storePlaceNumber: String): TaskProductInfo?
     fun addProduct(product: TaskProductInfo): Boolean
