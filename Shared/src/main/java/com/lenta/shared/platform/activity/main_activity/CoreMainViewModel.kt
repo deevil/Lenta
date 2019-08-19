@@ -44,16 +44,18 @@ abstract class CoreMainViewModel : CoreViewModel() {
 
     open fun onPause() {
         priorityAppManager.setHighPriority()
-        autoExitManager?.setLastActiveTime()
 
     }
 
     fun onResume() {
-        autoExitManager?.checkLastTime()
         priorityAppManager.setLowPriority()
         lockManager.getActiveAppPackageName()?.let { packageName ->
             coreNavigator.openAlertAnotherAppInProcess(packageName)
         }
+    }
+
+    fun onUserInteraction() {
+        autoExitManager?.setLastActiveTime()
     }
 
     init {
