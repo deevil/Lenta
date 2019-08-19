@@ -2,10 +2,7 @@ package com.lenta.inventory.models.task
 
 import com.lenta.inventory.models.RecountType
 import com.lenta.inventory.models.repositories.ITaskRepository
-import com.lenta.inventory.requests.network.ExciseStampInfo
-import com.lenta.inventory.requests.network.InventoryReport
-import com.lenta.inventory.requests.network.MaterialNumber
-import com.lenta.inventory.requests.network.StorePlace
+import com.lenta.inventory.requests.network.*
 
 class InventoryTask(val taskDescription: TaskDescription, val taskRepository: ITaskRepository) {
 
@@ -36,9 +33,9 @@ class InventoryTask(val taskDescription: TaskDescription, val taskRepository: IT
     //2. Строгий список, пересчет по МХ, по нажатию "Отвязать", удаляем товар в конкретном заданном МХ
     fun untieProduct(productNumber: String, storePlaceNumber: String) {
         taskRepository.getProducts().findProduct(productNumber, storePlaceNumber)?.let {
+            taskRepository.getProducts().untieProduct(it)
             taskRepository.getProducts().deleteProduct(it)
         }
-        //TODO: сохранять список отвязанных товаров для передачи в сохранение
     }
 
 
@@ -65,7 +62,7 @@ class InventoryTask(val taskDescription: TaskDescription, val taskRepository: IT
                 taskNumber = taskDescription.taskNumber,
                 isFinish = if (isFinish) "X" else "",
                 personnelNumber = personnelNumber,
-                storePlacesForDelete = getReportsStorePlaces(),
+                storePlacesForDelete = getUntiedProducts(),
                 products = getReportsProducts(),
                 stamps = getReportStamps(),
                 isRecount = if (isRecount) "X" else ""
@@ -90,14 +87,14 @@ class InventoryTask(val taskDescription: TaskDescription, val taskRepository: IT
     }
 
     //TODO предварительная версия. Логика будет уточнятся дополнятся
-    private fun getReportsStorePlaces(): List<StorePlace> {
+    private fun getUntiedProducts(): List<UntiedProduct> {
         return taskRepository
-                .getStorePlace().getStorePlaces().map {
-                    StorePlace(
-                            storage = "",
+                .getProducts().getUntiedProducts().map {
+                    UntiedProduct(
+                            storage = taskDescription.tkNumber,
                             placeCode = it.placeCode,
-                            matNumber = "",
-                            isDel = ""
+                            matNumber = it.materialNumber,
+                            isDel = if (it.isDel) "X" else ""
                     )
                 }
     }
@@ -143,6 +140,7 @@ class InventoryTask(val taskDescription: TaskDescription, val taskRepository: IT
         storePlace.isProcessed = false
         taskRepository.getProducts().getProcessedProducts(storePlace.placeCode).forEach {
             taskRepository.getProducts().changeProduct(it.copy(factCount = 0.0, isPositionCalc = false))
+            taskRepository.getExciseStamps().deleteExciseStampsForProduct(it)
         }
         return this
     }
@@ -162,6 +160,13 @@ class InventoryTask(val taskDescription: TaskDescription, val taskRepository: IT
     }
 
     fun getDiscrepancies(): List<TaskProductInfo> {
-        return taskRepository.getProducts().getNotProcessedProducts().filter { !(taskDescription.recountType == RecountType.ParallelByStorePlaces) || it.placeCode != "00" }
+        if (taskDescription.recountType == RecountType.ParallelByStorePlaces) {
+            val processedProducts = taskRepository.getProducts().getProcessedProducts()
+            return taskRepository.getProducts().getNotProcessedProducts().filter { productInfo ->
+                processedProducts.findLast { it.materialNumber == productInfo.materialNumber && it.placeCode != "00" } == null
+            }
+        } else {
+            return taskRepository.getProducts().getNotProcessedProducts()
+        }
     }
 }

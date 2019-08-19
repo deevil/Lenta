@@ -4,14 +4,20 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import com.lenta.inventory.models.repositories.ITaskProductRepository
 import com.lenta.inventory.models.task.TaskProductInfo
+import com.lenta.inventory.requests.network.UntiedProduct
 import com.lenta.shared.utilities.Logg
 
 class MemoryTaskProductRepository : ITaskProductRepository {
 
     private val productInfo: ArrayList<TaskProductInfo> = ArrayList()
+    private val untiedProducts: ArrayList<TaskProductInfo> = ArrayList()
 
     override fun getProducts(): List<TaskProductInfo> {
         return productInfo.toList()
+    }
+
+    override fun getUntiedProducts(): List<TaskProductInfo> {
+        return untiedProducts.toList()
     }
 
     override fun findProduct(product: TaskProductInfo): TaskProductInfo? {
@@ -84,8 +90,19 @@ class MemoryTaskProductRepository : ITaskProductRepository {
             (storePlaceNumber == null || it.placeCode == storePlaceNumber) && shouldInclude }
     }
 
+    override fun untieProduct(product: TaskProductInfo): Boolean {
+        if (product.placeCode != "00") {
+            if (untiedProducts.findLast { it.placeCode == product.placeCode && it.materialNumber == product.materialNumber } == null) {
+                untiedProducts.add(product)
+                return true
+            }
+        }
+        return false
+    }
+
     override fun clear() {
         productInfo.clear()
+        untiedProducts.clear()
     }
 
 }

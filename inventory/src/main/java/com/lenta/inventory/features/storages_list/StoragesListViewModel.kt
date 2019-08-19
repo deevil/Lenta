@@ -48,6 +48,8 @@ class StoragesListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     val requestFocusToStorageNumber: MutableLiveData<Boolean> = MutableLiveData()
     val processedSelectionHelper = SelectionItemsHelper()
 
+    var lastPage: Int = 0
+
     val deleteEnabled: MutableLiveData<Boolean> = selectedPage.combineLatest(processedSelectionHelper.selectedPositions).map {
         val page = it?.first ?: 0
         val selectionCount = it?.second?.size ?: 0
@@ -112,6 +114,9 @@ class StoragesListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
             processedSelectionHelper.clearPositions()
             updateUnprocessed()
             updateProcessed()
+            viewModelScope.launch {
+                moveToPreviousPageIfNeeded()
+            }
         }
     }
 
@@ -157,11 +162,15 @@ class StoragesListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
             it.updateTaskWithContents(taskContents)
             updateProcessed()
             updateUnprocessed()
+            viewModelScope.launch {
+                moveToPreviousPageIfNeeded()
+            }
         }
     }
 
     fun onPageSelected(position: Int) {
         selectedPage.value = position
+        lastPage = position
     }
 
     fun onClickItemPosition(position: Int) {
@@ -205,6 +214,14 @@ class StoragesListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
         }
 
         return true
+    }
+
+    private fun moveToPreviousPageIfNeeded() {
+        if (lastPage == 0) {
+            selectedPage.value = if (unprocessedStorages.value?.size == 0 && processedStorages.value?.size != 0) 1 else 0
+        } else {
+            selectedPage.value = if (processedStorages.value?.size == 0) 0 else 1
+        }
     }
 }
 
