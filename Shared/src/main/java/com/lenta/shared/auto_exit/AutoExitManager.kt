@@ -1,6 +1,5 @@
 package com.lenta.shared.auto_exit
 
-import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.coroutine.timer
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -23,7 +22,6 @@ class AutoExitManager(private var onNeedExitCallback: () -> Unit) {
 
 
     fun checkLastTime() {
-        Logg.d { "checkLastTime" }
         autoExitTimeInMinutes?.let {
             if ((System.currentTimeMillis() - lastTimeInMillis) > (it * 1000 * 60)) {
                 onNeedExitCallback()
