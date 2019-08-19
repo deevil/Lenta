@@ -9,6 +9,7 @@ import com.lenta.bp14.features.list_of_differences.ListOfDifferencesViewModel
 import com.lenta.bp14.features.loading.fast.FastLoadingViewModel
 import com.lenta.bp14.features.main_menu.MainMenuViewModel
 import com.lenta.bp14.features.price_check.good_info.GoodInfoPcViewModel
+import com.lenta.bp14.features.price_check.goods_list.GoodsListPcViewModel
 import com.lenta.bp14.features.print_settings.PrintSettingsViewModel
 import com.lenta.bp14.features.report_result.ReportResultViewModel
 import com.lenta.bp14.features.select_market.SelectMarketViewModel
@@ -41,5 +42,6 @@ interface AppComponent {
     fun inject(it: GoodInfoWlViewModel)
     fun inject(it: GoodInfoPcViewModel)
     fun inject(it: DetailsOfGoodsViewModel)
+    fun inject(it: GoodsListPcViewModel)
 
 }

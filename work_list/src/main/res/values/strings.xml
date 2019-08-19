@@ -18,6 +18,7 @@
     <string name="additional_good_info_title">Доп. инфо</string>
     <string name="good_providers_list_title">Поставщики</string>
     <string name="stocks_list_title">Остатки</string>
+    <string name="processing">К обработке</string>
     <string name="processed">Обработанные</string>
     <string name="search">Поиск</string>
 

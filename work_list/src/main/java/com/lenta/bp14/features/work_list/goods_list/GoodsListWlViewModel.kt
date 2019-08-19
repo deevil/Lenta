@@ -11,10 +11,9 @@ class GoodsListWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
 
     val selectedPage = MutableLiveData(0)
 
-    val workListName = MutableLiveData("Рабочий список от 23.07.19 23:15")
+    val taskName = MutableLiveData("Рабочий список от 23.07.19 23:15")
 
     val goods = MutableLiveData<List<Good>>(getTestItems())
-
 
     override fun onPageSelected(position: Int) {
         selectedPage.value = position
