@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools">
 
     <data>
 
         <variable
             name="vm"
-            type="com.lenta.bp14.features.good_info.GoodInfoViewModel"/>
+            type="com.lenta.bp14.features.work_list.good_info.GoodInfoWlViewModel"/>
 
         <variable
             name="rvConfig"
@@ -37,7 +36,7 @@
 
                 <LinearLayout
                     style="@style/LinearCellStyle"
-                    android:layout_weight="@integer/good_provider_column_1">
+                    android:layout_weight="@integer/good_provider_wl_column_1">
 
                     <TextView
                         style="@style/ColumnTitleStyle"
@@ -49,21 +48,21 @@
 
                 <LinearLayout
                     style="@style/LinearCellStyle"
-                    android:layout_weight="@integer/good_provider_column_2">
+                    android:layout_weight="@integer/good_provider_wl_column_2">
 
                     <TextView
                         style="@style/ColumnTitleStyle"
-                        android:text="@string/provider"/>
+                        android:text="@string/storage"/>
 
                 </LinearLayout>
 
                 <LinearLayout
                     style="@style/LinearCellStyle"
-                    android:layout_weight="@integer/good_provider_column_3">
+                    android:layout_weight="@integer/good_provider_wl_column_3">
 
                     <TextView
                         style="@style/ColumnTitleStyle"
-                        android:text="@string/period_kip"/>
+                        android:text="@string/quantity"/>
 
                 </LinearLayout>
 
@@ -75,13 +74,13 @@
         </LinearLayout>
 
 
-        <!-- Список поставщиков -->
+        <!-- Список остатков -->
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            tools:listitem="@layout/item_good_provider"/>
+            tools:listitem="@layout/item_stock"/>
 
     </LinearLayout>
 

@@ -181,6 +181,14 @@ data class ButtonDecorationInfo(
         val counted: ButtonDecorationInfo by lazy {
             ButtonDecorationInfo(R.drawable.ic_counted, R.string.counted)
         }
+
+        val deliveries: ButtonDecorationInfo by lazy {
+            ButtonDecorationInfo(R.drawable.ic_directions_car_white_24dp, R.string.deliveries)
+        }
+
+        val sales: ButtonDecorationInfo by lazy {
+            ButtonDecorationInfo(R.drawable.ic_shopping_cart_white_24dp, R.string.sales)
+        }
     }
 }
 

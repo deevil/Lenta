@@ -2,20 +2,19 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
-        tools:context=".features.good_info.GoodInfoFragment">
+        tools:context=".features.work_list.goods_list.GoodsListWlFragment">
 
     <data>
 
         <variable
             name="vm"
-            type="com.lenta.bp14.features.good_info.GoodInfoViewModel"/>
+            type="com.lenta.bp14.features.work_list.goods_list.GoodsListWlViewModel"/>
 
         <variable
             name="viewPagerSettings"
             type="com.lenta.shared.utilities.databinding.ViewPagerSettings"/>
 
     </data>
-
 
     <androidx.viewpager.widget.ViewPager
         android:id="@+id/view_pager"
@@ -41,6 +40,5 @@
             app:tabTextColor="@color/colorWhite"
             tools:targetApi="lollipop"/>
     </androidx.viewpager.widget.ViewPager>
-
 
 </layout>

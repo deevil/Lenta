@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
         tools:context=".features.print_settings.PrintSettingsFragment">
 
     <data>
@@ -8,6 +9,7 @@
         <variable
             name="vm"
             type="com.lenta.bp14.features.print_settings.PrintSettingsViewModel"/>
+
     </data>
 
     <LinearLayout
@@ -50,8 +52,12 @@
                         android:layout_height="wrap_content"
                         android:layout_margin="8dp"
                         android:layout_weight="1"
+                        android:digits="0123456789"
+                        android:inputType="number"
+                        android:maxLength="2"
                         android:paddingStart="10dp"
                         android:paddingEnd="10dp"
+                        android:text="@={vm.numberOfCopies}"
                         android:textSize="14sp"
                         tools:text="2"/>
 
@@ -103,6 +109,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_margin="8dp"
+                        app:position="@{vm.selectedPrinterType}"
+                        app:onPositionClickListener="@{vm}"
                         android:entries="@array/printer_name"/>
 
                 </LinearLayout>
@@ -139,6 +147,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_margin="8dp"
+                        app:position="@{vm.selectedPriceTagType}"
                         android:entries="@array/price_tag_name"/>
 
                 </LinearLayout>
@@ -155,7 +164,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:visibility="gone"
+                android:visibility="@{vm.ipAddressVisibility}"
                 tools:visibility="visible">
 
                 <LinearLayout
@@ -186,6 +195,7 @@
                             android:paddingStart="10dp"
                             android:paddingEnd="10dp"
                             android:textSize="14sp"
+                            android:text="@={vm.ipAddress}"
                             tools:text="10.254.25.12"/>
 
                     </LinearLayout>
@@ -225,6 +235,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
+                android:onClick="@{(view) -> vm.scanQrCode()}"
                 android:src="@drawable/ic_scan_barcode"/>
 
             <ImageView
@@ -232,6 +243,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
+                android:onClick="@{(view) -> vm.scanBarCode()}"
                 android:src="@drawable/ic_scan_barcode"/>
 
         </LinearLayout>

@@ -5,7 +5,7 @@
 
         <variable
             name="vm"
-            type="com.lenta.bp14.features.good_info.GoodInfoViewModel"/>
+            type="com.lenta.bp14.features.work_list.good_info.GoodInfoWlViewModel"/>
 
     </data>
 

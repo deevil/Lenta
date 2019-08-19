@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools">
 
     <data>
 
         <variable
             name="vm"
-            type="com.lenta.bp14.features.good_info.GoodInfoViewModel"/>
+            type="com.lenta.bp14.features.work_list.good_info.GoodInfoWlViewModel"/>
 
     </data>
 
@@ -30,7 +31,8 @@
 
                 <TextView
                     style="@style/CellTextStyle"
-                    android:text="@string/total_quantity"/>
+                    android:text="@{@string/total_quantity(vm.totalQuantity)}"
+                    tools:text="Итого: 7 шт."/>
 
             </LinearLayout>
 
@@ -46,10 +48,13 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="8dp"
+                    android:digits="0123456789"
+                    android:inputType="number"
                     android:paddingStart="10dp"
                     android:paddingEnd="10dp"
+                    android:text="@={vm.quantity}"
                     android:textSize="14sp"
-                    tools:text="1 ШТ."/>
+                    tools:text="1"/>
 
             </LinearLayout>
 
@@ -108,7 +113,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="8dp"
-                    android:entries="@array/shelf_life"/>
+                    android:entries="@array/shelf_life"
+                    app:position="@{vm.shelfLifePosition}"/>
 
             </LinearLayout>
 
@@ -130,8 +136,12 @@
                         android:layout_height="wrap_content"
                         android:layout_margin="8dp"
                         android:layout_weight="1"
+                        android:digits="0123456789"
+                        android:inputType="number"
+                        android:maxLength="2"
                         android:paddingStart="10dp"
                         android:paddingEnd="10dp"
+                        android:text="@={vm.day}"
                         android:textSize="14sp"
                         tools:text="31"/>
 
@@ -141,8 +151,12 @@
                         android:layout_height="wrap_content"
                         android:layout_margin="8dp"
                         android:layout_weight="1"
+                        android:digits="0123456789"
+                        android:inputType="number"
+                        android:maxLength="2"
                         android:paddingStart="10dp"
                         android:paddingEnd="10dp"
+                        android:text="@={vm.month}"
                         android:textSize="14sp"
                         tools:text="07"/>
 
@@ -152,14 +166,17 @@
                         android:layout_height="wrap_content"
                         android:layout_margin="8dp"
                         android:layout_weight="1"
+                        android:digits="0123456789"
+                        android:inputType="number"
+                        android:maxLength="2"
                         android:paddingStart="10dp"
                         android:paddingEnd="10dp"
+                        android:text="@={vm.year}"
                         android:textSize="14sp"
                         tools:text="19"/>
 
                     <View
                         android:layout_width="0dp"
-                        android:layout_margin="8dp"
                         android:layout_height="match_parent"
                         android:layout_weight="1"/>
 
@@ -204,9 +221,10 @@
                     android:text="10 сут."/>
 
                 <TextView
-                    android:id="@+id/tv_remaining_shelf_life"
+                    android:id="@+id/tv_shelf_life_days_left"
                     style="@style/CellTextStyle"
-                    android:text="2 сут."/>
+                    android:text="@{@string/shelf_life_days_left(vm.shelfLifeDaysLeft)}"
+                    tools:text="5 сут."/>
 
 
             </LinearLayout>

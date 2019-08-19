@@ -62,6 +62,8 @@
     <string name="untie">Отвязать</string>
     <string name="published">Опубликовано</string>
     <string name="counted">Посчитано</string>
+    <string name="deliveries">Поставки</string>
+    <string name="sales">Продажи</string>
     <string name="number">№</string>
     <string name="good">Товар</string>
     <string name="quantity">Количество</string>
