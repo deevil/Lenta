@@ -58,11 +58,11 @@ class GoodsListWlFragment : CoreFragment<FragmentGoodsListWlBinding, GoodsListWl
 
                 if (position == 0) {
                     layoutBinding.rvConfig = DataBindingRecyclerViewConfig<ItemGoodBinding>(
-                            layoutId = R.layout.item_good,
+                            layoutId = R.layout.item_good_selectable,
                             itemId = BR.good)
                 } else {
                     layoutBinding.rvConfig = DataBindingRecyclerViewConfig<ItemGoodSimpleBinding>(
-                            layoutId = R.layout.item_good_simple,
+                            layoutId = R.layout.item_good,
                             itemId = BR.good)
                 }
 

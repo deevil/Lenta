@@ -9,6 +9,10 @@
     <integer name="goods_list_wl_column_1">10</integer>
     <integer name="goods_list_wl_column_2">55</integer>
 
+    <!-- Колонки - № / Товары -->
+    <integer name="number_good_column_1">10</integer>
+    <integer name="number_good_column_2">50</integer>
+
     <!-- Колонки - № / Товары / Сверка -->
     <integer name="number_good_check_column_1">10</integer>
     <integer name="number_good_check_column_2">35</integer>

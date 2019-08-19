@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    tools:context="com.lenta.bp14.features.work_list.goods_list.GoodsListWlFragment">
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        tools:context="com.lenta.bp14.features.work_list.goods_list.GoodsListWlFragment">
 
     <data>
 
         <variable
             name="vm"
-            type="com.lenta.bp14.features.work_list.goods_list.GoodsListWlViewModel" />
+            type="com.lenta.bp14.features.work_list.goods_list.GoodsListWlViewModel"/>
 
         <variable
             name="rvConfig"
-            type="com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig" />
+            type="com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig"/>
     </data>
 
     <LinearLayout
@@ -68,15 +68,15 @@
             android:id="@+id/rv"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1"
             android:layout_marginBottom="8dp"
+            android:layout_weight="1"
             app:items="@{vm.goods}"
             app:layout_constraintBottom_toTopOf="@+id/et_search"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/layout_titles"
             app:rv_config="@{rvConfig}"
-            tools:listitem="@layout/item_good" />
+            tools:listitem="@layout/item_good_selectable"/>
 
         <!-- Ввод номера товара -->
         <LinearLayout
@@ -92,12 +92,12 @@
                 android:layout_margin="8dp"
                 android:layout_weight="1"
                 android:digits="0123456789"
+                android:ellipsize="end"
                 android:hint="@string/enter_item_number_or_barcode"
                 android:imeOptions="actionGo"
                 android:inputType="number"
                 android:maxLength="14"
                 android:maxLines="1"
-                android:ellipsize="end"
                 app:onOkInSoftKeyboard="@{vm}"
                 tools:ignore="Autofill"/>
 
