@@ -16,7 +16,7 @@ class AnalyticsHelper(
         private val context: Context) {
 
     fun onPermissionGranted() {
-        analytics.enableLogs(true)
+        analytics.enableLogs(false)
     }
 
 
