@@ -54,6 +54,8 @@
     <string name="loading_tab_number">Загрузка данных исполнителя</string>
     <string name="delete">Удалить</string>
     <string name="clean">Очистить</string>
+    <string name="refusal">Отказ</string>
+    <string name="batchs_products">Партии</string>
     <string name="print">Печать</string>
     <string name="save">Сохранить</string>
     <string name="complete">Завершить</string>

@@ -189,6 +189,14 @@ data class ButtonDecorationInfo(
         val sales: ButtonDecorationInfo by lazy {
             ButtonDecorationInfo(R.drawable.ic_shopping_cart_white_24dp, R.string.sales)
         }
+
+        val refusal: ButtonDecorationInfo by lazy {
+            ButtonDecorationInfo(R.drawable.is_refusal, R.string.refusal)
+        }
+
+        val batchsProducts: ButtonDecorationInfo by lazy {
+            ButtonDecorationInfo(R.drawable.is_batchs_products, R.string.batchs_products)
+        }
     }
 }
 

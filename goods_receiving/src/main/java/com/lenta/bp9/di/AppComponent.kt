@@ -5,7 +5,6 @@ import com.lenta.bp9.features.auth.AuthViewModel
 import com.lenta.bp9.features.goods_list.GoodsListViewModel
 import com.lenta.bp9.features.loading.tasks.LoadingTasksViewModel
 import com.lenta.bp9.features.task_list.TaskListViewModel
-import com.lenta.bp9.features.loading.fast.FastDataLoadingFragment
 import com.lenta.bp9.features.loading.fast.FastDataLoadingViewModel
 import com.lenta.bp9.features.main_menu.MainMenuViewModel
 import com.lenta.bp9.features.select_market.SelectMarketViewModel
