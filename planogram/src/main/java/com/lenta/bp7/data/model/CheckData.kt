@@ -62,8 +62,7 @@ class CheckData @Inject constructor(
                     matcode = goodInfo.matcode,
                     enteredCode = goodInfo.enteredCode,
                     name = goodInfo.name,
-                    unitsCode = goodInfo.unitsCode,
-                    units = goodInfo.units))
+                    uom = goodInfo.uom))
         }
         currentGoodIndex = 0
     }
@@ -243,7 +242,7 @@ class CheckData @Inject constructor(
 
                     for (good in shelf.goods) {
                         val goodSend = GoodSend(
-                                sapCodeForSend = good.getFormattedMaterial() + "_${good.unitsCode}",
+                                sapCodeForSend = good.getFormattedMaterial() + "_${good.uom.code}",
                                 barCode = if (good.enteredCode == EnteredCode.EAN) good.ean
                                         ?: "Not found!" else "",
                                 count = if (countFacings) good.facings else null,
