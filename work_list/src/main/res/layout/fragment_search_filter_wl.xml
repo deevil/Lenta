@@ -38,11 +38,7 @@
                 android:layout_weight="2">
 
                 <EditText
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="8dp"
-                    android:paddingStart="10dp"
-                    android:paddingEnd="10dp"
+                    style="@style/CellEditTextStyle"
                     android:text="@={vm.section}"
                     tools:text="02"/>
 
@@ -75,11 +71,7 @@
                 android:layout_weight="2">
 
                 <EditText
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="8dp"
-                    android:paddingStart="10dp"
-                    android:paddingEnd="10dp"
+                    style="@style/CellEditTextStyle"
                     android:text="@={vm.groupOfGoods}"/>
 
             </LinearLayout>
@@ -111,11 +103,7 @@
                 android:layout_weight="2">
 
                 <EditText
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="8dp"
-                    android:paddingStart="10dp"
-                    android:paddingEnd="10dp"
+                    style="@style/CellEditTextStyle"
                     android:text="@={vm.storagePlace}"/>
 
             </LinearLayout>
@@ -147,11 +135,7 @@
                 android:layout_weight="2">
 
                 <EditText
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="8dp"
-                    android:paddingStart="10dp"
-                    android:paddingEnd="10dp"
+                    style="@style/CellEditTextStyle"
                     android:text="@={vm.comment}"/>
 
             </LinearLayout>
