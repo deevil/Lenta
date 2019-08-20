@@ -19,7 +19,6 @@ class AndroidApplication : CoreApplication() {
                 techPassword = "1q2w3e4r"*/
                 serverAddress = "9.6.24.61:6444",
 
-
                 environment = "Lenta_LRP",
                 project = "PR_SHARED",
                 testServerAddress = "http://9.6.24.46",
