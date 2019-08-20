@@ -21,7 +21,7 @@ class FmpAnalytics @Inject constructor(val hyperHive: HyperHive, val logDao: Log
 
 
     override fun init() {
-        hyperHive.loggingAPI.initAutoSendingLogs()
+        //hyperHive.loggingAPI.initAutoSendingLogs()
     }
 
 
