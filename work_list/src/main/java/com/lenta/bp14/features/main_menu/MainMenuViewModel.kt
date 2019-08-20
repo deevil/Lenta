@@ -22,7 +22,8 @@ class MainMenuViewModel : CoreViewModel() {
         //screenNavigator.openPrintSettingsScreen()
         //screenNavigator.openGoodInfoWlScreen()
         //screenNavigator.openGoodsListWlScreen()
-        screenNavigator.openGoodListPcScreen()
+        //screenNavigator.openGoodListPcScreen()
+        screenNavigator.openSearchFilterWlScreen()
     }
 
 

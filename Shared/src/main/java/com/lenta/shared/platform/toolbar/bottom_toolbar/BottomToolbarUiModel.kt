@@ -197,6 +197,10 @@ data class ButtonDecorationInfo(
         val error: ButtonDecorationInfo by lazy {
             ButtonDecorationInfo(R.drawable.ic_error_outline_white_24dp, R.string.error)
         }
+
+        val toFind: ButtonDecorationInfo by lazy {
+            ButtonDecorationInfo(R.drawable.ic_search_white_24dp, R.string.to_find)
+        }
     }
 }
 
