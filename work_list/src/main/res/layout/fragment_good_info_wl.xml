@@ -21,7 +21,6 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-
         <!-- Табы -->
         <androidx.viewpager.widget.ViewPager
             android:id="@+id/view_pager"
@@ -49,7 +48,6 @@
                 tools:targetApi="lollipop"/>
 
         </androidx.viewpager.widget.ViewPager>
-
 
         <!-- Блок с кнопками -->
         <LinearLayout

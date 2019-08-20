@@ -12,6 +12,12 @@
         <item>Распродажа</item>
     </string-array>
 
+    <string-array name="price_tag_color">
+        <item>Не выбрано</item>
+        <item>Желтый ценник</item>
+        <item>Красный ценник</item>
+    </string-array>
+
     <string-array name="selected_comment">
         <item>Не выбран</item>
     </string-array>

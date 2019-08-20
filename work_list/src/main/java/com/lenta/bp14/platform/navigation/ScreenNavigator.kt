@@ -8,12 +8,15 @@ import com.lenta.bp14.features.job_card.JobCardFragment
 import com.lenta.bp14.features.list_of_differences.ListOfDifferencesFragment
 import com.lenta.bp14.features.loading.fast.FastDataLoadingFragment
 import com.lenta.bp14.features.main_menu.MainMenuFragment
+import com.lenta.bp14.features.price_check.good_info.GoodInfoPcFragment
+import com.lenta.bp14.features.price_check.goods_list.GoodsListPcFragment
 import com.lenta.bp14.features.print_settings.PrintSettingsFragment
 import com.lenta.bp14.features.report_result.ReportResultFragment
 import com.lenta.bp14.features.select_market.SelectMarketFragment
 import com.lenta.bp14.features.task_list.TaskListFragment
 import com.lenta.bp14.features.work_list.details_of_goods.DetailsOfGoodsFragment
 import com.lenta.bp14.features.work_list.goods_list.GoodsListWlFragment
+import com.lenta.bp14.features.work_list.search_filter.SearchFilterWlFragment
 import com.lenta.shared.account.IAuthenticator
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
 import com.lenta.shared.platform.navigation.ICoreNavigator
@@ -114,6 +117,24 @@ class ScreenNavigator(
         }
     }
 
+    override fun openGoodInfoPcScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(GoodInfoPcFragment())
+        }
+    }
+
+    override fun openGoodListPcScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(GoodsListPcFragment())
+        }
+    }
+
+    override fun openSearchFilterWlScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(SearchFilterWlFragment())
+        }
+    }
+
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 
 }
@@ -133,4 +154,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openDetailsOfGoodsScreen()
     fun openGoodInfoWlScreen()
     fun openGoodsListWlScreen()
+    fun openGoodInfoPcScreen()
+    fun openGoodListPcScreen()
+    fun openSearchFilterWlScreen()
 }

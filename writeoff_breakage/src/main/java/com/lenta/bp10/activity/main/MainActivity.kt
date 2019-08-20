@@ -1,6 +1,5 @@
 package com.lenta.bp10.activity.main
 
-import android.content.Intent
 import android.os.Bundle
 import androidx.lifecycle.ViewModelProviders
 import com.lenta.bp10.di.AppComponent
@@ -9,9 +8,6 @@ import com.lenta.shared.platform.activity.main_activity.CoreMainActivity
 import com.crashlytics.android.Crashlytics
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.utilities.runIfRelease
-import com.lenta.shared.scan.OnScanResultListener
-import com.lenta.shared.utilities.Logg
-import com.lenta.shared.utilities.extentions.implementationOf
 import io.fabric.sdk.android.Fabric
 
 

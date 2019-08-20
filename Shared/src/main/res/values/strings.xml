@@ -13,6 +13,7 @@
     <string name="add">Добавить</string>
     <string name="create">Создать</string>
     <string name="apply">Применить</string>
+    <string name="correct">Верно</string>
     <string name="confirm">Подтвердить</string>
     <string name="review">Просмотр</string>
     <string name="enter">Войти</string>
@@ -66,6 +67,8 @@
     <string name="counted">Посчитано</string>
     <string name="deliveries">Поставки</string>
     <string name="sales">Продажи</string>
+    <string name="error">Ошибка</string>
+    <string name="to_find">Найти</string>
     <string name="number">№</string>
     <string name="good">Товар</string>
     <string name="quantity">Количество</string>

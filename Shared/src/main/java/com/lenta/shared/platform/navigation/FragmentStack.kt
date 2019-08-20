@@ -101,8 +101,9 @@ class FragmentStack(private val manager: FragmentManager, private val containerI
     }
 
     fun popAll() {
-        for (i in manager.backStackEntryCount downTo 1) manager.popBackStackImmediate()
-        if (peek() != null) manager.beginTransaction().remove(peek()!!).commit()
+        for (i in 0 .. manager.backStackEntryCount) {
+            manager.popBackStack()
+        }
         executePendingTransactions()
         if (listener != null) listener!!.onBackStackChanged()
     }

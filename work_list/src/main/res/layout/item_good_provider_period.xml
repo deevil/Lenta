@@ -5,8 +5,8 @@
     <data>
 
         <variable
-            name="good"
-            type="com.lenta.bp14.data.model.GoodProvider"/>
+            name="provider"
+            type="com.lenta.bp14.data.model.Provider"/>
 
     </data>
 
@@ -24,7 +24,7 @@
 
             <LinearLayout
                 style="@style/LinearCellStyle"
-                android:layout_weight="@integer/good_provider_wl_column_1">
+                android:layout_weight="@integer/number_provider_period_column_1">
 
                 <TextView
                     android:id="@+id/tv_item_number"
@@ -39,7 +39,7 @@
 
             <LinearLayout
                 style="@style/LinearCellStyle"
-                android:layout_weight="@integer/good_provider_wl_column_2">
+                android:layout_weight="@integer/number_provider_period_column_2">
 
                 <TextView
                     android:id="@+id/tv_good_provider_number"
@@ -58,7 +58,7 @@
 
             <LinearLayout
                 style="@style/LinearCellStyle"
-                android:layout_weight="@integer/good_provider_wl_column_3">
+                android:layout_weight="@integer/number_provider_period_column_3">
 
                 <TextView
                     android:id="@+id/tv_period_kip"
