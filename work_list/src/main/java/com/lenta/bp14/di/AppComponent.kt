@@ -8,6 +8,7 @@ import com.lenta.bp14.features.job_card.JobCardViewModel
 import com.lenta.bp14.features.list_of_differences.ListOfDifferencesViewModel
 import com.lenta.bp14.features.loading.fast.FastLoadingViewModel
 import com.lenta.bp14.features.main_menu.MainMenuViewModel
+import com.lenta.bp14.features.not_displayed_goods.NotDisplayedGoodsViewModel
 import com.lenta.bp14.features.price_check.good_info.GoodInfoPcViewModel
 import com.lenta.bp14.features.price_check.goods_list.GoodsListPcViewModel
 import com.lenta.bp14.features.print_settings.PrintSettingsViewModel
@@ -49,5 +50,6 @@ interface AppComponent {
     fun inject(it: ExpectedDeliveriesViewModel)
     fun inject(it: SearchFilterWlViewModel)
     fun inject(it: SalesOfGoodsViewModel)
+    fun inject(it: NotDisplayedGoodsViewModel)
 
 }
