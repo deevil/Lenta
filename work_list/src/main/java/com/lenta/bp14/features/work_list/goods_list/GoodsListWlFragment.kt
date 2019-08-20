@@ -53,7 +53,7 @@ class GoodsListWlFragment : CoreFragment<FragmentGoodsListWlBinding, GoodsListWl
                     container,
                     false).let { layoutBinding ->
 
-                if (position == 0) {
+                if (position == 1) {
                     layoutBinding.rvConfig = DataBindingRecyclerViewConfig<ItemGoodSelectableBinding>(
                             layoutId = R.layout.item_good_selectable,
                             itemId = BR.good)
@@ -71,8 +71,9 @@ class GoodsListWlFragment : CoreFragment<FragmentGoodsListWlBinding, GoodsListWl
 
     override fun getTextTitle(position: Int): String {
         return when (position) {
-            0 -> getString(R.string.processed)
-            1 -> getString(R.string.search)
+            0 -> getString(R.string.processing)
+            1 -> getString(R.string.processed)
+            2 -> getString(R.string.search)
             else -> {
                 Logg.d { "Wrong pager position!" }
                 "Error"
@@ -81,7 +82,7 @@ class GoodsListWlFragment : CoreFragment<FragmentGoodsListWlBinding, GoodsListWl
     }
 
     override fun countTab(): Int {
-        return 2
+        return 3
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
