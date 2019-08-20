@@ -89,7 +89,7 @@
                         android:layout_height="wrap_content"
                         android:paddingStart="10dp"
                         android:paddingEnd="10dp"
-                        android:text="@{@string/one_space_two(String.valueOf(vm.totalFacings), vm.good.units)}"
+                        android:text="@{@string/one_space_two(String.valueOf(vm.totalFacings), vm.good.uom.name)}"
                         android:textSize="14sp"
                         tools:text="5 шт"/>
 
