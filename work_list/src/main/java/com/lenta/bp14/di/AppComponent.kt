@@ -16,6 +16,7 @@ import com.lenta.bp14.features.select_market.SelectMarketViewModel
 import com.lenta.bp14.features.task_list.TaskListViewModel
 import com.lenta.bp14.features.work_list.details_of_goods.DetailsOfGoodsViewModel
 import com.lenta.bp14.features.work_list.goods_list.GoodsListWlViewModel
+import com.lenta.bp14.features.work_list.search_filter.SearchFilterWlViewModel
 import com.lenta.bp14.main.MainActivity
 import com.lenta.bp14.main.MainViewModel
 import com.lenta.shared.di.AppScope
@@ -43,5 +44,6 @@ interface AppComponent {
     fun inject(it: GoodInfoPcViewModel)
     fun inject(it: DetailsOfGoodsViewModel)
     fun inject(it: GoodsListPcViewModel)
+    fun inject(it: SearchFilterWlViewModel)
 
 }
