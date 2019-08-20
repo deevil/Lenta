@@ -17,6 +17,7 @@ import com.lenta.bp14.features.task_list.TaskListFragment
 import com.lenta.bp14.features.work_list.details_of_goods.DetailsOfGoodsFragment
 import com.lenta.bp14.features.work_list.expected_deliveries.ExpectedDeliveriesFragment
 import com.lenta.bp14.features.work_list.goods_list.GoodsListWlFragment
+import com.lenta.bp14.features.work_list.sales_of_goods.SalesOfGoodsFragment
 import com.lenta.bp14.features.work_list.search_filter.SearchFilterWlFragment
 import com.lenta.shared.account.IAuthenticator
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
@@ -142,6 +143,12 @@ class ScreenNavigator(
         }
     }
 
+    override fun openSalesOfGoodsScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(SalesOfGoodsFragment())
+        }
+    }
+
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 
 }
@@ -165,4 +172,5 @@ interface IScreenNavigator : ICoreNavigator {
     fun openGoodListPcScreen()
     fun openSearchFilterWlScreen()
     fun openExpectedDeliveriesScreen()
+    fun openSalesOfGoodsScreen()
 }

@@ -137,7 +137,7 @@
     <string name="comment">Комментарий</string>
     <string name="list_of_goods">Список товаров</string>
     <string name="list_of_differences">Список расхождений</string>
-    <string name="goods_of_details">Детали по товару</string>
+    <string name="details_of_goods">Детали по товару</string>
     <string name="comments">Комментарии</string>
     <string name="status">Статус</string>
 </resources>

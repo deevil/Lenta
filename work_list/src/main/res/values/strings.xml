@@ -56,5 +56,8 @@
     <string name="section">Секция</string>
     <string name="expected_deliveries">Планируемые поставки</string>
     <string name="date">Дата</string>
+    <string name="date_and_time_last_sales">Дата и время последней продажи</string>
+    <string name="last_day_sales">Объем продаж за последние сутки</string>
+    <string name="last_week_sales">Объем продаж за 7 дней</string>
 
 </resources>
