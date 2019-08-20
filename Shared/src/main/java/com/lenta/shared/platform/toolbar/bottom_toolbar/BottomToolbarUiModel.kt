@@ -201,6 +201,14 @@ data class ButtonDecorationInfo(
         val toFind: ButtonDecorationInfo by lazy {
             ButtonDecorationInfo(R.drawable.ic_search_white_24dp, R.string.to_find)
         }
+
+        val refusal: ButtonDecorationInfo by lazy {
+            ButtonDecorationInfo(R.drawable.is_refusal, R.string.refusal)
+        }
+
+        val batchsProducts: ButtonDecorationInfo by lazy {
+            ButtonDecorationInfo(R.drawable.is_batchs_products, R.string.batchs_products)
+        }
     }
 }
 

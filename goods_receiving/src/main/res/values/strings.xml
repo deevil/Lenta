@@ -14,4 +14,6 @@
     <string name="receipt_task">Задания на приемку</string>
     <string name="user_no_rights">У пользователя (%1$s) нет прав на работу с МП</string>
     <string name="error_registering_server">Ошибка регистрации на сервере</string>
+    <string name="counted">Посчитанные</string>
+    <string name="without_barcode">Без штрихкода</string>
 </resources>
