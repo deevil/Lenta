@@ -18,6 +18,7 @@ import com.lenta.shared.exception.Failure
 import com.lenta.shared.models.core.Manufacturer
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
+import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.toStringFormatted
@@ -151,6 +152,7 @@ class ExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
             screenNavigator.openAlertDoubleScanStamp()
             return
         }
+
         viewModelScope.launch {
             screenNavigator.showProgress(titleProgressScreen.value!!)
             obtainingDataExciseGoodsNetRequest(
@@ -179,17 +181,26 @@ class ExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
 
         when (exciseGoodsRestInfo.status) {
             InfoStatus.BoxFound.status -> {
-                val boxStamps = exciseGoodsRestInfo.stampsBox.map { stampsBox ->
-                    TaskExciseStamp(
-                            materialNumber = productInfo.value!!.materialNumber,
-                            code = stampsBox.exciseStampCode,
-                            placeCode = productInfo.value!!.placeCode,
-                            boxNumber = stampsBox.boxNumber
-                    )
+                var boxStamps: ArrayList<TaskExciseStamp> = ArrayList()
+                exciseGoodsRestInfo.stampsBox.map { stampsBox ->
+                    if (!processExciseAlcoProductService.isTaskAlreadyHasExciseStamp(stampsBox.exciseStampCode)) {
+                        boxStamps.add(
+                                TaskExciseStamp(
+                                        materialNumber = productInfo.value!!.materialNumber,
+                                        code = stampsBox.exciseStampCode,
+                                        placeCode = productInfo.value!!.placeCode,
+                                        boxNumber = stampsBox.boxNumber
+                                )
+                        )
+                    }
                 }
-                processExciseAlcoProductService.addCurrentExciseStamps(boxStamps)
-                count.value = boxStamps.size.toString()
-                selectedPosition.value = GoodsInfoCountType.VINTAGE.number
+                if (boxStamps.isEmpty()) {
+                    screenNavigator.openAlertDoubleScanStamp()
+                } else {
+                    processExciseAlcoProductService.addCurrentExciseStamps(boxStamps)
+                    count.value = boxStamps.size.toString()
+                    selectedPosition.value = GoodsInfoCountType.VINTAGE.number
+                }
             }
             InfoStatus.BoxWithProblem.status -> screenNavigator.openAlertInfoScreen(exciseGoodsRestInfo.statusTxt)
             else -> screenNavigator.openAlertInfoScreen(textErrorUnknownStatus.value!!)
@@ -209,6 +220,7 @@ class ExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
             screenNavigator.openAlertDoubleScanStamp()
             return
         }
+
         viewModelScope.launch {
             screenNavigator.showProgress(titleProgressScreen.value!!)
             obtainingDataExciseGoodsNetRequest(
