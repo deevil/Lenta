@@ -181,7 +181,7 @@ class ExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
 
         when (exciseGoodsRestInfo.status) {
             InfoStatus.BoxFound.status -> {
-                var boxStamps: ArrayList<TaskExciseStamp> = ArrayList()
+                val boxStamps: ArrayList<TaskExciseStamp> = ArrayList()
                 exciseGoodsRestInfo.stampsBox.map { stampsBox ->
                     if (!processExciseAlcoProductService.isTaskAlreadyHasExciseStamp(stampsBox.exciseStampCode)) {
                         boxStamps.add(
