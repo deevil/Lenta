@@ -236,7 +236,8 @@ class CheckData @Inject constructor(
                     val shelfSend = ShelfSend(
                             number = shelf.number,
                             startTime = SimpleDateFormat(CHECK_DATA_TIME_FORMAT, Locale.getDefault()).format(shelf.checkStart),
-                            completionTime = SimpleDateFormat(CHECK_DATA_TIME_FORMAT, Locale.getDefault()).format(shelf.checkFinish),
+                            completionTime = SimpleDateFormat(CHECK_DATA_TIME_FORMAT, Locale.getDefault()).format(shelf.checkFinish
+                                    ?: Date()),
                             counted = if (countFacings) 1 else 0,
                             canceled = if (shelf.getStatus() == ShelfStatus.DELETED) 1 else null
                     )
