@@ -60,19 +60,19 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
             .combineLatest(unprocessedSelectionHelper.selectedPositions.combineLatest(processedSelectionHelper.selectedPositions))
             .combineLatest(unprocessedGoods.combineLatest(processedGoods))
             .map {
-        val page = it?.first?.first
-        if (page == 0) {
-            val selectedCount = it?.first?.second?.first.size
-            val totalCount = (it?.second?.first?.size ?: 0) + (it?.second?.second?.size ?: 0)
-            selectedCount != 0 && selectedCount != totalCount
-        } else {
-            val selectedCount = it?.first?.second?.second?.size
-            selectedCount != 0
-        }
-    }
+                val page = it?.first?.first
+                if (page == 0) {
+                    val selectedCount = it.first.second.first.size
+                    val totalCount = it.second.first.size + it.second.second.size
+                    selectedCount != 0 && selectedCount != totalCount
+                } else {
+                    val selectedCount = it?.first?.second?.second?.size
+                    selectedCount != 0
+                }
+            }
 
     fun isStrict(): Boolean {
-        return taskManager.getInventoryTask()!!.taskDescription.isStrict
+        return taskManager.getInventoryTask()?.taskDescription?.isStrict ?: false
     }
 
     init {
@@ -169,15 +169,11 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
                 val matnr = processedGoods.value?.get(it)?.matnr
                 if (matnr != null) {
                     val productInfo = taskManager.getInventoryTask()?.taskRepository?.getProducts()?.findProduct(matnr, storePlaceManager?.storePlaceNumber
-                                ?: "")
+                            ?: "")
 
-                        if (productInfo != null) {
-                            taskManager.
-                                    getInventoryTask()!!.
-                                    taskRepository.
-                                    getProducts().
-                                    changeProduct(productInfo.copy(factCount = 0.0, isPositionCalc = false))
-                        }
+                    if (productInfo != null) {
+                        taskManager.getInventoryTask()!!.taskRepository.getProducts().changeProduct(productInfo.copy(factCount = 0.0, isPositionCalc = false))
+                    }
                 }
             }
             processedSelectionHelper.clearPositions()

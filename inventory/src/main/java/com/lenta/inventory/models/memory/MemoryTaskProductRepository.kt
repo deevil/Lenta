@@ -1,16 +1,13 @@
 package com.lenta.inventory.models.memory
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import com.lenta.inventory.models.repositories.ITaskProductRepository
 import com.lenta.inventory.models.task.TaskProductInfo
-import com.lenta.inventory.requests.network.UntiedProduct
-import com.lenta.shared.utilities.Logg
 
-class MemoryTaskProductRepository : ITaskProductRepository {
+class MemoryTaskProductRepository(
+        private val productInfo: ArrayList<TaskProductInfo> = ArrayList(),
+        private val untiedProducts: ArrayList<TaskProductInfo> = ArrayList()
+) : ITaskProductRepository {
 
-    private val productInfo: ArrayList<TaskProductInfo> = ArrayList()
-    private val untiedProducts: ArrayList<TaskProductInfo> = ArrayList()
 
     override fun getProducts(): List<TaskProductInfo> {
         return productInfo.toList()
@@ -25,7 +22,7 @@ class MemoryTaskProductRepository : ITaskProductRepository {
     }
 
     override fun findProduct(materialNumber: String, storePlaceNumber: String): TaskProductInfo? {
-        return productInfo.firstOrNull { it.materialNumber == materialNumber && it.placeCode == storePlaceNumber}
+        return productInfo.firstOrNull { it.materialNumber == materialNumber && it.placeCode == storePlaceNumber }
     }
 
     override fun updateProducts(newProducts: List<TaskProductInfo>) {
@@ -50,7 +47,7 @@ class MemoryTaskProductRepository : ITaskProductRepository {
         if (index == -1) {
             productInfo.add(product)
             return true
-        } else if (index !=  productInfo.size - 1) {
+        } else if (index != productInfo.size - 1) {
             productInfo.getOrNull(index)?.let {
                 productInfo.removeAt(index)
                 productInfo.add(it)
@@ -87,7 +84,8 @@ class MemoryTaskProductRepository : ITaskProductRepository {
             } else {
                 it.isPositionCalc && !it.isDel
             }
-            (storePlaceNumber == null || it.placeCode == storePlaceNumber) && shouldInclude }
+            (storePlaceNumber == null || it.placeCode == storePlaceNumber) && shouldInclude
+        }
     }
 
     override fun untieProduct(product: TaskProductInfo): Boolean {

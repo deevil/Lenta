@@ -1,6 +1,9 @@
 package com.lenta.inventory.di
 
 import android.content.Context
+import com.google.gson.Gson
+import com.lenta.inventory.models.IPersistInventoryTask
+import com.lenta.inventory.models.PersistInventoryTask
 import com.lenta.inventory.models.task.IInventoryTaskManager
 import com.lenta.inventory.models.task.InventoryTaskManager
 import com.lenta.inventory.platform.navigation.IScreenNavigator
@@ -14,6 +17,7 @@ import com.lenta.shared.di.AppScope
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
 import com.lenta.shared.platform.navigation.ICoreNavigator
 import com.lenta.shared.progress.IProgressUseCaseInformator
+import com.mobrun.plugin.api.HyperHive
 import dagger.Module
 import dagger.Provides
 
@@ -50,6 +54,12 @@ open class AppModule {
     @AppScope
     internal fun provideIRepoInMemoryHolder(): IRepoInMemoryHolder {
         return RepoInMemoryHolder()
+    }
+
+    @Provides
+    @AppScope
+    internal fun provideIPersistInventoryTask(hyperHive: HyperHive, gson: Gson): IPersistInventoryTask {
+        return PersistInventoryTask(hyperHive, gson)
     }
 
 
