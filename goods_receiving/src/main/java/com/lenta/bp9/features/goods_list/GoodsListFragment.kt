@@ -1,24 +1,32 @@
 package com.lenta.bp9.features.goods_list
 
 import com.lenta.bp9.R
-import com.lenta.bp9.databinding.FragmentGoodsListBinding
 import com.lenta.bp9.platform.extentions.getAppComponent
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.utilities.extentions.provideViewModel
 import android.os.Bundle
-import com.lenta.shared.utilities.databinding.ViewPagerSettings
+import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.view.View
+import android.widget.AdapterView
+import androidx.databinding.DataBindingUtil
+import com.lenta.bp9.BR
+import com.lenta.bp9.databinding.*
+import com.lenta.shared.keys.KeyCode
+import com.lenta.shared.keys.OnKeyDownListener
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.scan.OnScanResultListener
-import com.lenta.shared.utilities.databinding.PageSelectionListener
+import com.lenta.shared.utilities.databinding.*
 
 class GoodsListFragment : CoreFragment<FragmentGoodsListBinding, GoodsListViewModel>(),
         ViewPagerSettings,
         OnScanResultListener,
-        PageSelectionListener {
+        PageSelectionListener,
+        OnKeyDownListener {
+
+    private var countedRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
 
     override fun getLayoutId(): Int = R.layout.fragment_goods_list
 
@@ -45,7 +53,94 @@ class GoodsListFragment : CoreFragment<FragmentGoodsListBinding, GoodsListViewMo
     }
 
     override fun getPagerItemView(container: ViewGroup, position: Int): View {
-        return View(context)
+        if (position == 0) {
+            DataBindingUtil
+                    .inflate<LayoutGoodsListCountedBinding>(LayoutInflater.from(container.context),
+                            R.layout.layout_goods_list_counted,
+                            container,
+                            false).let { layoutBinding ->
+
+                        val onClickSelectionListener = View.OnClickListener {
+                            (it!!.tag as Int).let { position ->
+                                vm.countedSelectionsHelper.revert(position = position)
+                                layoutBinding.rv.adapter?.notifyItemChanged(position)
+                            }
+                        }
+
+                        layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
+                                layoutId = R.layout.item_tile_goods_list_counted,
+                                itemId = BR.vm,
+                                realisation = object : DataBindingAdapter<ItemTileGoodsListCountedBinding> {
+                                    override fun onCreate(binding: ItemTileGoodsListCountedBinding) {
+                                    }
+
+                                    override fun onBind(binding: ItemTileGoodsListCountedBinding, position: Int) {
+                                        binding.tvCounter.tag = position
+                                        binding.tvCounter.setOnClickListener(onClickSelectionListener)
+                                        binding.selectedForDelete = vm.countedSelectionsHelper.isSelected(position)
+                                        countedRecyclerViewKeyHandler?.let {
+                                            binding.root.isSelected = it.isSelected(position)
+                                        }
+                                    }
+
+                                },
+                                onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
+                                    countedRecyclerViewKeyHandler?.let {
+                                        if (it.isSelected(position)) {
+                                            vm.onClickItemPosition(position)
+                                        } else {
+                                            it.selectPosition(position)
+                                        }
+                                    }
+
+                                }
+                        )
+
+                        layoutBinding.vm = vm
+                        layoutBinding.lifecycleOwner = viewLifecycleOwner
+                        countedRecyclerViewKeyHandler = RecyclerViewKeyHandler(
+                                rv = layoutBinding.rv,
+                                items = vm.countedGoods,
+                                lifecycleOwner = layoutBinding.lifecycleOwner!!,
+                                initPosInfo = countedRecyclerViewKeyHandler?.posInfo?.value
+                        )
+                        return layoutBinding.root
+                    }
+        }
+
+        DataBindingUtil
+                .inflate<LayoutGoodsListWithoutBarcodeBinding>(LayoutInflater.from(container.context),
+                        R.layout.layout_goods_list_without_barcode,
+                        container,
+                        false).let { layoutBinding ->
+
+                    val onClickGoodsTitle = View.OnClickListener {
+                        (it!!.tag as Int).let { position ->
+                            vm.onClickGoodsTitle(position)
+                        }
+                    }
+
+                    layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
+                            layoutId = R.layout.item_tile_goods_list_without_barcode,
+                            itemId = BR.vm,
+                            realisation = object : DataBindingAdapter<ItemTileGoodsListWithoutBarcodeBinding> {
+                                override fun onCreate(binding: ItemTileGoodsListWithoutBarcodeBinding) {
+                                }
+
+                                override fun onBind(binding: ItemTileGoodsListWithoutBarcodeBinding, position: Int) {
+                                    binding.tvCounter.tag = position
+                                    binding.tvCounter.setOnClickListener(onClickGoodsTitle)
+                                    binding.tvGoodsTitle.tag = position
+                                    binding.tvGoodsTitle.setOnClickListener(onClickGoodsTitle)
+                                }
+
+                            }
+                    )
+
+                    layoutBinding.vm = vm
+                    layoutBinding.lifecycleOwner = viewLifecycleOwner
+                    return layoutBinding.root
+                }
     }
 
     override fun getTextTitle(position: Int): String = getString(if (position == 0) R.string.counted else R.string.without_barcode)
@@ -65,6 +160,26 @@ class GoodsListFragment : CoreFragment<FragmentGoodsListBinding, GoodsListViewMo
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding?.viewPagerSettings = this
+    }
+
+    override fun onKeyDown(keyCode: KeyCode): Boolean {
+        (if (vm.selectedPage.value == 0) {
+            countedRecyclerViewKeyHandler
+        } else {
+            //todo
+            countedRecyclerViewKeyHandler
+            //filterRecyclerViewKeyHandler
+        })?.let {
+            if (!it.onKeyDown(keyCode)) {
+                keyCode.digit?.let { digit ->
+                    vm.onDigitPressed(digit)
+                    return true
+                }
+                return false
+            }
+            return true
+        }
+        return false
     }
 
 

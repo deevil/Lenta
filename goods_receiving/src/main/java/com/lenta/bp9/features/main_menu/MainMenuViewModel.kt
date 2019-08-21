@@ -29,7 +29,9 @@ class MainMenuViewModel : CoreViewModel() {
     }
 
     fun onClickReceiptTask() {
-        screenNavigator.openTaskListLoadingScreen(TaskListLoadingMode.Receiving)
+        //todo
+        screenNavigator.openGoodsListScreen()
+        //screenNavigator.openTaskListLoadingScreen(TaskListLoadingMode.Receiving)
     }
 
     fun onClickRecountTask() {

@@ -16,4 +16,5 @@
     <string name="error_registering_server">Ошибка регистрации на сервере</string>
     <string name="counted">Посчитанные</string>
     <string name="without_barcode">Без штрихкода</string>
+    <string name="enter_item_number_goods">Введите номер товара</string>
 </resources>
