@@ -198,13 +198,13 @@ class GoodsDetailsStorageFragment : CoreFragment<FragmentGoodsDetailsStorageBind
                         false).let { layoutBinding ->
 
                     layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
-                            layoutId = R.layout.item_tile_goods_details_storage,
+                            layoutId = R.layout.item_tile_goods_details_storage_not_prossed,
                             itemId = BR.vm,
-                            realisation = object : DataBindingAdapter<ItemTileGoodsDetailsStorageBinding> {
-                                override fun onCreate(binding: ItemTileGoodsDetailsStorageBinding) {
+                            realisation = object : DataBindingAdapter<ItemTileGoodsDetailsStorageNotProssedBinding> {
+                                override fun onCreate(binding: ItemTileGoodsDetailsStorageNotProssedBinding) {
                                 }
 
-                                override fun onBind(binding: ItemTileGoodsDetailsStorageBinding, position: Int) {
+                                override fun onBind(binding: ItemTileGoodsDetailsStorageNotProssedBinding, position: Int) {
                                     binding.tvCounter.tag = position
                                 }
 
