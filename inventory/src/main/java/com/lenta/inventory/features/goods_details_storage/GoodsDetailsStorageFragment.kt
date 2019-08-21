@@ -5,11 +5,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.Observer
 import com.lenta.inventory.BR
 import com.lenta.inventory.R
 import com.lenta.inventory.databinding.*
-import com.lenta.inventory.models.task.ProcessExciseAlcoProductService
 import com.lenta.inventory.models.task.TaskProductInfo
 import com.lenta.inventory.platform.extentions.getAppComponent
 import com.lenta.shared.models.core.ProductType
@@ -62,7 +60,7 @@ class GoodsDetailsStorageFragment : CoreFragment<FragmentGoodsDetailsStorageBind
         topToolbarUiModel.description.value = when {
             vm.isGeneralProduct.value!! -> getString(R.string.goods_store_place)
             vm.isStorePlace.value!! -> getString(R.string.goods_of_details_store_place)
-            else -> getString(R.string.goods_of_details)
+            else -> getString(R.string.details_of_goods)
         }
         topToolbarUiModel.title.value = "${vm.productInfo.value!!.getMaterialLastSix()} ${vm.productInfo.value!!.description}"
     }
