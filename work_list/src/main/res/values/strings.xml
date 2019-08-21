@@ -59,5 +59,6 @@
     <string name="date_and_time_last_sales">Дата и время последней продажи</string>
     <string name="last_day_sales">Объем продаж за последние сутки</string>
     <string name="last_week_sales">Объем продаж за 7 дней</string>
+    <string name="common_info">Общая информация</string>
 
 </resources>

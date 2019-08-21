@@ -140,4 +140,7 @@
     <string name="details_of_goods">Детали по товару</string>
     <string name="comments">Комментарии</string>
     <string name="status">Статус</string>
+    <string name="cancel">Отменить</string>
+    <string name="framed">Оформлено</string>
+    <string name="not_framed">Не оформлено</string>
 </resources>

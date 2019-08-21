@@ -9,6 +9,7 @@ import com.lenta.bp14.features.list_of_differences.ListOfDifferencesFragment
 import com.lenta.bp14.features.loading.fast.FastDataLoadingFragment
 import com.lenta.bp14.features.main_menu.MainMenuFragment
 import com.lenta.bp14.features.not_displayed_goods.NotDisplayedGoodsFragment
+import com.lenta.bp14.features.not_displayed_goods.NotDisplayedGoodsInfoFragment
 import com.lenta.bp14.features.price_check.good_info.GoodInfoPcFragment
 import com.lenta.bp14.features.price_check.goods_list.GoodsListPcFragment
 import com.lenta.bp14.features.print_settings.PrintSettingsFragment
@@ -156,6 +157,12 @@ class ScreenNavigator(
         }
     }
 
+    override fun openNotDisplayedGoodsInfoScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(NotDisplayedGoodsInfoFragment())
+        }
+    }
+
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 
 }
@@ -181,4 +188,5 @@ interface IScreenNavigator : ICoreNavigator {
     fun openExpectedDeliveriesScreen()
     fun openSalesOfGoodsScreen()
     fun openNotDisplayedGoodsScreen()
+    fun openNotDisplayedGoodsInfoScreen()
 }
