@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="vm"
+            type="com.lenta.bp14.features.work_list.good_info.GoodInfoWlViewModel"/>
+
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+
+        <!-- Количество -->
+        <LinearLayout
+            style="@style/LinearRowStyle">
+
+            <LinearLayout
+                style="@style/LinearCellStyle"
+                android:layout_weight="1">
+
+                <TextView
+                    style="@style/CellTextStyle"
+                    android:text="@string/quantity"/>
+
+                <TextView
+                    style="@style/CellTextStyle"
+                    android:text="@{@string/total_quantity(vm.totalQuantity)}"
+                    tools:text="Итого: 7 шт."/>
+
+            </LinearLayout>
+
+            <View
+                style="@style/VerticalDivider"/>
+
+            <LinearLayout
+                style="@style/LinearCellStyle"
+                android:layout_weight="2">
+
+                <EditText
+                    style="@style/CellEditTextStyle"
+                    android:digits="0123456789"
+                    android:inputType="number"
+                    android:text="@={vm.quantity}"
+                    tools:text="1"/>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <View
+            style="@style/HorizontalDivider"/>
+
+
+        <!-- Комментарий -->
+        <LinearLayout
+            style="@style/LinearRowStyle">
+
+            <LinearLayout
+                style="@style/LinearCellStyle"
+                android:layout_weight="1">
+
+                <TextView
+                    style="@style/CellTextStyle"
+                    android:text="@string/comment"/>
+
+            </LinearLayout>
+
+            <View
+                style="@style/VerticalDivider"/>
+
+            <LinearLayout
+                style="@style/LinearCellStyle"
+                android:layout_weight="2">
+
+                <com.lenta.shared.view.ClickableSpinner
+                    android:id="@+id/spin_select_comment"
+                    style="@style/CellSpinnerStyle"
+                    android:entries="@array/selected_comment"/>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <View
+            style="@style/HorizontalDivider"/>
+
+
+        <!-- Срок годности -->
+        <LinearLayout
+            style="@style/LinearRowStyle">
+
+            <LinearLayout
+                style="@style/LinearCellStyle"
+                android:layout_weight="1">
+
+                <com.lenta.shared.view.ClickableSpinner
+                    android:id="@+id/spin_shelf_life"
+                    style="@style/CellSpinnerStyle"
+                    android:entries="@array/shelf_life"
+                    app:position="@{vm.shelfLifePosition}"/>
+
+            </LinearLayout>
+
+            <View
+                style="@style/VerticalDivider"/>
+
+            <LinearLayout
+                style="@style/LinearCellStyle"
+                android:layout_weight="2">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <EditText
+                        style="@style/CellEditTextStyle"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:digits="0123456789"
+                        android:inputType="number"
+                        android:maxLength="2"
+                        android:text="@={vm.day}"
+                        tools:text="31"/>
+
+                    <EditText
+                        style="@style/CellEditTextStyle"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:digits="0123456789"
+                        android:inputType="number"
+                        android:maxLength="2"
+                        android:text="@={vm.month}"
+                        tools:text="07"/>
+
+                    <EditText
+                        style="@style/CellEditTextStyle"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:digits="0123456789"
+                        android:inputType="number"
+                        android:maxLength="2"
+                        android:text="@={vm.year}"
+                        tools:text="19"/>
+
+                    <View
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"/>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <View
+            style="@style/HorizontalDivider"/>
+
+
+        <!-- Оставшийся срок годности -->
+        <LinearLayout
+            style="@style/LinearRowStyle">
+
+            <LinearLayout
+                style="@style/LinearCellStyle"
+                android:layout_weight="1">
+
+                <TextView
+                    style="@style/CellTextStyle"
+                    android:text="@string/total_shelf_life"/>
+
+                <TextView
+                    style="@style/CellTextStyle"
+                    android:text="@string/remaining_shelf_life"/>
+
+            </LinearLayout>
+
+            <View
+                style="@style/VerticalDivider"/>
+
+            <LinearLayout
+                style="@style/LinearCellStyle"
+                android:layout_weight="2">
+
+                <TextView
+                    android:id="@+id/tv_total_shelf_life"
+                    style="@style/CellTextStyle"
+                    android:text="10 сут."/>
+
+                <TextView
+                    android:id="@+id/tv_shelf_life_days_left"
+                    style="@style/CellTextStyle"
+                    android:text="@{@string/shelf_life_days_left(vm.shelfLifeDaysLeft)}"
+                    tools:text="5 сут."/>
+
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <View
+            style="@style/HorizontalDivider"/>
+
+
+        <!-- Штрихкод -->
+        <LinearLayout
+            style="@style/LinearRowStyle">
+
+            <LinearLayout
+                style="@style/LinearCellStyle"
+                android:layout_weight="1">
+
+                <TextView
+                    style="@style/CellTextStyle"
+                    android:text="@string/barcode_units"/>
+
+                <TextView
+                    style="@style/CellTextStyle"
+                    android:text="@string/gt_gz"/>
+
+            </LinearLayout>
+
+            <View
+                style="@style/VerticalDivider"/>
+
+            <LinearLayout
+                style="@style/LinearCellStyle"
+                android:layout_weight="2">
+
+                <TextView
+                    android:id="@+id/tv_barcode_number_units"
+                    style="@style/CellTextStyle"
+                    android:text="2365248900015/КОР"/>
+
+                <TextView
+                    android:id="@+id/tv_gt_gz_numbers"
+                    style="@style/CellTextStyle"
+                    android:text="952365/1111"/>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <View
+            style="@style/HorizontalDivider"/>
+
+    </LinearLayout>
+
+</layout>

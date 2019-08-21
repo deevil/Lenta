@@ -3,6 +3,7 @@ package com.lenta.bp9.platform.navigation
 import android.content.Context
 import androidx.core.content.ContextCompat
 import com.lenta.bp9.features.auth.AuthFragment
+import com.lenta.bp9.features.goods_list.GoodsListFragment
 import com.lenta.bp9.features.loading.tasks.LoadingTasksFragment
 import com.lenta.bp9.features.task_list.TaskListFragment
 import com.lenta.bp9.features.loading.tasks.TaskListLoadingMode
@@ -92,6 +93,12 @@ class ScreenNavigator(
         }
     }
 
+    override fun openGoodsListScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(GoodsListFragment())
+        }
+    }
+
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 
 }
@@ -107,4 +114,5 @@ interface IScreenNavigator : ICoreNavigator {
     fun openSelectionPersonnelNumberScreen()
     fun openAlertNotPermissions(message: String)
     fun openTaskSearchScreen()
+    fun openGoodsListScreen()
 }

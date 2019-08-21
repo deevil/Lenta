@@ -36,9 +36,11 @@ class DataSaver @Inject constructor(
                                 isRecount = false
                         )).either(::handleFailure) {
                     taskManager.clearTask()
-                    screenNavigator.closeAllScreen()
-                    screenNavigator.openTasksList()
-                    screenNavigator.openSuccessSaveDataScreen()
+
+                    screenNavigator.openSuccessSaveDataScreen() {
+                        screenNavigator.closeAllScreen()
+                        screenNavigator.openTasksList()
+                    }
                 }
             }
             screenNavigator.hideProgress()

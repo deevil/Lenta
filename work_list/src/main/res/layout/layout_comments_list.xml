@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".features.task_list.TaskListFragment">
+
+    <data>
+
+        <variable
+            name="vm"
+            type="com.lenta.bp14.features.work_list.details_of_goods.DetailsOfGoodsViewModel" />
+
+        <variable
+            name="rvConfig"
+            type="com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <include
+            android:id="@+id/layout_titles"
+            layout="@layout/item_title_comment"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:items="@{vm.comments}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/layout_titles"
+            app:rv_config="@{rvConfig}"
+            tools:listitem="@layout/item_tile_comment" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>

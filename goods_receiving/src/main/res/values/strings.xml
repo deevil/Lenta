@@ -20,4 +20,6 @@
     <string name="transportation">Транспортировка</string>
     <string name="numberGE">Номер ГЕ</string>
     <string name="numberEO">Номер ЕО</string>
+    <string name="counted">Посчитанные</string>
+    <string name="without_barcode">Без штрихкода</string>
 </resources>

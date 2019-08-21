@@ -3,6 +3,7 @@ package com.lenta.bp7.data.model
 import com.lenta.bp7.data.CheckResultData
 import com.lenta.bp7.data.CheckType
 import com.lenta.bp7.data.IPersistCheckResult
+import com.lenta.shared.analytics.AnalyticsHelper
 import com.lenta.shared.platform.constants.Constants.CHECK_DATA_TIME_FORMAT
 import com.lenta.shared.utilities.Logg
 import org.simpleframework.xml.core.Persister
@@ -61,8 +62,7 @@ class CheckData @Inject constructor(
                     matcode = goodInfo.matcode,
                     enteredCode = goodInfo.enteredCode,
                     name = goodInfo.name,
-                    unitsCode = goodInfo.unitsCode,
-                    units = goodInfo.units))
+                    uom = goodInfo.uom))
         }
         currentGoodIndex = 0
     }
@@ -228,7 +228,7 @@ class CheckData @Inject constructor(
                         number = segment.number,
                         startTime = SimpleDateFormat(CHECK_DATA_TIME_FORMAT, Locale.getDefault()).format(segment.checkStart),
                         completionTime = SimpleDateFormat(CHECK_DATA_TIME_FORMAT, Locale.getDefault()).format(segment.checkFinish),
-                        canceled = if (segment.getStatus() == SegmentStatus.DELETED) 1 else 0
+                        canceled = if (segment.getStatus() == SegmentStatus.DELETED) 1 else null
                 )
 
                 for (shelf in segment.shelves) {
@@ -237,30 +237,27 @@ class CheckData @Inject constructor(
                             startTime = SimpleDateFormat(CHECK_DATA_TIME_FORMAT, Locale.getDefault()).format(shelf.checkStart),
                             completionTime = SimpleDateFormat(CHECK_DATA_TIME_FORMAT, Locale.getDefault()).format(shelf.checkFinish),
                             counted = if (countFacings) 1 else 0,
-                            canceled = if (shelf.getStatus() == ShelfStatus.DELETED) 1 else 0
+                            canceled = if (shelf.getStatus() == ShelfStatus.DELETED) 1 else null
                     )
 
                     for (good in shelf.goods) {
                         val goodSend = GoodSend(
-                                sapCodeForSend = good.getFormattedMaterial() + "_${good.unitsCode}",
+                                sapCodeForSend = good.getFormattedMaterial() + "_${good.uom.code}",
                                 barCode = if (good.enteredCode == EnteredCode.EAN) good.ean
                                         ?: "Not found!" else "",
                                 count = if (countFacings) good.facings else null,
-                                labeled = if (checkEmptyPlaces) {
-                                    when (good.getStatus()) {
-                                        GoodStatus.MISSING_WRONG -> 0
-                                        else -> 1
-                                    }
+                                labeled = if (checkEmptyPlaces && good.facings == 0) {
+                                    if (good.getStatus() == GoodStatus.MISSING_WRONG) 0 else 1
                                 } else null
                         )
 
-                        shelfSend.goods.add(goodSend)
+                        shelfSend.goods.add(0, goodSend)
                     }
 
-                    segmentSend.shelves.add(shelfSend)
+                    segmentSend.shelves.add(0, shelfSend)
                 }
 
-                displayOfGoods.segments.add(segmentSend)
+                displayOfGoods.segments.add(0, segmentSend)
             }
         }
 

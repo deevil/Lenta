@@ -20,13 +20,7 @@ class PrinterChangeViewModel : CoreViewModel(), OnPositionClickListener {
     lateinit var screenNavigator: ICoreNavigator
 
     @Inject
-    lateinit var printerChangeDBRequest: PrinterChangeDBRequest
-
-    @Inject
-    lateinit var sessionInfo: ISessionInfo
-
-    @Inject
-    lateinit var appSettings: IAppSettings
+    lateinit var printerManager: PrinterManager
 
     private val printers: MutableLiveData<List<PrinterUi>> = MutableLiveData()
     val printersNames: MutableLiveData<List<String>> = printers.map { printers ->
@@ -47,30 +41,35 @@ class PrinterChangeViewModel : CoreViewModel(), OnPositionClickListener {
 
     init {
         viewModelScope.launch {
-            printerChangeDBRequest(sessionInfo.market!!).either(::handleFailure, ::handlePrinters)
+            handlePrinters(printerManager.getAllPrinters())
         }
     }
 
     private fun handlePrinters(list: List<ZmpUtz26V001.ItemLocal_ET_PRINTERS>) {
-        printers.value = list.mapIndexed { index, printerInfo ->
-            PrinterUi(
-                    number = "${index + 1}",
-                    printerName = printerInfo.printername,
-                    printerInfo = printerInfo.printerinfo
-            )
-        }
-        if (list.isNotEmpty() && selectedPosition.value == null) {
-            var pos = 0
-            for ((i, item) in list.withIndex()) {
-                if (item.printername == appSettings.printer) {
-                    pos = i
-                    break
-                }
+        viewModelScope.launch {
+            printers.value = list.mapIndexed { index, printerInfo ->
+                PrinterUi(
+                        number = "${index + 1}",
+                        printerName = printerInfo.printerName,
+                        printerInfo = printerInfo.printerInfo
+                )
             }
-            onClickPosition(pos)
-        } else {
-            screenNavigator.goBack()
-            screenNavigator.openAlertScreen(message = txtNotFoundPrinter.value!!, pageNumber = "95")
+
+            val currentPrinter = printerManager.getCurrentPrinter()
+
+            if (list.isNotEmpty() && selectedPosition.value == null) {
+                var pos = 0
+                for ((i, item) in list.withIndex()) {
+                    if (item.printerName == currentPrinter?.printerName) {
+                        pos = i
+                        break
+                    }
+                }
+                onClickPosition(pos)
+            } else {
+                screenNavigator.goBack()
+                screenNavigator.openAlertScreen(message = txtNotFoundPrinter.value!!, pageNumber = "95")
+            }
         }
     }
 
@@ -81,14 +80,13 @@ class PrinterChangeViewModel : CoreViewModel(), OnPositionClickListener {
 
 
     fun onClickApply() {
-        printers.value?.getOrNull(selectedPosition.value!!).let {
-            sessionInfo.printer = it?.printerName
-            sessionInfo.printerNumber = it?.number
-        }
+        viewModelScope.launch {
+            printers.value?.getOrNull(selectedPosition.value!!).let {
+                printerManager.setPrinter(it?.number?.toIntOrNull())
+                screenNavigator.goBack()
+            }
 
-        appSettings.printer = sessionInfo.printer
-        appSettings.printerNumber = sessionInfo.printerNumber
-        screenNavigator.goBack()
+        }
     }
 
 

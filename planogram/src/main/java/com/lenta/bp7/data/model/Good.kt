@@ -1,5 +1,7 @@
 package com.lenta.bp7.data.model
 
+import com.lenta.shared.models.core.Uom
+
 data class Good(
         val id: Int,
         val ean: String?,
@@ -8,8 +10,7 @@ data class Good(
         val enteredCode: EnteredCode,
         val name: String,
         var facings: Int = 0,
-        val unitsCode: String,
-        val units: String,
+        val uom: Uom = Uom.DEFAULT,
         private var status: GoodStatus = GoodStatus.CREATED
 ) {
 
@@ -41,8 +42,7 @@ data class GoodInfo(
         val matcode: String = "000000000000",
         val enteredCode: EnteredCode,
         val name: String = "<НЕ ОПРЕДЕЛЕН>",
-        val unitsCode: String = "ST",
-        val units: String = "шт"
+        val uom: Uom = Uom.DEFAULT
 )
 
 enum class GoodStatus {

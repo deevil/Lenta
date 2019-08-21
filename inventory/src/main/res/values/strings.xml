@@ -8,7 +8,6 @@
     <string name="categories">Категории</string>
     <string name="processed">Обработанные</string>
     <string name="not_processed">К обработке</string>
-    <string name="goods_of_details">Детали по товару</string>
     <string name="goods_of_details_store_place">Детали по товару и местам хранения</string>
     <string name="goods_store_place">МХ товара</string>
     <string name="enter_storage_place_number">Введите номер МХ</string>
@@ -63,5 +62,6 @@
     <string name="alco_forbidden">Тип товара не соответствует настройкам задания</string>
     <string name="simple_recount">Обычный пересчет</string>
     <string name="min_update_sells_alert">Данные о продажах не поступали с касс более %d минут. Плановые остатки могут быть неточными. Начать пересчет?</string>
-    <string name="date_not_specified">Не указана дата розлива</string>
+    <string name="already_counted">МХ уже посчитано</string>
+    <string name="unsupported_mattype">Товар %1$s с видом %2$s не может быть обработан в мп инвентаризации</string>
 </resources>

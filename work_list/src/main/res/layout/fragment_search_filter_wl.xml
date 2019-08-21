@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        tools:context=".features.work_list.search_filter.SearchFilterWlFragment">
+
+    <data>
+
+        <variable
+            name="vm"
+            type="com.lenta.bp14.features.work_list.search_filter.SearchFilterWlViewModel"/>
+
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- Секция -->
+        <LinearLayout
+            style="@style/LinearRowStyle">
+
+            <LinearLayout
+                style="@style/LinearCellStyle"
+                android:layout_weight="1">
+
+                <TextView
+                    style="@style/CellTextStyle"
+                    android:text="@string/section"/>
+
+            </LinearLayout>
+
+            <View
+                style="@style/VerticalDivider"/>
+
+            <LinearLayout
+                style="@style/LinearCellStyle"
+                android:layout_weight="2">
+
+                <EditText
+                    style="@style/CellEditTextStyle"
+                    android:text="@={vm.section}"
+                    tools:text="02"/>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <View
+            style="@style/HorizontalDivider"/>
+
+        <!-- Группа товаров -->
+        <LinearLayout
+            style="@style/LinearRowStyle">
+
+            <LinearLayout
+                style="@style/LinearCellStyle"
+                android:layout_weight="1">
+
+                <TextView
+                    style="@style/CellTextStyle"
+                    android:text="@string/group_of_goods"/>
+
+            </LinearLayout>
+
+            <View
+                style="@style/VerticalDivider"/>
+
+            <LinearLayout
+                style="@style/LinearCellStyle"
+                android:layout_weight="2">
+
+                <EditText
+                    style="@style/CellEditTextStyle"
+                    android:text="@={vm.groupOfGoods}"/>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <View
+            style="@style/HorizontalDivider"/>
+
+        <!-- Место хранения -->
+        <LinearLayout
+            style="@style/LinearRowStyle">
+
+            <LinearLayout
+                style="@style/LinearCellStyle"
+                android:layout_weight="1">
+
+                <TextView
+                    style="@style/CellTextStyle"
+                    android:text="@string/storage_place"/>
+
+            </LinearLayout>
+
+            <View
+                style="@style/VerticalDivider"/>
+
+            <LinearLayout
+                style="@style/LinearCellStyle"
+                android:layout_weight="2">
+
+                <EditText
+                    style="@style/CellEditTextStyle"
+                    android:text="@={vm.storagePlace}"/>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <View
+            style="@style/HorizontalDivider"/>
+
+        <!-- Комментарий -->
+        <LinearLayout
+            style="@style/LinearRowStyle">
+
+            <LinearLayout
+                style="@style/LinearCellStyle"
+                android:layout_weight="1">
+
+                <TextView
+                    style="@style/CellTextStyle"
+                    android:text="@string/comment"/>
+
+            </LinearLayout>
+
+            <View
+                style="@style/VerticalDivider"/>
+
+            <LinearLayout
+                style="@style/LinearCellStyle"
+                android:layout_weight="2">
+
+                <EditText
+                    style="@style/CellEditTextStyle"
+                    android:text="@={vm.comment}"/>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <View
+            style="@style/HorizontalDivider"/>
+
+    </LinearLayout>
+
+</layout>

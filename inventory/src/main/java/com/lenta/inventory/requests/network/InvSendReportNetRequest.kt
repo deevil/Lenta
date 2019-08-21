@@ -60,7 +60,7 @@ data class InventoryReport(
         val personnelNumber: String,
         // МХ для обмена с ТСД
         @SerializedName("IT_STORPLACES_DEL")
-        val storePlacesForDelete: List<StorePlace>,
+        val storePlacesForDelete: List<UntiedProduct>,
         // Список товаров
         @SerializedName("IT_TASK_MATNR_LIST")
         val products: List<MaterialNumber>,
@@ -73,7 +73,7 @@ data class InventoryReport(
 )
 
 //IT_STORPLACES_DEL
-data class StorePlace(
+data class UntiedProduct(
         // Склад
         @SerializedName("LGORT")
         val storage: String,

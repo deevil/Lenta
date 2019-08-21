@@ -115,7 +115,8 @@ class TaskContentNetRequest
         return TaskStorePlaceInfo(placeCode = placeCode,
                 status = StorePlaceStatus.from(state),
                 lockUser = lockUser,
-                lockIP = lockIP
+                lockIP = lockIP,
+                isProcessed = StorePlaceStatus.from(state) == StorePlaceStatus.Finished
         )
     }
 

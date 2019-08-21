@@ -1,7 +1,6 @@
 package com.lenta.shared.platform.activity.main_activity
 
 import androidx.lifecycle.viewModelScope
-import com.lenta.shared.account.IAuthenticator
 import com.lenta.shared.auto_exit.AutoExitManager
 import com.lenta.shared.features.loading.ICoreLoadingViewModel
 import com.lenta.shared.features.loading.TimerLoadingViewModel
@@ -19,7 +18,6 @@ import com.mobrun.plugin.api.HyperHive
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.net.Authenticator
 import javax.inject.Inject
 
 abstract class CoreMainViewModel : CoreViewModel() {
@@ -44,21 +42,24 @@ abstract class CoreMainViewModel : CoreViewModel() {
 
     open fun onPause() {
         priorityAppManager.setHighPriority()
-        autoExitManager?.setLastActiveTime()
 
     }
 
     fun onResume() {
-        autoExitManager?.checkLastTime()
         priorityAppManager.setLowPriority()
         lockManager.getActiveAppPackageName()?.let { packageName ->
             coreNavigator.openAlertAnotherAppInProcess(packageName)
         }
     }
 
+    fun onUserInteraction() {
+        autoExitManager?.setLastActiveTime()
+    }
+
     init {
         viewModelScope.launch {
             autoExitManager = AutoExitManager {
+                preparingForExit()
                 coreNavigator.finishApp(restart = false)
             }.apply {
                 autoExitTimeInMinutes = withContext(Dispatchers.IO) {
@@ -70,5 +71,7 @@ abstract class CoreMainViewModel : CoreViewModel() {
 
         }
     }
+
+    abstract fun preparingForExit()
 
 }

@@ -94,6 +94,10 @@ data class ButtonDecorationInfo(
             ButtonDecorationInfo(R.drawable.ic_done_white_24dp, R.string.confirm)
         }
 
+        val correct: ButtonDecorationInfo by lazy {
+            ButtonDecorationInfo(R.drawable.ic_done_white_24dp, R.string.correct)
+        }
+
         val review: ButtonDecorationInfo by lazy {
             ButtonDecorationInfo(R.drawable.ic_visibility_white_24dp, R.string.review)
         }
@@ -162,6 +166,18 @@ data class ButtonDecorationInfo(
             ButtonDecorationInfo(R.drawable.ic_close_white_24dp, R.string.missing)
         }
 
+        val cancel: ButtonDecorationInfo by lazy {
+            ButtonDecorationInfo(R.drawable.ic_close_white_24dp, R.string.cancel)
+        }
+
+        val framed: ButtonDecorationInfo by lazy {
+            ButtonDecorationInfo(R.drawable.ic_published, R.string.framed)
+        }
+
+        val not_framed: ButtonDecorationInfo by lazy {
+            ButtonDecorationInfo(R.drawable.ic_error_outline_white_24dp, R.string.not_framed)
+        }
+
         val empty: ButtonDecorationInfo by lazy {
             ButtonDecorationInfo(0, 0)
         }
@@ -188,6 +204,30 @@ data class ButtonDecorationInfo(
 
         val search: ButtonDecorationInfo by lazy {
             ButtonDecorationInfo(R.drawable.ic_search, R.string.search)
+        }
+
+        val deliveries: ButtonDecorationInfo by lazy {
+            ButtonDecorationInfo(R.drawable.ic_directions_car_white_24dp, R.string.deliveries)
+        }
+
+        val sales: ButtonDecorationInfo by lazy {
+            ButtonDecorationInfo(R.drawable.ic_shopping_cart_white_24dp, R.string.sales)
+        }
+
+        val error: ButtonDecorationInfo by lazy {
+            ButtonDecorationInfo(R.drawable.ic_error_outline_white_24dp, R.string.error)
+        }
+
+        val toFind: ButtonDecorationInfo by lazy {
+            ButtonDecorationInfo(R.drawable.ic_search_white_24dp, R.string.to_find)
+        }
+
+        val refusal: ButtonDecorationInfo by lazy {
+            ButtonDecorationInfo(R.drawable.is_refusal, R.string.refusal)
+        }
+
+        val batchsProducts: ButtonDecorationInfo by lazy {
+            ButtonDecorationInfo(R.drawable.is_batchs_products, R.string.batchs_products)
         }
     }
 }

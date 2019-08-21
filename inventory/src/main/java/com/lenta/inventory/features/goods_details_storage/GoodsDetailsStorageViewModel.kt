@@ -55,9 +55,20 @@ class GoodsDetailsStorageViewModel : CoreViewModel() {
     }
 
     private fun updateGoodsInfo() {
+        if (isGeneralProduct.value!! || productInfo.value!!.isSet) {
+            updateNotProcessed()
+            updateProcessed()
+            return
+        }
+
+        if (isStorePlace.value!!) {
+            updateCategories()
+            updateNotProcessed()
+            updateProcessed()
+            return
+        }
+
         updateCategories()
-        updateNotProcessed()
-        updateProcessed()
     }
 
     private fun updateCategories() {
@@ -104,7 +115,7 @@ class GoodsDetailsStorageViewModel : CoreViewModel() {
                         taskRepository.getProducts().
                         getNotProcessedProducts().
                         filter {
-                            it.materialNumber == productInfo.value!!.materialNumber
+                            it.materialNumber == productInfo.value!!.materialNumber && it.placeCode != "00"
                         }.
                         mapIndexed { index, taskProductInfo ->
                             GoodsDetailsStorageItem(
@@ -124,7 +135,7 @@ class GoodsDetailsStorageViewModel : CoreViewModel() {
                         taskRepository.getProducts().
                         getProcessedProducts().
                         filter {
-                            it.materialNumber == productInfo.value!!.materialNumber
+                            it.materialNumber == productInfo.value!!.materialNumber && it.placeCode != "00"
                         }.
                         mapIndexed { index, taskProductInfo ->
                             GoodsDetailsStorageItem(

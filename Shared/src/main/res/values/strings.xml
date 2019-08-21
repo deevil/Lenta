@@ -13,6 +13,7 @@
     <string name="add">Добавить</string>
     <string name="create">Создать</string>
     <string name="apply">Применить</string>
+    <string name="correct">Верно</string>
     <string name="confirm">Подтвердить</string>
     <string name="review">Просмотр</string>
     <string name="enter">Войти</string>
@@ -54,6 +55,8 @@
     <string name="loading_tab_number">Загрузка данных исполнителя</string>
     <string name="delete">Удалить</string>
     <string name="clean">Очистить</string>
+    <string name="refusal">Отказ</string>
+    <string name="batchs_products">Партии</string>
     <string name="print">Печать</string>
     <string name="save">Сохранить</string>
     <string name="complete">Завершить</string>
@@ -62,6 +65,10 @@
     <string name="untie">Отвязать</string>
     <string name="published">Опубликовано</string>
     <string name="counted">Посчитано</string>
+    <string name="deliveries">Поставки</string>
+    <string name="sales">Продажи</string>
+    <string name="error">Ошибка</string>
+    <string name="to_find">Найти</string>
     <string name="number">№</string>
     <string name="good">Товар</string>
     <string name="quantity">Количество</string>
@@ -131,4 +138,10 @@
     <string name="comment">Комментарий</string>
     <string name="list_of_goods">Список товаров</string>
     <string name="list_of_differences">Список расхождений</string>
+    <string name="details_of_goods">Детали по товару</string>
+    <string name="comments">Комментарии</string>
+    <string name="status">Статус</string>
+    <string name="cancel">Отменить</string>
+    <string name="framed">Оформлено</string>
+    <string name="not_framed">Не оформлено</string>
 </resources>

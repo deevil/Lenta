@@ -72,6 +72,10 @@ class AnalyticsHelper(
         analytics.logTrace(message = "Сообщение пользователю: $message")
     }
 
+    fun logXmlCheckResult(xmlString: String) {
+        analytics.logTrace(message = "Результат проверки: $xmlString")
+    }
+
     fun onStartFmpRequest(resourceName: String, params: String? = null) {
         analytics.logTrace(message = "-> $resourceName${if (params == null) "" else ", params: $params"}")
     }

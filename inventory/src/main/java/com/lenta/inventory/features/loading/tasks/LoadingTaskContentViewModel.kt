@@ -53,18 +53,16 @@ class LoadingTaskContentViewModel : CoreLoadingViewModel() {
             val userNumber = if (recountType == RecountType.ParallelByStorePlaces || sessionInfo.personnelNumber == null) "" else sessionInfo.personnelNumber
             var needsRelock = false
             if (recountType == RecountType.Simple) {
-                taskInfo?.let {
-                    val status = StatusTask.from(it, sessionInfo.userName ?: "")
-                    needsRelock = status == StatusTask.BlockedMe
-                }
+                val status = StatusTask.from(taskInfo, sessionInfo.userName ?: "")
+                needsRelock = status == StatusTask.BlockedMe
             }
             taskContentRequest(TaskContentParams(ip = context.getDeviceIp(),
-                    taskNumber = taskInfo?.taskNumber ?: "",
+                    taskNumber = taskInfo.taskNumber,
                     userNumber = userNumber ?: "",
                     additionalDataFlag = "",
                     newProductNumbers = emptyList(),
                     numberRelock = if (needsRelock) "X" else "",
-                    mode = "1")).either(::handleFailure, ::handleSuccess)
+                    mode = recountType.recountType)).either(::handleFailure, ::handleSuccess)
             progress.value = false
         }
     }

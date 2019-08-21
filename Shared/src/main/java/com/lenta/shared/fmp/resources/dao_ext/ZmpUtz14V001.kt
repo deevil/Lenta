@@ -43,6 +43,10 @@ fun ZmpUtz14V001.getAutoExitTimeInMinutes(): Long? {
     return getParams("ALL_AUTOEXIT_TIMEOUT").firstOrNull()?.toLongOrNull()
 }
 
+fun ZmpUtz14V001.getAllowedMatTypesINV(): List<String> {
+    return getParams("INV_MATTYPE_USED")
+}
+
 private fun ZmpUtz14V001.getParams(paramName: String): List<String> {
     @Suppress("INACCESSIBLE_TYPE")
     return localHelper_ET_PARAMS.getWhere("PARAMNAME = \"$paramName\"").map { it.paramvalue }

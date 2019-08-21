@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
         tools:context=".features.print_settings.PrintSettingsFragment">
 
@@ -8,6 +9,7 @@
         <variable
             name="vm"
             type="com.lenta.bp14.features.print_settings.PrintSettingsViewModel"/>
+
     </data>
 
     <LinearLayout
@@ -45,14 +47,14 @@
                     android:orientation="horizontal">
 
                     <EditText
-                        android:id="@+id/et_price_tag_quantity"
+                        style="@style/CellEditTextStyle"
                         android:layout_width="0dp"
-                        android:layout_height="wrap_content"
                         android:layout_margin="8dp"
                         android:layout_weight="1"
-                        android:paddingStart="10dp"
-                        android:paddingEnd="10dp"
-                        android:textSize="14sp"
+                        android:digits="0123456789"
+                        android:inputType="number"
+                        android:maxLength="2"
+                        android:text="@={vm.numberOfCopies}"
                         tools:text="2"/>
 
                     <ImageButton
@@ -100,10 +102,10 @@
 
                     <com.lenta.shared.view.ClickableSpinner
                         android:id="@+id/spin_printer"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="8dp"
-                        android:entries="@array/printer_name"/>
+                        style="@style/CellSpinnerStyle"
+                        android:entries="@array/printer_name"
+                        app:onPositionClickListener="@{vm}"
+                        app:position="@{vm.selectedPrinterType}"/>
 
                 </LinearLayout>
 
@@ -136,10 +138,9 @@
 
                     <com.lenta.shared.view.ClickableSpinner
                         android:id="@+id/spin_price_tag"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="8dp"
-                        android:entries="@array/price_tag_name"/>
+                        style="@style/CellSpinnerStyle"
+                        android:entries="@array/price_tag_name"
+                        app:position="@{vm.selectedPriceTagType}"/>
 
                 </LinearLayout>
 
@@ -155,7 +156,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:visibility="gone"
+                android:visibility="@{vm.ipAddressVisibility}"
                 tools:visibility="visible">
 
                 <LinearLayout
@@ -179,13 +180,8 @@
                         android:layout_weight="2">
 
                         <EditText
-                            android:id="@+id/et_device_ip"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_margin="8dp"
-                            android:paddingStart="10dp"
-                            android:paddingEnd="10dp"
-                            android:textSize="14sp"
+                            style="@style/CellEditTextStyle"
+                            android:text="@={vm.ipAddress}"
                             tools:text="10.254.25.12"/>
 
                     </LinearLayout>
@@ -225,6 +221,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
+                android:onClick="@{(view) -> vm.scanQrCode()}"
                 android:src="@drawable/ic_scan_barcode"/>
 
             <ImageView
@@ -232,6 +229,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
+                android:onClick="@{(view) -> vm.scanBarCode()}"
                 android:src="@drawable/ic_scan_barcode"/>
 
         </LinearLayout>

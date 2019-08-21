@@ -18,6 +18,12 @@ class MainMenuViewModel : CoreViewModel() {
     }
 
     fun onClickPrint() {
+        // Тестирование запуска различных экранов
+        //screenNavigator.openPrintSettingsScreen()
+        //screenNavigator.openGoodInfoWlScreen()
+        //screenNavigator.openGoodsListWlScreen()
+        //screenNavigator.openGoodListPcScreen()
+        screenNavigator.openSearchFilterWlScreen()
     }
 
 

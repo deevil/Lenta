@@ -7,15 +7,28 @@
     <string name="not_processed">К обработке</string>
     <string name="task_list">Список заданий</string>
 
+    <!-- Подзаголовки экранов -->
     <string name="specify_product">Укажите товар</string>
     <string name="print_settings">Настройка печати</string>
+    <string name="product_information">Информация о товаре</string>
+    <string name="goods_list">Список товаров</string>
+
+    <!-- Заголовки вкладок -->
+    <string name="common_good_info_title">Общая</string>
+    <string name="additional_good_info_title">Доп. инфо</string>
+    <string name="good_providers_list_title">Поставщики</string>
+    <string name="stocks_list_title">Остатки</string>
+    <string name="processing">К обработке</string>
+    <string name="processed">Обработанные</string>
+    <string name="search">Поиск</string>
+
 
     <string name="copy_quantity">Кол-во копий</string>
     <string name="printer_type">Тип принтера</string>
     <string name="price_tag_type">Тип ценника</string>
     <string name="device_ip">IP адрес ТСД</string>
     <string name="quantity">Количество</string>
-    <string name="total_quantity">Итого: 1 шт.</string>
+    <string name="total_quantity">Итого: %1$d шт.</string>
     <string name="comment">Комментарий</string>
     <string name="total_shelf_life">Общий СГ</string>
     <string name="remaining_shelf_life">Остаточный СГ</string>
@@ -32,5 +45,22 @@
     <string name="storage">Склад</string>
     <string name="period_kip">Период КИП</string>
     <string name="provider">Поставщик</string>
+    <string name="expiration_date_abbreviation">СГ</string>
+    <string name="expiration_dates">Сроки годности</string>
+    <string name="shelf_life_days_left">%1$d сут.</string>
+    <string name="goods">Товары</string>
+    <string name="one_space_two">%1$s %2$s</string>
+    <string name="check">Сверка</string>
+    <string name="storage_place">Место хранения</string>
+    <string name="group_of_goods">Группа товаров</string>
+    <string name="section">Секция</string>
+    <string name="expected_deliveries">Планируемые поставки</string>
+    <string name="date">Дата</string>
+    <string name="date_and_time_last_sales">Дата и время последней продажи</string>
+    <string name="last_day_sales">Объем продаж за последние сутки</string>
+    <string name="last_week_sales">Объем продаж за 7 дней</string>
+    <string name="common_info">Общая информация</string>
+    <string name="stock_one_storage">Запас 1 склад</string>
+    <string name="empty_place">Пустое место</string>
 
 </resources>

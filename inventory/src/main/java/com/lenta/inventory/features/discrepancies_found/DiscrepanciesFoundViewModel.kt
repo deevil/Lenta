@@ -89,7 +89,7 @@ class DiscrepanciesFoundViewModel : CoreViewModel() {
     }
 
     fun updateByStorage() {
-        val goods = taskManager.getInventoryTask()?.getDiscrepancies() ?: emptyList()
+        val goods = taskManager.getInventoryTask()?.getDiscrepancies()?.filter { it.placeCode != "00" } ?: emptyList()
         val discrepancies =  goods.mapIndexed { index, product ->
             DiscrepancyVM(number = goods.size - index,
                     name = product.getDisplayName(),

@@ -57,4 +57,8 @@ class MainViewModel : CoreMainViewModel() {
         checkData.saveCheckResult()
     }
 
+    override fun preparingForExit() {
+        checkData.saveCheckResult()
+    }
+
 }

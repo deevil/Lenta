@@ -43,11 +43,11 @@ public class ZmpUtz26V001 {
 
         //  type: TEXT, source: {'name': 'SAP', 'type': 'C'}
         @SerializedName("PRINTERNAME")
-        public String printername;
+        public String printerName;
 
         //  type: TEXT, source: {'name': 'SAP', 'type': 'C'}
         @SerializedName("PRINTERINFO")
-        public String printerinfo;
+        public String printerInfo;
 
 
     }

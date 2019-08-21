@@ -11,6 +11,7 @@ import com.lenta.shared.fmp.resources.fast.ZmpUtz14V001
 import com.lenta.shared.fmp.resources.fast.ZmpUtz23V001
 import com.lenta.shared.fmp.resources.slow.ZfmpUtz48V001
 import com.lenta.shared.fmp.resources.slow.ZmpUtz25V001
+import com.lenta.shared.models.core.Uom
 import com.lenta.shared.requests.combined.scan_info.pojo.EanInfo
 import com.lenta.shared.requests.combined.scan_info.pojo.ProductInfo
 import com.lenta.shared.utilities.Logg
@@ -41,8 +42,9 @@ class DatabaseRepo(hyperHive: HyperHive) : IDatabaseRepo {
                         matcode = productInfo?.matcode ?: "Not found!",
                         enteredCode = EnteredCode.EAN,
                         name = productInfo?.name ?: "Not found!",
-                        unitsCode = productInfo?.buom ?: "Not found!",
-                        units = unitName ?: "Not found!")
+                        uom = Uom(
+                                code = productInfo?.buom ?: "Not found!",
+                                name = unitName ?: "Not found!"))
             }
         }
     }
@@ -61,8 +63,9 @@ class DatabaseRepo(hyperHive: HyperHive) : IDatabaseRepo {
                         matcode = productInfo.matcode,
                         enteredCode = EnteredCode.MATERIAL,
                         name = productInfo.name,
-                        unitsCode = productInfo.buom,
-                        units = unitName ?: "Not found!")
+                        uom = Uom(
+                                code = productInfo.buom,
+                                name = unitName ?: "Not found!"))
             }
         }
     }
@@ -81,8 +84,9 @@ class DatabaseRepo(hyperHive: HyperHive) : IDatabaseRepo {
                         matcode = matcode,
                         enteredCode = EnteredCode.MATCODE,
                         name = productInfo.name,
-                        unitsCode = productInfo.buom,
-                        units = unitName ?: "Not found!")
+                        uom = Uom(
+                                code = productInfo.buom,
+                                name = unitName ?: "Not found!"))
             }
         }
     }
