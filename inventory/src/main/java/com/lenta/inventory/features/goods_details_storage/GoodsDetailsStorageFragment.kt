@@ -5,11 +5,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.Observer
 import com.lenta.inventory.BR
 import com.lenta.inventory.R
 import com.lenta.inventory.databinding.*
-import com.lenta.inventory.models.task.ProcessExciseAlcoProductService
 import com.lenta.inventory.models.task.TaskProductInfo
 import com.lenta.inventory.platform.extentions.getAppComponent
 import com.lenta.shared.models.core.ProductType
@@ -200,13 +198,13 @@ class GoodsDetailsStorageFragment : CoreFragment<FragmentGoodsDetailsStorageBind
                         false).let { layoutBinding ->
 
                     layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
-                            layoutId = R.layout.item_tile_goods_details_storage,
+                            layoutId = R.layout.item_tile_goods_details_storage_not_prossed,
                             itemId = BR.vm,
-                            realisation = object : DataBindingAdapter<ItemTileGoodsDetailsStorageBinding> {
-                                override fun onCreate(binding: ItemTileGoodsDetailsStorageBinding) {
+                            realisation = object : DataBindingAdapter<ItemTileGoodsDetailsStorageNotProssedBinding> {
+                                override fun onCreate(binding: ItemTileGoodsDetailsStorageNotProssedBinding) {
                                 }
 
-                                override fun onBind(binding: ItemTileGoodsDetailsStorageBinding, position: Int) {
+                                override fun onBind(binding: ItemTileGoodsDetailsStorageNotProssedBinding, position: Int) {
                                     binding.tvCounter.tag = position
                                 }
 
