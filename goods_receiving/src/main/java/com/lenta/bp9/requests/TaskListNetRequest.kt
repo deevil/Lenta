@@ -2,7 +2,7 @@ package com.lenta.bp9.requests
 
 import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
-import com.lenta.bp9.models.task.*
+import com.lenta.bp9.model.task.*
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.analytics.AnalyticsHelper
 import com.lenta.shared.exception.Failure

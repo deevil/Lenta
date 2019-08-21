@@ -5,10 +5,9 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp9.features.loading.tasks.TaskListLoadingMode
-import com.lenta.bp9.models.task.TaskInfo
-import com.lenta.bp9.models.task.TaskList
-import com.lenta.bp9.models.task.TaskLockStatus
-import com.lenta.bp9.models.task.TaskType
+import com.lenta.bp9.model.task.TaskInfo
+import com.lenta.bp9.model.task.TaskList
+import com.lenta.bp9.model.task.TaskLockStatus
 import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.bp9.repos.IRepoInMemoryHolder
 import com.lenta.bp9.requests.TaskListNetRequest
@@ -17,7 +16,6 @@ import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.Logg
-import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.getDeviceIp

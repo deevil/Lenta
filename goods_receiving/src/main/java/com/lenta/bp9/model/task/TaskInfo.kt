@@ -1,4 +1,4 @@
-package com.lenta.bp9.models.task
+package com.lenta.bp9.model.task
 
 class TaskInfo(val position: String, //Номер по порядку (отформатирован пробелами для показа)
                val taskNumber: String, //Номер задания по приемке
