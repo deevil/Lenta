@@ -38,7 +38,7 @@ class NotDisplayedGoodsViewModel : CoreViewModel(), PageSelectionListener, OnOkI
         processedGoods.value = List(100) {
             ProcessedGoodsUi(
                     it,
-                    "000021 Горбуша $it",
+                    "000021 Горбуша ${it + 100}",
                     "20 шт."
             )
         }

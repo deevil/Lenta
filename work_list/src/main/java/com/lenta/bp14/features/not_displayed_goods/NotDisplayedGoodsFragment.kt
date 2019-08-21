@@ -1,7 +1,6 @@
 package com.lenta.bp14.features.not_displayed_goods
 
 import com.lenta.bp14.R
-import com.lenta.bp14.databinding.FragmentNotDisplayedGoodsBinding
 import com.lenta.bp14.platform.extentions.getAppComponent
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
@@ -14,8 +13,7 @@ import android.view.ViewGroup
 import android.view.View
 import androidx.databinding.DataBindingUtil
 import com.lenta.bp14.BR
-import com.lenta.bp14.databinding.ItemTileExpirationBinding
-import com.lenta.bp14.databinding.LayoutNotDisplayedGoodsProcessedBinding
+import com.lenta.bp14.databinding.*
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig
@@ -48,6 +46,21 @@ class NotDisplayedGoodsFragment : CoreFragment<FragmentNotDisplayedGoodsBinding,
 
     override fun getPagerItemView(container: ViewGroup, position: Int): View {
         when (getRealTabPosition(position)) {
+            0 -> DataBindingUtil
+                    .inflate<LayoutNotDisplayedGoodsNotProcessedBinding>(LayoutInflater.from(container.context),
+                            R.layout.layout_not_displayed_goods_not_processed,
+                            container,
+                            false).let { layoutBinding ->
+
+                        layoutBinding.rvConfig = DataBindingRecyclerViewConfig<ItemTileExpirationBinding>(
+                                layoutId = R.layout.item_tile_simple_goods,
+                                itemId = BR.vm
+                        )
+
+                        layoutBinding.vm = vm
+                        layoutBinding.lifecycleOwner = viewLifecycleOwner
+                        return layoutBinding.root
+                    }
             1 -> DataBindingUtil
                     .inflate<LayoutNotDisplayedGoodsProcessedBinding>(LayoutInflater.from(container.context),
                             R.layout.layout_not_displayed_goods_processed,
@@ -63,7 +76,21 @@ class NotDisplayedGoodsFragment : CoreFragment<FragmentNotDisplayedGoodsBinding,
                         layoutBinding.lifecycleOwner = viewLifecycleOwner
                         return layoutBinding.root
                     }
-            else -> return View(context)
+            else -> DataBindingUtil
+                    .inflate<LayoutNotDisplayedGoodsFilteredBinding>(LayoutInflater.from(container.context),
+                            R.layout.layout_not_displayed_goods_filtered,
+                            container,
+                            false).let { layoutBinding ->
+
+                        layoutBinding.rvConfig = DataBindingRecyclerViewConfig<ItemTileExpirationBinding>(
+                                layoutId = R.layout.item_tile_simple_goods,
+                                itemId = BR.vm
+                        )
+
+                        layoutBinding.vm = vm
+                        layoutBinding.lifecycleOwner = viewLifecycleOwner
+                        return layoutBinding.root
+                    }
         }
     }
 
