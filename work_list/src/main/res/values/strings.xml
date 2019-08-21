@@ -60,5 +60,7 @@
     <string name="last_day_sales">Объем продаж за последние сутки</string>
     <string name="last_week_sales">Объем продаж за 7 дней</string>
     <string name="common_info">Общая информация</string>
+    <string name="stock_one_storage">Запас 1 склад</string>
+    <string name="empty_place">Пустое место</string>
 
 </resources>
