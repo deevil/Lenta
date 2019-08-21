@@ -8,11 +8,17 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.utilities.extentions.provideViewModel
 import android.os.Bundle
+import android.view.LayoutInflater
 import com.lenta.shared.utilities.databinding.ViewPagerSettings
 import android.view.ViewGroup
 import android.view.View
+import androidx.databinding.DataBindingUtil
+import com.lenta.bp14.BR
+import com.lenta.bp14.databinding.ItemTileExpirationBinding
+import com.lenta.bp14.databinding.LayoutNotDisplayedGoodsProcessedBinding
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
+import com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig
 
 class NotDisplayedGoodsFragment : CoreFragment<FragmentNotDisplayedGoodsBinding, NotDisplayedGoodsViewModel>(),
         ViewPagerSettings, ToolbarButtonsClickListener {
@@ -41,17 +47,38 @@ class NotDisplayedGoodsFragment : CoreFragment<FragmentNotDisplayedGoodsBinding,
     }
 
     override fun getPagerItemView(container: ViewGroup, position: Int): View {
-        return View(context)
+        when (getRealTabPosition(position)) {
+            1 -> DataBindingUtil
+                    .inflate<LayoutNotDisplayedGoodsProcessedBinding>(LayoutInflater.from(container.context),
+                            R.layout.layout_not_displayed_goods_processed,
+                            container,
+                            false).let { layoutBinding ->
+
+                        layoutBinding.rvConfig = DataBindingRecyclerViewConfig<ItemTileExpirationBinding>(
+                                layoutId = R.layout.item_tile_processed_goods,
+                                itemId = BR.vm
+                        )
+
+                        layoutBinding.vm = vm
+                        layoutBinding.lifecycleOwner = viewLifecycleOwner
+                        return layoutBinding.root
+                    }
+            else -> return View(context)
+        }
     }
 
     override fun getTextTitle(position: Int): String {
         return getString(
-                when (if (countTab() < 3) position + 1 else position) {
+                when (getRealTabPosition(position)) {
                     0 -> R.string.not_processed
                     1 -> R.string.processed
                     else -> R.string.search
                 }
         )
+    }
+
+    private fun getRealTabPosition(position: Int): Int {
+        return if (countTab() < 3) position + 1 else position
     }
 
     override fun countTab(): Int {
