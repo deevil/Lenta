@@ -2,18 +2,20 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".features.list_of_differences.ListOfDifferencesFragment">
+    tools:context=".features.work_list.expected_deliveries.ExpectedDeliveriesFragment">
 
     <data>
 
         <variable
             name="vm"
-            type="com.lenta.bp14.features.list_of_differences.ListOfDifferencesViewModel" />
+            type="com.lenta.bp14.features.work_list.expected_deliveries.ExpectedDeliveriesViewModel" />
 
         <variable
             name="rvConfig"
             type="com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig" />
+
     </data>
+
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -21,7 +23,7 @@
 
         <include
             android:id="@+id/layout_titles"
-            layout="@layout/item_title_difference"
+            layout="@layout/item_title_deliveries"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:layout_constraintEnd_toEndOf="parent"
@@ -32,15 +34,15 @@
             android:id="@+id/rv"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            app:items="@{vm.differences}"
+            app:items="@{vm.deliveries}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/layout_titles"
             app:rv_config="@{rvConfig}"
-            tools:listitem="@layout/item_tile_difference" />
-
+            tools:listitem="@layout/item_tile_deliveries" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
+
 
 </layout>

@@ -166,6 +166,18 @@ data class ButtonDecorationInfo(
             ButtonDecorationInfo(R.drawable.ic_close_white_24dp, R.string.missing)
         }
 
+        val cancel: ButtonDecorationInfo by lazy {
+            ButtonDecorationInfo(R.drawable.ic_close_white_24dp, R.string.cancel)
+        }
+
+        val framed: ButtonDecorationInfo by lazy {
+            ButtonDecorationInfo(R.drawable.ic_published, R.string.framed)
+        }
+
+        val not_framed: ButtonDecorationInfo by lazy {
+            ButtonDecorationInfo(R.drawable.ic_error_outline_white_24dp, R.string.not_framed)
+        }
+
         val empty: ButtonDecorationInfo by lazy {
             ButtonDecorationInfo(0, 0)
         }

@@ -60,7 +60,7 @@ class GoodsDetailsStorageFragment : CoreFragment<FragmentGoodsDetailsStorageBind
         topToolbarUiModel.description.value = when {
             vm.isGeneralProduct.value!! -> getString(R.string.goods_store_place)
             vm.isStorePlace.value!! -> getString(R.string.goods_of_details_store_place)
-            else -> getString(R.string.goods_of_details)
+            else -> getString(R.string.details_of_goods)
         }
         topToolbarUiModel.title.value = "${vm.productInfo.value!!.getMaterialLastSix()} ${vm.productInfo.value!!.description}"
     }

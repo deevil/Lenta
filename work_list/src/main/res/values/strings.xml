@@ -54,5 +54,13 @@
     <string name="storage_place">Место хранения</string>
     <string name="group_of_goods">Группа товаров</string>
     <string name="section">Секция</string>
+    <string name="expected_deliveries">Планируемые поставки</string>
+    <string name="date">Дата</string>
+    <string name="date_and_time_last_sales">Дата и время последней продажи</string>
+    <string name="last_day_sales">Объем продаж за последние сутки</string>
+    <string name="last_week_sales">Объем продаж за 7 дней</string>
+    <string name="common_info">Общая информация</string>
+    <string name="stock_one_storage">Запас 1 склад</string>
+    <string name="empty_place">Пустое место</string>
 
 </resources>
