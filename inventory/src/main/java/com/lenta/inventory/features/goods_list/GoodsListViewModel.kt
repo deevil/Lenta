@@ -243,7 +243,7 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     }
 
     fun onScanResult(data: String) {
-        searchProductDelegate.searchCode(code = data, fromScan = true)
+        searchProductDelegate.searchCode(code = data, fromScan = true, isBarCode = true)
     }
 
     private fun handleProductSearchResult(scanInfoResult: ScanInfoResult?): Boolean {

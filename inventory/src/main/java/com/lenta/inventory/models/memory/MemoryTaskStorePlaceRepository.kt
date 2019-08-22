@@ -18,7 +18,9 @@ class MemoryTaskStorePlaceRepository(private val storePlaceInfo: ArrayList<TaskS
     }
 
     override fun updateStorePlaces(newStorePlaces: List<TaskStorePlaceInfo>) {
-        newStorePlaces.forEach { newStore -> newStore.isProcessed = storePlaceInfo.find { it.placeCode == newStore.placeCode }?.isProcessed ?: false }
+        newStorePlaces.forEach { newStore ->
+            storePlaceInfo.find { it.placeCode == newStore.placeCode }?.let { newStore.isProcessed = it.isProcessed }
+        }
         val manuallyAdded = storePlaceInfo.filter { storePlace -> storePlace.addedManually && newStorePlaces.find { it.placeCode == storePlace.placeCode } == null }
         storePlaceInfo.clear()
         for (storePlace in newStorePlaces) {

@@ -230,7 +230,8 @@ data class StoragePlaceVM(
         val storeNumber: String,
         val status: StorePlaceStatus,
         val name: String,
-        val productsQuantity: Int) {
+        val productsQuantity: Int,
+        val selectable: Boolean) {
 
     companion object {
         fun from(taskStoragePlaceInfo: TaskStorePlaceInfo, productsQuantity: Int, number: Int): StoragePlaceVM {
@@ -238,7 +239,8 @@ data class StoragePlaceVM(
                     storeNumber = taskStoragePlaceInfo.placeCode,
                     status = taskStoragePlaceInfo.status,
                     name = taskStoragePlaceInfo.placeCode,
-                    productsQuantity = productsQuantity)
+                    productsQuantity = productsQuantity,
+                    selectable = taskStoragePlaceInfo.status != StorePlaceStatus.Finished)
         }
 
     }
