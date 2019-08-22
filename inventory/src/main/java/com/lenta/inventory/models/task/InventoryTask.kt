@@ -100,7 +100,7 @@ class InventoryTask(val taskDescription: TaskDescription, val taskRepository: IT
     }
 
     private fun getReportsProducts(): List<MaterialNumber> {
-        return (taskRepository.getProducts().getProcessedProducts(includingDeleted = true)).map {
+        return (taskRepository.getProducts().getProducts().map {
             MaterialNumber(
                     materialNumber = it.materialNumber,
                     storePlaceCode = it.placeCode,
