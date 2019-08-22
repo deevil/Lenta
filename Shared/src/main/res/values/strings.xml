@@ -143,4 +143,5 @@
     <string name="cancel">Отменить</string>
     <string name="framed">Оформлено</string>
     <string name="not_framed">Не оформлено</string>
+    <string name="saved_data_detect_message">На устройстве обнаружены несохраненные данные. Перейти к данным?</string>
 </resources>

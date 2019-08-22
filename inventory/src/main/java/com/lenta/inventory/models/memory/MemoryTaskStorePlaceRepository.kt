@@ -3,9 +3,7 @@ package com.lenta.inventory.models.memory
 import com.lenta.inventory.models.repositories.ITaskStorePlaceRepository
 import com.lenta.inventory.models.task.TaskStorePlaceInfo
 
-class MemoryTaskStorePlaceRepository : ITaskStorePlaceRepository {
-
-    private val storePlaceInfo: ArrayList<TaskStorePlaceInfo> = ArrayList()
+class MemoryTaskStorePlaceRepository(private val storePlaceInfo: ArrayList<TaskStorePlaceInfo> = ArrayList()) : ITaskStorePlaceRepository {
 
     override fun getStorePlaces(): List<TaskStorePlaceInfo> {
         return storePlaceInfo.toList()
