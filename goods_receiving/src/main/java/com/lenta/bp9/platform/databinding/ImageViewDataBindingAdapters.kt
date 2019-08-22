@@ -4,8 +4,7 @@ import android.widget.ImageView
 import androidx.databinding.BindingAdapter
 import com.lenta.bp9.R
 import com.lenta.bp9.features.task_list.TaskPostponedStatus
-import com.lenta.bp9.models.task.TaskLockStatus
-import com.lenta.bp9.models.task.TaskStatus
+import com.lenta.bp9.model.task.TaskLockStatus
 import com.lenta.shared.utilities.extentions.setVisible
 import com.lenta.shared.utilities.extentions.setVisibleGone
 

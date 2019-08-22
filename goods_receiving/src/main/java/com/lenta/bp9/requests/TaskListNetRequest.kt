@@ -2,7 +2,7 @@ package com.lenta.bp9.requests
 
 import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
-import com.lenta.bp9.models.task.*
+import com.lenta.bp9.model.task.*
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.analytics.AnalyticsHelper
 import com.lenta.shared.exception.Failure
@@ -97,19 +97,19 @@ data class TaskListParams(
 
 data class TaskListSearchParams(
         @SerializedName("TASK_NUM")
-        val taskNumber: String,
+        val taskNumber: String?,
         @SerializedName("LIFNR")
-        val supplierNumber: String,
+        val supplierNumber: String?,
         @SerializedName("EBELN")
-        val documentNumber: String,
+        val documentNumber: String?,
         @SerializedName("ZTTN")
-        val invoiceNumber: String,
+        val invoiceNumber: String?,
         @SerializedName("TRNUM")
-        val transportNumber: String,
+        val transportNumber: String?,
         @SerializedName("EXIDV_TOP")
-        val numberGE: String,
+        val numberGE: String?,
         @SerializedName("EXIDV")
-        val numberEO: String
+        val numberEO: String?
 )
 
 class TaskContentStatus : ObjectRawStatus<TaskListRestInfo>()
