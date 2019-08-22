@@ -19,6 +19,7 @@ import com.lenta.shared.keys.OnKeyDownListener
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.scan.OnScanResultListener
 import com.lenta.shared.utilities.databinding.*
+import com.lenta.shared.utilities.extentions.connectLiveData
 
 class GoodsListFragment : CoreFragment<FragmentGoodsListBinding, GoodsListViewModel>(),
         ViewPagerSettings,
@@ -33,9 +34,10 @@ class GoodsListFragment : CoreFragment<FragmentGoodsListBinding, GoodsListViewMo
     override fun getPageNumber(): String = "09/15"
 
     override fun getViewModel(): GoodsListViewModel {
-        provideViewModel(GoodsListViewModel::class.java).let {
-            getAppComponent()?.inject(it)
-            return it
+        provideViewModel(GoodsListViewModel::class.java).let {vm ->
+            getAppComponent()?.inject(vm)
+            vm.titleProgressScreen.value = getString(R.string.data_loading)
+            return vm
         }
     }
 
@@ -50,6 +52,8 @@ class GoodsListFragment : CoreFragment<FragmentGoodsListBinding, GoodsListViewMo
         bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.clean)
         bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.batchsProducts)
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.save)
+
+        connectLiveData(vm.visibilityCleanButton, bottomToolbarUiModel.uiModelButton3.visibility)
     }
 
     override fun getPagerItemView(container: ViewGroup, position: Int): View {
