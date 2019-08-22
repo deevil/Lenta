@@ -3,9 +3,7 @@ package com.lenta.inventory.models.memory
 import com.lenta.inventory.models.repositories.ITaskStorePlaceRepository
 import com.lenta.inventory.models.task.TaskStorePlaceInfo
 
-class MemoryTaskStorePlaceRepository : ITaskStorePlaceRepository {
-
-    private val storePlaceInfo: ArrayList<TaskStorePlaceInfo> = ArrayList()
+class MemoryTaskStorePlaceRepository(private val storePlaceInfo: ArrayList<TaskStorePlaceInfo> = ArrayList()) : ITaskStorePlaceRepository {
 
     override fun getStorePlaces(): List<TaskStorePlaceInfo> {
         return storePlaceInfo.toList()
@@ -20,7 +18,9 @@ class MemoryTaskStorePlaceRepository : ITaskStorePlaceRepository {
     }
 
     override fun updateStorePlaces(newStorePlaces: List<TaskStorePlaceInfo>) {
-        newStorePlaces.forEach { newStore -> newStore.isProcessed = storePlaceInfo.find { it.placeCode == newStore.placeCode }?.isProcessed ?: false }
+        newStorePlaces.forEach { newStore ->
+            storePlaceInfo.find { it.placeCode == newStore.placeCode }?.let { newStore.isProcessed = it.isProcessed }
+        }
         val manuallyAdded = storePlaceInfo.filter { storePlace -> storePlace.addedManually && newStorePlaces.find { it.placeCode == storePlace.placeCode } == null }
         storePlaceInfo.clear()
         for (storePlace in newStorePlaces) {

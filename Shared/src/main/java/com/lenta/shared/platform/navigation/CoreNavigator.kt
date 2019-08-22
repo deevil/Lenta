@@ -322,8 +322,6 @@ class CoreNavigator constructor(private val context: Context,
         }
     }
 
-    private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
-
     override fun showUnsavedDataDetected(confirmCallback: () -> Unit) {
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.unsaved_data_detected),
@@ -332,6 +330,21 @@ class CoreNavigator constructor(private val context: Context,
                     rightButtonDecorationInfo = ButtonDecorationInfo.confirm))
         }
     }
+
+    override fun openDetectedSavedDataScreen(deleteCallback: () -> Unit, confirmCallback: () -> Unit) {
+        getFragmentStack()?.push(AlertFragment.create(
+                message = context.getString(R.string.saved_data_detect_message),
+                iconRes = R.drawable.ic_question,
+                pageNumber = "91",
+                codeConfirmForRight = backFragmentResultHelper.setFuncForResult(confirmCallback),
+                codeConfirmForButton3 = backFragmentResultHelper.setFuncForResult(deleteCallback),
+                rightButtonDecorationInfo = ButtonDecorationInfo.confirm,
+                buttonDecorationInfo3 = ButtonDecorationInfo.delete))
+    }
+
+
+    private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
+
 
 }
 
@@ -382,6 +395,7 @@ interface ICoreNavigator {
     fun closeAllScreen()
     fun openAlertAnotherAppInProcess(packageName: String)
     fun showUnsavedDataDetected(confirmCallback: () -> Unit)
+    fun openDetectedSavedDataScreen(deleteCallback: () -> Unit, confirmCallback: () -> Unit)
 }
 
 class FunctionsCollector(private val needCollectLiveData: LiveData<Boolean>) {

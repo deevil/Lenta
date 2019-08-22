@@ -141,7 +141,7 @@ class GoodsDetailsStorageViewModel : CoreViewModel() {
                             GoodsDetailsStorageItem(
                                         number = index + 1,
                                         name = taskProductInfo.placeCode,
-                                        quantity = taskProductInfo.factCount.toStringFormatted(),
+                                        quantity = "${taskProductInfo.factCount.toStringFormatted()} ${taskProductInfo.uom.name}",
                                         even = index % 2 == 0
                     )
                 }.reversed()
