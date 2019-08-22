@@ -22,14 +22,12 @@ import kotlinx.coroutines.withContext
 @AppScope
 class DatabaseRepo(
         hyperHive: HyperHive,
-        val settings: ZmpUtz14V001 = ZmpUtz14V001(hyperHive)
+        val units: ZmpUtz07V001 = ZmpUtz07V001(hyperHive), // Единицы измерения
+        val settings: ZmpUtz14V001 = ZmpUtz14V001(hyperHive), // Настройки
+        val stores: ZmpUtz23V001 = ZmpUtz23V001(hyperHive), // Список магазинов
+        val goodInfo: ZfmpUtz48V001 = ZfmpUtz48V001(hyperHive), // Информация о товаре
+        val barCodeInfo: ZmpUtz25V001 = ZmpUtz25V001(hyperHive) // Информация о штрих-коде
 ) : IDatabaseRepo {
-
-    private val units: ZmpUtz07V001 by lazy { ZmpUtz07V001(hyperHive) } // Единицы измерения
-    //private val settings: ZmpUtz14V001 by lazy { ZmpUtz14V001(hyperHive) } // Настройки
-    private val stores: ZmpUtz23V001 by lazy { ZmpUtz23V001(hyperHive) } // Список магазинов
-    private val goodInfo: ZfmpUtz48V001 by lazy { ZfmpUtz48V001(hyperHive) } // Информация о товаре
-    private val barCodeInfo: ZmpUtz25V001 by lazy { ZmpUtz25V001(hyperHive) } // Информация о штрих-коде
 
     override suspend fun getGoodInfoByEan(ean: String): GoodInfo? {
         return withContext(Dispatchers.IO) {
