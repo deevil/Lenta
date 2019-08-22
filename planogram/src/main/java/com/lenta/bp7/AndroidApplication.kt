@@ -1,6 +1,5 @@
 package com.lenta.bp7
 
-import android.content.Context
 import com.lenta.bp7.data.model.CheckData
 import com.lenta.bp7.platform.extentions.getAppComponent
 import com.lenta.shared.CoreApplication
@@ -8,16 +7,6 @@ import com.lenta.shared.settings.DefaultConnectionSettings
 import javax.inject.Inject
 
 class AndroidApplication : CoreApplication() {
-
-    companion object {
-        fun getContext(): Context {
-            return this.getContext()
-        }
-
-        fun getDefaultConnectionSettings(): DefaultConnectionSettings {
-            return getDefaultConnectionSettings()
-        }
-    }
 
     override fun getDefaultConnectionSettings(): DefaultConnectionSettings {
         return DefaultConnectionSettings(
