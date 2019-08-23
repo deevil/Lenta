@@ -14,6 +14,7 @@ import android.content.Intent
 import com.lenta.shared.utilities.Logg
 import java.lang.Exception
 import android.content.pm.ApplicationInfo
+import com.lenta.shared.utilities.runIfDebug
 
 
 fun Context.getDeviceIp(): String {
@@ -25,7 +26,11 @@ fun Context.getDeviceIp(): String {
 
 @SuppressLint("HardwareIds")
 fun Context.getDeviceId(): String {
-    return Settings.Secure.getString(this.contentResolver, "android_id")
+    var deviceId = Settings.Secure.getString(this.contentResolver, "android_id")
+    runIfDebug {
+        deviceId = "android_debug_device_$deviceId"
+    }
+    return deviceId
 }
 
 private val outValue by lazy { TypedValue() }
