@@ -1,0 +1,26 @@
+ext {
+    ext.stagingSettings = [
+            [type: "string", name: "ds_serverAddress", value: "http://9.6.24.46"],
+            [type: "string", name: "ds_environment", value: "Lenta_LRQ"],
+            [type: "string", name: "ds_project", value: "PR_SHARED"],
+            [type: "string", name: "ds_testServerAddress", value: "http://9.6.24.46"],
+            [type: "string", name: "ds_testEnvironment", value: "Lenta_LRQ"],
+            [type: "string", name: "ds_testProject", value: "PR_SHARED"],
+            [type: "string", name: "ds_techLogin", value: "MAKAROV"],
+            [type: "string", name: "ds_techPassword", value: "1q2w3e4r"],
+
+    ]
+
+    ext.prodSettings = [
+            [type: "string", name: "ds_serverAddress", value: "9.6.24.61:6444"],
+            [type: "string", name: "ds_environment", value: "Lenta_LRP"],
+            [type: "string", name: "ds_project", value: "PR_SHARED"],
+            [type: "string", name: "ds_testServerAddress", value: "http://9.6.24.46"],
+            [type: "string", name: "ds_testEnvironment", value: "Lenta_LRQ"],
+            [type: "string", name: "ds_testProject", value: "PR_SHARED"],
+            [type: "string", name: "ds_techLogin", value: "REFSMP"],
+            [type: "string", name: "ds_techPassword", value: "smp_plan_1"],
+    ]
+
+}
+

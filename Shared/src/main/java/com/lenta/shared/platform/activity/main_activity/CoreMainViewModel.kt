@@ -13,6 +13,7 @@ import com.lenta.shared.platform.statusbar.StatusBarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
+import com.lenta.shared.settings.DefaultSettingsManager
 import com.lenta.shared.utilities.Logg
 import com.mobrun.plugin.api.HyperHive
 import kotlinx.coroutines.Dispatchers
@@ -30,6 +31,8 @@ abstract class CoreMainViewModel : CoreViewModel() {
     lateinit var lockManager: LockManager
     @Inject
     lateinit var priorityAppManager: PriorityAppManager
+    @Inject
+    lateinit var defaultSettingsManager: DefaultSettingsManager
 
     val zmpUtz14V001: ZmpUtz14V001 by lazy { ZmpUtz14V001(hyperHive) }
     val topToolbarUiModel: TopToolbarUiModel = TopToolbarUiModel()
@@ -63,6 +66,18 @@ abstract class CoreMainViewModel : CoreViewModel() {
                 coreNavigator.finishApp(restart = false)
             }.apply {
                 autoExitTimeInMinutes = withContext(Dispatchers.IO) {
+                    if (defaultSettingsManager.isDefaultSettingsChanged()) {
+                        coreNavigator.openChangedDefaultSettingsAlert(
+                                noCallback = {
+                                    defaultSettingsManager.saveLastDefaultSettingsToSettings()
+                                },
+                                yesCallback = {
+                                    defaultSettingsManager.setNewDefaultSettings()
+                                    preparingForExit()
+                                    coreNavigator.finishApp(restart = true)
+                                }
+                        )
+                    }
                     return@withContext zmpUtz14V001.getAutoExitTimeInMinutes().apply {
                         Logg.d { "autoExitTimeInMinutes: $this" }
                     }

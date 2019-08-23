@@ -27,13 +27,10 @@ class FastLoadingViewModel : CoreLoadingViewModel() {
     @Inject
     lateinit var appUpdateChecker: AppUpdateChecker
     @Inject
-    lateinit var repoInMemoryHolder: IRepoInMemoryHolder
-    @Inject
-    lateinit var storesRequest: StoresRequest
-    @Inject
     lateinit var auth: Auth
     @Inject
     lateinit var database: IDatabaseRepo
+
 
     override val title: MutableLiveData<String> = MutableLiveData()
     override val progress: MutableLiveData<Boolean> = MutableLiveData(true)
@@ -43,14 +40,8 @@ class FastLoadingViewModel : CoreLoadingViewModel() {
     init {
         viewModelScope.launch {
             progress.value = true
-            fastResourcesNetRequest(null).either(::handleFailure, ::loadStores)
+            fastResourcesNetRequest(null).either(::handleFailure, ::handleSuccess)
             progress.value = false
-        }
-    }
-
-    private fun loadStores(@Suppress("UNUSED_PARAMETER") b: Boolean) {
-        viewModelScope.launch {
-            storesRequest(null).either(::handleFailure, ::handleSuccess)
         }
     }
 
@@ -59,9 +50,7 @@ class FastLoadingViewModel : CoreLoadingViewModel() {
         navigator.openAlertScreen(failureInterpreter.getFailureDescription(failure).message)
     }
 
-    private fun handleSuccess(storesRequestResult: StoresRequestResult) {
-        repoInMemoryHolder.storesRequestResult = storesRequestResult
-
+    private fun handleSuccess(@Suppress("UNUSED_PARAMETER") b: Boolean) {
         viewModelScope.launch {
             if (appUpdateChecker.isNeedUpdate(database.getAllowedAppVersion())) {
                 auth.cancelAuthorization()
@@ -77,4 +66,5 @@ class FastLoadingViewModel : CoreLoadingViewModel() {
     override fun clean() {
         progress.postValue(false)
     }
+
 }
