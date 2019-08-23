@@ -332,14 +332,30 @@ class CoreNavigator constructor(private val context: Context,
     }
 
     override fun openDetectedSavedDataScreen(deleteCallback: () -> Unit, confirmCallback: () -> Unit) {
-        getFragmentStack()?.push(AlertFragment.create(
-                message = context.getString(R.string.saved_data_detect_message),
-                iconRes = R.drawable.ic_question,
-                pageNumber = "91",
-                codeConfirmForRight = backFragmentResultHelper.setFuncForResult(confirmCallback),
-                codeConfirmForButton3 = backFragmentResultHelper.setFuncForResult(deleteCallback),
-                rightButtonDecorationInfo = ButtonDecorationInfo.confirm,
-                buttonDecorationInfo3 = ButtonDecorationInfo.delete))
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.saved_data_detect_message),
+                    iconRes = R.drawable.ic_question,
+                    pageNumber = "91",
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(confirmCallback),
+                    codeConfirmForButton3 = backFragmentResultHelper.setFuncForResult(deleteCallback),
+                    rightButtonDecorationInfo = ButtonDecorationInfo.confirm,
+                    buttonDecorationInfo3 = ButtonDecorationInfo.delete))
+        }
+
+    }
+
+    override fun openChangedDefaultSettingsAlert(noCallback: () -> Unit, yesCallback: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.detect_changes_connection_message),
+                    iconRes = R.drawable.is_warning_yellow,
+                    pageNumber = "91",
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(yesCallback),
+                    codeConfirmForButton3 = backFragmentResultHelper.setFuncForResult(noCallback),
+                    rightButtonDecorationInfo = ButtonDecorationInfo.yes,
+                    buttonDecorationInfo3 = ButtonDecorationInfo.no))
+        }
     }
 
 
@@ -396,6 +412,7 @@ interface ICoreNavigator {
     fun openAlertAnotherAppInProcess(packageName: String)
     fun showUnsavedDataDetected(confirmCallback: () -> Unit)
     fun openDetectedSavedDataScreen(deleteCallback: () -> Unit, confirmCallback: () -> Unit)
+    fun openChangedDefaultSettingsAlert(noCallback: () -> Unit, yesCallback: () -> Unit)
 }
 
 class FunctionsCollector(private val needCollectLiveData: LiveData<Boolean>) {

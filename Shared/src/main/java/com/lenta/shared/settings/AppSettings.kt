@@ -12,53 +12,53 @@ class AppSettings(
 ) : IAppSettings {
 
     override var isTest: Boolean
-        get() = sharedPrefferences.getBoolean("isTest", false)
+        get() = sharedPrefferences.getBoolean(FmpSettingsKey.fmpSettings_isTest.name, false)
         set(value) {
-            sharedPrefferences.edit().putBoolean("isTest", value).commit()
+            sharedPrefferences.edit().putBoolean(FmpSettingsKey.fmpSettings_isTest.name, value).commit()
         }
 
     override var serverAddress: String
-        get() = sharedPrefferences.getString("serverAddress", defaultConnectionSettings.serverAddress)
+        get() = sharedPrefferences.getString(FmpSettingsKey.fmpSettings_serverAddress.name, defaultConnectionSettings.serverAddress)
         set(value) {
-            sharedPrefferences.edit().putString("serverAddress", value).commit()
+            sharedPrefferences.edit().putString(FmpSettingsKey.fmpSettings_serverAddress.name, value).commit()
         }
     override var environment: String
-        get() = sharedPrefferences.getString("environment", defaultConnectionSettings.environment)
+        get() = sharedPrefferences.getString(FmpSettingsKey.fmpSettings_environment.name, defaultConnectionSettings.environment)
         set(value) {
-            sharedPrefferences.edit().putString("environment", value).commit()
+            sharedPrefferences.edit().putString(FmpSettingsKey.fmpSettings_environment.name, value).commit()
         }
     override var project: String
-        get() = sharedPrefferences.getString("project", defaultConnectionSettings.project)
+        get() = sharedPrefferences.getString(FmpSettingsKey.fmpSettings_project.name, defaultConnectionSettings.project)
         set(value) {
-            sharedPrefferences.edit().putString("project", value).commit()
+            sharedPrefferences.edit().putString(FmpSettingsKey.fmpSettings_project.name, value).commit()
         }
 
     override var testServerAddress: String
-        get() = sharedPrefferences.getString("testServerAddress", defaultConnectionSettings.testServerAddress)
+        get() = sharedPrefferences.getString(FmpSettingsKey.fmpSettings_test_serverAddress.name, defaultConnectionSettings.testServerAddress)
         set(value) {
-            sharedPrefferences.edit().putString("testServerAddress", value).commit()
+            sharedPrefferences.edit().putString(FmpSettingsKey.fmpSettings_test_serverAddress.name, value).commit()
         }
     override var testEnvironment: String
-        get() = sharedPrefferences.getString("testEnvironment", defaultConnectionSettings.testEnvironment)
+        get() = sharedPrefferences.getString(FmpSettingsKey.fmpSettings_test_environment.name, defaultConnectionSettings.testEnvironment)
         set(value) {
-            sharedPrefferences.edit().putString("testEnvironment", value).commit()
+            sharedPrefferences.edit().putString(FmpSettingsKey.fmpSettings_test_environment.name, value).commit()
         }
     override var testProject: String
-        get() = sharedPrefferences.getString("testProject", defaultConnectionSettings.testProject)
+        get() = sharedPrefferences.getString(FmpSettingsKey.fmpSettings_test_project.name, defaultConnectionSettings.testProject)
         set(value) {
-            sharedPrefferences.edit().putString("testProject", value).commit()
+            sharedPrefferences.edit().putString(FmpSettingsKey.fmpSettings_test_project.name, value).commit()
         }
 
     override var techLogin: String
-        get() = sharedPrefferences.getString("techLogin", defaultConnectionSettings.techLogin)
+        get() = sharedPrefferences.getString(FmpSettingsKey.fmpSettings_tech_login.name, defaultConnectionSettings.techLogin)
         set(value) {
-            sharedPrefferences.edit().putString("techLogin", value).commit()
+            sharedPrefferences.edit().putString(FmpSettingsKey.fmpSettings_tech_login.name, value).commit()
         }
 
     override var techPassword: String
-        get() = sharedPrefferences.getString("techPassword", defaultConnectionSettings.techPassword)
+        get() = sharedPrefferences.getString(FmpSettingsKey.fmpSettings_tech_password.name, defaultConnectionSettings.techPassword)
         set(value) {
-            sharedPrefferences.edit().putString("techPassword", value).commit()
+            sharedPrefferences.edit().putString(FmpSettingsKey.fmpSettings_tech_password.name, value).commit()
         }
 
 
@@ -120,8 +120,36 @@ class AppSettings(
 
     override val printerNumberLiveData: MutableLiveData<String?> = MutableLiveData(printerNumber)
 
+    override fun cleanFmpSettings() {
+        sharedPrefferences.edit().let { editor ->
+            FmpSettingsKey.values().forEach {
+                editor.remove(it.name)
+            }
+            editor.commit()
+        }
+    }
+
+    override fun isConnectionSettingsWasChangedByUser(): Boolean {
+        return isTest && sharedPrefferences.contains(Companion.FmpSettingsKey.fmpSettings_serverAddress.name)
+    }
+
+    companion object {
+        private enum class FmpSettingsKey {
+            fmpSettings_isTest,
+            fmpSettings_serverAddress,
+            fmpSettings_environment,
+            fmpSettings_project,
+            fmpSettings_test_serverAddress,
+            fmpSettings_test_environment,
+            fmpSettings_test_project,
+            fmpSettings_tech_login,
+            fmpSettings_tech_password
+        }
+    }
+
 
 }
+
 
 interface IAppSettings {
     var isTest: Boolean
@@ -147,6 +175,8 @@ interface IAppSettings {
     fun getCurrentServerAddress(): String
     fun getCurrentEnvironment(): String
     fun getCurrentProject(): String
+    fun cleanFmpSettings()
+    fun isConnectionSettingsWasChangedByUser(): Boolean
 
 
 }

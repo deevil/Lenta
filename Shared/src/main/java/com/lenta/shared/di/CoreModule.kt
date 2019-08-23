@@ -45,6 +45,7 @@ import com.lenta.shared.scan.IScanHelper
 import com.lenta.shared.scan.mobilbase.MobilBaseScanHelper
 import com.lenta.shared.settings.AppSettings
 import com.lenta.shared.settings.DefaultConnectionSettings
+import com.lenta.shared.settings.DefaultSettingsManager
 import com.lenta.shared.settings.IAppSettings
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.isWriteExternalStoragePermissionGranted
@@ -281,6 +282,16 @@ class CoreModule(val application: Application, val defaultConnectionSettings: De
     @Singleton
     fun provideDeviceInfo(context: Context): DeviceInfo {
         return AndroidDeviceInfo(context)
+    }
+
+    @Provides
+    @Singleton
+    fun provideDefaultSettingsManager(
+            appSettings: IAppSettings,
+            sharedPreferences: SharedPreferences,
+            gson: Gson
+    ): DefaultSettingsManager {
+        return DefaultSettingsManager(defaultConnectionSettings, appSettings, sharedPreferences, gson)
     }
 
 
