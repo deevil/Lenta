@@ -53,7 +53,7 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
 
                 if (selectedPosition.value == null) {
                     if (appSettings.lastTK != null) {
-                        list?.forEachIndexed { index, market ->
+                        list.forEachIndexed { index, market ->
                             if (market.number == appSettings.lastTK) {
                                 onClickPosition(index)
                             }
@@ -63,7 +63,7 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
                     }
                 }
 
-                if (list?.size == 1) {
+                if (list.size == 1) {
                     onClickNext()
                 }
             }

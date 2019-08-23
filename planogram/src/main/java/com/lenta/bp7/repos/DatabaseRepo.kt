@@ -173,7 +173,7 @@ class DatabaseRepo(
         }
     }
 
-    override suspend fun getAllMarkets(): List<MarketInfo>? {
+    override suspend fun getAllMarkets(): List<MarketInfo> {
         return withContext(Dispatchers.IO) {
             return@withContext stores.getAllMarkets().toMarketInfoList()
         }
@@ -196,5 +196,5 @@ interface IDatabaseRepo {
     suspend fun getGoodInfoByMaterial(material: String): GoodInfo?
     suspend fun getGoodInfoByMatcode(matcode: String): GoodInfo?
     suspend fun getAllowedAppVersion(): String?
-    suspend fun getAllMarkets(): List<MarketInfo>?
+    suspend fun getAllMarkets(): List<MarketInfo>
 }
