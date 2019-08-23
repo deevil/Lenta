@@ -1,4 +1,4 @@
-package com.lenta.bp9.models.task
+package com.lenta.bp9.model.task
 
 enum class TaskType(val taskTypeString: String) {
     None(""),

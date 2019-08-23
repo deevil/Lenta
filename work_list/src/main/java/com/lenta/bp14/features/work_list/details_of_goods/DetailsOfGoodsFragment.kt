@@ -38,7 +38,7 @@ class DetailsOfGoodsFragment : CoreFragment<FragmentDetailsOfGoodsBinding, Detai
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
         topToolbarUiModel.title.value = vm.getTitle()
-        topToolbarUiModel.description.value = getString(R.string.goods_of_details)
+        topToolbarUiModel.description.value = getString(R.string.details_of_goods)
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {

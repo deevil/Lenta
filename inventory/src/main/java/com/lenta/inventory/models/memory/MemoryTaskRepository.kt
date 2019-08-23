@@ -5,13 +5,12 @@ import com.lenta.inventory.models.repositories.ITaskProductRepository
 import com.lenta.inventory.models.repositories.ITaskRepository
 import com.lenta.inventory.models.repositories.ITaskStorePlaceRepository
 
-class MemoryTaskRepository : ITaskRepository {
+class MemoryTaskRepository(
+        private val taskProductRepository: ITaskProductRepository = MemoryTaskProductRepository(),
+        private val taskExciseStampRepository: MemoryTaskExciseStampRepository = MemoryTaskExciseStampRepository(),
+        private val taskStorePlaceRepository: MemoryTaskStorePlaceRepository = MemoryTaskStorePlaceRepository()
+) : ITaskRepository {
 
-    private val taskProductRepository: ITaskProductRepository = MemoryTaskProductRepository()
-
-    private val taskExciseStampRepository: MemoryTaskExciseStampRepository = MemoryTaskExciseStampRepository()
-
-    private val taskStorePlaceRepository: MemoryTaskStorePlaceRepository = MemoryTaskStorePlaceRepository()
 
     override fun getProducts(): ITaskProductRepository {
         return taskProductRepository

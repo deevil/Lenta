@@ -11,6 +11,7 @@ import com.lenta.shared.fmp.resources.fast.ZmpUtz14V001
 import com.lenta.shared.fmp.resources.fast.ZmpUtz23V001
 import com.lenta.shared.fmp.resources.slow.ZfmpUtz48V001
 import com.lenta.shared.fmp.resources.slow.ZmpUtz25V001
+import com.lenta.shared.models.core.Uom
 import com.lenta.shared.requests.combined.scan_info.pojo.EanInfo
 import com.lenta.shared.requests.combined.scan_info.pojo.ProductInfo
 import com.lenta.shared.utilities.Logg
@@ -19,13 +20,14 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 @AppScope
-class DatabaseRepo(hyperHive: HyperHive) : IDatabaseRepo {
-
-    private val units: ZmpUtz07V001 by lazy { ZmpUtz07V001(hyperHive) } // Единицы измерения
-    private val settings: ZmpUtz14V001 by lazy { ZmpUtz14V001(hyperHive) } // Настройки
-    private val stores: ZmpUtz23V001 by lazy { ZmpUtz23V001(hyperHive) } // Список магазинов
-    private val goodInfo: ZfmpUtz48V001 by lazy { ZfmpUtz48V001(hyperHive) } // Информация о товаре
-    private val barCodeInfo: ZmpUtz25V001 by lazy { ZmpUtz25V001(hyperHive) } // Информация о штрих-коде
+class DatabaseRepo(
+        hyperHive: HyperHive,
+        val units: ZmpUtz07V001 = ZmpUtz07V001(hyperHive), // Единицы измерения
+        val settings: ZmpUtz14V001 = ZmpUtz14V001(hyperHive), // Настройки
+        val stores: ZmpUtz23V001 = ZmpUtz23V001(hyperHive), // Список магазинов
+        val productInfo: ZfmpUtz48V001 = ZfmpUtz48V001(hyperHive), // Информация о товаре
+        val barCodeInfo: ZmpUtz25V001 = ZmpUtz25V001(hyperHive) // Информация о штрих-коде
+) : IDatabaseRepo {
 
     override suspend fun getGoodInfoByEan(ean: String): GoodInfo? {
         return withContext(Dispatchers.IO) {
@@ -41,8 +43,9 @@ class DatabaseRepo(hyperHive: HyperHive) : IDatabaseRepo {
                         matcode = productInfo?.matcode ?: "Not found!",
                         enteredCode = EnteredCode.EAN,
                         name = productInfo?.name ?: "Not found!",
-                        unitsCode = productInfo?.buom ?: "Not found!",
-                        units = unitName ?: "Not found!")
+                        uom = Uom(
+                                code = productInfo?.buom ?: "Not found!",
+                                name = unitName ?: "Not found!"))
             }
         }
     }
@@ -61,8 +64,9 @@ class DatabaseRepo(hyperHive: HyperHive) : IDatabaseRepo {
                         matcode = productInfo.matcode,
                         enteredCode = EnteredCode.MATERIAL,
                         name = productInfo.name,
-                        unitsCode = productInfo.buom,
-                        units = unitName ?: "Not found!")
+                        uom = Uom(
+                                code = productInfo.buom,
+                                name = unitName ?: "Not found!"))
             }
         }
     }
@@ -81,33 +85,34 @@ class DatabaseRepo(hyperHive: HyperHive) : IDatabaseRepo {
                         matcode = matcode,
                         enteredCode = EnteredCode.MATCODE,
                         name = productInfo.name,
-                        unitsCode = productInfo.buom,
-                        units = unitName ?: "Not found!")
+                        uom = Uom(
+                                code = productInfo.buom,
+                                name = unitName ?: "Not found!"))
             }
         }
     }
 
-    override suspend fun getEanInfoByEan(barCode: String?): EanInfo? {
+    override suspend fun getEanInfoByEan(ean: String?): EanInfo? {
         return withContext(Dispatchers.IO) {
-            return@withContext barCodeInfo.getEanInfo(barCode)?.toEanInfo()
+            return@withContext barCodeInfo.getEanInfo(ean)?.toEanInfo()
         }
     }
 
-    override suspend fun getEanInfoByMaterial(sapCode: String?): EanInfo? {
+    override suspend fun getEanInfoByMaterial(material: String?): EanInfo? {
         return withContext(Dispatchers.IO) {
-            return@withContext barCodeInfo.getEanInfoFromMaterial(sapCode)?.toEanInfo()
+            return@withContext barCodeInfo.getEanInfoFromMaterial(material)?.toEanInfo()
         }
     }
 
     override suspend fun getProductInfoByMaterial(material: String?): ProductInfo? {
         return withContext(Dispatchers.IO) {
-            return@withContext goodInfo.getProductInfoByMaterial(material)?.toMaterialInfo()
+            return@withContext productInfo.getProductInfoByMaterial(material)?.toMaterialInfo()
         }
     }
 
     override suspend fun getProductInfoByMatcode(matcode: String?): ProductInfo? {
         return withContext(Dispatchers.IO) {
-            return@withContext goodInfo.getProductInfoByMatcode(matcode)?.toMaterialInfo()
+            return@withContext productInfo.getProductInfoByMatcode(matcode)?.toMaterialInfo()
         }
     }
 
@@ -140,7 +145,7 @@ class DatabaseRepo(hyperHive: HyperHive) : IDatabaseRepo {
         return withContext(Dispatchers.IO) {
             when (getRetailType(marketNumber)) {
                 StoreRetailType.HYPER.type -> return@withContext settings.getPlacesHyperParam()
-                StoreRetailType.SUPER.type -> return@withContext settings.getFacingsSuperParam()
+                StoreRetailType.SUPER.type -> return@withContext settings.getPlacesSuperParam()
                 else -> {
                     Logg.d { "Store retail type unknown!" }
                     return@withContext Enabled.NO.type
@@ -174,8 +179,8 @@ interface IDatabaseRepo {
     suspend fun getPlacesParam(marketNumber: String?): String?
     suspend fun getSelfControlPinCode(): String?
     suspend fun getExternalAuditPinCode(): String?
-    suspend fun getEanInfoByEan(barCode: String?): EanInfo?
-    suspend fun getEanInfoByMaterial(sapCode: String?): EanInfo?
+    suspend fun getEanInfoByEan(ean: String?): EanInfo?
+    suspend fun getEanInfoByMaterial(material: String?): EanInfo?
     suspend fun getProductInfoByMaterial(material: String?): ProductInfo?
     suspend fun getProductInfoByMatcode(matcode: String?): ProductInfo?
     suspend fun getGoodUnitName(unitCode: String?): String?

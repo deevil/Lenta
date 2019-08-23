@@ -15,6 +15,7 @@ import com.lenta.shared.scan.OnScanResultListener
 import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.generateScreenNumber
 import com.lenta.shared.utilities.extentions.provideViewModel
+import com.lenta.shared.utilities.extentions.toStringFormatted
 import com.lenta.shared.utilities.state.state
 
 class GoodsInfoFragment : CoreFragment<FragmentGoodsInfoBinding,
@@ -23,15 +24,18 @@ class GoodsInfoFragment : CoreFragment<FragmentGoodsInfoBinding,
         OnScanResultListener {
 
     companion object {
-        fun create(productInfo: TaskProductInfo): GoodsInfoFragment {
+        fun create(productInfo: TaskProductInfo, initialCount: Double = 0.0): GoodsInfoFragment {
             GoodsInfoFragment().let {
                 it.productInfo = productInfo
+                it.initialCount = initialCount
                 return it
             }
         }
     }
 
     private var productInfo by state<TaskProductInfo?>(null)
+
+    private var initialCount by state<Double>(0.0)
 
     override fun getLayoutId(): Int = R.layout.fragment_goods_info
 
@@ -45,6 +49,7 @@ class GoodsInfoFragment : CoreFragment<FragmentGoodsInfoBinding,
             vm.iconRes.value = R.drawable.ic_info_pink
             vm.textColor.value = ContextCompat.getColor(context!!, com.lenta.shared.R.color.color_text_dialogWarning)
             vm.msgWrongProducType.value = getString(R.string.wrong_product_type)
+            vm.count.value = initialCount.toStringFormatted()
             return vm
         }
     }
@@ -77,5 +82,4 @@ class GoodsInfoFragment : CoreFragment<FragmentGoodsInfoBinding,
     override fun onScanResult(data: String) {
         vm.onScanResult(data)
     }
-
 }

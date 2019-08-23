@@ -10,6 +10,7 @@ import androidx.lifecycle.Observer
 import com.lenta.inventory.BR
 import com.lenta.inventory.R
 import com.lenta.inventory.databinding.*
+import com.lenta.inventory.models.StorePlaceStatus
 import com.lenta.inventory.platform.extentions.getAppComponent
 import com.lenta.shared.keys.KeyCode
 import com.lenta.shared.keys.OnKeyDownListener
@@ -161,7 +162,9 @@ class StoragesListFragment : CoreFragment<FragmentStoragesListBinding, StoragesL
 
                                 override fun onBind(binding: ItemTileProcessedStoragesBinding, position: Int) {
                                     binding.tvCounter.tag = position
-                                    binding.tvCounter.setOnClickListener(onClickSelectionListener)
+                                    if (vm.processedStorages.value?.get(position)?.selectable == true) {
+                                        binding.tvCounter.setOnClickListener(onClickSelectionListener)
+                                    }
                                     binding.selectedForDelete = vm.processedSelectionHelper.isSelected(position)
                                     processedRecyclerViewKeyHandler?.let {
                                         binding.root.isSelected = it.isSelected(position)

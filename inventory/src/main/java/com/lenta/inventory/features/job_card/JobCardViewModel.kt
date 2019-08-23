@@ -2,6 +2,7 @@ package com.lenta.inventory.features.job_card
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.lenta.inventory.models.IPersistInventoryTask
 import com.lenta.inventory.models.RecountType
 import com.lenta.inventory.models.StorePlaceLockMode
 import com.lenta.inventory.models.task.IInventoryTaskManager
@@ -36,6 +37,9 @@ class JobCardViewModel : CoreViewModel(), OnPositionClickListener {
 
     @Inject
     lateinit var deviceInfo: DeviceInfo
+
+    @Inject
+    lateinit var persistInventoryTask: IPersistInventoryTask
 
     private lateinit var tasksItem: TasksItem
 
@@ -76,7 +80,16 @@ class JobCardViewModel : CoreViewModel(), OnPositionClickListener {
 
     fun init(taskNumber: String, typesRecount: List<RecountType>, converterTypeToString: (RecountType) -> String) {
 
-        tasksItem = repoInMemoryHolder.tasksListRestInfo.value?.tasks?.first { it.taskNumber == taskNumber }!!
+        repoInMemoryHolder.tasksListRestInfo.value?.tasks?.firstOrNull { it.taskNumber == taskNumber }.let {
+            if (it != null) {
+                tasksItem = it
+            } else {
+                persistInventoryTask.saveWriteOffTask(null)
+                screenNavigator.closeAllScreen()
+                screenNavigator.openSelectionPersonnelNumberScreen()
+                return
+            }
+        }
 
         Logg.d { "taskItem $tasksItem" }
 
@@ -156,6 +169,7 @@ class JobCardViewModel : CoreViewModel(), OnPositionClickListener {
                 Logg.d { "restInfo: $it" }
                 taskManager.clearTask()
                 screenNavigator.goBack()
+                persistInventoryTask.saveWriteOffTask(null)
                 screenNavigator.hideProgress()
             }
         }

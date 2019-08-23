@@ -5,9 +5,7 @@ import com.lenta.inventory.models.task.TaskExciseStamp
 import com.lenta.inventory.models.task.TaskProductInfo
 import java.util.*
 
-class MemoryTaskExciseStampRepository : ITaskExciseStampRepository {
-
-    private val stamps: ArrayList<TaskExciseStamp> = ArrayList()
+class MemoryTaskExciseStampRepository(private val stamps: ArrayList<TaskExciseStamp> = ArrayList()) : ITaskExciseStampRepository {
 
     override fun getExciseStamps(): List<TaskExciseStamp> {
         return stamps
@@ -18,9 +16,10 @@ class MemoryTaskExciseStampRepository : ITaskExciseStampRepository {
     }
 
     override fun findExciseStampsOfProduct(materialNumber: String, storePlaceNumber: String, isSet: Boolean): List<TaskExciseStamp> {
-        return stamps.filter {stamp ->
+        return stamps.filter { stamp ->
             (stamp.materialNumber == materialNumber && stamp.placeCode == storePlaceNumber) ||
-                (isSet && stamp.setMaterialNumber == materialNumber && stamp.placeCode == storePlaceNumber)}
+                    (isSet && stamp.setMaterialNumber == materialNumber && stamp.placeCode == storePlaceNumber)
+        }
     }
 
     override fun updateExciseStamps(newStamps: List<TaskExciseStamp>) {
@@ -45,7 +44,7 @@ class MemoryTaskExciseStampRepository : ITaskExciseStampRepository {
     }
 
     override fun deleteExciseStamp(exciseStamp: TaskExciseStamp): Boolean {
-        stamps.filter {taskExciseStamp ->
+        stamps.filter { taskExciseStamp ->
             exciseStamp.code == taskExciseStamp.code
         }.map {
             return stamps.remove(it)
@@ -54,7 +53,7 @@ class MemoryTaskExciseStampRepository : ITaskExciseStampRepository {
     }
 
     override fun deleteExciseStampsForProduct(product: TaskProductInfo): Boolean {
-       (stamps.map { it }.filter {stamp ->
+        (stamps.map { it }.filter { stamp ->
             if ((stamp.materialNumber == product.materialNumber && stamp.placeCode == product.placeCode) ||
                     (product.isSet && stamp.setMaterialNumber == product.materialNumber && stamp.placeCode == product.placeCode)) {
                 stamps.remove(stamp)
