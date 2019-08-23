@@ -7,6 +7,7 @@ import com.lenta.shared.settings.DefaultConnectionSettings
 import javax.inject.Inject
 
 class AndroidApplication : CoreApplication() {
+
     override fun getDefaultConnectionSettings(): DefaultConnectionSettings {
         return DefaultConnectionSettings(
                 serverAddress = "http://9.6.24.46",
@@ -26,6 +27,7 @@ class AndroidApplication : CoreApplication() {
             it.handleException()
         }
     }
+
 }
 
 class ExceptionHandler {
@@ -36,4 +38,5 @@ class ExceptionHandler {
     fun handleException() {
         checkData.saveCheckResult()
     }
+
 }
