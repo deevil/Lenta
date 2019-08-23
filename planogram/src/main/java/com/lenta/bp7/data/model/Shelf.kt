@@ -7,7 +7,7 @@ data class Shelf(
         val id: Int,
         val number: String,
         val checkStart: Date = Date(),
-        var checkFinish: Date? = null,
+        var checkFinish: Date = Date(),
         private var status: ShelfStatus = ShelfStatus.UNFINISHED,
         val goods: MutableList<Good> = mutableListOf()
 ) {
