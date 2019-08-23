@@ -96,16 +96,11 @@ internal class DatabaseRepoTest {
     @Test
     fun `Get GoodInfo by ean`() = runBlocking {
         val goodInfo = getGoodInfo(EnteredCode.EAN)
-
-        mockkStatic("$EXT_PATH.ZmpUtz25V001Kt").apply {
+        mockkStatic("$EXT_PATH.ZmpUtz25V001Kt", "$EXT_PATH.ZfmpUtz48V001Kt", "$EXT_PATH.ZmpUtz07V001Kt").apply {
             every { barCodeInfo.getEanInfo(goodInfo.ean) } returns (getEtEans(goodInfo))
-            mockkStatic("$EXT_PATH.ZfmpUtz48V001Kt").apply {
-                every { productInfo.getProductInfoByMaterial(goodInfo.material) } returns (getEtMatnrList(goodInfo))
-                mockkStatic("$EXT_PATH.ZmpUtz07V001Kt").apply {
-                    every { units.getUnitName(goodInfo.uom.code) } returns (goodInfo.uom.name)
-                    assertEquals(goodInfo, databaseRepo.getGoodInfoByEan(goodInfo.ean))
-                }
-            }
+            every { productInfo.getProductInfoByMaterial(goodInfo.material) } returns (getEtMatnrList(goodInfo))
+            every { units.getUnitName(goodInfo.uom.code) } returns (goodInfo.uom.name)
+            assertEquals(goodInfo, databaseRepo.getGoodInfoByEan(goodInfo.ean))
         }
     }
 
@@ -120,18 +115,11 @@ internal class DatabaseRepoTest {
     @Test
     fun `Get GoodInfo by material`() = runBlocking {
         val goodInfo = getGoodInfo(EnteredCode.MATERIAL)
-
-        mockkStatic("$EXT_PATH.ZfmpUtz48V001Kt").apply {
+        mockkStatic("$EXT_PATH.ZfmpUtz48V001Kt", "$EXT_PATH.ZmpUtz25V001Kt", "$EXT_PATH.ZmpUtz07V001Kt").apply {
             every { productInfo.getProductInfoByMaterial(goodInfo.material) } returns (getEtMatnrList(goodInfo))
-            mockkStatic("$EXT_PATH.ZmpUtz25V001Kt").apply {
-                every { barCodeInfo.getEanInfoFromMaterial(goodInfo.material) } returns (getEtEans(goodInfo))
-                mockkStatic("$EXT_PATH.ZmpUtz07V001Kt").apply {
-                    every { units.getUnitName(goodInfo.uom.code) } returns (goodInfo.uom.name)
-
-
-                    assertEquals(goodInfo, databaseRepo.getGoodInfoByMaterial(goodInfo.material))
-                }
-            }
+            every { barCodeInfo.getEanInfoFromMaterial(goodInfo.material) } returns (getEtEans(goodInfo))
+            every { units.getUnitName(goodInfo.uom.code) } returns (goodInfo.uom.name)
+            assertEquals(goodInfo, databaseRepo.getGoodInfoByMaterial(goodInfo.material))
         }
     }
 
@@ -146,16 +134,11 @@ internal class DatabaseRepoTest {
     @Test
     fun `Get GoodInfo by matcode`() = runBlocking {
         val goodInfo = getGoodInfo(EnteredCode.MATCODE)
-
-        mockkStatic("$EXT_PATH.ZfmpUtz48V001Kt").apply {
+        mockkStatic("$EXT_PATH.ZfmpUtz48V001Kt", "$EXT_PATH.ZmpUtz25V001Kt", "$EXT_PATH.ZmpUtz07V001Kt").apply {
             every { productInfo.getProductInfoByMatcode(goodInfo.matcode) } returns (getEtMatnrList(goodInfo))
-            mockkStatic("$EXT_PATH.ZmpUtz25V001Kt").apply {
-                every { barCodeInfo.getEanInfoFromMaterial(goodInfo.material) } returns (getEtEans(goodInfo))
-                mockkStatic("$EXT_PATH.ZmpUtz07V001Kt").apply {
-                    every { units.getUnitName(goodInfo.uom.code) } returns (goodInfo.uom.name)
-                    assertEquals(goodInfo, databaseRepo.getGoodInfoByMatcode(goodInfo.matcode))
-                }
-            }
+            every { barCodeInfo.getEanInfoFromMaterial(goodInfo.material) } returns (getEtEans(goodInfo))
+            every { units.getUnitName(goodInfo.uom.code) } returns (goodInfo.uom.name)
+            assertEquals(goodInfo, databaseRepo.getGoodInfoByMatcode(goodInfo.matcode))
         }
     }
 
@@ -215,25 +198,21 @@ internal class DatabaseRepoTest {
 
     @Test
     fun `Get facings param with hyper retail type`() = runBlocking {
-        mockkStatic("$EXT_PATH.ZmpUtz23V001Kt").apply {
+        mockkStatic("$EXT_PATH.ZmpUtz23V001Kt", "$EXT_PATH.ZmpUtz14V001Kt").apply {
             every { stores.getRetailType(marketNumber) } returns (StoreRetailType.HYPER.type)
-            mockkStatic("$EXT_PATH.ZmpUtz14V001Kt").apply {
-                every { settings.getFacingsHyperParam() } returns (null)
-                databaseRepo.getFacingsParam(marketNumber)
-                verify { settings.getFacingsHyperParam() }
-            }
+            every { settings.getFacingsHyperParam() } returns (null)
+            databaseRepo.getFacingsParam(marketNumber)
+            verify { settings.getFacingsHyperParam() }
         }
     }
 
     @Test
     fun `Get facings param with super retail type`() = runBlocking {
-        mockkStatic("$EXT_PATH.ZmpUtz23V001Kt").apply {
+        mockkStatic("$EXT_PATH.ZmpUtz23V001Kt", "$EXT_PATH.ZmpUtz14V001Kt").apply {
             every { stores.getRetailType(marketNumber) } returns (StoreRetailType.SUPER.type)
-            mockkStatic("$EXT_PATH.ZmpUtz14V001Kt").apply {
-                every { settings.getFacingsSuperParam() } returns (null)
-                databaseRepo.getFacingsParam(marketNumber)
-                verify { settings.getFacingsSuperParam() }
-            }
+            every { settings.getFacingsSuperParam() } returns (null)
+            databaseRepo.getFacingsParam(marketNumber)
+            verify { settings.getFacingsSuperParam() }
         }
     }
 
@@ -247,25 +226,21 @@ internal class DatabaseRepoTest {
 
     @Test
     fun `Get places param with hyper retail type`() = runBlocking {
-        mockkStatic("$EXT_PATH.ZmpUtz23V001Kt").apply {
+        mockkStatic("$EXT_PATH.ZmpUtz23V001Kt", "$EXT_PATH.ZmpUtz14V001Kt").apply {
             every { stores.getRetailType(marketNumber) } returns (StoreRetailType.HYPER.type)
-            mockkStatic("$EXT_PATH.ZmpUtz14V001Kt").apply {
-                every { settings.getPlacesHyperParam() } returns (null)
-                databaseRepo.getPlacesParam(marketNumber)
-                verify { settings.getPlacesHyperParam() }
-            }
+            every { settings.getPlacesHyperParam() } returns (null)
+            databaseRepo.getPlacesParam(marketNumber)
+            verify { settings.getPlacesHyperParam() }
         }
     }
 
     @Test
     fun `Get places param with super retail type`() = runBlocking {
-        mockkStatic("$EXT_PATH.ZmpUtz23V001Kt").apply {
+        mockkStatic("$EXT_PATH.ZmpUtz23V001Kt", "$EXT_PATH.ZmpUtz14V001Kt").apply {
             every { stores.getRetailType(marketNumber) } returns (StoreRetailType.SUPER.type)
-            mockkStatic("$EXT_PATH.ZmpUtz14V001Kt").apply {
-                every { settings.getPlacesSuperParam() } returns (null)
-                databaseRepo.getPlacesParam(marketNumber)
-                verify { settings.getPlacesSuperParam() }
-            }
+            every { settings.getPlacesSuperParam() } returns (null)
+            databaseRepo.getPlacesParam(marketNumber)
+            verify { settings.getPlacesSuperParam() }
         }
     }
 
