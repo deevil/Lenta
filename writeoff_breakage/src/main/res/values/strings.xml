@@ -28,7 +28,6 @@
     <string name="product_not_set">Продукт не принадлежит этому набору</string>
     <string name="limit_exceeded_alco_product">Количество этого товара достигло/превысило лимит. Товар будет порезан на несколько заданий при сохранении в SAP</string>
     <string name="goods_not_for_task">Вид\\тип товара не соответствует настройкам задания</string>
-    <string name="saved_data_detect_message">На устройстве обнаружены несохраненные данные. Перейти к данным?</string>
     <string name="select_task_type">Выберите тип задания</string>
     <string name="cannot_save_negative_quantity">Невозможно сохранить отрицательные количества</string>
     <string name="select_type_code_description">Введено 12 знаков. Какой код вы ввели?</string>

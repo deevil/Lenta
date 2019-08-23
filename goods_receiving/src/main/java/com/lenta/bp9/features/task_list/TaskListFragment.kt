@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import android.widget.AdapterView
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
+import androidx.lifecycle.Observer
 import com.lenta.bp9.BR
 import com.lenta.bp9.R
 import com.lenta.bp9.databinding.*
@@ -45,12 +46,16 @@ class TaskListFragment : CoreFragment<FragmentTaskListBinding, TaskListViewModel
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
         topToolbarUiModel.title.value = "${getString(R.string.tk)} - ${vm.tkNumber}"
         connectLiveData(vm.tasksCount.map { getString(R.string.task_list_count, it) }, topToolbarUiModel.description)
-
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.menu)
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.update)
+        viewLifecycleOwner.apply {
+            vm.selectedPage.observe(this, Observer {
+                bottomToolbarUiModel.uiModelButton5.show(if (it == 1) ButtonDecorationInfo.search else ButtonDecorationInfo.update)
+            })
+        }
     }
 
 
@@ -70,7 +75,7 @@ class TaskListFragment : CoreFragment<FragmentTaskListBinding, TaskListViewModel
     override fun onToolbarButtonClick(view: View) {
         when (view.id) {
             R.id.b_1 -> vm.onClickMenu()
-            R.id.b_5 -> vm.onClickUpdate()
+            R.id.b_5 -> vm.onClickRight()
         }
     }
 

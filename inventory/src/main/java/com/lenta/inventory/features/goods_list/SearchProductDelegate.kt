@@ -141,10 +141,7 @@ class SearchProductDelegate @Inject constructor(
                 }
             }
 
-            if (searchFromScan && taskProductInfo.type != ProductType.ExciseAlcohol && !taskProductInfo.isSet) {
-                taskManager.getInventoryTask()!!.taskRepository.getProducts().changeProduct(taskProductInfo.copy(factCount = infoResult.quantity + taskProductInfo.factCount))
-            }
-            openTaskProductScreen(taskProductInfo)
+            openTaskProductScreen(taskProductInfo, infoResult.quantity)
         }
     }
 
@@ -192,9 +189,9 @@ class SearchProductDelegate @Inject constructor(
         }
     }
 
-    fun openTaskProductScreen(taskProductInfo: TaskProductInfo) {
+    fun openTaskProductScreen(taskProductInfo: TaskProductInfo, initialCount: Double = 0.0) {
         when (taskProductInfo.type) {
-            ProductType.General -> screenNavigator.openGoodsInfoScreen(taskProductInfo)
+            ProductType.General -> screenNavigator.openGoodsInfoScreen(taskProductInfo, initialCount)
             ProductType.ExciseAlcohol -> {
                 if (taskProductInfo.isSet) {
                     screenNavigator.openSetsInfoScreen(taskProductInfo)
@@ -203,7 +200,7 @@ class SearchProductDelegate @Inject constructor(
                     Logg.d { "taskProductInfo: $taskProductInfo" }
                 screenNavigator.openExciseAlcoInfoScreen(taskProductInfo)
             }
-            else -> screenNavigator.openGoodsInfoScreen(taskProductInfo)
+            else -> screenNavigator.openGoodsInfoScreen(taskProductInfo, initialCount)
         }
     }
 }

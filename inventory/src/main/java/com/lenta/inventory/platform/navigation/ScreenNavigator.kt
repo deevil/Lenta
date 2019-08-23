@@ -94,9 +94,9 @@ class ScreenNavigator(
         }
     }
 
-    override fun openGoodsInfoScreen(productInfo: TaskProductInfo) {
+    override fun openGoodsInfoScreen(productInfo: TaskProductInfo, initialCount: Double) {
         runOrPostpone {
-            getFragmentStack()?.push(GoodsInfoFragment.create(productInfo))
+            getFragmentStack()?.push(GoodsInfoFragment.create(productInfo, initialCount))
         }
     }
 
@@ -360,7 +360,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openFastDataLoadingScreen()
     fun openSelectionPersonnelNumberScreen()
     fun openMainMenuScreen()
-    fun openGoodsInfoScreen(productInfo: TaskProductInfo)
+    fun openGoodsInfoScreen(productInfo: TaskProductInfo, initialCount: Double = 0.0)
     fun openGoodsDetailsStorageScreen(productInfo: TaskProductInfo)
     fun openGoodsListScreen(storePlaceNumber: String)
     fun openSetsInfoScreen(productInfo: TaskProductInfo)

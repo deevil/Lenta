@@ -8,6 +8,8 @@ import com.lenta.bp14.features.job_card.JobCardFragment
 import com.lenta.bp14.features.list_of_differences.ListOfDifferencesFragment
 import com.lenta.bp14.features.loading.fast.FastDataLoadingFragment
 import com.lenta.bp14.features.main_menu.MainMenuFragment
+import com.lenta.bp14.features.not_displayed_goods.NotDisplayedGoodsFragment
+import com.lenta.bp14.features.not_displayed_goods.NotDisplayedGoodsInfoFragment
 import com.lenta.bp14.features.price_check.good_info.GoodInfoPcFragment
 import com.lenta.bp14.features.price_check.goods_list.GoodsListPcFragment
 import com.lenta.bp14.features.print_settings.PrintSettingsFragment
@@ -15,7 +17,9 @@ import com.lenta.bp14.features.report_result.ReportResultFragment
 import com.lenta.bp14.features.select_market.SelectMarketFragment
 import com.lenta.bp14.features.task_list.TaskListFragment
 import com.lenta.bp14.features.work_list.details_of_goods.DetailsOfGoodsFragment
+import com.lenta.bp14.features.work_list.expected_deliveries.ExpectedDeliveriesFragment
 import com.lenta.bp14.features.work_list.goods_list.GoodsListWlFragment
+import com.lenta.bp14.features.work_list.sales_of_goods.SalesOfGoodsFragment
 import com.lenta.bp14.features.work_list.search_filter.SearchFilterWlFragment
 import com.lenta.shared.account.IAuthenticator
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
@@ -129,9 +133,33 @@ class ScreenNavigator(
         }
     }
 
+    override fun openExpectedDeliveriesScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(ExpectedDeliveriesFragment())
+        }
+    }
+
     override fun openSearchFilterWlScreen() {
         runOrPostpone {
             getFragmentStack()?.push(SearchFilterWlFragment())
+        }
+    }
+
+    override fun openSalesOfGoodsScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(SalesOfGoodsFragment())
+        }
+    }
+
+    override fun openNotDisplayedGoodsScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(NotDisplayedGoodsFragment())
+        }
+    }
+
+    override fun openNotDisplayedGoodsInfoScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(NotDisplayedGoodsInfoFragment())
         }
     }
 
@@ -157,4 +185,8 @@ interface IScreenNavigator : ICoreNavigator {
     fun openGoodInfoPcScreen()
     fun openGoodListPcScreen()
     fun openSearchFilterWlScreen()
+    fun openExpectedDeliveriesScreen()
+    fun openSalesOfGoodsScreen()
+    fun openNotDisplayedGoodsScreen()
+    fun openNotDisplayedGoodsInfoScreen()
 }

@@ -3,12 +3,14 @@ package com.lenta.bp9.platform.navigation
 import android.content.Context
 import androidx.core.content.ContextCompat
 import com.lenta.bp9.features.auth.AuthFragment
+import com.lenta.bp9.features.goods_list.GoodsListFragment
 import com.lenta.bp9.features.loading.tasks.LoadingTasksFragment
 import com.lenta.bp9.features.task_list.TaskListFragment
 import com.lenta.bp9.features.loading.tasks.TaskListLoadingMode
 import com.lenta.bp9.requests.TaskListSearchParams
 import com.lenta.bp9.features.loading.fast.FastDataLoadingFragment
 import com.lenta.bp9.features.main_menu.MainMenuFragment
+import com.lenta.bp9.features.search_task.SearchTaskFragment
 import com.lenta.bp9.features.select_market.SelectMarketFragment
 import com.lenta.bp9.features.select_personnel_number.SelectPersonnelNumberFragment
 import com.lenta.shared.R
@@ -85,6 +87,18 @@ class ScreenNavigator(
         )
     }
 
+    override fun openTaskSearchScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(SearchTaskFragment())
+        }
+    }
+
+    override fun openGoodsListScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(GoodsListFragment())
+        }
+    }
+
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 
 }
@@ -99,4 +113,6 @@ interface IScreenNavigator : ICoreNavigator {
     fun openFastDataLoadingScreen()
     fun openSelectionPersonnelNumberScreen()
     fun openAlertNotPermissions(message: String)
+    fun openTaskSearchScreen()
+    fun openGoodsListScreen()
 }

@@ -115,7 +115,7 @@ class GoodsDetailsStorageViewModel : CoreViewModel() {
                         taskRepository.getProducts().
                         getNotProcessedProducts().
                         filter {
-                            it.materialNumber == productInfo.value!!.materialNumber
+                            it.materialNumber == productInfo.value!!.materialNumber && it.placeCode != "00"
                         }.
                         mapIndexed { index, taskProductInfo ->
                             GoodsDetailsStorageItem(
@@ -135,13 +135,13 @@ class GoodsDetailsStorageViewModel : CoreViewModel() {
                         taskRepository.getProducts().
                         getProcessedProducts().
                         filter {
-                            it.materialNumber == productInfo.value!!.materialNumber
+                            it.materialNumber == productInfo.value!!.materialNumber && it.placeCode != "00"
                         }.
                         mapIndexed { index, taskProductInfo ->
                             GoodsDetailsStorageItem(
                                         number = index + 1,
                                         name = taskProductInfo.placeCode,
-                                        quantity = taskProductInfo.factCount.toStringFormatted(),
+                                        quantity = "${taskProductInfo.factCount.toStringFormatted()} ${taskProductInfo.uom.name}",
                                         even = index % 2 == 0
                     )
                 }.reversed()
