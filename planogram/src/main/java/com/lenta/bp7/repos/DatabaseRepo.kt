@@ -25,7 +25,7 @@ class DatabaseRepo(
         val units: ZmpUtz07V001 = ZmpUtz07V001(hyperHive), // Единицы измерения
         val settings: ZmpUtz14V001 = ZmpUtz14V001(hyperHive), // Настройки
         val stores: ZmpUtz23V001 = ZmpUtz23V001(hyperHive), // Список магазинов
-        val goodInfo: ZfmpUtz48V001 = ZfmpUtz48V001(hyperHive), // Информация о товаре
+        val productInfo: ZfmpUtz48V001 = ZfmpUtz48V001(hyperHive), // Информация о товаре
         val barCodeInfo: ZmpUtz25V001 = ZmpUtz25V001(hyperHive) // Информация о штрих-коде
 ) : IDatabaseRepo {
 
@@ -92,27 +92,27 @@ class DatabaseRepo(
         }
     }
 
-    override suspend fun getEanInfoByEan(barCode: String?): EanInfo? {
+    override suspend fun getEanInfoByEan(ean: String?): EanInfo? {
         return withContext(Dispatchers.IO) {
-            return@withContext barCodeInfo.getEanInfo(barCode)?.toEanInfo()
+            return@withContext barCodeInfo.getEanInfo(ean)?.toEanInfo()
         }
     }
 
-    override suspend fun getEanInfoByMaterial(sapCode: String?): EanInfo? {
+    override suspend fun getEanInfoByMaterial(material: String?): EanInfo? {
         return withContext(Dispatchers.IO) {
-            return@withContext barCodeInfo.getEanInfoFromMaterial(sapCode)?.toEanInfo()
+            return@withContext barCodeInfo.getEanInfoFromMaterial(material)?.toEanInfo()
         }
     }
 
     override suspend fun getProductInfoByMaterial(material: String?): ProductInfo? {
         return withContext(Dispatchers.IO) {
-            return@withContext goodInfo.getProductInfoByMaterial(material)?.toMaterialInfo()
+            return@withContext productInfo.getProductInfoByMaterial(material)?.toMaterialInfo()
         }
     }
 
     override suspend fun getProductInfoByMatcode(matcode: String?): ProductInfo? {
         return withContext(Dispatchers.IO) {
-            return@withContext goodInfo.getProductInfoByMatcode(matcode)?.toMaterialInfo()
+            return@withContext productInfo.getProductInfoByMatcode(matcode)?.toMaterialInfo()
         }
     }
 
@@ -145,7 +145,7 @@ class DatabaseRepo(
         return withContext(Dispatchers.IO) {
             when (getRetailType(marketNumber)) {
                 StoreRetailType.HYPER.type -> return@withContext settings.getPlacesHyperParam()
-                StoreRetailType.SUPER.type -> return@withContext settings.getFacingsSuperParam()
+                StoreRetailType.SUPER.type -> return@withContext settings.getPlacesSuperParam()
                 else -> {
                     Logg.d { "Store retail type unknown!" }
                     return@withContext Enabled.NO.type
@@ -179,8 +179,8 @@ interface IDatabaseRepo {
     suspend fun getPlacesParam(marketNumber: String?): String?
     suspend fun getSelfControlPinCode(): String?
     suspend fun getExternalAuditPinCode(): String?
-    suspend fun getEanInfoByEan(barCode: String?): EanInfo?
-    suspend fun getEanInfoByMaterial(sapCode: String?): EanInfo?
+    suspend fun getEanInfoByEan(ean: String?): EanInfo?
+    suspend fun getEanInfoByMaterial(material: String?): EanInfo?
     suspend fun getProductInfoByMaterial(material: String?): ProductInfo?
     suspend fun getProductInfoByMatcode(matcode: String?): ProductInfo?
     suspend fun getGoodUnitName(unitCode: String?): String?

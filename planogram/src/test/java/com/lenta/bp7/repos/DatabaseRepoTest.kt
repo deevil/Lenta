@@ -1,15 +1,19 @@
 package com.lenta.bp7.repos
 
-import com.lenta.shared.fmp.resources.dao_ext.getSelfControlPinCode
+import com.lenta.bp7.data.Enabled
+import com.lenta.bp7.data.StoreRetailType
+import com.lenta.bp7.data.model.EnteredCode
+import com.lenta.bp7.data.model.GoodInfo
+import com.lenta.shared.fmp.resources.dao_ext.*
 import com.lenta.shared.fmp.resources.fast.ZmpUtz07V001
 import com.lenta.shared.fmp.resources.fast.ZmpUtz14V001
 import com.lenta.shared.fmp.resources.fast.ZmpUtz23V001
 import com.lenta.shared.fmp.resources.slow.ZfmpUtz48V001
 import com.lenta.shared.fmp.resources.slow.ZmpUtz25V001
-import com.nhaarman.mockitokotlin2.mock
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkStatic
+import io.mockk.verify
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeAll
@@ -24,31 +28,216 @@ internal class DatabaseRepoTest {
     private lateinit var units: ZmpUtz07V001
     private lateinit var settings: ZmpUtz14V001
     private lateinit var stores: ZmpUtz23V001
-    private lateinit var goodInfo: ZfmpUtz48V001
+    private lateinit var productInfo: ZfmpUtz48V001
     private lateinit var barCodeInfo: ZmpUtz25V001
+
+    private val ean = "ean"
+    private val material = "material"
+    private val matcode = "matcode"
+    private val unitCode = "unitCode"
+    private val marketNumber = "0001"
 
     @BeforeAll
     fun setUpp() {
         units = mockk()
         settings = mockk()
         stores = mockk()
-        goodInfo = mockk()
+        productInfo = mockk()
         barCodeInfo = mockk()
 
         databaseRepo = DatabaseRepo(
-                hyperHive = mock(),
+                hyperHive = mockk(),
                 units = units,
                 settings = settings,
                 stores = stores,
-                goodInfo = goodInfo,
+                productInfo = productInfo,
                 barCodeInfo = barCodeInfo)
     }
 
     @Test
-    fun `Getting self control pin code`() = runBlocking {
-        mockkStatic("com.lenta.shared.fmp.resources.dao_ext.ZmpUtz14V001Kt").apply {
-            every { settings.getSelfControlPinCode() } returns ("1111")
-            assertEquals("1111", databaseRepo.getSelfControlPinCode())
+    fun `Get GoodInfo with unknown ean`() = runBlocking {
+        mockkStatic("com.lenta.shared.fmp.resources.dao_ext.ZmpUtz25V001Kt").apply {
+            every { barCodeInfo.getEanInfo(ean) } returns (null)
+            assertEquals(null, databaseRepo.getGoodInfoByEan(ean))
         }
     }
+
+    @Test
+    fun `Get GoodInfo by ean`() = runBlocking {
+        val goodInfo = GoodInfo(
+                ean = "12345678",
+                enteredCode = EnteredCode.EAN)
+
+        val localEtEans = ZmpUtz25V001.ItemLocal_ET_EANS()
+        localEtEans.ean = goodInfo.ean
+        localEtEans.material = goodInfo.material
+        localEtEans.uom = goodInfo.uom.code
+        localEtEans.umrez = 0.0
+        localEtEans.umren = 0.0
+
+        val localEtMatnrList = ZfmpUtz48V001.ItemLocal_ET_MATNR_LIST()
+        localEtMatnrList.material = goodInfo.material
+        localEtMatnrList.name = goodInfo.name
+        localEtMatnrList.matcode = goodInfo.matcode
+        localEtMatnrList.buom = goodInfo.uom.code
+
+        mockkStatic("com.lenta.shared.fmp.resources.dao_ext.ZmpUtz25V001Kt").apply {
+            every { barCodeInfo.getEanInfo(goodInfo.ean) } returns (localEtEans)
+            mockkStatic("com.lenta.shared.fmp.resources.dao_ext.ZfmpUtz48V001Kt").apply {
+                every { productInfo.getProductInfoByMaterial(goodInfo.material) } returns (localEtMatnrList)
+                mockkStatic("com.lenta.shared.fmp.resources.dao_ext.ZmpUtz07V001Kt").apply {
+                    every { units.getUnitName(goodInfo.uom.code) } returns (goodInfo.uom.name)
+                    assertEquals(goodInfo, databaseRepo.getGoodInfoByEan(goodInfo.ean))
+                }
+            }
+        }
+    }
+
+
+
+    @Test
+    fun `Get EanInfo by ean`() = runBlocking {
+        mockkStatic("com.lenta.shared.fmp.resources.dao_ext.ZmpUtz25V001Kt").apply {
+            every { barCodeInfo.getEanInfo(ean) } returns (null)
+            databaseRepo.getEanInfoByEan(ean)
+            verify { barCodeInfo.getEanInfo(ean) }
+        }
+    }
+
+    @Test
+    fun `Get EanInfo by material`() = runBlocking {
+        mockkStatic("com.lenta.shared.fmp.resources.dao_ext.ZmpUtz25V001Kt").apply {
+            every { barCodeInfo.getEanInfoFromMaterial(material) } returns (null)
+            databaseRepo.getEanInfoByMaterial(material)
+            verify { barCodeInfo.getEanInfoFromMaterial(material) }
+        }
+    }
+
+    @Test
+    fun `Get ProductInfo by material`() = runBlocking {
+        mockkStatic("com.lenta.shared.fmp.resources.dao_ext.ZfmpUtz48V001Kt").apply {
+            every { productInfo.getProductInfoByMaterial(material) } returns (null)
+            databaseRepo.getProductInfoByMaterial(material)
+            verify { productInfo.getProductInfoByMaterial(material) }
+        }
+    }
+
+    @Test
+    fun `Get ProductInfo by matcode`() = runBlocking {
+        mockkStatic("com.lenta.shared.fmp.resources.dao_ext.ZfmpUtz48V001Kt").apply {
+            every { productInfo.getProductInfoByMatcode(matcode) } returns (null)
+            databaseRepo.getProductInfoByMatcode(matcode)
+            verify { productInfo.getProductInfoByMatcode(matcode) }
+        }
+    }
+
+    @Test
+    fun `Get good unit name`() = runBlocking {
+        mockkStatic("com.lenta.shared.fmp.resources.dao_ext.ZmpUtz07V001Kt").apply {
+            every { units.getUnitName(unitCode) } returns (null)
+            databaseRepo.getGoodUnitName(unitCode)
+            verify { units.getUnitName(unitCode) }
+        }
+    }
+
+    @Test
+    fun `Get store retail type`() = runBlocking {
+        mockkStatic("com.lenta.shared.fmp.resources.dao_ext.ZmpUtz23V001Kt").apply {
+            every { stores.getRetailType(marketNumber) } returns (null)
+            databaseRepo.getRetailType(marketNumber)
+            verify { stores.getRetailType(marketNumber) }
+        }
+    }
+
+    @Test
+    fun `Get facings param with hyper retail type`() = runBlocking {
+        mockkStatic("com.lenta.shared.fmp.resources.dao_ext.ZmpUtz23V001Kt").apply {
+            every { stores.getRetailType(marketNumber) } returns (StoreRetailType.HYPER.type)
+            mockkStatic("com.lenta.shared.fmp.resources.dao_ext.ZmpUtz14V001Kt").apply {
+                every { settings.getFacingsHyperParam() } returns (null)
+                databaseRepo.getFacingsParam(marketNumber)
+                verify { settings.getFacingsHyperParam() }
+            }
+        }
+    }
+
+    @Test
+    fun `Get facings param with super retail type`() = runBlocking {
+        mockkStatic("com.lenta.shared.fmp.resources.dao_ext.ZmpUtz23V001Kt").apply {
+            every { stores.getRetailType(marketNumber) } returns (StoreRetailType.SUPER.type)
+            mockkStatic("com.lenta.shared.fmp.resources.dao_ext.ZmpUtz14V001Kt").apply {
+                every { settings.getFacingsSuperParam() } returns (null)
+                databaseRepo.getFacingsParam(marketNumber)
+                verify { settings.getFacingsSuperParam() }
+            }
+        }
+    }
+
+    @Test
+    fun `Get facings param with unknown retail type`() = runBlocking {
+        mockkStatic("com.lenta.shared.fmp.resources.dao_ext.ZmpUtz23V001Kt").apply {
+            every { stores.getRetailType(marketNumber) } returns ("U")
+            assertEquals(Enabled.NO.type, databaseRepo.getFacingsParam(marketNumber))
+        }
+    }
+
+    @Test
+    fun `Get places param with hyper retail type`() = runBlocking {
+        mockkStatic("com.lenta.shared.fmp.resources.dao_ext.ZmpUtz23V001Kt").apply {
+            every { stores.getRetailType(marketNumber) } returns (StoreRetailType.HYPER.type)
+            mockkStatic("com.lenta.shared.fmp.resources.dao_ext.ZmpUtz14V001Kt").apply {
+                every { settings.getPlacesHyperParam() } returns (null)
+                databaseRepo.getPlacesParam(marketNumber)
+                verify { settings.getPlacesHyperParam() }
+            }
+        }
+    }
+
+    @Test
+    fun `Get places param with super retail type`() = runBlocking {
+        mockkStatic("com.lenta.shared.fmp.resources.dao_ext.ZmpUtz23V001Kt").apply {
+            every { stores.getRetailType(marketNumber) } returns (StoreRetailType.SUPER.type)
+            mockkStatic("com.lenta.shared.fmp.resources.dao_ext.ZmpUtz14V001Kt").apply {
+                every { settings.getPlacesSuperParam() } returns (null)
+                databaseRepo.getPlacesParam(marketNumber)
+                verify { settings.getPlacesSuperParam() }
+            }
+        }
+    }
+
+    @Test
+    fun `Get places param with unknown retail type`() = runBlocking {
+        mockkStatic("com.lenta.shared.fmp.resources.dao_ext.ZmpUtz23V001Kt").apply {
+            every { stores.getRetailType(marketNumber) } returns ("U")
+            assertEquals(Enabled.NO.type, databaseRepo.getPlacesParam(marketNumber))
+        }
+    }
+
+    @Test
+    fun `Get self control pin code`() = runBlocking {
+        mockkStatic("com.lenta.shared.fmp.resources.dao_ext.ZmpUtz14V001Kt").apply {
+            every { settings.getSelfControlPinCode() } returns (null)
+            databaseRepo.getSelfControlPinCode()
+            verify { settings.getSelfControlPinCode() }
+        }
+    }
+
+    @Test
+    fun `Get external audit pin code`() = runBlocking {
+        mockkStatic("com.lenta.shared.fmp.resources.dao_ext.ZmpUtz14V001Kt").apply {
+            every { settings.getExternalAuditPinCode() } returns (null)
+            databaseRepo.getExternalAuditPinCode()
+            verify { settings.getExternalAuditPinCode() }
+        }
+    }
+
+    @Test
+    fun `Get allowed app version`() = runBlocking {
+        mockkStatic("com.lenta.shared.fmp.resources.dao_ext.ZmpUtz14V001Kt").apply {
+            every { settings.getAllowedPleAppVersion() } returns (null)
+            databaseRepo.getAllowedAppVersion()
+            verify { settings.getAllowedPleAppVersion() }
+        }
+    }
+
 }
