@@ -68,10 +68,10 @@ abstract class CoreMainViewModel : CoreViewModel() {
                 autoExitTimeInMinutes = withContext(Dispatchers.IO) {
                     if (defaultSettingsManager.isDefaultSettingsChanged()) {
                         coreNavigator.openChangedDefaultSettingsAlert(
-                                {
+                                noCallback = {
                                     defaultSettingsManager.saveLastDefaultSettingsToSettings()
                                 },
-                                {
+                                yesCallback = {
                                     defaultSettingsManager.setNewDefaultSettings()
                                     preparingForExit()
                                     coreNavigator.finishApp(restart = true)

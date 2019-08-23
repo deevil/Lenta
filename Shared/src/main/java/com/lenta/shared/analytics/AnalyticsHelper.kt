@@ -8,10 +8,12 @@ import android.widget.TextView
 import com.lenta.shared.R
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.network_state.NetworkInfo
+import com.lenta.shared.settings.IAppSettings
 import com.lenta.shared.utilities.extentions.implementationOf
 import com.mobrun.plugin.models.BaseStatus
 
 class AnalyticsHelper(
+        private val appSettings: IAppSettings,
         private val analytics: IAnalytics,
         private val context: Context) {
 
@@ -22,8 +24,9 @@ class AnalyticsHelper(
 
     fun logAppInfo() {
         analytics.logTrace(message = context.packageManager?.getPackageInfo(context.packageName, 0)?.let { packageInfo ->
-            "app: ${packageInfo.packageName}, v:${packageInfo.versionName}"
+            "Приложение: ${packageInfo.packageName}, версия:${packageInfo.versionName}"
         } ?: "")
+        analytics.logTrace(message = "сервер: ${appSettings.getCurrentServerAddress()}, среда: ${appSettings.getCurrentEnvironment()}")
     }
 
     @SuppressLint("HardwareIds")
