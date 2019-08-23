@@ -26,19 +26,20 @@ class AppUpdateCheckerTest {
 
         val appUpdateChecker = AppUpdateChecker(context)
 
-        assertTrue(appUpdateChecker.isNeedUpdate("10.0.165", "10.0.164"))
-        assertTrue(appUpdateChecker.isNeedUpdate("10.0.165", "9.99.999"))
-        assertTrue(appUpdateChecker.isNeedUpdate("10.0.165", "9.999.999"))
-        assertTrue(appUpdateChecker.isNeedUpdate("10.7.0.1", "10.0.165"))
+        assertTrue(appUpdateChecker.isNeedUpdate("10.0.165", "10.0.164.29bd1"))
+        assertTrue(appUpdateChecker.isNeedUpdate("10.0.165", "10.0.164.29bd1"))
+        assertTrue(appUpdateChecker.isNeedUpdate("10.0.165", "9.99.999.29bd1"))
+        assertTrue(appUpdateChecker.isNeedUpdate("10.0.165", "9.999.999.29bd1"))
+        assertTrue(appUpdateChecker.isNeedUpdate("10.7.0.1", "10.0.165.29bd1"))
 
-        assertFalse(appUpdateChecker.isNeedUpdate("10.0.165", "10.0.165"))
-        assertFalse(appUpdateChecker.isNeedUpdate("10.0.165", "10.0.166"))
-        assertFalse(appUpdateChecker.isNeedUpdate("10.0.165", "11.0.0"))
-        assertFalse(appUpdateChecker.isNeedUpdate("10.0.165", "10.1.0"))
+        assertFalse(appUpdateChecker.isNeedUpdate("10.0.165", "10.0.165.29bd1"))
+        assertFalse(appUpdateChecker.isNeedUpdate("10.0.165", "10.0.166.29bd1"))
+        assertFalse(appUpdateChecker.isNeedUpdate("10.0.165", "11.0.0.29bd1"))
+        assertFalse(appUpdateChecker.isNeedUpdate("10.0.165", "10.1.0.29bd1"))
 
 
         mockkObject(appUpdateChecker)
-        every {appUpdateChecker.getCurrentVersionAppName()} returns "10.0.164"
+        every {appUpdateChecker.getCurrentVersionAppName()} returns "10.0.164.29bd1"
 
         assertTrue(appUpdateChecker.isNeedUpdate("10.7.0.1"))
         assertTrue(appUpdateChecker.isNeedUpdate("10.0.165"))

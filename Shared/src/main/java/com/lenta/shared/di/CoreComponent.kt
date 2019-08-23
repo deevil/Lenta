@@ -37,6 +37,7 @@ import com.lenta.shared.progress.IProgressUseCaseInformator
 import com.lenta.shared.requests.FmpRequestsHelper
 import com.lenta.shared.requests.combined.scan_info.ScanInfoRequest
 import com.lenta.shared.scan.IScanHelper
+import com.lenta.shared.settings.DefaultSettingsManager
 import com.lenta.shared.settings.IAppSettings
 import com.lenta.shared.utilities.databinding.DataBindingExtHolder
 import com.mobrun.plugin.api.HyperHive
@@ -76,6 +77,7 @@ interface CoreComponent {
     fun getFmpRequestsHelper(): FmpRequestsHelper
     fun getLockManager(): LockManager
     fun getDeviceInfo(): DeviceInfo
+    fun getDefaultSettingsManager(): DefaultSettingsManager
 
 
     fun inject(it: FmpSettingsViewModel)
