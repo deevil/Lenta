@@ -23,6 +23,10 @@ import org.junit.jupiter.api.TestInstance
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 internal class DatabaseRepoTest {
 
+    companion object {
+        const val EXT_PATH = "com.lenta.shared.fmp.resources.dao_ext"
+    }
+
     private lateinit var databaseRepo: IDatabaseRepo
 
     private lateinit var units: ZmpUtz07V001
@@ -54,9 +58,36 @@ internal class DatabaseRepoTest {
                 barCodeInfo = barCodeInfo)
     }
 
+    private fun getGoodInfo(enteredCode: EnteredCode): GoodInfo {
+        return GoodInfo(
+                ean = "12345678",
+                material = "000000000000123456",
+                matcode = "123456789012",
+                enteredCode = enteredCode)
+    }
+
+    private fun getEtEans(goodInfo: GoodInfo): ZmpUtz25V001.ItemLocal_ET_EANS {
+        val etEans = ZmpUtz25V001.ItemLocal_ET_EANS()
+        etEans.ean = goodInfo.ean
+        etEans.material = goodInfo.material
+        etEans.uom = goodInfo.uom.code
+        etEans.umrez = 0.0
+        etEans.umren = 0.0
+        return etEans
+    }
+
+    private fun getEtMatnrList(goodInfo: GoodInfo): ZfmpUtz48V001.ItemLocal_ET_MATNR_LIST {
+        val etMatnrList = ZfmpUtz48V001.ItemLocal_ET_MATNR_LIST()
+        etMatnrList.material = goodInfo.material
+        etMatnrList.name = goodInfo.name
+        etMatnrList.matcode = goodInfo.matcode
+        etMatnrList.buom = goodInfo.uom.code
+        return etMatnrList
+    }
+
     @Test
     fun `Get GoodInfo with unknown ean`() = runBlocking {
-        mockkStatic("com.lenta.shared.fmp.resources.dao_ext.ZmpUtz25V001Kt").apply {
+        mockkStatic("$EXT_PATH.ZmpUtz25V001Kt").apply {
             every { barCodeInfo.getEanInfo(ean) } returns (null)
             assertEquals(null, databaseRepo.getGoodInfoByEan(ean))
         }
@@ -64,28 +95,13 @@ internal class DatabaseRepoTest {
 
     @Test
     fun `Get GoodInfo by ean`() = runBlocking {
-        val goodInfo = GoodInfo(
-                ean = "12345678",
-                enteredCode = EnteredCode.EAN)
+        val goodInfo = getGoodInfo(EnteredCode.EAN)
 
-        val localEtEans = ZmpUtz25V001.ItemLocal_ET_EANS()
-        localEtEans.ean = goodInfo.ean
-        localEtEans.material = goodInfo.material
-        localEtEans.uom = goodInfo.uom.code
-        localEtEans.umrez = 0.0
-        localEtEans.umren = 0.0
-
-        val localEtMatnrList = ZfmpUtz48V001.ItemLocal_ET_MATNR_LIST()
-        localEtMatnrList.material = goodInfo.material
-        localEtMatnrList.name = goodInfo.name
-        localEtMatnrList.matcode = goodInfo.matcode
-        localEtMatnrList.buom = goodInfo.uom.code
-
-        mockkStatic("com.lenta.shared.fmp.resources.dao_ext.ZmpUtz25V001Kt").apply {
-            every { barCodeInfo.getEanInfo(goodInfo.ean) } returns (localEtEans)
-            mockkStatic("com.lenta.shared.fmp.resources.dao_ext.ZfmpUtz48V001Kt").apply {
-                every { productInfo.getProductInfoByMaterial(goodInfo.material) } returns (localEtMatnrList)
-                mockkStatic("com.lenta.shared.fmp.resources.dao_ext.ZmpUtz07V001Kt").apply {
+        mockkStatic("$EXT_PATH.ZmpUtz25V001Kt").apply {
+            every { barCodeInfo.getEanInfo(goodInfo.ean) } returns (getEtEans(goodInfo))
+            mockkStatic("$EXT_PATH.ZfmpUtz48V001Kt").apply {
+                every { productInfo.getProductInfoByMaterial(goodInfo.material) } returns (getEtMatnrList(goodInfo))
+                mockkStatic("$EXT_PATH.ZmpUtz07V001Kt").apply {
                     every { units.getUnitName(goodInfo.uom.code) } returns (goodInfo.uom.name)
                     assertEquals(goodInfo, databaseRepo.getGoodInfoByEan(goodInfo.ean))
                 }
@@ -93,11 +109,59 @@ internal class DatabaseRepoTest {
         }
     }
 
+    @Test
+    fun `Get GoodInfo with unknown material`() = runBlocking {
+        mockkStatic("$EXT_PATH.ZfmpUtz48V001Kt").apply {
+            every { productInfo.getProductInfoByMaterial(material) } returns (null)
+            assertEquals(null, databaseRepo.getGoodInfoByMaterial(material))
+        }
+    }
 
+    @Test
+    fun `Get GoodInfo by material`() = runBlocking {
+        val goodInfo = getGoodInfo(EnteredCode.MATERIAL)
+
+        mockkStatic("$EXT_PATH.ZfmpUtz48V001Kt").apply {
+            every { productInfo.getProductInfoByMaterial(goodInfo.material) } returns (getEtMatnrList(goodInfo))
+            mockkStatic("$EXT_PATH.ZmpUtz25V001Kt").apply {
+                every { barCodeInfo.getEanInfoFromMaterial(goodInfo.material) } returns (getEtEans(goodInfo))
+                mockkStatic("$EXT_PATH.ZmpUtz07V001Kt").apply {
+                    every { units.getUnitName(goodInfo.uom.code) } returns (goodInfo.uom.name)
+
+
+                    assertEquals(goodInfo, databaseRepo.getGoodInfoByMaterial(goodInfo.material))
+                }
+            }
+        }
+    }
+
+    @Test
+    fun `Get GoodInfo with unknown matcode`() = runBlocking {
+        mockkStatic("$EXT_PATH.ZfmpUtz48V001Kt").apply {
+            every { productInfo.getProductInfoByMatcode(matcode) } returns (null)
+            assertEquals(null, databaseRepo.getGoodInfoByMatcode(matcode))
+        }
+    }
+
+    @Test
+    fun `Get GoodInfo by matcode`() = runBlocking {
+        val goodInfo = getGoodInfo(EnteredCode.MATCODE)
+
+        mockkStatic("$EXT_PATH.ZfmpUtz48V001Kt").apply {
+            every { productInfo.getProductInfoByMatcode(goodInfo.matcode) } returns (getEtMatnrList(goodInfo))
+            mockkStatic("$EXT_PATH.ZmpUtz25V001Kt").apply {
+                every { barCodeInfo.getEanInfoFromMaterial(goodInfo.material) } returns (getEtEans(goodInfo))
+                mockkStatic("$EXT_PATH.ZmpUtz07V001Kt").apply {
+                    every { units.getUnitName(goodInfo.uom.code) } returns (goodInfo.uom.name)
+                    assertEquals(goodInfo, databaseRepo.getGoodInfoByMatcode(goodInfo.matcode))
+                }
+            }
+        }
+    }
 
     @Test
     fun `Get EanInfo by ean`() = runBlocking {
-        mockkStatic("com.lenta.shared.fmp.resources.dao_ext.ZmpUtz25V001Kt").apply {
+        mockkStatic("$EXT_PATH.ZmpUtz25V001Kt").apply {
             every { barCodeInfo.getEanInfo(ean) } returns (null)
             databaseRepo.getEanInfoByEan(ean)
             verify { barCodeInfo.getEanInfo(ean) }
@@ -106,7 +170,7 @@ internal class DatabaseRepoTest {
 
     @Test
     fun `Get EanInfo by material`() = runBlocking {
-        mockkStatic("com.lenta.shared.fmp.resources.dao_ext.ZmpUtz25V001Kt").apply {
+        mockkStatic("$EXT_PATH.ZmpUtz25V001Kt").apply {
             every { barCodeInfo.getEanInfoFromMaterial(material) } returns (null)
             databaseRepo.getEanInfoByMaterial(material)
             verify { barCodeInfo.getEanInfoFromMaterial(material) }
@@ -115,7 +179,7 @@ internal class DatabaseRepoTest {
 
     @Test
     fun `Get ProductInfo by material`() = runBlocking {
-        mockkStatic("com.lenta.shared.fmp.resources.dao_ext.ZfmpUtz48V001Kt").apply {
+        mockkStatic("$EXT_PATH.ZfmpUtz48V001Kt").apply {
             every { productInfo.getProductInfoByMaterial(material) } returns (null)
             databaseRepo.getProductInfoByMaterial(material)
             verify { productInfo.getProductInfoByMaterial(material) }
@@ -124,7 +188,7 @@ internal class DatabaseRepoTest {
 
     @Test
     fun `Get ProductInfo by matcode`() = runBlocking {
-        mockkStatic("com.lenta.shared.fmp.resources.dao_ext.ZfmpUtz48V001Kt").apply {
+        mockkStatic("$EXT_PATH.ZfmpUtz48V001Kt").apply {
             every { productInfo.getProductInfoByMatcode(matcode) } returns (null)
             databaseRepo.getProductInfoByMatcode(matcode)
             verify { productInfo.getProductInfoByMatcode(matcode) }
@@ -133,7 +197,7 @@ internal class DatabaseRepoTest {
 
     @Test
     fun `Get good unit name`() = runBlocking {
-        mockkStatic("com.lenta.shared.fmp.resources.dao_ext.ZmpUtz07V001Kt").apply {
+        mockkStatic("$EXT_PATH.ZmpUtz07V001Kt").apply {
             every { units.getUnitName(unitCode) } returns (null)
             databaseRepo.getGoodUnitName(unitCode)
             verify { units.getUnitName(unitCode) }
@@ -142,7 +206,7 @@ internal class DatabaseRepoTest {
 
     @Test
     fun `Get store retail type`() = runBlocking {
-        mockkStatic("com.lenta.shared.fmp.resources.dao_ext.ZmpUtz23V001Kt").apply {
+        mockkStatic("$EXT_PATH.ZmpUtz23V001Kt").apply {
             every { stores.getRetailType(marketNumber) } returns (null)
             databaseRepo.getRetailType(marketNumber)
             verify { stores.getRetailType(marketNumber) }
@@ -151,9 +215,9 @@ internal class DatabaseRepoTest {
 
     @Test
     fun `Get facings param with hyper retail type`() = runBlocking {
-        mockkStatic("com.lenta.shared.fmp.resources.dao_ext.ZmpUtz23V001Kt").apply {
+        mockkStatic("$EXT_PATH.ZmpUtz23V001Kt").apply {
             every { stores.getRetailType(marketNumber) } returns (StoreRetailType.HYPER.type)
-            mockkStatic("com.lenta.shared.fmp.resources.dao_ext.ZmpUtz14V001Kt").apply {
+            mockkStatic("$EXT_PATH.ZmpUtz14V001Kt").apply {
                 every { settings.getFacingsHyperParam() } returns (null)
                 databaseRepo.getFacingsParam(marketNumber)
                 verify { settings.getFacingsHyperParam() }
@@ -163,9 +227,9 @@ internal class DatabaseRepoTest {
 
     @Test
     fun `Get facings param with super retail type`() = runBlocking {
-        mockkStatic("com.lenta.shared.fmp.resources.dao_ext.ZmpUtz23V001Kt").apply {
+        mockkStatic("$EXT_PATH.ZmpUtz23V001Kt").apply {
             every { stores.getRetailType(marketNumber) } returns (StoreRetailType.SUPER.type)
-            mockkStatic("com.lenta.shared.fmp.resources.dao_ext.ZmpUtz14V001Kt").apply {
+            mockkStatic("$EXT_PATH.ZmpUtz14V001Kt").apply {
                 every { settings.getFacingsSuperParam() } returns (null)
                 databaseRepo.getFacingsParam(marketNumber)
                 verify { settings.getFacingsSuperParam() }
@@ -175,7 +239,7 @@ internal class DatabaseRepoTest {
 
     @Test
     fun `Get facings param with unknown retail type`() = runBlocking {
-        mockkStatic("com.lenta.shared.fmp.resources.dao_ext.ZmpUtz23V001Kt").apply {
+        mockkStatic("$EXT_PATH.ZmpUtz23V001Kt").apply {
             every { stores.getRetailType(marketNumber) } returns ("U")
             assertEquals(Enabled.NO.type, databaseRepo.getFacingsParam(marketNumber))
         }
@@ -183,9 +247,9 @@ internal class DatabaseRepoTest {
 
     @Test
     fun `Get places param with hyper retail type`() = runBlocking {
-        mockkStatic("com.lenta.shared.fmp.resources.dao_ext.ZmpUtz23V001Kt").apply {
+        mockkStatic("$EXT_PATH.ZmpUtz23V001Kt").apply {
             every { stores.getRetailType(marketNumber) } returns (StoreRetailType.HYPER.type)
-            mockkStatic("com.lenta.shared.fmp.resources.dao_ext.ZmpUtz14V001Kt").apply {
+            mockkStatic("$EXT_PATH.ZmpUtz14V001Kt").apply {
                 every { settings.getPlacesHyperParam() } returns (null)
                 databaseRepo.getPlacesParam(marketNumber)
                 verify { settings.getPlacesHyperParam() }
@@ -195,9 +259,9 @@ internal class DatabaseRepoTest {
 
     @Test
     fun `Get places param with super retail type`() = runBlocking {
-        mockkStatic("com.lenta.shared.fmp.resources.dao_ext.ZmpUtz23V001Kt").apply {
+        mockkStatic("$EXT_PATH.ZmpUtz23V001Kt").apply {
             every { stores.getRetailType(marketNumber) } returns (StoreRetailType.SUPER.type)
-            mockkStatic("com.lenta.shared.fmp.resources.dao_ext.ZmpUtz14V001Kt").apply {
+            mockkStatic("$EXT_PATH.ZmpUtz14V001Kt").apply {
                 every { settings.getPlacesSuperParam() } returns (null)
                 databaseRepo.getPlacesParam(marketNumber)
                 verify { settings.getPlacesSuperParam() }
@@ -207,7 +271,7 @@ internal class DatabaseRepoTest {
 
     @Test
     fun `Get places param with unknown retail type`() = runBlocking {
-        mockkStatic("com.lenta.shared.fmp.resources.dao_ext.ZmpUtz23V001Kt").apply {
+        mockkStatic("$EXT_PATH.ZmpUtz23V001Kt").apply {
             every { stores.getRetailType(marketNumber) } returns ("U")
             assertEquals(Enabled.NO.type, databaseRepo.getPlacesParam(marketNumber))
         }
@@ -215,7 +279,7 @@ internal class DatabaseRepoTest {
 
     @Test
     fun `Get self control pin code`() = runBlocking {
-        mockkStatic("com.lenta.shared.fmp.resources.dao_ext.ZmpUtz14V001Kt").apply {
+        mockkStatic("$EXT_PATH.ZmpUtz14V001Kt").apply {
             every { settings.getSelfControlPinCode() } returns (null)
             databaseRepo.getSelfControlPinCode()
             verify { settings.getSelfControlPinCode() }
@@ -224,7 +288,7 @@ internal class DatabaseRepoTest {
 
     @Test
     fun `Get external audit pin code`() = runBlocking {
-        mockkStatic("com.lenta.shared.fmp.resources.dao_ext.ZmpUtz14V001Kt").apply {
+        mockkStatic("$EXT_PATH.ZmpUtz14V001Kt").apply {
             every { settings.getExternalAuditPinCode() } returns (null)
             databaseRepo.getExternalAuditPinCode()
             verify { settings.getExternalAuditPinCode() }
@@ -233,7 +297,7 @@ internal class DatabaseRepoTest {
 
     @Test
     fun `Get allowed app version`() = runBlocking {
-        mockkStatic("com.lenta.shared.fmp.resources.dao_ext.ZmpUtz14V001Kt").apply {
+        mockkStatic("$EXT_PATH.ZmpUtz14V001Kt").apply {
             every { settings.getAllowedPleAppVersion() } returns (null)
             databaseRepo.getAllowedAppVersion()
             verify { settings.getAllowedPleAppVersion() }
