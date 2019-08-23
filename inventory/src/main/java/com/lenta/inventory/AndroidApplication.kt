@@ -6,18 +6,20 @@ import com.lenta.inventory.models.task.IInventoryTaskManager
 import com.lenta.shared.CoreApplication
 import com.lenta.shared.settings.DefaultConnectionSettings
 import javax.inject.Inject
+import com.lenta.shared.utilities.Logg
 
 class AndroidApplication : CoreApplication() {
     override fun getDefaultConnectionSettings(): DefaultConnectionSettings {
+        Logg.d { "default serverAddress: ${getString(R.string.ds_serverAddress)}"}
         return DefaultConnectionSettings(
-                serverAddress = "http://9.6.24.46",
-                environment = "Lenta_LRQ",
-                project = "PR_SHARED",
-                testServerAddress = "http://9.6.24.46",
-                testEnvironment = "Lenta_LRQ",
-                testProject = "PR_SHARED",
-                techLogin = "MAKAROV",
-                techPassword = "1q2w3e4r"
+                serverAddress = getString(R.string.ds_serverAddress),
+                environment = getString(R.string.ds_environment),
+                project = getString(R.string.ds_project),
+                testServerAddress = getString(R.string.ds_testServerAddress),
+                testEnvironment = getString(R.string.ds_testEnvironment),
+                testProject = getString(R.string.ds_testProject),
+                techLogin = getString(R.string.ds_techLogin),
+                techPassword = getString(R.string.ds_techPassword)
         )
     }
 
