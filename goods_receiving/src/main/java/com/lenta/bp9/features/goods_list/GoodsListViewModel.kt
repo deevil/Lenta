@@ -8,6 +8,7 @@ import com.lenta.bp9.platform.navigation.ScreenNavigator
 import com.lenta.bp9.requests.network.DirectSupplierStarRecountParams
 import com.lenta.bp9.requests.network.DirectSupplierStarRecountRestInfo
 import com.lenta.bp9.requests.network.DirectSupplierStartRecountNetRequest
+import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.databinding.PageSelectionListener
@@ -58,6 +59,7 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
 
     //todo удалить
     private fun testDataSuccess(restInfo: DirectSupplierStarRecountRestInfo) {
+        Logg.d { "test ${restInfo.taskComposition.size}" }
 
     }
 

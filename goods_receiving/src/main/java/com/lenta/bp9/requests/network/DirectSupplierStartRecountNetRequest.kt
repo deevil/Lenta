@@ -1,17 +1,12 @@
 package com.lenta.bp9.requests.network
 
-import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
-import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.fmp.ObjectRawStatus
-import com.lenta.shared.fmp.toFmpObjectRawStatusEither
 import com.lenta.shared.functional.Either
 import com.lenta.shared.interactor.UseCase
+import com.lenta.shared.models.core.Manufacturer
 import com.lenta.shared.requests.FmpRequestsHelper
-import com.lenta.shared.utilities.Logg
-import com.mobrun.plugin.api.HyperHive
-import com.mobrun.plugin.api.callparams.WebCallParams
 import javax.inject.Inject
 
 class DirectSupplierStartRecountNetRequest
@@ -20,26 +15,6 @@ class DirectSupplierStartRecountNetRequest
         return fmpRequestsHelper.restRequest("ZMP_UTZ_GRZ_11_V001", params, DirectSupplierStarRecountStatus::class.java)
     }
 }
-
-/**class DirectSupplierStartRecountNetRequest
-@Inject constructor(private val hyperHive: HyperHive, private val gson: Gson, private val sessionInfo: ISessionInfo) : UseCase<DirectSupplierStarRecountRestInfo, DirectSupplierStarRecountParams>() {
-    override suspend fun run(params: DirectSupplierStarRecountParams): Either<Failure, DirectSupplierStarRecountRestInfo> {
-
-        val webCallParams = WebCallParams().apply {
-        data = gson.toJson(params)
-        headers = mapOf(
-        "X-SUP-DOMAIN" to "DM-MAIN",
-        "Content-Type" to "application/json",
-        "Web-Authorization" to sessionInfo.basicAuth
-        )
-        }
-
-        val resString = hyperHive.requestAPI.web("ZMP_UTZ_GRZ_11_V001", webCallParams). execute()
-        Logg.d { "resString: $resString" }
-
-        return hyperHive.requestAPI.web("ZMP_UTZ_100_V001", webCallParams).execute().toFmpObjectRawStatusEither(DirectSupplierStarRecountStatus::class.java, gson)
-    }
-}*/
 
 data class DirectSupplierStarRecountParams(
         @SerializedName("IV_TASK_NUM")
@@ -60,15 +35,15 @@ class DirectSupplierStarRecountStatus : ObjectRawStatus<DirectSupplierStarRecoun
 
 data class DirectSupplierStarRecountRestInfo(
         @SerializedName("ET_TASK_POS") //Таблица состава задания ППП	ZTT_GRZ_TASK_DS_POS_EXCH
-        val taskComposition: String,
+        val taskComposition: List<TaskComposition>,
         @SerializedName("ET_TASK_DIFF") //Таблица расхождений по товару	ZTT_GRZ_TASK_DIF_EXCH
-        val productDiscrepancies: List<List<String>>,
+        val productDiscrepancies: List<ProductDiscrepancies>,
         @SerializedName("ET_TASK_PARTS") //Таблица партий задания	ZTT_GRZ_TASK_PARTS_EXCH
-        val taskParty: String,
+        val taskBatch: List<TaskBatch>,
         @SerializedName("ET_PARTS_DIFF") //Таблица расхождений по партиям	ZTT_GRZ_PARTS_DIF_EXCH
-        val partyDiscrepancies: String,
+        val batchDiscrepancies: List<BatchDiscrepancies>,
         @SerializedName("ET_PROD_TEXT") //Таблица названий производителей	ZTT_GRZ_PROD_TEXT
-        val manufacturersNames: String,
+        val manufacturers: List<Manufacturer>,
         @SerializedName("ET_TASK_SETS") //список наборов
         val taskSets: String,
         @SerializedName("ET_TASK_BOX") //список коробок задания
@@ -93,4 +68,64 @@ data class DirectSupplierStarRecountRestInfo(
         val retcode: String,
         @SerializedName("EV_ERROR_TEXT")
         val errorText: String
+)
+
+data class TaskComposition(
+        val materialNumber: String, //Сап код товара
+        val origDeliveryQuantity: String, //Исходное количество позиции поставки
+        val uom: String, //базисная единица измерения
+        val menge: String, //Кол-во в заказе
+        val volumeGoodsReceived: String, //объем поступившего товара
+        val purchaseOrderUnits: String, //ЕИ заказа на поставку
+        val overDeliveryToleranceLimit: String, //Граница допуска для сверхпоставки
+        val shortDeliveryToleranceLimit: String, //Граница допуска при недопоставке
+        val upperLimitConditionAmount: String, //Верхняя граница суммы условия (МРЦ)
+        val quantityInvestments: String, //кол-во вложения
+        val roundingSurplus: String, //Округления излишки
+        val roundingShortages: String, //Округления недостачи
+        val noEAN: String, //Без ШК
+        val noRecount: String, //Без пересчета
+        val isUFF: String, //Индикатор: UFF (фрукты, овощи)
+        val isAlco: String, //Признак алкогольного товара
+        val isExc: String, //Признак акцизного алкоголя
+        val notEdit: String, //Запрет редактирования
+        val totalExpirationDate: String, //общий срок годности
+        val remainingShelfLife: String, //оставшийся срок годности
+        val isSet: String, //признак набора
+        val isRus:String,
+        val BoxFl: String,
+        val isStampFl: String,
+        val quantityBoxesControl: String, //количество коробок для контроля
+        val quantityStampsControl: String, //количество марок для контроля
+        val isVet: String,
+        val departmentNumber: String //номер отдела (abtnr)
+)
+
+data class ProductDiscrepancies(
+        val materialNumber: String, //Сап код товара
+        val processingUnit: String, //Единица обработки
+        val quantityDiscrepancies: String, //кол-во расхождения
+        val uom: String, //базисная единица измерения
+        val typeDiscrepancy: String, //Тип расхождения
+        val notEdit: String //Запрет редактирования
+)
+
+data class TaskBatch(
+        val materialNumber: String, //Сап код товара
+        val batchNumber: String, //номер партии
+        val alcoCode: String,
+        val manufacturer: String,
+        val bottlingDate: String,
+        val quantityBatchPlan: String //Кол-во по партии план
+)
+
+data class BatchDiscrepancies(
+        val materialNumber: String, //Сап код товара
+        val batchNumber: String, //номер партии
+        val quantityDiscrepancies: String, //кол-во расхождения
+        val uom: String, //базисная единица измерения
+        val typeDiscrepancy: String, //Тип расхождения
+        val notEdit: String, //Запрет редактирования
+        val exciseStampCode: String, //Код акцизной марки(73 символа)
+        val fullDM: String //DM акцизной марки
 )
