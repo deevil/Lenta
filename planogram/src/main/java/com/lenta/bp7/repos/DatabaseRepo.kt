@@ -12,6 +12,7 @@ import com.lenta.shared.fmp.resources.fast.ZmpUtz23V001
 import com.lenta.shared.fmp.resources.slow.ZfmpUtz48V001
 import com.lenta.shared.fmp.resources.slow.ZmpUtz25V001
 import com.lenta.shared.models.core.Uom
+import com.lenta.shared.requests.combined.scan_info.pojo.MarketInfo
 import com.lenta.shared.requests.combined.scan_info.pojo.EanInfo
 import com.lenta.shared.requests.combined.scan_info.pojo.ProductInfo
 import com.lenta.shared.utilities.Logg
@@ -171,6 +172,13 @@ class DatabaseRepo(
             return@withContext settings.getAllowedPleAppVersion()
         }
     }
+
+    override suspend fun getAllMarkets(): List<MarketInfo>? {
+        return withContext(Dispatchers.IO) {
+            return@withContext stores.getAllMarkets().toMarketInfoList()
+        }
+    }
+
 }
 
 interface IDatabaseRepo {
@@ -188,4 +196,5 @@ interface IDatabaseRepo {
     suspend fun getGoodInfoByMaterial(material: String): GoodInfo?
     suspend fun getGoodInfoByMatcode(matcode: String): GoodInfo?
     suspend fun getAllowedAppVersion(): String?
+    suspend fun getAllMarkets(): List<MarketInfo>?
 }

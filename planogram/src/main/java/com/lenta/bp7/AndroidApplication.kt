@@ -10,23 +10,14 @@ class AndroidApplication : CoreApplication() {
 
     override fun getDefaultConnectionSettings(): DefaultConnectionSettings {
         return DefaultConnectionSettings(
-                /*serverAddress = "http://9.6.24.46",
+                serverAddress = "http://9.6.24.46",
                 environment = "Lenta_LRQ",
                 project = "PR_SHARED",
                 testServerAddress = "http://9.6.24.46",
                 testEnvironment = "Lenta_LRQ",
                 testProject = "PR_SHARED",
                 techLogin = "MAKAROV",
-                techPassword = "1q2w3e4r"*/
-                serverAddress = "9.6.24.61:6444",
-
-                environment = "Lenta_LRP",
-                project = "PR_SHARED",
-                testServerAddress = "http://9.6.24.46",
-                testEnvironment = "Lenta_LRQ",
-                testProject = "PR_SHARED",
-                techLogin = "REFSMP",
-                techPassword = "smp_plan_1"
+                techPassword = "1q2w3e4r"
         )
     }
 
