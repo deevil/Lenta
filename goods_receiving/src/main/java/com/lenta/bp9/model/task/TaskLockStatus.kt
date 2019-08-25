@@ -1,4 +1,4 @@
-package com.lenta.bp9.models.task
+package com.lenta.bp9.model.task
 
 enum class TaskLockStatus(val taskLockStatusString: String) {
     None(""),

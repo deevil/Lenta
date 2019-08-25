@@ -129,6 +129,7 @@
     <string name="another_app_need_close">Запущено приложение: \"%s\". Одновременная работа не поддерживается. Пожалуйста закройте его и войдите в это приложение заново.</string>
     <string name="filter">Фильтр</string>
     <string name="search">Поиск</string>
+    <string name="find">Найти</string>
     <string name="task">Задание</string>
     <string name="tags">Признаки</string>
     <string name="tag">Признак</string>
@@ -143,4 +144,6 @@
     <string name="cancel">Отменить</string>
     <string name="framed">Оформлено</string>
     <string name="not_framed">Не оформлено</string>
+    <string name="saved_data_detect_message">На устройстве обнаружены несохраненные данные. Перейти к данным?</string>
+    <string name="detect_changes_connection_message">Внимание! Настройки соединения изменились. Вы хотите применить новые настройки?</string>
 </resources>

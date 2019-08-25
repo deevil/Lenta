@@ -3,9 +3,7 @@ package com.lenta.bp9.features.loading.tasks
 import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.lenta.bp9.models.task.TaskList
-import com.lenta.bp9.features.loading.tasks.TaskListLoadingMode
-import com.lenta.bp9.models.task.TaskType
+import com.lenta.bp9.model.task.TaskList
 import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.bp9.repos.IRepoInMemoryHolder
 import com.lenta.bp9.requests.TaskListNetRequest
@@ -70,6 +68,7 @@ class LoadingTasksViewModel : CoreLoadingViewModel() {
             screenNavigator.openTaskListScreen()
         } else {
             repoInMemoryHolder.lastSearchResult.value = taskList
+            screenNavigator.goBack()
         }
     }
 

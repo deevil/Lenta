@@ -1,6 +1,8 @@
 package com.lenta.inventory.main
 
 import androidx.lifecycle.viewModelScope
+import com.lenta.inventory.models.IPersistInventoryTask
+import com.lenta.inventory.models.task.IInventoryTaskManager
 import com.lenta.inventory.platform.navigation.IScreenNavigator
 import com.lenta.shared.features.loading.startProgressTimer
 import com.lenta.shared.platform.activity.main_activity.CoreMainViewModel
@@ -15,7 +17,10 @@ class MainViewModel : CoreMainViewModel() {
     override lateinit var statusBarUiModel: StatusBarUiModel
     @Inject
     lateinit var screenNavigator: IScreenNavigator
-
+    @Inject
+    lateinit var inventoryTaskManager: IInventoryTaskManager
+    @Inject
+    lateinit var persistInventoryTask: IPersistInventoryTask
 
 
     override fun onNewEnter() {
@@ -54,14 +59,12 @@ class MainViewModel : CoreMainViewModel() {
 
     override fun onPause() {
         super.onPause()
-        //TODO реализовать сохранение задачи
-        //persistWriteOffTask.saveWriteOffTask(writeOffTaskManager.getWriteOffTask())
+        persistInventoryTask.saveWriteOffTask(inventoryTaskManager.getInventoryTask())
     }
 
     override fun preparingForExit() {
-        //TODO реализовать сохранение задачи
+        persistInventoryTask.saveWriteOffTask(inventoryTaskManager.getInventoryTask())
     }
-
 
 
 }

@@ -2,8 +2,8 @@ package com.lenta.bp7.data.model
 
 import com.lenta.bp7.data.CheckType
 import com.lenta.bp7.data.IPersistCheckResult
+import com.lenta.shared.models.core.Uom
 import com.nhaarman.mockitokotlin2.mock
-import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -52,12 +52,11 @@ internal class CheckDataTest {
             enteredCode: EnteredCode = EnteredCode.EAN,
             name: String = "Good " + (1..999).random(),
             facings: Int = (1..99).random(),
-            unitsCode: String = "ST",
-            units: String = "шт",
+            uom: Uom = Uom.DEFAULT,
             status: GoodStatus = GoodStatus.CREATED) {
         if (checkData.getCurrentSegment() == null) addSegment()
         if (checkData.getCurrentShelf() == null) addShelf()
-        checkData.addGood(GoodInfo(ean, material, matcode, enteredCode, name, unitsCode, units))
+        checkData.addGood(GoodInfo(ean, material, matcode, enteredCode, name, uom))
         checkData.getCurrentGood()?.facings = facings
         checkData.getCurrentGood()?.setStatus(status)
     }
