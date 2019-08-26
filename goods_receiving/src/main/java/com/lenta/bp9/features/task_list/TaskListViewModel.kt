@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.lenta.bp9.features.loading.tasks.TaskCardLoadingMode
 import com.lenta.bp9.features.loading.tasks.TaskListLoadingMode
 import com.lenta.bp9.model.task.TaskInfo
 import com.lenta.bp9.model.task.TaskList
@@ -150,7 +151,27 @@ class TaskListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     }
 
     fun onClickItemPosition(position: Int) {
-        screenNavigator.openTaskCardScreen()
+        val task = when (selectedPage.value) {
+            0 -> tasksToProcess.value?.get(position)
+            1 -> tasksSearch.value?.get(position)
+            2 -> tasksPostponed.value?.get(position)
+            else -> null
+        }
+        task?.let {
+            when (it.lockStatus) {
+                TaskLockStatus.LockedByMe -> {
+                    screenNavigator.openConfirmationUnlock {
+                        screenNavigator.openTaskCardLoadingScreen(TaskCardLoadingMode.Full, it.taskNumber)
+                    }
+                }
+                TaskLockStatus.LockedByOthers -> {
+                    screenNavigator.openConfirmationView {
+                        screenNavigator.openTaskCardLoadingScreen(TaskCardLoadingMode.ReadOnly, it.taskNumber)
+                    }
+                }
+                TaskLockStatus.None -> screenNavigator.openTaskCardLoadingScreen(TaskCardLoadingMode.Full, it.taskNumber)
+            }
+        }
     }
 
     fun onResume() {

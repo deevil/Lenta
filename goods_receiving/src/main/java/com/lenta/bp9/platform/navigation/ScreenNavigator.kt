@@ -9,16 +9,20 @@ import com.lenta.bp9.features.task_list.TaskListFragment
 import com.lenta.bp9.features.loading.tasks.TaskListLoadingMode
 import com.lenta.bp9.requests.network.TaskListSearchParams
 import com.lenta.bp9.features.loading.fast.FastDataLoadingFragment
+import com.lenta.bp9.features.loading.tasks.LoadingTaskCardFragment
+import com.lenta.bp9.features.loading.tasks.TaskCardLoadingMode
 import com.lenta.bp9.features.main_menu.MainMenuFragment
 import com.lenta.bp9.features.search_task.SearchTaskFragment
 import com.lenta.bp9.features.select_market.SelectMarketFragment
 import com.lenta.bp9.features.select_personnel_number.SelectPersonnelNumberFragment
 import com.lenta.bp9.features.task_card.TaskCardFragment
-import com.lenta.shared.R
+import com.lenta.bp9.R
 import com.lenta.shared.account.IAuthenticator
+import com.lenta.shared.features.alert.AlertFragment
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
 import com.lenta.shared.platform.navigation.ICoreNavigator
 import com.lenta.shared.platform.navigation.runOrPostpone
+import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.progress.IProgressUseCaseInformator
 
 class ScreenNavigator(
@@ -106,6 +110,30 @@ class ScreenNavigator(
         }
     }
 
+    override fun openTaskCardLoadingScreen(mode: TaskCardLoadingMode, taskNumber: String) {
+        runOrPostpone {
+            getFragmentStack()?.push(LoadingTaskCardFragment.create(taskNumber, mode))
+        }
+    }
+
+    override fun openConfirmationUnlock(callbackFunc: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.unlock_confirmation),
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(callbackFunc),
+                    pageNumber = "93",
+                    rightButtonDecorationInfo = ButtonDecorationInfo.yes))
+        }
+    }
+
+    override fun openConfirmationView(callbackFunc: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.view_confirmation),
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(callbackFunc),
+                    pageNumber = "93",
+                    rightButtonDecorationInfo = ButtonDecorationInfo.yes))
+        }
+    }
+
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 
 }
@@ -123,4 +151,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openTaskSearchScreen()
     fun openGoodsListScreen()
     fun openTaskCardScreen()
+    fun openTaskCardLoadingScreen(mode: TaskCardLoadingMode, taskNumber: String)
+    fun openConfirmationUnlock(callbackFunc: () -> Unit)
+    fun openConfirmationView(callbackFunc: () -> Unit)
 }

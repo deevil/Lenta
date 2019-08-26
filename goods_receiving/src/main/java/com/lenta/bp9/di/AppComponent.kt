@@ -6,6 +6,7 @@ import com.lenta.bp9.features.goods_list.GoodsListViewModel
 import com.lenta.bp9.features.loading.tasks.LoadingTasksViewModel
 import com.lenta.bp9.features.task_list.TaskListViewModel
 import com.lenta.bp9.features.loading.fast.FastDataLoadingViewModel
+import com.lenta.bp9.features.loading.tasks.LoadingTaskCardViewModel
 import com.lenta.bp9.features.main_menu.MainMenuViewModel
 import com.lenta.bp9.features.search_task.SearchTaskViewModel
 import com.lenta.bp9.features.select_market.SelectMarketViewModel
@@ -33,4 +34,5 @@ interface AppComponent {
     fun inject(it: GoodsListViewModel)
     fun inject(it: SearchTaskViewModel)
     fun inject(it: TaskCardViewModel)
+    fun inject(it: LoadingTaskCardViewModel)
 }
