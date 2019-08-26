@@ -5,14 +5,12 @@ import androidx.lifecycle.viewModelScope
 import com.lenta.inventory.features.goods_list.DataSaver
 import com.lenta.inventory.features.goods_list.SearchProductDelegate
 import com.lenta.inventory.models.RecountType
-import com.lenta.inventory.models.StorePlaceStatus
 import com.lenta.inventory.models.task.IInventoryTaskManager
 import com.lenta.inventory.models.task.TaskProductInfo
 import com.lenta.inventory.platform.navigation.IScreenNavigator
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.SelectionItemsHelper
 import kotlinx.coroutines.launch
-import com.lenta.shared.utilities.databinding.Evenable
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.map
 import javax.inject.Inject
@@ -142,7 +140,7 @@ class DiscrepanciesFoundViewModel : CoreViewModel() {
 
     fun onClickSkip() {
         if (isNotEmpty.value == true) {
-            if (taskManager.getInventoryTask()!!.taskDescription.isRecount) {
+            if (taskManager.getInventoryTask()!!.taskDescription.ivCountPerNr) {
                 screenNavigator.openConfirmationSkippingDiscrepanciesRecount({ dataSaver.saveData(true) }) {
                     dataSaver.saveData(false)
                 }

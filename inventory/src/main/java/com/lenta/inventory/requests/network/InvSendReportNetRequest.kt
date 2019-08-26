@@ -69,7 +69,7 @@ data class InventoryReport(
         val stamps: List<ExciseStampInfo>,
         // Признак пересчета по табельным номерам
         @SerializedName("IV_COUNT_PERNR")
-        val isRecount: String
+        val ivCountPerNr: String
 )
 
 //IT_STORPLACES_DEL
