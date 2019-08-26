@@ -13,14 +13,17 @@ import com.lenta.bp14.platform.extentions.getAppComponent
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
+import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig
 import com.lenta.shared.utilities.databinding.ViewPagerSettings
+import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
 import com.lenta.shared.utilities.extentions.provideViewModel
 
-class GoodsListWlFragment : CoreFragment<FragmentGoodsListWlBinding, GoodsListWlViewModel>(), ViewPagerSettings {
+class GoodsListWlFragment : CoreFragment<FragmentGoodsListWlBinding, GoodsListWlViewModel>(),
+        ViewPagerSettings, ToolbarButtonsClickListener {
 
     override fun getLayoutId(): Int = R.layout.fragment_goods_list_wl
 
@@ -43,30 +46,79 @@ class GoodsListWlFragment : CoreFragment<FragmentGoodsListWlBinding, GoodsListWl
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
-        bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.delete)
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.save)
+
+        vm.thirdButtonDecoration.observe(this, Observer<ButtonDecorationInfo> { decoration ->
+            bottomToolbarUiModel.uiModelButton3.show(decoration)
+        })
+
+        connectLiveData(vm.deleteButtonEnabled, getBottomToolBarUIModel()!!.uiModelButton3.enabled)
+        connectLiveData(vm.saveButtonEnabled, getBottomToolBarUIModel()!!.uiModelButton5.enabled)
+    }
+
+    override fun onToolbarButtonClick(view: View) {
+        when (view.id) {
+            R.id.b_3 -> {
+                if (vm.thirdButtonDecoration.value == ButtonDecorationInfo.delete) {
+                    vm.onClickDelete()
+                } else {
+                    vm.onClickFilter()
+                }
+            }
+            R.id.b_5 -> vm.onClickSave()
+        }
     }
 
     override fun getPagerItemView(container: ViewGroup, position: Int): View {
+        if (position == 1) {
+            vm.thirdButtonDecoration.value = ButtonDecorationInfo.delete
+
             DataBindingUtil.inflate<LayoutWlGoodsListBinding>(LayoutInflater.from(container.context),
                     R.layout.layout_wl_goods_list,
                     container,
                     false).let { layoutBinding ->
 
-                if (position == 1) {
-                    layoutBinding.rvConfig = DataBindingRecyclerViewConfig<ItemGoodSelectableBinding>(
-                            layoutId = R.layout.item_good_selectable,
-                            itemId = BR.good)
-                } else {
-                    layoutBinding.rvConfig = DataBindingRecyclerViewConfig<ItemGoodBinding>(
-                            layoutId = R.layout.item_good,
-                            itemId = BR.good)
-                }
+                layoutBinding.rvConfig = DataBindingRecyclerViewConfig<ItemGoodSelectableBinding>(
+                        layoutId = R.layout.item_good_selectable,
+                        itemId = BR.good)
 
                 layoutBinding.vm = vm
                 layoutBinding.lifecycleOwner = viewLifecycleOwner
                 return layoutBinding.root
             }
+        }
+
+        if (position == 2) {
+            vm.thirdButtonDecoration.value = ButtonDecorationInfo.filter
+
+            DataBindingUtil.inflate<LayoutWlGoodsListBinding>(LayoutInflater.from(container.context),
+                    R.layout.layout_wl_goods_list,
+                    container,
+                    false).let { layoutBinding ->
+
+                layoutBinding.rvConfig = DataBindingRecyclerViewConfig<ItemGoodBinding>(
+                        layoutId = R.layout.item_good,
+                        itemId = BR.good)
+
+                layoutBinding.vm = vm
+                layoutBinding.lifecycleOwner = viewLifecycleOwner
+                return layoutBinding.root
+            }
+        }
+
+        DataBindingUtil.inflate<LayoutWlGoodsListBinding>(LayoutInflater.from(container.context),
+                R.layout.layout_wl_goods_list,
+                container,
+                false).let { layoutBinding ->
+
+            layoutBinding.rvConfig = DataBindingRecyclerViewConfig<ItemGoodBinding>(
+                    layoutId = R.layout.item_good,
+                    itemId = BR.good)
+
+            layoutBinding.vm = vm
+            layoutBinding.lifecycleOwner = viewLifecycleOwner
+            return layoutBinding.root
+        }
     }
 
     override fun getTextTitle(position: Int): String {
