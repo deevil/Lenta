@@ -32,8 +32,8 @@ class DataSaver @Inject constructor(
                         task.getReport(
                                 isFinish = final,
                                 ip = context.getDeviceIp(),
-                                personnelNumber = sessionInfo.personnelNumber!!,
-                                isRecount = false
+                                personnelNumber = if (final) sessionInfo.personnelNumber!! else "",
+                                isRecount = task.taskDescription.isRecount
                         )).either(::handleFailure) {
                     taskManager.clearTask()
 

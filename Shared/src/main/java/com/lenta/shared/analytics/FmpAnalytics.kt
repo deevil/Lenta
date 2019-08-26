@@ -29,6 +29,7 @@ class FmpAnalytics @Inject constructor(val hyperHive: HyperHive, val logDao: Log
         if (!isEnabledLogs) {
             return
         }
+        Logg.d { "logTrace: $tag, message: $message" }
         logDao.insert(LogMessage(Date(), InfoLevel.INFO, message))
         //enableLogsFuncDisableLogs(tag, message, hyperHive.loggingAPI::logTrace)
     }
@@ -38,6 +39,7 @@ class FmpAnalytics @Inject constructor(val hyperHive: HyperHive, val logDao: Log
         if (!isEnabledLogs) {
             return
         }
+        Logg.d { "logError: $tag, message: $message" }
         logDao.insert(LogMessage(Date(), InfoLevel.ERROR, message))
         //enableLogsFuncDisableLogs(tag, message, hyperHive.loggingAPI::logWarning)
     }
@@ -46,6 +48,7 @@ class FmpAnalytics @Inject constructor(val hyperHive: HyperHive, val logDao: Log
         if (!isEnabledLogs) {
             return
         }
+        Logg.d { "logFatal: $tag, message: $message" }
         logDao.insert(LogMessage(Date(), InfoLevel.FATAL, message))
         //enableLogsFuncDisableLogs(tag, message, hyperHive.loggingAPI::logFatal)
     }

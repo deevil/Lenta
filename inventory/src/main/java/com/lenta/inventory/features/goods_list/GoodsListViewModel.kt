@@ -83,15 +83,15 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     }
 
     fun getTitle(): String {
-        when (taskManager.getInventoryTask()!!.taskDescription.recountType) {
-            RecountType.Simple -> return "${taskManager.getInventoryTask()?.taskDescription?.getTaskTypeAndNumber()
+        return when (taskManager.getInventoryTask()?.taskDescription?.recountType) {
+            RecountType.Simple -> "${taskManager.getInventoryTask()?.taskDescription?.getTaskTypeAndNumber()
                     ?: ""} / ${context.getString(R.string.simple_recount)}"
-            RecountType.ParallelByStorePlaces -> return "${taskManager.getInventoryTask()?.taskDescription?.getTaskTypeAndNumber()
+            RecountType.ParallelByStorePlaces -> "${taskManager.getInventoryTask()?.taskDescription?.getTaskTypeAndNumber()
                     ?: ""} / МХ-${storePlaceManager?.storePlaceNumber}"
-            RecountType.ParallelByPerNo -> return "${taskManager.getInventoryTask()?.taskDescription?.getTaskTypeAndNumber()
+            RecountType.ParallelByPerNo -> "${taskManager.getInventoryTask()?.taskDescription?.getTaskTypeAndNumber()
                     ?: ""} / ${sessionInfo.personnelFullName}"
+            else -> taskManager.getInventoryTask()?.taskDescription?.getTaskTypeAndNumber() ?: ""
         }
-        return taskManager.getInventoryTask()?.taskDescription?.getTaskTypeAndNumber() ?: ""
     }
 
     fun setStorePlaceNumber(storePlaceNumber: String) {

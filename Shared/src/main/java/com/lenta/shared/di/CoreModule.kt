@@ -45,6 +45,7 @@ import com.lenta.shared.scan.IScanHelper
 import com.lenta.shared.scan.mobilbase.MobilBaseScanHelper
 import com.lenta.shared.settings.AppSettings
 import com.lenta.shared.settings.DefaultConnectionSettings
+import com.lenta.shared.settings.DefaultSettingsManager
 import com.lenta.shared.settings.IAppSettings
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.isWriteExternalStoragePermissionGranted
@@ -79,8 +80,13 @@ class CoreModule(val application: Application, val defaultConnectionSettings: De
     @Provides
     @Singleton
     internal fun provideHyperHiveState(appContext: Context, appSettings: IAppSettings): HyperHiveState {
+
         prepareFolder(DB_PATH)
-        val fmpDbName = "resources_${appSettings.getCurrentEnvironment()}_${appSettings.getCurrentProject()}.sqlite"
+
+        val fmpDbName = "resources_${appSettings.getCurrentServerAddress().replace("/", "")}_" +
+                "${appSettings.getCurrentEnvironment()}_" +
+                "${appSettings.getCurrentProject()}.sqlite"
+
 
         Logg.d { "DB_PATH: $DB_PATH" }
         return HyperHiveState(appContext)
@@ -252,8 +258,8 @@ class CoreModule(val application: Application, val defaultConnectionSettings: De
 
     @Provides
     @Singleton
-    fun provideAnalyticsHelper(iAnalytics: IAnalytics, context: Context): AnalyticsHelper {
-        return AnalyticsHelper(iAnalytics, context)
+    fun provideAnalyticsHelper(appSettings: IAppSettings, iAnalytics: IAnalytics, context: Context): AnalyticsHelper {
+        return AnalyticsHelper(appSettings, iAnalytics, context)
     }
 
     @Provides
@@ -281,6 +287,16 @@ class CoreModule(val application: Application, val defaultConnectionSettings: De
     @Singleton
     fun provideDeviceInfo(context: Context): DeviceInfo {
         return AndroidDeviceInfo(context)
+    }
+
+    @Provides
+    @Singleton
+    fun provideDefaultSettingsManager(
+            appSettings: IAppSettings,
+            sharedPreferences: SharedPreferences,
+            gson: Gson
+    ): DefaultSettingsManager {
+        return DefaultSettingsManager(defaultConnectionSettings, appSettings, sharedPreferences, gson)
     }
 
 

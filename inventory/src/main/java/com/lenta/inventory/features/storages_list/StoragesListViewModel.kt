@@ -136,7 +136,8 @@ class StoragesListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
         viewModelScope.launch {
             screenNavigator.showProgress(taskContentsRequest)
             val recountType = taskManager.getInventoryTask()?.taskDescription?.recountType
-            val userNumber = if (recountType == RecountType.ParallelByStorePlaces || sessionInfo.personnelNumber == null) "" else sessionInfo.personnelNumber
+            val isNotFinish = taskManager.getInventoryTask()?.taskDescription?.isStarted
+            val userNumber = if (recountType == RecountType.ParallelByStorePlaces || sessionInfo.personnelNumber == null || isNotFinish == true) "" else sessionInfo.personnelNumber
             taskContentsRequest(
                     TaskContentParams(ip = context.getDeviceIp(),
                             taskNumber = taskManager.getInventoryTask()?.taskDescription?.taskNumber

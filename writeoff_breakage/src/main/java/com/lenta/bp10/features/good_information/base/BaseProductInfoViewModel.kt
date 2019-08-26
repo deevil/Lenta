@@ -99,9 +99,7 @@ abstract class BaseProductInfoViewModel : CoreViewModel(), OnPositionClickListen
                     limitsChecker = limitsChecker
             )
 
-            processServiceManager.getWriteOffTask()?.let { writeOffTask ->
-
-
+            processServiceManager.getWriteOffTask()?.let {
                 getTaskDescription().moveTypes.let { reasons ->
                     if (reasons.isEmpty()) {
                         writeOffReasons.value = listOf(WriteOffReason.emptyWithTitle(resourceManager.emptyCategory()))
