@@ -10,8 +10,8 @@ import com.lenta.bp9.model.task.TaskList
 import com.lenta.bp9.model.task.TaskLockStatus
 import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.bp9.repos.IRepoInMemoryHolder
-import com.lenta.bp9.requests.TaskListNetRequest
-import com.lenta.bp9.requests.TaskListParams
+import com.lenta.bp9.requests.network.TaskListNetRequest
+import com.lenta.bp9.requests.network.TaskListParams
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.platform.viewmodel.CoreViewModel
@@ -150,7 +150,7 @@ class TaskListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     }
 
     fun onClickItemPosition(position: Int) {
-
+        screenNavigator.openTaskCardScreen()
     }
 
     fun onResume() {

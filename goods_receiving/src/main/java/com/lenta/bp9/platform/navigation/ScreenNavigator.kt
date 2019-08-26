@@ -7,12 +7,13 @@ import com.lenta.bp9.features.goods_list.GoodsListFragment
 import com.lenta.bp9.features.loading.tasks.LoadingTasksFragment
 import com.lenta.bp9.features.task_list.TaskListFragment
 import com.lenta.bp9.features.loading.tasks.TaskListLoadingMode
-import com.lenta.bp9.requests.TaskListSearchParams
+import com.lenta.bp9.requests.network.TaskListSearchParams
 import com.lenta.bp9.features.loading.fast.FastDataLoadingFragment
 import com.lenta.bp9.features.main_menu.MainMenuFragment
 import com.lenta.bp9.features.search_task.SearchTaskFragment
 import com.lenta.bp9.features.select_market.SelectMarketFragment
 import com.lenta.bp9.features.select_personnel_number.SelectPersonnelNumberFragment
+import com.lenta.bp9.features.task_card.TaskCardFragment
 import com.lenta.shared.R
 import com.lenta.shared.account.IAuthenticator
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
@@ -99,6 +100,12 @@ class ScreenNavigator(
         }
     }
 
+    override fun openTaskCardScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(TaskCardFragment())
+        }
+    }
+
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 
 }
@@ -115,4 +122,5 @@ interface IScreenNavigator : ICoreNavigator {
     fun openAlertNotPermissions(message: String)
     fun openTaskSearchScreen()
     fun openGoodsListScreen()
+    fun openTaskCardScreen()
 }
