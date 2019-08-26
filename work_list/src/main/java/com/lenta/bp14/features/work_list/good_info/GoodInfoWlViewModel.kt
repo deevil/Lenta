@@ -36,9 +36,9 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
     val shelfLifeDaysLeft: MutableLiveData<Int> = day.combineLatest(month).combineLatest(year).map {
         val format = SimpleDateFormat("dd MM yy", Locale.getDefault())
 
-        val day = it?.first?.first?.toInt()
-        val month = it?.first?.second?.toInt()
-        val year = it?.second?.toInt()
+        val day = if (it?.first?.first?.isNotEmpty() == true) it.first.first?.toInt() else 0
+        val month = if (it?.first?.second?.isNotEmpty() == true) it.first.second?.toInt() else 0
+        val year = if (it?.second?.isNotEmpty() == true) it.second?.toInt() else 0
         var diff = 0
 
         try {

@@ -4,7 +4,6 @@ import androidx.lifecycle.MutableLiveData
 import com.lenta.bp14.data.model.Good
 import com.lenta.bp14.platform.navigation.IScreenNavigator
 import com.lenta.shared.models.core.Uom
-import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
@@ -24,15 +23,22 @@ class GoodsListWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
 
     val taskName = MutableLiveData("Рабочий список от 23.07.19 23:15")
 
-    val goods = MutableLiveData<List<Good>>(getTestItems())
+    val currentGoods = selectedPage.map {
+        when(it){
+            0 -> processingGoods.value
+            1 -> processedGoods.value
+            else -> searchGoods.value
+        }
+    }
+    val processingGoods = MutableLiveData<List<Good>>(getTestItems())
+    val processedGoods = MutableLiveData<List<Good>>(getTestItems())
+    val searchGoods = MutableLiveData<List<Good>>(getTestItems())
 
-    val thirdButtonDecoration = MutableLiveData<ButtonDecorationInfo>(ButtonDecorationInfo.delete)
-
-    val deleteButtonEnabled = goods.map {
+    val deleteButtonEnabled = processingGoods.map {
         it?.isNotEmpty() ?: false
     }
 
-    val saveButtonEnabled = goods.map {
+    val saveButtonEnabled = processingGoods.map {
         it?.isNotEmpty() ?: false
     }
 
@@ -41,11 +47,11 @@ class GoodsListWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     }
 
     private fun getTestItems(): List<Good>? {
-        return List(4) {
+        return List(3) {
             Good(
                     id = it + 1,
                     material = "000000000000" + (111111..999999).random(),
-                    name = "Товар ${it + 1}",
+                    name = "Товар ${it + (1..99).random()}",
                     uom = Uom.DEFAULT
             )
         }
@@ -73,5 +79,9 @@ class GoodsListWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
 
     fun onClickFilter() {
         navigator.openSearchFilterWlScreen()
+    }
+
+    fun onClickItemPosition(position: Int) {
+        //navigator.openGoodInfoWlScreen()
     }
 }
