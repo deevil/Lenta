@@ -1,14 +1,17 @@
 package com.lenta.bp14.features.price_check.goods_list
 
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
+import com.lenta.bp14.data.PriceCheckTab
 import com.lenta.bp14.data.model.Good
-import com.lenta.bp14.data.model.TaskManager
+import com.lenta.bp14.data.TaskManager
 import com.lenta.bp14.platform.navigation.IScreenNavigator
 import com.lenta.shared.models.core.Uom
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.databinding.PageSelectionListener
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class GoodsListPcViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyboardListener {
@@ -31,6 +34,12 @@ class GoodsListPcViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
 
     override fun onPageSelected(position: Int) {
         selectedPage.value = position
+    }
+
+    init {
+        viewModelScope.launch {
+            selectedPage.value = 0
+        }
     }
 
     private fun getTestItems(): List<Good>? {
@@ -75,9 +84,10 @@ class GoodsListPcViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
 
     private fun getGoodByPosition(position: Int): Good? {
         return when (selectedPage.value) {
-            0 -> processingGoods.value?.get(position)
-            1 -> processedGoods.value?.get(position)
-            else -> searchGoods.value?.get(position)
+            PriceCheckTab.PROCESSING.position -> processingGoods.value?.get(position)
+            PriceCheckTab.PROCESSED.position -> processedGoods.value?.get(position)
+            PriceCheckTab.SEARCH.position -> searchGoods.value?.get(position)
+            else -> null
         }
     }
 }
