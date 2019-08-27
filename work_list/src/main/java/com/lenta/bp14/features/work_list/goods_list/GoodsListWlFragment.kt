@@ -9,6 +9,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import com.lenta.bp14.BR
 import com.lenta.bp14.R
+import com.lenta.bp14.data.WorkListTab
 import com.lenta.bp14.databinding.*
 import com.lenta.bp14.platform.extentions.getAppComponent
 import com.lenta.shared.platform.fragment.CoreFragment
@@ -53,8 +54,17 @@ class GoodsListWlFragment : CoreFragment<FragmentGoodsListWlBinding, GoodsListWl
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
-        bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.delete)
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.save)
+
+        viewLifecycleOwner.apply {
+            vm.selectedPage.observe(this, Observer {
+                if (it == WorkListTab.SEARCH.position) {
+                    bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.filter)
+                } else {
+                    bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.delete)
+                }
+            })
+        }
 
         connectLiveData(vm.deleteButtonEnabled, getBottomToolBarUIModel()!!.uiModelButton3.enabled)
         connectLiveData(vm.saveButtonEnabled, getBottomToolBarUIModel()!!.uiModelButton5.enabled)
@@ -62,7 +72,11 @@ class GoodsListWlFragment : CoreFragment<FragmentGoodsListWlBinding, GoodsListWl
 
     override fun onToolbarButtonClick(view: View) {
         when (view.id) {
-            R.id.b_3 -> vm.onClickDelete()
+            R.id.b_3 -> {
+                if (vm.selectedPage.value == WorkListTab.SEARCH.position) {
+                    vm.onClickFilter()
+                } else vm.onClickDelete()
+            }
             R.id.b_5 -> vm.onClickSave()
         }
     }
