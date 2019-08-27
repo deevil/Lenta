@@ -37,7 +37,7 @@ class DataSaver @Inject constructor(
                         )).either(::handleFailure) {
                     taskManager.clearTask()
 
-                    screenNavigator.openSuccessSaveDataScreen() {
+                    screenNavigator.openSuccessSaveDataScreen {
                         screenNavigator.closeAllScreen()
                         screenNavigator.openTasksList()
                     }
