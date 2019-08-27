@@ -2,6 +2,7 @@ package com.lenta.bp14.features.price_check.goods_list
 
 import androidx.lifecycle.MutableLiveData
 import com.lenta.bp14.data.model.Good
+import com.lenta.bp14.data.model.TaskManager
 import com.lenta.bp14.platform.navigation.IScreenNavigator
 import com.lenta.shared.models.core.Uom
 import com.lenta.shared.platform.viewmodel.CoreViewModel
@@ -14,6 +15,8 @@ class GoodsListPcViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
 
     @Inject
     lateinit var navigator: IScreenNavigator
+    @Inject
+    lateinit var taskManager: TaskManager
 
 
     val selectionsHelper = SelectionItemsHelper()
@@ -62,10 +65,19 @@ class GoodsListPcViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     }
 
     fun onClickPrint() {
-        navigator.openSearchFilterWlScreen()
+
     }
 
     fun onClickItemPosition(position: Int) {
+        taskManager.currentGood = getGoodByPosition(position)
         navigator.openGoodInfoPcScreen()
+    }
+
+    private fun getGoodByPosition(position: Int): Good? {
+        return when (selectedPage.value) {
+            0 -> processingGoods.value?.get(position)
+            1 -> processedGoods.value?.get(position)
+            else -> searchGoods.value?.get(position)
+        }
     }
 }

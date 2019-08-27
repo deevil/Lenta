@@ -3,6 +3,8 @@ package com.lenta.bp14.features.work_list.good_info
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp14.data.model.Good
+import com.lenta.bp14.data.model.TaskManager
+import com.lenta.bp14.platform.navigation.IScreenNavigator
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.databinding.PageSelectionListener
@@ -13,8 +15,15 @@ import java.lang.Exception
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
+import javax.inject.Inject
 
 class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
+
+    @Inject
+    lateinit var navigator: IScreenNavigator
+    @Inject
+    lateinit var taskManager: TaskManager
+
 
     val selectedPage = MutableLiveData(0)
 
@@ -54,13 +63,7 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
 
     init {
         viewModelScope.launch {
-            good.value = Good(
-                    id = 0,
-                    material = "000000000000254128",
-                    name = "Кукуруза",
-                    total = 5
-            )
-
+            good.value = taskManager.currentGood
             quantity.value = "1"
         }
     }
