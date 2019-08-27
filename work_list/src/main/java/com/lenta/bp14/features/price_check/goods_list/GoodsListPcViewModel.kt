@@ -2,7 +2,7 @@ package com.lenta.bp14.features.price_check.goods_list
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.lenta.bp14.data.PriceCheckTab
+import com.lenta.bp14.data.Tab
 import com.lenta.bp14.data.model.Good
 import com.lenta.bp14.data.TaskManager
 import com.lenta.bp14.platform.navigation.IScreenNavigator
@@ -84,9 +84,9 @@ class GoodsListPcViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
 
     private fun getGoodByPosition(position: Int): Good? {
         return when (selectedPage.value) {
-            PriceCheckTab.PROCESSING.position -> processingGoods.value?.get(position)
-            PriceCheckTab.PROCESSED.position -> processedGoods.value?.get(position)
-            PriceCheckTab.SEARCH.position -> searchGoods.value?.get(position)
+            Tab.PC_PROCESSING.position -> processingGoods.value?.get(position)
+            Tab.PC_PROCESSED.position -> processedGoods.value?.get(position)
+            Tab.PC_SEARCH.position -> searchGoods.value?.get(position)
             else -> null
         }
     }
