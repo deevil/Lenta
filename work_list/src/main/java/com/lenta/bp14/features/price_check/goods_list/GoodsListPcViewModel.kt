@@ -66,6 +66,6 @@ class GoodsListPcViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     }
 
     fun onClickItemPosition(position: Int) {
-        //navigator.openGoodInfoWlScreen()
+        navigator.openGoodInfoPcScreen()
     }
 }

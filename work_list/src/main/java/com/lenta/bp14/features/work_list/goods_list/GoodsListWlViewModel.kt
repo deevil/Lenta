@@ -23,13 +23,6 @@ class GoodsListWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
 
     val taskName = MutableLiveData("Рабочий список от 23.07.19 23:15")
 
-    val currentGoods = selectedPage.map {
-        when(it){
-            0 -> processingGoods.value
-            1 -> processedGoods.value
-            else -> searchGoods.value
-        }
-    }
     val processingGoods = MutableLiveData<List<Good>>(getTestItems())
     val processedGoods = MutableLiveData<List<Good>>(getTestItems())
     val searchGoods = MutableLiveData<List<Good>>(getTestItems())
@@ -82,6 +75,6 @@ class GoodsListWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     }
 
     fun onClickItemPosition(position: Int) {
-        //navigator.openGoodInfoWlScreen()
+        navigator.openGoodInfoWlScreen()
     }
 }

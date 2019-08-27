@@ -68,9 +68,51 @@ class GoodsListWlFragment : CoreFragment<FragmentGoodsListWlBinding, GoodsListWl
     }
 
     override fun getPagerItemView(container: ViewGroup, position: Int): View {
+        if (position == 0) {
+            DataBindingUtil.inflate<LayoutWlGoodsListProcessingBinding>(LayoutInflater.from(container.context),
+                    R.layout.layout_wl_goods_list_processing,
+                    container,
+                    false).let { layoutBinding ->
+
+                layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
+                        layoutId = R.layout.item_good,
+                        itemId = BR.good,
+                        realisation = object : DataBindingAdapter<ItemGoodBinding> {
+                            override fun onCreate(binding: ItemGoodBinding) {
+                            }
+
+                            override fun onBind(binding: ItemGoodBinding, position: Int) {
+                                processingRecyclerViewKeyHandler?.let {
+                                    binding.root.isSelected = it.isSelected(position)
+                                }
+                            }
+                        },
+                        onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
+                            processingRecyclerViewKeyHandler?.let {
+                                if (it.isSelected(position)) {
+                                    vm.onClickItemPosition(position)
+                                } else {
+                                    it.selectPosition(position)
+                                }
+                            }
+                        })
+
+                layoutBinding.vm = vm
+                layoutBinding.lifecycleOwner = viewLifecycleOwner
+                processingRecyclerViewKeyHandler = RecyclerViewKeyHandler(
+                        rv = layoutBinding.rv,
+                        items = vm.processingGoods,
+                        lifecycleOwner = layoutBinding.lifecycleOwner!!,
+                        initPosInfo = processingRecyclerViewKeyHandler?.posInfo?.value
+                )
+
+                return layoutBinding.root
+            }
+        }
+
         if (position == 1) {
-            DataBindingUtil.inflate<LayoutWlGoodsListBinding>(LayoutInflater.from(container.context),
-                    R.layout.layout_wl_goods_list,
+            DataBindingUtil.inflate<LayoutWlGoodsListProcessedBinding>(LayoutInflater.from(container.context),
+                    R.layout.layout_wl_goods_list_processed,
                     container,
                     false).let { layoutBinding ->
 
@@ -120,50 +162,8 @@ class GoodsListWlFragment : CoreFragment<FragmentGoodsListWlBinding, GoodsListWl
             }
         }
 
-        if (position == 2) {
-            DataBindingUtil.inflate<LayoutWlGoodsListBinding>(LayoutInflater.from(container.context),
-                    R.layout.layout_wl_goods_list,
-                    container,
-                    false).let { layoutBinding ->
-
-                layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
-                        layoutId = R.layout.item_good,
-                        itemId = BR.good,
-                        realisation = object : DataBindingAdapter<ItemGoodBinding> {
-                            override fun onCreate(binding: ItemGoodBinding) {
-                            }
-
-                            override fun onBind(binding: ItemGoodBinding, position: Int) {
-                                searchRecyclerViewKeyHandler?.let {
-                                    binding.root.isSelected = it.isSelected(position)
-                                }
-                            }
-                        },
-                        onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
-                            searchRecyclerViewKeyHandler?.let {
-                                if (it.isSelected(position)) {
-                                    vm.onClickItemPosition(position)
-                                } else {
-                                    it.selectPosition(position)
-                                }
-                            }
-                        })
-
-                layoutBinding.vm = vm
-                layoutBinding.lifecycleOwner = viewLifecycleOwner
-                searchRecyclerViewKeyHandler = RecyclerViewKeyHandler(
-                        rv = layoutBinding.rv,
-                        items = vm.searchGoods,
-                        lifecycleOwner = layoutBinding.lifecycleOwner!!,
-                        initPosInfo = searchRecyclerViewKeyHandler?.posInfo?.value
-                )
-
-                return layoutBinding.root
-            }
-        }
-
-        DataBindingUtil.inflate<LayoutWlGoodsListBinding>(LayoutInflater.from(container.context),
-                R.layout.layout_wl_goods_list,
+        DataBindingUtil.inflate<LayoutWlGoodsListSearchBinding>(LayoutInflater.from(container.context),
+                R.layout.layout_wl_goods_list_search,
                 container,
                 false).let { layoutBinding ->
 
@@ -175,13 +175,13 @@ class GoodsListWlFragment : CoreFragment<FragmentGoodsListWlBinding, GoodsListWl
                         }
 
                         override fun onBind(binding: ItemGoodBinding, position: Int) {
-                            processingRecyclerViewKeyHandler?.let {
+                            searchRecyclerViewKeyHandler?.let {
                                 binding.root.isSelected = it.isSelected(position)
                             }
                         }
                     },
                     onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
-                        processingRecyclerViewKeyHandler?.let {
+                        searchRecyclerViewKeyHandler?.let {
                             if (it.isSelected(position)) {
                                 vm.onClickItemPosition(position)
                             } else {
@@ -192,11 +192,11 @@ class GoodsListWlFragment : CoreFragment<FragmentGoodsListWlBinding, GoodsListWl
 
             layoutBinding.vm = vm
             layoutBinding.lifecycleOwner = viewLifecycleOwner
-            processingRecyclerViewKeyHandler = RecyclerViewKeyHandler(
+            searchRecyclerViewKeyHandler = RecyclerViewKeyHandler(
                     rv = layoutBinding.rv,
-                    items = vm.processingGoods,
+                    items = vm.searchGoods,
                     lifecycleOwner = layoutBinding.lifecycleOwner!!,
-                    initPosInfo = processingRecyclerViewKeyHandler?.posInfo?.value
+                    initPosInfo = searchRecyclerViewKeyHandler?.posInfo?.value
             )
 
             return layoutBinding.root
