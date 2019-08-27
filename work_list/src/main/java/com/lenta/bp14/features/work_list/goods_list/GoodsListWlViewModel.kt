@@ -1,6 +1,7 @@
 package com.lenta.bp14.features.work_list.goods_list
 
 import androidx.lifecycle.MutableLiveData
+import com.lenta.bp14.data.PriceCheckTab
 import com.lenta.bp14.data.TaskManager
 import com.lenta.bp14.data.WorkListTab
 import com.lenta.bp14.data.model.Good
@@ -10,6 +11,7 @@ import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.databinding.PageSelectionListener
+import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.map
 import javax.inject.Inject
 
@@ -21,7 +23,8 @@ class GoodsListWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     lateinit var taskManager: TaskManager
 
 
-    val selectionsHelper = SelectionItemsHelper()
+    val processedSelectionsHelper = SelectionItemsHelper()
+    val searchSelectionsHelper = SelectionItemsHelper()
 
     val selectedPage = MutableLiveData(0)
 
@@ -31,13 +34,20 @@ class GoodsListWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     val processedGoods = MutableLiveData<List<Good>>(getTestItems())
     val searchGoods = MutableLiveData<List<Good>>(getTestItems())
 
-    val deleteButtonEnabled = processingGoods.map {
-        it?.isNotEmpty() ?: false
-    }
+    private val selectedItemOnCurrentTab: MutableLiveData<Boolean> = selectedPage
+            .combineLatest(processedSelectionsHelper.selectedPositions)
+            .combineLatest(searchSelectionsHelper.selectedPositions)
+            .map {
+                val tab = it?.first?.first?.toInt()
+                val processedSelected = it?.first?.second?.isNotEmpty() == true
+                //val searchSelected = it?.second?.isNotEmpty() == true
+                tab == PriceCheckTab.PROCESSED.position && processedSelected || tab == PriceCheckTab.SEARCH.position
+            }
 
-    val saveButtonEnabled = processingGoods.map {
-        it?.isNotEmpty() ?: false
-    }
+    val deleteButtonEnabled = selectedItemOnCurrentTab.map { it }
+    val saveButtonEnabled = processingGoods.map { it?.isNotEmpty() ?: false }
+
+    val thirdButtonVisibility = selectedPage.map { it != WorkListTab.PROCESSING.position }
 
     override fun onPageSelected(position: Int) {
         selectedPage.value = position

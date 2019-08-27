@@ -68,6 +68,7 @@ class GoodsListWlFragment : CoreFragment<FragmentGoodsListWlBinding, GoodsListWl
 
         connectLiveData(vm.deleteButtonEnabled, getBottomToolBarUIModel()!!.uiModelButton3.enabled)
         connectLiveData(vm.saveButtonEnabled, getBottomToolBarUIModel()!!.uiModelButton5.enabled)
+        connectLiveData(vm.thirdButtonVisibility, getBottomToolBarUIModel()!!.uiModelButton3.visibility)
     }
 
     override fun onToolbarButtonClick(view: View) {
@@ -132,7 +133,7 @@ class GoodsListWlFragment : CoreFragment<FragmentGoodsListWlBinding, GoodsListWl
 
                 val onClickSelectionListener = View.OnClickListener {
                     (it!!.tag as Int).let { position ->
-                        vm.selectionsHelper.revert(position = position)
+                        vm.processedSelectionsHelper.revert(position = position)
                         layoutBinding.rv.adapter?.notifyItemChanged(position)
                     }
                 }
@@ -147,7 +148,7 @@ class GoodsListWlFragment : CoreFragment<FragmentGoodsListWlBinding, GoodsListWl
                             override fun onBind(binding: ItemGoodSelectableBinding, position: Int) {
                                 binding.tvItemNumber.tag = position
                                 binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
-                                binding.selectedForDelete = vm.selectionsHelper.isSelected(position)
+                                binding.selectedForDelete = vm.processedSelectionsHelper.isSelected(position)
                                 processedRecyclerViewKeyHandler?.let {
                                     binding.root.isSelected = it.isSelected(position)
                                 }
@@ -181,14 +182,24 @@ class GoodsListWlFragment : CoreFragment<FragmentGoodsListWlBinding, GoodsListWl
                 container,
                 false).let { layoutBinding ->
 
+            val onClickSelectionListener = View.OnClickListener {
+                (it!!.tag as Int).let { position ->
+                    vm.searchSelectionsHelper.revert(position = position)
+                    layoutBinding.rv.adapter?.notifyItemChanged(position)
+                }
+            }
+
             layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
-                    layoutId = R.layout.item_good,
+                    layoutId = R.layout.item_good_selectable,
                     itemId = BR.good,
-                    realisation = object : DataBindingAdapter<ItemGoodBinding> {
-                        override fun onCreate(binding: ItemGoodBinding) {
+                    realisation = object : DataBindingAdapter<ItemGoodSelectableBinding> {
+                        override fun onCreate(binding: ItemGoodSelectableBinding) {
                         }
 
-                        override fun onBind(binding: ItemGoodBinding, position: Int) {
+                        override fun onBind(binding: ItemGoodSelectableBinding, position: Int) {
+                            binding.tvItemNumber.tag = position
+                            binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
+                            binding.selectedForDelete = vm.searchSelectionsHelper.isSelected(position)
                             searchRecyclerViewKeyHandler?.let {
                                 binding.root.isSelected = it.isSelected(position)
                             }
