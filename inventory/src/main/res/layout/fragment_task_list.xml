@@ -57,6 +57,7 @@
             android:maxLines="1"
             android:paddingTop="8dp"
             android:paddingBottom="8dp"
+            app:textAllCaps="@{true}"
             android:text="@={vm.filter}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
