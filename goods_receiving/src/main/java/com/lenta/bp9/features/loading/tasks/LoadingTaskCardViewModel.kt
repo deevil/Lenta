@@ -3,7 +3,11 @@ package com.lenta.bp9.features.loading.tasks
 import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.lenta.bp9.model.task.IReceivingTaskManager
+import com.lenta.bp9.model.task.TaskDescription
+import com.lenta.bp9.model.task.TaskNotification
 import com.lenta.bp9.platform.navigation.IScreenNavigator
+import com.lenta.bp9.repos.IRepoInMemoryHolder
 import com.lenta.bp9.requests.network.TaskCardNetRequest
 import com.lenta.bp9.requests.network.TaskCardParams
 import com.lenta.bp9.requests.network.TaskCardRequestResult
@@ -24,6 +28,10 @@ class LoadingTaskCardViewModel : CoreLoadingViewModel() {
     lateinit var sessionInfo: ISessionInfo
     @Inject
     lateinit var context: Context
+    @Inject
+    lateinit var taskManager: IReceivingTaskManager
+    @Inject
+    lateinit var repoInMemoryHolder: IRepoInMemoryHolder
 
     override val title: MutableLiveData<String> = MutableLiveData()
     override val progress: MutableLiveData<Boolean> = MutableLiveData(true)
@@ -54,7 +62,13 @@ class LoadingTaskCardViewModel : CoreLoadingViewModel() {
     private fun handleSuccess(result: TaskCardRequestResult) {
         Logg.d { "Task card request result $result" }
         screenNavigator.goBack()
-
+        val taskHeader = repoInMemoryHolder.taskList.value?.tasks?.findLast { it.taskNumber == taskNumber }
+        taskHeader?.let {
+            val notifications = result.notifications.map { TaskNotification.from(it) }
+            val newTask = taskManager.newReceivingTask(taskHeader, TaskDescription.from(result.taskDescription), notifications)
+            taskManager.setTask(newTask)
+            screenNavigator.openTaskCardScreen()
+        }
     }
 
     override fun clean() {

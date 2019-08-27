@@ -30,7 +30,7 @@ class LoadingTaskCardFragment : CoreLoadingFragment() {
     }
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
-        topToolbarUiModel.description.value = getString(R.string.tasks_loading)
+        topToolbarUiModel.description.value = getString(R.string.task_card)
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
@@ -47,7 +47,7 @@ class LoadingTaskCardFragment : CoreLoadingFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        vm.title.value = getString(R.string.tasks_loading)
+        vm.title.value = getString(R.string.task_loading)
     }
 
     companion object {

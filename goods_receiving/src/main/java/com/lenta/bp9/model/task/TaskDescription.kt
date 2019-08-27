@@ -37,7 +37,7 @@ data class TaskDescription(val currentStatusCode: String,   //Код текущ�
                     nextStatusText = restData.nextStatusText,
                     ttnNumber = restData.ttnNumber,
                     orderNumber = restData.orderNumber,
-                    deliveryNumber = restData.deliveryNumber,
+                    deliveryNumber = restData.deliveryNumber ?: "",
                     plannedDeliveryDate = restData.plannedDeliveryDate,
                     plannedDeliveryTime = restData.plannedDeliveryTime,
                     actualArrivalDate = restData.actualArrivalDate,
@@ -73,7 +73,7 @@ data class TaskDescriptionRestInfo(
         @SerializedName("EBELN")
         val orderNumber: String,
         @SerializedName("VEBELN")
-        val deliveryNumber: String,
+        val deliveryNumber: String?,
         @SerializedName("DATE_PLAN")
         val plannedDeliveryDate: String,
         @SerializedName("TIME_PLAN")

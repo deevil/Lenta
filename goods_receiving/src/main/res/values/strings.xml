@@ -8,6 +8,7 @@
     <string name="search">Поиск</string>
     <string name="postponed">Отложенные</string>
     <string name="tasks_loading">Загрузка заданий</string>
+    <string name="task_loading">Загрузка задания</string>
     <string name="filter_hint">Введите заказ / транспортировку</string>
     <string name="shipment_task">Задания на отгрузку</string>
     <string name="recount_task">Задания на пересчет ГЕ</string>
@@ -24,4 +25,8 @@
     <string name="without_barcode">Без штрихкода</string>
     <string name="unlock_confirmation">Задание заблокировано этим же логином на ТСД. Разблокировать и начать обработку?</string>
     <string name="view_confirmation">Задание заблокировано под другим логином на ТСД. Перейти к просмотру этого задания?</string>
+    <string name="task_card">Карточка задания</string>
+    <string name="status">Статус</string>
+    <string name="delivery">Поставка</string>
+    <string name="notifications">Уведомления</string>
 </resources>

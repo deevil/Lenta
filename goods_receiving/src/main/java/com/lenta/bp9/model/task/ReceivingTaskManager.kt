@@ -10,8 +10,9 @@ class ReceivingTaskManager : IReceivingTaskManager {
         return currentReceivingTask
     }
 
-    override fun newReceivingTask(taskDescription: TaskDescription): ReceivingTask? {
-        currentReceivingTask = ReceivingTask(taskDescription, taskRepository = MemoryTaskRepository())
+    override fun newReceivingTask(taskHeader: TaskInfo, taskDescription: TaskDescription, notifications: List<TaskNotification>) : ReceivingTask?
+    {
+        currentReceivingTask = ReceivingTask(taskHeader, taskDescription, notifications, taskRepository = MemoryTaskRepository())
         return  currentReceivingTask
     }
 

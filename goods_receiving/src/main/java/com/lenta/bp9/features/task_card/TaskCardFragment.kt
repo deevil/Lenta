@@ -11,6 +11,7 @@ import android.os.Bundle
 import com.lenta.shared.utilities.databinding.ViewPagerSettings
 import android.view.ViewGroup
 import android.view.View
+import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.utilities.extentions.generateScreenNumber
 
 class TaskCardFragment : CoreFragment<FragmentTaskCardBinding, TaskCardViewModel>(), ViewPagerSettings {
@@ -27,11 +28,13 @@ class TaskCardFragment : CoreFragment<FragmentTaskCardBinding, TaskCardViewModel
     }
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
-
+        topToolbarUiModel.title.value = vm.taskCaption
+        topToolbarUiModel.description.value = getString(R.string.task_card)
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
-
+        bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
+        bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.next)
     }
 
     override fun getPagerItemView(container: ViewGroup, position: Int): View {
@@ -39,7 +42,12 @@ class TaskCardFragment : CoreFragment<FragmentTaskCardBinding, TaskCardViewModel
     }
 
     override fun getTextTitle(position: Int): String {
-        return "Title: $position"
+        return when (position) {
+            0 -> getString(R.string.status)
+            1 -> getString(R.string.delivery)
+            2 -> getString(R.string.notifications)
+            else -> ""
+        }
     }
 
     override fun countTab(): Int {
