@@ -1,8 +1,8 @@
 package com.lenta.bp14.features.work_list.goods_list
 
 import androidx.lifecycle.MutableLiveData
-import com.lenta.bp14.data.Tab
 import com.lenta.bp14.data.TaskManager
+import com.lenta.bp14.data.WorkListTab
 import com.lenta.bp14.data.model.Good
 import com.lenta.bp14.platform.navigation.IScreenNavigator
 import com.lenta.shared.models.core.Uom
@@ -85,9 +85,9 @@ class GoodsListWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
 
     private fun getGoodByPosition(position: Int): Good? {
         return when (selectedPage.value) {
-            Tab.WL_PROCESSING.position -> processingGoods.value?.get(position)
-            Tab.WL_PROCESSED.position -> processedGoods.value?.get(position)
-            Tab.WL_SEARCH.position -> searchGoods.value?.get(position)
+            WorkListTab.PROCESSING.position -> processingGoods.value?.get(position)
+            WorkListTab.PROCESSED.position -> processedGoods.value?.get(position)
+            WorkListTab.SEARCH.position -> searchGoods.value?.get(position)
             else -> null
         }
     }

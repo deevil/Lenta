@@ -2,7 +2,7 @@ package com.lenta.bp14.features.price_check.goods_list
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.lenta.bp14.data.Tab
+import com.lenta.bp14.data.PriceCheckTab
 import com.lenta.bp14.data.model.Good
 import com.lenta.bp14.data.TaskManager
 import com.lenta.bp14.platform.navigation.IScreenNavigator
@@ -11,6 +11,8 @@ import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.databinding.PageSelectionListener
+import com.lenta.shared.utilities.extentions.combineLatest
+import com.lenta.shared.utilities.extentions.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -22,7 +24,8 @@ class GoodsListPcViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     lateinit var taskManager: TaskManager
 
 
-    val selectionsHelper = SelectionItemsHelper()
+    val processedSelectionsHelper = SelectionItemsHelper()
+    val searchSelectionsHelper = SelectionItemsHelper()
 
     val selectedPage = MutableLiveData(0)
 
@@ -31,6 +34,22 @@ class GoodsListPcViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     val processingGoods = MutableLiveData<List<Good>>(getTestItems())
     val processedGoods = MutableLiveData<List<Good>>(getTestItems())
     val searchGoods = MutableLiveData<List<Good>>(getTestItems())
+
+    private val selectedItemOnCurrentTab: MutableLiveData<Boolean> = selectedPage
+            .combineLatest(processedSelectionsHelper.selectedPositions)
+            .combineLatest(searchSelectionsHelper.selectedPositions)
+            .map {
+                val tab = it?.first?.first?.toInt()
+                val processedSelected = it?.first?.second?.isNotEmpty() == true
+                val searchSelected = it?.second?.isNotEmpty() == true
+                tab == PriceCheckTab.PROCESSED.position && processedSelected || tab == PriceCheckTab.SEARCH.position && searchSelected
+    }
+
+    val deleteButtonEnabled = selectedItemOnCurrentTab.map { it }
+    val printButtonEnabled = selectedItemOnCurrentTab.map { it }
+
+    val deleteButtonVisibility = selectedPage.map { it != PriceCheckTab.PROCESSING.position }
+    val printButtonVisibility = selectedPage.map { it != PriceCheckTab.PROCESSING.position }
 
     override fun onPageSelected(position: Int) {
         selectedPage.value = position
@@ -84,9 +103,9 @@ class GoodsListPcViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
 
     private fun getGoodByPosition(position: Int): Good? {
         return when (selectedPage.value) {
-            Tab.PC_PROCESSING.position -> processingGoods.value?.get(position)
-            Tab.PC_PROCESSED.position -> processedGoods.value?.get(position)
-            Tab.PC_SEARCH.position -> searchGoods.value?.get(position)
+            PriceCheckTab.PROCESSING.position -> processingGoods.value?.get(position)
+            PriceCheckTab.PROCESSED.position -> processedGoods.value?.get(position)
+            PriceCheckTab.SEARCH.position -> searchGoods.value?.get(position)
             else -> null
         }
     }

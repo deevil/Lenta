@@ -22,6 +22,7 @@ import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.databinding.DataBindingAdapter
 import com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig
 import com.lenta.shared.utilities.databinding.RecyclerViewKeyHandler
+import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
 
 class GoodsListPcFragment : CoreFragment<FragmentGoodsListPcBinding, GoodsListPcViewModel>(),
@@ -55,6 +56,11 @@ class GoodsListPcFragment : CoreFragment<FragmentGoodsListPcBinding, GoodsListPc
         bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.delete)
         bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.print)
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.save)
+
+        connectLiveData(vm.deleteButtonEnabled, getBottomToolBarUIModel()!!.uiModelButton3.enabled)
+        connectLiveData(vm.printButtonEnabled, getBottomToolBarUIModel()!!.uiModelButton4.enabled)
+        connectLiveData(vm.deleteButtonVisibility, getBottomToolBarUIModel()!!.uiModelButton3.visibility)
+        connectLiveData(vm.printButtonVisibility, getBottomToolBarUIModel()!!.uiModelButton4.visibility)
     }
 
     override fun onToolbarButtonClick(view: View) {
@@ -116,7 +122,7 @@ class GoodsListPcFragment : CoreFragment<FragmentGoodsListPcBinding, GoodsListPc
 
                 val onClickSelectionListener = View.OnClickListener {
                     (it!!.tag as Int).let { position ->
-                        vm.selectionsHelper.revert(position = position)
+                        vm.processedSelectionsHelper.revert(position = position)
                         layoutBinding.rv.adapter?.notifyItemChanged(position)
                     }
                 }
@@ -131,7 +137,7 @@ class GoodsListPcFragment : CoreFragment<FragmentGoodsListPcBinding, GoodsListPc
                             override fun onBind(binding: ItemGoodCheckSelectableBinding, position: Int) {
                                 binding.tvItemNumber.tag = position
                                 binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
-                                binding.selectedForDelete = vm.selectionsHelper.isSelected(position)
+                                binding.selectedForDelete = vm.processedSelectionsHelper.isSelected(position)
                                 processedRecyclerViewKeyHandler?.let {
                                     binding.root.isSelected = it.isSelected(position)
                                 }
@@ -167,7 +173,7 @@ class GoodsListPcFragment : CoreFragment<FragmentGoodsListPcBinding, GoodsListPc
 
             val onClickSelectionListener = View.OnClickListener {
                 (it!!.tag as Int).let { position ->
-                    vm.selectionsHelper.revert(position = position)
+                    vm.searchSelectionsHelper.revert(position = position)
                     layoutBinding.rv.adapter?.notifyItemChanged(position)
                 }
             }
@@ -182,7 +188,7 @@ class GoodsListPcFragment : CoreFragment<FragmentGoodsListPcBinding, GoodsListPc
                         override fun onBind(binding: ItemGoodCheckSelectableBinding, position: Int) {
                             binding.tvItemNumber.tag = position
                             binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
-                            binding.selectedForDelete = vm.selectionsHelper.isSelected(position)
+                            binding.selectedForDelete = vm.searchSelectionsHelper.isSelected(position)
                             searchRecyclerViewKeyHandler?.let {
                                 binding.root.isSelected = it.isSelected(position)
                             }
