@@ -45,6 +45,8 @@ class StoragesListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     val processedStorages: MutableLiveData<List<StoragePlaceVM>> = MutableLiveData()
     var selectedPage = MutableLiveData(0)
 
+    val completeEnabled: MutableLiveData<Boolean> = processedStorages.map { it?.isNotEmpty() == true }
+
     val storageNumber: MutableLiveData<String> = MutableLiveData()
     val requestFocusToStorageNumber: MutableLiveData<Boolean> = MutableLiveData()
     val processedSelectionHelper = SelectionItemsHelper()
