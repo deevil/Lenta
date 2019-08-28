@@ -17,6 +17,7 @@ import com.lenta.inventory.requests.network.TaskContentParams
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.platform.viewmodel.CoreViewModel
+import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.extentions.combineLatest
@@ -67,10 +68,10 @@ class StoragesListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     }
 
     fun onResume() {
+        Logg.d { "needsUpdate: $needsUpdate" }
         if (needsUpdate) {
             onClickRefresh()
-        } else {
-            needsUpdate = true
+            needsUpdate = false
         }
     }
 
@@ -121,12 +122,14 @@ class StoragesListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     }
 
     fun onClickComplete() {
+
         taskManager.getInventoryTask()?.let {
+            needsUpdate = false
+            Logg.d { "needsUpdate set $needsUpdate" }
             if (it.hasDiscrepancies()) {
                 screenNavigator.openDiscrepanciesScreen()
             } else {
                 screenNavigator.openConfirmationSavingJobScreen {
-                    needsUpdate = false
                     dataSaver.saveData(true)
                 }
             }
@@ -184,6 +187,7 @@ class StoragesListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
         }
         storeNumber?.let { storePlaceNumber ->
             val storePlace = taskManager.getInventoryTask()!!.taskRepository.getStorePlace().findStorePlace(storePlaceNumber)
+            needsUpdate = true
             when (storePlace?.status) {
                 StorePlaceStatus.LockedByMe, StorePlaceStatus.LockedByOthers ->
                     screenNavigator.openConfirmationTakeStorePlace {
@@ -215,7 +219,8 @@ class StoragesListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
                     it.taskRepository.getStorePlace().addStorePlace(TaskStorePlaceInfo(placeCode = storageNumber, lockIP = "", lockUser = "", status = StorePlaceStatus.None, addedManually = true))
                     updateUnprocessed()
                 }
-                needsUpdate = false
+                Logg.d { "needsUpdate set $needsUpdate" }
+                needsUpdate = true
                 screenNavigator.openLoadingStorePlaceLockScreen(StorePlaceLockMode.Lock, storageNumber)
             }
         }
