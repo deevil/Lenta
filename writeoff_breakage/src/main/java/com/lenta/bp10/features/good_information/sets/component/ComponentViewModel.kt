@@ -1,5 +1,6 @@
 package com.lenta.bp10.features.good_information.sets.component
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp10.features.good_information.base.BaseProductInfoViewModel
@@ -11,7 +12,6 @@ import com.lenta.bp10.models.repositories.ITaskRepository
 import com.lenta.bp10.models.task.ProcessExciseAlcoProductService
 import com.lenta.bp10.models.task.TaskDescription
 import com.lenta.bp10.models.task.WriteOffReason
-import com.lenta.shared.models.core.ProductInfo
 import com.lenta.shared.models.core.ProductType
 import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
 import com.lenta.shared.utilities.extentions.combineLatest
@@ -32,6 +32,10 @@ class ComponentViewModel : BaseProductInfoViewModel() {
 
     @Inject
     lateinit var stampsCollectorManager: StampsCollectorManager
+
+    val rollBackEnabled: LiveData<Boolean> by lazy {
+        countValue.map { it ?: 0.0 > 0.0 }
+    }
 
     override val enabledApplyButton: MutableLiveData<Boolean> by lazy {
         countValue.combineLatest(selectedPosition).map {

@@ -357,6 +357,18 @@ class ScreenNavigator(
         )
     }
 
+    override fun openConfirmationSavingForParallelsActiveUserDialog(callbackFunc: () -> Unit) {
+        getFragmentStack()?.push(
+                AlertFragment.create(
+                        description = context.getString(R.string.data_saving),
+                        message = context.getString(R.string.confirmation_saving_for_parallels_active_users),
+                        pageNumber = "93",
+                        codeConfirmForRight = backFragmentResultHelper.setFuncForResult(callbackFunc),
+                        rightButtonDecorationInfo = ButtonDecorationInfo.yes
+                )
+        )
+    }
+
 
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 
@@ -401,4 +413,5 @@ interface IScreenNavigator : ICoreNavigator {
     fun openAlertStampOverload(message: String, callbackFunc: () -> Unit)
     fun openAlertInfoScreen(message: String)
     fun openMinUpdateSalesDialogScreen(minUpdSales: Long, functionForLeft: () -> Unit, functionForRight: () -> Unit)
+    fun openConfirmationSavingForParallelsActiveUserDialog(callbackFunc: () -> Unit)
 }

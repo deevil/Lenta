@@ -41,7 +41,7 @@ class ProcessExciseAlcoProductServiceTest : BaseUnitTest() {
                 taskName = "12 неделя",
                 taskType = "ВИ",
                 tkNumber = "0001",
-                isRecount = true,
+                ivCountPerNr = true,
                 isStrict = true,
                 blockType = "",
                 lockUser = "",

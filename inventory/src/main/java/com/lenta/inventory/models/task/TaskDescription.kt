@@ -6,54 +6,54 @@ import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.models.core.GisControl
 import javax.inject.Inject
 
-class TaskDescription (val taskNumber: String,
-                       val taskName: String,
-                       val taskType: String,
-                       val tkNumber: String,
-                       val isRecount: Boolean,
-                       val isStrict: Boolean,
-                       val blockType: String,
-                       val lockUser: String,
-                       val lockIP: String, //????
-                       val productsInTask: Int, //NUM_POS - rest91
-                       val isStarted: Boolean, //!notFinish - rest91
-                       val dateFrom: String,
-                       val dateTo: String,
-                       val taskDeadLine: String, //Время на обработку задания (строка) REST-96
-                       val recountType: RecountType, //mode - rest91
-                       val gis: GisControl,
-                       val linkOldStamp: Boolean) {
+class TaskDescription(val taskNumber: String,
+                      val taskName: String,
+                      val taskType: String,
+                      val tkNumber: String,
+                      val ivCountPerNr: Boolean,
+                      val isStrict: Boolean,
+                      val blockType: String,
+                      val lockUser: String,
+                      val lockIP: String, //????
+                      val productsInTask: Int, //NUM_POS - rest91
+                      val isStarted: Boolean, //!notFinish - rest91
+                      val dateFrom: String,
+                      val dateTo: String,
+                      val taskDeadLine: String, //Время на обработку задания (строка) REST-96
+                      val recountType: RecountType, //mode - rest91
+                      val gis: GisControl,
+                      val linkOldStamp: Boolean) {
 
     @Inject
     lateinit var sessionInfo: ISessionInfo
 
-    fun getTaskTypeAndNumber() : String {
+    fun getTaskTypeAndNumber(): String {
         return "$taskType-$taskNumber"
     }
 
-    fun isAlco() : Boolean {
+    fun isAlco(): Boolean {
         return gis == GisControl.Alcohol
     }
 
-    fun isBlockedByMe() : Boolean {
+    fun isBlockedByMe(): Boolean {
         return blockType == "1" && lockUser == sessionInfo.userName
     }
 
-    fun isBlocked() : Boolean {
+    fun isBlocked(): Boolean {
         return blockType == "1" && lockUser != sessionInfo.userName
     }
 
-    fun isMultiUser() : Boolean {
+    fun isMultiUser(): Boolean {
         return blockType == "2"
     }
 
     companion object {
-        fun from(taskInfo: TasksItem, recountType: RecountType, deadline: String, tkNumber: String, linkOldStamp: Boolean) : TaskDescription {
+        fun from(taskInfo: TasksItem, recountType: RecountType, deadline: String, tkNumber: String, linkOldStamp: Boolean): TaskDescription {
             return TaskDescription(taskNumber = taskInfo.taskNumber,
                     taskName = taskInfo.taskName,
                     taskType = taskInfo.taskType,
                     tkNumber = tkNumber,
-                    isRecount = taskInfo.isRecount.isNotEmpty(),
+                    ivCountPerNr = recountType == RecountType.ParallelByPerNo,
                     isStrict = taskInfo.isStrict.isNotEmpty(),
                     blockType = taskInfo.blockType,
                     lockUser = taskInfo.lockUser,

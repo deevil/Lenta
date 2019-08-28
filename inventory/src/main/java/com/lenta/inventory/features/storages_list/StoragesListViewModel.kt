@@ -126,6 +126,7 @@ class StoragesListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
                 screenNavigator.openDiscrepanciesScreen()
             } else {
                 screenNavigator.openConfirmationSavingJobScreen {
+                    needsUpdate = false
                     dataSaver.saveData(true)
                 }
             }
@@ -241,7 +242,8 @@ data class StoragePlaceVM(
 
     companion object {
         fun from(taskStoragePlaceInfo: TaskStorePlaceInfo, productsQuantity: Int, number: Int): StoragePlaceVM {
-            return StoragePlaceVM(number = number,
+            return StoragePlaceVM(
+                    number = number,
                     storeNumber = taskStoragePlaceInfo.placeCode,
                     status = taskStoragePlaceInfo.status,
                     name = taskStoragePlaceInfo.placeCode,

@@ -1,8 +1,6 @@
 package com.lenta.inventory.features.discrepancies_found
 
-import android.content.Context
 import android.os.Bundle
-import android.transition.Visibility
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,7 +14,6 @@ import com.lenta.inventory.databinding.ItemTileDiscrepanciesBinding
 import com.lenta.inventory.databinding.LayoutDiscrepanciesBinding
 import com.lenta.inventory.databinding.LayoutDiscrepanciesByStorageBinding
 import com.lenta.inventory.platform.extentions.getAppComponent
-import com.lenta.shared.keys.OnKeyDownListener
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
