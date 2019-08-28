@@ -3,6 +3,7 @@ package com.lenta.inventory.models.task
 import com.lenta.inventory.models.RecountType
 import com.lenta.inventory.models.repositories.ITaskRepository
 import com.lenta.inventory.requests.network.*
+import com.lenta.shared.utilities.date_time.DateTimeUtil.convertMilisecondsToHHMm
 
 class InventoryTask(val taskDescription: TaskDescription, val taskRepository: ITaskRepository) {
 
@@ -21,12 +22,12 @@ class InventoryTask(val taskDescription: TaskDescription, val taskRepository: IT
     //Вызывается в двух случаях:
     //1. Нестрогий список, обычный пересчет, товар по умолчанию находится в общем МХ 00
     fun deleteProduct(productNumber: String, storePlaceNumber: String = "00") {
-     taskRepository.getProducts().findProduct(productNumber, storePlaceNumber)?.let {
-         if (it.isAddedManually) {
-             taskRepository.getProducts().deleteProduct(it)
-         } else {
-             taskRepository.getProducts().changeProduct(it.copy(isDel = true))
-         }
+        taskRepository.getProducts().findProduct(productNumber, storePlaceNumber)?.let {
+            if (it.isAddedManually) {
+                taskRepository.getProducts().deleteProduct(it)
+            } else {
+                taskRepository.getProducts().changeProduct(it.copy(isDel = true))
+            }
         }
     }
 
@@ -168,5 +169,18 @@ class InventoryTask(val taskDescription: TaskDescription, val taskRepository: IT
         } else {
             return taskRepository.getProducts().getNotProcessedProducts()
         }
+    }
+
+    fun getElapsedTimePrintable(unixTime: Long): String {
+        var elapsedTimeInMillis: Long? = null
+        taskDescription.processingEndTime?.let {
+            elapsedTimeInMillis = it - unixTime
+        }
+
+        if (elapsedTimeInMillis == null || elapsedTimeInMillis!! < 0) {
+            return ""
+        }
+
+        return convertMilisecondsToHHMm(elapsedTimeInMillis)
     }
 }

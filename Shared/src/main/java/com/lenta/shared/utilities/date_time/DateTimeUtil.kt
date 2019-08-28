@@ -36,7 +36,10 @@ object DateTimeUtil {
         return getDateFormat(format).parse(dateString)
     }
 
-    fun convertMilisecondsToHHMm(mSecs: Long): String {
+    fun convertMilisecondsToHHMm(mSecs: Long?): String {
+        if (mSecs == null) {
+            return ""
+        }
         return DurationFormatUtils.formatDuration(mSecs, Constants.TIME_FORMAT_HHmm)
     }
 
