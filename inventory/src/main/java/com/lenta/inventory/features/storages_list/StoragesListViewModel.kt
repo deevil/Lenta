@@ -12,11 +12,11 @@ import com.lenta.inventory.models.task.IInventoryTaskManager
 import com.lenta.inventory.models.task.TaskContents
 import com.lenta.inventory.models.task.TaskStorePlaceInfo
 import com.lenta.inventory.platform.navigation.IScreenNavigator
-import com.lenta.inventory.requests.network.TaskContentNetRequest
-import com.lenta.inventory.requests.network.TaskContentParams
+import com.lenta.inventory.requests.network.*
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.platform.viewmodel.CoreViewModel
+import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.extentions.combineLatest
@@ -39,10 +39,14 @@ class StoragesListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     lateinit var context: Context
     @Inject
     lateinit var dataSaver: DataSaver
+    @Inject
+    lateinit var lockRequest: StorePlaceLockNetRequest
 
     val unprocessedStorages: MutableLiveData<List<StoragePlaceVM>> = MutableLiveData()
     val processedStorages: MutableLiveData<List<StoragePlaceVM>> = MutableLiveData()
     var selectedPage = MutableLiveData(0)
+
+    val completeEnabled: MutableLiveData<Boolean> = processedStorages.map { it?.isNotEmpty() == true }
 
     val storageNumber: MutableLiveData<String> = MutableLiveData()
     val requestFocusToStorageNumber: MutableLiveData<Boolean> = MutableLiveData()
@@ -67,10 +71,13 @@ class StoragesListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     }
 
     fun onResume() {
+        Logg.d { "needsUpdate: $needsUpdate" }
         if (needsUpdate) {
             onClickRefresh()
+            needsUpdate = false
         } else {
-            needsUpdate = true
+            updateUnprocessed()
+            updateProcessed()
         }
     }
 
@@ -104,29 +111,43 @@ class StoragesListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
     fun onClickClean() {
         screenNavigator.openConfirmationClean(byStorage = true) {
-            val selectedPositions = processedSelectionHelper.selectedPositions.value
-                    ?: emptySet<Int>()
-            for (position in selectedPositions) {
-                processedStorages.value?.get(position)?.let {
-                    taskManager.getInventoryTask()?.clearStorePlaceByNumber(it.storeNumber)
-                }
-            }
-            processedSelectionHelper.clearPositions()
-            updateUnprocessed()
-            updateProcessed()
             viewModelScope.launch {
+                screenNavigator.showProgress(lockRequest)
+                Logg.d { "processedSelectionHelper.selectedPositions size: ${processedSelectionHelper.selectedPositions.value?.size}" }
+                val selectedPositions = processedSelectionHelper.selectedPositions.value
+                        ?: emptySet<Int>()
+                for (position in selectedPositions) {
+                    processedStorages.value?.get(position)?.let { storePlaceVm ->
+                        taskManager.getInventoryTask()?.let {
+                            lockRequest(StorePlaceLockParams(ip = context.getDeviceIp(),
+                                    taskNumber = it.taskDescription.taskNumber,
+                                    storePlaceCode = storePlaceVm.storeNumber,
+                                    mode = StorePlaceLockMode.Unlock.mode,
+                                    userNumber = "")).either(::handleFailure) {
+                                taskManager.getInventoryTask()?.clearStorePlaceByNumber(storePlaceVm.storeNumber)
+                                return@either false
+                            }
+                        }
+
+                    }
+                }
+                processedSelectionHelper.clearPositions()
+                screenNavigator.hideProgress()
+                onClickRefresh()
                 moveToPreviousPageIfNeeded()
             }
         }
     }
 
     fun onClickComplete() {
+
         taskManager.getInventoryTask()?.let {
+            needsUpdate = false
+            Logg.d { "needsUpdate set $needsUpdate" }
             if (it.hasDiscrepancies()) {
                 screenNavigator.openDiscrepanciesScreen()
             } else {
                 screenNavigator.openConfirmationSavingJobScreen {
-                    needsUpdate = false
                     dataSaver.saveData(true)
                 }
             }
@@ -184,6 +205,7 @@ class StoragesListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
         }
         storeNumber?.let { storePlaceNumber ->
             val storePlace = taskManager.getInventoryTask()!!.taskRepository.getStorePlace().findStorePlace(storePlaceNumber)
+            needsUpdate = true
             when (storePlace?.status) {
                 StorePlaceStatus.LockedByMe, StorePlaceStatus.LockedByOthers ->
                     screenNavigator.openConfirmationTakeStorePlace {
@@ -215,7 +237,8 @@ class StoragesListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
                     it.taskRepository.getStorePlace().addStorePlace(TaskStorePlaceInfo(placeCode = storageNumber, lockIP = "", lockUser = "", status = StorePlaceStatus.None, addedManually = true))
                     updateUnprocessed()
                 }
-                needsUpdate = false
+                Logg.d { "needsUpdate set $needsUpdate" }
+                needsUpdate = true
                 screenNavigator.openLoadingStorePlaceLockScreen(StorePlaceLockMode.Lock, storageNumber)
             }
         }

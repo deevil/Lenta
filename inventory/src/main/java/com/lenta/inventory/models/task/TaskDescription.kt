@@ -6,23 +6,25 @@ import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.models.core.GisControl
 import javax.inject.Inject
 
-class TaskDescription(val taskNumber: String,
-                      val taskName: String,
-                      val taskType: String,
-                      val tkNumber: String,
-                      val ivCountPerNr: Boolean,
-                      val isStrict: Boolean,
-                      val blockType: String,
-                      val lockUser: String,
-                      val lockIP: String, //????
-                      val productsInTask: Int, //NUM_POS - rest91
-                      val isStarted: Boolean, //!notFinish - rest91
-                      val dateFrom: String,
-                      val dateTo: String,
-                      val taskDeadLine: String, //Время на обработку задания (строка) REST-96
-                      val recountType: RecountType, //mode - rest91
-                      val gis: GisControl,
-                      val linkOldStamp: Boolean) {
+data class TaskDescription(val taskNumber: String,
+                           val taskName: String,
+                           val taskType: String,
+                           val tkNumber: String,
+                           val ivCountPerNr: Boolean,
+                           val isStrict: Boolean,
+                           val blockType: String,
+                           val lockUser: String,
+                           val lockIP: String, //????
+                           val productsInTask: Int, //NUM_POS - rest91
+                           val isStarted: Boolean, //!notFinish - rest91
+                           val dateFrom: String,
+                           val dateTo: String,
+                           val taskDeadLine: String, //Время на обработку задания (строка) REST-96
+                           val recountType: RecountType, //mode - rest91
+                           val gis: GisControl,
+                           val linkOldStamp: Boolean,
+                           val processingEndTime: Long?,
+                           val isRecount: Boolean) {
 
     @Inject
     lateinit var sessionInfo: ISessionInfo
@@ -48,7 +50,8 @@ class TaskDescription(val taskNumber: String,
     }
 
     companion object {
-        fun from(taskInfo: TasksItem, recountType: RecountType, deadline: String, tkNumber: String, linkOldStamp: Boolean): TaskDescription {
+        fun from(taskInfo: TasksItem, recountType: RecountType, deadline: String, tkNumber: String,
+                 linkOldStamp: Boolean, processingEndTime: Long?, isRecount: Boolean): TaskDescription {
             return TaskDescription(taskNumber = taskInfo.taskNumber,
                     taskName = taskInfo.taskName,
                     taskType = taskInfo.taskType,
@@ -65,7 +68,9 @@ class TaskDescription(val taskNumber: String,
                     taskDeadLine = deadline,
                     recountType = recountType,
                     gis = if (taskInfo.gis == "A") GisControl.Alcohol else GisControl.GeneralProduct,
-                    linkOldStamp = linkOldStamp)
+                    linkOldStamp = linkOldStamp,
+                    processingEndTime = processingEndTime,
+                    isRecount = isRecount)
         }
     }
 }

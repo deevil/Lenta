@@ -51,6 +51,7 @@ class StoragesListFragment : CoreFragment<FragmentStoragesListBinding, StoragesL
         bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.update)
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.complete)
         connectLiveData(source = vm.deleteEnabled, target = getBottomToolBarUIModel()!!.uiModelButton3.enabled)
+        connectLiveData(source = vm.completeEnabled, target = getBottomToolBarUIModel()!!.uiModelButton5.enabled)
         viewLifecycleOwner.apply {
             vm.selectedPage.observe(this, Observer {
                 if (it == 0) {

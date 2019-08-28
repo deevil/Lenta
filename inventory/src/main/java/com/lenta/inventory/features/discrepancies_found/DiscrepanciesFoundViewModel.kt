@@ -14,6 +14,7 @@ import com.lenta.inventory.requests.network.StorePlaceLockParams
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.platform.device_info.DeviceInfo
+import com.lenta.shared.platform.time.ITimeMonitor
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.SelectionItemsHelper
 import kotlinx.coroutines.launch
@@ -37,6 +38,8 @@ class DiscrepanciesFoundViewModel : CoreViewModel() {
     lateinit var sessionInfo: ISessionInfo
     @Inject
     lateinit var deviceInfo: DeviceInfo
+    @Inject
+    lateinit var timeMonitor: ITimeMonitor
 
     val discrepanciesByGoods: MutableLiveData<List<DiscrepancyVM>> = MutableLiveData()
     val discrepanciesByStorage: MutableLiveData<List<DiscrepancyVM>> = MutableLiveData()
@@ -155,11 +158,9 @@ class DiscrepanciesFoundViewModel : CoreViewModel() {
     fun onClickSkip() {
         if (isNotEmpty.value == true) {
             if (taskManager.getInventoryTask()!!.taskDescription.ivCountPerNr) {
-                checkIsForkAnotherUsersNow()
+                checkIsHaveAnotherUsersNow()
             } else {
-                screenNavigator.openConfirmationSkippingDiscrepancies {
-                    dataSaver.saveData(false)
-                }
+                openConfirmationSkippingDialog()
             }
 
         } else {
@@ -169,7 +170,7 @@ class DiscrepanciesFoundViewModel : CoreViewModel() {
         }
     }
 
-    private fun checkIsForkAnotherUsersNow() {
+    private fun checkIsHaveAnotherUsersNow() {
 
         viewModelScope.launch {
             screenNavigator.showProgress(lockRequest)
@@ -215,14 +216,28 @@ class DiscrepanciesFoundViewModel : CoreViewModel() {
     }
 
     private fun openConfirmationSkippingDialog() {
-        screenNavigator.openConfirmationSkippingDiscrepanciesRecount(
-                rightCallbackFunc = {
-                    dataSaver.saveData(true)
-                },
-                middleCallbackFunc = {
+        if (taskManager.getInventoryTask()?.taskDescription?.isRecount == true) {
+            screenNavigator.openConfirmationSkippingDiscrepanciesRecount(
+                    elapsedTime = taskManager.getInventoryTask()?.getElapsedTimePrintable(timeMonitor.getUnixTime())
+                            ?: "",
+                    rightCallbackFunc = {
+                        dataSaver.saveData(true)
+                    },
+                    middleCallbackFunc = {
+                        dataSaver.saveData(false)
+                    }
+            )
+            return
+        }
+
+        screenNavigator.openConfirmationSkippingDiscrepancies(
+                elapsedTime = taskManager.getInventoryTask()?.getElapsedTimePrintable(timeMonitor.getUnixTime())
+                        ?: "",
+                callbackFunc = {
                     dataSaver.saveData(false)
                 }
         )
+
     }
 
     fun onClickDeleteUntie() {

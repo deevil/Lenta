@@ -16,6 +16,7 @@ import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.features.loading.CoreLoadingViewModel
 import com.lenta.shared.platform.device_info.DeviceInfo
+import com.lenta.shared.platform.time.ITimeMonitor
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.getDeviceIp
 import kotlinx.coroutines.launch
@@ -38,6 +39,8 @@ class LoadingTaskContentViewModel : CoreLoadingViewModel() {
     lateinit var storePlaceLockNetRequest: StorePlaceLockNetRequest
     @Inject
     lateinit var deviceInfo: DeviceInfo
+    @Inject
+    lateinit var timeMonitor: ITimeMonitor
 
     lateinit var taskInfo: TasksItem
     lateinit var recountType: RecountType
@@ -117,11 +120,34 @@ class LoadingTaskContentViewModel : CoreLoadingViewModel() {
                 recountType = recountType,
                 deadline = taskContents.deadline,
                 tkNumber = sessionInfo.market!!,
-                linkOldStamp = taskContents.linkOldStamp
-        )
+                linkOldStamp = taskContents.linkOldStamp,
+                processingEndTime = getProcessingEndTime(taskContents.deadline),
+                isRecount = taskInfo.isRecount.isNotEmpty()
+
+        ).apply {
+            Logg.d { "taskDescription: $this" }
+        }
         taskManager.newInventoryTask(taskDescription)
         taskManager.getInventoryTask()?.updateTaskWithContents(taskContents)
         screenNavigator.openTakenToWorkFragment()
+    }
+
+    private fun getProcessingEndTime(deadline: String): Long? {
+
+        deadline.split(":").let {
+
+            val hours = it.getOrNull(0)?.toLongOrNull()
+            val minutes = it.getOrNull(1)?.toLongOrNull()
+
+            if (hours == null || minutes == null) {
+                return null
+            }
+
+            val elapsedTimeInMillis = ((hours * 60) + minutes) * 60 * 1000
+
+            return timeMonitor.getUnixTime() + elapsedTimeInMillis
+        }
+
     }
 
     override fun clean() {
