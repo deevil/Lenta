@@ -160,13 +160,7 @@ class DiscrepanciesFoundViewModel : CoreViewModel() {
             if (taskManager.getInventoryTask()!!.taskDescription.ivCountPerNr) {
                 checkIsHaveAnotherUsersNow()
             } else {
-                screenNavigator.openConfirmationSkippingDiscrepancies(
-                        elapsedTime = taskManager.getInventoryTask()?.getElapsedTimePrintable(timeMonitor.getUnixTime())
-                                ?: "",
-                        callbackFunc = {
-                            dataSaver.saveData(false)
-                        }
-                )
+                openConfirmationSkippingDialog()
             }
 
         } else {
@@ -222,16 +216,28 @@ class DiscrepanciesFoundViewModel : CoreViewModel() {
     }
 
     private fun openConfirmationSkippingDialog() {
-        screenNavigator.openConfirmationSkippingDiscrepanciesRecount(
+        if (taskManager.getInventoryTask()?.taskDescription?.isRecount == true) {
+            screenNavigator.openConfirmationSkippingDiscrepanciesRecount(
+                    elapsedTime = taskManager.getInventoryTask()?.getElapsedTimePrintable(timeMonitor.getUnixTime())
+                            ?: "",
+                    rightCallbackFunc = {
+                        dataSaver.saveData(true)
+                    },
+                    middleCallbackFunc = {
+                        dataSaver.saveData(false)
+                    }
+            )
+            return
+        }
+
+        screenNavigator.openConfirmationSkippingDiscrepancies(
                 elapsedTime = taskManager.getInventoryTask()?.getElapsedTimePrintable(timeMonitor.getUnixTime())
                         ?: "",
-                rightCallbackFunc = {
-                    dataSaver.saveData(true)
-                },
-                middleCallbackFunc = {
+                callbackFunc = {
                     dataSaver.saveData(false)
                 }
         )
+
     }
 
     fun onClickDeleteUntie() {
