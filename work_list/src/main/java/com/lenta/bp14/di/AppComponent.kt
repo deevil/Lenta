@@ -1,6 +1,7 @@
 package com.lenta.bp14.di
 
 import com.lenta.bp14.ExceptionHandler
+import com.lenta.bp14.data.TaskManager
 import com.lenta.bp14.features.auth.AuthViewModel
 import com.lenta.bp14.features.check_list.goods_list.GoodsListClViewModel
 import com.lenta.bp14.features.work_list.good_info.GoodInfoWlViewModel
@@ -30,6 +31,9 @@ import dagger.Component
 @Component(modules = [AppModule::class], dependencies = [CoreComponent::class])
 @AppScope
 interface AppComponent {
+
+    fun getTaskManager(): TaskManager
+
     fun inject(mainActivity: MainActivity)
     fun inject(mainViewModel: MainViewModel)
     fun inject(it: ExceptionHandler)

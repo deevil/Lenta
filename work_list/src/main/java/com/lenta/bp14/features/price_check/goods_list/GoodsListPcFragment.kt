@@ -11,16 +11,26 @@ import android.view.LayoutInflater
 import com.lenta.shared.utilities.databinding.ViewPagerSettings
 import android.view.ViewGroup
 import android.view.View
+import android.widget.AdapterView
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import com.lenta.bp14.BR
 import com.lenta.bp14.databinding.*
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
+import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.utilities.Logg
+import com.lenta.shared.utilities.databinding.DataBindingAdapter
 import com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig
+import com.lenta.shared.utilities.databinding.RecyclerViewKeyHandler
+import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
 
-class GoodsListPcFragment : CoreFragment<FragmentGoodsListPcBinding, GoodsListPcViewModel>(), ViewPagerSettings {
+class GoodsListPcFragment : CoreFragment<FragmentGoodsListPcBinding, GoodsListPcViewModel>(),
+        ViewPagerSettings, ToolbarButtonsClickListener {
+
+    private var processingRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
+    private var processedRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
+    private var searchRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
 
     override fun getLayoutId(): Int = R.layout.fragment_goods_list_pc
 
@@ -46,6 +56,19 @@ class GoodsListPcFragment : CoreFragment<FragmentGoodsListPcBinding, GoodsListPc
         bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.delete)
         bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.print)
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.save)
+
+        connectLiveData(vm.deleteButtonEnabled, getBottomToolBarUIModel()!!.uiModelButton3.enabled)
+        connectLiveData(vm.printButtonEnabled, getBottomToolBarUIModel()!!.uiModelButton4.enabled)
+        connectLiveData(vm.deleteButtonVisibility, getBottomToolBarUIModel()!!.uiModelButton3.visibility)
+        connectLiveData(vm.printButtonVisibility, getBottomToolBarUIModel()!!.uiModelButton4.visibility)
+    }
+
+    override fun onToolbarButtonClick(view: View) {
+        when (view.id) {
+            R.id.b_3 -> vm.onClickDelete()
+            R.id.b_4 -> vm.onClickPrint()
+            R.id.b_5 -> vm.onClickSave()
+        }
     }
 
     override fun getPagerItemView(container: ViewGroup, position: Int): View {
@@ -55,43 +78,141 @@ class GoodsListPcFragment : CoreFragment<FragmentGoodsListPcBinding, GoodsListPc
                     container,
                     false).let { layoutBinding ->
 
-                layoutBinding.rvConfig = DataBindingRecyclerViewConfig<ItemGoodBinding>(
+                layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
                         layoutId = R.layout.item_good,
-                        itemId = BR.good)
+                        itemId = BR.good,
+                        realisation = object : DataBindingAdapter<ItemGoodBinding> {
+                            override fun onCreate(binding: ItemGoodBinding) {
+                            }
+
+                            override fun onBind(binding: ItemGoodBinding, position: Int) {
+                                processingRecyclerViewKeyHandler?.let {
+                                    binding.root.isSelected = it.isSelected(position)
+                                }
+                            }
+                        },
+                        onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
+                            processingRecyclerViewKeyHandler?.let {
+                                if (it.isSelected(position)) {
+                                    vm.onClickItemPosition(position)
+                                } else {
+                                    it.selectPosition(position)
+                                }
+                            }
+                        })
 
                 layoutBinding.vm = vm
                 layoutBinding.lifecycleOwner = viewLifecycleOwner
+                processingRecyclerViewKeyHandler = RecyclerViewKeyHandler(
+                        rv = layoutBinding.rv,
+                        items = vm.processingGoods,
+                        lifecycleOwner = layoutBinding.lifecycleOwner!!,
+                        initPosInfo = processingRecyclerViewKeyHandler?.posInfo?.value
+                )
+
                 return layoutBinding.root
             }
         }
 
-        if (position == 2) {
-            DataBindingUtil.inflate<LayoutPcGoodsListSearchBinding>(LayoutInflater.from(container.context),
-                    R.layout.layout_pc_goods_list_search,
+        if (position == 1) {
+            DataBindingUtil.inflate<LayoutPcGoodsListProcessedBinding>(LayoutInflater.from(container.context),
+                    R.layout.layout_pc_goods_list_processed,
                     container,
                     false).let { layoutBinding ->
 
-                layoutBinding.rvConfig = DataBindingRecyclerViewConfig<ItemGoodCheckSelectableBinding>(
+                val onClickSelectionListener = View.OnClickListener {
+                    (it!!.tag as Int).let { position ->
+                        vm.processedSelectionsHelper.revert(position = position)
+                        layoutBinding.rv.adapter?.notifyItemChanged(position)
+                    }
+                }
+
+                layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
                         layoutId = R.layout.item_good_check_selectable,
-                        itemId = BR.good)
+                        itemId = BR.good,
+                        realisation = object : DataBindingAdapter<ItemGoodCheckSelectableBinding> {
+                            override fun onCreate(binding: ItemGoodCheckSelectableBinding) {
+                            }
+
+                            override fun onBind(binding: ItemGoodCheckSelectableBinding, position: Int) {
+                                binding.tvItemNumber.tag = position
+                                binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
+                                binding.selectedForDelete = vm.processedSelectionsHelper.isSelected(position)
+                                processedRecyclerViewKeyHandler?.let {
+                                    binding.root.isSelected = it.isSelected(position)
+                                }
+                            }
+                        },
+                        onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
+                            processedRecyclerViewKeyHandler?.let {
+                                if (it.isSelected(position)) {
+                                    vm.onClickItemPosition(position)
+                                } else {
+                                    it.selectPosition(position)
+                                }
+                            }
+                        })
 
                 layoutBinding.vm = vm
                 layoutBinding.lifecycleOwner = viewLifecycleOwner
+                processedRecyclerViewKeyHandler = RecyclerViewKeyHandler(
+                        rv = layoutBinding.rv,
+                        items = vm.processedGoods,
+                        lifecycleOwner = layoutBinding.lifecycleOwner!!,
+                        initPosInfo = processedRecyclerViewKeyHandler?.posInfo?.value
+                )
+
                 return layoutBinding.root
             }
         }
 
-        DataBindingUtil.inflate<LayoutPcGoodsListProcessedBinding>(LayoutInflater.from(container.context),
-                R.layout.layout_pc_goods_list_processed,
+        DataBindingUtil.inflate<LayoutPcGoodsListSearchBinding>(LayoutInflater.from(container.context),
+                R.layout.layout_pc_goods_list_search,
                 container,
                 false).let { layoutBinding ->
 
-            layoutBinding.rvConfig = DataBindingRecyclerViewConfig<ItemGoodCheckSelectableBinding>(
+            val onClickSelectionListener = View.OnClickListener {
+                (it!!.tag as Int).let { position ->
+                    vm.searchSelectionsHelper.revert(position = position)
+                    layoutBinding.rv.adapter?.notifyItemChanged(position)
+                }
+            }
+
+            layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
                     layoutId = R.layout.item_good_check_selectable,
-                    itemId = BR.good)
+                    itemId = BR.good,
+                    realisation = object : DataBindingAdapter<ItemGoodCheckSelectableBinding> {
+                        override fun onCreate(binding: ItemGoodCheckSelectableBinding) {
+                        }
+
+                        override fun onBind(binding: ItemGoodCheckSelectableBinding, position: Int) {
+                            binding.tvItemNumber.tag = position
+                            binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
+                            binding.selectedForDelete = vm.searchSelectionsHelper.isSelected(position)
+                            searchRecyclerViewKeyHandler?.let {
+                                binding.root.isSelected = it.isSelected(position)
+                            }
+                        }
+                    },
+                    onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
+                        searchRecyclerViewKeyHandler?.let {
+                            if (it.isSelected(position)) {
+                                vm.onClickItemPosition(position)
+                            } else {
+                                it.selectPosition(position)
+                            }
+                        }
+                    })
 
             layoutBinding.vm = vm
             layoutBinding.lifecycleOwner = viewLifecycleOwner
+            searchRecyclerViewKeyHandler = RecyclerViewKeyHandler(
+                    rv = layoutBinding.rv,
+                    items = vm.searchGoods,
+                    lifecycleOwner = layoutBinding.lifecycleOwner!!,
+                    initPosInfo = searchRecyclerViewKeyHandler?.posInfo?.value
+            )
+
             return layoutBinding.root
         }
     }

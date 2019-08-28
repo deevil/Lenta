@@ -1,19 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    tools:context="com.lenta.bp14.features.price_check.goods_list.GoodsListPcFragment">
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        tools:context="com.lenta.bp14.features.work_list.goods_list.GoodsListWlFragment">
 
     <data>
 
         <variable
             name="vm"
-            type="com.lenta.bp14.features.price_check.goods_list.GoodsListPcViewModel" />
+            type="com.lenta.bp14.features.work_list.goods_list.GoodsListWlViewModel"/>
 
         <variable
             name="rvConfig"
-            type="com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig" />
-
+            type="com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig"/>
     </data>
 
     <LinearLayout
@@ -37,7 +36,7 @@
 
                 <LinearLayout
                     style="@style/LinearCellStyle"
-                    android:layout_weight="@integer/number_good_check_column_1">
+                    android:layout_weight="@integer/number_good_column_1">
 
                     <TextView
                         style="@style/ColumnTitleStyle"
@@ -49,21 +48,11 @@
 
                 <LinearLayout
                     style="@style/LinearCellStyle"
-                    android:layout_weight="@integer/number_good_check_column_2">
+                    android:layout_weight="@integer/number_good_column_2">
 
                     <TextView
                         style="@style/ColumnTitleStyle"
                         android:text="@string/goods"/>
-
-                </LinearLayout>
-
-                <LinearLayout
-                    style="@style/LinearCellStyle"
-                    android:layout_weight="@integer/number_good_check_column_3">
-
-                    <TextView
-                        style="@style/ColumnTitleStyle"
-                        android:text="@string/check"/>
 
                 </LinearLayout>
 
@@ -79,11 +68,15 @@
             android:id="@+id/rv"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1"
             android:layout_marginBottom="8dp"
-            app:items="@{vm.searchGoods}"
+            android:layout_weight="1"
+            app:items="@{vm.processedGoods}"
+            app:layout_constraintBottom_toTopOf="@+id/et_search"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/layout_titles"
             app:rv_config="@{rvConfig}"
-            tools:listitem="@layout/item_good_check_selectable" />
+            tools:listitem="@layout/item_good_selectable"/>
 
         <!-- Ввод номера товара -->
         <LinearLayout
@@ -92,13 +85,21 @@
             android:gravity="center_vertical"
             android:orientation="horizontal">
 
-            <com.lenta.shared.view.ClickableSpinner
-                android:id="@+id/spin_price_tag"
+            <EditText
+                android:id="@+id/et_good_number"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_margin="8dp"
                 android:layout_weight="1"
-                android:entries="@array/price_tag_color"/>
+                android:digits="0123456789"
+                android:ellipsize="end"
+                android:hint="@string/enter_item_number_or_barcode"
+                android:imeOptions="actionGo"
+                android:inputType="number"
+                android:maxLength="14"
+                android:maxLines="1"
+                app:onOkInSoftKeyboard="@{vm}"
+                tools:ignore="Autofill"/>
 
             <ImageView
                 android:id="@+id/btn_qrcode"
