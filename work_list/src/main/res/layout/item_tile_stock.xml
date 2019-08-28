@@ -7,7 +7,7 @@
 
         <variable
             name="vm"
-            type="com.lenta.bp14.features.not_displayed_goods.StockInfoUi" />
+            type="com.lenta.bp14.features.not_exposed_good.StockInfoUi" />
 
 
     </data>

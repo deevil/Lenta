@@ -1,4 +1,4 @@
-package com.lenta.bp14.features.not_displayed_goods
+package com.lenta.bp14.features.not_exposed_good
 
 import com.lenta.bp14.R
 import com.lenta.bp14.platform.extentions.getAppComponent

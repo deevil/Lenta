@@ -6,7 +6,7 @@
     <data>
         <variable
             name="vm"
-            type="com.lenta.bp14.features.not_displayed_goods.NotDisplayedGoodsViewModel" />
+            type="com.lenta.bp14.features.not_exposed_good.NotDisplayedGoodsViewModel" />
         <variable
             name="rvConfig"
             type="com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig" />
