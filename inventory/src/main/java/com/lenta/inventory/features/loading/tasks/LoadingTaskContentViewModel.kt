@@ -50,7 +50,7 @@ class LoadingTaskContentViewModel : CoreLoadingViewModel() {
     init {
         viewModelScope.launch {
             progress.value = true
-            val userNumber = if (recountType == RecountType.ParallelByStorePlaces || sessionInfo.personnelNumber == null || taskInfo.notFinish.isNotEmpty()) "" else sessionInfo.personnelNumber
+            val userNumber = if (recountType == RecountType.ParallelByPerNo) sessionInfo.personnelNumber else ""
             var needsRelock = false
             if (recountType == RecountType.Simple) {
                 val status = StatusTask.from(taskInfo, sessionInfo.userName ?: "")

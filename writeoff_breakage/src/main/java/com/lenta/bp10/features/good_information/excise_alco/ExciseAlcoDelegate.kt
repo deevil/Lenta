@@ -66,9 +66,9 @@ class ExciseAlcoDelegate @Inject constructor(
         return false
     }
 
-    private fun handleExciseStampSuccess(exciseStampRestInfo: List<ExciseStampRestInfo>) {
-        val retCode = exciseStampRestInfo[1].data[0][0].toInt()
-        val serverDescription = exciseStampRestInfo[1].data[0][1]
+    private fun handleExciseStampSuccess(exciseStampRestInfo: ExciseStampRestInfo) {
+        val retCode = exciseStampRestInfo.retCode
+        val serverDescription = exciseStampRestInfo.errorText
 
         when (retCode) {
             0 -> {
@@ -81,7 +81,7 @@ class ExciseAlcoDelegate @Inject constructor(
             1 -> {
                 viewModelScope().launch {
                     screenNavigator.showProgress(productInfoDbRequest)
-                    productInfoDbRequest(ProductInfoRequestParams(number = exciseStampRestInfo[0].data[0][0]))
+                    productInfoDbRequest(ProductInfoRequestParams(number = exciseStampRestInfo.matNr))
                             .either(::handleFailure, ::openAlertForAnotherProductStamp)
                     screenNavigator.hideProgress()
 

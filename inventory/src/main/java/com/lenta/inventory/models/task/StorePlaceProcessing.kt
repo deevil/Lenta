@@ -10,6 +10,13 @@ class StorePlaceProcessing(val inventoryTask: InventoryTask, val storePlaceNumbe
         }
     }
 
+    fun markAsNotProcessed() {
+        val storePlace = inventoryTask.taskRepository.getStorePlace().findStorePlace(storePlaceNumber)
+        storePlace?.let {
+            it.isProcessed = false
+        }
+    }
+
     //фун-ция возвращает НЕ ОБРАБОТАННЫЕ товары
     fun getNotProcessedProducts(): List<TaskProductInfo> {
         return inventoryTask.taskRepository.getProducts().getNotProcessedProducts(storePlaceNumber)
