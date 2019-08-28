@@ -251,6 +251,15 @@ class ScreenNavigator(
         }
     }
 
+    override fun openConfirmationTakeStorePlace(callbackFunc: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.take_store_place),
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(callbackFunc),
+                    pageNumber = "93",
+                    rightButtonDecorationInfo = ButtonDecorationInfo.yes))
+        }
+    }
+
     override fun openConfirmationDeleteGoods(positionsCount: Int, callbackFunc: () -> Unit) {
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.confirmation_delete_goods, positionsCount),
@@ -348,6 +357,18 @@ class ScreenNavigator(
         )
     }
 
+    override fun openConfirmationSavingForParallelsActiveUserDialog(callbackFunc: () -> Unit) {
+        getFragmentStack()?.push(
+                AlertFragment.create(
+                        description = context.getString(R.string.data_saving),
+                        message = context.getString(R.string.confirmation_saving_for_parallels_active_users),
+                        pageNumber = "93",
+                        codeConfirmForRight = backFragmentResultHelper.setFuncForResult(callbackFunc),
+                        rightButtonDecorationInfo = ButtonDecorationInfo.yes
+                )
+        )
+    }
+
 
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 
@@ -383,6 +404,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openConfirmationMissingGoods(positionsCount: Int, callbackFunc: () -> Unit)
     fun openConfirmationDeleteGoods(positionsCount: Int, callbackFunc: () -> Unit)
     fun openConfirmationClean(byStorage: Boolean = false, callbackFunc: () -> Unit)
+    fun openConfirmationTakeStorePlace(callbackFunc: () -> Unit)
     fun openSuccessSaveDataScreen(callbackFunc: () -> Unit)
     fun openConfirmationExitTask(callbackFunc: () -> Unit)
     fun openSelectTypeCodeScreen(codeConfirmationForSap: Int, codeConfirmationForBarCode: Int)
@@ -391,4 +413,5 @@ interface IScreenNavigator : ICoreNavigator {
     fun openAlertStampOverload(message: String, callbackFunc: () -> Unit)
     fun openAlertInfoScreen(message: String)
     fun openMinUpdateSalesDialogScreen(minUpdSales: Long, functionForLeft: () -> Unit, functionForRight: () -> Unit)
+    fun openConfirmationSavingForParallelsActiveUserDialog(callbackFunc: () -> Unit)
 }

@@ -54,7 +54,7 @@ class InventoryTask(val taskDescription: TaskDescription, val taskRepository: IT
         }
     }
 
-    fun getReport(isFinish: Boolean, ip: String, personnelNumber: String, isRecount: Boolean): InventoryReport {
+    fun getReport(isFinish: Boolean, ip: String, personnelNumber: String, ivCountPerNr: Boolean): InventoryReport {
         val taskDescription = taskDescription
         return InventoryReport(
                 tkNumber = taskDescription.tkNumber,
@@ -65,7 +65,7 @@ class InventoryTask(val taskDescription: TaskDescription, val taskRepository: IT
                 storePlacesForDelete = getUntiedProducts(),
                 products = getReportsProducts(),
                 stamps = getReportStamps(),
-                isRecount = if (isRecount) "X" else ""
+                ivCountPerNr = if (ivCountPerNr) "X" else ""
         )
     }
 

@@ -39,7 +39,7 @@ class MemoryTaskProductRepository(
     override fun addProduct(product: TaskProductInfo): Boolean {
         var index = -1
         for (i in productInfo.indices) {
-            if (product.materialNumber == productInfo[i].materialNumber && product.placeCode == productInfo[i].placeCode) {
+            if (product.materialNumber == productInfo[i].materialNumber && (product.placeCode == productInfo[i].placeCode || productInfo[i].placeCode == "00")) {
                 index = i
             }
         }
@@ -47,10 +47,10 @@ class MemoryTaskProductRepository(
         if (index == -1) {
             productInfo.add(product)
             return true
-        } else if (index != productInfo.size - 1) {
+        } else {
             productInfo.getOrNull(index)?.let {
                 productInfo.removeAt(index)
-                productInfo.add(it)
+                productInfo.add(product)
             }
         }
 

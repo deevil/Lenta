@@ -71,13 +71,13 @@ class SetsAlcoStampSearchDelegate @Inject constructor(
         return false
     }
 
-    private fun handleExciseStampSuccess(exciseStampRestInfo: List<ExciseStampRestInfo>) {
-        val retCode = exciseStampRestInfo[1].data[0][0].toInt()
-        val serverDescription = exciseStampRestInfo[1].data[0][1]
+    private fun handleExciseStampSuccess(exciseStampRestInfo: ExciseStampRestInfo) {
+        val retCode = exciseStampRestInfo.retCode
+        val serverDescription = exciseStampRestInfo.errorText
 
         Logg.d { "exciseStampRestInfo: $exciseStampRestInfo" }
 
-        matNumber = exciseStampRestInfo[0].data[0][0]
+        matNumber = exciseStampRestInfo.matNr
 
         if (components.firstOrNull { it.materialNumber == matNumber } != null) {
             when (retCode) {

@@ -9,9 +9,9 @@ import com.lenta.shared.requests.FmpRequestsHelper
 import javax.inject.Inject
 
 class ExciseStampNetRequest
-@Inject constructor(private val fmpRequestsHelper: FmpRequestsHelper) : UseCase<List<ExciseStampRestInfo>, ExciseStampParams>() {
-    override suspend fun run(params: ExciseStampParams): Either<Failure, List<ExciseStampRestInfo>> {
-        return fmpRequestsHelper.restRequest("ZFMP_UTZ_WOB_03_V001", params, ExciseStampStatus::class.java)
+@Inject constructor(private val fmpRequestsHelper: FmpRequestsHelper) : UseCase<ExciseStampRestInfo, ExciseStampParams>() {
+    override suspend fun run(params: ExciseStampParams): Either<Failure, ExciseStampRestInfo> {
+        return fmpRequestsHelper.restRequest("ZMP_UTZ_WOB_03_V001", params, ExciseStampStatus::class.java)
     }
 
 }
@@ -24,11 +24,14 @@ data class ExciseStampParams(
         @SerializedName("IV_MATNR")
         val matnr: String)
 
-class ExciseStampStatus : ObjectRawStatus<List<ExciseStampRestInfo>>()
+class ExciseStampStatus : ObjectRawStatus<ExciseStampRestInfo>()
 
 data class ExciseStampRestInfo(
-        @SerializedName("name")
-        val name: String,
-        @SerializedName("data")
-        val data: List<List<String>>
+        @SerializedName("EV_ERROR_TEXT")
+        val errorText: String,
+        @SerializedName("EV_RETCODE")
+        val retCode: Int,
+        @SerializedName("EV_MATNR")
+        val matNr: String
 )
+
