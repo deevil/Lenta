@@ -8,11 +8,23 @@ data class Good(
         val material: String?,
         val name: String,
         val total: Int = 0,
-        val uom: Uom = Uom.DEFAULT
+        val uom: Uom = Uom.DEFAULT,
+        var goodStatus: GoodStatus = GoodStatus.MISSING,
+        val priceTagStatus: PriceTagStatus = PriceTagStatus.PRINTED
 ) {
 
     fun getFormattedMaterial(): String? {
         return material?.takeLast(6)
     }
 
+}
+
+enum class GoodStatus {
+    MISSING,
+    ERROR
+}
+
+enum class PriceTagStatus {
+    PRINTED,
+    MISSING
 }
