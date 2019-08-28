@@ -184,10 +184,15 @@ class StoragesListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
         }
         storeNumber?.let { storePlaceNumber ->
             val storePlace = taskManager.getInventoryTask()!!.taskRepository.getStorePlace().findStorePlace(storePlaceNumber)
-            if (storePlace?.status != StorePlaceStatus.Finished) {
-                screenNavigator.openGoodsListScreen(storePlaceNumber)
-            } else {
-                screenNavigator.openAlertScreen(context.getString(R.string.already_counted))
+            when (storePlace?.status) {
+                StorePlaceStatus.LockedByMe, StorePlaceStatus.LockedByOthers ->
+                    screenNavigator.openConfirmationTakeStorePlace {
+                        screenNavigator.openGoodsListScreen(storePlaceNumber)
+                    }
+                StorePlaceStatus.None, StorePlaceStatus.Started ->
+                    screenNavigator.openGoodsListScreen(storePlaceNumber)
+                StorePlaceStatus.Finished ->
+                    screenNavigator.openAlertScreen(context.getString(R.string.already_counted))
             }
         }
     }

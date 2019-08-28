@@ -65,4 +65,5 @@
     <string name="already_counted">МХ уже посчитано</string>
     <string name="unsupported_mattype">Товар %1$s с видом %2$s не может быть обработан в мп инвентаризации</string>
     <string name="confirmation_saving_for_parallels_active_users">Задание параллельно обрабатывается другим пользователем. Текущие данные будут переданы в SAP, но задание останется доступным для продолжения пересчета.</string>
+    <string name="take_store_place">Забрать МХ себе?</string>
 </resources>
