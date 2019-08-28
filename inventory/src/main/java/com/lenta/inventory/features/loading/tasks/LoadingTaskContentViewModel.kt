@@ -121,7 +121,8 @@ class LoadingTaskContentViewModel : CoreLoadingViewModel() {
                 deadline = taskContents.deadline,
                 tkNumber = sessionInfo.market!!,
                 linkOldStamp = taskContents.linkOldStamp,
-                processingEndTime = getProcessingEndTime(taskContents.deadline)
+                processingEndTime = getProcessingEndTime(taskContents.deadline),
+                isRecount = taskInfo.isRecount.isNotEmpty()
 
         ).apply {
             Logg.d { "taskDescription: $this" }

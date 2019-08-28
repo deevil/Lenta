@@ -158,7 +158,7 @@ class DiscrepanciesFoundViewModel : CoreViewModel() {
     fun onClickSkip() {
         if (isNotEmpty.value == true) {
             if (taskManager.getInventoryTask()!!.taskDescription.ivCountPerNr) {
-                checkIsForkAnotherUsersNow()
+                checkIsHaveAnotherUsersNow()
             } else {
                 screenNavigator.openConfirmationSkippingDiscrepancies(
                         elapsedTime = taskManager.getInventoryTask()?.getElapsedTimePrintable(timeMonitor.getUnixTime())
@@ -176,7 +176,7 @@ class DiscrepanciesFoundViewModel : CoreViewModel() {
         }
     }
 
-    private fun checkIsForkAnotherUsersNow() {
+    private fun checkIsHaveAnotherUsersNow() {
 
         viewModelScope.launch {
             screenNavigator.showProgress(lockRequest)

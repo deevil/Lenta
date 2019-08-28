@@ -12,8 +12,7 @@ import com.lenta.inventory.models.task.IInventoryTaskManager
 import com.lenta.inventory.models.task.TaskContents
 import com.lenta.inventory.models.task.TaskStorePlaceInfo
 import com.lenta.inventory.platform.navigation.IScreenNavigator
-import com.lenta.inventory.requests.network.TaskContentNetRequest
-import com.lenta.inventory.requests.network.TaskContentParams
+import com.lenta.inventory.requests.network.*
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.platform.viewmodel.CoreViewModel
@@ -40,6 +39,8 @@ class StoragesListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     lateinit var context: Context
     @Inject
     lateinit var dataSaver: DataSaver
+    @Inject
+    lateinit var lockRequest: StorePlaceLockNetRequest
 
     val unprocessedStorages: MutableLiveData<List<StoragePlaceVM>> = MutableLiveData()
     val processedStorages: MutableLiveData<List<StoragePlaceVM>> = MutableLiveData()
@@ -74,6 +75,9 @@ class StoragesListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
         if (needsUpdate) {
             onClickRefresh()
             needsUpdate = false
+        } else {
+            updateUnprocessed()
+            updateProcessed()
         }
     }
 
@@ -107,17 +111,29 @@ class StoragesListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
     fun onClickClean() {
         screenNavigator.openConfirmationClean(byStorage = true) {
-            val selectedPositions = processedSelectionHelper.selectedPositions.value
-                    ?: emptySet<Int>()
-            for (position in selectedPositions) {
-                processedStorages.value?.get(position)?.let {
-                    taskManager.getInventoryTask()?.clearStorePlaceByNumber(it.storeNumber)
-                }
-            }
-            processedSelectionHelper.clearPositions()
-            updateUnprocessed()
-            updateProcessed()
             viewModelScope.launch {
+                screenNavigator.showProgress(lockRequest)
+                Logg.d { "processedSelectionHelper.selectedPositions size: ${processedSelectionHelper.selectedPositions.value?.size}" }
+                val selectedPositions = processedSelectionHelper.selectedPositions.value
+                        ?: emptySet<Int>()
+                for (position in selectedPositions) {
+                    processedStorages.value?.get(position)?.let { storePlaceVm ->
+                        taskManager.getInventoryTask()?.let {
+                            lockRequest(StorePlaceLockParams(ip = context.getDeviceIp(),
+                                    taskNumber = it.taskDescription.taskNumber,
+                                    storePlaceCode = storePlaceVm.storeNumber,
+                                    mode = StorePlaceLockMode.Unlock.mode,
+                                    userNumber = "")).either(::handleFailure) {
+                                taskManager.getInventoryTask()?.clearStorePlaceByNumber(storePlaceVm.storeNumber)
+                                return@either false
+                            }
+                        }
+
+                    }
+                }
+                processedSelectionHelper.clearPositions()
+                screenNavigator.hideProgress()
+                onClickRefresh()
                 moveToPreviousPageIfNeeded()
             }
         }
