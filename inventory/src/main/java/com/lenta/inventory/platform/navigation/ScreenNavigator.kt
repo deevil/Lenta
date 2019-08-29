@@ -369,6 +369,15 @@ class ScreenNavigator(
         )
     }
 
+    override fun openAlertDoubleScanBox() {
+        openAlertScreen(
+                message = context.getString(R.string.alert_double_scan_box),
+                iconRes = R.drawable.ic_info_pink,
+                textColor = ContextCompat.getColor(context, com.lenta.shared.R.color.color_text_dialogWarning),
+                pageNumber = "98"
+        )
+    }
+
 
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 
@@ -414,4 +423,5 @@ interface IScreenNavigator : ICoreNavigator {
     fun openAlertInfoScreen(message: String)
     fun openMinUpdateSalesDialogScreen(minUpdSales: Long, functionForLeft: () -> Unit, functionForRight: () -> Unit)
     fun openConfirmationSavingForParallelsActiveUserDialog(callbackFunc: () -> Unit)
+    fun openAlertDoubleScanBox()
 }

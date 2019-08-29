@@ -102,7 +102,7 @@ class ExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
         }
     }
 
-    private fun handleProductSearchResult(scanInfoResult: ScanInfoResult?): Boolean {
+    private fun handleProductSearchResult(@Suppress("UNUSED_PARAMETER") scanInfoResult: ScanInfoResult?): Boolean {
         enabledBtn()
         screenNavigator.goBack()
         return false
@@ -151,7 +151,7 @@ class ExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
 
     private fun processBox(boxNumber: String) {
         if (processExciseAlcoProductService.isTaskAlreadyHasExciseStampBox(boxNumber)) {
-            screenNavigator.openAlertDoubleScanStamp()
+            screenNavigator.openAlertDoubleScanBox()
             return
         }
 
