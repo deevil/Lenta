@@ -42,9 +42,7 @@ class GoodsListClFragment : CoreFragment<FragmentGoodsListClBinding, GoodsListCl
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
         topToolbarUiModel.description.value = getString(R.string.list_of_goods)
 
-        vm.taskName.observe(this, Observer<String> { name ->
-            topToolbarUiModel.title.value = name
-        })
+        connectLiveData(vm.taskName, topToolbarUiModel.title)
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {

@@ -23,6 +23,7 @@ import com.lenta.shared.utilities.databinding.DataBindingAdapter
 import com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig
 import com.lenta.shared.utilities.databinding.RecyclerViewKeyHandler
 import com.lenta.shared.utilities.extentions.connectLiveData
+import java.lang.IllegalArgumentException
 
 class GoodsListNeFragment : CoreFragment<FragmentGoodsListNeBinding, GoodsListNeViewModel>(),
         ViewPagerSettings, ToolbarButtonsClickListener {
@@ -47,9 +48,7 @@ class GoodsListNeFragment : CoreFragment<FragmentGoodsListNeBinding, GoodsListNe
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
         topToolbarUiModel.description.value = getString(R.string.list_of_goods)
 
-        vm.taskName.observe(this, Observer<String> { name ->
-            topToolbarUiModel.title.value = name
-        })
+        connectLiveData(vm.taskName, topToolbarUiModel.title)
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
@@ -219,13 +218,12 @@ class GoodsListNeFragment : CoreFragment<FragmentGoodsListNeBinding, GoodsListNe
     }
 
     override fun getTextTitle(position: Int): String {
-        return getString(
-                when (getRealTabPosition(position)) {
-                    0 -> R.string.not_processed
-                    1 -> R.string.processed
-                    else -> R.string.search
-                }
-        )
+        return when (position) {
+            0 -> getString(R.string.processing)
+            1 -> getString(R.string.processed)
+            2 -> getString(R.string.search)
+            else -> throw IllegalArgumentException("Wrong pager position!")
+        }
     }
 
     private fun getRealTabPosition(position: Int): Int {
