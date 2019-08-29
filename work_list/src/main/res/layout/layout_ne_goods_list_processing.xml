@@ -7,7 +7,7 @@
 
         <variable
             name="vm"
-            type="com.lenta.bp14.features.not_exposed_good.NotDisplayedGoodsViewModel" />
+            type="com.lenta.bp14.features.not_exposed.GoodsListNeViewModel" />
 
         <variable
             name="rvConfig"
@@ -31,13 +31,13 @@
             android:id="@+id/rv"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            app:items="@{vm.notProcessedGoods}"
+            app:items="@{vm.processingGoods}"
             app:layout_constraintBottom_toTopOf="@+id/b_scan"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/layout_titles"
             app:rv_config="@{rvConfig}"
-            tools:listitem="@layout/item_tile_simple_goods" />
+            tools:listitem="@layout/item_good" />
 
         <EditText
             android:id="@+id/et_search"
@@ -67,13 +67,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="?selectableItemBackground"
-            android:onClick="@{(v) -> vm.screenNavigator.openEanInfoScreen()}"
             android:padding="8dp"
             android:src="@drawable/ic_scan_barcode"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             tools:ignore="ContentDescription" />
-
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -6,7 +6,7 @@
     <data>
         <variable
             name="vm"
-            type="com.lenta.bp14.features.not_exposed_good.NotDisplayedGoodsViewModel" />
+            type="com.lenta.bp14.features.not_exposed.GoodsListNeViewModel" />
         <variable
             name="rvConfig"
             type="com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig" />
@@ -35,7 +35,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/layout_titles"
             app:rv_config="@{rvConfig}"
-            tools:listitem="@layout/item_tile_processed_goods" />
+            tools:listitem="@layout/item_good_quantity_selectable" />
 
         <EditText
             android:id="@+id/et_search"
@@ -67,11 +67,9 @@
             android:background="?selectableItemBackground"
             android:padding="8dp"
             android:src="@drawable/ic_scan_barcode"
-            android:onClick="@{(v) -> vm.screenNavigator.openEanInfoScreen()}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             tools:ignore="ContentDescription" />
-
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -1,4 +1,4 @@
-package com.lenta.bp14.features.not_exposed_good
+package com.lenta.bp14.features.not_exposed
 
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import androidx.lifecycle.MutableLiveData
@@ -6,7 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.lenta.shared.utilities.databinding.PageSelectionListener
 import kotlinx.coroutines.launch
 
-class NotDisplayedGoodsInfoViewModel : CoreViewModel(), PageSelectionListener {
+class GoodInfoNeViewModel : CoreViewModel(), PageSelectionListener {
 
     val balances: MutableLiveData<List<StockInfoUi>> = MutableLiveData()
 

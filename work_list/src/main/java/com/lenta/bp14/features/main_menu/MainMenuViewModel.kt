@@ -7,11 +7,11 @@ import javax.inject.Inject
 class MainMenuViewModel : CoreViewModel() {
 
     @Inject
-    lateinit var screenNavigator: IScreenNavigator
+    lateinit var navigator: IScreenNavigator
 
 
     fun onClickWorkWithTask() {
-        screenNavigator.openTaskListScreen()
+        navigator.openTaskListScreen()
     }
 
     fun onClickCreateTask() {
@@ -19,15 +19,16 @@ class MainMenuViewModel : CoreViewModel() {
 
     fun onClickPrint() {
         // Тестирование запуска различных экранов
-        //screenNavigator.openPrintSettingsScreen()
-        //screenNavigator.openGoodInfoWlScreen()
-        //screenNavigator.openGoodsListWlScreen()
-        screenNavigator.openGoodListPcScreen()
-        //screenNavigator.openSearchFilterWlScreen()
+        //navigator.openPrintSettingsScreen()
+        //navigator.openGoodInfoWlScreen()
+        //navigator.openGoodsListWlScreen()
+        //navigator.openGoodsListPcScreen()
+        //navigator.openSearchFilterWlScreen()
+        navigator.openGoodsListNeScreen()
     }
 
 
     fun onClickAuxiliaryMenu() {
-        screenNavigator.openAuxiliaryMenuScreen()
+        navigator.openAuxiliaryMenuScreen()
     }
 }
