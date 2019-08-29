@@ -16,4 +16,14 @@ class TaskExciseStamp(materialNumber: String,
     //manufacturerCode - ЕГАИС Код организации
     //bottMark - УТЗ ТСД: Дата розлива
     //isBadStamp - признак "плохой" марки
+    fun copy(): TaskExciseStamp {
+        return TaskExciseStamp(materialNumber = materialNumber,
+                code = code,
+                placeCode = placeCode,
+                boxNumber = boxNumber,
+                setMaterialNumber = setMaterialNumber,
+                manufacturerCode = manufacturerCode,
+                bottlingDate = bottlingDate,
+                isBadStamp = isBadStamp)
+    }
 }

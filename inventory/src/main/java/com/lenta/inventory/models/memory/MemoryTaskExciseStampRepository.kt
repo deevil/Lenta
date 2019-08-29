@@ -7,8 +7,29 @@ import java.util.*
 
 class MemoryTaskExciseStampRepository(private val stamps: ArrayList<TaskExciseStamp> = ArrayList()) : ITaskExciseStampRepository {
 
+    private var stampsSnapshot: List<TaskExciseStamp>? = null
+    private var changedSinceSnapshot: Boolean = false
+
     override fun getExciseStamps(): List<TaskExciseStamp> {
         return stamps
+    }
+
+    override fun makeSnapshot() {
+        stampsSnapshot = stamps.map { it.copy() }
+        changedSinceSnapshot = false
+    }
+
+    override fun restoreSnapshot() {
+        stampsSnapshot?.let { stampsList ->
+            stamps.clear()
+            stampsList.forEach { stamps.add(it) }
+        }
+        stampsSnapshot = null
+        changedSinceSnapshot = false
+    }
+
+    override fun isChanged(): Boolean {
+        return changedSinceSnapshot
     }
 
     override fun findExciseStampsOfProduct(product: TaskProductInfo): List<TaskExciseStamp> {
@@ -38,6 +59,7 @@ class MemoryTaskExciseStampRepository(private val stamps: ArrayList<TaskExciseSt
 
         if (index == -1) {
             stamps.add(exciseStamp)
+            changedSinceSnapshot = true
             return true
         }
         return false
@@ -47,6 +69,7 @@ class MemoryTaskExciseStampRepository(private val stamps: ArrayList<TaskExciseSt
         stamps.filter { taskExciseStamp ->
             exciseStamp.code == taskExciseStamp.code
         }.map {
+            changedSinceSnapshot = true
             return stamps.remove(it)
         }
         return false
@@ -62,6 +85,7 @@ class MemoryTaskExciseStampRepository(private val stamps: ArrayList<TaskExciseSt
             return@filter false
 
         }).let {
+            changedSinceSnapshot = changedSinceSnapshot || it.isNotEmpty()
             return it.isNotEmpty()
         }
     }
@@ -71,6 +95,7 @@ class MemoryTaskExciseStampRepository(private val stamps: ArrayList<TaskExciseSt
             return false
         }
 
+        changedSinceSnapshot = true
         val distinctStamp = ArrayList<TaskExciseStamp>()
         for (i in exciseStamps150.indices) {
             //убираем дубликаты
