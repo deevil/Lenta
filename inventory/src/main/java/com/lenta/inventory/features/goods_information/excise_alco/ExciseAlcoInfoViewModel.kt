@@ -9,7 +9,6 @@ import com.lenta.inventory.models.task.ProcessExciseAlcoProductService
 import com.lenta.inventory.models.task.TaskExciseStamp
 import com.lenta.inventory.models.task.TaskProductInfo
 import com.lenta.inventory.platform.navigation.IScreenNavigator
-import com.lenta.inventory.requests.network.AlcoCodeNetRequest
 import com.lenta.inventory.requests.network.ExciseGoodsParams
 import com.lenta.inventory.requests.network.ExciseGoodsRestInfo
 import com.lenta.inventory.requests.network.ObtainingDataExciseGoodsNetRequest
@@ -18,7 +17,6 @@ import com.lenta.shared.exception.Failure
 import com.lenta.shared.models.core.Manufacturer
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
-import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.toStringFormatted
@@ -111,6 +109,10 @@ class ExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
     }
 
     fun onResume() {
+        updateCounts()
+    }
+
+    private fun updateCounts() {
         count.value = processExciseAlcoProductService.getLastCountExciseStamp().countLastExciseStamp.let {
             if (it == 0) "" else it.toString()
         }
@@ -319,6 +321,8 @@ class ExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
             }
             else -> screenNavigator.openAlertInfoScreen(textErrorUnknownStatus.value!!)
         }
+
+        updateCounts()
     }
 
     private fun checkExciseStampByCode(stampCode: String) {
@@ -419,6 +423,8 @@ class ExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
             }
             else -> screenNavigator.openAlertInfoScreen(textErrorUnknownStatus.value!!)
         }
+
+        updateCounts()
     }
 
     private fun enabledBtn() {
