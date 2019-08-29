@@ -1,5 +1,6 @@
 package com.lenta.bp14.data.model
 
+import androidx.lifecycle.MutableLiveData
 import com.lenta.shared.models.core.Uom
 
 
@@ -12,6 +13,8 @@ data class Good(
         var priceTagStatus: PriceTagStatus = PriceTagStatus.PRINTED,
         val goodStatus: GoodStatus = GoodStatus.MISSING_RIGHT
 ) {
+
+    val quantityField = MutableLiveData<String>(quantity.toString())
 
     fun getFormattedMaterial(): String? {
         return material?.takeLast(6)

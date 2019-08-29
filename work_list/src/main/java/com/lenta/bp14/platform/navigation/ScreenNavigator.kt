@@ -79,7 +79,7 @@ class ScreenNavigator(
         }
     }
 
-    override fun openCheckListGoodsList() {
+    override fun openGoodsListClScreen() {
         runOrPostpone {
             getFragmentStack()?.push(GoodsListClFragment())
         }
@@ -175,7 +175,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openFastDataLoadingScreen()
     fun openTaskListScreen()
     fun openJobCardScreen(taskNumber: String)
-    fun openCheckListGoodsList()
+    fun openGoodsListClScreen()
     fun openListOfDifferencesScreen()
     fun openReportResultScreen()
     fun openPrintSettingsScreen()

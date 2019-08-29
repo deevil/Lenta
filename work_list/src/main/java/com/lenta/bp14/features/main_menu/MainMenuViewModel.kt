@@ -24,7 +24,8 @@ class MainMenuViewModel : CoreViewModel() {
         //navigator.openGoodsListWlScreen()
         //navigator.openGoodsListPcScreen()
         //navigator.openSearchFilterWlScreen()
-        navigator.openGoodsListNeScreen()
+        //navigator.openGoodsListNeScreen()
+        navigator.openGoodsListClScreen()
     }
 
 

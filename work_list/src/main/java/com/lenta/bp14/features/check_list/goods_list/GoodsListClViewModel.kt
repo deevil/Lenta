@@ -2,49 +2,64 @@ package com.lenta.bp14.features.check_list.goods_list
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.lenta.shared.models.core.Uom
+import com.lenta.bp14.data.TaskManager
+import com.lenta.bp14.data.model.Good
+import com.lenta.bp14.platform.navigation.IScreenNavigator
 import com.lenta.shared.platform.viewmodel.CoreViewModel
+import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.databinding.PageSelectionListener
+import com.lenta.shared.utilities.extentions.map
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 class GoodsListClViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyboardListener {
-    val deleteButtonEnabled = MutableLiveData(false)
-    val saveButtonEnabled = MutableLiveData(false)
-    val selectedPage = MutableLiveData(0)
-    val searchCode = MutableLiveData("")
-    val goods: MutableLiveData<List<GoodUiCl>> = MutableLiveData()
 
+    @Inject
+    lateinit var navigator: IScreenNavigator
+    @Inject
+    lateinit var taskManager: TaskManager
+
+
+    val selectionsHelper = SelectionItemsHelper()
+
+    val selectedPage = MutableLiveData(0)
+
+    val taskName = MutableLiveData("Чек-лист от 23.07.19 23:15")
+
+    val numberField: MutableLiveData<String> = MutableLiveData("")
+    val requestFocusToNumberField: MutableLiveData<Boolean> = MutableLiveData()
+
+    val goods = MutableLiveData<List<Good>>()
+
+    val deleteButtonEnabled = selectionsHelper.selectedPositions.map { it?.isNotEmpty() ?: false }
+    val saveButtonEnabled = goods.map { it?.isNotEmpty() ?: false }
 
     init {
         viewModelScope.launch {
-            goods.value = getTestGoods()
-        }
-
-
-    }
-
-    private fun getTestGoods(): List<GoodUiCl>? {
-        return List(100) {
-            GoodUiCl(
-                    number = it + 1,
-                    name = "0000$it Селедка",
-                    suffix = "шт",
-                    uom = Uom.DEFAULT
-            )
+            goods.value = taskManager.getTestGoodList(4)
         }
     }
 
+    fun scanQrCode() {
 
-    fun getTitle(): String {
-        return "???"
+    }
+
+    fun scanBarCode() {
+
     }
 
     fun onClickDelete() {
+
     }
 
     fun onClickSave() {
 
+    }
+
+    fun onClickItemPosition(position: Int) {
+        taskManager.currentGood = goods.value?.get(position)
+        //navigator.openGoodInfoPcScreen()
     }
 
     override fun onPageSelected(position: Int) {
@@ -54,13 +69,5 @@ class GoodsListClViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     override fun onOkInSoftKeyboard(): Boolean {
         return true
     }
+
 }
-
-
-data class GoodUiCl(
-        val number: Int,
-        val name: String,
-        val quantity: MutableLiveData<String> = MutableLiveData("1"),
-        val suffix: String,
-        val uom: Uom
-)
