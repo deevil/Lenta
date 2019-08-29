@@ -17,4 +17,7 @@ interface ITaskExciseStampRepository {
     fun get(index: Int): TaskExciseStamp
     fun lenght(): Int
     fun containsStamp(code: String): Boolean
+    fun makeSnapshot()
+    fun restoreSnapshot()
+    fun isChanged(): Boolean
 }

@@ -297,6 +297,19 @@ class ScreenNavigator(
         }
     }
 
+    override fun openConfirmationExitStoreplace(callbackFunc: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.confirmation_exit_storeplace),
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(callbackFunc),
+                    pageNumber = "94",
+                    leftButtonDecorationInfo = ButtonDecorationInfo.no,
+                    rightButtonDecorationInfo = ButtonDecorationInfo.yes
+            )
+            )
+        }
+    }
+
     override fun openSelectTypeCodeScreen(codeConfirmationForSap: Int, codeConfirmationForBarCode: Int) {
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
@@ -405,6 +418,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openConfirmationDeleteGoods(positionsCount: Int, callbackFunc: () -> Unit)
     fun openConfirmationClean(byStorage: Boolean = false, callbackFunc: () -> Unit)
     fun openConfirmationTakeStorePlace(callbackFunc: () -> Unit)
+    fun openConfirmationExitStoreplace(callbackFunc: () -> Unit)
     fun openSuccessSaveDataScreen(callbackFunc: () -> Unit)
     fun openConfirmationExitTask(callbackFunc: () -> Unit)
     fun openSelectTypeCodeScreen(codeConfirmationForSap: Int, codeConfirmationForBarCode: Int)

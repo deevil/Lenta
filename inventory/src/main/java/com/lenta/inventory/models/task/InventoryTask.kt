@@ -183,4 +183,18 @@ class InventoryTask(val taskDescription: TaskDescription, val taskRepository: IT
 
         return convertMilisecondsToHHMm(elapsedTimeInMillis)
     }
+
+    fun isChanged(): Boolean {
+        return taskRepository.getProducts().isChanged() || taskRepository.getExciseStamps().isChanged()
+    }
+
+    fun makeSnapshot() {
+        taskRepository.getProducts().makeSnapshot()
+        taskRepository.getExciseStamps().makeSnapshot()
+    }
+
+    fun restoreSnapshot() {
+        taskRepository.getProducts().restoreSnapshot()
+        taskRepository.getExciseStamps().restoreSnapshot()
+    }
 }

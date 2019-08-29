@@ -105,6 +105,9 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
             searchProductDelegate.init(viewModelScope = this@GoodsListViewModel::viewModelScope,
                     scanResultHandler = this@GoodsListViewModel::handleProductSearchResult,
                     storePlace = storePlaceManager?.storePlaceNumber ?: "00")
+            if (taskManager.getInventoryTask()?.taskDescription?.recountType == RecountType.ParallelByStorePlaces) {
+                taskManager.getInventoryTask()?.makeSnapshot()
+            }
         }
     }
 
@@ -213,8 +216,25 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
     fun onClickBack() {
         val recountType = taskManager.getInventoryTask()?.taskDescription?.recountType
-        if (recountType == RecountType.ParallelByStorePlaces && storePlaceManager!!.getProcessedProducts().isEmpty()) {
-            makeLockUnlockRequest(recountType, StorePlaceLockMode.Unlock, ::handleUnlockSuccess)
+
+        if (recountType == RecountType.ParallelByStorePlaces) {
+            val needsUnlock = storePlaceManager!!.getProcessedProducts().isEmpty()
+            if (taskManager.getInventoryTask()?.isChanged() == true) {
+                screenNavigator.openConfirmationExitStoreplace {
+                    taskManager.getInventoryTask()?.restoreSnapshot()
+                    unlockIfNeededAndGoBack(needsUnlock)
+                }
+            } else {
+                unlockIfNeededAndGoBack(needsUnlock)
+            }
+        } else {
+            screenNavigator.goBack()
+        }
+    }
+
+    private fun unlockIfNeededAndGoBack(needsUnlock: Boolean) {
+        if (needsUnlock) {
+            makeLockUnlockRequest(RecountType.ParallelByStorePlaces, StorePlaceLockMode.Unlock, ::handleUnlockSuccess)
         } else {
             screenNavigator.goBack()
         }
