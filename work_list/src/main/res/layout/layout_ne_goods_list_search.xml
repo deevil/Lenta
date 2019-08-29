@@ -14,65 +14,107 @@
             type="com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig" />
     </data>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-        <include
-            android:id="@+id/layout_titles"
-            layout="@layout/item_title_simple_goods"
+        <!-- Наименования колонок -->
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:orientation="vertical">
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp">
+
+                <LinearLayout
+                    style="@style/LinearCellStyle"
+                    android:layout_weight="@integer/number_good_column_1">
+
+                    <TextView
+                        style="@style/ColumnTitleStyle"
+                        android:layout_width="wrap_content"
+                        android:layout_marginStart="0dp"
+                        android:text="@string/number"/>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    style="@style/LinearCellStyle"
+                    android:layout_weight="@integer/number_good_column_2">
+
+                    <TextView
+                        style="@style/ColumnTitleStyle"
+                        android:text="@string/goods"/>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <View
+                style="@style/HorizontalDivider"/>
+
+        </LinearLayout>
+
+        <!-- Список товаров -->
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv"
             android:layout_width="match_parent"
             android:layout_height="0dp"
+            android:layout_marginBottom="8dp"
+            android:layout_weight="1"
             app:items="@{vm.searchGoods}"
-            app:layout_constraintBottom_toTopOf="@+id/b_scan"
+            app:layout_constraintBottom_toTopOf="@+id/et_search"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/layout_titles"
             app:rv_config="@{rvConfig}"
-            tools:listitem="@layout/item_good" />
+            tools:listitem="@layout/item_good_selectable"/>
 
-        <EditText
-            android:id="@+id/et_search"
-            android:layout_width="0dp"
+        <!-- Ввод номера товара -->
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginBottom="8dp"
-            android:drawableEnd="@drawable/ic_search_white_16dp"
-            android:hint="@string/enter_item_number_or_barcode"
-            android:imeOptions="actionSearch"
-            android:inputType="numberDecimal"
-            android:paddingTop="8dp"
-            android:paddingBottom="8dp"
-            android:text="@={vm.eanCode}"
-            app:cursorToLastPos="@{true}"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/b_scan"
-            app:layout_constraintStart_toStartOf="parent"
-            app:onOkInSoftKeyboard="@{vm}"
-            app:requestFocus="@{vm.requestFocusToEan}"
-            tools:ignore="Autofill" />
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
 
-        <ImageButton
-            android:id="@+id/b_scan"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="?selectableItemBackground"
-            android:padding="8dp"
-            android:src="@drawable/ic_scan_barcode"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            tools:ignore="ContentDescription" />
+            <EditText
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:layout_weight="1"
+                android:digits="0123456789"
+                android:ellipsize="end"
+                android:hint="@string/enter_item_number_or_barcode"
+                android:imeOptions="actionGo"
+                android:inputType="number"
+                android:maxLength="14"
+                android:maxLines="1"
+                app:onOkInSoftKeyboard="@{vm}"
+                tools:ignore="Autofill"/>
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:onClick="@{(view) -> vm.scanQrCode()}"
+                android:src="@drawable/ic_scan_barcode"/>
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:onClick="@{(view) -> vm.scanBarCode()}"
+                android:src="@drawable/ic_scan_barcode"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
 
 </layout>

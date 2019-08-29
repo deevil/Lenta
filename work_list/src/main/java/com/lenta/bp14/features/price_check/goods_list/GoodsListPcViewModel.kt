@@ -31,6 +31,9 @@ class GoodsListPcViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
 
     val taskName = MutableLiveData("Сверка цен на полке от 23.07.19 23:15")
 
+    val numberField: MutableLiveData<String> = MutableLiveData("")
+    val requestFocusToNumberField: MutableLiveData<Boolean> = MutableLiveData()
+
     val processingGoods = MutableLiveData<List<Good>>(getTestItems())
     val processedGoods = MutableLiveData<List<Good>>(getTestItems())
     val searchGoods = MutableLiveData<List<Good>>(getTestItems())
@@ -50,6 +53,12 @@ class GoodsListPcViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
 
     val deleteButtonVisibility = selectedPage.map { it != PriceCheckTab.PROCESSING.position }
     val printButtonVisibility = selectedPage.map { it != PriceCheckTab.PROCESSING.position }
+
+    init {
+        viewModelScope.launch {
+            requestFocusToNumberField.value = true
+        }
+    }
 
     override fun onPageSelected(position: Int) {
         selectedPage.value = position

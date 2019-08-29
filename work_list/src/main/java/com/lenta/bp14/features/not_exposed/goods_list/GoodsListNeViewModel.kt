@@ -28,19 +28,18 @@ class GoodsListNeViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
 
     val taskName = MutableLiveData("Невыставленный товар от 23.07.19 23:15")
 
+    val numberField: MutableLiveData<String> = MutableLiveData("")
+    val requestFocusToNumberField: MutableLiveData<Boolean> = MutableLiveData()
+
     val processingGoods = MutableLiveData<List<Good>>(getTestItems())
     val processedGoods = MutableLiveData<List<Good>>(getTestItems())
     val searchGoods = MutableLiveData<List<Good>>(getTestItems())
 
-    val eanCode: MutableLiveData<String> = MutableLiveData("")
-    val requestFocusToEan: MutableLiveData<Boolean> = MutableLiveData()
-
-
-    /*init {
+    init {
         viewModelScope.launch {
-            //createTestData()
+            requestFocusToNumberField.value = true
         }
-    }*/
+    }
 
     private fun getTestItems(): List<Good>? {
         return List(3) {
@@ -53,33 +52,6 @@ class GoodsListNeViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
         }
     }
 
-    /*private fun createTestData() {
-        processingGoods.value = List(100) {
-            GoodsUi(
-                    it,
-                    "000021 Горбуша $it"
-            )
-        }
-
-        processedGoods.value = List(100) {
-            ProcessedGoodsUi(
-                    it,
-                    "000021 Горбуша ${it + 100}",
-                    "20 шт."
-            )
-        }
-
-        searchGoods.value = List(100) {
-            GoodsUi(
-                    it,
-                    "000022 Селедка $it"
-            )
-        }
-
-    }*/
-
-
-
     override fun onPageSelected(position: Int) {
         selectedPage.value = position
     }
@@ -88,12 +60,15 @@ class GoodsListNeViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
 
     }
 
-    fun getTitle(): String {
-        return "???"
+    override fun onOkInSoftKeyboard(): Boolean {
+        return false
     }
 
-    override fun onOkInSoftKeyboard(): Boolean {
-        return true
+    fun scanQrCode() {
+
+    }
+
+    fun scanBarCode() {
 
     }
 
@@ -112,14 +87,3 @@ class GoodsListNeViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     }
 
 }
-
-/*data class ProcessedGoodsUi(
-        val number: Int,
-        val name: String,
-        val quantity: String
-)
-
-data class GoodsUi(
-        val number: Int,
-        val name: String
-)*/

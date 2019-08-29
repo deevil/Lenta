@@ -1,6 +1,7 @@
 package com.lenta.bp14.features.work_list.goods_list
 
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import com.lenta.bp14.data.PriceCheckTab
 import com.lenta.bp14.data.TaskManager
 import com.lenta.bp14.data.WorkListTab
@@ -13,6 +14,7 @@ import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.map
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class GoodsListWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyboardListener {
@@ -29,6 +31,9 @@ class GoodsListWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     val selectedPage = MutableLiveData(0)
 
     val taskName = MutableLiveData("Рабочий список от 23.07.19 23:15")
+
+    val numberField: MutableLiveData<String> = MutableLiveData("")
+    val requestFocusToNumberField: MutableLiveData<Boolean> = MutableLiveData()
 
     val processingGoods = MutableLiveData<List<Good>>(getTestItems())
     val processedGoods = MutableLiveData<List<Good>>(getTestItems())
@@ -48,6 +53,12 @@ class GoodsListWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     val saveButtonEnabled = processingGoods.map { it?.isNotEmpty() ?: false }
 
     val thirdButtonVisibility = selectedPage.map { it != WorkListTab.PROCESSING.position }
+
+    init {
+        viewModelScope.launch {
+            requestFocusToNumberField.value = true
+        }
+    }
 
     override fun onPageSelected(position: Int) {
         selectedPage.value = position

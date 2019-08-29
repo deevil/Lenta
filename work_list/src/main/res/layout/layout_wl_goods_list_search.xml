@@ -86,23 +86,23 @@
             android:orientation="horizontal">
 
             <EditText
-                android:id="@+id/et_good_number"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_margin="8dp"
                 android:layout_weight="1"
                 android:digits="0123456789"
-                android:ellipsize="end"
                 android:hint="@string/enter_item_number_or_barcode"
                 android:imeOptions="actionGo"
                 android:inputType="number"
+                android:text="@={vm.numberField}"
                 android:maxLength="14"
                 android:maxLines="1"
+                android:ellipsize="end"
                 app:onOkInSoftKeyboard="@{vm}"
+                app:requestFocus="@{vm.requestFocusToNumberField}"
                 tools:ignore="Autofill"/>
 
             <ImageView
-                android:id="@+id/btn_qrcode"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
@@ -110,7 +110,6 @@
                 android:src="@drawable/ic_scan_barcode"/>
 
             <ImageView
-                android:id="@+id/btn_barcode"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
