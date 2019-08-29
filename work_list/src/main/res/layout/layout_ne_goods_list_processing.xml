@@ -1,14 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    tools:context="com.lenta.bp14.features.work_list.goods_list.GoodsListWlFragment">
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
 
         <variable
             name="vm"
-            type="com.lenta.bp14.features.work_list.goods_list.GoodsListWlViewModel" />
+            type="com.lenta.bp14.features.not_exposed.goods_list.GoodsListNeViewModel" />
 
         <variable
             name="rvConfig"
@@ -69,7 +68,7 @@
             android:layout_height="0dp"
             android:layout_marginBottom="8dp"
             android:layout_weight="1"
-            app:items="@{vm.searchGoods}"
+            app:items="@{vm.processingGoods}"
             app:layout_constraintBottom_toTopOf="@+id/et_search"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -97,6 +96,7 @@
                 android:maxLength="14"
                 android:maxLines="1"
                 android:text="@={vm.numberField}"
+                app:cursorToLastPos="@{true}"
                 app:onOkInSoftKeyboard="@{vm}"
                 app:requestFocus="@{vm.requestFocusToNumberField}"
                 tools:ignore="Autofill" />

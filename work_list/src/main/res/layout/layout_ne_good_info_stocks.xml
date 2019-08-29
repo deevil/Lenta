@@ -8,7 +8,7 @@
 
         <variable
             name="vm"
-            type="com.lenta.bp14.features.check_list.goods_list.GoodsListClViewModel" />
+            type="com.lenta.bp14.features.not_exposed.good_info.GoodInfoNeViewModel" />
 
         <variable
             name="rvConfig"
@@ -21,7 +21,7 @@
 
         <include
             android:id="@+id/layout_titles"
-            layout="@layout/item_title_goods"
+            layout="@layout/item_title_stock"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:layout_constraintEnd_toEndOf="parent"
@@ -32,36 +32,13 @@
             android:id="@+id/rv"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_marginBottom="8dp"
-            app:items="@{vm.goods}"
-            app:layout_constraintBottom_toTopOf="@+id/et_search"
+            app:items="@{vm.balances}"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/layout_titles"
             app:rv_config="@{rvConfig}"
-            tools:listitem="@layout/item_tile_goods_cl" />
-
-
-        <EditText
-            android:id="@+id/et_search"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginBottom="8dp"
-            android:ellipsize="end"
-            android:imeOptions="actionSearch"
-            android:inputType="textNoSuggestions|textVisiblePassword"
-            android:maxLines="1"
-            android:paddingTop="8dp"
-            android:paddingBottom="8dp"
-            android:text="@={vm.searchCode}"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:onOkInSoftKeyboard="@{vm}"
-            tools:ignore="Autofill" />
+            tools:listitem="@layout/item_tile_stock" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

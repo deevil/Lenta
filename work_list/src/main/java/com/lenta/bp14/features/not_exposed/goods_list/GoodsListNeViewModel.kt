@@ -1,12 +1,12 @@
-package com.lenta.bp14.features.price_check.goods_list
+package com.lenta.bp14.features.not_exposed.goods_list
 
+import com.lenta.shared.platform.viewmodel.CoreViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp14.data.GoodsListTab
-import com.lenta.bp14.data.model.Good
 import com.lenta.bp14.data.TaskManager
+import com.lenta.bp14.data.model.Good
 import com.lenta.bp14.platform.navigation.IScreenNavigator
-import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.databinding.PageSelectionListener
@@ -15,7 +15,7 @@ import com.lenta.shared.utilities.extentions.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class GoodsListPcViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyboardListener {
+class GoodsListNeViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyboardListener {
 
     @Inject
     lateinit var navigator: IScreenNavigator
@@ -24,11 +24,10 @@ class GoodsListPcViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
 
 
     val processedSelectionsHelper = SelectionItemsHelper()
-    val searchSelectionsHelper = SelectionItemsHelper()
 
     val selectedPage = MutableLiveData(0)
 
-    val taskName = MutableLiveData("Сверка цен на полке от 23.07.19 23:15")
+    val taskName = MutableLiveData("Невыставленный товар от 23.07.19 23:15")
 
     val numberField: MutableLiveData<String> = MutableLiveData("")
     val requestFocusToNumberField: MutableLiveData<Boolean> = MutableLiveData()
@@ -39,19 +38,16 @@ class GoodsListPcViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
 
     private val selectedItemOnCurrentTab: MutableLiveData<Boolean> = selectedPage
             .combineLatest(processedSelectionsHelper.selectedPositions)
-            .combineLatest(searchSelectionsHelper.selectedPositions)
             .map {
-                val tab = it?.first?.first?.toInt()
-                val processedSelected = it?.first?.second?.isNotEmpty() == true
-                val searchSelected = it?.second?.isNotEmpty() == true
-                tab == GoodsListTab.PROCESSED.position && processedSelected || tab == GoodsListTab.SEARCH.position && searchSelected
-    }
+                val tab = it?.first?.toInt()
+                val processedSelected = it?.second?.isNotEmpty() == true
+                tab == GoodsListTab.PROCESSED.position && processedSelected || tab == GoodsListTab.SEARCH.position
+            }
 
     val deleteButtonEnabled = selectedItemOnCurrentTab.map { it }
-    val printButtonEnabled = selectedItemOnCurrentTab.map { it }
+    val saveButtonEnabled = processingGoods.map { it?.isNotEmpty() ?: false }
 
-    val deleteButtonVisibility = selectedPage.map { it != GoodsListTab.PROCESSING.position }
-    val printButtonVisibility = selectedPage.map { it != GoodsListTab.PROCESSING.position }
+    val thirdButtonVisibility = selectedPage.map { it != GoodsListTab.PROCESSING.position }
 
     init {
         viewModelScope.launch {
@@ -66,12 +62,6 @@ class GoodsListPcViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
 
     override fun onPageSelected(position: Int) {
         selectedPage.value = position
-    }
-
-    init {
-        viewModelScope.launch {
-            selectedPage.value = 0
-        }
     }
 
     override fun onOkInSoftKeyboard(): Boolean {
@@ -94,8 +84,8 @@ class GoodsListPcViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
 
     }
 
-    fun onClickPrint() {
-
+    fun onClickFilter() {
+        navigator.openSearchFilterWlScreen()
     }
 
     fun onClickItemPosition(position: Int) {
@@ -111,4 +101,5 @@ class GoodsListPcViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
             else -> null
         }
     }
+
 }

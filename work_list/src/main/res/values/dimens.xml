@@ -14,4 +14,9 @@
     <integer name="number_good_check_column_2">35</integer>
     <integer name="number_good_check_column_3">15</integer>
 
+    <!-- Колонки - № / Товары / Количество -->
+    <integer name="number_good_quantity_column_1">10</integer>
+    <integer name="number_good_quantity_column_2">35</integer>
+    <integer name="number_good_quantity_column_3">15</integer>
+
 </resources>

@@ -8,8 +8,8 @@ import com.lenta.bp14.features.job_card.JobCardFragment
 import com.lenta.bp14.features.list_of_differences.ListOfDifferencesFragment
 import com.lenta.bp14.features.loading.fast.FastDataLoadingFragment
 import com.lenta.bp14.features.main_menu.MainMenuFragment
-import com.lenta.bp14.features.not_displayed_goods.NotDisplayedGoodsFragment
-import com.lenta.bp14.features.not_displayed_goods.NotDisplayedGoodsInfoFragment
+import com.lenta.bp14.features.not_exposed.goods_list.GoodsListNeFragment
+import com.lenta.bp14.features.not_exposed.good_info.GoodInfoNeFragment
 import com.lenta.bp14.features.price_check.good_info.GoodInfoPcFragment
 import com.lenta.bp14.features.price_check.goods_list.GoodsListPcFragment
 import com.lenta.bp14.features.print_settings.PrintSettingsFragment
@@ -79,7 +79,7 @@ class ScreenNavigator(
         }
     }
 
-    override fun openCheckListGoodsList() {
+    override fun openGoodsListClScreen() {
         runOrPostpone {
             getFragmentStack()?.push(GoodsListClFragment())
         }
@@ -127,7 +127,7 @@ class ScreenNavigator(
         }
     }
 
-    override fun openGoodListPcScreen() {
+    override fun openGoodsListPcScreen() {
         runOrPostpone {
             getFragmentStack()?.push(GoodsListPcFragment())
         }
@@ -151,15 +151,15 @@ class ScreenNavigator(
         }
     }
 
-    override fun openNotDisplayedGoodsScreen() {
+    override fun openGoodsListNeScreen() {
         runOrPostpone {
-            getFragmentStack()?.push(NotDisplayedGoodsFragment())
+            getFragmentStack()?.push(GoodsListNeFragment())
         }
     }
 
-    override fun openNotDisplayedGoodsInfoScreen() {
+    override fun openGoodInfoNeScreen() {
         runOrPostpone {
-            getFragmentStack()?.push(NotDisplayedGoodsInfoFragment())
+            getFragmentStack()?.push(GoodInfoNeFragment())
         }
     }
 
@@ -175,7 +175,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openFastDataLoadingScreen()
     fun openTaskListScreen()
     fun openJobCardScreen(taskNumber: String)
-    fun openCheckListGoodsList()
+    fun openGoodsListClScreen()
     fun openListOfDifferencesScreen()
     fun openReportResultScreen()
     fun openPrintSettingsScreen()
@@ -183,10 +183,10 @@ interface IScreenNavigator : ICoreNavigator {
     fun openGoodInfoWlScreen()
     fun openGoodsListWlScreen()
     fun openGoodInfoPcScreen()
-    fun openGoodListPcScreen()
+    fun openGoodsListPcScreen()
     fun openSearchFilterWlScreen()
     fun openExpectedDeliveriesScreen()
     fun openSalesOfGoodsScreen()
-    fun openNotDisplayedGoodsScreen()
-    fun openNotDisplayedGoodsInfoScreen()
+    fun openGoodsListNeScreen()
+    fun openGoodInfoNeScreen()
 }

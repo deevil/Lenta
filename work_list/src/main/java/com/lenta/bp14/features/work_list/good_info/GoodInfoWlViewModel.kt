@@ -32,7 +32,7 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
     val quantity: MutableLiveData<String> = MutableLiveData()
     val totalQuantity: MutableLiveData<Int> = quantity.map {
         val currentQuantity = if (it?.isNotEmpty() == true) it.toInt() else 0
-        val goodQuantity = if(good.value != null) good.value!!.total else 0
+        val goodQuantity = if(good.value != null) good.value!!.quantity else 0
         currentQuantity + goodQuantity
     }
 

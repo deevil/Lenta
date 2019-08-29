@@ -1,14 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    tools:context="com.lenta.bp14.features.work_list.goods_list.GoodsListWlFragment">
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
 
         <variable
             name="vm"
-            type="com.lenta.bp14.features.work_list.goods_list.GoodsListWlViewModel" />
+            type="com.lenta.bp14.features.not_exposed.goods_list.GoodsListNeViewModel" />
 
         <variable
             name="rvConfig"
@@ -36,7 +35,7 @@
 
                 <LinearLayout
                     style="@style/LinearCellStyle"
-                    android:layout_weight="@integer/number_good_column_1">
+                    android:layout_weight="@integer/number_good_quantity_column_1">
 
                     <TextView
                         style="@style/ColumnTitleStyle"
@@ -48,11 +47,21 @@
 
                 <LinearLayout
                     style="@style/LinearCellStyle"
-                    android:layout_weight="@integer/number_good_column_2">
+                    android:layout_weight="@integer/number_good_quantity_column_2">
 
                     <TextView
                         style="@style/ColumnTitleStyle"
                         android:text="@string/goods" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    style="@style/LinearCellStyle"
+                    android:layout_weight="@integer/number_good_quantity_column_3">
+
+                    <TextView
+                        style="@style/ColumnTitleStyle"
+                        android:text="@string/quantity" />
 
                 </LinearLayout>
 
@@ -69,13 +78,13 @@
             android:layout_height="0dp"
             android:layout_marginBottom="8dp"
             android:layout_weight="1"
-            app:items="@{vm.searchGoods}"
+            app:items="@{vm.processedGoods}"
             app:layout_constraintBottom_toTopOf="@+id/et_search"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/layout_titles"
             app:rv_config="@{rvConfig}"
-            tools:listitem="@layout/item_good_selectable" />
+            tools:listitem="@layout/item_good_quantity_selectable" />
 
         <!-- Ввод номера товара -->
         <LinearLayout

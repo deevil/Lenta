@@ -24,6 +24,7 @@ import com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig
 import com.lenta.shared.utilities.databinding.RecyclerViewKeyHandler
 import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
+import java.lang.IllegalArgumentException
 
 class GoodsListPcFragment : CoreFragment<FragmentGoodsListPcBinding, GoodsListPcViewModel>(),
         ViewPagerSettings, ToolbarButtonsClickListener {
@@ -46,9 +47,7 @@ class GoodsListPcFragment : CoreFragment<FragmentGoodsListPcBinding, GoodsListPc
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
         topToolbarUiModel.description.value = getString(R.string.goods_list)
 
-        vm.taskName.observe(this, Observer<String> { name ->
-            topToolbarUiModel.title.value = name
-        })
+        connectLiveData(vm.taskName, topToolbarUiModel.title)
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
@@ -222,10 +221,7 @@ class GoodsListPcFragment : CoreFragment<FragmentGoodsListPcBinding, GoodsListPc
             0 -> getString(R.string.processing)
             1 -> getString(R.string.processed)
             2 -> getString(R.string.search)
-            else -> {
-                Logg.d { "Wrong pager position!" }
-                "Error"
-            }
+            else -> throw IllegalArgumentException("Wrong pager position!")
         }
     }
 

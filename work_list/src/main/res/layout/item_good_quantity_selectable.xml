@@ -5,6 +5,8 @@
 
     <data>
 
+        <import type="android.view.View" />
+
         <variable
             name="good"
             type="com.lenta.bp14.data.model.Good" />
@@ -29,7 +31,7 @@
 
             <LinearLayout
                 style="@style/LinearCellStyle"
-                android:layout_weight="@integer/number_good_check_column_1">
+                android:layout_weight="@integer/number_good_quantity_column_1">
 
                 <TextView
                     android:id="@+id/tv_item_number"
@@ -48,7 +50,7 @@
 
             <LinearLayout
                 style="@style/LinearCellStyle"
-                android:layout_weight="@integer/number_good_check_column_2"
+                android:layout_weight="@integer/number_good_quantity_column_2"
                 android:orientation="horizontal">
 
                 <TextView
@@ -64,7 +66,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:padding="5dp"
-                    android:src="@drawable/ic_keyboard_arrow_right_white_24dp" />
+                    android:src="@drawable/ic_keyboard_arrow_right_white_24dp"
+                    tools:ignore="ContentDescription" />
 
             </LinearLayout>
 
@@ -72,21 +75,32 @@
 
             <LinearLayout
                 style="@style/LinearCellStyle"
-                android:layout_weight="@integer/number_good_check_column_3"
-                android:orientation="horizontal">
+                android:layout_weight="@integer/number_good_quantity_column_3">
 
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="10dp"
-                    android:src="@drawable/ic_close_white_24dp"
-                    app:goodStatusIcon="@{good.goodStatus}" />
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
 
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/ic_print_white_24dp"
-                    app:priceTagStatusIcon="@{good.priceTagStatus}" />
+                    <TextView
+                        style="@style/CellTextStyle"
+                        android:layout_width="wrap_content"
+                        android:layout_gravity="center"
+                        android:text="@{@string/total_quantity_units(good.quantity, good.uom.name)}"
+                        android:visibility="@{good.quantity != 0 ? View.VISIBLE : View.INVISIBLE}"
+                        tools:text="10 шт"
+                        tools:visibility="visible" />
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_close_white_24dp"
+                        android:visibility="@{good.quantity == 0 ? View.VISIBLE : View.INVISIBLE}"
+                        app:goodStatusIcon="@{good.goodStatus}"
+                        tools:ignore="ContentDescription"
+                        tools:visibility="visible" />
+
+                </FrameLayout>
 
             </LinearLayout>
 
