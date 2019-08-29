@@ -70,7 +70,6 @@ class InventoryTask(val taskDescription: TaskDescription, val taskRepository: IT
         )
     }
 
-    //TODO предварительная версия. Логика будет уточнятся дополнятся
     private fun getReportStamps(): List<ExciseStampInfo> {
         return taskRepository.getExciseStamps()
                 .getExciseStamps().map {
@@ -87,7 +86,6 @@ class InventoryTask(val taskDescription: TaskDescription, val taskRepository: IT
                 }
     }
 
-    //TODO предварительная версия. Логика будет уточнятся дополнятся
     private fun getUntiedProducts(): List<UntiedProduct> {
         return taskRepository
                 .getProducts().getUntiedProducts().map {
@@ -101,17 +99,29 @@ class InventoryTask(val taskDescription: TaskDescription, val taskRepository: IT
     }
 
     private fun getReportsProducts(): List<MaterialNumber> {
-        return taskRepository.getProducts().getProducts().map {
-            MaterialNumber(
-                    materialNumber = it.materialNumber,
-                    storePlaceCode = it.placeCode,
-                    factQuantity = it.factCount.toString(),
-                    positionCounted = if (it.isPositionCalc) "X" else "",
-                    isDel = if (it.isDel) "X" else "",
-                    isSet = if (it.isSet) "X" else "",
-                    isExcOld = if (it.isExcOld) "X" else ""
-            )
+
+        val productsNumbersWithNotZeroPlaceCode = mutableSetOf<String>()
+
+        taskRepository.getProducts().getProducts().forEach {
+            if (it.placeCode != "00") {
+                productsNumbersWithNotZeroPlaceCode.add(it.placeCode)
+            }
         }
+
+        return taskRepository.getProducts().getProducts().filter {
+            return@filter it.placeCode != "00" || !productsNumbersWithNotZeroPlaceCode.contains(it.placeCode)
+        }
+                .map {
+                    MaterialNumber(
+                            materialNumber = it.materialNumber,
+                            storePlaceCode = it.placeCode,
+                            factQuantity = it.factCount.toString(),
+                            positionCounted = if (it.isPositionCalc) "X" else "",
+                            isDel = if (it.isDel) "X" else "",
+                            isSet = if (it.isSet) "X" else "",
+                            isExcOld = if (it.isExcOld) "X" else ""
+                    )
+                }
     }
 
     //вызывается при возврате на 20 экран и при нажатии на кнопку ОБНОВИТЬ, вызываем 96 рест

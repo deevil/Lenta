@@ -89,7 +89,7 @@ class ProcessExciseAlcoProductService
         currentCountExciseStamps.add(
                 GoodsInfoCountExciseStamps(
                         countLastExciseStamp = count,
-                        countType = GoodsInfoCountType.PARTLY.number
+                        countType = GoodsInfoCountType.VINTAGE.number
                 )
         )
         currentProductInfo = currentProductInfo!!.copy(factCount = currentProductInfo!!.factCount + count)
@@ -152,17 +152,10 @@ class ProcessExciseAlcoProductService
     }
 
     fun getLastCountExciseStamp() : GoodsInfoCountExciseStamps{
+        val lastExciseStamp = currentCountExciseStamps.lastOrNull()
         return GoodsInfoCountExciseStamps(
-                countLastExciseStamp = currentCountExciseStamps.let {countExciseStampsList ->
-                    countExciseStampsList.isNullOrEmpty().let {
-                        if (it) 0 else countExciseStampsList.last().countLastExciseStamp
-                    }
-                },
-                countType = currentCountExciseStamps.let {countExciseStampsList ->
-                    countExciseStampsList.isNullOrEmpty().let {
-                        if (it) GoodsInfoCountType.QUANTITY.number else countExciseStampsList.last().countType
-                    }
-                }
+                countLastExciseStamp = lastExciseStamp?.countLastExciseStamp ?: 0,
+                countType = lastExciseStamp?.countType ?: GoodsInfoCountType.QUANTITY.number
         )
     }
 

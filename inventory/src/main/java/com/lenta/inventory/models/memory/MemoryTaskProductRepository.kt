@@ -59,8 +59,9 @@ class MemoryTaskProductRepository(
     override fun addProduct(product: TaskProductInfo): Boolean {
         var index = -1
         for (i in productInfo.indices) {
-            if (product.materialNumber == productInfo[i].materialNumber && (product.placeCode == productInfo[i].placeCode || productInfo[i].placeCode == "00")) {
+            if (product.materialNumber == productInfo[i].materialNumber && product.placeCode == productInfo[i].placeCode) {
                 index = i
+                break
             }
         }
 

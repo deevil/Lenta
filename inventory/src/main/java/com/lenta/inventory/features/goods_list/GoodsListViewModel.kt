@@ -165,8 +165,8 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     fun onClickClean() {
         if (selectedPage.value == 0) {
             unprocessedSelectionHelper.selectedPositions.value?.forEach {
-                unprocessedGoods.value?.get(it)?.matnr?.let {
-                    taskManager.getInventoryTask()!!.deleteProduct(it)
+                unprocessedGoods.value?.get(it)?.matnr?.let { matNr ->
+                    taskManager.getInventoryTask()!!.deleteProduct(matNr)
                 }
             }
             unprocessedSelectionHelper.clearPositions()
@@ -178,7 +178,10 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
                             ?: "")
 
                     if (productInfo != null) {
-                        taskManager.getInventoryTask()!!.taskRepository.getProducts().changeProduct(productInfo.copy(factCount = 0.0, isPositionCalc = false))
+                        taskManager.getInventoryTask()!!.taskRepository.apply {
+                            getExciseStamps().deleteExciseStampsForProduct(productInfo)
+                            getProducts().changeProduct(productInfo.copy(factCount = 0.0, isPositionCalc = false))
+                        }
                     }
                 }
             }

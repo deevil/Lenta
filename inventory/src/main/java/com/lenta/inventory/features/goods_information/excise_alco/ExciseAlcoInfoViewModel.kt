@@ -9,7 +9,6 @@ import com.lenta.inventory.models.task.ProcessExciseAlcoProductService
 import com.lenta.inventory.models.task.TaskExciseStamp
 import com.lenta.inventory.models.task.TaskProductInfo
 import com.lenta.inventory.platform.navigation.IScreenNavigator
-import com.lenta.inventory.requests.network.AlcoCodeNetRequest
 import com.lenta.inventory.requests.network.ExciseGoodsParams
 import com.lenta.inventory.requests.network.ExciseGoodsRestInfo
 import com.lenta.inventory.requests.network.ObtainingDataExciseGoodsNetRequest
@@ -18,7 +17,6 @@ import com.lenta.shared.exception.Failure
 import com.lenta.shared.models.core.Manufacturer
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
-import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.toStringFormatted
@@ -104,23 +102,26 @@ class ExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
         }
     }
 
-    private fun handleProductSearchResult(scanInfoResult: ScanInfoResult?): Boolean {
+    private fun handleProductSearchResult(@Suppress("UNUSED_PARAMETER") scanInfoResult: ScanInfoResult?): Boolean {
         enabledBtn()
         screenNavigator.goBack()
         return false
     }
 
     fun onResume() {
-        count.value = processExciseAlcoProductService.getLastCountExciseStamp().countLastExciseStamp.let {
-            if (it == 0) "" else it.toString()
+        updateCounts()
+    }
+
+    private fun updateCounts() {
+        processExciseAlcoProductService.getLastCountExciseStamp().apply {
+            count.postValue(if (this.countLastExciseStamp == 0) "" else this.countLastExciseStamp.toString())
+            selectedPosition.postValue(this.countType)
         }
-        selectedPosition.value = processExciseAlcoProductService.getLastCountExciseStamp().countType
     }
 
     fun onClickRollback() {
-        val countLastExciseStamp = processExciseAlcoProductService.rollback()
-        count.value = if (countLastExciseStamp.countLastExciseStamp == 0) "" else countLastExciseStamp.countLastExciseStamp.toString()
-        selectedPosition.value = countLastExciseStamp.countType
+        processExciseAlcoProductService.rollback()
+        updateCounts()
     }
 
     fun onClickDetails() {
@@ -149,7 +150,7 @@ class ExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
 
     private fun processBox(boxNumber: String) {
         if (processExciseAlcoProductService.isTaskAlreadyHasExciseStampBox(boxNumber)) {
-            screenNavigator.openAlertDoubleScanStamp()
+            screenNavigator.openAlertDoubleScanBox()
             return
         }
 
@@ -199,7 +200,6 @@ class ExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
                 } else {
                     processExciseAlcoProductService.addCurrentExciseStamps(boxStamps)
                     count.value = boxStamps.size.toString()
-                    selectedPosition.value = GoodsInfoCountType.VINTAGE.number
                 }
             }
             InfoStatus.BoxWithProblem.status -> screenNavigator.openAlertInfoScreen(exciseGoodsRestInfo.statusTxt)
@@ -257,7 +257,6 @@ class ExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
                         )
                 )
                 count.value = "1"
-                selectedPosition.value = GoodsInfoCountType.VINTAGE.number
                 if (exciseGoodsRestInfo.status == InfoStatus.StampOverload.status) {
                     screenNavigator.openAlertStampOverload(message = exciseGoodsRestInfo.statusTxt) {}
                 }
@@ -319,6 +318,8 @@ class ExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
             }
             else -> screenNavigator.openAlertInfoScreen(textErrorUnknownStatus.value!!)
         }
+
+        updateCounts()
     }
 
     private fun checkExciseStampByCode(stampCode: String) {
@@ -357,7 +358,6 @@ class ExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
                         )
                 )
                 count.value = "1"
-                selectedPosition.value = GoodsInfoCountType.PARTLY.number
                 if (exciseGoodsRestInfo.status == InfoStatus.StampOverload.status) {
                     screenNavigator.openAlertStampOverload(message = exciseGoodsRestInfo.statusTxt) {}
                 }
@@ -419,6 +419,8 @@ class ExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
             }
             else -> screenNavigator.openAlertInfoScreen(textErrorUnknownStatus.value!!)
         }
+
+        updateCounts()
     }
 
     private fun enabledBtn() {
