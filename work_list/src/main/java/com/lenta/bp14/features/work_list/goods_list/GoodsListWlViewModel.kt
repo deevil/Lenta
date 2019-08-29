@@ -35,9 +35,9 @@ class GoodsListWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     val numberField: MutableLiveData<String> = MutableLiveData("")
     val requestFocusToNumberField: MutableLiveData<Boolean> = MutableLiveData()
 
-    val processingGoods = MutableLiveData<List<Good>>(getTestItems())
-    val processedGoods = MutableLiveData<List<Good>>(getTestItems())
-    val searchGoods = MutableLiveData<List<Good>>(getTestItems())
+    val processingGoods = MutableLiveData<List<Good>>()
+    val processedGoods = MutableLiveData<List<Good>>()
+    val searchGoods = MutableLiveData<List<Good>>()
 
     private val selectedItemOnCurrentTab: MutableLiveData<Boolean> = selectedPage
             .combineLatest(processedSelectionsHelper.selectedPositions)
@@ -57,22 +57,16 @@ class GoodsListWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     init {
         viewModelScope.launch {
             requestFocusToNumberField.value = true
+
+            // Тестовые данные
+            processingGoods.value = taskManager.getTestGoodList(3)
+            processedGoods.value = taskManager.getTestGoodList(4)
+            searchGoods.value = taskManager.getTestGoodList(2)
         }
     }
 
     override fun onPageSelected(position: Int) {
         selectedPage.value = position
-    }
-
-    private fun getTestItems(): List<Good>? {
-        return List(3) {
-            Good(
-                    id = it + 1,
-                    material = "000000000000" + (111111..999999).random(),
-                    name = "Товар ${it + (1..99).random()}",
-                    uom = Uom.DEFAULT
-            )
-        }
     }
 
     override fun onOkInSoftKeyboard(): Boolean {
