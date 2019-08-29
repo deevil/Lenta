@@ -18,7 +18,7 @@ class TimeMonitor(private val intervalInMsec: Long) : ITimeMonitor {
     init {
         GlobalScope.launch {
             timer(intervalInMsec) {
-                unixTime.postValue(System.currentTimeMillis() + deltaTime)
+                unixTime.postValue(getUnixTime())
             }
         }
     }
@@ -32,9 +32,14 @@ class TimeMonitor(private val intervalInMsec: Long) : ITimeMonitor {
         val serverDate = getDateFromString(dateTime, DATE_FORMAT_yyyy_mm_dd + TIME_FORMAT_hhmmss)
         deltaTime = serverDate.time - System.currentTimeMillis()
     }
+
+    override fun getUnixTime(): Long {
+        return System.currentTimeMillis() + deltaTime
+    }
 }
 
 interface ITimeMonitor {
     fun observeUnixTime(): LiveData<Long>
+    fun getUnixTime(): Long
     fun setServerTime(time: String, date: String)
 }
