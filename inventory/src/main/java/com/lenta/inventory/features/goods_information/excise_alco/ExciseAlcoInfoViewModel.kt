@@ -113,16 +113,15 @@ class ExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
     }
 
     private fun updateCounts() {
-        count.value = processExciseAlcoProductService.getLastCountExciseStamp().countLastExciseStamp.let {
-            if (it == 0) "" else it.toString()
+        processExciseAlcoProductService.getLastCountExciseStamp().apply {
+            count.postValue(if (this.countLastExciseStamp == 0) "" else this.countLastExciseStamp.toString())
+            selectedPosition.postValue(this.countType)
         }
-        selectedPosition.value = processExciseAlcoProductService.getLastCountExciseStamp().countType
     }
 
     fun onClickRollback() {
-        val countLastExciseStamp = processExciseAlcoProductService.rollback()
-        count.value = if (countLastExciseStamp.countLastExciseStamp == 0) "" else countLastExciseStamp.countLastExciseStamp.toString()
-        selectedPosition.value = countLastExciseStamp.countType
+        processExciseAlcoProductService.rollback()
+        updateCounts()
     }
 
     fun onClickDetails() {
@@ -201,7 +200,6 @@ class ExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
                 } else {
                     processExciseAlcoProductService.addCurrentExciseStamps(boxStamps)
                     count.value = boxStamps.size.toString()
-                    selectedPosition.value = GoodsInfoCountType.VINTAGE.number
                 }
             }
             InfoStatus.BoxWithProblem.status -> screenNavigator.openAlertInfoScreen(exciseGoodsRestInfo.statusTxt)
@@ -259,7 +257,6 @@ class ExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
                         )
                 )
                 count.value = "1"
-                selectedPosition.value = GoodsInfoCountType.VINTAGE.number
                 if (exciseGoodsRestInfo.status == InfoStatus.StampOverload.status) {
                     screenNavigator.openAlertStampOverload(message = exciseGoodsRestInfo.statusTxt) {}
                 }
@@ -361,7 +358,6 @@ class ExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
                         )
                 )
                 count.value = "1"
-                selectedPosition.value = GoodsInfoCountType.PARTLY.number
                 if (exciseGoodsRestInfo.status == InfoStatus.StampOverload.status) {
                     screenNavigator.openAlertStampOverload(message = exciseGoodsRestInfo.statusTxt) {}
                 }
