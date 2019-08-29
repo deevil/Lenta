@@ -48,7 +48,9 @@ class ProcessGeneralProductServiceTest : BaseUnitTest() {
                 taskDeadLine = "2019-07-25",
                 recountType = RecountType.None,
                 gis = GisControl.GeneralProduct,
-                linkOldStamp = true
+                linkOldStamp = true,
+                processingEndTime = null,
+                isRecount = false
         )
 
         processServiceManager.newInventoryTask(taskDescription)

@@ -53,7 +53,9 @@ class ProcessExciseAlcoProductServiceTest : BaseUnitTest() {
                 taskDeadLine = "2019-07-25",
                 recountType = RecountType.None,
                 gis = GisControl.Alcohol,
-                linkOldStamp = false
+                linkOldStamp = false,
+                processingEndTime = null,
+                isRecount = false
         )
 
         product = TaskProductInfo(
