@@ -1,4 +1,4 @@
-package com.lenta.bp14.features.not_exposed
+package com.lenta.bp14.features.not_exposed.good_info
 
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import androidx.lifecycle.MutableLiveData

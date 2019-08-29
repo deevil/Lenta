@@ -8,7 +8,7 @@
 
         <variable
             name="vm"
-            type="com.lenta.bp14.features.not_exposed.GoodInfoNeViewModel" />
+            type="com.lenta.bp14.features.not_exposed.good_info.GoodInfoNeViewModel" />
 
         <variable
             name="viewPagerSettings"
