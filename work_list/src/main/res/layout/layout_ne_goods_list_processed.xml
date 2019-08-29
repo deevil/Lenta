@@ -4,9 +4,11 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+
         <variable
             name="vm"
             type="com.lenta.bp14.features.not_exposed.goods_list.GoodsListNeViewModel" />
+
         <variable
             name="rvConfig"
             type="com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig" />
@@ -39,7 +41,7 @@
                         style="@style/ColumnTitleStyle"
                         android:layout_width="wrap_content"
                         android:layout_marginStart="0dp"
-                        android:text="@string/number"/>
+                        android:text="@string/number" />
 
                 </LinearLayout>
 
@@ -49,7 +51,7 @@
 
                     <TextView
                         style="@style/ColumnTitleStyle"
-                        android:text="@string/goods"/>
+                        android:text="@string/goods" />
 
                 </LinearLayout>
 
@@ -59,14 +61,13 @@
 
                     <TextView
                         style="@style/ColumnTitleStyle"
-                        android:text="@string/quantity"/>
+                        android:text="@string/quantity" />
 
                 </LinearLayout>
 
             </LinearLayout>
 
-            <View
-                style="@style/HorizontalDivider"/>
+            <View style="@style/HorizontalDivider" />
 
         </LinearLayout>
 
@@ -83,7 +84,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/layout_titles"
             app:rv_config="@{rvConfig}"
-            tools:listitem="@layout/item_good_quantity_selectable"/>
+            tools:listitem="@layout/item_good_quantity_selectable" />
 
         <!-- Ввод номера товара -->
         <LinearLayout
@@ -102,26 +103,26 @@
                 android:hint="@string/enter_item_number_or_barcode"
                 android:imeOptions="actionGo"
                 android:inputType="number"
-                android:text="@={vm.numberField}"
                 android:maxLength="14"
                 android:maxLines="1"
+                android:text="@={vm.numberField}"
                 app:onOkInSoftKeyboard="@{vm}"
                 app:requestFocus="@{vm.requestFocusToNumberField}"
-                tools:ignore="Autofill"/>
+                tools:ignore="Autofill" />
 
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
                 android:onClick="@{(view) -> vm.scanQrCode()}"
-                android:src="@drawable/ic_scan_barcode"/>
+                android:src="@drawable/ic_scan_barcode" />
 
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
                 android:onClick="@{(view) -> vm.scanBarCode()}"
-                android:src="@drawable/ic_scan_barcode"/>
+                android:src="@drawable/ic_scan_barcode" />
 
         </LinearLayout>
 

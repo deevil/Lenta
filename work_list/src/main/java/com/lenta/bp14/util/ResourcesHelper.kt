@@ -5,19 +5,15 @@ import androidx.databinding.BindingAdapter
 import com.lenta.bp14.R
 import com.lenta.bp14.data.model.GoodStatus
 import com.lenta.bp14.data.model.PriceTagStatus
-import com.lenta.shared.utilities.extentions.setInvisible
-import com.lenta.shared.utilities.extentions.setVisible
 
 
 @BindingAdapter("goodStatusIcon")
 fun setGoodStatusIcon(imageView: ImageView, goodStatus: GoodStatus) {
     goodStatus.let {
-        imageView.setVisible()
-
         when (it) {
-            GoodStatus.MISSING -> imageView.setImageResource(R.drawable.ic_missing_wrong_status_white_24dp)
-            GoodStatus.ERROR -> imageView.setImageResource(R.drawable.ic_error_outline_white_24dp)
-            else -> imageView.setInvisible()
+            GoodStatus.PRESENT -> imageView.setImageResource(R.drawable.ic_done_white_24dp)
+            GoodStatus.MISSING_RIGHT -> imageView.setImageResource(R.drawable.ic_error_outline_white_24dp)
+            GoodStatus.MISSING_WRONG -> imageView.setImageResource(R.drawable.ic_close_white_24dp)
         }
     }
 }
@@ -25,12 +21,10 @@ fun setGoodStatusIcon(imageView: ImageView, goodStatus: GoodStatus) {
 @BindingAdapter("priceTagStatusIcon")
 fun setPriceTagStatusIcon(imageView: ImageView, priceTagStatus: PriceTagStatus) {
     priceTagStatus.let {
-        imageView.setVisible()
-
         when (it) {
-            PriceTagStatus.MISSING -> imageView.setImageResource(R.drawable.ic_missing_wrong_status_white_24dp)
+            PriceTagStatus.NO_PRICE_TAG -> imageView.setImageResource(R.drawable.ic_missing_wrong_status_white_24dp)
+            PriceTagStatus.WITH_ERROR -> imageView.setImageResource(R.drawable.ic_error_outline_white_24dp)
             PriceTagStatus.PRINTED -> imageView.setImageResource(R.drawable.ic_print_white_24dp)
-            else -> imageView.setInvisible()
         }
     }
 }

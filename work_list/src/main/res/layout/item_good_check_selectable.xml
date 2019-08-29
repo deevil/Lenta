@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
 
         <variable
             name="good"
-            type="com.lenta.bp14.data.model.Good"/>
+            type="com.lenta.bp14.data.model.Good" />
 
         <variable
             name="selectedForDelete"
-            type="Boolean"/>
+            type="Boolean" />
 
     </data>
 
@@ -40,12 +40,11 @@
                     android:gravity="center"
                     android:text="@{String.valueOf(good.id)}"
                     app:selected="@{selectedForDelete}"
-                    tools:text="1"/>
+                    tools:text="1" />
 
             </LinearLayout>
 
-            <View
-                style="@style/VerticalDivider"/>
+            <View style="@style/VerticalDivider" />
 
             <LinearLayout
                 style="@style/LinearCellStyle"
@@ -59,18 +58,17 @@
                     android:layout_weight="1"
                     android:maxLines="2"
                     android:text="@{@string/one_space_two(good.formattedMaterial, good.name)}"
-                    tools:text="000021 Масло"/>
+                    tools:text="000021 Масло" />
 
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:padding="5dp"
-                    android:src="@drawable/ic_keyboard_arrow_right_white_24dp"/>
+                    android:src="@drawable/ic_keyboard_arrow_right_white_24dp" />
 
             </LinearLayout>
 
-            <View
-                style="@style/VerticalDivider"/>
+            <View style="@style/VerticalDivider" />
 
             <LinearLayout
                 style="@style/LinearCellStyle"
@@ -81,21 +79,20 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="10dp"
-                    app:goodStatusIcon="@{good.goodStatus}"
-                    android:src="@drawable/ic_close_white_24dp"/>
+                    android:src="@drawable/ic_close_white_24dp"
+                    app:goodStatusIcon="@{good.goodStatus}" />
 
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    app:priceTagStatusIcon="@{good.priceTagStatus}"
-                    android:src="@drawable/ic_print_white_24dp"/>
+                    android:src="@drawable/ic_print_white_24dp"
+                    app:priceTagStatusIcon="@{good.priceTagStatus}" />
 
             </LinearLayout>
 
         </LinearLayout>
 
-        <View
-            style="@style/HorizontalDivider"/>
+        <View style="@style/HorizontalDivider" />
 
     </LinearLayout>
 

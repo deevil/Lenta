@@ -60,7 +60,7 @@ class GoodsListPcViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
 
             // Тестовые данные
             processingGoods.value = taskManager.getTestGoodList(3)
-            processedGoods.value = taskManager.getTestGoodList(4)
+            processedGoods.value = taskManager.getTestGoodList(28)
             searchGoods.value = taskManager.getTestGoodList(2)
         }
     }
