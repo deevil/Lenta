@@ -9,7 +9,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import com.lenta.bp14.BR
 import com.lenta.bp14.R
-import com.lenta.bp14.data.WorkListTab
+import com.lenta.bp14.data.GoodsListTab
 import com.lenta.bp14.databinding.*
 import com.lenta.bp14.platform.extentions.getAppComponent
 import com.lenta.shared.platform.fragment.CoreFragment
@@ -58,7 +58,7 @@ class GoodsListWlFragment : CoreFragment<FragmentGoodsListWlBinding, GoodsListWl
 
         viewLifecycleOwner.apply {
             vm.selectedPage.observe(this, Observer {
-                if (it == WorkListTab.SEARCH.position) {
+                if (it == GoodsListTab.SEARCH.position) {
                     bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.filter)
                 } else {
                     bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.delete)
@@ -74,7 +74,7 @@ class GoodsListWlFragment : CoreFragment<FragmentGoodsListWlBinding, GoodsListWl
     override fun onToolbarButtonClick(view: View) {
         when (view.id) {
             R.id.b_3 -> {
-                if (vm.selectedPage.value == WorkListTab.SEARCH.position) {
+                if (vm.selectedPage.value == GoodsListTab.SEARCH.position) {
                     vm.onClickFilter()
                 } else vm.onClickDelete()
             }

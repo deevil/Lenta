@@ -15,12 +15,14 @@ import android.widget.AdapterView
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import com.lenta.bp14.BR
+import com.lenta.bp14.data.GoodsListTab
 import com.lenta.bp14.databinding.*
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.utilities.databinding.DataBindingAdapter
 import com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig
 import com.lenta.shared.utilities.databinding.RecyclerViewKeyHandler
+import com.lenta.shared.utilities.extentions.connectLiveData
 
 class GoodsListNeFragment : CoreFragment<FragmentGoodsListNeBinding, GoodsListNeViewModel>(),
         ViewPagerSettings, ToolbarButtonsClickListener {
@@ -53,6 +55,31 @@ class GoodsListNeFragment : CoreFragment<FragmentGoodsListNeBinding, GoodsListNe
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.save)
+
+        viewLifecycleOwner.apply {
+            vm.selectedPage.observe(this, Observer {
+                if (it == GoodsListTab.SEARCH.position) {
+                    bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.filter)
+                } else {
+                    bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.delete)
+                }
+            })
+        }
+
+        connectLiveData(vm.deleteButtonEnabled, getBottomToolBarUIModel()!!.uiModelButton3.enabled)
+        connectLiveData(vm.saveButtonEnabled, getBottomToolBarUIModel()!!.uiModelButton5.enabled)
+        connectLiveData(vm.thirdButtonVisibility, getBottomToolBarUIModel()!!.uiModelButton3.visibility)
+    }
+
+    override fun onToolbarButtonClick(view: View) {
+        when (view.id) {
+            R.id.b_3 -> {
+                if (vm.selectedPage.value == GoodsListTab.SEARCH.position) {
+                    vm.onClickFilter()
+                } else vm.onClickDelete()
+            }
+            R.id.b_5 -> vm.onClickSave()
+        }
     }
 
     override fun getPagerItemView(container: ViewGroup, position: Int): View {
@@ -213,12 +240,5 @@ class GoodsListNeFragment : CoreFragment<FragmentGoodsListNeBinding, GoodsListNe
         super.onViewCreated(view, savedInstanceState)
         binding?.viewPagerSettings = this
     }
-
-    override fun onToolbarButtonClick(view: View) {
-        when (view.id) {
-            R.id.b_5 -> vm.onClickSave()
-        }
-    }
-
 
 }

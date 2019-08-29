@@ -22,9 +22,9 @@ class MainMenuViewModel : CoreViewModel() {
         //navigator.openPrintSettingsScreen()
         //navigator.openGoodInfoWlScreen()
         //navigator.openGoodsListWlScreen()
-        navigator.openGoodsListPcScreen()
+        //navigator.openGoodsListPcScreen()
         //navigator.openSearchFilterWlScreen()
-        //navigator.openGoodsListNeScreen()
+        navigator.openGoodsListNeScreen()
     }
 
 

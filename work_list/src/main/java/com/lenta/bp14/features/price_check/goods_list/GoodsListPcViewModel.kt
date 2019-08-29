@@ -2,11 +2,10 @@ package com.lenta.bp14.features.price_check.goods_list
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.lenta.bp14.data.PriceCheckTab
+import com.lenta.bp14.data.GoodsListTab
 import com.lenta.bp14.data.model.Good
 import com.lenta.bp14.data.TaskManager
 import com.lenta.bp14.platform.navigation.IScreenNavigator
-import com.lenta.shared.models.core.Uom
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
@@ -45,14 +44,14 @@ class GoodsListPcViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
                 val tab = it?.first?.first?.toInt()
                 val processedSelected = it?.first?.second?.isNotEmpty() == true
                 val searchSelected = it?.second?.isNotEmpty() == true
-                tab == PriceCheckTab.PROCESSED.position && processedSelected || tab == PriceCheckTab.SEARCH.position && searchSelected
+                tab == GoodsListTab.PROCESSED.position && processedSelected || tab == GoodsListTab.SEARCH.position && searchSelected
     }
 
     val deleteButtonEnabled = selectedItemOnCurrentTab.map { it }
     val printButtonEnabled = selectedItemOnCurrentTab.map { it }
 
-    val deleteButtonVisibility = selectedPage.map { it != PriceCheckTab.PROCESSING.position }
-    val printButtonVisibility = selectedPage.map { it != PriceCheckTab.PROCESSING.position }
+    val deleteButtonVisibility = selectedPage.map { it != GoodsListTab.PROCESSING.position }
+    val printButtonVisibility = selectedPage.map { it != GoodsListTab.PROCESSING.position }
 
     init {
         viewModelScope.launch {
@@ -106,9 +105,9 @@ class GoodsListPcViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
 
     private fun getGoodByPosition(position: Int): Good? {
         return when (selectedPage.value) {
-            PriceCheckTab.PROCESSING.position -> processingGoods.value?.get(position)
-            PriceCheckTab.PROCESSED.position -> processedGoods.value?.get(position)
-            PriceCheckTab.SEARCH.position -> searchGoods.value?.get(position)
+            GoodsListTab.PROCESSING.position -> processingGoods.value?.get(position)
+            GoodsListTab.PROCESSED.position -> processedGoods.value?.get(position)
+            GoodsListTab.SEARCH.position -> searchGoods.value?.get(position)
             else -> null
         }
     }
