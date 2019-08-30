@@ -19,4 +19,14 @@
     <integer name="number_good_quantity_column_2">35</integer>
     <integer name="number_good_quantity_column_3">15</integer>
 
+    <!-- Колонки - № / СГ / Количество -->
+    <integer name="number_shelf_life_quantity_column_1">10</integer>
+    <integer name="number_shelf_life_quantity_column_2">35</integer>
+    <integer name="number_shelf_life_quantity_column_3">15</integer>
+
+    <!-- Колонки - № / Комментарий / Количество -->
+    <integer name="number_comment_quantity_column_1">10</integer>
+    <integer name="number_comment_quantity_column_2">35</integer>
+    <integer name="number_comment_quantity_column_3">15</integer>
+
 </resources>

@@ -1,11 +1,10 @@
-package com.lenta.bp14.features.work_list.details_of_goods
+package com.lenta.bp14.features.work_list.good_details
 
 import androidx.lifecycle.MutableLiveData
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.databinding.PageSelectionListener
-import java.util.Collections.list
 
-class DetailsOfGoodsViewModel : CoreViewModel(), PageSelectionListener {
+class GoodDetailsViewModel : CoreViewModel(), PageSelectionListener {
 
     val enabledDeleteButton: MutableLiveData<Boolean> = MutableLiveData(false)
     val selectedPage = MutableLiveData(0)

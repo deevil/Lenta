@@ -1,4 +1,4 @@
-package com.lenta.bp14.features.work_list.details_of_goods
+package com.lenta.bp14.features.work_list.good_details
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -19,18 +19,18 @@ import com.lenta.shared.utilities.databinding.ViewPagerSettings
 import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.provideViewModel
 
-class DetailsOfGoodsFragment : CoreFragment<FragmentDetailsOfGoodsBinding, DetailsOfGoodsViewModel>(),
+class GoodDetailsFragment : CoreFragment<FragmentGoodDetailsBinding, GoodDetailsViewModel>(),
         ToolbarButtonsClickListener,
         ViewPagerSettings {
 
-    override fun getLayoutId(): Int = R.layout.fragment_details_of_goods
+    override fun getLayoutId(): Int = R.layout.fragment_good_details
 
     override fun getPageNumber(): String {
         return "14/13"
     }
 
-    override fun getViewModel(): DetailsOfGoodsViewModel {
-        provideViewModel(DetailsOfGoodsViewModel::class.java).let {
+    override fun getViewModel(): GoodDetailsViewModel {
+        provideViewModel(GoodDetailsViewModel::class.java).let {
             getAppComponent()?.inject(it)
             return it
         }
@@ -56,14 +56,14 @@ class DetailsOfGoodsFragment : CoreFragment<FragmentDetailsOfGoodsBinding, Detai
     override fun getPagerItemView(container: ViewGroup, position: Int): View {
         if (position == 0) {
             DataBindingUtil
-                    .inflate<LayoutExpirationDatesListBinding>(LayoutInflater.from(container.context),
-                            R.layout.layout_expiration_dates_list,
+                    .inflate<LayoutGoodDetailsShelfLifeBinding>(LayoutInflater.from(container.context),
+                            R.layout.layout_good_details_shelf_life,
                             container,
                             false).let { layoutBinding ->
 
-                        layoutBinding.rvConfig = DataBindingRecyclerViewConfig<ItemTileExpirationBinding>(
-                                layoutId = R.layout.item_tile_expiration,
-                                itemId = BR.vm
+                        layoutBinding.rvConfig = DataBindingRecyclerViewConfig<ItemShelfLifeQuantitySelectableBinding>(
+                                layoutId = R.layout.item_shelf_life_quantity_selectable,
+                                itemId = BR.shelfLife
                         )
 
                         layoutBinding.vm = vm
@@ -73,14 +73,14 @@ class DetailsOfGoodsFragment : CoreFragment<FragmentDetailsOfGoodsBinding, Detai
         }
 
         DataBindingUtil
-                .inflate<LayoutCommentsListBinding>(LayoutInflater.from(container.context),
-                        R.layout.layout_comments_list,
+                .inflate<LayoutGoodDetailsCommentsBinding>(LayoutInflater.from(container.context),
+                        R.layout.layout_good_details_comments,
                         container,
                         false).let { layoutBinding ->
 
-                    layoutBinding.rvConfig = DataBindingRecyclerViewConfig<ItemTileExpirationBinding>(
-                            layoutId = R.layout.item_tile_comment,
-                            itemId = BR.vm
+                    layoutBinding.rvConfig = DataBindingRecyclerViewConfig<ItemCommentQuantitySelectableBinding>(
+                            layoutId = R.layout.item_comment_quantity_selectable,
+                            itemId = BR.comment
                     )
 
                     layoutBinding.vm = vm

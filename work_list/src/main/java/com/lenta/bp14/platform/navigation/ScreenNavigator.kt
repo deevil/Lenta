@@ -17,7 +17,7 @@ import com.lenta.bp14.features.print_settings.PrintSettingsFragment
 import com.lenta.bp14.features.report_result.ReportResultFragment
 import com.lenta.bp14.features.select_market.SelectMarketFragment
 import com.lenta.bp14.features.task_list.TaskListFragment
-import com.lenta.bp14.features.work_list.details_of_goods.DetailsOfGoodsFragment
+import com.lenta.bp14.features.work_list.good_details.GoodDetailsFragment
 import com.lenta.bp14.features.work_list.expected_deliveries.ExpectedDeliveriesFragment
 import com.lenta.bp14.features.work_list.goods_list.GoodsListWlFragment
 import com.lenta.bp14.features.work_list.sales_of_goods.SalesOfGoodsFragment
@@ -108,7 +108,7 @@ class ScreenNavigator(
 
     override fun openDetailsOfGoodsScreen() {
         runOrPostpone {
-            getFragmentStack()?.push(DetailsOfGoodsFragment())
+            getFragmentStack()?.push(GoodDetailsFragment())
         }
     }
 

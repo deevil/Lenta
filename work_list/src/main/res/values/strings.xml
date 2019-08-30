@@ -45,7 +45,10 @@
     <string name="device_ip">IP адрес ТСД</string>
     <string name="quantity">Количество</string>
     <string name="total_quantity">Итого: %1$d шт.</string>
-    <string name="total_quantity_units">%1$d %2$s.</string>
+    <string name="quantity_st">%1$d шт.</string>
+    <string name="quantity_units">%1$d %2$s.</string>
+    <string name="shelf_life_date">СГ - %1$s</string>
+    <string name="d_p_date">ДП - %1$s</string>
     <string name="comment">Комментарий</string>
     <string name="total_shelf_life">Общий СГ</string>
     <string name="remaining_shelf_life">Остаточный СГ</string>
