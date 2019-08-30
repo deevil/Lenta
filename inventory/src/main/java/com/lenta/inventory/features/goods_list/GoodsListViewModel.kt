@@ -221,14 +221,13 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
         val recountType = taskManager.getInventoryTask()?.taskDescription?.recountType
 
         if (recountType == RecountType.ParallelByStorePlaces) {
-            val needsUnlock = storePlaceManager!!.getProcessedProducts().isEmpty()
             if (taskManager.getInventoryTask()?.isChanged() == true) {
                 screenNavigator.openConfirmationExitStoreplace {
                     taskManager.getInventoryTask()?.restoreSnapshot()
-                    unlockIfNeededAndGoBack(needsUnlock)
+                    unlockIfNeededAndGoBack(needsUnlock = storePlaceManager!!.getProcessedProducts().isEmpty())
                 }
             } else {
-                unlockIfNeededAndGoBack(needsUnlock)
+                unlockIfNeededAndGoBack(needsUnlock = storePlaceManager!!.getProcessedProducts().isEmpty())
             }
         } else {
             screenNavigator.goBack()
@@ -275,7 +274,7 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
         searchProductDelegate.searchCode(code = data, fromScan = true, isBarCode = true)
     }
 
-    private fun handleProductSearchResult(scanInfoResult: ScanInfoResult?): Boolean {
+    private fun handleProductSearchResult(@Suppress("UNUSED_PARAMETER") scanInfoResult: ScanInfoResult?): Boolean {
         eanCode.postValue("")
         return false
     }
