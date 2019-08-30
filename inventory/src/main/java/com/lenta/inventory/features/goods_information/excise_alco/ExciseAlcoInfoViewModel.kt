@@ -259,6 +259,8 @@ class ExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
                 count.value = "1"
                 if (exciseGoodsRestInfo.status == InfoStatus.StampOverload.status) {
                     screenNavigator.openAlertStampOverload(message = exciseGoodsRestInfo.statusTxt) {}
+                } else {
+                    updateCounts()
                 }
             }
             InfoStatus.StampOfOtherProduct.status -> {
