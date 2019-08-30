@@ -3,6 +3,7 @@ package com.lenta.bp14.di
 import com.lenta.bp14.ExceptionHandler
 import com.lenta.bp14.data.TaskManager
 import com.lenta.bp14.features.auth.AuthViewModel
+import com.lenta.bp14.features.barcode_detection.CoreScanBarCodeViewModel
 import com.lenta.bp14.features.check_list.goods_list.GoodsListClViewModel
 import com.lenta.bp14.features.work_list.good_info.GoodInfoWlViewModel
 import com.lenta.bp14.features.job_card.JobCardViewModel
@@ -58,6 +59,7 @@ interface AppComponent {
     fun inject(it: GoodSalesViewModel)
     fun inject(it: GoodsListNeViewModel)
     fun inject(it: GoodInfoNeViewModel)
+    fun inject(it: CoreScanBarCodeViewModel)
     fun inject(it: SearchFilterTlViewModel)
 
 }
