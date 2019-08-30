@@ -169,6 +169,7 @@ class ScreenNavigator(
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 
 
+    // Информационные экраны
     override fun showConfirmPriceTagsPrinting(priceTagNumber: Int, confirmCallback: () -> Unit) {
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.confirm_price_tags_printing, priceTagNumber),
@@ -256,9 +257,60 @@ class ScreenNavigator(
         }
     }
 
+    override fun showGoodIsNotPartOfTask() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.good_is_not_part_of_task),
+                    pageNumber = "109",
+                    iconRes = R.drawable.is_warning_red_80dp))
+        }
+    }
 
+    override fun showScannedGoodNotListedInLenta(nextCallback: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.scanned_good_not_listed_in_lenta),
+                    pageNumber = "112",
+                    iconRes = R.drawable.is_warning_yellow_80dp,
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(nextCallback),
+                    rightButtonDecorationInfo = ButtonDecorationInfo.next))
+        }
+    }
 
+    override fun showScannedGoodNotListedInTk(marketNumber: String) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.scanned_good_not_listed_in_tk, marketNumber),
+                    pageNumber = "114",
+                    iconRes = R.drawable.is_warning_red_80dp))
+        }
+    }
 
+    override fun showScannedGoodAlreadyAddedToTask(yesCallback: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.scanned_good_already_added_to_task),
+                    pageNumber = "116",
+                    iconRes = R.drawable.ic_question_80dp,
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(yesCallback),
+                    rightButtonDecorationInfo = ButtonDecorationInfo.yes))
+        }
+    }
+
+    override fun showScannedGoodNotListedInTk() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.number_of_positions_exceeded_in_task),
+                    pageNumber = "118",
+                    iconRes = R.drawable.is_warning_red_80dp))
+        }
+    }
+
+    override fun showNoNetworkToSaveTask(nextCallback: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.no_network_to_save_task),
+                    pageNumber = "119",
+                    iconRes = R.drawable.is_warning_yellow_80dp,
+                    isVisibleLeftButton = false,
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(nextCallback),
+                    rightButtonDecorationInfo = ButtonDecorationInfo.next))
+        }
+    }
 
 }
 
@@ -294,5 +346,11 @@ interface IScreenNavigator : ICoreNavigator {
     fun showRawGoodsRemainedInTask(goodName: String, yesCallback: () -> Unit)
     fun showUnsavedDataFoundOnDevice(deleteCallback: () -> Unit, goOverCallback: () -> Unit)
     fun showUnsavedTaskFoundOnDevice(deleteCallback: () -> Unit, goOverCallback: () -> Unit)
+    fun showGoodIsNotPartOfTask()
+    fun showScannedGoodNotListedInLenta(nextCallback: () -> Unit)
+    fun showScannedGoodNotListedInTk(marketNumber: String)
+    fun showScannedGoodAlreadyAddedToTask(yesCallback: () -> Unit)
+    fun showScannedGoodNotListedInTk()
+    fun showNoNetworkToSaveTask(nextCallback: () -> Unit)
 
 }
