@@ -1,6 +1,7 @@
 package com.lenta.bp14.platform.navigation
 
 import android.content.Context
+import com.lenta.bp14.R
 import com.lenta.bp14.features.auth.AuthFragment
 import com.lenta.bp14.features.check_list.goods_list.GoodsListClFragment
 import com.lenta.bp14.features.work_list.good_info.GoodInfoWlFragment
@@ -22,9 +23,11 @@ import com.lenta.bp14.features.work_list.goods_list.GoodsListWlFragment
 import com.lenta.bp14.features.work_list.sales_of_goods.SalesOfGoodsFragment
 import com.lenta.bp14.features.work_list.search_filter.SearchFilterWlFragment
 import com.lenta.shared.account.IAuthenticator
+import com.lenta.shared.features.alert.AlertFragment
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
 import com.lenta.shared.platform.navigation.ICoreNavigator
 import com.lenta.shared.platform.navigation.runOrPostpone
+import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.progress.IProgressUseCaseInformator
 
 class ScreenNavigator(
@@ -165,9 +168,102 @@ class ScreenNavigator(
 
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 
+
+    override fun showConfirmPriceTagsPrinting(priceTagNumber: Int, confirmCallback: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.confirm_price_tags_printing, priceTagNumber),
+                    pageNumber = "10",
+                    iconRes = R.drawable.ic_question_80dp,
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(confirmCallback),
+                    rightButtonDecorationInfo = ButtonDecorationInfo.confirm))
+        }
+    }
+
+    override fun showMakeSurePaperInstalled(printerName: String, paperColor: String, numberOfCopy: Int, confirmCallback: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.make_sure_paper_installed, printerName, paperColor, numberOfCopy),
+                    pageNumber = "10.1",
+                    iconRes = R.drawable.ic_question_80dp,
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(confirmCallback),
+                    rightButtonDecorationInfo = ButtonDecorationInfo.confirm))
+        }
+    }
+
+    override fun showPriceTagsSubmitted(nextCallback: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.price_tags_submitted),
+                    pageNumber = "11",
+                    iconRes = R.drawable.ic_done_green_80dp,
+                    isVisibleLeftButton = false,
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(nextCallback),
+                    rightButtonDecorationInfo = ButtonDecorationInfo.next))
+        }
+    }
+
+    override fun showSetTaskToStatusCalculated(yesCallback: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.set_task_to_status_calculated),
+                    pageNumber = "24",
+                    iconRes = R.drawable.ic_question_80dp,
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(yesCallback),
+                    rightButtonDecorationInfo = ButtonDecorationInfo.yes))
+        }
+    }
+
+    override fun showRawGoodsRemainedInTask(yesCallback: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.raw_goods_remained_in_task),
+                    pageNumber = "37",
+                    iconRes = R.drawable.ic_question_80dp,
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(yesCallback),
+                    rightButtonDecorationInfo = ButtonDecorationInfo.yes))
+        }
+    }
+
+    override fun showRawGoodsRemainedInTask(goodName: String, yesCallback: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.print_price_tag_for_good, goodName),
+                    pageNumber = "43",
+                    iconRes = R.drawable.ic_question_80dp,
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(yesCallback),
+                    leftButtonDecorationInfo = ButtonDecorationInfo.backNo,
+                    rightButtonDecorationInfo = ButtonDecorationInfo.yes))
+        }
+    }
+
+    override fun showUnsavedDataFoundOnDevice(deleteCallback: () -> Unit, goOverCallback: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.unsaved_data_found_on_device),
+                    pageNumber = "92",
+                    iconRes = R.drawable.ic_question_80dp,
+                    codeConfirmForButton3 = backFragmentResultHelper.setFuncForResult(deleteCallback),
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(goOverCallback),
+                    buttonDecorationInfo3 = ButtonDecorationInfo.delete,
+                    rightButtonDecorationInfo = ButtonDecorationInfo.goOver))
+        }
+    }
+
+    override fun showUnsavedTaskFoundOnDevice(deleteCallback: () -> Unit, goOverCallback: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.unsaved_task_found_on_device),
+                    pageNumber = "92",
+                    iconRes = R.drawable.ic_question_80dp,
+                    isVisibleLeftButton = false,
+                    codeConfirmForButton3 = backFragmentResultHelper.setFuncForResult(deleteCallback),
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(goOverCallback),
+                    buttonDecorationInfo3 = ButtonDecorationInfo.delete,
+                    rightButtonDecorationInfo = ButtonDecorationInfo.goOver))
+        }
+    }
+
+
+
+
+
 }
 
 interface IScreenNavigator : ICoreNavigator {
+
     fun openFirstScreen()
     fun openSelectMarketScreen()
     fun openMainMenuScreen()
@@ -189,4 +285,14 @@ interface IScreenNavigator : ICoreNavigator {
     fun openSalesOfGoodsScreen()
     fun openGoodsListNeScreen()
     fun openGoodInfoNeScreen()
+
+    fun showConfirmPriceTagsPrinting(priceTagNumber: Int, confirmCallback: () -> Unit)
+    fun showMakeSurePaperInstalled(printerName: String, paperColor: String, numberOfCopy: Int, confirmCallback: () -> Unit)
+    fun showPriceTagsSubmitted(nextCallback: () -> Unit)
+    fun showSetTaskToStatusCalculated(yesCallback: () -> Unit)
+    fun showRawGoodsRemainedInTask(yesCallback: () -> Unit)
+    fun showRawGoodsRemainedInTask(goodName: String, yesCallback: () -> Unit)
+    fun showUnsavedDataFoundOnDevice(deleteCallback: () -> Unit, goOverCallback: () -> Unit)
+    fun showUnsavedTaskFoundOnDevice(deleteCallback: () -> Unit, goOverCallback: () -> Unit)
+
 }

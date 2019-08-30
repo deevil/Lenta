@@ -24,11 +24,11 @@
 
     <!-- Информационные сообщния -->
     <string name="confirm_price_tags_printing">Подтвердите печать %1$d копий ценников</string>
-    <string name="make_sure_paper_installed_in_printer">Убедитесь, что в принтере %1$s установлена бумага для %2$s ценников и подтвердите количество копий для печати (%3$d шт.)</string>
+    <string name="make_sure_paper_installed">Убедитесь, что в принтере %1$s установлена бумага для %2$s ценников и подтвердите количество копий для печати (%3$d шт.)</string>
     <string name="price_tags_submitted">Ценники переданы на печать</string>
     <string name="set_task_to_status_calculated">Перевести задание в статус "Подсчитано" и закрыть его для редактирования?</string>
     <string name="raw_goods_remained_in_task">В задании остались необработанные товары. Сохранить в статусе "Опубликовано" и оставить доступным для продолжения пересчета?</string>
-    <string name="print_price_tag_for_product">Распечатать ценник по товару %1$s?</string>
+    <string name="print_price_tag_for_good">Распечатать ценник по товару %1$s?</string>
     <string name="unsaved_data_found_on_device">На устройстве обнаружены несохраненные данные. Перейти к данным?</string>
     <string name="unsaved_task_found_on_device">На устройстве обнаружены несохраненные задания. Перейти к данным?</string>
     <string name="this_item_is_not_part_of_task">Данный товар не входит в состав задания. Добавление товара невозможно.</string>
