@@ -146,6 +146,10 @@ data class ButtonDecorationInfo(
             ButtonDecorationInfo(R.drawable.ic_arrow_back_white_24dp, R.string.to_back)
         }
 
+        val backNo: ButtonDecorationInfo by lazy {
+            ButtonDecorationInfo(R.drawable.ic_arrow_back_white_24dp, R.string.no)
+        }
+
         val exit: ButtonDecorationInfo by lazy {
             ButtonDecorationInfo(R.drawable.ic_arrow_back_white_24dp, R.string.to_exit)
         }

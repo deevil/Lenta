@@ -59,7 +59,7 @@
                     android:layout_marginStart="8dp"
                     android:layout_weight="1"
                     android:maxLines="2"
-                    android:text="@{@string/one_space_two(good.formattedMaterial, good.name)}"
+                    android:text="@{good.formattedMaterialWithName}"
                     tools:text="000021 Масло" />
 
                 <ImageView
@@ -85,7 +85,7 @@
                         style="@style/CellTextStyle"
                         android:layout_width="wrap_content"
                         android:layout_gravity="center"
-                        android:text="@{@string/total_quantity_units(good.quantity, good.uom.name)}"
+                        android:text="@{@string/quantity_units(good.quantity, good.uom.name)}"
                         android:visibility="@{good.quantity != 0 ? View.VISIBLE : View.INVISIBLE}"
                         tools:text="10 шт"
                         tools:visibility="visible" />

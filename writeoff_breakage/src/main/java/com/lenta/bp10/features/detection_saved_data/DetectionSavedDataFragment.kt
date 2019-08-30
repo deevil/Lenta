@@ -18,7 +18,7 @@ class DetectionSavedDataFragment : CoreMessageFragment() {
         provideViewModel(DetectionSavedDataViewModel::class.java).let { vm ->
             getAppComponent()?.inject(vm)
             vm.message = getString(R.string.saved_data_detect_message)
-            vm.iconRes = R.drawable.ic_question
+            vm.iconRes = R.drawable.ic_question_80dp
             vm.codeConfirmForRight = 1
             return vm
         }

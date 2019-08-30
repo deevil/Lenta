@@ -2,13 +2,13 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".features.work_list.details_of_goods.DetailsOfGoodsFragment">
+    tools:context=".features.work_list.good_details.GoodDetailsFragment">
 
     <data>
 
         <variable
             name="vm"
-            type="com.lenta.bp14.features.work_list.details_of_goods.DetailsOfGoodsViewModel" />
+            type="com.lenta.bp14.features.work_list.good_details.GoodDetailsViewModel" />
 
         <variable
             name="viewPagerSettings"

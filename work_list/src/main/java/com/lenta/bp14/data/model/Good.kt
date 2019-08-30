@@ -11,13 +11,19 @@ data class Good(
         var quantity: Int = 0,
         val uom: Uom = Uom.DEFAULT,
         var priceTagStatus: PriceTagStatus = PriceTagStatus.PRINTED,
-        val goodStatus: GoodStatus = GoodStatus.MISSING_RIGHT
+        val goodStatus: GoodStatus = GoodStatus.MISSING_RIGHT,
+        val comments: MutableList<Comment> = mutableListOf(),
+        val shelfLives: MutableList<ShelfLife> = mutableListOf()
 ) {
 
     val quantityField = MutableLiveData<String>(quantity.toString())
 
     fun getFormattedMaterial(): String? {
         return material?.takeLast(6)
+    }
+
+    fun getFormattedMaterialWithName(): String? {
+        return getFormattedMaterial() + " " + name
     }
 
 }
