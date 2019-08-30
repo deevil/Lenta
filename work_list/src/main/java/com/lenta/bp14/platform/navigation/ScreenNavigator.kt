@@ -106,7 +106,7 @@ class ScreenNavigator(
         }
     }
 
-    override fun openDetailsOfGoodsScreen() {
+    override fun openGoodDetailsScreen() {
         runOrPostpone {
             getFragmentStack()?.push(GoodDetailsFragment())
         }
@@ -327,7 +327,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openListOfDifferencesScreen()
     fun openReportResultScreen()
     fun openPrintSettingsScreen()
-    fun openDetailsOfGoodsScreen()
+    fun openGoodDetailsScreen()
     fun openGoodInfoWlScreen()
     fun openGoodsListWlScreen()
     fun openGoodInfoPcScreen()

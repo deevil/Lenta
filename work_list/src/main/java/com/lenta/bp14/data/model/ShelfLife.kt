@@ -19,7 +19,7 @@ data class ShelfLife(
     }
 
     fun getFormattedSecondDate(): String {
-        return if (shelfLife != null) {
+        return if (secondDate != null) {
             SimpleDateFormat(Constants.DATE_FORMAT_ddmmyy, Locale.getDefault()).format(secondDate)
         } else ""
     }

@@ -1,9 +1,8 @@
 package com.lenta.bp14.data
 
-import com.lenta.bp14.data.model.Good
-import com.lenta.bp14.data.model.GoodStatus
-import com.lenta.bp14.data.model.PriceTagStatus
+import com.lenta.bp14.data.model.*
 import com.lenta.shared.models.core.Uom
+import java.util.*
 
 
 class TaskManager {
@@ -27,7 +26,30 @@ class TaskManager {
                     uom = Uom.DEFAULT,
                     quantity = quantity,
                     goodStatus = if (quantity == 0) goodStatus else GoodStatus.PRESENT,
-                    priceTagStatus = priceTagStatus
+                    priceTagStatus = priceTagStatus,
+                    shelfLives = getTestShelfLives(),
+                    comments = getTestComments()
+            )
+        }
+    }
+
+    private fun getTestShelfLives(): MutableList<ShelfLife> {
+        return MutableList((2..7).random()) {
+            ShelfLife(
+                    id = it + 1,
+                    shelfLife = Date(),
+                    secondDate = if ((0..1).random() == 1) Date() else null,
+                    quantity = (1..99).random()
+            )
+        }
+    }
+
+    private fun getTestComments(): MutableList<Comment> {
+        return MutableList((2..7).random()) {
+            Comment(
+                    id = it + 1,
+                    message = if ((0..1).random() == 1) "С товаром все хорошо" else "С товаром все плохо",
+                    quantity = (1..99).random()
             )
         }
     }

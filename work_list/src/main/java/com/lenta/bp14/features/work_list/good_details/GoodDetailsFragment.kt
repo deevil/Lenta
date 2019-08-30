@@ -14,20 +14,23 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
+import com.lenta.shared.utilities.databinding.DataBindingAdapter
 import com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig
+import com.lenta.shared.utilities.databinding.RecyclerViewKeyHandler
 import com.lenta.shared.utilities.databinding.ViewPagerSettings
 import com.lenta.shared.utilities.extentions.connectLiveData
+import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
 import com.lenta.shared.utilities.extentions.provideViewModel
 
 class GoodDetailsFragment : CoreFragment<FragmentGoodDetailsBinding, GoodDetailsViewModel>(),
-        ToolbarButtonsClickListener,
-        ViewPagerSettings {
+        ToolbarButtonsClickListener, ViewPagerSettings {
+
+    private var shelfLifeRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
+    private var commentsRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
 
     override fun getLayoutId(): Int = R.layout.fragment_good_details
 
-    override fun getPageNumber(): String {
-        return "14/13"
-    }
+    override fun getPageNumber(): String? = generateScreenNumberFromPostfix("13")
 
     override fun getViewModel(): GoodDetailsViewModel {
         provideViewModel(GoodDetailsViewModel::class.java).let {
@@ -37,14 +40,16 @@ class GoodDetailsFragment : CoreFragment<FragmentGoodDetailsBinding, GoodDetails
     }
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
-        topToolbarUiModel.title.value = vm.getTitle()
         topToolbarUiModel.description.value = getString(R.string.details_of_goods)
+
+        connectLiveData(vm.formattedGoodName, topToolbarUiModel.title)
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
         bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.delete)
-        connectLiveData(vm.enabledDeleteButton, bottomToolbarUiModel.uiModelButton3.enabled)
+
+        connectLiveData(vm.deleteButtonEnabled, bottomToolbarUiModel.uiModelButton3.enabled)
     }
 
     override fun onToolbarButtonClick(view: View) {
@@ -61,9 +66,29 @@ class GoodDetailsFragment : CoreFragment<FragmentGoodDetailsBinding, GoodDetails
                             container,
                             false).let { layoutBinding ->
 
-                        layoutBinding.rvConfig = DataBindingRecyclerViewConfig<ItemShelfLifeQuantitySelectableBinding>(
+                        val onClickSelectionListener = View.OnClickListener {
+                            (it!!.tag as Int).let { position ->
+                                vm.shelfLifeSelectionsHelper.revert(position = position)
+                                layoutBinding.rv.adapter?.notifyItemChanged(position)
+                            }
+                        }
+
+                        layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
                                 layoutId = R.layout.item_shelf_life_quantity_selectable,
-                                itemId = BR.shelfLife
+                                itemId = BR.shelfLife,
+                                realisation = object : DataBindingAdapter<ItemShelfLifeQuantitySelectableBinding> {
+                                    override fun onCreate(binding: ItemShelfLifeQuantitySelectableBinding) {
+                                    }
+
+                                    override fun onBind(binding: ItemShelfLifeQuantitySelectableBinding, position: Int) {
+                                        binding.tvItemNumber.tag = position
+                                        binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
+                                        binding.selectedForDelete = vm.shelfLifeSelectionsHelper.isSelected(position)
+                                        shelfLifeRecyclerViewKeyHandler?.let {
+                                            binding.root.isSelected = it.isSelected(position)
+                                        }
+                                    }
+                                }
                         )
 
                         layoutBinding.vm = vm
@@ -78,9 +103,29 @@ class GoodDetailsFragment : CoreFragment<FragmentGoodDetailsBinding, GoodDetails
                         container,
                         false).let { layoutBinding ->
 
-                    layoutBinding.rvConfig = DataBindingRecyclerViewConfig<ItemCommentQuantitySelectableBinding>(
+                    val onClickSelectionListener = View.OnClickListener {
+                        (it!!.tag as Int).let { position ->
+                            vm.commentSelectionsHelper.revert(position = position)
+                            layoutBinding.rv.adapter?.notifyItemChanged(position)
+                        }
+                    }
+
+                    layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
                             layoutId = R.layout.item_comment_quantity_selectable,
-                            itemId = BR.comment
+                            itemId = BR.comment,
+                            realisation = object : DataBindingAdapter<ItemCommentQuantitySelectableBinding> {
+                                override fun onCreate(binding: ItemCommentQuantitySelectableBinding) {
+                                }
+
+                                override fun onBind(binding: ItemCommentQuantitySelectableBinding, position: Int) {
+                                    binding.tvItemNumber.tag = position
+                                    binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
+                                    binding.selectedForDelete = vm.commentSelectionsHelper.isSelected(position)
+                                    commentsRecyclerViewKeyHandler?.let {
+                                        binding.root.isSelected = it.isSelected(position)
+                                    }
+                                }
+                            }
                     )
 
                     layoutBinding.vm = vm
@@ -91,7 +136,11 @@ class GoodDetailsFragment : CoreFragment<FragmentGoodDetailsBinding, GoodDetails
     }
 
     override fun getTextTitle(position: Int): String {
-        return getString(if (position == 0) R.string.expiration_dates else R.string.comments)
+        return when (position) {
+            0 -> getString(R.string.expiration_dates)
+            1 -> getString(R.string.comments)
+            else -> throw IllegalArgumentException("Wrong pager position!")
+        }
     }
 
     override fun countTab() = 2
