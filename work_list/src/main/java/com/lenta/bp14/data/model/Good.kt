@@ -20,6 +20,10 @@ data class Good(
         return material?.takeLast(6)
     }
 
+    fun getFormattedMaterialWithName(): String? {
+        return getFormattedMaterial() + " " + name
+    }
+
 }
 
 enum class PriceTagStatus {
