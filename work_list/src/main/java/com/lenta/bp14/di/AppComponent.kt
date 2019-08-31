@@ -17,6 +17,7 @@ import com.lenta.bp14.features.print_settings.PrintSettingsViewModel
 import com.lenta.bp14.features.report_result.ReportResultViewModel
 import com.lenta.bp14.features.select_market.SelectMarketViewModel
 import com.lenta.bp14.features.task_list.TaskListViewModel
+import com.lenta.bp14.features.task_list.search_filter.SearchFilterTlViewModel
 import com.lenta.bp14.features.work_list.good_details.GoodDetailsViewModel
 import com.lenta.bp14.features.work_list.expected_deliveries.ExpectedDeliveriesViewModel
 import com.lenta.bp14.features.work_list.goods_list.GoodsListWlViewModel
@@ -57,5 +58,6 @@ interface AppComponent {
     fun inject(it: SalesOfGoodsViewModel)
     fun inject(it: GoodsListNeViewModel)
     fun inject(it: GoodInfoNeViewModel)
+    fun inject(it: SearchFilterTlViewModel)
 
 }

@@ -29,4 +29,8 @@
     <integer name="number_comment_quantity_column_2">35</integer>
     <integer name="number_comment_quantity_column_3">15</integer>
 
+    <!-- Таблица - фильтр поиска -->
+    <integer name="search_filter_column_1">10</integer>
+    <integer name="search_filter_column_2">20</integer>
+
 </resources>

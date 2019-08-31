@@ -38,7 +38,7 @@ class TaskManager {
             ShelfLife(
                     id = it + 1,
                     shelfLife = Date(),
-                    secondDate = if ((0..1).random() == 1) Date() else null,
+                    publicationDate = if ((0..1).random() == 1) Date() else null,
                     quantity = (1..99).random()
             )
         }

@@ -8,7 +8,7 @@ import java.util.*
 data class ShelfLife(
         val id: Int = 0,
         var shelfLife: Date?,
-        var secondDate: Date?,
+        var publicationDate: Date?,
         var quantity: Int = 0
 ) {
 
@@ -18,9 +18,9 @@ data class ShelfLife(
         } else ""
     }
 
-    fun getFormattedSecondDate(): String {
-        return if (secondDate != null) {
-            SimpleDateFormat(Constants.DATE_FORMAT_ddmmyy, Locale.getDefault()).format(secondDate)
+    fun getFormattedPublicationDate(): String {
+        return if (publicationDate != null) {
+            SimpleDateFormat(Constants.DATE_FORMAT_ddmmyy, Locale.getDefault()).format(publicationDate)
         } else ""
     }
 

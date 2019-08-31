@@ -59,8 +59,8 @@
 
                 <TextView
                     style="@style/CellTextStyle"
-                    android:text="@{@string/d_p_date(shelfLife.formattedSecondDate)}"
-                    android:visibility="@{shelfLife.secondDate != null ? View.VISIBLE : View.GONE}"
+                    android:text="@{@string/d_p_date(shelfLife.formattedPublicationDate)}"
+                    android:visibility="@{shelfLife.publicationDate != null ? View.VISIBLE : View.GONE}"
                     tools:text="ДП - 24.07.18" />
 
             </LinearLayout>

@@ -47,8 +47,9 @@
     <string name="total_quantity">Итого: %1$d шт.</string>
     <string name="quantity_st">%1$d шт.</string>
     <string name="quantity_units">%1$d %2$s.</string>
-    <string name="shelf_life_date">СГ - %1$s</string>
-    <string name="d_p_date">ДП - %1$s</string>
+    <string name="sl_date">СГ - %1$s</string>
+    <string name="pd_date">ДП - %1$s</string>
+    <string name="publication_date">Дата публикации</string>
     <string name="comment">Комментарий</string>
     <string name="total_shelf_life">Общий СГ</string>
     <string name="remaining_shelf_life">Остаточный СГ</string>
@@ -82,5 +83,6 @@
     <string name="common_info">Общая информация</string>
     <string name="stock_one_storage">Запас 1 склад</string>
     <string name="empty_place">Пустое место</string>
+    <string name="task_type">Тип задания</string>
 
 </resources>

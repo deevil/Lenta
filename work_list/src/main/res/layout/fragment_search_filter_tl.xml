@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
         tools:context=".features.task_list.search_filter.SearchFilterTlFragment">
 
@@ -13,12 +12,177 @@
 
     </data>
 
-
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
 
+        <!-- Тип задания -->
+        <LinearLayout
+            style="@style/LinearRowStyle">
+
+            <LinearLayout
+                style="@style/LinearCellStyle"
+                android:layout_weight="@integer/search_filter_column_1">
+
+                <TextView
+                    style="@style/CellTextStyle"
+                    android:text="@string/task_type" />
+
+            </LinearLayout>
+
+            <View
+                style="@style/VerticalDivider" />
+
+            <LinearLayout
+                style="@style/LinearCellStyle"
+                android:layout_weight="@integer/search_filter_column_2">
+
+                <com.lenta.shared.view.ClickableSpinner
+                    android:id="@+id/spin_select_comment"
+                    style="@style/CellSpinnerStyle"
+                    android:entries="@array/task_type" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <View
+            style="@style/HorizontalDivider" />
+
+
+        <!-- Товар -->
+        <LinearLayout
+            style="@style/LinearRowStyle">
+
+            <LinearLayout
+                style="@style/LinearCellStyle"
+                android:layout_weight="@integer/search_filter_column_1">
+
+                <TextView
+                    style="@style/CellTextStyle"
+                    android:text="@string/good" />
+
+            </LinearLayout>
+
+            <View
+                style="@style/VerticalDivider" />
+
+            <LinearLayout
+                style="@style/LinearCellStyle"
+                android:layout_weight="@integer/search_filter_column_2">
+
+                <EditText
+                    style="@style/CellEditTextStyle"
+                    android:text="@={vm.groupOfGoods}" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <View
+            style="@style/HorizontalDivider" />
+
+
+        <!-- Секция -->
+        <LinearLayout
+            style="@style/LinearRowStyle">
+
+            <LinearLayout
+                style="@style/LinearCellStyle"
+                android:layout_weight="@integer/search_filter_column_1">
+
+                <TextView
+                    style="@style/CellTextStyle"
+                    android:text="@string/section" />
+
+            </LinearLayout>
+
+            <View
+                style="@style/VerticalDivider" />
+
+            <LinearLayout
+                style="@style/LinearCellStyle"
+                android:layout_weight="@integer/search_filter_column_2">
+
+                <EditText
+                    style="@style/CellEditTextStyle"
+                    android:text="@={vm.storagePlace}" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <View
+            style="@style/HorizontalDivider" />
+
+
+        <!-- Группа товаров -->
+        <LinearLayout
+            style="@style/LinearRowStyle">
+
+            <LinearLayout
+                style="@style/LinearCellStyle"
+                android:layout_weight="@integer/search_filter_column_1">
+
+                <TextView
+                    style="@style/CellTextStyle"
+                    android:text="@string/group_of_goods" />
+
+            </LinearLayout>
+
+            <View
+                style="@style/VerticalDivider" />
+
+            <LinearLayout
+                style="@style/LinearCellStyle"
+                android:layout_weight="@integer/search_filter_column_2">
+
+                <EditText
+                    style="@style/CellEditTextStyle"
+                    android:text="@={vm.comment}" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <View
+            style="@style/HorizontalDivider" />
+
+
+        <!-- Дата публикации -->
+        <LinearLayout
+            style="@style/LinearRowStyle">
+
+            <LinearLayout
+                style="@style/LinearCellStyle"
+                android:layout_weight="@integer/search_filter_column_1">
+
+                <TextView
+                    style="@style/CellTextStyle"
+                    android:text="@string/publication_date" />
+
+            </LinearLayout>
+
+            <View
+                style="@style/VerticalDivider" />
+
+            <LinearLayout
+                style="@style/LinearCellStyle"
+                android:layout_weight="@integer/search_filter_column_2">
+
+                <EditText
+                    style="@style/CellEditTextStyle"
+                    android:text="@={vm.comment}" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <View
+            style="@style/HorizontalDivider" />
+
+    </LinearLayout>
 
 </layout>
