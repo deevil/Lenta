@@ -54,12 +54,12 @@
 
                 <TextView
                     style="@style/CellTextStyle"
-                    android:text="@{@string/shelf_life_date(shelfLife.formattedShelfLife)}"
+                    android:text="@{@string/sl_date(shelfLife.formattedShelfLife)}"
                     tools:text="СГ - 12.11.13" />
 
                 <TextView
                     style="@style/CellTextStyle"
-                    android:text="@{@string/d_p_date(shelfLife.formattedPublicationDate)}"
+                    android:text="@{@string/pd_date(shelfLife.formattedPublicationDate)}"
                     android:visibility="@{shelfLife.publicationDate != null ? View.VISIBLE : View.GONE}"
                     tools:text="ДП - 24.07.18" />
 

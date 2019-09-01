@@ -17,6 +17,7 @@ import com.lenta.bp14.features.print_settings.PrintSettingsFragment
 import com.lenta.bp14.features.report_result.ReportResultFragment
 import com.lenta.bp14.features.select_market.SelectMarketFragment
 import com.lenta.bp14.features.task_list.TaskListFragment
+import com.lenta.bp14.features.task_list.search_filter.SearchFilterTlFragment
 import com.lenta.bp14.features.work_list.good_details.GoodDetailsFragment
 import com.lenta.bp14.features.work_list.expected_deliveries.ExpectedDeliveriesFragment
 import com.lenta.bp14.features.work_list.goods_list.GoodsListWlFragment
@@ -145,6 +146,12 @@ class ScreenNavigator(
     override fun openSearchFilterWlScreen() {
         runOrPostpone {
             getFragmentStack()?.push(SearchFilterWlFragment())
+        }
+    }
+
+    override fun openSearchFilterTlScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(SearchFilterTlFragment())
         }
     }
 
@@ -333,6 +340,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openGoodInfoPcScreen()
     fun openGoodsListPcScreen()
     fun openSearchFilterWlScreen()
+    fun openSearchFilterTlScreen()
     fun openExpectedDeliveriesScreen()
     fun openSalesOfGoodsScreen()
     fun openGoodsListNeScreen()

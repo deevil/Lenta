@@ -1,20 +1,24 @@
 package com.lenta.bp14.features.task_list.search_filter
 
+import android.view.View
+import androidx.lifecycle.Observer
 import com.lenta.bp14.R
 import com.lenta.bp14.databinding.FragmentSearchFilterTlBinding
 import com.lenta.bp14.platform.extentions.getAppComponent
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
+import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
+import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
+import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
 import com.lenta.shared.utilities.extentions.provideViewModel
 
-class SearchFilterTlFragment : CoreFragment<FragmentSearchFilterTlBinding, SearchFilterTlViewModel>() {
+class SearchFilterTlFragment : CoreFragment<FragmentSearchFilterTlBinding, SearchFilterTlViewModel>(),
+        ToolbarButtonsClickListener {
 
     override fun getLayoutId(): Int = R.layout.fragment_search_filter_tl
 
-    override fun getPageNumber(): String {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    override fun getPageNumber(): String? = generateScreenNumberFromPostfix("121")
 
     override fun getViewModel(): SearchFilterTlViewModel {
         provideViewModel(SearchFilterTlViewModel::class.java).let {
@@ -24,11 +28,22 @@ class SearchFilterTlFragment : CoreFragment<FragmentSearchFilterTlBinding, Searc
     }
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        topToolbarUiModel.description.value = getString(R.string.task_list)
+
+        vm.marketNumber.observe(this, Observer<String> { marketNumber ->
+            topToolbarUiModel.title.value = getString(R.string.title_market_number, marketNumber)
+        })
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
+        bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.find)
+    }
+
+    override fun onToolbarButtonClick(view: View) {
+        when (view.id) {
+            R.id.b_5 -> vm.onClickFind()
+        }
     }
 
 

@@ -75,7 +75,7 @@
 
                 <EditText
                     style="@style/CellEditTextStyle"
-                    android:text="@={vm.groupOfGoods}" />
+                    android:text="@={vm.goodField}" />
 
             </LinearLayout>
 
@@ -108,7 +108,7 @@
 
                 <EditText
                     style="@style/CellEditTextStyle"
-                    android:text="@={vm.storagePlace}" />
+                    android:text="@={vm.sectionField}" />
 
             </LinearLayout>
 
@@ -141,7 +141,7 @@
 
                 <EditText
                     style="@style/CellEditTextStyle"
-                    android:text="@={vm.comment}" />
+                    android:text="@={vm.goodsGroupField}" />
 
             </LinearLayout>
 
@@ -174,7 +174,7 @@
 
                 <EditText
                     style="@style/CellEditTextStyle"
-                    android:text="@={vm.comment}" />
+                    android:text="@={vm.publicationDateField}" />
 
             </LinearLayout>
 

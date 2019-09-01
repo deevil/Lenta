@@ -7,6 +7,7 @@ import java.util.*
 
 class TaskManager {
 
+    lateinit var marketNumber: String
     var currentGood: Good? = null
 
     fun getTestGoodList(numberOfItems: Int): List<Good> {

@@ -7,6 +7,9 @@
     <string name="not_processed">К обработке</string>
     <string name="task_list">Список заданий</string>
 
+    <!-- Заголовки экранов -->
+    <string name="title_market_number">ТК - %1$s</string>
+
     <!-- Подзаголовки экранов -->
     <string name="specify_product">Укажите товар</string>
     <string name="print_settings">Настройка печати</string>
