@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
         tools:context=".features.task_list.search_filter.SearchFilterTlFragment">
 
@@ -174,7 +175,11 @@
 
                 <EditText
                     style="@style/CellEditTextStyle"
-                    android:text="@={vm.publicationDateField}" />
+                    android:digits="1234567890."
+                    android:inputType="number"
+                    android:text="@={vm.publicationDateField}"
+                    app:maskPattern='@{"[00]{.}[00]{.}[00]"}'
+                    tools:ignore="Autofill,LabelFor" />
 
             </LinearLayout>
 
