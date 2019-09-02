@@ -12,6 +12,7 @@ import com.lenta.inventory.platform.navigation.IScreenNavigator
 import com.lenta.inventory.requests.network.*
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
+import com.lenta.shared.platform.device_info.DeviceInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
 import com.lenta.shared.utilities.Logg
@@ -39,6 +40,8 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     lateinit var dataSaver: DataSaver
     @Inject
     lateinit var searchProductDelegate: SearchProductDelegate
+    @Inject
+    lateinit var deviceInfo: DeviceInfo
 
     val unprocessedGoods: MutableLiveData<List<ProductInfoVM>> = MutableLiveData()
     val processedGoods: MutableLiveData<List<ProductInfoVM>> = MutableLiveData()
@@ -210,9 +213,14 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
             if (it.hasDiscrepancies()) {
                 screenNavigator.openDiscrepanciesScreen()
             } else {
-                screenNavigator.openConfirmationSavingJobScreen {
-                    dataSaver.saveData(true)
+                if (taskManager.getInventoryTask()!!.taskDescription.ivCountPerNr) {
+                    checkIsHaveAnotherUsersNow()
+                } else {
+                    screenNavigator.openConfirmationSavingJobScreen {
+                        dataSaver.saveData(true)
+                    }
                 }
+
             }
         }
     }
@@ -241,6 +249,51 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
             screenNavigator.goBack()
         }
     }
+
+    private fun checkIsHaveAnotherUsersNow() {
+        viewModelScope.launch {
+            screenNavigator.showProgress(lockRequest)
+            taskManager.getInventoryTask()?.let {
+                val userNumber = sessionInfo.personnelNumber!!
+                lockRequest(
+                        StorePlaceLockParams(
+                                ip = deviceInfo.getDeviceIp(),
+                                taskNumber = it.taskDescription.taskNumber,
+                                storePlaceCode = "",
+                                mode = StorePlaceLockMode.Check.mode,
+                                userNumber = userNumber
+                        )
+                ).either(::handleFailureCheckAnotherUserStatus) {
+                    screenNavigator.openConfirmationSavingJobScreen {
+                        dataSaver.saveData(true)
+                    }
+                }
+            }
+            screenNavigator.hideProgress()
+        }
+
+
+    }
+
+    private fun handleFailureCheckAnotherUserStatus(failure: Failure) {
+        super.handleFailure(failure)
+
+        if (failure is Failure.SapError) {
+            if (failure.retCode == 2) {
+                openConfirmationWithAnotherParallelsActiveUserDialog()
+                return
+            }
+        }
+        screenNavigator.openAlertScreen(failure)
+
+    }
+
+    private fun openConfirmationWithAnotherParallelsActiveUserDialog() {
+        screenNavigator.openConfirmationSavingForParallelsActiveUserDialog {
+            dataSaver.saveData(false)
+        }
+    }
+
 
     private fun makeLockUnlockRequest(recountType: RecountType?, mode: StorePlaceLockMode, successCallback: (StorePlaceLockRestInfo) -> Unit) {
         viewModelScope.launch {
