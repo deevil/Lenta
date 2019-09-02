@@ -29,6 +29,12 @@
     <integer name="number_comment_quantity_column_2">35</integer>
     <integer name="number_comment_quantity_column_3">15</integer>
 
+    <!-- Колонки - № / Задание / Признак / Товаров -->
+    <integer name="number_task_status_goods_column_1">6</integer>
+    <integer name="number_task_status_goods_column_2">30</integer>
+    <integer name="number_task_status_goods_column_3">12</integer>
+    <integer name="number_task_status_goods_column_4">12</integer>
+
     <!-- Таблица - фильтр поиска -->
     <integer name="search_filter_column_1">10</integer>
     <integer name="search_filter_column_2">20</integer>

@@ -10,9 +10,7 @@ import androidx.lifecycle.Observer
 import com.lenta.bp14.BR
 import com.lenta.bp14.R
 import com.lenta.bp14.data.TaskListTab
-import com.lenta.bp14.databinding.FragmentTaskListBinding
-import com.lenta.bp14.databinding.LayoutTaskListBinding
-import com.lenta.bp14.databinding.LayoutTaskListFilteredBinding
+import com.lenta.bp14.databinding.*
 import com.lenta.bp14.platform.extentions.getAppComponent
 import com.lenta.shared.platform.activity.OnBackPresserListener
 import com.lenta.shared.platform.fragment.CoreFragment
@@ -69,12 +67,11 @@ class TaskListFragment : CoreFragment<FragmentTaskListBinding, TaskListViewModel
 
     override fun onToolbarButtonClick(view: View) {
         when (view.id) {
-            R.id.b_1 -> vm.onClickBack()
+            R.id.b_1 -> vm.onClickMenu()
             R.id.b_3 -> vm.onClickFilter()
-            R.id.b_4 -> vm.onClickUpdate()
             R.id.b_5 -> {
                 if (vm.selectedPage.value == TaskListTab.PROCESSING.position) {
-                    vm.onClickSave()
+                    vm.onClickUpdate()
                 } else vm.onClickFilter()
             }
         }
@@ -87,16 +84,16 @@ class TaskListFragment : CoreFragment<FragmentTaskListBinding, TaskListViewModel
     }
 
     override fun getPagerItemView(container: ViewGroup, position: Int): View {
-        return if (position == 0) {
+        if (position == 0) {
             DataBindingUtil
-                    .inflate<LayoutTaskListBinding>(LayoutInflater.from(container.context),
-                            R.layout.layout_task_list,
+                    .inflate<LayoutTaskListProcessingBinding>(LayoutInflater.from(container.context),
+                            R.layout.layout_task_list_processing,
                             container,
                             false).let { layoutBinding ->
 
-                        layoutBinding.rvConfig = DataBindingRecyclerViewConfig<LayoutTaskListBinding>(
-                                layoutId = R.layout.item_tile_tasks,
-                                itemId = BR.vm,
+                        layoutBinding.rvConfig = DataBindingRecyclerViewConfig<ItemTaskStatusGoodsBinding>(
+                                layoutId = R.layout.item_task_status_goods,
+                                itemId = BR.task,
                                 onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
                                     vm.onClickUnprocessedTask(position)
                                 }
@@ -104,28 +101,29 @@ class TaskListFragment : CoreFragment<FragmentTaskListBinding, TaskListViewModel
 
                         layoutBinding.vm = vm
                         layoutBinding.lifecycleOwner = viewLifecycleOwner
-                        layoutBinding.root
-                    }
-        } else {
-            DataBindingUtil
-                    .inflate<LayoutTaskListFilteredBinding>(LayoutInflater.from(container.context),
-                            R.layout.layout_task_list_filtered,
-                            container,
-                            false).let { layoutBinding ->
-
-                        layoutBinding.rvConfig = DataBindingRecyclerViewConfig<LayoutTaskListBinding>(
-                                layoutId = R.layout.item_tile_tasks,
-                                itemId = BR.vm,
-                                onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
-                                    vm.onClickProcessedTask(position)
-                                }
-                        )
-
-                        layoutBinding.vm = vm
-                        layoutBinding.lifecycleOwner = viewLifecycleOwner
-                        layoutBinding.root
+                        return layoutBinding.root
                     }
         }
+
+        DataBindingUtil
+                .inflate<LayoutTaskListSearchBinding>(LayoutInflater.from(container.context),
+                        R.layout.layout_task_list_search,
+                        container,
+                        false).let { layoutBinding ->
+
+                    layoutBinding.rvConfig = DataBindingRecyclerViewConfig<ItemTaskStatusGoodsBinding>(
+                            layoutId = R.layout.item_task_status_goods,
+                            itemId = BR.task,
+                            onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
+                                vm.onClickProcessedTask(position)
+                            }
+                    )
+
+                    layoutBinding.vm = vm
+                    layoutBinding.lifecycleOwner = viewLifecycleOwner
+
+                    return layoutBinding.root
+                }
     }
 
     override fun getTextTitle(position: Int): String {
@@ -137,7 +135,7 @@ class TaskListFragment : CoreFragment<FragmentTaskListBinding, TaskListViewModel
     }
 
     override fun onBackPressed(): Boolean {
-        vm.onClickBack()
+        vm.onClickMenu()
         return false
     }
 

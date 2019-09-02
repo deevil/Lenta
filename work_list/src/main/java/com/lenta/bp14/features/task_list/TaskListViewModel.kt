@@ -4,6 +4,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp14.data.TaskListTab
 import com.lenta.bp14.data.TaskManager
+import com.lenta.bp14.data.model.Task
 import com.lenta.bp14.platform.navigation.IScreenNavigator
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.Logg
@@ -22,50 +23,28 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
 
     val selectedPage = MutableLiveData(0)
 
+    val numberField: MutableLiveData<String> = MutableLiveData("")
+    val requestFocusToNumberField: MutableLiveData<Boolean> = MutableLiveData()
+
     val marketNumber = MutableLiveData<String>("")
 
-    val processingTasks = MutableLiveData<List<TaskInfoVM>>(getTestItems())
-    val searchTasks = MutableLiveData<List<TaskInfoVM>>(getTestItems())
+    val processingTasks = MutableLiveData<List<Task>>()
+    val searchTasks = MutableLiveData<List<Task>>()
 
     val thirdButtonVisibility = selectedPage.map { it == TaskListTab.PROCESSING.position }
 
     init {
         viewModelScope.launch {
             marketNumber.value = taskManager.marketNumber
+
+            processingTasks.value = taskManager.getTestTaskList(4)
+            searchTasks.value = taskManager.getTestTaskList(3)
         }
     }
 
     override fun onOkInSoftKeyboard(): Boolean {
         return true
     }
-
-    private fun getTestItems(): List<TaskInfoVM>? {
-        return listOf(
-                TaskInfoVM(
-                        number = 3,
-                        name = "name3",
-                        type = "type",
-                        status = "status",
-                        quantity = "10"
-                ),
-                TaskInfoVM(
-                        number = 2,
-                        name = "name2",
-                        type = "type",
-                        status = "status",
-                        quantity = "10"
-                ),
-                TaskInfoVM(
-                        number = 1,
-                        name = "name1",
-                        type = "type",
-                        status = "status",
-                        quantity = "10"
-                )
-        )
-    }
-
-    val filter = MutableLiveData("")
 
     override fun onPageSelected(position: Int) {
         Logg.d { "onPageSelected: $position" }
@@ -77,11 +56,11 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
     }
 
     fun onClickFilter() {
-
+        navigator.openSearchFilterTlScreen()
     }
 
-    fun onClickSave() {
-
+    fun onClickMenu() {
+        navigator.openMainMenuScreen()
     }
 
     fun onClickUnprocessedTask(position: Int) {
@@ -92,20 +71,5 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
         navigator.openJobCardScreen(taskNumber = "100")
     }
 
-    fun onClickMenu() {
-
-    }
-
-    fun onClickBack() {
-        navigator.openMainMenuScreen()
-    }
 }
-
-data class TaskInfoVM(
-        val number: Int,
-        val name: String,
-        val type: String,
-        val status: String,
-        val quantity: String
-)
 

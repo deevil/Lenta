@@ -42,6 +42,7 @@
     <string name="no_network_to_save_task">Для сохранения задания в SAP ERP отсутствует сеть. Задание будет сохранено позже.</string>
 
 
+    <string name="enter_task_number_sap_login">Введите номер задания / SAP логин</string>
     <string name="copy_quantity">Кол-во копий</string>
     <string name="printer_type">Тип принтера</string>
     <string name="price_tag_type">Тип ценника</string>

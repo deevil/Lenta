@@ -79,4 +79,19 @@ class TaskManager {
         }
     }
 
+    fun getTestTaskList(numberOfItems: Int): List<Task> {
+        return List(numberOfItems) { Task(
+                    id = it + 1,
+                    type = "РБС - 30" + (0..9).random(),
+                    name = "Рабочий список от ${(10..28).random()}.0${(1..9).random()}.19 ${(10..23).random()}:${(10..59).random()}",
+                    status = when ((0..2).random()) {
+                        1 -> TaskStatus.BLOCK
+                        2 -> TaskStatus.SELF_BLOCK
+                        else -> TaskStatus.STARTED
+                    },
+                    quantity = (1..99).random()
+            )
+        }
+    }
+
 }
