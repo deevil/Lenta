@@ -53,13 +53,11 @@ class TaskListFragment : CoreFragment<FragmentTaskListBinding, TaskListViewModel
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.menu)
         bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.filter)
-        bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.update)
 
         viewLifecycleOwner.apply {
             vm.selectedPage.observe(this, Observer {
                 if (it == TaskListTab.PROCESSING.position) {
-                    bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.save)
-                    connectLiveData(vm.saveButtonEnabled, bottomToolbarUiModel.uiModelButton5.enabled)
+                    bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.update)
                 } else {
                     bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.filter)
                 }
@@ -67,7 +65,6 @@ class TaskListFragment : CoreFragment<FragmentTaskListBinding, TaskListViewModel
         }
 
         connectLiveData(vm.thirdButtonVisibility, getBottomToolBarUIModel()!!.uiModelButton3.visibility)
-        connectLiveData(vm.fourthButtonVisibility, getBottomToolBarUIModel()!!.uiModelButton4.visibility)
     }
 
     override fun onToolbarButtonClick(view: View) {

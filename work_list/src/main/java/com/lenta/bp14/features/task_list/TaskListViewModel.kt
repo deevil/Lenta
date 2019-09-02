@@ -27,10 +27,7 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
     val processingTasks = MutableLiveData<List<TaskInfoVM>>(getTestItems())
     val searchTasks = MutableLiveData<List<TaskInfoVM>>(getTestItems())
 
-    val saveButtonEnabled = processingTasks.map { it?.isNotEmpty() ?: false }
-
     val thirdButtonVisibility = selectedPage.map { it == TaskListTab.PROCESSING.position }
-    val fourthButtonVisibility = selectedPage.map { it == TaskListTab.PROCESSING.position }
 
     init {
         viewModelScope.launch {
