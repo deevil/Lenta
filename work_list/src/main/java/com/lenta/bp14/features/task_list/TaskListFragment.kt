@@ -23,6 +23,7 @@ import com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig
 import com.lenta.shared.utilities.databinding.RecyclerViewKeyHandler
 import com.lenta.shared.utilities.databinding.ViewPagerSettings
 import com.lenta.shared.utilities.extentions.connectLiveData
+import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
 import com.lenta.shared.utilities.extentions.provideViewModel
 
 class TaskListFragment : CoreFragment<FragmentTaskListBinding, TaskListViewModel>(),
@@ -33,7 +34,7 @@ class TaskListFragment : CoreFragment<FragmentTaskListBinding, TaskListViewModel
 
     override fun getLayoutId(): Int = R.layout.fragment_task_list
 
-    override fun getPageNumber(): String = "14/05"
+    override fun getPageNumber(): String? = generateScreenNumberFromPostfix("30")
 
     override fun getViewModel(): TaskListViewModel {
         provideViewModel(TaskListViewModel::class.java).let {

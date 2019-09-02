@@ -69,10 +69,6 @@
             android:layout_marginBottom="8dp"
             android:layout_weight="1"
             app:items="@{vm.searchGoods}"
-            app:layout_constraintBottom_toTopOf="@+id/et_search"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/layout_titles"
             app:rv_config="@{rvConfig}"
             tools:listitem="@layout/item_good_selectable" />
 

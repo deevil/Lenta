@@ -2,28 +2,38 @@ package com.lenta.bp14.features.list_of_differences
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.lenta.bp14.data.TaskManager
+import com.lenta.bp14.data.model.Good
+import com.lenta.bp14.platform.navigation.IScreenNavigator
 import com.lenta.shared.platform.viewmodel.CoreViewModel
+import com.lenta.shared.utilities.SelectionItemsHelper
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 class ListOfDifferencesViewModel : CoreViewModel() {
 
-    val differences: MutableLiveData<List<DifferenceVM>> = MutableLiveData()
+    @Inject
+    lateinit var navigator: IScreenNavigator
+    @Inject
+    lateinit var taskManager: TaskManager
+
+
+    val selectionsHelper = SelectionItemsHelper()
+
+    val goods = MutableLiveData<List<Good>>()
+
+
 
     val enabledMissingButton: MutableLiveData<Boolean> = MutableLiveData(false)
 
 
     init {
         viewModelScope.launch {
-            differences.value = getTestData()
-        }
-
-    }
-
-    private fun getTestData(): List<DifferenceVM>? {
-        return List(100) {
-            DifferenceVM(it + 1, "0000$it Горбуша")
+            goods.value = taskManager.getTestGoodList(4)
         }
     }
+
+
 
     fun getTitle(): String? {
         return "???"
@@ -34,6 +44,10 @@ class ListOfDifferencesViewModel : CoreViewModel() {
     }
 
     fun onClickMissing() {
+
+    }
+
+    fun onClickItemPosition(position: Int) {
 
     }
 
