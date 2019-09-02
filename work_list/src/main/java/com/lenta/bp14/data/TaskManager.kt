@@ -2,13 +2,37 @@ package com.lenta.bp14.data
 
 import com.lenta.bp14.data.model.*
 import com.lenta.shared.models.core.Uom
+import com.lenta.shared.platform.constants.Constants.DATE_FORMAT_ddmmyy
+import java.text.SimpleDateFormat
 import java.util.*
 
 
 class TaskManager {
 
     lateinit var marketNumber: String
+
     var currentGood: Good? = null
+    var currentTaskFilter: TaskFilter? = null
+
+
+    fun setCurrentTaskFilter(
+            taskType: TaskType,
+            goodName: String?,
+            sectionNumber: String?,
+            goodsGroup: String?,
+            publicationDate: String?
+    ) {
+        currentTaskFilter = TaskFilter(
+                taskType = taskType,
+                goodName = if (goodName?.isNotEmpty() == true) goodName else null,
+                sectionNumber = if (sectionNumber?.isNotEmpty() == true) sectionNumber.toInt() else null,
+                goodsGroup = if (goodsGroup?.isNotEmpty() == true) goodsGroup else null,
+                publicationDate = if (publicationDate?.length == DATE_FORMAT_ddmmyy.length) {
+                    SimpleDateFormat(DATE_FORMAT_ddmmyy, Locale.getDefault()).parse(publicationDate)
+                } else null
+        )
+    }
+
 
     fun getTestGoodList(numberOfItems: Int): List<Good> {
         return List(numberOfItems) {
