@@ -34,7 +34,7 @@ class JobCardViewModel : CoreViewModel() {
     }
 
     fun onClickNext() {
-        screenNavigator.openGoodInfoNeScreen()
+        screenNavigator.openScanPriceScreen()
     }
 
     val onClickTaskTypes = object : OnPositionClickListener {

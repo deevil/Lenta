@@ -14,6 +14,7 @@ import com.lenta.bp14.features.not_exposed.good_info.GoodInfoNeViewModel
 import com.lenta.bp14.features.not_exposed.goods_list.GoodsListNeViewModel
 import com.lenta.bp14.features.price_check.good_info.GoodInfoPcViewModel
 import com.lenta.bp14.features.price_check.goods_list.GoodsListPcViewModel
+import com.lenta.bp14.features.price_check.price_scanner.PriceScannerViewModel
 import com.lenta.bp14.features.print_settings.PrintSettingsViewModel
 import com.lenta.bp14.features.report_result.ReportResultViewModel
 import com.lenta.bp14.features.select_market.SelectMarketViewModel
@@ -61,5 +62,6 @@ interface AppComponent {
     fun inject(it: GoodInfoNeViewModel)
     fun inject(it: CoreScanBarCodeViewModel)
     fun inject(it: SearchFilterTlViewModel)
+    fun inject(it: PriceScannerViewModel)
 
 }

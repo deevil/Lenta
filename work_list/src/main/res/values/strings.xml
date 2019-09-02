@@ -97,5 +97,7 @@
     <string name="price_two">Цена 2</string>
     <string name="price_one_sell_out">Цена 1 (Распродажа)</string>
     <string name="price_two_by_stock">Цена 2 (По акции)</string>
+    <string name="scan_price_description">Наведите камеру на QR код ценника</string>
+    <string name="price_from_qr_code">Цена из QR кода</string>
 
 </resources>

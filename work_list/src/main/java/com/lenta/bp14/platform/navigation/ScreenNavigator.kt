@@ -14,6 +14,7 @@ import com.lenta.bp14.features.not_exposed.goods_list.GoodsListNeFragment
 import com.lenta.bp14.features.not_exposed.good_info.GoodInfoNeFragment
 import com.lenta.bp14.features.price_check.good_info.GoodInfoPcFragment
 import com.lenta.bp14.features.price_check.goods_list.GoodsListPcFragment
+import com.lenta.bp14.features.price_check.price_scanner.PriceScannerFragment
 import com.lenta.bp14.features.print_settings.PrintSettingsFragment
 import com.lenta.bp14.features.report_result.ReportResultFragment
 import com.lenta.bp14.features.select_market.SelectMarketFragment
@@ -177,6 +178,12 @@ class ScreenNavigator(
     override fun openTestScanBarcodeScreen() {
         runOrPostpone {
             getFragmentStack()?.push(CoreScanBarCodeFragment())
+        }
+    }
+
+    override fun openScanPriceScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(PriceScannerFragment())
         }
     }
 
@@ -380,4 +387,5 @@ interface IScreenNavigator : ICoreNavigator {
     fun showNoNetworkToSaveTask(nextCallback: () -> Unit)
 
     fun openTestScanBarcodeScreen()
+    fun openScanPriceScreen()
 }
