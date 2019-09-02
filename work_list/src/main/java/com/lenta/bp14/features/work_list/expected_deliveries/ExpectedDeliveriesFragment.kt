@@ -13,13 +13,14 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig
+import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
 import com.lenta.shared.utilities.extentions.provideViewModel
 
 class ExpectedDeliveriesFragment : CoreFragment<FragmentExpectedDeliveriesBinding, ExpectedDeliveriesViewModel>(), ToolbarButtonsClickListener {
 
     override fun getLayoutId(): Int = R.layout.fragment_expected_deliveries
 
-    override fun getPageNumber(): String = "14/21"
+    override fun getPageNumber(): String? = generateScreenNumberFromPostfix("21")
 
     override fun getViewModel(): ExpectedDeliveriesViewModel {
         provideViewModel(ExpectedDeliveriesViewModel::class.java).let {
@@ -38,18 +39,18 @@ class ExpectedDeliveriesFragment : CoreFragment<FragmentExpectedDeliveriesBindin
         bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.update)
     }
 
+    override fun onToolbarButtonClick(view: View) {
+        when (view.id) {
+            R.id.b_3 -> vm.onClickUpdate()
+        }
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding?.rvConfig = DataBindingRecyclerViewConfig<ItemTileDeliveriesBinding>(
                 layoutId = R.layout.item_tile_deliveries,
                 itemId = BR.vm
         )
-    }
-
-    override fun onToolbarButtonClick(view: View) {
-        when (view.id) {
-            R.id.b_3 -> vm.onClickRefresh()
-        }
     }
 
 

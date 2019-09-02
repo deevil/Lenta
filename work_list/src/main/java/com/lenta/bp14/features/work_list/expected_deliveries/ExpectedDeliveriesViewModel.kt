@@ -32,7 +32,7 @@ class ExpectedDeliveriesViewModel : CoreViewModel() {
         return "???"
     }
 
-    fun onClickRefresh() {
+    fun onClickUpdate() {
 
 
     }
