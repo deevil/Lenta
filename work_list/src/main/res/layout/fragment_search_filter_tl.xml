@@ -43,7 +43,7 @@
                 <com.lenta.shared.view.ClickableSpinner
                     android:id="@+id/spin_select_comment"
                     style="@style/CellSpinnerStyle"
-                    android:entries="@array/task_type"
+                    app:items="@{vm.taskTypeList}"
                     app:onPositionClickListener="@{vm}" />
 
             </LinearLayout>

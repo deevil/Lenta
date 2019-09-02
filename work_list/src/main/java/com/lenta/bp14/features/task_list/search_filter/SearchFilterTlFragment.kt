@@ -1,5 +1,6 @@
 package com.lenta.bp14.features.task_list.search_filter
 
+import android.os.Bundle
 import android.view.View
 import androidx.lifecycle.Observer
 import com.lenta.bp14.R
@@ -46,5 +47,10 @@ class SearchFilterTlFragment : CoreFragment<FragmentSearchFilterTlBinding, Searc
         }
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        vm.taskTypeList.value = resources.getStringArray(R.array.task_type).asList()
+    }
 
 }

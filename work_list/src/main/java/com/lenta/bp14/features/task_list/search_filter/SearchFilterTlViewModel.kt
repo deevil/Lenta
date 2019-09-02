@@ -21,7 +21,10 @@ class SearchFilterTlViewModel : CoreViewModel(), OnPositionClickListener {
 
     val marketNumber = MutableLiveData<String>("")
 
-    var taskType: TaskType = TaskType.WORK_LIST
+    val taskTypeList = MutableLiveData<List<String>>()
+
+    private var taskType: TaskType = TaskType.WORK_LIST
+
     val goodField = MutableLiveData<String>("")
     val sectionField = MutableLiveData<String>("")
     val goodsGroupField = MutableLiveData<String>("")
@@ -48,4 +51,5 @@ class SearchFilterTlViewModel : CoreViewModel(), OnPositionClickListener {
             else -> throw IllegalArgumentException("Wrong task type position!")
         }
     }
+
 }
