@@ -18,7 +18,9 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
+import com.lenta.shared.utilities.databinding.DataBindingAdapter
 import com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig
+import com.lenta.shared.utilities.databinding.RecyclerViewKeyHandler
 import com.lenta.shared.utilities.databinding.ViewPagerSettings
 import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.provideViewModel
@@ -26,8 +28,8 @@ import com.lenta.shared.utilities.extentions.provideViewModel
 class TaskListFragment : CoreFragment<FragmentTaskListBinding, TaskListViewModel>(),
         ViewPagerSettings, ToolbarButtonsClickListener, OnBackPresserListener {
 
-
-    override fun countTab(): Int = 2
+    private var processingRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
+    private var searchRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
 
     override fun getLayoutId(): Int = R.layout.fragment_task_list
 
@@ -94,13 +96,35 @@ class TaskListFragment : CoreFragment<FragmentTaskListBinding, TaskListViewModel
                         layoutBinding.rvConfig = DataBindingRecyclerViewConfig<ItemTaskStatusGoodsBinding>(
                                 layoutId = R.layout.item_task_status_goods,
                                 itemId = BR.task,
+                                realisation = object : DataBindingAdapter<ItemTaskStatusGoodsBinding> {
+                                    override fun onCreate(binding: ItemTaskStatusGoodsBinding) {
+                                    }
+
+                                    override fun onBind(binding: ItemTaskStatusGoodsBinding, position: Int) {
+                                        processingRecyclerViewKeyHandler?.let {
+                                            binding.root.isSelected = it.isSelected(position)
+                                        }
+                                    }
+                                },
                                 onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
-                                    vm.onClickUnprocessedTask(position)
-                                }
-                        )
+                                    processingRecyclerViewKeyHandler?.let {
+                                        if (it.isSelected(position)) {
+                                            vm.onClickProcessingTask(position)
+                                        } else {
+                                            it.selectPosition(position)
+                                        }
+                                    }
+                                })
 
                         layoutBinding.vm = vm
                         layoutBinding.lifecycleOwner = viewLifecycleOwner
+                        processingRecyclerViewKeyHandler = RecyclerViewKeyHandler(
+                                rv = layoutBinding.rv,
+                                items = vm.processingTasks,
+                                lifecycleOwner = layoutBinding.lifecycleOwner!!,
+                                initPosInfo = processingRecyclerViewKeyHandler?.posInfo?.value
+                        )
+
                         return layoutBinding.root
                     }
         }
@@ -111,16 +135,37 @@ class TaskListFragment : CoreFragment<FragmentTaskListBinding, TaskListViewModel
                         container,
                         false).let { layoutBinding ->
 
-                    layoutBinding.rvConfig = DataBindingRecyclerViewConfig<ItemTaskStatusGoodsBinding>(
+                    layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
                             layoutId = R.layout.item_task_status_goods,
                             itemId = BR.task,
+                            realisation = object : DataBindingAdapter<ItemTaskStatusGoodsBinding> {
+                                override fun onCreate(binding: ItemTaskStatusGoodsBinding) {
+                                }
+
+                                override fun onBind(binding: ItemTaskStatusGoodsBinding, position: Int) {
+                                    searchRecyclerViewKeyHandler?.let {
+                                        binding.root.isSelected = it.isSelected(position)
+                                    }
+                                }
+                            },
                             onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
-                                vm.onClickProcessedTask(position)
-                            }
-                    )
+                                searchRecyclerViewKeyHandler?.let {
+                                    if (it.isSelected(position)) {
+                                        vm.onClickSearchTask(position)
+                                    } else {
+                                        it.selectPosition(position)
+                                    }
+                                }
+                            })
 
                     layoutBinding.vm = vm
                     layoutBinding.lifecycleOwner = viewLifecycleOwner
+                    searchRecyclerViewKeyHandler = RecyclerViewKeyHandler(
+                            rv = layoutBinding.rv,
+                            items = vm.searchTasks,
+                            lifecycleOwner = layoutBinding.lifecycleOwner!!,
+                            initPosInfo = searchRecyclerViewKeyHandler?.posInfo?.value
+                    )
 
                     return layoutBinding.root
                 }
@@ -133,6 +178,8 @@ class TaskListFragment : CoreFragment<FragmentTaskListBinding, TaskListViewModel
             else -> throw IllegalArgumentException("Wrong pager position!")
         }
     }
+
+    override fun countTab(): Int = 2
 
     override fun onBackPressed(): Boolean {
         vm.onClickMenu()

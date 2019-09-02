@@ -63,11 +63,11 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
         navigator.openMainMenuScreen()
     }
 
-    fun onClickUnprocessedTask(position: Int) {
+    fun onClickProcessingTask(position: Int) {
         navigator.openJobCardScreen(taskNumber = "100")
     }
 
-    fun onClickProcessedTask(position: Int) {
+    fun onClickSearchTask(position: Int) {
         navigator.openJobCardScreen(taskNumber = "100")
     }
 
