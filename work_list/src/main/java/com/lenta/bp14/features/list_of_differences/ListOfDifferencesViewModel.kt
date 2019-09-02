@@ -7,6 +7,7 @@ import com.lenta.bp14.data.model.Good
 import com.lenta.bp14.platform.navigation.IScreenNavigator
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.SelectionItemsHelper
+import com.lenta.shared.utilities.extentions.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -20,12 +21,11 @@ class ListOfDifferencesViewModel : CoreViewModel() {
 
     val selectionsHelper = SelectionItemsHelper()
 
+    val title = MutableLiveData<String>("РБС-300//Рабочий список")
+
     val goods = MutableLiveData<List<Good>>()
 
-
-
-    val enabledMissingButton: MutableLiveData<Boolean> = MutableLiveData(false)
-
+    val missingButtonEnabled: MutableLiveData<Boolean> = selectionsHelper.selectedPositions.map { it?.isNotEmpty() }
 
     init {
         viewModelScope.launch {
@@ -33,17 +33,11 @@ class ListOfDifferencesViewModel : CoreViewModel() {
         }
     }
 
+    fun onClickMissing() {
 
-
-    fun getTitle(): String? {
-        return "???"
     }
 
     fun onClickSkip() {
-
-    }
-
-    fun onClickMissing() {
 
     }
 
@@ -51,10 +45,4 @@ class ListOfDifferencesViewModel : CoreViewModel() {
 
     }
 
-
 }
-
-data class DifferenceVM(
-        val number: Int,
-        val name: String
-)

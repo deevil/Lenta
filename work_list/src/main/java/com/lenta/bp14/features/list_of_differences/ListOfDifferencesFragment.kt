@@ -36,8 +36,9 @@ class ListOfDifferencesFragment : CoreFragment<FragmentListOfDifferencesBinding,
     }
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
-        topToolbarUiModel.title.value = vm.getTitle()
         topToolbarUiModel.description.value = getString(R.string.list_of_differences)
+
+        connectLiveData(vm.title, topToolbarUiModel.title)
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
@@ -45,10 +46,8 @@ class ListOfDifferencesFragment : CoreFragment<FragmentListOfDifferencesBinding,
         bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.missing)
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.skip)
 
-        connectLiveData(vm.enabledMissingButton, bottomToolbarUiModel.uiModelButton4.enabled)
-
+        connectLiveData(vm.missingButtonEnabled, bottomToolbarUiModel.uiModelButton4.enabled)
     }
-
 
     override fun onToolbarButtonClick(view: View) {
         when (view.id) {
