@@ -1,26 +1,42 @@
 package com.lenta.bp14.features.task_list
 
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
+import com.lenta.bp14.data.TaskListTab
+import com.lenta.bp14.data.TaskManager
 import com.lenta.bp14.platform.navigation.IScreenNavigator
-import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.databinding.PageSelectionListener
+import com.lenta.shared.utilities.extentions.map
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyboardListener {
 
     @Inject
-    lateinit var screenNavigator: IScreenNavigator
-
+    lateinit var navigator: IScreenNavigator
     @Inject
-    lateinit var sessionInfo: ISessionInfo
+    lateinit var taskManager: TaskManager
 
     val selectedPage = MutableLiveData(0)
 
-    val unprocessedTasks = MutableLiveData<List<TaskInfoVM>>(getTestItems())
-    val filteredTasks = MutableLiveData<List<TaskInfoVM>>(getTestItems())
+    val marketNumber = MutableLiveData<String>("")
+
+    val processingTasks = MutableLiveData<List<TaskInfoVM>>(getTestItems())
+    val searchTasks = MutableLiveData<List<TaskInfoVM>>(getTestItems())
+
+    val saveButtonEnabled = processingTasks.map { it?.isNotEmpty() ?: false }
+
+    val thirdButtonVisibility = selectedPage.map { it == TaskListTab.PROCESSING.position }
+    val fourthButtonVisibility = selectedPage.map { it == TaskListTab.PROCESSING.position }
+
+    init {
+        viewModelScope.launch {
+            marketNumber.value = taskManager.marketNumber
+        }
+    }
 
     override fun onOkInSoftKeyboard(): Boolean {
         return true
@@ -57,11 +73,6 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
     override fun onPageSelected(position: Int) {
         Logg.d { "onPageSelected: $position" }
         selectedPage.value = position
-
-    }
-
-    fun getMarket(): String {
-        return sessionInfo.market!!
     }
 
     fun onClickUpdate() {
@@ -77,11 +88,19 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
     }
 
     fun onClickUnprocessedTask(position: Int) {
-        screenNavigator.openJobCardScreen(taskNumber = "100")
+        navigator.openJobCardScreen(taskNumber = "100")
     }
 
     fun onClickProcessedTask(position: Int) {
-        screenNavigator.openJobCardScreen(taskNumber = "100")
+        navigator.openJobCardScreen(taskNumber = "100")
+    }
+
+    fun onClickMenu() {
+
+    }
+
+    fun onClickBack() {
+        navigator.openMainMenuScreen()
     }
 }
 
