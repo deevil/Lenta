@@ -2,13 +2,13 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
         android:id="@+id/layout2"
-        tools:context=".features.work_list.sales_of_goods.SalesOfGoodFragment">
+        tools:context=".features.work_list.good_sales.GoodSalesFragment">
 
     <data>
 
         <variable
             name="vm"
-            type="com.lenta.bp14.features.work_list.sales_of_goods.SalesOfGoodViewModel" />
+            type="com.lenta.bp14.features.work_list.good_sales.GoodSalesViewModel" />
 
     </data>
 

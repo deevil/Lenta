@@ -1,10 +1,10 @@
-package com.lenta.bp14.features.work_list.sales_of_goods
+package com.lenta.bp14.features.work_list.good_sales
 
 import android.view.View
 import androidx.lifecycle.Observer
 import com.lenta.bp14.R
 import com.lenta.bp14.data.model.Good
-import com.lenta.bp14.databinding.FragmentSalesOfGoodBinding
+import com.lenta.bp14.databinding.FragmentGoodSalesBinding
 import com.lenta.bp14.platform.extentions.getAppComponent
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
@@ -14,14 +14,14 @@ import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
 import com.lenta.shared.utilities.extentions.provideViewModel
 
-class SalesOfGoodFragment : CoreFragment<FragmentSalesOfGoodBinding, SalesOfGoodViewModel>(), ToolbarButtonsClickListener {
+class GoodSalesFragment : CoreFragment<FragmentGoodSalesBinding, GoodSalesViewModel>(), ToolbarButtonsClickListener {
 
-    override fun getLayoutId(): Int = R.layout.fragment_sales_of_good
+    override fun getLayoutId(): Int = R.layout.fragment_good_sales
 
     override fun getPageNumber(): String? = generateScreenNumberFromPostfix("22")
 
-    override fun getViewModel(): SalesOfGoodViewModel {
-        provideViewModel(SalesOfGoodViewModel::class.java).let {
+    override fun getViewModel(): GoodSalesViewModel {
+        provideViewModel(GoodSalesViewModel::class.java).let {
             getAppComponent()?.inject(it)
             return it
         }

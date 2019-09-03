@@ -1,4 +1,4 @@
-package com.lenta.bp14.features.work_list.sales_of_goods
+package com.lenta.bp14.features.work_list.good_sales
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
@@ -10,12 +10,13 @@ import com.lenta.shared.platform.viewmodel.CoreViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class SalesOfGoodViewModel : CoreViewModel() {
+class GoodSalesViewModel : CoreViewModel() {
 
     @Inject
     lateinit var navigator: IScreenNavigator
     @Inject
     lateinit var taskManager: TaskManager
+
 
     val good = MutableLiveData<Good>()
     val salesStatistics = MutableLiveData<SalesStatistics>()
