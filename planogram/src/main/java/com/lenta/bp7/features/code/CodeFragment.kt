@@ -8,7 +8,6 @@ import android.widget.EditText
 import com.lenta.bp7.R
 import com.lenta.bp7.databinding.FragmentCodeBinding
 import com.lenta.bp7.platform.extentions.getAppComponent
-import com.lenta.bp7.platform.extentions.getAppTitle
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
@@ -16,6 +15,7 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListe
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
+import com.lenta.shared.utilities.extentions.getAppInfo
 import com.lenta.shared.utilities.extentions.provideViewModel
 
 class CodeFragment : CoreFragment<FragmentCodeBinding, CodeViewModel>(), ToolbarButtonsClickListener {
@@ -36,7 +36,7 @@ class CodeFragment : CoreFragment<FragmentCodeBinding, CodeViewModel>(), Toolbar
     }
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
-        topToolbarUiModel.title.value = getAppTitle()
+        topToolbarUiModel.title.value = context?.getAppInfo()
         topToolbarUiModel.description.value = getString(R.string.description_select_mode)
     }
 

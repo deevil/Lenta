@@ -3,12 +3,12 @@ package com.lenta.inventory.features.main_menu
 import android.view.View
 import com.lenta.inventory.R
 import com.lenta.inventory.platform.extentions.getAppComponent
-import com.lenta.inventory.platform.extentions.getAppTitle
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.ImageButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
+import com.lenta.shared.utilities.extentions.getAppInfo
 import com.lenta.shared.utilities.extentions.provideViewModel
 
 class MainMenuFragment : CoreFragment<com.lenta.inventory.databinding.FragmentMainMenuBinding, MainMenuViewModel>(), ToolbarButtonsClickListener {
@@ -29,7 +29,7 @@ class MainMenuFragment : CoreFragment<com.lenta.inventory.databinding.FragmentMa
     }
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
-        topToolbarUiModel.title.value = getAppTitle()
+        topToolbarUiModel.title.value = context?.getAppInfo()
         topToolbarUiModel.description.value = getString(R.string.main_menu)
         topToolbarUiModel.uiModelButton1.show(ImageButtonDecorationInfo.settings)
         topToolbarUiModel.uiModelButton2.show(ImageButtonDecorationInfo.exitFromApp)
