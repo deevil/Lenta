@@ -175,7 +175,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent" />
 
-                <com.lenta.bp14.features.price_check.price_scanner.CanvasForScanDetection
+                <com.lenta.bp14.ml.CanvasForScanDetection
                     android:id="@+id/my_canvas"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent" />

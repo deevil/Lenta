@@ -1,5 +1,6 @@
-package com.lenta.bp14.features.price_check.price_scanner
+package com.lenta.bp14.ml
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Rect
 import android.graphics.SurfaceTexture
@@ -8,9 +9,7 @@ import android.hardware.camera2.CameraManager
 import android.os.Handler
 import android.os.HandlerThread
 import android.util.Size
-import android.view.TextureView
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import androidx.camera.core.*
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
@@ -26,16 +25,19 @@ import java.util.concurrent.TimeUnit
 
 class FireBaseMlScanHelper(val context: Context) {
 
-    var viewLifecycleOwner: LifecycleOwner? = null
-    var rootView: View? = null
-    var canvasForScanDetection: CanvasForScanDetection? = null
+    private var viewLifecycleOwner: LifecycleOwner? = null
+    private var rootView: View? = null
+    private var canvasForScanDetection: CanvasForScanDetection? = null
+    private lateinit var isErrorFunction: (String) -> Boolean?
 
-    var ratio = 1F
+    private var ratio = 1F
 
-    fun onViewCreated(viewLifecycleOwner: LifecycleOwner, canvasForScanDetection: CanvasForScanDetection, rootView: View) {
+    fun onViewCreated(viewLifecycleOwner: LifecycleOwner, canvasForScanDetection: CanvasForScanDetection, rootView: View, textureView: TextureView, isErrorFunction: (String) -> Boolean?) {
         this.viewLifecycleOwner = viewLifecycleOwner
         this.canvasForScanDetection = canvasForScanDetection
         this.rootView = rootView
+        this.isErrorFunction = isErrorFunction
+        startCamera(textureView)
     }
 
     fun onDestroyView() {
@@ -44,9 +46,10 @@ class FireBaseMlScanHelper(val context: Context) {
         this.rootView = null
     }
 
-    fun startCamera(textureView: TextureView) {
+    @SuppressLint("ClickableViewAccessibility")
+    private fun startCamera(textureView: TextureView) {
 
-        val targetSize = getMaximumSize()
+        val targetSize = getMaximumSize() ?: return
 
         rootView?.apply {
             val params = layoutParams as ViewGroup.LayoutParams
@@ -103,16 +106,6 @@ class FireBaseMlScanHelper(val context: Context) {
         val zoomValue = 0.8
         val xZoom = (centerPoint.width * zoomValue).toInt()
         val yZoom = (centerPoint.height * zoomValue).toInt()
-        /*preview.zoom(
-                Rect(
-                        centerPoint.width - xZoom,
-                        centerPoint.height - yZoom,
-                        centerPoint.width + xZoom,
-                        centerPoint.height + yZoom
-                ).apply {
-                    Logg.d { "zoom rect: $this" }
-                }
-        )*/
 
         val originalZoom = Rect(
                 0,
@@ -130,21 +123,30 @@ class FireBaseMlScanHelper(val context: Context) {
 
         var zoomEnable = false
 
-        textureView.setOnClickListener {
-            zoomEnable = !zoomEnable
-            preview.zoom(
-                    (if (zoomEnable) zoom else originalZoom).apply {
-                        Logg.d { "zoom rect: $this" }
+        val gestureDetector = GestureDetector(
+                textureView.context,
+                object : GestureDetector.SimpleOnGestureListener() {
+                    override fun onDoubleTap(e: MotionEvent?): Boolean {
+                        zoomEnable = !zoomEnable
+                        preview.zoom(
+                                (if (zoomEnable) zoom else originalZoom).apply {
+                                    Logg.d { "zoom rect: $this" }
+                                }
+
+                        )
+                        return true
                     }
+                })
 
-            )
-
+        textureView.setOnTouchListener { v, event ->
+            gestureDetector.onTouchEvent(event)
+            true
         }
 
 
     }
 
-    private fun getMaximumSize(): Size {
+    private fun getMaximumSize(): Size? {
         val manager = context.getSystemService(Context.CAMERA_SERVICE) as CameraManager
         val cameraId = manager.cameraIdList[0]
         val characteristics = manager.getCameraCharacteristics(cameraId)
@@ -154,14 +156,18 @@ class FireBaseMlScanHelper(val context: Context) {
 
         val constraint = 1300
 
-        for (size in map.getOutputSizes(SurfaceTexture::class.java)) {
-            Logg.d { "supported size: $size" }
-            if ((constraint > size.height && constraint > size.width) && (maximumSize.height + maximumSize.width) < (size.height + size.width)) {
-                maximumSize = size
+        if (map?.getOutputSizes(SurfaceTexture::class.java)?.isNotEmpty() == true) {
+            for (size in map.getOutputSizes(SurfaceTexture::class.java)) {
+                Logg.d { "supported size: $size" }
+                if ((constraint > size.height && constraint > size.width) && (maximumSize.height + maximumSize.width) < (size.height + size.width)) {
+                    maximumSize = size
+                }
             }
+            Logg.d { "maximum size: $maximumSize" }
+            return maximumSize
         }
-        Logg.d { "maximum size: $maximumSize" }
-        return maximumSize
+
+        return null
     }
 
     inner class LuminosityAnalyzer : ImageAnalysis.Analyzer {
@@ -240,8 +246,9 @@ class FireBaseMlScanHelper(val context: Context) {
                         barcodes.forEach {
                             canvas.addRectInfo(
                                     it!!.boundingBox!!.transformWithRatio(ratio),
-                                    error = !(it.rawValue?.contains("7") ?: false),
-                                    text = it.rawValue?.takeLast(20) ?: ""
+                                    error = it.rawValue?.let { rawValue ->
+                                        isErrorFunction(rawValue)
+                                    }
                             )
                         }
 

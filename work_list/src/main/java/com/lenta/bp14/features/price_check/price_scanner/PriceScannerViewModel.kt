@@ -7,4 +7,12 @@ class PriceScannerViewModel : CoreViewModel() {
         return "???"
     }
 
+    fun isErrorCode(code: String): Boolean? {
+        return when {
+            code.contains("7") -> false
+            code.toCharArray().all { char -> char.isDigit() } -> true
+            else -> null
+        }
+    }
+
 }

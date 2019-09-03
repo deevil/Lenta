@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.View
 import com.lenta.bp14.R
 import com.lenta.bp14.databinding.FragmentPriceScannerBinding
+import com.lenta.bp14.ml.FireBaseMlScanHelper
 import com.lenta.bp14.platform.extentions.getAppComponent
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
@@ -12,6 +13,7 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
 import com.lenta.shared.utilities.extentions.provideViewModel
+
 
 class PriceScannerFragment : CoreFragment<FragmentPriceScannerBinding, PriceScannerViewModel>() {
 
@@ -54,8 +56,13 @@ class PriceScannerFragment : CoreFragment<FragmentPriceScannerBinding, PriceScan
         binding!!.scrollView.setOnTouchListener { _, _ -> true }
 
         binding?.let {
-            fireBaseMlScanHelper.onViewCreated(viewLifecycleOwner, canvasForScanDetection = it.myCanvas, rootView = it.flRootScan)
-            fireBaseMlScanHelper.startCamera(it.textureView)
+            fireBaseMlScanHelper.onViewCreated(
+                    viewLifecycleOwner = viewLifecycleOwner,
+                    canvasForScanDetection = it.myCanvas,
+                    rootView = it.flRootScan,
+                    textureView = it.textureView,
+                    isErrorFunction = vm::isErrorCode
+            )
         }
 
     }
