@@ -8,7 +8,7 @@ import android.graphics.Rect
 import android.util.AttributeSet
 import android.view.View
 
-class MyCanvas @JvmOverloads constructor(
+class CanvasForScanDetection @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 ) : View(context, attrs, defStyleAttr) {
 
