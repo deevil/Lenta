@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools">
 
     <data>
@@ -25,13 +24,13 @@
 
             <LinearLayout
                 style="@style/LinearCellStyle"
-                android:layout_weight="@integer/number_task_status_goods_column_1">
+                android:layout_weight="@integer/number_status_quantity_date_column_1">
 
                 <TextView
                     android:id="@+id/tv_item_number"
                     style="@style/CellTextStyle"
                     android:layout_width="wrap_content"
-                    android:text="@{String.valueOf(task.id)}"
+                    android:text="@{String.valueOf(delivery.id)}"
                     tools:text="1" />
 
             </LinearLayout>
@@ -40,33 +39,17 @@
 
             <LinearLayout
                 style="@style/LinearCellStyle"
-                android:layout_weight="@integer/number_task_status_goods_column_2"
-                android:orientation="horizontal">
+                android:layout_weight="@integer/number_status_quantity_date_column_2">
 
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
+                <TextView
+                    style="@style/CellTextStyle"
+                    android:text="@{delivery.status.description}"
+                    tools:text="В пути" />
 
-                    <TextView
-                        style="@style/CellTextStyle"
-                        android:text="@{task.type}"
-                        tools:text="РБС - 120//" />
-
-                    <TextView
-                        style="@style/CellTextStyle"
-                        android:text="@{task.name}"
-                        tools:text="Рабочий список от 23.07.19 23:15" />
-
-                </LinearLayout>
-
-                <ImageView
-                    android:id="@+id/iv_open"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:padding="5dp"
-                    android:src="@drawable/ic_keyboard_arrow_right_white_24dp" />
+                <TextView
+                    style="@style/CellTextStyle"
+                    android:text="@{delivery.additional}"
+                    tools:text="ПП" />
 
             </LinearLayout>
 
@@ -74,29 +57,33 @@
 
             <LinearLayout
                 style="@style/LinearCellStyle"
-                android:layout_weight="@integer/number_task_status_goods_column_3"
+                android:layout_weight="@integer/number_status_quantity_date_column_3"
                 android:orientation="horizontal">
-
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/ic_close_white_24dp"
-                    app:taskStatusIcon="@{task.status}" />
-
-            </LinearLayout>
-
-            <View style="@style/VerticalDivider" />
-
-            <LinearLayout
-                style="@style/LinearCellStyle"
-                android:layout_weight="@integer/number_task_status_goods_column_4">
 
                 <TextView
                     style="@style/CellTextStyle"
                     android:layout_width="wrap_content"
                     android:layout_gravity="center"
-                    android:text="@{String.valueOf(task.quantity)}"
-                    tools:text="10" />
+                    android:text="@{@string/quantity_units(delivery.quantity, delivery.uom.name)}"
+                    tools:text="10 кор" />
+
+            </LinearLayout>
+
+            <View style="@style/VerticalDivider" />
+
+            <LinearLayout
+                style="@style/LinearCellStyle"
+                android:layout_weight="@integer/number_status_quantity_date_column_4">
+
+                <TextView
+                    style="@style/CellTextStyle"
+                    android:text="@{delivery.formattedDate}"
+                    tools:text="12.11.19" />
+
+                <TextView
+                    style="@style/CellTextStyle"
+                    android:text="@{delivery.formattedTime}"
+                    tools:text="11:33" />
 
             </LinearLayout>
 

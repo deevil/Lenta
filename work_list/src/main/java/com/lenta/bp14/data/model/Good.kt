@@ -12,8 +12,10 @@ data class Good(
         val uom: Uom = Uom.DEFAULT,
         var priceTagStatus: PriceTagStatus = PriceTagStatus.PRINTED,
         val goodStatus: GoodStatus = GoodStatus.MISSING_RIGHT,
+
         val comments: MutableList<Comment> = mutableListOf(),
-        val shelfLives: MutableList<ShelfLife> = mutableListOf()
+        val shelfLives: MutableList<ShelfLife> = mutableListOf(),
+        val delivery: MutableList<Delivery> = mutableListOf()
 ) {
 
     val quantityField = MutableLiveData<String>(quantity.toString())
