@@ -1,5 +1,6 @@
 package com.lenta.bp14.features.price_check.price_scanner
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.View
 import com.lenta.bp14.R
@@ -45,13 +46,18 @@ class PriceScannerFragment : CoreFragment<FragmentPriceScannerBinding, PriceScan
         fireBaseMlScanHelper = FireBaseMlScanHelper(context!!)
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         // дизэйблим scrollview
         binding!!.scrollView.setOnTouchListener { _, _ -> true }
 
-        fireBaseMlScanHelper.onViewCreated(viewLifecycleOwner, canvasForScanDetection = binding!!.myCanvas)
-        fireBaseMlScanHelper.startCamera(binding!!.textureView)
+        binding?.let {
+            fireBaseMlScanHelper.onViewCreated(viewLifecycleOwner, canvasForScanDetection = it.myCanvas, rootView = it.flRootScan)
+            fireBaseMlScanHelper.startCamera(it.textureView)
+        }
+
     }
 
     override fun onDestroyView() {

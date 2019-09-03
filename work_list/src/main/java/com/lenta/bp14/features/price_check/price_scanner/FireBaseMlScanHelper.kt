@@ -1,14 +1,15 @@
 package com.lenta.bp14.features.price_check.price_scanner
 
 import android.content.Context
+import android.graphics.Rect
 import android.graphics.SurfaceTexture
 import android.hardware.camera2.CameraCharacteristics
 import android.hardware.camera2.CameraManager
 import android.os.Handler
 import android.os.HandlerThread
-import android.util.Log
 import android.util.Size
 import android.view.TextureView
+import android.view.View
 import android.view.ViewGroup
 import androidx.camera.core.*
 import androidx.lifecycle.Lifecycle
@@ -22,24 +23,39 @@ import com.lenta.shared.utilities.Logg
 import java.nio.ByteBuffer
 import java.util.concurrent.TimeUnit
 
+
 class FireBaseMlScanHelper(val context: Context) {
 
     var viewLifecycleOwner: LifecycleOwner? = null
+    var rootView: View? = null
     var canvasForScanDetection: CanvasForScanDetection? = null
 
-    fun onViewCreated(viewLifecycleOwner: LifecycleOwner, canvasForScanDetection: CanvasForScanDetection) {
+    var ratio = 1F
+
+    fun onViewCreated(viewLifecycleOwner: LifecycleOwner, canvasForScanDetection: CanvasForScanDetection, rootView: View) {
         this.viewLifecycleOwner = viewLifecycleOwner
         this.canvasForScanDetection = canvasForScanDetection
+        this.rootView = rootView
     }
 
     fun onDestroyView() {
         this.viewLifecycleOwner = null
         this.canvasForScanDetection = null
+        this.rootView = null
     }
 
     fun startCamera(textureView: TextureView) {
 
         val targetSize = getMaximumSize()
+
+        rootView?.apply {
+            val params = layoutParams as ViewGroup.LayoutParams
+            ratio = rootView.width / targetSize.height.toFloat()
+            params.height = (targetSize.width * ratio).toInt()
+            this.layoutParams = params
+            rootView.invalidate()
+        }
+
 
         val previewConfig = PreviewConfig.Builder().apply {
             setLensFacing(CameraX.LensFacing.BACK)
@@ -48,9 +64,6 @@ class FireBaseMlScanHelper(val context: Context) {
 
         // Build the viewfinder use case
         val preview = Preview(previewConfig)
-
-        val textureView = textureView
-
 
         // Every time the viewfinder is updated, recompute layout
         preview.setOnPreviewOutputUpdateListener {
@@ -85,7 +98,48 @@ class FireBaseMlScanHelper(val context: Context) {
         CameraX.bindToLifecycle(viewLifecycleOwner, preview, analyzerUseCase)
 
         //зум можно устанавливать только после CameraX.bindToLifecycle
-        //preview.zoom(Rect(500, 500, 1200, 1200))
+        //val centerPoint = Size(targetSize.width / 2, targetSize.height / 2)
+        val centerPoint = Size(400, 400)
+        val zoomValue = 0.8
+        val xZoom = (centerPoint.width * zoomValue).toInt()
+        val yZoom = (centerPoint.height * zoomValue).toInt()
+        /*preview.zoom(
+                Rect(
+                        centerPoint.width - xZoom,
+                        centerPoint.height - yZoom,
+                        centerPoint.width + xZoom,
+                        centerPoint.height + yZoom
+                ).apply {
+                    Logg.d { "zoom rect: $this" }
+                }
+        )*/
+
+        val originalZoom = Rect(
+                0,
+                0,
+                3200,
+                3200
+        )
+
+        val zoom = Rect(
+                0,
+                0,
+                centerPoint.width + xZoom,
+                centerPoint.height + yZoom
+        )
+
+        var zoomEnable = false
+
+        textureView.setOnClickListener {
+            zoomEnable = !zoomEnable
+            preview.zoom(
+                    (if (zoomEnable) zoom else originalZoom).apply {
+                        Logg.d { "zoom rect: $this" }
+                    }
+
+            )
+
+        }
 
 
     }
@@ -98,10 +152,11 @@ class FireBaseMlScanHelper(val context: Context) {
 
         var maximumSize = Size(0, 0)
 
+        val constraint = 1300
+
         for (size in map.getOutputSizes(SurfaceTexture::class.java)) {
             Logg.d { "supported size: $size" }
-            Log.i("InfoAnalyzer", "imageDimension " + size)
-            if ((maximumSize.height + maximumSize.width) < (size.height + size.width)) {
+            if ((constraint > size.height && constraint > size.width) && (maximumSize.height + maximumSize.width) < (size.height + size.width)) {
                 maximumSize = size
             }
         }
@@ -135,9 +190,6 @@ class FireBaseMlScanHelper(val context: Context) {
                     }
 
                     val buffer = image.planes[0].buffer
-
-                    Log.d("InfoAnalyzer", "imageProxy width is : ${image.width}")
-                    Log.d("InfoAnalyzer", "imageProxy height is : ${image.height}")
 
                     val metadata = FirebaseVisionImageMetadata.Builder()
                             .setFormat(FirebaseVisionImageMetadata.IMAGE_FORMAT_YV12)
@@ -177,17 +229,17 @@ class FireBaseMlScanHelper(val context: Context) {
 
         val detector = FirebaseVision.getInstance()
                 .getVisionBarcodeDetector(options)
-        Log.d("CameraXApp", "image size: ${image.bitmap.height}/${image.bitmap.width}")
+        Logg.d { "image size: ${image.bitmap.height}/${image.bitmap.width}" }
         detector.detectInImage(image)
                 .addOnSuccessListener { barcodes ->
 
-                    Log.d("CameraXApp", "barcodes: ${barcodes.map { it.rawValue }}")
+                    Logg.d { "barcodes: ${barcodes.map { it.rawValue }}" }
 
                     canvasForScanDetection?.let { canvas ->
                         canvas.cleanAllRects()
                         barcodes.forEach {
                             canvas.addRectInfo(
-                                    it!!.boundingBox!!,
+                                    it!!.boundingBox!!.transformWithRatio(ratio),
                                     error = !(it.rawValue?.contains("7") ?: false),
                                     text = it.rawValue?.takeLast(20) ?: ""
                             )
@@ -198,8 +250,17 @@ class FireBaseMlScanHelper(val context: Context) {
 
                 }
                 .addOnFailureListener {
-                    Log.d("CameraXApp", "barcodes failure: $it")
+                    Logg.d { "barcodes failure: $it" }
                 }
     }
 
+}
+
+private fun Rect.transformWithRatio(ratio: Float): Rect {
+    return Rect(
+            (this.left * ratio).toInt(),
+            (this.top * ratio).toInt(),
+            (this.right * ratio).toInt(),
+            (this.bottom * ratio).toInt()
+    )
 }

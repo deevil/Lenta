@@ -7,8 +7,7 @@
     <ScrollView
         android:id="@+id/scrollView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:enabled="false">
+        android:layout_height="match_parent">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -163,8 +162,9 @@
 
 
             <FrameLayout
-                android:layout_width="360dp"
-                android:layout_height="480dp"
+                android:id="@+id/fl_root_scan"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
