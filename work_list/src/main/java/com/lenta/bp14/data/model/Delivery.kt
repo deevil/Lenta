@@ -1,10 +1,9 @@
 package com.lenta.bp14.data.model
 
 import com.lenta.shared.models.core.Uom
-import com.lenta.shared.platform.constants.Constants
-import java.text.SimpleDateFormat
+import com.lenta.shared.utilities.extentions.getFormattedDate
+import com.lenta.shared.utilities.extentions.getFormattedTime
 import java.util.*
-
 
 data class Delivery(
         val id: Int,
@@ -16,11 +15,11 @@ data class Delivery(
 ) {
 
     fun getFormattedDate(): String {
-        return SimpleDateFormat(Constants.DATE_FORMAT_ddmmyy, Locale.getDefault()).format(date)
+        return date.getFormattedDate()
     }
 
     fun getFormattedTime(): String {
-        return SimpleDateFormat(Constants.TIME_FORMAT_HHmm, Locale.getDefault()).format(date)
+        return date.getFormattedTime()
     }
 
 }

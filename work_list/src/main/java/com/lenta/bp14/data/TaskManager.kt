@@ -75,7 +75,8 @@ class TaskManager {
                     priceTagStatus = priceTagStatus,
                     comments = getTestComments(),
                     shelfLives = getTestShelfLives(),
-                    delivery = getTestDeliveries(4)
+                    delivery = getTestDeliveries(),
+                    salesStatistics = getTestSalesStatistics()
             )
         }
     }
@@ -101,9 +102,8 @@ class TaskManager {
         }
     }
 
-
-    fun getTestDeliveries(numberOfItems: Int): MutableList<Delivery> {
-        return MutableList(numberOfItems) {
+    private fun getTestDeliveries(): MutableList<Delivery> {
+        return MutableList((2..7).random()) {
             Delivery(
                     id = it + 1,
                     status = if ((0..1).random() == 0) DeliveryStatus.ORDERED else DeliveryStatus.ON_WAY,
@@ -112,6 +112,14 @@ class TaskManager {
                     date = Date()
             )
         }
+    }
+
+    private fun getTestSalesStatistics(): SalesStatistics? {
+        return SalesStatistics(
+                lastSaleDate = Date(),
+                daySales = (50..200).random(),
+                weekSales = (400..1000).random()
+        )
     }
 
 }
