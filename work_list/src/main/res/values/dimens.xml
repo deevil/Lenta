@@ -41,8 +41,12 @@
     <integer name="number_status_quantity_date_column_3">15</integer>
     <integer name="number_status_quantity_date_column_4">15</integer>
 
-    <!-- Таблица - фильтр поиска -->
+    <!-- Таблица - Фильтр поиска -->
     <integer name="search_filter_column_1">10</integer>
     <integer name="search_filter_column_2">20</integer>
+
+    <!-- Таблица - Продажи товара -->
+    <integer name="sales_of_good_column_1">20</integer>
+    <integer name="sales_of_good_column_2">10</integer>
 
 </resources>
