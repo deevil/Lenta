@@ -1,5 +1,6 @@
 package com.lenta.bp14.main
 
+import android.Manifest
 import android.os.Bundle
 import androidx.lifecycle.ViewModelProviders
 import com.lenta.bp14.platform.extentions.getAppComponent
@@ -60,6 +61,10 @@ class MainActivity : CoreMainActivity() {
 
     override fun getPrefixScreen(fragment: CoreFragment<*, *>): String {
         return numberScreenGenerator.getPrefixScreen(fragment)
+    }
+
+    override fun getAdditionalListOfRequiredPermissions(): List<String> {
+        return listOf(Manifest.permission.CAMERA)
     }
 
 }
