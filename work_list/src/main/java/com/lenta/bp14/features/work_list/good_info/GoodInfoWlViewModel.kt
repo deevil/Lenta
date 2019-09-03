@@ -42,7 +42,7 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
 
     val shelfLifePosition: MutableLiveData<Int> = MutableLiveData(0)
 
-    val shelfLifeDaysLeft: MutableLiveData<Int> = day.combineLatest(month).combineLatest(year).map {
+    /*val shelfLifeDaysLeft: MutableLiveData<Int> = day.combineLatest(month).combineLatest(year).map {
         val format = SimpleDateFormat("dd MM yy", Locale.getDefault())
 
         val day = if (it?.first?.first?.isNotEmpty() == true) it.first.first?.toInt() else 0
@@ -59,7 +59,7 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
         }
 
         diff
-    }
+    }*/
 
     init {
         viewModelScope.launch {
@@ -98,6 +98,22 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     fun onClickBtn7() {
+
+    }
+
+    fun openGoodDetails() {
+        navigator.openGoodDetailsScreen()
+    }
+
+    fun openGoodDeliveries() {
+        navigator.openExpectedDeliveriesScreen()
+    }
+
+    fun openGoodSales() {
+        navigator.openGoodSalesScreen()
+    }
+
+    fun onClickApply() {
 
     }
 

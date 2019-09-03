@@ -102,4 +102,5 @@ class GoodsListWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
             else -> null
         }
     }
+
 }

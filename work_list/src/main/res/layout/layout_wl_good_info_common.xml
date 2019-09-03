@@ -103,8 +103,7 @@
                 <com.lenta.shared.view.ClickableSpinner
                     android:id="@+id/spin_shelf_life"
                     style="@style/CellSpinnerStyle"
-                    android:entries="@array/shelf_life"
-                    app:position="@{vm.shelfLifePosition}"/>
+                    android:entries="@array/shelf_life" />
 
             </LinearLayout>
 
@@ -198,7 +197,7 @@
                 <TextView
                     android:id="@+id/tv_shelf_life_days_left"
                     style="@style/CellTextStyle"
-                    android:text="@{@string/shelf_life_days_left(vm.shelfLifeDaysLeft)}"
+                    android:text="5 сут."
                     tools:text="5 сут."/>
 
 
