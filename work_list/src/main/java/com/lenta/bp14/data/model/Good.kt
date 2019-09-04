@@ -16,7 +16,9 @@ data class Good(
 
         val comments: MutableList<Comment> = mutableListOf(),
         val shelfLives: MutableList<ShelfLife> = mutableListOf(),
-        val delivery: MutableList<Delivery> = mutableListOf()
+        val deliveries: MutableList<Delivery> = mutableListOf(),
+        val providers: MutableList<Provider> = mutableListOf(),
+        val stocks: MutableList<Stock> = mutableListOf()
 ) {
 
     val quantityField = MutableLiveData<String>(quantity.toString())

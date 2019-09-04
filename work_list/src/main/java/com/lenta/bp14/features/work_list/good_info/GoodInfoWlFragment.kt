@@ -69,6 +69,7 @@ class GoodInfoWlFragment : CoreFragment<FragmentGoodInfoWlBinding, GoodInfoWlVie
 
                 layoutBinding.vm = vm
                 layoutBinding.lifecycleOwner = viewLifecycleOwner
+
                 return layoutBinding.root
             }
         }
@@ -81,6 +82,7 @@ class GoodInfoWlFragment : CoreFragment<FragmentGoodInfoWlBinding, GoodInfoWlVie
 
                 layoutBinding.vm = vm
                 layoutBinding.lifecycleOwner = viewLifecycleOwner
+
                 return layoutBinding.root
             }
         }
@@ -93,10 +95,11 @@ class GoodInfoWlFragment : CoreFragment<FragmentGoodInfoWlBinding, GoodInfoWlVie
 
                 layoutBinding.rvConfig = DataBindingRecyclerViewConfig<ItemGoodProviderPeriodBinding>(
                         layoutId = R.layout.item_good_provider_period,
-                        itemId = BR.vm)
+                        itemId = BR.provider)
 
                 layoutBinding.vm = vm
                 layoutBinding.lifecycleOwner = viewLifecycleOwner
+
                 return layoutBinding.root
             }
         }
@@ -108,10 +111,11 @@ class GoodInfoWlFragment : CoreFragment<FragmentGoodInfoWlBinding, GoodInfoWlVie
 
             layoutBinding.rvConfig = DataBindingRecyclerViewConfig<ItemStorageStockBinding>(
                     layoutId = R.layout.item_storage_stock,
-                    itemId = BR.vm)
+                    itemId = BR.stock)
 
             layoutBinding.vm = vm
             layoutBinding.lifecycleOwner = viewLifecycleOwner
+
             return layoutBinding.root
         }
     }
@@ -131,6 +135,13 @@ class GoodInfoWlFragment : CoreFragment<FragmentGoodInfoWlBinding, GoodInfoWlVie
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding?.viewPagerSettings = this
+
+        initSpinners()
+    }
+
+    private fun initSpinners() {
+        vm.commentsList.value = resources.getStringArray(R.array.selected_comment).asList()
+        vm.shelfLifeList.value = resources.getStringArray(R.array.selected_comment).asList()
     }
 
 }

@@ -25,7 +25,7 @@ class ExpectedDeliveriesViewModel : CoreViewModel() {
     init {
         viewModelScope.launch {
             good.value = taskManager.currentGood
-            deliveries.value = good.value?.delivery
+            deliveries.value = good.value?.deliveries
         }
     }
 

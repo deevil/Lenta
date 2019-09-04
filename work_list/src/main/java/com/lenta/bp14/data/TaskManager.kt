@@ -75,8 +75,10 @@ class TaskManager {
                     priceTagStatus = priceTagStatus,
                     comments = getTestComments(),
                     shelfLives = getTestShelfLives(),
-                    delivery = getTestDeliveries(),
-                    salesStatistics = getTestSalesStatistics()
+                    deliveries = getTestDeliveries(),
+                    salesStatistics = getTestSalesStatistics(),
+                    stocks = getTestStock(),
+                    providers = getTestProviders()
             )
         }
     }
@@ -120,6 +122,28 @@ class TaskManager {
                 daySales = (50..200).random(),
                 weekSales = (400..1000).random()
         )
+    }
+
+    private fun getTestStock(): MutableList<Stock> {
+        return MutableList((5..9).random()) {
+            Stock(
+                    id = it + 1,
+                    storageNumber = "0" + (0..9).random() + (0..9).random() + (0..9).random(),
+                    quantity = (1..99).random()
+            )
+        }
+    }
+
+    private fun getTestProviders(): MutableList<Provider> {
+        return MutableList((3..5).random()) {
+            Provider(
+                    id = it + 1,
+                    code = (111111..999999).random().toString(),
+                    name = "Поставщик ${it + 1}",
+                    kipStart = Date(),
+                    kipEnd = Date()
+            )
+        }
     }
 
 }

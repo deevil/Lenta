@@ -50,6 +50,10 @@ class SearchFilterTlFragment : CoreFragment<FragmentSearchFilterTlBinding, Searc
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        initSpinner()
+    }
+
+    private fun initSpinner() {
         vm.taskTypeList.value = resources.getStringArray(R.array.task_type).asList()
     }
 
