@@ -17,6 +17,7 @@ import com.lenta.shared.account.IAuthenticator
 import com.lenta.shared.di.AppScope
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
 import com.lenta.shared.platform.navigation.ICoreNavigator
+import com.lenta.shared.platform.time.ITimeMonitor
 import com.lenta.shared.progress.IProgressUseCaseInformator
 import com.mobrun.plugin.api.HyperHive
 import dagger.Module
@@ -57,8 +58,8 @@ class AppModule {
 
     @Provides
     @AppScope
-    internal fun provideCheckStoreData(persistCheckResult: IPersistCheckResult): CheckData {
-        return CheckData(persistCheckResult)
+    internal fun provideCheckStoreData(persistCheckResult: IPersistCheckResult, timeMonitor: ITimeMonitor): CheckData {
+        return CheckData(persistCheckResult, timeMonitor)
     }
 
     @Provides
