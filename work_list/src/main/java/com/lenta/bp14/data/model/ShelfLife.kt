@@ -1,27 +1,21 @@
 package com.lenta.bp14.data.model
 
-import com.lenta.shared.platform.constants.Constants
-import java.text.SimpleDateFormat
+import com.lenta.shared.utilities.extentions.getFormattedDate
 import java.util.*
-
 
 data class ShelfLife(
         val id: Int = 0,
         var shelfLife: Date?,
-        var secondDate: Date?,
+        var publicationDate: Date?,
         var quantity: Int = 0
 ) {
 
     fun getFormattedShelfLife(): String {
-        return if (shelfLife != null) {
-            SimpleDateFormat(Constants.DATE_FORMAT_ddmmyy, Locale.getDefault()).format(shelfLife)
-        } else ""
+        return shelfLife.getFormattedDate()
     }
 
-    fun getFormattedSecondDate(): String {
-        return if (secondDate != null) {
-            SimpleDateFormat(Constants.DATE_FORMAT_ddmmyy, Locale.getDefault()).format(secondDate)
-        } else ""
+    fun getFormattedPublicationDate(): String {
+        return publicationDate.getFormattedDate()
     }
 
 }

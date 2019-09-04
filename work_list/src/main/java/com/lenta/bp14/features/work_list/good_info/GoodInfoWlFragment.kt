@@ -1,27 +1,28 @@
 package com.lenta.bp14.features.work_list.good_info
 
-import com.lenta.bp14.R
-import com.lenta.bp14.platform.extentions.getAppComponent
-import com.lenta.shared.platform.fragment.CoreFragment
-import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
-import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
-import com.lenta.shared.utilities.extentions.provideViewModel
 import android.os.Bundle
 import android.view.LayoutInflater
-import com.lenta.shared.utilities.databinding.ViewPagerSettings
-import android.view.ViewGroup
 import android.view.View
+import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import com.lenta.bp14.BR
+import com.lenta.bp14.R
 import com.lenta.bp14.data.model.Good
 import com.lenta.bp14.databinding.*
+import com.lenta.bp14.platform.extentions.getAppComponent
+import com.lenta.shared.platform.fragment.CoreFragment
+import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
-import com.lenta.shared.utilities.Logg
+import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
+import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig
+import com.lenta.shared.utilities.databinding.ViewPagerSettings
 import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
+import com.lenta.shared.utilities.extentions.provideViewModel
 
-class GoodInfoWlFragment : CoreFragment<FragmentGoodInfoWlBinding, GoodInfoWlViewModel>(), ViewPagerSettings {
+class GoodInfoWlFragment : CoreFragment<FragmentGoodInfoWlBinding, GoodInfoWlViewModel>(),
+        ViewPagerSettings, ToolbarButtonsClickListener {
 
     override fun getLayoutId(): Int = R.layout.fragment_good_info_wl
 
@@ -38,7 +39,7 @@ class GoodInfoWlFragment : CoreFragment<FragmentGoodInfoWlBinding, GoodInfoWlVie
         topToolbarUiModel.description.value = getString(R.string.goods_info)
 
         vm.good.observe(this, Observer<Good> { good ->
-            topToolbarUiModel.title.value = "${good.getFormattedMaterial()} ${good.name}"
+            topToolbarUiModel.title.value = good.getFormattedMaterialWithName()
         })
     }
 
@@ -50,6 +51,15 @@ class GoodInfoWlFragment : CoreFragment<FragmentGoodInfoWlBinding, GoodInfoWlVie
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.apply)
     }
 
+    override fun onToolbarButtonClick(view: View) {
+        when (view.id) {
+            R.id.b_2 -> vm.openGoodDetails()
+            R.id.b_3 -> vm.openGoodDeliveries()
+            R.id.b_4 -> vm.openGoodSales()
+            R.id.b_5 -> vm.onClickApply()
+        }
+    }
+
     override fun getPagerItemView(container: ViewGroup, position: Int): View {
         if (position == 0) {
             DataBindingUtil.inflate<LayoutWlGoodInfoCommonBinding>(LayoutInflater.from(container.context),
@@ -59,6 +69,7 @@ class GoodInfoWlFragment : CoreFragment<FragmentGoodInfoWlBinding, GoodInfoWlVie
 
                 layoutBinding.vm = vm
                 layoutBinding.lifecycleOwner = viewLifecycleOwner
+
                 return layoutBinding.root
             }
         }
@@ -71,6 +82,7 @@ class GoodInfoWlFragment : CoreFragment<FragmentGoodInfoWlBinding, GoodInfoWlVie
 
                 layoutBinding.vm = vm
                 layoutBinding.lifecycleOwner = viewLifecycleOwner
+
                 return layoutBinding.root
             }
         }
@@ -83,10 +95,11 @@ class GoodInfoWlFragment : CoreFragment<FragmentGoodInfoWlBinding, GoodInfoWlVie
 
                 layoutBinding.rvConfig = DataBindingRecyclerViewConfig<ItemGoodProviderPeriodBinding>(
                         layoutId = R.layout.item_good_provider_period,
-                        itemId = BR.vm)
+                        itemId = BR.provider)
 
                 layoutBinding.vm = vm
                 layoutBinding.lifecycleOwner = viewLifecycleOwner
+
                 return layoutBinding.root
             }
         }
@@ -98,10 +111,11 @@ class GoodInfoWlFragment : CoreFragment<FragmentGoodInfoWlBinding, GoodInfoWlVie
 
             layoutBinding.rvConfig = DataBindingRecyclerViewConfig<ItemStorageStockBinding>(
                     layoutId = R.layout.item_storage_stock,
-                    itemId = BR.vm)
+                    itemId = BR.stock)
 
             layoutBinding.vm = vm
             layoutBinding.lifecycleOwner = viewLifecycleOwner
+
             return layoutBinding.root
         }
     }
@@ -112,10 +126,7 @@ class GoodInfoWlFragment : CoreFragment<FragmentGoodInfoWlBinding, GoodInfoWlVie
             1 -> getString(R.string.additional_good_info_title)
             2 -> getString(R.string.good_providers_list_title)
             3 -> getString(R.string.stocks_list_title)
-            else -> {
-                Logg.d { "Wrong pager position!" }
-                "Error"
-            }
+            else -> throw IllegalArgumentException("Wrong pager position!")
         }
     }
 
@@ -124,7 +135,13 @@ class GoodInfoWlFragment : CoreFragment<FragmentGoodInfoWlBinding, GoodInfoWlVie
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding?.viewPagerSettings = this
+
+        initSpinners()
     }
 
+    private fun initSpinners() {
+        vm.commentsList.value = resources.getStringArray(R.array.selected_comment).asList()
+        vm.shelfLifeList.value = resources.getStringArray(R.array.selected_comment).asList()
+    }
 
 }

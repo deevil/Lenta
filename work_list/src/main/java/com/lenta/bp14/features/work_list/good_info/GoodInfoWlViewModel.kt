@@ -2,19 +2,15 @@ package com.lenta.bp14.features.work_list.good_info
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.lenta.bp14.data.model.Good
 import com.lenta.bp14.data.TaskManager
+import com.lenta.bp14.data.model.Good
+import com.lenta.bp14.data.model.Provider
+import com.lenta.bp14.data.model.Stock
 import com.lenta.bp14.platform.navigation.IScreenNavigator
 import com.lenta.shared.platform.viewmodel.CoreViewModel
-import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.databinding.PageSelectionListener
-import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.map
 import kotlinx.coroutines.launch
-import java.lang.Exception
-import java.text.SimpleDateFormat
-import java.util.*
-import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
@@ -36,13 +32,20 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
         currentQuantity + goodQuantity
     }
 
-    val day: MutableLiveData<String> = MutableLiveData("")
-    val month: MutableLiveData<String> = MutableLiveData("")
-    val year: MutableLiveData<String> = MutableLiveData("")
+    val day = MutableLiveData<String>("")
+    val month = MutableLiveData<String>("")
+    val year = MutableLiveData<String>("")
 
-    val shelfLifePosition: MutableLiveData<Int> = MutableLiveData(0)
+    val commentsPosition = MutableLiveData(0)
+    val shelfLifePosition = MutableLiveData(0)
 
-    val shelfLifeDaysLeft: MutableLiveData<Int> = day.combineLatest(month).combineLatest(year).map {
+    val commentsList = MutableLiveData<List<String>>()
+    val shelfLifeList = MutableLiveData<List<String>>()
+
+    val stocks = MutableLiveData<List<Stock>>()
+    val providers = MutableLiveData<List<Provider>>()
+
+    /*val shelfLifeDaysLeft: MutableLiveData<Int> = day.combineLatest(month).combineLatest(year).map {
         val format = SimpleDateFormat("dd MM yy", Locale.getDefault())
 
         val day = if (it?.first?.first?.isNotEmpty() == true) it.first.first?.toInt() else 0
@@ -59,18 +62,36 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
         }
 
         diff
-    }
+    }*/
 
     init {
         viewModelScope.launch {
             good.value = taskManager.currentGood
+            stocks.value = good.value?.stocks
+            providers.value = good.value?.providers
+
             quantity.value = "1"
         }
     }
 
-
     override fun onPageSelected(position: Int) {
         selectedPage.value = position
+    }
+
+    fun openGoodDetails() {
+        navigator.openGoodDetailsScreen()
+    }
+
+    fun openGoodDeliveries() {
+        navigator.openExpectedDeliveriesScreen()
+    }
+
+    fun openGoodSales() {
+        navigator.openGoodSalesScreen()
+    }
+
+    fun onClickApply() {
+
     }
 
     fun onClickBtn1() {

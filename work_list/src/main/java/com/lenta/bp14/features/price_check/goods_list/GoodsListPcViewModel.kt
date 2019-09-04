@@ -30,7 +30,7 @@ class GoodsListPcViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
 
     val taskName = MutableLiveData("Сверка цен на полке от 23.07.19 23:15")
 
-    val numberField: MutableLiveData<String> = MutableLiveData("")
+    val numberField = MutableLiveData<String>("")
     val requestFocusToNumberField: MutableLiveData<Boolean> = MutableLiveData()
 
     val processingGoods = MutableLiveData<List<Good>>()

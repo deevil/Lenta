@@ -17,10 +17,11 @@ import com.lenta.bp14.features.print_settings.PrintSettingsFragment
 import com.lenta.bp14.features.report_result.ReportResultFragment
 import com.lenta.bp14.features.select_market.SelectMarketFragment
 import com.lenta.bp14.features.task_list.TaskListFragment
+import com.lenta.bp14.features.task_list.search_filter.SearchFilterTlFragment
 import com.lenta.bp14.features.work_list.good_details.GoodDetailsFragment
 import com.lenta.bp14.features.work_list.expected_deliveries.ExpectedDeliveriesFragment
 import com.lenta.bp14.features.work_list.goods_list.GoodsListWlFragment
-import com.lenta.bp14.features.work_list.sales_of_goods.SalesOfGoodsFragment
+import com.lenta.bp14.features.work_list.good_sales.GoodSalesFragment
 import com.lenta.bp14.features.work_list.search_filter.SearchFilterWlFragment
 import com.lenta.shared.account.IAuthenticator
 import com.lenta.shared.features.alert.AlertFragment
@@ -148,9 +149,15 @@ class ScreenNavigator(
         }
     }
 
-    override fun openSalesOfGoodsScreen() {
+    override fun openSearchFilterTlScreen() {
         runOrPostpone {
-            getFragmentStack()?.push(SalesOfGoodsFragment())
+            getFragmentStack()?.push(SearchFilterTlFragment())
+        }
+    }
+
+    override fun openGoodSalesScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(GoodSalesFragment())
         }
     }
 
@@ -333,8 +340,9 @@ interface IScreenNavigator : ICoreNavigator {
     fun openGoodInfoPcScreen()
     fun openGoodsListPcScreen()
     fun openSearchFilterWlScreen()
+    fun openSearchFilterTlScreen()
     fun openExpectedDeliveriesScreen()
-    fun openSalesOfGoodsScreen()
+    fun openGoodSalesScreen()
     fun openGoodsListNeScreen()
     fun openGoodInfoNeScreen()
 

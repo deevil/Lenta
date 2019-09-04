@@ -1,16 +1,16 @@
-package com.lenta.bp14.features.work_list.expected_deliveries
+package com.lenta.bp14.features.work_list.good_sales
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp14.data.TaskManager
-import com.lenta.bp14.data.model.Delivery
 import com.lenta.bp14.data.model.Good
+import com.lenta.bp14.data.model.SalesStatistics
 import com.lenta.bp14.platform.navigation.IScreenNavigator
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class ExpectedDeliveriesViewModel : CoreViewModel() {
+class GoodSalesViewModel : CoreViewModel() {
 
     @Inject
     lateinit var navigator: IScreenNavigator
@@ -19,19 +19,16 @@ class ExpectedDeliveriesViewModel : CoreViewModel() {
 
 
     val good = MutableLiveData<Good>()
-
-    val deliveries = MutableLiveData<List<Delivery>>()
+    val salesStatistics = MutableLiveData<SalesStatistics>()
 
     init {
         viewModelScope.launch {
             good.value = taskManager.currentGood
-            deliveries.value = good.value?.deliveries
+            salesStatistics.value = good.value?.salesStatistics
         }
     }
 
     fun onClickUpdate() {
-        // Запрашиваем более свежий список поставок для данного товара
-        // ...
 
     }
 

@@ -8,7 +8,7 @@
 
         <variable
             name="vm"
-            type="com.lenta.bp14.features.work_list.good_details.GoodDetailsViewModel" />
+            type="com.lenta.bp14.features.task_list.TaskListViewModel" />
 
         <variable
             name="rvConfig"
@@ -37,7 +37,7 @@
 
                 <LinearLayout
                     style="@style/LinearCellStyle"
-                    android:layout_weight="@integer/number_shelf_life_quantity_column_1">
+                    android:layout_weight="@integer/number_task_status_goods_column_1">
 
                     <TextView
                         style="@style/ColumnTitleStyle"
@@ -49,21 +49,31 @@
 
                 <LinearLayout
                     style="@style/LinearCellStyle"
-                    android:layout_weight="@integer/number_shelf_life_quantity_column_2">
+                    android:layout_weight="@integer/number_task_status_goods_column_2">
 
                     <TextView
                         style="@style/ColumnTitleStyle"
-                        android:text="@string/comment" />
+                        android:text="@string/task" />
 
                 </LinearLayout>
 
                 <LinearLayout
                     style="@style/LinearCellStyle"
-                    android:layout_weight="@integer/number_shelf_life_quantity_column_3">
+                    android:layout_weight="@integer/number_task_status_goods_column_3">
 
                     <TextView
                         style="@style/ColumnTitleStyle"
-                        android:text="@string/quantity" />
+                        android:text="@string/tag" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    style="@style/LinearCellStyle"
+                    android:layout_weight="@integer/number_task_status_goods_column_4">
+
+                    <TextView
+                        style="@style/ColumnTitleStyle"
+                        android:text="@string/of_goods" />
 
                 </LinearLayout>
 
@@ -73,16 +83,43 @@
 
         </LinearLayout>
 
-        <!-- Список сроков годности -->
+        <!-- Список заданий -->
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_marginBottom="8dp"
             android:layout_weight="1"
-            app:items="@{vm.shelfLives}"
+            app:items="@{vm.searchTasks}"
             app:rv_config="@{rvConfig}"
-            tools:listitem="@layout/item_shelf_life_quantity_selectable" />
+            tools:listitem="@layout/item_task_status_goods" />
+
+        <!-- Ввод номера задания -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <EditText
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:layout_weight="1"
+                android:digits="0123456789"
+                android:drawableEnd="@drawable/ic_filter_white_24"
+                android:ellipsize="end"
+                android:hint="@string/enter_task_number_sap_login"
+                android:imeOptions="actionGo"
+                android:inputType="textNoSuggestions|textVisiblePassword"
+                android:maxLength="14"
+                android:maxLines="1"
+                android:text="@={vm.numberField}"
+                app:onOkInSoftKeyboard="@{vm}"
+                app:requestFocus="@{vm.requestFocusToNumberField}"
+                tools:ignore="Autofill" />
+
+        </LinearLayout>
 
     </LinearLayout>
 

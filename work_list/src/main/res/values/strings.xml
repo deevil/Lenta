@@ -7,6 +7,9 @@
     <string name="not_processed">К обработке</string>
     <string name="task_list">Список заданий</string>
 
+    <!-- Заголовки экранов -->
+    <string name="title_market_number">ТК - %1$s</string>
+
     <!-- Подзаголовки экранов -->
     <string name="specify_product">Укажите товар</string>
     <string name="print_settings">Настройка печати</string>
@@ -39,6 +42,7 @@
     <string name="no_network_to_save_task">Для сохранения задания в SAP ERP отсутствует сеть. Задание будет сохранено позже.</string>
 
 
+    <string name="enter_task_number_sap_login">Введите номер задания / SAP логин</string>
     <string name="copy_quantity">Кол-во копий</string>
     <string name="printer_type">Тип принтера</string>
     <string name="price_tag_type">Тип ценника</string>
@@ -47,8 +51,9 @@
     <string name="total_quantity">Итого: %1$d шт.</string>
     <string name="quantity_st">%1$d шт.</string>
     <string name="quantity_units">%1$d %2$s.</string>
-    <string name="shelf_life_date">СГ - %1$s</string>
-    <string name="d_p_date">ДП - %1$s</string>
+    <string name="sl_date">СГ - %1$s</string>
+    <string name="pd_date">ДП - %1$s</string>
+    <string name="publication_date">Дата публикации</string>
     <string name="comment">Комментарий</string>
     <string name="total_shelf_life">Общий СГ</string>
     <string name="remaining_shelf_life">Остаточный СГ</string>
@@ -82,5 +87,6 @@
     <string name="common_info">Общая информация</string>
     <string name="stock_one_storage">Запас 1 склад</string>
     <string name="empty_place">Пустое место</string>
+    <string name="task_type">Тип задания</string>
 
 </resources>

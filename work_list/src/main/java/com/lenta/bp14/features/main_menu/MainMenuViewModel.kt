@@ -15,22 +15,28 @@ class MainMenuViewModel : CoreViewModel() {
     }
 
     fun onClickCreateTask() {
+
     }
 
     fun onClickPrint() {
         // Тестирование запуска различных экранов
         //navigator.openPrintSettingsScreen()
         //navigator.openGoodInfoWlScreen()
-        //navigator.openGoodsListWlScreen()
+        navigator.openGoodsListWlScreen()
         //navigator.openGoodsListPcScreen()
         //navigator.openSearchFilterWlScreen()
         //navigator.openGoodsListNeScreen()
         //navigator.openGoodsListClScreen()
-        navigator.openGoodDetailsScreen()
+        //navigator.openGoodDetailsScreen()
+        //navigator.openSearchFilterTlScreen()
+        //navigator.openTaskListScreen()
+        //navigator.openListOfDifferencesScreen()
+        //navigator.openExpectedDeliveriesScreen()
+        //navigator.openGoodSalesScreen()
     }
-
 
     fun onClickAuxiliaryMenu() {
         navigator.openAuxiliaryMenuScreen()
     }
+
 }

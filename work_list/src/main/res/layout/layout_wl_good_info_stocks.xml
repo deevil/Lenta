@@ -1,16 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools">
+        xmlns:tools="http://schemas.android.com/tools"
+        xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
 
         <variable
             name="vm"
-            type="com.lenta.bp14.features.work_list.good_info.GoodInfoWlViewModel"/>
+            type="com.lenta.bp14.features.work_list.good_info.GoodInfoWlViewModel" />
 
         <variable
             name="rvConfig"
-            type="com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig"/>
+            type="com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig" />
 
     </data>
 
@@ -42,7 +43,7 @@
                         style="@style/ColumnTitleStyle"
                         android:layout_width="wrap_content"
                         android:layout_marginStart="0dp"
-                        android:text="@string/number"/>
+                        android:text="@string/number" />
 
                 </LinearLayout>
 
@@ -52,7 +53,7 @@
 
                     <TextView
                         style="@style/ColumnTitleStyle"
-                        android:text="@string/storage"/>
+                        android:text="@string/storage" />
 
                 </LinearLayout>
 
@@ -62,14 +63,14 @@
 
                     <TextView
                         style="@style/ColumnTitleStyle"
-                        android:text="@string/quantity"/>
+                        android:text="@string/quantity" />
 
                 </LinearLayout>
 
             </LinearLayout>
 
             <View
-                style="@style/HorizontalDivider"/>
+                style="@style/HorizontalDivider" />
 
         </LinearLayout>
 
@@ -80,7 +81,9 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            tools:listitem="@layout/item_storage_stock"/>
+            app:items="@{vm.stocks}"
+            app:rv_config="@{rvConfig}"
+            tools:listitem="@layout/item_storage_stock" />
 
     </LinearLayout>
 

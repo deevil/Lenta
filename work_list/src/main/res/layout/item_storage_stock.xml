@@ -5,8 +5,8 @@
     <data>
 
         <variable
-            name="storage"
-            type="com.lenta.bp14.data.model.Storage"/>
+            name="stock"
+            type="com.lenta.bp14.data.model.Stock" />
 
     </data>
 
@@ -30,12 +30,13 @@
                     android:id="@+id/tv_item_number"
                     style="@style/CellTextStyle"
                     android:layout_width="wrap_content"
-                    tools:text="1"/>
+                    android:text="@{String.valueOf(stock.id)}"
+                    tools:text="1" />
 
             </LinearLayout>
 
             <View
-                style="@style/VerticalDivider"/>
+                style="@style/VerticalDivider" />
 
             <LinearLayout
                 style="@style/LinearCellStyle"
@@ -44,12 +45,13 @@
                 <TextView
                     android:id="@+id/tv_storage_number"
                     style="@style/CellTextStyle"
-                    tools:text="0001"/>
+                    android:text="@{stock.storageNumber}"
+                    tools:text="0001" />
 
             </LinearLayout>
 
             <View
-                style="@style/VerticalDivider"/>
+                style="@style/VerticalDivider" />
 
             <LinearLayout
                 style="@style/LinearCellStyle"
@@ -58,14 +60,15 @@
                 <TextView
                     android:id="@+id/tv_good_quantity"
                     style="@style/CellTextStyle"
-                    tools:text="25 шт."/>
+                    android:text="@{@string/quantity_st(stock.quantity)}"
+                    tools:text="25 шт." />
 
             </LinearLayout>
 
         </LinearLayout>
 
         <View
-            style="@style/HorizontalDivider"/>
+            style="@style/HorizontalDivider" />
 
     </LinearLayout>
 

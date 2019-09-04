@@ -5,7 +5,19 @@ import androidx.databinding.BindingAdapter
 import com.lenta.bp14.R
 import com.lenta.bp14.data.model.GoodStatus
 import com.lenta.bp14.data.model.PriceTagStatus
+import com.lenta.bp14.data.model.TaskStatus
 
+
+@BindingAdapter("taskStatusIcon")
+fun setTaskStatusIcon(imageView: ImageView, taskStatus: TaskStatus) {
+    taskStatus.let {
+        when (it) {
+            TaskStatus.STARTED -> imageView.setImageResource(R.drawable.ic_play_arrow_white_24dp)
+            TaskStatus.SELF_BLOCK -> imageView.setImageResource(R.drawable.ic_processed_status_white_24dp)
+            TaskStatus.BLOCK -> imageView.setImageResource(R.drawable.ic_lock_white_24dp)
+        }
+    }
+}
 
 @BindingAdapter("goodStatusIcon")
 fun setGoodStatusIcon(imageView: ImageView, goodStatus: GoodStatus) {

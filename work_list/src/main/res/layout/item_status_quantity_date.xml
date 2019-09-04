@@ -5,8 +5,8 @@
     <data>
 
         <variable
-            name="provider"
-            type="com.lenta.bp14.data.model.Provider" />
+            name="delivery"
+            type="com.lenta.bp14.data.model.Delivery" />
 
     </data>
 
@@ -24,13 +24,13 @@
 
             <LinearLayout
                 style="@style/LinearCellStyle"
-                android:layout_weight="@integer/number_provider_period_column_1">
+                android:layout_weight="@integer/number_status_quantity_date_column_1">
 
                 <TextView
                     android:id="@+id/tv_item_number"
                     style="@style/CellTextStyle"
                     android:layout_width="wrap_content"
-                    android:text="@{String.valueOf(provider.id)}"
+                    android:text="@{String.valueOf(delivery.id)}"
                     tools:text="1" />
 
             </LinearLayout>
@@ -39,19 +39,17 @@
 
             <LinearLayout
                 style="@style/LinearCellStyle"
-                android:layout_weight="@integer/number_provider_period_column_2">
+                android:layout_weight="@integer/number_status_quantity_date_column_2">
 
                 <TextView
-                    android:id="@+id/tv_good_provider_number"
                     style="@style/CellTextStyle"
-                    android:text="@{provider.code}"
-                    tools:text="165832" />
+                    android:text="@{delivery.status.description}"
+                    tools:text="В пути" />
 
                 <TextView
-                    android:id="@+id/tv_good_provider_name"
                     style="@style/CellTextStyle"
-                    android:text="@{provider.name}"
-                    tools:text="Поставщик 1" />
+                    android:text="@{delivery.additional}"
+                    tools:text="ПП" />
 
             </LinearLayout>
 
@@ -59,13 +57,33 @@
 
             <LinearLayout
                 style="@style/LinearCellStyle"
-                android:layout_weight="@integer/number_provider_period_column_3">
+                android:layout_weight="@integer/number_status_quantity_date_column_3"
+                android:orientation="horizontal">
 
                 <TextView
-                    android:id="@+id/tv_period_kip"
                     style="@style/CellTextStyle"
-                    android:text="@{provider.kipPeriod}"
-                    tools:text="12.05.19 - 01.12.19" />
+                    android:layout_width="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="@{@string/quantity_units(delivery.quantity, delivery.uom.name)}"
+                    tools:text="10 кор" />
+
+            </LinearLayout>
+
+            <View style="@style/VerticalDivider" />
+
+            <LinearLayout
+                style="@style/LinearCellStyle"
+                android:layout_weight="@integer/number_status_quantity_date_column_4">
+
+                <TextView
+                    style="@style/CellTextStyle"
+                    android:text="@{delivery.formattedDate}"
+                    tools:text="12.11.19" />
+
+                <TextView
+                    style="@style/CellTextStyle"
+                    android:text="@{delivery.formattedTime}"
+                    tools:text="11:33" />
 
             </LinearLayout>
 
