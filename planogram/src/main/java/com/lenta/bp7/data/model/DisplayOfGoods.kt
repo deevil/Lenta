@@ -1,15 +1,13 @@
 package com.lenta.bp7.data.model
 
-import com.lenta.shared.platform.constants.Constants.CHECK_DATA_TIME_FORMAT
 import org.simpleframework.xml.*
-import java.text.SimpleDateFormat
 import java.util.*
 
 @Root(strict = false, name = "DisplayOfGoods")
 @Order(attributes = ["documentDate", "id", "gid"])
 data class DisplayOfGoods @JvmOverloads constructor(
         @field:Attribute(name = "documentDate")
-        var sendDateTime: String = SimpleDateFormat(CHECK_DATA_TIME_FORMAT, Locale.getDefault()).format(Date()),
+        var sendDateTime: String,
         @field:Attribute(name = "id")
         var marketIp: String,
         @field:Attribute(name = "gid")

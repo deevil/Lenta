@@ -8,6 +8,7 @@ import com.lenta.shared.utilities.coroutine.timer
 import com.lenta.shared.utilities.date_time.DateTimeUtil.getDateFromString
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import java.util.*
 
 class TimeMonitor(private val intervalInMsec: Long) : ITimeMonitor {
 
@@ -36,10 +37,15 @@ class TimeMonitor(private val intervalInMsec: Long) : ITimeMonitor {
     override fun getUnixTime(): Long {
         return System.currentTimeMillis() + deltaTime
     }
+
+    override fun getServerDate(): Date {
+        return Date(getUnixTime())
+    }
 }
 
 interface ITimeMonitor {
     fun observeUnixTime(): LiveData<Long>
     fun getUnixTime(): Long
     fun setServerTime(time: String, date: String)
+    fun getServerDate(): Date
 }

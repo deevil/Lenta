@@ -6,8 +6,8 @@ import java.util.*
 data class Shelf(
         val id: Int,
         val number: String,
-        val checkStart: Date = Date(),
-        var checkFinish: Date = Date(),
+        val checkStart: Date,
+        var checkFinish: Date,
         private var status: ShelfStatus = ShelfStatus.UNFINISHED,
         val goods: MutableList<Good> = mutableListOf()
 ) {
