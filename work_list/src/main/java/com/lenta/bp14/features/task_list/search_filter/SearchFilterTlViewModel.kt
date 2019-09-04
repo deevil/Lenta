@@ -8,7 +8,6 @@ import com.lenta.bp14.platform.navigation.IScreenNavigator
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.view.OnPositionClickListener
 import kotlinx.coroutines.launch
-import java.lang.IllegalArgumentException
 import javax.inject.Inject
 
 class SearchFilterTlViewModel : CoreViewModel(), OnPositionClickListener {

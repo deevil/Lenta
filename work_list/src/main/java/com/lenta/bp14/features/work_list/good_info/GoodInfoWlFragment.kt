@@ -141,7 +141,7 @@ class GoodInfoWlFragment : CoreFragment<FragmentGoodInfoWlBinding, GoodInfoWlVie
 
     private fun initSpinners() {
         vm.commentsList.value = resources.getStringArray(R.array.selected_comment).asList()
-        vm.shelfLifeList.value = resources.getStringArray(R.array.selected_comment).asList()
+        vm.shelfLifeTypeList.value = resources.getStringArray(R.array.shelf_life_type).asList()
     }
 
 }

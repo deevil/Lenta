@@ -82,7 +82,10 @@
                 <com.lenta.shared.view.ClickableSpinner
                     android:id="@+id/spin_select_comment"
                     style="@style/CellSpinnerStyle"
-                    android:entries="@array/selected_comment" />
+                    app:items="@{vm.commentsList}"
+                    app:onPositionClickListener="@{vm.onSelectComment}"
+                    app:position="@{vm.commentsPosition}"
+                    tools:entries="@array/selected_comment" />
 
             </LinearLayout>
 
@@ -103,7 +106,10 @@
                 <com.lenta.shared.view.ClickableSpinner
                     android:id="@+id/spin_shelf_life"
                     style="@style/CellSpinnerStyle"
-                    tools:entries="@array/shelf_life" />
+                    app:items="@{vm.shelfLifeTypeList}"
+                    app:onPositionClickListener="@{vm.onSelectShelfLifeType}"
+                    app:position="@{vm.shelfLifePosition}"
+                    tools:entries="@array/shelf_life_type" />
 
             </LinearLayout>
 

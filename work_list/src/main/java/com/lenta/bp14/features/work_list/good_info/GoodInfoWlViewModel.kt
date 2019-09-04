@@ -8,8 +8,10 @@ import com.lenta.bp14.data.model.Provider
 import com.lenta.bp14.data.model.Stock
 import com.lenta.bp14.platform.navigation.IScreenNavigator
 import com.lenta.shared.platform.viewmodel.CoreViewModel
+import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.extentions.map
+import com.lenta.shared.view.OnPositionClickListener
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -40,7 +42,7 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
     val shelfLifePosition = MutableLiveData(0)
 
     val commentsList = MutableLiveData<List<String>>()
-    val shelfLifeList = MutableLiveData<List<String>>()
+    val shelfLifeTypeList = MutableLiveData<List<String>>()
 
     val stocks = MutableLiveData<List<Stock>>()
     val providers = MutableLiveData<List<Provider>>()
@@ -76,6 +78,18 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
 
     override fun onPageSelected(position: Int) {
         selectedPage.value = position
+    }
+
+    val onSelectComment = object : OnPositionClickListener {
+        override fun onClickPosition(position: Int) {
+            commentsPosition.value = position
+        }
+    }
+
+    val onSelectShelfLifeType = object : OnPositionClickListener {
+        override fun onClickPosition(position: Int) {
+            shelfLifePosition.value = position
+        }
     }
 
     fun openGoodDetails() {
