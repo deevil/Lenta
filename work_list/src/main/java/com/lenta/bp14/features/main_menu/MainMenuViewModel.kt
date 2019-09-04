@@ -15,6 +15,7 @@ class MainMenuViewModel : CoreViewModel() {
     }
 
     fun onClickCreateTask() {
+        navigator.openScanPriceScreen()
 
     }
 
