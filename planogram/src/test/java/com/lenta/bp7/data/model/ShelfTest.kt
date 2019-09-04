@@ -37,7 +37,7 @@ internal class ShelfTest {
 
     @Test
     fun `Change status`() {
-        shelf.setStatus(ShelfStatus.PROCESSED)
+        shelf.setStatus(ShelfStatus.PROCESSED, creationDate)
         assertEquals(ShelfStatus.PROCESSED, shelf.getStatus())
         assertTrue(shelf.checkFinish != null)
     }

@@ -159,7 +159,7 @@ class CheckData @Inject constructor(
     }
 
     fun setCurrentShelfStatus(status: ShelfStatus) {
-        getCurrentShelf()?.setStatus(status)
+        getCurrentShelf()?.setStatus(status, timeMonitor.getServerDate())
     }
 
     fun setCurrentGoodStatus(status: GoodStatus) {
@@ -169,7 +169,7 @@ class CheckData @Inject constructor(
 
     fun setShelfStatusDeletedByIndex(shelfIndex: Int) {
         if (getCurrentSegment()?.shelves?.size ?: 0 > shelfIndex) {
-            getCurrentSegment()!!.shelves[shelfIndex].setStatus(ShelfStatus.DELETED)
+            getCurrentSegment()!!.shelves[shelfIndex].setStatus(ShelfStatus.DELETED, timeMonitor.getServerDate())
         }
     }
 

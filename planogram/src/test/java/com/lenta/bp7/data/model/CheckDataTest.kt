@@ -65,7 +65,7 @@ internal class CheckDataTest {
             status: ShelfStatus = ShelfStatus.UNFINISHED) {
         if (checkData.getCurrentSegment() == null) addSegment()
         checkData.addShelf(number)
-        checkData.getCurrentShelf()?.setStatus(status)
+        checkData.getCurrentShelf()?.setStatus(status, timeMonitor.getServerDate())
     }
 
     private fun addGood(

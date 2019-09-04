@@ -12,11 +12,11 @@ data class Shelf(
         val goods: MutableList<Good> = mutableListOf()
 ) {
 
-    fun setStatus(status: ShelfStatus) {
+    fun setStatus(status: ShelfStatus, currentDate: Date) {
         this.status = status
 
         if (status != ShelfStatus.UNFINISHED) {
-            checkFinish = Date()
+            checkFinish = currentDate
         }
     }
 
