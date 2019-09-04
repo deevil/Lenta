@@ -3,45 +3,37 @@ package com.lenta.bp14.features.not_exposed.good_info
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.lenta.bp14.data.TaskManager
+import com.lenta.bp14.data.model.Good
+import com.lenta.bp14.data.model.Stock
+import com.lenta.bp14.platform.navigation.IScreenNavigator
 import com.lenta.shared.utilities.databinding.PageSelectionListener
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 class GoodInfoNeViewModel : CoreViewModel(), PageSelectionListener {
 
-    val balances: MutableLiveData<List<StockInfoUi>> = MutableLiveData()
+    @Inject
+    lateinit var navigator: IScreenNavigator
+    @Inject
+    lateinit var taskManager: TaskManager
+
+
+    val selectedPage = MutableLiveData(0)
+
+    val good: MutableLiveData<Good> = MutableLiveData()
+
+    val stocks = MutableLiveData<List<Stock>>()
 
     init {
         viewModelScope.launch {
-            createTestData()
+            good.value = taskManager.currentGood
+            stocks.value = good.value?.stocks
         }
-
     }
-
-    private fun createTestData() {
-        balances.value = List(100) {
-            StockInfoUi(
-                    number = it,
-                    storage = "0010",
-                    quantity = "${10 + it} шт."
-            )
-        }
-
-    }
-
-    val selectedPage = MutableLiveData(0)
 
     override fun onPageSelected(position: Int) {
         selectedPage.value = position
     }
 
-    fun getTitle(): String {
-        return "???"
-    }
-
 }
-
-data class StockInfoUi(
-        val number: Int,
-        val storage: String,
-        val quantity: String
-)

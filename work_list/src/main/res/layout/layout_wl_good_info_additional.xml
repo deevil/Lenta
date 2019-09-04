@@ -15,7 +15,7 @@
         android:orientation="vertical">
 
 
-        <!-- Оставшийся срок годности -->
+        <!-- Места хранения -->
         <LinearLayout
             style="@style/LinearRowStyle">
 
@@ -59,7 +59,7 @@
             style="@style/HorizontalDivider"/>
 
 
-        <!-- Оставшийся срок годности -->
+        <!-- Инвентаризация / Приход -->
         <LinearLayout
             style="@style/LinearRowStyle">
 
@@ -103,7 +103,7 @@
             style="@style/HorizontalDivider"/>
 
 
-        <!-- Оставшийся срок годности -->
+        <!-- Цены -->
         <LinearLayout
             style="@style/LinearRowStyle">
 
@@ -147,7 +147,7 @@
             style="@style/HorizontalDivider"/>
 
 
-        <!-- Штрихкод -->
+        <!-- Промо-акции -->
         <LinearLayout
             style="@style/LinearRowStyle">
 

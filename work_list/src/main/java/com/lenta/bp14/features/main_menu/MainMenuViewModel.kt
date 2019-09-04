@@ -28,11 +28,12 @@ class MainMenuViewModel : CoreViewModel() {
         //navigator.openGoodsListNeScreen()
         //navigator.openGoodsListClScreen()
         //navigator.openGoodDetailsScreen()
-        navigator.openSearchFilterTlScreen()
+        //navigator.openSearchFilterTlScreen()
         //navigator.openTaskListScreen()
         //navigator.openListOfDifferencesScreen()
         //navigator.openExpectedDeliveriesScreen()
         //navigator.openGoodSalesScreen()
+        navigator.openGoodInfoNeScreen()
     }
 
     fun onClickAuxiliaryMenu() {
