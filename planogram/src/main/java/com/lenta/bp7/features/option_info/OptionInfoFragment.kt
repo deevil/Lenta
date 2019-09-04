@@ -4,13 +4,13 @@ import android.view.View
 import com.lenta.bp7.R
 import com.lenta.bp7.databinding.FragmentOptionInfoBinding
 import com.lenta.bp7.platform.extentions.getAppComponent
-import com.lenta.bp7.platform.extentions.getAppTitle
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
+import com.lenta.shared.utilities.extentions.getAppInfo
 import com.lenta.shared.utilities.extentions.provideViewModel
 
 class OptionInfoFragment : CoreFragment<FragmentOptionInfoBinding, OptionInfoViewModel>(), ToolbarButtonsClickListener {
@@ -27,7 +27,7 @@ class OptionInfoFragment : CoreFragment<FragmentOptionInfoBinding, OptionInfoVie
     }
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
-        topToolbarUiModel.title.value = getAppTitle()
+        topToolbarUiModel.title.value = context?.getAppInfo()
         topToolbarUiModel.description.value = getString(R.string.description_auxiliary_menu)
     }
 

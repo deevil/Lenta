@@ -174,7 +174,8 @@ class InventoryTask(val taskDescription: TaskDescription, val taskRepository: IT
         if (taskDescription.recountType == RecountType.ParallelByStorePlaces) {
             val processedProducts = taskRepository.getProducts().getProcessedProducts()
             return taskRepository.getProducts().getNotProcessedProducts().filter { productInfo ->
-                processedProducts.findLast { it.materialNumber == productInfo.materialNumber && it.placeCode != "00" } == null
+                //Товары с кодом МХ 00 попадают в список расхождений только в том случае, когда они не были посчитаны ни в одном реальном МХ
+                productInfo.placeCode != "00" || processedProducts.findLast { it.materialNumber == productInfo.materialNumber && it.placeCode != "00" } == null
             }
         } else {
             return taskRepository.getProducts().getNotProcessedProducts()

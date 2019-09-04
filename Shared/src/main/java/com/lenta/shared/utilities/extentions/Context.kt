@@ -65,7 +65,7 @@ fun Context.openAnotherApp(packageName: String) {
     }
 }
 
-fun Context.getApplicationName(packageName: String): String {
+fun Context.getApplicationName(packageName: String = this.packageName): String {
     val pm = applicationContext.packageManager
     var applicationInfo: ApplicationInfo?
     try {
@@ -74,4 +74,18 @@ fun Context.getApplicationName(packageName: String): String {
         applicationInfo = null
     }
     return (if (applicationInfo != null) pm.getApplicationLabel(applicationInfo) else "(unknown)") as String
+}
+
+fun Context.getAppVersion(packageName: String, withHash: Boolean = false): String? {
+    return packageManager?.getPackageInfo(packageName, 0)?.versionName.let {
+        if (withHash) {
+            it
+        } else {
+            it?.split(".")?.dropLast(1)?.joinToString(".")
+        }
+    }
+}
+
+fun Context.getAppInfo(packageName: String = this.packageName, withHash: Boolean = true): String {
+    return "${getApplicationName(packageName)} v${getAppVersion(packageName, withHash = withHash)}"
 }
