@@ -52,9 +52,9 @@ class ShelfListViewModel : SendDataViewModel(), OnOkInSoftKeyboardListener {
     }
 
     private fun checkNumber() {
-        val shelfNumber = shelfNumber.value?.toInt() ?: 0
+        val shelfNumber = shelfNumber.value?.toIntOrNull() ?: 0
         if (shelfNumber > 0) {
-            val shelf = shelves.value?.find { it.number.toInt() == shelfNumber }
+            val shelf = shelves.value?.find { (it.number.toIntOrNull() ?: 0) == shelfNumber }
             if (shelf != null) {
                 if (shelf.getStatus() == ShelfStatus.DELETED) {
                     // Выбор - Полка удалена. Открыть просмотр или создать новую? - Назад / Просмотр / Создать

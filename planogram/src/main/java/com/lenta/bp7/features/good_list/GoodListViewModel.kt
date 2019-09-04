@@ -108,6 +108,8 @@ class GoodListViewModel : AddGoodViewModel(), OnOkInSoftKeyboardListener {
     }
 
     fun onScanResult(data: String) {
-        addGoodByEan(data)
+        if (numberFieldEnabled.value == true) {
+            addGoodByEan(data)
+        }
     }
 }
