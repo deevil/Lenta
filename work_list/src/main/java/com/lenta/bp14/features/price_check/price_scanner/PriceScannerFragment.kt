@@ -61,7 +61,7 @@ class PriceScannerFragment : CoreFragment<FragmentPriceScannerBinding, PriceScan
                     canvasForScanDetection = it.myCanvas,
                     rootView = it.flRootScan,
                     textureView = it.textureView,
-                    isErrorFunction = vm::isErrorCode
+                    checkStatusFunction = vm::checkStatus
             )
         }
 
