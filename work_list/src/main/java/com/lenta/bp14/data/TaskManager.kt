@@ -64,6 +64,7 @@ class TaskManager {
                 1 -> PriceTagStatus.WITH_ERROR
                 else -> PriceTagStatus.PRINTED
             }
+            val priceWithDk = (100..999).random()
 
             Good(
                     id = it + 1,
@@ -78,7 +79,13 @@ class TaskManager {
                     deliveries = getTestDeliveries(),
                     salesStatistics = getTestSalesStatistics(),
                     stocks = getTestStock(),
-                    providers = getTestProviders()
+                    providers = getTestProviders(),
+                    storagePlaces = "" + (100000..999999).random() + "; " + (100000..999999).random() + "; " + (100000..999999).random(),
+                    minStock = (10..200).random(),
+                    goodMovement = getTestGoodMovement(),
+                    priceWithDk = priceWithDk,
+                    priceWithoutDk = priceWithDk + (10..70).random(),
+                    promo = Promo("Какая то акция", "Период: 30.07.19 - 24.08.19")
             )
         }
     }
@@ -144,6 +151,13 @@ class TaskManager {
                     kipEnd = Date()
             )
         }
+    }
+
+    private fun getTestGoodMovement(): GoodMovement {
+        return GoodMovement(
+                inventory = "${(10..15).random()}.09.19 (-${(1..99).random()} шт.)",
+                arrival = "${(16..28).random()}.09.19 (+${(50..99).random()} шт.)"
+        )
     }
 
 }

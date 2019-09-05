@@ -13,6 +13,12 @@ data class Good(
         var priceTagStatus: PriceTagStatus = PriceTagStatus.PRINTED,
         val goodStatus: GoodStatus = GoodStatus.MISSING_RIGHT,
         var salesStatistics: SalesStatistics?,
+        val storagePlaces: String,
+        val minStock: Int,
+        val goodMovement: GoodMovement,
+        val priceWithDk: Int,
+        val priceWithoutDk: Int,
+        var promo: Promo?,
 
         val comments: MutableList<Comment> = mutableListOf(),
         val shelfLives: MutableList<ShelfLife> = mutableListOf(),
