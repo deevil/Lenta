@@ -28,15 +28,15 @@ class FireBaseMlScanHelper(val context: Context) {
     private var viewLifecycleOwner: LifecycleOwner? = null
     private var rootView: View? = null
     private var canvasForScanDetection: CanvasForScanDetection? = null
-    private lateinit var isErrorFunction: (String) -> Boolean?
+    private lateinit var checkStatusFunction: (String) -> CheckStatus?
 
     private var ratio = 1F
 
-    fun onViewCreated(viewLifecycleOwner: LifecycleOwner, canvasForScanDetection: CanvasForScanDetection, rootView: View, textureView: TextureView, isErrorFunction: (String) -> Boolean?) {
+    fun onViewCreated(viewLifecycleOwner: LifecycleOwner, canvasForScanDetection: CanvasForScanDetection, rootView: View, textureView: TextureView, checkStatusFunction: (String) -> CheckStatus?) {
         this.viewLifecycleOwner = viewLifecycleOwner
         this.canvasForScanDetection = canvasForScanDetection
         this.rootView = rootView
-        this.isErrorFunction = isErrorFunction
+        this.checkStatusFunction = checkStatusFunction
         startCamera(textureView)
     }
 
@@ -148,7 +148,7 @@ class FireBaseMlScanHelper(val context: Context) {
 
     private fun getMaximumSize(): Size? {
         val manager = context.getSystemService(Context.CAMERA_SERVICE) as CameraManager
-        val cameraId = manager.cameraIdList[0]
+        val cameraId = manager.cameraIdList[0] ?: return null
         val characteristics = manager.getCameraCharacteristics(cameraId)
         val map = characteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP)
 
@@ -246,8 +246,8 @@ class FireBaseMlScanHelper(val context: Context) {
                         barcodes.forEach {
                             canvas.addRectInfo(
                                     it!!.boundingBox!!.transformWithRatio(ratio),
-                                    error = it.rawValue?.let { rawValue ->
-                                        isErrorFunction(rawValue)
+                                    checkStatus = it.rawValue?.let { rawValue ->
+                                        checkStatusFunction(rawValue)
                                     }
                             )
                         }

@@ -17,25 +17,31 @@ class CanvasForScanDetection @JvmOverloads constructor(
     val rects = mutableListOf<RectInfo>()
 
     val paintGreen by lazy {
-        RectColor.GREEN.getPaint(context)
+        CheckStatus.VALID.getPaint(context)
     }
 
     val paintRed by lazy {
-        RectColor.RED.getPaint(context)
+        CheckStatus.NOT_VALID.getPaint(context)
     }
 
     val paintYelow by lazy {
-        RectColor.YELLOW.getPaint(context)
+        CheckStatus.UNKNOWN.getPaint(context)
     }
 
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
         canvas?.let { canvas1 ->
             rects.forEach {
-                val paint = if (it.error == true) paintRed else if (it.error == false) paintGreen else paintYelow
-                canvas1.drawRect(it.rect, paint)
-                if (it.text.isNotEmpty()) {
-                    canvas1.drawText(it.text, it.rect.left.toFloat(), it.rect.top.toFloat() - 12, paint)
+                when (it.checkStatus) {
+                    CheckStatus.VALID -> paintGreen
+                    CheckStatus.NOT_VALID -> paintRed
+                    CheckStatus.UNKNOWN -> paintYelow
+                    else -> null
+                }?.apply {
+                    canvas1.drawRect(it.rect, this)
+                    if (it.text.isNotEmpty()) {
+                        canvas1.drawText(it.text, it.rect.left.toFloat(), it.rect.top.toFloat() - 12, this)
+                    }
                 }
             }
         }
@@ -48,17 +54,16 @@ class CanvasForScanDetection @JvmOverloads constructor(
 
     fun addRectInfo(
             rect: Rect,
-            error: Boolean?,
+            checkStatus: CheckStatus?,
             text: String = ""
     ) {
-        rects.add(RectInfo(rect, error, text))
-
+        rects.add(RectInfo(rect, checkStatus, text))
     }
 
 
 }
 
-private fun RectColor.getPaint(context: Context): Paint {
+private fun CheckStatus.getPaint(context: Context): Paint {
     return Paint().apply {
         color = ContextCompat.getColor(context, getColorRes())
         strokeWidth = 4.px
@@ -67,20 +72,21 @@ private fun RectColor.getPaint(context: Context): Paint {
     }
 }
 
+private fun CheckStatus.getColorRes(): Int {
+    return when (this) {
+        CheckStatus.VALID -> R.color.color_normal_green
+        CheckStatus.NOT_VALID -> R.color.color_normal_red
+        CheckStatus.UNKNOWN -> R.color.color_normal_yellow
+    }
+}
+
 data class RectInfo(
         val rect: Rect,
-        val error: Boolean?,
+        val checkStatus: CheckStatus?,
         val text: String
 )
 
-enum class RectColor {
-    GREEN, RED, YELLOW
+enum class CheckStatus {
+    VALID, NOT_VALID, UNKNOWN
 }
 
-private fun RectColor.getColorRes(): Int {
-    return when (this) {
-        RectColor.GREEN -> R.color.color_normal_green
-        RectColor.RED -> R.color.color_normal_red
-        RectColor.YELLOW -> R.color.color_normal_yellow
-    }
-}
