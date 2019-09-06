@@ -90,7 +90,7 @@ class GoodsListNeViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
 
     fun onClickItemPosition(position: Int) {
         taskManager.currentGood = getGoodByPosition(position)
-        navigator.openGoodInfoPcScreen()
+        navigator.openGoodInfoNeScreen()
     }
 
     private fun getGoodByPosition(position: Int): Good? {

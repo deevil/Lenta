@@ -22,10 +22,10 @@ class MainMenuViewModel : CoreViewModel() {
         // Тестирование запуска различных экранов
         //navigator.openPrintSettingsScreen()
         //navigator.openGoodInfoWlScreen()
-        navigator.openGoodsListWlScreen()
+        //navigator.openGoodsListWlScreen()
         //navigator.openGoodsListPcScreen()
         //navigator.openSearchFilterWlScreen()
-        //navigator.openGoodsListNeScreen()
+        navigator.openGoodsListNeScreen()
         //navigator.openGoodsListClScreen()
         //navigator.openGoodDetailsScreen()
         //navigator.openSearchFilterTlScreen()
