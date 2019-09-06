@@ -6,6 +6,7 @@ import com.lenta.shared.models.core.Uom
 data class Good(
         val id: Int,
         val material: String?,
+        val ean: String,
         val name: String,
         var quantity: Int = 0,
         val uom: Uom = Uom.DEFAULT,
@@ -19,6 +20,8 @@ data class Good(
         val priceWithDk: Int,
         val priceWithoutDk: Int,
         var promo: Promo?,
+        var goodGroup: String,
+        var purchaseGroup: String,
 
         val comments: MutableList<Comment> = mutableListOf(),
         val shelfLives: MutableList<ShelfLife> = mutableListOf(),

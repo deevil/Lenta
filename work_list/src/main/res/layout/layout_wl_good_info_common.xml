@@ -5,7 +5,7 @@
 
     <data>
 
-        <import type="android.view.View"/>
+        <import type="android.view.View" />
 
         <variable
             name="vm"
@@ -206,8 +206,8 @@
                 <TextView
                     android:id="@+id/tv_shelf_life_days_left"
                     style="@style/CellTextStyle"
-                    android:visibility="@{vm.shelfLifeDaysFieldVisibility ? View.VISIBLE : View.INVISIBLE}"
                     android:text="@{@string/shelf_life_days(vm.daysLeft)}"
+                    android:visibility="@{vm.shelfLifeDaysFieldVisibility ? View.VISIBLE : View.INVISIBLE}"
                     tools:text="5 сут." />
 
 
@@ -247,12 +247,14 @@
                 <TextView
                     android:id="@+id/tv_barcode_number_units"
                     style="@style/CellTextStyle"
-                    android:text="2365248900015/КОР" />
+                    android:text="@{@string/one_slash_two(vm.good.ean, vm.good.uom.name)}"
+                    tools:text="2365248900015/КОР" />
 
                 <TextView
                     android:id="@+id/tv_gt_gz_numbers"
                     style="@style/CellTextStyle"
-                    android:text="952365/1111" />
+                    android:text="@{@string/one_slash_two(vm.good.goodGroup, vm.good.purchaseGroup)}"
+                    tools:text="952365/1111" />
 
             </LinearLayout>
 

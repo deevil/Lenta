@@ -42,7 +42,6 @@
     <string name="no_network_to_save_task">Для сохранения задания в SAP ERP отсутствует сеть. Задание будет сохранено позже.</string>
 
 
-    <!-- Строки с плэйсхолдерами -->
     <string name="total_quantity">Итого: %1$d шт.</string>
     <string name="quantity_st">%1$d шт.</string>
     <string name="price_r">%1$d р.</string>
@@ -51,7 +50,7 @@
     <string name="pd_date">ДП - %1$s</string>
     <string name="shelf_life_days">%1$d сут.</string>
     <string name="one_space_two">%1$s %2$s</string>
-
+    <string name="one_slash_two">%1$s/%2$s</string>
 
 
     <string name="enter_task_number_sap_login">Введите номер задания / SAP логин</string>

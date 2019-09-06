@@ -69,6 +69,7 @@ class TaskManager {
             Good(
                     id = it + 1,
                     material = "000000000000" + (111111..999999).random(),
+                    ean = (11111111..999999999999).random().toString(),
                     name = "Товар ${it + (1..99).random()}",
                     uom = Uom.DEFAULT,
                     quantity = quantity,
@@ -86,7 +87,9 @@ class TaskManager {
                     goodMovement = getTestGoodMovement(),
                     priceWithDk = priceWithDk,
                     priceWithoutDk = priceWithDk + (10..70).random(),
-                    promo = Promo("Какая то акция", "Период: 30.07.19 - 24.08.19")
+                    promo = Promo("Какая то акция", "Период: 30.07.19 - 24.08.19"),
+                    goodGroup = (111111..999999).random().toString(),
+                    purchaseGroup = (1111..9999).random().toString()
             )
         }
     }
