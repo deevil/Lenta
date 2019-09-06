@@ -5,6 +5,8 @@
 
     <data>
 
+        <import type="android.view.View"/>
+
         <variable
             name="vm"
             type="com.lenta.bp14.features.work_list.good_info.GoodInfoWlViewModel" />
@@ -198,12 +200,14 @@
                 <TextView
                     android:id="@+id/tv_total_shelf_life"
                     style="@style/CellTextStyle"
-                    android:text="10 сут." />
+                    android:text="@{@string/shelf_life_days(vm.good.shelfLifeDays)}"
+                    tools:text="10 сут." />
 
                 <TextView
                     android:id="@+id/tv_shelf_life_days_left"
                     style="@style/CellTextStyle"
-                    android:text="5 сут."
+                    android:visibility="@{vm.shelfLifeDaysFieldVisibility ? View.VISIBLE : View.INVISIBLE}"
+                    android:text="@{@string/shelf_life_days(vm.daysLeft)}"
                     tools:text="5 сут." />
 
 

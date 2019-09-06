@@ -78,6 +78,7 @@ class TaskManager {
                     shelfLives = getTestShelfLives(),
                     deliveries = getTestDeliveries(),
                     salesStatistics = getTestSalesStatistics(),
+                    shelfLifeDays = (5..30).random(),
                     stocks = getTestStock(),
                     providers = getTestProviders(),
                     storagePlaces = "" + (100000..999999).random() + "; " + (100000..999999).random() + "; " + (100000..999999).random(),

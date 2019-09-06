@@ -49,7 +49,7 @@
     <string name="quantity_units">%1$d %2$s.</string>
     <string name="sl_date">СГ - %1$s</string>
     <string name="pd_date">ДП - %1$s</string>
-    <string name="shelf_life_days_left">%1$d сут.</string>
+    <string name="shelf_life_days">%1$d сут.</string>
     <string name="one_space_two">%1$s %2$s</string>
 
 
