@@ -159,7 +159,10 @@ class FireBaseMlScanHelper(val context: Context) {
         if (map?.getOutputSizes(SurfaceTexture::class.java)?.isNotEmpty() == true) {
             for (size in map.getOutputSizes(SurfaceTexture::class.java)) {
                 Logg.d { "supported size: $size" }
-                if ((constraint > size.height && constraint > size.width) && (maximumSize.height + maximumSize.width) < (size.height + size.width)) {
+                if ((constraint > size.height && constraint > size.width) &&
+                        (maximumSize.height + maximumSize.width) < (size.height + size.width)
+                        &&  size.width > size.height
+                ) {
                     maximumSize = size
                 }
             }
