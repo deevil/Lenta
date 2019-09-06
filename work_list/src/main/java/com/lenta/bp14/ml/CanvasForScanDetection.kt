@@ -25,7 +25,7 @@ class CanvasForScanDetection @JvmOverloads constructor(
     }
 
     val paintYelow by lazy {
-        CheckStatus.UNKNOWN.getPaint(context)
+        CheckStatus.ERROR.getPaint(context)
     }
 
     override fun onDraw(canvas: Canvas?) {
@@ -35,7 +35,7 @@ class CanvasForScanDetection @JvmOverloads constructor(
                 when (it.checkStatus) {
                     CheckStatus.VALID -> paintGreen
                     CheckStatus.NOT_VALID -> paintRed
-                    CheckStatus.UNKNOWN -> paintYelow
+                    CheckStatus.ERROR -> paintYelow
                     else -> null
                 }?.apply {
                     canvas1.drawRect(it.rect, this)
@@ -76,7 +76,7 @@ private fun CheckStatus.getColorRes(): Int {
     return when (this) {
         CheckStatus.VALID -> R.color.color_normal_green
         CheckStatus.NOT_VALID -> R.color.color_normal_red
-        CheckStatus.UNKNOWN -> R.color.color_normal_yellow
+        CheckStatus.ERROR -> R.color.color_normal_yellow
     }
 }
 
@@ -87,6 +87,6 @@ data class RectInfo(
 )
 
 enum class CheckStatus {
-    VALID, NOT_VALID, UNKNOWN
+    VALID, NOT_VALID, ERROR
 }
 

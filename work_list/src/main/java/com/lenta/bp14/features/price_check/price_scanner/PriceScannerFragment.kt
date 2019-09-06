@@ -52,9 +52,6 @@ class PriceScannerFragment : CoreFragment<FragmentPriceScannerBinding, PriceScan
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // дизэйблим scrollview
-        binding!!.scrollView.setOnTouchListener { _, _ -> true }
-
         binding?.let {
             fireBaseMlScanHelper.onViewCreated(
                     viewLifecycleOwner = viewLifecycleOwner,

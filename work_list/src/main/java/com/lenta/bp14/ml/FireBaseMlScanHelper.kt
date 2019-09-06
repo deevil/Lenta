@@ -238,7 +238,7 @@ class FireBaseMlScanHelper(val context: Context) {
 
         val detector = FirebaseVision.getInstance()
                 .getVisionBarcodeDetector(options)
-        Logg.d { "image size: ${image.bitmap.height}/${image.bitmap.width}" }
+        //Logg.d { "image size: ${image.bitmap.height}/${image.bitmap.width}" }
         detector.detectInImage(image)
                 .addOnSuccessListener { barcodes ->
 

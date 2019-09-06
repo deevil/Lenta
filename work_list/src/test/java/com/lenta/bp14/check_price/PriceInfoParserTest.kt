@@ -100,6 +100,17 @@ class PriceInfoParserTest {
 
     }
 
+    @Test
+    fun `Парсинг каких-то цифр`() {
+
+        rawCode = "120,5"
+
+        val priceInfo = priceInfoParser.getPriceInfoFromRawCode(rawCode)
+
+        assertNull(priceInfo)
+
+    }
+
 
 
 }

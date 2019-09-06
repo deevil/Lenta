@@ -98,6 +98,7 @@
     <string name="price_one_sell_out">Цена 1 (Распродажа)</string>
     <string name="price_two_by_stock">Цена 2 (По акции)</string>
     <string name="scan_price_description">Наведите камеру на QR код ценника</string>
-    <string name="price_from_qr_code">Цена из QR кода</string>
+    <string name="price_without_discount">Цена БДК, руб</string>
+    <string name="price_with_discount">Цена с ДК, руб</string>
 
 </resources>
