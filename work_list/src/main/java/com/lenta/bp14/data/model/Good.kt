@@ -22,6 +22,7 @@ data class Good(
         var promo: Promo?,
         var goodGroup: String,
         var purchaseGroup: String,
+        val firstStorageStock: Int,
 
         val comments: MutableList<Comment> = mutableListOf(),
         val shelfLives: MutableList<ShelfLife> = mutableListOf(),

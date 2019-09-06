@@ -89,7 +89,8 @@ class TaskManager {
                     priceWithoutDk = priceWithDk + (10..70).random(),
                     promo = Promo("Какая то акция", "Период: 30.07.19 - 24.08.19"),
                     goodGroup = (111111..999999).random().toString(),
-                    purchaseGroup = (1111..9999).random().toString()
+                    purchaseGroup = (1111..9999).random().toString(),
+                    firstStorageStock = (10..50).random()
             )
         }
     }

@@ -25,6 +25,8 @@ class GoodInfoNeViewModel : CoreViewModel(), PageSelectionListener {
 
     val stocks = MutableLiveData<List<Stock>>()
 
+    val quantityField = MutableLiveData<String>("0")
+
     init {
         viewModelScope.launch {
             good.value = taskManager.currentGood
