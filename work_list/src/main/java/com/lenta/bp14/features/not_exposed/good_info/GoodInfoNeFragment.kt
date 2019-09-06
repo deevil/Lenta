@@ -17,13 +17,16 @@ import com.lenta.bp14.platform.extentions.getAppComponent
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
+import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig
 import com.lenta.shared.utilities.databinding.ViewPagerSettings
+import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
 import com.lenta.shared.utilities.extentions.provideViewModel
 
-class GoodInfoNeFragment : CoreFragment<FragmentGoodInfoNeBinding, GoodInfoNeViewModel>(), ViewPagerSettings {
+class GoodInfoNeFragment : CoreFragment<FragmentGoodInfoNeBinding, GoodInfoNeViewModel>(),
+        ViewPagerSettings, ToolbarButtonsClickListener {
 
     override fun getLayoutId(): Int = R.layout.fragment_good_info_ne
 
@@ -50,6 +53,19 @@ class GoodInfoNeFragment : CoreFragment<FragmentGoodInfoNeBinding, GoodInfoNeVie
         bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.framed)
         bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.not_framed)
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.apply)
+
+        connectLiveData(vm.cancelButtonEnabled, getBottomToolBarUIModel()!!.uiModelButton2.enabled)
+        connectLiveData(vm.framedButtonEnabled, getBottomToolBarUIModel()!!.uiModelButton3.enabled)
+        connectLiveData(vm.notFramedButtonEnabled, getBottomToolBarUIModel()!!.uiModelButton4.enabled)
+    }
+
+    override fun onToolbarButtonClick(view: View) {
+        when (view.id) {
+            R.id.b_2 -> vm.onClickCancel()
+            R.id.b_3 -> vm.onClickFramed()
+            R.id.b_4 -> vm.onClickNotFramed()
+            R.id.b_5 -> vm.onClickApply()
+        }
     }
 
     override fun getPagerItemView(container: ViewGroup, position: Int): View {

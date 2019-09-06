@@ -116,6 +116,7 @@
                         android:id="@+id/tv_price_with_dk"
                         style="@style/CellTextStyle"
                         android:maxLines="2"
+                        android:text="@{vm.frameType}"
                         tools:text="" />
 
                 </LinearLayout>
