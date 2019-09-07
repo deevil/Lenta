@@ -3,6 +3,7 @@ package com.lenta.inventory.models.task
 import com.lenta.inventory.models.RecountType
 import com.lenta.inventory.models.repositories.ITaskRepository
 import com.lenta.inventory.requests.network.*
+import com.lenta.shared.utilities.date_time.DateTimeUtil.convertMilisecondsToHHMm
 
 class InventoryTask(val taskDescription: TaskDescription, val taskRepository: ITaskRepository) {
 
@@ -21,12 +22,12 @@ class InventoryTask(val taskDescription: TaskDescription, val taskRepository: IT
     //Вызывается в двух случаях:
     //1. Нестрогий список, обычный пересчет, товар по умолчанию находится в общем МХ 00
     fun deleteProduct(productNumber: String, storePlaceNumber: String = "00") {
-     taskRepository.getProducts().findProduct(productNumber, storePlaceNumber)?.let {
-         if (it.isAddedManually) {
-             taskRepository.getProducts().deleteProduct(it)
-         } else {
-             taskRepository.getProducts().changeProduct(it.copy(isDel = true))
-         }
+        taskRepository.getProducts().findProduct(productNumber, storePlaceNumber)?.let {
+            if (it.isAddedManually) {
+                taskRepository.getProducts().deleteProduct(it)
+            } else {
+                taskRepository.getProducts().changeProduct(it.copy(isDel = true))
+            }
         }
     }
 
@@ -54,7 +55,7 @@ class InventoryTask(val taskDescription: TaskDescription, val taskRepository: IT
         }
     }
 
-    fun getReport(isFinish: Boolean, ip: String, personnelNumber: String, isRecount: Boolean): InventoryReport {
+    fun getReport(isFinish: Boolean, ip: String, personnelNumber: String, ivCountPerNr: Boolean): InventoryReport {
         val taskDescription = taskDescription
         return InventoryReport(
                 tkNumber = taskDescription.tkNumber,
@@ -65,11 +66,10 @@ class InventoryTask(val taskDescription: TaskDescription, val taskRepository: IT
                 storePlacesForDelete = getUntiedProducts(),
                 products = getReportsProducts(),
                 stamps = getReportStamps(),
-                isRecount = if (isRecount) "X" else ""
+                ivCountPerNr = if (ivCountPerNr) "X" else ""
         )
     }
 
-    //TODO предварительная версия. Логика будет уточнятся дополнятся
     private fun getReportStamps(): List<ExciseStampInfo> {
         return taskRepository.getExciseStamps()
                 .getExciseStamps().map {
@@ -86,7 +86,6 @@ class InventoryTask(val taskDescription: TaskDescription, val taskRepository: IT
                 }
     }
 
-    //TODO предварительная версия. Логика будет уточнятся дополнятся
     private fun getUntiedProducts(): List<UntiedProduct> {
         return taskRepository
                 .getProducts().getUntiedProducts().map {
@@ -100,17 +99,29 @@ class InventoryTask(val taskDescription: TaskDescription, val taskRepository: IT
     }
 
     private fun getReportsProducts(): List<MaterialNumber> {
-        return taskRepository.getProducts().getProducts().map {
-            MaterialNumber(
-                    materialNumber = it.materialNumber,
-                    storePlaceCode = it.placeCode,
-                    factQuantity = it.factCount.toString(),
-                    positionCounted = if (it.isPositionCalc) "X" else "",
-                    isDel = if (it.isDel) "X" else "",
-                    isSet = if (it.isSet) "X" else "",
-                    isExcOld = if (it.isExcOld) "X" else ""
-            )
+
+        val productsNumbersWithNotZeroPlaceCode = mutableSetOf<String>()
+
+        taskRepository.getProducts().getProducts().forEach {
+            if (it.placeCode != "00") {
+                productsNumbersWithNotZeroPlaceCode.add(it.placeCode)
+            }
         }
+
+        return taskRepository.getProducts().getProducts().filter {
+            return@filter it.placeCode != "00" || !productsNumbersWithNotZeroPlaceCode.contains(it.placeCode)
+        }
+                .map {
+                    MaterialNumber(
+                            materialNumber = it.materialNumber,
+                            storePlaceCode = it.placeCode,
+                            factQuantity = it.factCount.toString(),
+                            positionCounted = if (it.isPositionCalc) "X" else "",
+                            isDel = if (it.isDel) "X" else "",
+                            isSet = if (it.isSet) "X" else "",
+                            isExcOld = if (it.isExcOld) "X" else ""
+                    )
+                }
     }
 
     //вызывается при возврате на 20 экран и при нажатии на кнопку ОБНОВИТЬ, вызываем 96 рест
@@ -163,10 +174,38 @@ class InventoryTask(val taskDescription: TaskDescription, val taskRepository: IT
         if (taskDescription.recountType == RecountType.ParallelByStorePlaces) {
             val processedProducts = taskRepository.getProducts().getProcessedProducts()
             return taskRepository.getProducts().getNotProcessedProducts().filter { productInfo ->
-                processedProducts.findLast { it.materialNumber == productInfo.materialNumber && it.placeCode != "00" } == null
+                //Товары с кодом МХ 00 попадают в список расхождений только в том случае, когда они не были посчитаны ни в одном реальном МХ
+                productInfo.placeCode != "00" || processedProducts.findLast { it.materialNumber == productInfo.materialNumber && it.placeCode != "00" } == null
             }
         } else {
             return taskRepository.getProducts().getNotProcessedProducts()
         }
+    }
+
+    fun getElapsedTimePrintable(unixTime: Long): String {
+        var elapsedTimeInMillis: Long? = null
+        taskDescription.processingEndTime?.let {
+            elapsedTimeInMillis = it - unixTime
+        }
+
+        if (elapsedTimeInMillis == null || elapsedTimeInMillis!! < 0) {
+            return ""
+        }
+
+        return convertMilisecondsToHHMm(elapsedTimeInMillis)
+    }
+
+    fun isChanged(): Boolean {
+        return taskRepository.getProducts().isChanged() || taskRepository.getExciseStamps().isChanged()
+    }
+
+    fun makeSnapshot() {
+        taskRepository.getProducts().makeSnapshot()
+        taskRepository.getExciseStamps().makeSnapshot()
+    }
+
+    fun restoreSnapshot() {
+        taskRepository.getProducts().restoreSnapshot()
+        taskRepository.getExciseStamps().restoreSnapshot()
     }
 }

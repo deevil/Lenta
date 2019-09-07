@@ -12,19 +12,19 @@ class CoreFailureInterpreter
             Failure.ServerError -> FailureDescription(message = context.getString(R.string.error_server))
 
             Failure.AuthError -> FailureDescription(message = context.getString(R.string.error_auth),
-                    iconRes = R.drawable.is_warning,
+                    iconRes = R.drawable.is_warning_red_80dp,
                     textColor = ContextCompat.getColor(context, R.color.color_text_dialogWarning))
 
             Failure.NetworkConnection -> FailureDescription(message = context.getString(R.string.error_network))
 
             Failure.GoodNotFound -> FailureDescription(message = context.getString(R.string.good_not_found),
-                    iconRes = R.drawable.is_warning,
+                    iconRes = R.drawable.is_warning_red_80dp,
                     textColor = ContextCompat.getColor(context, R.color.color_text_dialogWarning))
 
             Failure.NotValidEnterNumber -> FailureDescription(message = context.getString(R.string.not_valid_format_ean))
 
             is Failure.SapError -> FailureDescription(
-                    iconRes = R.drawable.is_warning_yellow,
+                    iconRes = R.drawable.is_warning_yellow_80dp,
                     message = failure.message)
 
             is Failure.DbError -> FailureDescription(message = context.getString(R.string.db_error))

@@ -335,7 +335,7 @@ class CoreNavigator constructor(private val context: Context,
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
                     message = context.getString(R.string.saved_data_detect_message),
-                    iconRes = R.drawable.ic_question,
+                    iconRes = R.drawable.ic_question_80dp,
                     pageNumber = "91",
                     codeConfirmForRight = backFragmentResultHelper.setFuncForResult(confirmCallback),
                     codeConfirmForButton3 = backFragmentResultHelper.setFuncForResult(deleteCallback),
@@ -349,7 +349,7 @@ class CoreNavigator constructor(private val context: Context,
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
                     message = context.getString(R.string.detect_changes_connection_message),
-                    iconRes = R.drawable.is_warning_yellow,
+                    iconRes = R.drawable.is_warning_yellow_80dp,
                     pageNumber = "91",
                     codeConfirmForRight = backFragmentResultHelper.setFuncForResult(yesCallback),
                     codeConfirmForButton3 = backFragmentResultHelper.setFuncForResult(noCallback),

@@ -7,6 +7,9 @@
     <string name="not_processed">К обработке</string>
     <string name="task_list">Список заданий</string>
 
+    <!-- Заголовки экранов -->
+    <string name="title_market_number">ТК - %1$s</string>
+
     <!-- Подзаголовки экранов -->
     <string name="specify_product">Укажите товар</string>
     <string name="print_settings">Настройка печати</string>
@@ -22,13 +25,35 @@
     <string name="processed">Обработанные</string>
     <string name="search">Поиск</string>
 
+    <!-- Информационные сообщения -->
+    <string name="confirm_price_tags_printing">Подтвердите печать %1$d копий ценников</string>
+    <string name="make_sure_paper_installed">Убедитесь, что в принтере %1$s установлена бумага для %2$s ценников и подтвердите количество копий для печати (%3$d шт.)</string>
+    <string name="price_tags_submitted">Ценники переданы на печать</string>
+    <string name="set_task_to_status_calculated">Перевести задание в статус "Подсчитано" и закрыть его для редактирования?</string>
+    <string name="raw_goods_remained_in_task">В задании остались необработанные товары. Сохранить в статусе "Опубликовано" и оставить доступным для продолжения пересчета?</string>
+    <string name="print_price_tag_for_good">Распечатать ценник по товару %1$s?</string>
+    <string name="unsaved_data_found_on_device">На устройстве обнаружены несохраненные данные. Перейти к данным?</string>
+    <string name="unsaved_task_found_on_device">На устройстве обнаружены несохраненные задания. Перейти к данным?</string>
+    <string name="good_is_not_part_of_task">Данный товар не входит в состав задания. Добавление товара невозможно.</string>
+    <string name="scanned_good_not_listed_in_lenta">Отсканированная марка не числится в сети "Лента". Проведите инвентаризацию данного товара для выявления расхождений.</string>
+    <string name="scanned_good_not_listed_in_tk">Отсканированная марка числится в ТК - %1$s. Проведите инвентаризацию данного товара для выявления расхождений.</string>
+    <string name="scanned_good_already_added_to_task">Отсканированная марка уже добавлена в задание. Удалить марку?</string>
+    <string name="number_of_positions_exceeded_in_task">В задании превышено количество позиций. Добавление невозможно.</string>
+    <string name="no_network_to_save_task">Для сохранения задания в SAP ERP отсутствует сеть. Задание будет сохранено позже.</string>
 
+
+    <string name="enter_task_number_sap_login">Введите номер задания / SAP логин</string>
     <string name="copy_quantity">Кол-во копий</string>
     <string name="printer_type">Тип принтера</string>
     <string name="price_tag_type">Тип ценника</string>
     <string name="device_ip">IP адрес ТСД</string>
     <string name="quantity">Количество</string>
     <string name="total_quantity">Итого: %1$d шт.</string>
+    <string name="quantity_st">%1$d шт.</string>
+    <string name="quantity_units">%1$d %2$s.</string>
+    <string name="sl_date">СГ - %1$s</string>
+    <string name="pd_date">ДП - %1$s</string>
+    <string name="publication_date">Дата публикации</string>
     <string name="comment">Комментарий</string>
     <string name="total_shelf_life">Общий СГ</string>
     <string name="remaining_shelf_life">Остаточный СГ</string>
@@ -62,5 +87,6 @@
     <string name="common_info">Общая информация</string>
     <string name="stock_one_storage">Запас 1 склад</string>
     <string name="empty_place">Пустое место</string>
+    <string name="task_type">Тип задания</string>
 
 </resources>

@@ -29,7 +29,9 @@ class GoodInfoPcFragment : CoreFragment<FragmentGoodInfoPcBinding, GoodInfoPcVie
         topToolbarUiModel.description.value = getString(R.string.goods_info)
 
         vm.good.observe(this, Observer<Good> { good ->
-            topToolbarUiModel.title.value = "${good.getFormattedMaterial()} ${good.name}"
+            if (good != null) {
+                topToolbarUiModel.title.value = "${good.getFormattedMaterial()} ${good.name}"
+            }
         })
     }
 

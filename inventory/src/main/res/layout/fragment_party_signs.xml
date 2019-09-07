@@ -105,12 +105,13 @@
             android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
             android:ems="10"
-            android:text="@={vm.bottlingDate}"
             android:hint="@string/et_bottling_date"
             android:inputType="date"
+            android:text="@={vm.bottlingDate}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@+id/div_vert"
-            app:layout_constraintTop_toTopOf="@+id/div_vert" />
+            app:layout_constraintTop_toTopOf="@+id/div_vert"
+            app:requestFocus="@{true}" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

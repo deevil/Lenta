@@ -43,7 +43,7 @@
                         style="@style/ColumnTitleStyle"
                         android:layout_width="wrap_content"
                         android:layout_marginStart="0dp"
-                        android:text="@string/number"/>
+                        android:text="@string/number" />
 
                 </LinearLayout>
 
@@ -53,7 +53,7 @@
 
                     <TextView
                         style="@style/ColumnTitleStyle"
-                        android:text="@string/goods"/>
+                        android:text="@string/goods" />
 
                 </LinearLayout>
 
@@ -63,14 +63,13 @@
 
                     <TextView
                         style="@style/ColumnTitleStyle"
-                        android:text="@string/check"/>
+                        android:text="@string/check" />
 
                 </LinearLayout>
 
             </LinearLayout>
 
-            <View
-                style="@style/HorizontalDivider"/>
+            <View style="@style/HorizontalDivider" />
 
         </LinearLayout>
 
@@ -79,9 +78,9 @@
             android:id="@+id/rv"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1"
             android:layout_marginBottom="8dp"
-            app:items="@{vm.goods}"
+            android:layout_weight="1"
+            app:items="@{vm.searchGoods}"
             app:rv_config="@{rvConfig}"
             tools:listitem="@layout/item_good_check_selectable" />
 
@@ -98,23 +97,21 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="8dp"
                 android:layout_weight="1"
-                android:entries="@array/price_tag_color"/>
+                android:entries="@array/price_tag_color" />
 
             <ImageView
-                android:id="@+id/btn_qrcode"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
                 android:onClick="@{(view) -> vm.scanQrCode()}"
-                android:src="@drawable/ic_scan_barcode"/>
+                android:src="@drawable/ic_scan_barcode" />
 
             <ImageView
-                android:id="@+id/btn_barcode"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
                 android:onClick="@{(view) -> vm.scanBarCode()}"
-                android:src="@drawable/ic_scan_barcode"/>
+                android:src="@drawable/ic_scan_barcode" />
 
         </LinearLayout>
 

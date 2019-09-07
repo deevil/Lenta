@@ -1,6 +1,7 @@
 package com.lenta.bp14.di
 
 import android.content.Context
+import com.lenta.bp14.data.TaskManager
 import com.lenta.bp14.platform.navigation.IScreenNavigator
 import com.lenta.bp14.platform.navigation.ScreenNavigator
 import com.lenta.bp14.repos.IRepoInMemoryHolder
@@ -36,5 +37,10 @@ class AppModule {
         return RepoInMemoryHolder()
     }
 
+    @Provides
+    @AppScope
+    internal fun provideTaskManager(): TaskManager {
+        return TaskManager()
+    }
 
 }

@@ -258,7 +258,7 @@ class ScreenNavigator(
     override fun openAlertNotValidFormatStamp() {
         openAlertScreen(
                 message = context.getString(R.string.not_valid_format_stamp),
-                iconRes = R.drawable.is_warning_yellow,
+                iconRes = R.drawable.is_warning_yellow_80dp,
                 pageNumber = "96"
         )
     }
@@ -275,7 +275,7 @@ class ScreenNavigator(
     override fun openLimitExceededScreen() {
         openAlertScreen(
                 message = context.getString(R.string.limit_exceeded_alco_product),
-                iconRes = R.drawable.is_warning_yellow,
+                iconRes = R.drawable.is_warning_yellow_80dp,
                 pageNumber = "96",
                 timeAutoExitInMillis = 2000
         )

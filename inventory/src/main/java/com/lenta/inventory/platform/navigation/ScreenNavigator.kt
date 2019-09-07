@@ -212,18 +212,18 @@ class ScreenNavigator(
         }
     }
 
-    override fun openConfirmationSkippingDiscrepancies(callbackFunc: () -> Unit) {
+    override fun openConfirmationSkippingDiscrepancies(elapsedTime: String, callbackFunc: () -> Unit) {
         runOrPostpone {
-            getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.confirmation_skipping_discrepancies),
+            getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.confirmation_skipping_discrepancies, elapsedTime),
                     codeConfirmForRight = backFragmentResultHelper.setFuncForResult(callbackFunc),
                     pageNumber = "93",
                     rightButtonDecorationInfo = ButtonDecorationInfo.yes))
         }
     }
 
-    override fun openConfirmationSkippingDiscrepanciesRecount(rightCallbackFunc: () -> Unit, middleCallbackFunc: () -> Unit) {
+    override fun openConfirmationSkippingDiscrepanciesRecount(elapsedTime: String, rightCallbackFunc: () -> Unit, middleCallbackFunc: () -> Unit) {
         runOrPostpone {
-            getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.confirmation_skipping_discrepancies_recount),
+            getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.confirmation_skipping_discrepancies_recount, elapsedTime),
                     codeConfirmForRight = backFragmentResultHelper.setFuncForResult(rightCallbackFunc),
                     codeConfirmForButton3 = backFragmentResultHelper.setFuncForResult(middleCallbackFunc),
                     pageNumber = "94",
@@ -245,6 +245,15 @@ class ScreenNavigator(
     override fun openConfirmationMissingGoods(positionsCount: Int, callbackFunc: () -> Unit) {
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.confirmation_missing_goods, positionsCount),
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(callbackFunc),
+                    pageNumber = "93",
+                    rightButtonDecorationInfo = ButtonDecorationInfo.yes))
+        }
+    }
+
+    override fun openConfirmationTakeStorePlace(callbackFunc: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.take_store_place),
                     codeConfirmForRight = backFragmentResultHelper.setFuncForResult(callbackFunc),
                     pageNumber = "93",
                     rightButtonDecorationInfo = ButtonDecorationInfo.yes))
@@ -279,6 +288,19 @@ class ScreenNavigator(
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
                     message = context.getString(R.string.confirmation_exit_task),
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(callbackFunc),
+                    pageNumber = "94",
+                    leftButtonDecorationInfo = ButtonDecorationInfo.no,
+                    rightButtonDecorationInfo = ButtonDecorationInfo.yes
+            )
+            )
+        }
+    }
+
+    override fun openConfirmationExitStoreplace(callbackFunc: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.confirmation_exit_storeplace),
                     codeConfirmForRight = backFragmentResultHelper.setFuncForResult(callbackFunc),
                     pageNumber = "94",
                     leftButtonDecorationInfo = ButtonDecorationInfo.no,
@@ -348,6 +370,27 @@ class ScreenNavigator(
         )
     }
 
+    override fun openConfirmationSavingForParallelsActiveUserDialog(callbackFunc: () -> Unit) {
+        getFragmentStack()?.push(
+                AlertFragment.create(
+                        description = context.getString(R.string.data_saving),
+                        message = context.getString(R.string.confirmation_saving_for_parallels_active_users),
+                        pageNumber = "93",
+                        codeConfirmForRight = backFragmentResultHelper.setFuncForResult(callbackFunc),
+                        rightButtonDecorationInfo = ButtonDecorationInfo.yes
+                )
+        )
+    }
+
+    override fun openAlertDoubleScanBox() {
+        openAlertScreen(
+                message = context.getString(R.string.alert_double_scan_box),
+                iconRes = R.drawable.ic_info_pink,
+                textColor = ContextCompat.getColor(context, com.lenta.shared.R.color.color_text_dialogWarning),
+                pageNumber = "98"
+        )
+    }
+
 
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 
@@ -378,11 +421,13 @@ interface IScreenNavigator : ICoreNavigator {
     fun openPartySignsScreen(title: String, manufacturers: List<String>, stampLength: Int)
     fun openTakenToWorkFragment()
     fun openConfirmationSavingJobScreen(callbackFunc: () -> Unit)
-    fun openConfirmationSkippingDiscrepancies(callbackFunc: () -> Unit)
-    fun openConfirmationSkippingDiscrepanciesRecount(rightCallbackFunc: () -> Unit, middleCallbackFunc: () -> Unit)
+    fun openConfirmationSkippingDiscrepancies(elapsedTime: String, callbackFunc: () -> Unit)
+    fun openConfirmationSkippingDiscrepanciesRecount(elapsedTime: String, rightCallbackFunc: () -> Unit, middleCallbackFunc: () -> Unit)
     fun openConfirmationMissingGoods(positionsCount: Int, callbackFunc: () -> Unit)
     fun openConfirmationDeleteGoods(positionsCount: Int, callbackFunc: () -> Unit)
     fun openConfirmationClean(byStorage: Boolean = false, callbackFunc: () -> Unit)
+    fun openConfirmationTakeStorePlace(callbackFunc: () -> Unit)
+    fun openConfirmationExitStoreplace(callbackFunc: () -> Unit)
     fun openSuccessSaveDataScreen(callbackFunc: () -> Unit)
     fun openConfirmationExitTask(callbackFunc: () -> Unit)
     fun openSelectTypeCodeScreen(codeConfirmationForSap: Int, codeConfirmationForBarCode: Int)
@@ -391,4 +436,6 @@ interface IScreenNavigator : ICoreNavigator {
     fun openAlertStampOverload(message: String, callbackFunc: () -> Unit)
     fun openAlertInfoScreen(message: String)
     fun openMinUpdateSalesDialogScreen(minUpdSales: Long, functionForLeft: () -> Unit, functionForRight: () -> Unit)
+    fun openConfirmationSavingForParallelsActiveUserDialog(callbackFunc: () -> Unit)
+    fun openAlertDoubleScanBox()
 }

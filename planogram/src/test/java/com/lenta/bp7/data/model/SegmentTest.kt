@@ -10,6 +10,7 @@ import java.util.*
 internal class SegmentTest {
 
     private lateinit var segment: Segment
+    private var creationDate = Date()
 
     private val id = 0
     private val storeNumber = "0001"
@@ -18,6 +19,8 @@ internal class SegmentTest {
     @BeforeEach
     fun createSegment() {
         segment = Segment(
+                checkStart = creationDate,
+                checkFinish = creationDate,
                 id = id,
                 storeNumber = storeNumber,
                 number = number)
@@ -29,7 +32,7 @@ internal class SegmentTest {
                 Executable { assertEquals(id, segment.id) },
                 Executable { assertEquals(storeNumber, segment.storeNumber) },
                 Executable { assertEquals(number, segment.number) },
-                Executable { assertTrue(segment.checkFinish == null) },
+                Executable { assertEquals(creationDate, segment.checkFinish) },
                 Executable { assertEquals(SegmentStatus.UNFINISHED, segment.getStatus()) },
                 Executable { assertTrue(segment.shelves.isEmpty()) }
         )
@@ -37,7 +40,7 @@ internal class SegmentTest {
 
     @Test
     fun `Change status`() {
-        segment.setStatus(SegmentStatus.PROCESSED)
+        segment.setStatus(SegmentStatus.PROCESSED, Date())
         assertEquals(SegmentStatus.PROCESSED, segment.getStatus())
         assertTrue(segment.checkFinish != null )
     }

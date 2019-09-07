@@ -10,6 +10,7 @@ import com.lenta.bp10.platform.extentions.getAppComponent
 import com.lenta.shared.models.core.ProductInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
+import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.provideViewModel
 import com.lenta.shared.utilities.extentions.setVisible
 import com.lenta.shared.utilities.extentions.toStringFormatted
@@ -63,6 +64,11 @@ class ComponentFragment : ExciseAlcoInfoFragment() {
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
         super.setupBottomToolBar(bottomToolbarUiModel)
         bottomToolbarUiModel.uiModelButton3.visibility.value = false
+
+        componentViewModel?.let {
+            connectLiveData(it.rollBackEnabled, bottomToolbarUiModel.uiModelButton2.enabled)
+        }
+
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

@@ -7,27 +7,36 @@ import javax.inject.Inject
 class MainMenuViewModel : CoreViewModel() {
 
     @Inject
-    lateinit var screenNavigator: IScreenNavigator
+    lateinit var navigator: IScreenNavigator
 
 
     fun onClickWorkWithTask() {
-        screenNavigator.openTaskListScreen()
+        navigator.openTaskListScreen()
     }
 
     fun onClickCreateTask() {
+
     }
 
     fun onClickPrint() {
         // Тестирование запуска различных экранов
-        //screenNavigator.openPrintSettingsScreen()
-        //screenNavigator.openGoodInfoWlScreen()
-        //screenNavigator.openGoodsListWlScreen()
-        //screenNavigator.openGoodListPcScreen()
-        screenNavigator.openSearchFilterWlScreen()
+        //navigator.openPrintSettingsScreen()
+        //navigator.openGoodInfoWlScreen()
+        navigator.openGoodsListWlScreen()
+        //navigator.openGoodsListPcScreen()
+        //navigator.openSearchFilterWlScreen()
+        //navigator.openGoodsListNeScreen()
+        //navigator.openGoodsListClScreen()
+        //navigator.openGoodDetailsScreen()
+        //navigator.openSearchFilterTlScreen()
+        //navigator.openTaskListScreen()
+        //navigator.openListOfDifferencesScreen()
+        //navigator.openExpectedDeliveriesScreen()
+        //navigator.openGoodSalesScreen()
     }
-
 
     fun onClickAuxiliaryMenu() {
-        screenNavigator.openAuxiliaryMenuScreen()
+        navigator.openAuxiliaryMenuScreen()
     }
+
 }

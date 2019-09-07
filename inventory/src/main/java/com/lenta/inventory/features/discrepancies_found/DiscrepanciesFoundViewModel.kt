@@ -5,14 +5,19 @@ import androidx.lifecycle.viewModelScope
 import com.lenta.inventory.features.goods_list.DataSaver
 import com.lenta.inventory.features.goods_list.SearchProductDelegate
 import com.lenta.inventory.models.RecountType
-import com.lenta.inventory.models.StorePlaceStatus
+import com.lenta.inventory.models.StorePlaceLockMode
 import com.lenta.inventory.models.task.IInventoryTaskManager
 import com.lenta.inventory.models.task.TaskProductInfo
 import com.lenta.inventory.platform.navigation.IScreenNavigator
+import com.lenta.inventory.requests.network.StorePlaceLockNetRequest
+import com.lenta.inventory.requests.network.StorePlaceLockParams
+import com.lenta.shared.account.ISessionInfo
+import com.lenta.shared.exception.Failure
+import com.lenta.shared.platform.device_info.DeviceInfo
+import com.lenta.shared.platform.time.ITimeMonitor
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.SelectionItemsHelper
 import kotlinx.coroutines.launch
-import com.lenta.shared.utilities.databinding.Evenable
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.map
 import javax.inject.Inject
@@ -27,6 +32,14 @@ class DiscrepanciesFoundViewModel : CoreViewModel() {
     lateinit var dataSaver: DataSaver
     @Inject
     lateinit var searchProductDelegate: SearchProductDelegate
+    @Inject
+    lateinit var lockRequest: StorePlaceLockNetRequest
+    @Inject
+    lateinit var sessionInfo: ISessionInfo
+    @Inject
+    lateinit var deviceInfo: DeviceInfo
+    @Inject
+    lateinit var timeMonitor: ITimeMonitor
 
     val discrepanciesByGoods: MutableLiveData<List<DiscrepancyVM>> = MutableLiveData()
     val discrepanciesByStorage: MutableLiveData<List<DiscrepancyVM>> = MutableLiveData()
@@ -40,17 +53,18 @@ class DiscrepanciesFoundViewModel : CoreViewModel() {
     val untieDeleteEnabled: MutableLiveData<Boolean> = selectedPage
             .combineLatest(byGoodsSelectionHelper.selectedPositions.combineLatest(byStorageSelectionHelper.selectedPositions))
             .combineLatest(processedGoods.combineLatest(discrepanciesByGoods)).map {
-        val page = it?.first?.first ?: 0
-        val selectionCount = if (page == 0) it?.first?.second?.first?.size ?: 0 else it?.first?.second?.second?.size ?: 0
-        if (page == 0) {
-            val isStrict = taskManager.getInventoryTask()?.taskDescription?.isStrict == true
-            val allSelected = selectionCount == it?.second?.second?.size
-            val allUnprocessed = it?.second?.first?.size == 0
-            selectionCount > 0 && !isStrict && !(allSelected && allUnprocessed)
-        } else {
-            selectionCount > 0
-        }
-    }
+                val page = it?.first?.first ?: 0
+                val selectionCount = if (page == 0) it?.first?.second?.first?.size
+                        ?: 0 else it?.first?.second?.second?.size ?: 0
+                if (page == 0) {
+                    val isStrict = taskManager.getInventoryTask()?.taskDescription?.isStrict == true
+                    val allSelected = selectionCount == it?.second?.second?.size
+                    val allUnprocessed = it?.second?.first?.size == 0
+                    selectionCount > 0 && !isStrict && !(allSelected && allUnprocessed)
+                } else {
+                    selectionCount > 0
+                }
+            }
 
     val isNotEmpty: MutableLiveData<Boolean> = discrepanciesByGoods.map { it?.size != 0 }
 
@@ -78,19 +92,20 @@ class DiscrepanciesFoundViewModel : CoreViewModel() {
             it.materialNumber
         } ?: emptyList()
 
-        val discrepancies =  goods.mapIndexed { index, product ->
+        val discrepancies = goods.mapIndexed { index, product ->
             DiscrepancyVM(number = goods.size - index,
                     name = product.getDisplayName(),
                     place = "",
                     matnr = product.materialNumber
-                    )
+            )
         }
         discrepanciesByGoods.postValue(discrepancies)
     }
 
     fun updateByStorage() {
-        val goods = taskManager.getInventoryTask()?.getDiscrepancies()?.filter { it.placeCode != "00" } ?: emptyList()
-        val discrepancies =  goods.mapIndexed { index, product ->
+        val goods = taskManager.getInventoryTask()?.getDiscrepancies()?.filter { it.placeCode != "00" }
+                ?: emptyList()
+        val discrepancies = goods.mapIndexed { index, product ->
             DiscrepancyVM(number = goods.size - index,
                     name = product.getDisplayName(),
                     place = product.placeCode,
@@ -142,14 +157,10 @@ class DiscrepanciesFoundViewModel : CoreViewModel() {
 
     fun onClickSkip() {
         if (isNotEmpty.value == true) {
-            if (taskManager.getInventoryTask()!!.taskDescription.isRecount) {
-                screenNavigator.openConfirmationSkippingDiscrepanciesRecount({ dataSaver.saveData(true) }) {
-                    dataSaver.saveData(false)
-                }
+            if (taskManager.getInventoryTask()!!.taskDescription.ivCountPerNr) {
+                checkIsHaveAnotherUsersNow()
             } else {
-                screenNavigator.openConfirmationSkippingDiscrepancies {
-                    dataSaver.saveData(false)
-                }
+                openConfirmationSkippingDialog()
             }
 
         } else {
@@ -157,6 +168,76 @@ class DiscrepanciesFoundViewModel : CoreViewModel() {
                 dataSaver.saveData(true)
             }
         }
+    }
+
+    private fun checkIsHaveAnotherUsersNow() {
+
+        viewModelScope.launch {
+            screenNavigator.showProgress(lockRequest)
+            taskManager.getInventoryTask()?.let {
+                val userNumber = sessionInfo.personnelNumber!!
+                lockRequest(
+                        StorePlaceLockParams(
+                                ip = deviceInfo.getDeviceIp(),
+                                taskNumber = it.taskDescription.taskNumber,
+                                storePlaceCode = "",
+                                mode = StorePlaceLockMode.Check.mode,
+                                userNumber = userNumber
+                        )
+                ).either(::handleFailureUpdateStatus) {
+                    openConfirmationSkippingDialog()
+                }
+            }
+            screenNavigator.hideProgress()
+        }
+
+
+    }
+
+    private fun handleFailureUpdateStatus(failure: Failure) {
+        super.handleFailure(failure)
+
+        if (failure is Failure.SapError) {
+            if (failure.retCode == 2) {
+                openConfirmationWithAnotherParallelsActiveUserDialog()
+                return
+            }
+        }
+
+        screenNavigator.openAlertScreen(failure)
+
+    }
+
+    private fun openConfirmationWithAnotherParallelsActiveUserDialog() {
+        screenNavigator.openConfirmationSavingForParallelsActiveUserDialog {
+            dataSaver.saveData(false)
+        }
+
+    }
+
+    private fun openConfirmationSkippingDialog() {
+        if (taskManager.getInventoryTask()?.taskDescription?.isRecount == true) {
+            screenNavigator.openConfirmationSkippingDiscrepanciesRecount(
+                    elapsedTime = taskManager.getInventoryTask()?.getElapsedTimePrintable(timeMonitor.getUnixTime())
+                            ?: "",
+                    rightCallbackFunc = {
+                        dataSaver.saveData(true)
+                    },
+                    middleCallbackFunc = {
+                        dataSaver.saveData(false)
+                    }
+            )
+            return
+        }
+
+        screenNavigator.openConfirmationSkippingDiscrepancies(
+                elapsedTime = taskManager.getInventoryTask()?.getElapsedTimePrintable(timeMonitor.getUnixTime())
+                        ?: "",
+                callbackFunc = {
+                    dataSaver.saveData(false)
+                }
+        )
+
     }
 
     fun onClickDeleteUntie() {
@@ -182,7 +263,7 @@ class DiscrepanciesFoundViewModel : CoreViewModel() {
         selectedPage.value = position
     }
 
-    fun isRecountByStorePlaces() : Boolean {
+    fun isRecountByStorePlaces(): Boolean {
         return taskManager.getInventoryTask()?.taskDescription?.recountType == RecountType.ParallelByStorePlaces
     }
 
