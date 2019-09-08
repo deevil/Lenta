@@ -13,7 +13,7 @@ import com.lenta.shared.utilities.extentions.provideViewModel
 
 class LoadingTaskCardFragment : CoreLoadingFragment() {
 
-    private var mode: TaskCardLoadingMode = TaskCardLoadingMode.None
+    private var mode: TaskCardMode = TaskCardMode.None
     private var taskNumber: String = ""
 
     override fun getPageNumber(): String? {
@@ -51,7 +51,7 @@ class LoadingTaskCardFragment : CoreLoadingFragment() {
     }
 
     companion object {
-        fun create(taskNumber: String, mode: TaskCardLoadingMode): LoadingTaskCardFragment {
+        fun create(taskNumber: String, mode: TaskCardMode): LoadingTaskCardFragment {
             LoadingTaskCardFragment().let {
                 it.taskNumber = taskNumber
                 it.mode = mode

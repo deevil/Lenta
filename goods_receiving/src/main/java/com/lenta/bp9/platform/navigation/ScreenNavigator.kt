@@ -10,7 +10,7 @@ import com.lenta.bp9.features.loading.tasks.TaskListLoadingMode
 import com.lenta.bp9.requests.network.TaskListSearchParams
 import com.lenta.bp9.features.loading.fast.FastDataLoadingFragment
 import com.lenta.bp9.features.loading.tasks.LoadingTaskCardFragment
-import com.lenta.bp9.features.loading.tasks.TaskCardLoadingMode
+import com.lenta.bp9.features.loading.tasks.TaskCardMode
 import com.lenta.bp9.features.main_menu.MainMenuFragment
 import com.lenta.bp9.features.search_task.SearchTaskFragment
 import com.lenta.bp9.features.select_market.SelectMarketFragment
@@ -104,13 +104,13 @@ class ScreenNavigator(
         }
     }
 
-    override fun openTaskCardScreen() {
+    override fun openTaskCardScreen(mode: TaskCardMode) {
         runOrPostpone {
-            getFragmentStack()?.push(TaskCardFragment())
+            getFragmentStack()?.push(TaskCardFragment.create(mode))
         }
     }
 
-    override fun openTaskCardLoadingScreen(mode: TaskCardLoadingMode, taskNumber: String) {
+    override fun openTaskCardLoadingScreen(mode: TaskCardMode, taskNumber: String) {
         runOrPostpone {
             getFragmentStack()?.push(LoadingTaskCardFragment.create(taskNumber, mode))
         }
@@ -150,8 +150,8 @@ interface IScreenNavigator : ICoreNavigator {
     fun openAlertNotPermissions(message: String)
     fun openTaskSearchScreen()
     fun openGoodsListScreen()
-    fun openTaskCardScreen()
-    fun openTaskCardLoadingScreen(mode: TaskCardLoadingMode, taskNumber: String)
+    fun openTaskCardScreen(mode: TaskCardMode)
+    fun openTaskCardLoadingScreen(mode: TaskCardMode, taskNumber: String)
     fun openConfirmationUnlock(callbackFunc: () -> Unit)
     fun openConfirmationView(callbackFunc: () -> Unit)
 }

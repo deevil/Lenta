@@ -38,13 +38,13 @@ class LoadingTaskCardViewModel : CoreLoadingViewModel() {
     override val speedKbInSec: MutableLiveData<Int> = MutableLiveData()
     override val sizeInMb: MutableLiveData<Float> = MutableLiveData()
 
-    var mode: TaskCardLoadingMode = TaskCardLoadingMode.None
+    var mode: TaskCardMode = TaskCardMode.None
     var taskNumber: String = ""
 
     init {
         viewModelScope.launch {
             progress.value = true
-            val params = TaskCardParams(mode = mode.TaskCardLoadingModeString,
+            val params = TaskCardParams(mode = mode.TaskCardModeString,
                     deviceIP = context.getDeviceIp(),
                     personalNumber = sessionInfo.personnelNumber ?: "",
                     taskNumber = taskNumber
@@ -67,7 +67,7 @@ class LoadingTaskCardViewModel : CoreLoadingViewModel() {
             val notifications = result.notifications.map { TaskNotification.from(it) }
             val newTask = taskManager.newReceivingTask(taskHeader, TaskDescription.from(result.taskDescription), notifications)
             taskManager.setTask(newTask)
-            screenNavigator.openTaskCardScreen()
+            screenNavigator.openTaskCardScreen(mode)
         }
     }
 

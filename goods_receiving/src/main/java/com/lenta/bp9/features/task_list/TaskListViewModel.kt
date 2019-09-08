@@ -4,7 +4,7 @@ import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.lenta.bp9.features.loading.tasks.TaskCardLoadingMode
+import com.lenta.bp9.features.loading.tasks.TaskCardMode
 import com.lenta.bp9.features.loading.tasks.TaskListLoadingMode
 import com.lenta.bp9.model.task.TaskInfo
 import com.lenta.bp9.model.task.TaskList
@@ -161,15 +161,15 @@ class TaskListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
             when (it.lockStatus) {
                 TaskLockStatus.LockedByMe -> {
                     screenNavigator.openConfirmationUnlock {
-                        screenNavigator.openTaskCardLoadingScreen(TaskCardLoadingMode.Full, it.taskNumber)
+                        screenNavigator.openTaskCardLoadingScreen(TaskCardMode.Full, it.taskNumber)
                     }
                 }
                 TaskLockStatus.LockedByOthers -> {
                     screenNavigator.openConfirmationView {
-                        screenNavigator.openTaskCardLoadingScreen(TaskCardLoadingMode.ReadOnly, it.taskNumber)
+                        screenNavigator.openTaskCardLoadingScreen(TaskCardMode.ReadOnly, it.taskNumber)
                     }
                 }
-                TaskLockStatus.None -> screenNavigator.openTaskCardLoadingScreen(TaskCardLoadingMode.Full, it.taskNumber)
+                TaskLockStatus.None -> screenNavigator.openTaskCardLoadingScreen(TaskCardMode.Full, it.taskNumber)
             }
         }
     }

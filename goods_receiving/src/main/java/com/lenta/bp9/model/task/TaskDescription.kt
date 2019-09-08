@@ -1,6 +1,10 @@
 package com.lenta.bp9.model.task
 
 import com.google.gson.annotations.SerializedName
+import com.lenta.shared.platform.constants.Constants
+import com.lenta.shared.utilities.date_time.DateTimeUtil
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 //ТП. Таблица 75 ZSGRZ_TASK_EXCH Структура карточки задания
 data class TaskDescription(val currentStatusCode: String,   //Код текущего статуса (CUR_STAT)
@@ -8,6 +12,8 @@ data class TaskDescription(val currentStatusCode: String,   //Код текущ�
                       val currentStatusDate: String,   //Дата текущего статуса (CUR_ST_DATE)
                       val currentStatusTime: String,   //Время текущего статуса (CUR_ST_TIME)
                       val nextStatusText: String,      //Следующий статус (NEXT_ST_TEXT)
+                      var nextStatusDate: String,      //Дата следуюшего статуса, изначальна равна текущей дате, может быть изменена пользователем
+                      var nextStatusTime: String,      //Время следуюшего статуса, изначальна равно текущму времени, может быть изменено пользователем
                       val ttnNumber: String,           //Номер ТН\ТТН (ZTTN)
                       val orderNumber: String,         //Номер заказа (EBELN)
                       val deliveryNumber: String,      //Номер поставки\Транспортировки (VBELN)
@@ -52,7 +58,10 @@ data class TaskDescription(val currentStatusCode: String,   //Код текущ�
                     isNotEDI = restData.isNotEDI.isNotEmpty(),
                     isPromo = restData.isPromo.isNotEmpty(),
                     isRecount = restData.isRecount.isNotEmpty(),
-                    isOwnTransport = restData.isOwnTransport.isNotEmpty())
+                    isOwnTransport = restData.isOwnTransport.isNotEmpty(),
+                    nextStatusDate = DateTimeUtil.formatDate(System.currentTimeMillis(), Constants.DATE_FORMAT_ddmmyy),
+                    nextStatusTime = DateTimeUtil.formatDate(System.currentTimeMillis(), Constants.TIME_FORMAT_HHmm)
+            )
         }
     }
 }

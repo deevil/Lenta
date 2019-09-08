@@ -29,4 +29,15 @@
     <string name="status">Статус</string>
     <string name="delivery">Поставка</string>
     <string name="notifications">Уведомления</string>
+    <string name="notification">Уведомление</string>
+    <string name="indicator">Индикатор</string>
+    <string name="numberTN_TTN">Номер ТН/ТТН</string>
+    <string name="arrival_plan">План поставки</string>
+    <string name="arrival_fact">Факт прибытия</string>
+    <string name="incoming_delivery">Входящая поставка</string>
+    <string name="count_SKU">Количество SKU</string>
+    <string name="current_status">Текущий статус</string>
+    <string name="new_status">Новый статус</string>
+    <string name="current_status_datetime">Дата и время\nТекущего статуса</string>
+    <string name="new_status_datetime">Новая дата и\nвремя</string>
 </resources>
