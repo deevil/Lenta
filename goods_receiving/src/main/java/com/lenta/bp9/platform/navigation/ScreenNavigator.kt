@@ -17,6 +17,8 @@ import com.lenta.bp9.features.select_market.SelectMarketFragment
 import com.lenta.bp9.features.select_personnel_number.SelectPersonnelNumberFragment
 import com.lenta.bp9.features.task_card.TaskCardFragment
 import com.lenta.bp9.R
+import com.lenta.bp9.features.change_datetime.ChangeDateTimeFragment
+import com.lenta.bp9.features.change_datetime.ChangeDateTimeMode
 import com.lenta.shared.account.IAuthenticator
 import com.lenta.shared.features.alert.AlertFragment
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
@@ -134,6 +136,12 @@ class ScreenNavigator(
         }
     }
 
+    override fun openChangeDateTimeScreen(mode: ChangeDateTimeMode) {
+        runOrPostpone {
+            getFragmentStack()?.push(ChangeDateTimeFragment.create(mode))
+        }
+    }
+
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 
 }
@@ -154,4 +162,5 @@ interface IScreenNavigator : ICoreNavigator {
     fun openTaskCardLoadingScreen(mode: TaskCardMode, taskNumber: String, loadFullData: Boolean)
     fun openConfirmationUnlock(callbackFunc: () -> Unit)
     fun openConfirmationView(callbackFunc: () -> Unit)
+    fun openChangeDateTimeScreen(mode: ChangeDateTimeMode)
 }

@@ -2,6 +2,7 @@ package com.lenta.bp9.di
 
 import com.lenta.bp9.ExceptionHandler
 import com.lenta.bp9.features.auth.AuthViewModel
+import com.lenta.bp9.features.change_datetime.ChangeDateTimeViewModel
 import com.lenta.bp9.features.goods_list.GoodsListViewModel
 import com.lenta.bp9.features.loading.tasks.LoadingTasksViewModel
 import com.lenta.bp9.features.task_list.TaskListViewModel
@@ -35,4 +36,5 @@ interface AppComponent {
     fun inject(it: SearchTaskViewModel)
     fun inject(it: TaskCardViewModel)
     fun inject(it: LoadingTaskCardViewModel)
+    fun inject(it: ChangeDateTimeViewModel)
 }

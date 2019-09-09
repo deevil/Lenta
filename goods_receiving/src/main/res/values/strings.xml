@@ -40,4 +40,13 @@
     <string name="new_status">Новый статус</string>
     <string name="current_status_datetime">Дата и время\nТекущего статуса</string>
     <string name="new_status_datetime">Новая дата и\nвремя</string>
+    <string name="register_arrival">Регистрация прибытия</string>
+    <string name="unloading_start">Начало разгрузки</string>
+    <string name="checking_start">Начало сверки</string>
+    <string name="arrival_date">Дата прибытия</string>
+    <string name="arrival_time">Время прибытия</string>
+    <string name="unloading_date">Дата разгрузки</string>
+    <string name="unloading_time">Время разгрузки</string>
+    <string name="checking_date">Дата сверки</string>
+    <string name="checking_time">Время сверки</string>
 </resources>

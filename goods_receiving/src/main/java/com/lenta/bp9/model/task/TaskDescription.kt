@@ -7,10 +7,10 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 //ТП. Таблица 75 ZSGRZ_TASK_EXCH Структура карточки задания
-data class TaskDescription(val currentStatusCode: String,   //Код текущего статуса (CUR_STAT)
+data class TaskDescription(val currentStatus: TaskStatus,   //Код текущего статуса (CUR_STAT)
                       val currentStatusText: String,   //Текс текущего статуса (CUR_ST_TEXT)
-                      val currentStatusDate: String,   //Дата текущего статуса (CUR_ST_DATE)
-                      val currentStatusTime: String,   //Время текущего статуса (CUR_ST_TIME)
+                      var currentStatusDate: String,   //Дата текущего статуса (CUR_ST_DATE)
+                      var currentStatusTime: String,   //Время текущего статуса (CUR_ST_TIME)
                       val nextStatusText: String,      //Следующий статус (NEXT_ST_TEXT)
                       var nextStatusDate: String,      //Дата следуюшего статуса, изначальна равна текущей дате, может быть изменена пользователем
                       var nextStatusTime: String,      //Время следуюшего статуса, изначальна равно текущму времени, может быть изменено пользователем
@@ -36,7 +36,7 @@ data class TaskDescription(val currentStatusCode: String,   //Код текущ�
 
     companion object {
         fun from(restData: TaskDescriptionRestInfo): TaskDescription {
-            return TaskDescription(currentStatusCode = restData.currentStatusCode,
+            return TaskDescription(currentStatus = TaskStatus.from(restData.currentStatusCode),
                     currentStatusText = restData.currentStatusText,
                     currentStatusDate = restData.currentStatusDate,
                     currentStatusTime = restData.currentStatusTime,

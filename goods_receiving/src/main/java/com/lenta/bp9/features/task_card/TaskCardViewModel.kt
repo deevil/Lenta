@@ -4,14 +4,18 @@ import android.content.Context
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.lenta.bp9.features.change_datetime.ChangeDateTimeMode
 import com.lenta.bp9.features.loading.tasks.TaskCardMode
 import com.lenta.bp9.model.task.IReceivingTaskManager
 import com.lenta.bp9.model.task.NotificationIndicatorType
 import com.lenta.bp9.model.task.TaskNotification
+import com.lenta.bp9.model.task.TaskStatus
 import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.shared.account.ISessionInfo
+import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.extentions.map
+import io.fabric.sdk.android.services.concurrency.Task
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -107,17 +111,24 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
         taskManager.getReceivingTask()?.taskDescription?.isSpecialControlGoods ?: false
     }
 
+    val changeCurrentDateTimePossible by lazy {
+        val status = taskManager.getReceivingTask()?.taskDescription?.currentStatus
+        status == TaskStatus.Arrived
+    }
+
+    val changeNextDateTimePossible by lazy {
+        val status = taskManager.getReceivingTask()?.taskDescription?.currentStatus
+        status == TaskStatus.Ordered || status == TaskStatus.Traveling || status == TaskStatus.Arrived ||
+                status == TaskStatus.Checked
+    }
+
     val currentStatusDateTime: MutableLiveData<String> = MutableLiveData("")
     val nextStatusDateTime: MutableLiveData<String> = MutableLiveData("")
 
-    fun init() {
+    fun onResume() {
         viewModelScope.launch {
             updateDateTimes()
         }
-    }
-
-    fun onResume() {
-        updateDateTimes()
     }
 
     private fun updateDateTimes() {
@@ -131,6 +142,14 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
 
     override fun onPageSelected(position: Int) {
         selectedPage.value = position
+    }
+
+    fun changeCurrentDatetimeTapped() {
+        screenNavigator.openChangeDateTimeScreen(ChangeDateTimeMode.CurrentStatus)
+    }
+
+    fun changeNextDatetimeTapped() {
+        screenNavigator.openChangeDateTimeScreen(ChangeDateTimeMode.NextStatus)
     }
 
     // TODO: Implement the ViewModel

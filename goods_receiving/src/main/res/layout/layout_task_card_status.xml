@@ -216,6 +216,30 @@
             app:layout_constraintStart_toEndOf="@id/guideline"
             app:layout_constraintBaseline_toBaselineOf="@+id/tv_next_status_datetime_caption" />
 
+        <ImageButton
+            android:id="@+id/b_changeCurrentDatetime"
+            android:layout_width="48dp"
+            android:layout_height="66dp"
+            android:background="?selectableItemBackground"
+            android:src="@drawable/ic_keyboard_arrow_right_white_16dp"
+            android:onClick="@{(v) -> vm.changeCurrentDatetimeTapped()}"
+            android:visibility="@{vm.changeCurrentDateTimePossible}"
+            app:layout_constraintBottom_toTopOf="@id/div_hor_3"
+            app:layout_constraintTop_toBottomOf="@id/div_hor_2"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <ImageButton
+            android:id="@+id/b_changeNextDatetime"
+            android:layout_width="48dp"
+            android:layout_height="66dp"
+            android:background="?selectableItemBackground"
+            android:src="@drawable/ic_keyboard_arrow_right_white_16dp"
+            android:onClick="@{(v) -> vm.changeNextDatetimeTapped()}"
+            android:visibility="@{vm.changeNextDateTimePossible}"
+            app:layout_constraintBottom_toTopOf="@id/div_hor_6"
+            app:layout_constraintTop_toBottomOf="@id/div_hor_5"
+            app:layout_constraintEnd_toEndOf="parent" />
+
         <ImageView
             android:id="@+id/imageViewIcon1"
             android:layout_width="wrap_content"
