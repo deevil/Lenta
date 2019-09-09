@@ -42,9 +42,11 @@ class GoodInfoNeFragment : CoreFragment<FragmentGoodInfoNeBinding, GoodInfoNeVie
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
         topToolbarUiModel.description.value = getString(R.string.goods_info)
 
-        vm.good.observe(this, Observer<Good> { good ->
-            topToolbarUiModel.title.value = good.getFormattedMaterialWithName()
-        })
+        viewLifecycleOwner.apply {
+            vm.good.observe(this, Observer { good ->
+                topToolbarUiModel.title.value = good.getFormattedMaterialWithName()
+            })
+        }
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {

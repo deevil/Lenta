@@ -22,7 +22,7 @@ class MainMenuViewModel : CoreViewModel() {
         // Тестирование запуска различных экранов
         //navigator.openPrintSettingsScreen()
         //navigator.openGoodInfoWlScreen()
-        //navigator.openGoodsListWlScreen()
+        navigator.openGoodsListWlScreen()
         //navigator.openGoodsListPcScreen()
         //navigator.openSearchFilterWlScreen()
         //navigator.openGoodsListNeScreen()
@@ -34,7 +34,7 @@ class MainMenuViewModel : CoreViewModel() {
         //navigator.openExpectedDeliveriesScreen()
         //navigator.openGoodSalesScreen()
         //navigator.openGoodInfoNeScreen()
-        navigator.openGoodInfoPcScreen()
+        //navigator.openGoodInfoPcScreen()
     }
 
     fun onClickAuxiliaryMenu() {
