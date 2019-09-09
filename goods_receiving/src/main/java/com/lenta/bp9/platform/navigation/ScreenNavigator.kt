@@ -4,13 +4,9 @@ import android.content.Context
 import androidx.core.content.ContextCompat
 import com.lenta.bp9.features.auth.AuthFragment
 import com.lenta.bp9.features.goods_list.GoodsListFragment
-import com.lenta.bp9.features.loading.tasks.LoadingTasksFragment
 import com.lenta.bp9.features.task_list.TaskListFragment
-import com.lenta.bp9.features.loading.tasks.TaskListLoadingMode
 import com.lenta.bp9.requests.network.TaskListSearchParams
 import com.lenta.bp9.features.loading.fast.FastDataLoadingFragment
-import com.lenta.bp9.features.loading.tasks.LoadingTaskCardFragment
-import com.lenta.bp9.features.loading.tasks.TaskCardMode
 import com.lenta.bp9.features.main_menu.MainMenuFragment
 import com.lenta.bp9.features.search_task.SearchTaskFragment
 import com.lenta.bp9.features.select_market.SelectMarketFragment
@@ -19,6 +15,7 @@ import com.lenta.bp9.features.task_card.TaskCardFragment
 import com.lenta.bp9.R
 import com.lenta.bp9.features.change_datetime.ChangeDateTimeFragment
 import com.lenta.bp9.features.change_datetime.ChangeDateTimeMode
+import com.lenta.bp9.features.loading.tasks.*
 import com.lenta.shared.account.IAuthenticator
 import com.lenta.shared.features.alert.AlertFragment
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
@@ -142,6 +139,12 @@ class ScreenNavigator(
         }
     }
 
+    override fun openLoadingRegisterArrivalScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(LoadingRegisterArrivalFragment())
+        }
+    }
+
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 
 }
@@ -163,4 +166,5 @@ interface IScreenNavigator : ICoreNavigator {
     fun openConfirmationUnlock(callbackFunc: () -> Unit)
     fun openConfirmationView(callbackFunc: () -> Unit)
     fun openChangeDateTimeScreen(mode: ChangeDateTimeMode)
+    fun openLoadingRegisterArrivalScreen()
 }
