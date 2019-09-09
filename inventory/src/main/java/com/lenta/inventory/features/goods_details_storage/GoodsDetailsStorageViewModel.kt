@@ -87,7 +87,7 @@ class GoodsDetailsStorageViewModel : CoreViewModel() {
                             number = 1,
                             name = partly.value!!,
                             quantity = "$partlyCount",
-                            even = 1 % 2 == 0,
+                            even = false,
                             egaisVersion = EgaisStampVersion.V2
                     )
             )

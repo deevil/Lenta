@@ -1,6 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <string-array name="task_type">
+        <item>Рабочий список</item>
+        <item>Сверка цен на полке</item>
+        <item>Чек-лист</item>
+        <item>Невыставленный товар</item>
+    </string-array>
+
     <string-array name="printer_name">
         <item>DataMax</item>
         <item>Zebra</item>

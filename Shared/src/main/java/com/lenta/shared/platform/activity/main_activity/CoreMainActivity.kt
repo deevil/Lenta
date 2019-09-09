@@ -90,38 +90,32 @@ abstract class CoreMainActivity : CoreActivity<ActivityMainBinding>(), ToolbarBu
 
         binding?.vm = vm
 
-        scanHelper.scanResult.observe(this, Observer<String> {
+        setupScanner()
+
+    }
+
+    private fun setupScanner() {
+        var lastTimeScanned = Long.MIN_VALUE
+        val scanObserver = Observer<String> {
             Logg.d { "scan result: $it" }
             it?.let { code ->
-                getCurrentFragment()?.implementationOf(OnScanResultListener::class.java)?.onScanResult(code)
+                val currentTime = System.currentTimeMillis()
+                if (currentTime - lastTimeScanned > 500) {
+                    getCurrentFragment()?.implementationOf(OnScanResultListener::class.java)?.onScanResult(code)
+                }
+                lastTimeScanned = currentTime
             }
 
-        })
+        }
 
-        honeywellScanHelper.scanResult.observe(this, Observer<String> {
-            Logg.d { "scan result: $it" }
-            it?.let { code ->
-                getCurrentFragment()?.implementationOf(OnScanResultListener::class.java)?.onScanResult(code)
-            }
+        scanHelper.scanResult.observe(this, scanObserver)
 
-        })
-
+        honeywellScanHelper.scanResult.observe(this, scanObserver)
         honeywellScanHelper.init(this)
 
-        newLandScanHelper.scanResult.observe(this, Observer<String> {
-            Logg.d { "scan result: $it" }
-            it?.let { code ->
-                getCurrentFragment()?.implementationOf(OnScanResultListener::class.java)?.onScanResult(code)
-            }
-        })
+        newLandScanHelper.scanResult.observe(this, scanObserver)
 
-        zebraScanHelper.scanResult.observe(this, Observer {
-            Logg.d { "scan result: $it" }
-            it?.let { code ->
-                getCurrentFragment()?.implementationOf(OnScanResultListener::class.java)?.onScanResult(code)
-            }
-        })
-
+        zebraScanHelper.scanResult.observe(this, scanObserver)
     }
 
     override fun onResume() {

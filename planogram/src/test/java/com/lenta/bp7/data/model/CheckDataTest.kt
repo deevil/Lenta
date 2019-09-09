@@ -1,17 +1,22 @@
 package com.lenta.bp7.data.model
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.lenta.bp7.data.CheckType
 import com.lenta.bp7.data.IPersistCheckResult
 import com.lenta.shared.models.core.Uom
+import com.lenta.shared.platform.time.ITimeMonitor
 import com.nhaarman.mockitokotlin2.mock
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.function.Executable
+import java.util.*
 
 internal class CheckDataTest {
 
     private lateinit var checkData: CheckData
+    private lateinit var timeMonitor: ITimeMonitor
 
     private val marketNumber = "0001"
     private val checkType = CheckType.SELF_CONTROL
@@ -23,7 +28,25 @@ internal class CheckDataTest {
     @BeforeEach
     fun createCheckData() {
         val persistCheckResult: IPersistCheckResult = mock()
-        checkData = CheckData(persistCheckResult)
+        timeMonitor = object : ITimeMonitor {
+            override fun observeUnixTime(): LiveData<Long> {
+                return MutableLiveData(getUnixTime())
+            }
+
+            override fun getUnixTime(): Long {
+                return System.currentTimeMillis()
+            }
+
+            override fun setServerTime(time: String, date: String) {
+
+            }
+
+            override fun getServerDate(): Date {
+                return Date(getUnixTime())
+            }
+
+        }
+        checkData = CheckData(persistCheckResult, timeMonitor)
         checkData.let {
             it.marketNumber = marketNumber
             it.checkType = checkType
@@ -34,7 +57,7 @@ internal class CheckDataTest {
             number: String = "" + (100..999).random() + "-" + (100..999).random(),
             status: SegmentStatus = SegmentStatus.UNFINISHED) {
         checkData.addSegment(marketNumber, number)
-        checkData.getCurrentSegment()?.setStatus(status)
+        checkData.getCurrentSegment()?.setStatus(status, Date())
     }
 
     private fun addShelf(
@@ -42,7 +65,7 @@ internal class CheckDataTest {
             status: ShelfStatus = ShelfStatus.UNFINISHED) {
         if (checkData.getCurrentSegment() == null) addSegment()
         checkData.addShelf(number)
-        checkData.getCurrentShelf()?.setStatus(status)
+        checkData.getCurrentShelf()?.setStatus(status, timeMonitor.getServerDate())
     }
 
     private fun addGood(

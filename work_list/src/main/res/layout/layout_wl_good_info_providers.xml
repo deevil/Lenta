@@ -7,11 +7,11 @@
 
         <variable
             name="vm"
-            type="com.lenta.bp14.features.work_list.good_info.GoodInfoWlViewModel"/>
+            type="com.lenta.bp14.features.work_list.good_info.GoodInfoWlViewModel" />
 
         <variable
             name="rvConfig"
-            type="com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig"/>
+            type="com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig" />
 
     </data>
 
@@ -43,7 +43,7 @@
                         style="@style/ColumnTitleStyle"
                         android:layout_width="wrap_content"
                         android:layout_marginStart="0dp"
-                        android:text="@string/number"/>
+                        android:text="@string/number" />
 
                 </LinearLayout>
 
@@ -53,7 +53,7 @@
 
                     <TextView
                         style="@style/ColumnTitleStyle"
-                        android:text="@string/provider"/>
+                        android:text="@string/provider" />
 
                 </LinearLayout>
 
@@ -63,14 +63,14 @@
 
                     <TextView
                         style="@style/ColumnTitleStyle"
-                        android:text="@string/period_kip"/>
+                        android:text="@string/period_kip" />
 
                 </LinearLayout>
 
             </LinearLayout>
 
             <View
-                style="@style/HorizontalDivider"/>
+                style="@style/HorizontalDivider" />
 
         </LinearLayout>
 
@@ -81,7 +81,9 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            tools:listitem="@layout/item_good_provider_period"/>
+            app:items="@{vm.providers}"
+            app:rv_config="@{rvConfig}"
+            tools:listitem="@layout/item_good_provider_period" />
 
     </LinearLayout>
 

@@ -41,7 +41,7 @@ class ProcessExciseAlcoProductServiceTest : BaseUnitTest() {
                 taskName = "12 неделя",
                 taskType = "ВИ",
                 tkNumber = "0001",
-                isRecount = true,
+                ivCountPerNr = true,
                 isStrict = true,
                 blockType = "",
                 lockUser = "",
@@ -53,7 +53,9 @@ class ProcessExciseAlcoProductServiceTest : BaseUnitTest() {
                 taskDeadLine = "2019-07-25",
                 recountType = RecountType.None,
                 gis = GisControl.Alcohol,
-                linkOldStamp = false
+                linkOldStamp = false,
+                processingEndTime = null,
+                isRecount = false
         )
 
         product = TaskProductInfo(
@@ -253,8 +255,11 @@ class ProcessExciseAlcoProductServiceTest : BaseUnitTest() {
         //проверяем фактическое кол-во продукта, должно быть 1
         Assert.assertEquals(1.0, processExciseAlcoProductService.getFactCount()!!, 0.0)
 
-        //проверяем кол-во марок, должно быть 1
-        Assert.assertEquals(1, processExciseAlcoProductService.getCountPartlyStamps())
+        //проверяем кол-во партионных марок, должно быть 0
+        Assert.assertEquals(0, processExciseAlcoProductService.getCountPartlyStamps())
+
+        //проверяем кол-во обычных марок, должно быть 1
+        Assert.assertEquals(1, processExciseAlcoProductService.getCountVintageStamps())
 
         //добавляем вторую акцизную марку 68 символов продукту
         processExciseAlcoProductService.add(1, exciseStamp68_2)
@@ -262,8 +267,11 @@ class ProcessExciseAlcoProductServiceTest : BaseUnitTest() {
         //проверяем фактическое кол-во продукта, должно быть 2
         Assert.assertEquals(2.0, processExciseAlcoProductService.getFactCount()!!, 0.0)
 
-        //проверяем кол-во марок, должно быть 2
-        Assert.assertEquals(2, processExciseAlcoProductService.getCountPartlyStamps())
+        //проверяем кол-во партионных марок, должно быть 0
+        Assert.assertEquals(0, processExciseAlcoProductService.getCountPartlyStamps())
+
+        //проверяем кол-во обычных марок, должно быть 2
+        Assert.assertEquals(2, processExciseAlcoProductService.getCountVintageStamps())
     }
 
     @Test
@@ -282,11 +290,11 @@ class ProcessExciseAlcoProductServiceTest : BaseUnitTest() {
         //проверяем фактическое кол-во продукта, должно быть 4 (1 марка 150 символов, 1 марка 68 символов, 2 марки по 150 символов для коробки)
         Assert.assertEquals(4.0, processExciseAlcoProductService.getFactCount()!!, 0.0)
 
-        //проверяем кол-во марочных марок, должно быть 3
-        Assert.assertEquals(3, processExciseAlcoProductService.getCountVintageStamps())
+        //проверяем кол-во марочных марок, должно быть 4
+        Assert.assertEquals(4, processExciseAlcoProductService.getCountVintageStamps())
 
-        //проверяем кол-во партионных марок, должно быть 1
-        Assert.assertEquals(1, processExciseAlcoProductService.getCountPartlyStamps())
+        //проверяем кол-во партионных марок, должно быть 0
+        Assert.assertEquals(0, processExciseAlcoProductService.getCountPartlyStamps())
 
         //делаем rollback
         processExciseAlcoProductService.rollback()
@@ -294,11 +302,11 @@ class ProcessExciseAlcoProductServiceTest : BaseUnitTest() {
         //проверяем фактическое кол-во продукта, должно быть 2 (удалились добавленные две марки по 150 символов для коробки)
         Assert.assertEquals(2.0, processExciseAlcoProductService.getFactCount()!!, 0.0)
 
-        //проверяем кол-во марочных марок, должно быть 1
-        Assert.assertEquals(1, processExciseAlcoProductService.getCountVintageStamps())
+        //проверяем кол-во марочных марок, должно быть 2
+        Assert.assertEquals(2, processExciseAlcoProductService.getCountVintageStamps())
 
-        //проверяем кол-во партионных марок, должно быть 1
-        Assert.assertEquals(1, processExciseAlcoProductService.getCountPartlyStamps())
+        //проверяем кол-во партионных марок, должно быть 0
+        Assert.assertEquals(0, processExciseAlcoProductService.getCountPartlyStamps())
 
         //проверяем, что марки коробки удалились
         Assert.assertFalse(processExciseAlcoProductService.isTaskAlreadyHasExciseStampBox(boxNumber))
@@ -416,9 +424,9 @@ class ProcessExciseAlcoProductServiceTest : BaseUnitTest() {
 
         //проверяем, кол-во должно быть 1
         Assert.assertEquals(1, lastCountExciseStamp.countLastExciseStamp)
-
-        //проверяем, тип должен PARTLY
-        Assert.assertTrue(GoodsInfoCountType.PARTLY.number == lastCountExciseStamp.countType)
+        //НЕ АКТУАЛЬНО(партионные марки считаем обычными) проверяем, тип должен PARTLY
+        //проверяем, тип должен VINTAGE
+        Assert.assertTrue(GoodsInfoCountType.VINTAGE.number == lastCountExciseStamp.countType)
 
         //делаем rollback, откатываем одну марку
         processExciseAlcoProductService.rollback()
@@ -474,8 +482,9 @@ class ProcessExciseAlcoProductServiceTest : BaseUnitTest() {
         //добавляем вторую акцизную марку 68 символов продукту
         processExciseAlcoProductService.add(1, exciseStamp68_2)
 
-        //проверяем getCountPartlyStamps, кол-во марок, должно быть 2
-        Assert.assertEquals(2, processExciseAlcoProductService.getCountPartlyStamps())
+        //НЕ АКТУАЛЬНО(партионные марки считаем обычными) - проверяем getCountPartlyStamps, кол-во марок, должно быть 2
+        //проверяем getCountPartlyStamps, кол-во марок, должно быть 0
+        Assert.assertEquals(0, processExciseAlcoProductService.getCountPartlyStamps())
     }
 
     @Test
@@ -514,34 +523,41 @@ class ProcessExciseAlcoProductServiceTest : BaseUnitTest() {
 
         //проверяем кол-во марок для продукта в репозитории, должно быть 0
         Assert.assertEquals(0, processServiceManager.getInventoryTask()!!.taskRepository.getExciseStamps().findExciseStampsOfProduct(product).size)
-        //проверяем кол-во марочных марок, должно быть 4
-        Assert.assertEquals(4, processExciseAlcoProductService.getCountVintageStamps())
+        //спроверяем кол-во марочных марок, должно быть 4
+        //проверяем кол-во марочных марок, должно быть 6, т.к. теперь все марки обрабатываем как марочные
+        Assert.assertEquals(6, processExciseAlcoProductService.getCountVintageStamps())
         //проверяем кол-во последней марки в GoodsInfoCountExciseStamps, должно быть 1 (последняя добавленная марка 150 символов)
         Assert.assertEquals(1, processExciseAlcoProductService.getLastCountExciseStamp().countLastExciseStamp)
-        //проверяем кол-во партионных марок, должно быть 2
-        Assert.assertEquals(2, processExciseAlcoProductService.getCountPartlyStamps())
+        //НЕ АКТУАЛЬНО - проверяем кол-во партионных марок, должно быть 2
+        //проверяем кол-во партионных марок, должно быть 0, т.к. теперь все марки обрабатываем как марочные
+        Assert.assertEquals(0, processExciseAlcoProductService.getCountPartlyStamps())
 
-        //проверяем тип в GoodsInfoCountExciseStamps, должно быть PARTLY (1), т.к. мы последнюю марку добавили партионную
-        Assert.assertEquals(1, processExciseAlcoProductService.getLastCountExciseStamp().countType)
+        //НЕ АКТУАЛЬНО - проверяем тип в GoodsInfoCountExciseStamps, должно быть PARTLY (1), т.к. мы последнюю марку добавили партионную
+        //проверяем тип в GoodsInfoCountExciseStamps, должно быть VINTAGE (2), т.к. все марки теперь марочные
+        Assert.assertEquals(2, processExciseAlcoProductService.getLastCountExciseStamp().countType)
 
         //удаляем все марочные марки delAllVintageStamps
         processExciseAlcoProductService.delAllPartlyStamps()
 
-        //проверяем фактическое кол-во у продуктов current, должно быть 2 (должны остаться тольке 4 марочные марки)
-        Assert.assertEquals(4.0, processExciseAlcoProductService.getFactCount()!!, 0.0)
+        //НЕ АКТУАЛЬНО - проверяем фактическое кол-во у продуктов current, должно быть 2 (должны остаться тольке 4 марочные марки)
+        //проверяем фактическое кол-во у продуктов current, должно быть 6, т.к. все марки теперь марочные
+        Assert.assertEquals(6.0, processExciseAlcoProductService.getFactCount()!!, 0.0)
         //проверяем фактическое кол-во у продуктов в репозитории, должно быть 0
         Assert.assertEquals(0.0, processServiceManager.getInventoryTask()!!.taskRepository.getProducts().findProduct(product)!!.factCount, 0.0)
 
         //проверяем кол-во марок для продукта в репозитории, должно быть 0
         Assert.assertEquals(0, processServiceManager.getInventoryTask()!!.taskRepository.getExciseStamps().findExciseStampsOfProduct(product).size)
-        //проверяем кол-во марочных марок, должно быть 4
-        Assert.assertEquals(4, processExciseAlcoProductService.getCountVintageStamps())
+        //НЕ АКТУАЛЬНО - проверяем кол-во марочных марок, должно быть 4
+        //проверяем кол-во марочных марок, должно быть 6, т.к. все марки теперь марочные
+        Assert.assertEquals(6, processExciseAlcoProductService.getCountVintageStamps())
         //проверяем кол-во партионных марок, должно быть 0
         Assert.assertEquals(0, processExciseAlcoProductService.getCountPartlyStamps())
         //проверяем кол-во последней марки в GoodsInfoCountExciseStamps, должно быть 2 (все партионные марки удалены, а остались марочны, последняя добавленная (2 две маркт для коробки) здесь показывается)
-        Assert.assertEquals(2, processExciseAlcoProductService.getLastCountExciseStamp().countLastExciseStamp)
+        //проверяем кол-во последней марки в GoodsInfoCountExciseStamps, должно быть 1 (все партионные марки удалены
+        Assert.assertEquals(1, processExciseAlcoProductService.getLastCountExciseStamp().countLastExciseStamp)
 
-        //проверяем тип в GoodsInfoCountExciseStamps, должно быть VINTAGE (2), т.к. остались марочные марки
+        //НЕ АКТУАЛЬНО - проверяем тип в GoodsInfoCountExciseStamps, должно быть VINTAGE (2), т.к. остались марочные марки
+        //проверяем тип в GoodsInfoCountExciseStamps, должно быть VINTAGE (2), т.к. все марки теперь марочные
         Assert.assertEquals(2, processExciseAlcoProductService.getLastCountExciseStamp().countType)
 
     }
@@ -567,12 +583,14 @@ class ProcessExciseAlcoProductServiceTest : BaseUnitTest() {
 
         //проверяем кол-во марок для продукта в репозитории, должно быть 0
         Assert.assertEquals(0, processServiceManager.getInventoryTask()!!.taskRepository.getExciseStamps().findExciseStampsOfProduct(product).size)
-        //проверяем кол-во марочных марок, должно быть 4
-        Assert.assertEquals(4, processExciseAlcoProductService.getCountVintageStamps())
+        //НЕ АКТУАЛЬНО - проверяем кол-во марочных марок, должно быть 4
+        //проверяем кол-во марочных марок, должно быть 6
+        Assert.assertEquals(6, processExciseAlcoProductService.getCountVintageStamps())
         //проверяем кол-во последней марки в GoodsInfoCountExciseStamps, должно быть 1 (последняя добавленная марка 150 символов)
         Assert.assertEquals(1, processExciseAlcoProductService.getLastCountExciseStamp().countLastExciseStamp)
-        //проверяем кол-во партионных марок, должно быть 2
-        Assert.assertEquals(2, processExciseAlcoProductService.getCountPartlyStamps())
+        //НЕ АКТУАЛЬНО - проверяем кол-во партионных марок, должно быть 2
+        //проверяем кол-во партионных марок, должно быть 0
+        Assert.assertEquals(0, processExciseAlcoProductService.getCountPartlyStamps())
 
         //проверяем тип в GoodsInfoCountExciseStamps, должно быть VINTAGE (2), т.к. мы последнюю марку добавили марочную
         Assert.assertEquals(2, processExciseAlcoProductService.getLastCountExciseStamp().countType)
@@ -580,8 +598,9 @@ class ProcessExciseAlcoProductServiceTest : BaseUnitTest() {
         //удаляем все марочные марки delAllVintageStamps
         processExciseAlcoProductService.delAllVintageStamps()
 
-        //проверяем фактическое кол-во у продуктов current, должно быть 2 (должны остаться тольке 2 партионные марки)
-        Assert.assertEquals(2.0, processExciseAlcoProductService.getFactCount()!!, 0.0)
+        //НЕ АКТУАЛЬНО - проверяем фактическое кол-во у продуктов current, должно быть 2 (должны остаться тольке 2 партионные марки)
+        //проверяем фактическое кол-во у продуктов current, должно быть 0 (должны остаться тольке 2 партионные марки)
+        Assert.assertEquals(0.0, processExciseAlcoProductService.getFactCount()!!, 0.0)
         //проверяем фактическое кол-во у продуктов в репозитории, должно быть 0
         Assert.assertEquals(0.0, processServiceManager.getInventoryTask()!!.taskRepository.getProducts().findProduct(product)!!.factCount, 0.0)
 
@@ -589,13 +608,16 @@ class ProcessExciseAlcoProductServiceTest : BaseUnitTest() {
         Assert.assertEquals(0, processServiceManager.getInventoryTask()!!.taskRepository.getExciseStamps().findExciseStampsOfProduct(product).size)
         //проверяем кол-во марочных марок, должно быть 0
         Assert.assertEquals(0, processExciseAlcoProductService.getCountVintageStamps())
-        //проверяем кол-во партионных марок, должно быть 2
-        Assert.assertEquals(2, processExciseAlcoProductService.getCountPartlyStamps())
+        //НЕ АКТУАЛЬНО - проверяем кол-во партионных марок, должно быть 2
+        //проверяем кол-во партионных марок, должно быть 0
+        Assert.assertEquals(0, processExciseAlcoProductService.getCountPartlyStamps())
         //проверяем кол-во последней марки в GoodsInfoCountExciseStamps, должно быть 1 (все марочные марки удалены, а остались партионные, последняя добавленная здесь показывается)
-        Assert.assertEquals(1, processExciseAlcoProductService.getLastCountExciseStamp().countLastExciseStamp)
+        //НЕ АКТУАЛЬНО - проверяем кол-во последней марки в GoodsInfoCountExciseStamps, должно быть 1 (все марочные марки удалены, а остались партионные, последняя добавленная здесь показывается)
+        Assert.assertEquals(0, processExciseAlcoProductService.getLastCountExciseStamp().countLastExciseStamp)
 
-        //проверяем тип в GoodsInfoCountExciseStamps, должно быть PARTLY (1), т.к. остались партионные марки
-        Assert.assertEquals(1, processExciseAlcoProductService.getLastCountExciseStamp().countType)
+        //НЕ АКТУАЛЬНО - проверяем тип в GoodsInfoCountExciseStamps, должно быть PARTLY (1), т.к. остались партионные марки
+        //проверяем тип в GoodsInfoCountExciseStamps, должно быть QUANTITY (0), т.к. не осталось марок
+        Assert.assertEquals(0, processExciseAlcoProductService.getLastCountExciseStamp().countType)
 
     }
 }

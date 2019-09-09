@@ -8,7 +8,8 @@ open class ExciseStamp(val materialNumber: String, val code: String) : IExciseSt
     companion object {
         fun getEgaisVersion(code: String): Int {
             return when (code.length) {
-                EgaisStampVersion.V2.version -> EgaisStampVersion.V2.version
+                // Все марки определяем как 150
+                EgaisStampVersion.V2.version,
                 EgaisStampVersion.V3.version -> EgaisStampVersion.V3.version
                 else -> EgaisStampVersion.UNKNOWN.version
             }

@@ -44,12 +44,13 @@
     <string name="taken_to_work">Принято в работу</string>
     <string name="taken_to_work_info">Задание %1$s принято в работу. До окончания пересчета осталось %2$s часов</string>
     <string name="confirmation_saving_job">Перевести задание в статус \"Посчитано\" и закрыть его для редактирования</string>
-    <string name="confirmation_skipping_discrepancies">В задании остались необработанные товары. Сохранить в статусе \"Опубликовано\" и оставить доступным для продолжения пересчета?</string>
-    <string name="confirmation_skipping_discrepancies_recount">В задание остались необработанные товары. Оставить задание доступным для пересчёта \"Опубликовано\" или закрыть \"Посчитано\"?</string>
+    <string name="confirmation_skipping_discrepancies">В задании остались необработанные товары. Сохранить в статусе \"Опубликовано\" и оставить доступным для продолжения пересчета? До конца пересчета осталось %1$s часов</string>
+    <string name="confirmation_skipping_discrepancies_recount">В задание остались необработанные товары. Оставить задание доступным для пересчёта \"Опубликовано\" или закрыть \"Посчитано\"? До конца пересчета осталось %1$s часов</string>
     <string name="confirmation_missing_goods">Вы действительно хотите установить 0 в поле количество для %1$d товаров из списка?</string>
     <string name="confirmation_delete_goods">Вы действительно хотите удалить %1$d товаров из списка?</string>
     <string name="confirmation_clean_goods">Очистить обработанные товары?</string>
     <string name="confirmation_clean_storages">Очистить обработанные МХ?</string>
+    <string name="confirmation_exit_storeplace">Вы точно хотите выйти из обработки места хранения? Введенные данные будут утеряны</string>
     <string name="success_save_report">Успешно сохранено в SAP ERP</string>
     <string name="stamp_another_product">АМ принадлежит другому товару</string>
     <string name="alcocode_not_found">Алкокод не найден в справочнике</string>
@@ -64,4 +65,7 @@
     <string name="min_update_sells_alert">Данные о продажах не поступали с касс более %d минут. Плановые остатки могут быть неточными. Начать пересчет?</string>
     <string name="already_counted">МХ уже посчитано</string>
     <string name="unsupported_mattype">Товар %1$s с видом %2$s не может быть обработан в мп инвентаризации</string>
+    <string name="confirmation_saving_for_parallels_active_users">Задание параллельно обрабатывается другим пользователем. Текущие данные будут переданы в SAP, но задание останется доступным для продолжения пересчета.</string>
+    <string name="take_store_place">Забрать МХ себе?</string>
+    <string name="alert_double_scan_box">Этот короб уже был отсканирован</string>
 </resources>

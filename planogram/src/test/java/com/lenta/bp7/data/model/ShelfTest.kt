@@ -10,6 +10,7 @@ import java.util.*
 internal class ShelfTest {
 
     private lateinit var shelf: Shelf
+    private var creationDate = Date()
 
     private val id = 0
     private val number = "11"
@@ -17,6 +18,8 @@ internal class ShelfTest {
     @BeforeEach
     fun createShelf() {
         shelf = Shelf(
+                checkStart = creationDate,
+                checkFinish = creationDate,
                 id = id,
                 number = number)
     }
@@ -26,7 +29,7 @@ internal class ShelfTest {
         assertAll("shelf",
                 Executable { assertEquals(id, shelf.id) },
                 Executable { assertEquals(number, shelf.number) },
-                Executable { assertEquals(null, shelf.checkFinish) },
+                Executable { assertEquals(creationDate, shelf.checkFinish) },
                 Executable { assertEquals(ShelfStatus.UNFINISHED, shelf.getStatus()) },
                 Executable { assertTrue(shelf.goods.isEmpty()) }
         )
@@ -34,9 +37,9 @@ internal class ShelfTest {
 
     @Test
     fun `Change status`() {
-        shelf.setStatus(ShelfStatus.PROCESSED)
+        shelf.setStatus(ShelfStatus.PROCESSED, creationDate)
         assertEquals(ShelfStatus.PROCESSED, shelf.getStatus())
-        assertTrue(shelf.checkFinish != null )
+        assertTrue(shelf.checkFinish != null)
     }
 
     @Test

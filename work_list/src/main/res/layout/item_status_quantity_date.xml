@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="delivery"
+            type="com.lenta.bp14.data.model.Delivery" />
+
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_selectable"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/common_row_height"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                style="@style/LinearCellStyle"
+                android:layout_weight="@integer/number_status_quantity_date_column_1">
+
+                <TextView
+                    android:id="@+id/tv_item_number"
+                    style="@style/CellTextStyle"
+                    android:layout_width="wrap_content"
+                    android:text="@{String.valueOf(delivery.id)}"
+                    tools:text="1" />
+
+            </LinearLayout>
+
+            <View style="@style/VerticalDivider" />
+
+            <LinearLayout
+                style="@style/LinearCellStyle"
+                android:layout_weight="@integer/number_status_quantity_date_column_2">
+
+                <TextView
+                    style="@style/CellTextStyle"
+                    android:text="@{delivery.status.description}"
+                    tools:text="В пути" />
+
+                <TextView
+                    style="@style/CellTextStyle"
+                    android:text="@{delivery.additional}"
+                    tools:text="ПП" />
+
+            </LinearLayout>
+
+            <View style="@style/VerticalDivider" />
+
+            <LinearLayout
+                style="@style/LinearCellStyle"
+                android:layout_weight="@integer/number_status_quantity_date_column_3"
+                android:orientation="horizontal">
+
+                <TextView
+                    style="@style/CellTextStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="@{@string/quantity_units(delivery.quantity, delivery.uom.name)}"
+                    tools:text="10 кор" />
+
+            </LinearLayout>
+
+            <View style="@style/VerticalDivider" />
+
+            <LinearLayout
+                style="@style/LinearCellStyle"
+                android:layout_weight="@integer/number_status_quantity_date_column_4">
+
+                <TextView
+                    style="@style/CellTextStyle"
+                    android:text="@{delivery.formattedDate}"
+                    tools:text="12.11.19" />
+
+                <TextView
+                    style="@style/CellTextStyle"
+                    android:text="@{delivery.formattedTime}"
+                    tools:text="11:33" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <View style="@style/HorizontalDivider" />
+
+    </LinearLayout>
+
+</layout>

@@ -24,7 +24,7 @@ class GoodInfoFacingViewModel : AddGoodViewModel(), OnOkInSoftKeyboardListener {
 
     val totalFacings: MutableLiveData<Int> = facings.map {
         if (isGoodJustCreated()) {
-            val currentFacings = if (it?.isNotEmpty() == true) it.toInt() else 0
+            val currentFacings = it?.toIntOrNull() ?: 0
             val previousFacings = if (checkData.isFirstCurrentGood()) checkData.getPreviousSameGoodFacings() else 0
             currentFacings + previousFacings
         } else {
@@ -35,13 +35,13 @@ class GoodInfoFacingViewModel : AddGoodViewModel(), OnOkInSoftKeyboardListener {
     val facingFieldEnabled: MutableLiveData<Boolean> = good.map { isGoodJustCreated() }
 
     val missingButtonEnabled: MutableLiveData<Boolean> = facings.combineLatest(good).map { pair ->
-        val emptyCountField = if (pair?.first?.isNotEmpty() == true) pair.first.toInt() == 0 else true
+        val emptyCountField = pair?.first?.toIntOrNull() ?: 0 == 0
         val alreadyExistFacings = if (pair?.second != null) pair.second.facings > 0 else false
         emptyCountField && !alreadyExistFacings && isGoodJustCreated()
     }
 
     val applyButtonEnabled: MutableLiveData<Boolean> = facings.map {
-        val isNotEmpty = if (it?.isNotEmpty() == true) it.toInt() > 0 else false
+        val isNotEmpty = (it?.toIntOrNull() ?: 0) > 0
         isNotEmpty && isGoodJustCreated()
     }
 
@@ -86,7 +86,7 @@ class GoodInfoFacingViewModel : AddGoodViewModel(), OnOkInSoftKeyboardListener {
     }
 
     fun onClickApply() {
-        checkData.getCurrentGood()?.facings = facings.value!!.toInt()
+        checkData.getCurrentGood()?.facings = facings.value!!.toIntOrNull() ?: 0
         checkData.setCurrentGoodStatus(GoodStatus.PROCESSED)
         navigator.openGoodListScreen()
     }
@@ -100,7 +100,7 @@ class GoodInfoFacingViewModel : AddGoodViewModel(), OnOkInSoftKeyboardListener {
 
     fun onScanResult(data: String) {
         if (applyButtonEnabled.value == true) {
-            checkData.getCurrentGood()?.facings = facings.value!!.toInt()
+            checkData.getCurrentGood()?.facings = facings.value!!.toIntOrNull() ?: 0
             checkData.setCurrentGoodStatus(GoodStatus.PROCESSED)
             addGoodByEan(data)
         }

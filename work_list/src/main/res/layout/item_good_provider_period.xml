@@ -6,7 +6,7 @@
 
         <variable
             name="provider"
-            type="com.lenta.bp14.data.model.Provider"/>
+            type="com.lenta.bp14.data.model.Provider" />
 
     </data>
 
@@ -30,12 +30,12 @@
                     android:id="@+id/tv_item_number"
                     style="@style/CellTextStyle"
                     android:layout_width="wrap_content"
-                    tools:text="1"/>
+                    android:text="@{String.valueOf(provider.id)}"
+                    tools:text="1" />
 
             </LinearLayout>
 
-            <View
-                style="@style/VerticalDivider"/>
+            <View style="@style/VerticalDivider" />
 
             <LinearLayout
                 style="@style/LinearCellStyle"
@@ -44,17 +44,18 @@
                 <TextView
                     android:id="@+id/tv_good_provider_number"
                     style="@style/CellTextStyle"
-                    tools:text="165832"/>
+                    android:text="@{provider.code}"
+                    tools:text="165832" />
 
                 <TextView
                     android:id="@+id/tv_good_provider_name"
                     style="@style/CellTextStyle"
-                    tools:text="Поставщик 1"/>
+                    android:text="@{provider.name}"
+                    tools:text="Поставщик 1" />
 
             </LinearLayout>
 
-            <View
-                style="@style/VerticalDivider"/>
+            <View style="@style/VerticalDivider" />
 
             <LinearLayout
                 style="@style/LinearCellStyle"
@@ -63,14 +64,14 @@
                 <TextView
                     android:id="@+id/tv_period_kip"
                     style="@style/CellTextStyle"
-                    tools:text="12.05.19 - 01.12.19"/>
+                    android:text="@{provider.kipPeriod}"
+                    tools:text="12.05.19 - 01.12.19" />
 
             </LinearLayout>
 
         </LinearLayout>
 
-        <View
-            style="@style/HorizontalDivider"/>
+        <View style="@style/HorizontalDivider" />
 
     </LinearLayout>
 

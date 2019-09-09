@@ -33,11 +33,11 @@ class DataSaver @Inject constructor(
                                 isFinish = final,
                                 ip = context.getDeviceIp(),
                                 personnelNumber = sessionInfo.personnelNumber!!,
-                                isRecount = false
+                                ivCountPerNr = task.taskDescription.ivCountPerNr
                         )).either(::handleFailure) {
                     taskManager.clearTask()
 
-                    screenNavigator.openSuccessSaveDataScreen() {
+                    screenNavigator.openSuccessSaveDataScreen {
                         screenNavigator.closeAllScreen()
                         screenNavigator.openTasksList()
                     }

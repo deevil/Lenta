@@ -3,8 +3,8 @@ package com.lenta.bp7.data.model
 import com.lenta.bp7.data.CheckResultData
 import com.lenta.bp7.data.CheckType
 import com.lenta.bp7.data.IPersistCheckResult
-import com.lenta.shared.analytics.AnalyticsHelper
 import com.lenta.shared.platform.constants.Constants.CHECK_DATA_TIME_FORMAT
+import com.lenta.shared.platform.time.ITimeMonitor
 import com.lenta.shared.utilities.Logg
 import org.simpleframework.xml.core.Persister
 import java.io.StringWriter
@@ -13,7 +13,8 @@ import java.util.*
 import javax.inject.Inject
 
 class CheckData @Inject constructor(
-        private val persistCheckResult: IPersistCheckResult
+        private val persistCheckResult: IPersistCheckResult,
+        private val timeMonitor: ITimeMonitor
 ) {
     val segments: MutableList<Segment> = mutableListOf()
 
@@ -40,13 +41,18 @@ class CheckData @Inject constructor(
         segments.add(0, Segment(
                 id = segments.lastIndex + 2,
                 storeNumber = storeNumber,
-                number = segmentNumber))
+                number = segmentNumber,
+                checkStart = timeMonitor.getServerDate()
+                ))
         currentSegmentIndex = 0
     }
 
     fun addShelf(shelfNumber: String) {
         getCurrentSegment()!!.shelves.let {
+            val currentDate = timeMonitor.getServerDate()
             it.add(0, Shelf(
+                    checkStart = currentDate,
+                    checkFinish = currentDate,
                     id = it.lastIndex + 2,
                     number = shelfNumber))
         }
@@ -149,11 +155,11 @@ class CheckData @Inject constructor(
     }
 
     fun setCurrentSegmentStatus(status: SegmentStatus) {
-        getCurrentSegment()?.setStatus(status)
+        getCurrentSegment()?.setStatus(status, timeMonitor.getServerDate())
     }
 
     fun setCurrentShelfStatus(status: ShelfStatus) {
-        getCurrentShelf()?.setStatus(status)
+        getCurrentShelf()?.setStatus(status, timeMonitor.getServerDate())
     }
 
     fun setCurrentGoodStatus(status: GoodStatus) {
@@ -163,7 +169,7 @@ class CheckData @Inject constructor(
 
     fun setShelfStatusDeletedByIndex(shelfIndex: Int) {
         if (getCurrentSegment()?.shelves?.size ?: 0 > shelfIndex) {
-            getCurrentSegment()!!.shelves[shelfIndex].setStatus(ShelfStatus.DELETED)
+            getCurrentSegment()!!.shelves[shelfIndex].setStatus(ShelfStatus.DELETED, timeMonitor.getServerDate())
         }
     }
 
@@ -219,6 +225,7 @@ class CheckData @Inject constructor(
     fun prepareXmlCheckResult(marketIp: String): String {
         // XML со списком неотправленных сегментов
         val displayOfGoods = DisplayOfGoods(
+                sendDateTime = SimpleDateFormat(CHECK_DATA_TIME_FORMAT, Locale.getDefault()).format(timeMonitor.getServerDate()),
                 marketIp = marketIp
         )
 

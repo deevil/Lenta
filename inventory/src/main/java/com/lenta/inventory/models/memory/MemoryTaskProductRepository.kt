@@ -8,6 +8,26 @@ class MemoryTaskProductRepository(
         private val untiedProducts: ArrayList<TaskProductInfo> = ArrayList()
 ) : ITaskProductRepository {
 
+    private var productsSnapshot: List<TaskProductInfo>? = null
+    private var changedSinceSnapshot: Boolean = false
+
+    override fun makeSnapshot() {
+        productsSnapshot = productInfo.map { it.copy() }
+        changedSinceSnapshot = false
+    }
+
+    override fun restoreSnapshot() {
+        productsSnapshot?.let { productList ->
+            productInfo.clear()
+            productList.forEach { productInfo.add(it) }
+        }
+        productsSnapshot = null
+        changedSinceSnapshot = false
+    }
+
+    override fun isChanged(): Boolean {
+        return changedSinceSnapshot
+    }
 
     override fun getProducts(): List<TaskProductInfo> {
         return productInfo.toList()
@@ -41,18 +61,23 @@ class MemoryTaskProductRepository(
         for (i in productInfo.indices) {
             if (product.materialNumber == productInfo[i].materialNumber && product.placeCode == productInfo[i].placeCode) {
                 index = i
+                break
             }
         }
+
+        changedSinceSnapshot = true
 
         if (index == -1) {
             productInfo.add(product)
             return true
-        } else if (index != productInfo.size - 1) {
+        } else {
             productInfo.getOrNull(index)?.let {
                 productInfo.removeAt(index)
-                productInfo.add(it)
+                productInfo.add(product)
             }
         }
+
+
 
         return false
     }

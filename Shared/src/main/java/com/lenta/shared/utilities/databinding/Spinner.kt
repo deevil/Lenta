@@ -17,7 +17,6 @@ fun setupSpinner(spinner: Spinner, items: List<String>?, position: Int?, onPosit
         adapter = ArrayAdapter(spinner.context, android.R.layout.simple_spinner_item, mutableList)
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         spinner.adapter = adapter
-        spinner.setSelection(position ?: 0)
     }
 
     if (spinner.onItemSelectedListener == null && onPositionClickListener != null) {

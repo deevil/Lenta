@@ -159,10 +159,10 @@ enum class StatusTask {
     companion object {
         fun from(taskItem: TasksItem, userName: String): StatusTask {
             return when {
-                taskItem.notFinish.isNotBlank() -> Processed
                 taskItem.mode == RecountType.ParallelByStorePlaces.recountType || taskItem.mode == RecountType.ParallelByPerNo.recountType -> Parallels
                 taskItem.blockType == "1" && taskItem.lockUser == userName -> BlockedMe
                 taskItem.blockType == "1" || taskItem.blockType == "2" -> BlockedNotMe
+                taskItem.notFinish.isNotBlank() && taskItem.mode == RecountType.Simple.recountType -> Processed
                 else -> Free
 
 
