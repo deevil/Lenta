@@ -124,21 +124,21 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:src="@drawable/temp_ic_btn1_white_60dp"/>
+                android:src="@drawable/ic_round_a_48dp"/>
 
             <ImageView
                 android:id="@+id/btn_2"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:src="@drawable/temp_ic_btn2_white_60dp"/>
+                android:src="@drawable/ic_round_a_48dp"/>
 
             <ImageView
                 android:id="@+id/btn_3"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:src="@drawable/temp_ic_btn3_white_60dp"
+                android:src="@drawable/ic_kandy_48dp"
                 android:visibility="invisible"/>
 
             <ImageView
@@ -146,7 +146,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:src="@drawable/temp_ic_btn4_white_60dp"
+                android:src="@drawable/ic_new_48dp"
                 android:visibility="invisible"/>
 
             <ImageView
@@ -154,7 +154,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:src="@drawable/temp_ic_btn5_white_60dp"
+                android:src="@drawable/ic_natural_48dp"
                 android:visibility="invisible"/>
 
             <ImageView
@@ -162,14 +162,14 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:src="@drawable/temp_ic_btn6_white_60dp"/>
+                android:src="@drawable/ic_scan_qrcode_48dp"/>
 
             <ImageView
                 android:id="@+id/btn_7"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:src="@drawable/temp_ic_btn7_white_60dp"/>
+                android:src="@drawable/ic_scan_barcode_48dp"/>
 
         </LinearLayout>
 
