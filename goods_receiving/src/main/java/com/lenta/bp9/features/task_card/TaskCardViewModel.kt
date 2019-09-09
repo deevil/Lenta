@@ -12,8 +12,11 @@ import com.lenta.bp9.model.task.TaskNotification
 import com.lenta.bp9.model.task.TaskStatus
 import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.shared.account.ISessionInfo
+import com.lenta.shared.platform.constants.Constants
+import com.lenta.shared.platform.time.ITimeMonitor
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.databinding.PageSelectionListener
+import com.lenta.shared.utilities.date_time.DateTimeUtil
 import com.lenta.shared.utilities.extentions.map
 import io.fabric.sdk.android.services.concurrency.Task
 import kotlinx.coroutines.launch
@@ -29,6 +32,8 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
     lateinit var context: Context
     @Inject
     lateinit var taskManager: IReceivingTaskManager
+    @Inject
+    lateinit var timeMonitor: ITimeMonitor
 
     val selectedPage = MutableLiveData(0)
 
@@ -124,6 +129,14 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
 
     val currentStatusDateTime: MutableLiveData<String> = MutableLiveData("")
     val nextStatusDateTime: MutableLiveData<String> = MutableLiveData("")
+
+    init {
+        viewModelScope.launch {
+            val timeInMillis = timeMonitor.getUnixTime()
+            taskManager.getReceivingTask()?.taskDescription?.nextStatusDate = DateTimeUtil.formatDate(timeInMillis, Constants.DATE_FORMAT_ddmmyy)
+            taskManager.getReceivingTask()?.taskDescription?.nextStatusTime = DateTimeUtil.formatDate(timeInMillis, Constants.TIME_FORMAT_HHmm)
+        }
+    }
 
     fun onResume() {
         viewModelScope.launch {

@@ -8,6 +8,7 @@ import com.lenta.bp9.model.task.IReceivingTaskManager
 import com.lenta.bp9.model.task.TaskStatus
 import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.shared.platform.constants.Constants
+import com.lenta.shared.platform.time.ITimeMonitor
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.date_time.DateTimeUtil
 import kotlinx.coroutines.launch
@@ -21,6 +22,8 @@ class ChangeDateTimeViewModel : CoreViewModel() {
     lateinit var context: Context
     @Inject
     lateinit var screenNavigator: IScreenNavigator
+    @Inject
+    lateinit var timeMonitor: ITimeMonitor
 
     var mode: ChangeDateTimeMode = ChangeDateTimeMode.None
 
@@ -66,7 +69,7 @@ class ChangeDateTimeViewModel : CoreViewModel() {
 
     fun onResume() {
         viewModelScope.launch {
-            val milliseconds = System.currentTimeMillis()
+            val milliseconds = timeMonitor.getUnixTime()
             days.value = DateTimeUtil.formatDate(milliseconds, Constants.DATE_FORMAT_dd)
             months.value = DateTimeUtil.formatDate(milliseconds, Constants.DATE_FORMAT_mm)
             years.value = DateTimeUtil.formatDate(milliseconds, Constants.DATE_FORMAT_yy)

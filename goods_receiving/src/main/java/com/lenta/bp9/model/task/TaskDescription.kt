@@ -59,8 +59,8 @@ data class TaskDescription(val currentStatus: TaskStatus,   //Код текущ�
                     isPromo = restData.isPromo.isNotEmpty(),
                     isRecount = restData.isRecount.isNotEmpty(),
                     isOwnTransport = restData.isOwnTransport.isNotEmpty(),
-                    nextStatusDate = DateTimeUtil.formatDate(System.currentTimeMillis(), Constants.DATE_FORMAT_ddmmyy),
-                    nextStatusTime = DateTimeUtil.formatDate(System.currentTimeMillis(), Constants.TIME_FORMAT_HHmm)
+                    nextStatusDate = "",
+                    nextStatusTime = ""
             )
         }
     }
