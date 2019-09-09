@@ -64,7 +64,6 @@ class TaskManager {
                 1 -> PriceTagStatus.WITH_ERROR
                 else -> PriceTagStatus.PRINTED
             }
-            val priceWithDk = (100..999).random()
 
             Good(
                     id = it + 1,
@@ -85,14 +84,25 @@ class TaskManager {
                     storagePlaces = "" + (100000..999999).random() + "; " + (100000..999999).random() + "; " + (100000..999999).random(),
                     minStock = (10..200).random(),
                     goodMovement = getTestGoodMovement(),
-                    priceWithDk = priceWithDk,
-                    priceWithoutDk = priceWithDk + (10..70).random(),
+                    price = getTestPrice(),
                     promo = Promo("Какая то акция", "Период: 30.07.19 - 24.08.19"),
                     goodGroup = (111111..999999).random().toString(),
                     purchaseGroup = (1111..9999).random().toString(),
                     firstStorageStock = (10..50).random()
             )
         }
+    }
+
+    private fun getTestPrice(): Price {
+        val priceWithDiscount = (100..999).random()
+        return Price(
+                priceWithDiscount = priceWithDiscount,
+                priceWithoutDiscount = priceWithDiscount + (10..70).random(),
+                priceOne = priceWithDiscount + (10..70).random(),
+                priceTwo = priceWithDiscount + (10..70).random(),
+                priceOneSellOut = priceWithDiscount - (10..70).random(),
+                priceTwoByStock = priceWithDiscount - (10..70).random()
+        )
     }
 
     private fun getTestShelfLives(): MutableList<ShelfLife> {

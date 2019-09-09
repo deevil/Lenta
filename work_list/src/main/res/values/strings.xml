@@ -92,5 +92,9 @@
     <string name="stock_one_storage">Запас 1 склад</string>
     <string name="empty_place">Пустое место</string>
     <string name="task_type">Тип задания</string>
+    <string name="price_one">Цена 1</string>
+    <string name="price_two">Цена 2</string>
+    <string name="price_one_sell_out">Цена 1 (Распродажа)</string>
+    <string name="price_two_by_stock">Цена 2 (По акции)</string>
 
 </resources>

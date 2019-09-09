@@ -25,7 +25,7 @@ class MainMenuViewModel : CoreViewModel() {
         //navigator.openGoodsListWlScreen()
         //navigator.openGoodsListPcScreen()
         //navigator.openSearchFilterWlScreen()
-        navigator.openGoodsListNeScreen()
+        //navigator.openGoodsListNeScreen()
         //navigator.openGoodsListClScreen()
         //navigator.openGoodDetailsScreen()
         //navigator.openSearchFilterTlScreen()
@@ -34,6 +34,7 @@ class MainMenuViewModel : CoreViewModel() {
         //navigator.openExpectedDeliveriesScreen()
         //navigator.openGoodSalesScreen()
         //navigator.openGoodInfoNeScreen()
+        navigator.openGoodInfoPcScreen()
     }
 
     fun onClickAuxiliaryMenu() {

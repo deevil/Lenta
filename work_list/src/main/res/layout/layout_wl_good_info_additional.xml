@@ -134,13 +134,13 @@
                 <TextView
                     android:id="@+id/tv_price_with_dk"
                     style="@style/CellTextStyle"
-                    android:text="@{@string/price_r(vm.good.priceWithDk)}"
+                    android:text="@{@string/price_r(vm.good.price.priceWithDiscount)}"
                     tools:text="100р." />
 
                 <TextView
                     android:id="@+id/tv_price_without_dk"
                     style="@style/CellTextStyle"
-                    android:text="@{@string/price_r(vm.good.priceWithoutDk)}"
+                    android:text="@{@string/price_r(vm.good.price.priceWithoutDiscount)}"
                     tools:text="140р." />
 
             </LinearLayout>

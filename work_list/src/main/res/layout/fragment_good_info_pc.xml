@@ -32,11 +32,11 @@
 
                     <TextView
                         style="@style/CellTextStyle"
-                        android:text="Цена 1"/>
+                        android:text="@string/price_one"/>
 
                     <TextView
                         style="@style/CellTextStyle"
-                        android:text="Цена 2"/>
+                        android:text="@string/price_two"/>
 
                 </LinearLayout>
 
@@ -50,13 +50,14 @@
                     <TextView
                         android:id="@+id/tv_total_shelf_life"
                         style="@style/CellTextStyle"
-                        android:text="120 руб."/>
+                        android:text="@{@string/price_r(vm.good.price.priceOne)}"
+                        tools:text="120 руб."/>
 
                     <TextView
                         android:id="@+id/tv_shelf_life_days_left"
                         style="@style/CellTextStyle"
-                        android:text="125 руб."
-                        tools:text="5 сут."/>
+                        android:text="@{@string/price_r(vm.good.price.priceTwo)}"
+                        tools:text="125 руб."/>
 
 
                 </LinearLayout>
@@ -76,11 +77,11 @@
 
                     <TextView
                         style="@style/CellTextStyle"
-                        android:text="Цена 1 (Распродажа)"/>
+                        android:text="@string/price_one_sell_out"/>
 
                     <TextView
                         style="@style/CellTextStyle"
-                        android:text="Цена 1 (По акции)"/>
+                        android:text="@string/price_two_by_stock"/>
 
                 </LinearLayout>
 
@@ -94,12 +95,14 @@
                     <TextView
                         android:id="@+id/tv_barcode_number_units"
                         style="@style/CellTextStyle"
-                        android:text="120 руб."/>
+                        android:text="@{@string/price_r(vm.good.price.priceOneSellOut)}"
+                        tools:text="120 руб."/>
 
                     <TextView
                         android:id="@+id/tv_gt_gz_numbers"
                         style="@style/CellTextStyle"
-                        android:text="125 руб."/>
+                        android:text="@{@string/price_r(vm.good.price.priceTwoByStock)}"
+                        tools:text="125 руб."/>
 
                 </LinearLayout>
 
