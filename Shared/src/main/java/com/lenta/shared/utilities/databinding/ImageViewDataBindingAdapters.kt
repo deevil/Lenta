@@ -25,7 +25,7 @@ fun setAlcoIcon(imageView: ImageView, productType: ProductType?) {
         imageView.setImageResource(iconRes)
         (iconRes != 0).let { hasIcon ->
             imageView.setVisible(hasIcon)
-            imageView.isFocusable = hasIcon
+            imageView.isFocusable = false
             if (hasIcon) {
                 imageView.setOnClickListener {
                     dataBindingHelpHolder.coreNavigator.openAlertScreen(

@@ -46,6 +46,8 @@ class GoodInfoFragment : CoreFragment<FragmentGoodInfoBinding, GoodInfoViewModel
         bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.missing, enabled = true)
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.apply, enabled = true)
 
+        bottomToolbarUiModel.uiModelButton5.requestFocus.postValue(true)
+
         connectLiveData(vm.missingButtonEnabled, bottomToolbarUiModel.uiModelButton4.enabled)
         connectLiveData(vm.applyButtonEnabled, bottomToolbarUiModel.uiModelButton5.enabled)
 
