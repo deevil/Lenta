@@ -30,7 +30,9 @@ class PriceScannerViewModel : CoreViewModel() {
         viewModelScope.launch {
             checkPriceTaskManager.newTask(
                     CheckPriceTaskDescription(
-                            tkNumber = sesionInfo.market!!
+                            tkNumber = sesionInfo.market!!,
+                            taskName = "task_1"
+
                     )
             )
         }
