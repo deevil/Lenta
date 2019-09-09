@@ -227,7 +227,7 @@ class CoreNavigator constructor(private val context: Context,
     override fun openEanInfoScreen() {
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.ean_info),
-                    iconRes = R.drawable.ic_scan_barcode), CustomAnimation.vertical)
+                    iconRes = R.drawable.ic_scan_barcode_48dp), CustomAnimation.vertical)
         }
     }
 

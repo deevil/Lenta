@@ -126,7 +126,7 @@
             android:layout_gravity="end|bottom"
             android:layout_margin="10dp"
             android:padding="8dp"
-            android:src="@drawable/ic_scan_barcode"
+            android:src="@drawable/ic_scan_barcode_48dp"
             tools:ignore="ContentDescription"/>
 
     </FrameLayout>
