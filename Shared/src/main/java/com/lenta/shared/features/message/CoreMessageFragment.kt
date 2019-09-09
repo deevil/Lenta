@@ -68,6 +68,10 @@ abstract class CoreMessageFragment : CoreFragment<LayoutMessageBinding, MessageV
         buttonDecorationInfo4?.let {
             bottomToolbarUiModel.uiModelButton4.show(it)
         }
+
+        if (bottomToolbarUiModel.uiModelButton5.enabled.value == true) {
+            bottomToolbarUiModel.uiModelButton5.requestFocus()
+        }
     }
 
     override fun cleanTopToolbar(topToolbarUiModel: TopToolbarUiModel) {
