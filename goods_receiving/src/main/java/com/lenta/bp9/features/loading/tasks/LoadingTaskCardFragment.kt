@@ -15,6 +15,7 @@ class LoadingTaskCardFragment : CoreLoadingFragment() {
 
     private var mode: TaskCardMode = TaskCardMode.None
     private var taskNumber: String = ""
+    private var loadFullData: Boolean = false
 
     override fun getPageNumber(): String? {
         return generateScreenNumberFromPostfix("98")
@@ -25,6 +26,7 @@ class LoadingTaskCardFragment : CoreLoadingFragment() {
             getAppComponent()?.inject(it)
             it.taskNumber = taskNumber
             it.mode = mode
+            it.loadFullData = loadFullData
             return it
         }
     }
@@ -51,10 +53,11 @@ class LoadingTaskCardFragment : CoreLoadingFragment() {
     }
 
     companion object {
-        fun create(taskNumber: String, mode: TaskCardMode): LoadingTaskCardFragment {
+        fun create(taskNumber: String, mode: TaskCardMode, loadFullData: Boolean): LoadingTaskCardFragment {
             LoadingTaskCardFragment().let {
                 it.taskNumber = taskNumber
                 it.mode = mode
+                it.loadFullData = loadFullData
                 return it
             }
         }

@@ -110,9 +110,9 @@ class ScreenNavigator(
         }
     }
 
-    override fun openTaskCardLoadingScreen(mode: TaskCardMode, taskNumber: String) {
+    override fun openTaskCardLoadingScreen(mode: TaskCardMode, taskNumber: String, loadFullData: Boolean) {
         runOrPostpone {
-            getFragmentStack()?.push(LoadingTaskCardFragment.create(taskNumber, mode))
+            getFragmentStack()?.push(LoadingTaskCardFragment.create(taskNumber, mode, loadFullData))
         }
     }
 
@@ -151,7 +151,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openTaskSearchScreen()
     fun openGoodsListScreen()
     fun openTaskCardScreen(mode: TaskCardMode)
-    fun openTaskCardLoadingScreen(mode: TaskCardMode, taskNumber: String)
+    fun openTaskCardLoadingScreen(mode: TaskCardMode, taskNumber: String, loadFullData: Boolean)
     fun openConfirmationUnlock(callbackFunc: () -> Unit)
     fun openConfirmationView(callbackFunc: () -> Unit)
 }

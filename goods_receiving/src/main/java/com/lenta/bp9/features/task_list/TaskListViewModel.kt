@@ -9,6 +9,7 @@ import com.lenta.bp9.features.loading.tasks.TaskListLoadingMode
 import com.lenta.bp9.model.task.TaskInfo
 import com.lenta.bp9.model.task.TaskList
 import com.lenta.bp9.model.task.TaskLockStatus
+import com.lenta.bp9.model.task.TaskStatus
 import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.bp9.repos.IRepoInMemoryHolder
 import com.lenta.bp9.requests.network.TaskListNetRequest
@@ -57,7 +58,8 @@ class TaskListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
                         bottomText = it.bottomText,
                         lockStatus = it.lockStatus,
                         postponedStatus = TaskPostponedStatus.postponedStatusOfTask(it),
-                        skuCount = it.positionsCount)
+                        skuCount = it.positionsCount,
+                        status = it.status)
             }
         }
     }
@@ -71,7 +73,8 @@ class TaskListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
                         bottomText = it.bottomText,
                         lockStatus = it.lockStatus,
                         postponedStatus = TaskPostponedStatus.postponedStatusOfTask(it),
-                        skuCount = it.positionsCount)
+                        skuCount = it.positionsCount,
+                        status = it.status)
             }
         }
     }
@@ -85,7 +88,8 @@ class TaskListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
                         bottomText = it.bottomText,
                         lockStatus = it.lockStatus,
                         postponedStatus = TaskPostponedStatus.postponedStatusOfTask(it),
-                        skuCount = it.positionsCount)
+                        skuCount = it.positionsCount,
+                        status = it.status)
             }
         }
     }
@@ -158,18 +162,19 @@ class TaskListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
             else -> null
         }
         task?.let {
+            val loadFullData = it.status != TaskStatus.Traveling && it.status != TaskStatus.Ordered
             when (it.lockStatus) {
                 TaskLockStatus.LockedByMe -> {
                     screenNavigator.openConfirmationUnlock {
-                        screenNavigator.openTaskCardLoadingScreen(TaskCardMode.Full, it.taskNumber)
+                        screenNavigator.openTaskCardLoadingScreen(TaskCardMode.Full, it.taskNumber, loadFullData)
                     }
                 }
                 TaskLockStatus.LockedByOthers -> {
                     screenNavigator.openConfirmationView {
-                        screenNavigator.openTaskCardLoadingScreen(TaskCardMode.ReadOnly, it.taskNumber)
+                        screenNavigator.openTaskCardLoadingScreen(TaskCardMode.ReadOnly, it.taskNumber, loadFullData = false)
                     }
                 }
-                TaskLockStatus.None -> screenNavigator.openTaskCardLoadingScreen(TaskCardMode.Full, it.taskNumber)
+                TaskLockStatus.None -> screenNavigator.openTaskCardLoadingScreen(TaskCardMode.Full, it.taskNumber, loadFullData)
             }
         }
     }
@@ -195,7 +200,8 @@ data class TaskItemVm(
         val bottomText: String,
         val lockStatus: TaskLockStatus,
         val postponedStatus: TaskPostponedStatus,
-        val skuCount: Int
+        val skuCount: Int,
+        val status: TaskStatus
 )
 
 enum class TaskPostponedStatus {

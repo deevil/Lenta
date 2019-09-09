@@ -12,8 +12,8 @@ import com.lenta.shared.requests.SapResponse
 import javax.inject.Inject
 
 class TaskCardNetRequest
-@Inject constructor(private val fmpRequestsHelper: FmpRequestsHelper) : UseCase<TaskCardRequestResult, TaskCardParams>() {
-    override suspend fun run(params: TaskCardParams): Either<Failure, TaskCardRequestResult> {
+@Inject constructor(private val fmpRequestsHelper: FmpRequestsHelper) : UseCase<TaskCardRequestResult, TaskContentRequestParameters>() {
+    override suspend fun run(params: TaskContentRequestParameters): Either<Failure, TaskCardRequestResult> {
         return fmpRequestsHelper.restRequest("ZMP_UTZ_GRZ_05_V001", params, TaskCardRequestStatus::class.java)
     }
 }
@@ -31,14 +31,3 @@ data class TaskCardRequestResult(
         @SerializedName("EV_ERROR_TEXT")
         override val errorText: String
 ) : SapResponse
-
-data class TaskCardParams(
-        @SerializedName("IV_MODE")
-        val mode: String,
-        @SerializedName("IV_IP")
-        val deviceIP: String,
-        @SerializedName("IV_PERNR")
-        val personalNumber: String,
-        @SerializedName("IV_TASK_NUM")
-        val taskNumber: String
-)

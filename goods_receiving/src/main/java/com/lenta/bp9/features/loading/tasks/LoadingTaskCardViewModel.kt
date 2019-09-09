@@ -6,11 +6,10 @@ import androidx.lifecycle.viewModelScope
 import com.lenta.bp9.model.task.IReceivingTaskManager
 import com.lenta.bp9.model.task.TaskDescription
 import com.lenta.bp9.model.task.TaskNotification
+import com.lenta.bp9.model.task.revise.*
 import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.bp9.repos.IRepoInMemoryHolder
-import com.lenta.bp9.requests.network.TaskCardNetRequest
-import com.lenta.bp9.requests.network.TaskCardParams
-import com.lenta.bp9.requests.network.TaskCardRequestResult
+import com.lenta.bp9.requests.network.*
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.features.loading.CoreLoadingViewModel
@@ -24,6 +23,8 @@ class LoadingTaskCardViewModel : CoreLoadingViewModel() {
     lateinit var screenNavigator: IScreenNavigator
     @Inject
     lateinit var taskCardNetRequest: TaskCardNetRequest
+    @Inject
+    lateinit var taskContentsNetRequest: TaskContentsNetRequest
     @Inject
     lateinit var sessionInfo: ISessionInfo
     @Inject
@@ -40,16 +41,21 @@ class LoadingTaskCardViewModel : CoreLoadingViewModel() {
 
     var mode: TaskCardMode = TaskCardMode.None
     var taskNumber: String = ""
+    var loadFullData: Boolean = false
 
     init {
         viewModelScope.launch {
             progress.value = true
-            val params = TaskCardParams(mode = mode.TaskCardModeString,
+            val params = TaskContentRequestParameters(mode = mode.TaskCardModeString,
                     deviceIP = context.getDeviceIp(),
                     personalNumber = sessionInfo.personnelNumber ?: "",
                     taskNumber = taskNumber
             )
-            taskCardNetRequest(params).either(::handleFailure, ::handleSuccess)
+            if (loadFullData) {
+                taskContentsNetRequest(params).either(::handleFailure, ::handleFullDataSuccess)
+            } else {
+                taskCardNetRequest(params).either(::handleFailure, ::handleSuccess)
+            }
             progress.value = false
         }
     }
@@ -66,6 +72,48 @@ class LoadingTaskCardViewModel : CoreLoadingViewModel() {
         taskHeader?.let {
             val notifications = result.notifications.map { TaskNotification.from(it) }
             val newTask = taskManager.newReceivingTask(taskHeader, TaskDescription.from(result.taskDescription), notifications)
+            taskManager.setTask(newTask)
+            screenNavigator.openTaskCardScreen(mode)
+        }
+    }
+
+    private fun handleFullDataSuccess(result: TaskContentsRequestResult) {
+        Logg.d { "Task card request result $result" }
+        screenNavigator.goBack()
+        val taskHeader = repoInMemoryHolder.taskList.value?.tasks?.findLast { it.taskNumber == taskNumber }
+        taskHeader?.let {
+            val notifications = result.notifications.map { TaskNotification.from(it) }
+            val documentNotifications = result.documentNotifications.map { TaskNotification.from(it) }
+            val productNotifications = result.productNotifications.map { TaskNotification.from(it) }
+            val conditionNotifications = result.conditionNotifications.map { TaskNotification.from(it) }
+            val deliveryDocumentsRevise = result.deliveryDocumentsRevise.map { DeliveryDocumentRevise.from(it) }
+            val deliveryProductDocumentsRevise = result.deliveryProductDocumentsRevise.map { DeliveryProductDocumentRevise.from(it) }
+            val productBatchesRevise = result.productBatchesRevise.map { ProductBatchRevise.from(it) }
+            val formsABRussianRevise = result.formsABRussianRevise.map { FormABRussianRevise.from(it) }
+            val formsABImportRevise = result.formsABImportRevise.map { FormABImportRevise.from(it) }
+            val setComponenttsRevise = result.setComponenttsRevise.map { SetComponentRevise.from(it) }
+            val invoiceRevise = InvoiceRevise.from(result.invoiceRevise)
+            val commentsToVP = result.commentsToVP.map { CommentToVP.from(it) }
+            val productsVetDocumentRevise = result.productsVetDocumentRevise.map { ProductVetDocumentRevise.from(it) }
+            val complexDocumentsRevise = result.complexDocumentsRevise.map { ComplexDocumentRevise.from(it) }
+
+            val newTask = taskManager.newReceivingTaskFull(taskHeader,
+                    TaskDescription.from(result.taskDescription),
+                    notifications,
+                    documentNotifications,
+                    productNotifications,
+                    conditionNotifications,
+                    deliveryDocumentsRevise,
+                    deliveryProductDocumentsRevise,
+                    productBatchesRevise,
+                    formsABRussianRevise,
+                    formsABImportRevise,
+                    setComponenttsRevise,
+                    invoiceRevise,
+                    commentsToVP,
+                    productsVetDocumentRevise,
+                    complexDocumentsRevise)
+
             taskManager.setTask(newTask)
             screenNavigator.openTaskCardScreen(mode)
         }
