@@ -10,7 +10,9 @@ import com.lenta.bp10.models.task.getReport
 import com.lenta.bp10.platform.navigation.IScreenNavigator
 import com.lenta.bp10.platform.requestCodeDelete
 import com.lenta.bp10.platform.requestCodeSelectPersonnelNumber
-import com.lenta.bp10.requests.network.*
+import com.lenta.bp10.requests.network.PrintTaskNetRequest
+import com.lenta.bp10.requests.network.SendWriteOffReportRequest
+import com.lenta.bp10.requests.network.WriteOffReportResponse
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.analytics.AnalyticsHelper
 import com.lenta.shared.exception.Failure

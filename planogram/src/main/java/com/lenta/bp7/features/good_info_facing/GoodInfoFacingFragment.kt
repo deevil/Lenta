@@ -34,9 +34,11 @@ class GoodInfoFacingFragment : CoreFragment<FragmentGoodInfoFacingBinding, GoodI
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
         topToolbarUiModel.description.value = getString(R.string.description_info_about_good)
 
-        vm.good.observe(this, Observer<Good> { good ->
-            topToolbarUiModel.title.value = getString(R.string.title_good_sap_name, good.getFormattedMaterial(), good.name)
-        })
+        viewLifecycleOwner.apply {
+            vm.good.observe(this, Observer { good ->
+                topToolbarUiModel.title.value = getString(R.string.title_good_sap_name, good.getFormattedMaterial(), good.name)
+            })
+        }
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {

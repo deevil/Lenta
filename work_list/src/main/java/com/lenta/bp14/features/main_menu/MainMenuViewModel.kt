@@ -33,6 +33,8 @@ class MainMenuViewModel : CoreViewModel() {
         //navigator.openListOfDifferencesScreen()
         //navigator.openExpectedDeliveriesScreen()
         //navigator.openGoodSalesScreen()
+        //navigator.openGoodInfoNeScreen()
+        //navigator.openGoodInfoPcScreen()
     }
 
     fun onClickAuxiliaryMenu() {

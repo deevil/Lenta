@@ -1,10 +1,14 @@
 <resources>
 
     <!-- Колонки - № / Поставщик / Период -->
-    <!-- Колонки - № / Склад / Количество -->
     <integer name="number_provider_period_column_1">10</integer>
     <integer name="number_provider_period_column_2">20</integer>
     <integer name="number_provider_period_column_3">30</integer>
+
+    <!-- Колонки - № / Склад / Количество -->
+    <integer name="number_storage_quantity_column_1">10</integer>
+    <integer name="number_storage_quantity_column_2">25</integer>
+    <integer name="number_storage_quantity_column_3">25</integer>
 
     <!-- Колонки - № / Товары -->
     <integer name="number_good_column_1">10</integer>

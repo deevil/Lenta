@@ -43,13 +43,15 @@ class GoodListFragment : CoreFragment<FragmentGoodListBinding, GoodListViewModel
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
         topToolbarUiModel.description.value = getString(R.string.description_list_of_processed_goods)
 
-        vm.segmentNumber.observe(this, Observer<String> { segmentNumber ->
-            topToolbarUiModel.title.value = getString(R.string.title_segment_shelf_number, segmentNumber, vm.shelfNumber.value)
-        })
+        viewLifecycleOwner.apply {
+            vm.segmentNumber.observe(this, Observer { segmentNumber ->
+                topToolbarUiModel.title.value = getString(R.string.title_segment_shelf_number, segmentNumber, vm.shelfNumber.value)
+            })
 
-        vm.shelfNumber.observe(this, Observer<String> { shelfNumber ->
-            topToolbarUiModel.title.value = getString(R.string.title_segment_shelf_number, vm.segmentNumber.value, shelfNumber)
-        })
+            vm.shelfNumber.observe(this, Observer { shelfNumber ->
+                topToolbarUiModel.title.value = getString(R.string.title_segment_shelf_number, vm.segmentNumber.value, shelfNumber)
+            })
+        }
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {

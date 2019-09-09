@@ -27,9 +27,11 @@ class SearchFilterWlFragment : CoreFragment<FragmentSearchFilterWlBinding, Searc
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
         topToolbarUiModel.description.value = getString(R.string.product_information)
 
-        vm.taskName.observe(this, Observer<String> { name ->
-            topToolbarUiModel.title.value = name
-        })
+        viewLifecycleOwner.apply {
+            vm.taskName.observe(this, Observer { name ->
+                topToolbarUiModel.title.value = name
+            })
+        }
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {

@@ -28,11 +28,13 @@ class GoodInfoPcFragment : CoreFragment<FragmentGoodInfoPcBinding, GoodInfoPcVie
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
         topToolbarUiModel.description.value = getString(R.string.goods_info)
 
-        vm.good.observe(this, Observer<Good> { good ->
-            if (good != null) {
-                topToolbarUiModel.title.value = "${good.getFormattedMaterial()} ${good.name}"
-            }
-        })
+        viewLifecycleOwner.apply {
+            vm.good.observe(this, Observer { good ->
+                if (good != null) {
+                    topToolbarUiModel.title.value = "${good.getFormattedMaterial()} ${good.name}"
+                }
+            })
+        }
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {

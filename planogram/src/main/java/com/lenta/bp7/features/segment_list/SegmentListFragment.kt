@@ -43,9 +43,11 @@ class SegmentListFragment : CoreFragment<FragmentSegmentListBinding, SegmentList
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
         topToolbarUiModel.description.value = getString(R.string.description_list_of_processed_segments)
 
-        vm.marketNumber.observe(this, Observer<String> { marketNumber ->
-            topToolbarUiModel.title.value = getString(R.string.title_store_number, marketNumber)
-        })
+        viewLifecycleOwner.apply {
+            vm.marketNumber.observe(this, Observer { marketNumber ->
+                topToolbarUiModel.title.value = getString(R.string.title_store_number, marketNumber)
+            })
+        }
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {

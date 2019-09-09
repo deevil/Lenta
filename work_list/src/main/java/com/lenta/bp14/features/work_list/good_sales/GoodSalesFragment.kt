@@ -30,9 +30,11 @@ class GoodSalesFragment : CoreFragment<FragmentGoodSalesBinding, GoodSalesViewMo
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
         topToolbarUiModel.description.value = getString(R.string.details_of_goods)
 
-        vm.good.observe(this, Observer<Good> { good ->
-            topToolbarUiModel.title.value = good.getFormattedMaterialWithName()
-        })
+        viewLifecycleOwner.apply {
+            vm.good.observe(this, Observer { good ->
+                topToolbarUiModel.title.value = good.getFormattedMaterialWithName()
+            })
+        }
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {

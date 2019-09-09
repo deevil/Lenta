@@ -44,7 +44,8 @@
                     android:id="@+id/spin_select_comment"
                     style="@style/CellSpinnerStyle"
                     app:items="@{vm.taskTypeList}"
-                    app:onPositionClickListener="@{vm}" />
+                    app:onPositionClickListener="@{vm}"
+                    tools:entries="@array/task_type" />
 
             </LinearLayout>
 

@@ -68,6 +68,7 @@ class TaskManager {
             Good(
                     id = it + 1,
                     material = "000000000000" + (111111..999999).random(),
+                    ean = (11111111..999999999999).random().toString(),
                     name = "Товар ${it + (1..99).random()}",
                     uom = Uom.DEFAULT,
                     quantity = quantity,
@@ -77,10 +78,31 @@ class TaskManager {
                     shelfLives = getTestShelfLives(),
                     deliveries = getTestDeliveries(),
                     salesStatistics = getTestSalesStatistics(),
+                    shelfLifeDays = (5..30).random(),
                     stocks = getTestStock(),
-                    providers = getTestProviders()
+                    providers = getTestProviders(),
+                    storagePlaces = "" + (100000..999999).random() + "; " + (100000..999999).random() + "; " + (100000..999999).random(),
+                    minStock = (10..200).random(),
+                    goodMovement = getTestGoodMovement(),
+                    price = getTestPrice(),
+                    promo = Promo("Какая то акция", "Период: 30.07.19 - 24.08.19"),
+                    goodGroup = (111111..999999).random().toString(),
+                    purchaseGroup = (1111..9999).random().toString(),
+                    firstStorageStock = (10..50).random()
             )
         }
+    }
+
+    private fun getTestPrice(): Price {
+        val priceWithDiscount = (100..999).random()
+        return Price(
+                priceWithDiscount = priceWithDiscount,
+                priceWithoutDiscount = priceWithDiscount + (10..70).random(),
+                priceOne = priceWithDiscount + (10..70).random(),
+                priceTwo = priceWithDiscount + (10..70).random(),
+                priceOneSellOut = priceWithDiscount - (10..70).random(),
+                priceTwoByStock = priceWithDiscount - (10..70).random()
+        )
     }
 
     private fun getTestShelfLives(): MutableList<ShelfLife> {
@@ -144,6 +166,13 @@ class TaskManager {
                     kipEnd = Date()
             )
         }
+    }
+
+    private fun getTestGoodMovement(): GoodMovement {
+        return GoodMovement(
+                inventory = "${(10..15).random()}.09.19 (-${(1..99).random()} шт.)",
+                arrival = "${(16..28).random()}.09.19 (+${(50..99).random()} шт.)"
+        )
     }
 
 }

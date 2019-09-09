@@ -35,9 +35,11 @@ class ExpectedDeliveriesFragment : CoreFragment<FragmentExpectedDeliveriesBindin
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
         topToolbarUiModel.description.value = getString(R.string.expected_deliveries)
 
-        vm.good.observe(this, Observer<Good> { good ->
-            topToolbarUiModel.title.value = good.getFormattedMaterialWithName()
-        })
+        viewLifecycleOwner.apply {
+            vm.good.observe(this, Observer { good ->
+                topToolbarUiModel.title.value = good.getFormattedMaterialWithName()
+            })
+        }
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
