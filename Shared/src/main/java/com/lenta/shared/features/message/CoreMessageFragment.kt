@@ -35,6 +35,7 @@ abstract class CoreMessageFragment : CoreFragment<LayoutMessageBinding, MessageV
     protected var rightButtonDecorationInfo by state(ButtonDecorationInfo.apply)
     protected var timeAutoExitInMillis by state<Int?>(null)
 
+
     override fun getLayoutId(): Int = R.layout.layout_message
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
@@ -98,7 +99,7 @@ abstract class CoreMessageFragment : CoreFragment<LayoutMessageBinding, MessageV
     }
 
     override fun onKeyDown(keyCode: KeyCode): Boolean {
-        if (keyCode == KeyCode.KEYCODE_ENTER) {
+        if (isAllowHandleKeyCode() && keyCode == KeyCode.KEYCODE_ENTER) {
             if (getBottomToolBarUIModel()?.uiModelButton5?.enabled?.value == true) {
                 vm.onClickRightButton()
             }
