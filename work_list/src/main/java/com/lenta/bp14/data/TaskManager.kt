@@ -58,11 +58,10 @@ class TaskManager {
     fun getTestGoodList(numberOfItems: Int): List<Good> {
         return List(numberOfItems) {
             val quantity = (0..5).random()
-            val goodStatus = if ((0..1).random() == 1) GoodStatus.MISSING_RIGHT else GoodStatus.MISSING_WRONG
+            val goodStatus = if ((0..1).random() == 1) PriceTagStatus.MISSING else PriceTagStatus.WITH_ERROR
             val priceTagStatus = when ((0..2).random()) {
-                0 -> PriceTagStatus.NO_PRICE_TAG
-                1 -> PriceTagStatus.WITH_ERROR
-                else -> PriceTagStatus.PRINTED
+                0 -> PrintStatus.NOT_PRINTED
+                else -> PrintStatus.PRINTED
             }
 
             Good(
@@ -72,8 +71,8 @@ class TaskManager {
                     name = "Товар ${it + (1..99).random()}",
                     uom = Uom.DEFAULT,
                     quantity = quantity,
-                    goodStatus = if (quantity == 0) goodStatus else GoodStatus.PRESENT,
-                    priceTagStatus = priceTagStatus,
+                    priceTagStatus = if (quantity == 0) goodStatus else PriceTagStatus.CORRECT,
+                    printStatus = priceTagStatus,
                     comments = getTestComments(),
                     shelfLives = getTestShelfLives(),
                     deliveries = getTestDeliveries(),

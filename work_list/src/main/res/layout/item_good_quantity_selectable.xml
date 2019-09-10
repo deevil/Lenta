@@ -96,7 +96,7 @@
                         android:layout_gravity="center"
                         android:src="@drawable/ic_close_white_24dp"
                         android:visibility="@{good.quantity == 0 ? View.VISIBLE : View.INVISIBLE}"
-                        app:goodStatusIcon="@{good.goodStatus}"
+                        app:priceTagStatusIcon="@{good.priceTagStatus}"
                         tools:ignore="ContentDescription"
                         tools:visibility="visible" />
 

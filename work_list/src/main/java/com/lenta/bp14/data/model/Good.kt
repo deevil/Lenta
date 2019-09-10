@@ -10,8 +10,8 @@ data class Good(
         val name: String,
         var quantity: Int = 0,
         val uom: Uom = Uom.DEFAULT,
-        var priceTagStatus: PriceTagStatus = PriceTagStatus.PRINTED,
-        val goodStatus: GoodStatus = GoodStatus.MISSING_RIGHT,
+        var printStatus: PrintStatus = PrintStatus.PRINTED,
+        val priceTagStatus: PriceTagStatus = PriceTagStatus.MISSING,
         var salesStatistics: SalesStatistics?,
         val shelfLifeDays: Int,
         val storagePlaces: String,
@@ -42,14 +42,13 @@ data class Good(
 
 }
 
-enum class PriceTagStatus {
-    NO_PRICE_TAG,
-    WITH_ERROR,
+enum class PrintStatus {
+    NOT_PRINTED,
     PRINTED
 }
 
-enum class GoodStatus {
-    PRESENT,
-    MISSING_WRONG,
-    MISSING_RIGHT
+enum class PriceTagStatus {
+    CORRECT,
+    WITH_ERROR,
+    MISSING
 }
