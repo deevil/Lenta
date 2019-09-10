@@ -72,5 +72,9 @@ data class ImageButtonDecorationInfo(
             ImageButtonDecorationInfo(R.drawable.ic_settings_white)
         }
 
+        val authorization: ImageButtonDecorationInfo by lazy {
+            ImageButtonDecorationInfo(R.drawable.ic_authorization_24dp)
+        }
+
     }
 }

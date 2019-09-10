@@ -24,7 +24,6 @@ import com.lenta.shared.utilities.getBaseAuth
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-
 class AuthViewModel : CoreAuthViewModel() {
 
     @Inject
@@ -35,6 +34,7 @@ class AuthViewModel : CoreAuthViewModel() {
     lateinit var sessionInfo: ISessionInfo
     @Inject
     lateinit var appSettings: IAppSettings
+
 
     val packageName: MutableLiveData<String> = MutableLiveData()
 
@@ -54,6 +54,7 @@ class AuthViewModel : CoreAuthViewModel() {
     override fun onClickEnter() {
         viewModelScope.launch {
             progress.value = true
+
             auth(AuthParams(getLogin(), getPassword())).either(::handleFailure, ::loadPermissions)
         }
     }
@@ -111,8 +112,9 @@ class AuthViewModel : CoreAuthViewModel() {
     fun onClickSkip() {
         login.value = appSettings.techLogin
         password.value = appSettings.techPassword
+        sessionInfo.authorizationSkipped = true
+
         onClickEnter()
     }
-
 
 }
