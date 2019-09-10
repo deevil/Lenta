@@ -2,8 +2,8 @@ package com.lenta.bp14.features.task_list.search_filter
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.lenta.bp14.data.TaskManager
-import com.lenta.bp14.data.model.TaskType
+import com.lenta.bp14.models.data.TaskManager
+import com.lenta.bp14.models.data.pojo.TaskType
 import com.lenta.bp14.platform.navigation.IScreenNavigator
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.view.OnPositionClickListener

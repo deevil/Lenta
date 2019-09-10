@@ -1,4 +1,4 @@
-package com.lenta.bp14.data
+package com.lenta.bp14.models.data
 
 enum class GoodsListTab(val position: Int) {
     PROCESSING(0),

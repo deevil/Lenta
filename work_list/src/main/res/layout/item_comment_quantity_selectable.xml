@@ -7,7 +7,7 @@
 
         <variable
             name="comment"
-            type="com.lenta.bp14.data.model.Comment" />
+            type="com.lenta.bp14.models.data.pojo.Comment" />
 
         <variable
             name="selectedForDelete"

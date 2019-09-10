@@ -1,0 +1,271 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".features.price_check.price_scanner.PriceScannerFragment">
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:id="@+id/ic_check_price_status"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginStart="4dp"
+            android:layout_marginTop="8dp"
+            android:src="@{vm.resultUi.priceIsValid ? @drawable/ic_checkbox_green_24dp : @drawable/ic_close_pink_24dp}"
+            app:invisible="@{!vm.resultUi.added}"
+            app:layout_constraintStart_toStartOf="@+id/vertical_guidline_1"
+            app:layout_constraintTop_toBottomOf="@+id/div_hor_1"
+            tools:src="@drawable/ic_checkbox_green_32dp" />
+
+
+        <ImageView
+            android:id="@+id/ic_check_price_status_discount"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginStart="4dp"
+            android:layout_marginTop="8dp"
+            android:src="@{vm.resultUi.discountPriceIsValid ? @drawable/ic_checkbox_green_24dp : @drawable/ic_close_pink_24dp}"
+            app:invisible="@{!vm.resultUi.added}"
+            app:layout_constraintStart_toStartOf="@+id/vertical_guidline_2"
+            app:layout_constraintTop_toBottomOf="@+id/div_hor_1"
+            tools:src="@drawable/ic_checkbox_green_32dp" />
+
+
+
+
+        <FrameLayout
+            android:id="@+id/fl_root_scan"
+            android:layout_width="0dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/div_hor_2"
+            android:layout_height="wrap_content">
+
+            <TextureView
+                android:id="@+id/textureView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+            <com.lenta.bp14.ml.CanvasForScanDetection
+                android:id="@+id/my_canvas"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+        </FrameLayout>
+
+        <ImageView
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            android:layout_gravity="top|center_horizontal"
+            android:src="@drawable/ic_scan_aim_200dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/div_vert3" />
+
+        <TextView
+            android:id="@+id/tv_title_good"
+            style="@style/TextTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="8dp"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:text="@string/good"
+            app:layout_constraintEnd_toStartOf="@+id/vertical_guidline_1"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="1.0" />
+
+        <TextView
+            android:id="@+id/tv_title_price"
+            style="@style/TextTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:ellipsize="end"
+            android:gravity="center_vertical"
+            android:maxLines="1"
+            android:text="@string/price_without_discount"
+            app:layout_constraintEnd_toStartOf="@+id/vertical_guidline_2"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/vertical_guidline_1"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tv_title_price_discount"
+            style="@style/TextTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:ellipsize="end"
+            android:gravity="center_vertical"
+            android:maxLines="1"
+            android:text="@string/price_with_discount"
+            app:layout_constraintEnd_toStartOf="@+id/vertical_guidline_3"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/vertical_guidline_2"
+            app:layout_constraintTop_toTopOf="parent" />
+
+
+        <TextView
+            android:id="@+id/tv_title_status"
+            style="@style/TextTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:ellipsize="end"
+            android:gravity="center_vertical"
+            android:maxLines="1"
+            android:text="@string/status"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/vertical_guidline_3"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            style="@style/CellTextStyle"
+            android:layout_width="0dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:maxLines="2"
+            android:text="@{vm.resultUi.productTitle}"
+            app:layout_constraintBottom_toBottomOf="@+id/ic_check_price_status"
+            app:layout_constraintEnd_toStartOf="@+id/vertical_guidline_1"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/ic_check_price_status"
+            tools:text="003712" />
+
+        <TextView
+            android:id="@+id/tv_price"
+            style="@style/CellTextStyle"
+            android:layout_width="0dp"
+            android:maxLines="1"
+            android:text="@{vm.resultUi.price}"
+            app:layout_constraintBottom_toBottomOf="@+id/ic_check_price_status"
+            app:layout_constraintEnd_toStartOf="@+id/vertical_guidline_2"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toEndOf="@+id/ic_check_price_status"
+            app:layout_constraintTop_toTopOf="@+id/ic_check_price_status"
+            tools:text="99999,99" />
+
+        <TextView
+            style="@style/CellTextStyle"
+            android:layout_width="0dp"
+            android:maxLines="1"
+            android:text='@{vm.resultUi.added ? @string/added : ""}'
+            app:layout_constraintBottom_toBottomOf="@+id/ic_check_price_status"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/vertical_guidline_3"
+            app:layout_constraintTop_toTopOf="@+id/ic_check_price_status"
+            tools:text="Добавлен" />
+
+        <TextView
+            android:id="@+id/tv_price_discount"
+            style="@style/CellTextStyle"
+            android:layout_width="0dp"
+            android:maxLines="1"
+            android:text="@{vm.resultUi.discountPrice}"
+            app:layout_constraintBottom_toBottomOf="@+id/ic_check_price_status_discount"
+            app:layout_constraintEnd_toStartOf="@+id/vertical_guidline_3"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toEndOf="@+id/ic_check_price_status_discount"
+            app:layout_constraintTop_toTopOf="@+id/ic_check_price_status_discount"
+            tools:text="99999,99" />
+
+        <View
+            android:id="@+id/div_hor_1"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="8dp"
+            android:background="@color/color_divider"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_title_price" />
+
+        <View
+            android:id="@+id/div_hor_2"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="8dp"
+            android:background="@color/color_divider"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/ic_check_price_status" />
+
+        <View
+            android:id="@+id/div_vert1"
+            android:layout_width="1dp"
+            android:layout_height="0dp"
+            android:background="@color/color_divider"
+            app:layout_constraintBottom_toTopOf="@+id/div_hor_2"
+            app:layout_constraintStart_toStartOf="@+id/vertical_guidline_1"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <View
+            android:id="@+id/div_vert2"
+            android:layout_width="1dp"
+            android:layout_height="0dp"
+            android:background="@color/color_divider"
+            app:layout_constraintBottom_toTopOf="@+id/div_hor_2"
+            app:layout_constraintStart_toStartOf="@+id/vertical_guidline_2"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <View
+            android:id="@+id/div_vert3"
+            android:layout_width="1dp"
+            android:layout_height="0dp"
+            android:background="@color/color_divider"
+            app:layout_constraintBottom_toTopOf="@+id/div_hor_2"
+            app:layout_constraintStart_toStartOf="@+id/vertical_guidline_3"
+            app:layout_constraintTop_toTopOf="parent" />
+
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/vertical_guidline_1"
+            android:layout_width="wrap_content"
+            android:layout_height="1dp"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.18" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/vertical_guidline_2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.46" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/vertical_guidline_3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.75" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+    <data>
+
+        <variable
+            name="vm"
+            type="com.lenta.bp14.features.price_check.price_scanner.PriceScannerViewModel" />
+
+
+    </data>
+
+
+</layout>

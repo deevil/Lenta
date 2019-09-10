@@ -61,7 +61,7 @@ abstract class CoreMainActivity : CoreActivity<ActivityMainBinding>(), ToolbarBu
 
     private val vm: CoreMainViewModel by lazy {
         getViewModel().apply {
-            if (!permissionNotGranted()) {
+            if (getNotGrantedPermissions().isEmpty()) {
                 analyticsHelper.onPermissionGranted()
                 ANALYTICS_HELPER = analyticsHelper
                 analyticsHelper.logAppInfo()
@@ -120,8 +120,14 @@ abstract class CoreMainActivity : CoreActivity<ActivityMainBinding>(), ToolbarBu
 
     override fun onResume() {
         super.onResume()
-        if (permissionNotGranted()) {
-            ActivityCompat.requestPermissions(this, listOf(Manifest.permission.WRITE_EXTERNAL_STORAGE).toTypedArray(), 1)
+        getNotGrantedPermissions().let {
+            if (it.isNotEmpty()) {
+                ActivityCompat.requestPermissions(
+                        this,
+                        it.toTypedArray(),
+                        1
+                )
+            }
         }
         networkStateMonitor.start(this)
         batteryStateMonitor.start(this)
@@ -133,9 +139,18 @@ abstract class CoreMainActivity : CoreActivity<ActivityMainBinding>(), ToolbarBu
         vm.onResume()
     }
 
-    private fun permissionNotGranted(): Boolean {
-        return !isWriteExternalStoragePermissionGranted()
+    private fun getNotGrantedPermissions(): List<String> {
+        return getNotGrantedPermissions(
+                mutableListOf(Manifest.permission.WRITE_EXTERNAL_STORAGE).apply {
+                    this.addAll(getAdditionalListOfRequiredPermissions())
+                }
+        )
     }
+
+    open fun getAdditionalListOfRequiredPermissions(): List<String> {
+        return emptyList()
+    }
+
 
     override fun onPause() {
         foregroundActivityProvider.clear()

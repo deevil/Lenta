@@ -2,9 +2,9 @@ package com.lenta.bp14.features.work_list.goods_list
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.lenta.bp14.data.GoodsListTab
-import com.lenta.bp14.data.TaskManager
-import com.lenta.bp14.data.model.Good
+import com.lenta.bp14.models.data.GoodsListTab
+import com.lenta.bp14.models.data.TaskManager
+import com.lenta.bp14.models.data.pojo.Good
 import com.lenta.bp14.platform.navigation.IScreenNavigator
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.SelectionItemsHelper

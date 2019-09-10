@@ -1,6 +1,6 @@
-package com.lenta.bp14.data
+package com.lenta.bp14.models.data
 
-import com.lenta.bp14.data.model.*
+import com.lenta.bp14.models.data.pojo.*
 import com.lenta.shared.models.core.Uom
 import com.lenta.shared.platform.constants.Constants.DATE_FORMAT_ddmmyy
 import java.text.SimpleDateFormat

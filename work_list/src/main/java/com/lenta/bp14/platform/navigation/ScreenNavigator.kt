@@ -3,6 +3,7 @@ package com.lenta.bp14.platform.navigation
 import android.content.Context
 import com.lenta.bp14.R
 import com.lenta.bp14.features.auth.AuthFragment
+import com.lenta.bp14.features.barcode_detection.CoreScanBarCodeFragment
 import com.lenta.bp14.features.check_list.goods_list.GoodsListClFragment
 import com.lenta.bp14.features.work_list.good_info.GoodInfoWlFragment
 import com.lenta.bp14.features.job_card.JobCardFragment
@@ -13,6 +14,7 @@ import com.lenta.bp14.features.not_exposed.goods_list.GoodsListNeFragment
 import com.lenta.bp14.features.not_exposed.good_info.GoodInfoNeFragment
 import com.lenta.bp14.features.price_check.good_info.GoodInfoPcFragment
 import com.lenta.bp14.features.price_check.goods_list.GoodsListPcFragment
+import com.lenta.bp14.features.price_check.price_scanner.PriceScannerFragment
 import com.lenta.bp14.features.print_settings.PrintSettingsFragment
 import com.lenta.bp14.features.report_result.ReportResultFragment
 import com.lenta.bp14.features.select_market.SelectMarketFragment
@@ -170,6 +172,18 @@ class ScreenNavigator(
     override fun openGoodInfoNeScreen() {
         runOrPostpone {
             getFragmentStack()?.push(GoodInfoNeFragment())
+        }
+    }
+
+    override fun openTestScanBarcodeScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(CoreScanBarCodeFragment())
+        }
+    }
+
+    override fun openScanPriceScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(PriceScannerFragment())
         }
     }
 
@@ -372,4 +386,6 @@ interface IScreenNavigator : ICoreNavigator {
     fun showScannedGoodNotListedInTk()
     fun showNoNetworkToSaveTask(nextCallback: () -> Unit)
 
+    fun openTestScanBarcodeScreen()
+    fun openScanPriceScreen()
 }

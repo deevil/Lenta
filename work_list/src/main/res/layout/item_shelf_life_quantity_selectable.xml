@@ -9,7 +9,7 @@
 
         <variable
             name="shelfLife"
-            type="com.lenta.bp14.data.model.ShelfLife" />
+            type="com.lenta.bp14.models.data.pojo.ShelfLife" />
 
         <variable
             name="selectedForDelete"

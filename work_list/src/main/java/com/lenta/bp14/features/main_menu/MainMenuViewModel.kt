@@ -15,6 +15,7 @@ class MainMenuViewModel : CoreViewModel() {
     }
 
     fun onClickCreateTask() {
+        navigator.openJobCardScreen("")
 
     }
 
@@ -26,8 +27,8 @@ class MainMenuViewModel : CoreViewModel() {
         //navigator.openGoodsListPcScreen()
         //navigator.openSearchFilterWlScreen()
         //navigator.openGoodsListNeScreen()
-        //navigator.openGoodsListClScreen()
         //navigator.openGoodDetailsScreen()
+        //navigator.openTestScanBarcodeScreen()
         //navigator.openSearchFilterTlScreen()
         //navigator.openTaskListScreen()
         //navigator.openListOfDifferencesScreen()

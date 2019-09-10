@@ -3,6 +3,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'io.fabric'
 apply from: '../fmp_settings.gradle'
+apply plugin: 'com.google.gms.google-services'
 
 def prefixAppVersion = "14"
 
@@ -56,6 +57,10 @@ android {
         }
     }
 
+    configurations {
+        all*.exclude group: 'com.google.guava', module: 'listenablefuture'
+    }
+
     packagingOptions {
         pickFirst 'META-INF/kotlinx-io.kotlin_module'
         pickFirst 'META-INF/atomicfu.kotlin_module'
@@ -67,6 +72,11 @@ android {
 dependencies {
     implementation project(':Shared')
     implementation 'com.android.support:multidex:1.0.3'
+
+    implementation 'com.google.firebase:firebase-ml-vision:23.0.0'
+    implementation 'com.google.firebase:firebase-core:17.2.0'
+    implementation "androidx.camera:camera-core:1.0.0-alpha04"
+    implementation "androidx.camera:camera-camera2:1.0.0-alpha04"
 
     // Dagger2
     kapt deps.dagger.compiler
