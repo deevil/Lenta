@@ -4,6 +4,8 @@ import android.content.Context
 import com.google.gson.Gson
 import com.lenta.bp14.models.data.TaskManager
 import com.lenta.bp14.models.check_price.CheckPriceTaskManager
+import com.lenta.bp14.models.general.GeneralRepo
+import com.lenta.bp14.models.general.IGeneralRepo
 import com.lenta.bp14.platform.navigation.IScreenNavigator
 import com.lenta.bp14.platform.navigation.ScreenNavigator
 import com.lenta.bp14.repos.IRepoInMemoryHolder
@@ -50,6 +52,12 @@ class AppModule {
     @AppScope
     internal fun provideCheckTaskManager(timeMonitor: ITimeMonitor, gson: Gson): CheckPriceTaskManager {
         return CheckPriceTaskManager(timeMonitor = timeMonitor, gson = gson)
+    }
+
+    @Provides
+    @AppScope
+    internal fun provideGeneralManager(): IGeneralRepo {
+        return GeneralRepo()
     }
 
 }
