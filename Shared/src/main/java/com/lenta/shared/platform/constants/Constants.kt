@@ -12,10 +12,15 @@ object Constants {
     const val TIME_FORMAT_hhmmss = "HH:mm:ss"
     const val TIME_FORMAT_LOGS = "yyyy-MM-dd_HH-mm-ss-SSS"
     const val CHECK_DATA_TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss"
+    const val TIME_FORMAT_HH = "HH"
+    const val TIME_FORMAT_mm = "mm"
 
     //---------Date formats---------//
     const val DATE_FORMAT_ddmmyy = "dd.MM.yy"
     const val DATE_FORMAT_yyyy_mm_dd = "yyyy-MM-dd"
+    const val DATE_FORMAT_dd = "dd"
+    const val DATE_FORMAT_mm = "MM"
+    const val DATE_FORMAT_yy = "yy"
 
     // Entered length
     const val COMMON_SAP_LENGTH = 6

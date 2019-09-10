@@ -1,5 +1,7 @@
 package com.lenta.shared.utilities.databinding
 
+import android.os.Build
+import android.view.View.*
 import android.widget.ImageView
 import androidx.databinding.BindingAdapter
 import com.lenta.shared.R
@@ -23,7 +25,7 @@ fun setAlcoIcon(imageView: ImageView, productType: ProductType?) {
         imageView.setImageResource(iconRes)
         (iconRes != 0).let { hasIcon ->
             imageView.setVisible(hasIcon)
-            imageView.isFocusable = hasIcon
+            imageView.isFocusable = false
             if (hasIcon) {
                 imageView.setOnClickListener {
                     dataBindingHelpHolder.coreNavigator.openAlertScreen(
@@ -43,4 +45,10 @@ fun setAlcoIcon(imageView: ImageView, productType: ProductType?) {
 
 }
 
+@BindingAdapter("focusable")
+fun setAlcoIcon(imageView: ImageView, focusable: Boolean?) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        imageView.focusable = if (focusable == true) FOCUSABLE_AUTO else NOT_FOCUSABLE
+    }
+}
 

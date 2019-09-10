@@ -3,23 +3,42 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <data>
-
-        <variable
-            name="vm"
-            type="com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel" />
-
-        <variable
-            name="toolbarButtonsClickListener"
-            type="com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener" />
-    </data>
-
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/colorTopPanelBackground"
         android:orientation="vertical"
         android:visibility="@{vm.visibility}">
+
+        <ImageButton
+            android:id="@+id/b_topbar_1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="?selectableItemBackground"
+            android:onClick="@{(v) -> toolbarButtonsClickListener.onToolbarButtonClick(v)}"
+            android:padding="16dp"
+            android:src="@{vm.uiModelButton1.buttonDecorationInfo.iconRes}"
+            android:visibility="@{vm.uiModelButton1.visibility}"
+            app:focusable="@{false}"
+            app:layout_constraintBottom_toBottomOf="@+id/tv_description"
+            app:layout_constraintEnd_toStartOf="@+id/b_topbar_2"
+            app:layout_constraintTop_toTopOf="@+id/tv_title"
+            tools:src="@drawable/ic_settings_white" />
+
+        <ImageButton
+            android:id="@+id/b_topbar_2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="?selectableItemBackground"
+            android:focusable="@{false}"
+            android:onClick="@{(v) -> toolbarButtonsClickListener.onToolbarButtonClick(v)}"
+            android:padding="16dp"
+            android:src="@{vm.uiModelButton2.buttonDecorationInfo.iconRes}"
+            android:visibility="@{vm.uiModelButton2.visibility}"
+            app:layout_constraintBottom_toBottomOf="@+id/tv_description"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/tv_title"
+            tools:src="@drawable/ic_exit_from_app_white" />
 
         <TextView
             android:id="@+id/tv_title"
@@ -45,6 +64,7 @@
             app:zoom="@{true}"
             tools:text="Списание товаров V1.0" />
 
+
         <TextView
             android:id="@+id/tv_description"
             android:layout_width="0dp"
@@ -63,34 +83,16 @@
             app:layout_constraintTop_toBottomOf="@+id/tv_title"
             tools:text="Авторизация" />
 
-        <ImageButton
-            android:id="@+id/b_topbar_1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="?selectableItemBackground"
-            android:onClick="@{(v) -> toolbarButtonsClickListener.onToolbarButtonClick(v)}"
-            android:padding="16dp"
-            android:src="@{vm.uiModelButton1.buttonDecorationInfo.iconRes}"
-            android:visibility="@{vm.uiModelButton1.visibility}"
-            app:layout_constraintBottom_toBottomOf="@+id/tv_description"
-            app:layout_constraintEnd_toStartOf="@+id/b_topbar_2"
-            app:layout_constraintTop_toTopOf="@+id/tv_title"
-            tools:src="@drawable/ic_settings_white" />
-
-
-        <ImageButton
-            android:id="@+id/b_topbar_2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="?selectableItemBackground"
-            android:onClick="@{(v) -> toolbarButtonsClickListener.onToolbarButtonClick(v)}"
-            android:padding="16dp"
-            android:src="@{vm.uiModelButton2.buttonDecorationInfo.iconRes}"
-            android:visibility="@{vm.uiModelButton2.visibility}"
-            app:layout_constraintBottom_toBottomOf="@+id/tv_description"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/tv_title"
-            tools:src="@drawable/ic_exit_from_app_white" />
-
     </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <data>
+
+        <variable
+            name="vm"
+            type="com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel" />
+
+        <variable
+            name="toolbarButtonsClickListener"
+            type="com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener" />
+    </data>
 </layout>
