@@ -7,7 +7,6 @@ import com.lenta.bp14.data.model.PriceTagStatus
 import com.lenta.bp14.data.model.PrintStatus
 import com.lenta.bp14.data.model.TaskStatus
 
-
 @BindingAdapter("taskStatusIcon")
 fun setTaskStatusIcon(imageView: ImageView, taskStatus: TaskStatus) {
     taskStatus.let {

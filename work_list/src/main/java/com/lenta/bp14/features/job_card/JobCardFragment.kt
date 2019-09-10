@@ -9,6 +9,7 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
+import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
 import com.lenta.shared.utilities.extentions.provideViewModel
 import com.lenta.shared.utilities.state.state
 
@@ -18,7 +19,7 @@ class JobCardFragment : CoreFragment<FragmentJobCardBinding, JobCardViewModel>()
 
     override fun getLayoutId(): Int = R.layout.fragment_job_card
 
-    override fun getPageNumber(): String = "14/??"
+    override fun getPageNumber(): String? = generateScreenNumberFromPostfix("13")
 
     override fun getViewModel(): JobCardViewModel {
         provideViewModel(JobCardViewModel::class.java).let {
