@@ -36,7 +36,7 @@ class SearchFilterWlFragment : CoreFragment<FragmentSearchFilterWlBinding, Searc
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
-        bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.toFind)
+        bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.find)
     }
 
 }

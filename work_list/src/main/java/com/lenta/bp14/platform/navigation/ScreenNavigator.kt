@@ -187,11 +187,21 @@ class ScreenNavigator(
         }
     }
 
-    override fun showMakeSurePaperInstalled(printerName: String, paperColor: String, numberOfCopy: Int, confirmCallback: () -> Unit) {
+    override fun showMakeSureYellowPaperInstalled(printerName: String, numberOfCopy: Int, confirmCallback: () -> Unit) {
         runOrPostpone {
-            getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.make_sure_paper_installed, printerName, paperColor, numberOfCopy),
+            getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.make_sure_yellow_paper_installed, printerName, numberOfCopy),
                     pageNumber = "10.1",
-                    iconRes = R.drawable.ic_question_80dp,
+                    iconRes = R.drawable.ic_price_yellow_80dp,
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(confirmCallback),
+                    rightButtonDecorationInfo = ButtonDecorationInfo.confirm))
+        }
+    }
+
+    override fun showMakeSureRedPaperInstalled(printerName: String, numberOfCopy: Int, confirmCallback: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.make_sure_red_paper_installed, printerName, numberOfCopy),
+                    pageNumber = "10.2",
+                    iconRes = R.drawable.ic_price_red_80dp,
                     codeConfirmForRight = backFragmentResultHelper.setFuncForResult(confirmCallback),
                     rightButtonDecorationInfo = ButtonDecorationInfo.confirm))
         }
@@ -347,7 +357,8 @@ interface IScreenNavigator : ICoreNavigator {
     fun openGoodInfoNeScreen()
 
     fun showConfirmPriceTagsPrinting(priceTagNumber: Int, confirmCallback: () -> Unit)
-    fun showMakeSurePaperInstalled(printerName: String, paperColor: String, numberOfCopy: Int, confirmCallback: () -> Unit)
+    fun showMakeSureYellowPaperInstalled(printerName: String, numberOfCopy: Int, confirmCallback: () -> Unit)
+    fun showMakeSureRedPaperInstalled(printerName: String, numberOfCopy: Int, confirmCallback: () -> Unit)
     fun showPriceTagsSubmitted(nextCallback: () -> Unit)
     fun showSetTaskToStatusCalculated(yesCallback: () -> Unit)
     fun showRawGoodsRemainedInTask(yesCallback: () -> Unit)

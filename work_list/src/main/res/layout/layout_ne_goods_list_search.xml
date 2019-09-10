@@ -99,14 +99,14 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
                 android:onClick="@{(view) -> vm.scanQrCode()}"
-                android:src="@drawable/ic_scan_barcode" />
+                android:src="@drawable/ic_scan_qrcode_48dp" />
 
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
                 android:onClick="@{(view) -> vm.scanBarCode()}"
-                android:src="@drawable/ic_scan_barcode" />
+                android:src="@drawable/ic_scan_barcode_48dp" />
 
         </LinearLayout>
 
