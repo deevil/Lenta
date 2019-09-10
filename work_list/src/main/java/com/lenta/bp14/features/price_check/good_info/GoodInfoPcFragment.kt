@@ -2,7 +2,6 @@ package com.lenta.bp14.features.price_check.good_info
 
 import androidx.lifecycle.Observer
 import com.lenta.bp14.R
-import com.lenta.bp14.data.model.Good
 import com.lenta.bp14.databinding.FragmentGoodInfoPcBinding
 import com.lenta.bp14.platform.extentions.getAppComponent
 import com.lenta.shared.platform.fragment.CoreFragment
@@ -39,9 +38,9 @@ class GoodInfoPcFragment : CoreFragment<FragmentGoodInfoPcBinding, GoodInfoPcVie
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
-        bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.missing)
-        bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.error)
-        bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.correct)
+        bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.noPrice)
+        bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.errorPrice)
+        bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.rightPrice)
     }
 
 }
