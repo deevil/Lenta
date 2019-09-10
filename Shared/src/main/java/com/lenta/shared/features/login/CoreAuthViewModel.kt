@@ -8,6 +8,7 @@ abstract class CoreAuthViewModel : CoreViewModel() {
     val password: MutableLiveData<String> = MutableLiveData("")
     val appTitle: MutableLiveData<String> = MutableLiveData("")
     val progress: MutableLiveData<Boolean> = MutableLiveData(false)
+    val skipButtonEnabled = MutableLiveData<Boolean>(true)
     abstract val enterEnabled: MutableLiveData<Boolean>
     abstract fun onClickEnter()
     abstract fun onClickAuxiliaryMenu()

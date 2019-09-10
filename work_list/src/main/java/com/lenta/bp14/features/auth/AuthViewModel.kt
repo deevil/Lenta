@@ -36,7 +36,12 @@ class AuthViewModel : CoreAuthViewModel() {
     lateinit var appSettings: IAppSettings
 
 
-    val packageName: MutableLiveData<String> = MutableLiveData()
+    val packageName = MutableLiveData<String>()
+
+    override val enterEnabled: MutableLiveData<Boolean> by lazy {
+        login.combineLatest(password).map { isValidLoginFields(login = it?.first, password = it?.second) }
+                .combineLatest(progress).map { isEnterEnabled(isFieldsValid = it?.first, inProgress = it?.second) }
+    }
 
     init {
         viewModelScope.launch {
@@ -46,14 +51,10 @@ class AuthViewModel : CoreAuthViewModel() {
         }
     }
 
-    override val enterEnabled: MutableLiveData<Boolean> by lazy {
-        login.combineLatest(password).map { isValidLoginFields(login = it?.first, password = it?.second) }
-                .combineLatest(progress).map { isEnterEnabled(isFieldsValid = it?.first, inProgress = it?.second) }
-    }
-
     override fun onClickEnter() {
         viewModelScope.launch {
             progress.value = true
+            skipButtonEnabled.value = false
 
             auth(AuthParams(getLogin(), getPassword())).either(::handleFailure, ::loadPermissions)
         }
@@ -68,6 +69,7 @@ class AuthViewModel : CoreAuthViewModel() {
             }
 
             progress.value = false
+            skipButtonEnabled.value = true
 
             navigator.openFastDataLoadingScreen()
         }
