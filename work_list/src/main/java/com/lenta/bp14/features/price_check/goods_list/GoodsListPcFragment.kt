@@ -65,6 +65,7 @@ class GoodsListPcFragment : CoreFragment<FragmentGoodsListPcBinding, GoodsListPc
 
     override fun onToolbarButtonClick(view: View) {
         when (view.id) {
+            R.id.b_2 -> vm.onClickVideo()
             R.id.b_3 -> vm.onClickDelete()
             R.id.b_4 -> vm.onClickPrint()
             R.id.b_5 -> vm.onClickSave()
