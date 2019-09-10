@@ -5,7 +5,6 @@ import android.view.View
 import androidx.lifecycle.Observer
 import com.lenta.bp14.BR
 import com.lenta.bp14.R
-import com.lenta.bp14.data.model.Good
 import com.lenta.bp14.databinding.FragmentExpectedDeliveriesBinding
 import com.lenta.bp14.databinding.ItemStatusQuantityDateBinding
 import com.lenta.bp14.platform.extentions.getAppComponent
@@ -15,7 +14,6 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig
-import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
 import com.lenta.shared.utilities.extentions.provideViewModel
 

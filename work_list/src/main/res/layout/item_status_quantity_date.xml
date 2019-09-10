@@ -6,7 +6,7 @@
 
         <variable
             name="delivery"
-            type="com.lenta.bp14.data.model.Delivery" />
+            type="com.lenta.bp14.models.data.pojo.Delivery" />
 
     </data>
 

@@ -3,7 +3,6 @@ package com.lenta.bp14.features.work_list.good_sales
 import android.view.View
 import androidx.lifecycle.Observer
 import com.lenta.bp14.R
-import com.lenta.bp14.data.model.Good
 import com.lenta.bp14.databinding.FragmentGoodSalesBinding
 import com.lenta.bp14.platform.extentions.getAppComponent
 import com.lenta.shared.platform.fragment.CoreFragment

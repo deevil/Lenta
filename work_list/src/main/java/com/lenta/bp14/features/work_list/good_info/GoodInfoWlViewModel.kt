@@ -2,11 +2,11 @@ package com.lenta.bp14.features.work_list.good_info
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.lenta.bp14.data.ShelfLifeType
-import com.lenta.bp14.data.TaskManager
-import com.lenta.bp14.data.model.Good
-import com.lenta.bp14.data.model.Provider
-import com.lenta.bp14.data.model.Stock
+import com.lenta.bp14.models.data.ShelfLifeType
+import com.lenta.bp14.models.data.TaskManager
+import com.lenta.bp14.models.data.pojo.Good
+import com.lenta.bp14.models.data.pojo.Provider
+import com.lenta.bp14.models.data.pojo.Stock
 import com.lenta.bp14.platform.navigation.IScreenNavigator
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.Logg

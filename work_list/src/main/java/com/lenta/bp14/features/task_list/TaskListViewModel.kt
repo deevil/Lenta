@@ -2,9 +2,9 @@ package com.lenta.bp14.features.task_list
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.lenta.bp14.data.TaskListTab
-import com.lenta.bp14.data.TaskManager
-import com.lenta.bp14.data.model.Task
+import com.lenta.bp14.models.data.TaskListTab
+import com.lenta.bp14.models.data.TaskManager
+import com.lenta.bp14.models.data.pojo.Task
 import com.lenta.bp14.platform.navigation.IScreenNavigator
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.Logg

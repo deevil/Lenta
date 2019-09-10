@@ -3,9 +3,9 @@ package com.lenta.bp14.util
 import android.widget.ImageView
 import androidx.databinding.BindingAdapter
 import com.lenta.bp14.R
-import com.lenta.bp14.data.model.PriceTagStatus
-import com.lenta.bp14.data.model.PrintStatus
-import com.lenta.bp14.data.model.TaskStatus
+import com.lenta.bp14.models.data.pojo.PriceTagStatus
+import com.lenta.bp14.models.data.pojo.PrintStatus
+import com.lenta.bp14.models.data.pojo.TaskStatus
 
 @BindingAdapter("taskStatusIcon")
 fun setTaskStatusIcon(imageView: ImageView, taskStatus: TaskStatus) {

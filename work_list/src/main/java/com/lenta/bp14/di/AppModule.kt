@@ -2,7 +2,7 @@ package com.lenta.bp14.di
 
 import android.content.Context
 import com.google.gson.Gson
-import com.lenta.bp14.data.TaskManager
+import com.lenta.bp14.models.data.TaskManager
 import com.lenta.bp14.models.check_price.CheckPriceTaskManager
 import com.lenta.bp14.platform.navigation.IScreenNavigator
 import com.lenta.bp14.platform.navigation.ScreenNavigator

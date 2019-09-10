@@ -1,7 +1,7 @@
 package com.lenta.bp14.di
 
 import com.lenta.bp14.ExceptionHandler
-import com.lenta.bp14.data.TaskManager
+import com.lenta.bp14.models.data.TaskManager
 import com.lenta.bp14.features.auth.AuthViewModel
 import com.lenta.bp14.features.barcode_detection.CoreScanBarCodeViewModel
 import com.lenta.bp14.features.check_list.goods_list.GoodsListClViewModel

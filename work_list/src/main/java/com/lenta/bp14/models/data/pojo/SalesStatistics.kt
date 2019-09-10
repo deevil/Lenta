@@ -1,4 +1,4 @@
-package com.lenta.bp14.data.model
+package com.lenta.bp14.models.data.pojo
 
 import com.lenta.shared.utilities.extentions.getFormattedDate
 import com.lenta.shared.utilities.extentions.getFormattedTime
