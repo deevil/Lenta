@@ -1,4 +1,4 @@
-package com.lenta.bp9.requests
+package com.lenta.bp9.requests.network
 
 import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName

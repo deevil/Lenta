@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".features.change_datetime.ChangeDateTimeFragment">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/tv_date_caption"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:textSize="21sp"
+            android:text='@{vm.dateCaption}'
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Дата прибытия"/>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/date_block"
+            android:layout_width="273dp"
+            android:layout_height="69dp"
+            android:layout_marginTop="19dp"
+            app:layout_constraintTop_toBottomOf="@id/tv_date_caption"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <EditText
+                android:id="@+id/et_days"
+                android:layout_width="69dp"
+                android:layout_height="60dp"
+                android:layout_centerHorizontal="true"
+                android:ellipsize="end"
+                android:imeOptions="actionNext"
+                android:inputType="textNoSuggestions|numberDecimal"
+                android:maxLines="1"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
+                android:gravity="center"
+                android:textSize="24sp"
+                android:text="@={vm.days}"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/tv_dot1"
+                tools:ignore="Autofill"
+                tools:text = "DD"/>
+
+            <TextView
+                android:id="@+id/tv_dot1"
+                android:layout_width="33dp"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="15dp"
+                android:gravity="center"
+                android:textSize="21sp"
+                android:text="."
+                app:layout_constraintStart_toEndOf="@id/et_days"
+                app:layout_constraintEnd_toStartOf="@id/et_months"
+                app:layout_constraintBottom_toBottomOf="parent"
+                tools:text="."/>
+
+            <EditText
+                android:id="@+id/et_months"
+                android:layout_width="69dp"
+                android:layout_height="60dp"
+                android:layout_centerHorizontal="true"
+                android:ellipsize="end"
+                android:imeOptions="actionNext"
+                android:inputType="textNoSuggestions|numberDecimal"
+                android:maxLines="1"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
+                android:gravity="center"
+                android:textSize="24sp"
+                android:text="@={vm.months}"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toEndOf="@id/tv_dot1"
+                app:layout_constraintEnd_toStartOf="@id/tv_dot2"
+                tools:ignore="Autofill"
+                tools:text="MM" />
+
+            <TextView
+                android:id="@+id/tv_dot2"
+                android:layout_width="33dp"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:layout_marginBottom="15dp"
+                android:textSize="21sp"
+                android:text="."
+                app:layout_constraintStart_toEndOf="@id/et_months"
+                app:layout_constraintEnd_toStartOf="@id/et_years"
+                app:layout_constraintBottom_toBottomOf="parent"
+                tools:text="."/>
+
+            <EditText
+                android:id="@+id/et_years"
+                android:layout_width="69dp"
+                android:layout_height="60dp"
+                android:layout_centerHorizontal="true"
+                android:ellipsize="end"
+                android:imeOptions="actionNext"
+                android:inputType="textNoSuggestions|numberDecimal"
+                android:maxLines="1"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
+                android:gravity="center"
+                android:textSize="24sp"
+                android:text="@={vm.years}"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toEndOf="@id/tv_dot2"
+                app:layout_constraintEnd_toEndOf="parent"
+                tools:ignore="Autofill"
+                tools:text="YY"/>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <TextView
+            android:id="@+id/tv_time_caption"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="36dp"
+            android:textSize="21sp"
+            android:text='@{vm.timeCaption}'
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/date_block"
+            tools:text="Время прибытия"/>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="171dp"
+            android:layout_height="69dp"
+            android:layout_marginTop="19dp"
+            app:layout_constraintTop_toBottomOf="@id/tv_time_caption"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <EditText
+                android:id="@+id/et_hours"
+                android:layout_width="69dp"
+                android:layout_height="60dp"
+                android:layout_centerHorizontal="true"
+                android:ellipsize="end"
+                android:imeOptions="actionNext"
+                android:inputType="textNoSuggestions|numberDecimal"
+                android:maxLines="1"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
+                android:gravity="center"
+                android:textSize="24sp"
+                android:text="@={vm.hours}"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/tv_colon1"
+                tools:ignore="Autofill"
+                tools:text = "HH"/>
+
+            <TextView
+                android:id="@+id/tv_colon1"
+                android:layout_width="33dp"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="15dp"
+                android:gravity="center"
+                android:textSize="21sp"
+                android:text=":"
+                app:layout_constraintStart_toEndOf="@id/et_hours"
+                app:layout_constraintEnd_toStartOf="@id/et_minutes"
+                app:layout_constraintBottom_toBottomOf="parent"
+                tools:text=":"/>
+
+            <EditText
+                android:id="@+id/et_minutes"
+                android:layout_width="69dp"
+                android:layout_height="60dp"
+                android:layout_centerHorizontal="true"
+                android:ellipsize="end"
+                android:imeOptions="actionDone"
+                android:inputType="textNoSuggestions|numberDecimal"
+                android:maxLines="1"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
+                android:gravity="center"
+                android:textSize="24sp"
+                android:text="@={vm.minutes}"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toEndOf="@id/tv_colon1"
+                app:layout_constraintEnd_toEndOf="parent"
+                tools:ignore="Autofill"
+                tools:text="MM" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+    <data>
+
+        <variable
+            name="vm"
+            type="com.lenta.bp9.features.change_datetime.ChangeDateTimeViewModel" />
+
+
+    </data>
+
+
+</layout>

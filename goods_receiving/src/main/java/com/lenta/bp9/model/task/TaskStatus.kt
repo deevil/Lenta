@@ -2,14 +2,14 @@ package com.lenta.bp9.model.task
 
 enum class TaskStatus(val taskStatusString: String) {
     Other(""),
-    Ordered("2"), //Заказано
-    Traveling("3"), //В пути
-    Arrived("4"), //Прибыло
-    Checking("5"), //Сверяется
-    Checked("6"), //Сверено
-    Unloading("7"), //Разгружается
-    Unloaded("8"), //Разгружено
-    Recounting("9"), //Пересчитывается
+    Ordered("02"), //Заказано
+    Traveling("03"), //В пути
+    Arrived("04"), //Прибыло
+    Checking("05"), //Сверяется
+    Checked("06"), //Сверено
+    Unloading("07"), //Разгружается
+    Unloaded("08"), //Разгружено
+    Recounting("09"), //Пересчитывается
     Recounted("10"), //Пересчитано
     Booked("11"), //Проведено
     TransferringToSection("12"), //Передача (в секцию)
@@ -23,14 +23,14 @@ enum class TaskStatus(val taskStatusString: String) {
     companion object {
         fun from(taskStatusString: String): TaskStatus {
             return when(taskStatusString) {
-                "2" -> Ordered
-                "3" -> Traveling
-                "4" -> Arrived
-                "5" -> Checking
-                "6" -> Checked
-                "7" -> Unloading
-                "8" -> Unloaded
-                "9" -> Recounting
+                "02" -> Ordered
+                "03" -> Traveling
+                "04" -> Arrived
+                "05" -> Checking
+                "06" -> Checked
+                "07" -> Unloading
+                "08" -> Unloaded
+                "09" -> Recounting
                 "10" -> Recounted
                 "11" -> Booked
                 "12" -> TransferringToSection

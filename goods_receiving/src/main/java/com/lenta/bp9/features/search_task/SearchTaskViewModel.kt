@@ -1,14 +1,12 @@
 package com.lenta.bp9.features.search_task
 
-import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import com.lenta.bp9.features.loading.tasks.TaskListLoadingMode
 import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.bp9.repos.IRepoInMemoryHolder
-import com.lenta.bp9.requests.TaskListSearchParams
+import com.lenta.bp9.requests.network.TaskListSearchParams
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
-import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.map
 import javax.inject.Inject
@@ -51,12 +49,12 @@ class SearchTaskViewModel: CoreViewModel() {
     fun onClickFind() {
         screenNavigator.openTaskListLoadingScreen(TaskListLoadingMode.Receiving,
                 TaskListSearchParams(taskNumber = if (taskNumber.value.isNullOrEmpty()) null else taskNumber.value,
-                supplierNumber = if (supplier.value.isNullOrEmpty()) null else supplier.value,
-                documentNumber = if (order.value.isNullOrEmpty()) null else order.value,
-                invoiceNumber = if (invoice.value.isNullOrEmpty()) null else invoice.value,
-                transportNumber = if (transportation.value.isNullOrEmpty()) null else transportation.value,
-                numberGE = if (numberGE.value.isNullOrEmpty()) null else numberGE.value,
-                numberEO = if (numberEO.value.isNullOrEmpty()) null else numberEO.value)
+                        supplierNumber = if (supplier.value.isNullOrEmpty()) null else supplier.value,
+                        documentNumber = if (order.value.isNullOrEmpty()) null else order.value,
+                        invoiceNumber = if (invoice.value.isNullOrEmpty()) null else invoice.value,
+                        transportNumber = if (transportation.value.isNullOrEmpty()) null else transportation.value,
+                        numberGE = if (numberGE.value.isNullOrEmpty()) null else numberGE.value,
+                        numberEO = if (numberEO.value.isNullOrEmpty()) null else numberEO.value)
         )
     }
 }
