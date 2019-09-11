@@ -4,15 +4,19 @@ import androidx.lifecycle.LiveData
 import com.google.gson.Gson
 import com.lenta.bp14.ml.CheckStatus
 import com.lenta.bp14.models.ITask
+import com.lenta.bp14.models.ITaskDescription
 import com.lenta.bp14.models.check_price.repo.ActualPriceRepoForTest
 import com.lenta.bp14.models.check_price.repo.IActualPricesRepo
 import com.lenta.bp14.models.check_price.repo.ICheckPriceResultsRepo
+import com.lenta.bp14.models.general.ITaskType
+import com.lenta.bp14.models.general.TaskTypes
 import com.lenta.shared.models.core.StateFromToString
 import com.lenta.shared.platform.time.ITimeMonitor
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.implementationOf
 
 class CheckPriceTask(
+        private val taskDescription: CheckPriceTaskDescription,
         private val actualPricesRepo: IActualPricesRepo,
         private val readyResultsRepo: ICheckPriceResultsRepo,
         private val priceInfoParser: IPriceInfoParser,
@@ -56,6 +60,14 @@ class CheckPriceTask(
     override fun stateToString(): String {
         //TODO будет реализовано позже
         return ""
+    }
+
+    override fun getTaskType(): ITaskType {
+        return TaskTypes.CheckPrice.taskType
+    }
+
+    override fun getDescription(): ITaskDescription {
+        return taskDescription
     }
 
 }
