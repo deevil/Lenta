@@ -25,6 +25,8 @@ abstract class CoreFragment<T : ViewDataBinding, S : CoreViewModel> : Fragment()
     var binding: T? = null
     lateinit var vm: S
 
+    private var timeForAllowHandleEnter = Long.MAX_VALUE
+
     val coreComponent: CoreComponent by lazy {
         (activity as CoreActivity<*>).coreComponent
     }
@@ -39,7 +41,6 @@ abstract class CoreFragment<T : ViewDataBinding, S : CoreViewModel> : Fragment()
         super.onSaveInstanceState(outState)
         saveInstanceStateGsonBundle(outState)
     }
-
 
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -67,6 +68,7 @@ abstract class CoreFragment<T : ViewDataBinding, S : CoreViewModel> : Fragment()
 
     override fun onResume() {
         super.onResume()
+        timeForAllowHandleEnter = System.currentTimeMillis() + 500L
         Logg.d { "onResume $this" }
         arguments?.let { arguments ->
             arguments.getBundle(FragmentStack.SAVE_TAG_FOR_ARGUMENTS)?.let {
@@ -105,6 +107,10 @@ abstract class CoreFragment<T : ViewDataBinding, S : CoreViewModel> : Fragment()
             it.cleanAll()
             setupBottomToolBar(it)
         }
+    }
+
+    protected fun isAllowHandleKeyCode(): Boolean {
+        return System.currentTimeMillis() > timeForAllowHandleEnter
     }
 
     @LayoutRes

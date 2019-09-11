@@ -21,6 +21,18 @@
         android:animateLayoutChanges="false"
         tools:context=".platform.activity.main_activity.CoreMainActivity">
 
+        <View
+            android:id="@+id/fake_view"
+            android:layout_width="0.01dp"
+            android:layout_height="0.01dp"
+            android:clickable="true"
+            android:focusable="true"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <requestFocus />
+        </View>
+
         <include
             android:id="@+id/layout_status_bar"
             layout="@layout/layout_status_bar"
