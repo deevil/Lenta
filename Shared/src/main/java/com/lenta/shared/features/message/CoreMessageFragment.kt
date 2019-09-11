@@ -3,6 +3,8 @@ package com.lenta.shared.features.message
 import android.view.View
 import com.lenta.shared.R
 import com.lenta.shared.databinding.LayoutMessageBinding
+import com.lenta.shared.keys.KeyCode
+import com.lenta.shared.keys.OnKeyDownListener
 import com.lenta.shared.platform.activity.OnBackPresserListener
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
@@ -12,7 +14,7 @@ import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
 import com.lenta.shared.utilities.state.state
 
-abstract class CoreMessageFragment : CoreFragment<LayoutMessageBinding, MessageViewModel>(), ToolbarButtonsClickListener, OnBackPresserListener {
+abstract class CoreMessageFragment : CoreFragment<LayoutMessageBinding, MessageViewModel>(), ToolbarButtonsClickListener, OnBackPresserListener, OnKeyDownListener {
     protected var message by state("")
     protected var title by state<String?>(null)
     protected var description by state<String?>(null)
@@ -38,8 +40,8 @@ abstract class CoreMessageFragment : CoreFragment<LayoutMessageBinding, MessageV
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
         topToolbarUiModel.visibility.value = true
 
-        if(title?.isNotEmpty() == true) topToolbarUiModel.title.value = title
-        if(description?.isNotEmpty() == true) topToolbarUiModel.description.value = description
+        if (title?.isNotEmpty() == true) topToolbarUiModel.title.value = title
+        if (description?.isNotEmpty() == true) topToolbarUiModel.description.value = description
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
@@ -94,6 +96,17 @@ abstract class CoreMessageFragment : CoreFragment<LayoutMessageBinding, MessageV
 
     override fun onBackPressed(): Boolean {
         return true
+    }
+
+    override fun onKeyDown(keyCode: KeyCode): Boolean {
+        if (keyCode == KeyCode.KEYCODE_ENTER) {
+            if (getBottomToolBarUIModel()?.uiModelButton5?.enabled?.value == true) {
+                vm.onClickRightButton()
+            }
+            return true
+        }
+
+        return false
     }
 
 }
