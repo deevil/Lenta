@@ -5,8 +5,6 @@
 
     <data>
 
-        <import type="android.view.View"/>
-
         <variable
             name="vm"
             type="com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel" />
@@ -28,10 +26,10 @@
             android:id="@+id/button_container"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:orientation="horizontal"
             app:layout_constraintBottom_toBottomOf="@+id/tv_description"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/tv_title"
-            android:orientation="horizontal">
+            app:layout_constraintTop_toTopOf="@+id/tv_title">
 
             <ImageButton
                 android:id="@+id/b_topbar_3"
@@ -41,8 +39,8 @@
                 android:onClick="@{(v) -> toolbarButtonsClickListener.onToolbarButtonClick(v)}"
                 android:padding="16dp"
                 android:src="@{vm.uiModelButton3.buttonDecorationInfo.iconRes}"
-                android:visibility="@{vm.uiModelButton3.visibility ? View.VISIBLE : View.GONE}"
                 app:focusable="@{false}"
+                app:isGone="@{!vm.uiModelButton3.visibility}"
                 tools:src="@drawable/ic_authorization_24dp" />
 
             <ImageButton
@@ -53,8 +51,8 @@
                 android:onClick="@{(v) -> toolbarButtonsClickListener.onToolbarButtonClick(v)}"
                 android:padding="16dp"
                 android:src="@{vm.uiModelButton1.buttonDecorationInfo.iconRes}"
-                android:visibility="@{vm.uiModelButton1.visibility ? View.VISIBLE : View.GONE}"
                 app:focusable="@{false}"
+                app:isGone="@{!vm.uiModelButton1.visibility}"
                 tools:src="@drawable/ic_settings_white" />
 
             <ImageButton
@@ -66,7 +64,7 @@
                 android:onClick="@{(v) -> toolbarButtonsClickListener.onToolbarButtonClick(v)}"
                 android:padding="16dp"
                 android:src="@{vm.uiModelButton2.buttonDecorationInfo.iconRes}"
-                android:visibility="@{vm.uiModelButton2.visibility ? View.VISIBLE : View.GONE}"
+                app:isGone="@{!vm.uiModelButton2.visibility}"
                 tools:src="@drawable/ic_exit_from_app_white" />
 
         </LinearLayout>
