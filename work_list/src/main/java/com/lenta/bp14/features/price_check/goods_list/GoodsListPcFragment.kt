@@ -13,12 +13,10 @@ import android.view.ViewGroup
 import android.view.View
 import android.widget.AdapterView
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.Observer
 import com.lenta.bp14.BR
 import com.lenta.bp14.databinding.*
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
-import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.databinding.DataBindingAdapter
 import com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig
 import com.lenta.shared.utilities.databinding.RecyclerViewKeyHandler
@@ -73,7 +71,10 @@ class GoodsListPcFragment : CoreFragment<FragmentGoodsListPcBinding, GoodsListPc
     }
 
     override fun getPagerItemView(container: ViewGroup, position: Int): View {
-        if (position == 0) {
+
+        val correctedPosition = vm.getCorrectedPagePosition(position)
+
+        if (correctedPosition == 0) {
             DataBindingUtil.inflate<LayoutPcGoodsListProcessingBinding>(LayoutInflater.from(container.context),
                     R.layout.layout_pc_goods_list_processing,
                     container,
@@ -115,7 +116,7 @@ class GoodsListPcFragment : CoreFragment<FragmentGoodsListPcBinding, GoodsListPc
             }
         }
 
-        if (position == 1) {
+        if (correctedPosition == 1) {
             DataBindingUtil.inflate<LayoutPcGoodsListProcessedBinding>(LayoutInflater.from(container.context),
                     R.layout.layout_pc_goods_list_processed,
                     container,
@@ -218,8 +219,9 @@ class GoodsListPcFragment : CoreFragment<FragmentGoodsListPcBinding, GoodsListPc
         }
     }
 
+
     override fun getTextTitle(position: Int): String {
-        return when (position) {
+        return when (vm.getCorrectedPagePosition(position)) {
             0 -> getString(R.string.processing)
             1 -> getString(R.string.processed)
             2 -> getString(R.string.search)
@@ -228,7 +230,7 @@ class GoodsListPcFragment : CoreFragment<FragmentGoodsListPcBinding, GoodsListPc
     }
 
     override fun countTab(): Int {
-        return 3
+        return vm.getPagesCount()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

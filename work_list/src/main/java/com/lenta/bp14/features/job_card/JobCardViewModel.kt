@@ -144,6 +144,7 @@ class JobCardViewModel : CoreViewModel() {
             checkPriceTaskManager.newTask(
                     taskDescription = CheckPriceTaskDescription(
                             tkNumber = sessionInfo.market!!,
+                            taskNumber = taskNumber,
                             taskName = taskName.value ?: "",
                             comment = comment.value ?: "",
                             description = description.value ?: ""
