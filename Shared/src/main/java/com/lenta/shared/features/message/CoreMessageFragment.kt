@@ -77,8 +77,7 @@ abstract class CoreMessageFragment : CoreFragment<LayoutMessageBinding, MessageV
     }
 
     override fun cleanTopToolbar(topToolbarUiModel: TopToolbarUiModel) {
-        topToolbarUiModel.uiModelButton1.visibility.value = false
-        topToolbarUiModel.uiModelButton2.visibility.value = false
+        topToolbarUiModel.cleanAll()
     }
 
     override fun onToolbarButtonClick(view: View) {
