@@ -220,7 +220,7 @@ abstract class CoreMainActivity : CoreActivity<ActivityMainBinding>(), ToolbarBu
         getCurrentFragment()?.implementationOf(ToolbarButtonsClickListener::class.java)?.onToolbarButtonClick(view)
     }
 
-    override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
+    override fun onKeyUp(keyCode: Int, event: KeyEvent): Boolean {
         val onKeyDownListener = getCurrentFragment()?.implementationOf(OnKeyDownListener::class.java)
         var handled = false
         val detectedKeyCode = KeyCode.detectKeyCode(event.keyCode)
