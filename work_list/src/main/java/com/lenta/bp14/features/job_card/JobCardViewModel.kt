@@ -2,6 +2,8 @@ package com.lenta.bp14.features.job_card
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.lenta.bp14.models.IGeneralTaskManager
+import com.lenta.bp14.models.ITask
 import com.lenta.bp14.models.check_price.CheckPriceTaskDescription
 import com.lenta.bp14.models.check_price.CheckPriceTaskManager
 import com.lenta.bp14.models.general.IGeneralRepo
@@ -9,7 +11,11 @@ import com.lenta.bp14.models.general.ITaskType
 import com.lenta.bp14.models.general.TaskTypes
 import com.lenta.bp14.platform.navigation.IScreenNavigator
 import com.lenta.shared.account.ISessionInfo
+import com.lenta.shared.platform.constants.Constants.DATE_FORMAT_ddmm
+import com.lenta.shared.platform.constants.Constants.TIME_FORMAT_HHmm
+import com.lenta.shared.platform.time.ITimeMonitor
 import com.lenta.shared.platform.viewmodel.CoreViewModel
+import com.lenta.shared.utilities.date_time.DateTimeUtil.formatDate
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.view.OnPositionClickListener
 import kotlinx.coroutines.launch
@@ -30,20 +36,58 @@ class JobCardViewModel : CoreViewModel() {
     @Inject
     lateinit var checkPriceTaskManager: CheckPriceTaskManager
 
+    @Inject
+    lateinit var generalTaskManager: IGeneralTaskManager
+
+    @Inject
+    lateinit var timeMonitor: ITimeMonitor
+
     private lateinit var taskNumber: String
 
-    private var taskTypes: MutableLiveData<List<ITaskType>> = MutableLiveData()
+    private val taskTypes: MutableLiveData<List<ITaskType>> = MutableLiveData(listOf())
+    private val processedTask: MutableLiveData<ITask> = MutableLiveData()
 
-    var taskTypeNames: MutableLiveData<List<String>> = taskTypes.map { it?.map { type -> type.taskName } }
+    val taskTypeNames: MutableLiveData<List<String>> = taskTypes.map { it?.map { type -> type.taskName } }
     val selectedTaskTypePosition: MutableLiveData<Int> = MutableLiveData(0)
-    val enabledChangeTaskType: MutableLiveData<Boolean> = MutableLiveData(true)
-    val taskName = MutableLiveData("taskName")
-    val description = MutableLiveData("Содержание описания")
-    val comment = MutableLiveData("Содержание комментария")
+    private val selectedTaskType: MutableLiveData<ITaskType> = selectedTaskTypePosition.map { getSelectedTypeTask() }
+    val enabledChangeTaskType: MutableLiveData<Boolean> = processedTask.map { it == null }
+
+    val taskName = selectedTaskType.map { selectedTaskType ->
+        processedTask.value.let { task ->
+            task?.getDescription()?.taskName ?: generateTaskName(selectedTaskType)
+
+        }
+    }
+
+    val description = selectedTaskType.map { it?.annotation }
+
+    val comment = selectedTaskType.map { getComment(it) }
+
+    val enabledNextButton = selectedTaskType.map { it != null && it != TaskTypes.Empty.taskType }
+
 
     init {
         viewModelScope.launch {
             taskTypes.value = generalRepo.getTasksTypes()
+            updateProcessedTask()
+        }
+    }
+
+    private fun updateProcessedTask() {
+        generalTaskManager.getProcessedTask().let { processedTask ->
+            this.processedTask.value = generalTaskManager.getProcessedTask()
+
+            if (processedTask != null) {
+                taskTypes.value?.apply {
+                    for (pos in 0..this.size) {
+                        if (processedTask.getTaskType() == this[pos]) {
+                            selectedTaskTypePosition.value = pos
+                            return
+                        }
+                    }
+                }
+
+            }
         }
     }
 
@@ -63,27 +107,59 @@ class JobCardViewModel : CoreViewModel() {
         }
     }
 
+    fun onBackPressed(): Boolean {
+        if (generalTaskManager.getProcessedTaskType() == null) {
+            return true
+        }
+
+        screenNavigator.openConfirmationExitTask {
+            generalTaskManager.clearCurrentTask()
+            screenNavigator.goBack()
+        }
+
+        return false
+    }
+
+
+    val onClickTaskTypes = object : OnPositionClickListener {
+        override fun onClickPosition(position: Int) {
+            selectedTaskTypePosition.value = position
+        }
+    }
+
+    private fun generateTaskName(taskType: ITaskType?): String {
+        return if (taskType == TaskTypes.Empty.taskType || taskType == null) "" else {
+            "${taskType.taskName} ${getCurrentTime()}"
+        }
+
+    }
+
+    private fun getCurrentTime(): String {
+        return formatDate(timeMonitor.getUnixTime(), "$DATE_FORMAT_ddmm $TIME_FORMAT_HHmm")
+    }
+
+    private fun getComment(taskType: ITaskType?): String {
+        return ""
+    }
+
     private fun newCheckPriceTask() {
         checkPriceTaskManager.clearTask()
         checkPriceTaskManager.newTask(
                 taskDescription = CheckPriceTaskDescription(
                         tkNumber = sessionInfo.market!!,
-                        taskName = taskName.value ?: ""
+                        taskName = taskName.value ?: "",
+                        comment = comment.value ?: "",
+                        description = description.value ?: ""
 
                 )
         )
+        updateProcessedTask()
         screenNavigator.openGoodsListPcScreen()
     }
 
     private fun getSelectedTypeTask(): ITaskType? {
         return selectedTaskTypePosition.value?.let {
             taskTypes.value?.getOrNull(it)
-        }
-    }
-
-    val onClickTaskTypes = object : OnPositionClickListener {
-        override fun onClickPosition(position: Int) {
-            selectedTaskTypePosition.value = position
         }
     }
 

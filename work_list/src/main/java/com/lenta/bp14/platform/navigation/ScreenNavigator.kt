@@ -343,6 +343,19 @@ class ScreenNavigator(
         }
     }
 
+    override fun openConfirmationExitTask(callbackFunc: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.confirmation_delete_task),
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(callbackFunc),
+                    pageNumber = "94",
+                    leftButtonDecorationInfo = ButtonDecorationInfo.no,
+                    rightButtonDecorationInfo = ButtonDecorationInfo.yes
+            )
+            )
+        }
+    }
+
 }
 
 interface IScreenNavigator : ICoreNavigator {
@@ -388,4 +401,5 @@ interface IScreenNavigator : ICoreNavigator {
 
     fun openTestScanBarcodeScreen()
     fun openScanPriceScreen()
+    fun openConfirmationExitTask(callbackFunc: () -> Unit)
 }

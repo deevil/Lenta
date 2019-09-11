@@ -17,6 +17,7 @@ object Constants {
 
     //---------Date formats---------//
     const val DATE_FORMAT_ddmmyy = "dd.MM.yy"
+    const val DATE_FORMAT_ddmm = "dd.MM"
     const val DATE_FORMAT_yyyy_mm_dd = "yyyy-MM-dd"
     const val DATE_FORMAT_dd = "dd"
     const val DATE_FORMAT_mm = "MM"

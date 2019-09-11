@@ -45,7 +45,7 @@ class GoodsListPcViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
                 val processedSelected = it?.first?.second?.isNotEmpty() == true
                 val searchSelected = it?.second?.isNotEmpty() == true
                 tab == GoodsListTab.PROCESSED.position && processedSelected || tab == GoodsListTab.SEARCH.position && searchSelected
-    }
+            }
 
     val deleteButtonEnabled = selectedItemOnCurrentTab.map { it }
     val printButtonEnabled = selectedItemOnCurrentTab.map { it }
@@ -96,6 +96,10 @@ class GoodsListPcViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
 
     fun onClickPrint() {
 
+    }
+
+    fun onClickVideo() {
+        navigator.openScanPriceScreen()
     }
 
     fun onClickItemPosition(position: Int) {
