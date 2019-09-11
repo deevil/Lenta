@@ -2,6 +2,7 @@
 
     <string name="app_name">Рабочий список</string>
     <string name="work_with_tasks">Работа с заданиями</string>
+    <string name="check_list">Чек-лист</string>
     <string name="create_task">Создать задание</string>
     <string name="print_labels">Печать ценников</string>
     <string name="not_processed">К обработке</string>
