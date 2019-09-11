@@ -5,8 +5,6 @@
 
     <data>
 
-        <import type="android.view.View" />
-
         <variable
             name="vm"
             type="com.lenta.bp14.features.main_menu.MainMenuViewModel" />
@@ -31,7 +29,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:ignore="ContentDescription" />
-
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -62,9 +59,9 @@
                 android:onClick="@{(view) -> vm.onClickCreateTask()}"
                 android:text="@string/create_task"
                 android:textAllCaps="false"
-                android:visibility="@{vm.createTaskButtonVisibility ? View.VISIBLE : View.GONE}"
                 app:icon="@drawable/ic_create_task_48dp"
-                app:iconGravity="end" />
+                app:iconGravity="end"
+                app:isGone="@{!vm.createTaskButtonVisibility}" />
 
 
             <Button
@@ -74,9 +71,9 @@
                 android:onClick="@{(view) -> vm.onClickWorkWithTask()}"
                 android:text="@string/work_with_tasks"
                 android:textAllCaps="false"
-                android:visibility="@{vm.workWithTaskButtonVisibility ? View.VISIBLE : View.GONE}"
                 app:icon="@drawable/ic_work_with_task_48dp"
-                app:iconGravity="end" />
+                app:iconGravity="end"
+                app:isGone="@{!vm.workWithTaskButtonVisibility}" />
 
             <Button
                 android:id="@+id/b_check_list"
@@ -85,9 +82,9 @@
                 android:onClick="@{(view) -> vm.onClickCheckList()}"
                 android:text="@string/check_list"
                 android:textAllCaps="false"
-                android:visibility="@{vm.checkListButtonVisibility ? View.VISIBLE : View.GONE}"
                 app:icon="@drawable/ic_check_list_48dp"
-                app:iconGravity="end" />
+                app:iconGravity="end"
+                app:isGone="@{!vm.checkListButtonVisibility}" />
 
         </LinearLayout>
 
