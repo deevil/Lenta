@@ -51,11 +51,11 @@ class JobCardViewModel : CoreViewModel() {
     val selectedTaskTypePosition: MutableLiveData<Int> = MutableLiveData(0)
     private val selectedTaskType: MutableLiveData<ITaskType> = selectedTaskTypePosition.map { getSelectedTypeTask() }
     val enabledChangeTaskType: MutableLiveData<Boolean> = processedTask.map { it == null }
+    val isStrictList = MutableLiveData(false)
 
     val taskName = selectedTaskType.map { selectedTaskType ->
         processedTask.value.let { task ->
             task?.getDescription()?.taskName ?: generateTaskName(selectedTaskType)
-
         }
     }
 
@@ -65,12 +65,23 @@ class JobCardViewModel : CoreViewModel() {
 
     val enabledNextButton = selectedTaskType.map { it != null && it != TaskTypes.Empty.taskType }
 
+    val onClickTaskTypes = object : OnPositionClickListener {
+        override fun onClickPosition(position: Int) {
+            selectedTaskTypePosition.value = position
+        }
+    }
 
     init {
         viewModelScope.launch {
             taskTypes.value = generalRepo.getTasksTypes()
+            isStrictList.value = isStrictList()
             updateProcessedTask()
         }
+    }
+
+    private fun isStrictList(): Boolean {
+        //TODO уточнить для ветки работы с заданиями
+        return taskNumber.isNotBlank()
     }
 
     private fun updateProcessedTask() {
@@ -121,12 +132,6 @@ class JobCardViewModel : CoreViewModel() {
     }
 
 
-    val onClickTaskTypes = object : OnPositionClickListener {
-        override fun onClickPosition(position: Int) {
-            selectedTaskTypePosition.value = position
-        }
-    }
-
     private fun generateTaskName(taskType: ITaskType?): String {
         return if (taskType == TaskTypes.Empty.taskType || taskType == null) "" else {
             "${taskType.taskName} ${getCurrentTime()}"
@@ -143,16 +148,21 @@ class JobCardViewModel : CoreViewModel() {
     }
 
     private fun newCheckPriceTask() {
-        checkPriceTaskManager.clearTask()
-        checkPriceTaskManager.newTask(
-                taskDescription = CheckPriceTaskDescription(
-                        tkNumber = sessionInfo.market!!,
-                        taskName = taskName.value ?: "",
-                        comment = comment.value ?: "",
-                        description = description.value ?: ""
 
-                )
-        )
+        if (checkPriceTaskManager.getTask() == null) {
+            checkPriceTaskManager.clearTask()
+            checkPriceTaskManager.newTask(
+                    taskDescription = CheckPriceTaskDescription(
+                            tkNumber = sessionInfo.market!!,
+                            taskName = taskName.value ?: "",
+                            comment = comment.value ?: "",
+                            description = description.value ?: ""
+                    )
+            )
+        } else {
+            checkPriceTaskManager.getTask()?.getDescription()?.taskName = taskName.value!!
+        }
+
         updateProcessedTask()
         screenNavigator.openGoodsListPcScreen()
     }

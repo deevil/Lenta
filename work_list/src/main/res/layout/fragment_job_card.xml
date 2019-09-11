@@ -192,7 +192,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
             android:layout_marginBottom="10dp"
-            android:src="@drawable/ic_scan_qrcode_48dp"
+            android:src="@{vm.isStrictList() ? @drawable/ic_strict_list_48dp : @drawable/ic_not_strict_list_48dp}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
 
