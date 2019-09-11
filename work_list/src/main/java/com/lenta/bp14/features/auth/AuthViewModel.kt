@@ -43,6 +43,8 @@ class AuthViewModel : CoreAuthViewModel() {
                 .combineLatest(progress).map { isEnterEnabled(isFieldsValid = it?.first, inProgress = it?.second) }
     }
 
+    val skipButtonEnabled = progress.map { it != true }
+
     init {
         viewModelScope.launch {
             //TODO - implement existUnsavedData
@@ -55,8 +57,6 @@ class AuthViewModel : CoreAuthViewModel() {
     override fun onClickEnter() {
         viewModelScope.launch {
             progress.value = true
-            skipButtonEnabled.value = false
-
             auth(AuthParams(getLogin(), getPassword())).either(::handleFailure, ::loadPermissions)
         }
     }
@@ -70,8 +70,6 @@ class AuthViewModel : CoreAuthViewModel() {
             }
 
             progress.value = false
-            skipButtonEnabled.value = true
-
             navigator.openFastDataLoadingScreen()
         }
     }
