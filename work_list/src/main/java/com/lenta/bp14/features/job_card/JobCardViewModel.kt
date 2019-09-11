@@ -39,9 +39,6 @@ class JobCardViewModel : CoreViewModel() {
     @Inject
     lateinit var generalTaskManager: IGeneralTaskManager
 
-    @Inject
-    lateinit var timeMonitor: ITimeMonitor
-
     private lateinit var taskNumber: String
 
     private val taskTypes: MutableLiveData<List<ITaskType>> = MutableLiveData(listOf())
@@ -53,9 +50,12 @@ class JobCardViewModel : CoreViewModel() {
     val enabledChangeTaskType: MutableLiveData<Boolean> = processedTask.map { it == null }
     val isStrictList = MutableLiveData(false)
 
-    val taskName = selectedTaskType.map { selectedTaskType ->
-        processedTask.value.let { task ->
-            task?.getDescription()?.taskName ?: generateTaskName(selectedTaskType)
+    val taskName by lazy {
+        selectedTaskType.map { selectedTaskType ->
+            processedTask.value.let { task ->
+                task?.getDescription()?.taskName
+                        ?: generalTaskManager.generateNewNameForTask(selectedTaskType)
+            }
         }
     }
 
@@ -123,7 +123,8 @@ class JobCardViewModel : CoreViewModel() {
             return true
         }
 
-        screenNavigator.openConfirmationExitTask {
+        screenNavigator.openConfirmationExitTask(generalTaskManager.getProcessedTask()?.getDescription()?.taskName
+                ?: "") {
             generalTaskManager.clearCurrentTask()
             screenNavigator.goBack()
         }
@@ -131,17 +132,6 @@ class JobCardViewModel : CoreViewModel() {
         return false
     }
 
-
-    private fun generateTaskName(taskType: ITaskType?): String {
-        return if (taskType == TaskTypes.Empty.taskType || taskType == null) "" else {
-            "${taskType.taskName} ${getCurrentTime()}"
-        }
-
-    }
-
-    private fun getCurrentTime(): String {
-        return formatDate(timeMonitor.getUnixTime(), "$DATE_FORMAT_ddmm $TIME_FORMAT_HHmm")
-    }
 
     private fun getComment(taskType: ITaskType?): String {
         return ""
