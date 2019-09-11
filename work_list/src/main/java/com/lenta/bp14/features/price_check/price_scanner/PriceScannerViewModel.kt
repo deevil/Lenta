@@ -2,16 +2,13 @@ package com.lenta.bp14.features.price_check.price_scanner
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import com.lenta.bp14.ml.CheckStatus
-import com.lenta.bp14.models.check_price.CheckPriceTaskDescription
 import com.lenta.bp14.models.check_price.CheckPriceTaskManager
 import com.lenta.bp14.models.check_price.ICheckPriceResult
 import com.lenta.bp14.models.check_price.toCheckStatus
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.extentions.map
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class PriceScannerViewModel : CoreViewModel() {
@@ -25,18 +22,6 @@ class PriceScannerViewModel : CoreViewModel() {
     private val checkPriceResult: MutableLiveData<ICheckPriceResult?> = MutableLiveData()
 
     val resultUi: LiveData<CheckPriceResultUi> = checkPriceResult.map { it.toUi() }
-
-    init {
-        viewModelScope.launch {
-            checkPriceTaskManager.newTask(
-                    CheckPriceTaskDescription(
-                            tkNumber = sesionInfo.market!!,
-                            taskName = "task_1"
-
-                    )
-            )
-        }
-    }
 
 
     fun getTitle(): String {

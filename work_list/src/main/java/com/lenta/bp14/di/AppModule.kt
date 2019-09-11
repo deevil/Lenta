@@ -2,6 +2,8 @@ package com.lenta.bp14.di
 
 import android.content.Context
 import com.google.gson.Gson
+import com.lenta.bp14.models.GeneralTaskManager
+import com.lenta.bp14.models.IGeneralTaskManager
 import com.lenta.bp14.models.data.TaskManager
 import com.lenta.bp14.models.check_price.CheckPriceTaskManager
 import com.lenta.bp14.models.general.GeneralRepo
@@ -56,8 +58,16 @@ class AppModule {
 
     @Provides
     @AppScope
-    internal fun provideGeneralManager(): IGeneralRepo {
+    internal fun provideGeneralRepo(): IGeneralRepo {
         return GeneralRepo()
+    }
+
+    @Provides
+    @AppScope
+    internal fun provideGeneralTaskManager(checkPriceTaskManager: CheckPriceTaskManager): IGeneralTaskManager {
+        return GeneralTaskManager(
+                checkPriceTaskManager = checkPriceTaskManager
+        )
     }
 
 }

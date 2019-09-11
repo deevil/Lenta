@@ -211,31 +211,31 @@ data class ButtonDecorationInfo(
         }
 
         val deliveries: ButtonDecorationInfo by lazy {
-            ButtonDecorationInfo(R.drawable.ic_deliveries_48dp, R.string.deliveries)
+            ButtonDecorationInfo(R.drawable.ic_deliveries_24dp, R.string.deliveries)
         }
 
         val sales: ButtonDecorationInfo by lazy {
-            ButtonDecorationInfo(R.drawable.ic_sales_48dp, R.string.sales)
+            ButtonDecorationInfo(R.drawable.ic_sales_24dp, R.string.sales)
         }
 
         val errorPrice: ButtonDecorationInfo by lazy {
-            ButtonDecorationInfo(R.drawable.ic_price_error_48dp, R.string.error)
+            ButtonDecorationInfo(R.drawable.ic_price_error_24dp, R.string.error)
         }
 
         val rightPrice: ButtonDecorationInfo by lazy {
-            ButtonDecorationInfo(R.drawable.ic_price_right_48dp, R.string.correct)
+            ButtonDecorationInfo(R.drawable.ic_price_right_24dp, R.string.correct)
         }
 
         val video: ButtonDecorationInfo by lazy {
-            ButtonDecorationInfo(R.drawable.ic_video_48dp, R.string.video)
+            ButtonDecorationInfo(R.drawable.ic_video_24dp, R.string.video)
         }
 
         val refusal: ButtonDecorationInfo by lazy {
-            ButtonDecorationInfo(R.drawable.is_refusal, R.string.refusal)
+            ButtonDecorationInfo(R.drawable.is_refusal_24dp, R.string.refusal)
         }
 
         val batchsProducts: ButtonDecorationInfo by lazy {
-            ButtonDecorationInfo(R.drawable.is_batchs_products, R.string.batchs_products)
+            ButtonDecorationInfo(R.drawable.is_batchs_products_24dp, R.string.batchs_products)
         }
     }
 }
