@@ -47,6 +47,7 @@ class AuthViewModel : CoreAuthViewModel() {
         viewModelScope.launch {
             //TODO - implement existUnsavedData
             sessionInfo.existUnsavedData = false
+            sessionInfo.authorizationSkipped = false
             sessionInfo.packageName = packageName.value
         }
     }

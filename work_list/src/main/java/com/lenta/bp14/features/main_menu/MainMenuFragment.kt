@@ -9,6 +9,7 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.ImageButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
+import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
 import com.lenta.shared.utilities.extentions.getAppInfo
 import com.lenta.shared.utilities.extentions.provideViewModel
@@ -32,6 +33,9 @@ class MainMenuFragment : CoreFragment<FragmentMainMenuBinding, MainMenuViewModel
 
         topToolbarUiModel.uiModelButton1.show(ImageButtonDecorationInfo.settings)
         topToolbarUiModel.uiModelButton2.show(ImageButtonDecorationInfo.exitFromApp)
+        topToolbarUiModel.uiModelButton3.show(ImageButtonDecorationInfo.authorization)
+
+        connectLiveData(vm.authorizationButtonVisibility, topToolbarUiModel.uiModelButton3.visibility)
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
@@ -40,7 +44,8 @@ class MainMenuFragment : CoreFragment<FragmentMainMenuBinding, MainMenuViewModel
 
     override fun onToolbarButtonClick(view: View) {
         when (view.id) {
-            com.lenta.shared.R.id.b_topbar_1 -> vm.onClickAuxiliaryMenu()
+            R.id.b_topbar_1 -> vm.onClickAuxiliaryMenu()
+            R.id.b_topbar_3 -> vm.onClickAuthorization()
         }
     }
 }

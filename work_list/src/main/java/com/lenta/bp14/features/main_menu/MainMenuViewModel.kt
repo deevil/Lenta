@@ -19,6 +19,8 @@ class MainMenuViewModel : CoreViewModel() {
 
     private val authorizationSkipped = MutableLiveData<Boolean>()
 
+    val authorizationButtonVisibility = authorizationSkipped.map { it == true }
+
     val createTaskButtonVisibility = authorizationSkipped.map { it == false }
     val workWithTaskButtonVisibility = authorizationSkipped.map { it == false }
     val checkListButtonVisibility = authorizationSkipped.map { it == true }
@@ -63,6 +65,11 @@ class MainMenuViewModel : CoreViewModel() {
 
     fun onClickAuxiliaryMenu() {
         navigator.openAuxiliaryMenuScreen()
+    }
+
+    fun onClickAuthorization() {
+        navigator.closeAllScreen()
+        navigator.openLoginScreen()
     }
 
 }
