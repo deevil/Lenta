@@ -2,9 +2,11 @@ package com.lenta.bp14.features.price_check.goods_list
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.lenta.bp14.models.check_price.CheckPriceTaskManager
 import com.lenta.bp14.models.data.GoodsListTab
 import com.lenta.bp14.models.data.pojo.Good
-import com.lenta.bp14.models.data.TaskManager
+import com.lenta.bp14.models.getTaskName
+import com.lenta.bp14.models.getTaskType
 import com.lenta.bp14.platform.navigation.IScreenNavigator
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.SelectionItemsHelper
@@ -20,7 +22,7 @@ class GoodsListPcViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     @Inject
     lateinit var navigator: IScreenNavigator
     @Inject
-    lateinit var taskManager: TaskManager
+    lateinit var checkPriceTaskManager: CheckPriceTaskManager
 
 
     val processedSelectionsHelper = SelectionItemsHelper()
@@ -28,16 +30,18 @@ class GoodsListPcViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
 
     val selectedPage = MutableLiveData(0)
 
-    val taskName = MutableLiveData("Сверка цен на полке от 23.07.19 23:15")
+    val correctedSelectedPage = selectedPage.map { getCorrectedPagePosition(it) }
+
+    val taskName = MutableLiveData("")
 
     val numberField = MutableLiveData<String>("")
     val requestFocusToNumberField: MutableLiveData<Boolean> = MutableLiveData()
 
-    val processingGoods = MutableLiveData<List<Good>>()
-    val processedGoods = MutableLiveData<List<Good>>()
-    val searchGoods = MutableLiveData<List<Good>>()
+    val processingGoods = MutableLiveData<List<Good>>(listOf())
+    val processedGoods = MutableLiveData<List<Good>>(listOf())
+    val searchGoods = MutableLiveData<List<Good>>(listOf())
 
-    private val selectedItemOnCurrentTab: MutableLiveData<Boolean> = selectedPage
+    private val selectedItemOnCurrentTab: MutableLiveData<Boolean> = correctedSelectedPage
             .combineLatest(processedSelectionsHelper.selectedPositions)
             .combineLatest(searchSelectionsHelper.selectedPositions)
             .map {
@@ -49,29 +53,30 @@ class GoodsListPcViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
 
     val deleteButtonEnabled = selectedItemOnCurrentTab.map { it }
     val printButtonEnabled = selectedItemOnCurrentTab.map { it }
+    val saveButtonEnabled = processedGoods.map { it?.isNotEmpty() ?: false }
 
-    val deleteButtonVisibility = selectedPage.map { it != GoodsListTab.PROCESSING.position }
-    val printButtonVisibility = selectedPage.map { it != GoodsListTab.PROCESSING.position }
+    val deleteButtonVisibility = correctedSelectedPage.map { it != GoodsListTab.PROCESSING.position }
+    val printButtonVisibility = correctedSelectedPage.map { it != GoodsListTab.PROCESSING.position }
 
     init {
         viewModelScope.launch {
             requestFocusToNumberField.value = true
 
             // Тестовые данные
-            processingGoods.value = taskManager.getTestGoodList(3)
+            /*processingGoods.value = taskManager.getTestGoodList(3)
             processedGoods.value = taskManager.getTestGoodList(28)
-            searchGoods.value = taskManager.getTestGoodList(2)
+            searchGoods.value = taskManager.getTestGoodList(2)*/
+        }
+    }
+
+    init {
+        viewModelScope.launch {
+            taskName.value = "${checkPriceTaskManager.getTaskType()} // ${checkPriceTaskManager.getTaskName()}"
         }
     }
 
     override fun onPageSelected(position: Int) {
         selectedPage.value = position
-    }
-
-    init {
-        viewModelScope.launch {
-            selectedPage.value = 0
-        }
     }
 
     override fun onOkInSoftKeyboard(): Boolean {
@@ -103,8 +108,15 @@ class GoodsListPcViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     }
 
     fun onClickItemPosition(position: Int) {
-        taskManager.currentGood = getGoodByPosition(position)
         navigator.openGoodInfoPcScreen()
+    }
+
+    fun getPagesCount(): Int {
+        return if (checkPriceTaskManager.getTask()?.getDescription()?.taskNumber.isNullOrBlank()) 2 else 3
+    }
+
+    fun getCorrectedPagePosition(position: Int?): Int {
+        return if (getPagesCount() == 3) position ?: 0 else (position ?: 0) + 1
     }
 
     private fun getGoodByPosition(position: Int): Good? {
@@ -115,4 +127,8 @@ class GoodsListPcViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
             else -> null
         }
     }
+
+
 }
+
+

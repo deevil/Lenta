@@ -103,7 +103,7 @@
     <string name="scan_price_description">Наведите камеру на QR код ценника</string>
     <string name="price_without_discount">Цена БДК, руб</string>
     <string name="price_with_discount">Цена с ДК, руб</string>
-    <string name="confirmation_delete_task">Удалить все данные по заданию?</string>
+    <string name="confirmation_delete_task">По заданию \"%1$s\" будут удалены все непереданные данные.</string>
 
 
 </resources>

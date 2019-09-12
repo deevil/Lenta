@@ -343,14 +343,15 @@ class ScreenNavigator(
         }
     }
 
-    override fun openConfirmationExitTask(callbackFunc: () -> Unit) {
+    override fun openConfirmationExitTask(taskName: String, callbackFunc: () -> Unit) {
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
-                    message = context.getString(R.string.confirmation_delete_task),
+                    message = context.getString(R.string.confirmation_delete_task, taskName),
+                    iconRes = R.drawable.ic_delete_red_80dp,
                     codeConfirmForRight = backFragmentResultHelper.setFuncForResult(callbackFunc),
                     pageNumber = "94",
-                    leftButtonDecorationInfo = ButtonDecorationInfo.no,
-                    rightButtonDecorationInfo = ButtonDecorationInfo.yes
+                    leftButtonDecorationInfo = ButtonDecorationInfo.back,
+                    rightButtonDecorationInfo = ButtonDecorationInfo.confirm
             )
             )
         }
@@ -422,5 +423,5 @@ interface IScreenNavigator : ICoreNavigator {
 
     fun openTestScanBarcodeScreen()
     fun openScanPriceScreen()
-    fun openConfirmationExitTask(callbackFunc: () -> Unit)
+    fun openConfirmationExitTask(taskName: String, callbackFunc: () -> Unit)
 }
