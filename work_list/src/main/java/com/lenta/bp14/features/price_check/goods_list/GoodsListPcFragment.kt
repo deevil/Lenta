@@ -59,6 +59,7 @@ class GoodsListPcFragment : CoreFragment<FragmentGoodsListPcBinding, GoodsListPc
         connectLiveData(vm.printButtonEnabled, getBottomToolBarUIModel()!!.uiModelButton4.enabled)
         connectLiveData(vm.deleteButtonVisibility, getBottomToolBarUIModel()!!.uiModelButton3.visibility)
         connectLiveData(vm.printButtonVisibility, getBottomToolBarUIModel()!!.uiModelButton4.visibility)
+        connectLiveData(vm.saveButtonEnabled, getBottomToolBarUIModel()!!.uiModelButton5.enabled)
     }
 
     override fun onToolbarButtonClick(view: View) {

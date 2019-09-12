@@ -37,9 +37,9 @@ class GoodsListPcViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     val numberField = MutableLiveData<String>("")
     val requestFocusToNumberField: MutableLiveData<Boolean> = MutableLiveData()
 
-    val processingGoods = MutableLiveData<List<Good>>()
-    val processedGoods = MutableLiveData<List<Good>>()
-    val searchGoods = MutableLiveData<List<Good>>()
+    val processingGoods = MutableLiveData<List<Good>>(listOf())
+    val processedGoods = MutableLiveData<List<Good>>(listOf())
+    val searchGoods = MutableLiveData<List<Good>>(listOf())
 
     private val selectedItemOnCurrentTab: MutableLiveData<Boolean> = correctedSelectedPage
             .combineLatest(processedSelectionsHelper.selectedPositions)
@@ -53,6 +53,7 @@ class GoodsListPcViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
 
     val deleteButtonEnabled = selectedItemOnCurrentTab.map { it }
     val printButtonEnabled = selectedItemOnCurrentTab.map { it }
+    val saveButtonEnabled = processedGoods.map { it?.isNotEmpty() ?: false }
 
     val deleteButtonVisibility = correctedSelectedPage.map { it != GoodsListTab.PROCESSING.position }
     val printButtonVisibility = correctedSelectedPage.map { it != GoodsListTab.PROCESSING.position }
