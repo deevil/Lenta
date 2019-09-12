@@ -167,7 +167,7 @@ data class ButtonDecorationInfo(
         }
 
         val noPrice: ButtonDecorationInfo by lazy {
-            ButtonDecorationInfo(R.drawable.ic_no_price_48dp, R.string.missing)
+            ButtonDecorationInfo(R.drawable.ic_no_price_24dp, R.string.missing)
         }
 
         val cancel: ButtonDecorationInfo by lazy {
@@ -175,11 +175,11 @@ data class ButtonDecorationInfo(
         }
 
         val framed: ButtonDecorationInfo by lazy {
-            ButtonDecorationInfo(R.drawable.ic_framed_yes_48dp, R.string.framed)
+            ButtonDecorationInfo(R.drawable.ic_framed_yes_24dp, R.string.framed)
         }
 
         val not_framed: ButtonDecorationInfo by lazy {
-            ButtonDecorationInfo(R.drawable.ic_framed_no_48dp, R.string.not_framed)
+            ButtonDecorationInfo(R.drawable.ic_framed_no_24dp, R.string.not_framed)
         }
 
         val empty: ButtonDecorationInfo by lazy {
