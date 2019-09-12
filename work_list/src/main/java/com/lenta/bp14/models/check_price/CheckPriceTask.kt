@@ -51,6 +51,10 @@ class CheckPriceTask(
 
     }
 
+    override fun removeCheckResultsByMatNumbers(matNumbers: Set<String>) {
+        readyResultsRepo.removePriceCheckResults(matNumbers)
+    }
+
 
     override fun getCheckResults(): LiveData<List<ICheckPriceResult>> {
         return readyResultsRepo.getCheckPriceResults()
@@ -87,6 +91,7 @@ fun ICheckPriceResult?.toCheckStatus(): CheckStatus? {
 interface ICheckPriceTask : ITask {
     fun checkProductFromScan(rawCode: String?): ICheckPriceResult?
     fun getCheckResults(): LiveData<List<ICheckPriceResult>>
+    fun removeCheckResultsByMatNumbers(matNumbers: Set<String>)
 
 }
 

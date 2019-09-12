@@ -46,6 +46,7 @@ class GoodsListPcViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
         checkPriceTask.getCheckResults().map { list ->
             list?.reversed()?.mapIndexed { index, iCheckPriceResult ->
                 CheckPriceResultUi(
+                        matNr = iCheckPriceResult.matNr!!,
                         position = list.size - index,
                         name = "${iCheckPriceResult.matNr?.takeLast(6)} ${iCheckPriceResult.name}",
                         isPriceValid = iCheckPriceResult.isPriceValid(),
@@ -109,6 +110,25 @@ class GoodsListPcViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     }
 
     fun onClickDelete() {
+        when (correctedSelectedPage.value) {
+            1 -> processedSelectionsHelper
+            2 -> searchSelectionsHelper
+            else -> null
+        }?.let { selectionHelper ->
+            selectionHelper.selectedPositions.value?.apply {
+                checkPriceTask.removeCheckResultsByMatNumbers(
+                        if (selectionHelper === processedSelectionsHelper) {
+                            processedGoods
+                        } else {
+                            searchGoods
+                        }.value?.filterIndexed { index, _ ->
+                            this.contains(index)
+                        }?.map { it.matNr }?.toSet()
+                                ?: emptySet()
+                )
+            }
+            selectionHelper.clearPositions()
+        }
 
     }
 
@@ -135,6 +155,7 @@ class GoodsListPcViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
 
 
 data class CheckPriceResultUi(
+        val matNr: String,
         val position: Int,
         val name: String,
         val isPriceValid: Boolean?,
