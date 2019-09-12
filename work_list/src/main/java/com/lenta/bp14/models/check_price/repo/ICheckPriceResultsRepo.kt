@@ -19,7 +19,6 @@ interface ICheckPriceResultsRepo {
 class CheckPriceResultsRepo : ICheckPriceResultsRepo {
 
     private val checkPriceResults = mutableListOf<ICheckPriceResult>()
-    private var checkPriceResultsMatNrWithPosMap = mutableMapOf<String?, Int>()
 
     private val resultsLiveData = MutableLiveData<List<ICheckPriceResult>>(checkPriceResults)
 
@@ -40,23 +39,17 @@ class CheckPriceResultsRepo : ICheckPriceResultsRepo {
     }
 
     override fun addCheckPriceResult(checkPriceResult: ICheckPriceResult) {
-        checkPriceResultsMatNrWithPosMap[checkPriceResult.matNr].let { lastPosition ->
-            if (lastPosition != null) {
-                checkPriceResults.removeAt(lastPosition)
-            }
-            checkPriceResults.add(checkPriceResult)
-            checkPriceResultsMatNrWithPosMap[checkPriceResult.matNr
-                    ?: ""] = checkPriceResults.size - 1
-
+        if (checkPriceResults.contains(checkPriceResult)) {
+            return
         }
+        checkPriceResults.removeAll { it.matNr == checkPriceResult.matNr }
+        checkPriceResults.add(checkPriceResult)
         resultsLiveData.value = checkPriceResults
     }
 
 
     override fun removePriceCheckResults(matNumbers: Set<String>) {
         checkPriceResults.removeAll { matNumbers.contains(it.matNr) }
-        checkPriceResultsMatNrWithPosMap.clear()
-        checkPriceResultsMatNrWithPosMap.putAll(checkPriceResults.mapIndexed { index, iCheckPriceResult -> iCheckPriceResult.matNr to index }.toMap())
         resultsLiveData.value = checkPriceResults
     }
 
