@@ -35,7 +35,7 @@ class MainMenuViewModel : CoreViewModel() {
         // Тестирование запуска различных экранов
         //navigator.openPrintSettingsScreen()
         //navigator.openGoodInfoWlScreen()
-        navigator.openGoodsListWlScreen()
+        //navigator.openGoodsListWlScreen()
         //navigator.openGoodsListPcScreen()
         //navigator.openSearchFilterWlScreen()
         //navigator.openGoodsListNeScreen()
@@ -48,6 +48,7 @@ class MainMenuViewModel : CoreViewModel() {
         //navigator.openGoodSalesScreen()
         //navigator.openGoodInfoNeScreen()
         //navigator.openGoodInfoPcScreen()
+        navigator.openGoodsListClScreen()
     }
 
     fun onClickCreateTask() {
