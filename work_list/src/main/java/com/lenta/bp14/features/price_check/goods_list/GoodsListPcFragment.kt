@@ -15,6 +15,8 @@ import android.widget.AdapterView
 import androidx.databinding.DataBindingUtil
 import com.lenta.bp14.BR
 import com.lenta.bp14.databinding.*
+import com.lenta.shared.keys.KeyCode
+import com.lenta.shared.keys.OnKeyDownListener
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.utilities.databinding.DataBindingAdapter
@@ -25,7 +27,7 @@ import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
 import java.lang.IllegalArgumentException
 
 class GoodsListPcFragment : CoreFragment<FragmentGoodsListPcBinding, GoodsListPcViewModel>(),
-        ViewPagerSettings, ToolbarButtonsClickListener {
+        ViewPagerSettings, ToolbarButtonsClickListener, OnKeyDownListener {
 
     private var processingRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
     private var processedRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
@@ -237,6 +239,24 @@ class GoodsListPcFragment : CoreFragment<FragmentGoodsListPcBinding, GoodsListPc
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding?.viewPagerSettings = this
+    }
+
+    override fun onKeyDown(keyCode: KeyCode): Boolean {
+        when (vm.correctedSelectedPage.value) {
+            1 -> processedRecyclerViewKeyHandler
+            2 -> searchRecyclerViewKeyHandler
+            else -> null
+        }?.let {
+            if (!it.onKeyDown(keyCode)) {
+                keyCode.digit?.let { digit ->
+                    vm.onDigitPressed(digit)
+                    return true
+                }
+                return false
+            }
+            return true
+        }
+        return false
     }
 
 }

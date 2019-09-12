@@ -34,7 +34,7 @@ class GoodsListPcViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
 
     val selectedPage = MutableLiveData(0)
 
-    private val correctedSelectedPage = selectedPage.map { getCorrectedPagePosition(it) }
+    val correctedSelectedPage = selectedPage.map { getCorrectedPagePosition(it) }
 
     val taskName = MutableLiveData("")
 
@@ -77,15 +77,33 @@ class GoodsListPcViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     val deleteButtonVisibility = correctedSelectedPage.map { it != GoodsListTab.PROCESSING.position }
     val printButtonVisibility = correctedSelectedPage.map { it != GoodsListTab.PROCESSING.position }
 
-    init {
-        viewModelScope.launch {
-            requestFocusToNumberField.value = true
-        }
-    }
 
     init {
         viewModelScope.launch {
+            requestFocusToNumberField.value = true
             taskName.value = "${checkPriceTaskManager.getTaskType()} // ${checkPriceTaskManager.getTaskName()}"
+
+
+            /*processedGoods.value = List(10) {
+                CheckPriceResultUi(
+                        matNr = "4546465",
+                        position = it + 1,
+                        name = "4546465 nameeeee",
+                        isPriceValid = true,
+                        isPrinted = false
+                )
+            }
+
+            searchGoods.value = List(10) {
+                CheckPriceResultUi(
+                        matNr = "4546465",
+                        position = it + 1,
+                        name = "4546465 nameeeee",
+                        isPriceValid = true,
+                        isPrinted = false
+                )
+            }*/
+
         }
     }
 
@@ -150,6 +168,11 @@ class GoodsListPcViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
 
     fun getCorrectedPagePosition(position: Int?): Int {
         return if (getPagesCount() == 3) position ?: 0 else (position ?: 0) + 1
+    }
+
+    fun onDigitPressed(digit: Int) {
+        numberField.postValue(numberField.value ?: "" + digit)
+        requestFocusToNumberField.value = true
     }
 }
 
