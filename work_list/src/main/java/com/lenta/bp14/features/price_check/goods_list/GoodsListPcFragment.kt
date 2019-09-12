@@ -57,6 +57,7 @@ class GoodsListPcFragment : CoreFragment<FragmentGoodsListPcBinding, GoodsListPc
         bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.print)
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.save)
 
+        connectLiveData(vm.videoButtonEnabled, getBottomToolBarUIModel()!!.uiModelButton2.enabled)
         connectLiveData(vm.deleteButtonEnabled, getBottomToolBarUIModel()!!.uiModelButton3.enabled)
         connectLiveData(vm.printButtonEnabled, getBottomToolBarUIModel()!!.uiModelButton4.enabled)
         connectLiveData(vm.deleteButtonVisibility, getBottomToolBarUIModel()!!.uiModelButton3.visibility)

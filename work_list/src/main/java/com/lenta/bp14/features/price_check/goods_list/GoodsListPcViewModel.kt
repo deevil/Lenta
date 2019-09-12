@@ -3,6 +3,7 @@ package com.lenta.bp14.features.price_check.goods_list
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp14.models.check_price.CheckPriceTaskManager
+import com.lenta.bp14.models.check_price.isFreeMode
 import com.lenta.bp14.models.data.GoodsListTab
 import com.lenta.bp14.models.data.pojo.Good
 import com.lenta.bp14.models.getTaskName
@@ -24,7 +25,7 @@ class GoodsListPcViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     @Inject
     lateinit var checkPriceTaskManager: CheckPriceTaskManager
 
-    val checkPriceTask by lazy {
+    val task by lazy {
         checkPriceTaskManager.getTask()!!
     }
 
@@ -43,7 +44,7 @@ class GoodsListPcViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
 
     val processingGoods = MutableLiveData<List<Good>>(listOf())
     val processedGoods by lazy {
-        checkPriceTask.getCheckResults().map { list ->
+        task.getCheckResults().map { list ->
             list?.reversed()?.mapIndexed { index, iCheckPriceResult ->
                 CheckPriceResultUi(
                         matNr = iCheckPriceResult.matNr!!,
@@ -69,6 +70,9 @@ class GoodsListPcViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
 
     val deleteButtonEnabled = selectedItemOnCurrentTab.map { it }
     val printButtonEnabled = selectedItemOnCurrentTab.map { it }
+    val videoButtonEnabled by lazy {
+        MutableLiveData(task.isFreeMode())
+    }
 
     val saveButtonEnabled by lazy {
         processedGoods.map { it?.isNotEmpty() ?: false }
@@ -82,7 +86,6 @@ class GoodsListPcViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
         viewModelScope.launch {
             requestFocusToNumberField.value = true
             taskName.value = "${checkPriceTaskManager.getTaskType()} // ${checkPriceTaskManager.getTaskName()}"
-
 
             /*processedGoods.value = List(10) {
                 CheckPriceResultUi(
@@ -134,7 +137,7 @@ class GoodsListPcViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
             else -> null
         }?.let { selectionHelper ->
             selectionHelper.selectedPositions.value?.apply {
-                checkPriceTask.removeCheckResultsByMatNumbers(
+                task.removeCheckResultsByMatNumbers(
                         if (selectionHelper === processedSelectionsHelper) {
                             processedGoods
                         } else {
@@ -163,7 +166,7 @@ class GoodsListPcViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     }
 
     fun getPagesCount(): Int {
-        return if (checkPriceTaskManager.getTask()?.getDescription()?.taskNumber.isNullOrBlank()) 2 else 3
+        return if (task.isFreeMode()) 2 else 3
     }
 
     fun getCorrectedPagePosition(position: Int?): Int {
