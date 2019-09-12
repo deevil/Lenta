@@ -2,10 +2,10 @@ package com.lenta.bp14.features.check_list.goods_list
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.lenta.bp14.models.check_list.CheckListTask
-import com.lenta.bp14.models.check_list.ICheckListTask
-import com.lenta.bp14.models.data.TaskManager
+import com.lenta.bp14.models.check_list.CheckListTaskManager
 import com.lenta.bp14.models.data.pojo.Good
+import com.lenta.bp14.models.getTaskName
+import com.lenta.bp14.models.getTaskType
 import com.lenta.bp14.platform.navigation.IScreenNavigator
 import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.platform.viewmodel.CoreViewModel
@@ -22,16 +22,14 @@ class GoodsListClViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     @Inject
     lateinit var navigator: IScreenNavigator
     @Inject
-    lateinit var taskManager: TaskManager
-    /*@Inject
-    lateinit var checkListTask: ICheckListTask*/
+    lateinit var checkListTaskManager: CheckListTaskManager
 
 
     val selectionsHelper = SelectionItemsHelper()
 
     val selectedPage = MutableLiveData(0)
 
-    val taskName = MutableLiveData("Чек-лист от 23.07.19 23:15")
+    val taskName = MutableLiveData("")
 
     val numberField: MutableLiveData<String> = MutableLiveData("")
     val requestFocusToNumberField: MutableLiveData<Boolean> = MutableLiveData()
@@ -43,6 +41,7 @@ class GoodsListClViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
 
     init {
         viewModelScope.launch {
+            taskName.value = "${checkListTaskManager.getTaskType()} // ${checkListTaskManager.getTaskName()}"
             //taskName.value = checkListTask.getDescription().taskName
             //goods.value = taskManager.getTestGoodList(4)
         }
@@ -65,7 +64,7 @@ class GoodsListClViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     }
 
     fun onClickItemPosition(position: Int) {
-        taskManager.currentGood = goods.value?.get(position)
+        //taskManager.currentGood = goods.value?.get(position)
         //navigator.openGoodInfoPcScreen()
     }
 
@@ -103,7 +102,7 @@ class GoodsListClViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
 
     private fun addGoodByEan(ean: String) {
         Logg.d { "Entered EAN: $ean" }
-        viewModelScope.launch {
+        /*viewModelScope.launch {
             val goodInfo = database.getGoodInfoByEan(ean)
 
 
@@ -119,12 +118,12 @@ class GoodsListClViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
                     navigator.showGoodNotFound()
                 }
             }
-        }
+        }*/
     }
 
     private fun addGoodByMaterial(material: String) {
         Logg.d { "Entered MATERIAL: $material" }
-        viewModelScope.launch {
+        /*viewModelScope.launch {
             val goodInfo: GoodInfo? = database.getGoodInfoByMaterial("000000000000$material")
             if (goodInfo != null) {
                 checkData.addGood(goodInfo)
@@ -133,12 +132,12 @@ class GoodsListClViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
                 // Сообщение - Данный товар не найден в справочнике
                 navigator.showGoodNotFound()
             }
-        }
+        }*/
     }
 
     private fun addGoodByMatcode(matcode: String) {
         Logg.d { "Entered MATCODE: $matcode" }
-        viewModelScope.launch {
+        /*viewModelScope.launch {
             val goodInfo: GoodInfo? = database.getGoodInfoByMatcode(matcode)
             if (goodInfo != null) {
                 checkData.addGood(goodInfo)
@@ -147,7 +146,7 @@ class GoodsListClViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
                 // Сообщение - Данный товар не найден в справочнике
                 navigator.showGoodNotFound()
             }
-        }
+        }*/
     }
 
 }

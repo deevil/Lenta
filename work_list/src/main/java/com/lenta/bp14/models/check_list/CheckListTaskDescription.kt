@@ -4,7 +4,8 @@ import com.lenta.bp14.models.ITaskDescription
 
 data class CheckListTaskDescription(
         val tkNumber: String,
+        override val taskNumber: String,
         override var taskName: String,
-        override var comment: String,
-        override var description: String
+        override val comment: String,
+        override val description: String
 ) : ITaskDescription

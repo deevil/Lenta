@@ -4,6 +4,7 @@ import android.content.Context
 import com.google.gson.Gson
 import com.lenta.bp14.models.GeneralTaskManager
 import com.lenta.bp14.models.IGeneralTaskManager
+import com.lenta.bp14.models.check_list.CheckListTaskManager
 import com.lenta.bp14.models.data.TaskManager
 import com.lenta.bp14.models.check_price.CheckPriceTaskManager
 import com.lenta.bp14.models.general.GeneralRepo
@@ -52,8 +53,14 @@ class AppModule {
 
     @Provides
     @AppScope
-    internal fun provideCheckTaskManager(timeMonitor: ITimeMonitor, gson: Gson): CheckPriceTaskManager {
+    internal fun provideCheckPriceTaskManager(timeMonitor: ITimeMonitor, gson: Gson): CheckPriceTaskManager {
         return CheckPriceTaskManager(timeMonitor = timeMonitor, gson = gson)
+    }
+
+    @Provides
+    @AppScope
+    internal fun provideCheckListTaskManager(timeMonitor: ITimeMonitor, gson: Gson): CheckListTaskManager {
+        return CheckListTaskManager(timeMonitor = timeMonitor, gson = gson)
     }
 
     @Provides
