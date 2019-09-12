@@ -22,7 +22,16 @@ interface ITask {
 }
 
 interface ITaskDescription {
+    val taskNumber: String
     var taskName: String
-    var description: String
-    var comment: String
+    val description: String
+    val comment: String
+}
+
+fun ITaskManager<*, *>.getTaskName(): String? {
+    return this.getTask()?.getDescription()?.taskName ?: ""
+}
+
+fun ITaskManager<*, *>.getTaskType(): String? {
+    return this.getTask()?.getTaskType()?.taskType ?: ""
 }
