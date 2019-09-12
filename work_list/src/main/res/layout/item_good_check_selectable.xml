@@ -6,8 +6,8 @@
     <data>
 
         <variable
-            name="good"
-            type="com.lenta.bp14.models.data.pojo.Good" />
+            name="vm"
+            type="com.lenta.bp14.features.price_check.goods_list.CheckPriceResultUi" />
 
         <variable
             name="selectedForDelete"
@@ -38,7 +38,7 @@
                     android:layout_height="32dp"
                     android:background="@drawable/bg_border_circle_white_selectable_for_delete"
                     android:gravity="center"
-                    android:text="@{String.valueOf(good.id)}"
+                    android:text='@{"" + vm.position}'
                     app:selected="@{selectedForDelete}"
                     tools:text="1" />
 
@@ -57,7 +57,7 @@
                     android:layout_marginStart="8dp"
                     android:layout_weight="1"
                     android:maxLines="2"
-                    android:text="@{@string/one_space_two(good.formattedMaterial, good.name)}"
+                    android:text="@{vm.name}"
                     tools:text="000021 Масло" />
 
                 <ImageView
@@ -80,13 +80,13 @@
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="10dp"
                     android:src="@drawable/ic_close_white_24dp"
-                    app:priceTagStatusIcon="@{good.priceTagStatus}" />
+                    app:isValid="@{vm.isPriceValid()}" />
 
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:src="@drawable/ic_print_white_24dp"
-                    app:printStatusIcon="@{good.printStatus}" />
+                    app:isPrinted="@{vm.printed}" />
 
             </LinearLayout>
 

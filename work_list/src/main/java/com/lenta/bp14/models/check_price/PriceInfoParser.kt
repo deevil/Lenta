@@ -13,6 +13,7 @@ class PriceInfoParser : IPriceInfoParser {
                 eanCode = getEanCode(rawCode)
                         ?: return null,
                 matNr = null,
+                nameOfProduct = null,
                 price = getPrice(rawCode)
                         ?: return null,
                 discountCardPrice = getPriceWithDiscountCard(rawCode)

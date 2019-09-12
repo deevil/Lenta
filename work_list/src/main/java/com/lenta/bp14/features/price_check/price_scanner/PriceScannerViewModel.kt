@@ -29,7 +29,7 @@ class PriceScannerViewModel : CoreViewModel() {
     }
 
     fun checkStatus(rawCode: String): CheckStatus? {
-        return checkPriceTaskManager.getTask()?.checkProduct(rawCode = rawCode)?.apply {
+        return checkPriceTaskManager.getTask()?.checkProductFromScan(rawCode = rawCode)?.apply {
             checkPriceResult.value = this
         }?.toCheckStatus()
     }
@@ -53,7 +53,7 @@ data class CheckPriceResultUi(
         val productTitle: String,
         val price: String,
         val discountPrice: String,
-        val priceIsValid: Boolean,
-        val discountPriceIsValid: Boolean,
+        val priceIsValid: Boolean?,
+        val discountPriceIsValid: Boolean?,
         val isAdded: Boolean
 )

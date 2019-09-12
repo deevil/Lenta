@@ -19,6 +19,7 @@ interface ICheckPriceResultsRepo {
 class CheckPriceResultsRepo : ICheckPriceResultsRepo {
 
     private val checkPriceResults = mutableListOf<ICheckPriceResult>()
+    private val checkPriceResultsMatNrWithPosMap = mutableMapOf<String, Int>()
 
     private val resultsLiveData = MutableLiveData<List<ICheckPriceResult>>(checkPriceResults)
 
@@ -39,7 +40,15 @@ class CheckPriceResultsRepo : ICheckPriceResultsRepo {
     }
 
     override fun addCheckPriceResult(checkPriceResult: ICheckPriceResult) {
-        checkPriceResults.add(checkPriceResult)
+        checkPriceResultsMatNrWithPosMap[checkPriceResult.matNr].let { lastPosition ->
+            if (lastPosition != null) {
+                checkPriceResults.removeAt(lastPosition)
+            }
+            checkPriceResults.add(checkPriceResult)
+            checkPriceResultsMatNrWithPosMap[checkPriceResult.matNr
+                    ?: ""] = checkPriceResults.size - 1
+
+        }
         resultsLiveData.value = checkPriceResults
     }
 

@@ -48,13 +48,15 @@ class ActualPriceRepoForTest : IActualPricesRepo {
             return if (Random.nextBoolean())
                 PriceInfo(
                         eanCode = it.eanCode,
-                        matNr = "000000000000002216",
+                        matNr = it.eanCode,
+                        nameOfProduct = null,
                         price = it.price,
                         discountCardPrice = it.discountCardPrice
                 )
             else PriceInfo(
                     eanCode = it.eanCode,
-                    matNr = "000000000000002216",
+                    matNr = it.eanCode,
+                    nameOfProduct = null,
                     price = it.price + 1,
                     discountCardPrice = it.discountCardPrice
             )

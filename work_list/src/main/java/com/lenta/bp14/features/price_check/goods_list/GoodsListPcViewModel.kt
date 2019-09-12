@@ -24,13 +24,17 @@ class GoodsListPcViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     @Inject
     lateinit var checkPriceTaskManager: CheckPriceTaskManager
 
+    val checkPriceTask by lazy {
+        checkPriceTaskManager.getTask()!!
+    }
+
 
     val processedSelectionsHelper = SelectionItemsHelper()
     val searchSelectionsHelper = SelectionItemsHelper()
 
     val selectedPage = MutableLiveData(0)
 
-    val correctedSelectedPage = selectedPage.map { getCorrectedPagePosition(it) }
+    private val correctedSelectedPage = selectedPage.map { getCorrectedPagePosition(it) }
 
     val taskName = MutableLiveData("")
 
@@ -38,8 +42,19 @@ class GoodsListPcViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     val requestFocusToNumberField: MutableLiveData<Boolean> = MutableLiveData()
 
     val processingGoods = MutableLiveData<List<Good>>(listOf())
-    val processedGoods = MutableLiveData<List<Good>>(listOf())
-    val searchGoods = MutableLiveData<List<Good>>(listOf())
+    val processedGoods by lazy {
+        checkPriceTask.getCheckResults().map { list ->
+            list?.reversed()?.mapIndexed { index, iCheckPriceResult ->
+                CheckPriceResultUi(
+                        position = list.size - index,
+                        name = "${iCheckPriceResult.matNr?.takeLast(6)} ${iCheckPriceResult.name}",
+                        isPriceValid = iCheckPriceResult.isPriceValid(),
+                        isPrinted = iCheckPriceResult.isPrinted()
+                )
+            }
+        }
+    }
+    val searchGoods = MutableLiveData<List<CheckPriceResultUi>>(listOf())
 
     private val selectedItemOnCurrentTab: MutableLiveData<Boolean> = correctedSelectedPage
             .combineLatest(processedSelectionsHelper.selectedPositions)
@@ -53,7 +68,10 @@ class GoodsListPcViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
 
     val deleteButtonEnabled = selectedItemOnCurrentTab.map { it }
     val printButtonEnabled = selectedItemOnCurrentTab.map { it }
-    val saveButtonEnabled = processedGoods.map { it?.isNotEmpty() ?: false }
+
+    val saveButtonEnabled by lazy {
+        processedGoods.map { it?.isNotEmpty() ?: false }
+    }
 
     val deleteButtonVisibility = correctedSelectedPage.map { it != GoodsListTab.PROCESSING.position }
     val printButtonVisibility = correctedSelectedPage.map { it != GoodsListTab.PROCESSING.position }
@@ -61,11 +79,6 @@ class GoodsListPcViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     init {
         viewModelScope.launch {
             requestFocusToNumberField.value = true
-
-            // Тестовые данные
-            /*processingGoods.value = taskManager.getTestGoodList(3)
-            processedGoods.value = taskManager.getTestGoodList(28)
-            searchGoods.value = taskManager.getTestGoodList(2)*/
         }
     }
 
@@ -118,17 +131,14 @@ class GoodsListPcViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     fun getCorrectedPagePosition(position: Int?): Int {
         return if (getPagesCount() == 3) position ?: 0 else (position ?: 0) + 1
     }
-
-    private fun getGoodByPosition(position: Int): Good? {
-        return when (selectedPage.value) {
-            GoodsListTab.PROCESSING.position -> processingGoods.value?.get(position)
-            GoodsListTab.PROCESSED.position -> processedGoods.value?.get(position)
-            GoodsListTab.SEARCH.position -> searchGoods.value?.get(position)
-            else -> null
-        }
-    }
-
-
 }
+
+
+data class CheckPriceResultUi(
+        val position: Int,
+        val name: String,
+        val isPriceValid: Boolean?,
+        val isPrinted: Boolean
+)
 
 

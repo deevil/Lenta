@@ -132,7 +132,7 @@ class GoodsListPcFragment : CoreFragment<FragmentGoodsListPcBinding, GoodsListPc
 
                 layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
                         layoutId = R.layout.item_good_check_selectable,
-                        itemId = BR.good,
+                        itemId = BR.vm,
                         realisation = object : DataBindingAdapter<ItemGoodCheckSelectableBinding> {
                             override fun onCreate(binding: ItemGoodCheckSelectableBinding) {
                             }
@@ -183,7 +183,7 @@ class GoodsListPcFragment : CoreFragment<FragmentGoodsListPcBinding, GoodsListPc
 
             layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
                     layoutId = R.layout.item_good_check_selectable,
-                    itemId = BR.good,
+                    itemId = BR.vm,
                     realisation = object : DataBindingAdapter<ItemGoodCheckSelectableBinding> {
                         override fun onCreate(binding: ItemGoodCheckSelectableBinding) {
                         }
