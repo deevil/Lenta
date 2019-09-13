@@ -58,7 +58,18 @@ class GoodsListClViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     }
 
     fun onClickDelete() {
+        val goodsList = goods.value!!.toMutableList()
 
+        selectionsHelper.selectedPositions.value?.apply {
+            val eans = goods.value?.filterIndexed { index, _ ->
+                this.contains(index)
+            }?.map { it.ean }?.toSet() ?: emptySet()
+
+            goodsList.removeAll { eans.contains(it.ean) }
+        }
+
+        selectionsHelper.clearPositions()
+        goods.value = goodsList.toList()
     }
 
     fun onClickSave() {
@@ -104,13 +115,13 @@ class GoodsListClViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     private fun addGoodByMaterial(material: String) {
         Logg.d { "Entered MATERIAL: $material" }
         viewModelScope.launch {
-                val goodInfo: GoodInfo? = task.getGoodInfoByMaterial(material)
-                if (goodInfo != null) {
-                    addGood(goodInfo)
-                } else {
-                    // Сообщение - Данный товар не найден в справочнике
-                    navigator.showGoodNotFound()
-                }
+            val goodInfo: GoodInfo? = task.getGoodInfoByMaterial(material)
+            if (goodInfo != null) {
+                addGood(goodInfo)
+            } else {
+                // Сообщение - Данный товар не найден в справочнике
+                navigator.showGoodNotFound()
+            }
         }
     }
 
@@ -148,22 +159,22 @@ class GoodsListClViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
         // todo Реализовать добавление по весу
         // Наверно в справочнике должен приходить вес по умолчанию?
 
-        val list = goods.value!!.toMutableList()
-        val good = list.find { it.ean == goodInfo.ean }
+        val goodsList = goods.value!!.toMutableList()
+        val good = goodsList.find { it.ean == goodInfo.ean }
         if (good != null) {
-            val index = list.indexOf(good)
-            val quantity = list[index].quantity.value!!.toInt()
-            list[index].quantity.value = "" + (quantity + 1)
+            val index = goodsList.indexOf(good)
+            val quantity = goodsList[index].quantity.value!!.toInt()
+            goodsList[index].quantity.value = "" + (quantity + 1)
         } else {
-            list.add(0, Good(
-                    number = list.lastIndex + 2,
+            goodsList.add(0, Good(
+                    number = goodsList.lastIndex + 2,
                     ean = goodInfo.ean,
                     material = goodInfo.material,
-                    name = goodInfo.name + " ${list.lastIndex + 2}"
+                    name = goodInfo.name + " ${goodsList.lastIndex + 2}"
             ))
         }
 
-        goods.value = list.toList()
+        goods.value = goodsList.toList()
         numberField.value = ""
     }
 
