@@ -3,7 +3,6 @@ package com.lenta.bp14.features.price_check.goods_list
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp14.models.check_price.CheckPriceTaskManager
-import com.lenta.bp14.models.check_price.isFreeMode
 import com.lenta.bp14.models.data.GoodsListTab
 import com.lenta.bp14.models.data.pojo.Good
 import com.lenta.bp14.models.getTaskName

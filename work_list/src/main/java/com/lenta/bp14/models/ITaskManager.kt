@@ -19,6 +19,14 @@ interface ITaskManager<S : ITask, D : ITaskDescription> {
 interface ITask {
     fun getTaskType(): ITaskType
     fun getDescription(): ITaskDescription
+    /**
+     * Проверяет режим работы. Возвращает:
+     * true, если режим создания задания;
+     * false - работы с заданием
+     */
+    fun isFreeMode(): Boolean {
+        return this.getDescription().taskNumber.isBlank()
+    }
 }
 
 interface ITaskDescription {

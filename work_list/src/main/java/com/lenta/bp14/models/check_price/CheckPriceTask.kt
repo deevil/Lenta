@@ -87,12 +87,6 @@ fun ICheckPriceResult?.toCheckStatus(): CheckStatus? {
     }
 }
 
-// режим создания задания
-fun ICheckPriceTask?.isFreeMode(): Boolean {
-    return this?.getDescription()?.taskNumber.isNullOrBlank()
-}
-
-
 interface ICheckPriceTask : ITask {
     fun checkProductFromScan(rawCode: String?): ICheckPriceResult?
     fun getCheckResults(): LiveData<List<ICheckPriceResult>>
