@@ -6,6 +6,8 @@ import com.lenta.bp14.ml.CheckStatus
 import com.lenta.bp14.models.check_price.CheckPriceTaskManager
 import com.lenta.bp14.models.check_price.ICheckPriceResult
 import com.lenta.bp14.models.check_price.toCheckStatus
+import com.lenta.bp14.models.getTaskName
+import com.lenta.bp14.models.getTaskType
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.extentions.map
@@ -25,11 +27,11 @@ class PriceScannerViewModel : CoreViewModel() {
 
 
     fun getTitle(): String {
-        return "???"
+        return "${checkPriceTaskManager.getTaskType()} // ${checkPriceTaskManager.getTaskName()}"
     }
 
     fun checkStatus(rawCode: String): CheckStatus? {
-        return checkPriceTaskManager.getTask()?.checkProduct(rawCode = rawCode)?.apply {
+        return checkPriceTaskManager.getTask()?.checkProductFromScan(rawCode = rawCode)?.apply {
             checkPriceResult.value = this
         }?.toCheckStatus()
     }
@@ -53,7 +55,7 @@ data class CheckPriceResultUi(
         val productTitle: String,
         val price: String,
         val discountPrice: String,
-        val priceIsValid: Boolean,
-        val discountPriceIsValid: Boolean,
+        val priceIsValid: Boolean?,
+        val discountPriceIsValid: Boolean?,
         val isAdded: Boolean
 )

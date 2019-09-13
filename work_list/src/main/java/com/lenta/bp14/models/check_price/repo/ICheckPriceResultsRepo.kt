@@ -12,7 +12,7 @@ interface ICheckPriceResultsRepo {
 
     fun addCheckPriceResult(checkPriceResult: ICheckPriceResult)
 
-    fun removePriceCheckResult(matNr: String)
+    fun removePriceCheckResults(matNumbers: Set<String>)
 
 }
 
@@ -39,16 +39,17 @@ class CheckPriceResultsRepo : ICheckPriceResultsRepo {
     }
 
     override fun addCheckPriceResult(checkPriceResult: ICheckPriceResult) {
+        if (checkPriceResults.contains(checkPriceResult)) {
+            return
+        }
+        checkPriceResults.removeAll { it.matNr == checkPriceResult.matNr }
         checkPriceResults.add(checkPriceResult)
         resultsLiveData.value = checkPriceResults
     }
 
-    override fun removePriceCheckResult(matNr: String) {
-        checkPriceResults.indexOfFirst { it.matNr == matNr }.let {
-            if (it >= 0) {
-                checkPriceResults.removeAt(it)
-            }
-        }
+
+    override fun removePriceCheckResults(matNumbers: Set<String>) {
+        checkPriceResults.removeAll { matNumbers.contains(it.matNr) }
         resultsLiveData.value = checkPriceResults
     }
 

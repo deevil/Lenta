@@ -1,4 +1,4 @@
-package com.lenta.bp14.util
+package com.lenta.bp14.platform.databinding
 
 import android.widget.ImageView
 import androidx.databinding.BindingAdapter
@@ -6,6 +6,7 @@ import com.lenta.bp14.R
 import com.lenta.bp14.models.data.pojo.PriceTagStatus
 import com.lenta.bp14.models.data.pojo.PrintStatus
 import com.lenta.bp14.models.data.pojo.TaskStatus
+import com.lenta.shared.utilities.extentions.setVisible
 
 @BindingAdapter("taskStatusIcon")
 fun setTaskStatusIcon(imageView: ImageView, taskStatus: TaskStatus) {
@@ -36,5 +37,29 @@ fun setPrintStatusIcon(imageView: ImageView, printStatus: PrintStatus) {
             PrintStatus.NOT_PRINTED -> imageView.setImageResource(R.drawable.ic_print_no_dark_24dp)
             PrintStatus.PRINTED -> imageView.setImageResource(R.drawable.ic_print_dark_24dp)
         }
+    }
+}
+
+@BindingAdapter("isValid")
+fun setPriceTagStatusIcon(imageView: ImageView, isValid: Boolean?) {
+    when (isValid) {
+        true -> imageView.setImageResource(R.drawable.ic_done_white_24dp)
+        false -> imageView.setImageResource(R.drawable.ic_close_white_24dp)
+        null -> imageView.setImageResource(R.drawable.ic_missing_dark_24dp)
+    }
+}
+
+@BindingAdapter("isPrinted")
+fun setPrintStatusIcon(imageView: ImageView, isPrinted: Boolean?) {
+    when (isPrinted) {
+        true -> {
+            imageView.setVisible(true)
+            imageView.setImageResource(R.drawable.ic_print_dark_24dp)
+        }
+        false -> {
+            imageView.setVisible(true)
+            imageView.setImageResource(R.drawable.ic_print_no_dark_24dp)
+        }
+        null -> imageView.setVisible(false)
     }
 }

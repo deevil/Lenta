@@ -98,18 +98,20 @@
                 app:requestFocus="@{vm.requestFocusToNumberField}"
                 tools:ignore="Autofill" />
 
-            <ImageView
+            <ImageButton
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
-                android:onClick="@{(view) -> vm.scanQrCode()}"
+                android:background="?selectableItemBackground"
+                android:onClick="@{(v) -> vm.navigator.openQrCodeInfoScreen()}"
                 android:src="@drawable/ic_scan_qrcode_48dp" />
 
-            <ImageView
+            <ImageButton
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
-                android:onClick="@{(view) -> vm.scanBarCode()}"
+                android:background="?selectableItemBackground"
+                android:onClick="@{(v) -> vm.navigator.openEanInfoScreen()}"
                 android:src="@drawable/ic_scan_barcode_48dp" />
 
         </LinearLayout>

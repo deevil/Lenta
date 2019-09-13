@@ -4,7 +4,7 @@ import android.view.View
 import com.lenta.shared.R
 import com.lenta.shared.databinding.LayoutMessageBinding
 import com.lenta.shared.keys.KeyCode
-import com.lenta.shared.keys.OnKeyDownListener
+import com.lenta.shared.keys.OnKeyUpListener
 import com.lenta.shared.platform.activity.OnBackPresserListener
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
@@ -14,7 +14,7 @@ import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
 import com.lenta.shared.utilities.state.state
 
-abstract class CoreMessageFragment : CoreFragment<LayoutMessageBinding, MessageViewModel>(), ToolbarButtonsClickListener, OnBackPresserListener, OnKeyDownListener {
+abstract class CoreMessageFragment : CoreFragment<LayoutMessageBinding, MessageViewModel>(), ToolbarButtonsClickListener, OnBackPresserListener, OnKeyUpListener {
     protected var message by state("")
     protected var title by state<String?>(null)
     protected var description by state<String?>(null)
@@ -98,7 +98,7 @@ abstract class CoreMessageFragment : CoreFragment<LayoutMessageBinding, MessageV
         return true
     }
 
-    override fun onKeyDown(keyCode: KeyCode): Boolean {
+    override fun onKeyUp(keyCode: KeyCode): Boolean {
         if (isAllowHandleKeyCode() && keyCode == KeyCode.KEYCODE_ENTER) {
             if (getBottomToolBarUIModel()?.uiModelButton5?.enabled?.value == true) {
                 vm.onClickRightButton()
