@@ -2,8 +2,7 @@ package com.lenta.bp14.features.check_list.goods_list
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.lenta.bp14.models.check_list.CheckListTaskManager
-import com.lenta.bp14.models.data.pojo.Good
+import com.lenta.bp14.models.check_list.*
 import com.lenta.bp14.models.getTaskName
 import com.lenta.bp14.models.getTaskType
 import com.lenta.bp14.platform.navigation.IScreenNavigator
@@ -34,7 +33,7 @@ class GoodsListClViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     val numberField: MutableLiveData<String> = MutableLiveData("")
     val requestFocusToNumberField: MutableLiveData<Boolean> = MutableLiveData()
 
-    val goods = MutableLiveData<List<Good>>()
+    val goods = MutableLiveData<List<Good>>(listOf())
 
     val deleteButtonEnabled = selectionsHelper.selectedPositions.map { it?.isNotEmpty() ?: false }
     val saveButtonEnabled = goods.map { it?.isNotEmpty() ?: false }
@@ -42,6 +41,7 @@ class GoodsListClViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     init {
         viewModelScope.launch {
             taskName.value = "${checkListTaskManager.getTaskType()} // ${checkListTaskManager.getTaskName()}"
+
             //taskName.value = checkListTask.getDescription().taskName
             //goods.value = taskManager.getTestGoodList(4)
         }
@@ -65,7 +65,6 @@ class GoodsListClViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
 
     fun onClickItemPosition(position: Int) {
         //taskManager.currentGood = goods.value?.get(position)
-        //navigator.openGoodInfoPcScreen()
     }
 
     override fun onPageSelected(position: Int) {
@@ -100,6 +99,22 @@ class GoodsListClViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
         }
     }
 
+    private fun addGoodByMaterial(material: String) {
+        Logg.d { "Entered MATERIAL: $material" }
+        viewModelScope.launch {
+            checkListTaskManager.getTask()?.let { task ->
+                val goodInfo: GoodInfo? = task.getGoodInfoByMaterial(material)
+                if (goodInfo != null) {
+                    task.addGood(goodInfo)
+                    goods.value = task.goods
+                } else {
+                    // Сообщение - Данный товар не найден в справочнике
+                    navigator.showGoodNotFound()
+                }
+            }
+        }
+    }
+
     private fun addGoodByEan(ean: String) {
         Logg.d { "Entered EAN: $ean" }
         /*viewModelScope.launch {
@@ -117,20 +132,6 @@ class GoodsListClViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
                     // Сообщение - Данный товар не найден в справочнике
                     navigator.showGoodNotFound()
                 }
-            }
-        }*/
-    }
-
-    private fun addGoodByMaterial(material: String) {
-        Logg.d { "Entered MATERIAL: $material" }
-        /*viewModelScope.launch {
-            val goodInfo: GoodInfo? = database.getGoodInfoByMaterial("000000000000$material")
-            if (goodInfo != null) {
-                checkData.addGood(goodInfo)
-                //openGoodInfoScreen()
-            } else {
-                // Сообщение - Данный товар не найден в справочнике
-                navigator.showGoodNotFound()
             }
         }*/
     }
