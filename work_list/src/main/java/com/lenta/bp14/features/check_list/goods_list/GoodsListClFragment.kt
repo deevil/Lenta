@@ -94,13 +94,7 @@ class GoodsListClFragment : CoreFragment<FragmentGoodsListClBinding, GoodsListCl
                                 }
                             },
                             onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
-                                recyclerViewKeyHandler?.let {
-                                    if (it.isSelected(position)) {
-                                        vm.onClickItemPosition(position)
-                                    } else {
-                                        it.selectPosition(position)
-                                    }
-                                }
+                                recyclerViewKeyHandler?.selectPosition(position)
                             }
                     )
 

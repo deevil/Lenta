@@ -68,16 +68,16 @@ class GoodsListClViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
             goodsList.removeAll { eans.contains(it.ean) }
         }
 
+        for (index in goodsList.lastIndex downTo 0) {
+            goodsList[index].number = goodsList.lastIndex + 1 - index
+        }
+
         selectionsHelper.clearPositions()
         goods.value = goodsList.toList()
     }
 
     fun onClickSave() {
 
-    }
-
-    fun onClickItemPosition(position: Int) {
-        //taskManager.currentGood = goods.value?.get(position)
     }
 
     override fun onPageSelected(position: Int) {

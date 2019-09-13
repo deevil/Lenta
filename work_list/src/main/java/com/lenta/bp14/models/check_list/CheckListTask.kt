@@ -64,7 +64,7 @@ data class GoodInfo(
 // --------------------------
 
 interface IGood {
-    val number: Int
+    var number: Int
     val ean: String?
     val material: String?
     val name: String?
@@ -73,7 +73,7 @@ interface IGood {
 }
 
 data class Good(
-        override val number: Int,
+        override var number: Int,
         override val ean: String?,
         override val material: String?,
         override val name: String?,
