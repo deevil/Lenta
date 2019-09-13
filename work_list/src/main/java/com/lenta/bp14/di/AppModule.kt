@@ -5,6 +5,7 @@ import com.google.gson.Gson
 import com.lenta.bp14.models.GeneralTaskManager
 import com.lenta.bp14.models.IGeneralTaskManager
 import com.lenta.bp14.models.check_list.CheckListTaskManager
+import com.lenta.bp14.models.check_list.ICheckListTask
 import com.lenta.bp14.models.data.TaskManager
 import com.lenta.bp14.models.check_price.CheckPriceTaskManager
 import com.lenta.bp14.models.check_price.ICheckPriceTask
@@ -86,6 +87,11 @@ class AppModule {
     @Provides
     internal fun provideCheckPriceTask(checkPriceTaskManager: CheckPriceTaskManager): ICheckPriceTask {
         return checkPriceTaskManager.getTask()!!
+    }
+
+    @Provides
+    internal fun provideCheckListTask(checkListTaskManager: CheckListTaskManager): ICheckListTask {
+        return checkListTaskManager.getTask()!!
     }
 
 }

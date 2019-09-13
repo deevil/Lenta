@@ -4,7 +4,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp14.models.check_list.*
 import com.lenta.bp14.models.getTaskName
-import com.lenta.bp14.models.getTaskType
 import com.lenta.bp14.platform.navigation.IScreenNavigator
 import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.platform.viewmodel.CoreViewModel
@@ -21,12 +20,7 @@ class GoodsListClViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     @Inject
     lateinit var navigator: IScreenNavigator
     @Inject
-    lateinit var checkListTaskManager: CheckListTaskManager
-
-
-    val task by lazy {
-        checkListTaskManager.getTask()!!
-    }
+    lateinit var task: ICheckListTask
 
     val selectionsHelper = SelectionItemsHelper()
 
@@ -45,7 +39,7 @@ class GoodsListClViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     init {
         viewModelScope.launch {
             requestFocusToNumberField.value = true
-            taskName.value = "${checkListTaskManager.getTaskType()} // ${checkListTaskManager.getTaskName()}"
+            taskName.value = "${task.getTaskType().taskType} // ${task.getTaskName()}"
         }
     }
 
