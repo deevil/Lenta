@@ -72,9 +72,13 @@ class AppModule {
 
     @Provides
     @AppScope
-    internal fun provideGeneralTaskManager(checkPriceTaskManager: CheckPriceTaskManager, timeMonitor: ITimeMonitor): IGeneralTaskManager {
+    internal fun provideGeneralTaskManager(
+            checkPriceTaskManager: CheckPriceTaskManager,
+            checkListTaskManager: CheckListTaskManager,
+            timeMonitor: ITimeMonitor): IGeneralTaskManager {
         return GeneralTaskManager(
                 checkPriceTaskManager = checkPriceTaskManager,
+                checkListTaskManager = checkListTaskManager,
                 timeMonitor = timeMonitor
         )
     }
