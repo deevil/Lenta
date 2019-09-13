@@ -4,6 +4,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp14.models.IGeneralTaskManager
 import com.lenta.bp14.models.ITask
+import com.lenta.bp14.models.check_list.CheckListTaskDescription
+import com.lenta.bp14.models.check_list.CheckListTaskManager
 import com.lenta.bp14.models.check_price.CheckPriceTaskDescription
 import com.lenta.bp14.models.check_price.CheckPriceTaskManager
 import com.lenta.bp14.models.general.IGeneralRepo
@@ -23,21 +25,19 @@ import javax.inject.Inject
 
 class JobCardViewModel : CoreViewModel() {
 
-
     @Inject
     lateinit var screenNavigator: IScreenNavigator
-
     @Inject
     lateinit var sessionInfo: ISessionInfo
-
     @Inject
     lateinit var generalRepo: IGeneralRepo
-
     @Inject
     lateinit var checkPriceTaskManager: CheckPriceTaskManager
-
+    @Inject
+    lateinit var checkListTaskManager: CheckListTaskManager
     @Inject
     lateinit var generalTaskManager: IGeneralTaskManager
+
 
     private lateinit var taskNumber: String
 
@@ -113,7 +113,7 @@ class JobCardViewModel : CoreViewModel() {
     fun onClickNext() {
         when (getSelectedTypeTask()) {
             TaskTypes.CheckPrice.taskType -> newCheckPriceTask()
-            TaskTypes.CheckList.taskType -> screenNavigator.openGoodsListClScreen()
+            TaskTypes.CheckList.taskType -> newCheckListTask()
             else -> screenNavigator.openNotImplementedScreenAlert("")
         }
     }
@@ -138,7 +138,6 @@ class JobCardViewModel : CoreViewModel() {
     }
 
     private fun newCheckPriceTask() {
-
         if (checkPriceTaskManager.getTask() == null) {
             checkPriceTaskManager.clearTask()
             checkPriceTaskManager.newTask(
@@ -156,6 +155,26 @@ class JobCardViewModel : CoreViewModel() {
 
         updateProcessedTask()
         screenNavigator.openGoodsListPcScreen()
+    }
+
+    private fun newCheckListTask() {
+        if (checkListTaskManager.getTask() == null) {
+            checkListTaskManager.clearTask()
+            checkListTaskManager.newTask(
+                    taskDescription = CheckListTaskDescription(
+                            tkNumber = sessionInfo.market!!,
+                            taskNumber = taskNumber,
+                            taskName = taskName.value ?: "",
+                            comment = comment.value ?: "",
+                            description = description.value ?: ""
+                    )
+            )
+        } else {
+            checkListTaskManager.getTask()?.getDescription()?.taskName = taskName.value!!
+        }
+
+        updateProcessedTask()
+        screenNavigator.openGoodsListClScreen()
     }
 
     private fun getSelectedTypeTask(): ITaskType? {

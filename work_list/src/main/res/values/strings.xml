@@ -42,6 +42,8 @@
     <string name="scanned_good_already_added_to_task">Отсканированная марка уже добавлена в задание. Удалить марку?</string>
     <string name="number_of_positions_exceeded_in_task">В задании превышено количество позиций. Добавление невозможно.</string>
     <string name="no_network_to_save_task">Для сохранения задания в SAP ERP отсутствует сеть. Задание будет сохранено позже.</string>
+    <string name="good_not_found_in_database">Данный товар не найден в справочнике</string>
+    <string name="twelve_characters_entered">Введено 12 знаков. Какой код вы ввели?</string>
 
 
     <string name="total_quantity">Итого: %1$d шт.</string>
@@ -102,5 +104,6 @@
     <string name="price_without_discount">Цена БДК, руб</string>
     <string name="price_with_discount">Цена с ДК, руб</string>
     <string name="confirmation_delete_task">По заданию \"%1$s\" будут удалены все непереданные данные.</string>
+
 
 </resources>

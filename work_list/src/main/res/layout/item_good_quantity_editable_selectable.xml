@@ -7,7 +7,7 @@
 
         <variable
             name="good"
-            type="com.lenta.bp14.models.data.pojo.Good" />
+            type="com.lenta.bp14.models.check_list.Good" />
 
         <variable
             name="selectedForDelete"
@@ -38,7 +38,7 @@
                     android:layout_height="32dp"
                     android:background="@drawable/bg_border_circle_white_selectable_for_delete"
                     android:gravity="center"
-                    android:text="@{String.valueOf(good.id)}"
+                    android:text="@{String.valueOf(good.number)}"
                     app:selected="@{selectedForDelete}"
                     tools:text="1" />
 
@@ -48,24 +48,13 @@
 
             <LinearLayout
                 style="@style/LinearCellStyle"
-                android:layout_weight="@integer/number_good_quantity_column_2"
-                android:orientation="horizontal">
+                android:layout_weight="@integer/number_good_quantity_column_2">
 
                 <TextView
                     style="@style/CellTextStyle"
-                    android:layout_width="0dp"
-                    android:layout_marginStart="8dp"
-                    android:layout_weight="1"
                     android:maxLines="2"
-                    android:text="@{@string/one_space_two(good.formattedMaterial, good.name)}"
+                    android:text="@{good.formattedMaterialWithName}"
                     tools:text="000021 Масло" />
-
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:padding="5dp"
-                    android:src="@drawable/ic_keyboard_arrow_right_white_24dp"
-                    tools:ignore="ContentDescription" />
 
             </LinearLayout>
 
@@ -80,7 +69,7 @@
                     android:ellipsize="end"
                     android:inputType="number"
                     android:maxLines="1"
-                    android:text="@={good.quantityField}"
+                    android:text="@={good.quantity}"
                     app:digitsForUom="@{good.uom}"
                     app:suffix="@{good.uom.name}"
                     tools:text="10 кор" />
