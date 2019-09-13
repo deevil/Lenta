@@ -46,8 +46,6 @@ class GoodsListClViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
         viewModelScope.launch {
             requestFocusToNumberField.value = true
             taskName.value = "${checkListTaskManager.getTaskType()} // ${checkListTaskManager.getTaskName()}"
-            //taskName.value = checkListTask.getDescription().taskName
-            //goods.value = taskManager.getTestGoodList(4)
         }
     }
 
@@ -118,42 +116,39 @@ class GoodsListClViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
 
     private fun addGoodByEan(ean: String) {
         Logg.d { "Entered EAN: $ean" }
-        /*viewModelScope.launch {
-            val goodInfo = database.getGoodInfoByEan(ean)
-
-
-            if (goodInfo != null) {
-                checkData.addGood(goodInfo)
-                //openGoodInfoScreen()
-            } else {
-                if (checkData.getCurrentGood()?.ean == ean) {
-                    checkData.addGood(GoodInfo(enteredCode = EnteredCode.EAN, ean = ean))
-                    //openGoodInfoScreen()
+        viewModelScope.launch {
+            viewModelScope.launch {
+                val goodInfo: GoodInfo? = task.getGoodInfoByEan(ean)
+                if (goodInfo != null) {
+                    addGood(goodInfo)
                 } else {
                     // Сообщение - Данный товар не найден в справочнике
                     navigator.showGoodNotFound()
                 }
             }
-        }*/
+        }
     }
 
     private fun addGoodByMatcode(matcode: String) {
         Logg.d { "Entered MATCODE: $matcode" }
-        /*viewModelScope.launch {
-            val goodInfo: GoodInfo? = database.getGoodInfoByMatcode(matcode)
-            if (goodInfo != null) {
-                checkData.addGood(goodInfo)
-                //openGoodInfoScreen()
-            } else {
-                // Сообщение - Данный товар не найден в справочнике
-                navigator.showGoodNotFound()
+        viewModelScope.launch {
+            viewModelScope.launch {
+                val goodInfo: GoodInfo? = task.getGoodInfoByMatcode(matcode)
+                if (goodInfo != null) {
+                    addGood(goodInfo)
+                } else {
+                    // Сообщение - Данный товар не найден в справочнике
+                    navigator.showGoodNotFound()
+                }
             }
-        }*/
+        }
     }
 
-    fun addGood(goodInfo: GoodInfo) {
-        val list = goods.value!!.toMutableList()
+    private fun addGood(goodInfo: GoodInfo) {
+        // todo Реализовать добавление по весу
+        // Наверно в справочнике должен приходить вес по умолчанию?
 
+        val list = goods.value!!.toMutableList()
         val good = list.find { it.ean == goodInfo.ean }
         if (good != null) {
             val index = list.indexOf(good)
@@ -169,6 +164,7 @@ class GoodsListClViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
         }
 
         goods.value = list.toList()
+        numberField.value = ""
     }
 
     fun onDigitPressed(digit: Int) {

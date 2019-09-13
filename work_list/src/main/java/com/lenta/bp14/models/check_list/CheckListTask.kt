@@ -21,6 +21,14 @@ class CheckListTask(
         return checkListRepo.getGoodInfoByMaterial(material)
     }
 
+    override fun getGoodInfoByEan(ean: String): GoodInfo? {
+        return checkListRepo.getGoodInfoByEan(ean)
+    }
+
+    override fun getGoodInfoByMatcode(matcode: String): GoodInfo? {
+        return checkListRepo.getGoodInfoByMatcode(matcode)
+    }
+
     override fun getTaskType(): ITaskType {
         return TaskTypes.CheckPrice.taskType
     }
@@ -33,6 +41,8 @@ class CheckListTask(
 
 interface ICheckListTask : ITask {
     fun getGoodInfoByMaterial(material: String): GoodInfo?
+    fun getGoodInfoByEan(ean: String): GoodInfo?
+    fun getGoodInfoByMatcode(matcode: String): GoodInfo?
 }
 
 // --------------------------
