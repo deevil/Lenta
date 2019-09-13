@@ -7,6 +7,7 @@ import com.lenta.bp14.models.IGeneralTaskManager
 import com.lenta.bp14.models.check_list.CheckListTaskManager
 import com.lenta.bp14.models.data.TaskManager
 import com.lenta.bp14.models.check_price.CheckPriceTaskManager
+import com.lenta.bp14.models.check_price.ICheckPriceTask
 import com.lenta.bp14.models.general.GeneralRepo
 import com.lenta.bp14.models.general.IGeneralRepo
 import com.lenta.bp14.platform.navigation.IScreenNavigator
@@ -76,6 +77,11 @@ class AppModule {
                 checkPriceTaskManager = checkPriceTaskManager,
                 timeMonitor = timeMonitor
         )
+    }
+
+    @Provides
+    internal fun provideCheckPriceTask(checkPriceTaskManager: CheckPriceTaskManager): ICheckPriceTask {
+        return checkPriceTaskManager.getTask()!!
     }
 
 }

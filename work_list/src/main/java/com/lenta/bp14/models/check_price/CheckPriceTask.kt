@@ -22,7 +22,8 @@ class CheckPriceTask(
         private val readyResultsRepo: ICheckPriceResultsRepo,
         private val priceInfoParser: IPriceInfoParser,
         private val timeMonitor: ITimeMonitor,
-        private val gson: Gson
+        private val gson: Gson,
+        override var processingMatNumber: String? = null
 ) : ICheckPriceTask, StateFromToString {
 
 
@@ -80,6 +81,11 @@ class CheckPriceTask(
         return taskDescription
     }
 
+    override fun getProcessingActualPrice(): IActualPriceInfo? {
+        return actualPricesRepo.getActualPriceInfoByMatNumber(matNumber = processingMatNumber
+                ?: return null)
+    }
+
 }
 
 fun ICheckPriceResult?.toCheckStatus(): CheckStatus? {
@@ -94,6 +100,9 @@ interface ICheckPriceTask : ITask {
     fun checkProductFromScan(rawCode: String?): ICheckPriceResult?
     fun getCheckResults(): LiveData<List<ICheckPriceResult>>
     fun removeCheckResultsByMatNumbers(matNumbers: Set<String>)
+    fun getProcessingActualPrice(): IActualPriceInfo?
+
+    var processingMatNumber: String?
 
 }
 

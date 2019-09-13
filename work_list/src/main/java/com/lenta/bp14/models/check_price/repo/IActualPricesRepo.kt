@@ -10,6 +10,7 @@ import kotlin.random.Random
 interface IActualPricesRepo {
 
     fun getActualPriceInfo(eanCode: String): IActualPriceInfo?
+    fun getActualPriceInfoByMatNumber(matNumber: String): IActualPriceInfo?
 
 }
 
@@ -40,6 +41,10 @@ class ActualPriceRepoForTest : IActualPricesRepo {
                 }
             }
         }
+    }
+
+    override fun getActualPriceInfoByMatNumber(matNumber: String): IActualPriceInfo? {
+        return cashedResults.values.firstOrNull { it.matNumber == matNumber }
     }
 
     private fun getPriceInfoForTest(priceInfo: IScanPriceInfo?): IActualPriceInfo? {

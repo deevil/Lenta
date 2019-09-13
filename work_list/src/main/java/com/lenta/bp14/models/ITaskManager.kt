@@ -43,3 +43,7 @@ fun ITaskManager<*, *>.getTaskName(): String? {
 fun ITaskManager<*, *>.getTaskType(): String? {
     return this.getTask()?.getTaskType()?.taskType ?: ""
 }
+
+fun ITask.getTaskName(): String {
+    return getDescription().taskName
+}

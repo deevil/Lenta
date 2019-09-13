@@ -48,7 +48,6 @@
 
     <string name="total_quantity">Итого: %1$d шт.</string>
     <string name="quantity_st">%1$d шт.</string>
-    <string name="price_r">%1$d р.</string>
     <string name="quantity_units">%1$d %2$s.</string>
     <string name="sl_date">СГ - %1$s</string>
     <string name="pd_date">ДП - %1$s</string>

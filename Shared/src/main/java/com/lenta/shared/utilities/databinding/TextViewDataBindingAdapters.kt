@@ -65,7 +65,7 @@ fun setTextWithVisibilities(textView: TextView, text: String?, prefix: String?, 
 
 @BindingAdapter(value = ["intWithVisibilities", "prefix", "postfix"], requireAll = false)
 fun intWithVisibilities(textView: TextView, counter: Int?, prefix: String? = null, postfix: String? = null) {
-    var resText: String = ""
+    var resText = ""
     counter?.let {
         resText = if (it > -1) it.toString() else ""
     }
@@ -74,11 +74,21 @@ fun intWithVisibilities(textView: TextView, counter: Int?, prefix: String? = nul
 
 @BindingAdapter(value = ["floatWithVisibilities", "prefix", "postfix"], requireAll = false)
 fun floatWithVisibilities(textView: TextView, value: Float?, prefix: String? = null, postfix: String? = null) {
-    var resText: String = ""
+    var resText = ""
     value?.let {
         resText = if (it >= 0F) it.toString() else ""
     }
     setTextWithVisibilities(textView, text = resText, prefix = prefix, postfix = postfix)
+}
+
+@BindingAdapter(value = ["price"])
+fun price(textView: TextView, price: Float?) {
+    textView.text = if (
+            price != null
+            && price > 0F
+    )
+        textView.context.getString(R.string.price_r, price)
+    else ""
 }
 
 @BindingAdapter(value = ["unixTime", "timeFormat", "prefix", "postfix"], requireAll = false)

@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import com.lenta.bp14.ml.CheckStatus
 import com.lenta.bp14.models.check_price.CheckPriceTaskManager
 import com.lenta.bp14.models.check_price.ICheckPriceResult
+import com.lenta.bp14.models.check_price.ICheckPriceTask
 import com.lenta.bp14.models.check_price.toCheckStatus
 import com.lenta.bp14.models.getTaskName
 import com.lenta.bp14.models.getTaskType
@@ -16,10 +17,10 @@ import javax.inject.Inject
 class PriceScannerViewModel : CoreViewModel() {
 
     @Inject
-    lateinit var checkPriceTaskManager: CheckPriceTaskManager
+    lateinit var task: ICheckPriceTask
 
     @Inject
-    lateinit var sesionInfo: ISessionInfo
+    lateinit var sessionInfo: ISessionInfo
 
     private val checkPriceResult: MutableLiveData<ICheckPriceResult?> = MutableLiveData()
 
@@ -27,11 +28,11 @@ class PriceScannerViewModel : CoreViewModel() {
 
 
     fun getTitle(): String {
-        return "${checkPriceTaskManager.getTaskType()} // ${checkPriceTaskManager.getTaskName()}"
+        return "${task.getTaskType().taskType} // ${task.getTaskName()}"
     }
 
     fun checkStatus(rawCode: String): CheckStatus? {
-        return checkPriceTaskManager.getTask()?.checkProductFromScan(rawCode = rawCode)?.apply {
+        return task.checkProductFromScan(rawCode = rawCode)?.apply {
             checkPriceResult.value = this
         }?.toCheckStatus()
     }
