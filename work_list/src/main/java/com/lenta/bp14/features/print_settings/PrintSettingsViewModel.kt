@@ -41,12 +41,5 @@ class PrintSettingsViewModel : CoreViewModel(), OnPositionClickListener {
         }
     }
 
-    fun scanQrCode() {
-
-    }
-
-    fun scanBarCode() {
-
-    }
 
 }

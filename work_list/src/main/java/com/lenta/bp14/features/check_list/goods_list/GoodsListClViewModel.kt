@@ -49,14 +49,6 @@ class GoodsListClViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
         }
     }
 
-    fun scanQrCode() {
-
-    }
-
-    fun scanBarCode() {
-
-    }
-
     fun onClickDelete() {
         val goodsList = goods.value!!.toMutableList()
 

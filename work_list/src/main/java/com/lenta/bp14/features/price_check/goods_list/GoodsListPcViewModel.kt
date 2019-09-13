@@ -112,14 +112,6 @@ class GoodsListPcViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
         return false
     }
 
-    fun scanQrCode() {
-
-    }
-
-    fun scanBarCode() {
-
-    }
-
     fun onClickSave() {
 
     }
