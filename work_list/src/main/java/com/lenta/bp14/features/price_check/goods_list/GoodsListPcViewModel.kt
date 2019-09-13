@@ -50,7 +50,7 @@ class GoodsListPcViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
                         position = list.size - index,
                         name = "${iCheckPriceResult.matNr?.takeLast(6)} ${iCheckPriceResult.name}",
                         isPriceValid = iCheckPriceResult.isPriceValid(),
-                        isPrinted = iCheckPriceResult.isPrinted()
+                        isPrinted = iCheckPriceResult.isPrinted
                 )
             }
         }

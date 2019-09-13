@@ -1,7 +1,6 @@
 package com.lenta.bp14.models.check_price.repo
 
-import com.lenta.bp14.models.check_price.IPriceInfo
-import com.lenta.bp14.models.check_price.PriceInfo
+import com.lenta.bp14.models.check_price.*
 import com.lenta.shared.utilities.Logg
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
@@ -10,23 +9,23 @@ import kotlin.random.Random
 
 interface IActualPricesRepo {
 
-    fun getActualPriceInfo(eanCode: String): IPriceInfo?
+    fun getActualPriceInfo(eanCode: String): IActualPriceInfo?
 
 }
 
 class ActualPriceRepoForTest : IActualPricesRepo {
 
-    private val cashedResults = mutableMapOf<String, IPriceInfo>()
+    private val cashedResults = mutableMapOf<String, IActualPriceInfo>()
 
-    private var testResult: IPriceInfo? = null
+    private var testResult: IScanPriceInfo? = null
 
     //TODO удалить эту логику после создания фмников
-    fun putTestResult(priceInfo: IPriceInfo) {
+    fun putTestResult(priceInfo: IScanPriceInfo) {
         testResult = priceInfo
         Logg.d { "testResult: $testResult" }
     }
 
-    override fun getActualPriceInfo(eanCode: String): IPriceInfo? {
+    override fun getActualPriceInfo(eanCode: String): IActualPriceInfo? {
         return cashedResults[eanCode].apply {
             Logg.d { "getActualPriceInfo: $testResult" }
             if (this == null) {
@@ -43,22 +42,24 @@ class ActualPriceRepoForTest : IActualPricesRepo {
         }
     }
 
-    private fun getPriceInfoForTest(priceInfo: IPriceInfo?): IPriceInfo? {
+    private fun getPriceInfoForTest(priceInfo: IScanPriceInfo?): IActualPriceInfo? {
         priceInfo?.let {
             return if (Random.nextBoolean())
-                PriceInfo(
-                        eanCode = it.eanCode,
-                        matNr = it.eanCode,
-                        nameOfProduct = null,
-                        price = it.price,
-                        discountCardPrice = it.discountCardPrice
+                ActualPriceInfo(
+                        matNumber = it.eanCode,
+                        productName = "Лук репчатый",
+                        price1 = it.price,
+                        price2 = it.discountCardPrice,
+                        price3 = null,
+                        price4 = null
                 )
-            else PriceInfo(
-                    eanCode = it.eanCode,
-                    matNr = it.eanCode,
-                    nameOfProduct = null,
-                    price = it.price + 1,
-                    discountCardPrice = it.discountCardPrice
+            else ActualPriceInfo(
+                    matNumber = it.eanCode,
+                    productName = "Мед липовый",
+                    price1 = (it.price ?: 0F) + 1,
+                    price2 = it.discountCardPrice,
+                    price3 = null,
+                    price4 = null
             )
             /*return PriceInfo(
                     eanCode = it.eanCode,

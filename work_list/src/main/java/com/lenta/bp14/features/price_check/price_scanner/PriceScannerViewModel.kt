@@ -42,8 +42,8 @@ private fun ICheckPriceResult?.toUi(): CheckPriceResultUi? {
     return this?.let {
         CheckPriceResultUi(
                 productTitle = this.matNr?.takeLast(6) ?: "",
-                price = this.actualPriceInfo.price.toString(),
-                discountPrice = this.actualPriceInfo.discountCardPrice.toString(),
+                price = this.actualPriceInfo.price1.toString(),
+                discountPrice = this.actualPriceInfo.getDiscountCardPrice().toString(),
                 priceIsValid = this.isPriceValid(),
                 discountPriceIsValid = this.isDiscountPriceValid(),
                 isAdded = true

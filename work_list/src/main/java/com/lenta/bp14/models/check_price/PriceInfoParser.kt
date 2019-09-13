@@ -3,17 +3,15 @@ package com.lenta.bp14.models.check_price
 class PriceInfoParser : IPriceInfoParser {
 
 
-    override fun getPriceInfoFromRawCode(rawCode: String?): IPriceInfo? {
+    override fun getPriceInfoFromRawCode(rawCode: String?): IScanPriceInfo? {
 
         if (rawCode == null) {
             return null
         }
 
-        return PriceInfo(
+        return ScanPriceInfo(
                 eanCode = getEanCode(rawCode)
                         ?: return null,
-                matNr = null,
-                nameOfProduct = null,
                 price = getPrice(rawCode)
                         ?: return null,
                 discountCardPrice = getPriceWithDiscountCard(rawCode)
@@ -62,5 +60,5 @@ class PriceInfoParser : IPriceInfoParser {
 }
 
 interface IPriceInfoParser {
-    fun getPriceInfoFromRawCode(rawCode: String?): IPriceInfo?
+    fun getPriceInfoFromRawCode(rawCode: String?): IScanPriceInfo?
 }
