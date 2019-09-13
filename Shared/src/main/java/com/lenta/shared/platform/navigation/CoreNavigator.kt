@@ -231,6 +231,14 @@ class CoreNavigator constructor(private val context: Context,
         }
     }
 
+    override fun openQrCodeInfoScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(
+                    AlertFragment.create(message = context.getString(R.string.qr_code_info),
+                            iconRes = R.drawable.ic_scan_qrcode_48dp), CustomAnimation.vertical)
+        }
+    }
+
     override fun openESInfoScreen() {
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.es_info),
@@ -400,6 +408,7 @@ interface ICoreNavigator {
     fun openMatrixInfoScreen(matrixType: MatrixType)
     fun openSectionInfoScreen(section: String)
     fun openEanInfoScreen()
+    fun openQrCodeInfoScreen()
     fun openESInfoScreen()
     fun openBoxInfoScreen()
     fun openInfoScreen(message: String)

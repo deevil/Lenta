@@ -14,6 +14,7 @@ import com.lenta.shared.analytics.AnalyticsHelper
 import com.lenta.shared.databinding.ActivityMainBinding
 import com.lenta.shared.keys.KeyCode
 import com.lenta.shared.keys.OnKeyDownListener
+import com.lenta.shared.keys.OnKeyUpListener
 import com.lenta.shared.platform.network_state.NetworkStateMonitor
 import com.lenta.shared.platform.activity.CoreActivity
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
@@ -220,7 +221,7 @@ abstract class CoreMainActivity : CoreActivity<ActivityMainBinding>(), ToolbarBu
         getCurrentFragment()?.implementationOf(ToolbarButtonsClickListener::class.java)?.onToolbarButtonClick(view)
     }
 
-    override fun onKeyUp(keyCode: Int, event: KeyEvent): Boolean {
+    override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
         val onKeyDownListener = getCurrentFragment()?.implementationOf(OnKeyDownListener::class.java)
         var handled = false
         val detectedKeyCode = KeyCode.detectKeyCode(event.keyCode)
@@ -236,6 +237,16 @@ abstract class CoreMainActivity : CoreActivity<ActivityMainBinding>(), ToolbarBu
             super.onKeyDown(keyCode, event)
         } else true
 
+    }
+
+    override fun onKeyUp(keyCode: Int, event: KeyEvent?): Boolean {
+        getCurrentFragment()?.implementationOf(OnKeyUpListener::class.java)?.let { onKeyUpListener ->
+            event?.keyCode?.let { keyCode ->
+                return onKeyUpListener.onKeyUp(keyCode = KeyCode.detectKeyCode(keyCode))
+            }
+
+        }
+        return super.onKeyUp(keyCode, event)
     }
 
     private fun isHaveBackButton(): Boolean {
