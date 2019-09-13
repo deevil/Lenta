@@ -24,6 +24,10 @@ class GoodsListClViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     lateinit var checkListTaskManager: CheckListTaskManager
 
 
+    val task by lazy {
+        checkListTaskManager.getTask()!!
+    }
+
     val selectionsHelper = SelectionItemsHelper()
 
     val selectedPage = MutableLiveData(0)
@@ -40,8 +44,9 @@ class GoodsListClViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
 
     init {
         viewModelScope.launch {
+            requestFocusToNumberField.value = true
             taskName.value = "${checkListTaskManager.getTaskType()} // ${checkListTaskManager.getTaskName()}"
-
+            goods.value = task.goods.value
             //taskName.value = checkListTask.getDescription().taskName
             //goods.value = taskManager.getTestGoodList(4)
         }
@@ -101,7 +106,7 @@ class GoodsListClViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
 
     private fun addGoodByMaterial(material: String) {
         Logg.d { "Entered MATERIAL: $material" }
-        viewModelScope.launch {
+        /*viewModelScope.launch {
             checkListTaskManager.getTask()?.let { task ->
                 val goodInfo: GoodInfo? = task.getGoodInfoByMaterial(material)
                 if (goodInfo != null) {
@@ -112,7 +117,7 @@ class GoodsListClViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
                     navigator.showGoodNotFound()
                 }
             }
-        }
+        }*/
     }
 
     private fun addGoodByEan(ean: String) {
@@ -148,6 +153,11 @@ class GoodsListClViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
                 navigator.showGoodNotFound()
             }
         }*/
+    }
+
+    fun onDigitPressed(digit: Int) {
+        numberField.postValue(numberField.value ?: "" + digit)
+        requestFocusToNumberField.value = true
     }
 
 }

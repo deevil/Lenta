@@ -11,6 +11,8 @@ import com.lenta.bp14.BR
 import com.lenta.bp14.R
 import com.lenta.bp14.databinding.*
 import com.lenta.bp14.platform.extentions.getAppComponent
+import com.lenta.shared.keys.KeyCode
+import com.lenta.shared.keys.OnKeyDownListener
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
@@ -24,7 +26,7 @@ import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.provideViewModel
 
 class GoodsListClFragment : CoreFragment<FragmentGoodsListClBinding, GoodsListClViewModel>(),
-        ToolbarButtonsClickListener, ViewPagerSettings {
+        ToolbarButtonsClickListener, ViewPagerSettings, OnKeyDownListener {
 
     private var recyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
 
@@ -128,5 +130,18 @@ class GoodsListClFragment : CoreFragment<FragmentGoodsListClBinding, GoodsListCl
 
     }
 
+    override fun onKeyDown(keyCode: KeyCode): Boolean {
+        recyclerViewKeyHandler?.let {
+            if (!it.onKeyDown(keyCode)) {
+                keyCode.digit?.let { digit ->
+                    vm.onDigitPressed(digit)
+                    return true
+                }
+                return false
+            }
+            return true
+        }
+        return false
+    }
 
 }

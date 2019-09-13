@@ -28,7 +28,7 @@ class CheckListTask(
 
 
 
-        val good = goods.find { it.ean == goodInfo.ean }
+        /*val good = goods.find { it.ean == goodInfo.ean }
         if (good != null) {
             val index = goods.indexOf(good)
 
@@ -40,7 +40,7 @@ class CheckListTask(
                 ean = goodInfo.ean,
                 material = goodInfo.material,
                 name = goodInfo.name + " ${goods.lastIndex + 2}"
-        ))
+        ))*/
     }
 
     override fun getTaskType(): ITaskType {
