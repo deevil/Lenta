@@ -10,16 +10,16 @@ class CheckListRepo : ICheckListRepo {
         return if (Random.nextBoolean()) {
             GoodInfo(
                     ean = "1234567890",
-                    material = "000000000000000021",
-                    name = "Товар",
+                    material = "000000000000999921",
+                    name = "Товар штучный ",
                     uom = Uom.DEFAULT
             )
         } else {
             GoodInfo(
                     ean = "1234567890",
-                    material = "000000000000000021",
-                    name = "Товар",
-                    uom = Uom.KG
+                    material = "000000000000123456",
+                    name = "Товар весовой",
+                    uom = Uom.DEFAULT
             )
         }
     }

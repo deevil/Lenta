@@ -46,7 +46,6 @@ class GoodsListClViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
         viewModelScope.launch {
             requestFocusToNumberField.value = true
             taskName.value = "${checkListTaskManager.getTaskType()} // ${checkListTaskManager.getTaskName()}"
-            goods.value = task.goods.value
             //taskName.value = checkListTask.getDescription().taskName
             //goods.value = taskManager.getTestGoodList(4)
         }
@@ -106,18 +105,15 @@ class GoodsListClViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
 
     private fun addGoodByMaterial(material: String) {
         Logg.d { "Entered MATERIAL: $material" }
-        /*viewModelScope.launch {
-            checkListTaskManager.getTask()?.let { task ->
+        viewModelScope.launch {
                 val goodInfo: GoodInfo? = task.getGoodInfoByMaterial(material)
                 if (goodInfo != null) {
-                    task.addGood(goodInfo)
-                    goods.value = task.goods
+                    addGood(goodInfo)
                 } else {
                     // Сообщение - Данный товар не найден в справочнике
                     navigator.showGoodNotFound()
                 }
-            }
-        }*/
+        }
     }
 
     private fun addGoodByEan(ean: String) {
@@ -153,6 +149,26 @@ class GoodsListClViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
                 navigator.showGoodNotFound()
             }
         }*/
+    }
+
+    fun addGood(goodInfo: GoodInfo) {
+        val list = goods.value!!.toMutableList()
+
+        val good = list.find { it.ean == goodInfo.ean }
+        if (good != null) {
+            val index = list.indexOf(good)
+            val quantity = list[index].quantity.value!!.toInt()
+            list[index].quantity.value = "" + (quantity + 1)
+        } else {
+            list.add(0, Good(
+                    number = list.lastIndex + 2,
+                    ean = goodInfo.ean,
+                    material = goodInfo.material,
+                    name = goodInfo.name + " ${list.lastIndex + 2}"
+            ))
+        }
+
+        goods.value = list.toList()
     }
 
     fun onDigitPressed(digit: Int) {

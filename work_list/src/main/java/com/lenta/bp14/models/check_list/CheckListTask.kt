@@ -17,30 +17,8 @@ class CheckListTask(
         private val gson: Gson
 ) : ICheckListTask {
 
-    override val goods = MutableLiveData<List<Good>>(listOf())
-
     override fun getGoodInfoByMaterial(material: String): GoodInfo? {
         return checkListRepo.getGoodInfoByMaterial(material)
-    }
-
-    override fun addGood(goodInfo: GoodInfo) {
-        val goodsList = goods.value
-
-
-
-        /*val good = goods.find { it.ean == goodInfo.ean }
-        if (good != null) {
-            val index = goods.indexOf(good)
-
-        }
-
-
-        goods.add(0, Good(
-                number = goods.lastIndex + 2,
-                ean = goodInfo.ean,
-                material = goodInfo.material,
-                name = goodInfo.name + " ${goods.lastIndex + 2}"
-        ))*/
     }
 
     override fun getTaskType(): ITaskType {
@@ -54,10 +32,7 @@ class CheckListTask(
 }
 
 interface ICheckListTask : ITask {
-    val goods: MutableLiveData<List<Good>>
-
     fun getGoodInfoByMaterial(material: String): GoodInfo?
-    fun addGood(goodInfo: GoodInfo)
 }
 
 // --------------------------
@@ -84,7 +59,7 @@ interface IGood {
     val material: String?
     val name: String?
     val uom: Uom
-    val quantity: MutableLiveData<String>
+    var quantity: MutableLiveData<String>
 }
 
 data class Good(
@@ -93,7 +68,7 @@ data class Good(
         override val material: String?,
         override val name: String?,
         override val uom: Uom = Uom.DEFAULT,
-        override val quantity: MutableLiveData<String> = MutableLiveData("1")
+        override var quantity: MutableLiveData<String> = MutableLiveData("1")
 ) : IGood {
 
     fun getFormattedMaterial(): String? {
