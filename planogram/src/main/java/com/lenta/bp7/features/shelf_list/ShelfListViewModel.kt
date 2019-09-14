@@ -60,7 +60,18 @@ class ShelfListViewModel : SendDataViewModel(), OnOkInSoftKeyboardListener {
                     // Выбор - Полка удалена. Открыть просмотр или создать новую? - Назад / Просмотр / Создать
                     navigator.showShelfIsDeleted(
                             reviewCallback = { openExistShelf(shelf) },
-                            createCallback = { createShelf(shelfNumber) })
+                            createCallback = {
+                                checkData.currentShelfIndex = shelves.value!!.indexOf(shelf)
+                                checkData.setCurrentShelfStatus(ShelfStatus.UNFINISHED)
+                                checkData.getCurrentShelf()?.clearGoodsList()
+
+                                // Сообщение - Начата обработка полки
+                                navigator.showShelfStarted(
+                                        segmentNumber = segmentNumber.value!!,
+                                        shelfNumber = shelfNumber.toString()) {
+                                    navigator.openGoodListScreen()
+                                }
+                            })
                 } else {
                     openExistShelf(shelf)
                 }

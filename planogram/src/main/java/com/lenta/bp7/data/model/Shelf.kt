@@ -28,6 +28,10 @@ data class Shelf(
         return SimpleDateFormat("HH:mm", Locale.getDefault()).format(checkStart)
     }
 
+    fun clearGoodsList() {
+        goods.clear()
+    }
+
 }
 
 enum class ShelfStatus {
