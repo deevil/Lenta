@@ -16,7 +16,6 @@ import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.extentions.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import kotlin.random.Random
 
 class GoodsListClViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyboardListener {
 
@@ -49,14 +48,6 @@ class GoodsListClViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
             requestFocusToNumberField.value = true
             taskName.value = "${checkListTaskManager.getTaskType()} // ${checkListTaskManager.getTaskName()}"
         }
-    }
-
-    fun scanQrCode() {
-
-    }
-
-    fun scanBarCode() {
-
     }
 
     fun onClickDelete() {
@@ -94,8 +85,7 @@ class GoodsListClViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     private fun checkEnteredNumber(number: String) {
         number.length.let { length ->
             if (length < Constants.COMMON_SAP_LENGTH) {
-                // Сообщение - Данный товар не найден в справочнике
-                navigator.showGoodNotFound()
+                showGoodNotFound()
                 return
             }
 
@@ -117,66 +107,44 @@ class GoodsListClViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     private fun addGoodByMaterial(material: String) {
         Logg.d { "Entered MATERIAL: $material" }
         viewModelScope.launch {
-            val goodInfo: GoodInfo? = task.getGoodInfoByMaterial(material)
-            if (goodInfo != null) {
-                addGood(goodInfo)
-            } else {
-                // Сообщение - Данный товар не найден в справочнике
-                navigator.showGoodNotFound()
-            }
+            val good: Good? = task.getGoodByMaterial(material)
+            if (good != null) addGood(good) else showGoodNotFound()
         }
     }
 
     private fun addGoodByEan(ean: String) {
         Logg.d { "Entered EAN: $ean" }
         viewModelScope.launch {
-            viewModelScope.launch {
-                val goodInfo: GoodInfo? = task.getGoodInfoByEan(ean)
-                if (goodInfo != null) {
-                    addGood(goodInfo)
-                } else {
-                    // Сообщение - Данный товар не найден в справочнике
-                    navigator.showGoodNotFound()
-                }
-            }
+            val good: Good? = task.getGoodByEan(ean)
+            if (good != null) addGood(good) else showGoodNotFound()
         }
     }
 
     private fun addGoodByMatcode(matcode: String) {
         Logg.d { "Entered MATCODE: $matcode" }
         viewModelScope.launch {
-            viewModelScope.launch {
-                val goodInfo: GoodInfo? = task.getGoodInfoByMatcode(matcode)
-                if (goodInfo != null) {
-                    addGood(goodInfo)
-                } else {
-                    // Сообщение - Данный товар не найден в справочнике
-                    navigator.showGoodNotFound()
-                }
-            }
+            val good: Good? = task.getGoodByMatcode(matcode)
+            if (good != null) addGood(good) else showGoodNotFound()
         }
     }
 
-    private fun addGood(goodInfo: GoodInfo) {
-        val goodsList = goods.value!!.toMutableList()
-        val good = goodsList.find { it.ean == goodInfo.ean }
-        if (good != null) {
-            val index = goodsList.indexOf(good)
-            goodsList[index].quantity.value = "" + if (good.uom.isOnlyInt()) {
-               good.quantity.value!!.toInt() + goodInfo.quantity.toInt()
-            } else {
-               good.quantity.value!!.toFloat() + goodInfo.quantity.toFloat()
-            }
+    private fun showGoodNotFound() {
+        // Сообщение - Данный товар не найден в справочнике
+        navigator.showGoodNotFound()
+    }
 
+    private fun addGood(good: Good) {
+        val goodsList = goods.value!!.toMutableList()
+        val existGood = goodsList.find { it.ean == good.ean }
+        if (existGood != null) {
+            val index = goodsList.indexOf(existGood)
+            goodsList[index].quantity.value = "" + if (good.uom.isOnlyInt()) {
+                existGood.quantity.value!!.toInt() + good.quantity.value!!.toInt()
+            } else {
+                existGood.quantity.value!!.toFloat() + good.quantity.value!!.toFloat()
+            }
         } else {
-            goodsList.add(0, Good(
-                    number = goodsList.lastIndex + 2,
-                    ean = goodInfo.ean,
-                    material = goodInfo.material,
-                    name = goodInfo.name + " ${goodsList.lastIndex + 2}",
-                    quantity = MutableLiveData(goodInfo.quantity),
-                    uom = goodInfo.uom
-            ))
+            goodsList.add(0, good)
         }
 
         goods.value = goodsList.toList()

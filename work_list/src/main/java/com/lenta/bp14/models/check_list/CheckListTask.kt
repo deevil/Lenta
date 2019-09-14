@@ -17,16 +17,16 @@ class CheckListTask(
         private val gson: Gson
 ) : ICheckListTask {
 
-    override fun getGoodInfoByMaterial(material: String): GoodInfo? {
-        return checkListRepo.getGoodInfoByMaterial(material)
+    override fun getGoodByMaterial(material: String): Good? {
+        return checkListRepo.getGoodByMaterial(material)
     }
 
-    override fun getGoodInfoByEan(ean: String): GoodInfo? {
-        return checkListRepo.getGoodInfoByEan(ean)
+    override fun getGoodByEan(ean: String): Good? {
+        return checkListRepo.getGoodByEan(ean)
     }
 
-    override fun getGoodInfoByMatcode(matcode: String): GoodInfo? {
-        return checkListRepo.getGoodInfoByMatcode(matcode)
+    override fun getGoodByMatcode(matcode: String): Good? {
+        return checkListRepo.getGoodByMatcode(matcode)
     }
 
     override fun getTaskType(): ITaskType {
@@ -40,28 +40,10 @@ class CheckListTask(
 }
 
 interface ICheckListTask : ITask {
-    fun getGoodInfoByMaterial(material: String): GoodInfo?
-    fun getGoodInfoByEan(ean: String): GoodInfo?
-    fun getGoodInfoByMatcode(matcode: String): GoodInfo?
+    fun getGoodByMaterial(material: String): Good?
+    fun getGoodByEan(ean: String): Good?
+    fun getGoodByMatcode(matcode: String): Good?
 }
-
-// --------------------------
-
-interface IGoodInfo {
-    val ean: String
-    val material: String
-    val name: String
-    val quantity: String
-    val uom: Uom
-}
-
-data class GoodInfo(
-        override val ean: String,
-        override val material: String,
-        override val name: String,
-        override val quantity: String,
-        override val uom: Uom
-) : IGoodInfo
 
 // --------------------------
 
@@ -71,16 +53,16 @@ interface IGood {
     val material: String
     val name: String
     val uom: Uom
-    var quantity: MutableLiveData<String>
+    val quantity: MutableLiveData<String>
 }
 
 data class Good(
-        override var number: Int,
+        override var number: Int = 0,
         override val ean: String,
         override val material: String,
         override val name: String,
         override val uom: Uom,
-        override var quantity: MutableLiveData<String> = MutableLiveData("1")
+        override val quantity: MutableLiveData<String> = MutableLiveData("")
 ) : IGood {
 
     fun getFormattedMaterial(): String? {
