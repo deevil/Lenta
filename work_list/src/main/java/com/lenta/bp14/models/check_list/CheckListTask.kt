@@ -48,16 +48,18 @@ interface ICheckListTask : ITask {
 // --------------------------
 
 interface IGoodInfo {
-    val ean: String?
-    val material: String?
-    val name: String?
+    val ean: String
+    val material: String
+    val name: String
+    val quantity: String
     val uom: Uom
 }
 
 data class GoodInfo(
-        override val ean: String?,
-        override val material: String?,
-        override val name: String?,
+        override val ean: String,
+        override val material: String,
+        override val name: String,
+        override val quantity: String,
         override val uom: Uom
 ) : IGoodInfo
 
@@ -65,24 +67,24 @@ data class GoodInfo(
 
 interface IGood {
     var number: Int
-    val ean: String?
-    val material: String?
-    val name: String?
+    val ean: String
+    val material: String
+    val name: String
     val uom: Uom
     var quantity: MutableLiveData<String>
 }
 
 data class Good(
         override var number: Int,
-        override val ean: String?,
-        override val material: String?,
-        override val name: String?,
-        override val uom: Uom = Uom.DEFAULT,
+        override val ean: String,
+        override val material: String,
+        override val name: String,
+        override val uom: Uom,
         override var quantity: MutableLiveData<String> = MutableLiveData("1")
 ) : IGood {
 
     fun getFormattedMaterial(): String? {
-        return material?.takeLast(6)
+        return material.takeLast(6)
     }
 
     fun getFormattedMaterialWithName(): String? {

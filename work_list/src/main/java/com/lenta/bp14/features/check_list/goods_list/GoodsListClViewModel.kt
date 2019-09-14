@@ -6,6 +6,7 @@ import com.lenta.bp14.models.check_list.*
 import com.lenta.bp14.models.getTaskName
 import com.lenta.bp14.models.getTaskType
 import com.lenta.bp14.platform.navigation.IScreenNavigator
+import com.lenta.shared.models.core.isOnlyInt
 import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.Logg
@@ -15,6 +16,7 @@ import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.extentions.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlin.random.Random
 
 class GoodsListClViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyboardListener {
 
@@ -156,21 +158,24 @@ class GoodsListClViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     }
 
     private fun addGood(goodInfo: GoodInfo) {
-        // todo Реализовать добавление по весу
-        // Наверно в справочнике должен приходить вес по умолчанию?
-
         val goodsList = goods.value!!.toMutableList()
         val good = goodsList.find { it.ean == goodInfo.ean }
         if (good != null) {
             val index = goodsList.indexOf(good)
-            val quantity = goodsList[index].quantity.value!!.toInt()
-            goodsList[index].quantity.value = "" + (quantity + 1)
+            goodsList[index].quantity.value = "" + if (good.uom.isOnlyInt()) {
+               good.quantity.value!!.toInt() + goodInfo.quantity.toInt()
+            } else {
+               good.quantity.value!!.toFloat() + goodInfo.quantity.toFloat()
+            }
+
         } else {
             goodsList.add(0, Good(
                     number = goodsList.lastIndex + 2,
                     ean = goodInfo.ean,
                     material = goodInfo.material,
-                    name = goodInfo.name + " ${goodsList.lastIndex + 2}"
+                    name = goodInfo.name + " ${goodsList.lastIndex + 2}",
+                    quantity = MutableLiveData(goodInfo.quantity),
+                    uom = goodInfo.uom
             ))
         }
 

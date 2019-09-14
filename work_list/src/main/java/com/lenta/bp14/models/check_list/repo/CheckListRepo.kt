@@ -13,6 +13,7 @@ class CheckListRepo : ICheckListRepo {
                         ean = "11111111",
                         material = "000000000000999921",
                         name = "Штучный",
+                        quantity = "1",
                         uom = Uom.DEFAULT
                 )
             }
@@ -21,6 +22,7 @@ class CheckListRepo : ICheckListRepo {
                         ean = "22222222",
                         material = "000000000000999921",
                         name = "Весовой",
+                        quantity = "0.6",
                         uom = Uom.KG
                 )
             }
@@ -29,6 +31,7 @@ class CheckListRepo : ICheckListRepo {
                         ean = (111111111111..999999999999).random().toString(),
                         material = "000000000000" + (111111..999999).random(),
                         name = "Товар",
+                        quantity = "1",
                         uom = Uom.DEFAULT
                 )
             }
