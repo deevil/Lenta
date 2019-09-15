@@ -90,7 +90,8 @@ class GoodsListClViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
                         // Выбор - Введено 12 знаков. Какой код вы ввели? - SAP-код / Штрихкод
                         navigator.showTwelveCharactersEntered(
                                 sapCallback = { addGoodByMatcode(number) },
-                                barCallback = { addGoodByEan(number) })
+                                barCallback = { addGoodByEan(number) }
+                        )
                     }
                     else -> addGoodByEan(number)
                 }

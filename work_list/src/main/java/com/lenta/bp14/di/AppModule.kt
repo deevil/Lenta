@@ -13,6 +13,8 @@ import com.lenta.bp14.models.general.GeneralRepo
 import com.lenta.bp14.models.general.IGeneralRepo
 import com.lenta.bp14.platform.navigation.IScreenNavigator
 import com.lenta.bp14.platform.navigation.ScreenNavigator
+import com.lenta.bp14.platform.sound.ISoundPlayer
+import com.lenta.bp14.platform.sound.SoundPlayer
 import com.lenta.bp14.repos.IRepoInMemoryHolder
 import com.lenta.bp14.repos.RepoInMemoryHolder
 import com.lenta.shared.account.IAuthenticator
@@ -55,8 +57,8 @@ class AppModule {
 
     @Provides
     @AppScope
-    internal fun provideCheckPriceTaskManager(timeMonitor: ITimeMonitor, gson: Gson): CheckPriceTaskManager {
-        return CheckPriceTaskManager(timeMonitor = timeMonitor, gson = gson)
+    internal fun provideCheckPriceTaskManager(timeMonitor: ITimeMonitor, gson: Gson, soundPlayer: ISoundPlayer): CheckPriceTaskManager {
+        return CheckPriceTaskManager(timeMonitor = timeMonitor, gson = gson, soundPlayer = soundPlayer)
     }
 
     @Provides
@@ -92,6 +94,11 @@ class AppModule {
     @Provides
     internal fun provideCheckListTask(checkListTaskManager: CheckListTaskManager): ICheckListTask {
         return checkListTaskManager.getTask()!!
+    }
+
+    @Provides
+    internal fun provideSoundPlayer(context: Context): ISoundPlayer {
+        return SoundPlayer(context)
     }
 
 }
