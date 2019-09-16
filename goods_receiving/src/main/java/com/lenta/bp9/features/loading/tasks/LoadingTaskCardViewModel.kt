@@ -71,7 +71,8 @@ class LoadingTaskCardViewModel : CoreLoadingViewModel() {
         val taskHeader = repoInMemoryHolder.taskList.value?.tasks?.findLast { it.taskNumber == taskNumber }
         taskHeader?.let {
             val notifications = result.notifications.map { TaskNotification.from(it) }
-            val newTask = taskManager.newReceivingTask(taskHeader, TaskDescription.from(result.taskDescription), notifications)
+            val newTask = taskManager.newReceivingTask(taskHeader, TaskDescription.from(result.taskDescription))
+            newTask?.taskRepository?.getNotifications()?.updateWithNotifications(notifications, null, null, null)
             taskManager.setTask(newTask)
             screenNavigator.openTaskCardScreen(mode)
         }
@@ -97,25 +98,19 @@ class LoadingTaskCardViewModel : CoreLoadingViewModel() {
             val productsVetDocumentRevise = result.productsVetDocumentRevise.map { ProductVetDocumentRevise.from(it) }
             val complexDocumentsRevise = result.complexDocumentsRevise.map { ComplexDocumentRevise.from(it) }
 
-            val newTask = taskManager.newReceivingTaskFull(taskHeader,
-                    TaskDescription.from(result.taskDescription),
-                    notifications,
-                    documentNotifications,
-                    productNotifications,
-                    conditionNotifications,
-                    deliveryDocumentsRevise,
-                    deliveryProductDocumentsRevise,
-                    productBatchesRevise,
-                    formsABRussianRevise,
-                    formsABImportRevise,
-                    setComponenttsRevise,
-                    invoiceRevise,
-                    commentsToVP,
-                    productsVetDocumentRevise,
-                    complexDocumentsRevise)
-
+            val newTask = taskManager.newReceivingTask(taskHeader, TaskDescription.from(result.taskDescription))
+            newTask?.taskRepository?.getNotifications()?.updateWithNotifications(notifications, documentNotifications, productNotifications, conditionNotifications)
+            newTask?.taskRepository?.getReviseDocuments()?.apply {
+                this.updateDeliveryDocuments(deliveryDocumentsRevise)
+                this.updateProductDocuments(deliveryProductDocumentsRevise)
+                this.updateImportABForms(formsABImportRevise)
+                this.updateRussianABForms(formsABRussianRevise)
+                this.updateProductBatches(productBatchesRevise)
+                this.updateSetComponents(setComponenttsRevise)
+                this.updateInvoiceInfo(invoiceRevise)
+            }
             taskManager.setTask(newTask)
-            screenNavigator.openTaskCardScreen(mode)
+            screenNavigator.openTaskReviseScreen()
         }
     }
 
