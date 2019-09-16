@@ -85,7 +85,8 @@ class GoodsListClViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     private fun checkEnteredNumber(number: String) {
         number.length.let { length ->
             if (length < Constants.COMMON_SAP_LENGTH) {
-                showGoodNotFound()
+                // Сообщение - Данный товар не найден в справочнике
+                navigator.showGoodNotFound()
                 return
             }
 
@@ -107,33 +108,31 @@ class GoodsListClViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     private fun addGoodByMaterial(material: String) {
         Logg.d { "Entered MATERIAL: $material" }
         viewModelScope.launch {
-            val good: Good? = task.getGoodByMaterial(material)
-            if (good != null) addGood(good) else showGoodNotFound()
+            addGood(task.getGoodByMaterial(material))
         }
     }
 
     private fun addGoodByEan(ean: String) {
         Logg.d { "Entered EAN: $ean" }
         viewModelScope.launch {
-            val good: Good? = task.getGoodByEan(ean)
-            if (good != null) addGood(good) else showGoodNotFound()
+            addGood(task.getGoodByEan(ean))
         }
     }
 
     private fun addGoodByMatcode(matcode: String) {
         Logg.d { "Entered MATCODE: $matcode" }
         viewModelScope.launch {
-            val good: Good? = task.getGoodByMatcode(matcode)
-            if (good != null) addGood(good) else showGoodNotFound()
+            addGood(task.getGoodByMatcode(matcode))
         }
     }
 
-    private fun showGoodNotFound() {
-        // Сообщение - Данный товар не найден в справочнике
-        navigator.showGoodNotFound()
-    }
+    private fun addGood(good: Good?) {
+        if (good == null) {
+            // Сообщение - Данный товар не найден в справочнике
+            navigator.showGoodNotFound()
+            return
+        }
 
-    private fun addGood(good: Good) {
         val goodsList = goods.value!!.toMutableList()
         val existGood = goodsList.find { it.ean == good.ean }
         if (existGood != null) {
