@@ -16,6 +16,7 @@ import com.lenta.bp9.R
 import com.lenta.bp9.features.change_datetime.ChangeDateTimeFragment
 import com.lenta.bp9.features.change_datetime.ChangeDateTimeMode
 import com.lenta.bp9.features.loading.tasks.*
+import com.lenta.bp9.features.revise.TaskReviseFragment
 import com.lenta.shared.account.IAuthenticator
 import com.lenta.shared.features.alert.AlertFragment
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
@@ -145,6 +146,18 @@ class ScreenNavigator(
         }
     }
 
+    override fun openLoadingStartReviseScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(LoadingStartReviseArrivalFragment())
+        }
+    }
+
+    override fun openTaskReviseScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(TaskReviseFragment())
+        }
+    }
+
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 
 }
@@ -167,4 +180,6 @@ interface IScreenNavigator : ICoreNavigator {
     fun openConfirmationView(callbackFunc: () -> Unit)
     fun openChangeDateTimeScreen(mode: ChangeDateTimeMode)
     fun openLoadingRegisterArrivalScreen()
+    fun openLoadingStartReviseScreen()
+    fun openTaskReviseScreen()
 }

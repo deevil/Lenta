@@ -64,7 +64,8 @@ class LoadingRegisterArrivalViewModel : CoreLoadingViewModel() {
         taskManager.getReceivingTask()?.taskHeader?.let {
             val notifications = result.notifications.map { TaskNotification.from(it) }
             val shipmentExists = result.shipmentExists.isNotEmpty()
-            val newTask = taskManager.newReceivingTask(it, TaskDescription.from(result.taskDescription), notifications)
+            val newTask = taskManager.newReceivingTask(it, TaskDescription.from(result.taskDescription))
+            newTask?.taskRepository?.getNotifications()?.updateWithNotifications(notifications, null, null, null)
             taskManager.setTask(newTask)
             screenNavigator.openTaskCardScreen(TaskCardMode.Full)
         }

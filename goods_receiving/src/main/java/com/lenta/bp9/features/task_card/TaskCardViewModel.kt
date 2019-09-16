@@ -44,7 +44,7 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     val notifications by lazy {
-        MutableLiveData((taskManager.getReceivingTask()?.notifications ?: emptyList()).mapIndexed { index, notification ->
+        MutableLiveData((taskManager.getReceivingTask()?.taskRepository?.getNotifications()?.getGeneralNotifications() ?: emptyList()).mapIndexed { index, notification ->
             NotificationVM(number = (index + 1).toString(),
                     text = notification.text,
                     indicator = notification.indicator)

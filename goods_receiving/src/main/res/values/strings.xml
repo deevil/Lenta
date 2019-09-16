@@ -49,4 +49,8 @@
     <string name="unloading_time">Время разгрузки</string>
     <string name="checking_date">Дата сверки</string>
     <string name="checking_time">Время сверки</string>
+    <string name="to_check">К сверке</string>
+    <string name="checked">Сверенные</string>
+    <string name="information">Информация</string>
+    <string name="delivery_documents">Документы по поставке</string>
 </resources>

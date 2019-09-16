@@ -10,6 +10,7 @@ import com.lenta.bp9.features.loading.fast.FastDataLoadingViewModel
 import com.lenta.bp9.features.loading.tasks.LoadingRegisterArrivalViewModel
 import com.lenta.bp9.features.loading.tasks.LoadingTaskCardViewModel
 import com.lenta.bp9.features.main_menu.MainMenuViewModel
+import com.lenta.bp9.features.revise.TaskReviseViewModel
 import com.lenta.bp9.features.search_task.SearchTaskViewModel
 import com.lenta.bp9.features.select_market.SelectMarketViewModel
 import com.lenta.bp9.features.select_personnel_number.SelectPersonnelNumberViewModel
@@ -39,4 +40,5 @@ interface AppComponent {
     fun inject(it: LoadingTaskCardViewModel)
     fun inject(it: ChangeDateTimeViewModel)
     fun inject(it: LoadingRegisterArrivalViewModel)
+    fun inject(it: TaskReviseViewModel)
 }
