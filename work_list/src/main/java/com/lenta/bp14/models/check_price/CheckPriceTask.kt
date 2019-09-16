@@ -92,6 +92,16 @@ class CheckPriceTask(
                 ?: return null)
     }
 
+    override fun setCheckPriceStatus(isValid: Boolean?) {
+        readyResultsRepo.getCheckPriceResult(matNr = processingMatNumber)?.apply {
+            readyResultsRepo.addCheckPriceResult(
+                    checkPriceResult = (this as CheckPriceResult).copy(
+                            userPriceInfo = UserPriceInfo(isValidPrice = isValid)
+                    )
+            )
+        }
+    }
+
 }
 
 fun ICheckPriceResult?.toCheckStatus(): CheckStatus? {
@@ -107,6 +117,7 @@ interface ICheckPriceTask : ITask {
     fun getCheckResults(): LiveData<List<ICheckPriceResult>>
     fun removeCheckResultsByMatNumbers(matNumbers: Set<String>)
     fun getProcessingActualPrice(): IActualPriceInfo?
+    fun setCheckPriceStatus(isValid: Boolean?)
 
     var processingMatNumber: String?
 
@@ -123,6 +134,9 @@ data class CheckPriceResult(
 ) : ICheckPriceResult {
 
     override fun isPriceValid(): Boolean? {
+        if (userPriceInfo != null) {
+            return userPriceInfo.isValidPrice
+        }
         return scannedPriceInfo.price == actualPriceInfo.getPrice()
     }
 
@@ -202,6 +216,9 @@ interface IActualPriceInfo {
     fun getPrice(): Float?
     fun getDiscountCardPrice(): Float?
 }
+
+data class UserPriceInfo(override val isValidPrice: Boolean?) : IUserPriceInfo
+
 
 interface IUserPriceInfo {
     /**

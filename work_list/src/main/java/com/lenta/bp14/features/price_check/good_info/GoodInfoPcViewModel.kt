@@ -28,6 +28,24 @@ class GoodInfoPcViewModel : CoreViewModel() {
         return "${priceInfo?.matNumber?.takeLast(6)} ${priceInfo?.productName}"
     }
 
+    fun onClickNoPrice() {
+        setNewCheckStatusAndGoBack(null)
+    }
+
+    fun onClickNotValid() {
+        setNewCheckStatusAndGoBack(false)
+    }
+
+    fun onClickValid() {
+        setNewCheckStatusAndGoBack(true)
+
+    }
+
+
+    private fun setNewCheckStatusAndGoBack(isValid: Boolean?) {
+        task.setCheckPriceStatus(isValid)
+        navigator.goBack()
+    }
 
 }
 

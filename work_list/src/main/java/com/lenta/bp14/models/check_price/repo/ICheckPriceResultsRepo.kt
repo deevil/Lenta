@@ -41,7 +41,7 @@ class CheckPriceResultsRepo : ICheckPriceResultsRepo {
 
     override fun addCheckPriceResult(checkPriceResult: ICheckPriceResult): Boolean {
         checkPriceResults.indexOfFirst {
-            Logg.d { "compare: ${it} / ${checkPriceResult}, res = ${it == checkPriceResult}" }
+            Logg.d { "compare: $it / $checkPriceResult, res = ${it == checkPriceResult}" }
             it == checkPriceResult
         }.let { index ->
             if (index > -1) {
