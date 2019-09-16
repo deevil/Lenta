@@ -243,6 +243,15 @@ class ScreenNavigator(
         }
     }
 
+    override fun showDeleteShelfData(shelfNumbers: String, deleteCallback: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.delete_shelf_data, shelfNumbers),
+                    pageNumber = "46.1",
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(deleteCallback),
+                    rightButtonDecorationInfo = ButtonDecorationInfo.delete))
+        }
+    }
+
     override fun showSegmentIsDeleted(reviewCallback: () -> Unit, createCallback: () -> Unit) {
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.segment_is_deleted),
@@ -342,6 +351,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun showTwelveCharactersEntered(sapCallback: () -> Unit, barCallback: () -> Unit)
     fun showUnknownGoodBarcode(barCode: String, yesCallback: () -> Unit)
     fun showShelfIsDeleted(reviewCallback: () -> Unit, createCallback: () -> Unit)
+    fun showDeleteShelfData(shelfNumbers: String, deleteCallback: () -> Unit)
     fun showSegmentIsDeleted(reviewCallback: () -> Unit, createCallback: () -> Unit)
     fun showSuccessfullySavedToLua(afterShowCallback: () -> Unit)
     fun showErrorSavingToLua(afterShowCallback: () -> Unit)
