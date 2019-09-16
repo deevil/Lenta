@@ -1,6 +1,5 @@
 package com.lenta.bp14.features.price_check.good_info
 
-import androidx.lifecycle.Observer
 import com.lenta.bp14.R
 import com.lenta.bp14.databinding.FragmentGoodInfoPcBinding
 import com.lenta.bp14.platform.extentions.getAppComponent
@@ -25,15 +24,9 @@ class GoodInfoPcFragment : CoreFragment<FragmentGoodInfoPcBinding, GoodInfoPcVie
     }
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
+        topToolbarUiModel.title.value = vm.getTitle()
         topToolbarUiModel.description.value = getString(R.string.goods_info)
 
-        viewLifecycleOwner.apply {
-            vm.good.observe(this, Observer { good ->
-                if (good != null) {
-                    topToolbarUiModel.title.value = "${good.getFormattedMaterial()} ${good.name}"
-                }
-            })
-        }
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {

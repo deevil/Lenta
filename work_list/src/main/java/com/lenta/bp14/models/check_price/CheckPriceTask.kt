@@ -10,18 +10,20 @@ import com.lenta.bp14.models.check_price.repo.IActualPricesRepo
 import com.lenta.bp14.models.check_price.repo.ICheckPriceResultsRepo
 import com.lenta.bp14.models.general.ITaskType
 import com.lenta.bp14.models.general.TaskTypes
+import com.lenta.bp14.platform.sound.ISoundPlayer
 import com.lenta.shared.models.core.StateFromToString
-import com.lenta.shared.platform.time.ITimeMonitor
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.implementationOf
+import kotlin.math.min
 
 class CheckPriceTask(
         private val taskDescription: CheckPriceTaskDescription,
         private val actualPricesRepo: IActualPricesRepo,
         private val readyResultsRepo: ICheckPriceResultsRepo,
         private val priceInfoParser: IPriceInfoParser,
-        private val timeMonitor: ITimeMonitor,
-        private val gson: Gson
+        private val gson: Gson,
+        override var processingMatNumber: String? = null,
+        private val soundPlayer: ISoundPlayer
 ) : ICheckPriceTask, StateFromToString {
 
 
@@ -35,18 +37,23 @@ class CheckPriceTask(
             Logg.d { "ActualPriceRepoForTest: $this" }
         }?.putTestResult(scannedPriceInfo)
 
-        val actualPriceInfo = actualPricesRepo.getActualPriceInfo(scannedPriceInfo.eanCode
-                ?: return null) ?: return null
+        val actualPriceInfo = actualPricesRepo.getActualPriceInfo(scannedPriceInfo.eanCode)
+                ?: return null
 
         return CheckPriceResult(
-                ean = scannedPriceInfo.eanCode!!,
-                matNr = actualPriceInfo.matNr,
-                name = actualPriceInfo.nameOfProduct,
-                time = timeMonitor.getUnixTime(),
+                ean = scannedPriceInfo.eanCode,
+                matNr = actualPriceInfo.matNumber,
+                name = actualPriceInfo.productName,
                 scannedPriceInfo = scannedPriceInfo,
-                actualPriceInfo = actualPriceInfo
+                actualPriceInfo = actualPriceInfo,
+                userPriceInfo = null,
+                isPrinted = false
         ).apply {
-            readyResultsRepo.addCheckPriceResult(this)
+            readyResultsRepo.addCheckPriceResult(this).let { isAdded ->
+                if (isAdded) {
+                    soundPlayer.playBeep()
+                }
+            }
         }
 
     }
@@ -77,6 +84,11 @@ class CheckPriceTask(
         return taskDescription
     }
 
+    override fun getProcessingActualPrice(): IActualPriceInfo? {
+        return actualPricesRepo.getActualPriceInfoByMatNumber(matNumber = processingMatNumber
+                ?: return null)
+    }
+
 }
 
 fun ICheckPriceResult?.toCheckStatus(): CheckStatus? {
@@ -87,16 +99,13 @@ fun ICheckPriceResult?.toCheckStatus(): CheckStatus? {
     }
 }
 
-// режим создания задания
-fun ICheckPriceTask?.isFreeMode(): Boolean {
-    return this?.getDescription()?.taskNumber.isNullOrBlank()
-}
-
-
 interface ICheckPriceTask : ITask {
     fun checkProductFromScan(rawCode: String?): ICheckPriceResult?
     fun getCheckResults(): LiveData<List<ICheckPriceResult>>
     fun removeCheckResultsByMatNumbers(matNumbers: Set<String>)
+    fun getProcessingActualPrice(): IActualPriceInfo?
+
+    var processingMatNumber: String?
 
 }
 
@@ -104,16 +113,18 @@ data class CheckPriceResult(
         override val ean: String,
         override val matNr: String?,
         override val name: String?,
-        override val time: Long,
-        override val scannedPriceInfo: IPriceInfo,
-        override val actualPriceInfo: IPriceInfo
+        override val scannedPriceInfo: IScanPriceInfo,
+        override val actualPriceInfo: IActualPriceInfo,
+        override val userPriceInfo: IUserPriceInfo?,
+        override val isPrinted: Boolean
 ) : ICheckPriceResult {
+
     override fun isPriceValid(): Boolean? {
-        return scannedPriceInfo.price == actualPriceInfo.price
+        return scannedPriceInfo.price == actualPriceInfo.getPrice()
     }
 
     override fun isDiscountPriceValid(): Boolean? {
-        return scannedPriceInfo.discountCardPrice == actualPriceInfo.discountCardPrice
+        return scannedPriceInfo.discountCardPrice == actualPriceInfo.getDiscountCardPrice()
     }
 
     override fun isAllValid(): Boolean? {
@@ -126,42 +137,72 @@ data class CheckPriceResult(
         return isPriceValid && isDiscountPriceValid
     }
 
-    override fun isErrorCheck(): Boolean {
-        return actualPriceInfo.matNr.isNullOrBlank()
-    }
-
-    override fun isPrinted(): Boolean {
-        return false
-    }
 
 }
 
-data class PriceInfo(
-        override val eanCode: String?,
-        override val matNr: String?,
-        override val nameOfProduct: String?,
-        override val price: Float,
-        override val discountCardPrice: Float
-) : IPriceInfo
+data class ScanPriceInfo(
+        override val eanCode: String,
+        override val price: Float?,
+        override val discountCardPrice: Float?
+) : IScanPriceInfo
+
+data class ActualPriceInfo(
+        override val matNumber: String,
+        override val productName: String?,
+        override val price1: Float?,
+        override val price2: Float?,
+        override val price3: Float?,
+        override val price4: Float?
+) : IActualPriceInfo {
+    override fun getPrice(): Float? {
+        return price1
+    }
+
+    override fun getDiscountCardPrice(): Float? {
+        return when {
+            price2 != null && price3 != null && price4 != null -> min(min(price2, price3), price4)
+            price2 != null && price3 == null && price4 == null -> price2
+            price2 != null && price3 != null -> price3
+            price2 != null && price4 != null -> price4
+            else -> null
+        }
+    }
+}
 
 interface ICheckPriceResult {
     val ean: String
     val matNr: String?
     val name: String?
-    val time: Long
-    val scannedPriceInfo: IPriceInfo
-    val actualPriceInfo: IPriceInfo
+    val scannedPriceInfo: IScanPriceInfo
+    val actualPriceInfo: IActualPriceInfo
+    val userPriceInfo: IUserPriceInfo?
     fun isPriceValid(): Boolean?
     fun isDiscountPriceValid(): Boolean?
     fun isAllValid(): Boolean?
-    fun isErrorCheck(): Boolean
-    fun isPrinted(): Boolean
+    val isPrinted: Boolean
 }
 
-interface IPriceInfo {
-    val eanCode: String?
-    val matNr: String?
-    val nameOfProduct: String?
-    val price: Float
-    val discountCardPrice: Float
+
+interface IScanPriceInfo {
+    val eanCode: String
+    val price: Float?
+    val discountCardPrice: Float?
+}
+
+interface IActualPriceInfo {
+    val matNumber: String
+    val productName: String?
+    val price1: Float?
+    val price2: Float?
+    val price3: Float?
+    val price4: Float?
+    fun getPrice(): Float?
+    fun getDiscountCardPrice(): Float?
+}
+
+interface IUserPriceInfo {
+    /**
+     * возвращает null, если нет ценника
+     */
+    val isValidPrice: Boolean?
 }

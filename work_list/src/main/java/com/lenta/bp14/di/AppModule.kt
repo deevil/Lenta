@@ -5,12 +5,16 @@ import com.google.gson.Gson
 import com.lenta.bp14.models.GeneralTaskManager
 import com.lenta.bp14.models.IGeneralTaskManager
 import com.lenta.bp14.models.check_list.CheckListTaskManager
+import com.lenta.bp14.models.check_list.ICheckListTask
 import com.lenta.bp14.models.data.TaskManager
 import com.lenta.bp14.models.check_price.CheckPriceTaskManager
+import com.lenta.bp14.models.check_price.ICheckPriceTask
 import com.lenta.bp14.models.general.GeneralRepo
 import com.lenta.bp14.models.general.IGeneralRepo
 import com.lenta.bp14.platform.navigation.IScreenNavigator
 import com.lenta.bp14.platform.navigation.ScreenNavigator
+import com.lenta.bp14.platform.sound.ISoundPlayer
+import com.lenta.bp14.platform.sound.SoundPlayer
 import com.lenta.bp14.repos.IRepoInMemoryHolder
 import com.lenta.bp14.repos.RepoInMemoryHolder
 import com.lenta.shared.account.IAuthenticator
@@ -53,8 +57,8 @@ class AppModule {
 
     @Provides
     @AppScope
-    internal fun provideCheckPriceTaskManager(timeMonitor: ITimeMonitor, gson: Gson): CheckPriceTaskManager {
-        return CheckPriceTaskManager(timeMonitor = timeMonitor, gson = gson)
+    internal fun provideCheckPriceTaskManager(timeMonitor: ITimeMonitor, gson: Gson, soundPlayer: ISoundPlayer): CheckPriceTaskManager {
+        return CheckPriceTaskManager(timeMonitor = timeMonitor, gson = gson, soundPlayer = soundPlayer)
     }
 
     @Provides
@@ -71,11 +75,30 @@ class AppModule {
 
     @Provides
     @AppScope
-    internal fun provideGeneralTaskManager(checkPriceTaskManager: CheckPriceTaskManager, timeMonitor: ITimeMonitor): IGeneralTaskManager {
+    internal fun provideGeneralTaskManager(
+            checkPriceTaskManager: CheckPriceTaskManager,
+            checkListTaskManager: CheckListTaskManager,
+            timeMonitor: ITimeMonitor): IGeneralTaskManager {
         return GeneralTaskManager(
                 checkPriceTaskManager = checkPriceTaskManager,
+                checkListTaskManager = checkListTaskManager,
                 timeMonitor = timeMonitor
         )
+    }
+
+    @Provides
+    internal fun provideCheckPriceTask(checkPriceTaskManager: CheckPriceTaskManager): ICheckPriceTask {
+        return checkPriceTaskManager.getTask()!!
+    }
+
+    @Provides
+    internal fun provideCheckListTask(checkListTaskManager: CheckListTaskManager): ICheckListTask {
+        return checkListTaskManager.getTask()!!
+    }
+
+    @Provides
+    internal fun provideSoundPlayer(context: Context): ISoundPlayer {
+        return SoundPlayer(context)
     }
 
 }

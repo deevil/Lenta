@@ -8,9 +8,10 @@ import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertThat
 import org.junit.Test
 
+@Suppress("NonAsciiCharacters")
 class PriceInfoParserTest {
-    lateinit var priceInfoParser: PriceInfoParser
-    var rawCode: String? = null
+    private lateinit var priceInfoParser: PriceInfoParser
+    private var rawCode: String? = null
 
 
     @org.junit.Before
@@ -110,7 +111,6 @@ class PriceInfoParserTest {
         assertNull(priceInfo)
 
     }
-
 
 
 }

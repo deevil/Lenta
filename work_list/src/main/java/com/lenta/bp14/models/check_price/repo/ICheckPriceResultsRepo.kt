@@ -3,6 +3,7 @@ package com.lenta.bp14.models.check_price.repo
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.lenta.bp14.models.check_price.ICheckPriceResult
+import com.lenta.shared.platform.time.ITimeMonitor
 
 interface ICheckPriceResultsRepo {
 
@@ -10,7 +11,7 @@ interface ICheckPriceResultsRepo {
 
     fun getCheckPriceResults(): LiveData<List<ICheckPriceResult>>
 
-    fun addCheckPriceResult(checkPriceResult: ICheckPriceResult)
+    fun addCheckPriceResult(checkPriceResult: ICheckPriceResult): Boolean
 
     fun removePriceCheckResults(matNumbers: Set<String>)
 
@@ -38,13 +39,16 @@ class CheckPriceResultsRepo : ICheckPriceResultsRepo {
         return resultsLiveData
     }
 
-    override fun addCheckPriceResult(checkPriceResult: ICheckPriceResult) {
-        if (checkPriceResults.contains(checkPriceResult)) {
-            return
+    override fun addCheckPriceResult(checkPriceResult: ICheckPriceResult): Boolean {
+        checkPriceResults.indexOfFirst { it == checkPriceResult }.let { index ->
+            if (index > 0) {
+                return false
+            }
         }
         checkPriceResults.removeAll { it.matNr == checkPriceResult.matNr }
         checkPriceResults.add(checkPriceResult)
         resultsLiveData.value = checkPriceResults
+        return true
     }
 
 

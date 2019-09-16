@@ -151,4 +151,5 @@
     <string name="pictogram_strict_list">Пиктограмма строгого списка</string>
     <string name="pictogram_not_strict_list">Пиктограмма нестрогого списка</string>
     <string name="qr_code_info">Доступно сканирование QR-кода</string>
+    <string name="price_r">%1$.2f р.</string>
 </resources>
