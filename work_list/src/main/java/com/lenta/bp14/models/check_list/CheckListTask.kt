@@ -29,6 +29,10 @@ class CheckListTask(
         return checkListRepo.getGoodByMatcode(matcode)
     }
 
+    override fun saveScannedGoodList(goodsList: List<Good>) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
     override fun getTaskType(): ITaskType {
         return TaskTypes.CheckPrice.taskType
     }
@@ -43,6 +47,7 @@ interface ICheckListTask : ITask {
     fun getGoodByMaterial(material: String): Good?
     fun getGoodByEan(ean: String): Good?
     fun getGoodByMatcode(matcode: String): Good?
+    fun saveScannedGoodList(goodsList: List<Good>)
 }
 
 // --------------------------

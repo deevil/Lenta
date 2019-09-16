@@ -70,7 +70,7 @@ class GoodsListClViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     }
 
     fun onClickSave() {
-
+        task.saveScannedGoodList(goods.value!!)
     }
 
     override fun onPageSelected(position: Int) {
