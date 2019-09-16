@@ -7,8 +7,7 @@ import com.lenta.shared.models.core.Uom
 class CheckListRepo : ICheckListRepo {
 
     override fun getGoodByMaterial(material: String): Good? {
-        //return when ((0..2).random()) {
-        return when (2) {
+        return when ((0..2).random()) {
             1 -> {
                 Good(
                         ean = "11111111",

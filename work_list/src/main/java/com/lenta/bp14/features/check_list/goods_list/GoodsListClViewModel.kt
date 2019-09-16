@@ -140,11 +140,9 @@ class GoodsListClViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
             goodsList[index].quantity.value = "" + if (good.uom.isOnlyInt()) {
                 existGood.quantity.value!!.toInt() + good.quantity.value!!.toInt()
             } else {
-                //existGood.quantity.value!!.toFloat() + good.quantity.value!!.toFloat()
-                val goodQuantity = good.quantity.value!!.toFloat()
-                val existGoodQuantity = existGood.quantity.value!!.toFloat()
-                val sum = goodQuantity + existGoodQuantity
-                sum
+                val goodQuantity = good.quantity.value!!.toBigDecimal()
+                val existGoodQuantity = existGood.quantity.value!!.toBigDecimal()
+                existGoodQuantity.plus(goodQuantity).toString().dropLastWhile { it == '0' || it == '.' }
             }
         } else {
             goodsList.add(0, good)
