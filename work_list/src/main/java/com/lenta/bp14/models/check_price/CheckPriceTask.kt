@@ -10,6 +10,7 @@ import com.lenta.bp14.models.check_price.repo.IActualPricesRepo
 import com.lenta.bp14.models.check_price.repo.ICheckPriceResultsRepo
 import com.lenta.bp14.models.general.ITaskType
 import com.lenta.bp14.models.general.TaskTypes
+import com.lenta.bp14.platform.IVibrateHelper
 import com.lenta.bp14.platform.sound.ISoundPlayer
 import com.lenta.shared.models.core.StateFromToString
 import com.lenta.shared.utilities.Logg
@@ -23,7 +24,8 @@ class CheckPriceTask(
         private val priceInfoParser: IPriceInfoParser,
         private val gson: Gson,
         override var processingMatNumber: String? = null,
-        private val soundPlayer: ISoundPlayer
+        private val soundPlayer: ISoundPlayer,
+        private val vibrateHelper: IVibrateHelper
 ) : ICheckPriceTask, StateFromToString {
 
 
@@ -51,6 +53,7 @@ class CheckPriceTask(
         ).apply {
             readyResultsRepo.addCheckPriceResult(this).let { isAdded ->
                 if (isAdded) {
+                    vibrateHelper.shortVibrate()
                     soundPlayer.playBeep()
                 }
             }
