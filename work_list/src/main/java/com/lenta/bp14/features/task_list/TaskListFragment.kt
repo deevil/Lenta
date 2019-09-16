@@ -9,7 +9,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import com.lenta.bp14.BR
 import com.lenta.bp14.R
-import com.lenta.bp14.data.TaskListTab
+import com.lenta.bp14.models.data.TaskListTab
 import com.lenta.bp14.databinding.*
 import com.lenta.bp14.platform.extentions.getAppComponent
 import com.lenta.shared.platform.activity.OnBackPresserListener
@@ -46,9 +46,11 @@ class TaskListFragment : CoreFragment<FragmentTaskListBinding, TaskListViewModel
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
         topToolbarUiModel.description.value = getString(R.string.task_list)
 
-        vm.marketNumber.observe(this, Observer<String> { marketNumber ->
-            topToolbarUiModel.title.value = getString(R.string.title_market_number, marketNumber)
-        })
+        viewLifecycleOwner.apply {
+            vm.marketNumber.observe(this, Observer { marketNumber ->
+                topToolbarUiModel.title.value = getString(R.string.title_market_number, marketNumber)
+            })
+        }
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {

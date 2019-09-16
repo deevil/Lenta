@@ -24,7 +24,6 @@ import com.lenta.shared.utilities.getBaseAuth
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-
 class AuthViewModel : CoreAuthViewModel() {
 
     @Inject
@@ -36,19 +35,23 @@ class AuthViewModel : CoreAuthViewModel() {
     @Inject
     lateinit var appSettings: IAppSettings
 
-    val packageName: MutableLiveData<String> = MutableLiveData()
+
+    val packageName = MutableLiveData<String>()
+
+    override val enterEnabled: MutableLiveData<Boolean> by lazy {
+        login.combineLatest(password).map { isValidLoginFields(login = it?.first, password = it?.second) }
+                .combineLatest(progress).map { isEnterEnabled(isFieldsValid = it?.first, inProgress = it?.second) }
+    }
+
+    val skipButtonEnabled = progress.map { it != true }
 
     init {
         viewModelScope.launch {
             //TODO - implement existUnsavedData
             sessionInfo.existUnsavedData = false
+            sessionInfo.authorizationSkipped = false
             sessionInfo.packageName = packageName.value
         }
-    }
-
-    override val enterEnabled: MutableLiveData<Boolean> by lazy {
-        login.combineLatest(password).map { isValidLoginFields(login = it?.first, password = it?.second) }
-                .combineLatest(progress).map { isEnterEnabled(isFieldsValid = it?.first, inProgress = it?.second) }
     }
 
     override fun onClickEnter() {
@@ -67,7 +70,6 @@ class AuthViewModel : CoreAuthViewModel() {
             }
 
             progress.value = false
-
             navigator.openFastDataLoadingScreen()
         }
     }
@@ -111,8 +113,9 @@ class AuthViewModel : CoreAuthViewModel() {
     fun onClickSkip() {
         login.value = appSettings.techLogin
         password.value = appSettings.techPassword
+        sessionInfo.authorizationSkipped = true
+
         onClickEnter()
     }
-
 
 }

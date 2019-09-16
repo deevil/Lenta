@@ -15,31 +15,76 @@
             type="com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig" />
     </data>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
 
-        <include
-            android:id="@+id/layout_titles"
-            layout="@layout/item_title_stock"
+
+        <!-- Наименования колонок -->
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:orientation="vertical">
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp">
+
+                <LinearLayout
+                    style="@style/LinearCellStyle"
+                    android:layout_weight="@integer/number_storage_quantity_column_1">
+
+                    <TextView
+                        style="@style/ColumnTitleStyle"
+                        android:layout_width="wrap_content"
+                        android:layout_marginStart="0dp"
+                        android:text="@string/number" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    style="@style/LinearCellStyle"
+                    android:layout_weight="@integer/number_storage_quantity_column_2">
+
+                    <TextView
+                        style="@style/ColumnTitleStyle"
+                        android:text="@string/storage" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    style="@style/LinearCellStyle"
+                    android:layout_weight="@integer/number_storage_quantity_column_3">
+
+                    <TextView
+                        style="@style/ColumnTitleStyle"
+                        android:text="@string/quantity" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <View
+                style="@style/HorizontalDivider" />
+
+        </LinearLayout>
+
+
+        <!-- Список остатков -->
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            app:items="@{vm.balances}"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/layout_titles"
+            android:layout_weight="1"
+            app:items="@{vm.stocks}"
             app:rv_config="@{rvConfig}"
-            tools:listitem="@layout/item_tile_stock" />
+            tools:listitem="@layout/item_storage_stock" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    </LinearLayout>
 
 </layout>

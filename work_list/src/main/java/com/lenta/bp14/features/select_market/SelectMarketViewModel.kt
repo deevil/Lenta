@@ -2,7 +2,7 @@ package com.lenta.bp14.features.select_market
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.lenta.bp14.data.TaskManager
+import com.lenta.bp14.models.data.TaskManager
 import com.lenta.bp14.platform.navigation.IScreenNavigator
 import com.lenta.bp14.repos.IRepoInMemoryHolder
 import com.lenta.shared.account.ISessionInfo

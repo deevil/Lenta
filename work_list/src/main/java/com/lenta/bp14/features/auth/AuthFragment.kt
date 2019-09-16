@@ -43,9 +43,9 @@ class AuthFragment : CoreLoginFragment() {
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
         super.setupBottomToolBar(bottomToolbarUiModel)
         bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.skip)
-        connectLiveData(vm.enterEnabled, bottomToolbarUiModel.uiModelButton4.enabled)
-    }
 
+        connectLiveData((vm as AuthViewModel).skipButtonEnabled, bottomToolbarUiModel.uiModelButton4.enabled)
+    }
 
     override fun onToolbarButtonClick(view: View) {
         when (view.id) {
@@ -54,6 +54,5 @@ class AuthFragment : CoreLoginFragment() {
             R.id.b_topbar_1 -> vm.onClickAuxiliaryMenu()
         }
     }
-
 
 }

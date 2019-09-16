@@ -2,9 +2,10 @@ package com.lenta.bp14.features.price_check.goods_list
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.lenta.bp14.data.GoodsListTab
-import com.lenta.bp14.data.model.Good
-import com.lenta.bp14.data.TaskManager
+import com.lenta.bp14.models.check_price.ICheckPriceTask
+import com.lenta.bp14.models.data.GoodsListTab
+import com.lenta.bp14.models.data.pojo.Good
+import com.lenta.bp14.models.getTaskName
 import com.lenta.bp14.platform.navigation.IScreenNavigator
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.SelectionItemsHelper
@@ -20,7 +21,7 @@ class GoodsListPcViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     @Inject
     lateinit var navigator: IScreenNavigator
     @Inject
-    lateinit var taskManager: TaskManager
+    lateinit var task: ICheckPriceTask
 
 
     val processedSelectionsHelper = SelectionItemsHelper()
@@ -28,16 +29,30 @@ class GoodsListPcViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
 
     val selectedPage = MutableLiveData(0)
 
-    val taskName = MutableLiveData("Сверка цен на полке от 23.07.19 23:15")
+    val correctedSelectedPage = selectedPage.map { getCorrectedPagePosition(it) }
+
+    val taskName = MutableLiveData("")
 
     val numberField = MutableLiveData<String>("")
     val requestFocusToNumberField: MutableLiveData<Boolean> = MutableLiveData()
 
-    val processingGoods = MutableLiveData<List<Good>>()
-    val processedGoods = MutableLiveData<List<Good>>()
-    val searchGoods = MutableLiveData<List<Good>>()
+    val processingGoods = MutableLiveData<List<Good>>(listOf())
+    val processedGoods by lazy {
+        task.getCheckResults().map { list ->
+            list?.reversed()?.mapIndexed { index, iCheckPriceResult ->
+                CheckPriceResultUi(
+                        matNr = iCheckPriceResult.matNr!!,
+                        position = list.size - index,
+                        name = "${iCheckPriceResult.matNr?.takeLast(6)} ${iCheckPriceResult.name}",
+                        isPriceValid = iCheckPriceResult.isPriceValid(),
+                        isPrinted = iCheckPriceResult.isPrinted
+                )
+            }
+        }
+    }
+    val searchGoods = MutableLiveData<List<CheckPriceResultUi>>(listOf())
 
-    private val selectedItemOnCurrentTab: MutableLiveData<Boolean> = selectedPage
+    private val selectedItemOnCurrentTab: MutableLiveData<Boolean> = correctedSelectedPage
             .combineLatest(processedSelectionsHelper.selectedPositions)
             .combineLatest(searchSelectionsHelper.selectedPositions)
             .map {
@@ -45,22 +60,47 @@ class GoodsListPcViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
                 val processedSelected = it?.first?.second?.isNotEmpty() == true
                 val searchSelected = it?.second?.isNotEmpty() == true
                 tab == GoodsListTab.PROCESSED.position && processedSelected || tab == GoodsListTab.SEARCH.position && searchSelected
-    }
+            }
 
     val deleteButtonEnabled = selectedItemOnCurrentTab.map { it }
     val printButtonEnabled = selectedItemOnCurrentTab.map { it }
+    val videoButtonEnabled by lazy {
+        MutableLiveData(task.isFreeMode())
+    }
 
-    val deleteButtonVisibility = selectedPage.map { it != GoodsListTab.PROCESSING.position }
-    val printButtonVisibility = selectedPage.map { it != GoodsListTab.PROCESSING.position }
+    val saveButtonEnabled by lazy {
+        processedGoods.map { it?.isNotEmpty() ?: false }
+    }
+
+    val deleteButtonVisibility = correctedSelectedPage.map { it != GoodsListTab.PROCESSING.position }
+    val printButtonVisibility = correctedSelectedPage.map { it != GoodsListTab.PROCESSING.position }
+
 
     init {
         viewModelScope.launch {
             requestFocusToNumberField.value = true
+            taskName.value = "${task.getTaskType().taskType} // ${task.getTaskName()}"
 
-            // Тестовые данные
-            processingGoods.value = taskManager.getTestGoodList(3)
-            processedGoods.value = taskManager.getTestGoodList(28)
-            searchGoods.value = taskManager.getTestGoodList(2)
+            /*processedGoods.value = List(10) {
+                CheckPriceResultUi(
+                        matNr = "4546465",
+                        position = it + 1,
+                        name = "4546465 nameeeee",
+                        isPriceValid = true,
+                        isPrinted = false
+                )
+            }
+
+            searchGoods.value = List(10) {
+                CheckPriceResultUi(
+                        matNr = "4546465",
+                        position = it + 1,
+                        name = "4546465 nameeeee",
+                        isPriceValid = true,
+                        isPrinted = false
+                )
+            }*/
+
         }
     }
 
@@ -68,22 +108,8 @@ class GoodsListPcViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
         selectedPage.value = position
     }
 
-    init {
-        viewModelScope.launch {
-            selectedPage.value = 0
-        }
-    }
-
     override fun onOkInSoftKeyboard(): Boolean {
         return false
-    }
-
-    fun scanQrCode() {
-
-    }
-
-    fun scanBarCode() {
-
     }
 
     fun onClickSave() {
@@ -91,6 +117,25 @@ class GoodsListPcViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     }
 
     fun onClickDelete() {
+        when (correctedSelectedPage.value) {
+            1 -> processedSelectionsHelper
+            2 -> searchSelectionsHelper
+            else -> null
+        }?.let { selectionHelper ->
+            selectionHelper.selectedPositions.value?.apply {
+                task.removeCheckResultsByMatNumbers(
+                        if (selectionHelper === processedSelectionsHelper) {
+                            processedGoods
+                        } else {
+                            searchGoods
+                        }.value?.filterIndexed { index, _ ->
+                            this.contains(index)
+                        }?.map { it.matNr }?.toSet()
+                                ?: emptySet()
+                )
+            }
+            selectionHelper.clearPositions()
+        }
 
     }
 
@@ -98,17 +143,49 @@ class GoodsListPcViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
 
     }
 
-    fun onClickItemPosition(position: Int) {
-        taskManager.currentGood = getGoodByPosition(position)
-        navigator.openGoodInfoPcScreen()
+    fun onClickVideo() {
+        navigator.openScanPriceScreen()
     }
 
-    private fun getGoodByPosition(position: Int): Good? {
-        return when (selectedPage.value) {
-            GoodsListTab.PROCESSING.position -> processingGoods.value?.get(position)
-            GoodsListTab.PROCESSED.position -> processedGoods.value?.get(position)
-            GoodsListTab.SEARCH.position -> searchGoods.value?.get(position)
-            else -> null
+    fun onClickItemPosition(position: Int) {
+        getMatNrByPosition(position)?.let { selectedMatNr ->
+            task.processingMatNumber = selectedMatNr
+            navigator.openGoodInfoPcScreen()
         }
     }
+
+    private fun getMatNrByPosition(position: Int): String? {
+        return when (correctedSelectedPage.value) {
+            0 -> processingGoods.value?.map { it.material }
+            1 -> processedGoods.value?.map { it.matNr }
+            2 -> searchGoods.value?.map { it.matNr }
+            else -> null
+        }.let {
+            it?.getOrNull(position)
+        }
+    }
+
+    fun getPagesCount(): Int {
+        return if (task.isFreeMode()) 2 else 3
+    }
+
+    fun getCorrectedPagePosition(position: Int?): Int {
+        return if (getPagesCount() == 3) position ?: 0 else (position ?: 0) + 1
+    }
+
+    fun onDigitPressed(digit: Int) {
+        numberField.postValue(numberField.value ?: "" + digit)
+        requestFocusToNumberField.value = true
+    }
 }
+
+
+data class CheckPriceResultUi(
+        val matNr: String,
+        val position: Int,
+        val name: String,
+        val isPriceValid: Boolean?,
+        val isPrinted: Boolean
+)
+
+

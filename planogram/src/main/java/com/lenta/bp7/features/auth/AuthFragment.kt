@@ -5,6 +5,8 @@ import android.view.View
 import com.lenta.bp7.platform.extentions.getAppComponent
 import com.lenta.shared.features.login.CoreAuthViewModel
 import com.lenta.shared.features.login.CoreLoginFragment
+import com.lenta.shared.keys.KeyCode
+import com.lenta.shared.keys.OnKeyDownListener
 import com.lenta.shared.platform.toolbar.top_toolbar.ImageButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
@@ -12,7 +14,7 @@ import com.lenta.shared.utilities.extentions.getAppInfo
 import com.lenta.shared.utilities.extentions.provideViewModel
 import com.lenta.shared.utilities.extentions.setInvisible
 
-class AuthFragment : CoreLoginFragment() {
+class AuthFragment : CoreLoginFragment(), OnKeyDownListener {
 
     override fun getPageNumber(): String? = generateScreenNumberFromPostfix("01")
 
@@ -46,4 +48,13 @@ class AuthFragment : CoreLoginFragment() {
             etPassword.setInvisible()
         }
     }
+
+    override fun onKeyDown(keyCode: KeyCode): Boolean {
+        if (isAllowHandleKeyCode() && keyCode == KeyCode.KEYCODE_ENTER) {
+            vm.onClickEnter()
+            return true
+        }
+        return false
+    }
+
 }

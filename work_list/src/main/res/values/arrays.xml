@@ -27,9 +27,11 @@
 
     <string-array name="selected_comment">
         <item>Не выбран</item>
+        <item>Случайный коммент 1</item>
+        <item>Случайный коммент 2</item>
     </string-array>
 
-    <string-array name="shelf_life">
+    <string-array name="shelf_life_type">
         <item>Срок годности</item>
         <item>Дата производства</item>
     </string-array>

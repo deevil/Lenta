@@ -22,14 +22,14 @@ fun setupViewPager(viewPager: ViewPager,
     }
 
     if (viewPager.adapter == null) {
-        viewPager.let { vp ->
-            vp.adapter = ViewPagerAdapter(viewPagerSettings)
-            vp.offscreenPageLimit = viewPagerSettings.countTab()
-            vp.currentItem = tabPosition ?: 0
+        viewPager.apply {
+            adapter = ViewPagerAdapter(viewPagerSettings)
+            offscreenPageLimit = viewPagerSettings.countTab()
             tabPosition?.let {
-                vp.setCurrentItem(it, false)
+                if (it != currentItem) {
+                    setCurrentItem(it, false)
+                }
             }
-
         }
 
         pageSelectionListener?.let {
@@ -53,13 +53,16 @@ fun setupViewPager(viewPager: ViewPager,
 
             })
         }
+
+    } else {
+        tabPosition?.let {
+            if (it != viewPager.currentItem) {
+                viewPager.setCurrentItem(it, false)
+            }
+        }
     }
 
     viewPager.tag = pageSelectionListener
-
-    if (tabPosition != null && viewPager.currentItem != tabPosition) {
-        viewPager.setCurrentItem(tabPosition, false)
-    }
 
 
 }

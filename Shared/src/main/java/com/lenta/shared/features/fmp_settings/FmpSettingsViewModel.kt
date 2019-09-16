@@ -44,7 +44,7 @@ class FmpSettingsViewModel : CoreViewModel() {
         }
 
         appSettings.isTest = true
-        coreNavigator.finishApp()
+        coreNavigator.finishApp(restart = true)
 
     }
 }

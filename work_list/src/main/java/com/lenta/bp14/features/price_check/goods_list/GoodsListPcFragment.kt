@@ -13,12 +13,12 @@ import android.view.ViewGroup
 import android.view.View
 import android.widget.AdapterView
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.Observer
 import com.lenta.bp14.BR
 import com.lenta.bp14.databinding.*
+import com.lenta.shared.keys.KeyCode
+import com.lenta.shared.keys.OnKeyDownListener
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
-import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.databinding.DataBindingAdapter
 import com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig
 import com.lenta.shared.utilities.databinding.RecyclerViewKeyHandler
@@ -27,7 +27,7 @@ import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
 import java.lang.IllegalArgumentException
 
 class GoodsListPcFragment : CoreFragment<FragmentGoodsListPcBinding, GoodsListPcViewModel>(),
-        ViewPagerSettings, ToolbarButtonsClickListener {
+        ViewPagerSettings, ToolbarButtonsClickListener, OnKeyDownListener {
 
     private var processingRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
     private var processedRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
@@ -52,18 +52,22 @@ class GoodsListPcFragment : CoreFragment<FragmentGoodsListPcBinding, GoodsListPc
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
+        bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.video)
         bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.delete)
         bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.print)
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.save)
 
+        connectLiveData(vm.videoButtonEnabled, getBottomToolBarUIModel()!!.uiModelButton2.enabled)
         connectLiveData(vm.deleteButtonEnabled, getBottomToolBarUIModel()!!.uiModelButton3.enabled)
         connectLiveData(vm.printButtonEnabled, getBottomToolBarUIModel()!!.uiModelButton4.enabled)
         connectLiveData(vm.deleteButtonVisibility, getBottomToolBarUIModel()!!.uiModelButton3.visibility)
         connectLiveData(vm.printButtonVisibility, getBottomToolBarUIModel()!!.uiModelButton4.visibility)
+        connectLiveData(vm.saveButtonEnabled, getBottomToolBarUIModel()!!.uiModelButton5.enabled)
     }
 
     override fun onToolbarButtonClick(view: View) {
         when (view.id) {
+            R.id.b_2 -> vm.onClickVideo()
             R.id.b_3 -> vm.onClickDelete()
             R.id.b_4 -> vm.onClickPrint()
             R.id.b_5 -> vm.onClickSave()
@@ -71,7 +75,10 @@ class GoodsListPcFragment : CoreFragment<FragmentGoodsListPcBinding, GoodsListPc
     }
 
     override fun getPagerItemView(container: ViewGroup, position: Int): View {
-        if (position == 0) {
+
+        val correctedPosition = vm.getCorrectedPagePosition(position)
+
+        if (correctedPosition == 0) {
             DataBindingUtil.inflate<LayoutPcGoodsListProcessingBinding>(LayoutInflater.from(container.context),
                     R.layout.layout_pc_goods_list_processing,
                     container,
@@ -113,7 +120,7 @@ class GoodsListPcFragment : CoreFragment<FragmentGoodsListPcBinding, GoodsListPc
             }
         }
 
-        if (position == 1) {
+        if (correctedPosition == 1) {
             DataBindingUtil.inflate<LayoutPcGoodsListProcessedBinding>(LayoutInflater.from(container.context),
                     R.layout.layout_pc_goods_list_processed,
                     container,
@@ -128,7 +135,7 @@ class GoodsListPcFragment : CoreFragment<FragmentGoodsListPcBinding, GoodsListPc
 
                 layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
                         layoutId = R.layout.item_good_check_selectable,
-                        itemId = BR.good,
+                        itemId = BR.vm,
                         realisation = object : DataBindingAdapter<ItemGoodCheckSelectableBinding> {
                             override fun onCreate(binding: ItemGoodCheckSelectableBinding) {
                             }
@@ -179,7 +186,7 @@ class GoodsListPcFragment : CoreFragment<FragmentGoodsListPcBinding, GoodsListPc
 
             layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
                     layoutId = R.layout.item_good_check_selectable,
-                    itemId = BR.good,
+                    itemId = BR.vm,
                     realisation = object : DataBindingAdapter<ItemGoodCheckSelectableBinding> {
                         override fun onCreate(binding: ItemGoodCheckSelectableBinding) {
                         }
@@ -216,8 +223,9 @@ class GoodsListPcFragment : CoreFragment<FragmentGoodsListPcBinding, GoodsListPc
         }
     }
 
+
     override fun getTextTitle(position: Int): String {
-        return when (position) {
+        return when (vm.getCorrectedPagePosition(position)) {
             0 -> getString(R.string.processing)
             1 -> getString(R.string.processed)
             2 -> getString(R.string.search)
@@ -226,12 +234,30 @@ class GoodsListPcFragment : CoreFragment<FragmentGoodsListPcBinding, GoodsListPc
     }
 
     override fun countTab(): Int {
-        return 3
+        return vm.getPagesCount()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding?.viewPagerSettings = this
+    }
+
+    override fun onKeyDown(keyCode: KeyCode): Boolean {
+        when (vm.correctedSelectedPage.value) {
+            1 -> processedRecyclerViewKeyHandler
+            2 -> searchRecyclerViewKeyHandler
+            else -> null
+        }?.let {
+            if (!it.onKeyDown(keyCode)) {
+                keyCode.digit?.let { digit ->
+                    vm.onDigitPressed(digit)
+                    return true
+                }
+                return false
+            }
+            return true
+        }
+        return false
     }
 
 }

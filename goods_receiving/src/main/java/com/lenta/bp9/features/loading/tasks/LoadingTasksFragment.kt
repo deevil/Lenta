@@ -3,9 +3,8 @@ package com.lenta.bp9.features.loading.tasks
 import android.os.Bundle
 import android.view.View
 import com.lenta.bp9.R
-import com.lenta.bp9.features.loading.tasks.TaskListLoadingMode
 import com.lenta.bp9.platform.extentions.getAppComponent
-import com.lenta.bp9.requests.TaskListSearchParams
+import com.lenta.bp9.requests.network.TaskListSearchParams
 import com.lenta.shared.features.loading.CoreLoadingFragment
 import com.lenta.shared.features.loading.CoreLoadingViewModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel

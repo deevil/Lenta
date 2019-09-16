@@ -3,6 +3,7 @@ package com.lenta.bp14.platform.navigation
 import android.content.Context
 import com.lenta.bp14.R
 import com.lenta.bp14.features.auth.AuthFragment
+import com.lenta.bp14.features.barcode_detection.CoreScanBarCodeFragment
 import com.lenta.bp14.features.check_list.goods_list.GoodsListClFragment
 import com.lenta.bp14.features.work_list.good_info.GoodInfoWlFragment
 import com.lenta.bp14.features.job_card.JobCardFragment
@@ -13,6 +14,7 @@ import com.lenta.bp14.features.not_exposed.goods_list.GoodsListNeFragment
 import com.lenta.bp14.features.not_exposed.good_info.GoodInfoNeFragment
 import com.lenta.bp14.features.price_check.good_info.GoodInfoPcFragment
 import com.lenta.bp14.features.price_check.goods_list.GoodsListPcFragment
+import com.lenta.bp14.features.price_check.price_scanner.PriceScannerFragment
 import com.lenta.bp14.features.print_settings.PrintSettingsFragment
 import com.lenta.bp14.features.report_result.ReportResultFragment
 import com.lenta.bp14.features.select_market.SelectMarketFragment
@@ -173,6 +175,18 @@ class ScreenNavigator(
         }
     }
 
+    override fun openTestScanBarcodeScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(CoreScanBarCodeFragment())
+        }
+    }
+
+    override fun openScanPriceScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(PriceScannerFragment())
+        }
+    }
+
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 
 
@@ -187,11 +201,21 @@ class ScreenNavigator(
         }
     }
 
-    override fun showMakeSurePaperInstalled(printerName: String, paperColor: String, numberOfCopy: Int, confirmCallback: () -> Unit) {
+    override fun showMakeSureYellowPaperInstalled(printerName: String, numberOfCopy: Int, confirmCallback: () -> Unit) {
         runOrPostpone {
-            getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.make_sure_paper_installed, printerName, paperColor, numberOfCopy),
+            getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.make_sure_yellow_paper_installed, printerName, numberOfCopy),
                     pageNumber = "10.1",
-                    iconRes = R.drawable.ic_question_80dp,
+                    iconRes = R.drawable.ic_price_yellow_80dp,
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(confirmCallback),
+                    rightButtonDecorationInfo = ButtonDecorationInfo.confirm))
+        }
+    }
+
+    override fun showMakeSureRedPaperInstalled(printerName: String, numberOfCopy: Int, confirmCallback: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.make_sure_red_paper_installed, printerName, numberOfCopy),
+                    pageNumber = "10.2",
+                    iconRes = R.drawable.ic_price_red_80dp,
                     codeConfirmForRight = backFragmentResultHelper.setFuncForResult(confirmCallback),
                     rightButtonDecorationInfo = ButtonDecorationInfo.confirm))
         }
@@ -319,6 +343,39 @@ class ScreenNavigator(
         }
     }
 
+    override fun openConfirmationExitTask(taskName: String, callbackFunc: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.confirmation_delete_task, taskName),
+                    iconRes = R.drawable.ic_delete_red_80dp,
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(callbackFunc),
+                    pageNumber = "94",
+                    leftButtonDecorationInfo = ButtonDecorationInfo.back,
+                    rightButtonDecorationInfo = ButtonDecorationInfo.confirm
+            )
+            )
+        }
+    }
+
+    override fun showGoodNotFound() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.good_not_found_in_database),
+                    pageNumber = "100",
+                    timeAutoExitInMillis = 2000))
+        }
+    }
+
+    override fun showTwelveCharactersEntered(sapCallback: () -> Unit, barCallback: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.twelve_characters_entered),
+                    pageNumber = "40",
+                    codeConfirmForLeft = backFragmentResultHelper.setFuncForResult(sapCallback),
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(barCallback),
+                    leftButtonDecorationInfo = ButtonDecorationInfo.sap,
+                    rightButtonDecorationInfo = ButtonDecorationInfo.barcode))
+        }
+    }
+
 }
 
 interface IScreenNavigator : ICoreNavigator {
@@ -347,7 +404,8 @@ interface IScreenNavigator : ICoreNavigator {
     fun openGoodInfoNeScreen()
 
     fun showConfirmPriceTagsPrinting(priceTagNumber: Int, confirmCallback: () -> Unit)
-    fun showMakeSurePaperInstalled(printerName: String, paperColor: String, numberOfCopy: Int, confirmCallback: () -> Unit)
+    fun showMakeSureYellowPaperInstalled(printerName: String, numberOfCopy: Int, confirmCallback: () -> Unit)
+    fun showMakeSureRedPaperInstalled(printerName: String, numberOfCopy: Int, confirmCallback: () -> Unit)
     fun showPriceTagsSubmitted(nextCallback: () -> Unit)
     fun showSetTaskToStatusCalculated(yesCallback: () -> Unit)
     fun showRawGoodsRemainedInTask(yesCallback: () -> Unit)
@@ -360,5 +418,10 @@ interface IScreenNavigator : ICoreNavigator {
     fun showScannedGoodAlreadyAddedToTask(yesCallback: () -> Unit)
     fun showScannedGoodNotListedInTk()
     fun showNoNetworkToSaveTask(nextCallback: () -> Unit)
+    fun showGoodNotFound()
+    fun showTwelveCharactersEntered(sapCallback: () -> Unit, barCallback: () -> Unit)
 
+    fun openTestScanBarcodeScreen()
+    fun openScanPriceScreen()
+    fun openConfirmationExitTask(taskName: String, callbackFunc: () -> Unit)
 }

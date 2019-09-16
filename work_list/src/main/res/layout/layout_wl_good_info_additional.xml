@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools">
 
     <data>
 
         <variable
             name="vm"
-            type="com.lenta.bp14.features.work_list.good_info.GoodInfoWlViewModel"/>
+            type="com.lenta.bp14.features.work_list.good_info.GoodInfoWlViewModel" />
 
     </data>
 
@@ -15,7 +16,7 @@
         android:orientation="vertical">
 
 
-        <!-- Оставшийся срок годности -->
+        <!-- Места хранения -->
         <LinearLayout
             style="@style/LinearRowStyle">
 
@@ -25,16 +26,16 @@
 
                 <TextView
                     style="@style/CellTextStyle"
-                    android:text="@string/storage_locations"/>
+                    android:text="@string/storage_locations" />
 
                 <TextView
                     style="@style/CellTextStyle"
-                    android:text="@string/pnz"/>
+                    android:text="@string/pnz" />
 
             </LinearLayout>
 
             <View
-                style="@style/VerticalDivider"/>
+                style="@style/VerticalDivider" />
 
             <LinearLayout
                 style="@style/LinearCellStyle"
@@ -43,23 +44,24 @@
                 <TextView
                     android:id="@+id/tv_storage_places"
                     style="@style/CellTextStyle"
-                    android:text="125635; 652148; 635894"/>
+                    android:text="@{vm.good.storagePlaces}"
+                    tools:text="125635; 652148; 635894" />
 
                 <TextView
                     android:id="@+id/tv_remaining_quantity"
                     style="@style/CellTextStyle"
-                    android:text="50 шт."/>
-
+                    android:text="@{@string/quantity_st(vm.good.minStock)}"
+                    tools:text="50 шт." />
 
             </LinearLayout>
 
         </LinearLayout>
 
         <View
-            style="@style/HorizontalDivider"/>
+            style="@style/HorizontalDivider" />
 
 
-        <!-- Оставшийся срок годности -->
+        <!-- Инвентаризация / Приход -->
         <LinearLayout
             style="@style/LinearRowStyle">
 
@@ -69,16 +71,16 @@
 
                 <TextView
                     style="@style/CellTextStyle"
-                    android:text="@string/inventory_of_goods"/>
+                    android:text="@string/inventory_of_goods" />
 
                 <TextView
                     style="@style/CellTextStyle"
-                    android:text="@string/goods_arrival"/>
+                    android:text="@string/goods_arrival" />
 
             </LinearLayout>
 
             <View
-                style="@style/VerticalDivider"/>
+                style="@style/VerticalDivider" />
 
             <LinearLayout
                 style="@style/LinearCellStyle"
@@ -87,23 +89,24 @@
                 <TextView
                     android:id="@+id/tv_removed_good"
                     style="@style/CellTextStyle"
-                    android:text="19.07.19 (-25 шт.)"/>
+                    android:text="@{vm.good.goodMovement.inventory}"
+                    tools:text="19.07.19 (-25 шт.)" />
 
                 <TextView
                     android:id="@+id/tv_added_good"
                     style="@style/CellTextStyle"
-                    android:text="29.07.19 (+50 шт; Z5)"/>
-
+                    android:text="@{vm.good.goodMovement.arrival}"
+                    tools:text="29.07.19 (+50 шт; Z5)" />
 
             </LinearLayout>
 
         </LinearLayout>
 
         <View
-            style="@style/HorizontalDivider"/>
+            style="@style/HorizontalDivider" />
 
 
-        <!-- Оставшийся срок годности -->
+        <!-- Цены -->
         <LinearLayout
             style="@style/LinearRowStyle">
 
@@ -113,16 +116,16 @@
 
                 <TextView
                     style="@style/CellTextStyle"
-                    android:text="@string/price_with_dk"/>
+                    android:text="@string/price_with_dk" />
 
                 <TextView
                     style="@style/CellTextStyle"
-                    android:text="@string/price_without_dk"/>
+                    android:text="@string/price_without_dk" />
 
             </LinearLayout>
 
             <View
-                style="@style/VerticalDivider"/>
+                style="@style/VerticalDivider" />
 
             <LinearLayout
                 style="@style/LinearCellStyle"
@@ -131,23 +134,24 @@
                 <TextView
                     android:id="@+id/tv_price_with_dk"
                     style="@style/CellTextStyle"
-                    android:text="100р."/>
+                    android:text="@{@string/price_r(vm.good.price.priceWithDiscount)}"
+                    tools:text="100р." />
 
                 <TextView
                     android:id="@+id/tv_price_without_dk"
                     style="@style/CellTextStyle"
-                    android:text="140р."/>
-
+                    android:text="@{@string/price_r(vm.good.price.priceWithoutDiscount)}"
+                    tools:text="140р." />
 
             </LinearLayout>
 
         </LinearLayout>
 
         <View
-            style="@style/HorizontalDivider"/>
+            style="@style/HorizontalDivider" />
 
 
-        <!-- Штрихкод -->
+        <!-- Промо-акции -->
         <LinearLayout
             style="@style/LinearRowStyle">
 
@@ -157,12 +161,12 @@
 
                 <TextView
                     style="@style/CellTextStyle"
-                    android:text="@string/promotions"/>
+                    android:text="@string/promotions" />
 
             </LinearLayout>
 
             <View
-                style="@style/VerticalDivider"/>
+                style="@style/VerticalDivider" />
 
             <LinearLayout
                 style="@style/LinearCellStyle"
@@ -171,19 +175,21 @@
                 <TextView
                     android:id="@+id/tv_promotion_name"
                     style="@style/CellTextStyle"
-                    android:text="Распродажа кукурузы ТК 0007"/>
+                    android:text="@{vm.good.promo.name}"
+                    tools:text="Распродажа кукурузы ТК 0007" />
 
                 <TextView
                     android:id="@+id/tv_promotion_period"
                     style="@style/CellTextStyle"
-                    android:text="Период 30.05.19 - 12.09.19"/>
+                    android:text="@{vm.good.promo.period}"
+                    tools:text="Период 30.05.19 - 12.09.19" />
 
             </LinearLayout>
 
         </LinearLayout>
 
         <View
-            style="@style/HorizontalDivider"/>
+            style="@style/HorizontalDivider" />
 
     </LinearLayout>
 

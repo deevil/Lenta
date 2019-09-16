@@ -1,6 +1,7 @@
 package com.lenta.bp9.model.task
 
 import com.lenta.bp9.model.memory.MemoryTaskRepository
+import com.lenta.bp9.model.task.revise.*
 
 class ReceivingTaskManager : IReceivingTaskManager {
 
@@ -10,8 +11,9 @@ class ReceivingTaskManager : IReceivingTaskManager {
         return currentReceivingTask
     }
 
-    override fun newReceivingTask(taskDescription: TaskDescription): ReceivingTask? {
-        currentReceivingTask = ReceivingTask(taskDescription, taskRepository = MemoryTaskRepository())
+    override fun newReceivingTask(taskHeader: TaskInfo, taskDescription: TaskDescription) : ReceivingTask?
+    {
+        currentReceivingTask = ReceivingTask(taskHeader, taskDescription, taskRepository = MemoryTaskRepository())
         return  currentReceivingTask
     }
 

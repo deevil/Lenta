@@ -1,8 +1,6 @@
 package com.lenta.bp9.model.memory
 
-import com.lenta.bp9.model.repositories.ITaskExciseStampRepository
-import com.lenta.bp9.model.repositories.ITaskProductRepository
-import com.lenta.bp9.model.repositories.ITaskRepository
+import com.lenta.bp9.model.repositories.*
 
 class MemoryTaskRepository : ITaskRepository {
 
@@ -10,6 +8,9 @@ class MemoryTaskRepository : ITaskRepository {
 
     private val taskExciseStampRepository: ITaskExciseStampRepository = MemoryTaskExciseStampRepository()
 
+    private val taskNotificationsRepository: ITaskNotificationsRepository = MemoryTaskNotificationsRepository()
+
+    private val taskReviseDocumentsRepository: ITaskReviseDocumentsRepository = MemoryTaskReviseDocumentsRepository()
 
     override fun getProducts(): ITaskProductRepository {
         return taskProductRepository
@@ -17,5 +18,13 @@ class MemoryTaskRepository : ITaskRepository {
 
     override fun getExciseStamps(): ITaskExciseStampRepository {
         return taskExciseStampRepository
+    }
+
+    override fun getNotifications(): ITaskNotificationsRepository {
+        return taskNotificationsRepository
+    }
+
+    override fun getReviseDocuments(): ITaskReviseDocumentsRepository {
+        return taskReviseDocumentsRepository
     }
 }

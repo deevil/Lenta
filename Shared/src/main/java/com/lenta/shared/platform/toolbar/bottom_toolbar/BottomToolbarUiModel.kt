@@ -55,7 +55,7 @@ data class ButtonDecorationInfo(
     companion object {
 
         val filter: ButtonDecorationInfo by lazy {
-            ButtonDecorationInfo(R.drawable.ic_filter_white_24, R.string.filter)
+            ButtonDecorationInfo(R.drawable.ic_search, R.string.filter)
         }
 
         val update: ButtonDecorationInfo by lazy {
@@ -92,10 +92,6 @@ data class ButtonDecorationInfo(
 
         val confirm: ButtonDecorationInfo by lazy {
             ButtonDecorationInfo(R.drawable.ic_done_white_24dp, R.string.confirm)
-        }
-
-        val correct: ButtonDecorationInfo by lazy {
-            ButtonDecorationInfo(R.drawable.ic_done_white_24dp, R.string.correct)
         }
 
         val review: ButtonDecorationInfo by lazy {
@@ -170,16 +166,20 @@ data class ButtonDecorationInfo(
             ButtonDecorationInfo(R.drawable.ic_close_white_24dp, R.string.missing)
         }
 
+        val noPrice: ButtonDecorationInfo by lazy {
+            ButtonDecorationInfo(R.drawable.ic_no_price_24dp, R.string.missing)
+        }
+
         val cancel: ButtonDecorationInfo by lazy {
             ButtonDecorationInfo(R.drawable.ic_close_white_24dp, R.string.cancel)
         }
 
         val framed: ButtonDecorationInfo by lazy {
-            ButtonDecorationInfo(R.drawable.ic_published, R.string.framed)
+            ButtonDecorationInfo(R.drawable.ic_framed_yes_24dp, R.string.framed)
         }
 
         val not_framed: ButtonDecorationInfo by lazy {
-            ButtonDecorationInfo(R.drawable.ic_error_outline_white_24dp, R.string.not_framed)
+            ButtonDecorationInfo(R.drawable.ic_framed_no_24dp, R.string.not_framed)
         }
 
         val empty: ButtonDecorationInfo by lazy {
@@ -211,27 +211,31 @@ data class ButtonDecorationInfo(
         }
 
         val deliveries: ButtonDecorationInfo by lazy {
-            ButtonDecorationInfo(R.drawable.ic_directions_car_white_24dp, R.string.deliveries)
+            ButtonDecorationInfo(R.drawable.ic_deliveries_24dp, R.string.deliveries)
         }
 
         val sales: ButtonDecorationInfo by lazy {
-            ButtonDecorationInfo(R.drawable.ic_shopping_cart_white_24dp, R.string.sales)
+            ButtonDecorationInfo(R.drawable.ic_sales_24dp, R.string.sales)
         }
 
-        val error: ButtonDecorationInfo by lazy {
-            ButtonDecorationInfo(R.drawable.ic_error_outline_white_24dp, R.string.error)
+        val errorPrice: ButtonDecorationInfo by lazy {
+            ButtonDecorationInfo(R.drawable.ic_price_error_24dp, R.string.error)
         }
 
-        val toFind: ButtonDecorationInfo by lazy {
-            ButtonDecorationInfo(R.drawable.ic_search_white_24dp, R.string.to_find)
+        val rightPrice: ButtonDecorationInfo by lazy {
+            ButtonDecorationInfo(R.drawable.ic_price_right_24dp, R.string.correct)
+        }
+
+        val video: ButtonDecorationInfo by lazy {
+            ButtonDecorationInfo(R.drawable.ic_video_24dp, R.string.video)
         }
 
         val refusal: ButtonDecorationInfo by lazy {
-            ButtonDecorationInfo(R.drawable.is_refusal, R.string.refusal)
+            ButtonDecorationInfo(R.drawable.is_refusal_24dp, R.string.refusal)
         }
 
         val batchsProducts: ButtonDecorationInfo by lazy {
-            ButtonDecorationInfo(R.drawable.is_batchs_products, R.string.batchs_products)
+            ButtonDecorationInfo(R.drawable.is_batchs_products_24dp, R.string.batchs_products)
         }
     }
 }

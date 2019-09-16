@@ -2,6 +2,7 @@
 
     <string name="app_name">Рабочий список</string>
     <string name="work_with_tasks">Работа с заданиями</string>
+    <string name="check_list">Чек-лист</string>
     <string name="create_task">Создать задание</string>
     <string name="print_labels">Печать ценников</string>
     <string name="not_processed">К обработке</string>
@@ -27,7 +28,8 @@
 
     <!-- Информационные сообщения -->
     <string name="confirm_price_tags_printing">Подтвердите печать %1$d копий ценников</string>
-    <string name="make_sure_paper_installed">Убедитесь, что в принтере %1$s установлена бумага для %2$s ценников и подтвердите количество копий для печати (%3$d шт.)</string>
+    <string name="make_sure_yellow_paper_installed">Убедитесь, что в принтере %1$s установлена бумага для желтых ценников и подтвердите количество копий для печати (%2$d шт.)</string>
+    <string name="make_sure_red_paper_installed">Убедитесь, что в принтере %1$s установлена бумага для красных ценников и подтвердите количество копий для печати (%2$d шт.)</string>
     <string name="price_tags_submitted">Ценники переданы на печать</string>
     <string name="set_task_to_status_calculated">Перевести задание в статус "Подсчитано" и закрыть его для редактирования?</string>
     <string name="raw_goods_remained_in_task">В задании остались необработанные товары. Сохранить в статусе "Опубликовано" и оставить доступным для продолжения пересчета?</string>
@@ -40,6 +42,18 @@
     <string name="scanned_good_already_added_to_task">Отсканированная марка уже добавлена в задание. Удалить марку?</string>
     <string name="number_of_positions_exceeded_in_task">В задании превышено количество позиций. Добавление невозможно.</string>
     <string name="no_network_to_save_task">Для сохранения задания в SAP ERP отсутствует сеть. Задание будет сохранено позже.</string>
+    <string name="good_not_found_in_database">Данный товар не найден в справочнике</string>
+    <string name="twelve_characters_entered">Введено 12 знаков. Какой код вы ввели?</string>
+
+
+    <string name="total_quantity">Итого: %1$d шт.</string>
+    <string name="quantity_st">%1$d шт.</string>
+    <string name="quantity_units">%1$d %2$s.</string>
+    <string name="sl_date">СГ - %1$s</string>
+    <string name="pd_date">ДП - %1$s</string>
+    <string name="shelf_life_days">%1$d сут.</string>
+    <string name="one_space_two">%1$s %2$s</string>
+    <string name="one_slash_two">%1$s/%2$s</string>
 
 
     <string name="enter_task_number_sap_login">Введите номер задания / SAP логин</string>
@@ -48,11 +62,6 @@
     <string name="price_tag_type">Тип ценника</string>
     <string name="device_ip">IP адрес ТСД</string>
     <string name="quantity">Количество</string>
-    <string name="total_quantity">Итого: %1$d шт.</string>
-    <string name="quantity_st">%1$d шт.</string>
-    <string name="quantity_units">%1$d %2$s.</string>
-    <string name="sl_date">СГ - %1$s</string>
-    <string name="pd_date">ДП - %1$s</string>
     <string name="publication_date">Дата публикации</string>
     <string name="comment">Комментарий</string>
     <string name="total_shelf_life">Общий СГ</string>
@@ -72,9 +81,7 @@
     <string name="provider">Поставщик</string>
     <string name="expiration_date_abbreviation">СГ</string>
     <string name="expiration_dates">Сроки годности</string>
-    <string name="shelf_life_days_left">%1$d сут.</string>
     <string name="goods">Товары</string>
-    <string name="one_space_two">%1$s %2$s</string>
     <string name="check">Сверка</string>
     <string name="storage_place">Место хранения</string>
     <string name="group_of_goods">Группа товаров</string>
@@ -88,5 +95,14 @@
     <string name="stock_one_storage">Запас 1 склад</string>
     <string name="empty_place">Пустое место</string>
     <string name="task_type">Тип задания</string>
+    <string name="price_one">Цена 1</string>
+    <string name="price_two">Цена 2</string>
+    <string name="price_one_sell_out">Цена 1 (Распродажа)</string>
+    <string name="price_two_by_stock">Цена 2 (По акции)</string>
+    <string name="scan_price_description">Наведите камеру на QR код ценника</string>
+    <string name="price_without_discount">Цена БДК, руб</string>
+    <string name="price_with_discount">Цена с ДК, руб</string>
+    <string name="confirmation_delete_task">По заданию \"%1$s\" будут удалены все непереданные данные.</string>
+
 
 </resources>

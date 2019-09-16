@@ -39,6 +39,7 @@
     <string name="twelve_characters_entered">Введено 12 знаков. Какой код вы ввели?</string>
     <string name="unknown_good_barcode">ШК %1$s\n\nНеизвестный штрихкод. Товар определить не удалось. Все равно использовать этот штрихкод?</string>
     <string name="shelf_is_deleted">Полка удалена. Открыть просмотр или создать новую?</string>
+    <string name="delete_shelf_data">Удалить данные полки №%1$s?</string>
     <string name="segment_is_deleted">Сегмент удален. Открыть просмотр или создать новый?</string>
     <string name="successfully_saved_to_lua">Успешно сохранено в LAU</string>
     <string name="error_saving_to_lua">Ошибка сохранения в LAU</string>

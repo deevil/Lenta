@@ -11,6 +11,7 @@ import androidx.databinding.BindingAdapter
 import com.lenta.shared.models.core.Uom
 import com.lenta.shared.models.core.isOnlyInt
 import com.lenta.shared.utilities.extentions.enable
+import com.redmadrobot.inputmask.MaskedTextChangedListener
 
 
 @BindingAdapter(value = ["onOkInSoftKeyboard"])
@@ -75,6 +76,13 @@ fun setDisabled(editText: EditText, disabled: Boolean?) {
         editText.enable(disabled == false)
     }
 
+}
+
+@BindingAdapter("maskPattern")
+fun setMaskPattern(editText: EditText, mask: String) {
+    val listener = MaskedTextChangedListener(mask, editText)
+    editText.addTextChangedListener(listener)
+    editText.onFocusChangeListener = listener
 }
 
 interface OnOkInSoftKeyboardListener {

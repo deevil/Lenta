@@ -14,6 +14,7 @@
     <string name="create">Создать</string>
     <string name="apply">Применить</string>
     <string name="correct">Верно</string>
+    <string name="video">Видео</string>
     <string name="confirm">Подтвердить</string>
     <string name="review">Просмотр</string>
     <string name="enter">Войти</string>
@@ -146,4 +147,9 @@
     <string name="not_framed">Не оформлено</string>
     <string name="saved_data_detect_message">На устройстве обнаружены несохраненные данные. Перейти к данным?</string>
     <string name="detect_changes_connection_message">Внимание! Настройки соединения изменились. Вы хотите применить новые настройки?</string>
+    <string name="added">Добавлен</string>
+    <string name="pictogram_strict_list">Пиктограмма строгого списка</string>
+    <string name="pictogram_not_strict_list">Пиктограмма нестрогого списка</string>
+    <string name="qr_code_info">Доступно сканирование QR-кода</string>
+    <string name="price_r">%1$.2f р.</string>
 </resources>

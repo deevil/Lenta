@@ -8,7 +8,6 @@ import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import com.lenta.bp14.BR
 import com.lenta.bp14.R
-import com.lenta.bp14.data.model.Good
 import com.lenta.bp14.databinding.*
 import com.lenta.bp14.platform.extentions.getAppComponent
 import com.lenta.shared.platform.fragment.CoreFragment
@@ -38,9 +37,11 @@ class GoodInfoWlFragment : CoreFragment<FragmentGoodInfoWlBinding, GoodInfoWlVie
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
         topToolbarUiModel.description.value = getString(R.string.goods_info)
 
-        vm.good.observe(this, Observer<Good> { good ->
-            topToolbarUiModel.title.value = good.getFormattedMaterialWithName()
-        })
+        viewLifecycleOwner.apply {
+            vm.good.observe(this, Observer { good ->
+                topToolbarUiModel.title.value = good.getFormattedMaterialWithName()
+            })
+        }
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
@@ -141,7 +142,7 @@ class GoodInfoWlFragment : CoreFragment<FragmentGoodInfoWlBinding, GoodInfoWlVie
 
     private fun initSpinners() {
         vm.commentsList.value = resources.getStringArray(R.array.selected_comment).asList()
-        vm.shelfLifeList.value = resources.getStringArray(R.array.selected_comment).asList()
+        vm.shelfLifeTypeList.value = resources.getStringArray(R.array.shelf_life_type).asList()
     }
 
 }

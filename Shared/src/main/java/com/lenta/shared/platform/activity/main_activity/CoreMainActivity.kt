@@ -14,6 +14,7 @@ import com.lenta.shared.analytics.AnalyticsHelper
 import com.lenta.shared.databinding.ActivityMainBinding
 import com.lenta.shared.keys.KeyCode
 import com.lenta.shared.keys.OnKeyDownListener
+import com.lenta.shared.keys.OnKeyUpListener
 import com.lenta.shared.platform.network_state.NetworkStateMonitor
 import com.lenta.shared.platform.activity.CoreActivity
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
@@ -61,7 +62,7 @@ abstract class CoreMainActivity : CoreActivity<ActivityMainBinding>(), ToolbarBu
 
     private val vm: CoreMainViewModel by lazy {
         getViewModel().apply {
-            if (!permissionNotGranted()) {
+            if (getNotGrantedPermissions().isEmpty()) {
                 analyticsHelper.onPermissionGranted()
                 ANALYTICS_HELPER = analyticsHelper
                 analyticsHelper.logAppInfo()
@@ -120,8 +121,14 @@ abstract class CoreMainActivity : CoreActivity<ActivityMainBinding>(), ToolbarBu
 
     override fun onResume() {
         super.onResume()
-        if (permissionNotGranted()) {
-            ActivityCompat.requestPermissions(this, listOf(Manifest.permission.WRITE_EXTERNAL_STORAGE).toTypedArray(), 1)
+        getNotGrantedPermissions().let {
+            if (it.isNotEmpty()) {
+                ActivityCompat.requestPermissions(
+                        this,
+                        it.toTypedArray(),
+                        1
+                )
+            }
         }
         networkStateMonitor.start(this)
         batteryStateMonitor.start(this)
@@ -133,9 +140,18 @@ abstract class CoreMainActivity : CoreActivity<ActivityMainBinding>(), ToolbarBu
         vm.onResume()
     }
 
-    private fun permissionNotGranted(): Boolean {
-        return !isWriteExternalStoragePermissionGranted()
+    private fun getNotGrantedPermissions(): List<String> {
+        return getNotGrantedPermissions(
+                mutableListOf(Manifest.permission.WRITE_EXTERNAL_STORAGE).apply {
+                    this.addAll(getAdditionalListOfRequiredPermissions())
+                }
+        )
     }
+
+    open fun getAdditionalListOfRequiredPermissions(): List<String> {
+        return emptyList()
+    }
+
 
     override fun onPause() {
         foregroundActivityProvider.clear()
@@ -221,6 +237,16 @@ abstract class CoreMainActivity : CoreActivity<ActivityMainBinding>(), ToolbarBu
             super.onKeyDown(keyCode, event)
         } else true
 
+    }
+
+    override fun onKeyUp(keyCode: Int, event: KeyEvent?): Boolean {
+        getCurrentFragment()?.implementationOf(OnKeyUpListener::class.java)?.let { onKeyUpListener ->
+            event?.keyCode?.let { keyCode ->
+                return onKeyUpListener.onKeyUp(keyCode = KeyCode.detectKeyCode(keyCode))
+            }
+
+        }
+        return super.onKeyUp(keyCode, event)
     }
 
     private fun isHaveBackButton(): Boolean {

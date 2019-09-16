@@ -6,6 +6,7 @@ import com.lenta.bp7.platform.navigation.IScreenNavigator
 import com.lenta.shared.features.loading.startProgressTimer
 import com.lenta.shared.platform.activity.main_activity.CoreMainViewModel
 import com.lenta.shared.platform.statusbar.StatusBarUiModel
+import com.lenta.shared.settings.IAppSettings
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -18,6 +19,16 @@ class MainViewModel : CoreMainViewModel() {
     lateinit var screenNavigator: IScreenNavigator
     @Inject
     lateinit var checkData: CheckData
+    @Inject
+    lateinit var appSettings: IAppSettings
+
+
+    init {
+        viewModelScope.launch {
+            appSettings.printerNotVisible = true
+            appSettings.printerNumber = appSettings.printerNumber
+        }
+    }
 
 
     override fun onNewEnter() {

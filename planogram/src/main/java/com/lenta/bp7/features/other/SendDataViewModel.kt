@@ -47,7 +47,7 @@ abstract class SendDataViewModel : CoreViewModel() {
 
             saveRequestType.let { saveRequest ->
                 navigator.showProgress(saveRequest)
-                saveRequest.run(saveCheckDataParams).either(::handleDataSendingError, ::handleDataSendingSuccess)
+                saveRequest(saveCheckDataParams).either(::handleDataSendingError, ::handleDataSendingSuccess)
                 navigator.hideProgress()
             }
         }

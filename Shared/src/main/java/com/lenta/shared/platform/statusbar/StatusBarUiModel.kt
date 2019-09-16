@@ -17,10 +17,18 @@ class StatusBarUiModel @Inject constructor(
         val analyticsHelper: AnalyticsHelper
 ) {
     val pageNumber: MutableLiveData<String> = MutableLiveData("")
-    var ip: MutableLiveData<String> = networkStateMonitor.networkInfo.map { it?.ip.apply {
-        analyticsHelper.logNetworkInfo(it)
-    } }
-    val printer = appSettings.printerNumberLiveData.map { if (it.isNullOrBlank()) "?" else it }
+    var ip: MutableLiveData<String> = networkStateMonitor.networkInfo.map {
+        it?.ip.apply {
+            analyticsHelper.logNetworkInfo(it)
+        }
+    }
+    val printer = appSettings.printerNumberLiveData.map {
+        when {
+            appSettings.printerNotVisible -> null
+            it.isNullOrBlank() -> "?"
+            else -> it
+        }
+    }
     val batteryLevel: MutableLiveData<Int> = batteryStateMonitor.batteryState.map { it?.level }
     val batteryIsCharging: MutableLiveData<Boolean> = batteryStateMonitor.batteryState.map { it?.isCharging }
     val time: MutableLiveData<Long> = timeMonitor.observeUnixTime().map { it }

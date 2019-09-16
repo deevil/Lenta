@@ -3,7 +3,6 @@ package com.lenta.bp7.features.good_info
 import android.view.View
 import androidx.lifecycle.Observer
 import com.lenta.bp7.R
-import com.lenta.bp7.data.model.Good
 import com.lenta.bp7.databinding.FragmentGoodInfoBinding
 import com.lenta.bp7.platform.extentions.getAppComponent
 import com.lenta.shared.platform.activity.OnBackPresserListener
@@ -34,15 +33,19 @@ class GoodInfoFragment : CoreFragment<FragmentGoodInfoBinding, GoodInfoViewModel
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
         topToolbarUiModel.description.value = getString(R.string.description_info_about_good)
 
-        vm.good.observe(this, Observer<Good> { good ->
-            topToolbarUiModel.title.value = getString(R.string.title_good_sap_name, good.getFormattedMaterial(), good.name)
-        })
+        viewLifecycleOwner.apply {
+            vm.good.observe(this, Observer { good ->
+                topToolbarUiModel.title.value = getString(R.string.title_good_sap_name, good.getFormattedMaterial(), good.name)
+            })
+        }
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
         bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.missing, enabled = true)
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.apply, enabled = true)
+
+        bottomToolbarUiModel.uiModelButton5.requestFocus()
 
         connectLiveData(vm.missingButtonEnabled, bottomToolbarUiModel.uiModelButton4.enabled)
         connectLiveData(vm.applyButtonEnabled, bottomToolbarUiModel.uiModelButton5.enabled)
