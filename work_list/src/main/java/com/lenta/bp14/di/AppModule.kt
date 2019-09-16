@@ -11,6 +11,8 @@ import com.lenta.bp14.models.check_price.CheckPriceTaskManager
 import com.lenta.bp14.models.check_price.ICheckPriceTask
 import com.lenta.bp14.models.general.GeneralRepo
 import com.lenta.bp14.models.general.IGeneralRepo
+import com.lenta.bp14.platform.IVibrateHelper
+import com.lenta.bp14.platform.VibrateHelper
 import com.lenta.bp14.platform.navigation.IScreenNavigator
 import com.lenta.bp14.platform.navigation.ScreenNavigator
 import com.lenta.bp14.platform.sound.ISoundPlayer
@@ -57,8 +59,17 @@ class AppModule {
 
     @Provides
     @AppScope
-    internal fun provideCheckPriceTaskManager(timeMonitor: ITimeMonitor, gson: Gson, soundPlayer: ISoundPlayer): CheckPriceTaskManager {
-        return CheckPriceTaskManager(timeMonitor = timeMonitor, gson = gson, soundPlayer = soundPlayer)
+    internal fun provideCheckPriceTaskManager(
+            timeMonitor: ITimeMonitor,
+            gson: Gson,
+            soundPlayer: ISoundPlayer,
+            vibrateHelper: IVibrateHelper): CheckPriceTaskManager {
+        return CheckPriceTaskManager(
+                timeMonitor = timeMonitor,
+                gson = gson,
+                soundPlayer = soundPlayer,
+                vibrateHelper = vibrateHelper
+        )
     }
 
     @Provides
@@ -99,6 +110,11 @@ class AppModule {
     @Provides
     internal fun provideSoundPlayer(context: Context): ISoundPlayer {
         return SoundPlayer(context)
+    }
+
+    @Provides
+    internal fun provideVibrateHelper(context: Context): IVibrateHelper {
+        return VibrateHelper(context)
     }
 
 }

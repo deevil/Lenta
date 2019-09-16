@@ -10,6 +10,7 @@ import com.lenta.bp14.models.check_price.repo.IActualPricesRepo
 import com.lenta.bp14.models.check_price.repo.ICheckPriceResultsRepo
 import com.lenta.bp14.models.general.ITaskType
 import com.lenta.bp14.models.general.TaskTypes
+import com.lenta.bp14.platform.IVibrateHelper
 import com.lenta.bp14.platform.sound.ISoundPlayer
 import com.lenta.shared.models.core.StateFromToString
 import com.lenta.shared.utilities.Logg
@@ -23,7 +24,8 @@ class CheckPriceTask(
         private val priceInfoParser: IPriceInfoParser,
         private val gson: Gson,
         override var processingMatNumber: String? = null,
-        private val soundPlayer: ISoundPlayer
+        private val soundPlayer: ISoundPlayer,
+        private val vibrateHelper: IVibrateHelper
 ) : ICheckPriceTask, StateFromToString {
 
 
@@ -51,6 +53,7 @@ class CheckPriceTask(
         ).apply {
             readyResultsRepo.addCheckPriceResult(this).let { isAdded ->
                 if (isAdded) {
+                    vibrateHelper.shortVibrate()
                     soundPlayer.playBeep()
                 }
             }
@@ -89,6 +92,16 @@ class CheckPriceTask(
                 ?: return null)
     }
 
+    override fun setCheckPriceStatus(isValid: Boolean?) {
+        readyResultsRepo.getCheckPriceResult(matNr = processingMatNumber)?.apply {
+            readyResultsRepo.addCheckPriceResult(
+                    checkPriceResult = (this as CheckPriceResult).copy(
+                            userPriceInfo = UserPriceInfo(isValidPrice = isValid)
+                    )
+            )
+        }
+    }
+
 }
 
 fun ICheckPriceResult?.toCheckStatus(): CheckStatus? {
@@ -104,6 +117,7 @@ interface ICheckPriceTask : ITask {
     fun getCheckResults(): LiveData<List<ICheckPriceResult>>
     fun removeCheckResultsByMatNumbers(matNumbers: Set<String>)
     fun getProcessingActualPrice(): IActualPriceInfo?
+    fun setCheckPriceStatus(isValid: Boolean?)
 
     var processingMatNumber: String?
 
@@ -120,6 +134,9 @@ data class CheckPriceResult(
 ) : ICheckPriceResult {
 
     override fun isPriceValid(): Boolean? {
+        if (userPriceInfo != null) {
+            return userPriceInfo.isValidPrice
+        }
         return scannedPriceInfo.price == actualPriceInfo.getPrice()
     }
 
@@ -199,6 +216,9 @@ interface IActualPriceInfo {
     fun getPrice(): Float?
     fun getDiscountCardPrice(): Float?
 }
+
+data class UserPriceInfo(override val isValidPrice: Boolean?) : IUserPriceInfo
+
 
 interface IUserPriceInfo {
     /**
