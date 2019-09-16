@@ -99,7 +99,7 @@ class ShelfListViewModel : SendDataViewModel(), OnOkInSoftKeyboardListener {
     fun onClickDelete() {
         selectionsHelper.let {
             val items = it.selectedPositions.value?.toMutableSet()
-            if (items?.isEmpty() == true) {
+            if (items!!.isEmpty()) {
                 // Подтверждение - Удалить данные по сегменту? - Назад / Удалить
                 navigator.showDeleteDataOnSegment(
                         storeNumber = checkData.getCurrentSegment()!!.storeNumber,
@@ -108,10 +108,21 @@ class ShelfListViewModel : SendDataViewModel(), OnOkInSoftKeyboardListener {
                     navigator.openSegmentListScreen()
                 }
             } else {
-                items!!.forEach { index ->
-                    it.revert(index)
-                    checkData.setShelfStatusDeletedByIndex(index)
-                    updateShelfList()
+                var shelfNumbers = ""
+                items.forEach { index ->
+                    shelfNumbers += checkData.getCurrentSegment()?.shelves?.get(index)?.number
+                    if (items.size > 1 && index != items.size - 1){
+                        shelfNumbers += ", "
+                    }
+                }
+
+                // Подтверждение - Удалить данные полки №...? - Назад / Удалить
+                navigator.showDeleteShelfData(shelfNumbers){
+                    items.forEach { index ->
+                        it.revert(index)
+                        checkData.setShelfStatusDeletedByIndex(index)
+                        updateShelfList()
+                    }
                 }
             }
         }
