@@ -68,6 +68,9 @@ class AppSettings(
             sharedPrefferences.edit().putString("printer", value).commit()
         }
 
+    override var printerNotVisible: Boolean = false
+
+
     override var printerNumber: String?
         get() = sharedPrefferences.getString("printerNumber", null)
         set(value) {
@@ -163,6 +166,7 @@ interface IAppSettings {
     var lastJobType: String?
 
     var printer: String?
+    var printerNotVisible: Boolean
     var printerNumber: String?
     val printerNumberLiveData: MutableLiveData<String?>
 

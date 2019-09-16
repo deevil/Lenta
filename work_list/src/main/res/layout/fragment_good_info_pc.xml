@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
-        tools:context=".features.price_check.good_info.GoodInfoPcFragment">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".features.price_check.good_info.GoodInfoPcFragment">
 
     <data>
 
         <variable
             name="vm"
-            type="com.lenta.bp14.features.price_check.good_info.GoodInfoPcViewModel"/>
+            type="com.lenta.bp14.features.price_check.good_info.GoodInfoPcViewModel" />
 
     </data>
 
@@ -23,8 +24,7 @@
             android:layout_weight="1"
             android:orientation="vertical">
 
-            <LinearLayout
-                style="@style/LinearRowStyle">
+            <LinearLayout style="@style/LinearRowStyle">
 
                 <LinearLayout
                     style="@style/LinearCellStyle"
@@ -32,16 +32,15 @@
 
                     <TextView
                         style="@style/CellTextStyle"
-                        android:text="@string/price_one"/>
+                        android:text="@string/price_one" />
 
                     <TextView
                         style="@style/CellTextStyle"
-                        android:text="@string/price_two"/>
+                        android:text="@string/price_two" />
 
                 </LinearLayout>
 
-                <View
-                    style="@style/VerticalDivider"/>
+                <View style="@style/VerticalDivider" />
 
                 <LinearLayout
                     style="@style/LinearCellStyle"
@@ -50,26 +49,24 @@
                     <TextView
                         android:id="@+id/tv_total_shelf_life"
                         style="@style/CellTextStyle"
-                        android:text="@{@string/price_r(vm.good.price.priceOne)}"
-                        tools:text="120 руб."/>
+                        app:price='@{vm.priceInfoUi.price1}'
+                        tools:text="120 р" />
 
                     <TextView
                         android:id="@+id/tv_shelf_life_days_left"
                         style="@style/CellTextStyle"
-                        android:text="@{@string/price_r(vm.good.price.priceTwo)}"
-                        tools:text="125 руб."/>
+                        app:price='@{vm.priceInfoUi.price2}'
+                        tools:text="125 руб." />
 
 
                 </LinearLayout>
 
             </LinearLayout>
 
-            <View
-                style="@style/HorizontalDivider"/>
+            <View style="@style/HorizontalDivider" />
 
             <!-- Блок акционных цен -->
-            <LinearLayout
-                style="@style/LinearRowStyle">
+            <LinearLayout style="@style/LinearRowStyle">
 
                 <LinearLayout
                     style="@style/LinearCellStyle"
@@ -77,16 +74,15 @@
 
                     <TextView
                         style="@style/CellTextStyle"
-                        android:text="@string/price_one_sell_out"/>
+                        android:text="@string/price_one_sell_out" />
 
                     <TextView
                         style="@style/CellTextStyle"
-                        android:text="@string/price_two_by_stock"/>
+                        android:text="@string/price_two_by_stock" />
 
                 </LinearLayout>
 
-                <View
-                    style="@style/VerticalDivider"/>
+                <View style="@style/VerticalDivider" />
 
                 <LinearLayout
                     style="@style/LinearCellStyle"
@@ -95,21 +91,20 @@
                     <TextView
                         android:id="@+id/tv_barcode_number_units"
                         style="@style/CellTextStyle"
-                        android:text="@{@string/price_r(vm.good.price.priceOneSellOut)}"
-                        tools:text="120 руб."/>
+                        app:price='@{vm.priceInfoUi.price1Promotion}'
+                        tools:text="120 руб." />
 
                     <TextView
                         android:id="@+id/tv_gt_gz_numbers"
                         style="@style/CellTextStyle"
-                        android:text="@{@string/price_r(vm.good.price.priceTwoByStock)}"
-                        tools:text="125 руб."/>
+                        app:price='@{vm.priceInfoUi.price2Sale}'
+                        tools:text="125 руб." />
 
                 </LinearLayout>
 
             </LinearLayout>
 
-            <View
-                style="@style/HorizontalDivider"/>
+            <View style="@style/HorizontalDivider" />
 
         </LinearLayout>
 
@@ -124,14 +119,14 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:src="@drawable/ic_round_a_48dp"/>
+                android:src="@drawable/ic_round_a_48dp" />
 
             <ImageView
                 android:id="@+id/btn_2"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:src="@drawable/ic_round_a_48dp"/>
+                android:src="@drawable/ic_round_a_48dp" />
 
             <ImageView
                 android:id="@+id/btn_3"
@@ -139,7 +134,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:src="@drawable/ic_kandy_48dp"
-                android:visibility="invisible"/>
+                android:visibility="invisible" />
 
             <ImageView
                 android:id="@+id/btn_4"
@@ -147,7 +142,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:src="@drawable/ic_new_48dp"
-                android:visibility="invisible"/>
+                android:visibility="invisible" />
 
             <ImageView
                 android:id="@+id/btn_5"
@@ -155,21 +150,21 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:src="@drawable/ic_natural_48dp"
-                android:visibility="invisible"/>
+                android:visibility="invisible" />
 
             <ImageView
                 android:id="@+id/btn_6"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:src="@drawable/ic_scan_qrcode_48dp"/>
+                android:src="@drawable/ic_scan_qrcode_48dp" />
 
             <ImageView
                 android:id="@+id/btn_7"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:src="@drawable/ic_scan_barcode_48dp"/>
+                android:src="@drawable/ic_scan_barcode_48dp" />
 
         </LinearLayout>
 

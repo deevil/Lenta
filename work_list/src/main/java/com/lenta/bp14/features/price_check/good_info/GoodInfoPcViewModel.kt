@@ -1,26 +1,39 @@
 package com.lenta.bp14.features.price_check.good_info
 
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
-import com.lenta.bp14.models.data.pojo.Good
-import com.lenta.bp14.models.data.TaskManager
+import com.lenta.bp14.models.check_price.ICheckPriceTask
 import com.lenta.bp14.platform.navigation.IScreenNavigator
 import com.lenta.shared.platform.viewmodel.CoreViewModel
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class GoodInfoPcViewModel : CoreViewModel() {
-
     @Inject
     lateinit var navigator: IScreenNavigator
     @Inject
-    lateinit var taskManager: TaskManager
+    lateinit var task: ICheckPriceTask
 
-    val good = MutableLiveData<Good>()
-
-    init {
-        viewModelScope.launch {
-            good.value = taskManager.currentGood
-        }
+    private val priceInfo by lazy {
+        task.getProcessingActualPrice()
     }
+
+    val priceInfoUi by lazy {
+        ActualPriceInfoUi(
+                price1 = priceInfo?.price1,
+                price2 = priceInfo?.price2,
+                price1Promotion = priceInfo?.price3,
+                price2Sale = priceInfo?.price4
+        )
+    }
+
+    fun getTitle(): String {
+        return "${priceInfo?.matNumber?.takeLast(6)} ${priceInfo?.productName}"
+    }
+
+
 }
+
+data class ActualPriceInfoUi(
+        val price1: Float?,
+        val price2: Float?,
+        val price1Promotion: Float?,
+        val price2Sale: Float?
+)

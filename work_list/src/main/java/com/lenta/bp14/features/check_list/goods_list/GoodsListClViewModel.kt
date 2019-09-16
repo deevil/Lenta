@@ -4,8 +4,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp14.models.check_list.*
 import com.lenta.bp14.models.getTaskName
-import com.lenta.bp14.models.getTaskType
 import com.lenta.bp14.platform.navigation.IScreenNavigator
+import com.lenta.shared.models.core.isOnlyInt
 import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.Logg
@@ -21,12 +21,7 @@ class GoodsListClViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     @Inject
     lateinit var navigator: IScreenNavigator
     @Inject
-    lateinit var checkListTaskManager: CheckListTaskManager
-
-
-    val task by lazy {
-        checkListTaskManager.getTask()!!
-    }
+    lateinit var task: ICheckListTask
 
     val selectionsHelper = SelectionItemsHelper()
 
@@ -45,16 +40,8 @@ class GoodsListClViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     init {
         viewModelScope.launch {
             requestFocusToNumberField.value = true
-            taskName.value = "${checkListTaskManager.getTaskType()} // ${checkListTaskManager.getTaskName()}"
+            taskName.value = "${task.getTaskType().taskType} // ${task.getTaskName()}"
         }
-    }
-
-    fun scanQrCode() {
-
-    }
-
-    fun scanBarCode() {
-
     }
 
     fun onClickDelete() {
@@ -77,7 +64,7 @@ class GoodsListClViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     }
 
     fun onClickSave() {
-
+        task.saveScannedGoodList(goods.value!!)
     }
 
     override fun onPageSelected(position: Int) {
@@ -104,7 +91,8 @@ class GoodsListClViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
                         // Выбор - Введено 12 знаков. Какой код вы ввели? - SAP-код / Штрихкод
                         navigator.showTwelveCharactersEntered(
                                 sapCallback = { addGoodByMatcode(number) },
-                                barCallback = { addGoodByEan(number) })
+                                barCallback = { addGoodByEan(number) }
+                        )
                     }
                     else -> addGoodByEan(number)
                 }
@@ -115,63 +103,44 @@ class GoodsListClViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     private fun addGoodByMaterial(material: String) {
         Logg.d { "Entered MATERIAL: $material" }
         viewModelScope.launch {
-            val goodInfo: GoodInfo? = task.getGoodInfoByMaterial(material)
-            if (goodInfo != null) {
-                addGood(goodInfo)
-            } else {
-                // Сообщение - Данный товар не найден в справочнике
-                navigator.showGoodNotFound()
-            }
+            addGood(task.getGoodByMaterial(material))
         }
     }
 
     private fun addGoodByEan(ean: String) {
         Logg.d { "Entered EAN: $ean" }
         viewModelScope.launch {
-            viewModelScope.launch {
-                val goodInfo: GoodInfo? = task.getGoodInfoByEan(ean)
-                if (goodInfo != null) {
-                    addGood(goodInfo)
-                } else {
-                    // Сообщение - Данный товар не найден в справочнике
-                    navigator.showGoodNotFound()
-                }
-            }
+            addGood(task.getGoodByEan(ean))
         }
     }
 
     private fun addGoodByMatcode(matcode: String) {
         Logg.d { "Entered MATCODE: $matcode" }
         viewModelScope.launch {
-            viewModelScope.launch {
-                val goodInfo: GoodInfo? = task.getGoodInfoByMatcode(matcode)
-                if (goodInfo != null) {
-                    addGood(goodInfo)
-                } else {
-                    // Сообщение - Данный товар не найден в справочнике
-                    navigator.showGoodNotFound()
-                }
-            }
+            addGood(task.getGoodByMatcode(matcode))
         }
     }
 
-    private fun addGood(goodInfo: GoodInfo) {
-        // todo Реализовать добавление по весу
-        // Наверно в справочнике должен приходить вес по умолчанию?
+    private fun addGood(good: Good?) {
+        if (good == null) {
+            // Сообщение - Данный товар не найден в справочнике
+            navigator.showGoodNotFound()
+            return
+        }
 
         val goodsList = goods.value!!.toMutableList()
-        val good = goodsList.find { it.ean == goodInfo.ean }
-        if (good != null) {
-            val index = goodsList.indexOf(good)
-            val quantity = goodsList[index].quantity.value!!.toInt()
-            goodsList[index].quantity.value = "" + (quantity + 1)
+        val existGood = goodsList.find { it.ean == good.ean }
+        if (existGood != null) {
+            val index = goodsList.indexOf(existGood)
+            goodsList[index].quantity.value = "" + if (good.uom.isOnlyInt()) {
+                existGood.quantity.value!!.toInt() + good.quantity.value!!.toInt()
+            } else {
+                val goodQuantity = good.quantity.value!!.toBigDecimal()
+                val existGoodQuantity = existGood.quantity.value!!.toBigDecimal()
+                existGoodQuantity.plus(goodQuantity).toString().dropLastWhile { it == '0' || it == '.' }
+            }
         } else {
-            goodsList.add(0, Good(
-                    number = goodsList.lastIndex + 2,
-                    ean = goodInfo.ean,
-                    material = goodInfo.material,
-                    name = goodInfo.name + " ${goodsList.lastIndex + 2}"
-            ))
+            goodsList.add(0, good)
         }
 
         goods.value = goodsList.toList()
