@@ -3,7 +3,7 @@ package com.lenta.bp14.models.check_price.repo
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.lenta.bp14.models.check_price.ICheckPriceResult
-import com.lenta.shared.platform.time.ITimeMonitor
+import com.lenta.shared.utilities.Logg
 
 interface ICheckPriceResultsRepo {
 
@@ -40,8 +40,11 @@ class CheckPriceResultsRepo : ICheckPriceResultsRepo {
     }
 
     override fun addCheckPriceResult(checkPriceResult: ICheckPriceResult): Boolean {
-        checkPriceResults.indexOfFirst { it == checkPriceResult }.let { index ->
-            if (index > 0) {
+        checkPriceResults.indexOfFirst {
+            Logg.d { "compare: ${it} / ${checkPriceResult}, res = ${it == checkPriceResult}" }
+            it == checkPriceResult
+        }.let { index ->
+            if (index > -1) {
                 return false
             }
         }
