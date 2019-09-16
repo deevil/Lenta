@@ -17,6 +17,8 @@ class CheckListTask(
         private val gson: Gson
 ) : ICheckListTask {
 
+    override var openToEdit = true
+
     override fun getGoodByMaterial(material: String): Good? {
         return checkListRepo.getGoodByMaterial(material)
     }
@@ -30,7 +32,7 @@ class CheckListTask(
     }
 
     override fun saveScannedGoodList(goodsList: List<Good>) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+
     }
 
     override fun getTaskType(): ITaskType {
@@ -44,6 +46,8 @@ class CheckListTask(
 }
 
 interface ICheckListTask : ITask {
+    var openToEdit: Boolean
+
     fun getGoodByMaterial(material: String): Good?
     fun getGoodByEan(ean: String): Good?
     fun getGoodByMatcode(matcode: String): Good?
