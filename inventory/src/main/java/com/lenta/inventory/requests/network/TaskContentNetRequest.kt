@@ -11,10 +11,10 @@ import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.analytics.AnalyticsHelper
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.fmp.ObjectRawStatus
-import com.lenta.shared.fmp.resources.dao_ext.getMaterial
+import com.lenta.shared.fmp.resources.dao_ext.getProductInfoByMaterial
 import com.lenta.shared.fmp.resources.dao_ext.getUomInfo
 import com.lenta.shared.fmp.resources.fast.ZmpUtz07V001
-import com.lenta.shared.fmp.resources.slow.ZmpUtz30V001
+import com.lenta.shared.fmp.resources.slow.ZfmpUtz48V001
 import com.lenta.shared.functional.Either
 import com.lenta.shared.interactor.UseCase
 import com.lenta.shared.models.core.Uom
@@ -39,8 +39,8 @@ class TaskContentNetRequest
         ZmpUtz07V001(hyperHive)
     }
 
-    private val zmpUtz30V001: ZmpUtz30V001 by lazy {
-        ZmpUtz30V001(hyperHive)
+    private val zfmpUtz48V001: ZfmpUtz48V001 by lazy {
+        ZfmpUtz48V001(hyperHive)
     }
 
     override suspend fun run(params: TaskContentParams): Either<Failure, TaskContents> {
@@ -65,7 +65,7 @@ class TaskContentNetRequest
             status.result?.raw?.let {
                 if (it.retcode == "0") {
                     val products = it.productsList.mapNotNull {
-                        val materialInfo = zmpUtz30V001.getMaterial(it.materialNumber)
+                        val materialInfo = zfmpUtz48V001.getProductInfoByMaterial(it.materialNumber)
                         val uomInfo = zmpUtz07V001.getUomInfo(materialInfo?.buom)
                         it.ProductInfo(materialInfo, uomInfo)
                     }
@@ -88,7 +88,7 @@ class TaskContentNetRequest
         return Either.Left(status.getFailure())
     }
 
-    fun TaskProductRestInfo.ProductInfo(materialInfo: ZmpUtz30V001.ItemLocal_ET_MATERIALS?, uomInfo: ZmpUtz07V001.ItemLocal_ET_UOMS?): TaskProductInfo? {
+    fun TaskProductRestInfo.ProductInfo(materialInfo: ZfmpUtz48V001.ItemLocal_ET_MATNR_LIST?, uomInfo: ZmpUtz07V001.ItemLocal_ET_UOMS?): TaskProductInfo? {
         if (materialInfo == null || uomInfo == null || materialNumber.isEmpty()) {
             return null
         }

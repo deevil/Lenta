@@ -5,8 +5,8 @@ import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.fmp.resources.dao_ext.*
 import com.lenta.shared.fmp.resources.fast.ZmpUtz07V001
+import com.lenta.shared.fmp.resources.slow.ZfmpUtz48V001
 import com.lenta.shared.fmp.resources.slow.ZmpUtz25V001
-import com.lenta.shared.fmp.resources.slow.ZmpUtz30V001
 import com.lenta.shared.fmp.resources.slow.ZmpUtz46V001
 import com.lenta.shared.functional.Either
 import com.lenta.shared.interactor.UseCase
@@ -28,8 +28,8 @@ class ScanInfoRequest(private val hyperHive: HyperHive, private val gson: Gson, 
         ZmpUtz25V001(hyperHive)
     }
 
-    private val zmpUtz30V001: ZmpUtz30V001 by lazy {
-        ZmpUtz30V001(hyperHive)
+    private val zfmpUtz48V001: ZfmpUtz48V001 by lazy {
+        ZfmpUtz48V001(hyperHive)
     }
 
     private val zmpUtz07V001: ZmpUtz07V001 by lazy {
@@ -117,14 +117,14 @@ class ScanInfoRequest(private val hyperHive: HyperHive, private val gson: Gson, 
 
         val quantity = scanCodeInfo.extractQuantityFromEan(eanInfo = eanInfo)
 
-        val materialInfo = zmpUtz30V001.getMaterial(eanInfo?.materialNumber
+        val materialInfo = zfmpUtz48V001.getProductInfoByMaterial(eanInfo?.materialNumber
                 ?: scanCodeInfo.materialNumberForSearch ?: return null)
                 ?: return null
 
         return getResult(materialInfo, quantity)
     }
 
-    private fun getResult(materialInfo: ZmpUtz30V001.ItemLocal_ET_MATERIALS, quantity: Double): Either<Failure, ScanInfoResult> {
+    private fun getResult(materialInfo: ZfmpUtz48V001.ItemLocal_ET_MATNR_LIST, quantity: Double): Either<Failure, ScanInfoResult> {
         val uomInfo = zmpUtz07V001.getUomInfo(materialInfo.buom)
                 ?: return Either.Left(Failure.GoodNotFound)
 
