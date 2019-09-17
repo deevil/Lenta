@@ -28,6 +28,8 @@ class GoodsListWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
 
     val selectedPage = MutableLiveData(0)
 
+    val correctedSelectedPage = selectedPage.map { getCorrectedPagePosition(it) }
+
     val taskName = MutableLiveData("Рабочий список от 23.07.19 23:15")
 
     val numberField: MutableLiveData<String> = MutableLiveData("")
@@ -94,6 +96,19 @@ class GoodsListWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
             GoodsListTab.SEARCH.position -> searchGoods.value?.get(position)
             else -> null
         }
+    }
+
+    fun getPagesCount(): Int {
+        return if (task.isFreeMode()) 2 else 3
+    }
+
+    fun getCorrectedPagePosition(position: Int?): Int {
+        return if (getPagesCount() == 3) position ?: 0 else (position ?: 0) + 1
+    }
+
+    fun onDigitPressed(digit: Int) {
+        numberField.postValue(numberField.value ?: "" + digit)
+        requestFocusToNumberField.value = true
     }
 
 }

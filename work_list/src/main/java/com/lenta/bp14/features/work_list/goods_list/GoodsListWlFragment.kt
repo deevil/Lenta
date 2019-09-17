@@ -12,6 +12,8 @@ import com.lenta.bp14.R
 import com.lenta.bp14.models.data.GoodsListTab
 import com.lenta.bp14.databinding.*
 import com.lenta.bp14.platform.extentions.getAppComponent
+import com.lenta.shared.keys.KeyCode
+import com.lenta.shared.keys.OnKeyDownListener
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
@@ -28,7 +30,7 @@ import com.lenta.shared.utilities.extentions.provideViewModel
 import java.lang.IllegalArgumentException
 
 class GoodsListWlFragment : CoreFragment<FragmentGoodsListWlBinding, GoodsListWlViewModel>(),
-        ViewPagerSettings, ToolbarButtonsClickListener {
+        ViewPagerSettings, ToolbarButtonsClickListener, OnKeyDownListener {
 
     private var processingRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
     private var processedRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
@@ -73,16 +75,18 @@ class GoodsListWlFragment : CoreFragment<FragmentGoodsListWlBinding, GoodsListWl
     override fun onToolbarButtonClick(view: View) {
         when (view.id) {
             R.id.b_3 -> {
-                if (vm.selectedPage.value == GoodsListTab.SEARCH.position) {
-                    vm.onClickFilter()
-                } else vm.onClickDelete()
+                if (vm.getCorrectedPagePosition(vm.selectedPage.value) == GoodsListTab.SEARCH.position) vm.onClickFilter()
+                else vm.onClickDelete()
             }
             R.id.b_5 -> vm.onClickSave()
         }
     }
 
     override fun getPagerItemView(container: ViewGroup, position: Int): View {
-        if (position == 0) {
+
+        val correctedPosition = vm.getCorrectedPagePosition(position)
+
+        if (correctedPosition == 0) {
             DataBindingUtil.inflate<LayoutWlGoodsListProcessingBinding>(LayoutInflater.from(container.context),
                     R.layout.layout_wl_goods_list_processing,
                     container,
@@ -124,7 +128,7 @@ class GoodsListWlFragment : CoreFragment<FragmentGoodsListWlBinding, GoodsListWl
             }
         }
 
-        if (position == 1) {
+        if (correctedPosition == 1) {
             DataBindingUtil.inflate<LayoutWlGoodsListProcessedBinding>(LayoutInflater.from(container.context),
                     R.layout.layout_wl_goods_list_processed,
                     container,
@@ -228,7 +232,7 @@ class GoodsListWlFragment : CoreFragment<FragmentGoodsListWlBinding, GoodsListWl
     }
 
     override fun getTextTitle(position: Int): String {
-        return when (position) {
+        return when (vm.getCorrectedPagePosition(position)) {
             0 -> getString(R.string.processing)
             1 -> getString(R.string.processed)
             2 -> getString(R.string.search)
@@ -237,12 +241,30 @@ class GoodsListWlFragment : CoreFragment<FragmentGoodsListWlBinding, GoodsListWl
     }
 
     override fun countTab(): Int {
-        return 3
+        return vm.getPagesCount()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding?.viewPagerSettings = this
+    }
+
+    override fun onKeyDown(keyCode: KeyCode): Boolean {
+        when (vm.correctedSelectedPage.value) {
+            1 -> processedRecyclerViewKeyHandler
+            2 -> searchRecyclerViewKeyHandler
+            else -> null
+        }?.let {
+            if (!it.onKeyDown(keyCode)) {
+                keyCode.digit?.let { digit ->
+                    vm.onDigitPressed(digit)
+                    return true
+                }
+                return false
+            }
+            return true
+        }
+        return false
     }
 
 }
