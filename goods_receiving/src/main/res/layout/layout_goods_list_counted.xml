@@ -20,7 +20,7 @@
 
         <include
             android:id="@+id/layout_titles"
-            layout="@layout/item_title_goods_list"
+            layout="@layout/item_title_goods_list_counted"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:layout_constraintEnd_toEndOf="parent"

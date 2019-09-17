@@ -54,4 +54,6 @@
     <string name="checked">Сверенные</string>
     <string name="information">Информация</string>
     <string name="delivery_documents">Документы по поставке</string>
+    <string name="norm">Норма</string>
+    <string name="reject">Брак</string>
 </resources>

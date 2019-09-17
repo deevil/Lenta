@@ -1,8 +1,12 @@
 package com.lenta.bp9.features.goods_list
 
 import androidx.lifecycle.MutableLiveData
+import com.lenta.bp9.model.ReceivingProductInfo
 import com.lenta.bp9.model.task.IReceivingTaskManager
 import com.lenta.bp9.platform.navigation.IScreenNavigator
+import com.lenta.shared.models.core.MatrixType
+import com.lenta.shared.models.core.ProductType
+import com.lenta.shared.models.core.Uom
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
@@ -143,6 +147,15 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
 
     fun onClickSave(){
         //todo
-        return
+        screenNavigator.openGoodsInfoScreen(ReceivingProductInfo(
+                materialNumber = "000021",
+                description = "Р/к горбуша (Россия) 230/250г",
+                uom = Uom("ST", "шт"),
+                type = ProductType.General,
+                isSet = false,
+                sectionId = "01",
+                matrixType = MatrixType.Active,
+                materialType = ""
+        ))
     }
 }
