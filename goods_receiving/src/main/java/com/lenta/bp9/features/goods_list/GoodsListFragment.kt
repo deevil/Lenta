@@ -17,6 +17,7 @@ import com.lenta.bp9.databinding.*
 import com.lenta.shared.keys.KeyCode
 import com.lenta.shared.keys.OnKeyDownListener
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
+import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.scan.OnScanResultListener
 import com.lenta.shared.utilities.databinding.*
 import com.lenta.shared.utilities.extentions.connectLiveData
@@ -25,7 +26,8 @@ class GoodsListFragment : CoreFragment<FragmentGoodsListBinding, GoodsListViewMo
         ViewPagerSettings,
         OnScanResultListener,
         PageSelectionListener,
-        OnKeyDownListener {
+        OnKeyDownListener,
+        ToolbarButtonsClickListener {
 
     private var countedRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
 
@@ -36,7 +38,6 @@ class GoodsListFragment : CoreFragment<FragmentGoodsListBinding, GoodsListViewMo
     override fun getViewModel(): GoodsListViewModel {
         provideViewModel(GoodsListViewModel::class.java).let {vm ->
             getAppComponent()?.inject(vm)
-            vm.titleProgressScreen.value = getString(R.string.data_loading)
             return vm
         }
     }
@@ -54,6 +55,21 @@ class GoodsListFragment : CoreFragment<FragmentGoodsListBinding, GoodsListViewMo
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.save)
 
         connectLiveData(vm.visibilityCleanButton, bottomToolbarUiModel.uiModelButton3.visibility)
+        connectLiveData(vm.enabledCleanButton, bottomToolbarUiModel.uiModelButton3.enabled)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        binding?.viewPagerSettings = this
+    }
+
+    override fun onToolbarButtonClick(view: View) {
+        when (view.id) {
+            R.id.b_2 -> vm.onClickRefusal()
+            R.id.b_3 -> vm.onClickClean()
+            R.id.b_4 -> vm.onClickBatchsProducts()
+            R.id.b_5 -> vm.onClickSave()
+        }
     }
 
     override fun getPagerItemView(container: ViewGroup, position: Int): View {
@@ -157,13 +173,13 @@ class GoodsListFragment : CoreFragment<FragmentGoodsListBinding, GoodsListViewMo
         return 2
     }
 
-    override fun onScanResult(data: String) {
-        vm.onScanResult(data)
+    override fun onResume() {
+        super.onResume()
+        vm.onResume()
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        binding?.viewPagerSettings = this
+    override fun onScanResult(data: String) {
+        vm.onScanResult(data)
     }
 
     override fun onKeyDown(keyCode: KeyCode): Boolean {
