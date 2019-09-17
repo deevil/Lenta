@@ -75,8 +75,8 @@ dependencies {
 
     implementation 'com.google.firebase:firebase-ml-vision:23.0.0'
     implementation 'com.google.firebase:firebase-core:17.2.0'
-    implementation "androidx.camera:camera-core:1.0.0-alpha04"
-    implementation "androidx.camera:camera-camera2:1.0.0-alpha04"
+    implementation "androidx.camera:camera-core:1.0.0-alpha05"
+    implementation "androidx.camera:camera-camera2:1.0.0-alpha05"
 
     // Dagger2
     kapt deps.dagger.compiler
