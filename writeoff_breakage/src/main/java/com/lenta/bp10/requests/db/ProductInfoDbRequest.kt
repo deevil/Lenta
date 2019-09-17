@@ -3,8 +3,8 @@ package com.lenta.bp10.requests.db
 import com.lenta.shared.fmp.resources.fast.ZmpUtz07V001
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.fmp.resources.dao_ext.*
+import com.lenta.shared.fmp.resources.slow.ZfmpUtz48V001
 import com.lenta.shared.fmp.resources.slow.ZmpUtz25V001
-import com.lenta.shared.fmp.resources.slow.ZmpUtz30V001
 import com.lenta.shared.fmp.resources.slow.ZmpUtz46V001
 import com.lenta.shared.functional.Either
 import com.lenta.shared.interactor.UseCase
@@ -21,8 +21,8 @@ class ProductInfoDbRequest
         ZmpUtz25V001(hyperHive)
     }
 
-    private val zmpUtz30V001: ZmpUtz30V001 by lazy {
-        ZmpUtz30V001(hyperHive)
+    private val zfmpUtz48V001: ZfmpUtz48V001 by lazy {
+        ZfmpUtz48V001(hyperHive)
     }
 
     private val zmpUtz07V001: ZmpUtz07V001 by lazy {
@@ -41,7 +41,7 @@ class ProductInfoDbRequest
         Logg.d { "eanInfo.material: ${eanInfo?.material}" }
 
 
-        val materialInfo = zmpUtz30V001.getMaterial(if (eanInfo != null) eanInfo.material else params.number)
+        val materialInfo = zfmpUtz48V001.getProductInfoByMaterial(if (eanInfo != null) eanInfo.material else params.number)
 
         if (materialInfo == null) {
             return Either.Left(Failure.GoodNotFound)

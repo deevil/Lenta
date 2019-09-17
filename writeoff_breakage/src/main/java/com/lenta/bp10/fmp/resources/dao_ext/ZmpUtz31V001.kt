@@ -1,10 +1,10 @@
 package com.lenta.bp10.fmp.resources.dao_ext
 
 import com.lenta.bp10.fmp.resources.fast.ZmpUtz31V001
-import com.lenta.shared.fmp.resources.slow.ZmpUtz30V001
+import com.lenta.shared.fmp.resources.slow.ZfmpUtz48V001
 
 @Suppress("INACCESSIBLE_TYPE", "UNREACHABLE_CODE")
-fun ZmpUtz31V001.getDefaultReason(taskType: String, sectionId: String, material: ZmpUtz30V001.ItemLocal_ET_MATERIALS?): String {
+fun ZmpUtz31V001.getDefaultReason(taskType: String, sectionId: String, material: ZfmpUtz48V001.ItemLocal_ET_MATNR_LIST?): String {
 
     if (material == null) {
         return ""
