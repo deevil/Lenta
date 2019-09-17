@@ -5,6 +5,8 @@ import androidx.lifecycle.viewModelScope
 import com.lenta.bp14.models.data.GoodsListTab
 import com.lenta.bp14.models.data.TaskManager
 import com.lenta.bp14.models.data.pojo.Good
+import com.lenta.bp14.models.getTaskName
+import com.lenta.bp14.models.work_list.IWorkListTask
 import com.lenta.bp14.platform.navigation.IScreenNavigator
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.SelectionItemsHelper
@@ -20,7 +22,7 @@ class GoodsListWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     @Inject
     lateinit var navigator: IScreenNavigator
     @Inject
-    lateinit var taskManager: TaskManager
+    lateinit var task: IWorkListTask
 
 
     val processedSelectionsHelper = SelectionItemsHelper()
@@ -30,7 +32,7 @@ class GoodsListWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
 
     val correctedSelectedPage = selectedPage.map { getCorrectedPagePosition(it) }
 
-    val taskName = MutableLiveData("Рабочий список от 23.07.19 23:15")
+    val taskName = MutableLiveData("")
 
     val numberField: MutableLiveData<String> = MutableLiveData("")
     val requestFocusToNumberField: MutableLiveData<Boolean> = MutableLiveData()
@@ -55,11 +57,12 @@ class GoodsListWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     init {
         viewModelScope.launch {
             requestFocusToNumberField.value = true
+            taskName.value = "${task.getTaskType().taskType} // ${task.getTaskName()}"
 
             // Тестовые данные
-            processingGoods.value = taskManager.getTestGoodList(3)
+            /*processingGoods.value = taskManager.getTestGoodList(3)
             processedGoods.value = taskManager.getTestGoodList(4)
-            searchGoods.value = taskManager.getTestGoodList(2)
+            searchGoods.value = taskManager.getTestGoodList(2)*/
         }
     }
 
@@ -85,7 +88,7 @@ class GoodsListWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     }
 
     fun onClickItemPosition(position: Int) {
-        taskManager.currentGood = getGoodByPosition(position)
+        //taskManager.currentGood = getGoodByPosition(position)
         navigator.openGoodInfoWlScreen()
     }
 

@@ -11,6 +11,8 @@ import com.lenta.bp14.models.check_price.CheckPriceTaskManager
 import com.lenta.bp14.models.check_price.ICheckPriceTask
 import com.lenta.bp14.models.general.GeneralRepo
 import com.lenta.bp14.models.general.IGeneralRepo
+import com.lenta.bp14.models.work_list.IWorkListTask
+import com.lenta.bp14.models.work_list.WorkListTaskManager
 import com.lenta.bp14.platform.IVibrateHelper
 import com.lenta.bp14.platform.VibrateHelper
 import com.lenta.bp14.platform.navigation.IScreenNavigator
@@ -80,6 +82,12 @@ class AppModule {
 
     @Provides
     @AppScope
+    internal fun provideWorkListTaskManager(timeMonitor: ITimeMonitor, gson: Gson): WorkListTaskManager {
+        return WorkListTaskManager(timeMonitor = timeMonitor, gson = gson)
+    }
+
+    @Provides
+    @AppScope
     internal fun provideGeneralRepo(): IGeneralRepo {
         return GeneralRepo()
     }
@@ -105,6 +113,11 @@ class AppModule {
     @Provides
     internal fun provideCheckListTask(checkListTaskManager: CheckListTaskManager): ICheckListTask {
         return checkListTaskManager.getTask()!!
+    }
+
+    @Provides
+    internal fun provideWorkListTask(workListTaskManager: WorkListTaskManager): IWorkListTask {
+        return workListTaskManager.getTask()!!
     }
 
     @Provides
