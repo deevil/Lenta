@@ -15,6 +15,7 @@ import com.lenta.bp14.platform.sound.ISoundPlayer
 import com.lenta.shared.models.core.StateFromToString
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.implementationOf
+import com.lenta.shared.utilities.extentions.map
 import kotlin.math.min
 
 class CheckPriceTask(
@@ -102,6 +103,15 @@ class CheckPriceTask(
         }
     }
 
+    override fun getCheckResultsForPrint(): LiveData<List<ICheckPriceResult>> {
+        return getCheckResults().map { checkResults ->
+            checkResults?.filter {
+                !it.isPrinted && !(it.isAllValid() ?: false)
+            }
+        }
+
+    }
+
 }
 
 fun ICheckPriceResult?.toCheckStatus(): CheckStatus? {
@@ -118,6 +128,7 @@ interface ICheckPriceTask : ITask {
     fun removeCheckResultsByMatNumbers(matNumbers: Set<String>)
     fun getProcessingActualPrice(): IActualPriceInfo?
     fun setCheckPriceStatus(isValid: Boolean?)
+    fun getCheckResultsForPrint(): LiveData<List<ICheckPriceResult>>
 
     var processingMatNumber: String?
 

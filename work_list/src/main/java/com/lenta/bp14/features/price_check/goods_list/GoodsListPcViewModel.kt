@@ -2,6 +2,7 @@ package com.lenta.bp14.features.price_check.goods_list
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.lenta.bp14.models.check_price.ICheckPriceResult
 import com.lenta.bp14.models.check_price.ICheckPriceTask
 import com.lenta.bp14.models.data.GoodsListTab
 import com.lenta.bp14.models.data.pojo.Good
@@ -37,20 +38,25 @@ class GoodsListPcViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     val requestFocusToNumberField: MutableLiveData<Boolean> = MutableLiveData()
 
     val processingGoods = MutableLiveData<List<Good>>(listOf())
-    val processedGoods by lazy {
-        task.getCheckResults().map { list ->
-            list?.reversed()?.mapIndexed { index, iCheckPriceResult ->
-                CheckPriceResultUi(
-                        matNr = iCheckPriceResult.matNr!!,
-                        position = list.size - index,
-                        name = "${iCheckPriceResult.matNr?.takeLast(6)} ${iCheckPriceResult.name}",
-                        isPriceValid = iCheckPriceResult.isPriceValid(),
-                        isPrinted = iCheckPriceResult.isPrinted
-                )
-            }
+
+    private val funcUiAdapter = { list: List<ICheckPriceResult>? ->
+        list?.reversed()?.mapIndexed { index, iCheckPriceResult ->
+            CheckPriceResultUi(
+                    matNr = iCheckPriceResult.matNr!!,
+                    position = list.size - index,
+                    name = "${iCheckPriceResult.matNr?.takeLast(6)} ${iCheckPriceResult.name}",
+                    isPriceValid = iCheckPriceResult.isPriceValid(),
+                    isPrinted = iCheckPriceResult.isPrinted
+            )
         }
     }
-    val searchGoods = MutableLiveData<List<CheckPriceResultUi>>(listOf())
+
+    val processedGoods by lazy {
+        task.getCheckResults().map(funcUiAdapter)
+    }
+    val searchGoods by lazy {
+        task.getCheckResultsForPrint().map(funcUiAdapter)
+    }
 
     private val selectedItemOnCurrentTab: MutableLiveData<Boolean> = correctedSelectedPage
             .combineLatest(processedSelectionsHelper.selectedPositions)
