@@ -7,11 +7,10 @@ class GeneralRepo : IGeneralRepo {
         return listOf(
                 TaskTypes.Empty.taskType,
                 TaskTypes.CheckList.taskType,
-                TaskTypes.CheckPrice.taskType
+                TaskTypes.CheckPrice.taskType,
+                TaskTypes.WorkList.taskType
         )
-
     }
-
 
 }
 
@@ -24,7 +23,6 @@ data class TaskType(
         override val taskType: String,
         override val taskName: String,
         override val annotation: String
-
 ) : ITaskType
 
 enum class TaskTypes(val taskType: ITaskType) {
@@ -50,6 +48,14 @@ enum class TaskTypes(val taskType: ITaskType) {
 
             )
     ),
+    WorkList(
+            taskType = TaskType(
+                    taskType = "РБС",
+                    taskName = "Рабочий список",
+                    annotation = "Рабочий список"
+
+            )
+    ),
     NotExposedProducts(
             taskType = TaskType(
                     taskType = "НВТ",
@@ -58,7 +64,6 @@ enum class TaskTypes(val taskType: ITaskType) {
 
             )
     )
-
 }
 
 interface ITaskType {

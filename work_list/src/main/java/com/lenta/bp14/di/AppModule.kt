@@ -97,10 +97,12 @@ class AppModule {
     internal fun provideGeneralTaskManager(
             checkPriceTaskManager: CheckPriceTaskManager,
             checkListTaskManager: CheckListTaskManager,
+            workListTaskManager: WorkListTaskManager,
             timeMonitor: ITimeMonitor): IGeneralTaskManager {
         return GeneralTaskManager(
                 checkPriceTaskManager = checkPriceTaskManager,
                 checkListTaskManager = checkListTaskManager,
+                workListTaskManager = workListTaskManager,
                 timeMonitor = timeMonitor
         )
     }

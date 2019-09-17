@@ -41,7 +41,7 @@ class CheckListTaskManager(
     }
 
     override fun getCurrentTaskType(): ITaskType? {
-        return if (getTask() != null) TaskTypes.CheckPrice.taskType else null
+        return if (getTask() != null) TaskTypes.CheckList.taskType else null
     }
 
 }
