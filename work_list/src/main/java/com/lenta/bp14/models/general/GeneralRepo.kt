@@ -31,29 +31,27 @@ enum class TaskTypes(val taskType: ITaskType) {
                     taskType = "",
                     taskName = "Не выбрано",
                     annotation = "Не выбрано"
-
-            )),
+            )
+    ),
     CheckList(
             taskType = TaskType(
                     taskType = "ЧКЛ",
                     taskName = "Чек лист",
                     annotation = "Чек лист"
-
-            )),
+            )
+    ),
     CheckPrice(
             taskType = TaskType(
                     taskType = "СЦН",
                     taskName = "Сверка цен",
                     annotation = "Сверка цен"
-
             )
     ),
     WorkList(
             taskType = TaskType(
                     taskType = "РБС",
                     taskName = "Рабочий список",
-                    annotation = "Рабочий список"
-
+                    annotation = "Задание для создания рабочего списка"
             )
     ),
     NotExposedProducts(
@@ -61,7 +59,6 @@ enum class TaskTypes(val taskType: ITaskType) {
                     taskType = "НВТ",
                     taskName = "Невыставленный товар",
                     annotation = "Невыставленный товар"
-
             )
     )
 }

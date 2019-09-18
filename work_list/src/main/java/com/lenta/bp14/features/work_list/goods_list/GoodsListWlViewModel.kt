@@ -3,12 +3,13 @@ package com.lenta.bp14.features.work_list.goods_list
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp14.models.data.GoodsListTab
-import com.lenta.bp14.models.data.TaskManager
-import com.lenta.bp14.models.data.pojo.Good
 import com.lenta.bp14.models.getTaskName
-import com.lenta.bp14.models.work_list.IWorkListTask
+import com.lenta.bp14.models.work_list.Good
+import com.lenta.bp14.models.work_list.WorkListTask
 import com.lenta.bp14.platform.navigation.IScreenNavigator
+import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.platform.viewmodel.CoreViewModel
+import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.databinding.PageSelectionListener
@@ -22,7 +23,7 @@ class GoodsListWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     @Inject
     lateinit var navigator: IScreenNavigator
     @Inject
-    lateinit var task: IWorkListTask
+    lateinit var task: WorkListTask
 
 
     val processedSelectionsHelper = SelectionItemsHelper()
@@ -59,21 +60,15 @@ class GoodsListWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
             requestFocusToNumberField.value = true
             taskName.value = "${task.getTaskType().taskType} // ${task.getTaskName()}"
 
-            // Тестовые данные
-            /*processingGoods.value = taskManager.getTestGoodList(3)
-            processedGoods.value = taskManager.getTestGoodList(4)
-            searchGoods.value = taskManager.getTestGoodList(2)*/
+            processingGoods.value = task.processed
+            processedGoods.value = task.processed
         }
     }
 
     override fun onPageSelected(position: Int) {
         selectedPage.value = position
+        task.setCurrentList(getCorrectedPagePosition(position))
     }
-
-    override fun onOkInSoftKeyboard(): Boolean {
-        return false
-    }
-
 
     fun onClickSave() {
 
@@ -82,6 +77,90 @@ class GoodsListWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     fun onClickDelete() {
 
     }
+
+    override fun onOkInSoftKeyboard(): Boolean {
+        checkEnteredNumber(numberField.value ?: "")
+        return true
+    }
+
+    private fun checkEnteredNumber(number: String) {
+        number.length.let { length ->
+            if (length < Constants.COMMON_SAP_LENGTH) {
+                // Сообщение - Данный товар не найден в справочнике
+                navigator.showGoodNotFound()
+                return
+            }
+
+            if (length >= Constants.COMMON_SAP_LENGTH) {
+                when (length) {
+                    Constants.COMMON_SAP_LENGTH -> addGoodByMaterial(number)
+                    Constants.SAP_OR_BAR_LENGTH -> {
+                        // Выбор - Введено 12 знаков. Какой код вы ввели? - SAP-код / Штрихкод
+                        navigator.showTwelveCharactersEntered(
+                                sapCallback = { addGoodByMatcode(number) },
+                                barCallback = { addGoodByEan(number) }
+                        )
+                    }
+                    else -> addGoodByEan(number)
+                }
+            }
+        }
+    }
+
+    private fun addGoodByEan(ean: String) {
+        Logg.d { "Entered EAN: $ean" }
+        viewModelScope.launch {
+            val good = task.getGoodByEan(ean)
+            if (good != null) {
+                task.currentGood = good
+                navigator.openGoodInfoWlScreen()
+            }
+        }
+    }
+
+    private fun addGoodByMaterial(material: String) {
+        Logg.d { "Entered MATERIAL: $material" }
+        viewModelScope.launch {
+            val good = task.getGoodByEan(material)
+            if (good != null) {
+                task.currentGood = good
+                navigator.openGoodInfoWlScreen()
+            }
+        }
+    }
+
+    private fun addGoodByMatcode(matcode: String) {
+        Logg.d { "Entered MATCODE: $matcode" }
+        viewModelScope.launch {
+
+        }
+    }
+
+    /*private fun addGood(good: com.lenta.bp14.models.check_list.Good?) {
+        if (good == null) {
+            // Сообщение - Данный товар не найден в справочнике
+            navigator.showGoodNotFound()
+            return
+        }
+
+        val goodsList = processed.value!!.toMutableList()
+        val existGood = goodsList.find { it.ean == good.ean }
+        if (existGood != null) {
+            val index = goodsList.indexOf(existGood)
+            goodsList[index].quantity.value = "" + if (good.uom.isOnlyInt()) {
+                existGood.quantity.value!!.toInt() + good.quantity.value!!.toInt()
+            } else {
+                val goodQuantity = good.quantity.value!!.toBigDecimal()
+                val existGoodQuantity = existGood.quantity.value!!.toBigDecimal()
+                existGoodQuantity.plus(goodQuantity).toString().dropLastWhile { it == '0' || it == '.' }
+            }
+        } else {
+            goodsList.add(0, good)
+        }
+
+        processed.value = goodsList.toList()
+        numberField.value = ""
+    }*/
 
     fun onClickFilter() {
         navigator.openSearchFilterWlScreen()
@@ -115,3 +194,10 @@ class GoodsListWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     }
 
 }
+
+data class WorkListUi(
+        val position: Int,
+        val material: String,
+        val name: String,
+        val quantity: Int
+)

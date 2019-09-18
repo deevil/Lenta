@@ -10,15 +10,15 @@ import com.lenta.shared.platform.time.ITimeMonitor
 class WorkListTaskManager(
         private val timeMonitor: ITimeMonitor,
         private val gson: Gson
-) : ITaskManager<IWorkListTask, WorkListTaskDescription> {
+) : ITaskManager<WorkListTask, WorkListTaskDescription> {
 
-    private var workListTask: IWorkListTask? = null
+    private var workListTask: WorkListTask? = null
 
-    override fun getTask(): IWorkListTask? {
+    override fun getTask(): WorkListTask? {
         return workListTask
     }
 
-    override fun newTask(taskDescription: WorkListTaskDescription): IWorkListTask? {
+    override fun newTask(taskDescription: WorkListTaskDescription): WorkListTask? {
         workListTask = WorkListTask(
                 workListRepo = WorkListRepo(),
                 taskDescription = taskDescription,
@@ -36,7 +36,7 @@ class WorkListTaskManager(
         return true
     }
 
-    override fun setTask(inventoryTask: IWorkListTask?) {
+    override fun setTask(inventoryTask: WorkListTask?) {
         workListTask = inventoryTask
     }
 

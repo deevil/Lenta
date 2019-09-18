@@ -6,12 +6,12 @@ import com.lenta.bp14.models.GeneralTaskManager
 import com.lenta.bp14.models.IGeneralTaskManager
 import com.lenta.bp14.models.check_list.CheckListTaskManager
 import com.lenta.bp14.models.check_list.ICheckListTask
-import com.lenta.bp14.models.data.TaskManager
 import com.lenta.bp14.models.check_price.CheckPriceTaskManager
 import com.lenta.bp14.models.check_price.ICheckPriceTask
+import com.lenta.bp14.models.data.TaskManager
 import com.lenta.bp14.models.general.GeneralRepo
 import com.lenta.bp14.models.general.IGeneralRepo
-import com.lenta.bp14.models.work_list.IWorkListTask
+import com.lenta.bp14.models.work_list.WorkListTask
 import com.lenta.bp14.models.work_list.WorkListTaskManager
 import com.lenta.bp14.platform.IVibrateHelper
 import com.lenta.bp14.platform.VibrateHelper
@@ -118,7 +118,7 @@ class AppModule {
     }
 
     @Provides
-    internal fun provideWorkListTask(workListTaskManager: WorkListTaskManager): IWorkListTask {
+    internal fun provideWorkListTask(workListTaskManager: WorkListTaskManager): WorkListTask {
         return workListTaskManager.getTask()!!
     }
 
