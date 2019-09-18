@@ -1,6 +1,8 @@
 package com.lenta.bp14.models.work_list.repo
 
 import com.lenta.bp14.models.work_list.CommonGoodInfo
+import com.lenta.bp14.models.work_list.GoodOptions
+import com.lenta.shared.models.core.MatrixType
 import com.lenta.shared.models.core.Uom
 
 class WorkListRepo {
@@ -13,7 +15,13 @@ class WorkListRepo {
                 name = "Товар",
                 unit = Uom.ST,
                 goodGroup = "123456",
-                purchaseGroup = "1111"
+                purchaseGroup = "1111",
+                options = GoodOptions(
+                        matrixType = MatrixType.Active,
+                        section = "5",
+                        healthFood = true,
+                        novelty = true
+                )
         )
     }
 

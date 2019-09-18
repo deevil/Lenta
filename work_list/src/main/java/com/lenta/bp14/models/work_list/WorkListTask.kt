@@ -7,8 +7,11 @@ import com.lenta.bp14.models.data.GoodsListTab
 import com.lenta.bp14.models.general.ITaskType
 import com.lenta.bp14.models.general.TaskTypes
 import com.lenta.bp14.models.work_list.repo.WorkListRepo
+import com.lenta.shared.models.core.MatrixType
 import com.lenta.shared.models.core.Uom
 import com.lenta.shared.platform.time.ITimeMonitor
+import com.lenta.shared.utilities.extentions.getFormattedDate
+import java.util.*
 
 class WorkListTask(
         private val workListRepo: WorkListRepo,
@@ -68,11 +71,11 @@ class WorkListTask(
 
 data class Good(
         var number: Int,
-        var processed: Boolean = false,
         val common: CommonGoodInfo,
-        val additional: AdditionalGoodInfo? = null
+        val additional: AdditionalGoodInfo? = null,
+        val providers: MutableList<Provider> = mutableListOf(),
+        val stocks: MutableList<Stock> = mutableListOf()
 )
-
 
 data class CommonGoodInfo(
         val ean: String,
@@ -81,16 +84,44 @@ data class CommonGoodInfo(
         val name: String,
         val unit: Uom,
         var goodGroup: String,
-        var purchaseGroup: String
+        var purchaseGroup: String,
+        var quantity: Int = 0,
+        val shelfLifeDays: Int = 5,
+        val options: GoodOptions
 )
 
 
 data class AdditionalGoodInfo(
-        val ean: String,
-        val material: String,
-        val matcode: String,
-        val name: String,
-        val unit: Uom,
-        var goodGroup: String,
-        var purchaseGroup: String
+        val ean: String
+
 )
+
+
+data class GoodOptions(
+        val matrixType: MatrixType,
+        val section: String,
+        val alcohol: Boolean = false,
+        val mark: Boolean = false,
+        val healthFood: Boolean = false,
+        val novelty: Boolean = false
+)
+
+data class Stock(
+        val id: Int,
+        val storageNumber: String,
+        val quantity: Int
+)
+
+data class Provider(
+        val id: Int,
+        val code: String,
+        val name: String,
+        val kipStart: Date,
+        val kipEnd: Date
+) {
+
+    fun getKipPeriod(): String {
+        return "${kipStart.getFormattedDate()} - ${kipEnd.getFormattedDate()}"
+    }
+
+}

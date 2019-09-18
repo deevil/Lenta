@@ -3,10 +3,10 @@ package com.lenta.bp14.features.work_list.good_info
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp14.models.data.ShelfLifeType
-import com.lenta.bp14.models.data.TaskManager
-import com.lenta.bp14.models.data.pojo.Good
-import com.lenta.bp14.models.data.pojo.Provider
-import com.lenta.bp14.models.data.pojo.Stock
+import com.lenta.bp14.models.work_list.Good
+import com.lenta.bp14.models.work_list.Provider
+import com.lenta.bp14.models.work_list.Stock
+import com.lenta.bp14.models.work_list.WorkListTask
 import com.lenta.bp14.platform.navigation.IScreenNavigator
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.Logg
@@ -25,7 +25,7 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
     @Inject
     lateinit var navigator: IScreenNavigator
     @Inject
-    lateinit var taskManager: TaskManager
+    lateinit var task: WorkListTask
 
 
     val selectedPage = MutableLiveData(0)
@@ -35,7 +35,7 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
     val quantity = MutableLiveData<String>()
     val totalQuantity: MutableLiveData<Int> = quantity.map {
         val currentQuantity = if (it?.isNotEmpty() == true) it.toInt() else 0
-        val goodQuantity = if (good.value != null) good.value!!.quantity else 0
+        val goodQuantity = if (good.value != null) good.value!!.common.quantity else 0
         currentQuantity + goodQuantity
     }
 
@@ -64,7 +64,7 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     val daysLeft: MutableLiveData<Int> = enteredDate.combineLatest(shelfLifePosition).map {
-        val shelfLifeDays = good.value?.shelfLifeDays
+        val shelfLifeDays = good.value?.common?.shelfLifeDays
         val enteredDate = it?.first
         val shelfLifeType = it?.second
 
@@ -91,11 +91,11 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
 
     init {
         viewModelScope.launch {
-            good.value = taskManager.currentGood
-            stocks.value = good.value?.stocks
-            providers.value = good.value?.providers
+            good.value = task.currentGood
+            stocks.value = task.currentGood?.stocks
+            providers.value = task.currentGood?.providers
 
-            quantity.value = "1"
+            quantity.value = task.currentGood?.common?.quantity.toString()
         }
     }
 
@@ -128,34 +128,6 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     fun onClickApply() {
-
-    }
-
-    fun onClickBtn1() {
-
-    }
-
-    fun onClickBtn2() {
-
-    }
-
-    fun onClickBtn3() {
-
-    }
-
-    fun onClickBtn4() {
-
-    }
-
-    fun onClickBtn5() {
-
-    }
-
-    fun onClickBtn6() {
-
-    }
-
-    fun onClickBtn7() {
 
     }
 
