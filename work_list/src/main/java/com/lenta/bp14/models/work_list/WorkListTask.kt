@@ -3,6 +3,7 @@ package com.lenta.bp14.models.work_list
 import com.google.gson.Gson
 import com.lenta.bp14.models.ITask
 import com.lenta.bp14.models.ITaskDescription
+import com.lenta.bp14.models.data.GoodType
 import com.lenta.bp14.models.data.GoodsListTab
 import com.lenta.bp14.models.general.ITaskType
 import com.lenta.bp14.models.general.TaskTypes
@@ -99,9 +100,8 @@ data class AdditionalGoodInfo(
 
 data class GoodOptions(
         val matrixType: MatrixType,
+        val goodType: GoodType,
         val section: String,
-        val alcohol: Boolean = false,
-        val mark: Boolean = false,
         val healthFood: Boolean = false,
         val novelty: Boolean = false
 )

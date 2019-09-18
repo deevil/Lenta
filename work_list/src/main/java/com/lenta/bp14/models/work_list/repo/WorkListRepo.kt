@@ -1,5 +1,6 @@
 package com.lenta.bp14.models.work_list.repo
 
+import com.lenta.bp14.models.data.GoodType
 import com.lenta.bp14.models.work_list.CommonGoodInfo
 import com.lenta.bp14.models.work_list.GoodOptions
 import com.lenta.shared.models.core.MatrixType
@@ -19,8 +20,7 @@ class WorkListRepo {
                 options = GoodOptions(
                         matrixType = MatrixType.Active,
                         section = "5",
-                        healthFood = true,
-                        novelty = true
+                        goodType = GoodType.COMMON
                 )
         )
     }

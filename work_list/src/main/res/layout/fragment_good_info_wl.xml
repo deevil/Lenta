@@ -8,11 +8,15 @@
 
         <variable
             name="vm"
-            type="com.lenta.bp14.features.work_list.good_info.GoodInfoWlViewModel"/>
+            type="com.lenta.bp14.features.work_list.good_info.GoodInfoWlViewModel" />
+
+        <variable
+            name="options"
+            type="com.lenta.bp14.models.work_list.GoodOptions" />
 
         <variable
             name="viewPagerSettings"
-            type="com.lenta.shared.utilities.databinding.ViewPagerSettings"/>
+            type="com.lenta.shared.utilities.databinding.ViewPagerSettings" />
 
     </data>
 
@@ -45,7 +49,7 @@
                 app:tabSelectedTextColor="@color/colorTabIndicator"
                 app:tabTextAppearance="@style/TabLayoutStyle"
                 app:tabTextColor="@color/colorWhite"
-                tools:targetApi="lollipop"/>
+                tools:targetApi="lollipop" />
 
         </androidx.viewpager.widget.ViewPager>
 
@@ -53,56 +57,77 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:gravity="center_vertical"
             android:orientation="horizontal">
 
-            <ImageView
-                android:id="@+id/btn_1"
+            <LinearLayout
                 android:layout_width="0dp"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:src="@drawable/ic_round_a_48dp"
-                android:layout_height="wrap_content"/>
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:background="@drawable/bg_white_circle"
+                    android:gravity="center"
+                    android:textSize="16sp"
+                    app:matrixType="@{options.matrixType}"
+                    tools:text="A" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:background="@drawable/bg_white_circle"
+                    android:gravity="center"
+                    android:text="@{options.section}"
+                    android:textSize="16sp"
+                    tools:text="02" />
+
+            </LinearLayout>
 
             <ImageView
-                android:id="@+id/btn_2"
                 android:layout_width="0dp"
+                android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:src="@drawable/ic_round_two_48dp"
-                android:layout_height="wrap_content"/>
+                app:goodTypeIcon="@{options.goodType}"
+                tools:src="@drawable/ic_kandy_48dp" />
 
             <ImageView
-                android:id="@+id/btn_3"
                 android:layout_width="0dp"
+                android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:src="@drawable/ic_kandy_48dp"
-                android:layout_height="wrap_content"/>
+                android:visibility="@{options.novelty}"
+                tools:src="@drawable/ic_new_48dp" />
 
             <ImageView
-                android:id="@+id/btn_4"
                 android:layout_width="0dp"
+                android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:src="@drawable/ic_new_48dp"
-                android:layout_height="wrap_content"/>
+                android:visibility="@{options.healthFood}"
+                tools:src="@drawable/ic_natural_48dp" />
 
             <ImageView
-                android:id="@+id/btn_5"
                 android:layout_width="0dp"
+                android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:src="@drawable/ic_natural_48dp"
-                android:layout_height="wrap_content"/>
+                android:src="@drawable/ic_scan_qrcode_48dp" />
 
             <ImageView
-                android:id="@+id/btn_6"
                 android:layout_width="0dp"
+                android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:src="@drawable/ic_scan_qrcode_48dp"
-                android:layout_height="wrap_content"/>
-
-            <ImageView
-                android:id="@+id/btn_7"
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:src="@drawable/ic_scan_barcode_48dp"
-                android:layout_height="wrap_content"/>
+                android:src="@drawable/ic_scan_barcode_48dp" />
 
         </LinearLayout>
 

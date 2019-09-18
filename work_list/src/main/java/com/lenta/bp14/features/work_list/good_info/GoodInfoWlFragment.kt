@@ -37,11 +37,11 @@ class GoodInfoWlFragment : CoreFragment<FragmentGoodInfoWlBinding, GoodInfoWlVie
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
         topToolbarUiModel.description.value = getString(R.string.goods_info)
 
-        viewLifecycleOwner.apply {
+        /*viewLifecycleOwner.apply {
             vm.good.observe(this, Observer { good ->
                 topToolbarUiModel.title.value = good.getFormattedMaterialWithName()
             })
-        }
+        }*/
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
@@ -136,6 +136,7 @@ class GoodInfoWlFragment : CoreFragment<FragmentGoodInfoWlBinding, GoodInfoWlVie
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding?.viewPagerSettings = this
+        binding?.options = vm.good.value?.common?.options
 
         initSpinners()
     }
