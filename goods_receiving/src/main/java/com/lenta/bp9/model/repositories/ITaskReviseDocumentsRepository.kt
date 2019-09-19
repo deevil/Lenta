@@ -26,4 +26,6 @@ interface ITaskReviseDocumentsRepository {
     fun updateInvoiceInfo(invoice: InvoiceRevise)
 
     fun clear()
+
+    fun changeDeliveryDocumentStatus(documentID: String)
 }

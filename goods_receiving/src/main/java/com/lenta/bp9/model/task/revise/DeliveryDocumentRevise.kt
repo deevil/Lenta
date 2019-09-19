@@ -7,7 +7,7 @@ data class DeliveryDocumentRevise(
         val documentID: String, //ID Документа
         val documentName: String, //Название документа
         val isObligatory: Boolean,  // ??? - Общий флаг
-        val isCheck: Boolean,   // ??? - Общий флаг
+        var isCheck: Boolean,   // ??? - Общий флаг
         val documentType: DocumentType // Тип документа
 ) {
 
@@ -51,11 +51,15 @@ data class DeliveryDocumentReviseRestData(
 
 //TODO: find and add all document types
 enum class DocumentType(val documentTypeString: String) {
-    None("");
+    None(""),
+    Simple("0"),
+    Invoice("1");
 
     companion object {
         fun from(documentTypeString: String): DocumentType {
             return when (documentTypeString) {
+                "0" -> Simple
+                "2" -> Invoice
                 else -> None
             }
         }

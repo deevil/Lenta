@@ -53,4 +53,6 @@
     <string name="checked">Сверенные</string>
     <string name="information">Информация</string>
     <string name="delivery_documents">Документы по поставке</string>
+    <string name="document">Документ</string>
+    <string name="revise">Сверка</string>
 </resources>

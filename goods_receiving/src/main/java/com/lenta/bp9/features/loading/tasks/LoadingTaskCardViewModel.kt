@@ -87,7 +87,11 @@ class LoadingTaskCardViewModel : CoreLoadingViewModel() {
             val documentNotifications = result.documentNotifications.map { TaskNotification.from(it) }
             val productNotifications = result.productNotifications.map { TaskNotification.from(it) }
             val conditionNotifications = result.conditionNotifications.map { TaskNotification.from(it) }
-            val deliveryDocumentsRevise = result.deliveryDocumentsRevise.map { DeliveryDocumentRevise.from(it) }
+            val deliveryDocumentsRevise = result.deliveryDocumentsRevise.map { DeliveryDocumentRevise.from(it) }.toMutableList()
+            deliveryDocumentsRevise.add(DeliveryDocumentRevise(documentID = "123", documentName = "Простой 1", documentType = DocumentType.Simple, isCheck = false, isObligatory = false))
+            deliveryDocumentsRevise.add(DeliveryDocumentRevise(documentID = "124", documentName = "Простой 2", documentType = DocumentType.Simple, isCheck = false, isObligatory = true))
+            deliveryDocumentsRevise.add(DeliveryDocumentRevise(documentID = "125", documentName = "Простой 3", documentType = DocumentType.Simple, isCheck = false, isObligatory = false))
+
             val deliveryProductDocumentsRevise = result.deliveryProductDocumentsRevise.map { DeliveryProductDocumentRevise.from(it) }
             val productBatchesRevise = result.productBatchesRevise.map { ProductBatchRevise.from(it) }
             val formsABRussianRevise = result.formsABRussianRevise.map { FormABRussianRevise.from(it) }
