@@ -11,8 +11,8 @@ import com.lenta.shared.view.OnPositionClickListener
 class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
 
     val productInfo: MutableLiveData<ReceivingProductInfo> = MutableLiveData()
-    val spinList: MutableLiveData<List<String>> = MutableLiveData()
-    val spinSelectedPosition: MutableLiveData<Int> = MutableLiveData(0)
+    val spinQualityList: MutableLiveData<List<String>> = MutableLiveData()
+    val spinQualitySelectedPosition: MutableLiveData<Int> = MutableLiveData(0)
     val suffix: MutableLiveData<String> = MutableLiveData()
 
     val count: MutableLiveData<String> = MutableLiveData("0")

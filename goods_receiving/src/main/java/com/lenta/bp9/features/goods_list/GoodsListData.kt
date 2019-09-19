@@ -6,8 +6,8 @@ import com.lenta.shared.utilities.databinding.Evenable
 data class GoodsListCountedItem(
         val number: Int,
         val name: String,
-        val quantity: String,
-        val minus: String,
+        val accept: String,
+        val refusal: String,
         val even: Boolean,
         val productInfo: ReceivingProductInfo
 ) : Evenable {
@@ -18,7 +18,6 @@ data class GoodsListCountedItem(
 data class GoodsListWithoutBarcodeItem(
         val number: Int,
         val name: String,
-        val quantity: String,
         val even: Boolean,
         val productInfo: ReceivingProductInfo
 ) : Evenable {

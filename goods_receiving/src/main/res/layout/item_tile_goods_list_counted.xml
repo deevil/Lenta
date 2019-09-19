@@ -116,23 +116,23 @@
             app:layout_constraintStart_toStartOf="parent" />
 
         <TextView
-            android:id="@+id/tv_plan"
+            android:id="@+id/tv_accept"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="10dp"
             android:layout_marginEnd="8dp"
             android:ellipsize="end"
             android:gravity="start|center_vertical"
             android:maxLines="1"
-            android:text='@{vm.quantity}'
+            android:text='@{vm.accept}'
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/div_vert2"
             app:layout_constraintTop_toTopOf="parent"
             tools:text="+ 10 шт" />
 
         <TextView
-            android:id="@+id/tv_minus"
+            android:id="@+id/tv_refusal"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="12dp"
@@ -140,12 +140,11 @@
             android:ellipsize="end"
             android:gravity="start|center_vertical"
             android:maxLines="1"
-            android:text='@{vm.minus}'
+            android:text='@{vm.refusal}'
             android:textColor="@color/color_pressed_red"
-            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@+id/vertical_guidline_2"
-            app:layout_constraintTop_toBottomOf="@+id/tv_plan"
+            app:layout_constraintTop_toBottomOf="@+id/tv_accept"
             tools:text="- 10 шт" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

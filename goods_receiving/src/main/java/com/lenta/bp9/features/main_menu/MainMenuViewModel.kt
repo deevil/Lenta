@@ -93,7 +93,28 @@ class MainMenuViewModel : CoreViewModel() {
                     isSet = false,
                     sectionId = "01",
                     matrixType = MatrixType.Active,
-                    materialType = ""
+                    materialType = "",
+                    origQuantity = "",
+                    orderQuantity = "",
+                    quantityCapitalized = "",
+                    overdToleranceLimit = "",
+                    underdToleranceLimit = "",
+                    upLimitCondAmount = "",
+                    quantityInvest = "",
+                    roundingSurplus = "",
+                    roundingShortages = "",
+                    isNoEAN = false,
+                    isWithoutRecount = false,
+                    isUFF = false,
+                    isNotEdit = false,
+                    totalExpirationDate = "",
+                    remainingShelfLife = "",
+                    isRus = false,
+                    isBoxFl = false,
+                    isMarkFl = false,
+                    isVet = false,
+                    numberBoxesControl = "",
+                    numberStampsControl = ""
             ))
         }
         screenNavigator.openGoodsListScreen()

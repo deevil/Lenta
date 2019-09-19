@@ -38,7 +38,7 @@ class GoodsInfoFragment : CoreFragment<FragmentGoodsInfoBinding, GoodsInfoViewMo
         provideViewModel(GoodsInfoViewModel::class.java).let {vm ->
             getAppComponent()?.inject(vm)
             vm.productInfo.value = this.productInfo
-            vm.spinList.value = listOf(getString(R.string.norm), getString(R.string.reject))
+            vm.spinQualityList.value = listOf(getString(R.string.norm), getString(R.string.reject))
             return vm
         }
     }

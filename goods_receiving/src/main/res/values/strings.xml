@@ -56,4 +56,6 @@
     <string name="delivery_documents">Документы по поставке</string>
     <string name="norm">Норма</string>
     <string name="reject">Брак</string>
+    <string name="accept">Принять</string>
+    <string name="refusal">Отказать</string>
 </resources>

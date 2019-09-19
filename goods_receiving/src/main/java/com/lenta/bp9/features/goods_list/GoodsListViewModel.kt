@@ -53,8 +53,8 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
                                         number = index + 1,
                                         name = "${productInfo.getMaterialLastSix()} ${productInfo.description}",
                                         //quantity = "${it.taskRepository.getTotalCountForProduct(productInfo).toStringFormatted()} ${productInfo.uom.name}",
-                                        quantity = "+ 20 ${productInfo.uom.name}",
-                                        minus = "- 10 ${productInfo.uom.name}",
+                                        accept = "+ 20 ${productInfo.uom.name}",
+                                        refusal = "- 10 ${productInfo.uom.name}",
                                         even = index % 2 == 0,
                                         productInfo = productInfo)
                             }
@@ -74,8 +74,6 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
                                         //todo
                                         number = index + 1,
                                         name = "${productInfo.getMaterialLastSix()} ${productInfo.description}",
-                                        //quantity = "${it.taskRepository.getTotalCountForProduct(productInfo).toStringFormatted()} ${productInfo.uom.name}",
-                                        quantity = "30 ${productInfo.uom.name}",
                                         even = index % 2 == 0,
                                         productInfo = productInfo)
                             }
@@ -155,7 +153,28 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
                 isSet = false,
                 sectionId = "01",
                 matrixType = MatrixType.Active,
-                materialType = ""
+                materialType = "",
+                origQuantity = "",
+                orderQuantity = "",
+                quantityCapitalized = "",
+                overdToleranceLimit = "",
+                underdToleranceLimit = "",
+                upLimitCondAmount = "",
+                quantityInvest = "",
+                roundingSurplus = "",
+                roundingShortages = "",
+                isNoEAN = false,
+                isWithoutRecount = false,
+                isUFF = false,
+                isNotEdit = false,
+                totalExpirationDate = "",
+                remainingShelfLife = "",
+                isRus = false,
+                isBoxFl = false,
+                isMarkFl = false,
+                isVet = false,
+                numberBoxesControl = "",
+                numberStampsControl = ""
         ))
     }
 }
