@@ -53,7 +53,7 @@
                     <TextView
                         android:id="@+id/tv_storage_places"
                         style="@style/CellTextStyle"
-                        android:onClick="@{(v) -> vm.showFullInfo()}"
+                        android:onClick="@{(view) -> vm.showFullInfo(view)}"
                         android:text="@{good.additional.storagePlaces}"
                         tools:text="125635; 652148; 635894" />
 
@@ -191,7 +191,7 @@
                     <TextView
                         android:id="@+id/tv_promotion_period"
                         style="@style/CellTextStyle"
-                        android:onClick="@{(v) -> vm.showFullInfo()}"
+                        android:onClick="@{(view) -> vm.showFullInfo(view)}"
                         android:text="@{good.additional.promo.period}"
                         tools:text="Период 30.05.19 - 12.09.19" />
 

@@ -205,7 +205,7 @@
 
                     <TextView
                         style="@style/CellTextStyle"
-                        android:text="@{String.valueOf(common.marks)}"
+                        android:text="@{String.valueOf(good.common.marks)}"
                         tools:text="10" />
 
                 </LinearLayout>

@@ -1,10 +1,12 @@
 package com.lenta.bp14.models.work_list.repo
 
 import com.lenta.bp14.models.data.GoodType
-import com.lenta.bp14.models.work_list.CommonGoodInfo
-import com.lenta.bp14.models.work_list.GoodOptions
+import com.lenta.bp14.models.work_list.*
 import com.lenta.shared.models.core.MatrixType
 import com.lenta.shared.models.core.Uom
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class WorkListRepo {
 
@@ -26,6 +28,28 @@ class WorkListRepo {
                         goodType = GoodType.COMMON
                 )
         )
+    }
+
+    fun getAdditionalGoodInfo(ean: String): AdditionalGoodInfo? {
+        GlobalScope.launch {
+            delay(15000)
+        }
+
+        return AdditionalGoodInfo(
+                storagePlaces = "125635; 652148; 635894",
+                minStock = (10..50).random(),
+                movement = Movement(
+                        inventory = "19.07.19 (-25 шт.)",
+                        arrival = "29.07.19 (+50 шт; Z5)"
+                ),
+                price = Price(
+                        commonPrice = (110..140).random(),
+                        discountPrice = (80..100).random()
+                ),
+                promo = Promo(
+                        name = "Распродажа кукурузы ТК 0007",
+                        period = "Период 30.05.19 - 12.09.19"
+                ))
     }
 
 }

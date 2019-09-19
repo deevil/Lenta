@@ -1,5 +1,6 @@
 package com.lenta.bp14.features.work_list.good_info
 
+import android.view.View
 import android.widget.TextView
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
@@ -97,11 +98,18 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
     init {
         viewModelScope.launch {
             good.value = task.currentGood
-            stocks.value = good.value?.additional?.stocks
-            providers.value = good.value?.additional?.providers
+            stocks.value = good.value?.stocks
+            providers.value = good.value?.providers
             title.value = good.value?.getFormattedMaterialWithName()
 
             quantity.value = good.value?.common?.quantity.toString()
+
+            // Загрузка дополнительных данных
+            viewModelScope.launch {
+                showProgress.value = true
+                good.value?.additional = task.getAdditionalGoodInfo(good.value!!.common.ean)
+                showProgress.value = false
+            }
         }
     }
 
@@ -137,7 +145,8 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
 
     }
 
-    fun showFullInfo(textView: TextView) {
+    fun showFullInfo(view: View) {
+        val textView = view as TextView
         navigator.openInfoScreen(textView.text.toString())
     }
 

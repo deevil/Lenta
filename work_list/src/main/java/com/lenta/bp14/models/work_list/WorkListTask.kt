@@ -46,6 +46,10 @@ class WorkListTask(
         return null
     }
 
+    fun getAdditionalGoodInfo(ean: String): AdditionalGoodInfo? {
+        return workListRepo.getAdditionalGoodInfo(ean)
+    }
+
     fun setCurrentList(tabPosition: Int) {
         currentList = when (tabPosition) {
             GoodsListTab.PROCESSED.position -> processed
@@ -54,9 +58,6 @@ class WorkListTask(
             else -> processed
         }
     }
-
-
-
 
 
     override fun getTaskType(): ITaskType {
@@ -73,7 +74,9 @@ class WorkListTask(
 data class Good(
         var number: Int,
         val common: CommonGoodInfo,
-        val additional: AdditionalGoodInfo? = null
+        var additional: AdditionalGoodInfo? = null,
+        val providers: MutableList<Provider>? = null,
+        val stocks: MutableList<Stock>? = null
 ) {
 
     fun getFormattedMaterialWithName(): String? {
@@ -115,10 +118,7 @@ data class AdditionalGoodInfo(
         val minStock: Int,
         val movement: Movement,
         val price: Price,
-        val promo: Promo,
-
-        val providers: MutableList<Provider> = mutableListOf(),
-        val stocks: MutableList<Stock> = mutableListOf()
+        val promo: Promo
 )
 
 
@@ -157,11 +157,11 @@ data class Movement(
 
 data class Price(
         val commonPrice: Int,
-        val discountPrice: Int,
-        val priceOne: Int,
+        val discountPrice: Int
+        /*val priceOne: Int,
         val priceOneSellOut: Int,
         val priceTwo: Int,
-        val priceTwoByStock: Int
+        val priceTwoByStock: Int*/
 )
 
 data class Promo(
