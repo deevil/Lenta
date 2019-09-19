@@ -9,6 +9,7 @@ import com.lenta.bp14.models.data.pojo.Good
 import com.lenta.bp14.models.getTaskName
 import com.lenta.bp14.platform.navigation.IScreenNavigator
 import com.lenta.shared.platform.viewmodel.CoreViewModel
+import com.lenta.shared.requests.combined.scan_info.analyseCode
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.databinding.PageSelectionListener
@@ -45,7 +46,7 @@ class GoodsListPcViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
                     matNr = iCheckPriceResult.matNr!!,
                     position = list.size - index,
                     name = "${iCheckPriceResult.matNr?.takeLast(6)} ${iCheckPriceResult.name}",
-                    isPriceValid = iCheckPriceResult.isPriceValid(),
+                    isPriceValid = iCheckPriceResult.isAllValid(),
                     isPrinted = iCheckPriceResult.isPrinted
             )
         }
@@ -115,8 +116,56 @@ class GoodsListPcViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     }
 
     override fun onOkInSoftKeyboard(): Boolean {
-        return false
+
+        checkCode(numberField.value)
+
+        return true
     }
+
+    private fun checkCode(code: String?) {
+        analyseCode(
+                code = code ?: "",
+                funcForEan = { eanCode ->
+                    searchCode(eanCode = eanCode)
+                },
+                funcForMatNr = { matNr ->
+                    searchCode(matNr = matNr)
+                },
+                funcForPriceQrCode = { qrCode ->
+                    searchCode(qrCode = qrCode)
+                },
+                funcForSapOrBar = navigator::showTwelveCharactersEntered,
+                funcForNotValidFormat = navigator::showGoodNotFound
+        )
+    }
+
+    private fun searchCode(eanCode: String? = null, matNr: String? = null, qrCode: String? = null) {
+        viewModelScope.launch {
+            require((eanCode != null) xor (matNr != null) xor (qrCode != null)) {
+                "only one param allowed. eanCode: $eanCode, matNr: $matNr, qrCode: $qrCode "
+            }
+            navigator.showProgressLoadingData()
+
+            when {
+                !eanCode.isNullOrBlank() -> task.getActualPriceByEan(eanCode)
+                !matNr.isNullOrBlank() -> task.getActualPriceByMatNr(matNr)
+                !qrCode.isNullOrBlank() -> task.checkPriceByQrCode(qrCode)
+                else -> throw IllegalArgumentException()
+            }.either(
+                    fnL = {
+                        navigator.openAlertScreen(it)
+                    }
+            ) {
+                task.processingMatNumber = it.matNumber
+                if (qrCode.isNullOrBlank()) {
+                    navigator.openGoodInfoPcScreen()
+                }
+            }
+            navigator.hideProgress()
+
+        }
+    }
+
 
     fun onClickSave() {
 
@@ -182,6 +231,10 @@ class GoodsListPcViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     fun onDigitPressed(digit: Int) {
         numberField.postValue(numberField.value ?: "" + digit)
         requestFocusToNumberField.value = true
+    }
+
+    fun onScanResult(data: String) {
+        checkCode(data)
     }
 }
 
