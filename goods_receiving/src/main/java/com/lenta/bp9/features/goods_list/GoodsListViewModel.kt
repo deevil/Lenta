@@ -52,12 +52,10 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
                             }
                             .mapIndexed { index, productInfo ->
                                 GoodsListCountedItem(
-                                        //todo
                                         number = index + 1,
                                         name = "${productInfo.getMaterialLastSix()} ${productInfo.description}",
-                                        //quantity = "${it.taskRepository.getTotalCountForProduct(productInfo).toStringFormatted()} ${productInfo.uom.name}",
-                                        accept = "+ 20 ${productInfo.uom.name}",
-                                        refusal = "- 10 ${productInfo.uom.name}",
+                                        countAccept = task.taskRepository.getProductsDiscrepancies().getCountAcceptOfProduct(productInfo),
+                                        countRefusal = task.taskRepository.getProductsDiscrepancies().getCountRefusalOfProduct(productInfo),
                                         even = index % 2 == 0,
                                         productInfo = productInfo)
                             }
@@ -134,11 +132,15 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
 
     fun onClickClean(){
         countedSelectionsHelper.selectedPositions.value?.map { position ->
-            //todo
-            //processSetsService.clearExciseStampsForComponent(componentsInfo[position])
+            taskManager
+                    .getReceivingTask()
+                    ?.taskRepository
+                    ?.getProductsDiscrepancies()
+                    ?.deleteProductsDiscrepanciesForProduct(countedGoods.value?.get(position)!!.productInfo)
+            taskManager.getReceivingTask()?.taskRepository?.getProducts()?.changeProduct(countedGoods.value?.get(position)!!.productInfo.copy(isNoEAN = true))
         }
         updateCounted()
-        return
+        updateWithoutBarcode()
     }
 
     fun onClickBatchsProducts(){

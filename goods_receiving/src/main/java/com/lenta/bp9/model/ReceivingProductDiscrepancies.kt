@@ -9,6 +9,7 @@ data class ReceivingProductDiscrepancies(
         val numberDiscrepancies: String, //Количество расхождения в ПЕИ
         val uom: Uom,
         val typeDifferences: String, //Тип расхождения
-        val isNotEdit: Boolean
+        val isNotEdit: Boolean,
+        val isNew: Boolean
 ) {
 }

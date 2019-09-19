@@ -3,6 +3,7 @@ package com.lenta.bp9.features.main_menu
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp9.features.loading.tasks.TaskListLoadingMode
+import com.lenta.bp9.model.ReceivingProductDiscrepancies
 import com.lenta.bp9.model.ReceivingProductInfo
 import com.lenta.bp9.model.task.*
 import com.lenta.bp9.platform.navigation.IScreenNavigator
@@ -115,6 +116,39 @@ class MainMenuViewModel : CoreViewModel() {
                     isVet = false,
                     numberBoxesControl = "",
                     numberStampsControl = ""
+            ))
+        }
+        taskManager.getReceivingTask().let {
+            it!!.taskRepository.getProductsDiscrepancies().addProductDiscrepancies(ReceivingProductDiscrepancies(
+                    materialNumber = "000021",
+                    exidv = "",
+                    numberDiscrepancies = "20.0",
+                    uom = Uom("ST", "шт"),
+                    typeDifferences = "1",
+                    isNotEdit = false,
+                    isNew = false
+            ))
+        }
+        taskManager.getReceivingTask().let {
+            it!!.taskRepository.getProductsDiscrepancies().addProductDiscrepancies(ReceivingProductDiscrepancies(
+                    materialNumber = "000021",
+                    exidv = "",
+                    numberDiscrepancies = "5.0",
+                    uom = Uom("ST", "шт"),
+                    typeDifferences = "22",
+                    isNotEdit = false,
+                    isNew = false
+            ))
+        }
+        taskManager.getReceivingTask().let {
+            it!!.taskRepository.getProductsDiscrepancies().addProductDiscrepancies(ReceivingProductDiscrepancies(
+                    materialNumber = "000021",
+                    exidv = "",
+                    numberDiscrepancies = "4.0",
+                    uom = Uom("ST", "шт"),
+                    typeDifferences = "45",
+                    isNotEdit = false,
+                    isNew = false
             ))
         }
         taskManager.getReceivingTask().let {

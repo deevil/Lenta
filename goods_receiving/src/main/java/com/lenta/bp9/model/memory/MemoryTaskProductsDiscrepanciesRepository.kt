@@ -37,7 +37,7 @@ class MemoryTaskProductsDiscrepanciesRepository : ITaskProductsDiscrepancies {
         return false
     }
 
-    override fun deleteProductsDiscrepancies(discrepancies: ReceivingProductDiscrepancies): Boolean {
+    override fun deleteProductDiscrepancies(discrepancies: ReceivingProductDiscrepancies): Boolean {
         var index = -1
         for (i in productsDiscrepancies.indices) {
             if (discrepancies.materialNumber == productsDiscrepancies[i].materialNumber && discrepancies.typeDifferences == productsDiscrepancies[i].typeDifferences) {
@@ -52,7 +52,7 @@ class MemoryTaskProductsDiscrepanciesRepository : ITaskProductsDiscrepancies {
         return true
     }
 
-    override fun deleteProductDiscrepanciesForProduct(product: ReceivingProductInfo): Boolean {
+    override fun deleteProductsDiscrepanciesForProduct(product: ReceivingProductInfo): Boolean {
         val delDiscrepancies = ArrayList<ReceivingProductDiscrepancies>()
         for (i in productsDiscrepancies.indices) {
             if (product.materialNumber == productsDiscrepancies[i].materialNumber) {
@@ -67,6 +67,27 @@ class MemoryTaskProductsDiscrepanciesRepository : ITaskProductsDiscrepancies {
         productsDiscrepancies.removeAll(delDiscrepancies)
         return true
     }
+
+    override fun getCountAcceptOfProduct(product: ReceivingProductInfo): Double {
+        var countAccept = 0.0
+        findProductDiscrepanciesOfProduct(product).filter {
+            it.typeDifferences == "1"
+        }.map {discrepancies ->
+            countAccept += discrepancies.numberDiscrepancies.toDouble()
+        }
+        return countAccept
+    }
+
+    override fun getCountRefusalOfProduct(product: ReceivingProductInfo): Double {
+        var countRefusal = 0.0
+        findProductDiscrepanciesOfProduct(product).filter {
+            it.typeDifferences != "1"
+        }.map {discrepancies ->
+            countRefusal += discrepancies.numberDiscrepancies.toDouble()
+        }
+        return countRefusal
+    }
+
 
     override fun clear() {
         productsDiscrepancies.clear()
