@@ -1,21 +1,21 @@
 package com.lenta.bp9.model.memory
 
 import com.lenta.bp9.model.repositories.ITaskBatchesRepository
-import com.lenta.bp9.model.task.TaskBatches
+import com.lenta.bp9.model.task.TaskBatchesInfo
 
 class MemoryTaskBatchesRepository : ITaskBatchesRepository {
 
-    private val batchesInfo: ArrayList<TaskBatches> = ArrayList()
+    private val batchesInfo: ArrayList<TaskBatchesInfo> = ArrayList()
 
-    override fun getBatches(): List<TaskBatches> {
+    override fun getBatches(): List<TaskBatchesInfo> {
         return batchesInfo
     }
 
-    override fun findBatch(batch: TaskBatches): TaskBatches? {
+    override fun findBatch(batch: TaskBatchesInfo): TaskBatchesInfo? {
         return batchesInfo.firstOrNull { it.materialNumber == batch.materialNumber && it.batchNumber == batch.batchNumber}
     }
 
-    override fun addBatch(batch: TaskBatches): Boolean {
+    override fun addBatch(batch: TaskBatchesInfo): Boolean {
         var index = -1
         for (i in batchesInfo.indices) {
             if (batch.materialNumber == batchesInfo[i].materialNumber && batch.batchNumber == batchesInfo[i].batchNumber) {
@@ -30,12 +30,12 @@ class MemoryTaskBatchesRepository : ITaskBatchesRepository {
         return false
     }
 
-    override fun changeBatch(batch: TaskBatches): Boolean {
+    override fun changeBatch(batch: TaskBatchesInfo): Boolean {
         deleteBatch(batch)
         return addBatch(batch)
     }
 
-    override fun deleteBatch(batch: TaskBatches): Boolean {
+    override fun deleteBatch(batch: TaskBatchesInfo): Boolean {
         var index = -1
         for (i in batchesInfo.indices) {
             if (batch.materialNumber == batchesInfo[i].materialNumber && batch.batchNumber == batchesInfo[i].batchNumber) {

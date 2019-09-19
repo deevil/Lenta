@@ -7,7 +7,7 @@
 
         <variable
             name="vm"
-            type="com.lenta.bp9.features.goods_list.GoodsListWithoutBarcodeItem" />
+            type="com.lenta.bp9.features.goods_list.ListWithoutBarcodeItem" />
 
         <variable
             name="selectedForDelete"

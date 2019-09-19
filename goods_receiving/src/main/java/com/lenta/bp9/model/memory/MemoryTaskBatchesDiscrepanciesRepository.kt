@@ -1,7 +1,7 @@
 package com.lenta.bp9.model.memory
 
 import com.lenta.bp9.model.repositories.ITaskBatchesDiscrepanciesRepository
-import com.lenta.bp9.model.task.TaskBatches
+import com.lenta.bp9.model.task.TaskBatchesInfo
 import com.lenta.bp9.model.task.TaskBatchesDiscrepancies
 
 class MemoryTaskBatchesDiscrepanciesRepository : ITaskBatchesDiscrepanciesRepository {
@@ -12,7 +12,7 @@ class MemoryTaskBatchesDiscrepanciesRepository : ITaskBatchesDiscrepanciesReposi
         return batchesDiscrepancies
     }
 
-    override fun findBatchDiscrepanciesOfBatch(batch: TaskBatches): List<TaskBatchesDiscrepancies> {
+    override fun findBatchDiscrepanciesOfBatch(batch: TaskBatchesInfo): List<TaskBatchesDiscrepancies> {
         val foundDiscrepancies = ArrayList<TaskBatchesDiscrepancies>()
         for (i in batchesDiscrepancies.indices) {
             if (batch.materialNumber == batchesDiscrepancies[i].materialNumber && batch.batchNumber == batchesDiscrepancies[i].batchNumber) {
@@ -56,7 +56,7 @@ class MemoryTaskBatchesDiscrepanciesRepository : ITaskBatchesDiscrepanciesReposi
         return true
     }
 
-    override fun deleteBatchesDiscrepanciesForBatch(batch: TaskBatches): Boolean {
+    override fun deleteBatchesDiscrepanciesForBatch(batch: TaskBatchesInfo): Boolean {
         val delDiscrepancies = ArrayList<TaskBatchesDiscrepancies>()
         for (i in batchesDiscrepancies.indices) {
             if (batch.materialNumber == batchesDiscrepancies[i].materialNumber &&
@@ -73,7 +73,7 @@ class MemoryTaskBatchesDiscrepanciesRepository : ITaskBatchesDiscrepanciesReposi
         return true
     }
 
-    override fun getCountAcceptOfBatch(batch: TaskBatches): Double {
+    override fun getCountAcceptOfBatch(batch: TaskBatchesInfo): Double {
         var countAccept = 0.0
         findBatchDiscrepanciesOfBatch(batch).filter {
             it.typeDifferences == "1"
@@ -83,7 +83,7 @@ class MemoryTaskBatchesDiscrepanciesRepository : ITaskBatchesDiscrepanciesReposi
         return countAccept
     }
 
-    override fun getCountRefusalOfBatch(batch: TaskBatches): Double {
+    override fun getCountRefusalOfBatch(batch: TaskBatchesInfo): Double {
         var countRefusal = 0.0
         findBatchDiscrepanciesOfBatch(batch).filter {
             it.typeDifferences != "1"

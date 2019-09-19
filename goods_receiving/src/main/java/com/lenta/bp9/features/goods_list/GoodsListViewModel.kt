@@ -1,8 +1,8 @@
 package com.lenta.bp9.features.goods_list
 
 import androidx.lifecycle.MutableLiveData
-import com.lenta.bp9.model.task.TaskProductInfo
 import com.lenta.bp9.model.task.IReceivingTaskManager
+import com.lenta.bp9.model.task.TaskProductInfo
 import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.shared.models.core.MatrixType
 import com.lenta.shared.models.core.ProductType
@@ -23,10 +23,11 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
 
     val selectedPage = MutableLiveData(0)
     val countedSelectionsHelper = SelectionItemsHelper()
-    val countedGoods: MutableLiveData<List<GoodsListCountedItem>> = MutableLiveData()
-    val withoutBarcodeGoods: MutableLiveData<List<GoodsListWithoutBarcodeItem>> = MutableLiveData()
+    val listCounted: MutableLiveData<List<ListCountedItem>> = MutableLiveData()
+    val listWithoutBarcode: MutableLiveData<List<ListWithoutBarcodeItem>> = MutableLiveData()
     val eanCode: MutableLiveData<String> = MutableLiveData()
     val requestFocusToEan: MutableLiveData<Boolean> = MutableLiveData()
+    private val isBatches: MutableLiveData<Boolean> = MutableLiveData(false)
 
     val visibilityCleanButton: MutableLiveData<Boolean> = selectedPage.map {
         it == 0
@@ -39,47 +40,83 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
 
 
     fun onResume() {
-        updateCounted()
-        updateWithoutBarcode()
+        updateListCounted()
+        updateListWithoutBarcode()
     }
 
-    private fun updateCounted() {
+    private fun updateListCounted() {
         taskManager.getReceivingTask()?.let { task ->
-            countedGoods.postValue(
-                    task.getProcessedProducts()
-                            .filter {
-                                !it.isNoEAN
-                            }
-                            .mapIndexed { index, productInfo ->
-                                GoodsListCountedItem(
-                                        number = index + 1,
-                                        name = "${productInfo.getMaterialLastSix()} ${productInfo.description}",
-                                        countAccept = task.taskRepository.getProductsDiscrepancies().getCountAcceptOfProduct(productInfo),
-                                        countRefusal = task.taskRepository.getProductsDiscrepancies().getCountRefusalOfProduct(productInfo),
-                                        even = index % 2 == 0,
-                                        productInfo = productInfo)
-                            }
-                            .reversed())
+            if (!isBatches.value!!) {
+                listCounted.postValue(
+                        task.getProcessedProducts()
+                                .filter {
+                                    !it.isNoEAN
+                                }
+                                .mapIndexed { index, productInfo ->
+                                    ListCountedItem(
+                                            number = index + 1,
+                                            name = "${productInfo.getMaterialLastSix()} ${productInfo.description}",
+                                            countAccept = task.taskRepository.getProductsDiscrepancies().getCountAcceptOfProduct(productInfo),
+                                            countRefusal = task.taskRepository.getProductsDiscrepancies().getCountRefusalOfProduct(productInfo),
+                                            uomName = productInfo.uom.name,
+                                            productInfo = productInfo,
+                                            batchInfo = null,
+                                            even = index % 2 == 0)
+                                }
+                                .reversed())
+            } else {
+                listCounted.postValue(
+                        task.taskRepository.getBatches().getBatches()
+                                .filter {
+                                    !it.isNoEAN
+                                }
+                                .mapIndexed { index, batchInfo ->
+                                    ListCountedItem(
+                                            number = index + 1,
+                                            name = "${batchInfo.getMaterialLastSix()} ${batchInfo.description}",
+                                            countAccept = task.taskRepository.getBatchesDiscrepancies().getCountAcceptOfBatch(batchInfo),
+                                            countRefusal = task.taskRepository.getBatchesDiscrepancies().getCountRefusalOfBatch(batchInfo),
+                                            uomName = batchInfo.uom.name,
+                                            productInfo = null,
+                                            batchInfo = batchInfo,
+                                            even = index % 2 == 0)
+                                }
+                                .reversed())
+            }
+
         }
 
         countedSelectionsHelper.clearPositions()
 
     }
 
-    private fun updateWithoutBarcode() {
+    private fun updateListWithoutBarcode() {
         taskManager.getReceivingTask()?.let { task ->
-            withoutBarcodeGoods.postValue(
-                    task.getProcessedProducts()
-                            .filter {
-                                it.isNoEAN
-                            }.mapIndexed { index, productInfo ->
-                                GoodsListWithoutBarcodeItem(
-                                        number = index + 1,
-                                        name = "${productInfo.getMaterialLastSix()} ${productInfo.description}",
-                                        even = index % 2 == 0,
-                                        productInfo = productInfo)
-                            }
-                            .reversed())
+            if (!isBatches.value!!) {
+                listWithoutBarcode.postValue(
+                        task.getProcessedProducts()
+                                .filter {
+                                    it.isNoEAN
+                                }.mapIndexed { index, productInfo ->
+                                    ListWithoutBarcodeItem(
+                                            number = index + 1,
+                                            name = "${productInfo.getMaterialLastSix()} ${productInfo.description}",
+                                            even = index % 2 == 0)
+                                }
+                                .reversed())
+            } else {
+                listWithoutBarcode.postValue(
+                        task.taskRepository.getBatches().getBatches()
+                                .filter {
+                                    it.isNoEAN
+                                }.mapIndexed { index, batchInfo ->
+                                    ListWithoutBarcodeItem(
+                                            number = index + 1,
+                                            name = "${batchInfo.getMaterialLastSix()} ${batchInfo.description}",
+                                            even = index % 2 == 0)
+                                }
+                                .reversed())
+            }
         }
     }
 
@@ -127,25 +164,40 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
 
     fun onClickRefusal() {
         //todo
-        return
+        isBatches.value = false
+        updateListCounted()
+        updateListWithoutBarcode()
     }
 
     fun onClickClean() {
-        countedSelectionsHelper.selectedPositions.value?.map { position ->
-            taskManager
-                    .getReceivingTask()
-                    ?.taskRepository
-                    ?.getProductsDiscrepancies()
-                    ?.deleteProductsDiscrepanciesForProduct(countedGoods.value?.get(position)!!.productInfo)
-            taskManager.getReceivingTask()?.taskRepository?.getProducts()?.changeProduct(countedGoods.value?.get(position)!!.productInfo.copy(isNoEAN = true))
+        if (!isBatches.value!!) {
+            countedSelectionsHelper.selectedPositions.value?.map { position ->
+                taskManager
+                        .getReceivingTask()
+                        ?.taskRepository
+                        ?.getProductsDiscrepancies()
+                        ?.deleteProductsDiscrepanciesForProduct(listCounted.value?.get(position)!!.productInfo!!)
+                taskManager.getReceivingTask()?.taskRepository?.getProducts()?.changeProduct(listCounted.value?.get(position)!!.productInfo!!.copy(isNoEAN = true))
+            }
+        } else {
+            countedSelectionsHelper.selectedPositions.value?.map { position ->
+                taskManager
+                        .getReceivingTask()
+                        ?.taskRepository
+                        ?.getBatchesDiscrepancies()
+                        ?.deleteBatchesDiscrepanciesForBatch(listCounted.value?.get(position)!!.batchInfo!!)
+                taskManager.getReceivingTask()?.taskRepository?.getBatches()?.changeBatch(listCounted.value?.get(position)!!.batchInfo!!.copy(isNoEAN = true))
+            }
         }
-        updateCounted()
-        updateWithoutBarcode()
+
+        updateListCounted()
+        updateListWithoutBarcode()
     }
 
-    fun onClickBatchsProducts() {
-        //todo
-        return
+    fun onClickBatches() {
+        isBatches.value = true
+        updateListCounted()
+        updateListWithoutBarcode()
     }
 
     fun onClickSave() {

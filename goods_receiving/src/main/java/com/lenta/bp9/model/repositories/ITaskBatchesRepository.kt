@@ -1,12 +1,12 @@
 package com.lenta.bp9.model.repositories
 
-import com.lenta.bp9.model.task.TaskBatches
+import com.lenta.bp9.model.task.TaskBatchesInfo
 
 interface ITaskBatchesRepository {
-    fun getBatches(): List<TaskBatches>
-    fun findBatch(batch: TaskBatches): TaskBatches?
-    fun addBatch(batch: TaskBatches): Boolean
-    fun changeBatch(batch: TaskBatches): Boolean
-    fun deleteBatch(batch: TaskBatches): Boolean
+    fun getBatches(): List<TaskBatchesInfo>
+    fun findBatch(batch: TaskBatchesInfo): TaskBatchesInfo?
+    fun addBatch(batch: TaskBatchesInfo): Boolean
+    fun changeBatch(batch: TaskBatchesInfo): Boolean
+    fun deleteBatch(batch: TaskBatchesInfo): Boolean
     fun clear()
 }

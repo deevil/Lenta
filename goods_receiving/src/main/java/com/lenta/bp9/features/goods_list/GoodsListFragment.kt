@@ -67,7 +67,7 @@ class GoodsListFragment : CoreFragment<FragmentGoodsListBinding, GoodsListViewMo
         when (view.id) {
             R.id.b_2 -> vm.onClickRefusal()
             R.id.b_3 -> vm.onClickClean()
-            R.id.b_4 -> vm.onClickBatchsProducts()
+            R.id.b_4 -> vm.onClickBatches()
             R.id.b_5 -> vm.onClickSave()
         }
     }
@@ -120,7 +120,7 @@ class GoodsListFragment : CoreFragment<FragmentGoodsListBinding, GoodsListViewMo
                         layoutBinding.lifecycleOwner = viewLifecycleOwner
                         countedRecyclerViewKeyHandler = RecyclerViewKeyHandler(
                                 rv = layoutBinding.rv,
-                                items = vm.countedGoods,
+                                items = vm.listCounted,
                                 lifecycleOwner = layoutBinding.lifecycleOwner!!,
                                 initPosInfo = countedRecyclerViewKeyHandler?.posInfo?.value
                         )

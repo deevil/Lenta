@@ -169,7 +169,7 @@ class MainMenuViewModel : CoreViewModel() {
                     quantityInvest = "",
                     roundingSurplus = "",
                     roundingShortages = "",
-                    isNoEAN = true,
+                    isNoEAN = false,
                     isWithoutRecount = false,
                     isUFF = false,
                     isNotEdit = false,
@@ -181,6 +181,57 @@ class MainMenuViewModel : CoreViewModel() {
                     isVet = false,
                     numberBoxesControl = "",
                     numberStampsControl = ""
+            ))
+        }
+
+        taskManager.getReceivingTask().let {
+            it!!.taskRepository.getBatches().addBatch(TaskBatchesInfo(
+                    materialNumber = "000031",
+                    description = "партия 1",
+                    uom = Uom("ST", "шт"),
+                    batchNumber = "1",
+                    alcoСode = "",
+                    manufacturer = "",
+                    bottlingDate = "",
+                    planQuantityИatch = "",
+                    isNoEAN = false
+            ))
+        }
+        taskManager.getReceivingTask().let {
+            it!!.taskRepository.getBatchesDiscrepancies().addBatchDiscrepancies(TaskBatchesDiscrepancies(
+                    materialNumber = "000031",
+                    batchNumber = "1",
+                    numberDiscrepancies = "35.0",
+                    uom = Uom("ST", "шт"),
+                    typeDifferences = "22",
+                    isNotEdit = false,
+                    exciseStampCode = "",
+                    fullDM = ""
+            ))
+        }
+        taskManager.getReceivingTask().let {
+            it!!.taskRepository.getBatchesDiscrepancies().addBatchDiscrepancies(TaskBatchesDiscrepancies(
+                    materialNumber = "000031",
+                    batchNumber = "1",
+                    numberDiscrepancies = "35.0",
+                    uom = Uom("ST", "шт"),
+                    typeDifferences = "45",
+                    isNotEdit = false,
+                    exciseStampCode = "",
+                    fullDM = ""
+            ))
+        }
+        taskManager.getReceivingTask().let {
+            it!!.taskRepository.getBatches().addBatch(TaskBatchesInfo(
+                    materialNumber = "000032",
+                    description = "партия 2",
+                    uom = Uom("ST", "шт"),
+                    batchNumber = "2",
+                    alcoСode = "",
+                    manufacturer = "",
+                    bottlingDate = "",
+                    planQuantityИatch = "",
+                    isNoEAN = true
             ))
         }
         screenNavigator.openGoodsListScreen()
