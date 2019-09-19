@@ -5,7 +5,9 @@
 
     <data>
 
-        <import type="android.view.View" />
+        <variable
+            name="good"
+            type="com.lenta.bp14.models.work_list.Good" />
 
         <variable
             name="common"
@@ -103,7 +105,8 @@
 
         <!-- Срок годности -->
         <LinearLayout
-            style="@style/LinearRowStyle">
+            style="@style/LinearRowStyle"
+            app:isGone="@{!good.commonGood}">
 
             <LinearLayout
                 style="@style/LinearCellStyle"
@@ -173,7 +176,44 @@
         </LinearLayout>
 
         <View
-            style="@style/HorizontalDivider" />
+            style="@style/HorizontalDivider"
+            app:isGone="@{!good.commonGood}" />
+
+
+        <!-- Количество марок -->
+        <LinearLayout
+            style="@style/LinearRowStyle"
+            app:isGone="@{good.commonGood}">
+
+            <LinearLayout
+                style="@style/LinearCellStyle"
+                android:layout_weight="1">
+
+                <TextView
+                    style="@style/CellTextStyle"
+                    android:text="@string/number_of_mark" />
+
+            </LinearLayout>
+
+            <View
+                style="@style/VerticalDivider" />
+
+            <LinearLayout
+                style="@style/LinearCellStyle"
+                android:layout_weight="2">
+
+                <TextView
+                    style="@style/CellTextStyle"
+                    android:text="@{String.valueOf(common.marks)}"
+                    tools:text="10" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <View
+            style="@style/HorizontalDivider"
+            app:isGone="@{good.commonGood}" />
 
 
         <!-- Оставшийся срок годности -->
@@ -202,13 +242,11 @@
                 android:layout_weight="2">
 
                 <TextView
-                    android:id="@+id/tv_total_shelf_life"
                     style="@style/CellTextStyle"
                     android:text="@{@string/shelf_life_days(common.shelfLifeDays)}"
                     tools:text="10 сут." />
 
                 <TextView
-                    android:id="@+id/tv_shelf_life_days_left"
                     style="@style/CellTextStyle"
                     android:text="@{@string/shelf_life_days(vm.daysLeft)}"
                     android:visibility="@{vm.shelfLifeDaysFieldVisibility}"
@@ -250,13 +288,13 @@
                 <TextView
                     android:id="@+id/tv_barcode_number_units"
                     style="@style/CellTextStyle"
-                    android:text="@{common.eanWithUnits}"
+                    android:text="@{good.eanWithUnits}"
                     tools:text="2365248900015/КОР" />
 
                 <TextView
                     android:id="@+id/tv_gt_gz_numbers"
                     style="@style/CellTextStyle"
-                    android:text="@{common.goodWithPurchaseGroups}"
+                    android:text="@{good.goodWithPurchaseGroups}"
                     tools:text="952365/1111" />
 
             </LinearLayout>

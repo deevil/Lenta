@@ -80,6 +80,18 @@ data class Good(
         return "${common.material.takeLast(6)} ${common.name}"
     }
 
+    fun isCommonGood(): Boolean {
+        return common.options.goodType == GoodType.COMMON
+    }
+
+    fun getEanWithUnits(): String? {
+        return "${common.ean}/${common.unit.name}"
+    }
+
+    fun getGoodWithPurchaseGroups(): String? {
+        return "${common.goodGroup}/${common.purchaseGroup}"
+    }
+
 }
 
 data class CommonGoodInfo(
@@ -91,19 +103,11 @@ data class CommonGoodInfo(
         var goodGroup: String,
         var purchaseGroup: String,
         var quantity: Int = 0,
+        var marks: Int = 0,
         val shelfLifeDays: Int = 5,
         val serverComments: MutableList<String>,
         val options: GoodOptions
-) {
-
-    fun getEanWithUnits(): String? {
-        return "$ean/${unit.name}"
-    }
-
-    fun getGoodWithPurchaseGroups(): String? {
-        return "$goodGroup/$purchaseGroup"
-    }
-}
+)
 
 
 data class AdditionalGoodInfo(

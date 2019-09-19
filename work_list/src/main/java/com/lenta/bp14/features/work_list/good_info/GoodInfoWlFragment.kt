@@ -66,6 +66,7 @@ class GoodInfoWlFragment : CoreFragment<FragmentGoodInfoWlBinding, GoodInfoWlVie
                     false).let { layoutBinding ->
 
                 layoutBinding.vm = vm
+                layoutBinding.good = vm.good.value
                 layoutBinding.common = vm.good.value?.common
                 layoutBinding.lifecycleOwner = viewLifecycleOwner
 
