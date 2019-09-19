@@ -117,6 +117,39 @@ class MainMenuViewModel : CoreViewModel() {
                     numberStampsControl = ""
             ))
         }
+        taskManager.getReceivingTask().let {
+            it!!.taskRepository.getProducts().addProduct(ReceivingProductInfo(
+                    materialNumber = "000017",
+                    description = "Масло",
+                    uom = Uom("ST", "шт"),
+                    type = ProductType.General,
+                    isSet = false,
+                    sectionId = "01",
+                    matrixType = MatrixType.Active,
+                    materialType = "",
+                    origQuantity = "",
+                    orderQuantity = "",
+                    quantityCapitalized = "",
+                    overdToleranceLimit = "",
+                    underdToleranceLimit = "",
+                    upLimitCondAmount = "",
+                    quantityInvest = "",
+                    roundingSurplus = "",
+                    roundingShortages = "",
+                    isNoEAN = true,
+                    isWithoutRecount = false,
+                    isUFF = false,
+                    isNotEdit = false,
+                    totalExpirationDate = "",
+                    remainingShelfLife = "",
+                    isRus = false,
+                    isBoxFl = false,
+                    isMarkFl = false,
+                    isVet = false,
+                    numberBoxesControl = "",
+                    numberStampsControl = ""
+            ))
+        }
         screenNavigator.openGoodsListScreen()
 
         //screenNavigator.openTaskListLoadingScreen(TaskListLoadingMode.Receiving)

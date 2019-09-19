@@ -44,9 +44,12 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
     }
 
     private fun updateCounted() {
-        taskManager.getReceivingTask()?.let {
+        taskManager.getReceivingTask()?.let {task ->
             countedGoods.postValue(
-                    it.getProcessedProducts()
+                    task.getProcessedProducts()
+                            .filter {
+                                !it.isNoEAN
+                            }
                             .mapIndexed { index, productInfo ->
                                 GoodsListCountedItem(
                                         //todo
@@ -66,12 +69,13 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
     }
 
     private fun updateWithoutBarcode() {
-        taskManager.getReceivingTask()?.let {
+        taskManager.getReceivingTask()?.let {task ->
             withoutBarcodeGoods.postValue(
-                    it.getProcessedProducts()
-                            .mapIndexed { index, productInfo ->
+                    task.getProcessedProducts()
+                            .filter {
+                                it.isNoEAN
+                            }.mapIndexed {index, productInfo ->
                                 GoodsListWithoutBarcodeItem(
-                                        //todo
                                         number = index + 1,
                                         name = "${productInfo.getMaterialLastSix()} ${productInfo.description}",
                                         even = index % 2 == 0,
@@ -79,7 +83,6 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
                             }
                             .reversed())
         }
-
     }
 
     fun getTitle(): String {
