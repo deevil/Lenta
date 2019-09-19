@@ -4,7 +4,6 @@ import com.lenta.bp9.model.repositories.*
 
 class MemoryTaskRepository : ITaskRepository {
 
-
     private val taskProductRepository: ITaskProductRepository = MemoryTaskProductRepository()
 
     private val taskExciseStampRepository: ITaskExciseStampRepository = MemoryTaskExciseStampRepository()
@@ -13,7 +12,11 @@ class MemoryTaskRepository : ITaskRepository {
 
     private val taskReviseDocumentsRepository: ITaskReviseDocumentsRepository = MemoryTaskReviseDocumentsRepository()
 
-    private val taskProductsDiscrepancies: ITaskProductsDiscrepancies = MemoryTaskProductsDiscrepanciesRepository()
+    private val taskProductsDiscrepanciesRepository: ITaskProductsDiscrepanciesRepository = MemoryTaskProductsDiscrepanciesRepository()
+
+    private val taskBatchesRepository: ITaskBatchesRepository = MemoryTaskBatchesRepository()
+
+    private val taskBatchesDiscrepanciesRepository: ITaskBatchesDiscrepanciesRepository = MemoryTaskBatchesDiscrepanciesRepository()
 
     override fun getProducts(): ITaskProductRepository {
         return taskProductRepository
@@ -31,7 +34,15 @@ class MemoryTaskRepository : ITaskRepository {
         return taskReviseDocumentsRepository
     }
 
-    override fun getProductsDiscrepancies(): ITaskProductsDiscrepancies {
-        return taskProductsDiscrepancies
+    override fun getProductsDiscrepancies(): ITaskProductsDiscrepanciesRepository {
+        return taskProductsDiscrepanciesRepository
+    }
+
+    override fun getBatches(): ITaskBatchesRepository {
+        return taskBatchesRepository
+    }
+
+    override fun getBatchesDiscrepancies(): ITaskBatchesDiscrepanciesRepository {
+        return taskBatchesDiscrepanciesRepository
     }
 }

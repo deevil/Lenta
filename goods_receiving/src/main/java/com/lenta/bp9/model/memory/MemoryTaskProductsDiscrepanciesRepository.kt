@@ -1,19 +1,19 @@
 package com.lenta.bp9.model.memory
 
-import com.lenta.bp9.model.ReceivingProductDiscrepancies
-import com.lenta.bp9.model.ReceivingProductInfo
-import com.lenta.bp9.model.repositories.ITaskProductsDiscrepancies
+import com.lenta.bp9.model.task.TaskProductDiscrepancies
+import com.lenta.bp9.model.task.TaskProductInfo
+import com.lenta.bp9.model.repositories.ITaskProductsDiscrepanciesRepository
 
-class MemoryTaskProductsDiscrepanciesRepository : ITaskProductsDiscrepancies {
+class MemoryTaskProductsDiscrepanciesRepository : ITaskProductsDiscrepanciesRepository {
 
-    private val productsDiscrepancies: ArrayList<ReceivingProductDiscrepancies> = ArrayList()
+    private val productsDiscrepancies: ArrayList<TaskProductDiscrepancies> = ArrayList()
 
-    override fun getProductsDiscrepancies(): List<ReceivingProductDiscrepancies> {
+    override fun getProductsDiscrepancies(): List<TaskProductDiscrepancies> {
         return productsDiscrepancies
     }
 
-    override fun findProductDiscrepanciesOfProduct(product: ReceivingProductInfo): List<ReceivingProductDiscrepancies> {
-        val foundDiscrepancies = ArrayList<ReceivingProductDiscrepancies>()
+    override fun findProductDiscrepanciesOfProduct(product: TaskProductInfo): List<TaskProductDiscrepancies> {
+        val foundDiscrepancies = ArrayList<TaskProductDiscrepancies>()
         for (i in productsDiscrepancies.indices) {
             if (product.materialNumber == productsDiscrepancies[i].materialNumber) {
                 foundDiscrepancies.add(productsDiscrepancies[i])
@@ -22,7 +22,7 @@ class MemoryTaskProductsDiscrepanciesRepository : ITaskProductsDiscrepancies {
         return foundDiscrepancies
     }
 
-    override fun addProductDiscrepancies(discrepancies: ReceivingProductDiscrepancies): Boolean {
+    override fun addProductDiscrepancies(discrepancies: TaskProductDiscrepancies): Boolean {
         var index = -1
         for (i in productsDiscrepancies.indices) {
             if (discrepancies.materialNumber == productsDiscrepancies[i].materialNumber && discrepancies.typeDifferences == productsDiscrepancies[i].typeDifferences) {
@@ -37,7 +37,7 @@ class MemoryTaskProductsDiscrepanciesRepository : ITaskProductsDiscrepancies {
         return false
     }
 
-    override fun deleteProductDiscrepancies(discrepancies: ReceivingProductDiscrepancies): Boolean {
+    override fun deleteProductDiscrepancies(discrepancies: TaskProductDiscrepancies): Boolean {
         var index = -1
         for (i in productsDiscrepancies.indices) {
             if (discrepancies.materialNumber == productsDiscrepancies[i].materialNumber && discrepancies.typeDifferences == productsDiscrepancies[i].typeDifferences) {
@@ -52,8 +52,8 @@ class MemoryTaskProductsDiscrepanciesRepository : ITaskProductsDiscrepancies {
         return true
     }
 
-    override fun deleteProductsDiscrepanciesForProduct(product: ReceivingProductInfo): Boolean {
-        val delDiscrepancies = ArrayList<ReceivingProductDiscrepancies>()
+    override fun deleteProductsDiscrepanciesForProduct(product: TaskProductInfo): Boolean {
+        val delDiscrepancies = ArrayList<TaskProductDiscrepancies>()
         for (i in productsDiscrepancies.indices) {
             if (product.materialNumber == productsDiscrepancies[i].materialNumber) {
                 delDiscrepancies.add(productsDiscrepancies[i])
@@ -68,7 +68,7 @@ class MemoryTaskProductsDiscrepanciesRepository : ITaskProductsDiscrepancies {
         return true
     }
 
-    override fun getCountAcceptOfProduct(product: ReceivingProductInfo): Double {
+    override fun getCountAcceptOfProduct(product: TaskProductInfo): Double {
         var countAccept = 0.0
         findProductDiscrepanciesOfProduct(product).filter {
             it.typeDifferences == "1"
@@ -78,7 +78,7 @@ class MemoryTaskProductsDiscrepanciesRepository : ITaskProductsDiscrepancies {
         return countAccept
     }
 
-    override fun getCountRefusalOfProduct(product: ReceivingProductInfo): Double {
+    override fun getCountRefusalOfProduct(product: TaskProductInfo): Double {
         var countRefusal = 0.0
         findProductDiscrepanciesOfProduct(product).filter {
             it.typeDifferences != "1"

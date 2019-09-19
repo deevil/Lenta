@@ -1,25 +1,25 @@
 package com.lenta.bp9.model.memory
 
-import com.lenta.bp9.model.ReceivingProductInfo
+import com.lenta.bp9.model.task.TaskProductInfo
 import com.lenta.bp9.model.repositories.ITaskProductRepository
 
 class MemoryTaskProductRepository : ITaskProductRepository {
 
-    private val productInfo: ArrayList<ReceivingProductInfo> = ArrayList()
+    private val productInfo: ArrayList<TaskProductInfo> = ArrayList()
 
-    override fun getProducts(): List<ReceivingProductInfo> {
+    override fun getProducts(): List<TaskProductInfo> {
         return productInfo
     }
 
-    override fun findProduct(product: ReceivingProductInfo): ReceivingProductInfo? {
+    override fun findProduct(product: TaskProductInfo): TaskProductInfo? {
         return findProduct(product.materialNumber)
     }
 
-    override fun findProduct(materialNumber: String): ReceivingProductInfo? {
+    override fun findProduct(materialNumber: String): TaskProductInfo? {
         return productInfo.firstOrNull { it.materialNumber == materialNumber}
     }
 
-    override fun addProduct(product: ReceivingProductInfo): Boolean {
+    override fun addProduct(product: TaskProductInfo): Boolean {
         var index = -1
         for (i in productInfo.indices) {
             if (product.materialNumber == productInfo[i].materialNumber) {
@@ -40,12 +40,12 @@ class MemoryTaskProductRepository : ITaskProductRepository {
         return false
     }
 
-    override fun changeProduct(product: ReceivingProductInfo): Boolean {
+    override fun changeProduct(product: TaskProductInfo): Boolean {
         deleteProduct(product)
         return addProduct(product)
     }
 
-    override fun deleteProduct(product: ReceivingProductInfo): Boolean {
+    override fun deleteProduct(product: TaskProductInfo): Boolean {
         var index = -1
         for (i in productInfo.indices) {
             if (product.materialNumber == productInfo[i].materialNumber) {

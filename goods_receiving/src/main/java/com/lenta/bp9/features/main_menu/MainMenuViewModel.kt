@@ -2,9 +2,8 @@ package com.lenta.bp9.features.main_menu
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.lenta.bp9.features.loading.tasks.TaskListLoadingMode
-import com.lenta.bp9.model.ReceivingProductDiscrepancies
-import com.lenta.bp9.model.ReceivingProductInfo
+import com.lenta.bp9.model.task.TaskProductDiscrepancies
+import com.lenta.bp9.model.task.TaskProductInfo
 import com.lenta.bp9.model.task.*
 import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.shared.account.ISessionInfo
@@ -86,7 +85,7 @@ class MainMenuViewModel : CoreViewModel() {
                 )
         taskManager.newReceivingTask(taskInfo,taskDescription)
         taskManager.getReceivingTask().let {
-            it!!.taskRepository.getProducts().addProduct(ReceivingProductInfo(
+            it!!.taskRepository.getProducts().addProduct(TaskProductInfo(
                     materialNumber = "000021",
                     description = "Р/к горбуша (Россия) 230/250г",
                     uom = Uom("ST", "шт"),
@@ -119,7 +118,7 @@ class MainMenuViewModel : CoreViewModel() {
             ))
         }
         taskManager.getReceivingTask().let {
-            it!!.taskRepository.getProductsDiscrepancies().addProductDiscrepancies(ReceivingProductDiscrepancies(
+            it!!.taskRepository.getProductsDiscrepancies().addProductDiscrepancies(TaskProductDiscrepancies(
                     materialNumber = "000021",
                     exidv = "",
                     numberDiscrepancies = "20.0",
@@ -130,7 +129,7 @@ class MainMenuViewModel : CoreViewModel() {
             ))
         }
         taskManager.getReceivingTask().let {
-            it!!.taskRepository.getProductsDiscrepancies().addProductDiscrepancies(ReceivingProductDiscrepancies(
+            it!!.taskRepository.getProductsDiscrepancies().addProductDiscrepancies(TaskProductDiscrepancies(
                     materialNumber = "000021",
                     exidv = "",
                     numberDiscrepancies = "5.0",
@@ -141,7 +140,7 @@ class MainMenuViewModel : CoreViewModel() {
             ))
         }
         taskManager.getReceivingTask().let {
-            it!!.taskRepository.getProductsDiscrepancies().addProductDiscrepancies(ReceivingProductDiscrepancies(
+            it!!.taskRepository.getProductsDiscrepancies().addProductDiscrepancies(TaskProductDiscrepancies(
                     materialNumber = "000021",
                     exidv = "",
                     numberDiscrepancies = "4.0",
@@ -152,7 +151,7 @@ class MainMenuViewModel : CoreViewModel() {
             ))
         }
         taskManager.getReceivingTask().let {
-            it!!.taskRepository.getProducts().addProduct(ReceivingProductInfo(
+            it!!.taskRepository.getProducts().addProduct(TaskProductInfo(
                     materialNumber = "000017",
                     description = "Масло",
                     uom = Uom("ST", "шт"),

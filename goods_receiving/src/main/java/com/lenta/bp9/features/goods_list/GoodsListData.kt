@@ -1,6 +1,6 @@
 package com.lenta.bp9.features.goods_list
 
-import com.lenta.bp9.model.ReceivingProductInfo
+import com.lenta.bp9.model.task.TaskProductInfo
 import com.lenta.shared.utilities.databinding.Evenable
 
 data class GoodsListCountedItem(
@@ -9,7 +9,7 @@ data class GoodsListCountedItem(
         val countAccept: Double,
         val countRefusal: Double,
         val even: Boolean,
-        val productInfo: ReceivingProductInfo
+        val productInfo: TaskProductInfo
 ) : Evenable {
     override fun isEven() = even
 
@@ -19,7 +19,7 @@ data class GoodsListWithoutBarcodeItem(
         val number: Int,
         val name: String,
         val even: Boolean,
-        val productInfo: ReceivingProductInfo
+        val productInfo: TaskProductInfo
 ) : Evenable {
     override fun isEven() = even
 

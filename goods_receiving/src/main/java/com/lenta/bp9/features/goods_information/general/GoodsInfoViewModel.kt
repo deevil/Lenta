@@ -1,7 +1,7 @@
 package com.lenta.bp9.features.goods_information.general
 
 import androidx.lifecycle.MutableLiveData
-import com.lenta.bp9.model.ReceivingProductInfo
+import com.lenta.bp9.model.task.TaskProductInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.map
@@ -10,7 +10,7 @@ import com.lenta.shared.view.OnPositionClickListener
 
 class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
 
-    val productInfo: MutableLiveData<ReceivingProductInfo> = MutableLiveData()
+    val productInfo: MutableLiveData<TaskProductInfo> = MutableLiveData()
     val spinQualityList: MutableLiveData<List<String>> = MutableLiveData()
     val spinQualitySelectedPosition: MutableLiveData<Int> = MutableLiveData(0)
     val suffix: MutableLiveData<String> = MutableLiveData()

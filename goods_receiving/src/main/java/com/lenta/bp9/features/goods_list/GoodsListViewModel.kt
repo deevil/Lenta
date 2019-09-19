@@ -1,7 +1,7 @@
 package com.lenta.bp9.features.goods_list
 
 import androidx.lifecycle.MutableLiveData
-import com.lenta.bp9.model.ReceivingProductInfo
+import com.lenta.bp9.model.task.TaskProductInfo
 import com.lenta.bp9.model.task.IReceivingTaskManager
 import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.shared.models.core.MatrixType
@@ -44,7 +44,7 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
     }
 
     private fun updateCounted() {
-        taskManager.getReceivingTask()?.let {task ->
+        taskManager.getReceivingTask()?.let { task ->
             countedGoods.postValue(
                     task.getProcessedProducts()
                             .filter {
@@ -67,12 +67,12 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
     }
 
     private fun updateWithoutBarcode() {
-        taskManager.getReceivingTask()?.let {task ->
+        taskManager.getReceivingTask()?.let { task ->
             withoutBarcodeGoods.postValue(
                     task.getProcessedProducts()
                             .filter {
                                 it.isNoEAN
-                            }.mapIndexed {index, productInfo ->
+                            }.mapIndexed { index, productInfo ->
                                 GoodsListWithoutBarcodeItem(
                                         number = index + 1,
                                         name = "${productInfo.getMaterialLastSix()} ${productInfo.description}",
@@ -99,11 +99,11 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
     fun onClickItemPosition(position: Int) {
         //todo
         /**if (selectedPage.value == 0) {
-            countedGoods.value?.getOrNull(position)?.productInfo
+        countedGoods.value?.getOrNull(position)?.productInfo
         } else {
-            filteredGoods.value?.getOrNull(position)?.productInfo
+        filteredGoods.value?.getOrNull(position)?.productInfo
         }?.let {
-            searchProductDelegate.openProductScreen(it, 0.0)
+        searchProductDelegate.openProductScreen(it, 0.0)
         }*/
     }
 
@@ -125,12 +125,12 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
         return
     }
 
-    fun onClickRefusal(){
+    fun onClickRefusal() {
         //todo
         return
     }
 
-    fun onClickClean(){
+    fun onClickClean() {
         countedSelectionsHelper.selectedPositions.value?.map { position ->
             taskManager
                     .getReceivingTask()
@@ -143,14 +143,14 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
         updateWithoutBarcode()
     }
 
-    fun onClickBatchsProducts(){
+    fun onClickBatchsProducts() {
         //todo
         return
     }
 
-    fun onClickSave(){
+    fun onClickSave() {
         //todo
-        screenNavigator.openGoodsInfoScreen(ReceivingProductInfo(
+        screenNavigator.openGoodsInfoScreen(TaskProductInfo(
                 materialNumber = "000021",
                 description = "Р/к горбуша (Россия) 230/250г",
                 uom = Uom("ST", "шт"),

@@ -3,7 +3,7 @@ package com.lenta.bp9.features.goods_information.general
 import android.view.View
 import com.lenta.bp9.R
 import com.lenta.bp9.databinding.FragmentGoodsInfoBinding
-import com.lenta.bp9.model.ReceivingProductInfo
+import com.lenta.bp9.model.task.TaskProductInfo
 import com.lenta.bp9.platform.extentions.getAppComponent
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
@@ -20,7 +20,7 @@ class GoodsInfoFragment : CoreFragment<FragmentGoodsInfoBinding, GoodsInfoViewMo
         OnScanResultListener {
 
     companion object {
-        fun create(productInfo: ReceivingProductInfo): GoodsInfoFragment {
+        fun create(productInfo: TaskProductInfo): GoodsInfoFragment {
             GoodsInfoFragment().let {
                 it.productInfo = productInfo
                 return it
@@ -28,7 +28,7 @@ class GoodsInfoFragment : CoreFragment<FragmentGoodsInfoBinding, GoodsInfoViewMo
         }
     }
 
-    private var productInfo by state<ReceivingProductInfo?>(null)
+    private var productInfo by state<TaskProductInfo?>(null)
 
     override fun getLayoutId(): Int = R.layout.fragment_goods_info
 

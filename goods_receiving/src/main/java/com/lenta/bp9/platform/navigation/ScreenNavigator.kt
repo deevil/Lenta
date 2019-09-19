@@ -18,7 +18,7 @@ import com.lenta.bp9.features.change_datetime.ChangeDateTimeMode
 import com.lenta.bp9.features.goods_information.general.GoodsInfoFragment
 import com.lenta.bp9.features.loading.tasks.*
 import com.lenta.bp9.features.revise.TaskReviseFragment
-import com.lenta.bp9.model.ReceivingProductInfo
+import com.lenta.bp9.model.task.TaskProductInfo
 import com.lenta.shared.account.IAuthenticator
 import com.lenta.shared.features.alert.AlertFragment
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
@@ -160,7 +160,7 @@ class ScreenNavigator(
         }
     }
 
-    override fun openGoodsInfoScreen(productInfo: ReceivingProductInfo) {
+    override fun openGoodsInfoScreen(productInfo: TaskProductInfo) {
         runOrPostpone {
             getFragmentStack()?.push(GoodsInfoFragment.create(productInfo))
         }
@@ -190,5 +190,5 @@ interface IScreenNavigator : ICoreNavigator {
     fun openLoadingRegisterArrivalScreen()
     fun openLoadingStartReviseScreen()
     fun openTaskReviseScreen()
-    fun openGoodsInfoScreen(productInfo: ReceivingProductInfo)
+    fun openGoodsInfoScreen(productInfo: TaskProductInfo)
 }
