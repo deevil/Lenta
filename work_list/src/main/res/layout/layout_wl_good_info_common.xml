@@ -10,10 +10,6 @@
             type="com.lenta.bp14.models.work_list.Good" />
 
         <variable
-            name="common"
-            type="com.lenta.bp14.models.work_list.CommonGoodInfo" />
-
-        <variable
             name="vm"
             type="com.lenta.bp14.features.work_list.good_info.GoodInfoWlViewModel" />
 
@@ -248,7 +244,7 @@
 
                     <TextView
                         style="@style/CellTextStyle"
-                        android:text="@{@string/shelf_life_days(common.shelfLifeDays)}"
+                        android:text="@{@string/shelf_life_days(good.common.shelfLifeDays)}"
                         tools:text="10 сут." />
 
                     <TextView
