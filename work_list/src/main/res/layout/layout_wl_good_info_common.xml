@@ -8,6 +8,10 @@
         <import type="android.view.View" />
 
         <variable
+            name="common"
+            type="com.lenta.bp14.models.work_list.CommonGoodInfo" />
+
+        <variable
             name="vm"
             type="com.lenta.bp14.features.work_list.good_info.GoodInfoWlViewModel" />
 
@@ -200,16 +204,15 @@
                 <TextView
                     android:id="@+id/tv_total_shelf_life"
                     style="@style/CellTextStyle"
-                    android:text="@{@string/shelf_life_days(vm.good.shelfLifeDays)}"
+                    android:text="@{@string/shelf_life_days(common.shelfLifeDays)}"
                     tools:text="10 сут." />
 
                 <TextView
                     android:id="@+id/tv_shelf_life_days_left"
                     style="@style/CellTextStyle"
                     android:text="@{@string/shelf_life_days(vm.daysLeft)}"
-                    android:visibility="@{vm.shelfLifeDaysFieldVisibility ? View.VISIBLE : View.INVISIBLE}"
+                    android:visibility="@{vm.shelfLifeDaysFieldVisibility}"
                     tools:text="5 сут." />
-
 
             </LinearLayout>
 
@@ -247,13 +250,13 @@
                 <TextView
                     android:id="@+id/tv_barcode_number_units"
                     style="@style/CellTextStyle"
-                    android:text="@{@string/one_slash_two(vm.good.ean, vm.good.uom.name)}"
+                    android:text="@{common.eanWithUnits}"
                     tools:text="2365248900015/КОР" />
 
                 <TextView
                     android:id="@+id/tv_gt_gz_numbers"
                     style="@style/CellTextStyle"
-                    android:text="@{@string/one_slash_two(vm.good.goodGroup, vm.good.purchaseGroup)}"
+                    android:text="@{common.goodWithPurchaseGroups}"
                     tools:text="952365/1111" />
 
             </LinearLayout>

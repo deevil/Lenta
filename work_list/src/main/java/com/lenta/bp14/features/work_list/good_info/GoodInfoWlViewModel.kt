@@ -30,6 +30,8 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
 
     val selectedPage = MutableLiveData(0)
 
+    val title = MutableLiveData<String>()
+
     val good = MutableLiveData<Good>()
 
     val quantity = MutableLiveData<String>()
@@ -92,10 +94,11 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
     init {
         viewModelScope.launch {
             good.value = task.currentGood
-            stocks.value = task.currentGood?.stocks
-            providers.value = task.currentGood?.providers
+            stocks.value = good.value?.additional?.stocks
+            providers.value = good.value?.additional?.providers
+            title.value = good.value?.getFormattedMaterialWithName()
 
-            quantity.value = task.currentGood?.common?.quantity.toString()
+            quantity.value = good.value?.common?.quantity.toString()
         }
     }
 

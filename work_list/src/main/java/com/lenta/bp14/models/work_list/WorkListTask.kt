@@ -73,10 +73,14 @@ class WorkListTask(
 data class Good(
         var number: Int,
         val common: CommonGoodInfo,
-        val additional: AdditionalGoodInfo? = null,
-        val providers: MutableList<Provider> = mutableListOf(),
-        val stocks: MutableList<Stock> = mutableListOf()
-)
+        val additional: AdditionalGoodInfo? = null
+) {
+
+    fun getFormattedMaterialWithName(): String? {
+        return "${common.material.takeLast(6)} ${common.name}"
+    }
+
+}
 
 data class CommonGoodInfo(
         val ean: String,
@@ -88,12 +92,25 @@ data class CommonGoodInfo(
         var purchaseGroup: String,
         var quantity: Int = 0,
         val shelfLifeDays: Int = 5,
+        val serverComments: MutableList<String>,
         val options: GoodOptions
-)
+) {
+
+    fun getEanWithUnits(): String? {
+        return "$ean/${unit.name}"
+    }
+
+    fun getGoodWithPurchaseGroups(): String? {
+        return "$goodGroup/$purchaseGroup"
+    }
+}
 
 
 data class AdditionalGoodInfo(
-        val ean: String
+        val ean: String,
+
+        val providers: MutableList<Provider> = mutableListOf(),
+        val stocks: MutableList<Stock> = mutableListOf()
 
 )
 

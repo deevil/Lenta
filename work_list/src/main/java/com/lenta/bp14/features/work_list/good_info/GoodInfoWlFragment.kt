@@ -17,6 +17,7 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListe
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig
 import com.lenta.shared.utilities.databinding.ViewPagerSettings
+import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
 import com.lenta.shared.utilities.extentions.provideViewModel
 
@@ -37,11 +38,7 @@ class GoodInfoWlFragment : CoreFragment<FragmentGoodInfoWlBinding, GoodInfoWlVie
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
         topToolbarUiModel.description.value = getString(R.string.goods_info)
 
-        /*viewLifecycleOwner.apply {
-            vm.good.observe(this, Observer { good ->
-                topToolbarUiModel.title.value = good.getFormattedMaterialWithName()
-            })
-        }*/
+        connectLiveData(vm.title, topToolbarUiModel.title)
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
@@ -69,6 +66,7 @@ class GoodInfoWlFragment : CoreFragment<FragmentGoodInfoWlBinding, GoodInfoWlVie
                     false).let { layoutBinding ->
 
                 layoutBinding.vm = vm
+                layoutBinding.common = vm.good.value?.common
                 layoutBinding.lifecycleOwner = viewLifecycleOwner
 
                 return layoutBinding.root

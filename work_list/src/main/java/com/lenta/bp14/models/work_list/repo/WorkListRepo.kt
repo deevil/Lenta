@@ -17,6 +17,9 @@ class WorkListRepo {
                 unit = Uom.ST,
                 goodGroup = "123456",
                 purchaseGroup = "1111",
+                serverComments = MutableList(3) {
+                    "Комментарий ${it + 1}"
+                },
                 options = GoodOptions(
                         matrixType = MatrixType.Active,
                         section = "5",
