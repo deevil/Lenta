@@ -376,6 +376,10 @@ class ScreenNavigator(
         }
     }
 
+    override fun openVideoScanProductScreen() {
+        openNotImplementedScreenAlert("Видео сканирование")
+    }
+
 }
 
 interface IScreenNavigator : ICoreNavigator {
@@ -424,4 +428,5 @@ interface IScreenNavigator : ICoreNavigator {
     fun openTestScanBarcodeScreen()
     fun openScanPriceScreen()
     fun openConfirmationExitTask(taskName: String, callbackFunc: () -> Unit)
+    fun openVideoScanProductScreen()
 }
