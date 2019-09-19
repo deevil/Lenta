@@ -140,7 +140,10 @@ class GoodInfoWlFragment : CoreFragment<FragmentGoodInfoWlBinding, GoodInfoWlVie
     }
 
     private fun initSpinners() {
-        vm.commentsList.value = resources.getStringArray(R.array.selected_comment).asList()
+        val comments = mutableListOf("Не выбран")
+        vm.good.value?.common?.serverComments?.map { comments.add(it) }
+        vm.commentsList.value = comments
+
         vm.shelfLifeTypeList.value = resources.getStringArray(R.array.shelf_life_type).asList()
     }
 
