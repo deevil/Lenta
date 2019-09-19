@@ -111,11 +111,14 @@ data class CommonGoodInfo(
 
 
 data class AdditionalGoodInfo(
-        val ean: String,
+        val storagePlaces: String,
+        val minStock: Int,
+        val movement: Movement,
+        val price: Price,
+        val promo: Promo,
 
         val providers: MutableList<Provider> = mutableListOf(),
         val stocks: MutableList<Stock> = mutableListOf()
-
 )
 
 
@@ -146,3 +149,22 @@ data class Provider(
     }
 
 }
+
+data class Movement(
+        val inventory: String,
+        val arrival: String
+)
+
+data class Price(
+        val commonPrice: Int,
+        val discountPrice: Int,
+        val priceOne: Int,
+        val priceOneSellOut: Int,
+        val priceTwo: Int,
+        val priceTwoByStock: Int
+)
+
+data class Promo(
+        val name: String,
+        val period: String
+)

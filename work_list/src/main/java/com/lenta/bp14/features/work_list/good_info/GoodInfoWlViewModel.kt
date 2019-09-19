@@ -1,5 +1,6 @@
 package com.lenta.bp14.features.work_list.good_info
 
+import android.widget.TextView
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp14.models.data.ShelfLifeType
@@ -73,7 +74,7 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
         var daysLeft: Int? = null
         if (enteredDate != null && shelfLifeDays != null && shelfLifeType != null) {
             val shelfLifeEnd = when (shelfLifeType) {
-                ShelfLifeType.PRODUCED.position -> enteredDate.time  + shelfLifeDays * 24 * 60 * 60 * 1000
+                ShelfLifeType.PRODUCED.position -> enteredDate.time + shelfLifeDays * 24 * 60 * 60 * 1000
                 else -> enteredDate.time
             }
 
@@ -132,6 +133,10 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
 
     fun onClickApply() {
 
+    }
+
+    fun showFullInfo(textView: TextView) {
+        navigator.openInfoScreen(textView.text.toString())
     }
 
 }
