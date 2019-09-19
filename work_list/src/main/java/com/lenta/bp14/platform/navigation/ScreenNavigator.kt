@@ -4,6 +4,7 @@ import android.content.Context
 import com.lenta.bp14.R
 import com.lenta.bp14.features.auth.AuthFragment
 import com.lenta.bp14.features.barcode_detection.CoreScanBarCodeFragment
+import com.lenta.bp14.features.check_list.ean_scanner.EanVideoScannerFragment
 import com.lenta.bp14.features.check_list.goods_list.GoodsListClFragment
 import com.lenta.bp14.features.work_list.good_info.GoodInfoWlFragment
 import com.lenta.bp14.features.job_card.JobCardFragment
@@ -377,7 +378,9 @@ class ScreenNavigator(
     }
 
     override fun openVideoScanProductScreen() {
-        openNotImplementedScreenAlert("Видео сканирование")
+        runOrPostpone {
+            getFragmentStack()?.push(EanVideoScannerFragment())
+        }
     }
 
 }
