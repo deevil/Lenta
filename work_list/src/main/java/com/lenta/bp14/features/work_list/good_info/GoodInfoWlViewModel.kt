@@ -33,6 +33,8 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
 
     val title = MutableLiveData<String>()
 
+    val showProgress = MutableLiveData<Boolean>(false)
+
     val good = MutableLiveData<Good>()
 
     val quantity = MutableLiveData<String>()
