@@ -54,6 +54,7 @@
     <string name="shelf_life_days">%1$d сут.</string>
     <string name="one_space_two">%1$s %2$s</string>
     <string name="one_slash_two">%1$s/%2$s</string>
+    <string name="price_r">%1$dр</string>
 
 
     <string name="enter_task_number_sap_login">Введите номер задания / SAP логин</string>

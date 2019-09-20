@@ -31,10 +31,6 @@ class WorkListRepo {
     }
 
     fun getAdditionalGoodInfo(ean: String): AdditionalGoodInfo? {
-        GlobalScope.launch {
-            delay(15000)
-        }
-
         return AdditionalGoodInfo(
                 storagePlaces = "125635; 652148; 635894",
                 minStock = (10..50).random(),

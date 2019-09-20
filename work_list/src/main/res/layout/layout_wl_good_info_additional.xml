@@ -1,12 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-
-        <variable
-            name="good"
-            type="com.lenta.bp14.models.work_list.Good" />
 
         <variable
             name="vm"
@@ -22,7 +19,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:visibility="@{!vm.showProgress}">
+            app:invisible="@{vm.showProgress}">
 
 
             <!-- Места хранения -->
@@ -54,13 +51,13 @@
                         android:id="@+id/tv_storage_places"
                         style="@style/CellTextStyle"
                         android:onClick="@{(view) -> vm.showFullInfo(view)}"
-                        android:text="@{good.additional.storagePlaces}"
+                        android:text="@{vm.good.additional.storagePlaces}"
                         tools:text="125635; 652148; 635894" />
 
                     <TextView
                         android:id="@+id/tv_remaining_quantity"
                         style="@style/CellTextStyle"
-                        android:text="@{@string/quantity_st(good.additional.minStock)}"
+                        android:text="@{@string/quantity_st(vm.good.additional.minStock)}"
                         tools:text="50 шт." />
 
                 </LinearLayout>
@@ -99,13 +96,13 @@
                     <TextView
                         android:id="@+id/tv_removed_good"
                         style="@style/CellTextStyle"
-                        android:text="@{good.additional.movement.inventory}"
+                        android:text="@{vm.good.additional.movement.inventory}"
                         tools:text="19.07.19 (-25 шт.)" />
 
                     <TextView
                         android:id="@+id/tv_added_good"
                         style="@style/CellTextStyle"
-                        android:text="@{good.additional.movement.arrival}"
+                        android:text="@{vm.good.additional.movement.arrival}"
                         tools:text="29.07.19 (+50 шт; Z5)" />
 
                 </LinearLayout>
@@ -142,15 +139,13 @@
                     android:layout_weight="2">
 
                     <TextView
-                        android:id="@+id/tv_price_with_dk"
                         style="@style/CellTextStyle"
-                        android:text="@{@string/price_r(good.additional.price.discountPrice)}"
+                        android:text="@{@string/price_r(vm.good.additional.price.discountPrice)}"
                         tools:text="100р." />
 
                     <TextView
-                        android:id="@+id/tv_price_without_dk"
                         style="@style/CellTextStyle"
-                        android:text="@{@string/price_r(good.additional.price.commonPrice)}"
+                        android:text="@{@string/price_r(vm.good.additional.price.commonPrice)}"
                         tools:text="140р." />
 
                 </LinearLayout>
@@ -185,14 +180,14 @@
                     <TextView
                         android:id="@+id/tv_promotion_name"
                         style="@style/CellTextStyle"
-                        android:text="@{good.additional.promo.name}"
+                        android:onClick="@{(view) -> vm.showFullInfo(view)}"
+                        android:text="@{vm.good.additional.promo.name}"
                         tools:text="Распродажа кукурузы ТК 0007" />
 
                     <TextView
                         android:id="@+id/tv_promotion_period"
                         style="@style/CellTextStyle"
-                        android:onClick="@{(view) -> vm.showFullInfo(view)}"
-                        android:text="@{good.additional.promo.period}"
+                        android:text="@{vm.good.additional.promo.period}"
                         tools:text="Период 30.05.19 - 12.09.19" />
 
                 </LinearLayout>
@@ -209,7 +204,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:visibility="@{vm.showProgress}" />
+            app:invisible="@{!vm.showProgress}" />
 
     </FrameLayout>
 

@@ -11,10 +11,6 @@
             type="com.lenta.bp14.features.work_list.good_info.GoodInfoWlViewModel" />
 
         <variable
-            name="options"
-            type="com.lenta.bp14.models.work_list.GoodOptions" />
-
-        <variable
             name="viewPagerSettings"
             type="com.lenta.shared.utilities.databinding.ViewPagerSettings" />
 
@@ -73,7 +69,7 @@
                     android:background="@drawable/bg_white_circle"
                     android:gravity="center"
                     android:textSize="16sp"
-                    app:matrixType="@{options.matrixType}"
+                    app:matrixType="@{vm.good.common.options.matrixType}"
                     tools:text="A" />
 
             </LinearLayout>
@@ -90,7 +86,7 @@
                     android:layout_height="36dp"
                     android:background="@drawable/bg_white_circle"
                     android:gravity="center"
-                    android:text="@{options.section}"
+                    android:text="@{vm.good.common.options.section}"
                     android:textSize="16sp"
                     tools:text="02" />
 
@@ -100,21 +96,21 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                app:goodTypeIcon="@{options.goodType}"
+                app:goodTypeIcon="@{vm.good.common.options.goodType}"
                 tools:src="@drawable/ic_kandy_48dp" />
 
             <ImageView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:visibility="@{options.novelty}"
+                app:invisible="@{!vm.good.common.options.novelty}"
                 tools:src="@drawable/ic_new_48dp" />
 
             <ImageView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:visibility="@{options.healthFood}"
+                app:invisible="@{!vm.good.common.options.healthFood}"
                 tools:src="@drawable/ic_natural_48dp" />
 
             <ImageView

@@ -16,6 +16,7 @@ import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.view.OnPositionClickListener
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
@@ -34,7 +35,7 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
 
     val title = MutableLiveData<String>()
 
-    val showProgress = MutableLiveData<Boolean>(false)
+    val showProgress = MutableLiveData<Boolean>(true)
 
     val good = MutableLiveData<Good>()
 
@@ -101,13 +102,14 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
             stocks.value = good.value?.stocks
             providers.value = good.value?.providers
             title.value = good.value?.getFormattedMaterialWithName()
-
             quantity.value = good.value?.common?.quantity.toString()
 
             // Загрузка дополнительных данных
             viewModelScope.launch {
-                showProgress.value = true
-                good.value?.additional = task.getAdditionalGoodInfo(good.value!!.common.ean)
+                delay(10000)
+                val goodWithAdditional = good.value
+                goodWithAdditional?.additional = task.getAdditionalGoodInfo(good.value?.common?.ean ?: "")
+                good.value = goodWithAdditional
                 showProgress.value = false
             }
         }
@@ -147,7 +149,7 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
 
     fun showFullInfo(view: View) {
         val textView = view as TextView
-        navigator.openInfoScreen(textView.text.toString())
+        navigator.openMessageScreen(textView.text.toString())
     }
 
 }

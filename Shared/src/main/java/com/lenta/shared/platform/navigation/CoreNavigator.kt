@@ -261,6 +261,12 @@ class CoreNavigator constructor(private val context: Context,
         )
     }
 
+    override fun openMessageScreen(message: String) {
+        openAlertScreen(message = message,
+                pageNumber = "97.1"
+        )
+    }
+
     override fun openStampAnotherMarketAlert(codeConfirm: Int) {
         runOrPostpone {
             getFragmentStack()?.push(
@@ -412,6 +418,7 @@ interface ICoreNavigator {
     fun openESInfoScreen()
     fun openBoxInfoScreen()
     fun openInfoScreen(message: String)
+    fun openMessageScreen(message: String)
     fun openStampAnotherMarketAlert(codeConfirm: Int)
     fun openAnotherProductStampAlert(productName: String)
     fun openWriteOffToProductionConfirmationScreen(codeConfirm: Int)

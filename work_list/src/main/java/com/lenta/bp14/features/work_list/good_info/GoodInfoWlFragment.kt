@@ -66,7 +66,6 @@ class GoodInfoWlFragment : CoreFragment<FragmentGoodInfoWlBinding, GoodInfoWlVie
                     false).let { layoutBinding ->
 
                 layoutBinding.vm = vm
-                layoutBinding.good = vm.good.value
                 layoutBinding.lifecycleOwner = viewLifecycleOwner
 
                 return layoutBinding.root
@@ -134,7 +133,6 @@ class GoodInfoWlFragment : CoreFragment<FragmentGoodInfoWlBinding, GoodInfoWlVie
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding?.viewPagerSettings = this
-        binding?.options = vm.good.value?.common?.options
 
         initSpinners()
     }
