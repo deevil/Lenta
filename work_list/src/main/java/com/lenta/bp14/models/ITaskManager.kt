@@ -5,15 +5,29 @@ import com.lenta.bp14.models.general.ITaskType
 
 interface ITaskManager<S : ITask, D : ITaskDescription> {
 
-    fun getTask(): S?
+    var _task: S?
+
+    fun getTask(): S? {
+        return _task
+    }
 
     fun newTask(taskDescription: D): S?
 
-    fun clearTask(): Boolean
+    fun clearTask(): Boolean {
+        if (_task == null) {
+            return false
+        }
+        _task = null
+        return true
+    }
 
-    fun setTask(inventoryTask: S?)
+    fun setTask(task: S?) {
+        _task = task
+    }
 
-    fun getCurrentTaskType(): ITaskType?
+    fun getCurrentTaskType(): ITaskType? {
+        return _task?.getTaskType()
+    }
 }
 
 interface ITask {
