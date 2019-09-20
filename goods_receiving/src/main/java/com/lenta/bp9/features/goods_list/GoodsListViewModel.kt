@@ -198,7 +198,7 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
     }
 
     fun onClickBatches() {
-        isBatches.value = true
+        isBatches.value = !isBatches.value!!
         updateListCounted()
         updateListWithoutBarcode()
     }

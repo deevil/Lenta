@@ -64,7 +64,7 @@ class MainMenuViewModel : CoreViewModel() {
                 currentStatusText = "",
                 currentStatusTime = "",
                 deliveryNumber = "",
-                isAlco = false,
+                isAlco = true,
                 isNotEDI = false,
                 isOverdue = false,
                 isOwnTransport = false,
