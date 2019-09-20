@@ -17,8 +17,11 @@ import androidx.lifecycle.Observer
 import com.lenta.bp14.BR
 import com.lenta.bp14.models.data.GoodsListTab
 import com.lenta.bp14.databinding.*
+import com.lenta.shared.keys.KeyCode
+import com.lenta.shared.keys.OnKeyDownListener
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
+import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.databinding.DataBindingAdapter
 import com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig
 import com.lenta.shared.utilities.databinding.RecyclerViewKeyHandler
@@ -26,7 +29,7 @@ import com.lenta.shared.utilities.extentions.connectLiveData
 import java.lang.IllegalArgumentException
 
 class GoodsListNeFragment : CoreFragment<FragmentGoodsListNeBinding, GoodsListNeViewModel>(),
-        ViewPagerSettings, ToolbarButtonsClickListener {
+        ViewPagerSettings, ToolbarButtonsClickListener, OnKeyDownListener {
 
     private var processingRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
     private var processedRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
@@ -56,7 +59,7 @@ class GoodsListNeFragment : CoreFragment<FragmentGoodsListNeBinding, GoodsListNe
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.save)
 
         viewLifecycleOwner.apply {
-            vm.selectedPage.observe(this, Observer {
+            vm.correctedSelectedPage.observe(this, Observer {
                 if (it == GoodsListTab.SEARCH.position) {
                     bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.filter)
                 } else {
@@ -65,24 +68,21 @@ class GoodsListNeFragment : CoreFragment<FragmentGoodsListNeBinding, GoodsListNe
             })
         }
 
-        connectLiveData(vm.deleteButtonEnabled, getBottomToolBarUIModel()!!.uiModelButton3.enabled)
-        connectLiveData(vm.saveButtonEnabled, getBottomToolBarUIModel()!!.uiModelButton5.enabled)
-        connectLiveData(vm.thirdButtonVisibility, getBottomToolBarUIModel()!!.uiModelButton3.visibility)
+        connectLiveData(vm.thirdButtonEnabled, bottomToolbarUiModel.uiModelButton3.enabled)
+        connectLiveData(vm.saveButtonEnabled, bottomToolbarUiModel.uiModelButton5.enabled)
+        connectLiveData(vm.thirdButtonVisibility, bottomToolbarUiModel.uiModelButton3.visibility)
     }
 
     override fun onToolbarButtonClick(view: View) {
         when (view.id) {
-            R.id.b_3 -> {
-                if (vm.selectedPage.value == GoodsListTab.SEARCH.position) {
-                    vm.onClickFilter()
-                } else vm.onClickDelete()
-            }
+            R.id.b_3 -> vm.onClickThirdButton()
             R.id.b_5 -> vm.onClickSave()
         }
     }
 
     override fun getPagerItemView(container: ViewGroup, position: Int): View {
-        if (position == 0) {
+        val correctedPosition = vm.getCorrectedPagePosition(position)
+        if (correctedPosition == 0) {
             DataBindingUtil.inflate<LayoutNeGoodsListProcessingBinding>(LayoutInflater.from(container.context),
                     R.layout.layout_ne_goods_list_processing,
                     container,
@@ -124,7 +124,7 @@ class GoodsListNeFragment : CoreFragment<FragmentGoodsListNeBinding, GoodsListNe
             }
         }
 
-        if (position == 1) {
+        if (correctedPosition == 1) {
             DataBindingUtil.inflate<LayoutNeGoodsListProcessedBinding>(LayoutInflater.from(container.context),
                     R.layout.layout_ne_goods_list_processed,
                     container,
@@ -138,8 +138,8 @@ class GoodsListNeFragment : CoreFragment<FragmentGoodsListNeBinding, GoodsListNe
                 }
 
                 layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
-                        layoutId = R.layout.item_good_quantity_missing_selectable,
-                        itemId = BR.good,
+                        layoutId = R.layout.item_good_quantity_selectable,
+                        itemId = BR.vm,
                         realisation = object : DataBindingAdapter<ItemGoodQuantitySelectableBinding> {
                             override fun onCreate(binding: ItemGoodQuantitySelectableBinding) {
                             }
@@ -218,7 +218,7 @@ class GoodsListNeFragment : CoreFragment<FragmentGoodsListNeBinding, GoodsListNe
     }
 
     override fun getTextTitle(position: Int): String {
-        return when (position) {
+        return when (vm.getCorrectedPagePosition(position)) {
             0 -> getString(R.string.processing)
             1 -> getString(R.string.processed)
             2 -> getString(R.string.search)
@@ -226,17 +226,34 @@ class GoodsListNeFragment : CoreFragment<FragmentGoodsListNeBinding, GoodsListNe
         }
     }
 
-    private fun getRealTabPosition(position: Int): Int {
-        return if (countTab() < 3) position + 1 else position
-    }
 
     override fun countTab(): Int {
-        return 3
+        return vm.getPagesCount()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding?.viewPagerSettings = this
+    }
+
+    override fun onKeyDown(keyCode: KeyCode): Boolean {
+        when (vm.correctedSelectedPage.value.apply {
+            Logg.d { "correctedSelectedPage: ${this}" }
+        }) {
+            1 -> processedRecyclerViewKeyHandler
+            2 -> searchRecyclerViewKeyHandler
+            else -> null
+        }?.let {
+            if (!it.onKeyDown(keyCode)) {
+                keyCode.digit?.let { digit ->
+                    vm.onDigitPressed(digit)
+                    return true
+                }
+                return false
+            }
+            return true
+        }
+        return false
     }
 
 }

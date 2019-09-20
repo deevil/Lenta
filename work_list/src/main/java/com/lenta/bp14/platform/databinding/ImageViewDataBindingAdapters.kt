@@ -20,15 +20,13 @@ fun setTaskStatusIcon(imageView: ImageView, taskStatus: TaskStatus) {
     }
 }
 
-@BindingAdapter("priceTagStatusIcon")
-fun setPriceTagStatusIcon(imageView: ImageView, priceTagStatus: PriceTagStatus) {
-    priceTagStatus.let {
-        when (it) {
-            PriceTagStatus.CORRECT -> imageView.setImageResource(R.drawable.ic_done_white_24dp)
-            PriceTagStatus.WITH_ERROR -> imageView.setImageResource(R.drawable.ic_close_white_24dp)
-            PriceTagStatus.MISSING -> imageView.setImageResource(R.drawable.ic_missing_dark_24dp)
-        }
+@BindingAdapter("isValid")
+fun setPriceTagStatusIcon(imageView: ImageView, isValid: Boolean?) {
+    when (isValid) {
+        true -> imageView.setImageResource(R.drawable.ic_done_white_24dp)
+        false -> imageView.setImageResource(R.drawable.ic_close_white_24dp)
     }
+    imageView.setVisible(isValid != null)
 }
 
 @BindingAdapter("printStatusIcon")
@@ -41,9 +39,9 @@ fun setPrintStatusIcon(imageView: ImageView, printStatus: PrintStatus) {
     }
 }
 
-@BindingAdapter("isValid")
-fun setPriceTagStatusIcon(imageView: ImageView, isValid: Boolean?) {
-    when (isValid) {
+@BindingAdapter("isValidPrice")
+fun setValiPriceStausIcon(imageView: ImageView, isValidPrice: Boolean?) {
+    when (isValidPrice) {
         true -> imageView.setImageResource(R.drawable.ic_done_white_24dp)
         false -> imageView.setImageResource(R.drawable.ic_close_white_24dp)
         null -> imageView.setImageResource(R.drawable.ic_missing_dark_24dp)

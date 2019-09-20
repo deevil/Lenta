@@ -11,6 +11,7 @@ import com.lenta.bp14.models.check_price.ICheckPriceTask
 import com.lenta.bp14.models.data.TaskManager
 import com.lenta.bp14.models.general.GeneralRepo
 import com.lenta.bp14.models.general.IGeneralRepo
+import com.lenta.bp14.models.not_exposed_products.INotExposedProductsTask
 import com.lenta.bp14.models.not_exposed_products.NotExposedProductsTaskManager
 import com.lenta.bp14.models.work_list.WorkListTask
 import com.lenta.bp14.models.work_list.WorkListTaskManager
@@ -135,6 +136,11 @@ class AppModule {
     @Provides
     internal fun provideWorkListTask(workListTaskManager: WorkListTaskManager): WorkListTask {
         return workListTaskManager.getTask()!!
+    }
+
+    @Provides
+    internal fun provideNotExposedProductsTask(taskManager: NotExposedProductsTaskManager): INotExposedProductsTask {
+        return taskManager.getTask()!!
     }
 
     @Provides

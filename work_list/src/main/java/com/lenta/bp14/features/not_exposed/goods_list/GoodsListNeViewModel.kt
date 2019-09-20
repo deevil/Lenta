@@ -4,8 +4,8 @@ import com.lenta.shared.platform.viewmodel.CoreViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp14.models.data.GoodsListTab
-import com.lenta.bp14.models.data.TaskManager
 import com.lenta.bp14.models.data.pojo.Good
+import com.lenta.bp14.models.not_exposed_products.INotExposedProductsTask
 import com.lenta.bp14.platform.navigation.IScreenNavigator
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
@@ -19,13 +19,16 @@ class GoodsListNeViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
 
     @Inject
     lateinit var navigator: IScreenNavigator
+
     @Inject
-    lateinit var taskManager: TaskManager
+    lateinit var task: INotExposedProductsTask
 
 
     val processedSelectionsHelper = SelectionItemsHelper()
 
     val selectedPage = MutableLiveData(0)
+
+    val correctedSelectedPage = selectedPage.map { getCorrectedPagePosition(it) }
 
     val taskName = MutableLiveData("Невыставленный товар от 23.07.19 23:15")
 
@@ -33,10 +36,10 @@ class GoodsListNeViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     val requestFocusToNumberField: MutableLiveData<Boolean> = MutableLiveData()
 
     val processingGoods = MutableLiveData<List<Good>>()
-    val processedGoods = MutableLiveData<List<Good>>()
+    val processedGoods = MutableLiveData<List<NotExposedProductUi>>()
     val searchGoods = MutableLiveData<List<Good>>()
 
-    private val selectedItemOnCurrentTab: MutableLiveData<Boolean> = selectedPage
+    private val selectedItemOnCurrentTab: MutableLiveData<Boolean> = correctedSelectedPage
             .combineLatest(processedSelectionsHelper.selectedPositions)
             .map {
                 val tab = it?.first?.toInt()
@@ -44,19 +47,26 @@ class GoodsListNeViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
                 tab == GoodsListTab.PROCESSED.position && processedSelected || tab == GoodsListTab.SEARCH.position
             }
 
-    val deleteButtonEnabled = selectedItemOnCurrentTab.map { it }
+    val thirdButtonEnabled = selectedItemOnCurrentTab.map { it }
     val saveButtonEnabled = processingGoods.map { it?.isNotEmpty() ?: false }
 
-    val thirdButtonVisibility = selectedPage.map { it != GoodsListTab.PROCESSING.position }
+    val thirdButtonVisibility = correctedSelectedPage.map { it != GoodsListTab.PROCESSING.position }
 
     init {
         viewModelScope.launch {
             requestFocusToNumberField.value = true
 
-            // Тестовые данные
-            processingGoods.value = taskManager.getTestGoodList(3)
-            processedGoods.value = taskManager.getTestGoodList(28)
-            searchGoods.value = taskManager.getTestGoodList(2)
+            processedGoods.value = List(10) {
+                NotExposedProductUi(
+                        position = it,
+                        matNr = "000021",
+                        name = "Селедка $it",
+                        quantity = "10 кг",
+                        isEmptyPlaceFramed = null
+                )
+            }
+
+
         }
     }
 
@@ -73,26 +83,43 @@ class GoodsListNeViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
 
     }
 
-    fun onClickDelete() {
+    private fun onClickDelete() {
+        processedGoods.value = emptyList()
 
     }
 
-    fun onClickFilter() {
-        navigator.openSearchFilterWlScreen()
+    fun onClickThirdButton() {
+        when (correctedSelectedPage.value) {
+            1 -> onClickDelete()
+            2 -> navigator.openSearchFilterWlScreen()
+        }
+
     }
 
     fun onClickItemPosition(position: Int) {
-        taskManager.currentGood = getGoodByPosition(position)
         navigator.openGoodInfoNeScreen()
     }
 
-    private fun getGoodByPosition(position: Int): Good? {
-        return when (selectedPage.value) {
-            GoodsListTab.PROCESSING.position -> processingGoods.value?.get(position)
-            GoodsListTab.PROCESSED.position -> processedGoods.value?.get(position)
-            GoodsListTab.SEARCH.position -> searchGoods.value?.get(position)
-            else -> null
-        }
+    fun getPagesCount(): Int {
+        return if (task.isFreeMode()) 2 else 3
+    }
+
+    fun getCorrectedPagePosition(position: Int?): Int {
+        return if (getPagesCount() == 3) position ?: 0 else (position ?: 0) + 1
+    }
+
+    fun onDigitPressed(digit: Int) {
+        numberField.postValue(numberField.value ?: "" + digit)
+        requestFocusToNumberField.value = true
     }
 
 }
+
+
+data class NotExposedProductUi(
+        val position: Int,
+        val matNr: String,
+        val name: String,
+        val quantity: String?,
+        val isEmptyPlaceFramed: Boolean?
+)
