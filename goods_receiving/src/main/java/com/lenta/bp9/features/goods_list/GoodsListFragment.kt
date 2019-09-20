@@ -56,6 +56,7 @@ class GoodsListFragment : CoreFragment<FragmentGoodsListBinding, GoodsListViewMo
 
         connectLiveData(vm.visibilityCleanButton, bottomToolbarUiModel.uiModelButton3.visibility)
         connectLiveData(vm.enabledCleanButton, bottomToolbarUiModel.uiModelButton3.enabled)
+        connectLiveData(vm.visibilityBatchesButton, bottomToolbarUiModel.uiModelButton4.visibility)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

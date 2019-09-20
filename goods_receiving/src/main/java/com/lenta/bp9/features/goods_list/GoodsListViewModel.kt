@@ -1,6 +1,8 @@
 package com.lenta.bp9.features.goods_list
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Transformations
 import com.lenta.bp9.model.task.IReceivingTaskManager
 import com.lenta.bp9.model.task.TaskProductInfo
 import com.lenta.bp9.platform.navigation.IScreenNavigator
@@ -38,8 +40,11 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
         !selectedComponentsPositions.isNullOrEmpty()
     }
 
+    val visibilityBatchesButton: MutableLiveData<Boolean> = MutableLiveData()
+
 
     fun onResume() {
+        visibilityBatchesButton.value = taskManager.getReceivingTask()?.taskDescription?.isAlco
         updateListCounted()
         updateListWithoutBarcode()
     }
@@ -163,10 +168,8 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
     }
 
     fun onClickRefusal() {
-        //todo
-        isBatches.value = false
-        updateListCounted()
-        updateListWithoutBarcode()
+        //todo экран "Отказ в приемке" еще в разработке
+        screenNavigator.openInfoScreen("экран \"Отказ в приемке\" еще в разработке")
     }
 
     fun onClickClean() {
