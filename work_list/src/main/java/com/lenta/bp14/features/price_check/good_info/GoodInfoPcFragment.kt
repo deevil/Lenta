@@ -9,10 +9,11 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
+import com.lenta.shared.scan.OnScanResultListener
 import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
 import com.lenta.shared.utilities.extentions.provideViewModel
 
-class GoodInfoPcFragment : CoreFragment<FragmentGoodInfoPcBinding, GoodInfoPcViewModel>(), ToolbarButtonsClickListener {
+class GoodInfoPcFragment : CoreFragment<FragmentGoodInfoPcBinding, GoodInfoPcViewModel>(), ToolbarButtonsClickListener, OnScanResultListener {
 
     override fun getLayoutId(): Int = R.layout.fragment_good_info_pc
 
@@ -44,6 +45,10 @@ class GoodInfoPcFragment : CoreFragment<FragmentGoodInfoPcBinding, GoodInfoPcVie
             R.id.b_4 -> vm.onClickNotValid()
             R.id.b_5 -> vm.onClickValid()
         }
+    }
+
+    override fun onScanResult(data: String) {
+        vm.onScanResult(data)
     }
 
 

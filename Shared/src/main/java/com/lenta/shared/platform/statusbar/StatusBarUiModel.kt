@@ -1,6 +1,7 @@
 package com.lenta.shared.platform.statusbar
 
 import androidx.lifecycle.MutableLiveData
+import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.analytics.AnalyticsHelper
 import com.lenta.shared.platform.battery_state.IBatteryStateMonitor
 import com.lenta.shared.platform.network_state.INetworkStateMonitor
@@ -14,7 +15,8 @@ class StatusBarUiModel @Inject constructor(
         val batteryStateMonitor: IBatteryStateMonitor,
         val timeMonitor: ITimeMonitor,
         val appSettings: IAppSettings,
-        val analyticsHelper: AnalyticsHelper
+        val analyticsHelper: AnalyticsHelper,
+        val sessionInfo: ISessionInfo
 ) {
     val pageNumber: MutableLiveData<String> = MutableLiveData("")
     var ip: MutableLiveData<String> = networkStateMonitor.networkInfo.map {
@@ -33,4 +35,5 @@ class StatusBarUiModel @Inject constructor(
     val batteryIsCharging: MutableLiveData<Boolean> = batteryStateMonitor.batteryState.map { it?.isCharging }
     val time: MutableLiveData<Long> = timeMonitor.observeUnixTime().map { it }
     val networkConnected: MutableLiveData<Boolean> = networkStateMonitor.networkInfo.map { it?.connected }
+    val isAuthSkipped = time.map { sessionInfo.isAuthSkipped }
 }

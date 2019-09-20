@@ -132,14 +132,18 @@ class CoreNavigator constructor(private val context: Context,
     }
 
     override fun <Params> showProgress(useCase: UseCase<Any, Params>) {
-        runOrPostpone {
-            showProgress(context.getString(R.string.data_loading))
-        }
+        showProgressLoadingData()
     }
 
     override fun showProgress(title: String) {
         runOrPostpone {
             foregroundActivityProvider.getActivity()?.showSimpleProgress(title)
+        }
+    }
+
+    override fun showProgressLoadingData() {
+        runOrPostpone {
+            showProgress(context.getString(R.string.data_loading))
         }
     }
 
@@ -400,6 +404,7 @@ interface ICoreNavigator {
     fun openSupportScreen()
     fun <Params> showProgress(useCase: UseCase<Any, Params>)
     fun showProgress(title: String)
+    fun showProgressLoadingData()
     fun hideProgress()
     fun openTechLoginScreen()
     fun openConnectionsSettingsScreen()

@@ -1,6 +1,8 @@
 package com.lenta.shared.fmp.resources.dao_ext
 
 import com.lenta.shared.fmp.resources.slow.ZfmpUtz48V001
+import com.lenta.shared.models.core.MatrixType
+import com.lenta.shared.models.core.ProductType
 import com.lenta.shared.requests.combined.scan_info.pojo.ProductInfo
 
 fun ZfmpUtz48V001.getProductInfo(material: String): List<ZfmpUtz48V001.ItemLocal_ET_MATNR_LIST> {
@@ -25,4 +27,16 @@ fun ZfmpUtz48V001.ItemLocal_ET_MATNR_LIST.toMaterialInfo(): ProductInfo {
             matcode = matcode,
             buom = buom
     )
+}
+
+fun ZfmpUtz48V001.ItemLocal_ET_MATNR_LIST.getMatrixType(): MatrixType {
+    return com.lenta.shared.models.core.getMatrixType(matrType)
+}
+
+fun ZfmpUtz48V001.ItemLocal_ET_MATNR_LIST.getSectionNumber(): Int {
+    return abtnr.toIntOrNull() ?: 0
+}
+
+fun ZfmpUtz48V001.ItemLocal_ET_MATNR_LIST.getProductType(): ProductType {
+    return com.lenta.shared.models.core.getProductType(isAlco.isNotEmpty(), isExc.isNotEmpty())
 }
