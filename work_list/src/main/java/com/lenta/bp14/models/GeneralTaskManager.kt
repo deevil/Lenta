@@ -4,6 +4,7 @@ import com.lenta.bp14.models.check_list.CheckListTaskManager
 import com.lenta.bp14.models.check_price.CheckPriceTaskManager
 import com.lenta.bp14.models.general.ITaskType
 import com.lenta.bp14.models.general.TaskTypes
+import com.lenta.bp14.models.not_exposed_products.NotExposedProductsTaskManager
 import com.lenta.bp14.models.work_list.WorkListTaskManager
 import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.platform.time.ITimeMonitor
@@ -15,16 +16,20 @@ class GeneralTaskManager(
         private val workListTaskManager: WorkListTaskManager,
         private var timeMonitor: ITimeMonitor
 ) : IGeneralTaskManager {
+        private val notExposedProductsTaskManager: NotExposedProductsTaskManager,
+        private var timeMonitor: ITimeMonitor) : IGeneralTaskManager {
 
     override fun getProcessedTaskType(): ITaskType? {
         return getCurrentTaskManager()?.getCurrentTaskType()
     }
 
     override fun clearCurrentTask(): Boolean {
+        return checkPriceTaskManager.clearTask() || checkListTaskManager.clearTask() || notExposedProductsTaskManager.clearTask()
         return checkPriceTaskManager.clearTask() || checkListTaskManager.clearTask() || workListTaskManager.clearTask()
     }
 
     override fun getProcessedTask(): ITask? {
+        return checkPriceTaskManager.getTask() ?: checkListTaskManager.getTask() ?: notExposedProductsTaskManager.getTask()
         return checkPriceTaskManager.getTask() ?: checkListTaskManager.getTask() ?: workListTaskManager.getTask()
     }
 
@@ -34,6 +39,9 @@ class GeneralTaskManager(
         }
         if (checkListTaskManager.getTask() != null) {
             return checkListTaskManager
+        }
+        if (notExposedProductsTaskManager.getTask() != null) {
+            return notExposedProductsTaskManager
         }
         if (workListTaskManager.getTask() != null) {
             return workListTaskManager

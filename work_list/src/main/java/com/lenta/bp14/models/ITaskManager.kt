@@ -3,17 +3,14 @@ package com.lenta.bp14.models
 import com.lenta.bp14.models.general.ITaskType
 
 
-interface ITaskManager<S : ITask, D : ITaskDescription> {
+abstract class BaseTaskManager<S : ITask, D : ITaskDescription> : ITaskManager<S, D> {
+    protected var _task: S? = null
 
-    var _task: S?
-
-    fun getTask(): S? {
+    override fun getTask(): S? {
         return _task
     }
 
-    fun newTask(taskDescription: D): S?
-
-    fun clearTask(): Boolean {
+    override fun clearTask(): Boolean {
         if (_task == null) {
             return false
         }
@@ -21,13 +18,28 @@ interface ITaskManager<S : ITask, D : ITaskDescription> {
         return true
     }
 
-    fun setTask(task: S?) {
+    override fun setTask(task: S?) {
         _task = task
     }
 
-    fun getCurrentTaskType(): ITaskType? {
+    override fun getCurrentTaskType(): ITaskType? {
         return _task?.getTaskType()
     }
+
+}
+
+
+interface ITaskManager<S : ITask, D : ITaskDescription> {
+
+    fun getTask(): S?
+
+    fun newTask(taskDescription: D): S?
+
+    fun clearTask(): Boolean
+
+    fun setTask(task: S?)
+
+    fun getCurrentTaskType(): ITaskType?
 }
 
 interface ITask {

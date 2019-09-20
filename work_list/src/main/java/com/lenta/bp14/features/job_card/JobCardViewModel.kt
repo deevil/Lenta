@@ -13,6 +13,8 @@ import com.lenta.bp14.models.check_price.CheckPriceTaskManager
 import com.lenta.bp14.models.general.IGeneralRepo
 import com.lenta.bp14.models.general.ITaskType
 import com.lenta.bp14.models.general.TaskTypes
+import com.lenta.bp14.models.not_exposed_products.NotExposedProductsTaskDescription
+import com.lenta.bp14.models.not_exposed_products.NotExposedProductsTaskManager
 import com.lenta.bp14.models.work_list.WorkListTaskDescription
 import com.lenta.bp14.models.work_list.WorkListTaskManager
 import com.lenta.bp14.platform.navigation.IScreenNavigator
@@ -37,6 +39,8 @@ class JobCardViewModel : CoreViewModel() {
     lateinit var checkPriceTaskManager: CheckPriceTaskManager
     @Inject
     lateinit var checkListTaskManager: CheckListTaskManager
+    @Inject
+    lateinit var notExposedProductsTaskManager: NotExposedProductsTaskManager
     @Inject
     lateinit var workListTaskManager: WorkListTaskManager
 
@@ -130,6 +134,19 @@ class JobCardViewModel : CoreViewModel() {
                         )
                 )
                 screenNavigator.openGoodsListWlScreen()
+            }
+            TaskTypes.NotExposedProducts.taskType -> {
+                newTask(
+                        taskManager = notExposedProductsTaskManager,
+                        taskDescription = NotExposedProductsTaskDescription(
+                                tkNumber = sessionInfo.market!!,
+                                taskNumber = taskNumber,
+                                taskName = taskName.value ?: "",
+                                comment = comment.value ?: "",
+                                description = description.value ?: ""
+                        )
+                )
+                screenNavigator.openGoodsListNeScreen()
             }
             else -> screenNavigator.openNotImplementedScreenAlert("")
         }

@@ -1,7 +1,7 @@
 package com.lenta.bp14.models.check_price
 
 import com.google.gson.Gson
-import com.lenta.bp14.models.ITaskManager
+import com.lenta.bp14.models.BaseTaskManager
 import com.lenta.bp14.models.check_price.repo.ActualPriceRepoForTest
 import com.lenta.bp14.models.check_price.repo.CheckPriceResultsRepo
 import com.lenta.bp14.platform.IVibrateHelper
@@ -11,10 +11,8 @@ import com.lenta.shared.platform.time.ITimeMonitor
 class CheckPriceTaskManager(private val timeMonitor: ITimeMonitor,
                             private val gson: Gson,
                             private val soundPlayer: ISoundPlayer,
-                            private val vibrateHelper: IVibrateHelper) : ITaskManager<ICheckPriceTask, CheckPriceTaskDescription> {
+                            private val vibrateHelper: IVibrateHelper) : BaseTaskManager<ICheckPriceTask, CheckPriceTaskDescription>() {
 
-
-    override var _task: ICheckPriceTask? = null
 
     override fun newTask(taskDescription: CheckPriceTaskDescription): ICheckPriceTask? {
         _task = CheckPriceTask(
