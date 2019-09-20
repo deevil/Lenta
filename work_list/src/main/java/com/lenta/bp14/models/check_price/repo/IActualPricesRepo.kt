@@ -47,7 +47,7 @@ class ActualPriceRepoForTest : IActualPricesRepo {
         delay(500)
         return Either.Right(getPriceInfoForTest(testResult).apply {
             Logg.d { "actualPriceInfo: ${this}" }
-            cashedResults[matNumber] = this
+            cashedResults[eanCode] = this
         })
     }
 

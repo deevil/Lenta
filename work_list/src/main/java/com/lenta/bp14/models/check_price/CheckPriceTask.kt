@@ -66,8 +66,8 @@ class CheckPriceTask(
 
     }
 
-    override suspend fun checkPriceByQrCode(rawCode: String): Either<Failure, IActualPriceInfo> {
-        val scannedPriceInfo = priceInfoParser.getPriceInfoFromRawCode(rawCode)
+    override suspend fun checkPriceByQrCode(qrCode: String): Either<Failure, IActualPriceInfo> {
+        val scannedPriceInfo = priceInfoParser.getPriceInfoFromRawCode(qrCode)
                 ?: return Either.Left(Failure.NotValidQrCode)
 
         actualPricesRepo.implementationOf(ActualPriceRepoForTest::class.java).apply {
