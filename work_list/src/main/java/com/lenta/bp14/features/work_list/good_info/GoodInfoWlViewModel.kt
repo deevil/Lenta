@@ -1,7 +1,5 @@
 package com.lenta.bp14.features.work_list.good_info
 
-import android.view.View
-import android.widget.TextView
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp14.models.data.ShelfLifeType
@@ -148,3 +146,10 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
     }
 
 }
+
+data class ProvidersUi(
+        val number: Int,
+        val code: String,
+        val name: String,
+        val kipPeriod: String
+)

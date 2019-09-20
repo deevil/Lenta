@@ -136,32 +136,6 @@ class GoodsListWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
         }
     }
 
-    /*private fun addGood(good: com.lenta.bp14.models.check_list.Good?) {
-        if (good == null) {
-            // Сообщение - Данный товар не найден в справочнике
-            navigator.showGoodNotFound()
-            return
-        }
-
-        val goodsList = processed.value!!.toMutableList()
-        val existGood = goodsList.find { it.ean == good.ean }
-        if (existGood != null) {
-            val index = goodsList.indexOf(existGood)
-            goodsList[index].quantity.value = "" + if (good.uom.isOnlyInt()) {
-                existGood.quantity.value!!.toInt() + good.quantity.value!!.toInt()
-            } else {
-                val goodQuantity = good.quantity.value!!.toBigDecimal()
-                val existGoodQuantity = existGood.quantity.value!!.toBigDecimal()
-                existGoodQuantity.plus(goodQuantity).toString().dropLastWhile { it == '0' || it == '.' }
-            }
-        } else {
-            goodsList.add(0, good)
-        }
-
-        processed.value = goodsList.toList()
-        numberField.value = ""
-    }*/
-
     fun onClickFilter() {
         navigator.openSearchFilterWlScreen()
     }
