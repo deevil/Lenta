@@ -32,7 +32,9 @@ class ShelfListViewModel : SendDataViewModel(), OnOkInSoftKeyboardListener {
         segmentIsNotDeleted && notDeletedShelveSelected
     }
 
-    val deleteSegmentButtonEnabled = MutableLiveData<Boolean>()
+    val deleteSegmentButtonEnabled: MutableLiveData<Boolean> = shelves.map { shelves ->
+        shelves?.isNotEmpty() ?: false && checkData.getCurrentSegment()?.getStatus() != SegmentStatus.DELETED
+    }
 
     val applyButtonEnabled: MutableLiveData<Boolean> = shelves.map {
         it?.isNotEmpty() ?: false && checkData.getCurrentSegment()?.getStatus() == SegmentStatus.UNFINISHED &&
@@ -45,7 +47,6 @@ class ShelfListViewModel : SendDataViewModel(), OnOkInSoftKeyboardListener {
                 segmentNumber.value = it.getCurrentSegment()?.number
                 shelves.value = it.getCurrentSegment()?.shelves
                 numberFieldEnabled.value = it.getCurrentSegment()?.getStatus() == SegmentStatus.UNFINISHED
-                deleteSegmentButtonEnabled.value = checkData.getCurrentSegment()?.getStatus() != SegmentStatus.DELETED
             }
         }
     }
