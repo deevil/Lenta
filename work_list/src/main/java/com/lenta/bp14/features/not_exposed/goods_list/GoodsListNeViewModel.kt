@@ -1,10 +1,12 @@
 package com.lenta.bp14.features.not_exposed.goods_list
 
+import androidx.lifecycle.LiveData
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp14.models.data.GoodsListTab
 import com.lenta.bp14.models.data.pojo.Good
+import com.lenta.bp14.models.getTaskName
 import com.lenta.bp14.models.not_exposed_products.INotExposedProductsTask
 import com.lenta.bp14.platform.navigation.IScreenNavigator
 import com.lenta.shared.utilities.SelectionItemsHelper
@@ -30,13 +32,27 @@ class GoodsListNeViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
 
     val correctedSelectedPage = selectedPage.map { getCorrectedPagePosition(it) }
 
-    val taskName = MutableLiveData("Невыставленный товар от 23.07.19 23:15")
+    val taskName by lazy {
+        "${task.getTaskType().taskType} // ${task.getTaskName()}"
+    }
 
     val numberField: MutableLiveData<String> = MutableLiveData("")
     val requestFocusToNumberField: MutableLiveData<Boolean> = MutableLiveData()
 
     val processingGoods = MutableLiveData<List<Good>>()
-    val processedGoods = MutableLiveData<List<NotExposedProductUi>>()
+    val processedGoods: LiveData<List<NotExposedProductUi>> by lazy {
+        task.getProducts().map { products ->
+            products?.mapIndexed { index, productInfo ->
+                NotExposedProductUi(
+                        position = products.size - index,
+                        matNr = productInfo.matNr,
+                        name = productInfo.name,
+                        quantity = "${productInfo.quantity} ${productInfo.uom}",
+                        isEmptyPlaceMarked = productInfo.isEmptyPlaceMarked
+                )
+            }
+        }
+    }
     val searchGoods = MutableLiveData<List<Good>>()
 
     private val selectedItemOnCurrentTab: MutableLiveData<Boolean> = correctedSelectedPage
@@ -56,17 +72,6 @@ class GoodsListNeViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
         viewModelScope.launch {
             requestFocusToNumberField.value = true
 
-            processedGoods.value = List(10) {
-                NotExposedProductUi(
-                        position = it,
-                        matNr = "000021",
-                        name = "Селедка $it",
-                        quantity = "10 кг",
-                        isEmptyPlaceFramed = null
-                )
-            }
-
-
         }
     }
 
@@ -84,7 +89,6 @@ class GoodsListNeViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     }
 
     private fun onClickDelete() {
-        processedGoods.value = emptyList()
 
     }
 
@@ -121,5 +125,5 @@ data class NotExposedProductUi(
         val matNr: String,
         val name: String,
         val quantity: String?,
-        val isEmptyPlaceFramed: Boolean?
+        val isEmptyPlaceMarked: Boolean?
 )

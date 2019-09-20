@@ -50,8 +50,7 @@ class GoodsListNeFragment : CoreFragment<FragmentGoodsListNeBinding, GoodsListNe
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
         topToolbarUiModel.description.value = getString(R.string.list_of_goods)
-
-        connectLiveData(vm.taskName, topToolbarUiModel.title)
+        topToolbarUiModel.title.value = vm.taskName
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
