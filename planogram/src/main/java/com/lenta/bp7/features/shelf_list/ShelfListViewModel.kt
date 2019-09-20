@@ -23,9 +23,16 @@ class ShelfListViewModel : SendDataViewModel(), OnOkInSoftKeyboardListener {
 
     val numberFieldEnabled: MutableLiveData<Boolean> = MutableLiveData(false)
 
-    val deleteButtonEnabled: MutableLiveData<Boolean> = shelves.map {
-        it?.isNotEmpty() ?: false && checkData.getCurrentSegment()?.getStatus() != SegmentStatus.DELETED
+    val deleteShelfButtonEnabled: MutableLiveData<Boolean> = selectionsHelper.selectedPositions.map {
+        val segmentIsNotDeleted = checkData.getCurrentSegment()?.getStatus() != SegmentStatus.DELETED
+        val notDeletedShelveSelected = selectionsHelper.selectedPositions.value?.find { index ->
+            shelves.value?.get(index)?.getStatus() != ShelfStatus.DELETED
+        } != null
+
+        segmentIsNotDeleted && notDeletedShelveSelected
     }
+
+    val deleteSegmentButtonEnabled = MutableLiveData<Boolean>()
 
     val applyButtonEnabled: MutableLiveData<Boolean> = shelves.map {
         it?.isNotEmpty() ?: false && checkData.getCurrentSegment()?.getStatus() == SegmentStatus.UNFINISHED &&
@@ -38,6 +45,7 @@ class ShelfListViewModel : SendDataViewModel(), OnOkInSoftKeyboardListener {
                 segmentNumber.value = it.getCurrentSegment()?.number
                 shelves.value = it.getCurrentSegment()?.shelves
                 numberFieldEnabled.value = it.getCurrentSegment()?.getStatus() == SegmentStatus.UNFINISHED
+                deleteSegmentButtonEnabled.value = checkData.getCurrentSegment()?.getStatus() != SegmentStatus.DELETED
             }
         }
     }
@@ -96,35 +104,36 @@ class ShelfListViewModel : SendDataViewModel(), OnOkInSoftKeyboardListener {
         }
     }
 
-    fun onClickDelete() {
+    fun onClickDeleteShelf() {
         selectionsHelper.let {
             val items = it.selectedPositions.value?.toMutableSet()
-            if (items!!.isEmpty()) {
-                // Подтверждение - Удалить данные по сегменту? - Назад / Удалить
-                navigator.showDeleteDataOnSegment(
-                        storeNumber = checkData.getCurrentSegment()!!.storeNumber,
-                        segmentNumber = segmentNumber.value!!) {
-                    checkData.setCurrentSegmentStatus(SegmentStatus.DELETED)
-                    navigator.openSegmentListScreen()
-                }
-            } else {
-                var shelfNumbers = ""
-                items.forEach { index ->
-                    shelfNumbers += checkData.getCurrentSegment()?.shelves?.get(index)?.number
-                    if (items.size > 1 && index != items.size - 1){
-                        shelfNumbers += ", "
-                    }
-                }
 
-                // Подтверждение - Удалить данные полки №...? - Назад / Удалить
-                navigator.showDeleteShelfData(shelfNumbers){
-                    items.forEach { index ->
-                        it.revert(index)
-                        checkData.setShelfStatusDeletedByIndex(index)
-                        updateShelfList()
-                    }
+            var shelfNumbers = ""
+            items!!.forEach { index ->
+                shelfNumbers += checkData.getCurrentSegment()?.shelves?.get(index)?.number
+                if (items.size > 1 && index != items.size - 1) {
+                    shelfNumbers += ", "
                 }
             }
+
+            // Подтверждение - Удалить данные полки №...? - Назад / Удалить
+            navigator.showDeleteShelfData(shelfNumbers) {
+                items.forEach { index ->
+                    it.revert(index)
+                    checkData.setShelfStatusDeletedByIndex(index)
+                    updateShelfList()
+                }
+            }
+        }
+    }
+
+    fun onClickDeleteSegment() {
+        // Подтверждение - Удалить данные по сегменту? - Назад / Удалить
+        navigator.showDeleteDataOnSegment(
+                storeNumber = checkData.getCurrentSegment()!!.storeNumber,
+                segmentNumber = segmentNumber.value!!) {
+            checkData.setCurrentSegmentStatus(SegmentStatus.DELETED)
+            navigator.openSegmentListScreen()
         }
     }
 
