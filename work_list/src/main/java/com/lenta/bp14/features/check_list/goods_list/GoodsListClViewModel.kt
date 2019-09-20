@@ -158,4 +158,9 @@ class GoodsListClViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
         requestFocusToNumberField.value = true
     }
 
+    fun onClickVideo() {
+        navigator.openVideoScanProductScreen()
+
+    }
+
 }

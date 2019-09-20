@@ -1,10 +1,10 @@
-package com.lenta.bp14.features.price_check.price_scanner
+package com.lenta.bp14.features.check_list.ean_scanner
 
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.View
 import com.lenta.bp14.R
-import com.lenta.bp14.databinding.FragmentPriceScannerBinding
+import com.lenta.bp14.databinding.FragmentEanVideoScannerBinding
 import com.lenta.bp14.ml.FireBaseMlScanHelper
 import com.lenta.bp14.ml.ScanType
 import com.lenta.bp14.platform.extentions.getAppComponent
@@ -15,19 +15,16 @@ import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
 import com.lenta.shared.utilities.extentions.provideViewModel
 
-
-class PriceScannerFragment : CoreFragment<FragmentPriceScannerBinding, PriceScannerViewModel>() {
+class EanVideoScannerFragment : CoreFragment<FragmentEanVideoScannerBinding, EanVideoScannerViewModel>() {
 
     private lateinit var fireBaseMlScanHelper: FireBaseMlScanHelper
 
-    override fun getLayoutId(): Int = R.layout.fragment_price_scanner
+    override fun getLayoutId(): Int = R.layout.fragment_ean_video_scanner
 
-    override fun getPageNumber(): String? {
-        return generateScreenNumberFromPostfix("127")
-    }
+    override fun getPageNumber(): String? = generateScreenNumberFromPostfix("24")
 
-    override fun getViewModel(): PriceScannerViewModel {
-        provideViewModel(PriceScannerViewModel::class.java).let {
+    override fun getViewModel(): EanVideoScannerViewModel {
+        provideViewModel(EanVideoScannerViewModel::class.java).let {
             getAppComponent()?.inject(it)
             return it
         }
@@ -35,9 +32,7 @@ class PriceScannerFragment : CoreFragment<FragmentPriceScannerBinding, PriceScan
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
         topToolbarUiModel.title.value = vm.getTitle()
-        topToolbarUiModel.description.value = getString(R.string.scan_price_description)
-
-
+        topToolbarUiModel.description.value = getString(R.string.point_camera_to_barcode)
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
@@ -46,7 +41,7 @@ class PriceScannerFragment : CoreFragment<FragmentPriceScannerBinding, PriceScan
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        fireBaseMlScanHelper = FireBaseMlScanHelper(context!!, ScanType.QR_CODE)
+        fireBaseMlScanHelper = FireBaseMlScanHelper(context!!, ScanType.EAN)
     }
 
     @SuppressLint("ClickableViewAccessibility")

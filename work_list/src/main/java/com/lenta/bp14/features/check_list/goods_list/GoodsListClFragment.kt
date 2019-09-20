@@ -49,6 +49,7 @@ class GoodsListClFragment : CoreFragment<FragmentGoodsListClBinding, GoodsListCl
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
+        bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.video)
         bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.delete)
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.save)
 
@@ -58,6 +59,7 @@ class GoodsListClFragment : CoreFragment<FragmentGoodsListClBinding, GoodsListCl
 
     override fun onToolbarButtonClick(view: View) {
         when (view.id) {
+            R.id.b_2 -> vm.onClickVideo()
             R.id.b_3 -> vm.onClickDelete()
             R.id.b_5 -> vm.onClickSave()
         }

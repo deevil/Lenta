@@ -23,7 +23,7 @@ import java.nio.ByteBuffer
 import java.util.concurrent.TimeUnit
 
 
-class FireBaseMlScanHelper(val context: Context) {
+class FireBaseMlScanHelper(private val context: Context, private val scanType: ScanType) {
 
     private var viewLifecycleOwner: LifecycleOwner? = null
     private var rootView: View? = null
@@ -161,7 +161,7 @@ class FireBaseMlScanHelper(val context: Context) {
                 Logg.d { "supported size: $size" }
                 if ((constraint > size.height && constraint > size.width) &&
                         (maximumSize.height + maximumSize.width) < (size.height + size.width)
-                        &&  size.width > size.height
+                        && size.width > size.height
                 ) {
                     maximumSize = size
                 }
@@ -232,7 +232,8 @@ class FireBaseMlScanHelper(val context: Context) {
     private fun scanBarcodes(image: FirebaseVisionImage) {
         val options = FirebaseVisionBarcodeDetectorOptions.Builder()
                 .setBarcodeFormats(
-                        FirebaseVisionBarcode.FORMAT_QR_CODE
+                        scanType.generalFormat,
+                        *scanType.additionalFormats
                 )
                 .build()
 
@@ -264,6 +265,19 @@ class FireBaseMlScanHelper(val context: Context) {
                 }
     }
 
+}
+
+
+enum class ScanType(val generalFormat: Int, val additionalFormats: IntArray) {
+
+    QR_CODE(
+            generalFormat = FirebaseVisionBarcode.FORMAT_QR_CODE,
+            additionalFormats = emptyArray<Int>().toIntArray()
+    ),
+    EAN(
+            generalFormat = FirebaseVisionBarcode.FORMAT_EAN_13,
+            additionalFormats = emptyArray<Int>().toIntArray()
+    );
 }
 
 private fun Rect.transformWithRatio(ratio: Float): Rect {

@@ -29,6 +29,7 @@ sealed class Failure {
     object NotValidEnterNumber : Failure()
     class SapError(val message: String, val retCode: Int? = null) : Failure()
     class DbError(val message: String) : Failure()
+    object NotValidQrCode : Failure()
 
     /** * Extend this class for feature specific failures.*/
     abstract class FeatureFailure : Failure()
