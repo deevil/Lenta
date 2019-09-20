@@ -4,9 +4,7 @@ import com.lenta.bp14.models.data.GoodType
 import com.lenta.bp14.models.work_list.*
 import com.lenta.shared.models.core.MatrixType
 import com.lenta.shared.models.core.Uom
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import java.util.*
 
 class WorkListRepo {
 
@@ -45,7 +43,24 @@ class WorkListRepo {
                 promo = Promo(
                         name = "Распродажа кукурузы ТК 0007",
                         period = "Период 30.05.19 - 12.09.19"
-                ))
+                ),
+                providers = MutableList((3..5).random()) {
+                    Provider(
+                            number = it + 1,
+                            code = (111111..999999).random().toString(),
+                            name = "Поставщик ${it + 1}",
+                            kipStart = Date(),
+                            kipEnd = Date()
+                    )
+                },
+                stocks = MutableList((5..9).random()) {
+                    Stock(
+                            number = it + 1,
+                            storage = "0" + (0..9).random() + (0..9).random() + (0..9).random(),
+                            quantity = (1..99).random()
+                    )
+                }
+        )
     }
 
 }

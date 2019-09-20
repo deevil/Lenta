@@ -99,8 +99,6 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
     init {
         viewModelScope.launch {
             good.value = task.currentGood
-            stocks.value = good.value?.stocks
-            providers.value = good.value?.providers
             title.value = good.value?.getFormattedMaterialWithName()
             quantity.value = good.value?.common?.quantity.toString()
 
@@ -110,6 +108,8 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
                 val goodWithAdditional = good.value
                 goodWithAdditional?.additional = task.getAdditionalGoodInfo(good.value?.common?.ean ?: "")
                 good.value = goodWithAdditional
+                stocks.value = good.value?.additional?.stocks
+                providers.value = good.value?.additional?.providers
                 showProgress.value = false
             }
         }

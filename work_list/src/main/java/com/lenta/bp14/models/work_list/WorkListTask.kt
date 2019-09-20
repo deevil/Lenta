@@ -74,9 +74,7 @@ class WorkListTask(
 data class Good(
         var number: Int,
         val common: CommonGoodInfo,
-        var additional: AdditionalGoodInfo? = null,
-        val providers: MutableList<Provider>? = null,
-        val stocks: MutableList<Stock>? = null
+        var additional: AdditionalGoodInfo? = null
 ) {
 
     fun getFormattedMaterialWithName(): String? {
@@ -118,7 +116,9 @@ data class AdditionalGoodInfo(
         val minStock: Int,
         val movement: Movement,
         val price: Price,
-        val promo: Promo
+        val promo: Promo,
+        val providers: MutableList<Provider>,
+        val stocks: MutableList<Stock>
 )
 
 
@@ -131,13 +131,13 @@ data class GoodOptions(
 )
 
 data class Stock(
-        val id: Int,
-        val storageNumber: String,
+        val number: Int,
+        val storage: String,
         val quantity: Int
 )
 
 data class Provider(
-        val id: Int,
+        val number: Int,
         val code: String,
         val name: String,
         val kipStart: Date,
@@ -158,10 +158,6 @@ data class Movement(
 data class Price(
         val commonPrice: Int,
         val discountPrice: Int
-        /*val priceOne: Int,
-        val priceOneSellOut: Int,
-        val priceTwo: Int,
-        val priceTwoByStock: Int*/
 )
 
 data class Promo(
