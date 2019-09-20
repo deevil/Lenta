@@ -147,9 +147,4 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
 
     }
 
-    fun showFullInfo(view: View) {
-        val textView = view as TextView
-        navigator.openMessageScreen(textView.text.toString())
-    }
-
 }

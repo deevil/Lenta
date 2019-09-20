@@ -50,8 +50,8 @@
                     <TextView
                         android:id="@+id/tv_storage_places"
                         style="@style/CellTextStyle"
-                        android:onClick="@{(view) -> vm.showFullInfo(view)}"
                         android:text="@{vm.good.additional.storagePlaces}"
+                        app:zoom="@{true}"
                         tools:text="125635; 652148; 635894" />
 
                     <TextView
@@ -180,8 +180,8 @@
                     <TextView
                         android:id="@+id/tv_promotion_name"
                         style="@style/CellTextStyle"
-                        android:onClick="@{(view) -> vm.showFullInfo(view)}"
                         android:text="@{vm.good.additional.promo.name}"
+                        app:zoom="@{true}"
                         tools:text="Распродажа кукурузы ТК 0007" />
 
                     <TextView
