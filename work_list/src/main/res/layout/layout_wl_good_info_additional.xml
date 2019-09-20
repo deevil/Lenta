@@ -199,12 +199,27 @@
 
         </LinearLayout>
 
+
         <!-- Индикатор загрузки -->
-        <ProgressBar
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            app:invisible="@{!vm.showProgress}" />
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
+            app:invisible="@{!vm.showProgress}">
+
+            <ProgressBar
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="@string/data_loading" />
+
+        </LinearLayout>
 
     </FrameLayout>
 

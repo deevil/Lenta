@@ -105,6 +105,7 @@
     <string name="price_with_discount">Цена с ДК, руб</string>
     <string name="confirmation_delete_task">По заданию \"%1$s\" будут удалены все непереданные данные.</string>
     <string name="number_of_mark">Количество марок</string>
+    <string name="data_loading">Идет загрузка данных</string>
 
 
 </resources>
