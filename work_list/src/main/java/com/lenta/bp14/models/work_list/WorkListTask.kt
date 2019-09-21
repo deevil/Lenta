@@ -95,6 +95,7 @@ data class Good(
 
 }
 
+
 data class CommonGoodInfo(
         val ean: String,
         val material: String,
@@ -110,7 +111,6 @@ data class CommonGoodInfo(
         val options: GoodOptions
 )
 
-
 data class AdditionalGoodInfo(
         val storagePlaces: String,
         val minStock: Int,
@@ -120,7 +120,6 @@ data class AdditionalGoodInfo(
         val providers: MutableList<Provider>,
         val stocks: MutableList<Stock>
 )
-
 
 data class GoodOptions(
         val matrixType: MatrixType,
@@ -142,13 +141,7 @@ data class Provider(
         val name: String,
         val kipStart: Date,
         val kipEnd: Date
-) {
-
-    fun getKipPeriod(): String {
-        return "${kipStart.getFormattedDate()} - ${kipEnd.getFormattedDate()}"
-    }
-
-}
+)
 
 data class Movement(
         val inventory: String,

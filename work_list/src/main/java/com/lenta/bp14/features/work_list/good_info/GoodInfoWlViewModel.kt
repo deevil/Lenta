@@ -4,7 +4,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp14.models.data.ShelfLifeType
 import com.lenta.bp14.models.work_list.Good
-import com.lenta.bp14.models.work_list.Provider
 import com.lenta.bp14.models.work_list.Stock
 import com.lenta.bp14.models.work_list.WorkListTask
 import com.lenta.bp14.platform.navigation.IScreenNavigator
@@ -12,6 +11,7 @@ import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.extentions.combineLatest
+import com.lenta.shared.utilities.extentions.getFormattedDate
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.view.OnPositionClickListener
 import kotlinx.coroutines.delay
@@ -92,7 +92,7 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
     val shelfLifeTypeList = MutableLiveData<List<String>>()
 
     val stocks = MutableLiveData<List<Stock>>()
-    val providers = MutableLiveData<List<Provider>>()
+    val providers = MutableLiveData<List<ItemProviderUi>>()
 
     init {
         viewModelScope.launch {
@@ -107,7 +107,16 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
                 goodWithAdditional?.additional = task.getAdditionalGoodInfo(good.value?.common?.ean ?: "")
                 good.value = goodWithAdditional
                 stocks.value = good.value?.additional?.stocks
-                providers.value = good.value?.additional?.providers
+
+                providers.value = good.value?.additional?.providers?.mapIndexed { index, provider ->
+                    ItemProviderUi(
+                            number = index + 1,
+                            code = provider.code,
+                            name = provider.name,
+                            kipPeriod = "${provider.kipStart.getFormattedDate()} - ${provider.kipEnd.getFormattedDate()}"
+                    )
+                }
+
                 showProgress.value = false
             }
         }
@@ -147,7 +156,7 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
 
 }
 
-data class ProvidersUi(
+data class ItemProviderUi(
         val number: Int,
         val code: String,
         val name: String,
