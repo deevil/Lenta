@@ -32,6 +32,9 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
     val spinReasonRejection: MutableLiveData<List<String>> = MutableLiveData()
     val spinReasonRejectionSelectedPosition: MutableLiveData<Int> = MutableLiveData(0)
     val suffix: MutableLiveData<String> = MutableLiveData()
+    val isDefect: MutableLiveData<Boolean> = spinQualitySelectedPosition.map {
+        it != 0
+    }
 
     private val qualityInfo: MutableLiveData<List<QualityInfo>> = MutableLiveData()
     private val reasonRejectionInfo: MutableLiveData<List<ReasonRejectionInfo>> = MutableLiveData()
@@ -84,8 +87,8 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
     }
 
     fun onClickPositionSpinQuality(position: Int){
-        spinQualitySelectedPosition.value = position
         viewModelScope.launch {
+            spinQualitySelectedPosition.value = position
             updateDataSpinReasonRejection(qualityInfo.value!![position].code)
         }
     }
