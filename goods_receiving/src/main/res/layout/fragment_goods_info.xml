@@ -51,14 +51,12 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp"
-            android:enabled="@{true}"
-            app:items="@{vm.spinQualityList}"
+            app:items="@{vm.spinQuality}"
             app:layout_constraintBottom_toBottomOf="@+id/et_inventory"
             app:layout_constraintEnd_toStartOf="@+id/div_vert"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@+id/et_inventory"
-            app:onPositionClickListener="@{vm}"
-            app:position="@{vm.spinQualitySelectedPosition}" />
+            app:position="@{vm.spinQualitySelectedPosition}"/>
 
         <com.lenta.shared.view.EditTextWithSuffix
             android:id="@+id/et_inventory"
@@ -177,22 +175,21 @@
                 android:background="@color/color_divider"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/spinner_reject_type" />
+                app:layout_constraintTop_toBottomOf="@+id/spinner_reject_rejection" />
 
             <com.lenta.shared.view.ClickableSpinner
-                android:id="@+id/spinner_reject_type"
+                android:id="@+id/spinner_reject_rejection"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
                 android:layout_marginEnd="8dp"
-                android:enabled="@{true}"
-                app:items="@{vm.spinQualityList}"
+                app:items="@{vm.spinReasonRejection}"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:onPositionClickListener="@{vm}"
-                app:position="@{vm.spinQualitySelectedPosition}" />
+                app:position="@{vm.spinReasonRejectionSelectedPosition}" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

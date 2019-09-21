@@ -1,6 +1,8 @@
 package com.lenta.bp9.features.goods_information.general
 
+import android.os.Bundle
 import android.view.View
+import android.widget.AdapterView
 import com.lenta.bp9.R
 import com.lenta.bp9.databinding.FragmentGoodsInfoBinding
 import com.lenta.bp9.model.task.TaskProductInfo
@@ -38,9 +40,22 @@ class GoodsInfoFragment : CoreFragment<FragmentGoodsInfoBinding, GoodsInfoViewMo
         provideViewModel(GoodsInfoViewModel::class.java).let {vm ->
             getAppComponent()?.inject(vm)
             vm.productInfo.value = this.productInfo
-            vm.spinQualityList.value = listOf(getString(R.string.norm), getString(R.string.defect))
+            vm.titleProgressScreen.value = getString(R.string.data_loading)
             return vm
         }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        binding?.spinnerQuality?.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(adapterView: AdapterView<*>, view: View, position: Int, l: Long) {
+                vm.onClickPositionSpinQuality(position)
+            }
+
+            override fun onNothingSelected(adapterView: AdapterView<*>) {
+            }
+        }
+
     }
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {

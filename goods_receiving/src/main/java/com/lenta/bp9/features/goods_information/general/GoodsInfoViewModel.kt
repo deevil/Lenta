@@ -1,19 +1,40 @@
 package com.lenta.bp9.features.goods_information.general
 
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import com.lenta.bp9.model.task.TaskProductInfo
+import com.lenta.bp9.platform.navigation.IScreenNavigator
+import com.lenta.bp9.repos.IDataBaseRepo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
+import com.lenta.shared.requests.combined.scan_info.pojo.QualityInfo
+import com.lenta.shared.requests.combined.scan_info.pojo.ReasonRejectionInfo
+import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.toStringFormatted
 import com.lenta.shared.view.OnPositionClickListener
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
 
+    @Inject
+    lateinit var screenNavigator: IScreenNavigator
+
+    @Inject
+    lateinit var dataBase: IDataBaseRepo
+
     val productInfo: MutableLiveData<TaskProductInfo> = MutableLiveData()
-    val spinQualityList: MutableLiveData<List<String>> = MutableLiveData()
+    val titleProgressScreen: MutableLiveData<String> = MutableLiveData()
+    val spinQuality: MutableLiveData<List<String>> = MutableLiveData()
     val spinQualitySelectedPosition: MutableLiveData<Int> = MutableLiveData(0)
+    val spinReasonRejection: MutableLiveData<List<String>> = MutableLiveData()
+    val spinReasonRejectionSelectedPosition: MutableLiveData<Int> = MutableLiveData(0)
     val suffix: MutableLiveData<String> = MutableLiveData()
+
+    private val qualityInfo: MutableLiveData<List<QualityInfo>> = MutableLiveData()
+    private val reasonRejectionInfo: MutableLiveData<List<ReasonRejectionInfo>> = MutableLiveData()
 
     val count: MutableLiveData<String> = MutableLiveData("0")
     private val countValue: MutableLiveData<Double> = count.map { it?.toDoubleOrNull() ?: 0.0 }
@@ -28,7 +49,13 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
     }
 
     init {
-        suffix.value = productInfo.value?.uom?.name
+        viewModelScope.launch {
+            suffix.value = productInfo.value?.uom?.name
+            qualityInfo.value = dataBase.getQualityInfo()
+            spinQuality.value = qualityInfo.value?.map {
+                it.name
+            }
+        }
     }
 
     fun onClickDetails(){
@@ -53,6 +80,26 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
     }
 
     override fun onClickPosition(position: Int) {
-        return
+        spinReasonRejectionSelectedPosition.value = position
     }
+
+    fun onClickPositionSpinQuality(position: Int){
+        spinQualitySelectedPosition.value = position
+        viewModelScope.launch {
+            updateDataSpinReasonRejection(qualityInfo.value!![position].code)
+        }
+    }
+
+    private suspend fun updateDataSpinReasonRejection(selectedQuality: String) {
+        viewModelScope.launch {
+            screenNavigator.showProgress(titleProgressScreen.value!!)
+            spinReasonRejectionSelectedPosition.value = 0
+            reasonRejectionInfo.value = dataBase.getReasonRejectionInfo(selectedQuality)
+            spinReasonRejection.value = reasonRejectionInfo.value?.map {
+                it.name
+            }
+            screenNavigator.hideProgress()
+        }
+    }
+
 }
