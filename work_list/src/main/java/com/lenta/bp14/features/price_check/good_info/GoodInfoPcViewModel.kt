@@ -1,8 +1,11 @@
 package com.lenta.bp14.features.price_check.good_info
 
+import androidx.lifecycle.viewModelScope
 import com.lenta.bp14.models.check_price.ICheckPriceTask
 import com.lenta.bp14.platform.navigation.IScreenNavigator
 import com.lenta.shared.platform.viewmodel.CoreViewModel
+import com.lenta.shared.requests.combined.scan_info.analyseCode
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class GoodInfoPcViewModel : CoreViewModel() {
@@ -41,6 +44,54 @@ class GoodInfoPcViewModel : CoreViewModel() {
 
     }
 
+    fun onScanResult(data: String) {
+        checkCode(data)
+    }
+
+    private fun checkCode(code: String?) {
+        analyseCode(
+                code = code ?: "",
+                funcForEan = { eanCode ->
+                    searchCode(eanCode = eanCode)
+                },
+                funcForMatNr = { matNr ->
+                    searchCode(matNr = matNr)
+                },
+                funcForPriceQrCode = { qrCode ->
+                    searchCode(qrCode = qrCode)
+                },
+                funcForSapOrBar = navigator::showTwelveCharactersEntered,
+                funcForNotValidFormat = navigator::showGoodNotFound
+        )
+    }
+
+    private fun searchCode(eanCode: String? = null, matNr: String? = null, qrCode: String? = null) {
+        viewModelScope.launch {
+            require((eanCode != null) xor (matNr != null) xor (qrCode != null)) {
+                "only one param allowed. eanCode: $eanCode, matNr: $matNr, qrCode: $qrCode "
+            }
+            navigator.showProgressLoadingData()
+
+            when {
+                !eanCode.isNullOrBlank() -> task.getActualPriceByEan(eanCode)
+                !matNr.isNullOrBlank() -> task.getActualPriceByMatNr(matNr)
+                !qrCode.isNullOrBlank() -> task.checkPriceByQrCode(qrCode)
+                else -> throw IllegalArgumentException()
+            }.either(
+                    fnL = {
+                        navigator.openAlertScreen(it)
+                    }
+            ) {
+                task.processingMatNumber = it.matNumber
+                onClickValid()
+                if (qrCode.isNullOrBlank()) {
+                    navigator.openGoodInfoPcScreen()
+                }
+            }
+            navigator.hideProgress()
+
+        }
+    }
 
     private fun setNewCheckStatusAndGoBack(isValid: Boolean?) {
         task.setCheckPriceStatus(isValid)

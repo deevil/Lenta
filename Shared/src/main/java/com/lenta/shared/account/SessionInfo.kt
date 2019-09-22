@@ -1,5 +1,7 @@
 package com.lenta.shared.account
 
+import androidx.lifecycle.MutableLiveData
+
 
 data class SessionInfo(
         override var packageName: String? = null,
@@ -11,7 +13,7 @@ data class SessionInfo(
         override var market: String? = null,
         override var basicAuth: String? = null,
         override var existUnsavedData: Boolean? = null,
-        override var authorizationSkipped: Boolean = false
+        override var isAuthSkipped: MutableLiveData<Boolean> = MutableLiveData(false)
 ) : ISessionInfo
 
 interface ISessionInfo {
@@ -24,5 +26,5 @@ interface ISessionInfo {
     var market: String?
     var basicAuth: String?
     var existUnsavedData: Boolean?
-    var authorizationSkipped: Boolean
+    var isAuthSkipped: MutableLiveData<Boolean>
 }

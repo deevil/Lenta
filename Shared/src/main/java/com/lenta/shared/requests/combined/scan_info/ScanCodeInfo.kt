@@ -1,5 +1,6 @@
 package com.lenta.shared.requests.combined.scan_info
 
+import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.requests.combined.scan_info.pojo.EanInfo
 import java.util.*
 
@@ -79,4 +80,46 @@ class ScanCodeInfo(val originalNumber: String, val fixedQuantity: Double?) {
         }
         return false
     }
+}
+
+
+fun analyseCode(
+        code: String,
+        funcForEan: (eanCode: String) -> Unit,
+        funcForMatNr: (matNumber: String) -> Unit,
+        funcForSapOrBar: (sapCallback: () -> Unit, barCallback: () -> Unit) -> Unit,
+        funcForPriceQrCode: ((matNumber: String) -> Unit)? = null,
+        funcForNotValidFormat: () -> Unit
+) {
+
+    code.length.let { length ->
+
+        if (code.startsWith("(01)")) {
+            funcForPriceQrCode?.let {
+                it(code)
+                return
+            }
+            funcForNotValidFormat()
+            return
+        }
+
+        if (length < Constants.COMMON_SAP_LENGTH) {
+            funcForNotValidFormat()
+            return
+        }
+
+        if (length >= Constants.COMMON_SAP_LENGTH) {
+            when (length) {
+                Constants.COMMON_SAP_LENGTH -> funcForMatNr(code)
+                Constants.SAP_OR_BAR_LENGTH -> {
+                    funcForSapOrBar(
+                            { funcForMatNr(code) },
+                            { funcForEan(code) }
+                    )
+                }
+                else -> funcForEan(code)
+            }
+        }
+    }
+
 }

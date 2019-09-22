@@ -36,7 +36,7 @@ class CheckListTask(
     }
 
     override fun getTaskType(): ITaskType {
-        return TaskTypes.CheckPrice.taskType
+        return TaskTypes.CheckList.taskType
     }
 
     override fun getDescription(): ITaskDescription {
