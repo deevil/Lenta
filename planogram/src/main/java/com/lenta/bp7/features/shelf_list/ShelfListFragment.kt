@@ -1,11 +1,8 @@
 package com.lenta.bp7.features.shelf_list
 
 import android.os.Bundle
-import android.view.KeyEvent
 import android.view.View
-import android.view.inputmethod.EditorInfo
 import android.widget.AdapterView
-import android.widget.TextView
 import androidx.lifecycle.Observer
 import com.lenta.bp7.BR
 import com.lenta.bp7.R
@@ -55,16 +52,16 @@ class ShelfListFragment : CoreFragment<FragmentShelfListBinding, ShelfListViewMo
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
-        bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.delete, enabled = false)
+        bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.deleteSegment)
+        bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.deleteShelf, enabled = false)
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.apply, enabled = false)
+
+        connectLiveData(vm.deleteSegmentButtonEnabled, getBottomToolBarUIModel()!!.uiModelButton2.enabled)
+        connectLiveData(vm.deleteShelfButtonEnabled, getBottomToolBarUIModel()!!.uiModelButton3.enabled)
+        connectLiveData(vm.applyButtonEnabled, getBottomToolBarUIModel()!!.uiModelButton5.enabled)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        viewLifecycleOwner.apply {
-            connectLiveData(vm.deleteButtonEnabled, getBottomToolBarUIModel()!!.uiModelButton3.enabled)
-            connectLiveData(vm.applyButtonEnabled, getBottomToolBarUIModel()!!.uiModelButton5.enabled)
-        }
-
         initRvConfig()
     }
 
@@ -76,7 +73,8 @@ class ShelfListFragment : CoreFragment<FragmentShelfListBinding, ShelfListViewMo
     override fun onToolbarButtonClick(view: View) {
         when (view.id) {
             R.id.b_1 -> vm.onClickBack()
-            R.id.b_3 -> vm.onClickDelete()
+            R.id.b_2 -> vm.onClickDeleteSegment()
+            R.id.b_3 -> vm.onClickDeleteShelf()
             R.id.b_5 -> vm.onClickApply()
         }
     }

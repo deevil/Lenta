@@ -126,6 +126,14 @@ data class ButtonDecorationInfo(
             ButtonDecorationInfo(R.drawable.ic_delete_white_24dp, R.string.delete)
         }
 
+        val deleteShelf: ButtonDecorationInfo by lazy {
+            ButtonDecorationInfo(R.drawable.ic_delete_shelf_white_24dp, R.string.shelf)
+        }
+
+        val deleteSegment: ButtonDecorationInfo by lazy {
+            ButtonDecorationInfo(R.drawable.ic_delete_segment_white_24dp, R.string.segment)
+        }
+
         val clean: ButtonDecorationInfo by lazy {
             ButtonDecorationInfo(R.drawable.ic_delete_white_24dp, R.string.clean)
         }

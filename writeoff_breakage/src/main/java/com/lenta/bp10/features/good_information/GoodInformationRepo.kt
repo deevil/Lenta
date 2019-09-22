@@ -5,8 +5,8 @@ import com.lenta.bp10.fmp.resources.dao_ext.getLimit
 import com.lenta.bp10.fmp.resources.fast.ZmpUtz31V001
 import com.lenta.bp10.fmp.resources.tasks_settings.ZmpUtz29V001Rfc
 import com.lenta.shared.di.AppScope
-import com.lenta.shared.fmp.resources.dao_ext.getMaterial
-import com.lenta.shared.fmp.resources.slow.ZmpUtz30V001
+import com.lenta.shared.fmp.resources.dao_ext.getProductInfoByMaterial
+import com.lenta.shared.fmp.resources.slow.ZfmpUtz48V001
 import com.lenta.shared.models.core.ProductType
 import com.mobrun.plugin.api.HyperHive
 import kotlinx.coroutines.Dispatchers
@@ -16,7 +16,7 @@ import kotlinx.coroutines.withContext
 class GoodInformationRepo(hyperHive: HyperHive) : IGoodInformationRepo {
 
     val zmpUt29V001 by lazy { ZmpUtz29V001Rfc(hyperHive) }
-    val zmpUtz30V001 by lazy { ZmpUtz30V001(hyperHive) }
+    val zfmpUtz48V001 by lazy { ZfmpUtz48V001(hyperHive) }
     val zmpUtz31V001 by lazy { ZmpUtz31V001(hyperHive) }
 
     override suspend fun getDefaultReason(taskType: String, sectionId: String, materialNumber: String): String {
@@ -24,7 +24,7 @@ class GoodInformationRepo(hyperHive: HyperHive) : IGoodInformationRepo {
             return@withContext zmpUtz31V001.getDefaultReason(
                     taskType = taskType,
                     sectionId = sectionId,
-                    material = zmpUtz30V001.getMaterial(materialNumber))
+                    material = zfmpUtz48V001.getProductInfoByMaterial(materialNumber))
         }
     }
 

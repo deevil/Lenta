@@ -8,7 +8,8 @@
         <variable
             name="vm"
             type="com.lenta.shared.platform.statusbar.StatusBarUiModel" />
-        <import type="com.lenta.shared.platform.constants.Constants"/>
+
+        <import type="com.lenta.shared.platform.constants.Constants" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -22,22 +23,33 @@
             android:layout_marginStart="4dp"
             android:layout_marginTop="4dp"
             android:layout_marginBottom="4dp"
-            android:textSize="14sp"
             android:text="@{vm.pageNumber}"
+            android:textSize="14sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintHorizontal_chainStyle="spread_inside"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:text="10/09" />
 
+        <ImageView
+            android:id="@+id/iv_auth_skip"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_incognito_mode"
+            android:visibility="@{vm.isAuthSkipped()}"
+            app:layout_constraintBottom_toBottomOf="@+id/tv_page_number"
+            app:layout_constraintStart_toEndOf="@+id/tv_page_number"
+            app:layout_constraintTop_toTopOf="@+id/tv_page_number"
+            tools:visibility="gone" />
+
         <TextView
             android:id="@+id/tv_ip"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
+            android:layout_marginStart="4dp"
             android:textSize="14sp"
             app:layout_constraintBottom_toBottomOf="@+id/tv_page_number"
-            app:layout_constraintStart_toEndOf="@+id/tv_page_number"
+            app:layout_constraintStart_toEndOf="@+id/iv_auth_skip"
             app:layout_constraintTop_toTopOf="@+id/tv_page_number"
             app:layout_constraintVertical_bias="0.0"
             app:prefix='@{"IP:"}'
@@ -48,25 +60,25 @@
             android:id="@+id/tv_printer_tasks"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:textSize="14sp"
+            android:layout_marginEnd="4dp"
             android:drawableStart="@drawable/ic_print_white_16dp"
             android:drawablePadding="4dp"
-            app:setTextWithVisibilities="@{vm.printer}"
+            android:textSize="14sp"
             app:layout_constraintBottom_toBottomOf="@+id/tv_page_number"
             app:layout_constraintEnd_toStartOf="@+id/tv_battery_status"
             app:layout_constraintHorizontal_chainStyle="spread_inside"
             app:layout_constraintTop_toTopOf="@+id/tv_page_number"
+            app:setTextWithVisibilities="@{vm.printer}"
             tools:text="3" />
 
         <TextView
             android:id="@+id/tv_battery_status"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
+            android:layout_marginEnd="4dp"
             android:textSize="14sp"
-            app:isCharging="@{vm.batteryIsCharging}"
             app:batteryLevel="@{vm.batteryLevel}"
+            app:isCharging="@{vm.batteryIsCharging}"
             app:layout_constraintBottom_toBottomOf="@+id/tv_page_number"
             app:layout_constraintEnd_toStartOf="@+id/tv_time"
             app:layout_constraintTop_toTopOf="@+id/tv_page_number"
@@ -77,16 +89,16 @@
             android:id="@+id/tv_time"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:textSize="14sp"
+            android:layout_marginEnd="4dp"
             android:drawableEnd="@drawable/ic_wifi_white_16dp"
             android:drawablePadding="2dp"
+            android:textSize="14sp"
             app:layout_constraintBottom_toBottomOf="@+id/tv_page_number"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@+id/tv_page_number"
             app:networkIsConnected="@{vm.networkConnected}"
-            app:unixTime="@{vm.time}"
             app:timeFormat="@{Constants.TIME_FORMAT_HHmm}"
+            app:unixTime="@{vm.time}"
             tools:drawablePadding="4dp"
             tools:text="10:23" />
 

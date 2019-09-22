@@ -64,7 +64,13 @@ class GoodsListClViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     }
 
     fun onClickSave() {
-        task.saveScannedGoodList(goods.value!!)
+        // Подтверждение - Перевести задание в статус "Подсчитано" и закрыть его для редактирования? - Назад / Да
+        navigator.showSetTaskToStatusCalculated {
+            task.openToEdit = false
+
+            // todo Реализовать сохранение задания?
+            task.saveScannedGoodList(goods.value!!)
+        }
     }
 
     override fun onPageSelected(position: Int) {
@@ -150,6 +156,11 @@ class GoodsListClViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     fun onDigitPressed(digit: Int) {
         numberField.postValue(numberField.value ?: "" + digit)
         requestFocusToNumberField.value = true
+    }
+
+    fun onClickVideo() {
+        navigator.openVideoScanProductScreen()
+
     }
 
 }
