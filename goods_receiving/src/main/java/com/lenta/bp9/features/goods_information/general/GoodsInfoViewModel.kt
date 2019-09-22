@@ -2,6 +2,8 @@ package com.lenta.bp9.features.goods_information.general
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.lenta.bp9.model.processing.ProcessGeneralProductService
+import com.lenta.bp9.model.task.IReceivingTaskManager
 import com.lenta.bp9.model.task.TaskProductInfo
 import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.bp9.repos.IDataBaseRepo
@@ -13,7 +15,6 @@ import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.toStringFormatted
 import com.lenta.shared.view.OnPositionClickListener
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -21,6 +22,12 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
 
     @Inject
     lateinit var screenNavigator: IScreenNavigator
+
+    @Inject
+    lateinit var taskManager: IReceivingTaskManager
+
+    @Inject
+    lateinit var processGeneralProductService: ProcessGeneralProductService
 
     @Inject
     lateinit var dataBase: IDataBaseRepo
@@ -41,15 +48,38 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
 
     val count: MutableLiveData<String> = MutableLiveData("0")
     private val countValue: MutableLiveData<Double> = count.map { it?.toDoubleOrNull() ?: 0.0 }
-    private val totalCount: MutableLiveData<Double> = countValue.map {
-        (it ?: 0.0) //+ productInfo.value!!.factCount
+
+    val acceptTotalCount: MutableLiveData<Double> by lazy  {
+        countValue.combineLatest(spinQualitySelectedPosition).map{
+            if (qualityInfo.value?.get(it!!.second)?.code == "1") {
+                (it?.first ?: 0.0) + taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().getCountAcceptOfProduct(productInfo.value!!)
+            } else {
+                0.0
+            }
+        }
     }
 
-    val totalCountWithUom: MutableLiveData<String> = totalCount.map { "${it.toStringFormatted()} ${productInfo.value!!.uom.name}" }
-
-    val enabledApplyButton: MutableLiveData<Boolean> = countValue.combineLatest(totalCount).map {
-        it!!.first != 0.0 && it.second > 0.0
+    val refusalTotalCount: MutableLiveData<Double> by lazy  {
+        countValue.
+                combineLatest(spinReasonRejectionSelectedPosition).
+                combineLatest(spinQualitySelectedPosition).
+                map{
+                    if (qualityInfo.value?.get(it?.second ?: 0)?.code != "1") {
+                        (it?.first?.first ?: 0.0) + taskManager.
+                                            getReceivingTask()!!.
+                                            taskRepository.
+                                            getProductsDiscrepancies().
+                                            getCountRefusalOfProductOfReasonRejection(productInfo.value!!, reasonRejectionInfo.value?.get(it?.first?.second ?: 0) ?.code)
+                    } else {
+                        0.0
+                    }
+        }
     }
+
+    val enabledApplyButton: MutableLiveData<Boolean> = countValue.
+            map {
+                it!! != 0.0
+            }
 
     init {
         viewModelScope.launch {
@@ -58,24 +88,30 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
             spinQuality.value = qualityInfo.value?.map {
                 it.name
             }
+            if (processGeneralProductService.newProcessGeneralProductService(productInfo.value!!) == null){
+                screenNavigator.goBack()
+                screenNavigator.openAlertWrongProductType()
+            }
         }
     }
 
     fun onClickDetails(){
-        //screenNavigator.openGoodsDetailsStorageScreen(productInfo.value!!)
+        //screenNavigator.openInfoScreen("экран \"Список детали\" еще в разработке")
     }
 
     fun onClickAdd() {
-        /**if (addGood()) {
-            viewModelScope.launch {
-                limitsChecker?.check()
-            }
-        }*/
+        if (qualityInfo.value?.get(spinQualitySelectedPosition.value ?: 0)?.code == "1") {
+            processGeneralProductService.add(acceptTotalCount.value!!.toString(), "1")
+        } else {
+            processGeneralProductService.add(refusalTotalCount.value!!.toString(), reasonRejectionInfo.value!![spinReasonRejectionSelectedPosition.value!!].code)
+        }
+
+        count.value = "0"
     }
 
     fun onClickApply() {
-        //processGeneralProductService.setFactCount(totalCount.value!!)
-        //screenNavigator.goBack()
+        onClickAdd()
+        screenNavigator.goBack()
     }
 
     fun onScanResult(data: String) {
@@ -101,6 +137,7 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
             spinReasonRejection.value = reasonRejectionInfo.value?.map {
                 it.name
             }
+            count.value = count.value
             screenNavigator.hideProgress()
         }
     }

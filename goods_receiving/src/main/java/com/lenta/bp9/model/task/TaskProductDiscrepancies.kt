@@ -8,8 +8,7 @@ data class TaskProductDiscrepancies(
         val exidv: String,
         val numberDiscrepancies: String, //Количество расхождения в ПЕИ
         val uom: Uom,
-        val typeDifferences: String, //Тип расхождения
+        val typeDiscrepancies: String, //Тип расхождения
         val isNotEdit: Boolean,
         val isNew: Boolean
-) {
-}
+)

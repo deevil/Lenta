@@ -1,7 +1,9 @@
 package com.lenta.bp9.features.goods_information.general
 
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.widget.AdapterView
 import com.lenta.bp9.R
 import com.lenta.bp9.databinding.FragmentGoodsInfoBinding
@@ -48,14 +50,13 @@ class GoodsInfoFragment : CoreFragment<FragmentGoodsInfoBinding, GoodsInfoViewMo
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding?.spinnerQuality?.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(adapterView: AdapterView<*>, view: View, position: Int, l: Long) {
-                vm.onClickPositionSpinQuality(position)
-            }
+                override fun onItemSelected(adapterView: AdapterView<*>, view: View, position: Int, l: Long) {
+                    vm.onClickPositionSpinQuality(position)
+                }
 
-            override fun onNothingSelected(adapterView: AdapterView<*>) {
+                override fun onNothingSelected(adapterView: AdapterView<*>) {
+                }
             }
-        }
-
     }
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {

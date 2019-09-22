@@ -1,6 +1,7 @@
 package com.lenta.bp9.platform.navigation
 
 import android.content.Context
+import android.provider.Settings.Global.getString
 import androidx.core.content.ContextCompat
 import com.lenta.bp9.features.auth.AuthFragment
 import com.lenta.bp9.features.goods_list.GoodsListFragment
@@ -166,6 +167,16 @@ class ScreenNavigator(
         }
     }
 
+    override fun openAlertWrongProductType() {
+        openAlertScreen(message = context.getString(R.string.wrong_product_type),
+                iconRes = R.drawable.ic_info_pink,
+                textColor = ContextCompat.getColor(context, R.color.color_text_dialogWarning),
+                pageNumber = "96",
+                timeAutoExitInMillis = 3000
+        )
+    }
+
+
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 
 }
@@ -191,4 +202,5 @@ interface IScreenNavigator : ICoreNavigator {
     fun openLoadingStartReviseScreen()
     fun openTaskReviseScreen()
     fun openGoodsInfoScreen(productInfo: TaskProductInfo)
+    fun openAlertWrongProductType()
 }

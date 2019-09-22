@@ -56,4 +56,5 @@
     <string name="delivery_documents">Документы по поставке</string>
     <string name="accept">Принять</string>
     <string name="refusal">Отказать</string>
+    <string name="wrong_product_type">Неверный тип продукта</string>
 </resources>

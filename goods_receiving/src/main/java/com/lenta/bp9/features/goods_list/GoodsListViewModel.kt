@@ -1,8 +1,6 @@
 package com.lenta.bp9.features.goods_list
 
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Transformations
 import com.lenta.bp9.model.task.IReceivingTaskManager
 import com.lenta.bp9.model.task.TaskProductInfo
 import com.lenta.bp9.platform.navigation.IScreenNavigator
@@ -205,7 +203,7 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
 
     fun onClickSave() {
         //todo
-        screenNavigator.openGoodsInfoScreen(TaskProductInfo(
+        val tmpProduct = taskManager.getReceivingTask()!!.taskRepository.getProducts().findProduct(TaskProductInfo(
                 materialNumber = "000021",
                 description = "Р/к горбуша (Россия) 230/250г",
                 uom = Uom("ST", "шт"),
@@ -236,5 +234,6 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
                 numberBoxesControl = "",
                 numberStampsControl = ""
         ))
+        screenNavigator.openGoodsInfoScreen(tmpProduct!!)
     }
 }

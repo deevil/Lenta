@@ -118,34 +118,34 @@ class MainMenuViewModel : CoreViewModel() {
             ))
         }
         taskManager.getReceivingTask().let {
-            it!!.taskRepository.getProductsDiscrepancies().addProductDiscrepancies(TaskProductDiscrepancies(
+            it!!.taskRepository.getProductsDiscrepancies().addProductDiscrepancy(TaskProductDiscrepancies(
                     materialNumber = "000021",
                     exidv = "",
                     numberDiscrepancies = "20.0",
                     uom = Uom("ST", "шт"),
-                    typeDifferences = "1",
+                    typeDiscrepancies = "1",
                     isNotEdit = false,
                     isNew = false
             ))
         }
         taskManager.getReceivingTask().let {
-            it!!.taskRepository.getProductsDiscrepancies().addProductDiscrepancies(TaskProductDiscrepancies(
+            it!!.taskRepository.getProductsDiscrepancies().addProductDiscrepancy(TaskProductDiscrepancies(
                     materialNumber = "000021",
                     exidv = "",
                     numberDiscrepancies = "5.0",
                     uom = Uom("ST", "шт"),
-                    typeDifferences = "22",
+                    typeDiscrepancies = "22",
                     isNotEdit = false,
                     isNew = false
             ))
         }
         taskManager.getReceivingTask().let {
-            it!!.taskRepository.getProductsDiscrepancies().addProductDiscrepancies(TaskProductDiscrepancies(
+            it!!.taskRepository.getProductsDiscrepancies().addProductDiscrepancy(TaskProductDiscrepancies(
                     materialNumber = "000021",
                     exidv = "",
                     numberDiscrepancies = "4.0",
                     uom = Uom("ST", "шт"),
-                    typeDifferences = "45",
+                    typeDiscrepancies = "45",
                     isNotEdit = false,
                     isNew = false
             ))

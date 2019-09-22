@@ -22,25 +22,30 @@ class MemoryTaskProductsDiscrepanciesRepository : ITaskProductsDiscrepanciesRepo
         return foundDiscrepancies
     }
 
-    override fun addProductDiscrepancies(discrepancies: TaskProductDiscrepancies): Boolean {
+    override fun addProductDiscrepancy(discrepancy: TaskProductDiscrepancies): Boolean {
         var index = -1
         for (i in productsDiscrepancies.indices) {
-            if (discrepancies.materialNumber == productsDiscrepancies[i].materialNumber && discrepancies.typeDifferences == productsDiscrepancies[i].typeDifferences) {
+            if (discrepancy.materialNumber == productsDiscrepancies[i].materialNumber && discrepancy.typeDiscrepancies == productsDiscrepancies[i].typeDiscrepancies) {
                 index = i
             }
         }
 
         if (index == -1) {
-            productsDiscrepancies.add(discrepancies)
+            productsDiscrepancies.add(discrepancy)
             return true
         }
         return false
     }
 
-    override fun deleteProductDiscrepancies(discrepancies: TaskProductDiscrepancies): Boolean {
+    override fun changeProductDiscrepancy(discrepancy: TaskProductDiscrepancies): Boolean {
+        deleteProductDiscrepancy(discrepancy)
+        return addProductDiscrepancy(discrepancy)
+    }
+
+    override fun deleteProductDiscrepancy(discrepancy: TaskProductDiscrepancies): Boolean {
         var index = -1
         for (i in productsDiscrepancies.indices) {
-            if (discrepancies.materialNumber == productsDiscrepancies[i].materialNumber && discrepancies.typeDifferences == productsDiscrepancies[i].typeDifferences) {
+            if (discrepancy.materialNumber == productsDiscrepancies[i].materialNumber && discrepancy.typeDiscrepancies == productsDiscrepancies[i].typeDiscrepancies) {
                 index = i
             }
         }
@@ -71,7 +76,7 @@ class MemoryTaskProductsDiscrepanciesRepository : ITaskProductsDiscrepanciesRepo
     override fun getCountAcceptOfProduct(product: TaskProductInfo): Double {
         var countAccept = 0.0
         findProductDiscrepanciesOfProduct(product).filter {
-            it.typeDifferences == "1"
+            it.typeDiscrepancies == "1"
         }.map {discrepancies ->
             countAccept += discrepancies.numberDiscrepancies.toDouble()
         }
@@ -81,9 +86,21 @@ class MemoryTaskProductsDiscrepanciesRepository : ITaskProductsDiscrepanciesRepo
     override fun getCountRefusalOfProduct(product: TaskProductInfo): Double {
         var countRefusal = 0.0
         findProductDiscrepanciesOfProduct(product).filter {
-            it.typeDifferences != "1"
+            it.typeDiscrepancies != "1"
         }.map {discrepancies ->
             countRefusal += discrepancies.numberDiscrepancies.toDouble()
+        }
+        return countRefusal
+    }
+
+    override fun getCountRefusalOfProductOfReasonRejection(product: TaskProductInfo, reasonRejectionCode: String?): Double {
+        var countRefusal = 0.0
+        reasonRejectionCode?.let {
+            findProductDiscrepanciesOfProduct(product).filter {
+                it.typeDiscrepancies == reasonRejectionCode
+            }.map {discrepancies ->
+                countRefusal += discrepancies.numberDiscrepancies.toDouble()
+            }
         }
         return countRefusal
     }
