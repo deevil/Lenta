@@ -54,6 +54,7 @@
     <string name="shelf_life_days">%1$d сут.</string>
     <string name="one_space_two">%1$s %2$s</string>
     <string name="one_slash_two">%1$s/%2$s</string>
+    <string name="price_r">%1$dр</string>
 
 
     <string name="enter_task_number_sap_login">Введите номер задания / SAP логин</string>
@@ -103,6 +104,8 @@
     <string name="price_without_discount">Цена БДК, руб</string>
     <string name="price_with_discount">Цена с ДК, руб</string>
     <string name="confirmation_delete_task">По заданию \"%1$s\" будут удалены все непереданные данные.</string>
+    <string name="number_of_mark">Количество марок</string>
+    <string name="data_loading">Идет загрузка данных</string>
     <string name="point_camera_to_barcode">Наведите камеру на штрихкод EAN</string>
 
 

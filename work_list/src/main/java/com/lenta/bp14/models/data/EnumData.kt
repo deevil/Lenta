@@ -20,3 +20,9 @@ enum class ShelfLifeType(val position: Int) {
     BEFORE(0),
     PRODUCED(1)
 }
+
+enum class GoodType {
+    COMMON,
+    ALCOHOL,
+    MARKED
+}

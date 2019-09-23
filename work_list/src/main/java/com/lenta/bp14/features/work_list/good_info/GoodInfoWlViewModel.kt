@@ -2,18 +2,21 @@ package com.lenta.bp14.features.work_list.good_info
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.lenta.bp14.models.data.GoodType
 import com.lenta.bp14.models.data.ShelfLifeType
-import com.lenta.bp14.models.data.TaskManager
-import com.lenta.bp14.models.data.pojo.Good
-import com.lenta.bp14.models.data.pojo.Provider
-import com.lenta.bp14.models.data.pojo.Stock
+import com.lenta.bp14.models.work_list.Provider
+import com.lenta.bp14.models.work_list.Stock
+import com.lenta.bp14.models.work_list.WorkListTask
 import com.lenta.bp14.platform.navigation.IScreenNavigator
+import com.lenta.shared.models.core.MatrixType
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.extentions.combineLatest
+import com.lenta.shared.utilities.extentions.getFormattedDate
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.view.OnPositionClickListener
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
@@ -25,17 +28,21 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
     @Inject
     lateinit var navigator: IScreenNavigator
     @Inject
-    lateinit var taskManager: TaskManager
+    lateinit var task: WorkListTask
 
 
     val selectedPage = MutableLiveData(0)
 
-    val good = MutableLiveData<Good>()
+    val showProgress = MutableLiveData<Boolean>(true)
+
+    val good by lazy { task.currentGood }
+
+    val title = MutableLiveData<String>("")
 
     val quantity = MutableLiveData<String>()
     val totalQuantity: MutableLiveData<Int> = quantity.map {
         val currentQuantity = if (it?.isNotEmpty() == true) it.toInt() else 0
-        val goodQuantity = if (good.value != null) good.value!!.quantity else 0
+        val goodQuantity = if (good.value != null) good.value!!.common.quantity else 0
         currentQuantity + goodQuantity
     }
 
@@ -64,14 +71,14 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     val daysLeft: MutableLiveData<Int> = enteredDate.combineLatest(shelfLifePosition).map {
-        val shelfLifeDays = good.value?.shelfLifeDays
+        val shelfLifeDays = good.value?.common?.shelfLifeDays
         val enteredDate = it?.first
         val shelfLifeType = it?.second
 
         var daysLeft: Int? = null
         if (enteredDate != null && shelfLifeDays != null && shelfLifeType != null) {
             val shelfLifeEnd = when (shelfLifeType) {
-                ShelfLifeType.PRODUCED.position -> enteredDate.time  + shelfLifeDays * 24 * 60 * 60 * 1000
+                ShelfLifeType.PRODUCED.position -> enteredDate.time + shelfLifeDays * 24 * 60 * 60 * 1000
                 else -> enteredDate.time
             }
 
@@ -86,16 +93,53 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
     val commentsList = MutableLiveData<List<String>>()
     val shelfLifeTypeList = MutableLiveData<List<String>>()
 
-    val stocks = MutableLiveData<List<Stock>>()
-    val providers = MutableLiveData<List<Provider>>()
+    val stocks: MutableLiveData<List<ItemStockUi>> by lazy {
+        task.getGoodStocks().map { list: List<Stock>? ->
+            list?.mapIndexed { index, stock ->
+                ItemStockUi(
+                        number = (index + 1).toString(),
+                        storage = stock.storage,
+                        quantity = "${stock.quantity} шт."
+                )
+            }
+        }
+    }
+
+    val providers: MutableLiveData<List<ItemProviderUi>> by lazy {
+        task.getGoodProviders().map { list: List<Provider>? ->
+            list?.mapIndexed { index, provider ->
+                ItemProviderUi(
+                        number = (index + 1).toString(),
+                        code = provider.code,
+                        name = provider.name,
+                        period = "${provider.kipStart.getFormattedDate()} - ${provider.kipEnd.getFormattedDate()}"
+                )
+            }
+        }
+    }
+
+    val options: MutableLiveData<OptionsUi> by lazy {
+        task.getGoodOptions().map { options ->
+            OptionsUi(
+                    matrixType = options?.matrixType ?: MatrixType.Unknown,
+                    goodType = options?.goodType ?: GoodType.COMMON,
+                    section = options?.section ?: "",
+                    healthFood = options?.healthFood ?: false,
+                    novelty = options?.novelty ?: false
+            )
+        }
+    }
 
     init {
         viewModelScope.launch {
-            good.value = taskManager.currentGood
-            stocks.value = good.value?.stocks
-            providers.value = good.value?.providers
+            title.value = good.value?.getFormattedMaterialWithName()
+            quantity.value = good.value?.common?.quantity.toString()
 
-            quantity.value = "1"
+            viewModelScope.launch {
+                delay(5000)
+                task.loadAdditionalGoodInfo()
+                showProgress.value = false
+            }
         }
     }
 
@@ -131,32 +175,26 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
 
     }
 
-    fun onClickBtn1() {
-
-    }
-
-    fun onClickBtn2() {
-
-    }
-
-    fun onClickBtn3() {
-
-    }
-
-    fun onClickBtn4() {
-
-    }
-
-    fun onClickBtn5() {
-
-    }
-
-    fun onClickBtn6() {
-
-    }
-
-    fun onClickBtn7() {
-
-    }
-
 }
+
+
+data class OptionsUi(
+        val matrixType: MatrixType,
+        val goodType: GoodType,
+        val section: String,
+        val healthFood: Boolean,
+        val novelty: Boolean
+)
+
+data class ItemProviderUi(
+        val number: String,
+        val code: String,
+        val name: String,
+        val period: String
+)
+
+data class ItemStockUi(
+        val number: String,
+        val storage: String,
+        val quantity: String
+)
