@@ -96,7 +96,7 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
     }
 
     fun onClickDetails(){
-        //screenNavigator.openInfoScreen("экран \"Список детали\" еще в разработке")
+        screenNavigator.openGoodsDetailsScreen(productInfo.value!!)
     }
 
     fun onClickAdd() {

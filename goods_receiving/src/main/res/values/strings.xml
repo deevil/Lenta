@@ -57,4 +57,6 @@
     <string name="accept">Принять</string>
     <string name="refusal">Отказать</string>
     <string name="wrong_product_type">Неверный тип продукта</string>
+    <string name="categories">Категории</string>
+    <string name="details_quantities_entered">Детали по введенным количествам</string>
 </resources>
