@@ -100,7 +100,7 @@ class GoodsListWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
                     addGoodByEan(matNr)
                 },
                 funcForPriceQrCode = { qrCode ->
-
+                    //addGoodByEan(matNr)
                 },
                 funcForSapOrBar = navigator::showTwelveCharactersEntered,
                 funcForNotValidFormat = navigator::showGoodNotFound
