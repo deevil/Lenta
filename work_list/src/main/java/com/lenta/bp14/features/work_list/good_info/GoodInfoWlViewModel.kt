@@ -4,7 +4,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp14.models.data.GoodType
 import com.lenta.bp14.models.data.ShelfLifeType
-import com.lenta.bp14.models.work_list.Good
+import com.lenta.bp14.models.work_list.Provider
+import com.lenta.bp14.models.work_list.Stock
 import com.lenta.bp14.models.work_list.WorkListTask
 import com.lenta.bp14.platform.navigation.IScreenNavigator
 import com.lenta.shared.models.core.MatrixType
@@ -32,11 +33,11 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
 
     val selectedPage = MutableLiveData(0)
 
-    val title = MutableLiveData<String>()
-
     val showProgress = MutableLiveData<Boolean>(true)
 
-    val good = MutableLiveData<Good>()
+    val good by lazy { task.currentGood }
+
+    val title = MutableLiveData<String>("")
 
     val quantity = MutableLiveData<String>()
     val totalQuantity: MutableLiveData<Int> = quantity.map {
@@ -92,50 +93,51 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
     val commentsList = MutableLiveData<List<String>>()
     val shelfLifeTypeList = MutableLiveData<List<String>>()
 
-    val stocks = MutableLiveData<List<ItemStockUi>>()
-    val providers = MutableLiveData<List<ItemProviderUi>>()
-    val options: MutableLiveData<OptionsUi> = good.map { good ->
-        OptionsUi(
-                matrixType = good?.common?.options?.matrixType ?: MatrixType.Unknown,
-                goodType = good?.common?.options?.goodType ?: GoodType.COMMON,
-                section = good?.common?.options?.section ?: "",
-                healthFood = good?.common?.options?.healthFood ?: false,
-                novelty = good?.common?.options?.novelty ?: false
-        )
+    val stocks: MutableLiveData<List<ItemStockUi>> by lazy {
+        task.getGoodStocks().map { list: List<Stock>? ->
+            list?.mapIndexed { index, stock ->
+                ItemStockUi(
+                        number = (index + 1).toString(),
+                        storage = stock.storage,
+                        quantity = "${stock.quantity} шт."
+                )
+            }
+        }
+    }
+
+    val providers: MutableLiveData<List<ItemProviderUi>> by lazy {
+        task.getGoodProviders().map { list: List<Provider>? ->
+            list?.mapIndexed { index, provider ->
+                ItemProviderUi(
+                        number = (index + 1).toString(),
+                        code = provider.code,
+                        name = provider.name,
+                        period = "${provider.kipStart.getFormattedDate()} - ${provider.kipEnd.getFormattedDate()}"
+                )
+            }
+        }
+    }
+
+    val options: MutableLiveData<OptionsUi> by lazy {
+        task.getGoodOptions().map { options ->
+            OptionsUi(
+                    matrixType = options?.matrixType ?: MatrixType.Unknown,
+                    goodType = options?.goodType ?: GoodType.COMMON,
+                    section = options?.section ?: "",
+                    healthFood = options?.healthFood ?: false,
+                    novelty = options?.novelty ?: false
+            )
+        }
     }
 
     init {
         viewModelScope.launch {
-            good.value = task.currentGood
             title.value = good.value?.getFormattedMaterialWithName()
             quantity.value = good.value?.common?.quantity.toString()
 
-            // Загрузка дополнительных данных
             viewModelScope.launch {
                 delay(5000)
-
-                val goodWithAdditional = good.value
-                goodWithAdditional?.additional = task.getAdditionalGoodInfo(good.value?.common?.ean
-                        ?: "")
-                good.value = goodWithAdditional
-
-                stocks.value = good.value?.additional?.stocks?.mapIndexed { index, stock ->
-                    ItemStockUi(
-                            number = (index + 1).toString(),
-                            storage = stock.storage,
-                            quantity = "${stock.quantity} шт."
-                    )
-                }
-
-                providers.value = good.value?.additional?.providers?.mapIndexed { index, provider ->
-                    ItemProviderUi(
-                            number = (index + 1).toString(),
-                            code = provider.code,
-                            name = provider.name,
-                            period = "${provider.kipStart.getFormattedDate()} - ${provider.kipEnd.getFormattedDate()}"
-                    )
-                }
-
+                task.loadAdditionalGoodInfo()
                 showProgress.value = false
             }
         }

@@ -112,7 +112,7 @@ class GoodsListWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
         viewModelScope.launch {
             val good = task.getGoodByEan(ean)
             if (good != null) {
-                task.currentGood = good
+                task.currentGood.value = good
                 navigator.openGoodInfoWlScreen()
             }
         }
@@ -123,7 +123,7 @@ class GoodsListWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
         viewModelScope.launch {
             val good = task.getGoodByEan(material)
             if (good != null) {
-                task.currentGood = good
+                task.currentGood.value = good
                 navigator.openGoodInfoWlScreen()
             }
         }

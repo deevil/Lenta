@@ -28,7 +28,7 @@ class WorkListRepo {
         )
     }
 
-    fun getAdditionalGoodInfo(ean: String): AdditionalGoodInfo? {
+    fun loadAdditionalGoodInfo(good: Good): AdditionalGoodInfo? {
         return AdditionalGoodInfo(
                 storagePlaces = "125635; 652148; 635894",
                 minStock = (10..50).random(),

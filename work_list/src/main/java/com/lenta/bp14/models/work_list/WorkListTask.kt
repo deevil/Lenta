@@ -1,5 +1,7 @@
 package com.lenta.bp14.models.work_list
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.google.gson.Gson
 import com.lenta.bp14.models.ITask
 import com.lenta.bp14.models.ITaskDescription
@@ -11,7 +13,7 @@ import com.lenta.bp14.models.work_list.repo.WorkListRepo
 import com.lenta.shared.models.core.MatrixType
 import com.lenta.shared.models.core.Uom
 import com.lenta.shared.platform.time.ITimeMonitor
-import com.lenta.shared.utilities.extentions.getFormattedDate
+import com.lenta.shared.utilities.extentions.map
 import java.util.*
 
 class WorkListTask(
@@ -27,7 +29,7 @@ class WorkListTask(
 
     private var currentList = processed
 
-    var currentGood: Good? = null
+    var currentGood = MutableLiveData<Good>()
 
     fun getGoodByEan(ean: String): Good? {
         val good = currentList.find { it.common.ean == ean }
@@ -46,8 +48,13 @@ class WorkListTask(
         return null
     }
 
-    fun getAdditionalGoodInfo(ean: String): AdditionalGoodInfo? {
-        return workListRepo.getAdditionalGoodInfo(ean)
+    fun loadAdditionalGoodInfo() {
+        val good = currentGood.value
+        if (good != null) {
+            val additionalGoodInfo = workListRepo.loadAdditionalGoodInfo(good)
+            good.additional = additionalGoodInfo
+            currentGood.value = good
+        }
     }
 
     fun setCurrentList(tabPosition: Int) {
@@ -58,6 +65,19 @@ class WorkListTask(
             else -> processed
         }
     }
+
+    fun getGoodOptions(): LiveData<GoodOptions> {
+        return currentGood.map { it?.common?.options }
+    }
+
+    fun getGoodStocks(): LiveData<List<Stock>> {
+        return currentGood.map { it?.additional?.stocks?.toList() }
+    }
+
+    fun getGoodProviders(): LiveData<List<Provider>> {
+        return currentGood.map { it?.additional?.providers?.toList() }
+    }
+
 
 
     override fun getTaskType(): ITaskType {
