@@ -76,6 +76,16 @@ class MemoryTaskReviseDocumentsRepository : ITaskReviseDocumentsRepository {
         invoiceInfo = newInvoice
     }
 
+    override fun changeDeliveryDocumentStatus(documentID: String) {
+        val document = deliveryDocuments.findLast { it.documentID == documentID }
+        document?.let { it.isCheck = !it.isCheck }
+    }
+
+    override fun changeInvoiceStatus() {
+        val document = deliveryDocuments.findLast { it.documentType == DocumentType.Invoice }
+        document?.let { it.isCheck = !it.isCheck }
+    }
+
     override fun clear() {
         deliveryDocuments.clear()
         productDocuments.clear()

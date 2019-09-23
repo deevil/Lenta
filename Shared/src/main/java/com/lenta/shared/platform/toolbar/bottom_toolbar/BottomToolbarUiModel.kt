@@ -244,6 +244,20 @@ data class ButtonDecorationInfo(
 
         val batches: ButtonDecorationInfo by lazy {
             ButtonDecorationInfo(R.drawable.is_batches_24dp, R.string.batchs_products)
+        val fix: ButtonDecorationInfo by lazy {
+            ButtonDecorationInfo(R.drawable.ic_edit, R.string.fix)
+        }
+
+        val full: ButtonDecorationInfo by lazy {
+            ButtonDecorationInfo(R.drawable.ic_full_rejection, R.string.full)
+        }
+
+        val temporary: ButtonDecorationInfo by lazy {
+            ButtonDecorationInfo(R.drawable.ic_temp_rejection, R.string.temporary)
+        }
+
+        val batchsProducts: ButtonDecorationInfo by lazy {
+            ButtonDecorationInfo(R.drawable.is_batchs_products_24dp, R.string.batchs_products)
         }
     }
 }

@@ -11,7 +11,7 @@ data class DeliveryProductDocumentRevise(
         val isCheck: Boolean,   // ??? - Общий флаг
         val documentType: DocumentType, // Тип документа
         val isSet: Boolean, // УТЗ ТСД: Индикатор: Признак набора
-        val initialCount: Int, // Исходное количество позиции поставки
+        val initialCount: Double, // Исходное количество позиции поставки
         val measureUnits: String // Продажная ЕИ
 ) {
 
@@ -25,7 +25,7 @@ data class DeliveryProductDocumentRevise(
                     isCheck = restData.isCheck.isNotEmpty(),
                     documentType = DocumentType.from(restData.documentType),
                     isSet = restData.isSet.isNotEmpty(),
-                    initialCount = restData.initialCount.toInt(),
+                    initialCount = restData.initialCount.toDouble(),
                     measureUnits = restData.measureUnits
             )
         }

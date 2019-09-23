@@ -6,11 +6,13 @@ import com.lenta.bp14.models.GeneralTaskManager
 import com.lenta.bp14.models.IGeneralTaskManager
 import com.lenta.bp14.models.check_list.CheckListTaskManager
 import com.lenta.bp14.models.check_list.ICheckListTask
-import com.lenta.bp14.models.data.TaskManager
 import com.lenta.bp14.models.check_price.CheckPriceTaskManager
 import com.lenta.bp14.models.check_price.ICheckPriceTask
+import com.lenta.bp14.models.data.TaskManager
 import com.lenta.bp14.models.general.GeneralRepo
 import com.lenta.bp14.models.general.IGeneralRepo
+import com.lenta.bp14.models.work_list.WorkListTask
+import com.lenta.bp14.models.work_list.WorkListTaskManager
 import com.lenta.bp14.platform.IVibrateHelper
 import com.lenta.bp14.platform.VibrateHelper
 import com.lenta.bp14.platform.navigation.IScreenNavigator
@@ -80,6 +82,12 @@ class AppModule {
 
     @Provides
     @AppScope
+    internal fun provideWorkListTaskManager(timeMonitor: ITimeMonitor, gson: Gson): WorkListTaskManager {
+        return WorkListTaskManager(timeMonitor = timeMonitor, gson = gson)
+    }
+
+    @Provides
+    @AppScope
     internal fun provideGeneralRepo(): IGeneralRepo {
         return GeneralRepo()
     }
@@ -89,10 +97,12 @@ class AppModule {
     internal fun provideGeneralTaskManager(
             checkPriceTaskManager: CheckPriceTaskManager,
             checkListTaskManager: CheckListTaskManager,
+            workListTaskManager: WorkListTaskManager,
             timeMonitor: ITimeMonitor): IGeneralTaskManager {
         return GeneralTaskManager(
                 checkPriceTaskManager = checkPriceTaskManager,
                 checkListTaskManager = checkListTaskManager,
+                workListTaskManager = workListTaskManager,
                 timeMonitor = timeMonitor
         )
     }
@@ -105,6 +115,11 @@ class AppModule {
     @Provides
     internal fun provideCheckListTask(checkListTaskManager: CheckListTaskManager): ICheckListTask {
         return checkListTaskManager.getTask()!!
+    }
+
+    @Provides
+    internal fun provideWorkListTask(workListTaskManager: WorkListTaskManager): WorkListTask {
+        return workListTaskManager.getTask()!!
     }
 
     @Provides

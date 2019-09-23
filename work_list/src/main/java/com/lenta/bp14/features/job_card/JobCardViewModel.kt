@@ -13,6 +13,8 @@ import com.lenta.bp14.models.check_price.CheckPriceTaskManager
 import com.lenta.bp14.models.general.IGeneralRepo
 import com.lenta.bp14.models.general.ITaskType
 import com.lenta.bp14.models.general.TaskTypes
+import com.lenta.bp14.models.work_list.WorkListTaskDescription
+import com.lenta.bp14.models.work_list.WorkListTaskManager
 import com.lenta.bp14.platform.navigation.IScreenNavigator
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
@@ -30,11 +32,14 @@ class JobCardViewModel : CoreViewModel() {
     @Inject
     lateinit var generalRepo: IGeneralRepo
     @Inject
+    lateinit var generalTaskManager: IGeneralTaskManager
+    @Inject
     lateinit var checkPriceTaskManager: CheckPriceTaskManager
     @Inject
     lateinit var checkListTaskManager: CheckListTaskManager
     @Inject
-    lateinit var generalTaskManager: IGeneralTaskManager
+    lateinit var workListTaskManager: WorkListTaskManager
+
 
 
     private lateinit var taskNumber: String
@@ -77,7 +82,6 @@ class JobCardViewModel : CoreViewModel() {
         }
     }
 
-
     fun getMarket(): String {
         return sessionInfo.market!!
     }
@@ -113,6 +117,19 @@ class JobCardViewModel : CoreViewModel() {
                         )
                 )
                 screenNavigator.openGoodsListClScreen()
+            }
+            TaskTypes.WorkList.taskType -> {
+                newTask(
+                        taskManager = workListTaskManager,
+                        taskDescription = WorkListTaskDescription(
+                                tkNumber = sessionInfo.market!!,
+                                taskNumber = taskNumber,
+                                taskName = taskName.value ?: "",
+                                comment = comment.value ?: "",
+                                description = description.value ?: ""
+                        )
+                )
+                screenNavigator.openGoodsListWlScreen()
             }
             else -> screenNavigator.openNotImplementedScreenAlert("")
         }
@@ -173,10 +190,8 @@ class JobCardViewModel : CoreViewModel() {
                         }
                     }
                 }
-
             }
         }
     }
-
 
 }

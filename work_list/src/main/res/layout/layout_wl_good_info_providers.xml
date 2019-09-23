@@ -15,76 +15,104 @@
 
     </data>
 
-    <LinearLayout
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_height="match_parent">
 
-
-        <!-- Наименования колонок -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            app:invisible="@{vm.showProgress}">
 
+
+            <!-- Наименования колонок -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:paddingTop="8dp"
-                android:paddingBottom="8dp">
+                android:orientation="vertical">
 
                 <LinearLayout
-                    style="@style/LinearCellStyle"
-                    android:layout_weight="@integer/number_provider_period_column_1">
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingTop="8dp"
+                    android:paddingBottom="8dp">
 
-                    <TextView
-                        style="@style/ColumnTitleStyle"
-                        android:layout_width="wrap_content"
-                        android:layout_marginStart="0dp"
-                        android:text="@string/number" />
+                    <LinearLayout
+                        style="@style/LinearCellStyle"
+                        android:layout_weight="@integer/number_provider_period_column_1">
+
+                        <TextView
+                            style="@style/ColumnTitleStyle"
+                            android:layout_width="wrap_content"
+                            android:layout_marginStart="0dp"
+                            android:text="@string/number" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        style="@style/LinearCellStyle"
+                        android:layout_weight="@integer/number_provider_period_column_2">
+
+                        <TextView
+                            style="@style/ColumnTitleStyle"
+                            android:text="@string/provider" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        style="@style/LinearCellStyle"
+                        android:layout_weight="@integer/number_provider_period_column_3">
+
+                        <TextView
+                            style="@style/ColumnTitleStyle"
+                            android:text="@string/period_kip" />
+
+                    </LinearLayout>
 
                 </LinearLayout>
 
-                <LinearLayout
-                    style="@style/LinearCellStyle"
-                    android:layout_weight="@integer/number_provider_period_column_2">
-
-                    <TextView
-                        style="@style/ColumnTitleStyle"
-                        android:text="@string/provider" />
-
-                </LinearLayout>
-
-                <LinearLayout
-                    style="@style/LinearCellStyle"
-                    android:layout_weight="@integer/number_provider_period_column_3">
-
-                    <TextView
-                        style="@style/ColumnTitleStyle"
-                        android:text="@string/period_kip" />
-
-                </LinearLayout>
+                <View
+                    style="@style/HorizontalDivider" />
 
             </LinearLayout>
 
-            <View
-                style="@style/HorizontalDivider" />
+
+            <!-- Список поставщиков -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                app:items="@{vm.providers}"
+                app:rv_config="@{rvConfig}"
+                tools:listitem="@layout/item_good_provider_period" />
 
         </LinearLayout>
 
+        <!-- Индикатор загрузки -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
+            app:isGone="@{!vm.showProgress}">
 
-        <!-- Список поставщиков -->
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rv"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            app:items="@{vm.providers}"
-            app:rv_config="@{rvConfig}"
-            tools:listitem="@layout/item_good_provider_period" />
+            <ProgressBar
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
 
-    </LinearLayout>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="@string/data_loading" />
+
+        </LinearLayout>
+
+    </FrameLayout>
 
 </layout>

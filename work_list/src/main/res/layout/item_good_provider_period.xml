@@ -6,7 +6,7 @@
 
         <variable
             name="provider"
-            type="com.lenta.bp14.models.data.pojo.Provider" />
+            type="com.lenta.bp14.features.work_list.good_info.ItemProviderUi" />
 
     </data>
 
@@ -30,7 +30,7 @@
                     android:id="@+id/tv_item_number"
                     style="@style/CellTextStyle"
                     android:layout_width="wrap_content"
-                    android:text="@{String.valueOf(provider.id)}"
+                    android:text="@{provider.number}"
                     tools:text="1" />
 
             </LinearLayout>
@@ -64,7 +64,7 @@
                 <TextView
                     android:id="@+id/tv_period_kip"
                     style="@style/CellTextStyle"
-                    android:text="@{provider.kipPeriod}"
+                    android:text="@{provider.period}"
                     tools:text="12.05.19 - 01.12.19" />
 
             </LinearLayout>
