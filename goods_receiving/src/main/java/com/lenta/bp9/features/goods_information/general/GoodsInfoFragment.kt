@@ -50,7 +50,7 @@ class GoodsInfoFragment : CoreFragment<FragmentGoodsInfoBinding, GoodsInfoViewMo
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding?.spinnerQuality?.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-                override fun onItemSelected(adapterView: AdapterView<*>, view: View, position: Int, l: Long) {
+                override fun onItemSelected(adapterView: AdapterView<*>, view: View?, position: Int, l: Long) {
                     vm.onClickPositionSpinQuality(position)
                 }
 
