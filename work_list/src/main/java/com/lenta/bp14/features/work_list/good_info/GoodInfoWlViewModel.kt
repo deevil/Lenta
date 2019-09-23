@@ -2,11 +2,12 @@ package com.lenta.bp14.features.work_list.good_info
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.lenta.bp14.models.data.GoodType
 import com.lenta.bp14.models.data.ShelfLifeType
 import com.lenta.bp14.models.work_list.Good
-import com.lenta.bp14.models.work_list.Stock
 import com.lenta.bp14.models.work_list.WorkListTask
 import com.lenta.bp14.platform.navigation.IScreenNavigator
+import com.lenta.shared.models.core.MatrixType
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.databinding.PageSelectionListener
@@ -91,8 +92,17 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
     val commentsList = MutableLiveData<List<String>>()
     val shelfLifeTypeList = MutableLiveData<List<String>>()
 
-    val stocks = MutableLiveData<List<Stock>>()
+    val stocks = MutableLiveData<List<ItemStockUi>>()
     val providers = MutableLiveData<List<ItemProviderUi>>()
+    val options: MutableLiveData<OptionsUi> = good.map { good ->
+        OptionsUi(
+                matrixType = good?.common?.options?.matrixType ?: MatrixType.Unknown,
+                goodType = good?.common?.options?.goodType ?: GoodType.COMMON,
+                section = good?.common?.options?.section ?: "",
+                healthFood = good?.common?.options?.healthFood ?: false,
+                novelty = good?.common?.options?.novelty ?: false
+        )
+    }
 
     init {
         viewModelScope.launch {
@@ -102,18 +112,27 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
 
             // Загрузка дополнительных данных
             viewModelScope.launch {
-                delay(10000)
+                delay(5000)
+
                 val goodWithAdditional = good.value
-                goodWithAdditional?.additional = task.getAdditionalGoodInfo(good.value?.common?.ean ?: "")
+                goodWithAdditional?.additional = task.getAdditionalGoodInfo(good.value?.common?.ean
+                        ?: "")
                 good.value = goodWithAdditional
-                stocks.value = good.value?.additional?.stocks
+
+                stocks.value = good.value?.additional?.stocks?.mapIndexed { index, stock ->
+                    ItemStockUi(
+                            number = (index + 1).toString(),
+                            storage = stock.storage,
+                            quantity = "${stock.quantity} шт."
+                    )
+                }
 
                 providers.value = good.value?.additional?.providers?.mapIndexed { index, provider ->
                     ItemProviderUi(
-                            number = index + 1,
+                            number = (index + 1).toString(),
                             code = provider.code,
                             name = provider.name,
-                            kipPeriod = "${provider.kipStart.getFormattedDate()} - ${provider.kipEnd.getFormattedDate()}"
+                            period = "${provider.kipStart.getFormattedDate()} - ${provider.kipEnd.getFormattedDate()}"
                     )
                 }
 
@@ -156,9 +175,24 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
 
 }
 
+
+data class OptionsUi(
+        val matrixType: MatrixType,
+        val goodType: GoodType,
+        val section: String,
+        val healthFood: Boolean,
+        val novelty: Boolean
+)
+
 data class ItemProviderUi(
-        val number: Int,
+        val number: String,
         val code: String,
         val name: String,
-        val kipPeriod: String
+        val period: String
+)
+
+data class ItemStockUi(
+        val number: String,
+        val storage: String,
+        val quantity: String
 )

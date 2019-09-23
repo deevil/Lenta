@@ -7,6 +7,10 @@
     <data>
 
         <variable
+            name="options"
+            type="com.lenta.bp14.features.work_list.good_info.OptionsUi" />
+
+        <variable
             name="vm"
             type="com.lenta.bp14.features.work_list.good_info.GoodInfoWlViewModel" />
 
@@ -69,7 +73,7 @@
                     android:background="@drawable/bg_white_circle"
                     android:gravity="center"
                     android:textSize="16sp"
-                    app:matrixType="@{vm.good.common.options.matrixType}"
+                    app:matrixType="@{vm.options.matrixType}"
                     tools:text="A" />
 
             </LinearLayout>
@@ -86,7 +90,7 @@
                     android:layout_height="36dp"
                     android:background="@drawable/bg_white_circle"
                     android:gravity="center"
-                    android:text="@{vm.good.common.options.section}"
+                    android:text="@{vm.options.section}"
                     android:textSize="16sp"
                     tools:text="02" />
 
@@ -96,21 +100,21 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                app:goodTypeIcon="@{vm.good.common.options.goodType}"
+                app:goodTypeIcon="@{vm.options.goodType}"
                 tools:src="@drawable/ic_kandy_48dp" />
 
             <ImageView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                app:invisible="@{!vm.good.common.options.novelty}"
+                app:invisible="@{!vm.options.novelty}"
                 tools:src="@drawable/ic_new_48dp" />
 
             <ImageView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                app:invisible="@{!vm.good.common.options.healthFood}"
+                app:invisible="@{!vm.options.healthFood}"
                 tools:src="@drawable/ic_natural_48dp" />
 
             <ImageView
