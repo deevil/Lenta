@@ -67,4 +67,10 @@
     <string name="quantity_st">Количество, шт</string>
     <string name="quantity_kg">Количество, кг</string>
     <string name="quantity_total">Общее количество, всего</string>
+    <string name="select_reason">Введите или выберите\n причину отказа</string>
+    <string name="enter_comment">Ввод комментария</string>
+    <string name="reject_recieving">Отказ в приёмке</string>
+    <string name="reject_success_temp">Временный отказ произведен успешно</string>
+    <string name="reject_success_full">Полный отказ произведен успешно. Входящая поставка удалена.</string>
+    <string name="reject_success_full_alco">Выполнен временный отказ, для полного отказа необходимо оповестить ГИС-центр</string>
 </resources>

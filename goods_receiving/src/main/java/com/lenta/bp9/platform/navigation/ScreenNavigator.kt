@@ -16,6 +16,7 @@ import com.lenta.bp9.R
 import com.lenta.bp9.features.change_datetime.ChangeDateTimeFragment
 import com.lenta.bp9.features.change_datetime.ChangeDateTimeMode
 import com.lenta.bp9.features.loading.tasks.*
+import com.lenta.bp9.features.reject.RejectFragment
 import com.lenta.bp9.features.revise.TaskReviseFragment
 import com.lenta.bp9.features.revise.invoice.InvoiceReviseFragment
 import com.lenta.shared.account.IAuthenticator
@@ -144,6 +145,15 @@ class ScreenNavigator(
         }
     }
 
+    override fun openAlertWithoutConfirmation(message: String, callbackFunc: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(message = message,
+                    codeConfirmForLeft = backFragmentResultHelper.setFuncForResult(callbackFunc),
+                    pageNumber = "96",
+                    leftButtonDecorationInfo = ButtonDecorationInfo.back))
+        }
+    }
+
     override fun openChangeDateTimeScreen(mode: ChangeDateTimeMode) {
         runOrPostpone {
             getFragmentStack()?.push(ChangeDateTimeFragment.create(mode))
@@ -174,6 +184,12 @@ class ScreenNavigator(
         }
     }
 
+    override fun openRejectScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(RejectFragment())
+        }
+    }
+
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 
 }
@@ -195,9 +211,11 @@ interface IScreenNavigator : ICoreNavigator {
     fun openConfirmationUnlock(callbackFunc: () -> Unit)
     fun openConfirmationView(callbackFunc: () -> Unit)
     fun openConfirmationUnsavedData(callbackFunc: () -> Unit)
+    fun openAlertWithoutConfirmation(message: String, callbackFunc: () -> Unit)
     fun openChangeDateTimeScreen(mode: ChangeDateTimeMode)
     fun openLoadingRegisterArrivalScreen()
     fun openLoadingStartReviseScreen()
     fun openTaskReviseScreen()
     fun openInvoiceReviseScreen()
+    fun openRejectScreen()
 }

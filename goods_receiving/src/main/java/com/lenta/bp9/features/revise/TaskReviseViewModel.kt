@@ -122,7 +122,7 @@ class TaskReviseViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     fun onClickReject() {
-        Logg.d { "Reject screen" }
+        screenNavigator.openRejectScreen()
     }
 
     fun onClickNext() {
