@@ -1,13 +1,15 @@
 package com.lenta.shared.models.core
 
-open class ProductInfo(val materialNumber: String,
-                  val description: String,
-                  val uom: Uom,
-                  val type: ProductType,
-                  val isSet: Boolean,
-                  val sectionId: String,
-                  val matrixType: MatrixType,
-                  val materialType: String) : IProduct {
+open class ProductInfo(
+        val materialNumber: String,
+        val description: String,
+        val uom: Uom,
+        val type: ProductType,
+        val isSet: Boolean,
+        val sectionId: String,
+        val matrixType: MatrixType,
+        val materialType: String
+) : IProduct {
 
 
     override fun getMaterialLastSix(): String {

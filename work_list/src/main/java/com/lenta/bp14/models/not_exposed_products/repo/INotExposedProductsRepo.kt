@@ -53,9 +53,17 @@ interface INotExposedProductsRepo {
 
 }
 
+data class NotExposedProductInfo(
+        override val ean: String?,
+        override val matNr: String,
+        override val name: String,
+        override val quantity: Double?,
+        override val uom: String,
+        override val isEmptyPlaceMarked: Boolean?) : INotExposedProductInfo
+
 
 interface INotExposedProductInfo {
-    val ean: String
+    val ean: String?
     val matNr: String
     val name: String
     val quantity: Double?

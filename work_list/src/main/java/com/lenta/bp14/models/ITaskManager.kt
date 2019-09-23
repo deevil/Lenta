@@ -56,6 +56,7 @@ interface ITask {
 }
 
 interface ITaskDescription {
+    val tkNumber: String
     val taskNumber: String
     var taskName: String
     val description: String

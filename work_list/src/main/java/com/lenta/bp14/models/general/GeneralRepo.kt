@@ -58,7 +58,7 @@ enum class TaskTypes(val taskType: ITaskType) {
     ),
     NotExposedProducts(
             taskType = TaskType(
-                    taskType = "НВТ",
+                    taskType = "НТП",
                     taskName = "Невыставленный товар",
                     annotation = "Невыставленный товар"
 

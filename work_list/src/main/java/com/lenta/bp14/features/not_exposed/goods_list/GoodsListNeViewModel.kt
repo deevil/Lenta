@@ -9,6 +9,9 @@ import com.lenta.bp14.models.data.pojo.Good
 import com.lenta.bp14.models.getTaskName
 import com.lenta.bp14.models.not_exposed_products.INotExposedProductsTask
 import com.lenta.bp14.platform.navigation.IScreenNavigator
+import com.lenta.shared.requests.combined.scan_info.ScanInfoRequest
+import com.lenta.shared.requests.combined.scan_info.ScanInfoRequestParams
+import com.lenta.shared.requests.combined.scan_info.analyseCode
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.databinding.PageSelectionListener
@@ -24,6 +27,9 @@ class GoodsListNeViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
 
     @Inject
     lateinit var task: INotExposedProductsTask
+
+    @Inject
+    lateinit var scanInfoRequest: ScanInfoRequest
 
 
     val processedSelectionsHelper = SelectionItemsHelper()
@@ -80,7 +86,47 @@ class GoodsListNeViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     }
 
     override fun onOkInSoftKeyboard(): Boolean {
-        return false
+        checkCode(numberField.value)
+        return true
+    }
+
+    private fun checkCode(code: String?) {
+        analyseCode(
+                code = code ?: "",
+                funcForEan = { eanCode ->
+                    searchCode(number = eanCode, fromScan = true, isBarcode = true)
+                },
+                funcForMatNr = { matNr ->
+                    searchCode(number = matNr, fromScan = false, isBarcode = false)
+                },
+                funcForPriceQrCode = { qrCode ->
+                    navigator.showGoodNotFound()
+                },
+                funcForSapOrBar = navigator::showTwelveCharactersEntered,
+                funcForNotValidFormat = navigator::showGoodNotFound
+        )
+    }
+
+    private fun searchCode(number: String, fromScan: Boolean, isBarcode: Boolean?) {
+        viewModelScope.launch {
+            navigator.showProgress(scanInfoRequest)
+            scanInfoRequest(
+                    ScanInfoRequestParams(
+                            number = number,
+                            tkNumber = task.getDescription().tkNumber,
+                            fromScan = fromScan,
+                            isBarCode = isBarcode
+                    )
+            ).either(
+                    fnL = {
+                        navigator.openAlertScreen(it)
+                    }
+            ) {
+                task.scanInfoResult = it
+                navigator.openGoodInfoNeScreen()
+            }
+            navigator.hideProgress()
+        }
     }
 
 
@@ -101,7 +147,15 @@ class GoodsListNeViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     }
 
     fun onClickItemPosition(position: Int) {
-        navigator.openGoodInfoNeScreen()
+        val correctedPage = correctedSelectedPage.value
+        when (correctedPage) {
+            1 -> {
+                (processedGoods.value)?.getOrNull(position)?.let {
+                    checkCode(it.matNr)
+                }
+
+            }
+        }
     }
 
     fun getPagesCount(): Int {
