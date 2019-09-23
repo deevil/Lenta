@@ -5,11 +5,14 @@ import androidx.lifecycle.MutableLiveData
 import com.google.gson.Gson
 import com.lenta.bp14.models.ITask
 import com.lenta.bp14.models.ITaskDescription
+import com.lenta.bp14.models.check_price.IActualPriceInfo
 import com.lenta.bp14.models.data.GoodType
 import com.lenta.bp14.models.data.GoodsListTab
 import com.lenta.bp14.models.general.ITaskType
 import com.lenta.bp14.models.general.TaskTypes
 import com.lenta.bp14.models.work_list.repo.WorkListRepo
+import com.lenta.shared.exception.Failure
+import com.lenta.shared.functional.Either
 import com.lenta.shared.models.core.MatrixType
 import com.lenta.shared.models.core.Uom
 import com.lenta.shared.platform.time.ITimeMonitor
@@ -21,7 +24,7 @@ class WorkListTask(
         private val taskDescription: WorkListTaskDescription,
         private val timeMonitor: ITimeMonitor,
         private val gson: Gson
-) : ITask {
+) : IWorkListTask {
 
     val processing: MutableList<Good> = mutableListOf()
     val processed: MutableList<Good> = mutableListOf()
@@ -89,6 +92,12 @@ class WorkListTask(
     }
 
 }
+
+
+interface IWorkListTask : ITask {
+    suspend fun getGoodByEan(ean: String): Either<Failure, Good>
+}
+
 
 
 data class Good(

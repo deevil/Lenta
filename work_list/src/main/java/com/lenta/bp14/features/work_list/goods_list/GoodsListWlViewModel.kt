@@ -9,6 +9,7 @@ import com.lenta.bp14.models.work_list.WorkListTask
 import com.lenta.bp14.platform.navigation.IScreenNavigator
 import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.platform.viewmodel.CoreViewModel
+import com.lenta.shared.requests.combined.scan_info.analyseCode
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
@@ -81,6 +82,50 @@ class GoodsListWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     override fun onOkInSoftKeyboard(): Boolean {
         checkEnteredNumber(numberField.value ?: "")
         return true
+    }
+
+    private fun checkCode(code: String?) {
+        analyseCode(
+                code = code ?: "",
+                funcForEan = { eanCode ->
+                    searchCode(eanCode = eanCode)
+                },
+                funcForMatNr = { matNr ->
+                    searchCode(matNr = matNr)
+                },
+                funcForPriceQrCode = { qrCode ->
+                    searchCode(qrCode = qrCode)
+                },
+                funcForSapOrBar = navigator::showTwelveCharactersEntered,
+                funcForNotValidFormat = navigator::showGoodNotFound
+        )
+    }
+
+    private fun searchCode(eanCode: String? = null, matNr: String? = null, qrCode: String? = null) {
+        viewModelScope.launch {
+            require((eanCode != null) xor (matNr != null) xor (qrCode != null)) {
+                "only one param allowed. eanCode: $eanCode, matNr: $matNr, qrCode: $qrCode "
+            }
+            navigator.showProgressLoadingData()
+
+            when {
+                !eanCode.isNullOrBlank() -> task.getGoodByEan(eanCode)
+                !matNr.isNullOrBlank() -> task.getGoodByEan(matNr)
+                !qrCode.isNullOrBlank() -> task.getGoodByEan(qrCode)
+                else -> throw IllegalArgumentException()
+            }.either(
+                    fnL = {
+                        navigator.openAlertScreen(it)
+                    }
+            ) {
+                task.processingMatNumber = it.matNumber
+                if (qrCode.isNullOrBlank()) {
+                    navigator.openGoodInfoPcScreen()
+                }
+            }
+            navigator.hideProgress()
+
+        }
     }
 
     private fun checkEnteredNumber(number: String) {
