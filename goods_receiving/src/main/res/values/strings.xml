@@ -25,6 +25,7 @@
     <string name="without_barcode">Без штрихкода</string>
     <string name="unlock_confirmation">Задание заблокировано этим же логином на ТСД. Разблокировать и начать обработку?</string>
     <string name="view_confirmation">Задание заблокировано под другим логином на ТСД. Перейти к просмотру этого задания?</string>
+    <string name="unsaved_data_confirmation">Несохранённые данные будут утеряны, всё равно продолжить?</string>
     <string name="task_card">Карточка задания</string>
     <string name="status">Статус</string>
     <string name="delivery">Поставка</string>
@@ -32,6 +33,8 @@
     <string name="notification">Уведомление</string>
     <string name="indicator">Индикатор</string>
     <string name="numberTN_TTN">Номер ТН/ТТН</string>
+    <string name="invoice_number">Номер накладной</string>
+    <string name="invoice_date">Дата накладной</string>
     <string name="arrival_plan">План поставки</string>
     <string name="arrival_fact">Факт прибытия</string>
     <string name="incoming_delivery">Входящая поставка</string>
@@ -53,4 +56,21 @@
     <string name="checked">Сверенные</string>
     <string name="information">Информация</string>
     <string name="delivery_documents">Документы по поставке</string>
+    <string name="invoice_revise">Сверка накладной</string>
+    <string name="document">Документ</string>
+    <string name="revise">Сверка</string>
+    <string name="header">Заголовок</string>
+    <string name="notes">Примечания</string>
+    <string name="inn">ИНН</string>
+    <string name="supplier_address">Адрес поставщика</string>
+    <string name="strings_goods">Строк (товаров)</string>
+    <string name="quantity_st">Количество, шт</string>
+    <string name="quantity_kg">Количество, кг</string>
+    <string name="quantity_total">Общее количество, всего</string>
+    <string name="select_reason">Введите или выберите\n причину отказа</string>
+    <string name="enter_comment">Ввод комментария</string>
+    <string name="reject_recieving">Отказ в приёмке</string>
+    <string name="reject_success_temp">Временный отказ произведен успешно</string>
+    <string name="reject_success_full">Полный отказ произведен успешно. Входящая поставка удалена.</string>
+    <string name="reject_success_full_alco">Выполнен временный отказ, для полного отказа необходимо оповестить ГИС-центр</string>
 </resources>

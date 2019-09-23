@@ -18,7 +18,7 @@ import com.lenta.shared.utilities.extentions.getDeviceIp
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class LoadingStartReviseArrivalViewModel : CoreLoadingViewModel() {
+class LoadingStartReviseViewModel : CoreLoadingViewModel() {
     @Inject
     lateinit var screenNavigator: IScreenNavigator
     @Inject
@@ -64,7 +64,9 @@ class LoadingStartReviseArrivalViewModel : CoreLoadingViewModel() {
 
         val documentNotifications = result.documentNotifications.map { TaskNotification.from(it) }
         val productNotifications = result.productNotifications.map { TaskNotification.from(it) }
+        val commentsToVP = result.commentsToVP.map { CommentToVP.from(it) }
         taskManager.getReceivingTask()?.taskRepository?.getNotifications()?.updateWithNotifications(null, documentNotifications, productNotifications, null)
+        taskManager.getReceivingTask()?.taskRepository?.getNotifications()?.updateWithInvoiceNotes(commentsToVP)
 
         val deliveryDocumentsRevise = result.deliveryReviseDocuments.map { DeliveryDocumentRevise.from(it) }
         val deliveryProductDocumentsRevise = result.productReviseDocuments.map { DeliveryProductDocumentRevise.from(it) }

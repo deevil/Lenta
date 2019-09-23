@@ -16,7 +16,9 @@ import com.lenta.bp9.R
 import com.lenta.bp9.features.change_datetime.ChangeDateTimeFragment
 import com.lenta.bp9.features.change_datetime.ChangeDateTimeMode
 import com.lenta.bp9.features.loading.tasks.*
+import com.lenta.bp9.features.reject.RejectFragment
 import com.lenta.bp9.features.revise.TaskReviseFragment
+import com.lenta.bp9.features.revise.invoice.InvoiceReviseFragment
 import com.lenta.shared.account.IAuthenticator
 import com.lenta.shared.features.alert.AlertFragment
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
@@ -134,6 +136,24 @@ class ScreenNavigator(
         }
     }
 
+    override fun openConfirmationUnsavedData(callbackFunc: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.unsaved_data_confirmation),
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(callbackFunc),
+                    pageNumber = "93",
+                    rightButtonDecorationInfo = ButtonDecorationInfo.yes))
+        }
+    }
+
+    override fun openAlertWithoutConfirmation(message: String, callbackFunc: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(message = message,
+                    codeConfirmForLeft = backFragmentResultHelper.setFuncForResult(callbackFunc),
+                    pageNumber = "96",
+                    leftButtonDecorationInfo = ButtonDecorationInfo.back))
+        }
+    }
+
     override fun openChangeDateTimeScreen(mode: ChangeDateTimeMode) {
         runOrPostpone {
             getFragmentStack()?.push(ChangeDateTimeFragment.create(mode))
@@ -148,13 +168,25 @@ class ScreenNavigator(
 
     override fun openLoadingStartReviseScreen() {
         runOrPostpone {
-            getFragmentStack()?.push(LoadingStartReviseArrivalFragment())
+            getFragmentStack()?.push(LoadingStartReviseFragment())
         }
     }
 
     override fun openTaskReviseScreen() {
         runOrPostpone {
             getFragmentStack()?.push(TaskReviseFragment())
+        }
+    }
+
+    override fun openInvoiceReviseScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(InvoiceReviseFragment())
+        }
+    }
+
+    override fun openRejectScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(RejectFragment())
         }
     }
 
@@ -178,8 +210,12 @@ interface IScreenNavigator : ICoreNavigator {
     fun openTaskCardLoadingScreen(mode: TaskCardMode, taskNumber: String, loadFullData: Boolean)
     fun openConfirmationUnlock(callbackFunc: () -> Unit)
     fun openConfirmationView(callbackFunc: () -> Unit)
+    fun openConfirmationUnsavedData(callbackFunc: () -> Unit)
+    fun openAlertWithoutConfirmation(message: String, callbackFunc: () -> Unit)
     fun openChangeDateTimeScreen(mode: ChangeDateTimeMode)
     fun openLoadingRegisterArrivalScreen()
     fun openLoadingStartReviseScreen()
     fun openTaskReviseScreen()
+    fun openInvoiceReviseScreen()
+    fun openRejectScreen()
 }

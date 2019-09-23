@@ -11,7 +11,7 @@ import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
 import com.lenta.shared.utilities.extentions.provideViewModel
 
-class LoadingStartReviseArrivalFragment : CoreLoadingFragment() {
+class LoadingStartReviseFragment : CoreLoadingFragment() {
 
     override fun getPageNumber(): String? {
         return generateScreenNumberFromPostfix("98")
