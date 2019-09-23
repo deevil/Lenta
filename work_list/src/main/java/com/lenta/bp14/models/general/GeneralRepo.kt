@@ -8,7 +8,8 @@ class GeneralRepo : IGeneralRepo {
                 TaskTypes.Empty.taskType,
                 TaskTypes.CheckList.taskType,
                 TaskTypes.CheckPrice.taskType,
-                TaskTypes.NotExposedProducts.taskType
+                TaskTypes.NotExposedProducts.taskType,
+                TaskTypes.WorkList.taskType
         )
     }
 
@@ -49,19 +50,19 @@ enum class TaskTypes(val taskType: ITaskType) {
 
             )
     ),
-    WorkList(
-            taskType = TaskType(
-                    taskType = "РБС",
-                    taskName = "Рабочий список",
-                    annotation = "Задание для создания рабочего списка"
-            )
-    ),
     NotExposedProducts(
             taskType = TaskType(
                     taskType = "НТП",
                     taskName = "Невыставленный товар",
                     annotation = "Невыставленный товар"
 
+            )
+    ),
+    WorkList(
+            taskType = TaskType(
+                    taskType = "РБС",
+                    taskName = "Рабочий список",
+                    annotation = "Задание для создания рабочего списка"
             )
     )
 

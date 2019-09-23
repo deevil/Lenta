@@ -112,7 +112,7 @@ class WorkListTask(
 
 
     override fun getTaskType(): ITaskType {
-        return TaskTypes.CheckPrice.taskType
+        return TaskTypes.WorkList.taskType
     }
 
     override fun getDescription(): ITaskDescription {
