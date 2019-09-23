@@ -63,7 +63,7 @@
             android:layout_marginEnd="8dp"
             android:ellipsize="end"
             android:gravity="start|center_vertical"
-            android:maxLines="1"
+            android:maxLines="2"
             android:text="@{vm.name}"
             app:layout_constraintBottom_toBottomOf="@+id/tv_counter"
             app:layout_constraintEnd_toStartOf="@+id/img_arrow"

@@ -185,15 +185,15 @@ class MainMenuViewModel : CoreViewModel() {
         }
 
         taskManager.getReceivingTask().let {
-            it!!.taskRepository.getBatches().addBatch(TaskBatchesInfo(
+            it!!.taskRepository.getBatches().addBatch(TaskBatchInfo(
                     materialNumber = "000031",
                     description = "партия 1",
                     uom = Uom("ST", "шт"),
                     batchNumber = "1",
                     alcoСode = "",
-                    manufacturer = "",
-                    bottlingDate = "",
-                    planQuantityИatch = "",
+                    manufacturer = "АО \"ПУПКИН\"",
+                    bottlingDate = "11.09.2018",
+                    planQuantityBatch = "",
                     isNoEAN = false
             ))
         }
@@ -203,7 +203,7 @@ class MainMenuViewModel : CoreViewModel() {
                     batchNumber = "1",
                     numberDiscrepancies = "35.0",
                     uom = Uom("ST", "шт"),
-                    typeDifferences = "22",
+                    typeDiscrepancies = "22",
                     isNotEdit = false,
                     exciseStampCode = "",
                     fullDM = ""
@@ -215,22 +215,22 @@ class MainMenuViewModel : CoreViewModel() {
                     batchNumber = "1",
                     numberDiscrepancies = "35.0",
                     uom = Uom("ST", "шт"),
-                    typeDifferences = "45",
+                    typeDiscrepancies = "45",
                     isNotEdit = false,
                     exciseStampCode = "",
                     fullDM = ""
             ))
         }
         taskManager.getReceivingTask().let {
-            it!!.taskRepository.getBatches().addBatch(TaskBatchesInfo(
+            it!!.taskRepository.getBatches().addBatch(TaskBatchInfo(
                     materialNumber = "000032",
                     description = "партия 2",
                     uom = Uom("ST", "шт"),
                     batchNumber = "2",
                     alcoСode = "",
-                    manufacturer = "",
-                    bottlingDate = "",
-                    planQuantityИatch = "",
+                    manufacturer = "ТОВ \"НЕ ПОЙМИ КТО\"",
+                    bottlingDate = "01.01.2000",
+                    planQuantityBatch = "",
                     isNoEAN = true
             ))
         }

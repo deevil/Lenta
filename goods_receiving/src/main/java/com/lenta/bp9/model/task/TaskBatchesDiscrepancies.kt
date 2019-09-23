@@ -8,7 +8,7 @@ data class TaskBatchesDiscrepancies(
         val batchNumber: String,
         val numberDiscrepancies: String, //Количество расхождения в ПЕИ
         val uom: Uom,
-        val typeDifferences: String, //Тип расхождения
+        val typeDiscrepancies: String, //Тип расхождения
         val isNotEdit: Boolean,
         val exciseStampCode: String,
         val fullDM: String //DM акцизной марки

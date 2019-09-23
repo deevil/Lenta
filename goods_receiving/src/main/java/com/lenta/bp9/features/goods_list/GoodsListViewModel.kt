@@ -76,7 +76,7 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
                                 .mapIndexed { index, batchInfo ->
                                     ListCountedItem(
                                             number = index + 1,
-                                            name = "${batchInfo.getMaterialLastSix()} ${batchInfo.description}",
+                                            name = "${batchInfo.getMaterialLastSix()} ${batchInfo.description} \nДР-${batchInfo.bottlingDate} // ${batchInfo.manufacturer}",
                                             countAccept = task.taskRepository.getBatchesDiscrepancies().getCountAcceptOfBatch(batchInfo),
                                             countRefusal = task.taskRepository.getBatchesDiscrepancies().getCountRefusalOfBatch(batchInfo),
                                             uomName = batchInfo.uom.name,
@@ -115,7 +115,7 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
                                 }.mapIndexed { index, batchInfo ->
                                     ListWithoutBarcodeItem(
                                             number = index + 1,
-                                            name = "${batchInfo.getMaterialLastSix()} ${batchInfo.description}",
+                                            name = "${batchInfo.getMaterialLastSix()} ${batchInfo.description} \nДР-${batchInfo.bottlingDate} // ${batchInfo.manufacturer}",
                                             even = index % 2 == 0)
                                 }
                                 .reversed())
@@ -233,7 +233,8 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
                 numberBoxesControl = "",
                 numberStampsControl = ""
         ))
-        //screenNavigator.openGoodsInfoScreen(tmpProduct!!)
-        screenNavigator.openDiscrepancyListScreen()
+        screenNavigator.openGoodsInfoScreen(tmpProduct!!)
+
+        //screenNavigator.openDiscrepancyListScreen()
     }
 }

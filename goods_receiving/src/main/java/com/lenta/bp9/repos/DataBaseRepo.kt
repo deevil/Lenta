@@ -25,14 +25,21 @@ class DataBaseRepo(
             }
         }
 
-    override suspend fun getReasonRejectionInfo(quality: String): List<ReasonRejectionInfo>? = withContext(Dispatchers.IO) {
+    override suspend fun getReasonRejectionInfoOfQuality(quality: String): List<ReasonRejectionInfo>? = withContext(Dispatchers.IO) {
             zmpUtz20V001.getAllReasonRejection()?.toReasonRejectionInfoList()?.filter {
                 it.id == "005" && it.qualityCode == quality
             }
         }
+
+    override suspend fun getAllReasonRejectionInfo(): List<ReasonRejectionInfo>? = withContext(Dispatchers.IO) {
+        zmpUtz20V001.getAllReasonRejection()?.toReasonRejectionInfoList()?.filter {
+            it.id == "005" //&& it.qualityCode != "1"
+        }
+    }
 }
 
 interface IDataBaseRepo {
     suspend fun getQualityInfo(): List<QualityInfo>?
-    suspend fun getReasonRejectionInfo(quality: String): List<ReasonRejectionInfo>?
+    suspend fun getReasonRejectionInfoOfQuality(quality: String): List<ReasonRejectionInfo>?
+    suspend fun getAllReasonRejectionInfo(): List<ReasonRejectionInfo>?
 }

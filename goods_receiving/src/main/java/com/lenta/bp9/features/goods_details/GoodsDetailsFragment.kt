@@ -5,7 +5,8 @@ import android.view.View
 import com.lenta.bp9.BR
 import com.lenta.bp9.R
 import com.lenta.bp9.databinding.FragmentGoodsDetailsBinding
-import com.lenta.bp9.databinding.ItemTileGoodsListWithoutBarcodeBinding
+import com.lenta.bp9.databinding.ItemTileGoodsDetailsBinding
+import com.lenta.bp9.model.task.TaskBatchInfo
 import com.lenta.bp9.model.task.TaskProductInfo
 import com.lenta.bp9.platform.extentions.getAppComponent
 import com.lenta.shared.platform.fragment.CoreFragment
@@ -20,15 +21,17 @@ import com.lenta.shared.utilities.state.state
 class GoodsDetailsFragment : CoreFragment<FragmentGoodsDetailsBinding, GoodsDetailsViewModel>() {
 
     companion object {
-        fun create(productInfo: TaskProductInfo): GoodsDetailsFragment {
+        fun create(productInfo: TaskProductInfo?, batch: TaskBatchInfo?): GoodsDetailsFragment {
             GoodsDetailsFragment().let {
                 it.productInfo = productInfo
+                it.batch = batch
                 return it
             }
         }
     }
 
     private var productInfo by state<TaskProductInfo?>(null)
+    private var batch by state<TaskBatchInfo?>(null)
 
     override fun getLayoutId(): Int = R.layout.fragment_goods_details
 
@@ -37,7 +40,12 @@ class GoodsDetailsFragment : CoreFragment<FragmentGoodsDetailsBinding, GoodsDeta
     override fun getViewModel(): GoodsDetailsViewModel {
         provideViewModel(GoodsDetailsViewModel::class.java).let {vm ->
             getAppComponent()?.inject(vm)
-            vm.productInfo.value = productInfo
+            productInfo?.let {
+                vm.productInfo.value = it
+            }
+            batch?.let {
+                vm.batchInfo.value = it
+            }
             return vm
         }
     }
@@ -60,11 +68,11 @@ class GoodsDetailsFragment : CoreFragment<FragmentGoodsDetailsBinding, GoodsDeta
             layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
                     layoutId = R.layout.item_tile_goods_details,
                     itemId = BR.vm,
-                    realisation = object : DataBindingAdapter<ItemTileGoodsListWithoutBarcodeBinding> {
-                        override fun onCreate(binding: ItemTileGoodsListWithoutBarcodeBinding) {
+                    realisation = object : DataBindingAdapter<ItemTileGoodsDetailsBinding> {
+                        override fun onCreate(binding: ItemTileGoodsDetailsBinding) {
                         }
 
-                        override fun onBind(binding: ItemTileGoodsListWithoutBarcodeBinding, position: Int) {
+                        override fun onBind(binding: ItemTileGoodsDetailsBinding, position: Int) {
                         }
 
                     }
@@ -75,5 +83,9 @@ class GoodsDetailsFragment : CoreFragment<FragmentGoodsDetailsBinding, GoodsDeta
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        vm.onResume()
+    }
 
 }

@@ -24,6 +24,7 @@ import com.lenta.bp9.features.reject.RejectFragment
 import com.lenta.bp9.features.revise.TaskReviseFragment
 import com.lenta.bp9.model.task.TaskProductInfo
 import com.lenta.bp9.features.revise.invoice.InvoiceReviseFragment
+import com.lenta.bp9.model.task.TaskBatchInfo
 import com.lenta.shared.account.IAuthenticator
 import com.lenta.shared.features.alert.AlertFragment
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
@@ -198,9 +199,9 @@ class ScreenNavigator(
         )
     }
 
-    override fun openGoodsDetailsScreen(productInfo: TaskProductInfo) {
+    override fun openGoodsDetailsScreen(productInfo: TaskProductInfo?, batch: TaskBatchInfo?) {
         runOrPostpone {
-            getFragmentStack()?.push(GoodsDetailsFragment.create(productInfo))
+            getFragmentStack()?.push(GoodsDetailsFragment.create(productInfo, batch))
         }
     }
 
@@ -250,7 +251,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openTaskReviseScreen()
     fun openGoodsInfoScreen(productInfo: TaskProductInfo)
     fun openAlertWrongProductType()
-    fun openGoodsDetailsScreen(productInfo: TaskProductInfo)
+    fun openGoodsDetailsScreen(productInfo: TaskProductInfo? = null, batch: TaskBatchInfo? =null)
     fun openInvoiceReviseScreen()
     fun openRejectScreen()
     fun openDiscrepancyListScreen()

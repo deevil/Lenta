@@ -133,7 +133,7 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
         viewModelScope.launch {
             screenNavigator.showProgress(titleProgressScreen.value!!)
             spinReasonRejectionSelectedPosition.value = 0
-            reasonRejectionInfo.value = dataBase.getReasonRejectionInfo(selectedQuality)
+            reasonRejectionInfo.value = dataBase.getReasonRejectionInfoOfQuality(selectedQuality)
             spinReasonRejection.value = reasonRejectionInfo.value?.map {
                 it.name
             }

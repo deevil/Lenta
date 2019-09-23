@@ -1,7 +1,7 @@
 package com.lenta.bp9.model.memory
 
 import com.lenta.bp9.model.repositories.ITaskBatchesDiscrepanciesRepository
-import com.lenta.bp9.model.task.TaskBatchesInfo
+import com.lenta.bp9.model.task.TaskBatchInfo
 import com.lenta.bp9.model.task.TaskBatchesDiscrepancies
 
 class MemoryTaskBatchesDiscrepanciesRepository : ITaskBatchesDiscrepanciesRepository {
@@ -12,7 +12,7 @@ class MemoryTaskBatchesDiscrepanciesRepository : ITaskBatchesDiscrepanciesReposi
         return batchesDiscrepancies
     }
 
-    override fun findBatchDiscrepanciesOfBatch(batch: TaskBatchesInfo): List<TaskBatchesDiscrepancies> {
+    override fun findBatchDiscrepanciesOfBatch(batch: TaskBatchInfo): List<TaskBatchesDiscrepancies> {
         val foundDiscrepancies = ArrayList<TaskBatchesDiscrepancies>()
         for (i in batchesDiscrepancies.indices) {
             if (batch.materialNumber == batchesDiscrepancies[i].materialNumber && batch.batchNumber == batchesDiscrepancies[i].batchNumber) {
@@ -27,7 +27,7 @@ class MemoryTaskBatchesDiscrepanciesRepository : ITaskBatchesDiscrepanciesReposi
         for (i in batchesDiscrepancies.indices) {
             if (discrepancies.materialNumber == batchesDiscrepancies[i].materialNumber &&
                     discrepancies.batchNumber == batchesDiscrepancies[i].batchNumber &&
-                    discrepancies.typeDifferences == batchesDiscrepancies[i].typeDifferences) {
+                    discrepancies.typeDiscrepancies == batchesDiscrepancies[i].typeDiscrepancies) {
                 index = i
             }
         }
@@ -44,7 +44,7 @@ class MemoryTaskBatchesDiscrepanciesRepository : ITaskBatchesDiscrepanciesReposi
         for (i in batchesDiscrepancies.indices) {
             if (discrepancies.materialNumber == batchesDiscrepancies[i].materialNumber &&
                     discrepancies.batchNumber == batchesDiscrepancies[i].batchNumber &&
-                    discrepancies.typeDifferences == batchesDiscrepancies[i].typeDifferences) {
+                    discrepancies.typeDiscrepancies == batchesDiscrepancies[i].typeDiscrepancies) {
                 index = i
             }
         }
@@ -56,7 +56,7 @@ class MemoryTaskBatchesDiscrepanciesRepository : ITaskBatchesDiscrepanciesReposi
         return true
     }
 
-    override fun deleteBatchesDiscrepanciesForBatch(batch: TaskBatchesInfo): Boolean {
+    override fun deleteBatchesDiscrepanciesForBatch(batch: TaskBatchInfo): Boolean {
         val delDiscrepancies = ArrayList<TaskBatchesDiscrepancies>()
         for (i in batchesDiscrepancies.indices) {
             if (batch.materialNumber == batchesDiscrepancies[i].materialNumber &&
@@ -73,20 +73,20 @@ class MemoryTaskBatchesDiscrepanciesRepository : ITaskBatchesDiscrepanciesReposi
         return true
     }
 
-    override fun getCountAcceptOfBatch(batch: TaskBatchesInfo): Double {
+    override fun getCountAcceptOfBatch(batch: TaskBatchInfo): Double {
         var countAccept = 0.0
         findBatchDiscrepanciesOfBatch(batch).filter {
-            it.typeDifferences == "1"
+            it.typeDiscrepancies == "1"
         }.map {discrepancies ->
             countAccept += discrepancies.numberDiscrepancies.toDouble()
         }
         return countAccept
     }
 
-    override fun getCountRefusalOfBatch(batch: TaskBatchesInfo): Double {
+    override fun getCountRefusalOfBatch(batch: TaskBatchInfo): Double {
         var countRefusal = 0.0
         findBatchDiscrepanciesOfBatch(batch).filter {
-            it.typeDifferences != "1"
+            it.typeDiscrepancies != "1"
         }.map {discrepancies ->
             countRefusal += discrepancies.numberDiscrepancies.toDouble()
         }

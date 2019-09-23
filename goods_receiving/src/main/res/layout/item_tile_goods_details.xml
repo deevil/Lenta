@@ -106,7 +106,8 @@
             android:ellipsize="end"
             android:gravity="start|center_vertical"
             android:maxLines="1"
-            android:text='@{vm.quantity}'
+            android:text='@{vm.typeDiscrepancies == "1" ? "+ " + vm.quantity + " " + vm.uomName : "- " + vm.quantity + " " + vm.uomName }'
+            android:textColor='@{vm.typeDiscrepancies == "1" ? @color/colorAccent : @color/color_pressed_red}'
             app:layout_constraintBottom_toBottomOf="@+id/tv_counter"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/div_vert2"

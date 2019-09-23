@@ -13,7 +13,7 @@ fun List<ZmpUtz20V001.ItemLocal_ET_GRUNDS>.toReasonRejectionInfoList(): List<Rea
         ReasonRejectionInfo(
                 id = it.tid,
                 qualityCode = it.grundcat,
-                code = it.grund,
-                name = it.gtext)
+                code = if (it.grundcat == "1") "1" else it.grund,
+                name = if (it.grundcat == "1") "Норма" else it.gtext)
     }
 }
