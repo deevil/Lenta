@@ -7,7 +7,6 @@ import com.lenta.bp14.models.getTaskName
 import com.lenta.bp14.models.work_list.Good
 import com.lenta.bp14.models.work_list.WorkListTask
 import com.lenta.bp14.platform.navigation.IScreenNavigator
-import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.analyseCode
 import com.lenta.shared.utilities.Logg
@@ -40,8 +39,19 @@ class GoodsListWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     val requestFocusToNumberField: MutableLiveData<Boolean> = MutableLiveData()
 
     val processingGoods = MutableLiveData<List<Good>>()
-    val processedGoods = MutableLiveData<List<Good>>()
     val searchGoods = MutableLiveData<List<Good>>()
+
+    val processedGoods: MutableLiveData<List<ProcessedListUi>> by lazy {
+        task.goods.map { list: MutableList<Good>? ->
+            list?.filter { it.processed }?.mapIndexed { index, good ->
+                ProcessedListUi(
+                        position = (index + 1).toString(),
+                        name = good.getFormattedMaterialWithName(),
+                        quantity = good.getQuantityWithUnit()
+                )
+            }
+        }
+    }
 
     private val selectedItemOnCurrentTab: MutableLiveData<Boolean> = selectedPage
             .combineLatest(processedSelectionsHelper.selectedPositions)
@@ -60,15 +70,11 @@ class GoodsListWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
         viewModelScope.launch {
             requestFocusToNumberField.value = true
             taskName.value = "${task.getTaskType().taskType} // ${task.getTaskName()}"
-
-            processingGoods.value = task.processed
-            processedGoods.value = task.processed
         }
     }
 
     override fun onPageSelected(position: Int) {
         selectedPage.value = position
-        task.setCurrentList(getCorrectedPagePosition(position))
     }
 
     fun onClickSave() {
@@ -84,80 +90,27 @@ class GoodsListWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
         return true
     }
 
-    private fun checkCode(code: String?) {
+    private fun checkEnteredNumber(number: String) {
         analyseCode(
-                code = code ?: "",
+                code = number,
                 funcForEan = { eanCode ->
-                    searchCode(eanCode = eanCode)
+                    addGoodByEan(eanCode)
                 },
                 funcForMatNr = { matNr ->
-                    searchCode(matNr = matNr)
+                    addGoodByEan(matNr)
                 },
                 funcForPriceQrCode = { qrCode ->
-                    searchCode(qrCode = qrCode)
+
                 },
                 funcForSapOrBar = navigator::showTwelveCharactersEntered,
                 funcForNotValidFormat = navigator::showGoodNotFound
         )
     }
 
-    private fun searchCode(eanCode: String? = null, matNr: String? = null, qrCode: String? = null) {
-        viewModelScope.launch {
-            require((eanCode != null) xor (matNr != null) xor (qrCode != null)) {
-                "only one param allowed. eanCode: $eanCode, matNr: $matNr, qrCode: $qrCode "
-            }
-            navigator.showProgressLoadingData()
-
-            when {
-                !eanCode.isNullOrBlank() -> task.getGoodByEan(eanCode)
-                !matNr.isNullOrBlank() -> task.getGoodByEan(matNr)
-                !qrCode.isNullOrBlank() -> task.getGoodByEan(qrCode)
-                else -> throw IllegalArgumentException()
-            }.either(
-                    fnL = {
-                        navigator.openAlertScreen(it)
-                    }
-            ) {
-                task.processingMatNumber = it.matNumber
-                if (qrCode.isNullOrBlank()) {
-                    navigator.openGoodInfoPcScreen()
-                }
-            }
-            navigator.hideProgress()
-
-        }
-    }
-
-    private fun checkEnteredNumber(number: String) {
-        number.length.let { length ->
-            if (length < Constants.COMMON_SAP_LENGTH) {
-                // Сообщение - Данный товар не найден в справочнике
-                navigator.showGoodNotFound()
-                return
-            }
-
-            if (length >= Constants.COMMON_SAP_LENGTH) {
-                when (length) {
-                    Constants.COMMON_SAP_LENGTH -> addGoodByMaterial(number)
-                    Constants.SAP_OR_BAR_LENGTH -> {
-                        // Выбор - Введено 12 знаков. Какой код вы ввели? - SAP-код / Штрихкод
-                        navigator.showTwelveCharactersEntered(
-                                sapCallback = { addGoodByMatcode(number) },
-                                barCallback = { addGoodByEan(number) }
-                        )
-                    }
-                    else -> addGoodByEan(number)
-                }
-            }
-        }
-    }
-
     private fun addGoodByEan(ean: String) {
         Logg.d { "Entered EAN: $ean" }
         viewModelScope.launch {
-            val good = task.getGoodByEan(ean)
-            if (good != null) {
-                task.currentGood.value = good
+            if (task.addGoodByEan(ean)) {
                 navigator.openGoodInfoWlScreen()
             }
         }
@@ -166,9 +119,7 @@ class GoodsListWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     private fun addGoodByMaterial(material: String) {
         Logg.d { "Entered MATERIAL: $material" }
         viewModelScope.launch {
-            val good = task.getGoodByEan(material)
-            if (good != null) {
-                task.currentGood.value = good
+            if (task.addGoodByEan(material)) {
                 navigator.openGoodInfoWlScreen()
             }
         }
@@ -186,17 +137,7 @@ class GoodsListWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     }
 
     fun onClickItemPosition(position: Int) {
-        //taskManager.currentGood = getGoodByPosition(position)
         navigator.openGoodInfoWlScreen()
-    }
-
-    private fun getGoodByPosition(position: Int): Good? {
-        return when (selectedPage.value) {
-            GoodsListTab.PROCESSING.position -> processingGoods.value?.get(position)
-            GoodsListTab.PROCESSED.position -> processedGoods.value?.get(position)
-            GoodsListTab.SEARCH.position -> searchGoods.value?.get(position)
-            else -> null
-        }
     }
 
     fun getPagesCount(): Int {
@@ -214,9 +155,8 @@ class GoodsListWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
 
 }
 
-data class WorkListUi(
-        val position: Int,
-        val material: String,
+data class ProcessedListUi(
+        val position: String,
         val name: String,
-        val quantity: Int
+        val quantity: String
 )

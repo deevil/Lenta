@@ -138,7 +138,7 @@ class GoodsListNeFragment : CoreFragment<FragmentGoodsListNeBinding, GoodsListNe
                 }
 
                 layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
-                        layoutId = R.layout.item_good_quantity_selectable,
+                        layoutId = R.layout.item_good_quantity_missing_selectable,
                         itemId = BR.good,
                         realisation = object : DataBindingAdapter<ItemGoodQuantitySelectableBinding> {
                             override fun onCreate(binding: ItemGoodQuantitySelectableBinding) {
