@@ -166,8 +166,7 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
     }
 
     fun onClickRefusal() {
-        //todo экран "Отказ в приемке" еще в разработке
-        screenNavigator.openInfoScreen("экран \"Отказ в приемке\" еще в разработке")
+        screenNavigator.openRejectScreen()
     }
 
     fun onClickClean() {
