@@ -37,6 +37,8 @@ data class StartReviseRequestResult(
         @SerializedName("ES_TTN_CHK")
         val invoiceData: InvoiceReviseRestData,
 
+        @SerializedName("ET_VBELN_COM")
+        val commentsToVP: List<CommentToVPRestData>,
         @SerializedName("ET_DOC_NOTIFY")
         val documentNotifications: List<TaskNotificationRestInfo>,
         @SerializedName("ET_MATNR_NOTIFY")

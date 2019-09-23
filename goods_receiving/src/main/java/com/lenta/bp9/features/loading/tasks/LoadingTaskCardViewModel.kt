@@ -87,19 +87,26 @@ class LoadingTaskCardViewModel : CoreLoadingViewModel() {
             val documentNotifications = result.documentNotifications.map { TaskNotification.from(it) }
             val productNotifications = result.productNotifications.map { TaskNotification.from(it) }
             val conditionNotifications = result.conditionNotifications.map { TaskNotification.from(it) }
-            val deliveryDocumentsRevise = result.deliveryDocumentsRevise.map { DeliveryDocumentRevise.from(it) }
+            val deliveryDocumentsRevise = result.deliveryDocumentsRevise.map { DeliveryDocumentRevise.from(it) }.toMutableList()
+            deliveryDocumentsRevise.add(DeliveryDocumentRevise(documentID = "123", documentName = "Простой 1", documentType = DocumentType.Simple, isCheck = false, isObligatory = false))
+            deliveryDocumentsRevise.add(DeliveryDocumentRevise(documentID = "124", documentName = "Простой 2", documentType = DocumentType.Simple, isCheck = false, isObligatory = true))
+            deliveryDocumentsRevise.add(DeliveryDocumentRevise(documentID = "125", documentName = "Простой 3", documentType = DocumentType.Simple, isCheck = false, isObligatory = false))
+
             val deliveryProductDocumentsRevise = result.deliveryProductDocumentsRevise.map { DeliveryProductDocumentRevise.from(it) }
             val productBatchesRevise = result.productBatchesRevise.map { ProductBatchRevise.from(it) }
             val formsABRussianRevise = result.formsABRussianRevise.map { FormABRussianRevise.from(it) }
             val formsABImportRevise = result.formsABImportRevise.map { FormABImportRevise.from(it) }
             val setComponenttsRevise = result.setComponenttsRevise.map { SetComponentRevise.from(it) }
             val invoiceRevise = InvoiceRevise.from(result.invoiceRevise)
-            val commentsToVP = result.commentsToVP.map { CommentToVP.from(it) }
+            val commentsToVP = result.commentsToVP.map { CommentToVP.from(it) }.toMutableList()
+            commentsToVP.add(CommentToVP(1, "Какой-то текст для теста"))
+            commentsToVP.add(CommentToVP(2, "Ещё текст для теста"))
             val productsVetDocumentRevise = result.productsVetDocumentRevise.map { ProductVetDocumentRevise.from(it) }
             val complexDocumentsRevise = result.complexDocumentsRevise.map { ComplexDocumentRevise.from(it) }
 
             val newTask = taskManager.newReceivingTask(taskHeader, TaskDescription.from(result.taskDescription))
             newTask?.taskRepository?.getNotifications()?.updateWithNotifications(notifications, documentNotifications, productNotifications, conditionNotifications)
+            newTask?.taskRepository?.getNotifications()?.updateWithInvoiceNotes(commentsToVP)
             newTask?.taskRepository?.getReviseDocuments()?.apply {
                 this.updateDeliveryDocuments(deliveryDocumentsRevise)
                 this.updateProductDocuments(deliveryProductDocumentsRevise)

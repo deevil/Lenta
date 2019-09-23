@@ -57,6 +57,7 @@
     <string name="delete">Удалить</string>
     <string name="clean">Очистить</string>
     <string name="refusal">Отказ</string>
+    <string name="fix">Исправить</string>
     <string name="batchs_products">Партии</string>
     <string name="print">Печать</string>
     <string name="save">Сохранить</string>
@@ -66,6 +67,8 @@
     <string name="untie">Отвязать</string>
     <string name="published">Опубликовано</string>
     <string name="counted">Посчитано</string>
+    <string name="full">Полный</string>
+    <string name="temporary">Временный</string>
     <string name="deliveries">Поставки</string>
     <string name="sales">Продажи</string>
     <string name="error">Ошибка</string>

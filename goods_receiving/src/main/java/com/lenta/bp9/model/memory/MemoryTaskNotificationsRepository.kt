@@ -1,7 +1,9 @@
 package com.lenta.bp9.model.memory
 
+import com.lenta.bp9.features.revise.invoice.InvoiceNoteVM
 import com.lenta.bp9.model.repositories.ITaskNotificationsRepository
 import com.lenta.bp9.model.task.TaskNotification
+import com.lenta.bp9.model.task.revise.CommentToVP
 
 class MemoryTaskNotificationsRepository : ITaskNotificationsRepository {
 
@@ -9,6 +11,7 @@ class MemoryTaskNotificationsRepository : ITaskNotificationsRepository {
     private val documentNotifications: ArrayList<TaskNotification> = ArrayList()
     private val productNotifications: ArrayList<TaskNotification> = ArrayList()
     private val conditionsNotifications: ArrayList<TaskNotification> = ArrayList()
+    private val invoiceNotes: ArrayList<CommentToVP> = ArrayList()
 
     override fun getGeneralNotifications(): List<TaskNotification> {
         return generalNotifications.toList()
@@ -24,6 +27,10 @@ class MemoryTaskNotificationsRepository : ITaskNotificationsRepository {
 
     override fun getReviseConditionsNotifications(): List<TaskNotification> {
         return conditionsNotifications.toList()
+    }
+
+    override fun getInvoiceNotes(): List<CommentToVP> {
+        return invoiceNotes.toList()
     }
 
     override fun updateWithNotifications(general: List<TaskNotification>?,
@@ -48,10 +55,16 @@ class MemoryTaskNotificationsRepository : ITaskNotificationsRepository {
         }
     }
 
+    override fun updateWithInvoiceNotes(notes: List<CommentToVP>) {
+        invoiceNotes.clear()
+        invoiceNotes.addAll(notes)
+    }
+
     override fun clear() {
         generalNotifications.clear()
         documentNotifications.clear()
         productNotifications.clear()
         conditionsNotifications.clear()
+        invoiceNotes.clear()
     }
 }
