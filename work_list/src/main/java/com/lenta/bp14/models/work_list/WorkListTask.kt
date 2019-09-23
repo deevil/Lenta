@@ -6,7 +6,6 @@ import com.google.gson.Gson
 import com.lenta.bp14.models.ITask
 import com.lenta.bp14.models.ITaskDescription
 import com.lenta.bp14.models.data.GoodType
-import com.lenta.bp14.models.data.GoodsListTab
 import com.lenta.bp14.models.general.ITaskType
 import com.lenta.bp14.models.general.TaskTypes
 import com.lenta.bp14.models.work_list.repo.WorkListRepo
@@ -14,6 +13,7 @@ import com.lenta.shared.models.core.MatrixType
 import com.lenta.shared.models.core.Uom
 import com.lenta.shared.platform.time.ITimeMonitor
 import com.lenta.shared.utilities.extentions.map
+import kotlinx.coroutines.delay
 import java.util.*
 
 class WorkListTask(
@@ -21,34 +21,44 @@ class WorkListTask(
         private val taskDescription: WorkListTaskDescription,
         private val timeMonitor: ITimeMonitor,
         private val gson: Gson
-) : ITask {
+) : IWorkListTask {
 
-    val processing: MutableList<Good> = mutableListOf()
-    val processed: MutableList<Good> = mutableListOf()
-    val search: MutableList<Good> = mutableListOf()
 
-    private var currentList = processed
+    //val processing: MutableList<Good> = mutableListOf()
+    //val processed: MutableList<Good> = mutableListOf()
+    //val search: MutableList<Good> = mutableListOf()
+    //private var currentList = processed
+
+    val goods = MutableLiveData<MutableList<Good>>(mutableListOf())
 
     var currentGood = MutableLiveData<Good>()
 
-    fun getGoodByEan(ean: String): Good? {
-        val good = currentList.find { it.common.ean == ean }
+    override suspend fun addGoodByEan(ean: String): Boolean {
+        delay(500)
+
+        var good = goods.value?.find { it.common.ean == ean }
         if (good != null) {
-            return good
+            currentGood.value = good
+
+            return true
         }
 
         val commonGoodInfo = workListRepo.getCommonGoodInfoByEan(ean)
         if (commonGoodInfo != null) {
-            return Good(
-                    number = currentList.size + 1,
-                    common = commonGoodInfo
-            )
+            good = Good(common = commonGoodInfo)
+
+            val goodsList = goods.value!!
+            goodsList.add(good)
+            goods.value = goodsList
+            currentGood.value = good
+
+            return true
         }
 
-        return null
+        return false
     }
 
-    fun loadAdditionalGoodInfo() {
+    suspend fun loadAdditionalGoodInfo() {
         val good = currentGood.value
         if (good != null) {
             val additionalGoodInfo = workListRepo.loadAdditionalGoodInfo(good)
@@ -57,14 +67,14 @@ class WorkListTask(
         }
     }
 
-    fun setCurrentList(tabPosition: Int) {
+    /*fun setCurrentList(tabPosition: Int) {
         currentList = when (tabPosition) {
             GoodsListTab.PROCESSED.position -> processed
             GoodsListTab.PROCESSING.position -> processing
             GoodsListTab.SEARCH.position -> search
             else -> processed
         }
-    }
+    }*/
 
     fun getGoodOptions(): LiveData<GoodOptions> {
         return currentGood.map { it?.common?.options }
@@ -79,7 +89,6 @@ class WorkListTask(
     }
 
 
-
     override fun getTaskType(): ITaskType {
         return TaskTypes.CheckPrice.taskType
     }
@@ -91,14 +100,23 @@ class WorkListTask(
 }
 
 
+interface IWorkListTask : ITask {
+    suspend fun addGoodByEan(ean: String): Boolean
+}
+
+
 data class Good(
-        var number: Int,
         val common: CommonGoodInfo,
-        var additional: AdditionalGoodInfo? = null
+        var additional: AdditionalGoodInfo? = null,
+        var processed: Boolean = false
 ) {
 
-    fun getFormattedMaterialWithName(): String? {
+    fun getFormattedMaterialWithName(): String {
         return "${common.material.takeLast(6)} ${common.name}"
+    }
+
+    fun getQuantityWithUnit(): String {
+        return "${common.quantity} ${common.unit.name.toLowerCase(Locale.getDefault())}"
     }
 
     fun isCommonGood(): Boolean {
