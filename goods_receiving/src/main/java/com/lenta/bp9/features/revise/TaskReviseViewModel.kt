@@ -113,7 +113,7 @@ class TaskReviseViewModel : CoreViewModel(), PageSelectionListener {
 
     private fun onClickOnDocument(document: DeliveryDocumentVM) {
         if (document.isInvoice) {
-            Logg.d { "Checking Invoice" }
+            screenNavigator.openInvoiceReviseScreen()
         }
     }
 

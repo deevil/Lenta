@@ -98,12 +98,15 @@ class LoadingTaskCardViewModel : CoreLoadingViewModel() {
             val formsABImportRevise = result.formsABImportRevise.map { FormABImportRevise.from(it) }
             val setComponenttsRevise = result.setComponenttsRevise.map { SetComponentRevise.from(it) }
             val invoiceRevise = InvoiceRevise.from(result.invoiceRevise)
-            val commentsToVP = result.commentsToVP.map { CommentToVP.from(it) }
+            val commentsToVP = result.commentsToVP.map { CommentToVP.from(it) }.toMutableList()
+            commentsToVP.add(CommentToVP(1, "Какой-то текст для теста"))
+            commentsToVP.add(CommentToVP(2, "Ещё текст для теста"))
             val productsVetDocumentRevise = result.productsVetDocumentRevise.map { ProductVetDocumentRevise.from(it) }
             val complexDocumentsRevise = result.complexDocumentsRevise.map { ComplexDocumentRevise.from(it) }
 
             val newTask = taskManager.newReceivingTask(taskHeader, TaskDescription.from(result.taskDescription))
             newTask?.taskRepository?.getNotifications()?.updateWithNotifications(notifications, documentNotifications, productNotifications, conditionNotifications)
+            newTask?.taskRepository?.getNotifications()?.updateWithInvoiceNotes(commentsToVP)
             newTask?.taskRepository?.getReviseDocuments()?.apply {
                 this.updateDeliveryDocuments(deliveryDocumentsRevise)
                 this.updateProductDocuments(deliveryProductDocumentsRevise)

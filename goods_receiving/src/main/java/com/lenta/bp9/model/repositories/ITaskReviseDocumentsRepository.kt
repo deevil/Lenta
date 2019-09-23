@@ -28,4 +28,5 @@ interface ITaskReviseDocumentsRepository {
     fun clear()
 
     fun changeDeliveryDocumentStatus(documentID: String)
+    fun changeInvoiceStatus()
 }
