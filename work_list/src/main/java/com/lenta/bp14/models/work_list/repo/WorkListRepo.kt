@@ -17,7 +17,7 @@ class WorkListRepo {
                     material = "000000000000222222",
                     matcode = "333333333333",
                     name = "Товар",
-                    unit = Uom.ST,
+                    units = Uom.ST,
                     goodGroup = "123456",
                     purchaseGroup = "1111",
                     serverComments = MutableList(3) {
@@ -65,6 +65,17 @@ class WorkListRepo {
                                 quantity = (1..99).random()
                         )
                     }
+            )
+        }
+    }
+
+    suspend fun loadSalesStatistics(good: Good): SalesStatistics? {
+        return withContext(Dispatchers.IO) {
+            return@withContext SalesStatistics(
+                    lastSaleDate = Date(),
+                    daySales = (10..50).random(),
+                    weekSales = (80..150).random(),
+                    units = Uom.ST
             )
         }
     }

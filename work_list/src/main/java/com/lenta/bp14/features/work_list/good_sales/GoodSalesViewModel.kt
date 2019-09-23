@@ -2,11 +2,12 @@ package com.lenta.bp14.features.work_list.good_sales
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.lenta.bp14.models.data.TaskManager
-import com.lenta.bp14.models.data.pojo.Good
-import com.lenta.bp14.models.data.pojo.SalesStatistics
+import com.lenta.bp14.models.work_list.WorkListTask
 import com.lenta.bp14.platform.navigation.IScreenNavigator
 import com.lenta.shared.platform.viewmodel.CoreViewModel
+import com.lenta.shared.utilities.extentions.getFormattedDate
+import com.lenta.shared.utilities.extentions.getFormattedTime
+import com.lenta.shared.utilities.extentions.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -15,21 +16,39 @@ class GoodSalesViewModel : CoreViewModel() {
     @Inject
     lateinit var navigator: IScreenNavigator
     @Inject
-    lateinit var taskManager: TaskManager
+    lateinit var task: WorkListTask
 
+    val title = MutableLiveData<String>("")
 
-    val good = MutableLiveData<Good>()
-    val salesStatistics = MutableLiveData<SalesStatistics>()
+    val salesStatistics: MutableLiveData<SalesStatisticsUi> by lazy {
+        task.salesStatistics.map {sales ->
+            SalesStatisticsUi(
+                    lastSaleDate = sales?.lastSaleDate.getFormattedDate(),
+                    lastSaleTime = sales?.lastSaleDate.getFormattedTime(),
+                    daySales = sales?.getDaySalesWithUnits() ?: "",
+                    weekSales = sales?.getWeekSalesWithUnits() ?: ""
+            )
+        }
+    }
 
     init {
         viewModelScope.launch {
-            good.value = taskManager.currentGood
-            salesStatistics.value = good.value?.salesStatistics
+            title.value = task.currentGood.value?.getFormattedMaterialWithName()
+            onClickUpdate()
         }
     }
 
     fun onClickUpdate() {
-
+        viewModelScope.launch {
+            task.loadSalesStatistics()
+        }
     }
 
 }
+
+data class SalesStatisticsUi(
+        val lastSaleDate: String,
+        val lastSaleTime: String,
+        val daySales: String,
+        val weekSales: String
+)

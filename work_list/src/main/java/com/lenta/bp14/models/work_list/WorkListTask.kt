@@ -23,7 +23,6 @@ class WorkListTask(
         private val gson: Gson
 ) : IWorkListTask {
 
-
     //val processing: MutableList<Good> = mutableListOf()
     //val processed: MutableList<Good> = mutableListOf()
     //val search: MutableList<Good> = mutableListOf()
@@ -33,13 +32,14 @@ class WorkListTask(
 
     var currentGood = MutableLiveData<Good>()
 
+    val salesStatistics = MutableLiveData<SalesStatistics>()
+
     override suspend fun addGoodByEan(ean: String): Boolean {
         delay(500)
 
         var good = goods.value?.find { it.common.ean == ean }
         if (good != null) {
             currentGood.value = good
-
             return true
         }
 
@@ -51,19 +51,30 @@ class WorkListTask(
             goodsList.add(good)
             goods.value = goodsList
             currentGood.value = good
-
             return true
         }
 
         return false
     }
 
-    suspend fun loadAdditionalGoodInfo() {
+    override suspend fun loadAdditionalGoodInfo() {
+        delay(500)
+
         val good = currentGood.value
         if (good != null) {
             val additionalGoodInfo = workListRepo.loadAdditionalGoodInfo(good)
             good.additional = additionalGoodInfo
             currentGood.value = good
+        }
+    }
+
+    override suspend fun loadSalesStatistics() {
+        delay(500)
+
+        val good = currentGood.value
+        if (good != null) {
+            val sales = workListRepo.loadSalesStatistics(good)
+            salesStatistics.value = sales
         }
     }
 
@@ -76,15 +87,15 @@ class WorkListTask(
         }
     }*/
 
-    fun getGoodOptions(): LiveData<GoodOptions> {
+    override fun getGoodOptions(): LiveData<GoodOptions> {
         return currentGood.map { it?.common?.options }
     }
 
-    fun getGoodStocks(): LiveData<List<Stock>> {
+    override fun getGoodStocks(): LiveData<List<Stock>> {
         return currentGood.map { it?.additional?.stocks?.toList() }
     }
 
-    fun getGoodProviders(): LiveData<List<Provider>> {
+    override fun getGoodProviders(): LiveData<List<Provider>> {
         return currentGood.map { it?.additional?.providers?.toList() }
     }
 
@@ -102,6 +113,13 @@ class WorkListTask(
 
 interface IWorkListTask : ITask {
     suspend fun addGoodByEan(ean: String): Boolean
+
+    suspend fun loadAdditionalGoodInfo()
+    suspend fun loadSalesStatistics()
+
+    fun getGoodOptions(): LiveData<GoodOptions>
+    fun getGoodStocks(): LiveData<List<Stock>>
+    fun getGoodProviders(): LiveData<List<Provider>>
 }
 
 
@@ -116,7 +134,7 @@ data class Good(
     }
 
     fun getQuantityWithUnit(): String {
-        return "${common.quantity} ${common.unit.name.toLowerCase(Locale.getDefault())}"
+        return "${common.quantity} ${common.units.name.toLowerCase(Locale.getDefault())}"
     }
 
     fun isCommonGood(): Boolean {
@@ -124,7 +142,7 @@ data class Good(
     }
 
     fun getEanWithUnits(): String? {
-        return "${common.ean}/${common.unit.name}"
+        return "${common.ean}/${common.units.name}"
     }
 
     fun getGoodWithPurchaseGroups(): String? {
@@ -139,7 +157,7 @@ data class CommonGoodInfo(
         val material: String,
         val matcode: String,
         val name: String,
-        val unit: Uom,
+        val units: Uom,
         var goodGroup: String,
         var purchaseGroup: String,
         var quantity: Int = 0,
@@ -195,3 +213,22 @@ data class Promo(
         val name: String,
         val period: String
 )
+
+// -----------------------------
+
+data class SalesStatistics(
+        val lastSaleDate: Date,
+        val daySales: Int,
+        val weekSales: Int,
+        val units: Uom
+) {
+
+    fun getDaySalesWithUnits(): String {
+        return "$daySales ${units.name.toLowerCase(Locale.getDefault())}"
+    }
+
+    fun getWeekSalesWithUnits(): String {
+        return "$weekSales ${units.name.toLowerCase(Locale.getDefault())}"
+    }
+
+}
