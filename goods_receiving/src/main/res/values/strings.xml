@@ -79,4 +79,7 @@
     <string name="reject_success_temp">Временный отказ произведен успешно</string>
     <string name="reject_success_full">Полный отказ произведен успешно. Входящая поставка удалена.</string>
     <string name="reject_success_full_alco">Выполнен временный отказ, для полного отказа необходимо оповестить ГИС-центр</string>
+    <string name="processed">Обработанные</string>
+    <string name="not_processed">К обработке</string>
+    <string name="discrepancies_found">Обнаружены расхождения</string>
 </resources>

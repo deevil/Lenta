@@ -16,6 +16,7 @@ import com.lenta.bp9.features.task_card.TaskCardFragment
 import com.lenta.bp9.R
 import com.lenta.bp9.features.change_datetime.ChangeDateTimeFragment
 import com.lenta.bp9.features.change_datetime.ChangeDateTimeMode
+import com.lenta.bp9.features.discrepancy_list.DiscrepancyListFragment
 import com.lenta.bp9.features.goods_details.GoodsDetailsFragment
 import com.lenta.bp9.features.goods_information.general.GoodsInfoFragment
 import com.lenta.bp9.features.loading.tasks.*
@@ -215,6 +216,12 @@ class ScreenNavigator(
         }
     }
 
+    override fun openDiscrepancyListScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(DiscrepancyListFragment())
+        }
+    }
+
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 
 }
@@ -246,4 +253,5 @@ interface IScreenNavigator : ICoreNavigator {
     fun openGoodsDetailsScreen(productInfo: TaskProductInfo)
     fun openInvoiceReviseScreen()
     fun openRejectScreen()
+    fun openDiscrepancyListScreen()
 }

@@ -233,6 +233,7 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
                 numberBoxesControl = "",
                 numberStampsControl = ""
         ))
-        screenNavigator.openGoodsInfoScreen(tmpProduct!!)
+        //screenNavigator.openGoodsInfoScreen(tmpProduct!!)
+        screenNavigator.openDiscrepancyListScreen()
     }
 }
