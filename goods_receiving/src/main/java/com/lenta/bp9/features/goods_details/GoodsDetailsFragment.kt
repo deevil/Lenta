@@ -83,9 +83,4 @@ class GoodsDetailsFragment : CoreFragment<FragmentGoodsDetailsBinding, GoodsDeta
         }
     }
 
-    override fun onResume() {
-        super.onResume()
-        vm.onResume()
-    }
-
 }

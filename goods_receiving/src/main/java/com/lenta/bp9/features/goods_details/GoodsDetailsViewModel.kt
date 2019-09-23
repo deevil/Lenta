@@ -26,7 +26,7 @@ class GoodsDetailsViewModel : CoreViewModel() {
     val goodsDetails: MutableLiveData<List<GoodsDetailsCategoriesItem>> = MutableLiveData()
     private val reasonRejectionInfo: MutableLiveData<List<ReasonRejectionInfo>> = MutableLiveData()
 
-    fun onResume() {
+    init {
         viewModelScope.launch {
             reasonRejectionInfo.value = dataBase.getAllReasonRejectionInfo()
             if (productInfo.value != null) {
@@ -37,6 +37,7 @@ class GoodsDetailsViewModel : CoreViewModel() {
                 }
             }
         }
+
     }
 
     private fun updateProduct() {
