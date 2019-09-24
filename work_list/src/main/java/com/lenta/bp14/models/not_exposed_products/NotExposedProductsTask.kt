@@ -30,6 +30,10 @@ class NotExposedProductsTask(
         return notExposedProductsRepo.getProducts()
     }
 
+    override fun getFilteredProducts(): LiveData<List<INotExposedProductInfo>> {
+        return notExposedProductsRepo.getProducts()
+    }
+
     override fun setCheckInfo(quantity: Double?, isEmptyPlaceMarked: Boolean?) {
         scanInfoResult.let {
             requireNotNull(it)
@@ -59,6 +63,8 @@ interface INotExposedProductsTask : ITask {
     var scanInfoResult: ScanInfoResult?
 
     fun getProducts(): LiveData<List<INotExposedProductInfo>>
+
+    fun getFilteredProducts(): LiveData<List<INotExposedProductInfo>>
 
     fun setCheckInfo(quantity: Double?, isEmptyPlaceMarked: Boolean?)
 

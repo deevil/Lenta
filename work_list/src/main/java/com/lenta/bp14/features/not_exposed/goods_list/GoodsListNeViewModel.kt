@@ -8,6 +8,7 @@ import com.lenta.bp14.models.data.GoodsListTab
 import com.lenta.bp14.models.data.pojo.Good
 import com.lenta.bp14.models.getTaskName
 import com.lenta.bp14.models.not_exposed_products.INotExposedProductsTask
+import com.lenta.bp14.models.not_exposed_products.repo.INotExposedProductInfo
 import com.lenta.bp14.platform.navigation.IScreenNavigator
 import com.lenta.shared.requests.combined.scan_info.ScanInfoRequest
 import com.lenta.shared.requests.combined.scan_info.ScanInfoRequestParams
@@ -46,20 +47,25 @@ class GoodsListNeViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     val requestFocusToNumberField: MutableLiveData<Boolean> = MutableLiveData()
 
     val processingGoods = MutableLiveData<List<Good>>()
-    val processedGoods: LiveData<List<NotExposedProductUi>> by lazy {
-        task.getProducts().map { products ->
-            products?.reversed()?.mapIndexed { index, productInfo ->
-                NotExposedProductUi(
-                        position = products.size - index,
-                        matNr = productInfo.matNr,
-                        name = "${productInfo.matNr.takeLast(6)} ${productInfo.name}",
-                        quantity = "${productInfo.quantity} ${productInfo.uom}",
-                        isEmptyPlaceMarked = productInfo.isEmptyPlaceMarked
-                )
-            }
+
+    private val toUiFunc = { products: List<INotExposedProductInfo>? ->
+        products?.reversed()?.mapIndexed { index, productInfo ->
+            NotExposedProductUi(
+                    position = products.size - index,
+                    matNr = productInfo.matNr,
+                    name = "${productInfo.matNr.takeLast(6)} ${productInfo.name}",
+                    quantity = "${productInfo.quantity} ${productInfo.uom}",
+                    isEmptyPlaceMarked = productInfo.isEmptyPlaceMarked
+            )
         }
     }
-    val searchGoods = MutableLiveData<List<Good>>()
+
+    val processedGoods: LiveData<List<NotExposedProductUi>> by lazy {
+        task.getProducts().map(toUiFunc)
+    }
+    val searchGoods: LiveData<List<NotExposedProductUi>> by lazy {
+        task.getFilteredProducts().map(toUiFunc)
+    }
 
     private val selectedItemOnCurrentTab: MutableLiveData<Boolean> = correctedSelectedPage
             .combineLatest(processedSelectionsHelper.selectedPositions)

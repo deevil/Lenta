@@ -181,13 +181,14 @@ class GoodsListNeFragment : CoreFragment<FragmentGoodsListNeBinding, GoodsListNe
                 false).let { layoutBinding ->
 
             layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
-                    layoutId = R.layout.item_good,
-                    itemId = BR.good,
-                    realisation = object : DataBindingAdapter<ItemGoodBinding> {
-                        override fun onCreate(binding: ItemGoodBinding) {
+                    layoutId = R.layout.item_ne_filtered_good,
+                    itemId = BR.vm,
+                    realisation = object : DataBindingAdapter<ItemNeFilteredGoodBinding> {
+                        override fun onCreate(binding: ItemNeFilteredGoodBinding) {
+
                         }
 
-                        override fun onBind(binding: ItemGoodBinding, position: Int) {
+                        override fun onBind(binding: ItemNeFilteredGoodBinding, position: Int) {
                             searchRecyclerViewKeyHandler?.let {
                                 binding.root.isSelected = it.isSelected(position)
                             }
