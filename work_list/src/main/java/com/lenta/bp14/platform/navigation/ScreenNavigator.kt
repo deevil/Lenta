@@ -25,7 +25,7 @@ import com.lenta.bp14.features.work_list.good_details.GoodDetailsFragment
 import com.lenta.bp14.features.work_list.expected_deliveries.ExpectedDeliveriesFragment
 import com.lenta.bp14.features.work_list.goods_list.GoodsListWlFragment
 import com.lenta.bp14.features.work_list.good_sales.GoodSalesFragment
-import com.lenta.bp14.features.work_list.search_filter.SearchFilterWlFragment
+import com.lenta.bp14.features.search_filter.SearchFilterFragment
 import com.lenta.shared.account.IAuthenticator
 import com.lenta.shared.features.alert.AlertFragment
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
@@ -148,7 +148,7 @@ class ScreenNavigator(
 
     override fun openSearchFilterWlScreen() {
         runOrPostpone {
-            getFragmentStack()?.push(SearchFilterWlFragment())
+            getFragmentStack()?.push(SearchFilterFragment())
         }
     }
 

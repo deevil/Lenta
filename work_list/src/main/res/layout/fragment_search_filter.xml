@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
-        tools:context=".features.work_list.search_filter.SearchFilterWlFragment">
+        tools:context=".features.search_filter.SearchFilterFragment">
 
     <data>
 
         <variable
             name="vm"
-            type="com.lenta.bp14.features.work_list.search_filter.SearchFilterWlViewModel"/>
+            type="com.lenta.bp14.features.search_filter.SearchFilterViewModel"/>
 
     </data>
 
