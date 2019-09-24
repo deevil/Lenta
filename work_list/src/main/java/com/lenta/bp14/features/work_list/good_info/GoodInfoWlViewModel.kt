@@ -90,8 +90,9 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
 
     val shelfLifeDaysFieldVisibility = daysLeft.map { it != null }
 
-    val commentsList = MutableLiveData<List<String>>()
     val shelfLifeTypeList = MutableLiveData<List<String>>()
+
+    val commentsList: MutableLiveData<List<String>> by lazy { task.comments }
 
     val stocks: MutableLiveData<List<ItemStockUi>> by lazy {
         task.getGoodStocks().map { list: List<Stock>? ->

@@ -34,6 +34,7 @@ class WorkListTask(
 
     val sales = MutableLiveData<SalesStatistics>()
     val deliveries = MutableLiveData<List<Delivery>>(listOf())
+    val comments = MutableLiveData<List<String>>(listOf())
 
     override suspend fun addGoodByEan(ean: String): Boolean {
         delay(500)
@@ -52,6 +53,7 @@ class WorkListTask(
             goodsList.add(good)
             goods.value = goodsList
             currentGood.value = good
+            loadComments()
             return true
         }
 
@@ -86,6 +88,16 @@ class WorkListTask(
         if (good != null) {
             val deliveriesList = workListRepo.loadDeliveries(good)
             deliveries.value = deliveriesList
+        }
+    }
+
+    override suspend fun loadComments() {
+        delay(500)
+
+        val good = currentGood.value
+        if (good != null) {
+            val commentsList = workListRepo.loadComments(good)
+            comments.value = commentsList
         }
     }
 
@@ -128,6 +140,7 @@ interface IWorkListTask : ITask {
     suspend fun loadAdditionalGoodInfo()
     suspend fun loadSalesStatistics()
     suspend fun loadDeliveries()
+    suspend fun loadComments()
 
     fun getGoodOptions(): LiveData<GoodOptions>
     fun getGoodStocks(): LiveData<List<Stock>>
@@ -176,7 +189,7 @@ data class CommonGoodInfo(
         var quantity: Int = 0,
         var marks: Int = 0,
         val shelfLifeDays: Int = 5,
-        val serverComments: MutableList<String>,
+        val comment: String = "",
         val options: GoodOptions
 )
 
