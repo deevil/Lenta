@@ -4,6 +4,8 @@ import androidx.lifecycle.LiveData
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.lenta.bp14.features.search_filter.FilterFieldType
+import com.lenta.bp14.features.search_filter.FilterParameter
 import com.lenta.bp14.models.data.GoodsListTab
 import com.lenta.bp14.models.data.pojo.Good
 import com.lenta.bp14.models.getTaskName
@@ -32,6 +34,12 @@ class GoodsListNeViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     @Inject
     lateinit var scanInfoRequest: ScanInfoRequest
 
+    val onOkFilterListener = object : OnOkInSoftKeyboardListener {
+        override fun onOkInSoftKeyboard(): Boolean {
+            applyFilter()
+            return true
+        }
+    }
 
     val processedSelectionsHelper = SelectionItemsHelper()
 
@@ -44,6 +52,9 @@ class GoodsListNeViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     }
 
     val numberField: MutableLiveData<String> = MutableLiveData("")
+
+    val filterField: MutableLiveData<String> = MutableLiveData("")
+
     val requestFocusToNumberField: MutableLiveData<Boolean> = MutableLiveData()
 
     val processingGoods = MutableLiveData<List<Good>>()
@@ -176,6 +187,12 @@ class GoodsListNeViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
                 }
 
             }
+            2 -> {
+                (searchGoods.value)?.getOrNull(position)?.let {
+                    checkCode(it.matNr)
+                }
+
+            }
         }
     }
 
@@ -190,6 +207,10 @@ class GoodsListNeViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     fun onDigitPressed(digit: Int) {
         numberField.postValue(numberField.value ?: "" + digit)
         requestFocusToNumberField.value = true
+    }
+
+    fun applyFilter() {
+        task.onFilterChanged(FilterParameter(FilterFieldType.NUMBER, filterField.value ?: ""))
     }
 
 }

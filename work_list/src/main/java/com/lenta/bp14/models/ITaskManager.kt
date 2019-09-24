@@ -1,5 +1,7 @@
 package com.lenta.bp14.models
 
+import com.lenta.bp14.features.search_filter.FilterFieldType
+import com.lenta.bp14.features.search_filter.FilterParameter
 import com.lenta.bp14.models.general.ITaskType
 
 
@@ -53,6 +55,28 @@ interface ITask {
     fun isFreeMode(): Boolean {
         return this.getDescription().taskNumber.isBlank()
     }
+
+    fun getSupportedFiltersTypes(): Set<FilterFieldType> {
+        return emptySet()
+    }
+
+    fun getFilterValue(filterFieldType: FilterFieldType): String? {
+        return null
+    }
+
+
+    fun onFilterChanged(filterParameter: FilterParameter) {
+
+    }
+
+    fun addNewFilters(filters: List<FilterParameter>) {
+
+    }
+
+    fun clearAllFilters() {
+
+    }
+
 }
 
 interface ITaskDescription {
