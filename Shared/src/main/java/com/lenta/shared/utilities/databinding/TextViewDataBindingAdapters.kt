@@ -87,7 +87,7 @@ fun price(textView: TextView, price: Float?) {
             price != null
             && price > 0F
     )
-        textView.context.getString(R.string.price_r, price)
+        "${String.format("%.2f", price)} р."
     else ""
 }
 
