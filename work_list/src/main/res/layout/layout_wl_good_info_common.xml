@@ -65,7 +65,8 @@
 
             <!-- Комментарий -->
             <LinearLayout
-                style="@style/LinearRowStyle">
+                style="@style/LinearRowStyle"
+                android:layout_height="wrap_content">
 
                 <LinearLayout
                     style="@style/LinearCellStyle"
@@ -84,6 +85,11 @@
                     style="@style/LinearCellStyle"
                     android:layout_weight="2">
 
+                    <EditText
+                        style="@style/CellEditTextStyle"
+                        android:text="@={vm.comment}"
+                        tools:text="Не выбран" />
+
                     <com.lenta.shared.view.ClickableSpinner
                         android:id="@+id/spin_select_comment"
                         style="@style/CellSpinnerStyle"
@@ -91,6 +97,16 @@
                         app:onPositionClickListener="@{vm.onSelectComment}"
                         app:position="@{vm.commentsPosition}"
                         tools:entries="@array/selected_comment" />
+
+                    <com.reginald.editspinner.EditSpinner
+                        android:id="@+id/edit_spinner"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:dropDownDrawable="@drawable/spinner_arrow_down"
+                        app:dropDownDrawableSpacing="15dp"
+                        app:dropDownDrawableWidth="25dp"
+                        app:dropDownDrawableHeight="25dp"
+                        />
 
                 </LinearLayout>
 

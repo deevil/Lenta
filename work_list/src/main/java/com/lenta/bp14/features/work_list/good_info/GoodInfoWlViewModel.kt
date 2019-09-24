@@ -93,6 +93,7 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
     val shelfLifeTypeList = MutableLiveData<List<String>>()
 
     val commentsList: MutableLiveData<List<String>> by lazy { task.comments }
+    val comment = MutableLiveData<String>("")
 
     val stocks: MutableLiveData<List<ItemStockUi>> by lazy {
         task.getGoodStocks().map { list: List<Stock>? ->
@@ -151,6 +152,7 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
     val onSelectComment = object : OnPositionClickListener {
         override fun onClickPosition(position: Int) {
             commentsPosition.value = position
+            comment.value = commentsList.value?.get(position)
         }
     }
 
