@@ -69,8 +69,18 @@ class GoodsListNeViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
                 tab == GoodsListTab.PROCESSED.position && processedSelected || tab == GoodsListTab.SEARCH.position
             }
 
-    val thirdButtonEnabled = selectedItemOnCurrentTab.map { it }
-    val saveButtonEnabled = processingGoods.map { it?.isNotEmpty() ?: false }
+    val saveButtonEnabled by lazy { processedGoods.map { it?.isNotEmpty() ?: false } }
+
+    val thirdButtonEnabled by lazy {
+        selectedItemOnCurrentTab.combineLatest(saveButtonEnabled).map {
+            when (correctedSelectedPage.value) {
+                0, 1 -> selectedItemOnCurrentTab.value
+                2 -> saveButtonEnabled.value
+                else -> null
+            }
+        }
+    }
+
 
     val thirdButtonVisibility = correctedSelectedPage.map { it != GoodsListTab.PROCESSING.position }
 
