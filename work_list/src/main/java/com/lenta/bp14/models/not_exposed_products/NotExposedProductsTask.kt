@@ -47,6 +47,10 @@ class NotExposedProductsTask(
 
     }
 
+    override fun removeCheckResultsByMatNumbers(matNumbers: Set<String>) {
+        notExposedProductsRepo.removeProducts(matNumbers)
+    }
+
 }
 
 
@@ -57,5 +61,7 @@ interface INotExposedProductsTask : ITask {
     fun getProducts(): LiveData<List<INotExposedProductInfo>>
 
     fun setCheckInfo(quantity: Double?, isEmptyPlaceMarked: Boolean?)
+
+    fun removeCheckResultsByMatNumbers(matNumbers: Set<String>)
 
 }

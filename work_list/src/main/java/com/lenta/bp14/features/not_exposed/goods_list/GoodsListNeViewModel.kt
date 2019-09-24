@@ -48,11 +48,11 @@ class GoodsListNeViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     val processingGoods = MutableLiveData<List<Good>>()
     val processedGoods: LiveData<List<NotExposedProductUi>> by lazy {
         task.getProducts().map { products ->
-            products?.mapIndexed { index, productInfo ->
+            products?.reversed()?.mapIndexed { index, productInfo ->
                 NotExposedProductUi(
                         position = products.size - index,
                         matNr = productInfo.matNr,
-                        name = productInfo.name,
+                        name = "${productInfo.matNr.takeLast(6)} ${productInfo.name}",
                         quantity = "${productInfo.quantity} ${productInfo.uom}",
                         isEmptyPlaceMarked = productInfo.isEmptyPlaceMarked
                 )
@@ -135,7 +135,12 @@ class GoodsListNeViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     }
 
     private fun onClickDelete() {
-
+        processedGoods.value!!.filterIndexed { index, _ ->
+            processedSelectionsHelper.isSelected(position = index)
+        }.map { it.matNr }.toSet().apply {
+            task.removeCheckResultsByMatNumbers(this)
+        }
+        processedSelectionsHelper.clearPositions()
     }
 
     fun onClickThirdButton() {
