@@ -3,6 +3,7 @@ package com.lenta.bp14.platform.databinding
 import android.widget.ImageView
 import androidx.databinding.BindingAdapter
 import com.lenta.bp14.R
+import com.lenta.bp14.models.data.GoodType
 import com.lenta.bp14.models.data.pojo.PriceTagStatus
 import com.lenta.bp14.models.data.pojo.PrintStatus
 import com.lenta.bp14.models.data.pojo.TaskStatus
@@ -61,5 +62,14 @@ fun setPrintStatusIcon(imageView: ImageView, isPrinted: Boolean?) {
             imageView.setImageResource(R.drawable.ic_print_no_dark_24dp)
         }
         null -> imageView.setVisible(false)
+    }
+}
+
+@BindingAdapter("goodTypeIcon")
+fun setGoodTypeIcon(imageView: ImageView, goodType: GoodType?) {
+    when (goodType) {
+        GoodType.ALCOHOL -> imageView.setImageResource(R.drawable.ic_alco_white_48dp)
+        GoodType.MARKED -> imageView.setImageResource(R.drawable.ic_marked_white_48dp)
+        else -> imageView.setImageResource(R.drawable.ic_kandy_48dp)
     }
 }

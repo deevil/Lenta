@@ -5,9 +5,11 @@
 
     <data>
 
+        <import type="android.view.View" />
+
         <variable
             name="good"
-            type="com.lenta.bp14.features.work_list.goods_list.ProcessedListUi" />
+            type="com.lenta.bp14.models.data.pojo.Good" />
 
         <variable
             name="selectedForDelete"
@@ -38,7 +40,7 @@
                     android:layout_height="32dp"
                     android:background="@drawable/bg_border_circle_white_selectable_for_delete"
                     android:gravity="center"
-                    android:text="@{good.position}"
+                    android:text="@{String.valueOf(good.id)}"
                     app:selected="@{selectedForDelete}"
                     tools:text="1" />
 
@@ -57,7 +59,7 @@
                     android:layout_marginStart="8dp"
                     android:layout_weight="1"
                     android:maxLines="2"
-                    android:text="@{good.name}"
+                    android:text="@{good.formattedMaterialWithName}"
                     tools:text="000021 Масло" />
 
                 <ImageView
@@ -83,8 +85,19 @@
                         style="@style/CellTextStyle"
                         android:layout_width="wrap_content"
                         android:layout_gravity="center"
-                        android:text="@{good.quantity}"
+                        android:text="@{@string/quantity_units(good.quantity, good.uom.name)}"
+                        android:visibility="@{good.quantity != 0 ? View.VISIBLE : View.INVISIBLE}"
                         tools:text="10 шт"
+                        tools:visibility="visible" />
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_close_white_24dp"
+                        android:visibility="@{good.quantity == 0 ? View.VISIBLE : View.INVISIBLE}"
+                        app:priceTagStatusIcon="@{good.priceTagStatus}"
+                        tools:ignore="ContentDescription"
                         tools:visibility="visible" />
 
                 </FrameLayout>

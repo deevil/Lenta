@@ -6,7 +6,7 @@
 
         <variable
             name="stock"
-            type="com.lenta.bp14.models.data.pojo.Stock" />
+            type="com.lenta.bp14.features.work_list.good_info.ItemStockUi" />
 
     </data>
 
@@ -30,7 +30,7 @@
                     android:id="@+id/tv_item_number"
                     style="@style/CellTextStyle"
                     android:layout_width="wrap_content"
-                    android:text="@{String.valueOf(stock.id)}"
+                    android:text="@{stock.number}"
                     tools:text="1" />
 
             </LinearLayout>
@@ -45,7 +45,7 @@
                 <TextView
                     android:id="@+id/tv_storage_number"
                     style="@style/CellTextStyle"
-                    android:text="@{stock.storageNumber}"
+                    android:text="@{stock.storage}"
                     tools:text="0001" />
 
             </LinearLayout>
@@ -60,7 +60,7 @@
                 <TextView
                     android:id="@+id/tv_good_quantity"
                     style="@style/CellTextStyle"
-                    android:text="@{@string/quantity_st(stock.quantity)}"
+                    android:text="@{stock.quantity}"
                     tools:text="25 шт." />
 
             </LinearLayout>
