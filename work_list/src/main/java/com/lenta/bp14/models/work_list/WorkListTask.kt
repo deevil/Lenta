@@ -32,7 +32,8 @@ class WorkListTask(
 
     var currentGood = MutableLiveData<Good>()
 
-    val salesStatistics = MutableLiveData<SalesStatistics>()
+    val sales = MutableLiveData<SalesStatistics>()
+    val deliveries = MutableLiveData<List<Delivery>>(listOf())
 
     override suspend fun addGoodByEan(ean: String): Boolean {
         delay(500)
@@ -73,8 +74,18 @@ class WorkListTask(
 
         val good = currentGood.value
         if (good != null) {
-            val sales = workListRepo.loadSalesStatistics(good)
-            salesStatistics.value = sales
+            val salesStatistics = workListRepo.loadSalesStatistics(good)
+            sales.value = salesStatistics
+        }
+    }
+
+    override suspend fun loadDeliveries() {
+        delay(500)
+
+        val good = currentGood.value
+        if (good != null) {
+            val deliveriesList = workListRepo.loadDeliveries(good)
+            deliveries.value = deliveriesList
         }
     }
 
@@ -116,12 +127,14 @@ interface IWorkListTask : ITask {
 
     suspend fun loadAdditionalGoodInfo()
     suspend fun loadSalesStatistics()
+    suspend fun loadDeliveries()
 
     fun getGoodOptions(): LiveData<GoodOptions>
     fun getGoodStocks(): LiveData<List<Stock>>
     fun getGoodProviders(): LiveData<List<Provider>>
 }
 
+// -----------------------------
 
 data class Good(
         val common: CommonGoodInfo,
@@ -231,4 +244,23 @@ data class SalesStatistics(
         return "$weekSales ${units.name.toLowerCase(Locale.getDefault())}"
     }
 
+}
+
+data class Delivery(
+        val status: DeliveryStatus,
+        val info: String, // ПП, РЦ, ...
+        val quantity: Int,
+        val units: Uom,
+        val date: Date
+) {
+
+    fun getQuantityWithUnits(): String {
+        return "$quantity ${units.name.toLowerCase(Locale.getDefault())}"
+    }
+
+}
+
+enum class DeliveryStatus(val description: String) {
+    ON_WAY("В пути"),
+    ORDERED("Заказан")
 }

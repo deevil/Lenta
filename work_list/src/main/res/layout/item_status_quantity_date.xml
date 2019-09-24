@@ -6,7 +6,7 @@
 
         <variable
             name="delivery"
-            type="com.lenta.bp14.models.data.pojo.Delivery" />
+            type="com.lenta.bp14.features.work_list.expected_deliveries.DeliveriesUi" />
 
     </data>
 
@@ -30,7 +30,7 @@
                     android:id="@+id/tv_item_number"
                     style="@style/CellTextStyle"
                     android:layout_width="wrap_content"
-                    android:text="@{String.valueOf(delivery.id)}"
+                    android:text="@{delivery.position}"
                     tools:text="1" />
 
             </LinearLayout>
@@ -43,12 +43,12 @@
 
                 <TextView
                     style="@style/CellTextStyle"
-                    android:text="@{delivery.status.description}"
+                    android:text="@{delivery.status}"
                     tools:text="В пути" />
 
                 <TextView
                     style="@style/CellTextStyle"
-                    android:text="@{delivery.additional}"
+                    android:text="@{delivery.info}"
                     tools:text="ПП" />
 
             </LinearLayout>
@@ -64,7 +64,7 @@
                     style="@style/CellTextStyle"
                     android:layout_width="wrap_content"
                     android:layout_gravity="center"
-                    android:text="@{@string/quantity_units(delivery.quantity, delivery.uom.name)}"
+                    android:text="@{delivery.quantity}"
                     tools:text="10 кор" />
 
             </LinearLayout>
@@ -77,12 +77,12 @@
 
                 <TextView
                     style="@style/CellTextStyle"
-                    android:text="@{delivery.formattedDate}"
+                    android:text="@{delivery.date}"
                     tools:text="12.11.19" />
 
                 <TextView
                     style="@style/CellTextStyle"
-                    android:text="@{delivery.formattedTime}"
+                    android:text="@{delivery.time}"
                     tools:text="11:33" />
 
             </LinearLayout>

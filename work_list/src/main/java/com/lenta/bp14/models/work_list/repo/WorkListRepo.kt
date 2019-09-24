@@ -7,6 +7,7 @@ import com.lenta.shared.models.core.Uom
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.util.*
+import kotlin.random.Random
 
 class WorkListRepo {
 
@@ -77,6 +78,20 @@ class WorkListRepo {
                     weekSales = (80..150).random(),
                     units = Uom.ST
             )
+        }
+    }
+
+    suspend fun loadDeliveries(good: Good): List<Delivery>? {
+        return withContext(Dispatchers.IO) {
+            return@withContext List((3..5).random()) {
+                Delivery(
+                        status = if (Random.nextBoolean()) DeliveryStatus.ORDERED else DeliveryStatus.ON_WAY,
+                        info = if (Random.nextBoolean()) "ПП" else "РЦ",
+                        quantity = (1..99).random(),
+                        units = Uom.KAR,
+                        date = Date()
+                )
+            }
         }
     }
 

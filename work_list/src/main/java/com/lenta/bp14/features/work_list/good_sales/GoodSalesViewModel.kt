@@ -18,10 +18,11 @@ class GoodSalesViewModel : CoreViewModel() {
     @Inject
     lateinit var task: WorkListTask
 
+
     val title = MutableLiveData<String>("")
 
-    val salesStatistics: MutableLiveData<SalesStatisticsUi> by lazy {
-        task.salesStatistics.map {sales ->
+    val sales: MutableLiveData<SalesStatisticsUi> by lazy {
+        task.sales.map { sales ->
             SalesStatisticsUi(
                     lastSaleDate = sales?.lastSaleDate.getFormattedDate(),
                     lastSaleTime = sales?.lastSaleDate.getFormattedTime(),

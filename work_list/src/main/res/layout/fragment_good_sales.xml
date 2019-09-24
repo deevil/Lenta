@@ -43,13 +43,13 @@
                 <TextView
                     android:id="@+id/tv_storage_places"
                     style="@style/CellTextStyle"
-                    android:text="@{vm.salesStatistics.lastSaleDate}"
+                    android:text="@{vm.sales.lastSaleDate}"
                     tools:text="05.09.19" />
 
                 <TextView
                     android:id="@+id/tv_remaining_quantity"
                     style="@style/CellTextStyle"
-                    android:text="@{vm.salesStatistics.lastSaleTime}"
+                    android:text="@{vm.sales.lastSaleTime}"
                     tools:text="05:09" />
 
             </LinearLayout>
@@ -85,7 +85,7 @@
                 <TextView
                     android:id="@+id/tv_removed_good"
                     style="@style/CellTextStyle"
-                    android:text="@{vm.salesStatistics.daySales}"
+                    android:text="@{vm.sales.daySales}"
                     tools:text="150 шт" />
 
             </LinearLayout>
@@ -121,7 +121,7 @@
                 <TextView
                     android:id="@+id/tv_price_with_dk"
                     style="@style/CellTextStyle"
-                    android:text="@{vm.salesStatistics.weekSales}"
+                    android:text="@{vm.sales.weekSales}"
                     tools:text="650 шт" />
 
             </LinearLayout>

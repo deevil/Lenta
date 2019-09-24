@@ -14,6 +14,7 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig
+import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
 import com.lenta.shared.utilities.extentions.provideViewModel
 
@@ -33,11 +34,7 @@ class ExpectedDeliveriesFragment : CoreFragment<FragmentExpectedDeliveriesBindin
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
         topToolbarUiModel.description.value = getString(R.string.expected_deliveries)
 
-        viewLifecycleOwner.apply {
-            vm.good.observe(this, Observer { good ->
-                topToolbarUiModel.title.value = good.getFormattedMaterialWithName()
-            })
-        }
+        connectLiveData(vm.title, topToolbarUiModel.title)
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
