@@ -33,7 +33,9 @@ class GoodsListPcViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
 
     val correctedSelectedPage = selectedPage.map { getCorrectedPagePosition(it) }
 
-    val taskName = MutableLiveData("")
+    val taskName by lazy {
+        "${task.getTaskType().taskType} // ${task.getTaskName()}"
+    }
 
     val numberField = MutableLiveData<String>("")
     val requestFocusToNumberField: MutableLiveData<Boolean> = MutableLiveData()
@@ -86,7 +88,6 @@ class GoodsListPcViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     init {
         viewModelScope.launch {
             requestFocusToNumberField.value = true
-            taskName.value = "${task.getTaskType().taskType} // ${task.getTaskName()}"
 
             /*processedGoods.value = List(10) {
                 CheckPriceResultUi(
@@ -150,7 +151,10 @@ class GoodsListPcViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
                 !eanCode.isNullOrBlank() -> task.getActualPriceByEan(eanCode)
                 !matNr.isNullOrBlank() -> task.getActualPriceByMatNr(matNr)
                 !qrCode.isNullOrBlank() -> task.checkPriceByQrCode(qrCode)
-                else -> throw IllegalArgumentException()
+                else -> {
+                    navigator.showGoodNotFound()
+                    return@launch
+                }
             }.either(
                     fnL = {
                         navigator.openAlertScreen(it)

@@ -1,9 +1,9 @@
-package com.lenta.bp14.features.work_list.search_filter
+package com.lenta.bp14.features.search_filter
 
 import androidx.lifecycle.MutableLiveData
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 
-class SearchFilterWlViewModel : CoreViewModel() {
+class SearchFilterViewModel : CoreViewModel() {
 
     val taskName = MutableLiveData("Рабочий список от 23.07.19 23:15")
 

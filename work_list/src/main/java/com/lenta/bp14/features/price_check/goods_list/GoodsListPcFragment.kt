@@ -48,7 +48,7 @@ class GoodsListPcFragment : CoreFragment<FragmentGoodsListPcBinding, GoodsListPc
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
         topToolbarUiModel.description.value = getString(R.string.goods_list)
 
-        connectLiveData(vm.taskName, topToolbarUiModel.title)
+        topToolbarUiModel.title.value = vm.taskName
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
