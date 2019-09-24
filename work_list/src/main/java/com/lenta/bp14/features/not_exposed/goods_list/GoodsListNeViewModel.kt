@@ -4,8 +4,8 @@ import androidx.lifecycle.LiveData
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.lenta.bp14.features.search_filter.FilterFieldType
-import com.lenta.bp14.features.search_filter.FilterParameter
+import com.lenta.bp14.models.filter.FilterFieldType
+import com.lenta.bp14.models.filter.FilterParameter
 import com.lenta.bp14.models.data.GoodsListTab
 import com.lenta.bp14.models.data.pojo.Good
 import com.lenta.bp14.models.getTaskName
@@ -210,7 +210,8 @@ class GoodsListNeViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     }
 
     fun applyFilter() {
-        task.onFilterChanged(FilterParameter(FilterFieldType.NUMBER, filterField.value ?: ""))
+        task.onFilterChanged(FilterParameter(FilterFieldType.NUMBER, filterField.value
+                ?: ""))
     }
 
 }

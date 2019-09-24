@@ -1,4 +1,4 @@
-package com.lenta.bp14.features.search_filter
+package com.lenta.bp14.models.filter
 
 enum class FilterFieldType {
     NUMBER,

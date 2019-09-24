@@ -1,36 +1,26 @@
 package com.lenta.bp14.models.not_exposed_products
 
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import com.lenta.bp14.features.search_filter.FilterFieldType
-import com.lenta.bp14.features.search_filter.FilterParameter
 import com.lenta.bp14.models.ITask
 import com.lenta.bp14.models.ITaskDescription
+import com.lenta.bp14.models.filter.FilterableDelegate
+import com.lenta.bp14.models.filter.FilterFieldType
+import com.lenta.bp14.models.filter.IFilterable
 import com.lenta.bp14.models.general.ITaskType
 import com.lenta.bp14.models.general.TaskTypes
 import com.lenta.bp14.models.not_exposed_products.repo.INotExposedProductInfo
 import com.lenta.bp14.models.not_exposed_products.repo.INotExposedProductsRepo
 import com.lenta.bp14.models.not_exposed_products.repo.NotExposedProductInfo
 import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
-import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.map
 
 
 class NotExposedProductsTask(
         private val taskDescription: NotExposedProductsTaskDescription,
-        private val notExposedProductsRepo: INotExposedProductsRepo) : INotExposedProductsTask {
-
-    private val filtersMap: MutableMap<FilterFieldType, FilterParameter> = mutableMapOf()
-    private val filtersMapLiveData: MutableLiveData<Map<FilterFieldType, FilterParameter>> = MutableLiveData(filtersMap)
-
-    private val supportedFilters by lazy {
-        setOf(
-                FilterFieldType.NUMBER,
-                FilterFieldType.SECTION,
-                FilterFieldType.GROUP
-        )
-    }
+        private val notExposedProductsRepo: INotExposedProductsRepo,
+        private val filterableDelegate: FilterableDelegate
+) : INotExposedProductsTask, IFilterable by filterableDelegate {
 
 
     override var scanInfoResult: ScanInfoResult? = null
@@ -48,30 +38,6 @@ class NotExposedProductsTask(
         return notExposedProductsRepo.getProducts()
     }
 
-    override fun getFilteredProducts(): LiveData<List<INotExposedProductInfo>> {
-        return getProducts().combineLatest(filtersMapLiveData).map {
-            requireNotNull(it)
-            val products = it.first
-            products.filter { productInfo ->
-                filter(productInfo)
-            }
-        }
-
-    }
-
-    private fun filter(product: INotExposedProductInfo): Boolean {
-        filtersMap.forEach {
-            @Suppress("NON_EXHAUSTIVE_WHEN")
-            when (it.key) {
-                FilterFieldType.NUMBER -> {
-                    if (product.ean?.contains(it.value.value) != true && !product.matNr.contains(it.value.value)) {
-                        return false
-                    }
-                }
-            }
-        }
-        return true
-    }
 
     override fun setCheckInfo(quantity: Double?, isEmptyPlaceMarked: Boolean?) {
         scanInfoResult.let {
@@ -94,38 +60,36 @@ class NotExposedProductsTask(
         notExposedProductsRepo.removeProducts(matNumbers)
     }
 
-    override fun getSupportedFiltersTypes(): Set<FilterFieldType> {
-        return supportedFilters
-    }
-
-    override fun getFilterValue(filterFieldType: FilterFieldType): String? {
-        return filtersMap[filterFieldType]?.value
-    }
-
-    override fun onFilterChanged(filterParameter: FilterParameter) {
-        Logg.d { "filterParameter: $filterParameter" }
-        filtersMap[filterParameter.filterFieldType] = filterParameter
-        filtersMapLiveData.value = filtersMap
-
-    }
-
-    override fun addNewFilters(filters: List<FilterParameter>) {
-        filtersMap.clear()
-        filters.forEach {
-            filtersMap[it.filterFieldType] = it
+    override fun getFilteredProducts(): LiveData<List<INotExposedProductInfo>> {
+        return getProducts().combineLatest(filterableDelegate.onFiltersChangesLiveData).map {
+            requireNotNull(it)
+            val products = it.first
+            products.filter { productInfo ->
+                filter(productInfo)
+            }
         }
-        filtersMapLiveData.value = filtersMap
+
     }
 
-    override fun clearAllFilters() {
-        filtersMap.clear()
-        filtersMapLiveData.value = filtersMap
+    private fun filter(product: INotExposedProductInfo): Boolean {
+        filterableDelegate.filtersMap.forEach {
+            @Suppress("NON_EXHAUSTIVE_WHEN")
+            when (it.key) {
+                FilterFieldType.NUMBER -> {
+                    if (product.ean?.contains(it.value.value) != true && !product.matNr.contains(it.value.value)) {
+                        return false
+                    }
+                }
+            }
+        }
+        return true
     }
+
 
 }
 
 
-interface INotExposedProductsTask : ITask {
+interface INotExposedProductsTask : ITask, IFilterable {
 
     var scanInfoResult: ScanInfoResult?
 

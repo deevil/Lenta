@@ -3,6 +3,9 @@ package com.lenta.bp14.features.search_filter
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp14.models.IGeneralTaskManager
+import com.lenta.bp14.models.filter.FilterFieldType
+import com.lenta.bp14.models.filter.FilterParameter
+import com.lenta.bp14.models.filter.IFilterable
 import com.lenta.bp14.models.getTaskName
 import com.lenta.bp14.platform.navigation.IScreenNavigator
 import com.lenta.shared.platform.viewmodel.CoreViewModel
@@ -35,19 +38,24 @@ class SearchFilterViewModel : CoreViewModel() {
         generalTaskManager.getProcessedTask()!!
     }
 
+    val filterable by lazy {
+        require( task is IFilterable)
+        task as IFilterable
+    }
+
 
     val placeStorageVisibility by lazy {
-        task.getSupportedFiltersTypes().contains(FilterFieldType.PLACE_STORAGE)
+        filterable.getSupportedFiltersTypes().contains(FilterFieldType.PLACE_STORAGE)
     }
 
     val commentVisibility by lazy {
-        task.getSupportedFiltersTypes().contains(FilterFieldType.COMMENT)
+        filterable.getSupportedFiltersTypes().contains(FilterFieldType.COMMENT)
     }
 
     init {
         viewModelScope.launch {
             mapFieldsToTypes.forEach {
-                it.key.value = task.getFilterValue(it.value)
+                it.key.value = filterable.getFilterValue(it.value)
             }
         }
     }
@@ -57,7 +65,7 @@ class SearchFilterViewModel : CoreViewModel() {
     }
 
     fun onClickSearch() {
-        task.addNewFilters(
+        filterable.addNewFilters(
                 filters = mapFieldsToTypes.map {
                     FilterParameter(it.value, it.key.value ?: "")
                 }
