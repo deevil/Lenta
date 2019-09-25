@@ -47,7 +47,7 @@ class GoodsListWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
                 ProcessedListUi(
                         position = (index + 1).toString(),
                         name = good.getFormattedMaterialWithName(),
-                        quantity = good.getQuantityWithUnit()
+                        quantity = "11111"
                 )
             }
         }

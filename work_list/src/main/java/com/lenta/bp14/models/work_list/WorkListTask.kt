@@ -158,10 +158,6 @@ data class Good(
         return "${common.material.takeLast(6)} ${common.name}"
     }
 
-    fun getQuantityWithUnit(): String {
-        return "${common.quantity} ${common.units.name.toLowerCase(Locale.getDefault())}"
-    }
-
     fun isCommonGood(): Boolean {
         return common.options.goodType == GoodType.COMMON
     }
@@ -185,7 +181,6 @@ data class CommonGoodInfo(
         val units: Uom,
         var goodGroup: String,
         var purchaseGroup: String,
-        var quantity: Int = 0,
         var marks: Int = 0,
         val shelfLifeDays: Int = 5,
         val options: GoodOptions

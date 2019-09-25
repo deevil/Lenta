@@ -40,10 +40,10 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
     val title = MutableLiveData<String>("")
 
     val quantity = MutableLiveData<String>()
-    val totalQuantity: MutableLiveData<Int> = quantity.map {
-        val currentQuantity = if (it?.isNotEmpty() == true) it.toInt() else 0
-        val goodQuantity = if (good.value != null) good.value!!.common.quantity else 0
-        currentQuantity + goodQuantity
+    val totalQuantity: MutableLiveData<Int> = quantity.map { quantity ->
+        val total = quantity?.toIntOrNull() ?: 0
+        good.value?.scanResults?.map { total + it.quantity }
+        total
     }
 
     val commentsPosition = MutableLiveData(0)
@@ -136,7 +136,7 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     val applyButtonEnabled = quantity.combineLatest(daysLeft).map { pair ->
-        val quantityNotNull = pair?.first?.toIntOrNull() != null && pair.first?.toIntOrNull() != 0
+        val quantityNotNull = pair?.first?.toIntOrNull() ?: 0 != 0
         val shelfLifeIsEntered = pair?.second != null
         quantityNotNull && shelfLifeIsEntered
     }
@@ -146,7 +146,8 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
     init {
         viewModelScope.launch {
             title.value = good.value?.getFormattedMaterialWithName()
-            quantity.value = good.value?.common?.quantity.toString()
+
+            quantity.value = "1"
             comment.value = commentsList.value?.get(0)
 
             viewModelScope.launch {
