@@ -218,6 +218,7 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
         quantity.value = "1"
 
         shelfLifeTypePosition.value = 0
+        comment.value = commentsList.value?.get(0)
 
         day.value = ""
         month.value = ""

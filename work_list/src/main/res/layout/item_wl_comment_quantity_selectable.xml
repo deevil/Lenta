@@ -53,7 +53,7 @@
                 <TextView
                     style="@style/CellTextStyle"
                     android:maxLines="2"
-                    android:text="@{comment.message}"
+                    android:text="@{comment.comment}"
                     tools:text="С товаром все хорошо" />
 
             </LinearLayout>

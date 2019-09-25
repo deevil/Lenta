@@ -46,7 +46,17 @@ class GoodDetailsViewModel : CoreViewModel(), PageSelectionListener {
         }
     }
 
-    val comments = MutableLiveData<List<ItemCommentUi>>()
+    val comments: MutableLiveData<List<ItemCommentUi>> by lazy {
+        task.currentGood.value!!.scanResults.map { list: List<ScanResult>? ->
+            list?.mapIndexed { index, scanResult ->
+                ItemCommentUi(
+                        position = (index + 1).toString(),
+                        comment = scanResult.comment,
+                        quantity = "${scanResult.quantity} ${task.currentGood.value!!.getUnits()}"
+                )
+            }
+        }
+    }
 
 
     private val selectedItemOnCurrentTab: MutableLiveData<Boolean> = selectedPage
@@ -93,6 +103,6 @@ data class ItemShelfLifeUi(
 
 data class ItemCommentUi(
         val position: String,
-        val message: String,
+        val comment: String,
         val quantity: String
 )
