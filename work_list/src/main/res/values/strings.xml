@@ -110,6 +110,7 @@
     <string name="picto_nova">\"Новинка\"</string>
     <string name="healthy_food">\"Здоровая еда\"</string>
     <string name="common_product">Обычный товар</string>
+    <string name="confirmation_not_save_changes">Изменения не будут сохранены. Продолжить?</string>
 
 
 </resources>

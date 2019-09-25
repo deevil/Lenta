@@ -398,6 +398,19 @@ class ScreenNavigator(
         }
     }
 
+    override fun openConfirmationNotSaveChanges(yesCallback: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.confirmation_not_save_changes),
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(yesCallback),
+                    pageNumber = "94",
+                    leftButtonDecorationInfo = ButtonDecorationInfo.back,
+                    rightButtonDecorationInfo = ButtonDecorationInfo.yes
+            )
+            )
+        }
+    }
+
 }
 
 interface IScreenNavigator : ICoreNavigator {
@@ -449,4 +462,5 @@ interface IScreenNavigator : ICoreNavigator {
     fun openVideoScanProductScreen()
     fun openPictogrammInfoNova()
     fun openPictogrammInfoHealthyFood()
+    fun openConfirmationNotSaveChanges(yesCallback: () -> Unit)
 }

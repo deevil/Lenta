@@ -3,13 +3,12 @@ package com.lenta.bp14.features.not_exposed.good_info
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.lenta.bp14.features.work_list.good_info.ItemStockUi
 import com.lenta.bp14.models.data.GoodType
-import com.lenta.bp14.models.data.pojo.Stock
 import com.lenta.bp14.models.not_exposed_products.INotExposedProductsTask
 import com.lenta.bp14.platform.navigation.IScreenNavigator
 import com.lenta.shared.models.core.MatrixType
 import com.lenta.shared.utilities.databinding.PageSelectionListener
-import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.map
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -22,8 +21,6 @@ class GoodInfoNeViewModel : CoreViewModel(), PageSelectionListener {
 
     @Inject
     lateinit var task: INotExposedProductsTask
-
-    val firstStorageStock = MutableLiveData("125??")
 
     val productParamsUi: MutableLiveData<ProductParamsUi> by lazy {
         MutableLiveData<ProductParamsUi>().also { liveData ->
@@ -45,36 +42,66 @@ class GoodInfoNeViewModel : CoreViewModel(), PageSelectionListener {
 
     val selectedPage = MutableLiveData(0)
 
-    val stocks = MutableLiveData<List<Stock>>()
-
-    val quantityField = MutableLiveData<String>("0")
-
-    private val frameTypeSelected = MutableLiveData(false)
-
-    val cancelButtonEnabled = frameTypeSelected.map { true }
-
-    val framedButtonEnabled = frameTypeSelected.combineLatest(quantityField).map {
-        true
+    val stocks: MutableLiveData<List<ItemStockUi>> by lazy {
+        MutableLiveData<List<ItemStockUi>>().also { liveData ->
+            viewModelScope.launch {
+                delay(500)
+                liveData.postValue(
+                        List(10) {
+                            ItemStockUi(
+                                    number = "${it + 1}",
+                                    storage = "000${it + 1}",
+                                    quantity = "${it + 1} ШТ"
+                            )
+                        }
+                )
+            }
+        }
     }
-    val notFramedButtonEnabled = frameTypeSelected.combineLatest(quantityField).map {
-        true
+
+
+    private val originalProcessedProductInfo by lazy {
+        task.getProcessedCheckInfo()
     }
 
-    init {
-        /*viewModelScope.launch {
-            good.value = taskManager.currentGood
-            stocks.value = good.value?.stocks
-
-            frameType.value = ""
-        }*/
+    val firstStorageStock = stocks.map {
+        it?.firstOrNull { stock -> stock.storage == "0001" }?.quantity ?: ""
     }
+
+    val quantityField by lazy {
+        MutableLiveData<String>().also {
+            viewModelScope.launch {
+                it.value = originalProcessedProductInfo?.quantity?.toString() ?: "0"
+            }
+        }
+    }
+
+    val applyButtonEnabled: MutableLiveData<Boolean> by lazy {
+        quantityField.map { it?.toDoubleOrNull() ?: 0.0 != 0.0 }
+    }
+
+    val isEmptyPlaceMarked by lazy {
+        MutableLiveData<Boolean>(originalProcessedProductInfo?.isEmptyPlaceMarked)
+    }
+
+    val isInputNumberEnabled by lazy { isEmptyPlaceMarked.map { it == null } }
+
+    val cancelButtonEnabled by lazy { isEmptyPlaceMarked.map { it != null } }
+
+    val framedButtonEnabled by lazy {
+        isEmptyPlaceMarked.map { it != true }
+    }
+    val notFramedButtonEnabled by lazy {
+        isEmptyPlaceMarked.map { it != false }
+    }
+
 
     override fun onPageSelected(position: Int) {
         selectedPage.value = position
     }
 
     fun onClickCancel() {
-
+        isEmptyPlaceMarked.value = null
     }
 
     fun onClickFramed() {
@@ -101,6 +128,20 @@ class GoodInfoNeViewModel : CoreViewModel(), PageSelectionListener {
         return null
     }
 
+    fun onBackPressed(): Boolean {
+        if (isHaveChangedData()) {
+            navigator.openConfirmationNotSaveChanges {
+                navigator.goBack()
+            }
+            return false
+        }
+        return true
+    }
+
+    private fun isHaveChangedData(): Boolean {
+        return quantityField.value?.toDoubleOrNull() ?: 0.0 != originalProcessedProductInfo?.quantity ?: 0.0
+    }
+
 }
 
 data class ProductParamsUi(
@@ -110,3 +151,4 @@ data class ProductParamsUi(
         val isNew: Boolean,
         val isHealthyFood: Boolean
 )
+

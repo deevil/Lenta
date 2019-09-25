@@ -12,6 +12,7 @@ import com.lenta.bp14.models.not_exposed_products.repo.INotExposedProductInfo
 import com.lenta.bp14.models.not_exposed_products.repo.INotExposedProductsRepo
 import com.lenta.bp14.models.not_exposed_products.repo.NotExposedProductInfo
 import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
+import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.map
 
@@ -85,6 +86,10 @@ class NotExposedProductsTask(
         return true
     }
 
+    override fun getProcessedCheckInfo(): INotExposedProductInfo? {
+        return getProducts().value?.firstOrNull { it.matNr == scanInfoResult?.productInfo?.materialNumber }
+    }
+
 
 }
 
@@ -100,5 +105,7 @@ interface INotExposedProductsTask : ITask, IFilterable {
     fun setCheckInfo(quantity: Double?, isEmptyPlaceMarked: Boolean?)
 
     fun removeCheckResultsByMatNumbers(matNumbers: Set<String>)
+
+    fun getProcessedCheckInfo(): INotExposedProductInfo?
 
 }
