@@ -150,6 +150,7 @@ interface IWorkListTask : ITask {
 data class Good(
         val common: CommonGoodInfo,
         var additional: AdditionalGoodInfo? = null,
+        val scanResults: MutableList<ScanResult> = mutableListOf(),
         var processed: Boolean = false
 ) {
 
@@ -187,7 +188,6 @@ data class CommonGoodInfo(
         var quantity: Int = 0,
         var marks: Int = 0,
         val shelfLifeDays: Int = 5,
-        var comment: String = "",
         val options: GoodOptions
 )
 
@@ -275,3 +275,12 @@ enum class DeliveryStatus(val description: String) {
     ON_WAY("В пути"),
     ORDERED("Заказан")
 }
+
+// -----------------------------
+
+data class ScanResult(
+        val quantity: Int,
+        val comment: String,
+        val shelfLifeStart: Date?,
+        val shelfLifeEnd: Date?
+)

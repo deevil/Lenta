@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.lenta.bp14.models.data.GoodType
 import com.lenta.bp14.models.data.ShelfLifeType
 import com.lenta.bp14.models.work_list.Provider
+import com.lenta.bp14.models.work_list.ScanResult
 import com.lenta.bp14.models.work_list.Stock
 import com.lenta.bp14.models.work_list.WorkListTask
 import com.lenta.bp14.platform.navigation.IScreenNavigator
@@ -46,12 +47,15 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
         currentQuantity + goodQuantity
     }
 
+    val commentsPosition = MutableLiveData(0)
+    val shelfLifePosition = MutableLiveData(0)
+
     val day = MutableLiveData<String>("")
     val month = MutableLiveData<String>("")
     val year = MutableLiveData<String>("")
 
-    val commentsPosition = MutableLiveData(0)
-    val shelfLifePosition = MutableLiveData(0)
+    val shelfLifeStart = MutableLiveData<Date>()
+    val shelfLifeEnd = MutableLiveData<Date>()
 
     private val enteredDate = day.combineLatest(month).combineLatest(year).map {
         val day = it?.first?.first?.toIntOrNull()
@@ -177,9 +181,19 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     fun onClickApply() {
-        task.currentGood.value?.common?.comment = comment.value ?: ""
 
 
+    }
+
+    private fun saveScanResult() {
+        task.currentGood.value?.scanResults?.add(
+                ScanResult(
+                        quantity = quantity.value?.toInt() ?: 0,
+                        comment = comment.value ?: "",
+                        shelfLifeStart = shelfLifeStart.value,
+                        shelfLifeEnd = shelfLifeEnd.value
+                )
+        )
     }
 
 }
