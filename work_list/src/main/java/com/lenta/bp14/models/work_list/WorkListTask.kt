@@ -12,6 +12,7 @@ import com.lenta.bp14.models.work_list.repo.WorkListRepo
 import com.lenta.shared.models.core.MatrixType
 import com.lenta.shared.models.core.Uom
 import com.lenta.shared.platform.time.ITimeMonitor
+import com.lenta.shared.utilities.extentions.getFormattedDate
 import com.lenta.shared.utilities.extentions.map
 import kotlinx.coroutines.delay
 import java.util.*
@@ -56,6 +57,12 @@ class WorkListTask(
         }
 
         return false
+    }
+
+    override fun addScanResult(scanResult: ScanResult) {
+        val scanResultsList = currentGood.value?.scanResults?.value?.toMutableList()
+        scanResultsList?.add(scanResult)
+        currentGood.value?.scanResults?.value = scanResultsList
     }
 
     override suspend fun loadAdditionalGoodInfo() {
@@ -129,12 +136,6 @@ class WorkListTask(
         return taskDescription
     }
 
-    override fun addScanResult(scanResult: ScanResult) {
-        val good = currentGood.value!!
-        good.scanResults.add(scanResult)
-        currentGood.value = good
-    }
-
 }
 
 
@@ -158,7 +159,7 @@ interface IWorkListTask : ITask {
 data class Good(
         val common: CommonGoodInfo,
         var additional: AdditionalGoodInfo? = null,
-        val scanResults: MutableList<ScanResult> = mutableListOf(),
+        val scanResults: MutableLiveData<List<ScanResult>> = MutableLiveData(listOf()),
         var processed: Boolean = false
 ) {
 
@@ -180,6 +181,10 @@ data class Good(
 
     fun getShelfLifeInMills(): Long {
         return (common.shelfLife * 24 * 60 * 60 * 1000).toLong()
+    }
+
+    fun getUnits(): String {
+        return common.units.name.toLowerCase(Locale.getDefault())
     }
 
 }
@@ -290,4 +295,14 @@ data class ScanResult(
         val comment: String,
         val productionDate: Date?,
         val expirationDate: Date?
-)
+) {
+
+    fun getFormattedProductionDate(): String {
+        return if (productionDate != null) "ДП ${productionDate.getFormattedDate()}" else ""
+    }
+
+    fun getFormattedExpirationDate(): String {
+        return if (expirationDate != null) "СГ ${expirationDate.getFormattedDate()}" else ""
+    }
+
+}

@@ -82,7 +82,6 @@ class GoodsListWlFragment : CoreFragment<FragmentGoodsListWlBinding, GoodsListWl
     }
 
     override fun getPagerItemView(container: ViewGroup, position: Int): View {
-
         val correctedPosition = vm.getCorrectedPagePosition(position)
 
         if (correctedPosition == 0) {

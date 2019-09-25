@@ -107,6 +107,7 @@
     <string name="number_of_mark">Количество марок</string>
     <string name="data_loading">Идет загрузка данных</string>
     <string name="point_camera_to_barcode">Наведите камеру на штрихкод EAN</string>
+    <string name="self_life">Срок годности</string>
 
 
 </resources>

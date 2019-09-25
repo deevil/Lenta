@@ -3,10 +3,8 @@ package com.lenta.bp14.features.work_list.good_details
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp14.models.data.GoodDetailsTab
-import com.lenta.bp14.models.data.TaskManager
-import com.lenta.bp14.models.data.pojo.Comment
-import com.lenta.bp14.models.data.pojo.Good
-import com.lenta.bp14.models.data.pojo.ShelfLife
+import com.lenta.bp14.models.work_list.ScanResult
+import com.lenta.bp14.models.work_list.WorkListTask
 import com.lenta.bp14.platform.navigation.IScreenNavigator
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.SelectionItemsHelper
@@ -21,7 +19,7 @@ class GoodDetailsViewModel : CoreViewModel(), PageSelectionListener {
     @Inject
     lateinit var navigator: IScreenNavigator
     @Inject
-    lateinit var taskManager: TaskManager
+    lateinit var task: WorkListTask
 
 
     val shelfLifeSelectionsHelper = SelectionItemsHelper()
@@ -29,11 +27,27 @@ class GoodDetailsViewModel : CoreViewModel(), PageSelectionListener {
 
     val selectedPage = MutableLiveData(0)
 
-    val good = MutableLiveData<Good>()
-    val formattedGoodName = MutableLiveData<String>()
+    val good by lazy { task.currentGood }
 
-    val shelfLives = MutableLiveData<List<ShelfLife>>()
-    val comments = MutableLiveData<List<Comment>>()
+    val title = MutableLiveData<String>("")
+
+
+    val shelfLives: MutableLiveData<List<ItemShelfLifeUi>> by lazy {
+        task.currentGood.value!!.scanResults.map { list: List<ScanResult>? ->
+            list?.mapIndexed { index, scanResult ->
+                ItemShelfLifeUi(
+                        position = (index + 1).toString(),
+                        expirationDate = scanResult.getFormattedExpirationDate(),
+                        productionDate = scanResult.getFormattedProductionDate(),
+                        productionDateVisibility = scanResult.productionDate != null,
+                        quantity = "${scanResult.quantity} ${task.currentGood.value!!.getUnits()}"
+                )
+            }
+        }
+    }
+
+    val comments = MutableLiveData<List<ItemCommentUi>>()
+
 
     private val selectedItemOnCurrentTab: MutableLiveData<Boolean> = selectedPage
             .combineLatest(shelfLifeSelectionsHelper.selectedPositions)
@@ -47,21 +61,38 @@ class GoodDetailsViewModel : CoreViewModel(), PageSelectionListener {
 
     val deleteButtonEnabled = selectedItemOnCurrentTab.map { it }
 
+// -----------------------------
+
     init {
         viewModelScope.launch {
-            good.value = taskManager.getTestGoodList(1)[0]
-            shelfLives.value = good.value?.shelfLives
-            comments.value = good.value?.comments
+            title.value = good.value?.getFormattedMaterialWithName()
 
-            formattedGoodName.value = good.value?.getFormattedMaterialWithName()
+
         }
+    }
+
+// -----------------------------
+
+    override fun onPageSelected(position: Int) {
+        selectedPage.value = position
     }
 
     fun onClickDelete() {
 
     }
 
-    override fun onPageSelected(position: Int) {
-        selectedPage.value = position
-    }
 }
+
+data class ItemShelfLifeUi(
+        val position: String,
+        val expirationDate: String,
+        val productionDate: String,
+        val productionDateVisibility: Boolean,
+        val quantity: String
+)
+
+data class ItemCommentUi(
+        val position: String,
+        val message: String,
+        val quantity: String
+)

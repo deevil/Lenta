@@ -5,11 +5,9 @@
 
     <data>
 
-        <import type="android.view.View" />
-
         <variable
             name="shelfLife"
-            type="com.lenta.bp14.models.data.pojo.ShelfLife" />
+            type="com.lenta.bp14.features.work_list.good_details.ItemShelfLifeUi" />
 
         <variable
             name="selectedForDelete"
@@ -40,7 +38,7 @@
                     android:layout_height="32dp"
                     android:background="@drawable/bg_border_circle_white_selectable_for_delete"
                     android:gravity="center"
-                    android:text="@{String.valueOf(shelfLife.id)}"
+                    android:text="@{shelfLife.position}"
                     app:selected="@{selectedForDelete}"
                     tools:text="1" />
 
@@ -54,13 +52,13 @@
 
                 <TextView
                     style="@style/CellTextStyle"
-                    android:text="@{@string/sl_date(shelfLife.formattedShelfLife)}"
+                    android:text="@{shelfLife.expirationDate}"
                     tools:text="СГ - 12.11.13" />
 
                 <TextView
                     style="@style/CellTextStyle"
-                    android:text="@{@string/pd_date(shelfLife.formattedPublicationDate)}"
-                    android:visibility="@{shelfLife.publicationDate != null ? View.VISIBLE : View.GONE}"
+                    android:text="@{shelfLife.productionDate}"
+                    android:visibility="@{shelfLife.productionDateVisibility}"
                     tools:text="ДП - 24.07.18" />
 
             </LinearLayout>
@@ -75,7 +73,7 @@
                     style="@style/CellTextStyle"
                     android:layout_width="wrap_content"
                     android:layout_gravity="center"
-                    android:text="@{@string/quantity_st(shelfLife.quantity)}"
+                    android:text="@{shelfLife.quantity}"
                     tools:text="10 шт" />
 
             </LinearLayout>

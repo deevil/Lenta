@@ -81,7 +81,7 @@
             android:layout_weight="1"
             app:items="@{vm.comments}"
             app:rv_config="@{rvConfig}"
-            tools:listitem="@layout/item_comment_quantity_selectable" />
+            tools:listitem="@layout/item_wl_comment_quantity_selectable" />
 
     </LinearLayout>
 

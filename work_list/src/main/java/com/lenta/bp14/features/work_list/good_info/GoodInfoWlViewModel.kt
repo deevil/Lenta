@@ -45,7 +45,7 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
     val quantity = MutableLiveData<String>()
     val totalQuantity: MutableLiveData<Int> = quantity.map { quantity ->
         var total = quantity?.toIntOrNull() ?: 0
-        for (scanResult in good.value!!.scanResults) {
+        for (scanResult in good.value!!.scanResults.value!!) {
             total += scanResult.quantity
         }
         total
@@ -72,25 +72,9 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
         parseDate
     }
 
-    val productionDate: MutableLiveData<Date> = enteredDate.combineLatest(shelfLifeTypePosition).map { pair ->
-        val enteredDate = pair?.first
-        val shelfLifeType = pair!!.second
-        if (enteredDate != null && shelfLifeType == ShelfLifeType.PRODUCTION.position) {
-            enteredDate
-        } else null
-    }
-    val expirationDate: MutableLiveData<Date> = enteredDate.combineLatest(shelfLifeTypePosition).map { pair ->
-        val enteredDate = pair?.first
-        val shelfLifeType = pair?.second
-        if (enteredDate != null && shelfLifeType == ShelfLifeType.PRODUCTION.position) {
-            Date(enteredDate.time + good.value!!.getShelfLifeInMills())
-        } else enteredDate
-    }
-
     val daysLeft: MutableLiveData<Int> = enteredDate.combineLatest(shelfLifeTypePosition).map { pair ->
         val enteredDate = pair?.first
         val shelfLifeType = pair?.second
-
         val daysLeft: Int? = if (enteredDate != null && shelfLifeType != null) {
             val expirationDate = if (shelfLifeType == ShelfLifeType.PRODUCTION.position){
                 enteredDate.time + good.value!!.getShelfLifeInMills()
@@ -168,6 +152,8 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
         }
     }
 
+    // -----------------------------
+
     override fun onPageSelected(position: Int) {
         selectedPage.value = position
     }
@@ -209,11 +195,22 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     private fun addScanResult() {
+        val shelfLifeDate = enteredDate.value
+        val shelfLifeType = shelfLifeTypePosition.value
+
+        val productionDate = if (shelfLifeDate != null && shelfLifeType == ShelfLifeType.PRODUCTION.position) {
+            shelfLifeDate
+        } else null
+
+        val expirationDate = if (shelfLifeDate != null && shelfLifeType == ShelfLifeType.PRODUCTION.position) {
+            Date(shelfLifeDate.time + good.value!!.getShelfLifeInMills())
+        } else shelfLifeDate
+
         task.addScanResult(ScanResult(
                 quantity = quantity.value?.toInt() ?: 0,
                 comment = comment.value ?: "",
-                productionDate = productionDate.value,
-                expirationDate = expirationDate.value
+                productionDate = productionDate,
+                expirationDate = expirationDate
         ))
     }
 

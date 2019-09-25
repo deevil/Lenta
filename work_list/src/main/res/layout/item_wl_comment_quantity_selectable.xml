@@ -7,7 +7,7 @@
 
         <variable
             name="comment"
-            type="com.lenta.bp14.models.data.pojo.Comment" />
+            type="com.lenta.bp14.features.work_list.good_details.ItemCommentUi" />
 
         <variable
             name="selectedForDelete"
@@ -38,7 +38,7 @@
                     android:layout_height="32dp"
                     android:background="@drawable/bg_border_circle_white_selectable_for_delete"
                     android:gravity="center"
-                    android:text="@{String.valueOf(comment.id)}"
+                    android:text="@{comment.position}"
                     app:selected="@{selectedForDelete}"
                     tools:text="1" />
 
@@ -68,7 +68,7 @@
                     style="@style/CellTextStyle"
                     android:layout_width="wrap_content"
                     android:layout_gravity="center"
-                    android:text="@{@string/quantity_st(comment.quantity)}"
+                    android:text="@{comment.quantity}"
                     tools:text="10 шт" />
 
             </LinearLayout>
