@@ -44,8 +44,10 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
 
     val quantity = MutableLiveData<String>()
     val totalQuantity: MutableLiveData<Int> = quantity.map { quantity ->
-        val total = quantity?.toIntOrNull() ?: 0
-        good.value?.scanResults?.map { total + it.quantity }
+        var total = quantity?.toIntOrNull() ?: 0
+        for (scanResult in good.value!!.scanResults) {
+            total += scanResult.quantity
+        }
         total
     }
 
@@ -189,7 +191,11 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     fun onClickApply() {
+        addScanResult()
 
+        // todo Потом удалить
+        // Имитация сканирования такого-же товара
+        resetGoodFields()
 
     }
 
@@ -200,6 +206,16 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
                 shelfLifeStart = shelfLifeStart.value,
                 shelfLifeEnd = shelfLifeEnd.value
         ))
+    }
+
+    private fun resetGoodFields() {
+        quantity.value = "1"
+
+        shelfLifePosition.value = 0
+
+        day.value = ""
+        month.value = ""
+        year.value = ""
     }
 
 }
