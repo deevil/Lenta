@@ -2,12 +2,17 @@ package com.lenta.bp14.features.not_exposed.good_info
 
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
+import com.lenta.bp14.models.data.GoodType
 import com.lenta.bp14.models.data.pojo.Stock
 import com.lenta.bp14.models.not_exposed_products.INotExposedProductsTask
 import com.lenta.bp14.platform.navigation.IScreenNavigator
+import com.lenta.shared.models.core.MatrixType
 import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.map
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class GoodInfoNeViewModel : CoreViewModel(), PageSelectionListener {
@@ -19,6 +24,24 @@ class GoodInfoNeViewModel : CoreViewModel(), PageSelectionListener {
     lateinit var task: INotExposedProductsTask
 
     val firstStorageStock = MutableLiveData("125??")
+
+    val productParamsUi: MutableLiveData<ProductParamsUi> by lazy {
+        MutableLiveData<ProductParamsUi>().also { liveData ->
+            viewModelScope.launch {
+                delay(500)
+                liveData.postValue(
+                        ProductParamsUi(
+                                matrixType = MatrixType.Active,
+                                sectionId = "02",
+                                type = GoodType.COMMON,
+                                isNew = true,
+                                isHealthyFood = true
+                        )
+                )
+
+            }
+        }
+    }
 
     val selectedPage = MutableLiveData(0)
 
@@ -79,3 +102,11 @@ class GoodInfoNeViewModel : CoreViewModel(), PageSelectionListener {
     }
 
 }
+
+data class ProductParamsUi(
+        val matrixType: MatrixType,
+        val sectionId: String,
+        val type: GoodType,
+        val isNew: Boolean,
+        val isHealthyFood: Boolean
+)

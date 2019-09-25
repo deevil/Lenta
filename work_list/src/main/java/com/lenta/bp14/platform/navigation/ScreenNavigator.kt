@@ -29,6 +29,7 @@ import com.lenta.bp14.features.search_filter.SearchFilterFragment
 import com.lenta.shared.account.IAuthenticator
 import com.lenta.shared.features.alert.AlertFragment
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
+import com.lenta.shared.platform.navigation.CustomAnimation
 import com.lenta.shared.platform.navigation.ICoreNavigator
 import com.lenta.shared.platform.navigation.runOrPostpone
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
@@ -383,6 +384,20 @@ class ScreenNavigator(
         }
     }
 
+    override fun openPictogrammInfoNova() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.picto_nova),
+                    iconRes = com.lenta.shared.R.drawable.ic_new_48dp), CustomAnimation.vertical)
+        }
+    }
+
+    override fun openPictogrammInfoHealthyFood() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.healthy_food),
+                    iconRes = com.lenta.shared.R.drawable.ic_natural_48dp), CustomAnimation.vertical)
+        }
+    }
+
 }
 
 interface IScreenNavigator : ICoreNavigator {
@@ -432,4 +447,6 @@ interface IScreenNavigator : ICoreNavigator {
     fun openScanPriceScreen()
     fun openConfirmationExitTask(taskName: String, callbackFunc: () -> Unit)
     fun openVideoScanProductScreen()
+    fun openPictogrammInfoNova()
+    fun openPictogrammInfoHealthyFood()
 }
