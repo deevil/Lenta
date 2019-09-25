@@ -129,6 +129,12 @@ class WorkListTask(
         return taskDescription
     }
 
+    override fun addScanResult(scanResult: ScanResult) {
+        val good = currentGood.value!!
+        good.scanResults.add(scanResult)
+        currentGood.value = good
+    }
+
 }
 
 
@@ -139,6 +145,8 @@ interface IWorkListTask : ITask {
     suspend fun loadSalesStatistics()
     suspend fun loadDeliveries()
     suspend fun loadComments()
+
+    fun addScanResult(scanResult: ScanResult)
 
     fun getGoodOptions(): LiveData<GoodOptions>
     fun getGoodStocks(): LiveData<List<Stock>>

@@ -35,6 +35,9 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
 
     val showProgress = MutableLiveData<Boolean>(true)
 
+    val commentsPosition = MutableLiveData(0)
+    val shelfLifePosition = MutableLiveData(0)
+
     val good by lazy { task.currentGood }
 
     val title = MutableLiveData<String>("")
@@ -45,9 +48,6 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
         good.value?.scanResults?.map { total + it.quantity }
         total
     }
-
-    val commentsPosition = MutableLiveData(0)
-    val shelfLifePosition = MutableLiveData(0)
 
     val day = MutableLiveData<String>("")
     val month = MutableLiveData<String>("")
@@ -193,15 +193,13 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
 
     }
 
-    private fun saveScanResult() {
-        task.currentGood.value?.scanResults?.add(
-                ScanResult(
-                        quantity = quantity.value?.toInt() ?: 0,
-                        comment = comment.value ?: "",
-                        shelfLifeStart = shelfLifeStart.value,
-                        shelfLifeEnd = shelfLifeEnd.value
-                )
-        )
+    private fun addScanResult() {
+        task.addScanResult(ScanResult(
+                quantity = quantity.value?.toInt() ?: 0,
+                comment = comment.value ?: "",
+                shelfLifeStart = shelfLifeStart.value,
+                shelfLifeEnd = shelfLifeEnd.value
+        ))
     }
 
 }
