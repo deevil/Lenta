@@ -17,7 +17,6 @@ import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.getFormattedDate
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.view.OnPositionClickListener
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
@@ -135,6 +134,14 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
             )
         }
     }
+
+    val applyButtonEnabled = quantity.combineLatest(daysLeft).map { pair ->
+        val quantityNotNull = pair?.first?.toIntOrNull() != null && pair.first?.toIntOrNull() != 0
+        val shelfLifeIsEntered = pair?.second != null
+        quantityNotNull && shelfLifeIsEntered
+    }
+
+    // -----------------------------
 
     init {
         viewModelScope.launch {

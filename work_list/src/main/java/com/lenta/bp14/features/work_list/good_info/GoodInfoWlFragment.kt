@@ -45,7 +45,9 @@ class GoodInfoWlFragment : CoreFragment<FragmentGoodInfoWlBinding, GoodInfoWlVie
         bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.details)
         bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.deliveries)
         bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.sales)
-        bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.apply)
+        bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.apply, enabled = false)
+
+        connectLiveData(vm.applyButtonEnabled, bottomToolbarUiModel.uiModelButton5.enabled)
     }
 
     override fun onToolbarButtonClick(view: View) {
