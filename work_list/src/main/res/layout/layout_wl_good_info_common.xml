@@ -65,8 +65,7 @@
 
             <!-- Комментарий -->
             <LinearLayout
-                style="@style/LinearRowStyle"
-                android:layout_height="wrap_content">
+                style="@style/LinearRowStyle">
 
                 <LinearLayout
                     style="@style/LinearCellStyle"
@@ -85,28 +84,31 @@
                     style="@style/LinearCellStyle"
                     android:layout_weight="2">
 
-                    <EditText
-                        style="@style/CellEditTextStyle"
-                        android:text="@={vm.comment}"
-                        tools:text="Не выбран" />
-
-                    <com.lenta.shared.view.ClickableSpinner
-                        android:id="@+id/spin_select_comment"
-                        style="@style/CellSpinnerStyle"
-                        app:items="@{vm.commentsList}"
-                        app:onPositionClickListener="@{vm.onSelectComment}"
-                        app:position="@{vm.commentsPosition}"
-                        tools:entries="@array/selected_comment" />
-
-                    <com.reginald.editspinner.EditSpinner
-                        android:id="@+id/edit_spinner"
+                    <FrameLayout
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        app:dropDownDrawable="@drawable/spinner_arrow_down"
-                        app:dropDownDrawableSpacing="15dp"
-                        app:dropDownDrawableWidth="25dp"
-                        app:dropDownDrawableHeight="25dp"
-                        />
+                        android:layout_height="match_parent">
+
+                        <com.lenta.shared.view.ClickableSpinner
+                            android:id="@+id/spin_select_comment"
+                            style="@style/CellSpinnerStyle"
+                            android:layout_height="match_parent"
+                            app:items="@{vm.commentsList}"
+                            app:onPositionClickListener="@{vm.onSelectComment}"
+                            app:position="@{vm.commentsPosition}"
+                            tools:entries="@array/selected_comment" />
+
+                        <EditText
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_marginStart="10dp"
+                            android:layout_marginTop="10dp"
+                            android:layout_marginEnd="48dp"
+                            android:layout_marginBottom="10dp"
+                            android:backgroundTint="@color/color_background"
+                            android:text="@={vm.comment}"
+                            tools:text="Не выбран" />
+
+                    </FrameLayout>
 
                 </LinearLayout>
 
@@ -262,7 +264,7 @@
                     <TextView
                         style="@style/CellTextStyle"
                         android:text="@{@string/shelf_life_days(vm.daysLeft)}"
-                        android:visibility="@{vm.shelfLifeDaysFieldVisibility}"
+                        app:invisible="@{!vm.shelfLifeDaysFieldVisibility}"
                         tools:text="5 сут." />
 
                 </LinearLayout>

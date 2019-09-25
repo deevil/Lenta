@@ -89,7 +89,4 @@ dependencies {
         transitive = true
     }
 
-    // EditText с функцией спиннера
-    implementation 'com.reginald:editspinner:1.0.0'
-
 }

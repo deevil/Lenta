@@ -136,9 +136,9 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
         viewModelScope.launch {
             title.value = good.value?.getFormattedMaterialWithName()
             quantity.value = good.value?.common?.quantity.toString()
+            comment.value = commentsList.value?.get(0)
 
             viewModelScope.launch {
-                delay(5000)
                 task.loadAdditionalGoodInfo()
                 showProgress.value = false
             }
@@ -154,6 +154,8 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
             commentsPosition.value = position
             comment.value = commentsList.value?.get(position)
         }
+
+
     }
 
     val onSelectShelfLifeType = object : OnPositionClickListener {
@@ -175,6 +177,8 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     fun onClickApply() {
+        task.currentGood.value?.common?.comment = comment.value ?: ""
+
 
     }
 

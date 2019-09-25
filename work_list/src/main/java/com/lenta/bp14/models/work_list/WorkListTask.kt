@@ -37,8 +37,6 @@ class WorkListTask(
     val comments = MutableLiveData<List<String>>(listOf())
 
     override suspend fun addGoodByEan(ean: String): Boolean {
-        delay(500)
-
         var good = goods.value?.find { it.common.ean == ean }
         if (good != null) {
             currentGood.value = good
@@ -61,7 +59,7 @@ class WorkListTask(
     }
 
     override suspend fun loadAdditionalGoodInfo() {
-        delay(500)
+        delay(5000)
 
         val good = currentGood.value
         if (good != null) {
@@ -189,7 +187,7 @@ data class CommonGoodInfo(
         var quantity: Int = 0,
         var marks: Int = 0,
         val shelfLifeDays: Int = 5,
-        val comment: String = "",
+        var comment: String = "",
         val options: GoodOptions
 )
 
