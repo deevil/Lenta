@@ -132,7 +132,7 @@
                         style="@style/CellSpinnerStyle"
                         app:items="@{vm.shelfLifeTypeList}"
                         app:onPositionClickListener="@{vm.onSelectShelfLifeType}"
-                        app:position="@{vm.shelfLifePosition}"
+                        app:position="@{vm.shelfLifeTypePosition}"
                         tools:entries="@array/shelf_life_type" />
 
                 </LinearLayout>
@@ -258,7 +258,7 @@
 
                     <TextView
                         style="@style/CellTextStyle"
-                        android:text="@{@string/shelf_life_days(vm.good.common.shelfLifeDays)}"
+                        android:text="@{@string/shelf_life_days(vm.good.common.shelfLife)}"
                         tools:text="10 сут." />
 
                     <TextView

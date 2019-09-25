@@ -36,7 +36,7 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
     val showProgress = MutableLiveData<Boolean>(true)
 
     val commentsPosition = MutableLiveData(0)
-    val shelfLifePosition = MutableLiveData(0)
+    val shelfLifeTypePosition = MutableLiveData(0)
 
     val good by lazy { task.currentGood }
 
@@ -55,9 +55,6 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
     val month = MutableLiveData<String>("")
     val year = MutableLiveData<String>("")
 
-    val shelfLifeStart = MutableLiveData<Date>()
-    val shelfLifeEnd = MutableLiveData<Date>()
-
     private val enteredDate = day.combineLatest(month).combineLatest(year).map {
         val day = it?.first?.first?.toIntOrNull()
         val month = it?.first?.second?.toIntOrNull()
@@ -75,20 +72,32 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
         parseDate
     }
 
-    val daysLeft: MutableLiveData<Int> = enteredDate.combineLatest(shelfLifePosition).map {
-        val shelfLifeDays = good.value?.common?.shelfLifeDays
-        val enteredDate = it?.first
-        val shelfLifeType = it?.second
+    val productionDate: MutableLiveData<Date> = enteredDate.combineLatest(shelfLifeTypePosition).map { pair ->
+        val enteredDate = pair?.first
+        val shelfLifeType = pair!!.second
+        if (enteredDate != null && shelfLifeType == ShelfLifeType.PRODUCTION.position) {
+            enteredDate
+        } else null
+    }
+    val expirationDate: MutableLiveData<Date> = enteredDate.combineLatest(shelfLifeTypePosition).map { pair ->
+        val enteredDate = pair?.first
+        val shelfLifeType = pair?.second
+        if (enteredDate != null && shelfLifeType == ShelfLifeType.PRODUCTION.position) {
+            Date(enteredDate.time + good.value!!.getShelfLifeInMills())
+        } else enteredDate
+    }
 
-        var daysLeft: Int? = null
-        if (enteredDate != null && shelfLifeDays != null && shelfLifeType != null) {
-            val shelfLifeEnd = when (shelfLifeType) {
-                ShelfLifeType.PRODUCED.position -> enteredDate.time + shelfLifeDays * 24 * 60 * 60 * 1000
-                else -> enteredDate.time
-            }
+    val daysLeft: MutableLiveData<Int> = enteredDate.combineLatest(shelfLifeTypePosition).map { pair ->
+        val enteredDate = pair?.first
+        val shelfLifeType = pair?.second
 
-            daysLeft = TimeUnit.DAYS.convert(shelfLifeEnd - Date().time, TimeUnit.MILLISECONDS).toInt()
-        }
+        val daysLeft: Int? = if (enteredDate != null && shelfLifeType != null) {
+            val expirationDate = if (shelfLifeType == ShelfLifeType.PRODUCTION.position){
+                enteredDate.time + good.value!!.getShelfLifeInMills()
+            } else enteredDate.time
+
+            TimeUnit.DAYS.convert(expirationDate - Date().time, TimeUnit.MILLISECONDS).toInt()
+        } else null
 
         daysLeft
     }
@@ -174,7 +183,7 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
 
     val onSelectShelfLifeType = object : OnPositionClickListener {
         override fun onClickPosition(position: Int) {
-            shelfLifePosition.value = position
+            shelfLifeTypePosition.value = position
         }
     }
 
@@ -203,15 +212,15 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
         task.addScanResult(ScanResult(
                 quantity = quantity.value?.toInt() ?: 0,
                 comment = comment.value ?: "",
-                shelfLifeStart = shelfLifeStart.value,
-                shelfLifeEnd = shelfLifeEnd.value
+                productionDate = productionDate.value,
+                expirationDate = expirationDate.value
         ))
     }
 
     private fun resetGoodFields() {
         quantity.value = "1"
 
-        shelfLifePosition.value = 0
+        shelfLifeTypePosition.value = 0
 
         day.value = ""
         month.value = ""

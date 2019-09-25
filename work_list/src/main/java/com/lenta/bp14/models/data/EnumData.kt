@@ -17,8 +17,8 @@ enum class GoodDetailsTab(val position: Int) {
 }
 
 enum class ShelfLifeType(val position: Int) {
-    BEFORE(0),
-    PRODUCED(1)
+    PRODUCTION(0),
+    EXPIRATION(1)
 }
 
 enum class GoodType {

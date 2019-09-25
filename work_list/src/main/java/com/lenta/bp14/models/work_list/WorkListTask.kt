@@ -178,6 +178,10 @@ data class Good(
         return "${common.goodGroup}/${common.purchaseGroup}"
     }
 
+    fun getShelfLifeInMills(): Long {
+        return (common.shelfLife * 24 * 60 * 60 * 1000).toLong()
+    }
+
 }
 
 
@@ -190,7 +194,7 @@ data class CommonGoodInfo(
         var goodGroup: String,
         var purchaseGroup: String,
         var marks: Int = 0,
-        val shelfLifeDays: Int = 5,
+        val shelfLife: Int,
         val options: GoodOptions
 )
 
@@ -284,6 +288,6 @@ enum class DeliveryStatus(val description: String) {
 data class ScanResult(
         val quantity: Int,
         val comment: String,
-        val shelfLifeStart: Date?,
-        val shelfLifeEnd: Date?
+        val productionDate: Date?,
+        val expirationDate: Date?
 )

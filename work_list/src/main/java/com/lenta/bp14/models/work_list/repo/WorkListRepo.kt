@@ -21,6 +21,7 @@ class WorkListRepo {
                     units = Uom.ST,
                     goodGroup = "123456",
                     purchaseGroup = "1111",
+                    shelfLife = (3..14).random(),
                     options = GoodOptions(
                             matrixType = MatrixType.Active,
                             section = "5",
