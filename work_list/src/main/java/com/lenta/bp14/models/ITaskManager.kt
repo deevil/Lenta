@@ -3,6 +3,32 @@ package com.lenta.bp14.models
 import com.lenta.bp14.models.general.ITaskType
 
 
+abstract class BaseTaskManager<S : ITask, D : ITaskDescription> : ITaskManager<S, D> {
+    protected var _task: S? = null
+
+    override fun getTask(): S? {
+        return _task
+    }
+
+    override fun clearTask(): Boolean {
+        if (_task == null) {
+            return false
+        }
+        _task = null
+        return true
+    }
+
+    override fun setTask(task: S?) {
+        _task = task
+    }
+
+    override fun getCurrentTaskType(): ITaskType? {
+        return _task?.getTaskType()
+    }
+
+}
+
+
 interface ITaskManager<S : ITask, D : ITaskDescription> {
 
     fun getTask(): S?
@@ -11,7 +37,7 @@ interface ITaskManager<S : ITask, D : ITaskDescription> {
 
     fun clearTask(): Boolean
 
-    fun setTask(inventoryTask: S?)
+    fun setTask(task: S?)
 
     fun getCurrentTaskType(): ITaskType?
 }
@@ -30,6 +56,7 @@ interface ITask {
 }
 
 interface ITaskDescription {
+    val tkNumber: String
     val taskNumber: String
     var taskName: String
     val description: String

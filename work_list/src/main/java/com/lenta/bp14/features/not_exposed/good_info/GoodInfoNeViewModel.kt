@@ -2,52 +2,48 @@ package com.lenta.bp14.features.not_exposed.good_info
 
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
-import com.lenta.bp14.models.data.TaskManager
-import com.lenta.bp14.models.data.pojo.Good
 import com.lenta.bp14.models.data.pojo.Stock
+import com.lenta.bp14.models.not_exposed_products.INotExposedProductsTask
 import com.lenta.bp14.platform.navigation.IScreenNavigator
 import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.map
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class GoodInfoNeViewModel : CoreViewModel(), PageSelectionListener {
 
     @Inject
     lateinit var navigator: IScreenNavigator
-    @Inject
-    lateinit var taskManager: TaskManager
 
+    @Inject
+    lateinit var task: INotExposedProductsTask
+
+    val firstStorageStock = MutableLiveData("125??")
 
     val selectedPage = MutableLiveData(0)
-
-    val good: MutableLiveData<Good> = MutableLiveData()
 
     val stocks = MutableLiveData<List<Stock>>()
 
     val quantityField = MutableLiveData<String>("0")
 
-    val frameType = MutableLiveData<String>()
-    private val frameTypeSelected = frameType.map { !it.isNullOrEmpty() }
+    private val frameTypeSelected = MutableLiveData(false)
 
-    val cancelButtonEnabled = frameTypeSelected.map { it == true }
+    val cancelButtonEnabled = frameTypeSelected.map { true }
 
     val framedButtonEnabled = frameTypeSelected.combineLatest(quantityField).map {
-        it?.first == false && it.second.toIntOrNull() ?: 0 == 0
+        true
     }
     val notFramedButtonEnabled = frameTypeSelected.combineLatest(quantityField).map {
-        it?.first == false && it.second.toIntOrNull() ?: 0 == 0
+        true
     }
 
     init {
-        viewModelScope.launch {
+        /*viewModelScope.launch {
             good.value = taskManager.currentGood
             stocks.value = good.value?.stocks
 
             frameType.value = ""
-        }
+        }*/
     }
 
     override fun onPageSelected(position: Int) {
@@ -55,19 +51,31 @@ class GoodInfoNeViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     fun onClickCancel() {
-        frameType.value = ""
+
     }
 
     fun onClickFramed() {
-        frameType.value = "Оформлено"
+        task.setCheckInfo(quantity = null, isEmptyPlaceMarked = true)
+        navigator.goBack()
     }
 
     fun onClickNotFramed() {
-        frameType.value = "Не оформлено"
+        task.setCheckInfo(quantity = null, isEmptyPlaceMarked = false)
+        navigator.goBack()
     }
 
     fun onClickApply() {
+        quantityField.value?.toDoubleOrNull()?.let {
+            task.setCheckInfo(quantity = it, isEmptyPlaceMarked = null)
+        }
+        navigator.goBack()
+    }
 
+    fun getTitle(): String? {
+        task.scanInfoResult?.productInfo?.let {
+            return "${it.getMaterialLastSix()} ${it.description}"
+        }
+        return null
     }
 
 }
