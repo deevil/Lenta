@@ -9,7 +9,6 @@ data class TaskProductDiscrepancies(
         val numberDiscrepancies: String, //Количество расхождения в ПЕИ
         val uom: Uom,
         val typeDiscrepancies: String, //Тип расхождения
-        //val nameDiscrepancies: String, //Наименование расхождения, добавляется из справочника 20
         val isNotEdit: Boolean,
         val isNew: Boolean
 )

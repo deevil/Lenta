@@ -19,6 +19,10 @@ class ReceivingTask(val taskHeader: TaskInfo,
     fun getProcessedProducts(): List<TaskProductInfo> {
         return taskRepository.getProducts().getProducts()
     }
+
+    fun getProcessedBatches(): List<TaskBatchInfo> {
+        return taskRepository.getBatches().getBatches()
+    }
 }
 
 

@@ -1,17 +1,28 @@
 package com.lenta.bp9.features.goods_list
 
+import android.content.Context
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import com.lenta.bp9.model.task.IReceivingTaskManager
 import com.lenta.bp9.model.task.TaskProductInfo
 import com.lenta.bp9.platform.navigation.IScreenNavigator
+import com.lenta.bp9.requests.network.EndRecountDDParameters
+import com.lenta.bp9.requests.network.EndRecountDDResult
+import com.lenta.bp9.requests.network.EndRecountDirectDeliveriesNetRequest
+import com.lenta.shared.account.ISessionInfo
+import com.lenta.shared.exception.Failure
 import com.lenta.shared.models.core.MatrixType
 import com.lenta.shared.models.core.ProductType
 import com.lenta.shared.models.core.Uom
 import com.lenta.shared.platform.viewmodel.CoreViewModel
+import com.lenta.shared.requests.network.AuthParams
+import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.databinding.PageSelectionListener
+import com.lenta.shared.utilities.extentions.getDeviceIp
 import com.lenta.shared.utilities.extentions.map
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyboardListener {
@@ -20,7 +31,14 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
     lateinit var screenNavigator: IScreenNavigator
     @Inject
     lateinit var taskManager: IReceivingTaskManager
+    @Inject
+    lateinit var endRecountDirectDeliveries: EndRecountDirectDeliveriesNetRequest
+    @Inject
+    lateinit var context: Context
+    @Inject
+    lateinit var sessionInfo: ISessionInfo
 
+    val titleProgressScreen: MutableLiveData<String> = MutableLiveData()
     val selectedPage = MutableLiveData(0)
     val countedSelectionsHelper = SelectionItemsHelper()
     val listCounted: MutableLiveData<List<ListCountedItem>> = MutableLiveData()
@@ -69,7 +87,7 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
                                 .reversed())
             } else {
                 listCounted.postValue(
-                        task.taskRepository.getBatches().getBatches()
+                        task.getProcessedBatches()
                                 .filter {
                                     !it.isNoEAN
                                 }
@@ -104,18 +122,22 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
                                     ListWithoutBarcodeItem(
                                             number = index + 1,
                                             name = "${productInfo.getMaterialLastSix()} ${productInfo.description}",
+                                            productInfo = productInfo,
+                                            batchInfo = null,
                                             even = index % 2 == 0)
                                 }
                                 .reversed())
             } else {
                 listWithoutBarcode.postValue(
-                        task.taskRepository.getBatches().getBatches()
+                        task.getProcessedBatches()
                                 .filter {
                                     it.isNoEAN
                                 }.mapIndexed { index, batchInfo ->
                                     ListWithoutBarcodeItem(
                                             number = index + 1,
                                             name = "${batchInfo.getMaterialLastSix()} ${batchInfo.description} \nДР-${batchInfo.bottlingDate} // ${batchInfo.manufacturer}",
+                                            productInfo = null,
+                                            batchInfo = batchInfo,
                                             even = index % 2 == 0)
                                 }
                                 .reversed())
@@ -138,12 +160,17 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
 
     fun onClickItemPosition(position: Int) {
         //todo
-        /**if (selectedPage.value == 0) {
-        countedGoods.value?.getOrNull(position)?.productInfo
+        val matnr: String?
+        if (selectedPage.value == 0) {
+            matnr = listCounted.value?.get(position)?.productInfo?.materialNumber
         } else {
-        filteredGoods.value?.getOrNull(position)?.productInfo
-        }?.let {
-        searchProductDelegate.openProductScreen(it, 0.0)
+            matnr = listWithoutBarcode.value?.get(position)?.productInfo?.materialNumber
+        }
+        Logg.d { "test $matnr" }
+        /**matnr?.let {
+            val productInfo = taskManager.getInventoryTask()?.taskRepository?.getProducts()?.findProduct(it, storePlaceManager?.storePlaceNumber
+                    ?: "")
+            if (productInfo != null) searchProductDelegate.openTaskProductScreen(productInfo)
         }*/
     }
 
@@ -158,11 +185,6 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
             //searchProductDelegate.searchCode(it, fromScan = false)
         }
         return true
-    }
-
-    fun onClickGoodsTitle(position: Int) {
-        //todo
-        return
     }
 
     fun onClickRefusal() {
@@ -235,6 +257,30 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
         ))
         screenNavigator.openGoodsInfoScreen(tmpProduct!!)
 
-        //screenNavigator.openDiscrepancyListScreen()
+        /**viewModelScope.launch {
+            screenNavigator.showProgress(titleProgressScreen.value!!)
+            if (taskManager.getReceivingTask()!!.getProcessedProducts().any { it.isNoEAN }) {
+                screenNavigator.openDiscrepancyListScreen()
+            } else {
+                endRecountDirectDeliveries(EndRecountDDParameters(
+                        taskNumber = taskManager.getReceivingTask()!!.taskHeader.taskNumber,
+                        deviceIP = context.getDeviceIp(),
+                        personalNumber = sessionInfo.personnelNumber ?: "",
+                        discrepanciesProduct = taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().getProductsDiscrepancies(),
+                        discrepanciesBatches = taskManager.getReceivingTask()!!.taskRepository.getBatchesDiscrepancies().getBatchesDiscrepancies()
+                )).either(::handleFailure, ::handleSucess)
+            }
+            screenNavigator.hideProgress()
+        }*/
     }
+
+    private fun handleSucess(endRecountDDResult: EndRecountDDResult) {
+        screenNavigator.goBack()
+    }
+
+    override fun handleFailure(failure: Failure) {
+        super.handleFailure(failure)
+        screenNavigator.openAlertScreen(failure, pageNumber = "97")
+    }
+
 }

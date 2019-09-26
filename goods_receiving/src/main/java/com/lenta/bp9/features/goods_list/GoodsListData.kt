@@ -21,6 +21,8 @@ data class ListCountedItem(
 data class ListWithoutBarcodeItem(
         val number: Int,
         val name: String,
+        val productInfo: TaskProductInfo?,
+        val batchInfo: TaskBatchInfo?,
         val even: Boolean
 ) : Evenable {
     override fun isEven() = even
