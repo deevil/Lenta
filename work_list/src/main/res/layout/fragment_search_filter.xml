@@ -83,6 +83,7 @@
 
         <!-- Место хранения -->
         <LinearLayout
+            android:visibility="@{vm.placeStorageVisibility}"
             style="@style/LinearRowStyle">
 
             <LinearLayout
@@ -111,10 +112,12 @@
         </LinearLayout>
 
         <View
+            android:visibility="@{vm.placeStorageVisibility}"
             style="@style/HorizontalDivider"/>
 
         <!-- Комментарий -->
         <LinearLayout
+            android:visibility="@{vm.commentVisibility}"
             style="@style/LinearRowStyle">
 
             <LinearLayout
@@ -143,6 +146,7 @@
         </LinearLayout>
 
         <View
+            android:visibility="@{vm.commentVisibility}"
             style="@style/HorizontalDivider"/>
 
     </LinearLayout>

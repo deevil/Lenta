@@ -1,5 +1,7 @@
 package com.lenta.bp14.models.data
 
+import com.lenta.bp14.R
+
 enum class GoodsListTab(val position: Int) {
     PROCESSING(0),
     PROCESSED(1),
@@ -25,4 +27,12 @@ enum class GoodType {
     COMMON,
     ALCOHOL,
     MARKED
+}
+
+fun GoodType.getDescriptionResId(): Int {
+    return when (this) {
+        GoodType.COMMON -> R.string.common_product
+        GoodType.ALCOHOL -> R.string.alcohol
+        GoodType.MARKED -> R.string.marked_product
+    }
 }
