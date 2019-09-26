@@ -105,49 +105,35 @@ class GoodDetailsViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     fun onClickDelete() {
+        // Удаление по сроку годности
         if (selectedPage.value == GoodDetailsTab.SHELF_LIVES.position) {
-            task.deleteSelectedScanResults(shelfLifeSelectionsHelper.selectedPositions.value)
-            shelfLifeSelectionsHelper.clearPositions()
+            shelfLifeSelectionsHelper.selectedPositions.value?.apply {
+                val shelfLivesForDelete = mutableListOf<String>()
+                shelfLives.value!!.mapIndexed { index, itemShelfLifeUi ->
+                    if (this.contains(index)) {
+                        shelfLivesForDelete.add(itemShelfLifeUi.productionDate + itemShelfLifeUi.expirationDate)
+                    }
+                }
+
+                task.deleteScanResultsByShelfLives(shelfLivesForDelete)
+                shelfLifeSelectionsHelper.clearPositions()
+            }
         }
 
+        // Удаление по комментариям
+        if (selectedPage.value == GoodDetailsTab.COMMENTS.position) {
+            commentSelectionsHelper.selectedPositions.value?.apply {
+                val commentsForDelete = mutableListOf<String>()
+                comments.value!!.mapIndexed { index, itemCommentUi ->
+                    if (this.contains(index)) {
+                        commentsForDelete.add(itemCommentUi.comment)
+                    }
+                }
 
-        /* val goodsList = goods.value!!.toMutableList()
-
-         selectionsHelper.selectedPositions.value?.apply {
-             val eans = goods.value?.filterIndexed { index, _ ->
-                 this.contains(index)
-             }?.map { it.ean }?.toSet() ?: emptySet()
-
-             goodsList.removeAll { eans.contains(it.ean) }
-         }
-
-         for (index in goodsList.lastIndex downTo 0) {
-             goodsList[index].number = goodsList.lastIndex + 1 - index
-         }
-
-         selectionsHelper.clearPositions()
-         goods.value = goodsList.toList()*/
-
-
-        /*when (selectedPage.value) {
-            1 -> shelfLifeSelectionsHelper
-            2 -> commentSelectionsHelper
-            else -> null
-        }?.let { selectionHelper ->
-            selectionHelper.selectedPositions.value?.apply {
-                task.removeCheckResultsByMatNumbers(
-                        if (selectionHelper === processedSelectionsHelper) {
-                            processedGoods
-                        } else {
-                            searchGoods
-                        }.value?.filterIndexed { index, _ ->
-                            this.contains(index)
-                        }?.map { it.matNr }?.toSet()
-                                ?: emptySet()
-                )
+                task.deleteScanResultsByComments(commentsForDelete)
+                commentSelectionsHelper.clearPositions()
             }
-            selectionHelper.clearPositions()
-        }*/
+        }
     }
 
 }

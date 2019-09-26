@@ -37,14 +37,6 @@ class WorkListTask(
     val deliveries = MutableLiveData<List<Delivery>>(listOf())
     val comments = MutableLiveData<List<String>>(listOf())
 
-    override fun getTaskType(): ITaskType {
-        return TaskTypes.WorkList.taskType
-    }
-
-    override fun getDescription(): ITaskDescription {
-        return taskDescription
-    }
-
     override suspend fun addGoodByEan(ean: String): Boolean {
         var good = goods.value?.find { it.common.ean == ean }
         if (good != null) {
@@ -135,16 +127,23 @@ class WorkListTask(
         return currentGood.map { it?.additional?.providers?.toList() }
     }
 
+    override fun getTaskType(): ITaskType {
+        return TaskTypes.WorkList.taskType
+    }
 
+    override fun getDescription(): ITaskDescription {
+        return taskDescription
+    }
 
-
-    fun deleteSelectedScanResults(indices: MutableSet<Int>?) {
+    fun deleteScanResultsByComments(comments: List<String>) {
         val scanResultsList = currentGood.value?.scanResults?.value?.toMutableList()
-        val itemsForDelete = scanResultsList?.filterIndexed { index, _ ->
-            indices!!.contains(index)
-        }
+        scanResultsList?.removeAll { comments.contains(it.comment) }
+        currentGood.value?.scanResults?.value = scanResultsList
+    }
 
-        scanResultsList?.removeAll { itemsForDelete!!.contains(it) }
+    fun deleteScanResultsByShelfLives(shelfLives: List<String>) {
+        val scanResultsList = currentGood.value?.scanResults?.value?.toMutableList()
+        scanResultsList?.removeAll { shelfLives.contains(it.getFormattedProductionDate() + it.getFormattedExpirationDate()) }
         currentGood.value?.scanResults?.value = scanResultsList
     }
 
@@ -319,13 +318,6 @@ data class ScanResult(
 
     fun getKeyFromDates(): String {
         return "${productionDate?.time}${expirationDate?.time}"
-    }
-
-    fun sameDates(scanResult: ScanResult?): Boolean {
-        if (scanResult == null) return false
-        if (productionDate != scanResult.productionDate) return false
-        if (expirationDate != scanResult.expirationDate) return false
-        return true
     }
 
 }
