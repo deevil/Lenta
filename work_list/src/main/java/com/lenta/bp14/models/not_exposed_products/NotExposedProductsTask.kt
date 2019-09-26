@@ -77,6 +77,11 @@ class NotExposedProductsTask(
             @Suppress("NON_EXHAUSTIVE_WHEN")
             when (it.key) {
                 FilterFieldType.NUMBER -> {
+
+                    if (!filterableDelegate.isHaveAnotherActiveFilter(FilterFieldType.NUMBER) && it.value.value.isBlank()) {
+                        return false
+                    }
+
                     if (product.ean?.contains(it.value.value) != true && !product.matNr.contains(it.value.value)) {
                         return false
                     }
