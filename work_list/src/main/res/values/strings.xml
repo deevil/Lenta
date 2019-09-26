@@ -107,6 +107,12 @@
     <string name="number_of_mark">Количество марок</string>
     <string name="data_loading">Идет загрузка данных</string>
     <string name="point_camera_to_barcode">Наведите камеру на штрихкод EAN</string>
+    <string name="picto_nova">\"Новинка\"</string>
+    <string name="healthy_food">\"Здоровая еда\"</string>
+    <string name="common_product">Обычный товар</string>
+    <string name="confirmation_not_save_changes">Изменения не будут сохранены. Продолжить?</string>
+    <string name="alcohol">Алкоголь</string>
+    <string name="marked_product">Маркированный товар</string>
 
 
 </resources>

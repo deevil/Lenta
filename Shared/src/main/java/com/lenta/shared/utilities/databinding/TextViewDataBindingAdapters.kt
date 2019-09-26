@@ -12,6 +12,7 @@ import com.lenta.shared.utilities.date_time.DateTimeUtil
 import com.lenta.shared.utilities.extentions.setTextViewDrawableColor
 import com.lenta.shared.utilities.extentions.setVisible
 import com.lenta.shared.utilities.extentions.selectableItemBackgroundResId
+import com.lenta.shared.utilities.extentions.setVisibleGone
 
 
 @BindingAdapter(value = ["buttonDecorationInfo", "enabled"], requireAll = false)
@@ -87,7 +88,7 @@ fun price(textView: TextView, price: Float?) {
             price != null
             && price > 0F
     )
-        textView.context.getString(R.string.price_r, price)
+        "${String.format("%.2f", price)} р."
     else ""
 }
 
@@ -119,6 +120,28 @@ fun setMatrixType(textView: TextView, matrixType: MatrixType?) {
         ))
         textView.setBackgroundResource(if (normalType) R.drawable.bg_white_circle else R.drawable.bg_pink_circle)
     }
+
+    matrixType?.let {
+        textView.setOnClickListener {
+            dataBindingHelpHolder.coreNavigator.openMatrixInfoScreen(matrixType)
+        }
+    }
+
+
+}
+
+@BindingAdapter(value = ["section"])
+fun setSectionInfo(textView: TextView, section: String?) {
+    section?.let {
+        textView.setVisible()
+        textView.text = section
+        textView.setBackgroundResource(R.drawable.bg_white_circle)
+        textView.setOnClickListener {
+            dataBindingHelpHolder.coreNavigator.openSectionInfoScreen(section)
+        }
+        return
+    }
+    textView.setVisibleGone()
 
 }
 

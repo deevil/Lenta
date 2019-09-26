@@ -4,9 +4,11 @@ import android.widget.ImageView
 import androidx.databinding.BindingAdapter
 import com.lenta.bp14.R
 import com.lenta.bp14.models.data.GoodType
-import com.lenta.bp14.models.data.pojo.PriceTagStatus
+import com.lenta.bp14.models.data.getDescriptionResId
 import com.lenta.bp14.models.data.pojo.PrintStatus
 import com.lenta.bp14.models.data.pojo.TaskStatus
+import com.lenta.shared.utilities.databinding.dataBindingHelpHolder
+import com.lenta.shared.utilities.extentions.setInvisible
 import com.lenta.shared.utilities.extentions.setVisible
 
 @BindingAdapter("taskStatusIcon")
@@ -65,9 +67,25 @@ fun setPrintStatusIcon(imageView: ImageView, isPrinted: Boolean?) {
 
 @BindingAdapter("goodTypeIcon")
 fun setGoodTypeIcon(imageView: ImageView, goodType: GoodType?) {
-    when (goodType) {
-        GoodType.ALCOHOL -> imageView.setImageResource(R.drawable.ic_alco_white_48dp)
-        GoodType.MARKED -> imageView.setImageResource(R.drawable.ic_marked_white_48dp)
-        else -> imageView.setImageResource(R.drawable.ic_kandy_48dp)
+    imageView.setImageResource(when (goodType) {
+        GoodType.ALCOHOL -> R.drawable.ic_alco_white_48dp
+        GoodType.MARKED -> R.drawable.ic_marked_white_48dp
+        else -> R.drawable.ic_kandy_48dp
+    }.also { iconRes ->
+
+        imageView.setInvisible(goodType == null)
+
+        goodType?.let {
+            imageView.setOnClickListener {
+                dataBindingHelpHolder.coreNavigator.openAlertScreen(
+                        message = imageView.context.getString(goodType.getDescriptionResId()),
+                        iconRes = iconRes
+                )
+
+            }
+        }
     }
+    )
+
+
 }

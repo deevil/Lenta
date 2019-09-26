@@ -26,6 +26,7 @@ import com.lenta.shared.utilities.databinding.DataBindingAdapter
 import com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig
 import com.lenta.shared.utilities.databinding.RecyclerViewKeyHandler
 import com.lenta.shared.utilities.extentions.connectLiveData
+import com.lenta.shared.utilities.extentions.debounce
 import java.lang.IllegalArgumentException
 
 class GoodsListNeFragment : CoreFragment<FragmentGoodsListNeBinding, GoodsListNeViewModel>(),
@@ -64,6 +65,9 @@ class GoodsListNeFragment : CoreFragment<FragmentGoodsListNeBinding, GoodsListNe
                 } else {
                     bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.delete)
                 }
+            })
+            vm.filterField.debounce().observe(this, Observer {
+                vm.applyFilter()
             })
         }
 

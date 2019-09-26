@@ -55,59 +55,97 @@
             android:id="@+id/ll_labels"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
             android:orientation="horizontal"
+            android:visibility="@{vm.productParamsUi != null}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             tools:ignore="ContentDescription">
 
-            <ImageView
-                android:id="@+id/btn_1"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:src="@drawable/ic_round_a_48dp" />
+            <TextView
+                android:id="@+id/tv_matrix"
+                android:layout_width="36sp"
+                android:layout_height="36sp"
+                android:layout_gravity="center"
+                android:layout_marginStart="4dp"
+                android:layout_marginEnd="4dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:fontFamily="@font/tahoma_bold"
+                android:foreground="?selectableItemBackground"
+                android:gravity="center"
+                android:textSize="18sp"
+                app:matrixType="@{vm.productParamsUi.matrixType}"
+                tools:background="@drawable/bg_white_circle"
+                tools:text="A" />
 
-            <ImageView
-                android:id="@+id/btn_2"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:src="@drawable/ic_round_a_48dp" />
+            <TextView
+                android:id="@+id/tv_section"
+                style="@style/NumberSectionTxt"
+                android:layout_width="36sp"
+                android:layout_height="36sp"
+                android:layout_gravity="center"
+                android:layout_marginEnd="4dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?selectableItemBackground"
+                android:gravity="center"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/tv_matrix"
+                app:section='@{vm.productParamsUi.sectionId}'
+                tools:text="02" />
 
-            <ImageView
-                android:id="@+id/btn_3"
-                android:layout_width="0dp"
+            <ImageButton
+                android:id="@+id/b_excise_alco"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:src="@drawable/ic_kandy_48dp" />
+                android:layout_gravity="center"
+                android:background="?selectableItemBackground"
+                app:goodTypeIcon="@{vm.productParamsUi.type}"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/tv_section"
+                tools:src="@drawable/ic_excise_white_48dp" />
 
-            <ImageView
+
+            <ImageButton
                 android:id="@+id/btn_4"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:src="@drawable/ic_new_48dp" />
+                android:background="?selectableItemBackground"
+                android:src="@drawable/ic_new_48dp"
+                android:onClick="@{(v) -> vm.navigator.openPictogrammInfoNova()}"
+                app:invisible="@{!vm.productParamsUi.new}" />
 
-            <ImageView
+            <ImageButton
                 android:id="@+id/btn_5"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:src="@drawable/ic_natural_48dp" />
+                android:background="?selectableItemBackground"
+                android:src="@drawable/ic_natural_48dp"
+                android:onClick="@{(v) -> vm.navigator.openPictogrammInfoHealthyFood()}"
+                app:invisible="@{!vm.productParamsUi.healthyFood}" />
 
-            <ImageView
+            <ImageButton
                 android:id="@+id/btn_6"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="4dp"
                 android:layout_weight="1"
+                android:background="?selectableItemBackground"
+                android:onClick="@{(v) -> vm.navigator.openESInfoScreen()}"
                 android:src="@drawable/ic_scan_qrcode_48dp" />
 
-            <ImageView
+            <ImageButton
                 android:id="@+id/btn_7"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="4dp"
                 android:layout_weight="1"
+                android:background="?selectableItemBackground"
+                android:onClick="@{(v) -> vm.navigator.openEanInfoScreen()}"
                 android:src="@drawable/ic_scan_barcode_48dp" />
 
         </LinearLayout>

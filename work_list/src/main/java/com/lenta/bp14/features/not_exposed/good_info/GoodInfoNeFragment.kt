@@ -5,7 +5,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.Observer
 import com.lenta.bp14.BR
 import com.lenta.bp14.R
 import com.lenta.bp14.databinding.FragmentGoodInfoNeBinding
@@ -13,6 +12,7 @@ import com.lenta.bp14.databinding.ItemStorageStockBinding
 import com.lenta.bp14.databinding.LayoutNeGoodInfoCommonBinding
 import com.lenta.bp14.databinding.LayoutNeGoodInfoStocksBinding
 import com.lenta.bp14.platform.extentions.getAppComponent
+import com.lenta.shared.platform.activity.OnBackPresserListener
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
@@ -25,7 +25,7 @@ import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
 import com.lenta.shared.utilities.extentions.provideViewModel
 
 class GoodInfoNeFragment : CoreFragment<FragmentGoodInfoNeBinding, GoodInfoNeViewModel>(),
-        ViewPagerSettings, ToolbarButtonsClickListener {
+        ViewPagerSettings, ToolbarButtonsClickListener, OnBackPresserListener {
 
     override fun getLayoutId(): Int = R.layout.fragment_good_info_ne
 
@@ -53,6 +53,7 @@ class GoodInfoNeFragment : CoreFragment<FragmentGoodInfoNeBinding, GoodInfoNeVie
         connectLiveData(vm.cancelButtonEnabled, getBottomToolBarUIModel()!!.uiModelButton2.enabled)
         connectLiveData(vm.framedButtonEnabled, getBottomToolBarUIModel()!!.uiModelButton3.enabled)
         connectLiveData(vm.notFramedButtonEnabled, getBottomToolBarUIModel()!!.uiModelButton4.enabled)
+        connectLiveData(vm.applyButtonEnabled, getBottomToolBarUIModel()!!.uiModelButton5.enabled)
     }
 
     override fun onToolbarButtonClick(view: View) {
@@ -107,6 +108,10 @@ class GoodInfoNeFragment : CoreFragment<FragmentGoodInfoNeBinding, GoodInfoNeVie
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding?.viewPagerSettings = this
+    }
+
+    override fun onBackPressed(): Boolean {
+        return vm.onBackPressed()
     }
 
 }

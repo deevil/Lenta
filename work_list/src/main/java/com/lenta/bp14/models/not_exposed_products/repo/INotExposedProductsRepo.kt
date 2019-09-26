@@ -22,7 +22,7 @@ class NotExposedProductsRepo : INotExposedProductsRepo {
     }
 
     override fun getProducts(): LiveData<List<INotExposedProductInfo>> {
-        return resultsLiveData.map { it }
+        return resultsLiveData
     }
 
     override fun addOrReplaceProduct(product: INotExposedProductInfo): Boolean {
