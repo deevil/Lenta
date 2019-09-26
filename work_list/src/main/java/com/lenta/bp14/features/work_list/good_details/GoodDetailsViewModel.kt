@@ -34,13 +34,22 @@ class GoodDetailsViewModel : CoreViewModel(), PageSelectionListener {
 
     val shelfLives: MutableLiveData<List<ItemShelfLifeUi>> by lazy {
         task.currentGood.value!!.scanResults.map { list: List<ScanResult>? ->
-            list?.mapIndexed { index, scanResult ->
+            val combinedResults = mutableMapOf<String, ScanResult>()
+            list?.map { result ->
+                if (combinedResults.containsKey(result.getKeyFromDates())) {
+                    combinedResults[result.getKeyFromDates()]!!.quantity += result.quantity
+                } else {
+                    combinedResults[result.getKeyFromDates()] = result
+                }
+            }
+
+            combinedResults.values.mapIndexed { index, mapScanResult ->
                 ItemShelfLifeUi(
                         position = (index + 1).toString(),
-                        expirationDate = scanResult.getFormattedExpirationDate(),
-                        productionDate = scanResult.getFormattedProductionDate(),
-                        productionDateVisibility = scanResult.productionDate != null,
-                        quantity = "${scanResult.quantity} ${task.currentGood.value!!.getUnits()}"
+                        expirationDate = mapScanResult.getFormattedExpirationDate(),
+                        productionDate = mapScanResult.getFormattedProductionDate(),
+                        productionDateVisibility = mapScanResult.productionDate != null,
+                        quantity = "${mapScanResult.quantity} ${task.currentGood.value!!.getUnits()}"
                 )
             }
         }
@@ -48,27 +57,21 @@ class GoodDetailsViewModel : CoreViewModel(), PageSelectionListener {
 
     val comments: MutableLiveData<List<ItemCommentUi>> by lazy {
         task.currentGood.value!!.scanResults.map { list: List<ScanResult>? ->
-            list?.let { scanResults ->
-                val comments = mutableSetOf<String>()
-                scanResults.map { comments.add(it.comment) }
-
-                val combinedResults = mutableMapOf<String, ScanResult>()
-
-                for (scanResult in scanResults) {
-                    if (combinedResults.containsKey(scanResult.comment)) {
-                        combinedResults[scanResult.comment]!!.quantity += scanResult.quantity
-                    } else {
-                        combinedResults[scanResult.comment] = scanResult
-                    }
+            val combinedResults = mutableMapOf<String, ScanResult>()
+            list?.map { result ->
+                if (combinedResults.containsKey(result.comment)) {
+                    combinedResults[result.comment]!!.quantity += result.quantity
+                } else {
+                    combinedResults[result.comment] = result
                 }
+            }
 
-                combinedResults.toList().mapIndexed { index, scanResult ->
-                    ItemCommentUi(
-                            position = (index + 1).toString(),
-                            comment = scanResult.second.comment,
-                            quantity = "${scanResult.second.quantity} ${task.currentGood.value!!.getUnits()}"
-                    )
-                }
+            combinedResults.values.mapIndexed { index, mapScanResult ->
+                ItemCommentUi(
+                        position = (index + 1).toString(),
+                        comment = mapScanResult.comment,
+                        quantity = "${mapScanResult.quantity} ${task.currentGood.value!!.getUnits()}"
+                )
             }
         }
     }

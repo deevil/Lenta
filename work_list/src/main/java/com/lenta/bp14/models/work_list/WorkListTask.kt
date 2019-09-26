@@ -317,4 +317,15 @@ data class ScanResult(
         return if (expirationDate != null) "СГ ${expirationDate.getFormattedDate()}" else ""
     }
 
+    fun getKeyFromDates(): String {
+        return "${productionDate?.time}${expirationDate?.time}"
+    }
+
+    fun sameDates(scanResult: ScanResult?): Boolean {
+        if (scanResult == null) return false
+        if (productionDate != scanResult.productionDate) return false
+        if (expirationDate != scanResult.expirationDate) return false
+        return true
+    }
+
 }
