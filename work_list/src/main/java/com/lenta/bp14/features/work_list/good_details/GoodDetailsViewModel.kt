@@ -36,12 +36,11 @@ class GoodDetailsViewModel : CoreViewModel(), PageSelectionListener {
         task.currentGood.value!!.scanResults.map { list: List<ScanResult>? ->
             val combinedResults = mutableMapOf<String, ScanResult>()
             list?.map { result ->
-                if (combinedResults.containsKey(result.getKeyFromDates())) {
-                    val sum = combinedResults[result.getKeyFromDates()]!!.quantity + result.quantity
-                    combinedResults[result.getKeyFromDates()] = combinedResults[result.getKeyFromDates()]!!.copy(quantity = sum)
-                } else {
-                    combinedResults[result.getKeyFromDates()] = result
-                }
+                val key = result.getKeyFromDates()
+                combinedResults[key] = if (combinedResults.containsKey(key)) {
+                    val totalQuantity = combinedResults[key]!!.quantity + result.quantity
+                    combinedResults[key]!!.copy(quantity = totalQuantity)
+                } else result
             }
 
             combinedResults.values.mapIndexed { index, mapScanResult ->
@@ -60,12 +59,11 @@ class GoodDetailsViewModel : CoreViewModel(), PageSelectionListener {
         task.currentGood.value!!.scanResults.map { list: List<ScanResult>? ->
             val combinedResults = mutableMapOf<String, ScanResult>()
             list?.map { result ->
-                if (combinedResults.containsKey(result.comment)) {
-                    val sum = combinedResults[result.comment]!!.quantity + result.quantity
-                    combinedResults[result.comment] = combinedResults[result.comment]!!.copy(quantity = sum)
-                } else {
-                    combinedResults[result.comment] = result
-                }
+                val key = result.comment
+                combinedResults[key] = if (combinedResults.containsKey(key)) {
+                    val totalQuantity = combinedResults[key]!!.quantity + result.quantity
+                    combinedResults[key]!!.copy(quantity = totalQuantity)
+                } else result
             }
 
             combinedResults.values.mapIndexed { index, mapScanResult ->
