@@ -235,7 +235,7 @@ data class GoodOptions(
 data class Stock(
         val number: Int,
         val storage: String,
-        val quantity: Int
+        val quantity: Double
 )
 
 data class Provider(

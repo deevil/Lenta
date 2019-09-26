@@ -65,8 +65,10 @@ class GoodInfoNeViewModel : CoreViewModel(), PageSelectionListener {
         task.getProcessedCheckInfo()
     }
 
-    val firstStorageStock = stocks.map {
-        it?.firstOrNull { stock -> stock.storage == "0001" }?.quantity ?: ""
+    val marketStorage = stocks.map { stockSList ->
+        //TODO поправить подсчет
+        "${(stocks.value?.sumByDouble { it.quantity.toDoubleOrNull() ?: 0.0 }
+                ?: 0.0).toStringFormatted()} ???"
     }
 
     val quantityField by lazy {

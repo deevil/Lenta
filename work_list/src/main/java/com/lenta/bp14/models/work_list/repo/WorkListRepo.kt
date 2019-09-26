@@ -61,7 +61,7 @@ class WorkListRepo {
                         Stock(
                                 number = it + 1,
                                 storage = "0" + (0..9).random() + (0..9).random() + (0..9).random(),
-                                quantity = (1..99).random()
+                                quantity = (1..99).random().toDouble()
                         )
                     }
             )
