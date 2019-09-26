@@ -27,10 +27,7 @@ class GoodDetailsViewModel : CoreViewModel(), PageSelectionListener {
 
     val selectedPage = MutableLiveData(0)
 
-    val good by lazy { task.currentGood }
-
     val title = MutableLiveData<String>("")
-
 
     val shelfLives: MutableLiveData<List<ItemShelfLifeUi>> by lazy {
         task.currentGood.value!!.scanResults.map { list: List<ScanResult>? ->
@@ -92,9 +89,7 @@ class GoodDetailsViewModel : CoreViewModel(), PageSelectionListener {
 
     init {
         viewModelScope.launch {
-            title.value = good.value?.getFormattedMaterialWithName()
-
-
+            title.value = task.currentGood.value?.getFormattedMaterialWithName()
         }
     }
 
@@ -105,33 +100,32 @@ class GoodDetailsViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     fun onClickDelete() {
-        // Удаление по сроку годности
-        if (selectedPage.value == GoodDetailsTab.SHELF_LIVES.position) {
-            shelfLifeSelectionsHelper.selectedPositions.value?.apply {
-                val shelfLivesForDelete = mutableListOf<String>()
-                shelfLives.value!!.mapIndexed { index, itemShelfLifeUi ->
-                    if (this.contains(index)) {
-                        shelfLivesForDelete.add(itemShelfLifeUi.productionDate + itemShelfLifeUi.expirationDate)
+        when (selectedPage.value) {
+            GoodDetailsTab.SHELF_LIVES.position -> {
+                shelfLifeSelectionsHelper.selectedPositions.value?.apply {
+                    val shelfLivesForDelete = mutableListOf<String>()
+                    shelfLives.value!!.mapIndexed { index, itemShelfLifeUi ->
+                        if (this.contains(index)) {
+                            shelfLivesForDelete.add(itemShelfLifeUi.productionDate + itemShelfLifeUi.expirationDate)
+                        }
                     }
-                }
 
-                task.deleteScanResultsByShelfLives(shelfLivesForDelete)
-                shelfLifeSelectionsHelper.clearPositions()
+                    task.deleteScanResultsByShelfLives(shelfLivesForDelete)
+                    shelfLifeSelectionsHelper.clearPositions()
+                }
             }
-        }
-
-        // Удаление по комментариям
-        if (selectedPage.value == GoodDetailsTab.COMMENTS.position) {
-            commentSelectionsHelper.selectedPositions.value?.apply {
-                val commentsForDelete = mutableListOf<String>()
-                comments.value!!.mapIndexed { index, itemCommentUi ->
-                    if (this.contains(index)) {
-                        commentsForDelete.add(itemCommentUi.comment)
+            GoodDetailsTab.COMMENTS.position -> {
+                commentSelectionsHelper.selectedPositions.value?.apply {
+                    val commentsForDelete = mutableListOf<String>()
+                    comments.value!!.mapIndexed { index, itemCommentUi ->
+                        if (this.contains(index)) {
+                            commentsForDelete.add(itemCommentUi.comment)
+                        }
                     }
-                }
 
-                task.deleteScanResultsByComments(commentsForDelete)
-                commentSelectionsHelper.clearPositions()
+                    task.deleteScanResultsByComments(commentsForDelete)
+                    commentSelectionsHelper.clearPositions()
+                }
             }
         }
     }
