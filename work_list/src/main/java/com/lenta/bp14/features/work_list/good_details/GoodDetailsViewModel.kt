@@ -37,7 +37,8 @@ class GoodDetailsViewModel : CoreViewModel(), PageSelectionListener {
             val combinedResults = mutableMapOf<String, ScanResult>()
             list?.map { result ->
                 if (combinedResults.containsKey(result.getKeyFromDates())) {
-                    combinedResults[result.getKeyFromDates()]!!.quantity += result.quantity
+                    val copy = combinedResults[result.getKeyFromDates()]!!.copy(quantity = combinedResults[result.getKeyFromDates()]!!.quantity + result.quantity )
+                    combinedResults[result.getKeyFromDates()] = copy
                 } else {
                     combinedResults[result.getKeyFromDates()] = result
                 }
@@ -60,7 +61,8 @@ class GoodDetailsViewModel : CoreViewModel(), PageSelectionListener {
             val combinedResults = mutableMapOf<String, ScanResult>()
             list?.map { result ->
                 if (combinedResults.containsKey(result.comment)) {
-                    combinedResults[result.comment]!!.quantity += result.quantity
+                    val copy = combinedResults[result.comment]!!.copy(quantity = combinedResults[result.comment]!!.quantity + result.quantity )
+                    combinedResults[result.comment] = copy
                 } else {
                     combinedResults[result.comment] = result
                 }

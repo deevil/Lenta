@@ -303,7 +303,7 @@ enum class DeliveryStatus(val description: String) {
 // -----------------------------
 
 data class ScanResult(
-        var quantity: Int,
+        val quantity: Int,
         val comment: String,
         val productionDate: Date?,
         val expirationDate: Date?
