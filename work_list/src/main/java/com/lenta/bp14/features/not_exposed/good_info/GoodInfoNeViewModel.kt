@@ -30,7 +30,7 @@ class GoodInfoNeViewModel : CoreViewModel(), PageSelectionListener {
                         ProductParamsUi(
                                 matrixType = MatrixType.Active,
                                 sectionId = "02",
-                                type = GoodType.COMMON,
+                                type = GoodType.MARKED,
                                 isNew = true,
                                 isHealthyFood = true
                         )

@@ -25,14 +25,14 @@ enum class ShelfLifeType(val position: Int) {
 
 enum class GoodType {
     COMMON,
-    ALCOHOL_NON_EXCISE,
-    ALCOHOL_EXCISE
+    ALCOHOL,
+    MARKED
 }
 
 fun GoodType.getDescriptionResId(): Int {
     return when (this) {
         GoodType.COMMON -> R.string.common_product
-        GoodType.ALCOHOL_NON_EXCISE -> R.string.non_excise_alco
-        GoodType.ALCOHOL_EXCISE -> R.string.excise_alco
+        GoodType.ALCOHOL -> R.string.alcohol
+        GoodType.MARKED -> R.string.marked_product
     }
 }

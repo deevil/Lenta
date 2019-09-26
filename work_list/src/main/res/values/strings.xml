@@ -111,6 +111,8 @@
     <string name="healthy_food">\"Здоровая еда\"</string>
     <string name="common_product">Обычный товар</string>
     <string name="confirmation_not_save_changes">Изменения не будут сохранены. Продолжить?</string>
+    <string name="alcohol">Алкоголь</string>
+    <string name="marked_product">Маркированный товар</string>
 
 
 </resources>
