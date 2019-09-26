@@ -48,16 +48,30 @@ class GoodDetailsViewModel : CoreViewModel(), PageSelectionListener {
 
     val comments: MutableLiveData<List<ItemCommentUi>> by lazy {
         task.currentGood.value!!.scanResults.map { list: List<ScanResult>? ->
-            list?.mapIndexed { index, scanResult ->
-                ItemCommentUi(
-                        position = (index + 1).toString(),
-                        comment = scanResult.comment,
-                        quantity = "${scanResult.quantity} ${task.currentGood.value!!.getUnits()}"
-                )
+            list?.let { scanResults ->
+                val comments = mutableSetOf<String>()
+                scanResults.map { comments.add(it.comment) }
+
+                val combinedResults = mutableMapOf<String, ScanResult>()
+
+                for (scanResult in scanResults) {
+                    if (combinedResults.containsKey(scanResult.comment)) {
+                        combinedResults[scanResult.comment]!!.quantity += scanResult.quantity
+                    } else {
+                        combinedResults[scanResult.comment] = scanResult
+                    }
+                }
+
+                combinedResults.toList().mapIndexed { index, scanResult ->
+                    ItemCommentUi(
+                            position = (index + 1).toString(),
+                            comment = scanResult.second.comment,
+                            quantity = "${scanResult.second.quantity} ${task.currentGood.value!!.getUnits()}"
+                    )
+                }
             }
         }
     }
-
 
     private val selectedItemOnCurrentTab: MutableLiveData<Boolean> = selectedPage
             .combineLatest(shelfLifeSelectionsHelper.selectedPositions)
@@ -88,7 +102,49 @@ class GoodDetailsViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     fun onClickDelete() {
+        if (selectedPage.value == GoodDetailsTab.SHELF_LIVES.position) {
+            task.deleteSelectedScanResults(shelfLifeSelectionsHelper.selectedPositions.value)
+            shelfLifeSelectionsHelper.clearPositions()
+        }
 
+
+        /* val goodsList = goods.value!!.toMutableList()
+
+         selectionsHelper.selectedPositions.value?.apply {
+             val eans = goods.value?.filterIndexed { index, _ ->
+                 this.contains(index)
+             }?.map { it.ean }?.toSet() ?: emptySet()
+
+             goodsList.removeAll { eans.contains(it.ean) }
+         }
+
+         for (index in goodsList.lastIndex downTo 0) {
+             goodsList[index].number = goodsList.lastIndex + 1 - index
+         }
+
+         selectionsHelper.clearPositions()
+         goods.value = goodsList.toList()*/
+
+
+        /*when (selectedPage.value) {
+            1 -> shelfLifeSelectionsHelper
+            2 -> commentSelectionsHelper
+            else -> null
+        }?.let { selectionHelper ->
+            selectionHelper.selectedPositions.value?.apply {
+                task.removeCheckResultsByMatNumbers(
+                        if (selectionHelper === processedSelectionsHelper) {
+                            processedGoods
+                        } else {
+                            searchGoods
+                        }.value?.filterIndexed { index, _ ->
+                            this.contains(index)
+                        }?.map { it.matNr }?.toSet()
+                                ?: emptySet()
+                )
+            }
+            selectionHelper.clearPositions()
+        }*/
     }
 
 }

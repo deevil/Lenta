@@ -37,6 +37,14 @@ class WorkListTask(
     val deliveries = MutableLiveData<List<Delivery>>(listOf())
     val comments = MutableLiveData<List<String>>(listOf())
 
+    override fun getTaskType(): ITaskType {
+        return TaskTypes.WorkList.taskType
+    }
+
+    override fun getDescription(): ITaskDescription {
+        return taskDescription
+    }
+
     override suspend fun addGoodByEan(ean: String): Boolean {
         var good = goods.value?.find { it.common.ean == ean }
         if (good != null) {
@@ -128,12 +136,16 @@ class WorkListTask(
     }
 
 
-    override fun getTaskType(): ITaskType {
-        return TaskTypes.WorkList.taskType
-    }
 
-    override fun getDescription(): ITaskDescription {
-        return taskDescription
+
+    fun deleteSelectedScanResults(indices: MutableSet<Int>?) {
+        val scanResultsList = currentGood.value?.scanResults?.value?.toMutableList()
+        val itemsForDelete = scanResultsList?.filterIndexed { index, _ ->
+            indices!!.contains(index)
+        }
+
+        scanResultsList?.removeAll { itemsForDelete!!.contains(it) }
+        currentGood.value?.scanResults?.value = scanResultsList
     }
 
 }
@@ -291,7 +303,7 @@ enum class DeliveryStatus(val description: String) {
 // -----------------------------
 
 data class ScanResult(
-        val quantity: Int,
+        var quantity: Int,
         val comment: String,
         val productionDate: Date?,
         val expirationDate: Date?
