@@ -116,20 +116,36 @@
             app:layout_constraintStart_toStartOf="parent" />
 
         <TextView
-            android:id="@+id/tv_quantity"
+            android:id="@+id/tv_accept"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
+            android:layout_marginTop="10dp"
             android:layout_marginEnd="8dp"
             android:ellipsize="end"
             android:gravity="start|center_vertical"
             android:maxLines="1"
-            android:text='@{vm.quantity}'
-            app:layout_constraintBottom_toBottomOf="@+id/tv_goods_title"
+            android:text='@{vm.countAccept != 0.0 ? "+ " + vm.countAccept + " " + vm.uomName : "0 " + vm.uomName }'
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/div_vert2"
-            app:layout_constraintTop_toTopOf="@+id/tv_goods_title"
-            tools:text="\? 10 шт" />
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="+ 10 шт" />
+
+        <TextView
+            android:id="@+id/tv_refusal"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:ellipsize="end"
+            android:gravity="start|center_vertical"
+            android:maxLines="1"
+            android:text='@{vm.countRefusal != 0.0 ? "- " + vm.countRefusal + " " + vm.uomName : "0 " + vm.uomName }'
+            android:textColor="@color/color_pressed_red"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="@+id/tv_accept"
+            app:layout_constraintTop_toBottomOf="@+id/tv_accept"
+            tools:text="- 10 шт" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

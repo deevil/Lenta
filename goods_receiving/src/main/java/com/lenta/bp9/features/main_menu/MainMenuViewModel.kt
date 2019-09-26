@@ -169,7 +169,7 @@ class MainMenuViewModel : CoreViewModel() {
                     quantityInvest = "",
                     roundingSurplus = "",
                     roundingShortages = "",
-                    isNoEAN = false,
+                    isNoEAN = true,
                     isWithoutRecount = false,
                     isUFF = false,
                     isNotEdit = false,

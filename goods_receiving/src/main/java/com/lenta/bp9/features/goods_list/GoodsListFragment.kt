@@ -30,7 +30,6 @@ class GoodsListFragment : CoreFragment<FragmentGoodsListBinding, GoodsListViewMo
         ToolbarButtonsClickListener {
 
     private var countedRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
-    private var withoutBarcodeRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
 
     override fun getLayoutId(): Int = R.layout.fragment_goods_list
 
@@ -137,6 +136,12 @@ class GoodsListFragment : CoreFragment<FragmentGoodsListBinding, GoodsListViewMo
                         container,
                         false).let { layoutBinding ->
 
+                    val onClickGoodsTitle = View.OnClickListener {
+                        (it!!.tag as Int).let { position ->
+                            vm.onClickItemPosition(position)
+                        }
+                    }
+
                     layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
                             layoutId = R.layout.item_tile_goods_list_without_barcode,
                             itemId = BR.vm,
@@ -145,18 +150,10 @@ class GoodsListFragment : CoreFragment<FragmentGoodsListBinding, GoodsListViewMo
                                 }
 
                                 override fun onBind(binding: ItemTileGoodsListWithoutBarcodeBinding, position: Int) {
-                                    //binding.tvGoodsTitle.tag = position
-                                    //binding.tvGoodsTitle.setOnClickListener(onClickGoodsTitle)
-                                }
-
-                            },
-                            onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
-                                withoutBarcodeRecyclerViewKeyHandler?.let {
-                                    if (it.isSelected(position)) {
-                                        vm.onClickItemPosition(position)
-                                    } else {
-                                        it.selectPosition(position)
-                                    }
+                                    binding.tvCounter.tag = position
+                                    binding.tvCounter.setOnClickListener(onClickGoodsTitle)
+                                    binding.tvGoodsTitle.tag = position
+                                    binding.tvGoodsTitle.setOnClickListener(onClickGoodsTitle)
                                 }
 
                             }

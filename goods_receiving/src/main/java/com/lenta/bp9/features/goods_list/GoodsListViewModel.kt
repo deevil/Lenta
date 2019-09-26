@@ -58,7 +58,6 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
 
     val visibilityBatchesButton: MutableLiveData<Boolean> = MutableLiveData()
 
-
     fun onResume() {
         visibilityBatchesButton.value = taskManager.getReceivingTask()?.taskDescription?.isAlco
         updateListCounted()
@@ -159,19 +158,16 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
     }
 
     fun onClickItemPosition(position: Int) {
-        //todo
         val matnr: String?
         if (selectedPage.value == 0) {
             matnr = listCounted.value?.get(position)?.productInfo?.materialNumber
         } else {
             matnr = listWithoutBarcode.value?.get(position)?.productInfo?.materialNumber
         }
-        Logg.d { "test $matnr" }
-        /**matnr?.let {
-            val productInfo = taskManager.getInventoryTask()?.taskRepository?.getProducts()?.findProduct(it, storePlaceManager?.storePlaceNumber
-                    ?: "")
-            if (productInfo != null) searchProductDelegate.openTaskProductScreen(productInfo)
-        }*/
+        matnr?.let {
+            val productInfo = taskManager.getReceivingTask()?.taskRepository?.getProducts()?.findProduct(it)
+            if (productInfo != null) screenNavigator.openGoodsInfoScreen(productInfo)
+        }
     }
 
     fun onDigitPressed(digit: Int) {
@@ -223,41 +219,7 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
     }
 
     fun onClickSave() {
-        //todo
-        val tmpProduct = taskManager.getReceivingTask()!!.taskRepository.getProducts().findProduct(TaskProductInfo(
-                materialNumber = "000021",
-                description = "Р/к горбуша (Россия) 230/250г",
-                uom = Uom("ST", "шт"),
-                type = ProductType.General,
-                isSet = false,
-                sectionId = "01",
-                matrixType = MatrixType.Active,
-                materialType = "",
-                origQuantity = "",
-                orderQuantity = "",
-                quantityCapitalized = "",
-                overdToleranceLimit = "",
-                underdToleranceLimit = "",
-                upLimitCondAmount = "",
-                quantityInvest = "",
-                roundingSurplus = "",
-                roundingShortages = "",
-                isNoEAN = false,
-                isWithoutRecount = false,
-                isUFF = false,
-                isNotEdit = false,
-                totalExpirationDate = "",
-                remainingShelfLife = "",
-                isRus = false,
-                isBoxFl = false,
-                isMarkFl = false,
-                isVet = false,
-                numberBoxesControl = "",
-                numberStampsControl = ""
-        ))
-        screenNavigator.openGoodsInfoScreen(tmpProduct!!)
-
-        /**viewModelScope.launch {
+        viewModelScope.launch {
             screenNavigator.showProgress(titleProgressScreen.value!!)
             if (taskManager.getReceivingTask()!!.getProcessedProducts().any { it.isNoEAN }) {
                 screenNavigator.openDiscrepancyListScreen()
@@ -271,7 +233,7 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
                 )).either(::handleFailure, ::handleSucess)
             }
             screenNavigator.hideProgress()
-        }*/
+        }
     }
 
     private fun handleSucess(endRecountDDResult: EndRecountDDResult) {
