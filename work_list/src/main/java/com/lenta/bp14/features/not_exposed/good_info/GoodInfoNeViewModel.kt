@@ -10,6 +10,7 @@ import com.lenta.bp14.platform.navigation.IScreenNavigator
 import com.lenta.shared.models.core.MatrixType
 import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.extentions.map
+import com.lenta.shared.utilities.extentions.toStringFormatted
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -60,7 +61,7 @@ class GoodInfoNeViewModel : CoreViewModel(), PageSelectionListener {
     }
 
 
-    private val originalProcessedProductInfo by lazy {
+    val originalProcessedProductInfo by lazy {
         task.getProcessedCheckInfo()
     }
 
@@ -71,7 +72,7 @@ class GoodInfoNeViewModel : CoreViewModel(), PageSelectionListener {
     val quantityField by lazy {
         MutableLiveData<String>().also {
             viewModelScope.launch {
-                it.value = originalProcessedProductInfo?.quantity?.toString() ?: "0"
+                it.value = originalProcessedProductInfo?.quantity?.toStringFormatted() ?: "0"
             }
         }
     }

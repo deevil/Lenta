@@ -49,7 +49,7 @@ class NotExposedProductsTask(
                             matNr = it.productInfo.materialNumber,
                             name = it.productInfo.description,
                             quantity = quantity,
-                            uom = it.productInfo.uom.name,
+                            uom = it.productInfo.uom,
                             isEmptyPlaceMarked = isEmptyPlaceMarked
                     )
             )

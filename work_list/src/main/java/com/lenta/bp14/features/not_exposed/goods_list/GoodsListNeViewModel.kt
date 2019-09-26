@@ -20,6 +20,7 @@ import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.map
+import com.lenta.shared.utilities.extentions.toStringFormatted
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -65,7 +66,7 @@ class GoodsListNeViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
                     position = products.size - index,
                     matNr = productInfo.matNr,
                     name = "${productInfo.matNr.takeLast(6)} ${productInfo.name}",
-                    quantity = "${productInfo.quantity} ${productInfo.uom}",
+                    quantity = "${productInfo.quantity.toStringFormatted()} ${productInfo.uom.name}",
                     isEmptyPlaceMarked = productInfo.isEmptyPlaceMarked
             )
         }

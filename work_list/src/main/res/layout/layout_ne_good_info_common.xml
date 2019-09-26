@@ -40,6 +40,8 @@
                         android:inputType="numberDecimal"
                         android:text="@={vm.quantityField}"
                         android:enabled="@{vm.isInputNumberEnabled()}"
+                        app:digitsForUom="@{vm.originalProcessedProductInfo.uom}"
+                        app:suffix="@{vm.originalProcessedProductInfo.uom.name}"
                         tools:text="0" />
 
                 </LinearLayout>
