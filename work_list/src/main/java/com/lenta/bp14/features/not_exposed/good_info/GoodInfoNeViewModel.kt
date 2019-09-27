@@ -5,13 +5,15 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp14.features.work_list.good_info.ItemStockUi
 import com.lenta.bp14.models.data.GoodType
+import com.lenta.bp14.models.data.getGoodType
 import com.lenta.bp14.models.not_exposed_products.INotExposedProductsTask
 import com.lenta.bp14.platform.navigation.IScreenNavigator
 import com.lenta.shared.models.core.MatrixType
+import com.lenta.shared.models.core.getMatrixType
 import com.lenta.shared.utilities.databinding.PageSelectionListener
+import com.lenta.shared.utilities.extentions.isSapTrue
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.toStringFormatted
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -23,41 +25,41 @@ class GoodInfoNeViewModel : CoreViewModel(), PageSelectionListener {
     @Inject
     lateinit var task: INotExposedProductsTask
 
-    val productParamsUi: MutableLiveData<ProductParamsUi> by lazy {
-        MutableLiveData<ProductParamsUi>().also { liveData ->
-            viewModelScope.launch {
-                delay(500)
-                liveData.postValue(
-                        ProductParamsUi(
-                                matrixType = MatrixType.Active,
-                                sectionId = "02",
-                                type = GoodType.MARKED,
-                                isNew = true,
-                                isHealthyFood = true
-                        )
-                )
-
-            }
-        }
+    private val goodInfo by lazy {
+        task.getProcessedProductInfoResult()!!
     }
+
+    val productParamsUi: MutableLiveData<ProductParamsUi> by lazy {
+        MutableLiveData<ProductParamsUi>(
+                goodInfo.let {
+                    ProductParamsUi(
+                            matrixType = getMatrixType(it.productInfo.matrixType),
+                            sectionId = it.productInfo.sectionNumber,
+                            type = it.productInfo.getGoodType(),
+                            isNew = it.productInfo.isNew.isSapTrue(),
+                            isHealthyFood = it.productInfo.isHealthyFood.isSapTrue()
+                    )
+                }
+        )
+    }
+
 
     val selectedPage = MutableLiveData(0)
 
     val stocks: MutableLiveData<List<ItemStockUi>> by lazy {
-        MutableLiveData<List<ItemStockUi>>().also { liveData ->
-            viewModelScope.launch {
-                delay(500)
-                liveData.postValue(
-                        List(10) {
-                            ItemStockUi(
-                                    number = "${it + 1}",
-                                    storage = "000${it + 1}",
-                                    quantity = "${it + 1} ШТ"
-                            )
-                        }
-                )
-            }
-        }
+        MutableLiveData<List<ItemStockUi>>(
+                goodInfo.let { goodInfo ->
+                    goodInfo.stocks.mapIndexed { index, stock ->
+                        ItemStockUi(
+                                number = "${index + 1}",
+                                storage = stock.lgort,
+                                quantity = "${stock.stock.toStringFormatted()} ${goodInfo.uom?.name
+                                        ?: ""}"
+                        )
+
+                    }
+                }
+        )
     }
 
 
@@ -65,10 +67,9 @@ class GoodInfoNeViewModel : CoreViewModel(), PageSelectionListener {
         task.getProcessedCheckInfo()
     }
 
-    val marketStorage = stocks.map { stockSList ->
-        //TODO поправить подсчет
-        "${(stocks.value?.sumByDouble { it.quantity.toDoubleOrNull() ?: 0.0 }
-                ?: 0.0).toStringFormatted()} ???"
+    val marketStorage by lazy {
+        "${(goodInfo.stocks.sumByDouble { it.stock }).toStringFormatted()} ${goodInfo.uom?.name
+                ?: ""}"
     }
 
     val quantityField by lazy {
@@ -125,10 +126,9 @@ class GoodInfoNeViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     fun getTitle(): String? {
-        task.getProcessedProductInfoResult()?.productInfo?.let {
+        goodInfo.productInfo.let {
             return "${it.matNr.takeLast(6)} ${it.name}"
         }
-        return null
     }
 
     fun onBackPressed(): Boolean {
