@@ -20,8 +20,7 @@ class ProductInfoForNotExposedNetRequest
     }
 
     override suspend fun run(params: NotExposedInfoRequestParams): Either<Failure, GoodInfo> {
-        var goodNotFoundFault: Either<Failure, GoodInfo>? = null
-        val res = productInfoNetRequest(params = params.toCommonParams()).map {
+        return productInfoNetRequest(params = params.toCommonParams()).map {
             GoodInfo(
                     productInfo = it.productsInfo[0],
                     stocks = it.stocks,
@@ -33,11 +32,6 @@ class ProductInfoForNotExposedNetRequest
                     }
             )
         }
-
-        goodNotFoundFault?.apply {
-            return this
-        }
-        return res
     }
 
 }
