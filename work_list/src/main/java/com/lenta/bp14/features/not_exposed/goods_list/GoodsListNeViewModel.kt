@@ -12,14 +12,15 @@ import com.lenta.bp14.models.getTaskName
 import com.lenta.bp14.models.not_exposed_products.INotExposedProductsTask
 import com.lenta.bp14.models.not_exposed_products.repo.INotExposedProductInfo
 import com.lenta.bp14.platform.navigation.IScreenNavigator
+import com.lenta.bp14.requests.ProductInfoNetRequest
 import com.lenta.shared.requests.combined.scan_info.ScanInfoRequest
-import com.lenta.shared.requests.combined.scan_info.ScanInfoRequestParams
 import com.lenta.shared.requests.combined.scan_info.analyseCode
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.map
+import com.lenta.shared.utilities.extentions.toStringFormatted
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -33,6 +34,9 @@ class GoodsListNeViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
 
     @Inject
     lateinit var scanInfoRequest: ScanInfoRequest
+
+    @Inject
+    lateinit var productInfoNetRequest: ProductInfoNetRequest
 
     val onOkFilterListener = object : OnOkInSoftKeyboardListener {
         override fun onOkInSoftKeyboard(): Boolean {
@@ -65,7 +69,8 @@ class GoodsListNeViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
                     position = products.size - index,
                     matNr = productInfo.matNr,
                     name = "${productInfo.matNr.takeLast(6)} ${productInfo.name}",
-                    quantity = "${productInfo.quantity} ${productInfo.uom}",
+                    quantity = "${productInfo.quantity.toStringFormatted()} ${productInfo.uom?.name
+                            ?: ""}",
                     isEmptyPlaceMarked = productInfo.isEmptyPlaceMarked
             )
         }
@@ -121,10 +126,10 @@ class GoodsListNeViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
         analyseCode(
                 code = code ?: "",
                 funcForEan = { eanCode ->
-                    searchCode(number = eanCode, fromScan = true, isBarcode = true)
+                    searchCode(eanCode = eanCode)
                 },
                 funcForMatNr = { matNr ->
-                    searchCode(number = matNr, fromScan = false, isBarcode = false)
+                    searchCode(matNr = matNr)
                 },
                 funcForPriceQrCode = { qrCode ->
                     navigator.showGoodNotFound()
@@ -134,27 +139,25 @@ class GoodsListNeViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
         )
     }
 
-    private fun searchCode(number: String, fromScan: Boolean, isBarcode: Boolean?) {
+
+    private fun searchCode(eanCode: String? = null, matNr: String? = null) {
+        require((!eanCode.isNullOrBlank() xor !matNr.isNullOrBlank()))
         viewModelScope.launch {
-            navigator.showProgress(scanInfoRequest)
-            scanInfoRequest(
-                    ScanInfoRequestParams(
-                            number = number,
-                            tkNumber = task.getDescription().tkNumber,
-                            fromScan = fromScan,
-                            isBarCode = isBarcode
-                    )
-            ).either(
-                    fnL = {
-                        navigator.openAlertScreen(it)
+            navigator.showProgressLoadingData()
+            task.getProductInfoAndSetProcessed(ean = eanCode, matNr = matNr).either(
+                    {
+                        navigator.openAlertScreen(failure = it)
                     }
             ) {
-                task.scanInfoResult = it
                 navigator.openGoodInfoNeScreen()
             }
+
             navigator.hideProgress()
         }
+
+
     }
+
 
 
     fun onClickSave() {

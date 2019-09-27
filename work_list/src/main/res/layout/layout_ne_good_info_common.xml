@@ -40,6 +40,8 @@
                         android:inputType="numberDecimal"
                         android:text="@={vm.quantityField}"
                         android:enabled="@{vm.isInputNumberEnabled()}"
+                        app:digitsForUom="@{vm.originalProcessedProductInfo.uom}"
+                        app:suffix="@{vm.originalProcessedProductInfo.uom.name}"
                         tools:text="0" />
 
                 </LinearLayout>
@@ -60,7 +62,7 @@
 
                     <TextView
                         style="@style/CellTextStyle"
-                        android:text="@string/stock_one_storage" />
+                        android:text="@string/market_storage" />
 
                 </LinearLayout>
 
@@ -74,7 +76,7 @@
                     <TextView
                         android:id="@+id/tv_removed_good"
                         style="@style/CellTextStyle"
-                        android:text="@{vm.firstStorageStock}"
+                        android:text="@{vm.marketStorage}"
                         tools:text="25 шт." />
 
                 </LinearLayout>

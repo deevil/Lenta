@@ -2,7 +2,7 @@ package com.lenta.bp14.models.not_exposed_products.repo
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.lenta.shared.utilities.extentions.map
+import com.lenta.shared.models.core.Uom
 
 class NotExposedProductsRepo : INotExposedProductsRepo {
 
@@ -58,8 +58,9 @@ data class NotExposedProductInfo(
         override val matNr: String,
         override val name: String,
         override val quantity: Double?,
-        override val uom: String,
-        override val isEmptyPlaceMarked: Boolean?) : INotExposedProductInfo
+        override val uom: Uom?,
+        override val isEmptyPlaceMarked: Boolean?
+) : INotExposedProductInfo
 
 
 interface INotExposedProductInfo {
@@ -67,6 +68,6 @@ interface INotExposedProductInfo {
     val matNr: String
     val name: String
     val quantity: Double?
-    val uom: String
+    val uom: Uom?
     val isEmptyPlaceMarked: Boolean?
 }

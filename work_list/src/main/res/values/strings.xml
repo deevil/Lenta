@@ -93,7 +93,7 @@
     <string name="last_day_sales">Объем продаж за последние сутки</string>
     <string name="last_week_sales">Объем продаж за 7 дней</string>
     <string name="common_info">Общая информация</string>
-    <string name="stock_one_storage">Запас 1 склад</string>
+    <string name="market_storage">Общий запас в ТК</string>
     <string name="empty_place">Пустое место</string>
     <string name="task_type">Тип задания</string>
     <string name="price_one">Цена 1</string>
@@ -110,7 +110,7 @@
     <string name="picto_nova">\"Новинка\"</string>
     <string name="healthy_food">\"Здоровая еда\"</string>
     <string name="common_product">Обычный товар</string>
-    <string name="confirmation_not_save_changes">Изменения не будут сохранены. Продолжить?</string>
+    <string name="confirmation_not_save_changes">Несохраненные данные будут удалены. Продолжить?</string>
     <string name="alcohol">Алкоголь</string>
     <string name="marked_product">Маркированный товар</string>
     <string name="self_life">Срок годности</string>

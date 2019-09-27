@@ -11,8 +11,12 @@ import com.lenta.bp14.models.general.TaskTypes
 import com.lenta.bp14.models.not_exposed_products.repo.INotExposedProductInfo
 import com.lenta.bp14.models.not_exposed_products.repo.INotExposedProductsRepo
 import com.lenta.bp14.models.not_exposed_products.repo.NotExposedProductInfo
-import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
-import com.lenta.shared.utilities.Logg
+import com.lenta.bp14.requests.not_exposed_product.GoodInfo
+import com.lenta.bp14.requests.not_exposed_product.NotExposedInfoRequestParams
+import com.lenta.shared.exception.Failure
+import com.lenta.shared.functional.Either
+import com.lenta.shared.functional.map
+import com.lenta.shared.interactor.UseCase
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.map
 
@@ -20,11 +24,16 @@ import com.lenta.shared.utilities.extentions.map
 class NotExposedProductsTask(
         private val taskDescription: NotExposedProductsTaskDescription,
         private val notExposedProductsRepo: INotExposedProductsRepo,
-        private val filterableDelegate: FilterableDelegate
+        private val filterableDelegate: FilterableDelegate,
+        private val productInfoNotExposedInfoRequest: UseCase<GoodInfo, NotExposedInfoRequestParams>
 ) : INotExposedProductsTask, IFilterable by filterableDelegate {
 
 
-    override var scanInfoResult: ScanInfoResult? = null
+    private var processedGoodInfo: GoodInfo? = null
+
+    override fun getProcessedProductInfoResult(): GoodInfo? {
+        return processedGoodInfo
+    }
 
 
     override fun getTaskType(): ITaskType {
@@ -41,15 +50,15 @@ class NotExposedProductsTask(
 
 
     override fun setCheckInfo(quantity: Double?, isEmptyPlaceMarked: Boolean?) {
-        scanInfoResult.let {
+        processedGoodInfo.let {
             requireNotNull(it)
             notExposedProductsRepo.addOrReplaceProduct(
                     NotExposedProductInfo(
                             ean = null,
-                            matNr = it.productInfo.materialNumber,
-                            name = it.productInfo.description,
+                            matNr = it.productInfo.matNr,
+                            name = it.productInfo.name,
                             quantity = quantity,
-                            uom = it.productInfo.uom.name,
+                            uom = it.uom,
                             isEmptyPlaceMarked = isEmptyPlaceMarked
                     )
             )
@@ -77,6 +86,11 @@ class NotExposedProductsTask(
             @Suppress("NON_EXHAUSTIVE_WHEN")
             when (it.key) {
                 FilterFieldType.NUMBER -> {
+
+                    if (!filterableDelegate.isHaveAnotherActiveFilter(FilterFieldType.NUMBER) && it.value.value.isBlank()) {
+                        return false
+                    }
+
                     if (product.ean?.contains(it.value.value) != true && !product.matNr.contains(it.value.value)) {
                         return false
                     }
@@ -87,7 +101,22 @@ class NotExposedProductsTask(
     }
 
     override fun getProcessedCheckInfo(): INotExposedProductInfo? {
-        return getProducts().value?.firstOrNull { it.matNr == scanInfoResult?.productInfo?.materialNumber }
+        return getProducts().value?.firstOrNull { it.matNr == processedGoodInfo?.productInfo?.matNr }
+    }
+
+    override suspend fun getProductInfoAndSetProcessed(ean: String?, matNr: String?): Either<Failure, GoodInfo> {
+        return productInfoNotExposedInfoRequest(
+                NotExposedInfoRequestParams(
+                        ean = ean,
+                        matNr = matNr,
+                        tkNumber = taskDescription.tkNumber
+                )
+
+        ).also {
+            it.map {
+                processedGoodInfo = it
+            }
+        }
     }
 
 
@@ -96,7 +125,7 @@ class NotExposedProductsTask(
 
 interface INotExposedProductsTask : ITask, IFilterable {
 
-    var scanInfoResult: ScanInfoResult?
+    fun getProcessedProductInfoResult(): GoodInfo?
 
     fun getProducts(): LiveData<List<INotExposedProductInfo>>
 
@@ -108,4 +137,7 @@ interface INotExposedProductsTask : ITask, IFilterable {
 
     fun getProcessedCheckInfo(): INotExposedProductInfo?
 
+    suspend fun getProductInfoAndSetProcessed(ean: String? = null, matNr: String? = null): Either<Failure, GoodInfo>
+
 }
+

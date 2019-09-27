@@ -15,6 +15,8 @@
  */
 package com.lenta.shared.functional
 
+import com.lenta.shared.utilities.Logg
+
 /**
  * Represents a value of one of two possible types (a disjoint union).
  * Instances of [Either] are either an instance of [Left] or [Right].
@@ -27,6 +29,7 @@ package com.lenta.shared.functional
 sealed class Either<out L, out R> {
     /** * Represents the left side of [Either] class which by convention is a "Failure". */
     data class Left<out L>(val a: L) : Either<L, Nothing>()
+
     /** * Represents the right side of [Either] class which by convention is a "Success". */
     data class Right<out R>(val b: R) : Either<Nothing, R>()
 
@@ -56,3 +59,18 @@ fun <T, L, R> Either<L, R>.flatMap(fn: (R) -> Either<L, T>): Either<L, T> =
         }
 
 fun <T, L, R> Either<L, R>.map(fn: (R) -> (T)): Either<L, T> = this.flatMap(fn.c(::right))
+
+fun <L, R> Either<L, R>.rightToLeft(fnRtoL: (R) -> (L?)): Either<L, R> =
+        when (this) {
+            is Either.Left -> Either.Left(a)
+            is Either.Right -> {
+                fnRtoL(b).let { result ->
+                    Logg.d { "result: $result" }
+                    when (result) {
+                        null -> Either.Right(b)
+                        else -> Either.Left(result)
+                    }
+                }
+            }
+        }
+

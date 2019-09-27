@@ -23,6 +23,7 @@ import com.lenta.bp14.platform.sound.ISoundPlayer
 import com.lenta.bp14.platform.sound.SoundPlayer
 import com.lenta.bp14.repos.IRepoInMemoryHolder
 import com.lenta.bp14.repos.RepoInMemoryHolder
+import com.lenta.bp14.requests.not_exposed_product.ProductInfoForNotExposedNetRequest
 import com.lenta.shared.account.IAuthenticator
 import com.lenta.shared.di.AppScope
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
@@ -115,10 +116,12 @@ class AppModule {
     @AppScope
     internal fun provideNotExposedProductsTaskManager(
             timeMonitor: ITimeMonitor,
-            gson: Gson): NotExposedProductsTaskManager {
+            gson: Gson,
+            productInfoForNotExposedNetRequest: ProductInfoForNotExposedNetRequest): NotExposedProductsTaskManager {
         return NotExposedProductsTaskManager(
                 timeMonitor = timeMonitor,
-                gson = gson
+                gson = gson,
+                productInfoNetNotExposedInfoRequest = productInfoForNotExposedNetRequest
         )
     }
 
