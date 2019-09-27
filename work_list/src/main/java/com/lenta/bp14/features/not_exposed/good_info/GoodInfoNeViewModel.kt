@@ -125,8 +125,8 @@ class GoodInfoNeViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     fun getTitle(): String? {
-        task.scanInfoResult?.productInfo?.let {
-            return "${it.getMaterialLastSix()} ${it.description}"
+        task.getProcessedProductInfoResult()?.productInfo?.let {
+            return "${it.matNr.takeLast(6)} ${it.name}"
         }
         return null
     }

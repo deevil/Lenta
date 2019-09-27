@@ -4,6 +4,7 @@ import com.google.gson.annotations.SerializedName
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.fmp.ObjectRawStatus
 import com.lenta.shared.functional.Either
+import com.lenta.shared.functional.rightToLeft
 import com.lenta.shared.interactor.UseCase
 import com.lenta.shared.requests.FmpRequestsHelper
 import javax.inject.Inject
@@ -12,6 +13,14 @@ class ProductInfoNetRequest
 @Inject constructor(private val fmpRequestsHelper: FmpRequestsHelper) : UseCase<ProductInfoResult, ProductInfoParams>() {
     override suspend fun run(params: ProductInfoParams): Either<Failure, ProductInfoResult> {
         return fmpRequestsHelper.restRequest("ZMP_UTZ_WKL_11_V001", params, ProductInfoStatus::class.java)
+                .rightToLeft(
+                        fnRtoL = {
+                                if (it.productsInfo.isNullOrEmpty()) {
+                                        return@rightToLeft Failure.GoodNotFound
+                                }
+                                else null
+                        }
+                )
     }
 
 }
@@ -20,7 +29,7 @@ data class ProductInfoParams(
         @SerializedName("IV_MATNR_DATA_FLG")
         val withProductInfo: String,
         @SerializedName("IV_RBSINFO_FLG")
-        val withAdditionalInf: String ,
+        val withAdditionalInf: String,
         @SerializedName("IV_WERKS")
         val tkNumber: String,
         @SerializedName("IV_TASK_TYPE")
@@ -108,7 +117,7 @@ data class ProductInfo(
         val isVet: String,
         //SAP-код товара
         @SerializedName("MATERIAL")
-        val material: String,
+        val matNr: String,
         //Группа товаров
         @SerializedName("MATKL")
         val matKL: String,

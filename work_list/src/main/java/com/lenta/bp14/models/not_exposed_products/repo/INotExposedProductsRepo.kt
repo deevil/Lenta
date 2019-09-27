@@ -58,7 +58,7 @@ data class NotExposedProductInfo(
         override val matNr: String,
         override val name: String,
         override val quantity: Double?,
-        override val uom: Uom,
+        override val uom: Uom?,
         override val isEmptyPlaceMarked: Boolean?
 ) : INotExposedProductInfo
 
@@ -68,6 +68,6 @@ interface INotExposedProductInfo {
     val matNr: String
     val name: String
     val quantity: Double?
-    val uom: Uom
+    val uom: Uom?
     val isEmptyPlaceMarked: Boolean?
 }
