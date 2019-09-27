@@ -1,6 +1,7 @@
 package com.lenta.bp14.requests
 
 import com.google.gson.annotations.SerializedName
+import com.lenta.bp14.requests.pojo.RetCode
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.fmp.ObjectRawStatus
 import com.lenta.shared.functional.Either
@@ -202,13 +203,6 @@ data class Price(
 
 )
 
-data class RetCode(
-        @SerializedName("RETCODE")
-        var retCode: Int,
-
-        @SerializedName("ERROR_TEXT")
-        var errorText: String
-)
 
 data class Stock(
 

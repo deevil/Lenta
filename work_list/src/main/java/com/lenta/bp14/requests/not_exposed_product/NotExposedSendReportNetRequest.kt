@@ -1,36 +1,33 @@
 package com.lenta.bp14.requests.not_exposed_product
 
-import com.lenta.bp14.fmp.resources.ZmpUtzWkl08V001Rfc
-import com.lenta.bp14.fmp.resources.ZmpUtzWkl08V001Rfc.*
-import com.lenta.bp14.fmp.resources.ZmpUtzWkl08V001Rfc.LimitedScalarParameter.*
+import com.google.gson.annotations.SerializedName
 import com.lenta.bp14.models.not_exposed_products.NotExposedProductsTaskDescription
 import com.lenta.bp14.models.not_exposed_products.repo.INotExposedProductInfo
+import com.lenta.bp14.requests.pojo.CreatedTaskInfo
+import com.lenta.bp14.requests.pojo.ReportSentStatus
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.functional.Either
 import com.lenta.shared.functional.map
 import com.lenta.shared.functional.rightToLeft
 import com.lenta.shared.interactor.UseCase
-import com.lenta.shared.utilities.extentions.hhive.toEitherBoolean
+import com.lenta.shared.requests.FmpRequestsHelper
 import com.lenta.shared.utilities.extentions.toSapBooleanString
-import com.mobrun.plugin.api.HyperHive
 import javax.inject.Inject
 
 class NotExposedSendReportNetRequest
-@Inject constructor(hyperHive: HyperHive) : UseCase<SentReportResult, NotExposedReport>() {
-
-    private val zmpUtzWkl08V001Rfc by lazy { ZmpUtzWkl08V001Rfc(hyperHive) }
+@Inject constructor(private val fmpRequestsHelper: FmpRequestsHelper) : UseCase<SentReportResult, NotExposedReport>() {
 
     override suspend fun run(params: NotExposedReport): Either<Failure, SentReportResult> {
 
-        val checkPlaces = mutableListOf<Param_IT_CHECK_PLACE>()
-        val checkPositions = mutableListOf<Param_IT_TASK_POS>()
+        val checkPlaces = mutableListOf<Place>()
+        val checkPositions = mutableListOf<Position>()
 
         params.checksResults.forEach {
 
             checkPlaces.add(
-                    Param_IT_CHECK_PLACE(
-                            it.matNr,
-                            when (it.isEmptyPlaceMarked) {
+                    Place(
+                            matNr = it.matNr,
+                            statCheck = when (it.isEmptyPlaceMarked) {
                                 false -> "3"
                                 true -> "2"
                                 else -> "1"
@@ -40,40 +37,36 @@ class NotExposedSendReportNetRequest
 
             if (it.isEmptyPlaceMarked == null) {
                 checkPositions.add(
-                        Param_IT_TASK_POS(
-                                it.matNr,
-                                true.toSapBooleanString(),
-                                it.quantity
+                        Position(
+                                matNr = it.matNr,
+                                isProcessed = true.toSapBooleanString(),
+                                quantity = it.quantity ?: 0.0
                         )
                 )
             }
         }
 
-        return zmpUtzWkl08V001Rfc.newRequest()
-                .addScalar(IV_IP(params.ip))
-                .addScalar(IV_NOT_FINISH(params.isNotFinish.toSapBooleanString()))
-                .addScalar(IV_TASK_NUM(params.description.taskNumber))
-                .addScalar(IV_WERKS(params.description.tkNumber))
-                .addScalar(IV_DESCR(params.description.taskName))
-                .addTableItems(checkPlaces)
-                .addTableItems(checkPositions)
-                .streamCallTable().execute().toEitherBoolean("ZMP_UTZ_WKL_08_V001_RFC").rightToLeft {
-                    @Suppress("INACCESSIBLE_TYPE")
-                    zmpUtzWkl08V001Rfc.localHelper_ET_RETCODE.all.filter { it.retcode == 1 }.getOrNull(0)?.let {
+        return fmpRequestsHelper.restRequest("ZMP_UTZ_WKL_08_V001",
+                FmpReport(
+                        description = params.description.taskName,
+                        ip = params.ip,
+                        isNotFinished = params.isNotFinish.toSapBooleanString(),
+                        taskNumber = params.description.taskNumber,
+                        tkNumber = params.description.tkNumber,
+                        positions = checkPositions,
+                        places = checkPlaces
+                )
+                , ReportSentStatus::class.java)
+                .rightToLeft { sentResult ->
+                    sentResult.retCodes.firstOrNull { it.retCode == 1 }?.let {
                         Failure.SapError(it.errorText)
                     }
-                }.map {
+                }
+                .map {
                     SentReportResult(
-                            createdTasks = zmpUtzWkl08V001Rfc.localHelper_ET_TASK_LIST.all.map {
-                                CreatedTaskInfo(
-                                        taskNumber = it.taskNum,
-                                        text1 = it.text1,
-                                        text2 = it.text2
-                                )
-                            }
+                            it.createdTasks
                     )
                 }
-
     }
 
 }
@@ -92,10 +85,46 @@ data class SentReportResult(
 )
 
 
-data class CreatedTaskInfo(
+data class FmpReport(
+        @SerializedName("IV_DESCR")
+        val description: String,
+
+        @SerializedName("IV_IP")
+        val ip: String,
+
+        @SerializedName("IV_NOT_FINISH")
+        val isNotFinished: String,
+
+        @SerializedName("IV_TASK_NUM")
         val taskNumber: String,
-        val text1: String,
-        val text2: String
+
+        @SerializedName("IV_WERKS")
+        val tkNumber: String,
+
+        @SerializedName("IT_TASK_POS")
+        val positions: List<Position>,
+
+        @SerializedName("IT_CHECK_PLACE")
+        val places: List<Place>
+
+
+)
+
+data class Position(
+        @SerializedName("MATNR")
+        val matNr: String,
+        @SerializedName("XZAEL")
+        val isProcessed: String,
+        @SerializedName("FACT_QNT")
+        val quantity: Double
+)
+
+data class Place(
+        @SerializedName("MATNR")
+        val matNr: String,
+        // оформленно - 2, не оформленно - 3, есть кол-во - 1
+        @SerializedName("STAT_CHECK")
+        val statCheck: String
 )
 
 
