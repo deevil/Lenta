@@ -42,7 +42,7 @@ class GoodDetailsFragment : CoreFragment<FragmentGoodDetailsBinding, GoodDetails
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
         topToolbarUiModel.description.value = getString(R.string.details_of_goods)
 
-        connectLiveData(vm.formattedGoodName, topToolbarUiModel.title)
+        connectLiveData(vm.title, topToolbarUiModel.title)
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
@@ -74,13 +74,13 @@ class GoodDetailsFragment : CoreFragment<FragmentGoodDetailsBinding, GoodDetails
                         }
 
                         layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
-                                layoutId = R.layout.item_shelf_life_quantity_selectable,
+                                layoutId = R.layout.item_wl_shelf_life_quantity_selectable,
                                 itemId = BR.shelfLife,
-                                realisation = object : DataBindingAdapter<ItemShelfLifeQuantitySelectableBinding> {
-                                    override fun onCreate(binding: ItemShelfLifeQuantitySelectableBinding) {
+                                realisation = object : DataBindingAdapter<ItemWlShelfLifeQuantitySelectableBinding> {
+                                    override fun onCreate(binding: ItemWlShelfLifeQuantitySelectableBinding) {
                                     }
 
-                                    override fun onBind(binding: ItemShelfLifeQuantitySelectableBinding, position: Int) {
+                                    override fun onBind(binding: ItemWlShelfLifeQuantitySelectableBinding, position: Int) {
                                         binding.tvItemNumber.tag = position
                                         binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
                                         binding.selectedForDelete = vm.shelfLifeSelectionsHelper.isSelected(position)
@@ -111,13 +111,13 @@ class GoodDetailsFragment : CoreFragment<FragmentGoodDetailsBinding, GoodDetails
                     }
 
                     layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
-                            layoutId = R.layout.item_comment_quantity_selectable,
+                            layoutId = R.layout.item_wl_comment_quantity_selectable,
                             itemId = BR.comment,
-                            realisation = object : DataBindingAdapter<ItemCommentQuantitySelectableBinding> {
-                                override fun onCreate(binding: ItemCommentQuantitySelectableBinding) {
+                            realisation = object : DataBindingAdapter<ItemWlCommentQuantitySelectableBinding> {
+                                override fun onCreate(binding: ItemWlCommentQuantitySelectableBinding) {
                                 }
 
-                                override fun onBind(binding: ItemCommentQuantitySelectableBinding, position: Int) {
+                                override fun onBind(binding: ItemWlCommentQuantitySelectableBinding, position: Int) {
                                     binding.tvItemNumber.tag = position
                                     binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
                                     binding.selectedForDelete = vm.commentSelectionsHelper.isSelected(position)
@@ -132,7 +132,6 @@ class GoodDetailsFragment : CoreFragment<FragmentGoodDetailsBinding, GoodDetails
                     layoutBinding.lifecycleOwner = viewLifecycleOwner
                     return layoutBinding.root
                 }
-
     }
 
     override fun getTextTitle(position: Int): String {

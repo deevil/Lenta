@@ -12,6 +12,7 @@ import com.lenta.bp14.models.work_list.repo.WorkListRepo
 import com.lenta.shared.models.core.MatrixType
 import com.lenta.shared.models.core.Uom
 import com.lenta.shared.platform.time.ITimeMonitor
+import com.lenta.shared.utilities.extentions.getFormattedDate
 import com.lenta.shared.utilities.extentions.map
 import kotlinx.coroutines.delay
 import java.util.*
@@ -34,10 +35,9 @@ class WorkListTask(
 
     val sales = MutableLiveData<SalesStatistics>()
     val deliveries = MutableLiveData<List<Delivery>>(listOf())
+    val comments = MutableLiveData<List<String>>(listOf())
 
     override suspend fun addGoodByEan(ean: String): Boolean {
-        delay(500)
-
         var good = goods.value?.find { it.common.ean == ean }
         if (good != null) {
             currentGood.value = good
@@ -52,14 +52,21 @@ class WorkListTask(
             goodsList.add(good)
             goods.value = goodsList
             currentGood.value = good
+            loadComments()
             return true
         }
 
         return false
     }
 
+    override fun addScanResult(scanResult: ScanResult) {
+        val scanResultsList = currentGood.value?.scanResults?.value?.toMutableList()
+        scanResultsList?.add(scanResult)
+        currentGood.value?.scanResults?.value = scanResultsList
+    }
+
     override suspend fun loadAdditionalGoodInfo() {
-        delay(500)
+        delay(5000)
 
         val good = currentGood.value
         if (good != null) {
@@ -89,6 +96,16 @@ class WorkListTask(
         }
     }
 
+    override suspend fun loadComments() {
+        delay(500)
+
+        val good = currentGood.value
+        if (good != null) {
+            val commentsList = workListRepo.loadComments(good)
+            comments.value = commentsList
+        }
+    }
+
     /*fun setCurrentList(tabPosition: Int) {
         currentList = when (tabPosition) {
             GoodsListTab.PROCESSED.position -> processed
@@ -110,13 +127,24 @@ class WorkListTask(
         return currentGood.map { it?.additional?.providers?.toList() }
     }
 
-
     override fun getTaskType(): ITaskType {
         return TaskTypes.WorkList.taskType
     }
 
     override fun getDescription(): ITaskDescription {
         return taskDescription
+    }
+
+    fun deleteScanResultsByComments(comments: List<String>) {
+        val scanResultsList = currentGood.value?.scanResults?.value?.toMutableList()
+        scanResultsList?.removeAll { comments.contains(it.comment) }
+        currentGood.value?.scanResults?.value = scanResultsList
+    }
+
+    fun deleteScanResultsByShelfLives(shelfLives: List<String>) {
+        val scanResultsList = currentGood.value?.scanResults?.value?.toMutableList()
+        scanResultsList?.removeAll { shelfLives.contains(it.getFormattedProductionDate() + it.getFormattedExpirationDate()) }
+        currentGood.value?.scanResults?.value = scanResultsList
     }
 
 }
@@ -128,6 +156,9 @@ interface IWorkListTask : ITask {
     suspend fun loadAdditionalGoodInfo()
     suspend fun loadSalesStatistics()
     suspend fun loadDeliveries()
+    suspend fun loadComments()
+
+    fun addScanResult(scanResult: ScanResult)
 
     fun getGoodOptions(): LiveData<GoodOptions>
     fun getGoodStocks(): LiveData<List<Stock>>
@@ -139,15 +170,12 @@ interface IWorkListTask : ITask {
 data class Good(
         val common: CommonGoodInfo,
         var additional: AdditionalGoodInfo? = null,
+        val scanResults: MutableLiveData<List<ScanResult>> = MutableLiveData(listOf()),
         var processed: Boolean = false
 ) {
 
     fun getFormattedMaterialWithName(): String {
         return "${common.material.takeLast(6)} ${common.name}"
-    }
-
-    fun getQuantityWithUnit(): String {
-        return "${common.quantity} ${common.units.name.toLowerCase(Locale.getDefault())}"
     }
 
     fun isCommonGood(): Boolean {
@@ -162,6 +190,14 @@ data class Good(
         return "${common.goodGroup}/${common.purchaseGroup}"
     }
 
+    fun getShelfLifeInMills(): Long {
+        return (common.shelfLife * 24 * 60 * 60 * 1000).toLong()
+    }
+
+    fun getUnits(): String {
+        return common.units.name.toLowerCase(Locale.getDefault())
+    }
+
 }
 
 
@@ -173,10 +209,8 @@ data class CommonGoodInfo(
         val units: Uom,
         var goodGroup: String,
         var purchaseGroup: String,
-        var quantity: Int = 0,
         var marks: Int = 0,
-        val shelfLifeDays: Int = 5,
-        val serverComments: MutableList<String>,
+        val shelfLife: Int,
         val options: GoodOptions
 )
 
@@ -263,4 +297,27 @@ data class Delivery(
 enum class DeliveryStatus(val description: String) {
     ON_WAY("В пути"),
     ORDERED("Заказан")
+}
+
+// -----------------------------
+
+data class ScanResult(
+        val quantity: Int,
+        val comment: String,
+        val productionDate: Date?,
+        val expirationDate: Date?
+) {
+
+    fun getFormattedProductionDate(): String {
+        return if (productionDate != null) "ДП ${productionDate.getFormattedDate()}" else ""
+    }
+
+    fun getFormattedExpirationDate(): String {
+        return if (expirationDate != null) "СГ ${expirationDate.getFormattedDate()}" else ""
+    }
+
+    fun getKeyFromDates(): String {
+        return "${productionDate?.time}${expirationDate?.time}"
+    }
+
 }

@@ -21,9 +21,7 @@ class WorkListRepo {
                     units = Uom.ST,
                     goodGroup = "123456",
                     purchaseGroup = "1111",
-                    serverComments = MutableList(3) {
-                        "Комментарий ${it + 1}"
-                    },
+                    shelfLife = (3..14).random(),
                     options = GoodOptions(
                             matrixType = MatrixType.Active,
                             section = "5",
@@ -92,6 +90,17 @@ class WorkListRepo {
                         date = Date()
                 )
             }
+        }
+    }
+
+    suspend fun loadComments(good: Good): List<String>? {
+        return withContext(Dispatchers.IO) {
+            val comments = MutableList((1..3).random()) {
+                "Комментарий ${it + 1}"
+            }
+            comments.add(0, "Не выбран")
+
+            return@withContext comments
         }
     }
 

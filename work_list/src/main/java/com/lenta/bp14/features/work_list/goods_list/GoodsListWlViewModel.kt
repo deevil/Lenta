@@ -30,7 +30,6 @@ class GoodsListWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     val searchSelectionsHelper = SelectionItemsHelper()
 
     val selectedPage = MutableLiveData(0)
-
     val correctedSelectedPage = selectedPage.map { getCorrectedPagePosition(it) }
 
     val taskName = MutableLiveData("")
@@ -47,7 +46,7 @@ class GoodsListWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
                 ProcessedListUi(
                         position = (index + 1).toString(),
                         name = good.getFormattedMaterialWithName(),
-                        quantity = good.getQuantityWithUnit()
+                        quantity = "11111"
                 )
             }
         }
