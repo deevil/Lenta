@@ -5,6 +5,8 @@ import com.lenta.bp9.model.task.IReceivingTaskManager
 import com.lenta.bp9.model.task.ReceivingTaskManager
 import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.bp9.platform.navigation.ScreenNavigator
+import com.lenta.bp9.repos.DataBaseRepo
+import com.lenta.bp9.repos.IDataBaseRepo
 import com.lenta.bp9.repos.IRepoInMemoryHolder
 import com.lenta.bp9.repos.RepoInMemoryHolder
 import com.lenta.shared.account.IAuthenticator
@@ -12,6 +14,7 @@ import com.lenta.shared.di.AppScope
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
 import com.lenta.shared.platform.navigation.ICoreNavigator
 import com.lenta.shared.progress.IProgressUseCaseInformator
+import com.mobrun.plugin.api.HyperHive
 import dagger.Module
 import dagger.Provides
 
@@ -42,6 +45,12 @@ class AppModule {
     @AppScope
     internal fun provideReceivingTaskManager(): IReceivingTaskManager {
         return ReceivingTaskManager()
+    }
+
+    @Provides
+    @AppScope
+    internal fun provideIDataBaseRepo(hyperHive: HyperHive): IDataBaseRepo {
+        return DataBaseRepo(hyperHive)
     }
 
 }

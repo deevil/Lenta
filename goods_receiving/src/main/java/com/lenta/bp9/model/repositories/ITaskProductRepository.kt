@@ -1,13 +1,13 @@
 package com.lenta.bp9.model.repositories
 
-import com.lenta.bp9.model.ReceivingProductInfo
+import com.lenta.bp9.model.task.TaskProductInfo
 
 interface ITaskProductRepository {
-    fun getProducts(): List<ReceivingProductInfo>
-    fun findProduct(product: ReceivingProductInfo): ReceivingProductInfo?
-    fun findProduct(materialNumber: String): ReceivingProductInfo?
-    fun addProduct(product: ReceivingProductInfo): Boolean
-    fun changeProduct(product: ReceivingProductInfo): Boolean
-    fun deleteProduct(product: ReceivingProductInfo): Boolean
+    fun getProducts(): List<TaskProductInfo>
+    fun findProduct(product: TaskProductInfo): TaskProductInfo?
+    fun findProduct(materialNumber: String): TaskProductInfo?
+    fun addProduct(product: TaskProductInfo): Boolean
+    fun changeProduct(product: TaskProductInfo): Boolean
+    fun deleteProduct(product: TaskProductInfo): Boolean
     fun clear()
 }

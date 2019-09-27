@@ -1,6 +1,7 @@
 package com.lenta.bp9.platform.navigation
 
 import android.content.Context
+import android.provider.Settings.Global.getString
 import androidx.core.content.ContextCompat
 import com.lenta.bp9.features.auth.AuthFragment
 import com.lenta.bp9.features.goods_list.GoodsListFragment
@@ -15,10 +16,15 @@ import com.lenta.bp9.features.task_card.TaskCardFragment
 import com.lenta.bp9.R
 import com.lenta.bp9.features.change_datetime.ChangeDateTimeFragment
 import com.lenta.bp9.features.change_datetime.ChangeDateTimeMode
+import com.lenta.bp9.features.discrepancy_list.DiscrepancyListFragment
+import com.lenta.bp9.features.goods_details.GoodsDetailsFragment
+import com.lenta.bp9.features.goods_information.general.GoodsInfoFragment
 import com.lenta.bp9.features.loading.tasks.*
 import com.lenta.bp9.features.reject.RejectFragment
 import com.lenta.bp9.features.revise.TaskReviseFragment
+import com.lenta.bp9.model.task.TaskProductInfo
 import com.lenta.bp9.features.revise.invoice.InvoiceReviseFragment
+import com.lenta.bp9.model.task.TaskBatchInfo
 import com.lenta.shared.account.IAuthenticator
 import com.lenta.shared.features.alert.AlertFragment
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
@@ -178,6 +184,27 @@ class ScreenNavigator(
         }
     }
 
+    override fun openGoodsInfoScreen(productInfo: TaskProductInfo) {
+        runOrPostpone {
+            getFragmentStack()?.push(GoodsInfoFragment.create(productInfo))
+        }
+    }
+
+    override fun openAlertWrongProductType() {
+        openAlertScreen(message = context.getString(R.string.wrong_product_type),
+                iconRes = R.drawable.ic_info_pink,
+                textColor = ContextCompat.getColor(context, R.color.color_text_dialogWarning),
+                pageNumber = "96",
+                timeAutoExitInMillis = 3000
+        )
+    }
+
+    override fun openGoodsDetailsScreen(productInfo: TaskProductInfo?, batch: TaskBatchInfo?) {
+        runOrPostpone {
+            getFragmentStack()?.push(GoodsDetailsFragment.create(productInfo, batch))
+        }
+    }
+
     override fun openInvoiceReviseScreen() {
         runOrPostpone {
             getFragmentStack()?.push(InvoiceReviseFragment())
@@ -187,6 +214,12 @@ class ScreenNavigator(
     override fun openRejectScreen() {
         runOrPostpone {
             getFragmentStack()?.push(RejectFragment())
+        }
+    }
+
+    override fun openDiscrepancyListScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(DiscrepancyListFragment())
         }
     }
 
@@ -216,6 +249,10 @@ interface IScreenNavigator : ICoreNavigator {
     fun openLoadingRegisterArrivalScreen()
     fun openLoadingStartReviseScreen()
     fun openTaskReviseScreen()
+    fun openGoodsInfoScreen(productInfo: TaskProductInfo)
+    fun openAlertWrongProductType()
+    fun openGoodsDetailsScreen(productInfo: TaskProductInfo? = null, batch: TaskBatchInfo? =null)
     fun openInvoiceReviseScreen()
     fun openRejectScreen()
+    fun openDiscrepancyListScreen()
 }
