@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.lenta.bp14.models.IGeneralTaskManager
 import com.lenta.bp14.models.filter.FilterFieldType
 import com.lenta.bp14.models.filter.FilterParameter
 import com.lenta.bp14.models.data.GoodsListTab
@@ -38,6 +39,9 @@ class GoodsListNeViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
 
     @Inject
     lateinit var sentReportRequest: NotExposedSendReportNetRequest
+
+    @Inject
+    lateinit var generalTaskManager: IGeneralTaskManager
 
     val onOkFilterListener = object : OnOkInSoftKeyboardListener {
         override fun onOkInSoftKeyboard(): Boolean {
@@ -169,6 +173,8 @@ class GoodsListNeViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
                     }
             ) {
                 Logg.d { "SentReportResult: $it" }
+                generalTaskManager.clearCurrentTask(sentReportResult = it)
+                navigator.openReportResultScreen()
             }
             navigator.hideProgress()
         }
