@@ -19,6 +19,7 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
+import com.lenta.shared.scan.OnScanResultListener
 import com.lenta.shared.utilities.databinding.DataBindingAdapter
 import com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig
 import com.lenta.shared.utilities.databinding.RecyclerViewKeyHandler
@@ -29,7 +30,7 @@ import com.lenta.shared.utilities.extentions.provideViewModel
 import java.lang.IllegalArgumentException
 
 class GoodsListWlFragment : CoreFragment<FragmentGoodsListWlBinding, GoodsListWlViewModel>(),
-        ViewPagerSettings, ToolbarButtonsClickListener, OnKeyDownListener {
+        ViewPagerSettings, ToolbarButtonsClickListener, OnKeyDownListener, OnScanResultListener {
 
     private var processingRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
     private var processedRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
@@ -263,6 +264,10 @@ class GoodsListWlFragment : CoreFragment<FragmentGoodsListWlBinding, GoodsListWl
             return true
         }
         return false
+    }
+
+    override fun onScanResult(data: String) {
+        vm.onScanResult(data)
     }
 
 }

@@ -152,6 +152,10 @@ class GoodsListWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
         requestFocusToNumberField.value = true
     }
 
+    fun onScanResult(data: String) {
+
+    }
+
 }
 
 data class ProcessedListUi(

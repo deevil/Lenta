@@ -225,6 +225,10 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
         year.value = ""
     }
 
+    fun onScanResult(data: String) {
+
+    }
+
 }
 
 
