@@ -71,7 +71,7 @@
             android:layout_weight="1"
             app:items="@{vm.processedGoods}"
             app:rv_config="@{rvConfig}"
-            tools:listitem="@layout/item_good_selectable" />
+            tools:listitem="@layout/item_good_quantity_selectable" />
 
         <!-- Ввод номера товара -->
         <LinearLayout

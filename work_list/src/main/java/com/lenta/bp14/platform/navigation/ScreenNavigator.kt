@@ -25,10 +25,11 @@ import com.lenta.bp14.features.work_list.good_details.GoodDetailsFragment
 import com.lenta.bp14.features.work_list.expected_deliveries.ExpectedDeliveriesFragment
 import com.lenta.bp14.features.work_list.goods_list.GoodsListWlFragment
 import com.lenta.bp14.features.work_list.good_sales.GoodSalesFragment
-import com.lenta.bp14.features.work_list.search_filter.SearchFilterWlFragment
+import com.lenta.bp14.features.search_filter.SearchFilterFragment
 import com.lenta.shared.account.IAuthenticator
 import com.lenta.shared.features.alert.AlertFragment
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
+import com.lenta.shared.platform.navigation.CustomAnimation
 import com.lenta.shared.platform.navigation.ICoreNavigator
 import com.lenta.shared.platform.navigation.runOrPostpone
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
@@ -148,7 +149,7 @@ class ScreenNavigator(
 
     override fun openSearchFilterWlScreen() {
         runOrPostpone {
-            getFragmentStack()?.push(SearchFilterWlFragment())
+            getFragmentStack()?.push(SearchFilterFragment())
         }
     }
 
@@ -383,6 +384,33 @@ class ScreenNavigator(
         }
     }
 
+    override fun openPictogrammInfoNova() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.picto_nova),
+                    iconRes = com.lenta.shared.R.drawable.ic_new_48dp), CustomAnimation.vertical)
+        }
+    }
+
+    override fun openPictogrammInfoHealthyFood() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.healthy_food),
+                    iconRes = com.lenta.shared.R.drawable.ic_natural_48dp), CustomAnimation.vertical)
+        }
+    }
+
+    override fun openConfirmationNotSaveChanges(yesCallback: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.confirmation_not_save_changes),
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(yesCallback),
+                    pageNumber = "94",
+                    leftButtonDecorationInfo = ButtonDecorationInfo.back,
+                    rightButtonDecorationInfo = ButtonDecorationInfo.yes
+            )
+            )
+        }
+    }
+
 }
 
 interface IScreenNavigator : ICoreNavigator {
@@ -432,4 +460,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openScanPriceScreen()
     fun openConfirmationExitTask(taskName: String, callbackFunc: () -> Unit)
     fun openVideoScanProductScreen()
+    fun openPictogrammInfoNova()
+    fun openPictogrammInfoHealthyFood()
+    fun openConfirmationNotSaveChanges(yesCallback: () -> Unit)
 }

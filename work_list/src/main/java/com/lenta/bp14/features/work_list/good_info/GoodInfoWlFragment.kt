@@ -5,7 +5,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.Observer
 import com.lenta.bp14.BR
 import com.lenta.bp14.R
 import com.lenta.bp14.databinding.*
@@ -46,7 +45,9 @@ class GoodInfoWlFragment : CoreFragment<FragmentGoodInfoWlBinding, GoodInfoWlVie
         bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.details)
         bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.deliveries)
         bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.sales)
-        bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.apply)
+        bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.apply, enabled = false)
+
+        connectLiveData(vm.applyButtonEnabled, bottomToolbarUiModel.uiModelButton5.enabled)
     }
 
     override fun onToolbarButtonClick(view: View) {
@@ -138,10 +139,6 @@ class GoodInfoWlFragment : CoreFragment<FragmentGoodInfoWlBinding, GoodInfoWlVie
     }
 
     private fun initSpinners() {
-        val comments = mutableListOf("Не выбран")
-        vm.good.value?.common?.serverComments?.map { comments.add(it) }
-        vm.commentsList.value = comments
-
         vm.shelfLifeTypeList.value = resources.getStringArray(R.array.shelf_life_type).asList()
     }
 

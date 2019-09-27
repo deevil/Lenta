@@ -10,6 +10,7 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
+import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
 import com.lenta.shared.utilities.extentions.provideViewModel
 
@@ -29,11 +30,7 @@ class GoodSalesFragment : CoreFragment<FragmentGoodSalesBinding, GoodSalesViewMo
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
         topToolbarUiModel.description.value = getString(R.string.details_of_goods)
 
-        viewLifecycleOwner.apply {
-            vm.good.observe(this, Observer { good ->
-                topToolbarUiModel.title.value = good.getFormattedMaterialWithName()
-            })
-        }
+        connectLiveData(vm.title, topToolbarUiModel.title)
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {

@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
 
         <variable
-            name="comment"
-            type="com.lenta.bp14.models.data.pojo.Comment" />
+            name="good"
+            type="com.lenta.bp14.features.work_list.goods_list.ProcessedListUi" />
 
         <variable
             name="selectedForDelete"
@@ -29,7 +29,7 @@
 
             <LinearLayout
                 style="@style/LinearCellStyle"
-                android:layout_weight="@integer/number_comment_quantity_column_1">
+                android:layout_weight="@integer/number_good_quantity_column_1">
 
                 <TextView
                     android:id="@+id/tv_item_number"
@@ -38,7 +38,7 @@
                     android:layout_height="32dp"
                     android:background="@drawable/bg_border_circle_white_selectable_for_delete"
                     android:gravity="center"
-                    android:text="@{String.valueOf(comment.id)}"
+                    android:text="@{good.position}"
                     app:selected="@{selectedForDelete}"
                     tools:text="1" />
 
@@ -48,13 +48,24 @@
 
             <LinearLayout
                 style="@style/LinearCellStyle"
-                android:layout_weight="@integer/number_comment_quantity_column_2">
+                android:layout_weight="@integer/number_good_quantity_column_2"
+                android:orientation="horizontal">
 
                 <TextView
                     style="@style/CellTextStyle"
+                    android:layout_width="0dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_weight="1"
                     android:maxLines="2"
-                    android:text="@{comment.message}"
-                    tools:text="С товаром все хорошо" />
+                    android:text="@{good.name}"
+                    tools:text="000021 Масло" />
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="5dp"
+                    android:src="@drawable/ic_keyboard_arrow_right_white_24dp"
+                    tools:ignore="ContentDescription" />
 
             </LinearLayout>
 
@@ -62,14 +73,21 @@
 
             <LinearLayout
                 style="@style/LinearCellStyle"
-                android:layout_weight="@integer/number_comment_quantity_column_3">
+                android:layout_weight="@integer/number_good_quantity_column_3">
 
-                <TextView
-                    style="@style/CellTextStyle"
-                    android:layout_width="wrap_content"
-                    android:layout_gravity="center"
-                    android:text="@{@string/quantity_st(comment.quantity)}"
-                    tools:text="10 шт" />
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <TextView
+                        style="@style/CellTextStyle"
+                        android:layout_width="wrap_content"
+                        android:layout_gravity="center"
+                        android:text="@{good.quantity}"
+                        tools:text="10 шт"
+                        tools:visibility="visible" />
+
+                </FrameLayout>
 
             </LinearLayout>
 

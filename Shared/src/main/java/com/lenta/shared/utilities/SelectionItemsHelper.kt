@@ -41,7 +41,7 @@ class SelectionItemsHelper {
         }
     }
 
-    fun isSelected(position: Int): Boolean? {
+    fun isSelected(position: Int): Boolean {
         return selectedPositions.value!!.contains(position)
     }
 

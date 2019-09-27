@@ -211,7 +211,6 @@
             android:fontFamily="@font/tahoma_bold"
             android:foreground="?selectableItemBackground"
             android:gravity="center"
-            android:onClick="@{(v) -> vm.screenNavigator.openMatrixInfoScreen(vm.productInfo.matrixType)}"
             android:textSize="18sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"

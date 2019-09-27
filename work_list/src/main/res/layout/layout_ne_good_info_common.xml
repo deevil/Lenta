@@ -1,14 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools">
-
-    <data>
-
-        <variable
-            name="vm"
-            type="com.lenta.bp14.features.not_exposed.good_info.GoodInfoNeViewModel" />
-
-    </data>
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <ScrollView
         android:id="@+id/scrollView"
@@ -42,10 +35,11 @@
                     style="@style/LinearCellStyle"
                     android:layout_weight="2">
 
-                    <EditText
+                    <com.lenta.shared.view.EditTextWithSuffix
                         style="@style/CellTextStyle"
                         android:inputType="numberDecimal"
                         android:text="@={vm.quantityField}"
+                        android:enabled="@{vm.isInputNumberEnabled()}"
                         tools:text="0" />
 
                 </LinearLayout>
@@ -80,7 +74,7 @@
                     <TextView
                         android:id="@+id/tv_removed_good"
                         style="@style/CellTextStyle"
-                        android:text="@{@string/quantity_st(vm.good.firstStorageStock)}"
+                        android:text="@{vm.firstStorageStock}"
                         tools:text="25 шт." />
 
                 </LinearLayout>
@@ -116,8 +110,9 @@
                         android:id="@+id/tv_price_with_dk"
                         style="@style/CellTextStyle"
                         android:maxLines="2"
-                        android:text="@{vm.frameType}"
-                        tools:text="" />
+                        app:invisible="@{vm.isEmptyPlaceMarked == null}"
+                        android:text='@{vm.isEmptyPlaceMarked == true ? @string/framed : @string/not_framed}'
+                        tools:text="Оформлено" />
 
                 </LinearLayout>
 
@@ -129,5 +124,13 @@
         </LinearLayout>
 
     </ScrollView>
+
+    <data>
+
+        <variable
+            name="vm"
+            type="com.lenta.bp14.features.not_exposed.good_info.GoodInfoNeViewModel" />
+
+    </data>
 
 </layout>

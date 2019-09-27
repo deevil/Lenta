@@ -1,11 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-
-        <import type="android.view.View" />
 
         <variable
             name="vm"
@@ -31,17 +28,13 @@
 
             <LinearLayout
                 style="@style/LinearCellStyle"
-                android:layout_weight="@integer/number_good_quantity_column_1">
+                android:layout_weight="@integer/number_good_column_1">
 
                 <TextView
                     android:id="@+id/tv_item_number"
                     style="@style/CellTextStyle"
-                    android:layout_width="32dp"
-                    android:layout_height="32dp"
-                    android:background="@drawable/bg_border_circle_white_selectable_for_delete"
-                    android:gravity="center"
+                    android:layout_width="wrap_content"
                     android:text='@{"" + vm.position}'
-                    app:selected="@{selectedForDelete}"
                     tools:text="1" />
 
             </LinearLayout>
@@ -50,10 +43,11 @@
 
             <LinearLayout
                 style="@style/LinearCellStyle"
-                android:layout_weight="@integer/number_good_quantity_column_2"
+                android:layout_weight="@integer/number_good_column_2"
                 android:orientation="horizontal">
 
                 <TextView
+                    android:id="@+id/tv_good_number_name"
                     style="@style/CellTextStyle"
                     android:layout_width="0dp"
                     android:layout_marginStart="8dp"
@@ -63,43 +57,11 @@
                     tools:text="000021 Масло" />
 
                 <ImageView
+                    android:id="@+id/iv_open"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:padding="5dp"
-                    android:src="@drawable/ic_keyboard_arrow_right_white_24dp"
-                    tools:ignore="ContentDescription" />
-
-            </LinearLayout>
-
-            <View style="@style/VerticalDivider" />
-
-            <LinearLayout
-                style="@style/LinearCellStyle"
-                android:layout_weight="@integer/number_good_quantity_column_3">
-
-                <FrameLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent">
-
-                    <TextView
-                        style="@style/CellTextStyle"
-                        android:layout_width="wrap_content"
-                        android:layout_gravity="center"
-                        android:text="@{vm.quantity}"
-                        android:visibility="@{vm.isEmptyPlaceMarked == null}"
-                        tools:text="10 шт"
-                        tools:visibility="visible" />
-
-                    <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:src="@drawable/ic_close_white_24dp"
-                        app:isValid="@{vm.isEmptyPlaceMarked()}"
-                        tools:ignore="ContentDescription"
-                        tools:visibility="visible" />
-
-                </FrameLayout>
+                    android:src="@drawable/ic_keyboard_arrow_right_white_24dp" />
 
             </LinearLayout>
 

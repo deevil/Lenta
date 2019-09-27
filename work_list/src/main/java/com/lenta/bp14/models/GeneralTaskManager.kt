@@ -4,39 +4,51 @@ import com.lenta.bp14.models.check_list.CheckListTaskManager
 import com.lenta.bp14.models.check_price.CheckPriceTaskManager
 import com.lenta.bp14.models.general.ITaskType
 import com.lenta.bp14.models.general.TaskTypes
+import com.lenta.bp14.models.not_exposed_products.NotExposedProductsTaskManager
 import com.lenta.bp14.models.work_list.WorkListTaskManager
 import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.platform.time.ITimeMonitor
 import com.lenta.shared.utilities.date_time.DateTimeUtil.formatDate
 
 class GeneralTaskManager(
-        private val checkPriceTaskManager: CheckPriceTaskManager,
-        private val checkListTaskManager: CheckListTaskManager,
-        private val workListTaskManager: WorkListTaskManager,
+        checkPriceTaskManager: CheckPriceTaskManager,
+        checkListTaskManager: CheckListTaskManager,
+        workListTaskManager: WorkListTaskManager,
+        notExposedProductsTaskManager: NotExposedProductsTaskManager,
         private var timeMonitor: ITimeMonitor
 ) : IGeneralTaskManager {
+
+    private val allManagers = listOf<ITaskManager<*, *>>(checkPriceTaskManager, checkListTaskManager, workListTaskManager, notExposedProductsTaskManager)
 
     override fun getProcessedTaskType(): ITaskType? {
         return getCurrentTaskManager()?.getCurrentTaskType()
     }
 
     override fun clearCurrentTask(): Boolean {
-        return checkPriceTaskManager.clearTask() || checkListTaskManager.clearTask() || workListTaskManager.clearTask()
+        allManagers.forEach {
+            if (it.clearTask()) {
+                return true
+            }
+        }
+
+        return false
+
     }
 
     override fun getProcessedTask(): ITask? {
-        return checkPriceTaskManager.getTask() ?: checkListTaskManager.getTask() ?: workListTaskManager.getTask()
+        allManagers.forEach { manager ->
+            manager.getTask()?.let {
+                return it
+            }
+        }
+        return null
     }
 
     private fun getCurrentTaskManager(): ITaskManager<out ITask, out ITaskDescription>? {
-        if (checkPriceTaskManager.getTask() != null) {
-            return checkPriceTaskManager
-        }
-        if (checkListTaskManager.getTask() != null) {
-            return checkListTaskManager
-        }
-        if (workListTaskManager.getTask() != null) {
-            return workListTaskManager
+        allManagers.forEach { manager ->
+            manager.getTask()?.let {
+                return manager
+            }
         }
         return null
     }

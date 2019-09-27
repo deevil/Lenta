@@ -11,6 +11,8 @@ import com.lenta.bp14.models.check_price.ICheckPriceTask
 import com.lenta.bp14.models.data.TaskManager
 import com.lenta.bp14.models.general.GeneralRepo
 import com.lenta.bp14.models.general.IGeneralRepo
+import com.lenta.bp14.models.not_exposed_products.INotExposedProductsTask
+import com.lenta.bp14.models.not_exposed_products.NotExposedProductsTaskManager
 import com.lenta.bp14.models.work_list.WorkListTask
 import com.lenta.bp14.models.work_list.WorkListTaskManager
 import com.lenta.bp14.platform.IVibrateHelper
@@ -97,15 +99,29 @@ class AppModule {
     internal fun provideGeneralTaskManager(
             checkPriceTaskManager: CheckPriceTaskManager,
             checkListTaskManager: CheckListTaskManager,
+            notExposedProductsTaskManager: NotExposedProductsTaskManager,
             workListTaskManager: WorkListTaskManager,
             timeMonitor: ITimeMonitor): IGeneralTaskManager {
         return GeneralTaskManager(
                 checkPriceTaskManager = checkPriceTaskManager,
                 checkListTaskManager = checkListTaskManager,
+                notExposedProductsTaskManager = notExposedProductsTaskManager,
                 workListTaskManager = workListTaskManager,
                 timeMonitor = timeMonitor
         )
     }
+
+    @Provides
+    @AppScope
+    internal fun provideNotExposedProductsTaskManager(
+            timeMonitor: ITimeMonitor,
+            gson: Gson): NotExposedProductsTaskManager {
+        return NotExposedProductsTaskManager(
+                timeMonitor = timeMonitor,
+                gson = gson
+        )
+    }
+
 
     @Provides
     internal fun provideCheckPriceTask(checkPriceTaskManager: CheckPriceTaskManager): ICheckPriceTask {
@@ -120,6 +136,11 @@ class AppModule {
     @Provides
     internal fun provideWorkListTask(workListTaskManager: WorkListTaskManager): WorkListTask {
         return workListTaskManager.getTask()!!
+    }
+
+    @Provides
+    internal fun provideNotExposedProductsTask(taskManager: NotExposedProductsTaskManager): INotExposedProductsTask {
+        return taskManager.getTask()!!
     }
 
     @Provides

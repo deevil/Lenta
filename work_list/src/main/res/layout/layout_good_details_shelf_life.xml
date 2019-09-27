@@ -53,7 +53,7 @@
 
                     <TextView
                         style="@style/ColumnTitleStyle"
-                        android:text="@string/comment" />
+                        android:text="@string/self_life" />
 
                 </LinearLayout>
 
@@ -82,7 +82,7 @@
             android:layout_weight="1"
             app:items="@{vm.shelfLives}"
             app:rv_config="@{rvConfig}"
-            tools:listitem="@layout/item_shelf_life_quantity_selectable" />
+            tools:listitem="@layout/item_wl_shelf_life_quantity_selectable" />
 
     </LinearLayout>
 
