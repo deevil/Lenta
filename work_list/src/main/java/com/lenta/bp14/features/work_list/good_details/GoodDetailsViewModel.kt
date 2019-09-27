@@ -40,13 +40,13 @@ class GoodDetailsViewModel : CoreViewModel(), PageSelectionListener {
                 } else result
             }
 
-            combinedResults.values.mapIndexed { index, mapScanResult ->
+            combinedResults.values.mapIndexed { index, scanResult ->
                 ItemShelfLifeUi(
                         position = (index + 1).toString(),
-                        expirationDate = mapScanResult.getFormattedExpirationDate(),
-                        productionDate = mapScanResult.getFormattedProductionDate(),
-                        productionDateVisibility = mapScanResult.productionDate != null,
-                        quantity = "${mapScanResult.quantity} ${task.currentGood.value!!.getUnits()}"
+                        expirationDate = scanResult.getFormattedExpirationDate(),
+                        productionDate = scanResult.getFormattedProductionDate(),
+                        productionDateVisibility = scanResult.productionDate != null,
+                        quantity = "${scanResult.quantity} ${task.currentGood.value!!.getUnits()}"
                 )
             }
         }
@@ -63,11 +63,11 @@ class GoodDetailsViewModel : CoreViewModel(), PageSelectionListener {
                 } else result
             }
 
-            combinedResults.values.mapIndexed { index, mapScanResult ->
+            combinedResults.values.mapIndexed { index, scanResult ->
                 ItemCommentUi(
                         position = (index + 1).toString(),
-                        comment = mapScanResult.comment,
-                        quantity = "${mapScanResult.quantity} ${task.currentGood.value!!.getUnits()}"
+                        comment = scanResult.comment,
+                        quantity = "${scanResult.quantity} ${task.currentGood.value!!.getUnits()}"
                 )
             }
         }
