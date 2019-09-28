@@ -27,7 +27,6 @@ class GoodsListFragment : CoreFragment<FragmentGoodsListBinding, GoodsListViewMo
         ViewPagerSettings,
         OnScanResultListener,
         PageSelectionListener,
-        OnKeyDownListener,
         ToolbarButtonsClickListener {
 
     private var countedRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
@@ -189,26 +188,5 @@ class GoodsListFragment : CoreFragment<FragmentGoodsListBinding, GoodsListViewMo
         super.onFragmentResult(arguments)
         vm.onResult(arguments.getFragmentResultCode())
     }
-
-    override fun onKeyDown(keyCode: KeyCode): Boolean {
-        (if (vm.selectedPage.value == 0) {
-            countedRecyclerViewKeyHandler
-        } else {
-            //todo
-            countedRecyclerViewKeyHandler
-            //filterRecyclerViewKeyHandler
-        })?.let {
-            if (!it.onKeyDown(keyCode)) {
-                keyCode.digit?.let { digit ->
-                    vm.onDigitPressed(digit)
-                    return true
-                }
-                return false
-            }
-            return true
-        }
-        return false
-    }
-
 
 }

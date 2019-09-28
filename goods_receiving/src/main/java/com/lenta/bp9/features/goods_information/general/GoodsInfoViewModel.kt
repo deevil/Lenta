@@ -2,6 +2,7 @@ package com.lenta.bp9.features.goods_information.general
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.lenta.bp9.features.goods_list.SearchProductDelegate
 import com.lenta.bp9.model.processing.ProcessGeneralProductService
 import com.lenta.bp9.model.task.IReceivingTaskManager
 import com.lenta.bp9.model.task.TaskProductInfo
@@ -31,6 +32,9 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
 
     @Inject
     lateinit var dataBase: IDataBaseRepo
+
+    @Inject
+    lateinit var searchProductDelegate: SearchProductDelegate
 
     val productInfo: MutableLiveData<TaskProductInfo> = MutableLiveData()
     val titleProgressScreen: MutableLiveData<String> = MutableLiveData()
@@ -115,7 +119,7 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
     }
 
     fun onScanResult(data: String) {
-        //searchProductDelegate.searchCode(code = data, fromScan = true)
+        searchProductDelegate.searchCode(code = data, fromScan = true)
     }
 
     override fun onClickPosition(position: Int) {

@@ -17,7 +17,7 @@ class ProcessGeneralProductService
     private lateinit var productInfo: TaskProductInfo
 
     fun newProcessGeneralProductService(productInfo: TaskProductInfo) : ProcessGeneralProductService? {
-        return if (productInfo.type == ProductType.General || productInfo.type == ProductType.NonExciseAlcohol){
+        return if (productInfo.type == ProductType.General){
             this.productInfo = productInfo.copy()
             this
         }

@@ -185,11 +185,6 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
         }
     }
 
-    fun onDigitPressed(digit: Int) {
-        requestFocusToEan.value = true
-        eanCode.value = eanCode.value ?: "" + digit
-    }
-
     private fun handleProductSearchResult(@Suppress("UNUSED_PARAMETER") scanInfoResult: ScanInfoResult?): Boolean {
         eanCode.postValue("")
         return false
