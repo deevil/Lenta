@@ -110,7 +110,8 @@ fun analyseCode(
 
         if (length >= Constants.COMMON_SAP_LENGTH) {
             when (length) {
-                Constants.COMMON_SAP_LENGTH -> funcForMatNr(code)
+                Constants.COMMON_SAP_LENGTH -> funcForMatNr("000000000000${code.takeLast(6)}")
+                Constants.COMMON_SAP_FULL_LENGTH -> funcForMatNr(code)
                 Constants.SAP_OR_BAR_LENGTH -> {
                     funcForSapOrBar(
                             { funcForMatNr(code) },
