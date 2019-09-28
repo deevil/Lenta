@@ -22,6 +22,10 @@ class MainMenuViewModel : CoreViewModel() {
     @Inject
     lateinit var sessionInfo: ISessionInfo
 
+    //todo delete
+    @Inject
+    lateinit var taskManager: IReceivingTaskManager
+
     val fio = MutableLiveData("")
 
     init {
@@ -35,7 +39,205 @@ class MainMenuViewModel : CoreViewModel() {
     }
 
     fun onClickReceiptTask() {
-        screenNavigator.openTaskListLoadingScreen(TaskListLoadingMode.Receiving)
+        //todo delete
+        val taskInfo = TaskInfo(
+                position = "0",
+                taskNumber = "",
+                bottomText = "",
+                caption = "ППП-27855//ПП-108825 ООО \"СН...\"",
+                documentNumber = "",
+                isCracked = false,
+                isDelayed = false,
+                isPaused = false,
+                isStarted = false,
+                lockStatus = TaskLockStatus.None,
+                positionsCount = 0,
+                status = TaskStatus.Completed,
+                taskType = TaskType.None,
+                topText = "",
+                transportationOTM = ""
+        )
+        val taskDescription = TaskDescription(
+                currentStatus = TaskStatus.Completed,
+                actualArrivalDate = "",
+                actualArrivalTime = "",
+                currentStatusDate = "",
+                currentStatusText = "",
+                currentStatusTime = "",
+                deliveryNumber = "",
+                isAlco = true,
+                isNotEDI = false,
+                isOverdue = false,
+                isOwnTransport = false,
+                isPromo = false,
+                isRawMaterials = false,
+                isRecount = false,
+                isSpecialControlGoods = false,
+                isSupplierReturnAvailability = false,
+                isUFF = false,
+                nextStatusDate = "",
+                nextStatusText = "",
+                nextStatusTime = "",
+                orderNumber = "",
+                plannedDeliveryDate = "",
+                plannedDeliveryTime = "",
+                quantityPositions = 0,
+                ttnNumber = ""
+        )
+        taskManager.newReceivingTask(taskInfo,taskDescription)
+        taskManager.getReceivingTask().let {
+            it!!.taskRepository.getProducts().addProduct(TaskProductInfo(
+                    materialNumber = "000000000000000021",
+                    description = "Р/к горбуша (Россия) 230/250г",
+                    uom = Uom("ST", "шт"),
+                    type = ProductType.General,
+                    isSet = false,
+                    sectionId = "01",
+                    matrixType = MatrixType.Active,
+                    materialType = "",
+                    origQuantity = "",
+                    orderQuantity = "",
+                    quantityCapitalized = "",
+                    overdToleranceLimit = "",
+                    underdToleranceLimit = "",
+                    upLimitCondAmount = "",
+                    quantityInvest = "",
+                    roundingSurplus = "",
+                    roundingShortages = "",
+                    isNoEAN = false,
+                    isWithoutRecount = false,
+                    isUFF = false,
+                    isNotEdit = false,
+                    totalExpirationDate = "",
+                    remainingShelfLife = "",
+                    isRus = false,
+                    isBoxFl = false,
+                    isMarkFl = false,
+                    isVet = false,
+                    numberBoxesControl = "",
+                    numberStampsControl = ""
+            ))
+        }
+        taskManager.getReceivingTask().let {
+            it!!.taskRepository.getProductsDiscrepancies().addProductDiscrepancy(TaskProductDiscrepancies(
+                    materialNumber = "000000000000000021",
+                    exidv = "",
+                    numberDiscrepancies = "20.0",
+                    uom = Uom("ST", "шт"),
+                    typeDiscrepancies = "1",
+                    isNotEdit = false,
+                    isNew = false
+            ))
+        }
+        taskManager.getReceivingTask().let {
+            it!!.taskRepository.getProductsDiscrepancies().addProductDiscrepancy(TaskProductDiscrepancies(
+                    materialNumber = "000000000000000021",
+                    exidv = "",
+                    numberDiscrepancies = "5.0",
+                    uom = Uom("ST", "шт"),
+                    typeDiscrepancies = "22",
+                    isNotEdit = false,
+                    isNew = false
+            ))
+        }
+        taskManager.getReceivingTask().let {
+            it!!.taskRepository.getProductsDiscrepancies().addProductDiscrepancy(TaskProductDiscrepancies(
+                    materialNumber = "000000000000000021",
+                    exidv = "",
+                    numberDiscrepancies = "4.0",
+                    uom = Uom("ST", "шт"),
+                    typeDiscrepancies = "45",
+                    isNotEdit = false,
+                    isNew = false
+            ))
+        }
+        taskManager.getReceivingTask().let {
+            it!!.taskRepository.getProducts().addProduct(TaskProductInfo(
+                    materialNumber = "000000000000000017",
+                    description = "Масло",
+                    uom = Uom("ST", "шт"),
+                    type = ProductType.General,
+                    isSet = false,
+                    sectionId = "01",
+                    matrixType = MatrixType.Active,
+                    materialType = "",
+                    origQuantity = "",
+                    orderQuantity = "",
+                    quantityCapitalized = "",
+                    overdToleranceLimit = "",
+                    underdToleranceLimit = "",
+                    upLimitCondAmount = "",
+                    quantityInvest = "",
+                    roundingSurplus = "",
+                    roundingShortages = "",
+                    isNoEAN = true,
+                    isWithoutRecount = false,
+                    isUFF = false,
+                    isNotEdit = false,
+                    totalExpirationDate = "",
+                    remainingShelfLife = "",
+                    isRus = false,
+                    isBoxFl = false,
+                    isMarkFl = false,
+                    isVet = false,
+                    numberBoxesControl = "",
+                    numberStampsControl = ""
+            ))
+        }
+
+        taskManager.getReceivingTask().let {
+            it!!.taskRepository.getBatches().addBatch(TaskBatchInfo(
+                    materialNumber = "000031",
+                    description = "партия 1",
+                    uom = Uom("ST", "шт"),
+                    batchNumber = "1",
+                    alcoСode = "",
+                    manufacturer = "АО \"ПУПКИН\"",
+                    bottlingDate = "11.09.2018",
+                    planQuantityBatch = "",
+                    isNoEAN = false
+            ))
+        }
+        taskManager.getReceivingTask().let {
+            it!!.taskRepository.getBatchesDiscrepancies().addBatchDiscrepancies(TaskBatchesDiscrepancies(
+                    materialNumber = "000031",
+                    batchNumber = "1",
+                    numberDiscrepancies = "35.0",
+                    uom = Uom("ST", "шт"),
+                    typeDiscrepancies = "22",
+                    isNotEdit = false,
+                    exciseStampCode = "",
+                    fullDM = ""
+            ))
+        }
+        taskManager.getReceivingTask().let {
+            it!!.taskRepository.getBatchesDiscrepancies().addBatchDiscrepancies(TaskBatchesDiscrepancies(
+                    materialNumber = "000031",
+                    batchNumber = "1",
+                    numberDiscrepancies = "35.0",
+                    uom = Uom("ST", "шт"),
+                    typeDiscrepancies = "45",
+                    isNotEdit = false,
+                    exciseStampCode = "",
+                    fullDM = ""
+            ))
+        }
+        taskManager.getReceivingTask().let {
+            it!!.taskRepository.getBatches().addBatch(TaskBatchInfo(
+                    materialNumber = "000032",
+                    description = "партия 2",
+                    uom = Uom("ST", "шт"),
+                    batchNumber = "2",
+                    alcoСode = "",
+                    manufacturer = "ТОВ \"НЕ ПОЙМИ КТО\"",
+                    bottlingDate = "01.01.2000",
+                    planQuantityBatch = "",
+                    isNoEAN = true
+            ))
+        }
+        screenNavigator.openGoodsListScreen()
+
+        //screenNavigator.openTaskListLoadingScreen(TaskListLoadingMode.Receiving)
     }
 
     fun onClickRecountTask() {

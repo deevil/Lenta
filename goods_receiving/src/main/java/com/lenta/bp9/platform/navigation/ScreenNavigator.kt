@@ -223,6 +223,24 @@ class ScreenNavigator(
         }
     }
 
+    override fun openSelectTypeCodeScreen(codeConfirmationForSap: Int, codeConfirmationForBarCode: Int) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.select_type_code_description),
+                    iconRes = 0,
+                    codeConfirmForRight = codeConfirmationForBarCode,
+                    codeConfirmForLeft = codeConfirmationForSap,
+                    pageNumber = "90",
+                    leftButtonDecorationInfo = ButtonDecorationInfo.sap,
+                    rightButtonDecorationInfo = ButtonDecorationInfo.barcode)
+            )
+        }
+    }
+
+    override fun openAlertGoodsNotInOrderScreen() {
+        openInfoScreen(context.getString(R.string.goods_not_in_order))
+    }
+
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 
 }
@@ -255,4 +273,6 @@ interface IScreenNavigator : ICoreNavigator {
     fun openInvoiceReviseScreen()
     fun openRejectScreen()
     fun openDiscrepancyListScreen()
+    fun openSelectTypeCodeScreen(codeConfirmationForSap: Int, codeConfirmationForBarCode: Int)
+    fun openAlertGoodsNotInOrderScreen()
 }

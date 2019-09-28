@@ -21,6 +21,7 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListe
 import com.lenta.shared.scan.OnScanResultListener
 import com.lenta.shared.utilities.databinding.*
 import com.lenta.shared.utilities.extentions.connectLiveData
+import com.lenta.shared.utilities.extentions.getFragmentResultCode
 
 class GoodsListFragment : CoreFragment<FragmentGoodsListBinding, GoodsListViewModel>(),
         ViewPagerSettings,
@@ -182,6 +183,11 @@ class GoodsListFragment : CoreFragment<FragmentGoodsListBinding, GoodsListViewMo
 
     override fun onScanResult(data: String) {
         vm.onScanResult(data)
+    }
+
+    override fun onFragmentResult(arguments: Bundle) {
+        super.onFragmentResult(arguments)
+        vm.onResult(arguments.getFragmentResultCode())
     }
 
     override fun onKeyDown(keyCode: KeyCode): Boolean {

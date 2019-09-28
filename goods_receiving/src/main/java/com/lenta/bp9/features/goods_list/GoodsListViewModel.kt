@@ -15,6 +15,7 @@ import com.lenta.shared.models.core.MatrixType
 import com.lenta.shared.models.core.ProductType
 import com.lenta.shared.models.core.Uom
 import com.lenta.shared.platform.viewmodel.CoreViewModel
+import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
 import com.lenta.shared.requests.network.AuthParams
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.SelectionItemsHelper
@@ -37,6 +38,8 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
     lateinit var context: Context
     @Inject
     lateinit var sessionInfo: ISessionInfo
+    @Inject
+    lateinit var searchProductDelegate: SearchProductDelegate
 
     val titleProgressScreen: MutableLiveData<String> = MutableLiveData()
     val selectedPage = MutableLiveData(0)
@@ -57,6 +60,13 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
     }
 
     val visibilityBatchesButton: MutableLiveData<Boolean> = MutableLiveData()
+
+    init {
+        viewModelScope.launch {
+            searchProductDelegate.init(viewModelScope = this@GoodsListViewModel::viewModelScope,
+                    scanResultHandler = this@GoodsListViewModel::handleProductSearchResult)
+        }
+    }
 
     fun onResume() {
         visibilityBatchesButton.value = taskManager.getReceivingTask()?.taskDescription?.isAlco
@@ -149,8 +159,13 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
     }
 
     fun onScanResult(data: String) {
-        //todo
-        return
+        searchProductDelegate.searchCode(code = data, fromScan = true)
+    }
+
+    fun onResult(code: Int?) {
+        if (searchProductDelegate.handleResultCode(code)) {
+            return
+        }
     }
 
     override fun onPageSelected(position: Int) {
@@ -166,7 +181,7 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
         }
         matnr?.let {
             val productInfo = taskManager.getReceivingTask()?.taskRepository?.getProducts()?.findProduct(it)
-            if (productInfo != null) screenNavigator.openGoodsInfoScreen(productInfo)
+            if (productInfo != null) searchProductDelegate.openProductScreen(productInfo)
         }
     }
 
@@ -175,10 +190,14 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
         eanCode.value = eanCode.value ?: "" + digit
     }
 
+    private fun handleProductSearchResult(@Suppress("UNUSED_PARAMETER") scanInfoResult: ScanInfoResult?): Boolean {
+        eanCode.postValue("")
+        return false
+    }
+
     override fun onOkInSoftKeyboard(): Boolean {
         eanCode.value?.let {
-            //todo
-            //searchProductDelegate.searchCode(it, fromScan = false)
+            searchProductDelegate.searchCode(it, fromScan = false)
         }
         return true
     }
