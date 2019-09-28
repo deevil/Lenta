@@ -26,6 +26,7 @@
     <string name="unlock_confirmation">Задание заблокировано этим же логином на ТСД. Разблокировать и начать обработку?</string>
     <string name="view_confirmation">Задание заблокировано под другим логином на ТСД. Перейти к просмотру этого задания?</string>
     <string name="unsaved_data_confirmation">Несохранённые данные будут утеряны, всё равно продолжить?</string>
+    <string name="process_as_discrepancy_confirmation">Остались неподтвержденными обязательные документы по товарам. Оформить все эти товары как расхождение "Несоответствие документов"?</string>
     <string name="task_card">Карточка задания</string>
     <string name="status">Статус</string>
     <string name="delivery">Поставка</string>
@@ -73,4 +74,6 @@
     <string name="reject_success_temp">Временный отказ произведен успешно</string>
     <string name="reject_success_full">Полный отказ произведен успешно. Входящая поставка удалена.</string>
     <string name="reject_success_full_alco">Выполнен временный отказ, для полного отказа необходимо оповестить ГИС-центр</string>
+    <string name="product_documents">Документы по товарам</string>
+    <string name="enter_product_number">Введите номер товара</string>
 </resources>

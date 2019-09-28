@@ -17,6 +17,7 @@ import com.lenta.bp9.features.change_datetime.ChangeDateTimeFragment
 import com.lenta.bp9.features.change_datetime.ChangeDateTimeMode
 import com.lenta.bp9.features.loading.tasks.*
 import com.lenta.bp9.features.reject.RejectFragment
+import com.lenta.bp9.features.revise.ProductDocumentsReviseFragment
 import com.lenta.bp9.features.revise.TaskReviseFragment
 import com.lenta.bp9.features.revise.invoice.InvoiceReviseFragment
 import com.lenta.shared.account.IAuthenticator
@@ -145,6 +146,15 @@ class ScreenNavigator(
         }
     }
 
+    override fun openConfirmationProcessAsDiscrepancy(callbackFunc: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.process_as_discrepancy_confirmation),
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(callbackFunc),
+                    pageNumber = "93",
+                    rightButtonDecorationInfo = ButtonDecorationInfo.process))
+        }
+    }
+
     override fun openAlertWithoutConfirmation(message: String, callbackFunc: () -> Unit) {
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(message = message,
@@ -190,6 +200,12 @@ class ScreenNavigator(
         }
     }
 
+    override fun openProductDocumentsReviseScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(ProductDocumentsReviseFragment())
+        }
+    }
+
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 
 }
@@ -211,6 +227,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openConfirmationUnlock(callbackFunc: () -> Unit)
     fun openConfirmationView(callbackFunc: () -> Unit)
     fun openConfirmationUnsavedData(callbackFunc: () -> Unit)
+    fun openConfirmationProcessAsDiscrepancy(callbackFunc: () -> Unit)
     fun openAlertWithoutConfirmation(message: String, callbackFunc: () -> Unit)
     fun openChangeDateTimeScreen(mode: ChangeDateTimeMode)
     fun openLoadingRegisterArrivalScreen()
@@ -218,4 +235,5 @@ interface IScreenNavigator : ICoreNavigator {
     fun openTaskReviseScreen()
     fun openInvoiceReviseScreen()
     fun openRejectScreen()
+    fun openProductDocumentsReviseScreen()
 }

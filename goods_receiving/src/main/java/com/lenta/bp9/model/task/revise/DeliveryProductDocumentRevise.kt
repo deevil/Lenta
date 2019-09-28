@@ -8,8 +8,8 @@ data class DeliveryProductDocumentRevise(
         val documentID: String, // ID Документа
         val documentName: String, // Название документа
         val isObligatory: Boolean,  // ??? - Общий флаг
-        val isCheck: Boolean,   // ??? - Общий флаг
-        val documentType: DocumentType, // Тип документа
+        var isCheck: Boolean,   // ??? - Общий флаг
+        val documentType: ProductDocumentType, // Тип документа
         val isSet: Boolean, // УТЗ ТСД: Индикатор: Признак набора
         val initialCount: Double, // Исходное количество позиции поставки
         val measureUnits: String // Продажная ЕИ
@@ -23,7 +23,7 @@ data class DeliveryProductDocumentRevise(
                     documentName = restData.documentName,
                     isObligatory = restData.isObligatory.isNotEmpty(),
                     isCheck = restData.isCheck.isNotEmpty(),
-                    documentType = DocumentType.from(restData.documentType),
+                    documentType = ProductDocumentType.from(restData.documentType),
                     isSet = restData.isSet.isNotEmpty(),
                     initialCount = restData.initialCount.toDouble(),
                     measureUnits = restData.measureUnits
@@ -65,6 +65,24 @@ data class DeliveryProductDocumentReviseRestData(
                     initialCount = data.initialCount.toString(),
                     measureUnits = data.measureUnits
             )
+        }
+    }
+}
+
+enum class ProductDocumentType(val documentTypeString: String) {
+    None(""),
+    Simple("0"),
+    AlcoRus("3"),
+    AlcoImport("4");
+
+    companion object {
+        fun from(documentTypeString: String): ProductDocumentType {
+            return when (documentTypeString) {
+                "0" -> Simple
+                "3" -> AlcoRus
+                "4" -> AlcoImport
+                else -> None
+            }
         }
     }
 }

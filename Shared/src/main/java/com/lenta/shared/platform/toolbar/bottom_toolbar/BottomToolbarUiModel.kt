@@ -257,6 +257,14 @@ data class ButtonDecorationInfo(
         val batchsProducts: ButtonDecorationInfo by lazy {
             ButtonDecorationInfo(R.drawable.is_batchs_products_24dp, R.string.batchs_products)
         }
+
+        val sort: ButtonDecorationInfo by lazy {
+            ButtonDecorationInfo(R.drawable.ic_sort, R.string.sort)
+        }
+
+        val process: ButtonDecorationInfo by lazy {
+            ButtonDecorationInfo(R.drawable.ic_arrow_forward_white_24dp, R.string.process)
+        }
     }
 }
 

@@ -126,7 +126,7 @@ class TaskReviseViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     fun onClickNext() {
-        Logg.d { "Product documents screen" }
+        screenNavigator.openProductDocumentsReviseScreen()
     }
 
 

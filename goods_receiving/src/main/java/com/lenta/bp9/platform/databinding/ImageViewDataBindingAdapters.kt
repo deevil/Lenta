@@ -9,6 +9,7 @@ import com.lenta.bp9.model.task.TaskLockStatus
 import com.lenta.shared.utilities.extentions.setVisible
 import com.lenta.shared.utilities.extentions.setVisibleGone
 import com.lenta.bp9.model.task.revise.DocumentType
+import com.lenta.bp9.model.task.revise.ProductDocumentType
 
 @BindingAdapter("postponedTaskStatusIcon")
 fun setPostponedStatusIcon(imageView: ImageView, statusType: TaskPostponedStatus?) {
@@ -42,6 +43,16 @@ fun setNotificationIndicatorIcon(imageView: ImageView, indicatorType: Notificati
 
 @BindingAdapter("documentTypeIcon")
 fun setDocumentTypeIcon(imageView: ImageView, docType: DocumentType?) {
+    docType?.getIconRes()?.let {
+        imageView.setVisible()
+        imageView.setImageResource(it)
+        return
+    }
+    imageView.setVisibleGone()
+}
+
+@BindingAdapter("productDocumentTypeIcon")
+fun setProductDocumentTypeIcon(imageView: ImageView, docType: ProductDocumentType?) {
     docType?.getIconRes()?.let {
         imageView.setVisible()
         imageView.setImageResource(it)
@@ -87,6 +98,14 @@ fun DocumentType.getIconRes(): Int? {
     return when (this) {
         DocumentType.Simple -> R.drawable.ic_simple_delivery_doc
         DocumentType.Invoice -> R.drawable.ic_invoice
+        else -> null
+    }
+}
+
+fun ProductDocumentType.getIconRes(): Int? {
+    return when (this) {
+        ProductDocumentType.Simple -> R.drawable.ic_simple_product_doc
+        ProductDocumentType.AlcoRus, ProductDocumentType.AlcoImport -> R.drawable.ic_alco_task_icon
         else -> null
     }
 }

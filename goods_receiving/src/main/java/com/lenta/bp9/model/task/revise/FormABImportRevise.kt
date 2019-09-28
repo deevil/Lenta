@@ -1,6 +1,7 @@
 package com.lenta.bp9.model.task.revise
 
 import com.google.gson.annotations.SerializedName
+import com.lenta.shared.utilities.extentions.toStringFormatted
 
 //ET_FORMA_IMP - Таблица Справок А и Б (Импортный товар)
 data class FormABImportRevise(
@@ -15,7 +16,7 @@ data class FormABImportRevise(
         val longName_B: String, // Длинное наименование
         val date_A: String, // ??? - Дата
         val date_B: String, // ??? - Дата
-        val quantityByTTN_B: Int, // Количество по ТТН/ГТД
+        val quantityByTTN_B: Double, // Количество по ТТН/ГТД
         val EGAISFixDocumentNumber_B: String, // Номер документа фиксации ЕГАИС
         val EGAISFixDate_B: String, // Дата фиксации в ЕГАИС
         val lastB: Int, // ??? - Двухбайтовое целое число (со знаком)
@@ -37,10 +38,10 @@ data class FormABImportRevise(
                     longName_B = restData.longName_B,
                     date_A = restData.date_A,
                     date_B = restData.date_B,
-                    quantityByTTN_B = restData.quantityByTTN_B.toInt(),
+                    quantityByTTN_B = restData.quantityByTTN_B.toDouble(),
                     EGAISFixDocumentNumber_B = restData.EGAISFixDocumentNumber_B,
                     EGAISFixDate_B = restData.EGAISFixDate_B,
-                    lastB = restData.lastB.toInt(),
+                    lastB = restData.lastB.trim().toInt(),
                     isCheck = restData.isCheck.isNotEmpty(),
                     matnrOSN = restData.matnrOSN
             )
@@ -98,7 +99,7 @@ data class FormABImportReviseRestData(
                     longName_B = data.longName_B,
                     date_A = data.date_A,
                     date_B = data.date_B,
-                    quantityByTTN_B = data.quantityByTTN_B.toString(),
+                    quantityByTTN_B = data.quantityByTTN_B.toStringFormatted(),
                     EGAISFixDocumentNumber_B = data.EGAISFixDocumentNumber_B,
                     EGAISFixDate_B = data.EGAISFixDate_B,
                     lastB = data.lastB.toString(),

@@ -86,6 +86,11 @@ class MemoryTaskReviseDocumentsRepository : ITaskReviseDocumentsRepository {
         document?.let { it.isCheck = !it.isCheck }
     }
 
+    override fun changeProductDocumentStatus(documentID: String, matnr: String) {
+        val document = productDocuments.findLast { it.documentID == documentID && it.productNumber == matnr }
+        document?.let { it.isCheck = !it.isCheck }
+    }
+
     override fun clear() {
         deliveryDocuments.clear()
         productDocuments.clear()
