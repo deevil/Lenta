@@ -60,7 +60,9 @@ class NotExposedProductsTask(
                             name = it.productInfo.name,
                             quantity = quantity,
                             uom = it.uom,
-                            isEmptyPlaceMarked = isEmptyPlaceMarked
+                            isEmptyPlaceMarked = isEmptyPlaceMarked,
+                            section = it.productInfo.sectionNumber,
+                            group = it.productInfo.matKL
                     )
             )
         }
@@ -93,6 +95,18 @@ class NotExposedProductsTask(
                     }
 
                     if (product.ean?.contains(it.value.value) != true && !product.matNr.contains(it.value.value)) {
+                        return false
+                    }
+                }
+
+                FilterFieldType.GROUP -> {
+                    if (product.group?.contains(it.value.value) != true) {
+                        return false
+                    }
+                }
+
+                FilterFieldType.SECTION -> {
+                    if (product.section?.contains(it.value.value) != true) {
                         return false
                     }
                 }
