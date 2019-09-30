@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.lenta.bp14.models.IGeneralTaskManager
 import com.lenta.bp14.models.filter.FilterFieldType
 import com.lenta.bp14.models.filter.FilterParameter
 import com.lenta.bp14.models.data.GoodsListTab
@@ -12,9 +13,10 @@ import com.lenta.bp14.models.getTaskName
 import com.lenta.bp14.models.not_exposed_products.INotExposedProductsTask
 import com.lenta.bp14.models.not_exposed_products.repo.INotExposedProductInfo
 import com.lenta.bp14.platform.navigation.IScreenNavigator
-import com.lenta.bp14.requests.ProductInfoNetRequest
-import com.lenta.shared.requests.combined.scan_info.ScanInfoRequest
+import com.lenta.bp14.requests.not_exposed_product.NotExposedSendReportNetRequest
+import com.lenta.shared.platform.device_info.DeviceInfo
 import com.lenta.shared.requests.combined.scan_info.analyseCode
+import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.databinding.PageSelectionListener
@@ -33,10 +35,13 @@ class GoodsListNeViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     lateinit var task: INotExposedProductsTask
 
     @Inject
-    lateinit var scanInfoRequest: ScanInfoRequest
+    lateinit var deviceInfo: DeviceInfo
 
     @Inject
-    lateinit var productInfoNetRequest: ProductInfoNetRequest
+    lateinit var sentReportRequest: NotExposedSendReportNetRequest
+
+    @Inject
+    lateinit var generalTaskManager: IGeneralTaskManager
 
     val onOkFilterListener = object : OnOkInSoftKeyboardListener {
         override fun onOkInSoftKeyboard(): Boolean {
@@ -159,9 +164,20 @@ class GoodsListNeViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     }
 
 
-
     fun onClickSave() {
-
+        viewModelScope.launch {
+            navigator.showProgressLoadingData()
+            sentReportRequest(task.getReportData(deviceInfo.getDeviceIp())).either(
+                    {
+                        navigator.openAlertScreen(failure = it)
+                    }
+            ) {
+                Logg.d { "SentReportResult: $it" }
+                generalTaskManager.clearCurrentTask(sentReportResult = it)
+                navigator.openReportResultScreen()
+            }
+            navigator.hideProgress()
+        }
     }
 
     private fun onClickDelete() {

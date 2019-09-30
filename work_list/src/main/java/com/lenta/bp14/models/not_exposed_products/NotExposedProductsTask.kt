@@ -13,6 +13,7 @@ import com.lenta.bp14.models.not_exposed_products.repo.INotExposedProductsRepo
 import com.lenta.bp14.models.not_exposed_products.repo.NotExposedProductInfo
 import com.lenta.bp14.requests.not_exposed_product.GoodInfo
 import com.lenta.bp14.requests.not_exposed_product.NotExposedInfoRequestParams
+import com.lenta.bp14.requests.not_exposed_product.NotExposedReport
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.functional.Either
 import com.lenta.shared.functional.map
@@ -120,6 +121,16 @@ class NotExposedProductsTask(
     }
 
 
+    override fun getReportData(ip: String): NotExposedReport {
+        return NotExposedReport(
+                ip = ip,
+                description = taskDescription,
+                isNotFinish = false,
+                checksResults = notExposedProductsRepo.getProducts().value?: emptyList()
+        )
+    }
+
+
 }
 
 
@@ -138,6 +149,8 @@ interface INotExposedProductsTask : ITask, IFilterable {
     fun getProcessedCheckInfo(): INotExposedProductInfo?
 
     suspend fun getProductInfoAndSetProcessed(ean: String? = null, matNr: String? = null): Either<Failure, GoodInfo>
+
+    fun getReportData(ip: String): NotExposedReport
 
 }
 

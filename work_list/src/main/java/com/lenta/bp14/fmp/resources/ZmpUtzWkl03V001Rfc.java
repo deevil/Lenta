@@ -8,6 +8,7 @@ import com.mobrun.plugin.api.request_assistant.RequestBuilder;
 import com.mobrun.plugin.api.helper.LocalTableResourceHelper;
 import com.mobrun.plugin.models.StatusSelectTable;
 
+//Получение состава задания - РБС
 public class ZmpUtzWkl03V001Rfc {
 
     public static final String NAME_RESOURCE = "ZMP_UTZ_WKL_03_V001_RFC";
