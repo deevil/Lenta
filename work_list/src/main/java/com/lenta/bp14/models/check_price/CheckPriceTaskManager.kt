@@ -6,19 +6,22 @@ import com.lenta.bp14.models.check_price.repo.ActualPriceRepoForTest
 import com.lenta.bp14.models.check_price.repo.CheckPriceResultsRepo
 import com.lenta.bp14.platform.IVibrateHelper
 import com.lenta.bp14.platform.sound.ISoundPlayer
+import com.lenta.bp14.requests.check_price.CheckPriceRequestParams
+import com.lenta.shared.interactor.UseCase
 import com.lenta.shared.platform.time.ITimeMonitor
 
 class CheckPriceTaskManager(private val timeMonitor: ITimeMonitor,
                             private val gson: Gson,
                             private val soundPlayer: ISoundPlayer,
                             private val vibrateHelper: IVibrateHelper,
-                            private val priceInfoParser: IPriceInfoParser) : BaseTaskManager<ICheckPriceTask, CheckPriceTaskDescription>() {
+                            private val priceInfoParser: IPriceInfoParser,
+                            private val checkPriceRequest: UseCase<ActualPriceInfo, CheckPriceRequestParams>) : BaseTaskManager<ICheckPriceTask, CheckPriceTaskDescription>() {
 
 
     override fun newTask(taskDescription: CheckPriceTaskDescription): ICheckPriceTask? {
         _task = CheckPriceTask(
                 taskDescription = taskDescription,
-                actualPricesRepo = ActualPriceRepoForTest(),
+                actualPricesRepo = ActualPriceRepoForTest(checkPriceRequest),
                 readyResultsRepo = CheckPriceResultsRepo(),
                 priceInfoParser = priceInfoParser,
                 gson = gson,

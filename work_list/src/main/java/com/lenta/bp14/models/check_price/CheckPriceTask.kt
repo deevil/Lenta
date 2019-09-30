@@ -5,7 +5,6 @@ import com.google.gson.Gson
 import com.lenta.bp14.ml.CheckStatus
 import com.lenta.bp14.models.ITask
 import com.lenta.bp14.models.ITaskDescription
-import com.lenta.bp14.models.check_price.repo.ActualPriceRepoForTest
 import com.lenta.bp14.models.check_price.repo.IActualPricesRepo
 import com.lenta.bp14.models.check_price.repo.ICheckPriceResultsRepo
 import com.lenta.bp14.models.general.ITaskType
@@ -15,11 +14,7 @@ import com.lenta.bp14.platform.sound.ISoundPlayer
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.functional.Either
 import com.lenta.shared.models.core.StateFromToString
-import com.lenta.shared.utilities.Logg
-import com.lenta.shared.utilities.extentions.implementationOf
 import com.lenta.shared.utilities.extentions.map
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import kotlin.math.min
 
 class CheckPriceTask(
@@ -40,11 +35,10 @@ class CheckPriceTask(
 
         val scannedPriceInfo = priceInfoParser.getPriceInfoFromRawCode(rawCode) ?: return null
 
-        actualPricesRepo.implementationOf(ActualPriceRepoForTest::class.java).apply {
-            Logg.d { "ActualPriceRepoForTest: $this" }
-        }?.putTestResult(scannedPriceInfo)
-
-        val actualPriceInfo = actualPricesRepo.getActualPriceInfoFromCache(scannedPriceInfo.eanCode)
+        val actualPriceInfo = actualPricesRepo.getActualPriceInfoFromCache(
+                tkNumber = taskDescription.tkNumber,
+                eanCode = scannedPriceInfo.eanCode
+        )
                 ?: return null
 
         return CheckPriceResult(
@@ -70,12 +64,10 @@ class CheckPriceTask(
         val scannedPriceInfo = priceInfoParser.getPriceInfoFromRawCode(qrCode)
                 ?: return Either.Left(Failure.NotValidQrCode)
 
-        actualPricesRepo.implementationOf(ActualPriceRepoForTest::class.java).apply {
-            Logg.d { "ActualPriceRepoForTest: $this" }
-        }?.putTestResult(scannedPriceInfo)
-
-
-        return actualPricesRepo.getActualPriceInfoByEan(scannedPriceInfo.eanCode).also {
+        return actualPricesRepo.getActualPriceInfoByEan(
+                tkNumber = taskDescription.tkNumber,
+                eanCode = scannedPriceInfo.eanCode
+        ).also {
             it.either({}, { actualPriceInfo ->
                 CheckPriceResult(
                         ean = scannedPriceInfo.eanCode,
@@ -173,29 +165,17 @@ class CheckPriceTask(
     }
 
     override suspend fun getActualPriceByEan(eanCode: String): Either<Failure, IActualPriceInfo> {
-        actualPricesRepo.implementationOf(ActualPriceRepoForTest::class.java).apply {
-            Logg.d { "ActualPriceRepoForTest: $this" }
-        }?.putTestResult(ScanPriceInfo(
-                eanCode = eanCode,
-                price = 4555.99F,
-                discountCardPrice = 4554.99F
-        ))
-        return withContext(Dispatchers.IO) {
-            return@withContext actualPricesRepo.getActualPriceInfoByEan(eanCode)
-        }
+        return actualPricesRepo.getActualPriceInfoByEan(
+                tkNumber = taskDescription.tkNumber,
+                eanCode = eanCode
+        )
     }
 
     override suspend fun getActualPriceByMatNr(matNumber: String): Either<Failure, IActualPriceInfo> {
-        actualPricesRepo.implementationOf(ActualPriceRepoForTest::class.java).apply {
-            Logg.d { "ActualPriceRepoForTest: $this" }
-        }?.putTestResult(ScanPriceInfo(
-                eanCode = matNumber,
-                price = 4555.99F,
-                discountCardPrice = 4554.99F
-        ))
-        return withContext(Dispatchers.IO) {
-            return@withContext actualPricesRepo.getActualPriceInfoByMatNr(matNumber)
-        }
+        return actualPricesRepo.getActualPriceInfoByMatNr(
+                tkNumber = taskDescription.tkNumber,
+                matNumber = matNumber
+        )
     }
 
 }
