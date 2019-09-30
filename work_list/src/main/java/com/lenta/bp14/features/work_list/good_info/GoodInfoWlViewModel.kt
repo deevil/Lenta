@@ -159,7 +159,7 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
         viewModelScope.launch {
             title.value = good.value?.getFormattedMaterialWithName()
 
-            quantity.value = "1"
+            quantity.value = good.value?.common?.defaultQuantity?.dropTail()
             comment.value = commentsList.value?.get(0)
 
             viewModelScope.launch {
