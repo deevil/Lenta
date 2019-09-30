@@ -1,10 +1,10 @@
 package com.lenta.bp14.requests.check_price
 
 import com.google.gson.annotations.SerializedName
+import com.lenta.bp14.models.check_price.CheckPriceTaskDescription
 import com.lenta.bp14.models.check_price.ICheckPriceResult
-import com.lenta.bp14.models.not_exposed_products.NotExposedProductsTaskDescription
-import com.lenta.bp14.requests.pojo.CreatedTaskInfo
 import com.lenta.bp14.requests.pojo.ReportSentStatus
+import com.lenta.bp14.requests.pojo.SentReportResult
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.functional.Either
 import com.lenta.shared.functional.map
@@ -56,15 +56,12 @@ class CheckPriceReportNetRequest
 
 data class CheckPriceReport(
         val ip: String,
-        val description: NotExposedProductsTaskDescription,
+        val description: CheckPriceTaskDescription,
         val isNotFinish: Boolean,
         val checksResults: List<ICheckPriceResult>
 
 )
 
-data class SentReportResult(
-        val createdTasks: List<CreatedTaskInfo>
-)
 
 
 data class FmpReport(

@@ -6,7 +6,7 @@ import com.lenta.bp14.models.general.ITaskType
 import com.lenta.bp14.models.general.TaskTypes
 import com.lenta.bp14.models.not_exposed_products.NotExposedProductsTaskManager
 import com.lenta.bp14.models.work_list.WorkListTaskManager
-import com.lenta.bp14.requests.not_exposed_product.SentReportResult
+import com.lenta.bp14.requests.pojo.SentReportResult
 import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.platform.time.ITimeMonitor
 import com.lenta.shared.utilities.date_time.DateTimeUtil.formatDate

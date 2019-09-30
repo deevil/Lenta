@@ -11,6 +11,7 @@ import com.lenta.bp14.models.general.ITaskType
 import com.lenta.bp14.models.general.TaskTypes
 import com.lenta.bp14.platform.IVibrateHelper
 import com.lenta.bp14.platform.sound.ISoundPlayer
+import com.lenta.bp14.requests.check_price.CheckPriceReport
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.functional.Either
 import com.lenta.shared.models.core.StateFromToString
@@ -178,6 +179,16 @@ class CheckPriceTask(
         )
     }
 
+    override fun getReportData(ip: String): CheckPriceReport {
+        return CheckPriceReport(
+                ip = ip,
+                description = taskDescription,
+                isNotFinish = false,
+                checksResults = getCheckResults().value ?: emptyList()
+
+        )
+    }
+
 }
 
 fun ICheckPriceResult?.toCheckStatus(): CheckStatus? {
@@ -198,6 +209,7 @@ interface ICheckPriceTask : ITask {
     suspend fun getActualPriceByEan(eanCode: String): Either<Failure, IActualPriceInfo>
     suspend fun getActualPriceByMatNr(matNumber: String): Either<Failure, IActualPriceInfo>
     suspend fun checkPriceByQrCode(qrCode: String): Either<Failure, IActualPriceInfo>
+    fun getReportData(ip: String): CheckPriceReport
 
     var processingMatNumber: String?
 

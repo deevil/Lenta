@@ -2,14 +2,18 @@ package com.lenta.bp14.features.price_check.goods_list
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.lenta.bp14.models.IGeneralTaskManager
 import com.lenta.bp14.models.check_price.ICheckPriceResult
 import com.lenta.bp14.models.check_price.ICheckPriceTask
 import com.lenta.bp14.models.data.GoodsListTab
 import com.lenta.bp14.models.data.pojo.Good
 import com.lenta.bp14.models.getTaskName
 import com.lenta.bp14.platform.navigation.IScreenNavigator
+import com.lenta.bp14.requests.check_price.CheckPriceReportNetRequest
+import com.lenta.shared.platform.device_info.DeviceInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.analyseCode
+import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.databinding.PageSelectionListener
@@ -24,6 +28,13 @@ class GoodsListPcViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     lateinit var navigator: IScreenNavigator
     @Inject
     lateinit var task: ICheckPriceTask
+    @Inject
+    lateinit var checkPriceReportNetRequest: CheckPriceReportNetRequest
+    @Inject
+    lateinit var deviceInfo: DeviceInfo
+    @Inject
+    lateinit var generalTaskManager: IGeneralTaskManager
+
 
 
     val processedSelectionsHelper = SelectionItemsHelper()
@@ -172,6 +183,21 @@ class GoodsListPcViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
 
 
     fun onClickSave() {
+
+        viewModelScope.launch {
+            navigator.showProgressLoadingData()
+            checkPriceReportNetRequest(task.getReportData(deviceInfo.getDeviceIp())).either( {
+                navigator.openAlertScreen(it)
+            }) {
+                Logg.d { "SentReportResult: $it" }
+                generalTaskManager.clearCurrentTask(sentReportResult = it)
+                navigator.openReportResultScreen()
+            }
+            navigator.hideProgress()
+
+        }
+
+
 
     }
 
