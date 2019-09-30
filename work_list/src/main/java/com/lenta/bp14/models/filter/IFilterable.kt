@@ -18,6 +18,8 @@ interface IFilterable {
     fun addNewFilters(filters: List<FilterParameter>)
 
     fun clearAllFilters()
+
+    fun isHaveAnotherActiveFilter(filterFieldType: FilterFieldType): Boolean
 }
 
 class FilterableDelegate(private val supportedFilters: Set<FilterFieldType>) : IFilterable {
@@ -50,6 +52,16 @@ class FilterableDelegate(private val supportedFilters: Set<FilterFieldType>) : I
     override fun clearAllFilters() {
         filtersMap.clear()
         onFiltersChangesLiveData.value = true
+    }
+
+    override fun isHaveAnotherActiveFilter(filterFieldType: FilterFieldType): Boolean {
+        filtersMap.forEach {
+            if (it.key != filterFieldType && it.value.value.isNotBlank()) {
+                return true
+            }
+        }
+        return false
+
     }
 
 

@@ -402,10 +402,11 @@ class ScreenNavigator(
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
                     message = context.getString(R.string.confirmation_not_save_changes),
+                    iconRes = R.drawable.ic_question_80dp,
                     codeConfirmForRight = backFragmentResultHelper.setFuncForResult(yesCallback),
                     pageNumber = "94",
                     leftButtonDecorationInfo = ButtonDecorationInfo.back,
-                    rightButtonDecorationInfo = ButtonDecorationInfo.yes
+                    rightButtonDecorationInfo = ButtonDecorationInfo.next
             )
             )
         }

@@ -32,6 +32,8 @@ class FmpRequestsHelper(val hyperHive: HyperHive,
 
         analyticsHelper.onStartFmpRequest(resourceName = resourceName)
 
+        Logg.d { "webCallParams.data: ${webCallParams.data}" }
+
         val statusString = hyperHive.requestAPI.web(resourceName, webCallParams)
                 .execute()
 

@@ -1,16 +1,16 @@
 package com.lenta.bp9.model.repositories
 
-import com.lenta.bp9.model.ReceivingExciseStamp
-import com.lenta.bp9.model.ReceivingProductInfo
+import com.lenta.bp9.model.task.TaskExciseStamp
+import com.lenta.bp9.model.task.TaskProductInfo
 
 interface ITaskExciseStampRepository {
-    fun getExciseStamps(): List<ReceivingExciseStamp>
-    fun findExciseStampsOfProduct(product: ReceivingProductInfo): List<ReceivingExciseStamp>
-    fun findExciseStampsOfProduct(materialNumber: String, isSet: Boolean): List<ReceivingExciseStamp>
-    fun addExciseStamp(exciseStamp: ReceivingExciseStamp): Boolean
-    fun addExciseStamps(exciseStamps: List<ReceivingExciseStamp>): Boolean
-    fun deleteExciseStamp(exciseStamp: ReceivingExciseStamp): Boolean
-    fun deleteExciseStamps(exciseStamps: List<ReceivingExciseStamp>): Boolean
-    fun deleteExciseStampsForProduct(product: ReceivingProductInfo): Boolean
+    fun getExciseStamps(): List<TaskExciseStamp>
+    fun findExciseStampsOfProduct(product: TaskProductInfo): List<TaskExciseStamp>
+    fun findExciseStampsOfProduct(materialNumber: String, isSet: Boolean): List<TaskExciseStamp>
+    fun addExciseStamp(exciseStamp: TaskExciseStamp): Boolean
+    fun addExciseStamps(exciseStamps: List<TaskExciseStamp>): Boolean
+    fun deleteExciseStamp(exciseStamp: TaskExciseStamp): Boolean
+    fun deleteExciseStamps(exciseStamps: List<TaskExciseStamp>): Boolean
+    fun deleteExciseStampsForProduct(product: TaskProductInfo): Boolean
     fun clear()
 }

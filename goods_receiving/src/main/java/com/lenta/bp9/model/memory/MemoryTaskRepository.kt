@@ -12,6 +12,12 @@ class MemoryTaskRepository : ITaskRepository {
 
     private val taskReviseDocumentsRepository: ITaskReviseDocumentsRepository = MemoryTaskReviseDocumentsRepository()
 
+    private val taskProductsDiscrepanciesRepository: ITaskProductsDiscrepanciesRepository = MemoryTaskProductsDiscrepanciesRepository()
+
+    private val taskBatchesRepository: ITaskBatchesRepository = MemoryTaskBatchesRepository()
+
+    private val taskBatchesDiscrepanciesRepository: ITaskBatchesDiscrepanciesRepository = MemoryTaskBatchesDiscrepanciesRepository()
+
     override fun getProducts(): ITaskProductRepository {
         return taskProductRepository
     }
@@ -26,5 +32,17 @@ class MemoryTaskRepository : ITaskRepository {
 
     override fun getReviseDocuments(): ITaskReviseDocumentsRepository {
         return taskReviseDocumentsRepository
+    }
+
+    override fun getProductsDiscrepancies(): ITaskProductsDiscrepanciesRepository {
+        return taskProductsDiscrepanciesRepository
+    }
+
+    override fun getBatches(): ITaskBatchesRepository {
+        return taskBatchesRepository
+    }
+
+    override fun getBatchesDiscrepancies(): ITaskBatchesDiscrepanciesRepository {
+        return taskBatchesDiscrepanciesRepository
     }
 }
