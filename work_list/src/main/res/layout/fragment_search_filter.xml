@@ -40,6 +40,8 @@
                 <EditText
                     style="@style/CellEditTextStyle"
                     android:text="@={vm.section}"
+                    android:digits="0123456789"
+                    android:inputType="number"
                     tools:text="02"/>
 
             </LinearLayout>
@@ -72,6 +74,8 @@
 
                 <EditText
                     style="@style/CellEditTextStyle"
+                    android:digits="0123456789"
+                    android:inputType="number"
                     android:text="@={vm.groupOfGoods}"/>
 
             </LinearLayout>
