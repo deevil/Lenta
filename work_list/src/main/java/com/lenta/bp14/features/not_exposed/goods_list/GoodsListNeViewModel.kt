@@ -5,6 +5,7 @@ import com.lenta.shared.platform.viewmodel.CoreViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp14.models.IGeneralTaskManager
+import com.lenta.bp14.models.check_price.IPriceInfoParser
 import com.lenta.bp14.models.filter.FilterFieldType
 import com.lenta.bp14.models.filter.FilterParameter
 import com.lenta.bp14.models.data.GoodsListTab
@@ -42,6 +43,9 @@ class GoodsListNeViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
 
     @Inject
     lateinit var generalTaskManager: IGeneralTaskManager
+
+    @Inject
+    lateinit var priceInfoParser: IPriceInfoParser
 
     val onOkFilterListener = object : OnOkInSoftKeyboardListener {
         override fun onOkInSoftKeyboard(): Boolean {
@@ -137,6 +141,10 @@ class GoodsListNeViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
                     searchCode(matNr = matNr)
                 },
                 funcForPriceQrCode = { qrCode ->
+                    priceInfoParser.getPriceInfoFromRawCode(qrCode)?.let {
+                        searchCode(eanCode = it.eanCode)
+                        return@analyseCode
+                    }
                     navigator.showGoodNotFound()
                 },
                 funcForSapOrBar = navigator::showTwelveCharactersEntered,
@@ -231,6 +239,10 @@ class GoodsListNeViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     fun applyFilter() {
         task.onFilterChanged(FilterParameter(FilterFieldType.NUMBER, filterField.value
                 ?: ""))
+    }
+
+    fun onScanResult(data: String) {
+        checkCode(data)
     }
 
 }

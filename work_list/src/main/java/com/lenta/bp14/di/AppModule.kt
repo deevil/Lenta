@@ -8,6 +8,8 @@ import com.lenta.bp14.models.check_list.CheckListTaskManager
 import com.lenta.bp14.models.check_list.ICheckListTask
 import com.lenta.bp14.models.check_price.CheckPriceTaskManager
 import com.lenta.bp14.models.check_price.ICheckPriceTask
+import com.lenta.bp14.models.check_price.IPriceInfoParser
+import com.lenta.bp14.models.check_price.PriceInfoParser
 import com.lenta.bp14.models.data.TaskManager
 import com.lenta.bp14.models.general.GeneralRepo
 import com.lenta.bp14.models.general.IGeneralRepo
@@ -68,12 +70,15 @@ class AppModule {
             timeMonitor: ITimeMonitor,
             gson: Gson,
             soundPlayer: ISoundPlayer,
-            vibrateHelper: IVibrateHelper): CheckPriceTaskManager {
+            vibrateHelper: IVibrateHelper,
+            priceInfoParser: IPriceInfoParser
+    ): CheckPriceTaskManager {
         return CheckPriceTaskManager(
                 timeMonitor = timeMonitor,
                 gson = gson,
                 soundPlayer = soundPlayer,
-                vibrateHelper = vibrateHelper
+                vibrateHelper = vibrateHelper,
+                priceInfoParser = priceInfoParser
         )
     }
 
@@ -154,6 +159,12 @@ class AppModule {
     @Provides
     internal fun provideVibrateHelper(context: Context): IVibrateHelper {
         return VibrateHelper(context)
+    }
+
+    @Provides
+    @AppScope
+    internal fun providePriceInfoParser(): IPriceInfoParser {
+        return PriceInfoParser()
     }
 
 }
