@@ -41,8 +41,8 @@ class GoodsListWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     val searchGoods = MutableLiveData<List<Good>>()
 
     val processedGoods: MutableLiveData<List<ProcessedListUi>> by lazy {
-        task.goods.map { list: MutableList<Good>? ->
-            list?.filter { it.processed }?.mapIndexed { index, good ->
+        task.processed.map { list: MutableList<Good>? ->
+            list?.mapIndexed { index, good ->
                 ProcessedListUi(
                         position = (index + 1).toString(),
                         name = good.getFormattedMaterialWithName(),

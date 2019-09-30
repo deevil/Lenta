@@ -24,12 +24,11 @@ class WorkListTask(
         private val gson: Gson
 ) : IWorkListTask {
 
-    //val processing: MutableList<Good> = mutableListOf()
-    //val processed: MutableList<Good> = mutableListOf()
-    //val search: MutableList<Good> = mutableListOf()
     //private var currentList = processed
 
-    val goods = MutableLiveData<MutableList<Good>>(mutableListOf())
+    val processing = MutableLiveData<MutableList<Good>>(mutableListOf())
+    val processed = MutableLiveData<MutableList<Good>>(mutableListOf())
+    val search = MutableLiveData<MutableList<Good>>(mutableListOf())
 
     var currentGood = MutableLiveData<Good>()
 
@@ -38,7 +37,7 @@ class WorkListTask(
     val comments = MutableLiveData<List<String>>(listOf())
 
     override suspend fun addGoodByEan(ean: String): Boolean {
-        var good = goods.value?.find { it.common.ean == ean }
+        var good = processed.value?.find { it.common.ean == ean }
         if (good != null) {
             currentGood.value = good
             return true
@@ -48,9 +47,9 @@ class WorkListTask(
         if (commonGoodInfo != null) {
             good = Good(common = commonGoodInfo)
 
-            val goodsList = goods.value!!
+            val goodsList = processed.value!!
             goodsList.add(good)
-            goods.value = goodsList
+            processed.value = goodsList
             currentGood.value = good
             loadComments()
             return true
@@ -170,8 +169,7 @@ interface IWorkListTask : ITask {
 data class Good(
         val common: CommonGoodInfo,
         var additional: AdditionalGoodInfo? = null,
-        val scanResults: MutableLiveData<List<ScanResult>> = MutableLiveData(listOf()),
-        var processed: Boolean = false
+        val scanResults: MutableLiveData<List<ScanResult>> = MutableLiveData(listOf())
 ) {
 
     fun getFormattedMaterialWithName(): String {

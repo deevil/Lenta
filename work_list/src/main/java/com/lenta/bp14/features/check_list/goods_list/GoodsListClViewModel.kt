@@ -163,4 +163,8 @@ class GoodsListClViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
 
     }
 
+    fun onScanResult(data: String) {
+
+    }
+
 }
