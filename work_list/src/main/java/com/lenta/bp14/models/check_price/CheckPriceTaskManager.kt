@@ -11,7 +11,8 @@ import com.lenta.shared.platform.time.ITimeMonitor
 class CheckPriceTaskManager(private val timeMonitor: ITimeMonitor,
                             private val gson: Gson,
                             private val soundPlayer: ISoundPlayer,
-                            private val vibrateHelper: IVibrateHelper) : BaseTaskManager<ICheckPriceTask, CheckPriceTaskDescription>() {
+                            private val vibrateHelper: IVibrateHelper,
+                            private val priceInfoParser: IPriceInfoParser) : BaseTaskManager<ICheckPriceTask, CheckPriceTaskDescription>() {
 
 
     override fun newTask(taskDescription: CheckPriceTaskDescription): ICheckPriceTask? {
@@ -19,7 +20,7 @@ class CheckPriceTaskManager(private val timeMonitor: ITimeMonitor,
                 taskDescription = taskDescription,
                 actualPricesRepo = ActualPriceRepoForTest(),
                 readyResultsRepo = CheckPriceResultsRepo(),
-                priceInfoParser = PriceInfoParser(),
+                priceInfoParser = priceInfoParser,
                 gson = gson,
                 soundPlayer = soundPlayer,
                 vibrateHelper = vibrateHelper
