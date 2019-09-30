@@ -54,7 +54,11 @@ class CheckPriceTask(
             readyResultsRepo.addCheckPriceResult(this).let { isAdded ->
                 if (isAdded) {
                     vibrateHelper.shortVibrate()
-                    soundPlayer.playBeep()
+                    if (this.isAllValid() == true) {
+                        soundPlayer.playBeep()
+                    } else {
+                        soundPlayer.playError()
+                    }
                 }
             }
         }

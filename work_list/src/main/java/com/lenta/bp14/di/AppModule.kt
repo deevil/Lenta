@@ -155,6 +155,7 @@ class AppModule {
     }
 
     @Provides
+    @AppScope
     internal fun provideSoundPlayer(context: Context): ISoundPlayer {
         return SoundPlayer(context)
     }
