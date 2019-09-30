@@ -18,6 +18,7 @@ import com.lenta.shared.utilities.extentions.getFormattedDate
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.view.OnPositionClickListener
 import kotlinx.coroutines.launch
+import java.math.BigDecimal
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -43,12 +44,12 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
     val title = MutableLiveData<String>("")
 
     val quantity = MutableLiveData<String>()
-    val totalQuantity: MutableLiveData<Int> = quantity.map { quantity ->
-        var total = quantity?.toIntOrNull() ?: 0
+    val totalQuantity: MutableLiveData<String> = quantity.map { quantity ->
+        var total = quantity?.toBigDecimal() ?: BigDecimal.ZERO
         for (scanResult in good.value!!.scanResults.value!!) {
             total += scanResult.quantity
         }
-        total
+        total.toString()
     }
 
     val day = MutableLiveData<String>("")
@@ -90,7 +91,7 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
 
     val shelfLifeTypeList = MutableLiveData<List<String>>()
 
-    val commentsList: MutableLiveData<List<String>> by lazy { task.comments }
+    val commentsList: MutableLiveData<List<String>> by lazy { task.currentGood.value!!.comments }
     val comment = MutableLiveData<String>("")
 
     val stocks: MutableLiveData<List<ItemStockUi>> by lazy {
@@ -99,7 +100,7 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
                 ItemStockUi(
                         number = (index + 1).toString(),
                         storage = stock.storage,
-                        quantity = "${stock.quantity} шт."
+                        quantity = "${stock.quantity} ${task.currentGood.value!!.getUnits()}"
                 )
             }
         }
@@ -207,8 +208,8 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
         } else shelfLifeDate
 
         task.addScanResult(ScanResult(
-                quantity = quantity.value?.toInt() ?: 0,
-                comment =  if (comment.value.isNullOrEmpty()) task.comments.value?.get(0) ?: "" else comment.value!!,
+                quantity = quantity.value?.toBigDecimal() ?: BigDecimal.ZERO,
+                comment =  if (comment.value.isNullOrEmpty()) task.currentGood.value?.comments?.value?.get(0) ?: "" else comment.value!!,
                 productionDate = productionDate,
                 expirationDate = expirationDate
         ))

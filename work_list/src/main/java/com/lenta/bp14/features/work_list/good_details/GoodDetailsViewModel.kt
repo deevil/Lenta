@@ -11,6 +11,7 @@ import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.map
+import com.lenta.shared.utilities.extentions.dropTail
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -46,7 +47,7 @@ class GoodDetailsViewModel : CoreViewModel(), PageSelectionListener {
                         expirationDate = scanResult.getFormattedExpirationDate(),
                         productionDate = scanResult.getFormattedProductionDate(),
                         productionDateVisibility = scanResult.productionDate != null,
-                        quantity = "${scanResult.quantity} ${task.currentGood.value!!.getUnits()}"
+                        quantity = "${scanResult.quantity.dropTail()} ${task.currentGood.value!!.getUnits()}"
                 )
             }
         }
@@ -67,7 +68,7 @@ class GoodDetailsViewModel : CoreViewModel(), PageSelectionListener {
                 ItemCommentUi(
                         position = (index + 1).toString(),
                         comment = scanResult.comment,
-                        quantity = "${scanResult.quantity} ${task.currentGood.value!!.getUnits()}"
+                        quantity = "${scanResult.quantity.dropTail()} ${task.currentGood.value!!.getUnits()}"
                 )
             }
         }

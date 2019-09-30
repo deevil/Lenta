@@ -22,7 +22,7 @@ class GoodSalesViewModel : CoreViewModel() {
     val title = MutableLiveData<String>("")
 
     val sales: MutableLiveData<SalesStatisticsUi> by lazy {
-        task.sales.map { sales ->
+        task.currentGood.value!!.sales.map { sales ->
             SalesStatisticsUi(
                     lastSaleDate = sales?.lastSaleDate.getFormattedDate(),
                     lastSaleTime = sales?.lastSaleDate.getFormattedTime(),

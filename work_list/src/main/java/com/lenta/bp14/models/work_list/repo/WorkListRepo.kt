@@ -6,6 +6,7 @@ import com.lenta.shared.models.core.MatrixType
 import com.lenta.shared.models.core.Uom
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import java.math.BigDecimal
 import java.util.*
 import kotlin.random.Random
 
@@ -19,6 +20,7 @@ class WorkListRepo {
                     matcode = "333333333333",
                     name = "Товар",
                     units = Uom.ST,
+                    defaultQuantity = BigDecimal.ONE,
                     goodGroup = "123456",
                     purchaseGroup = "1111",
                     shelfLife = (3..14).random(),
@@ -61,7 +63,7 @@ class WorkListRepo {
                         Stock(
                                 number = it + 1,
                                 storage = "0" + (0..9).random() + (0..9).random() + (0..9).random(),
-                                quantity = (1..99).random()
+                                quantity = (1..99).random().toBigDecimal()
                         )
                     }
             )
@@ -85,7 +87,7 @@ class WorkListRepo {
                 Delivery(
                         status = if (Random.nextBoolean()) DeliveryStatus.ORDERED else DeliveryStatus.ON_WAY,
                         info = if (Random.nextBoolean()) "ПП" else "РЦ",
-                        quantity = (1..99).random(),
+                        quantity = (1..99).random().toBigDecimal(),
                         units = Uom.KAR,
                         date = Date()
                 )

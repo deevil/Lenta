@@ -23,7 +23,7 @@ class ExpectedDeliveriesViewModel : CoreViewModel() {
     val title = MutableLiveData<String>("")
 
     val deliveries: MutableLiveData<List<DeliveriesUi>> by lazy {
-        task.deliveries.map { list: List<Delivery>? ->
+        task.currentGood.value?.deliveries!!.map { list: List<Delivery>? ->
             list?.mapIndexed { index, delivery ->
                 DeliveriesUi(
                        position = (index + 1).toString(),

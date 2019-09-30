@@ -15,6 +15,7 @@ import com.lenta.shared.platform.time.ITimeMonitor
 import com.lenta.shared.utilities.extentions.getFormattedDate
 import com.lenta.shared.utilities.extentions.map
 import kotlinx.coroutines.delay
+import java.math.BigDecimal
 import java.util.*
 
 class WorkListTask(
@@ -31,10 +32,6 @@ class WorkListTask(
     val search = MutableLiveData<MutableList<Good>>(mutableListOf())
 
     var currentGood = MutableLiveData<Good>()
-
-    val sales = MutableLiveData<SalesStatistics>()
-    val deliveries = MutableLiveData<List<Delivery>>(listOf())
-    val comments = MutableLiveData<List<String>>(listOf())
 
     override suspend fun addGoodByEan(ean: String): Boolean {
         var good = processed.value?.find { it.common.ean == ean }
@@ -66,9 +63,7 @@ class WorkListTask(
 
     override suspend fun loadAdditionalGoodInfo() {
         delay(5000)
-
-        val good = currentGood.value
-        if (good != null) {
+        currentGood.value?.let {good ->
             val additionalGoodInfo = workListRepo.loadAdditionalGoodInfo(good)
             good.additional = additionalGoodInfo
             currentGood.value = good
@@ -77,31 +72,25 @@ class WorkListTask(
 
     override suspend fun loadSalesStatistics() {
         delay(500)
-
-        val good = currentGood.value
-        if (good != null) {
+        currentGood.value?.let {good ->
             val salesStatistics = workListRepo.loadSalesStatistics(good)
-            sales.value = salesStatistics
+            good.sales.value = salesStatistics
         }
     }
 
     override suspend fun loadDeliveries() {
         delay(500)
-
-        val good = currentGood.value
-        if (good != null) {
+        currentGood.value?.let {good ->
             val deliveriesList = workListRepo.loadDeliveries(good)
-            deliveries.value = deliveriesList
+            good.deliveries.value = deliveriesList
         }
     }
 
     override suspend fun loadComments() {
         delay(500)
-
-        val good = currentGood.value
-        if (good != null) {
+        currentGood.value?.let {good ->
             val commentsList = workListRepo.loadComments(good)
-            comments.value = commentsList
+            good.comments.value = commentsList
         }
     }
 
@@ -169,6 +158,10 @@ interface IWorkListTask : ITask {
 data class Good(
         val common: CommonGoodInfo,
         var additional: AdditionalGoodInfo? = null,
+        val sales: MutableLiveData<SalesStatistics> = MutableLiveData(),
+        val deliveries: MutableLiveData<List<Delivery>> = MutableLiveData(listOf()),
+        val comments: MutableLiveData<List<String>> = MutableLiveData(listOf()),
+
         val scanResults: MutableLiveData<List<ScanResult>> = MutableLiveData(listOf())
 ) {
 
@@ -205,6 +198,7 @@ data class CommonGoodInfo(
         val matcode: String,
         val name: String,
         val units: Uom,
+        val defaultQuantity: BigDecimal,
         var goodGroup: String,
         var purchaseGroup: String,
         var marks: Int = 0,
@@ -233,7 +227,7 @@ data class GoodOptions(
 data class Stock(
         val number: Int,
         val storage: String,
-        val quantity: Int
+        val quantity: BigDecimal
 )
 
 data class Provider(
@@ -281,7 +275,7 @@ data class SalesStatistics(
 data class Delivery(
         val status: DeliveryStatus,
         val info: String, // ПП, РЦ, ...
-        val quantity: Int,
+        val quantity: BigDecimal,
         val units: Uom,
         val date: Date
 ) {
@@ -300,7 +294,7 @@ enum class DeliveryStatus(val description: String) {
 // -----------------------------
 
 data class ScanResult(
-        val quantity: Int,
+        val quantity: BigDecimal,
         val comment: String,
         val productionDate: Date?,
         val expirationDate: Date?
