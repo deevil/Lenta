@@ -65,8 +65,7 @@ class WorkListTask(
         delay(5000)
         currentGood.value?.let {good ->
             val additionalGoodInfo = workListRepo.loadAdditionalGoodInfo(good)
-            good.additional = additionalGoodInfo
-            currentGood.value = good
+            good.additional.value = additionalGoodInfo
         }
     }
 
@@ -108,11 +107,11 @@ class WorkListTask(
     }
 
     override fun getGoodStocks(): LiveData<List<Stock>> {
-        return currentGood.map { it?.additional?.stocks?.toList() }
+        return currentGood.map { it?.additional?.value?.stocks?.toList() }
     }
 
     override fun getGoodProviders(): LiveData<List<Provider>> {
-        return currentGood.map { it?.additional?.providers?.toList() }
+        return currentGood.map { it?.additional?.value?.providers?.toList() }
     }
 
     override fun getTaskType(): ITaskType {
@@ -157,7 +156,7 @@ interface IWorkListTask : ITask {
 
 data class Good(
         val common: CommonGoodInfo,
-        var additional: AdditionalGoodInfo? = null,
+        var additional: MutableLiveData<AdditionalGoodInfo> = MutableLiveData(),
         val sales: MutableLiveData<SalesStatistics> = MutableLiveData(),
         val deliveries: MutableLiveData<List<Delivery>> = MutableLiveData(listOf()),
         val comments: MutableLiveData<List<String>> = MutableLiveData(listOf()),
@@ -208,7 +207,7 @@ data class CommonGoodInfo(
 
 data class AdditionalGoodInfo(
         val storagePlaces: String,
-        val minStock: Int,
+        val minStock: BigDecimal,
         val movement: Movement,
         val price: Price,
         val promo: Promo,
@@ -244,8 +243,8 @@ data class Movement(
 )
 
 data class Price(
-        val commonPrice: Int,
-        val discountPrice: Int
+        val commonPrice: BigDecimal,
+        val discountPrice: BigDecimal
 )
 
 data class Promo(

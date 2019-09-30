@@ -37,14 +37,14 @@ class WorkListRepo {
         return withContext(Dispatchers.IO) {
             return@withContext AdditionalGoodInfo(
                     storagePlaces = "125635; 652148; 635894",
-                    minStock = (10..50).random(),
+                    minStock = (10..50).random().toBigDecimal(),
                     movement = Movement(
                             inventory = "19.07.19 (-25 шт.)",
                             arrival = "29.07.19 (+50 шт; Z5)"
                     ),
                     price = Price(
-                            commonPrice = (110..140).random(),
-                            discountPrice = (80..100).random()
+                            commonPrice = (110..140).random().toBigDecimal(),
+                            discountPrice = (80..100).random().toBigDecimal()
                     ),
                     promo = Promo(
                             name = "Распродажа кукурузы ТК 0007",

@@ -32,12 +32,16 @@ class GoodSalesViewModel : CoreViewModel() {
         }
     }
 
+    // -----------------------------
+
     init {
         viewModelScope.launch {
             title.value = task.currentGood.value?.getFormattedMaterialWithName()
             onClickUpdate()
         }
     }
+
+    // -----------------------------
 
     fun onClickUpdate() {
         viewModelScope.launch {

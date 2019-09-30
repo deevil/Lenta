@@ -14,6 +14,7 @@ import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.extentions.combineLatest
+import com.lenta.shared.utilities.extentions.dropTail
 import com.lenta.shared.utilities.extentions.getFormattedDate
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.view.OnPositionClickListener
@@ -93,6 +94,21 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
 
     val commentsList: MutableLiveData<List<String>> by lazy { task.currentGood.value!!.comments }
     val comment = MutableLiveData<String>("")
+
+    val additional: MutableLiveData<AdditionalInfoUi> by lazy {
+        task.currentGood.value!!.additional.map { additional ->
+            AdditionalInfoUi(
+                    storagePlaces = additional?.storagePlaces ?: "Not found!",
+                    minStock = "${additional?.minStock?.dropTail()} ${task.currentGood.value!!.getUnits()}",
+                    inventory = additional?.movement?.inventory ?: "Not found!",
+                    arrival = additional?.movement?.arrival ?: "Not found!",
+                    commonPrice = "${additional?.price?.commonPrice?.dropTail()}р.",
+                    discountPrice = "${additional?.price?.discountPrice?.dropTail()}р.",
+                    promoName = additional?.promo?.name ?: "Not found!",
+                    promoPeriod = additional?.promo?.period ?: "Not found!"
+            )
+        }
+    }
 
     val stocks: MutableLiveData<List<ItemStockUi>> by lazy {
         task.getGoodStocks().map { list: List<Stock>? ->
@@ -239,6 +255,17 @@ data class OptionsUi(
         val section: String,
         val healthFood: Boolean,
         val novelty: Boolean
+)
+
+data class AdditionalInfoUi(
+        val storagePlaces: String,
+        val minStock: String,
+        val inventory: String,
+        val arrival: String,
+        val commonPrice: String,
+        val discountPrice: String,
+        val promoName: String,
+        val promoPeriod: String
 )
 
 data class ItemProviderUi(
