@@ -19,6 +19,7 @@ import com.lenta.bp9.features.change_datetime.ChangeDateTimeMode
 import com.lenta.bp9.features.discrepancy_list.DiscrepancyListFragment
 import com.lenta.bp9.features.goods_details.GoodsDetailsFragment
 import com.lenta.bp9.features.goods_information.general.GoodsInfoFragment
+import com.lenta.bp9.features.goods_information.non_excise_alco.NonExciseAlcoInfoFragment
 import com.lenta.bp9.features.loading.tasks.*
 import com.lenta.bp9.features.reject.RejectFragment
 import com.lenta.bp9.features.revise.TaskReviseFragment
@@ -223,6 +224,30 @@ class ScreenNavigator(
         }
     }
 
+    override fun openSelectTypeCodeScreen(codeConfirmationForSap: Int, codeConfirmationForBarCode: Int) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.select_type_code_description),
+                    iconRes = 0,
+                    codeConfirmForRight = codeConfirmationForBarCode,
+                    codeConfirmForLeft = codeConfirmationForSap,
+                    pageNumber = "90",
+                    leftButtonDecorationInfo = ButtonDecorationInfo.sap,
+                    rightButtonDecorationInfo = ButtonDecorationInfo.barcode)
+            )
+        }
+    }
+
+    override fun openAlertGoodsNotInOrderScreen() {
+        openInfoScreen(context.getString(R.string.goods_not_in_order))
+    }
+
+    override fun openNonExciseAlcoInfoScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(NonExciseAlcoInfoFragment())
+        }
+    }
+
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 
 }
@@ -255,4 +280,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openInvoiceReviseScreen()
     fun openRejectScreen()
     fun openDiscrepancyListScreen()
+    fun openSelectTypeCodeScreen(codeConfirmationForSap: Int, codeConfirmationForBarCode: Int)
+    fun openAlertGoodsNotInOrderScreen()
+    fun openNonExciseAlcoInfoScreen()
 }

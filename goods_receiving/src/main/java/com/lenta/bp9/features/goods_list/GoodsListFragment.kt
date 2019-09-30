@@ -21,12 +21,12 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListe
 import com.lenta.shared.scan.OnScanResultListener
 import com.lenta.shared.utilities.databinding.*
 import com.lenta.shared.utilities.extentions.connectLiveData
+import com.lenta.shared.utilities.extentions.getFragmentResultCode
 
 class GoodsListFragment : CoreFragment<FragmentGoodsListBinding, GoodsListViewModel>(),
         ViewPagerSettings,
         OnScanResultListener,
         PageSelectionListener,
-        OnKeyDownListener,
         ToolbarButtonsClickListener {
 
     private var countedRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
@@ -184,25 +184,9 @@ class GoodsListFragment : CoreFragment<FragmentGoodsListBinding, GoodsListViewMo
         vm.onScanResult(data)
     }
 
-    override fun onKeyDown(keyCode: KeyCode): Boolean {
-        (if (vm.selectedPage.value == 0) {
-            countedRecyclerViewKeyHandler
-        } else {
-            //todo
-            countedRecyclerViewKeyHandler
-            //filterRecyclerViewKeyHandler
-        })?.let {
-            if (!it.onKeyDown(keyCode)) {
-                keyCode.digit?.let { digit ->
-                    vm.onDigitPressed(digit)
-                    return true
-                }
-                return false
-            }
-            return true
-        }
-        return false
+    override fun onFragmentResult(arguments: Bundle) {
+        super.onFragmentResult(arguments)
+        vm.onResult(arguments.getFragmentResultCode())
     }
-
 
 }

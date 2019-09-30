@@ -82,4 +82,6 @@
     <string name="processed">Обработанные</string>
     <string name="not_processed">К обработке</string>
     <string name="discrepancies_found">Обнаружены расхождения</string>
+    <string name="select_type_code_description">Введено 12 знаков. Какой код вы ввели?</string>
+    <string name="goods_not_in_order">Товара нет в заказе</string>
 </resources>
