@@ -6,16 +6,18 @@ import com.lenta.bp14.models.check_price.repo.ActualPriceRepoForTest
 import com.lenta.bp14.models.check_price.repo.CheckPriceResultsRepo
 import com.lenta.bp14.platform.IVibrateHelper
 import com.lenta.bp14.platform.sound.ISoundPlayer
-import com.lenta.bp14.requests.check_price.CheckPriceRequestParams
-import com.lenta.shared.interactor.UseCase
+import com.lenta.bp14.requests.check_price.ICheckPriceNetRequest
 import com.lenta.shared.platform.time.ITimeMonitor
+import javax.inject.Inject
 
-class CheckPriceTaskManager(private val timeMonitor: ITimeMonitor,
-                            private val gson: Gson,
-                            private val soundPlayer: ISoundPlayer,
-                            private val vibrateHelper: IVibrateHelper,
-                            private val priceInfoParser: IPriceInfoParser,
-                            private val checkPriceRequest: UseCase<ActualPriceInfo, CheckPriceRequestParams>) : BaseTaskManager<ICheckPriceTask, CheckPriceTaskDescription>() {
+class CheckPriceTaskManager @Inject constructor(
+        private val timeMonitor: ITimeMonitor,
+        private val gson: Gson,
+        private val soundPlayer: ISoundPlayer,
+        private val vibrateHelper: IVibrateHelper,
+        private val priceInfoParser: IPriceInfoParser,
+        private val checkPriceRequest: ICheckPriceNetRequest
+) : BaseTaskManager<ICheckPriceTask, CheckPriceTaskDescription>() {
 
 
     override fun newTask(taskDescription: CheckPriceTaskDescription): ICheckPriceTask? {

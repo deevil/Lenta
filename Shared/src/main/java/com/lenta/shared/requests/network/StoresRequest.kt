@@ -11,7 +11,7 @@ import javax.inject.Inject
 
 
 class StoresRequest
-@Inject constructor(private val fmpRequestsHelper: FmpRequestsHelper) : UseCase<StoresRequestResult, Nothing?>() {
+@Inject constructor(private val fmpRequestsHelper: FmpRequestsHelper) : UseCase<StoresRequestResult, Nothing?> {
     override suspend fun run(params: Nothing?): Either<Failure, StoresRequestResult> {
         return fmpRequestsHelper.restRequest("ZMP_UTZ_WOB_01_V001", params, StoresRequestStatus::class.java)
     }

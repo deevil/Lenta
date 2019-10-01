@@ -1,7 +1,9 @@
 package com.lenta.bp14.models.general
 
+import javax.inject.Inject
 
-class GeneralRepo : IGeneralRepo {
+
+class GeneralRepo @Inject constructor() : IGeneralRepo {
 
     override suspend fun getTasksTypes(): List<ITaskType> {
         return listOf(

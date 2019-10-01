@@ -4,8 +4,9 @@ import android.content.Context
 import android.os.Build
 import android.os.VibrationEffect
 import android.os.Vibrator
+import javax.inject.Inject
 
-class VibrateHelper(private val context: Context) : IVibrateHelper {
+class VibrateHelper @Inject constructor(private val context: Context) : IVibrateHelper {
 
     private val oneShortTime = 200L
 

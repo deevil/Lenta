@@ -4,8 +4,9 @@ import com.google.gson.Gson
 import com.lenta.bp14.models.BaseTaskManager
 import com.lenta.bp14.models.work_list.repo.WorkListRepo
 import com.lenta.shared.platform.time.ITimeMonitor
+import javax.inject.Inject
 
-class WorkListTaskManager(
+class WorkListTaskManager @Inject constructor(
         private val timeMonitor: ITimeMonitor,
         private val gson: Gson
 ) : BaseTaskManager<WorkListTask, WorkListTaskDescription>() {

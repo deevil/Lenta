@@ -13,7 +13,7 @@ import com.mobrun.plugin.api.request_assistant.RequestBuilder
 import com.mobrun.plugin.api.request_assistant.ScalarParameter
 import com.mobrun.plugin.models.BaseStatus
 
-abstract class CoreResourcesMultiRequest : UseCase<Boolean, MutableLiveData<LoadStatus>?>() {
+abstract class CoreResourcesMultiRequest : UseCase<Boolean, MutableLiveData<LoadStatus>?> {
 
     abstract val isDeltaRequest: Boolean
 

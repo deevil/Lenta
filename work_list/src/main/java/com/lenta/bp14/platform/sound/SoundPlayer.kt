@@ -4,6 +4,7 @@ import android.content.Context
 import android.media.AudioManager
 import android.media.MediaPlayer
 import com.lenta.bp14.R
+import javax.inject.Inject
 
 interface ISoundPlayer {
     fun start()
@@ -12,7 +13,7 @@ interface ISoundPlayer {
     fun playError()
 }
 
-class SoundPlayer(private val context: Context) : ISoundPlayer {
+class SoundPlayer @Inject constructor(private val context: Context) : ISoundPlayer {
 
     val succesId = R.raw.beep
     val wrongId = R.raw.wrong

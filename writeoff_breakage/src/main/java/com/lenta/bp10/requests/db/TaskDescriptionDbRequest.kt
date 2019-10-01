@@ -21,7 +21,7 @@ import javax.inject.Inject
 class TaskDescriptionDbRequest
 @Inject constructor(private val hyperHive: HyperHive,
                     private val sessionInfo: ISessionInfo,
-                    private val context: Context) : UseCase<TaskDescription, TaskCreatingParams>() {
+                    private val context: Context) : UseCase<TaskDescription, TaskCreatingParams> {
 
     override suspend fun run(params: TaskCreatingParams): Either<Failure, TaskDescription> {
         val gisControls = params.gisControlList.map { it.code }

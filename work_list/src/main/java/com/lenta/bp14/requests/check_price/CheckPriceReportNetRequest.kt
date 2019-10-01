@@ -15,7 +15,7 @@ import com.lenta.shared.utilities.extentions.toSapBooleanString
 import javax.inject.Inject
 
 class CheckPriceReportNetRequest
-@Inject constructor(private val fmpRequestsHelper: FmpRequestsHelper) : UseCase<SentReportResult, CheckPriceReport>() {
+@Inject constructor(private val fmpRequestsHelper: FmpRequestsHelper) : UseCase<SentReportResult, CheckPriceReport> {
 
     override suspend fun run(params: CheckPriceReport): Either<Failure, SentReportResult> {
 
