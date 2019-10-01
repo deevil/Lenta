@@ -4,7 +4,7 @@ import com.google.gson.annotations.SerializedName
 import com.lenta.shared.utilities.extentions.toStringFormatted
 
 //ET_FORMA_IMP - Таблица Справок А и Б (Импортный товар)
-data class FormABImportRevise(
+class FormABImportRevise(
         val productNumber: String, // Номер товара
         val batchNumber: String, // Номер партии
         val alcoCode: String, // Номер товара в ЕГАИС (АлкоКод)
@@ -23,6 +23,26 @@ data class FormABImportRevise(
         val isCheck: Boolean, // ??? - Общий флаг
         val matnrOSN: String // ??? - Номер товара
 ) {
+
+    fun approvedCopy(newNumberTTN_A: String?, newNumberTTN_B: String?): FormABImportRevise {
+        return FormABImportRevise(productNumber = this.productNumber,
+                batchNumber = this.batchNumber,
+                alcoCode = this.alcoCode,
+                EGAISName = this.EGAISName,
+                EGAISAddress = this.EGAISAddress,
+                numberTTN_A = newNumberTTN_A ?: this.numberTTN_A,
+                numberTTN_B = newNumberTTN_B ?: this.numberTTN_B,
+                longName_A = this.longName_A,
+                longName_B = this.longName_B,
+                date_B = this.date_B,
+                date_A = this.date_A,
+                quantityByTTN_B = this.quantityByTTN_B,
+                EGAISFixDocumentNumber_B = this.EGAISFixDocumentNumber_B,
+                EGAISFixDate_B = this.EGAISFixDate_B,
+                lastB = this.lastB,
+                matnrOSN = this.matnrOSN,
+                isCheck = true)
+    }
 
     companion object {
         fun from(restData: FormABImportReviseRestData): FormABImportRevise {

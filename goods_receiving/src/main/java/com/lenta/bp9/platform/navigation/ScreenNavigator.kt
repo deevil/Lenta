@@ -17,9 +17,12 @@ import com.lenta.bp9.features.change_datetime.ChangeDateTimeFragment
 import com.lenta.bp9.features.change_datetime.ChangeDateTimeMode
 import com.lenta.bp9.features.loading.tasks.*
 import com.lenta.bp9.features.reject.RejectFragment
+import com.lenta.bp9.features.revise.AlcoFormReviseFragment
+import com.lenta.bp9.features.revise.AlcoholBatchSelectFragment
 import com.lenta.bp9.features.revise.ProductDocumentsReviseFragment
 import com.lenta.bp9.features.revise.TaskReviseFragment
 import com.lenta.bp9.features.revise.invoice.InvoiceReviseFragment
+import com.lenta.bp9.model.task.revise.ProductDocumentType
 import com.lenta.shared.account.IAuthenticator
 import com.lenta.shared.features.alert.AlertFragment
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
@@ -206,6 +209,18 @@ class ScreenNavigator(
         }
     }
 
+    override fun openAlcoholBatchSelectScreen(matnr: String, type: ProductDocumentType) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlcoholBatchSelectFragment.create(matnr, type))
+        }
+    }
+
+    override fun openImportAlcoFormReviseScreen(matnr: String, batchNumber: String) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlcoFormReviseFragment.create(matnr, batchNumber))
+        }
+    }
+
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 
 }
@@ -236,4 +251,6 @@ interface IScreenNavigator : ICoreNavigator {
     fun openInvoiceReviseScreen()
     fun openRejectScreen()
     fun openProductDocumentsReviseScreen()
+    fun openAlcoholBatchSelectScreen(matnr: String, type: ProductDocumentType)
+    fun openImportAlcoFormReviseScreen(matnr: String, batchNumber: String)
 }

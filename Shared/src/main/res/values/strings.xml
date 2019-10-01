@@ -76,6 +76,7 @@
     <string name="number">№</string>
     <string name="good">Товар</string>
     <string name="quantity">Количество</string>
+    <string name="quantity_short">Кол-во</string>
     <string name="components">Компоненты</string>
     <string name="total">Итого</string>
     <string name="not_selected">Не выбрано</string>

@@ -9,7 +9,7 @@ data class ProductBatchRevise(
         val text1: String, // ??? - Текст длиной 20 знаков
         val text2: String, // ??? - Текст длиной 20 знаков
         val quantity: Int, // ??? - Натуральное число
-        val isCheck: Boolean,   // ??? - Общий флаг
+        var isCheck: Boolean,   // ??? - Общий флаг
         val matnrOSN: String // ??? - Номер товара
 ) {
 

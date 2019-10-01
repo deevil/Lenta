@@ -51,7 +51,7 @@ class TaskListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
     val tasksToProcess by lazy {
         repoInMemoryHolder.taskList.combineLatest(filterToProcess).map { pair ->
-            pair!!.first.tasks.filter { !it.isDelayed && it.matchesFilter(pair.second) && it.status == TaskStatus.Checking }.map {
+            pair!!.first.tasks.filter { !it.isDelayed && it.matchesFilter(pair.second) }.map {
                 TaskItemVm(taskPosition = it.position,
                         taskNumber = it.taskNumber,
                         topText = it.topText,
@@ -171,7 +171,7 @@ class TaskListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
                 }
                 TaskLockStatus.LockedByOthers -> {
                     screenNavigator.openConfirmationView {
-                        screenNavigator.openTaskCardLoadingScreen(TaskCardMode.ReadOnly, it.taskNumber, loadFullData = false)
+                        screenNavigator.openTaskCardLoadingScreen(TaskCardMode.Full, it.taskNumber, loadFullData = true)
                     }
                 }
                 TaskLockStatus.None -> screenNavigator.openTaskCardLoadingScreen(TaskCardMode.Full, it.taskNumber, loadFullData)

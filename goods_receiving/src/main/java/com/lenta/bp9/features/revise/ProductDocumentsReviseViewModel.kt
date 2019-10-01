@@ -9,9 +9,13 @@ import com.lenta.bp9.model.task.IReceivingTaskManager
 import com.lenta.bp9.model.task.revise.ProductDocumentType
 import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.shared.account.ISessionInfo
+import com.lenta.shared.fmp.resources.dao_ext.getProductInfoByMatcode
+import com.lenta.shared.fmp.resources.dao_ext.getProductInfoByMaterial
+import com.lenta.shared.fmp.resources.slow.ZfmpUtz48V001
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.extentions.map
+import com.mobrun.plugin.api.HyperHive
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -25,6 +29,12 @@ class ProductDocumentsReviseViewModel : CoreViewModel(), PageSelectionListener {
     lateinit var context: Context
     @Inject
     lateinit var taskManager: IReceivingTaskManager
+    @Inject
+    lateinit var hyperHive: HyperHive
+
+    private val ZfmpUtz48V001: ZfmpUtz48V001 by lazy {
+        ZfmpUtz48V001(hyperHive)
+    }
 
     val selectedPage = MutableLiveData(0)
 
@@ -62,7 +72,8 @@ class ProductDocumentsReviseViewModel : CoreViewModel(), PageSelectionListener {
         checked?.let { checkedList ->
             checkedDocs.value = checkedList.sortedBy { if (currentSortMode == SortMode.DocumentName) it.documentName else it.productNumber }.mapIndexed { index, document ->
                 ProductDocumentVM(position = checkedList.size - index,
-                        name = document.productNumber.takeLast(6) + " " + document.documentName,
+                        name = document.documentName,
+                        productName = document.productNumber.takeLast(6) + " " + (ZfmpUtz48V001.getProductInfoByMaterial(document.productNumber)?.name ?: ""),
                         type = document.documentType,
                         isObligatory = document.isObligatory,
                         isCheck = true,
@@ -76,7 +87,8 @@ class ProductDocumentsReviseViewModel : CoreViewModel(), PageSelectionListener {
         unchecked?.let { uncheckedList ->
             docsToCheck.value = uncheckedList.sortedBy { if (currentSortMode == SortMode.DocumentName) it.documentName else it.productNumber }.mapIndexed { index, document ->
                 ProductDocumentVM(position = uncheckedList.size - index,
-                        name = document.productNumber.takeLast(6) + " " + document.documentName,
+                        name = document.documentName,
+                        productName = document.productNumber.takeLast(6) + " " + (ZfmpUtz48V001.getProductInfoByMaterial(document.productNumber)?.name ?: ""),
                         type = document.documentType,
                         isObligatory = document.isObligatory,
                         isCheck = false,
@@ -122,7 +134,21 @@ class ProductDocumentsReviseViewModel : CoreViewModel(), PageSelectionListener {
 
     private fun onClickOnDocument(document: ProductDocumentVM) {
         if (document.isABForm) {
-            Logg.d { "Open AB Form shit" }
+            val batches = taskManager.getReceivingTask()?.taskRepository?.getReviseDocuments()?.getProductBatches()?.filter { it.productNumber == document.matnr }
+            if (!batches.isNullOrEmpty()) {
+                if (batches.size > 1) {
+                    screenNavigator.openAlcoholBatchSelectScreen(document.matnr, document.type)
+                } else {
+                    when (document.type) {
+                        ProductDocumentType.AlcoImport -> {
+                            screenNavigator.openImportAlcoFormReviseScreen(batches.first().productNumber, batches.first().batchNumber)
+                        }
+                        ProductDocumentType.AlcoRus -> {
+                            Logg.d { "Open form for russian batch with matnr " + batches.first().productNumber + " and batch number " + batches.first().batchNumber }
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -157,6 +183,7 @@ class ProductDocumentsReviseViewModel : CoreViewModel(), PageSelectionListener {
 data class ProductDocumentVM(
         val position: Int,
         val name: String,
+        val productName: String,
         val type: ProductDocumentType,
         val isObligatory: Boolean,
         val isCheck: Boolean,
