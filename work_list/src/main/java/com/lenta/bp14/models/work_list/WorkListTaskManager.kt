@@ -22,4 +22,9 @@ class WorkListTaskManager @Inject constructor(
         )
         return _task
     }
+
+    override fun getComponentClass(): Class<out Any> {
+        return Any::class.java
+    }
+
 }

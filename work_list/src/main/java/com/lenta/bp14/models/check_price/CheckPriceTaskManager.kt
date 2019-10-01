@@ -2,7 +2,7 @@ package com.lenta.bp14.models.check_price
 
 import com.google.gson.Gson
 import com.lenta.bp14.models.BaseTaskManager
-import com.lenta.bp14.models.check_price.repo.ActualPriceRepoForTest
+import com.lenta.bp14.models.check_price.repo.ActualPriceRepo
 import com.lenta.bp14.models.check_price.repo.CheckPriceResultsRepo
 import com.lenta.bp14.platform.IVibrateHelper
 import com.lenta.bp14.platform.sound.ISoundPlayer
@@ -25,14 +25,19 @@ class CheckPriceTaskManager @Inject constructor(
     override fun newTask(taskDescription: CheckPriceTaskDescription): ICheckPriceTask? {
         _task = CheckPriceTask(
                 taskDescription = taskDescription,
-                actualPricesRepo = ActualPriceRepoForTest(checkPriceRequest),
+                actualPricesRepo = ActualPriceRepo(checkPriceRequest),
                 readyResultsRepo = CheckPriceResultsRepo(),
                 priceInfoParser = priceInfoParser,
                 gson = gson,
                 soundPlayer = soundPlayer,
                 vibrateHelper = vibrateHelper
         )
+
         return _task
+    }
+
+    override fun getComponentClass(): Class<out Any> {
+        return Any::class.java
     }
 
 }

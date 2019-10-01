@@ -87,9 +87,4 @@ class AppModule {
         return workListTaskManager.getTask()!!
     }
 
-    @Provides
-    internal fun provideNotExposedProductsTask(taskManager: NotExposedProductsTaskManager): INotExposedProductsTask {
-        return taskManager.getTask()!!
-    }
-
 }

@@ -1,9 +1,9 @@
 package com.lenta.bp14.models.not_exposed_products
 
 import androidx.lifecycle.LiveData
+import com.lenta.bp14.di.NotExposedScope
 import com.lenta.bp14.models.ITask
 import com.lenta.bp14.models.ITaskDescription
-import com.lenta.bp14.models.filter.FilterableDelegate
 import com.lenta.bp14.models.filter.FilterFieldType
 import com.lenta.bp14.models.filter.IFilterable
 import com.lenta.bp14.models.general.ITaskType
@@ -12,21 +12,22 @@ import com.lenta.bp14.models.not_exposed_products.repo.INotExposedProductInfo
 import com.lenta.bp14.models.not_exposed_products.repo.INotExposedProductsRepo
 import com.lenta.bp14.models.not_exposed_products.repo.NotExposedProductInfo
 import com.lenta.bp14.requests.not_exposed_product.GoodInfo
+import com.lenta.bp14.requests.not_exposed_product.IProductInfoForNotExposedNetRequest
 import com.lenta.bp14.requests.not_exposed_product.NotExposedInfoRequestParams
 import com.lenta.bp14.requests.not_exposed_product.NotExposedReport
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.functional.Either
 import com.lenta.shared.functional.map
-import com.lenta.shared.interactor.UseCase
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.map
+import javax.inject.Inject
 
-
-class NotExposedProductsTask(
+@NotExposedScope
+class NotExposedProductsTask @Inject constructor(
         private val taskDescription: NotExposedProductsTaskDescription,
         private val notExposedProductsRepo: INotExposedProductsRepo,
-        private val filterableDelegate: FilterableDelegate,
-        private val productInfoNotExposedInfoRequest: UseCase<GoodInfo, NotExposedInfoRequestParams>
+        private val filterableDelegate: IFilterable,
+        private val productInfoNotExposedInfoRequest: IProductInfoForNotExposedNetRequest
 ) : INotExposedProductsTask, IFilterable by filterableDelegate {
 
 
@@ -140,7 +141,7 @@ class NotExposedProductsTask(
                 ip = ip,
                 description = taskDescription,
                 isNotFinish = false,
-                checksResults = notExposedProductsRepo.getProducts().value?: emptyList()
+                checksResults = notExposedProductsRepo.getProducts().value ?: emptyList()
         )
     }
 
