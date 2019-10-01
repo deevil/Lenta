@@ -12,7 +12,9 @@ import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.databinding.PageSelectionListener
+import com.lenta.shared.utilities.extentions.dropZeros
 import com.lenta.shared.utilities.extentions.map
+import com.lenta.shared.utilities.extentions.sumWith
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -137,14 +139,9 @@ class GoodsListClViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
         val goodsList = goods.value!!.toMutableList()
         val existGood = goodsList.find { it.ean == good.ean }
         if (existGood != null) {
-            val index = goodsList.indexOf(existGood)
-            goodsList[index].quantity.value = "" + if (good.uom.isOnlyInt()) {
-                existGood.quantity.value!!.toInt() + good.quantity.value!!.toInt()
-            } else {
-                val goodQuantity = good.quantity.value!!.toBigDecimal()
-                val existGoodQuantity = existGood.quantity.value!!.toBigDecimal()
-                existGoodQuantity.plus(goodQuantity).toString().dropLastWhile { it == '0' || it == '.' }
-            }
+            val existQuantity = existGood.quantity.value!!.toDoubleOrNull()
+            val quantity = good.quantity.value!!.toDoubleOrNull()
+            goodsList[goodsList.indexOf(existGood)].quantity.value = existQuantity.sumWith(quantity).dropZeros()
         } else {
             goodsList.add(0, good)
         }

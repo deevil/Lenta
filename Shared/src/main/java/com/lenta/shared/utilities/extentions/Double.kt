@@ -13,3 +13,7 @@ fun Double?.toStringFormatted(): String {
 fun Double?.sumWith(other: Double?): Double {
     return ((this ?: 0.0).toBigDecimal() + (other ?: 0.0).toBigDecimal()).toDouble()
 }
+
+fun Double?.dropZeros(): String {
+    return this.toString().dropLastWhile { it == '0' || it == '.' }
+}
