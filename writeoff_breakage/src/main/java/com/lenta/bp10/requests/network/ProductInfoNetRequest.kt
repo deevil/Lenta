@@ -27,7 +27,7 @@ class ProductInfoNetRequest
                     private val gson: Gson,
                     private val processServiceManager: IWriteOffTaskManager,
                     private val sessionInfo: ISessionInfo) :
-        UseCase<ProductInfo, ProductInfoRequestParams>() {
+        UseCase<ProductInfo, ProductInfoRequestParams> {
 
     private val zmpUtz07V001: ZmpUtz07V001 by lazy {
         ZmpUtz07V001(hyperHive)

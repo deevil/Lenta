@@ -33,7 +33,7 @@ class TaskContentNetRequest
         private val gson: Gson,
         private val sessionInfo: ISessionInfo,
         private val analyticsHelper: AnalyticsHelper
-) : UseCase<TaskContents, TaskContentParams>() {
+) : UseCase<TaskContents, TaskContentParams> {
 
     private val zmpUtz07V001: ZmpUtz07V001 by lazy {
         ZmpUtz07V001(hyperHive)

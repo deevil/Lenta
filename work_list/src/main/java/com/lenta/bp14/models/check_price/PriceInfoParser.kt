@@ -1,6 +1,8 @@
 package com.lenta.bp14.models.check_price
 
-class PriceInfoParser : IPriceInfoParser {
+import javax.inject.Inject
+
+class PriceInfoParser @Inject constructor() : IPriceInfoParser {
 
 
     override fun getPriceInfoFromRawCode(rawCode: String?): IScanPriceInfo? {

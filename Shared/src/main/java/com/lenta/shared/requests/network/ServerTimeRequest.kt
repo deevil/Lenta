@@ -11,7 +11,7 @@ import javax.inject.Inject
 
 
 class ServerTimeRequest
-@Inject constructor(private val fmpRequestsHelper: FmpRequestsHelper) : UseCase<ServerTime, ServerTimeRequestParam>() {
+@Inject constructor(private val fmpRequestsHelper: FmpRequestsHelper) : UseCase<ServerTime, ServerTimeRequestParam> {
     override suspend fun run(params: ServerTimeRequestParam): Either<Failure, ServerTime> {
         return fmpRequestsHelper.restRequest("ZMP_UTZ_87_V001", params, ServerTimeRequestStatus::class.java)
     }

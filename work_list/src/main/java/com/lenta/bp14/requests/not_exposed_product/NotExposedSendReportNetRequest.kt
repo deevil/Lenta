@@ -3,8 +3,8 @@ package com.lenta.bp14.requests.not_exposed_product
 import com.google.gson.annotations.SerializedName
 import com.lenta.bp14.models.not_exposed_products.NotExposedProductsTaskDescription
 import com.lenta.bp14.models.not_exposed_products.repo.INotExposedProductInfo
-import com.lenta.bp14.requests.pojo.CreatedTaskInfo
 import com.lenta.bp14.requests.pojo.ReportSentStatus
+import com.lenta.bp14.requests.pojo.SentReportResult
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.functional.Either
 import com.lenta.shared.functional.map
@@ -15,7 +15,7 @@ import com.lenta.shared.utilities.extentions.toSapBooleanString
 import javax.inject.Inject
 
 class NotExposedSendReportNetRequest
-@Inject constructor(private val fmpRequestsHelper: FmpRequestsHelper) : UseCase<SentReportResult, NotExposedReport>() {
+@Inject constructor(private val fmpRequestsHelper: FmpRequestsHelper) : UseCase<SentReportResult, NotExposedReport> {
 
     override suspend fun run(params: NotExposedReport): Either<Failure, SentReportResult> {
 
@@ -80,9 +80,7 @@ data class NotExposedReport(
 
 )
 
-data class SentReportResult(
-        val createdTasks: List<CreatedTaskInfo>
-)
+
 
 
 data class FmpReport(

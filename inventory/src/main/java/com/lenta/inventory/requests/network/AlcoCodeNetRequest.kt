@@ -9,7 +9,7 @@ import com.lenta.shared.requests.FmpRequestsHelper
 import javax.inject.Inject
 
 class AlcoCodeNetRequest
-@Inject constructor(private val fmpRequestsHelper: FmpRequestsHelper) : UseCase<List<AlcoCodeRestInfo>, Nothing?>() {
+@Inject constructor(private val fmpRequestsHelper: FmpRequestsHelper) : UseCase<List<AlcoCodeRestInfo>, Nothing?> {
     override suspend fun run(params: Nothing?): Either<Failure, List<AlcoCodeRestInfo>> {
         return fmpRequestsHelper.restRequest("ZFMP_UTZ_47_V001", null, AlcoCodeStatus::class.java)
     }

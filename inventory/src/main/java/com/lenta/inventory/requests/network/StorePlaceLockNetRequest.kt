@@ -11,7 +11,7 @@ import com.lenta.shared.utilities.Logg
 import javax.inject.Inject
 
 class StorePlaceLockNetRequest
-@Inject constructor(private val fmpRequestsHelper: FmpRequestsHelper) : UseCase<StorePlaceLockRestInfo, StorePlaceLockParams>() {
+@Inject constructor(private val fmpRequestsHelper: FmpRequestsHelper) : UseCase<StorePlaceLockRestInfo, StorePlaceLockParams> {
     override suspend fun run(params: StorePlaceLockParams): Either<Failure, StorePlaceLockRestInfo> {
         Logg.d { "IP: ${params.ip}\nTask number: ${params.taskNumber}\nPlace code: ${params.storePlaceCode}\nMode: ${params.mode}\n Personal number: ${params.userNumber}" }
         return fmpRequestsHelper.restRequest("ZMP_UTZ_97_V001", params, StorePlaceLockStatus::class.java)

@@ -9,7 +9,7 @@ import com.lenta.shared.requests.FmpRequestsHelper
 import javax.inject.Inject
 
 class ExciseStampNetRequest
-@Inject constructor(private val fmpRequestsHelper: FmpRequestsHelper) : UseCase<ExciseStampRestInfo, ExciseStampParams>() {
+@Inject constructor(private val fmpRequestsHelper: FmpRequestsHelper) : UseCase<ExciseStampRestInfo, ExciseStampParams> {
     override suspend fun run(params: ExciseStampParams): Either<Failure, ExciseStampRestInfo> {
         return fmpRequestsHelper.restRequest("ZMP_UTZ_WOB_03_V001", params, ExciseStampStatus::class.java)
     }

@@ -13,7 +13,7 @@ import com.mobrun.plugin.api.HyperHive
 import javax.inject.Inject
 
 class ProductInfoForNotExposedNetRequest
-@Inject constructor(private val productInfoNetRequest: ProductInfoNetRequest, hyperHive: HyperHive) : UseCase<GoodInfo, NotExposedInfoRequestParams>() {
+@Inject constructor(private val productInfoNetRequest: ProductInfoNetRequest, hyperHive: HyperHive) : IProductInfoForNotExposedNetRequest {
 
     val zmpUtz07V001 by lazy {
         ZmpUtz07V001(hyperHive)
@@ -35,6 +35,8 @@ class ProductInfoForNotExposedNetRequest
     }
 
 }
+
+interface IProductInfoForNotExposedNetRequest : UseCase<GoodInfo, NotExposedInfoRequestParams>
 
 private fun NotExposedInfoRequestParams.toCommonParams(): ProductInfoParams {
     require((!ean.isNullOrBlank() xor !matNr.isNullOrBlank()))

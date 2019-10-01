@@ -5,14 +5,15 @@ import com.lenta.bp14.models.BaseTaskManager
 import com.lenta.bp14.models.filter.FilterableDelegate
 import com.lenta.bp14.models.filter.FilterFieldType.*
 import com.lenta.bp14.models.not_exposed_products.repo.NotExposedProductsRepo
-import com.lenta.bp14.requests.not_exposed_product.GoodInfo
-import com.lenta.bp14.requests.not_exposed_product.NotExposedInfoRequestParams
-import com.lenta.shared.interactor.UseCase
+import com.lenta.bp14.requests.not_exposed_product.IProductInfoForNotExposedNetRequest
 import com.lenta.shared.platform.time.ITimeMonitor
+import javax.inject.Inject
 
-class NotExposedProductsTaskManager(private val timeMonitor: ITimeMonitor,
-                                    private val gson: Gson,
-                                    private val productInfoNetNotExposedInfoRequest: UseCase<GoodInfo, NotExposedInfoRequestParams>) : BaseTaskManager<INotExposedProductsTask, NotExposedProductsTaskDescription>() {
+class NotExposedProductsTaskManager @Inject constructor(
+        private val timeMonitor: ITimeMonitor,
+        private val gson: Gson,
+        private val productInfoNetNotExposedInfoRequest: IProductInfoForNotExposedNetRequest
+) : BaseTaskManager<INotExposedProductsTask, NotExposedProductsTaskDescription>() {
 
     override fun newTask(taskDescription: NotExposedProductsTaskDescription): INotExposedProductsTask? {
         _task = NotExposedProductsTask(

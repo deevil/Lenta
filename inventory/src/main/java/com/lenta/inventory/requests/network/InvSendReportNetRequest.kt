@@ -11,7 +11,7 @@ import com.lenta.shared.utilities.Logg
 import javax.inject.Inject
 
 class InvSendReportNetRequest
-@Inject constructor(private val fmpRequestsHelper: FmpRequestsHelper) : UseCase<InvSendReportResponse, InventoryReport>() {
+@Inject constructor(private val fmpRequestsHelper: FmpRequestsHelper) : UseCase<InvSendReportResponse, InventoryReport> {
 
     override suspend fun run(params: InventoryReport): Either<Failure, InvSendReportResponse> {
         Logg.d { "InventoryReport: $params" }

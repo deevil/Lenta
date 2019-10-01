@@ -13,7 +13,7 @@ import com.lenta.shared.requests.SapResponse
 import javax.inject.Inject
 
 class TaskContentsNetRequest
-@Inject constructor(private val fmpRequestsHelper: FmpRequestsHelper) : UseCase<TaskContentsRequestResult, TaskContentRequestParameters>() {
+@Inject constructor(private val fmpRequestsHelper: FmpRequestsHelper) : UseCase<TaskContentsRequestResult, TaskContentRequestParameters> {
     override suspend fun run(params: TaskContentRequestParameters): Either<Failure, TaskContentsRequestResult> {
         return fmpRequestsHelper.restRequest("ZMP_UTZ_GRZ_15_V001", params, TaskContentsRequestStatus::class.java)
     }

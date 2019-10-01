@@ -10,7 +10,7 @@ import com.lenta.shared.requests.FmpRequestsHelper
 import javax.inject.Inject
 
 class DirectSupplierStartRecountNetRequest
-@Inject constructor(private val fmpRequestsHelper: FmpRequestsHelper) : UseCase<DirectSupplierStarRecountRestInfo, DirectSupplierStarRecountParams>() {
+@Inject constructor(private val fmpRequestsHelper: FmpRequestsHelper) : UseCase<DirectSupplierStarRecountRestInfo, DirectSupplierStarRecountParams> {
     override suspend fun run(params: DirectSupplierStarRecountParams): Either<Failure, DirectSupplierStarRecountRestInfo> {
         return fmpRequestsHelper.restRequest("ZMP_UTZ_GRZ_11_V001", params, DirectSupplierStarRecountStatus::class.java)
     }

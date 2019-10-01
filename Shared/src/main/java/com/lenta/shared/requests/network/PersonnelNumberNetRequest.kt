@@ -12,7 +12,7 @@ import com.lenta.shared.utilities.Logg
 import javax.inject.Inject
 
 class PersonnelNumberNetRequest
-@Inject constructor(val fmpRequestsHelper: FmpRequestsHelper) : UseCase<TabNumberInfo, TabNumberParams>() {
+@Inject constructor(val fmpRequestsHelper: FmpRequestsHelper) : UseCase<TabNumberInfo, TabNumberParams> {
     override suspend fun run(params: TabNumberParams): Either<Failure, TabNumberInfo> {
 
         Logg.d { "searchPersonnelNumber TabNumberParams: [${params.tabNumber}]" }

@@ -10,7 +10,7 @@ import com.lenta.shared.requests.SapResponse
 import javax.inject.Inject
 
 class RejectNetRequest
-@Inject constructor(private val fmpRequestsHelper: FmpRequestsHelper) : UseCase<RejectRequestResult, RejectRequestParameters>() {
+@Inject constructor(private val fmpRequestsHelper: FmpRequestsHelper) : UseCase<RejectRequestResult, RejectRequestParameters> {
     override suspend fun run(params: RejectRequestParameters): Either<Failure, RejectRequestResult> {
         return fmpRequestsHelper.restRequest("ZMP_UTZ_GRZ_19_V001", params, RejectRequestStatus::class.java)
     }

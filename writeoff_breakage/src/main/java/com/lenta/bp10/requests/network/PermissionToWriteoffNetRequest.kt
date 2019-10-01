@@ -9,7 +9,7 @@ import com.lenta.shared.requests.FmpRequestsHelper
 import javax.inject.Inject
 
 class PermissionToWriteoffNetRequest
-@Inject constructor(private val fmpRequestsHelper: FmpRequestsHelper) : UseCase<PermissionToWriteoffRestInfo, PermissionToWriteoffPrams>() {
+@Inject constructor(private val fmpRequestsHelper: FmpRequestsHelper) : UseCase<PermissionToWriteoffRestInfo, PermissionToWriteoffPrams> {
     override suspend fun run(params: PermissionToWriteoffPrams): Either<Failure, PermissionToWriteoffRestInfo> {
         return fmpRequestsHelper.restRequest("ZMP_UTZ_WOB_06_V001", params, PermissionToWriteoffStatus::class.java)
     }

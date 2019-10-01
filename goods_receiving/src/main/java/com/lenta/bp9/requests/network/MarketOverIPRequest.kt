@@ -10,7 +10,7 @@ import com.lenta.shared.requests.SapResponse
 import javax.inject.Inject
 
 class MarketOverIPRequest
-@Inject constructor(private val fmpRequestsHelper: FmpRequestsHelper) : UseCase<MarketOverIPRestInfo, MarketOverIPParams>() {
+@Inject constructor(private val fmpRequestsHelper: FmpRequestsHelper) : UseCase<MarketOverIPRestInfo, MarketOverIPParams> {
     override suspend fun run(params: MarketOverIPParams): Either<Failure, MarketOverIPRestInfo> {
         return fmpRequestsHelper.restRequest("ZMP_UTZ_89_V001", params, MarketOverIPStatus::class.java)
     }
