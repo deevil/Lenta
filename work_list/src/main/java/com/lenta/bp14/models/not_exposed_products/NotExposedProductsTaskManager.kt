@@ -6,9 +6,11 @@ import com.lenta.bp14.models.filter.FilterableDelegate
 import com.lenta.bp14.models.filter.FilterFieldType.*
 import com.lenta.bp14.models.not_exposed_products.repo.NotExposedProductsRepo
 import com.lenta.bp14.requests.not_exposed_product.IProductInfoForNotExposedNetRequest
+import com.lenta.shared.di.AppScope
 import com.lenta.shared.platform.time.ITimeMonitor
 import javax.inject.Inject
 
+@AppScope
 class NotExposedProductsTaskManager @Inject constructor(
         private val timeMonitor: ITimeMonitor,
         private val gson: Gson,
