@@ -12,7 +12,7 @@ import com.lenta.shared.requests.SapResponse
 import javax.inject.Inject
 
 class StartReviseNetRequest
-@Inject constructor(private val fmpRequestsHelper: FmpRequestsHelper) : UseCase<StartReviseRequestResult, StartReviseRequestParameters>() {
+@Inject constructor(private val fmpRequestsHelper: FmpRequestsHelper) : UseCase<StartReviseRequestResult, StartReviseRequestParameters> {
     override suspend fun run(params: StartReviseRequestParameters): Either<Failure, StartReviseRequestResult> {
         return fmpRequestsHelper.restRequest("ZMP_UTZ_GRZ_07_V001", params, StartReviseRequestStatus::class.java)
     }

@@ -10,7 +10,7 @@ import com.lenta.shared.interactor.UseCase
 import javax.inject.Inject
 
 class CheckPriceNetRequest
-@Inject constructor(private val productInfoNetRequest: ProductInfoNetRequest) : UseCase<ActualPriceInfo, CheckPriceRequestParams>() {
+@Inject constructor(private val productInfoNetRequest: ProductInfoNetRequest) : ICheckPriceNetRequest {
 
     override suspend fun run(params: CheckPriceRequestParams): Either<Failure, ActualPriceInfo> {
         return productInfoNetRequest(params = params.toCommonParams()).map {
@@ -29,6 +29,8 @@ class CheckPriceNetRequest
 
 }
 
+interface ICheckPriceNetRequest : UseCase<ActualPriceInfo, CheckPriceRequestParams>
+
 private fun CheckPriceRequestParams.toCommonParams(): ProductInfoParams {
     require((!ean.isNullOrBlank() xor !matNr.isNullOrBlank()))
     return ProductInfoParams(
@@ -40,7 +42,6 @@ private fun CheckPriceRequestParams.toCommonParams(): ProductInfoParams {
             matNrList = if (matNr == null) emptyList() else listOf(MatNrParam(matNr))
     )
 }
-
 
 
 data class CheckPriceRequestParams(

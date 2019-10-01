@@ -15,7 +15,7 @@ import com.lenta.shared.utilities.extentions.toSapBooleanString
 import javax.inject.Inject
 
 class NotExposedSendReportNetRequest
-@Inject constructor(private val fmpRequestsHelper: FmpRequestsHelper) : UseCase<SentReportResult, NotExposedReport>() {
+@Inject constructor(private val fmpRequestsHelper: FmpRequestsHelper) : UseCase<SentReportResult, NotExposedReport> {
 
     override suspend fun run(params: NotExposedReport): Either<Failure, SentReportResult> {
 

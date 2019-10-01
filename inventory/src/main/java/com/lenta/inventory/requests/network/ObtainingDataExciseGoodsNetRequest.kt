@@ -10,7 +10,7 @@ import com.lenta.shared.requests.FmpRequestsHelper
 import javax.inject.Inject
 
 class ObtainingDataExciseGoodsNetRequest
-@Inject constructor(private val fmpRequestsHelper: FmpRequestsHelper) : UseCase<ExciseGoodsRestInfo, ExciseGoodsParams>(){
+@Inject constructor(private val fmpRequestsHelper: FmpRequestsHelper) : UseCase<ExciseGoodsRestInfo, ExciseGoodsParams>{
     override suspend fun run(params: ExciseGoodsParams): Either<Failure, ExciseGoodsRestInfo> {
 
         return fmpRequestsHelper.restRequest(

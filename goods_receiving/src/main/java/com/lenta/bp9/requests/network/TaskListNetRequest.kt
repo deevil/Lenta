@@ -22,7 +22,7 @@ class TaskListNetRequest
         private val gson: Gson,
         private val sessionInfo: ISessionInfo,
         private val analyticsHelper: AnalyticsHelper
-) : UseCase<TaskList, TaskListParams>() {
+) : UseCase<TaskList, TaskListParams> {
 
     override suspend fun run(params: TaskListParams): Either<Failure, TaskList> {
         val webCallParams = WebCallParams().apply {

@@ -20,7 +20,7 @@ class PinCodeNetRequest
 @Inject constructor(private val hyperHive: HyperHive,
                     private val gson: Gson,
                     private val appSettings: IAppSettings,
-                    private val sessionInfo: ISessionInfo) : UseCase<PinCodeInfo, PinCodeRequestParams?>() {
+                    private val sessionInfo: ISessionInfo) : UseCase<PinCodeInfo, PinCodeRequestParams?> {
     override suspend fun run(params: PinCodeRequestParams?): Either<Failure, PinCodeInfo> {
         val isAuthorized = hyperHive.authAPI.isAuthorized
 

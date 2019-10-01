@@ -5,9 +5,10 @@ import com.lenta.shared.models.core.Uom
 import com.lenta.shared.platform.constants.Constants.DATE_FORMAT_ddmmyy
 import java.text.SimpleDateFormat
 import java.util.*
+import javax.inject.Inject
 
 
-class TaskManager {
+class TaskManager @Inject constructor() {
 
     lateinit var marketNumber: String
 

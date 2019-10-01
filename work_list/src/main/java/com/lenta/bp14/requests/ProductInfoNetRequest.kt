@@ -11,7 +11,7 @@ import com.lenta.shared.requests.FmpRequestsHelper
 import javax.inject.Inject
 
 class ProductInfoNetRequest
-@Inject constructor(private val fmpRequestsHelper: FmpRequestsHelper) : UseCase<ProductInfoResult, ProductInfoParams>() {
+@Inject constructor(private val fmpRequestsHelper: FmpRequestsHelper) : UseCase<ProductInfoResult, ProductInfoParams> {
     override suspend fun run(params: ProductInfoParams): Either<Failure, ProductInfoResult> {
         return fmpRequestsHelper.restRequest("ZMP_UTZ_WKL_11_V001", params, ProductInfoStatus::class.java)
                 .rightToLeft(

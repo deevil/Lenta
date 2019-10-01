@@ -10,7 +10,7 @@ import com.lenta.shared.requests.FmpRequestsHelper
 import javax.inject.Inject
 
 class TaskListNetRequest
-@Inject constructor(private val fmpRequestsHelper: FmpRequestsHelper) : UseCase<TaskListInfo, TasksListParams>() {
+@Inject constructor(private val fmpRequestsHelper: FmpRequestsHelper) : UseCase<TaskListInfo, TasksListParams> {
 
     override suspend fun run(params: TasksListParams): Either<Failure, TaskListInfo> {
         return fmpRequestsHelper.restRequest("ZMP_UTZ_WKL_02_V001", params, TaskListInfoStatus::class.java)
@@ -63,7 +63,9 @@ data class TasksListParams(
         val tkNumber: String,
         @SerializedName("IV_EXEC_USER")
         val user: String,
-        //режим работы ФМ: 1 - обновление, 2 - расширенный поиск
+        /**
+         * режим работы ФМ: 1 - обновление, 2 - расширенный поиск
+         */
         @SerializedName("IV_MODE")
         val mode: String,
         @SerializedName("IS_SEARCH_TASK")
@@ -72,14 +74,14 @@ data class TasksListParams(
 
 data class SearchTaskFilter(
         @SerializedName("TASK_TYPE")
-        val taskType: String,
+        val taskType: String = "",
         @SerializedName("MATNR")
-        val matNr: String,
+        val matNr: String = "",
         @SerializedName("ABTNR")
-        val sectionId: String,
+        val sectionId: String = "",
         @SerializedName("MATKL")
-        val group: String,
+        val group: String = "",
         @SerializedName("DATE_PUBLIC")
-        val dateOfPublic: String
+        val dateOfPublic: String = ""
 )
 

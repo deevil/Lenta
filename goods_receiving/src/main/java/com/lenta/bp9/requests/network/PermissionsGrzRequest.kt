@@ -10,7 +10,7 @@ import com.lenta.shared.requests.SapResponse
 import javax.inject.Inject
 
 class PermissionsGrzRequest
-@Inject constructor(private val fmpRequestsHelper: FmpRequestsHelper) : UseCase<PermissionsGrzResult, Nothing?>() {
+@Inject constructor(private val fmpRequestsHelper: FmpRequestsHelper) : UseCase<PermissionsGrzResult, Nothing?> {
     override suspend fun run(params: Nothing?): Either<Failure, PermissionsGrzResult> {
         return fmpRequestsHelper.restRequest("ZMP_UTZ_GRZ_01_V001", null, PermissionGrzStatus::class.java)
     }

@@ -11,7 +11,7 @@ import com.lenta.shared.requests.SapResponse
 import javax.inject.Inject
 
 class EndRecountDirectDeliveriesNetRequest
-@Inject constructor(private val fmpRequestsHelper: FmpRequestsHelper) : UseCase<EndRecountDDResult, EndRecountDDParameters>() {
+@Inject constructor(private val fmpRequestsHelper: FmpRequestsHelper) : UseCase<EndRecountDDResult, EndRecountDDParameters> {
     override suspend fun run(params: EndRecountDDParameters): Either<Failure, EndRecountDDResult> {
         return fmpRequestsHelper.restRequest("ZMP_UTZ_GRZ_12_V001", params, EndRecountDDStatus::class.java)
     }

@@ -6,11 +6,10 @@ import com.lenta.shared.fmp.ObjectRawStatus
 import com.lenta.shared.functional.Either
 import com.lenta.shared.interactor.UseCase
 import com.lenta.shared.requests.FmpRequestsHelper
-import com.lenta.shared.requests.SapResponse
 import javax.inject.Inject
 
 class TaskListNetRequest
-@Inject constructor(private val fmpRequestsHelper: FmpRequestsHelper) : UseCase<TasksListRestInfo, TasksListParams>() {
+@Inject constructor(private val fmpRequestsHelper: FmpRequestsHelper) : UseCase<TasksListRestInfo, TasksListParams> {
     override suspend fun run(params: TasksListParams): Either<Failure, TasksListRestInfo> {
         return fmpRequestsHelper.restRequest("ZMP_UTZ_91_V001", params, TasksListStatus::class.java)
     }
