@@ -3,8 +3,8 @@ package com.lenta.bp14.requests.not_exposed_product
 import com.google.gson.annotations.SerializedName
 import com.lenta.bp14.models.not_exposed_products.NotExposedProductsTaskDescription
 import com.lenta.bp14.models.not_exposed_products.repo.INotExposedProductInfo
-import com.lenta.bp14.requests.pojo.CreatedTaskInfo
 import com.lenta.bp14.requests.pojo.ReportSentStatus
+import com.lenta.bp14.requests.pojo.SentReportResult
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.functional.Either
 import com.lenta.shared.functional.map
@@ -80,9 +80,7 @@ data class NotExposedReport(
 
 )
 
-data class SentReportResult(
-        val createdTasks: List<CreatedTaskInfo>
-)
+
 
 
 data class FmpReport(

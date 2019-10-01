@@ -25,6 +25,7 @@ import com.lenta.bp14.platform.sound.ISoundPlayer
 import com.lenta.bp14.platform.sound.SoundPlayer
 import com.lenta.bp14.repos.IRepoInMemoryHolder
 import com.lenta.bp14.repos.RepoInMemoryHolder
+import com.lenta.bp14.requests.check_price.CheckPriceNetRequest
 import com.lenta.bp14.requests.not_exposed_product.ProductInfoForNotExposedNetRequest
 import com.lenta.shared.account.IAuthenticator
 import com.lenta.shared.di.AppScope
@@ -71,14 +72,16 @@ class AppModule {
             gson: Gson,
             soundPlayer: ISoundPlayer,
             vibrateHelper: IVibrateHelper,
-            priceInfoParser: IPriceInfoParser
+            priceInfoParser: IPriceInfoParser,
+            checkPriceRequest: CheckPriceNetRequest
     ): CheckPriceTaskManager {
         return CheckPriceTaskManager(
                 timeMonitor = timeMonitor,
                 gson = gson,
                 soundPlayer = soundPlayer,
                 vibrateHelper = vibrateHelper,
-                priceInfoParser = priceInfoParser
+                priceInfoParser = priceInfoParser,
+                checkPriceRequest = checkPriceRequest
         )
     }
 
@@ -152,6 +155,7 @@ class AppModule {
     }
 
     @Provides
+    @AppScope
     internal fun provideSoundPlayer(context: Context): ISoundPlayer {
         return SoundPlayer(context)
     }
