@@ -14,8 +14,10 @@ import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.extentions.combineLatest
+import com.lenta.shared.utilities.extentions.dropTail
 import com.lenta.shared.utilities.extentions.map
 import kotlinx.coroutines.launch
+import java.math.BigDecimal
 import javax.inject.Inject
 
 class GoodsListWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyboardListener {
@@ -43,10 +45,15 @@ class GoodsListWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     val processedGoods: MutableLiveData<List<ProcessedListUi>> by lazy {
         task.processed.map { list: MutableList<Good>? ->
             list?.mapIndexed { index, good ->
+                var totalQuantity = BigDecimal.ZERO
+                for (scanResult in good.scanResults.value!!) {
+                    totalQuantity += scanResult.quantity
+                }
+
                 ProcessedListUi(
                         position = (index + 1).toString(),
                         name = good.getFormattedMaterialWithName(),
-                        quantity = "11111"
+                        quantity = totalQuantity.dropTail()
                 )
             }
         }

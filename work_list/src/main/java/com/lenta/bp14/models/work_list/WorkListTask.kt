@@ -34,19 +34,16 @@ class WorkListTask(
     var currentGood = MutableLiveData<Good>()
 
     override suspend fun addGoodByEan(ean: String): Boolean {
-        var good = processed.value?.find { it.common.ean == ean }
-        if (good != null) {
+        processed.value?.find { it.common.ean == "12345678" }?.let { good ->
             currentGood.value = good
             return true
         }
 
-        val commonGoodInfo = workListRepo.getCommonGoodInfoByEan(ean)
-        if (commonGoodInfo != null) {
-            good = Good(common = commonGoodInfo)
-
-            val goodsList = processed.value!!
-            goodsList.add(good)
-            processed.value = goodsList
+        workListRepo.getCommonGoodInfoByEan(ean)?.let { commonInfo ->
+            val good = Good(common = commonInfo)
+            val processingList = processing.value!!
+            processingList.add(good)
+            processing.value = processingList
             currentGood.value = good
             loadComments()
             return true
@@ -63,7 +60,7 @@ class WorkListTask(
 
     override suspend fun loadAdditionalGoodInfo() {
         delay(5000)
-        currentGood.value?.let {good ->
+        currentGood.value?.let { good ->
             val additionalGoodInfo = workListRepo.loadAdditionalGoodInfo(good)
             good.additional.value = additionalGoodInfo
         }
@@ -71,7 +68,7 @@ class WorkListTask(
 
     override suspend fun loadSalesStatistics() {
         delay(500)
-        currentGood.value?.let {good ->
+        currentGood.value?.let { good ->
             val salesStatistics = workListRepo.loadSalesStatistics(good)
             good.sales.value = salesStatistics
         }
@@ -79,7 +76,7 @@ class WorkListTask(
 
     override suspend fun loadDeliveries() {
         delay(500)
-        currentGood.value?.let {good ->
+        currentGood.value?.let { good ->
             val deliveriesList = workListRepo.loadDeliveries(good)
             good.deliveries.value = deliveriesList
         }
@@ -87,7 +84,7 @@ class WorkListTask(
 
     override suspend fun loadComments() {
         delay(500)
-        currentGood.value?.let {good ->
+        currentGood.value?.let { good ->
             val commentsList = workListRepo.loadComments(good)
             good.comments.value = commentsList
         }
@@ -134,6 +131,26 @@ class WorkListTask(
         currentGood.value?.scanResults?.value = scanResultsList
     }
 
+    override fun moveGoodToProcessedList() {
+        processed.value?.let { list ->
+            currentGood.value?.let {good ->
+                if (!list.contains(good)) {
+                    list.add(good)
+                    processed.value = list
+                }
+            }
+        }
+
+        processing.value?.let { list ->
+            currentGood.value?.let {good ->
+                if (list.contains(good)) {
+                    list.remove(good)
+                    processing.value = list
+                }
+            }
+        }
+    }
+
 }
 
 
@@ -146,6 +163,7 @@ interface IWorkListTask : ITask {
     suspend fun loadComments()
 
     fun addScanResult(scanResult: ScanResult)
+    fun moveGoodToProcessedList()
 
     fun getGoodOptions(): LiveData<GoodOptions>
     fun getGoodStocks(): LiveData<List<Stock>>
@@ -186,6 +204,19 @@ data class Good(
 
     fun getUnits(): String {
         return common.units.name.toLowerCase(Locale.getDefault())
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is Good) return false
+
+        if (common.ean != other.common.ean) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        return common.ean.hashCode()
     }
 
 }

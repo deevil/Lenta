@@ -50,7 +50,7 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
         for (scanResult in good.value!!.scanResults.value!!) {
             total += scanResult.quantity
         }
-        total.toString()
+        "${total.dropTail()} ${task.currentGood.value!!.getUnits()}"
     }
 
     val day = MutableLiveData<String>("")
@@ -204,11 +204,9 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
 
     fun onClickApply() {
         addScanResult()
-
-        // todo Потом удалить
-        // Имитация сканирования такого-же товара
-        resetGoodFields()
-
+        task.moveGoodToProcessedList()
+        navigator.closeAllScreen()
+        navigator.openGoodsListWlScreen()
     }
 
     private fun addScanResult() {
@@ -232,7 +230,7 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     private fun resetGoodFields() {
-        quantity.value = "1"
+        quantity.value = good.value?.common?.defaultQuantity?.dropTail()
 
         shelfLifeTypePosition.value = 0
         comment.value = commentsList.value?.get(0)

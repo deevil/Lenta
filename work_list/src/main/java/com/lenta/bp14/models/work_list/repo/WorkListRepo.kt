@@ -15,7 +15,7 @@ class WorkListRepo {
     suspend fun getCommonGoodInfoByEan(ean: String): CommonGoodInfo? {
         return withContext(Dispatchers.IO) {
             return@withContext CommonGoodInfo(
-                    ean = "11111111",
+                    ean = "12345678",
                     material = "000000000000222222",
                     matcode = "333333333333",
                     name = "Товар",

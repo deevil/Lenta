@@ -141,13 +141,13 @@ class GoodsListWlFragment : CoreFragment<FragmentGoodsListWlBinding, GoodsListWl
                 }
 
                 layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
-                        layoutId = R.layout.item_good_selectable,
+                        layoutId = R.layout.item_wl_good_quantity_selectable,
                         itemId = BR.good,
-                        realisation = object : DataBindingAdapter<ItemGoodSelectableBinding> {
-                            override fun onCreate(binding: ItemGoodSelectableBinding) {
+                        realisation = object : DataBindingAdapter<ItemWlGoodQuantitySelectableBinding> {
+                            override fun onCreate(binding: ItemWlGoodQuantitySelectableBinding) {
                             }
 
-                            override fun onBind(binding: ItemGoodSelectableBinding, position: Int) {
+                            override fun onBind(binding: ItemWlGoodQuantitySelectableBinding, position: Int) {
                                 binding.tvItemNumber.tag = position
                                 binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
                                 binding.selectedForDelete = vm.processedSelectionsHelper.isSelected(position)
