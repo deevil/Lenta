@@ -12,7 +12,7 @@ import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.sumWith
-import com.lenta.shared.utilities.extentions.toStringFormatted
+import com.lenta.shared.utilities.extentions.dropZeros
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -48,7 +48,7 @@ class GoodDetailsViewModel : CoreViewModel(), PageSelectionListener {
                         expirationDate = scanResult.getFormattedExpirationDate(),
                         productionDate = scanResult.getFormattedProductionDate(),
                         productionDateVisibility = scanResult.productionDate != null,
-                        quantity = "${scanResult.quantity.toStringFormatted()} ${task.currentGood.value!!.getUnits()}"
+                        quantity = "${scanResult.quantity.dropZeros()} ${task.currentGood.value!!.getUnits()}"
                 )
             }
         }
@@ -69,7 +69,7 @@ class GoodDetailsViewModel : CoreViewModel(), PageSelectionListener {
                 ItemCommentUi(
                         position = (index + 1).toString(),
                         comment = scanResult.comment,
-                        quantity = "${scanResult.quantity.toStringFormatted()} ${task.currentGood.value!!.getUnits()}"
+                        quantity = "${scanResult.quantity.dropZeros()} ${task.currentGood.value!!.getUnits()}"
                 )
             }
         }

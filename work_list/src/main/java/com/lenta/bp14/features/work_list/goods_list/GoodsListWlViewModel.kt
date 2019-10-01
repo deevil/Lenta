@@ -16,7 +16,7 @@ import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.sumWith
-import com.lenta.shared.utilities.extentions.toStringFormatted
+import com.lenta.shared.utilities.extentions.dropZeros
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -53,7 +53,7 @@ class GoodsListWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
                 ProcessedListUi(
                         position = (index + 1).toString(),
                         name = good.getFormattedMaterialWithName(),
-                        quantity = total.toStringFormatted()
+                        quantity = total.dropZeros()
                 )
             }
         }
@@ -106,7 +106,7 @@ class GoodsListWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
                     addGoodByEan(matNr)
                 },
                 funcForPriceQrCode = { qrCode ->
-                    //addGoodByEan(matNr)
+                    //getGoodByEan(matNr)
                 },
                 funcForSapOrBar = navigator::showTwelveCharactersEntered,
                 funcForNotValidFormat = navigator::showGoodNotFound

@@ -2,13 +2,12 @@ package com.lenta.bp14.features.check_list.goods_list
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.lenta.bp14.models.check_list.*
+import com.lenta.bp14.models.check_list.Good
+import com.lenta.bp14.models.check_list.ICheckListTask
 import com.lenta.bp14.models.getTaskName
 import com.lenta.bp14.platform.navigation.IScreenNavigator
-import com.lenta.shared.models.core.isOnlyInt
-import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.platform.viewmodel.CoreViewModel
-import com.lenta.shared.utilities.Logg
+import com.lenta.shared.requests.combined.scan_info.analyseCode
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.databinding.PageSelectionListener
@@ -85,48 +84,20 @@ class GoodsListClViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     }
 
     private fun checkEnteredNumber(number: String) {
-        number.length.let { length ->
-            if (length < Constants.COMMON_SAP_LENGTH) {
-                // Сообщение - Данный товар не найден в справочнике
-                navigator.showGoodNotFound()
-                return
-            }
-
-            if (length >= Constants.COMMON_SAP_LENGTH) {
-                when (length) {
-                    Constants.COMMON_SAP_LENGTH -> addGoodByMaterial(number)
-                    Constants.SAP_OR_BAR_LENGTH -> {
-                        // Выбор - Введено 12 знаков. Какой код вы ввели? - SAP-код / Штрихкод
-                        navigator.showTwelveCharactersEntered(
-                                sapCallback = { addGoodByMatcode(number) },
-                                barCallback = { addGoodByEan(number) }
-                        )
-                    }
-                    else -> addGoodByEan(number)
-                }
-            }
-        }
-    }
-
-    private fun addGoodByMaterial(material: String) {
-        Logg.d { "Entered MATERIAL: $material" }
-        viewModelScope.launch {
-            addGood(task.getGoodByMaterial(material))
-        }
-    }
-
-    private fun addGoodByEan(ean: String) {
-        Logg.d { "Entered EAN: $ean" }
-        viewModelScope.launch {
-            addGood(task.getGoodByEan(ean))
-        }
-    }
-
-    private fun addGoodByMatcode(matcode: String) {
-        Logg.d { "Entered MATCODE: $matcode" }
-        viewModelScope.launch {
-            addGood(task.getGoodByMatcode(matcode))
-        }
+        analyseCode(
+                code = number,
+                funcForEan = { eanCode ->
+                    addGood(task.getGoodByEan(eanCode))
+                },
+                funcForMatNr = { matNr ->
+                    addGood(task.getGoodByMaterial(matNr))
+                },
+                funcForPriceQrCode = { qrCode ->
+                    //getGoodByEan(matNr)
+                },
+                funcForSapOrBar = navigator::showTwelveCharactersEntered,
+                funcForNotValidFormat = navigator::showGoodNotFound
+        )
     }
 
     private fun addGood(good: Good?) {

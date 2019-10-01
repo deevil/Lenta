@@ -46,7 +46,7 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
         for (scanResult in good.value!!.scanResults.value!!) {
             total = total.sumWith(scanResult.quantity)
         }
-        "${total.toStringFormatted()} ${task.currentGood.value!!.getUnits()}"
+        "${total.dropZeros()} ${task.currentGood.value!!.getUnits()}"
     }
 
     val day = MutableLiveData<String>("")
@@ -95,11 +95,11 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
         task.currentGood.value!!.additional.map { additional ->
             AdditionalInfoUi(
                     storagePlaces = additional?.storagePlaces ?: "Not found!",
-                    minStock = "${additional?.minStock?.toStringFormatted()} ${task.currentGood.value!!.getUnits()}",
+                    minStock = "${additional?.minStock?.dropZeros()} ${task.currentGood.value!!.getUnits()}",
                     inventory = additional?.movement?.inventory ?: "Not found!",
                     arrival = additional?.movement?.arrival ?: "Not found!",
-                    commonPrice = "${additional?.price?.commonPrice?.toStringFormatted()}р.",
-                    discountPrice = "${additional?.price?.discountPrice?.toStringFormatted()}р.",
+                    commonPrice = "${additional?.price?.commonPrice?.dropZeros()}р.",
+                    discountPrice = "${additional?.price?.discountPrice?.dropZeros()}р.",
                     promoName = additional?.promo?.name ?: "Not found!",
                     promoPeriod = additional?.promo?.period ?: "Not found!"
             )
@@ -155,7 +155,7 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
         viewModelScope.launch {
             title.value = good.value?.getFormattedMaterialWithName()
 
-            quantity.value = good.value?.common?.defaultQuantity?.toStringFormatted()
+            quantity.value = good.value?.common?.defaultQuantity?.dropZeros()
             comment.value = commentsList.value?.get(0)
 
             viewModelScope.launch {
@@ -226,7 +226,7 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     private fun resetGoodFields() {
-        quantity.value = good.value?.common?.defaultQuantity?.toStringFormatted()
+        quantity.value = good.value?.common?.defaultQuantity?.dropZeros()
 
         shelfLifeTypePosition.value = 0
         comment.value = commentsList.value?.get(0)
