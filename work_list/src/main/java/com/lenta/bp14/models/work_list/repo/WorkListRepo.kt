@@ -20,7 +20,7 @@ class WorkListRepo {
                     matcode = "333333333333",
                     name = "Товар",
                     units = Uom.ST,
-                    defaultQuantity = BigDecimal.ONE,
+                    defaultQuantity = 1.0,
                     goodGroup = "123456",
                     purchaseGroup = "1111",
                     shelfLife = (3..14).random(),
@@ -37,14 +37,14 @@ class WorkListRepo {
         return withContext(Dispatchers.IO) {
             return@withContext AdditionalGoodInfo(
                     storagePlaces = "125635; 652148; 635894",
-                    minStock = (10..50).random().toBigDecimal(),
+                    minStock = (10..50).random().toDouble(),
                     movement = Movement(
                             inventory = "19.07.19 (-25 шт.)",
                             arrival = "29.07.19 (+50 шт; Z5)"
                     ),
                     price = Price(
-                            commonPrice = (110..140).random().toBigDecimal(),
-                            discountPrice = (80..100).random().toBigDecimal()
+                            commonPrice = (110..140).random().toDouble(),
+                            discountPrice = (80..100).random().toDouble()
                     ),
                     promo = Promo(
                             name = "Распродажа кукурузы ТК 0007",
@@ -63,7 +63,7 @@ class WorkListRepo {
                         Stock(
                                 number = it + 1,
                                 storage = "0" + (0..9).random() + (0..9).random() + (0..9).random(),
-                                quantity = (1..99).random().toBigDecimal()
+                                quantity = (1..99).random().toDouble()
                         )
                     }
             )
@@ -87,7 +87,7 @@ class WorkListRepo {
                 Delivery(
                         status = if (Random.nextBoolean()) DeliveryStatus.ORDERED else DeliveryStatus.ON_WAY,
                         info = if (Random.nextBoolean()) "ПП" else "РЦ",
-                        quantity = (1..99).random().toBigDecimal(),
+                        quantity = (1..99).random().toDouble(),
                         units = Uom.KAR,
                         date = Date()
                 )

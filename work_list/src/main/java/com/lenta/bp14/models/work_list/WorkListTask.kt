@@ -228,7 +228,7 @@ data class CommonGoodInfo(
         val matcode: String,
         val name: String,
         val units: Uom,
-        val defaultQuantity: BigDecimal,
+        val defaultQuantity: Double,
         var goodGroup: String,
         var purchaseGroup: String,
         var marks: Int = 0,
@@ -238,7 +238,7 @@ data class CommonGoodInfo(
 
 data class AdditionalGoodInfo(
         val storagePlaces: String,
-        val minStock: BigDecimal,
+        val minStock: Double,
         val movement: Movement,
         val price: Price,
         val promo: Promo,
@@ -257,7 +257,7 @@ data class GoodOptions(
 data class Stock(
         val number: Int,
         val storage: String,
-        val quantity: BigDecimal
+        val quantity: Double
 )
 
 data class Provider(
@@ -274,8 +274,8 @@ data class Movement(
 )
 
 data class Price(
-        val commonPrice: BigDecimal,
-        val discountPrice: BigDecimal
+        val commonPrice: Double,
+        val discountPrice: Double
 )
 
 data class Promo(
@@ -305,7 +305,7 @@ data class SalesStatistics(
 data class Delivery(
         val status: DeliveryStatus,
         val info: String, // ПП, РЦ, ...
-        val quantity: BigDecimal,
+        val quantity: Double,
         val units: Uom,
         val date: Date
 ) {
@@ -324,7 +324,7 @@ enum class DeliveryStatus(val description: String) {
 // -----------------------------
 
 data class ScanResult(
-        val quantity: BigDecimal,
+        val quantity: Double,
         val comment: String,
         val productionDate: Date?,
         val expirationDate: Date?

@@ -13,13 +13,9 @@ import com.lenta.shared.models.core.MatrixType
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.databinding.PageSelectionListener
-import com.lenta.shared.utilities.extentions.combineLatest
-import com.lenta.shared.utilities.extentions.dropTail
-import com.lenta.shared.utilities.extentions.getFormattedDate
-import com.lenta.shared.utilities.extentions.map
+import com.lenta.shared.utilities.extentions.*
 import com.lenta.shared.view.OnPositionClickListener
 import kotlinx.coroutines.launch
-import java.math.BigDecimal
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -46,11 +42,11 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
 
     val quantity = MutableLiveData<String>()
     val totalQuantity: MutableLiveData<String> = quantity.map { quantity ->
-        var total = quantity?.toBigDecimal() ?: BigDecimal.ZERO
+        var total = quantity?.toDoubleOrNull() ?: 0.0
         for (scanResult in good.value!!.scanResults.value!!) {
-            total += scanResult.quantity
+            total = total.sumWith(scanResult.quantity)
         }
-        "${total.dropTail()} ${task.currentGood.value!!.getUnits()}"
+        "${total.toStringFormatted()} ${task.currentGood.value!!.getUnits()}"
     }
 
     val day = MutableLiveData<String>("")
@@ -99,11 +95,11 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
         task.currentGood.value!!.additional.map { additional ->
             AdditionalInfoUi(
                     storagePlaces = additional?.storagePlaces ?: "Not found!",
-                    minStock = "${additional?.minStock?.dropTail()} ${task.currentGood.value!!.getUnits()}",
+                    minStock = "${additional?.minStock?.toStringFormatted()} ${task.currentGood.value!!.getUnits()}",
                     inventory = additional?.movement?.inventory ?: "Not found!",
                     arrival = additional?.movement?.arrival ?: "Not found!",
-                    commonPrice = "${additional?.price?.commonPrice?.dropTail()}р.",
-                    discountPrice = "${additional?.price?.discountPrice?.dropTail()}р.",
+                    commonPrice = "${additional?.price?.commonPrice?.toStringFormatted()}р.",
+                    discountPrice = "${additional?.price?.discountPrice?.toStringFormatted()}р.",
                     promoName = additional?.promo?.name ?: "Not found!",
                     promoPeriod = additional?.promo?.period ?: "Not found!"
             )
@@ -159,7 +155,7 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
         viewModelScope.launch {
             title.value = good.value?.getFormattedMaterialWithName()
 
-            quantity.value = good.value?.common?.defaultQuantity?.dropTail()
+            quantity.value = good.value?.common?.defaultQuantity?.toStringFormatted()
             comment.value = commentsList.value?.get(0)
 
             viewModelScope.launch {
@@ -222,7 +218,7 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
         } else shelfLifeDate
 
         task.addScanResult(ScanResult(
-                quantity = quantity.value?.toBigDecimal() ?: BigDecimal.ZERO,
+                quantity = quantity.value?.toDoubleOrNull() ?: 0.0,
                 comment =  if (comment.value.isNullOrEmpty()) task.currentGood.value?.comments?.value?.get(0) ?: "" else comment.value!!,
                 productionDate = productionDate,
                 expirationDate = expirationDate
@@ -230,7 +226,7 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     private fun resetGoodFields() {
-        quantity.value = good.value?.common?.defaultQuantity?.dropTail()
+        quantity.value = good.value?.common?.defaultQuantity?.toStringFormatted()
 
         shelfLifeTypePosition.value = 0
         comment.value = commentsList.value?.get(0)
@@ -241,6 +237,10 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     fun onScanResult(data: String) {
+
+    }
+
+    fun onClickBack() {
 
     }
 

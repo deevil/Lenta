@@ -9,6 +9,7 @@ import com.lenta.bp14.BR
 import com.lenta.bp14.R
 import com.lenta.bp14.databinding.*
 import com.lenta.bp14.platform.extentions.getAppComponent
+import com.lenta.shared.platform.activity.OnBackPresserListener
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
@@ -22,7 +23,7 @@ import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
 import com.lenta.shared.utilities.extentions.provideViewModel
 
 class GoodInfoWlFragment : CoreFragment<FragmentGoodInfoWlBinding, GoodInfoWlViewModel>(),
-        ViewPagerSettings, ToolbarButtonsClickListener, OnScanResultListener {
+        ViewPagerSettings, ToolbarButtonsClickListener, OnScanResultListener, OnBackPresserListener {
 
     override fun getLayoutId(): Int = R.layout.fragment_good_info_wl
 
@@ -145,6 +146,11 @@ class GoodInfoWlFragment : CoreFragment<FragmentGoodInfoWlBinding, GoodInfoWlVie
 
     override fun onScanResult(data: String) {
         vm.onScanResult(data)
+    }
+
+    override fun onBackPressed(): Boolean {
+        vm.onClickBack()
+        return false
     }
 
 }
