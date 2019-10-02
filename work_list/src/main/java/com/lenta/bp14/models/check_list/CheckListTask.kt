@@ -51,15 +51,15 @@ class CheckListTask(
     }
 
     override fun getGoodByMaterial(material: String): Good? {
-        return checkListRepo.getGoodByMaterial(material)
+        return goods.value?.find { it.material == material } ?: checkListRepo.getGoodByMaterial(material)
     }
 
     override fun getGoodByEan(ean: String): Good? {
-        return checkListRepo.getGoodByEan(ean)
+        return goods.value?.find { it.ean == ean } ?: checkListRepo.getGoodByEan(ean)
     }
 
     override fun getGoodByMatcode(matcode: String): Good? {
-        return checkListRepo.getGoodByMatcode(matcode)
+        return goods.value?.find { it.ean == matcode } ?: checkListRepo.getGoodByEan(matcode)
     }
 
     override fun saveScannedGoodList(goodsList: List<Good>) {
