@@ -25,6 +25,7 @@ import com.lenta.bp14.main.MainActivity
 import com.lenta.bp14.main.MainViewModel
 import com.lenta.bp14.models.IGeneralTaskManager
 import com.lenta.bp14.models.check_price.IPriceInfoParser
+import com.lenta.bp14.models.general.IGeneralRepo
 import com.lenta.bp14.platform.IVibrateHelper
 import com.lenta.bp14.platform.navigation.IScreenNavigator
 import com.lenta.bp14.platform.sound.ISoundPlayer
@@ -34,7 +35,7 @@ import dagger.Component
 
 @Component(modules = [AppModule::class], dependencies = [CoreComponent::class])
 @AppScope
-interface AppComponent: CoreComponent {
+interface AppComponent : CoreComponent {
 
     fun getTaskManager(): TaskManager
     fun getIScreenNavigator(): IScreenNavigator
@@ -42,6 +43,7 @@ interface AppComponent: CoreComponent {
     fun getIPriceInfoParser(): IPriceInfoParser
     fun getISoundPlayer(): ISoundPlayer
     fun getIVibrateHelper(): IVibrateHelper
+    fun getIGeneralRepo(): IGeneralRepo
 
     fun inject(mainActivity: MainActivity)
     fun inject(mainViewModel: MainViewModel)

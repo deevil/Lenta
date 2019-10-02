@@ -38,7 +38,7 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
         taskList?.map {
             TaskUi(
                     id = it.taskId,
-                    type = it.taskType.taskType,
+                    type = it.taskTypeInfo.taskType,
                     name = it.taskName,
                     status = if (it.isNotFinished) TaskStatus.STARTED else {
                         if (it.isMyBlock) TaskStatus.SELF_BLOCK else TaskStatus.BLOCK

@@ -1,6 +1,6 @@
 package com.lenta.bp14.models
 
-import com.lenta.bp14.models.general.ITaskType
+import com.lenta.bp14.models.general.ITaskTypeInfo
 import com.lenta.shared.di.CoreInjectHelper.removeComponent
 
 
@@ -26,7 +26,7 @@ abstract class BaseTaskManager<S : ITask, D : ITaskDescription> : ITaskManager<S
         _task = task
     }
 
-    override fun getCurrentTaskType(): ITaskType? {
+    override fun getCurrentTaskType(): ITaskTypeInfo? {
         return _task?.getTaskType()
     }
 
@@ -43,11 +43,11 @@ interface ITaskManager<S : ITask, D : ITaskDescription> {
 
     fun setTask(task: S?)
 
-    fun getCurrentTaskType(): ITaskType?
+    fun getCurrentTaskType(): ITaskTypeInfo?
 }
 
 interface ITask {
-    fun getTaskType(): ITaskType
+    fun getTaskType(): ITaskTypeInfo
     fun getDescription(): ITaskDescription
     /**
      * Проверяет режим работы. Возвращает:

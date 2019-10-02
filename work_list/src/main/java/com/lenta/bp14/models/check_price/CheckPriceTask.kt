@@ -8,8 +8,9 @@ import com.lenta.bp14.models.ITask
 import com.lenta.bp14.models.ITaskDescription
 import com.lenta.bp14.models.check_price.repo.IActualPricesRepo
 import com.lenta.bp14.models.check_price.repo.ICheckPriceResultsRepo
-import com.lenta.bp14.models.general.ITaskType
-import com.lenta.bp14.models.general.TaskTypes
+import com.lenta.bp14.models.general.ITaskTypeInfo
+import com.lenta.bp14.models.general.AppTaskTypes
+import com.lenta.bp14.models.general.IGeneralRepo
 import com.lenta.bp14.platform.IVibrateHelper
 import com.lenta.bp14.platform.sound.ISoundPlayer
 import com.lenta.bp14.requests.check_price.CheckPriceReport
@@ -22,6 +23,7 @@ import kotlin.math.min
 
 @CheckPriceScope
 class CheckPriceTask @Inject constructor(
+        private val generalRepo: IGeneralRepo,
         private val taskDescription: CheckPriceTaskDescription,
         private val actualPricesRepo: IActualPricesRepo,
         private val readyResultsRepo: ICheckPriceResultsRepo,
@@ -113,8 +115,8 @@ class CheckPriceTask @Inject constructor(
         return ""
     }
 
-    override fun getTaskType(): ITaskType {
-        return TaskTypes.CheckPrice.taskType
+    override fun getTaskType(): ITaskTypeInfo {
+        return generalRepo.getTasksTypeInfo(AppTaskTypes.CheckPrice.taskType)!!
     }
 
     override fun getDescription(): ITaskDescription {

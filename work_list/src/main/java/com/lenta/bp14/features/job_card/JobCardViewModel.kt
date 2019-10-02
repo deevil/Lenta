@@ -11,8 +11,8 @@ import com.lenta.bp14.models.check_list.CheckListTaskManager
 import com.lenta.bp14.models.check_price.CheckPriceTaskDescription
 import com.lenta.bp14.models.check_price.CheckPriceTaskManager
 import com.lenta.bp14.models.general.IGeneralRepo
-import com.lenta.bp14.models.general.ITaskType
-import com.lenta.bp14.models.general.TaskTypes
+import com.lenta.bp14.models.general.ITaskTypeInfo
+import com.lenta.bp14.models.general.AppTaskTypes
 import com.lenta.bp14.models.not_exposed_products.NotExposedProductsTaskDescription
 import com.lenta.bp14.models.not_exposed_products.NotExposedProductsTaskManager
 import com.lenta.bp14.models.work_list.WorkListTaskDescription
@@ -45,20 +45,19 @@ class JobCardViewModel : CoreViewModel() {
     lateinit var workListTaskManager: WorkListTaskManager
 
 
-
     private lateinit var taskNumber: String
 
-    private val taskTypes: MutableLiveData<List<ITaskType>> = MutableLiveData(listOf())
+    private val taskTypesInfo: MutableLiveData<List<ITaskTypeInfo>> = MutableLiveData(listOf())
     private val processedTask: MutableLiveData<ITask> = MutableLiveData()
 
-    val taskTypeNames: MutableLiveData<List<String>> = taskTypes.map { it?.map { type -> type.taskName } }
+    val taskTypeNames: MutableLiveData<List<String>> = taskTypesInfo.map { it?.map { type -> type.taskName } }
     val selectedTaskTypePosition: MutableLiveData<Int> = MutableLiveData(0)
-    private val selectedTaskType: MutableLiveData<ITaskType> = selectedTaskTypePosition.map { getSelectedTypeTask() }
+    private val selectedTaskTypeInfo: MutableLiveData<ITaskTypeInfo> = selectedTaskTypePosition.map { getSelectedTypeTask() }
     val enabledChangeTaskType: MutableLiveData<Boolean> = processedTask.map { it == null }
     val isStrictList = MutableLiveData(false)
 
     val taskName by lazy {
-        selectedTaskType.map { selectedTaskType ->
+        selectedTaskTypeInfo.map { selectedTaskType ->
             processedTask.value.let { task ->
                 task?.getDescription()?.taskName
                         ?: generalTaskManager.generateNewNameForTask(selectedTaskType)
@@ -66,11 +65,11 @@ class JobCardViewModel : CoreViewModel() {
         }
     }
 
-    val description = selectedTaskType.map { it?.annotation }
+    val description = selectedTaskTypeInfo.map { it?.annotation }
 
-    val comment = selectedTaskType.map { getComment(it) }
+    val comment = selectedTaskTypeInfo.map { getComment(it) }
 
-    val enabledNextButton = selectedTaskType.map { it != null && it != TaskTypes.Empty.taskType }
+    val enabledNextButton = selectedTaskTypeInfo.map { it != null && it.taskType != AppTaskTypes.Empty.taskType }
 
     val onClickTaskTypes = object : OnPositionClickListener {
         override fun onClickPosition(position: Int) {
@@ -80,7 +79,7 @@ class JobCardViewModel : CoreViewModel() {
 
     init {
         viewModelScope.launch {
-            taskTypes.value = generalRepo.getTasksTypes()
+            taskTypesInfo.value = generalRepo.getTasksTypes()
             isStrictList.value = isStrictList()
             updateProcessedTask()
         }
@@ -95,8 +94,8 @@ class JobCardViewModel : CoreViewModel() {
     }
 
     fun onClickNext() {
-        when (getSelectedTypeTask()) {
-            TaskTypes.CheckPrice.taskType -> {
+        when (getSelectedTypeTask()?.taskType) {
+            AppTaskTypes.CheckPrice.taskType -> {
                 newTask(
                         taskManager = checkPriceTaskManager,
                         taskDescription = CheckPriceTaskDescription(
@@ -109,7 +108,7 @@ class JobCardViewModel : CoreViewModel() {
                 )
                 screenNavigator.openGoodsListPcScreen()
             }
-            TaskTypes.CheckList.taskType -> {
+            AppTaskTypes.CheckList.taskType -> {
                 newTask(
                         taskManager = checkListTaskManager,
                         taskDescription = CheckListTaskDescription(
@@ -122,7 +121,7 @@ class JobCardViewModel : CoreViewModel() {
                 )
                 screenNavigator.openGoodsListClScreen()
             }
-            TaskTypes.WorkList.taskType -> {
+            AppTaskTypes.WorkList.taskType -> {
                 newTask(
                         taskManager = workListTaskManager,
                         taskDescription = WorkListTaskDescription(
@@ -135,7 +134,7 @@ class JobCardViewModel : CoreViewModel() {
                 )
                 screenNavigator.openGoodsListWlScreen()
             }
-            TaskTypes.NotExposedProducts.taskType -> {
+            AppTaskTypes.NotExposedProducts.taskType -> {
                 newTask(
                         taskManager = notExposedProductsTaskManager,
                         taskDescription = NotExposedProductsTaskDescription(
@@ -167,8 +166,8 @@ class JobCardViewModel : CoreViewModel() {
     }
 
 
-    private fun getComment(taskType: ITaskType?): String {
-        return ""
+    private fun getComment(taskTypeInfo: ITaskTypeInfo?): String {
+        return taskTypeInfo?.annotation ?: ""
     }
 
     private fun <S : ITask, D : ITaskDescription> newTask(taskManager: ITaskManager<S, D>, taskDescription: D) {
@@ -183,9 +182,9 @@ class JobCardViewModel : CoreViewModel() {
         updateProcessedTask()
     }
 
-    private fun getSelectedTypeTask(): ITaskType? {
+    private fun getSelectedTypeTask(): ITaskTypeInfo? {
         return selectedTaskTypePosition.value?.let {
-            taskTypes.value?.getOrNull(it)
+            taskTypesInfo.value?.getOrNull(it)
         }
     }
 
@@ -199,7 +198,7 @@ class JobCardViewModel : CoreViewModel() {
             this.processedTask.value = generalTaskManager.getProcessedTask()
 
             if (processedTask != null) {
-                taskTypes.value?.apply {
+                taskTypesInfo.value?.apply {
                     for (pos in 0..this.size) {
                         if (processedTask.getTaskType() == this[pos]) {
                             selectedTaskTypePosition.value = pos

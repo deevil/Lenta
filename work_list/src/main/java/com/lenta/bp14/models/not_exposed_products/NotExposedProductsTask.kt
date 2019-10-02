@@ -6,8 +6,9 @@ import com.lenta.bp14.models.ITask
 import com.lenta.bp14.models.ITaskDescription
 import com.lenta.bp14.models.filter.FilterFieldType
 import com.lenta.bp14.models.filter.IFilterable
-import com.lenta.bp14.models.general.ITaskType
-import com.lenta.bp14.models.general.TaskTypes
+import com.lenta.bp14.models.general.ITaskTypeInfo
+import com.lenta.bp14.models.general.AppTaskTypes
+import com.lenta.bp14.models.general.IGeneralRepo
 import com.lenta.bp14.models.not_exposed_products.repo.INotExposedProductInfo
 import com.lenta.bp14.models.not_exposed_products.repo.INotExposedProductsRepo
 import com.lenta.bp14.models.not_exposed_products.repo.NotExposedProductInfo
@@ -24,6 +25,7 @@ import javax.inject.Inject
 
 @NotExposedScope
 class NotExposedProductsTask @Inject constructor(
+        private val generalRepo: IGeneralRepo,
         private val taskDescription: NotExposedProductsTaskDescription,
         private val notExposedProductsRepo: INotExposedProductsRepo,
         private val filterableDelegate: IFilterable,
@@ -38,8 +40,8 @@ class NotExposedProductsTask @Inject constructor(
     }
 
 
-    override fun getTaskType(): ITaskType {
-        return TaskTypes.NotExposedProducts.taskType
+    override fun getTaskType(): ITaskTypeInfo {
+        return generalRepo.getTasksTypeInfo(AppTaskTypes.NotExposedProducts.taskType)!!
     }
 
     override fun getDescription(): ITaskDescription {
