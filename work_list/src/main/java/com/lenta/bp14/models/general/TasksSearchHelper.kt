@@ -26,9 +26,11 @@ class TasksSearchHelper @Inject constructor(
 
     override var isNewSearchData: Boolean = false
 
-    override val taskList: MutableLiveData<List<TaskInfo>> = MutableLiveData(listOf())
+    override var processedTaskInfo: TaskInfo? = null
 
-    override val filteredTaskList: MutableLiveData<List<TaskInfo>> = MutableLiveData(listOf())
+    override val taskList: MutableLiveData<List<TaskInfo>> = MutableLiveData(emptyList())
+
+    override val filteredTaskList: MutableLiveData<List<TaskInfo>> = MutableLiveData(emptyList())
 
     override suspend fun updateTaskList(): Either<Failure, Boolean> {
         return generalRepo.getTaskList(SimpleParams(
@@ -53,11 +55,21 @@ class TasksSearchHelper @Inject constructor(
         }
     }
 
+    override fun setProcessedTask(taskId: String) {
+        mutableListOf<TaskInfo>().apply {
+            addAll(taskList.value!!)
+            addAll(filteredTaskList.value!!)
 
+            this.firstOrNull { it.taskId == taskId }?.let {
+                processedTaskInfo = it
+            }
+        }
+    }
 }
 
 interface ITasksSearchHelper {
     var processedFilter: String?
+    var processedTaskInfo: TaskInfo?
     var searchFilter: String?
     var filterParams: SearchTaskFilter?
     var isNewSearchData: Boolean
@@ -67,6 +79,5 @@ interface ITasksSearchHelper {
 
     suspend fun updateTaskList(): Either<Failure, Boolean>
     suspend fun updateFilteredTaskList(): Either<Failure, Boolean>
-
-
+    fun setProcessedTask(taskId: String)
 }

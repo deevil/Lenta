@@ -121,11 +121,30 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
     }
 
     fun onClickProcessingTask(position: Int) {
-        navigator.openJobCardScreen(taskNumber = "100")
+        setProcessedTask(getProcessingTaskId(position))
     }
 
     fun onClickSearchTask(position: Int) {
-        navigator.openJobCardScreen(taskNumber = "100")
+        setProcessedTask(getFilteredTaskId(position))
+    }
+
+    private fun getProcessingTaskId(position: Int): String {
+        return tasksSearchHelper.taskList.value?.getOrNull(position)?.taskId ?: ""
+    }
+
+    private fun getFilteredTaskId(position: Int): String {
+        return tasksSearchHelper.filteredTaskList.value?.getOrNull(position)?.taskId ?: ""
+    }
+
+
+    private fun setProcessedTask(taskId: String) {
+        viewModelScope.launch {
+            navigator.showProgressLoadingData()
+            tasksSearchHelper.setProcessedTask(taskId)
+            navigator.openJobCardScreen()
+            navigator.hideProgress()
+        }
+
     }
 
     fun onResume() {

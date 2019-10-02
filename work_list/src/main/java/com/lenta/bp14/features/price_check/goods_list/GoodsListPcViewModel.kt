@@ -99,27 +99,6 @@ class GoodsListPcViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     init {
         viewModelScope.launch {
             requestFocusToNumberField.value = true
-
-            /*processedGoods.value = List(10) {
-                CheckPriceResultUi(
-                        matNr = "4546465",
-                        position = it + 1,
-                        name = "4546465 nameeeee",
-                        isPriceValid = true,
-                        isPrinted = false
-                )
-            }
-
-            searchGoods.value = List(10) {
-                CheckPriceResultUi(
-                        matNr = "4546465",
-                        position = it + 1,
-                        name = "4546465 nameeeee",
-                        isPriceValid = true,
-                        isPrinted = false
-                )
-            }*/
-
         }
     }
 

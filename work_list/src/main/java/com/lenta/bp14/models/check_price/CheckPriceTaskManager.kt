@@ -25,6 +25,6 @@ class CheckPriceTaskManager @Inject constructor() : BaseTaskManager<ICheckPriceT
     }
 
     override fun getComponentClass(): Class<out Any> {
-        return Any::class.java
+        return componentClazz
     }
 }

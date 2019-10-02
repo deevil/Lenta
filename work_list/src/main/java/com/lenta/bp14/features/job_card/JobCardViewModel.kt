@@ -10,17 +10,20 @@ import com.lenta.bp14.models.check_list.CheckListTaskDescription
 import com.lenta.bp14.models.check_list.CheckListTaskManager
 import com.lenta.bp14.models.check_price.CheckPriceTaskDescription
 import com.lenta.bp14.models.check_price.CheckPriceTaskManager
-import com.lenta.bp14.models.general.IGeneralRepo
-import com.lenta.bp14.models.general.ITaskTypeInfo
-import com.lenta.bp14.models.general.AppTaskTypes
+import com.lenta.bp14.models.general.*
 import com.lenta.bp14.models.not_exposed_products.NotExposedProductsTaskDescription
 import com.lenta.bp14.models.not_exposed_products.NotExposedProductsTaskManager
 import com.lenta.bp14.models.work_list.WorkListTaskDescription
 import com.lenta.bp14.models.work_list.WorkListTaskManager
 import com.lenta.bp14.platform.navigation.IScreenNavigator
+import com.lenta.bp14.requests.CheckPriceTaskInfoParams
+import com.lenta.bp14.requests.ICheckPriceTaskInfoNetRequest
 import com.lenta.shared.account.ISessionInfo
+import com.lenta.shared.functional.Either
+import com.lenta.shared.platform.device_info.DeviceInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.extentions.map
+import com.lenta.shared.utilities.extentions.toSapBooleanString
 import com.lenta.shared.view.OnPositionClickListener
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -43,26 +46,40 @@ class JobCardViewModel : CoreViewModel() {
     lateinit var notExposedProductsTaskManager: NotExposedProductsTaskManager
     @Inject
     lateinit var workListTaskManager: WorkListTaskManager
+    @Inject
+    lateinit var tasksSearchHelper: ITasksSearchHelper
+    @Inject
+    lateinit var deviceIndo: DeviceInfo
+    @Inject
+    lateinit var checkPriceTaskInfoNetRequest: ICheckPriceTaskInfoNetRequest
 
 
-    private lateinit var taskNumber: String
+    private val taskFromTaskList by lazy {
+        tasksSearchHelper.processedTaskInfo
+    }
 
-    private val taskTypesInfo: MutableLiveData<List<ITaskTypeInfo>> = MutableLiveData(listOf())
+    private val taskTypesInfo: MutableLiveData<List<ITaskTypeInfo>> = MutableLiveData(emptyList())
     private val processedTask: MutableLiveData<ITask> = MutableLiveData()
 
     val taskTypeNames: MutableLiveData<List<String>> = taskTypesInfo.map { it?.map { type -> type.taskName } }
     val selectedTaskTypePosition: MutableLiveData<Int> = MutableLiveData(0)
     private val selectedTaskTypeInfo: MutableLiveData<ITaskTypeInfo> = selectedTaskTypePosition.map { getSelectedTypeTask() }
-    val enabledChangeTaskType: MutableLiveData<Boolean> = processedTask.map { it == null }
+    val enabledChangeTaskType: MutableLiveData<Boolean> = processedTask.map { it == null && taskFromTaskList == null }
     val isStrictList = MutableLiveData(false)
 
     val taskName by lazy {
-        selectedTaskTypeInfo.map { selectedTaskType ->
-            processedTask.value.let { task ->
-                task?.getDescription()?.taskName
-                        ?: generalTaskManager.generateNewNameForTask(selectedTaskType)
+        if (taskFromTaskList != null) {
+            MutableLiveData(taskFromTaskList!!.taskName)
+
+        } else {
+            selectedTaskTypeInfo.map { selectedTaskType ->
+                processedTask.value.let { task ->
+                    task?.getDescription()?.taskName
+                            ?: generalTaskManager.generateNewNameForTask(selectedTaskType)
+                }
             }
         }
+
     }
 
     val description = selectedTaskTypeInfo.map { it?.annotation }
@@ -89,66 +106,93 @@ class JobCardViewModel : CoreViewModel() {
         return sessionInfo.market!!
     }
 
-    fun setTaskNumber(taskNumber: String) {
-        this.taskNumber = taskNumber
-    }
-
     fun onClickNext() {
-        when (getSelectedTypeTask()?.taskType) {
-            AppTaskTypes.CheckPrice.taskType -> {
-                newTask(
-                        taskManager = checkPriceTaskManager,
-                        taskDescription = CheckPriceTaskDescription(
-                                tkNumber = sessionInfo.market!!,
-                                taskNumber = taskNumber,
-                                taskName = taskName.value ?: "",
-                                comment = comment.value ?: "",
-                                description = description.value ?: ""
+        viewModelScope.launch {
+            when (getSelectedTypeTask()?.taskType) {
+                AppTaskTypes.CheckPrice.taskType -> {
+                    if (taskFromTaskList != null) {
+                        checkPriceTaskInfoNetRequest(
+                                CheckPriceTaskInfoParams(
+                                        taskNumber = taskFromTaskList!!.taskId,
+                                        ip = deviceIndo.getDeviceIp(),
+                                        withProductInfo = true.toSapBooleanString(),
+                                        mode = "1"
+                                )
                         )
-                )
-                screenNavigator.openGoodsListPcScreen()
+                    } else {
+                        Either.Right(null)
+                    }.let {
+                        it.either( { failure ->
+                            screenNavigator.openAlertScreen(failure)
+                        }) { checkPriceTaskInfoResult ->
+                            newTask(
+                                    taskManager = checkPriceTaskManager,
+                                    taskDescription = CheckPriceTaskDescription(
+                                            tkNumber = sessionInfo.market!!,
+                                            taskNumber = taskFromTaskList?.taskId
+                                                    ?: "",
+                                            taskName = taskName.value ?: "",
+                                            comment = comment.value ?: "",
+                                            description = description.value ?: "",
+                                            isStrictList = taskFromTaskList?.isStrict ?: false,
+                                            checkPriceTaskInfoResult = checkPriceTaskInfoResult
+                                    )
+                            )
+                            screenNavigator.openGoodsListPcScreen()
+                        }
+
+                    }
+
+                }
+                AppTaskTypes.CheckList.taskType -> {
+                    newTask(
+                            taskManager = checkListTaskManager,
+                            taskDescription = CheckListTaskDescription(
+                                    tkNumber = sessionInfo.market!!,
+                                    taskNumber = taskFromTaskList?.taskId
+                                            ?: "",
+                                    taskName = taskName.value ?: "",
+                                    comment = comment.value ?: "",
+                                    description = description.value ?: "",
+                                    isStrictList = taskFromTaskList?.isStrict ?: false
+                            )
+                    )
+                    screenNavigator.openGoodsListClScreen()
+                }
+                AppTaskTypes.WorkList.taskType -> {
+                    newTask(
+                            taskManager = workListTaskManager,
+                            taskDescription = WorkListTaskDescription(
+                                    tkNumber = sessionInfo.market!!,
+                                    taskNumber = taskFromTaskList?.taskId
+                                            ?: "",
+                                    taskName = taskName.value ?: "",
+                                    comment = comment.value ?: "",
+                                    description = description.value ?: "",
+                                    isStrictList = taskFromTaskList?.isStrict ?: false
+                            )
+                    )
+                    screenNavigator.openGoodsListWlScreen()
+                }
+                AppTaskTypes.NotExposedProducts.taskType -> {
+                    newTask(
+                            taskManager = notExposedProductsTaskManager,
+                            taskDescription = NotExposedProductsTaskDescription(
+                                    tkNumber = sessionInfo.market!!,
+                                    taskNumber = taskFromTaskList?.taskId
+                                            ?: "",
+                                    taskName = taskName.value ?: "",
+                                    comment = comment.value ?: "",
+                                    description = description.value ?: "",
+                                    isStrictList = taskFromTaskList?.isStrict ?: false
+                            )
+                    )
+                    screenNavigator.openGoodsListNeScreen()
+                }
+                else -> screenNavigator.openNotImplementedScreenAlert("")
             }
-            AppTaskTypes.CheckList.taskType -> {
-                newTask(
-                        taskManager = checkListTaskManager,
-                        taskDescription = CheckListTaskDescription(
-                                tkNumber = sessionInfo.market!!,
-                                taskNumber = taskNumber,
-                                taskName = taskName.value ?: "",
-                                comment = comment.value ?: "",
-                                description = description.value ?: ""
-                        )
-                )
-                screenNavigator.openGoodsListClScreen()
-            }
-            AppTaskTypes.WorkList.taskType -> {
-                newTask(
-                        taskManager = workListTaskManager,
-                        taskDescription = WorkListTaskDescription(
-                                tkNumber = sessionInfo.market!!,
-                                taskNumber = taskNumber,
-                                taskName = taskName.value ?: "",
-                                comment = comment.value ?: "",
-                                description = description.value ?: ""
-                        )
-                )
-                screenNavigator.openGoodsListWlScreen()
-            }
-            AppTaskTypes.NotExposedProducts.taskType -> {
-                newTask(
-                        taskManager = notExposedProductsTaskManager,
-                        taskDescription = NotExposedProductsTaskDescription(
-                                tkNumber = sessionInfo.market!!,
-                                taskNumber = taskNumber,
-                                taskName = taskName.value ?: "",
-                                comment = comment.value ?: "",
-                                description = description.value ?: ""
-                        )
-                )
-                screenNavigator.openGoodsListNeScreen()
-            }
-            else -> screenNavigator.openNotImplementedScreenAlert("")
         }
+
     }
 
     fun onBackPressed(): Boolean {
@@ -171,6 +215,7 @@ class JobCardViewModel : CoreViewModel() {
     }
 
     private fun <S : ITask, D : ITaskDescription> newTask(taskManager: ITaskManager<S, D>, taskDescription: D) {
+        tasksSearchHelper.processedTaskInfo = null
         if (taskManager.getTask() == null) {
             taskManager.clearTask()
             taskManager.newTask(
@@ -189,18 +234,18 @@ class JobCardViewModel : CoreViewModel() {
     }
 
     private fun isStrictList(): Boolean {
-        //TODO уточнить для ветки работы с заданиями
-        return taskNumber.isNotBlank()
+        return taskFromTaskList?.isStrict ?: processedTask.value?.getDescription()?.isStrictList == true
     }
 
     private fun updateProcessedTask() {
         generalTaskManager.getProcessedTask().let { processedTask ->
             this.processedTask.value = generalTaskManager.getProcessedTask()
-
-            if (processedTask != null) {
+            val taskType = processedTask?.getTaskType()
+                    ?: taskFromTaskList?.taskTypeInfo
+            taskType?.let {
                 taskTypesInfo.value?.apply {
                     for (pos in 0..this.size) {
-                        if (processedTask.getTaskType() == this[pos]) {
+                        if (it == this[pos]) {
                             selectedTaskTypePosition.value = pos
                             return
                         }
