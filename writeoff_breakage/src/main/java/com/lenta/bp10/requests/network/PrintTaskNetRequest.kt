@@ -20,7 +20,7 @@ class PrintTaskNetRequest
 @Inject constructor(private val hyperHive: HyperHive,
                     private val gson: Gson,
                     private val sessionInfo: ISessionInfo) :
-        UseCase<Boolean, PrintTask>() {
+        UseCase<Boolean, PrintTask> {
 
 
     override suspend fun run(params: PrintTask): Either<Failure, Boolean> {

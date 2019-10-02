@@ -13,7 +13,7 @@ import com.lenta.shared.requests.SapResponse
 import javax.inject.Inject
 
 class InvoiceContentSaveNetRequest
-@Inject constructor(private val fmpRequestsHelper: FmpRequestsHelper) : UseCase<InvoiceContentSaveRequestResult, InvoiceContentSaveRequestParameters>() {
+@Inject constructor(private val fmpRequestsHelper: FmpRequestsHelper) : UseCase<InvoiceContentSaveRequestResult, InvoiceContentSaveRequestParameters> {
     override suspend fun run(params: InvoiceContentSaveRequestParameters): Either<Failure, InvoiceContentSaveRequestResult> {
         return fmpRequestsHelper.restRequest("ZMP_UTZ_GRZ_18_V001", params, InvoiceContentSaveRequestStatus::class.java)
     }

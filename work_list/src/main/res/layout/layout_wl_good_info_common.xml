@@ -84,13 +84,31 @@
                     style="@style/LinearCellStyle"
                     android:layout_weight="2">
 
-                    <com.lenta.shared.view.ClickableSpinner
-                        android:id="@+id/spin_select_comment"
-                        style="@style/CellSpinnerStyle"
-                        app:items="@{vm.commentsList}"
-                        app:onPositionClickListener="@{vm.onSelectComment}"
-                        app:position="@{vm.commentsPosition}"
-                        tools:entries="@array/selected_comment" />
+                    <FrameLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+
+                        <com.lenta.shared.view.ClickableSpinner
+                            android:id="@+id/spin_select_comment"
+                            style="@style/CellSpinnerStyle"
+                            android:layout_height="match_parent"
+                            app:items="@{vm.commentsList}"
+                            app:onPositionClickListener="@{vm.onSelectComment}"
+                            app:position="@{vm.commentsPosition}"
+                            tools:entries="@array/selected_comment" />
+
+                        <EditText
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_marginStart="10dp"
+                            android:layout_marginTop="10dp"
+                            android:layout_marginEnd="48dp"
+                            android:layout_marginBottom="10dp"
+                            android:backgroundTint="@color/color_background"
+                            android:text="@={vm.comment}"
+                            tools:text="Не выбран" />
+
+                    </FrameLayout>
 
                 </LinearLayout>
 
@@ -114,7 +132,7 @@
                         style="@style/CellSpinnerStyle"
                         app:items="@{vm.shelfLifeTypeList}"
                         app:onPositionClickListener="@{vm.onSelectShelfLifeType}"
-                        app:position="@{vm.shelfLifePosition}"
+                        app:position="@{vm.shelfLifeTypePosition}"
                         tools:entries="@array/shelf_life_type" />
 
                 </LinearLayout>
@@ -240,13 +258,13 @@
 
                     <TextView
                         style="@style/CellTextStyle"
-                        android:text="@{@string/shelf_life_days(vm.good.common.shelfLifeDays)}"
+                        android:text="@{@string/shelf_life_days(vm.good.common.shelfLife)}"
                         tools:text="10 сут." />
 
                     <TextView
                         style="@style/CellTextStyle"
                         android:text="@{@string/shelf_life_days(vm.daysLeft)}"
-                        android:visibility="@{vm.shelfLifeDaysFieldVisibility}"
+                        app:invisible="@{!vm.shelfLifeDaysFieldVisibility}"
                         tools:text="5 сут." />
 
                 </LinearLayout>

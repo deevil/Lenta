@@ -12,7 +12,7 @@ import com.lenta.shared.requests.SapResponse
 import javax.inject.Inject
 
 class RegisterArrivalNetRequest
-@Inject constructor(private val fmpRequestsHelper: FmpRequestsHelper) : UseCase<RegisterArrivalRequestResult, RegisterArrivalRequestParameters>() {
+@Inject constructor(private val fmpRequestsHelper: FmpRequestsHelper) : UseCase<RegisterArrivalRequestResult, RegisterArrivalRequestParameters> {
     override suspend fun run(params: RegisterArrivalRequestParameters): Either<Failure, RegisterArrivalRequestResult> {
         return fmpRequestsHelper.restRequest("ZMP_UTZ_GRZ_06_V001", params, RegisterArrivalRequestStatus::class.java)
     }

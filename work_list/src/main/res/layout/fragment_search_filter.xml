@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
-        tools:context=".features.work_list.search_filter.SearchFilterWlFragment">
+        tools:context=".features.search_filter.SearchFilterFragment">
 
     <data>
 
         <variable
             name="vm"
-            type="com.lenta.bp14.features.work_list.search_filter.SearchFilterWlViewModel"/>
+            type="com.lenta.bp14.features.search_filter.SearchFilterViewModel"/>
 
     </data>
 
@@ -40,6 +40,8 @@
                 <EditText
                     style="@style/CellEditTextStyle"
                     android:text="@={vm.section}"
+                    android:digits="0123456789"
+                    android:inputType="number"
                     tools:text="02"/>
 
             </LinearLayout>
@@ -72,6 +74,8 @@
 
                 <EditText
                     style="@style/CellEditTextStyle"
+                    android:digits="0123456789"
+                    android:inputType="number"
                     android:text="@={vm.groupOfGoods}"/>
 
             </LinearLayout>
@@ -83,6 +87,7 @@
 
         <!-- Место хранения -->
         <LinearLayout
+            android:visibility="@{vm.placeStorageVisibility}"
             style="@style/LinearRowStyle">
 
             <LinearLayout
@@ -111,10 +116,12 @@
         </LinearLayout>
 
         <View
+            android:visibility="@{vm.placeStorageVisibility}"
             style="@style/HorizontalDivider"/>
 
         <!-- Комментарий -->
         <LinearLayout
+            android:visibility="@{vm.commentVisibility}"
             style="@style/LinearRowStyle">
 
             <LinearLayout
@@ -143,6 +150,7 @@
         </LinearLayout>
 
         <View
+            android:visibility="@{vm.commentVisibility}"
             style="@style/HorizontalDivider"/>
 
     </LinearLayout>

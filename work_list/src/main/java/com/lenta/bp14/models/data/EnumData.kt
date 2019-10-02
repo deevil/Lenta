@@ -1,5 +1,9 @@
 package com.lenta.bp14.models.data
 
+import com.lenta.bp14.R
+import com.lenta.bp14.requests.ProductInfo
+import com.lenta.shared.utilities.extentions.isSapTrue
+
 enum class GoodsListTab(val position: Int) {
     PROCESSING(0),
     PROCESSED(1),
@@ -17,12 +21,28 @@ enum class GoodDetailsTab(val position: Int) {
 }
 
 enum class ShelfLifeType(val position: Int) {
-    BEFORE(0),
-    PRODUCED(1)
+    PRODUCTION(0),
+    EXPIRATION(1)
 }
 
 enum class GoodType {
     COMMON,
     ALCOHOL,
     MARKED
+}
+
+fun ProductInfo.getGoodType(): GoodType {
+    return when {
+        this.isAlco.isSapTrue() -> GoodType.ALCOHOL
+        this.iSMarked.isSapTrue() -> GoodType.MARKED
+        else -> GoodType.COMMON
+    }
+}
+
+fun GoodType.getDescriptionResId(): Int {
+    return when (this) {
+        GoodType.COMMON -> R.string.common_product
+        GoodType.ALCOHOL -> R.string.alcohol
+        GoodType.MARKED -> R.string.marked_product
+    }
 }

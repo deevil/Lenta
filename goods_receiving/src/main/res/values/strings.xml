@@ -23,6 +23,7 @@
     <string name="numberEO">Номер ЕО</string>
     <string name="counted">Посчитанные</string>
     <string name="without_barcode">Без штрихкода</string>
+    <string name="enter_item_number_goods">Введите номер товара</string>
     <string name="unlock_confirmation">Задание заблокировано этим же логином на ТСД. Разблокировать и начать обработку?</string>
     <string name="view_confirmation">Задание заблокировано под другим логином на ТСД. Перейти к просмотру этого задания?</string>
     <string name="unsaved_data_confirmation">Несохранённые данные будут утеряны, всё равно продолжить?</string>
@@ -57,6 +58,11 @@
     <string name="checked">Сверенные</string>
     <string name="information">Информация</string>
     <string name="delivery_documents">Документы по поставке</string>
+    <string name="accept">Принять</string>
+    <string name="refusal">Отказать</string>
+    <string name="wrong_product_type">Неверный тип продукта</string>
+    <string name="categories">Категории</string>
+    <string name="details_quantities_entered">Детали по введенным количествам</string>
     <string name="invoice_revise">Сверка накладной</string>
     <string name="document">Документ</string>
     <string name="revise">Сверка</string>
@@ -97,5 +103,9 @@
     <string name="pour_date">Дата розлива</string>
     <string name="number_TTN">Номер ТТН</string>
     <string name="shipment_date">Дата отгрузки</string>
-
+    <string name="processed">Обработанные</string>
+    <string name="not_processed">К обработке</string>
+    <string name="discrepancies_found">Обнаружены расхождения</string>
+    <string name="select_type_code_description">Введено 12 знаков. Какой код вы ввели?</string>
+    <string name="goods_not_in_order">Товара нет в заказе</string>
 </resources>

@@ -22,7 +22,7 @@ fun setupSpinner(spinner: Spinner, items: List<String>?, position: Int?, onPosit
     if (spinner.onItemSelectedListener == null && onPositionClickListener != null) {
         spinner.postDelayed({
             spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-                override fun onItemSelected(adapterView: AdapterView<*>, view: View, position: Int, l: Long) {
+                override fun onItemSelected(adapterView: AdapterView<*>, view: View?, position: Int, l: Long) {
                     onPositionClickListener.onClickPosition(position)
                 }
 

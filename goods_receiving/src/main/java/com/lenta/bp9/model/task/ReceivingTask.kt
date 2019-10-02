@@ -23,6 +23,13 @@ class ReceivingTask(val taskHeader: TaskInfo,
         return taskRepository.getReviseDocuments().getProductDocuments().filter { it.isCheck }
     }
 
+    fun getProcessedProducts(): List<TaskProductInfo> {
+        return taskRepository.getProducts().getProducts()
+    }
+
+    fun getProcessedBatches(): List<TaskBatchInfo> {
+        return taskRepository.getBatches().getBatches()
+    }
 }
 
 

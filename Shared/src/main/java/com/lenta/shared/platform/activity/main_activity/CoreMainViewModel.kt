@@ -48,7 +48,7 @@ abstract class CoreMainViewModel : CoreViewModel() {
 
     }
 
-    fun onResume() {
+    open fun onResume() {
         priorityAppManager.setLowPriority()
         lockManager.getActiveAppPackageName()?.let { packageName ->
             coreNavigator.openAlertAnotherAppInProcess(packageName)

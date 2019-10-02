@@ -242,6 +242,10 @@ data class ButtonDecorationInfo(
             ButtonDecorationInfo(R.drawable.is_refusal_24dp, R.string.refusal)
         }
 
+        val batches: ButtonDecorationInfo by lazy {
+            ButtonDecorationInfo(R.drawable.is_batches_24dp, R.string.batchs_products)
+        }
+
         val fix: ButtonDecorationInfo by lazy {
             ButtonDecorationInfo(R.drawable.ic_edit, R.string.fix)
         }
@@ -254,10 +258,6 @@ data class ButtonDecorationInfo(
             ButtonDecorationInfo(R.drawable.ic_temp_rejection, R.string.temporary)
         }
 
-        val batchsProducts: ButtonDecorationInfo by lazy {
-            ButtonDecorationInfo(R.drawable.is_batchs_products_24dp, R.string.batchs_products)
-        }
-
         val sort: ButtonDecorationInfo by lazy {
             ButtonDecorationInfo(R.drawable.ic_sort, R.string.sort)
         }
@@ -265,6 +265,7 @@ data class ButtonDecorationInfo(
         val process: ButtonDecorationInfo by lazy {
             ButtonDecorationInfo(R.drawable.ic_arrow_forward_white_24dp, R.string.process)
         }
+
     }
 }
 

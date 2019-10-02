@@ -10,7 +10,7 @@ import com.lenta.shared.requests.FmpRequestsHelper
 import javax.inject.Inject
 
 class SendWriteOffReportRequest
-@Inject constructor(private val fmpRequestsHelper: FmpRequestsHelper) : UseCase<WriteOffReportResponse, WriteOffReport>() {
+@Inject constructor(private val fmpRequestsHelper: FmpRequestsHelper) : UseCase<WriteOffReportResponse, WriteOffReport> {
     override suspend fun run(params: WriteOffReport): Either<Failure, WriteOffReportResponse> {
         return fmpRequestsHelper.restRequest(
                 resourceName = "ZMP_UTZ_WOB_04_V001",

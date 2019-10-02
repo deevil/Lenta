@@ -10,7 +10,7 @@ import com.lenta.shared.requests.FmpRequestsHelper
 import javax.inject.Inject
 
 class StockNetRequest
-@Inject constructor(private val fmpRequestsHelper: FmpRequestsHelper, private val sessionInfo: ISessionInfo) : UseCase<StockLockRequestResult, Nothing?>() {
+@Inject constructor(private val fmpRequestsHelper: FmpRequestsHelper, private val sessionInfo: ISessionInfo) : UseCase<StockLockRequestResult, Nothing?> {
     override suspend fun run(params: Nothing?): Either<Failure, StockLockRequestResult> {
         return fmpRequestsHelper.restRequest(
                 resourceName = "ZMP_UTZ_02_V001",

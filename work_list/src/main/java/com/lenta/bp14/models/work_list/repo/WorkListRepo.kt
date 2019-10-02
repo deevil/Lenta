@@ -7,6 +7,7 @@ import com.lenta.shared.models.core.Uom
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.util.*
+import kotlin.random.Random
 
 class WorkListRepo {
 
@@ -17,12 +18,10 @@ class WorkListRepo {
                     material = "000000000000222222",
                     matcode = "333333333333",
                     name = "Товар",
-                    unit = Uom.ST,
+                    units = Uom.ST,
                     goodGroup = "123456",
                     purchaseGroup = "1111",
-                    serverComments = MutableList(3) {
-                        "Комментарий ${it + 1}"
-                    },
+                    shelfLife = (3..14).random(),
                     options = GoodOptions(
                             matrixType = MatrixType.Active,
                             section = "5",
@@ -62,10 +61,46 @@ class WorkListRepo {
                         Stock(
                                 number = it + 1,
                                 storage = "0" + (0..9).random() + (0..9).random() + (0..9).random(),
-                                quantity = (1..99).random()
+                                quantity = (1..99).random().toDouble()
                         )
                     }
             )
+        }
+    }
+
+    suspend fun loadSalesStatistics(good: Good): SalesStatistics? {
+        return withContext(Dispatchers.IO) {
+            return@withContext SalesStatistics(
+                    lastSaleDate = Date(),
+                    daySales = (10..50).random(),
+                    weekSales = (80..150).random(),
+                    units = Uom.ST
+            )
+        }
+    }
+
+    suspend fun loadDeliveries(good: Good): List<Delivery>? {
+        return withContext(Dispatchers.IO) {
+            return@withContext List((3..5).random()) {
+                Delivery(
+                        status = if (Random.nextBoolean()) DeliveryStatus.ORDERED else DeliveryStatus.ON_WAY,
+                        info = if (Random.nextBoolean()) "ПП" else "РЦ",
+                        quantity = (1..99).random(),
+                        units = Uom.KAR,
+                        date = Date()
+                )
+            }
+        }
+    }
+
+    suspend fun loadComments(good: Good): List<String>? {
+        return withContext(Dispatchers.IO) {
+            val comments = MutableList((1..3).random()) {
+                "Комментарий ${it + 1}"
+            }
+            comments.add(0, "Не выбран")
+
+            return@withContext comments
         }
     }
 

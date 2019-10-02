@@ -76,7 +76,10 @@ class GoodInfoPcViewModel : CoreViewModel() {
                 !eanCode.isNullOrBlank() -> task.getActualPriceByEan(eanCode)
                 !matNr.isNullOrBlank() -> task.getActualPriceByMatNr(matNr)
                 !qrCode.isNullOrBlank() -> task.checkPriceByQrCode(qrCode)
-                else -> throw IllegalArgumentException()
+                else -> {
+                    navigator.showGoodNotFound()
+                    return@launch
+                }
             }.either(
                     fnL = {
                         navigator.openAlertScreen(it)

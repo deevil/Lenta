@@ -8,7 +8,7 @@ import kotlinx.coroutines.delay
 import javax.inject.Inject
 
 class DelayGoBack
-@Inject constructor(val coreNavigator: ICoreNavigator) : UseCase<Boolean, GoBackParams>() {
+@Inject constructor(val coreNavigator: ICoreNavigator) : UseCase<Boolean, GoBackParams> {
     override suspend fun run(params: GoBackParams): Either<Failure, Boolean> {
         delay(params.timeInMillis)
         coreNavigator.goBackWithResultCode(params.codeForBackResult)

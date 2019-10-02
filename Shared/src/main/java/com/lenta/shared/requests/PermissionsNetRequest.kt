@@ -8,7 +8,7 @@ import com.lenta.shared.interactor.UseCase
 import javax.inject.Inject
 
 class PermissionsRequest
-@Inject constructor(private val fmpRequestsHelper: FmpRequestsHelper) : UseCase<PermissionsResult, PermissionsParams>() {
+@Inject constructor(private val fmpRequestsHelper: FmpRequestsHelper) : UseCase<PermissionsResult, PermissionsParams> {
     override suspend fun run(params: PermissionsParams): Either<Failure, PermissionsResult> {
         return fmpRequestsHelper.restRequest("ZMP_UTZ_99_V001", params, PermissionInventoryStatus::class.java)
     }

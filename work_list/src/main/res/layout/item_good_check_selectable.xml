@@ -80,7 +80,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="10dp"
                     android:src="@drawable/ic_close_white_24dp"
-                    app:isValid="@{vm.isPriceValid()}" />
+                    app:isValidPrice="@{vm.isPriceValid()}" />
 
                 <ImageView
                     android:layout_width="wrap_content"

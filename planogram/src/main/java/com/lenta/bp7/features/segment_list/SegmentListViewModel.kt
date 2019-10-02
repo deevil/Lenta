@@ -72,7 +72,18 @@ class SegmentListViewModel : SendDataViewModel(), OnOkInSoftKeyboardListener {
                         // Выбор - Сегмент удален. Открыть просмотр или создать новый? - Назад / Просмотр / Создать
                         navigator.showSegmentIsDeleted(
                                 reviewCallback = { openExistSegment(segment) },
-                                createCallback = { createSegment(number) })
+                                createCallback = {
+                                    checkData.currentSegmentIndex = segments.value!!.indexOf(segment)
+                                    checkData.setCurrentSegmentStatus(SegmentStatus.UNFINISHED)
+                                    checkData.getCurrentSegment()?.clearShelfList()
+
+                                    // Сообщение - Начата обработка сегмента
+                                    navigator.showSegmentStarted(
+                                            segmentNumber = number,
+                                            isFacings = checkData.countFacings) {
+                                        navigator.openShelfListScreen()
+                                    }
+                                })
                     } else {
                         openExistSegment(segment)
                     }

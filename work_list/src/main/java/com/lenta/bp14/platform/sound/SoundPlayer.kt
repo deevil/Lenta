@@ -4,34 +4,69 @@ import android.content.Context
 import android.media.AudioManager
 import android.media.MediaPlayer
 import com.lenta.bp14.R
+import javax.inject.Inject
 
 interface ISoundPlayer {
+    fun start()
+    fun stop()
     fun playBeep()
+    fun playError()
 }
 
-class SoundPlayer(private val context: Context) : ISoundPlayer {
+class SoundPlayer @Inject constructor(private val context: Context) : ISoundPlayer {
+
+    val succesId = R.raw.beep
+    val wrongId = R.raw.wrong
+
+    val rawsIds = listOf(succesId, wrongId)
+
+    var mediaPlayers: MutableMap<Int, MediaPlayer> = mutableMapOf()
+
+    override fun start() {
+        for (id in rawsIds) {
+            mediaPlayers[id].let {
+                if (it == null) {
+                    mediaPlayers[id] = MediaPlayer.create(context, id)
+                }
+            }
+        }
+    }
+
+    override fun stop() {
+        mediaPlayers.forEach {
+            it.value.release()
+        }
+        mediaPlayers.clear()
+    }
 
     override fun playBeep() {
-        val am = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
+        play(succesId)
+    }
 
-        val userVolume = am.getStreamVolume(AudioManager.STREAM_MUSIC)
+    override fun playError() {
+        play(wrongId)
+    }
 
-        am.setStreamVolume(
-                AudioManager.STREAM_MUSIC,
-                am.getStreamMaxVolume(AudioManager.STREAM_MUSIC),
-                0)
+    private fun play(rawId: Int) {
+        mediaPlayers[rawId]?.let {
+            val am = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
 
-        val mp = MediaPlayer.create(context, R.raw.beep)
+            val userVolume = am.getStreamVolume(AudioManager.STREAM_MUSIC)
 
-        mp.setOnCompletionListener { mediaPlayer ->
-            mediaPlayer.release()
             am.setStreamVolume(
                     AudioManager.STREAM_MUSIC,
-                    userVolume,
+                    am.getStreamMaxVolume(AudioManager.STREAM_MUSIC),
                     0)
-        }
 
-        mp.start()
+            it.setOnCompletionListener {
+                am.setStreamVolume(
+                        AudioManager.STREAM_MUSIC,
+                        userVolume,
+                        0)
+            }
+
+            it.start()
+        }
     }
 
 }
