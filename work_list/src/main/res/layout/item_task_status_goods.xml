@@ -7,7 +7,7 @@
 
         <variable
             name="task"
-            type="com.lenta.bp14.models.data.pojo.Task" />
+            type="com.lenta.bp14.features.task_list.TaskUi" />
 
     </data>
 
@@ -31,7 +31,7 @@
                     android:id="@+id/tv_item_number"
                     style="@style/CellTextStyle"
                     android:layout_width="wrap_content"
-                    android:text="@{String.valueOf(task.id)}"
+                    android:text="@{task.id}"
                     tools:text="1" />
 
             </LinearLayout>

@@ -1,37 +1,25 @@
 package com.lenta.bp14.models.check_price
 
-import com.google.gson.Gson
+import com.lenta.bp14.di.CheckPriceComponent
+import com.lenta.bp14.di.CheckPriceModule
+import com.lenta.bp14.di.DaggerCheckPriceComponent
 import com.lenta.bp14.models.BaseTaskManager
-import com.lenta.bp14.models.check_price.repo.ActualPriceRepo
-import com.lenta.bp14.models.check_price.repo.CheckPriceResultsRepo
-import com.lenta.bp14.platform.IVibrateHelper
-import com.lenta.bp14.platform.sound.ISoundPlayer
-import com.lenta.bp14.requests.check_price.ICheckPriceNetRequest
+import com.lenta.bp14.platform.extentions.getAppComponent
 import com.lenta.shared.di.AppScope
-import com.lenta.shared.platform.time.ITimeMonitor
+import com.lenta.shared.di.CoreInjectHelper
 import javax.inject.Inject
 
 @AppScope
-class CheckPriceTaskManager @Inject constructor(
-        private val timeMonitor: ITimeMonitor,
-        private val gson: Gson,
-        private val soundPlayer: ISoundPlayer,
-        private val vibrateHelper: IVibrateHelper,
-        private val priceInfoParser: IPriceInfoParser,
-        private val checkPriceRequest: ICheckPriceNetRequest
-) : BaseTaskManager<ICheckPriceTask, CheckPriceTaskDescription>() {
-
+class CheckPriceTaskManager @Inject constructor() : BaseTaskManager<ICheckPriceTask, CheckPriceTaskDescription>() {
+    private val componentClazz = CheckPriceComponent::class.java
 
     override fun newTask(taskDescription: CheckPriceTaskDescription): ICheckPriceTask? {
-        _task = CheckPriceTask(
-                taskDescription = taskDescription,
-                actualPricesRepo = ActualPriceRepo(checkPriceRequest),
-                readyResultsRepo = CheckPriceResultsRepo(),
-                priceInfoParser = priceInfoParser,
-                gson = gson,
-                soundPlayer = soundPlayer,
-                vibrateHelper = vibrateHelper
-        )
+        _task = CoreInjectHelper.createComponent(componentClazz) {
+            DaggerCheckPriceComponent.builder()
+                    .appComponent(getAppComponent(null))
+                    .checkPriceModule(CheckPriceModule(taskDescription))
+                    .build()
+        }.getTask()
 
         return _task
     }
@@ -39,5 +27,4 @@ class CheckPriceTaskManager @Inject constructor(
     override fun getComponentClass(): Class<out Any> {
         return Any::class.java
     }
-
 }

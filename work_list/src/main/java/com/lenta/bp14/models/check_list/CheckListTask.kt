@@ -5,14 +5,16 @@ import com.google.gson.Gson
 import com.lenta.bp14.models.ITask
 import com.lenta.bp14.models.ITaskDescription
 import com.lenta.bp14.models.check_list.repo.ICheckListRepo
-import com.lenta.bp14.models.general.ITaskType
-import com.lenta.bp14.models.general.TaskTypes
+import com.lenta.bp14.models.general.ITaskTypeInfo
+import com.lenta.bp14.models.general.AppTaskTypes
+import com.lenta.bp14.models.general.IGeneralRepo
 import com.lenta.shared.models.core.Uom
 import com.lenta.shared.platform.time.ITimeMonitor
 import com.lenta.shared.utilities.extentions.dropZeros
 import com.lenta.shared.utilities.extentions.sumWith
 
 class CheckListTask(
+        private val generalRepo: IGeneralRepo,
         private val checkListRepo: ICheckListRepo,
         private val taskDescription: CheckListTaskDescription,
         private val timeMonitor: ITimeMonitor,
@@ -66,8 +68,8 @@ class CheckListTask(
 
     }
 
-    override fun getTaskType(): ITaskType {
-        return TaskTypes.CheckList.taskType
+    override fun getTaskType(): ITaskTypeInfo {
+        return generalRepo.getTasksTypeInfo(AppTaskTypes.CheckList.taskType)!!
     }
 
     override fun getDescription(): ITaskDescription {

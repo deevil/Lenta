@@ -2,8 +2,8 @@ package com.lenta.bp14.models
 
 import com.lenta.bp14.models.check_list.CheckListTaskManager
 import com.lenta.bp14.models.check_price.CheckPriceTaskManager
-import com.lenta.bp14.models.general.ITaskType
-import com.lenta.bp14.models.general.TaskTypes
+import com.lenta.bp14.models.general.ITaskTypeInfo
+import com.lenta.bp14.models.general.AppTaskTypes
 import com.lenta.bp14.models.not_exposed_products.NotExposedProductsTaskManager
 import com.lenta.bp14.models.work_list.WorkListTaskManager
 import com.lenta.bp14.requests.pojo.SentReportResult
@@ -24,7 +24,7 @@ class GeneralTaskManager @Inject constructor(
 
     private val allManagers = listOf<ITaskManager<*, *>>(checkPriceTaskManager, checkListTaskManager, workListTaskManager, notExposedProductsTaskManager)
 
-    override fun getProcessedTaskType(): ITaskType? {
+    override fun getProcessedTaskType(): ITaskTypeInfo? {
         return getCurrentTaskManager()?.getCurrentTaskType()
     }
 
@@ -58,9 +58,9 @@ class GeneralTaskManager @Inject constructor(
         return null
     }
 
-    override fun generateNewNameForTask(taskType: ITaskType?): String {
-        return if (taskType == TaskTypes.Empty.taskType || taskType == null) "" else {
-            "${taskType.taskName} от ${getCurrentTime()}"
+    override fun generateNewNameForTask(taskTypeInfo: ITaskTypeInfo?): String {
+        return if (taskTypeInfo == null || taskTypeInfo.taskType == AppTaskTypes.Empty.taskType) "" else {
+            "${taskTypeInfo.taskName} от ${getCurrentTime()}"
         }
     }
 
@@ -77,8 +77,8 @@ class GeneralTaskManager @Inject constructor(
 
 interface IGeneralTaskManager {
     fun getProcessedTask(): ITask?
-    fun getProcessedTaskType(): ITaskType?
+    fun getProcessedTaskType(): ITaskTypeInfo?
     fun clearCurrentTask(sentReportResult: SentReportResult? = null): Boolean
-    fun generateNewNameForTask(taskType: ITaskType?): String
+    fun generateNewNameForTask(taskTypeInfo: ITaskTypeInfo?): String
     fun getLatestSentReportResult(): SentReportResult?
 }

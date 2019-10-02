@@ -2,6 +2,7 @@ package com.lenta.bp14.requests.tasks
 
 import com.google.gson.annotations.SerializedName
 import com.lenta.bp14.requests.pojo.RetCode
+import com.lenta.shared.di.AppScope
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.fmp.ObjectRawStatus
 import com.lenta.shared.functional.Either
@@ -9,6 +10,7 @@ import com.lenta.shared.interactor.UseCase
 import com.lenta.shared.requests.FmpRequestsHelper
 import javax.inject.Inject
 
+@AppScope
 class TaskListNetRequest
 @Inject constructor(private val fmpRequestsHelper: FmpRequestsHelper) : UseCase<TaskListInfo, TasksListParams> {
 
@@ -39,14 +41,18 @@ data class TaskInfo(
         val text2: String,
         @SerializedName("TEXT3")
         val text3: String,
-        //Тип блокировки: 1 - своя, 2 - не своя
+        /**
+         * Тип блокировки: 1 - своя, 2 - не своя
+         */
         @SerializedName("BLOCK_TYPE")
         val blockType: String,
         @SerializedName("LOCK_USER")
         val lockUser: String,
         @SerializedName("NOT_FINISH")
         val notFinished: String,
-        // Количество позиций в задании
+        /**
+         * Количество позиций в задании
+         */
         @SerializedName("QNT_POS")
         val quantityPositions: Int,
         @SerializedName("DESCR")

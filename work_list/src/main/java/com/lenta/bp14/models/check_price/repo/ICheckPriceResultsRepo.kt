@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.lenta.bp14.models.check_price.ICheckPriceResult
 import com.lenta.shared.utilities.Logg
+import javax.inject.Inject
 
 interface ICheckPriceResultsRepo {
 
@@ -17,7 +18,7 @@ interface ICheckPriceResultsRepo {
 
 }
 
-class CheckPriceResultsRepo : ICheckPriceResultsRepo {
+class CheckPriceResultsRepo @Inject constructor() : ICheckPriceResultsRepo {
 
     private val checkPriceResults = mutableListOf<ICheckPriceResult>()
 

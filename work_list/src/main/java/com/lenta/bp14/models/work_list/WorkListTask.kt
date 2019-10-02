@@ -6,8 +6,9 @@ import com.google.gson.Gson
 import com.lenta.bp14.models.ITask
 import com.lenta.bp14.models.ITaskDescription
 import com.lenta.bp14.models.data.GoodType
-import com.lenta.bp14.models.general.ITaskType
-import com.lenta.bp14.models.general.TaskTypes
+import com.lenta.bp14.models.general.ITaskTypeInfo
+import com.lenta.bp14.models.general.AppTaskTypes
+import com.lenta.bp14.models.general.IGeneralRepo
 import com.lenta.bp14.models.work_list.repo.WorkListRepo
 import com.lenta.shared.models.core.MatrixType
 import com.lenta.shared.models.core.Uom
@@ -15,10 +16,10 @@ import com.lenta.shared.platform.time.ITimeMonitor
 import com.lenta.shared.utilities.extentions.getFormattedDate
 import com.lenta.shared.utilities.extentions.map
 import kotlinx.coroutines.delay
-import java.math.BigDecimal
 import java.util.*
 
 class WorkListTask(
+        private val generalRepo: IGeneralRepo,
         private val workListRepo: WorkListRepo,
         private val taskDescription: WorkListTaskDescription,
         private val timeMonitor: ITimeMonitor,
@@ -111,8 +112,8 @@ class WorkListTask(
         return currentGood.map { it?.additional?.value?.providers?.toList() }
     }
 
-    override fun getTaskType(): ITaskType {
-        return TaskTypes.WorkList.taskType
+    override fun getTaskType(): ITaskTypeInfo {
+        return generalRepo.getTasksTypeInfo(AppTaskTypes.WorkList.taskType)!!
     }
 
     override fun getDescription(): ITaskDescription {
@@ -133,7 +134,7 @@ class WorkListTask(
 
     override fun moveGoodToProcessedList() {
         processed.value?.let { list ->
-            currentGood.value?.let {good ->
+            currentGood.value?.let { good ->
                 if (!list.contains(good)) {
                     list.add(good)
                     processed.value = list
@@ -142,7 +143,7 @@ class WorkListTask(
         }
 
         processing.value?.let { list ->
-            currentGood.value?.let {good ->
+            currentGood.value?.let { good ->
                 if (list.contains(good)) {
                     list.remove(good)
                     processing.value = list

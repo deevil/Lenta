@@ -3,10 +3,10 @@ package com.lenta.bp14.platform.databinding
 import android.widget.ImageView
 import androidx.databinding.BindingAdapter
 import com.lenta.bp14.R
+import com.lenta.bp14.features.task_list.TaskStatus
 import com.lenta.bp14.models.data.GoodType
 import com.lenta.bp14.models.data.getDescriptionResId
 import com.lenta.bp14.models.data.pojo.PrintStatus
-import com.lenta.bp14.models.data.pojo.TaskStatus
 import com.lenta.shared.utilities.databinding.dataBindingHelpHolder
 import com.lenta.shared.utilities.extentions.setInvisible
 import com.lenta.shared.utilities.extentions.setVisible

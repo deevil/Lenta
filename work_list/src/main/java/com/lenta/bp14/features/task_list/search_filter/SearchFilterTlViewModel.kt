@@ -1,13 +1,12 @@
 package com.lenta.bp14.features.task_list.search_filter
 
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import com.lenta.bp14.models.data.TaskManager
 import com.lenta.bp14.models.data.pojo.TaskType
 import com.lenta.bp14.platform.navigation.IScreenNavigator
+import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.view.OnPositionClickListener
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class SearchFilterTlViewModel : CoreViewModel(), OnPositionClickListener {
@@ -16,9 +15,11 @@ class SearchFilterTlViewModel : CoreViewModel(), OnPositionClickListener {
     lateinit var navigator: IScreenNavigator
     @Inject
     lateinit var taskManager: TaskManager
+    @Inject
+    lateinit var sessionInfo: ISessionInfo
 
 
-    val marketNumber = MutableLiveData<String>("")
+    val marketNumber by lazy { sessionInfo.market }
 
     val taskTypeList = MutableLiveData<List<String>>()
 
@@ -29,12 +30,6 @@ class SearchFilterTlViewModel : CoreViewModel(), OnPositionClickListener {
     val goodsGroupField = MutableLiveData<String>("")
     val publicationDateField = MutableLiveData<String>("")
 
-
-    init {
-        viewModelScope.launch {
-            marketNumber.value = taskManager.marketNumber
-        }
-    }
 
     fun onClickFind() {
         taskManager.setCurrentTaskFilter(taskType, goodField.value, sectionField.value, goodsGroupField.value, publicationDateField.value)
