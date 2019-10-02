@@ -92,7 +92,11 @@ class LoadingTaskCardViewModel : CoreLoadingViewModel() {
             deliveryDocumentsRevise.add(DeliveryDocumentRevise(documentID = "124", documentName = "Простой 2", documentType = DocumentType.Simple, isCheck = false, isObligatory = true))
             deliveryDocumentsRevise.add(DeliveryDocumentRevise(documentID = "125", documentName = "Простой 3", documentType = DocumentType.Simple, isCheck = false, isObligatory = false))
 
-            val deliveryProductDocumentsRevise = result.deliveryProductDocumentsRevise.map { DeliveryProductDocumentRevise.from(it) }
+            val deliveryProductDocumentsRevise = result.deliveryProductDocumentsRevise.map { DeliveryProductDocumentRevise.from(it) }.toMutableList()
+            deliveryProductDocumentsRevise.add(DeliveryProductDocumentRevise(documentID = "123", documentName = "Простой 1", documentType = ProductDocumentType.Simple, isCheck = false, isObligatory = false, initialCount = 1.0, isSet = false, productNumber = "000123", measureUnits = "ШТ"))
+            deliveryProductDocumentsRevise.add(DeliveryProductDocumentRevise(documentID = "124", documentName = "Простой 2", documentType = ProductDocumentType.Simple, isCheck = false, isObligatory = true, initialCount = 1.0, isSet = false, productNumber = "000124", measureUnits = "ШТ"))
+            deliveryProductDocumentsRevise.add(DeliveryProductDocumentRevise(documentID = "125", documentName = "Простой 3", documentType = ProductDocumentType.Simple, isCheck = false, isObligatory = false, initialCount = 1.0, isSet = false, productNumber = "000125", measureUnits = "ШТ"))
+
             val productBatchesRevise = result.productBatchesRevise.map { ProductBatchRevise.from(it) }
             val formsABRussianRevise = result.formsABRussianRevise.map { FormABRussianRevise.from(it) }
             val formsABImportRevise = result.formsABImportRevise.map { FormABImportRevise.from(it) }

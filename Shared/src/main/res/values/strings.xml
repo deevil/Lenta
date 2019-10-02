@@ -76,6 +76,7 @@
     <string name="number">№</string>
     <string name="good">Товар</string>
     <string name="quantity">Количество</string>
+    <string name="quantity_short">Кол-во</string>
     <string name="components">Компоненты</string>
     <string name="total">Итого</string>
     <string name="not_selected">Не выбрано</string>
@@ -154,6 +155,9 @@
     <string name="pictogram_strict_list">Пиктограмма строгого списка</string>
     <string name="pictogram_not_strict_list">Пиктограмма нестрогого списка</string>
     <string name="qr_code_info">Доступно сканирование QR-кода</string>
+    <string name="price_r">%1$.2f р.</string>
+    <string name="sort">Сортировка</string>
     <string name="shelf">Полка</string>
     <string name="segment">Сегмент</string>
+    <string name="process">Оформить</string>
 </resources>

@@ -3,7 +3,7 @@ package com.lenta.bp9.model.task.revise
 import com.google.gson.annotations.SerializedName
 import com.lenta.shared.utilities.extentions.toStringFormatted
 
-//ES_TTN_CHK - Структура сверки накладной
+//ET_VBELN_POS - Структура сверки накладной
 data class InvoiceRevise(
         val numberTTN: String, // Номер ТТН/Номер ГТД
         val dateTTN: String, // Дата

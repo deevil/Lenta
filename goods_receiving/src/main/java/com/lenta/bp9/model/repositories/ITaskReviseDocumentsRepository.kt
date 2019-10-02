@@ -28,5 +28,9 @@ interface ITaskReviseDocumentsRepository {
     fun clear()
 
     fun changeDeliveryDocumentStatus(documentID: String)
+    fun changeProductDocumentStatus(documentID: String, matnr: String)
+    fun approveAlcoDocument(matnr: String)
+    fun approveImportForm(matnr: String, batchNumber: String, updatedGTDA: String?, updatedGTDB: String?)
+    fun approveBatch(matnr: String, batchNumber: String)
     fun changeInvoiceStatus()
 }
