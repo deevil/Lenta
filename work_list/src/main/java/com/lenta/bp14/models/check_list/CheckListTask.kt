@@ -33,6 +33,8 @@ class CheckListTask(
         } else {
             goodsList.add(0, good)
         }
+
+        goods.value = goodsList
     }
 
     override fun deleteSelectedGoods(indices: MutableSet<Int>) {
@@ -95,8 +97,7 @@ data class Good(
         val material: String,
         val name: String,
         val units: Uom,
-        val quantity: MutableLiveData<String> = MutableLiveData(""),
-        val defaultQuantity: Double
+        val quantity: MutableLiveData<String>
 ) {
 
     fun getFormattedMaterial(): String {

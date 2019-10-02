@@ -45,8 +45,13 @@ class GoodsListClViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
         }
     }
 
-    val deleteButtonEnabled = selectionsHelper.selectedPositions.map { it?.isNotEmpty() ?: false }
-    val saveButtonEnabled = goods.map { it?.isNotEmpty() ?: false }
+    val deleteButtonEnabled by lazy {
+        selectionsHelper.selectedPositions.map { it?.isNotEmpty() ?: false }
+    }
+
+    val saveButtonEnabled by lazy {
+        goods.map { it?.isNotEmpty() ?: false }
+    }
 
     // -----------------------------
 
