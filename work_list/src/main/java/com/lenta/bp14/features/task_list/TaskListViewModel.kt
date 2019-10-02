@@ -135,6 +135,16 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
         }
     }
 
+    fun onDigitPressed(digit: Int) {
+        when (selectedPage.value) {
+            0 -> searchFieldProcessing
+            else -> searchFieldFiltered
+        }.let {
+            it.postValue(it.value ?: "" + digit)
+        }
+        requestFocusToNumberField.value = true
+    }
+
 }
 
 data class TaskUi(
