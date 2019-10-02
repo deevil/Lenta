@@ -58,9 +58,9 @@ class CheckListTask(
         return goods.value?.find { it.ean == ean } ?: checkListRepo.getGoodByEan(ean)
     }
 
-    override fun getGoodByMatcode(matcode: String): Good? {
+    /*override fun getGoodByMatcode(matcode: String): Good? {
         return goods.value?.find { it.ean == matcode } ?: checkListRepo.getGoodByEan(matcode)
-    }
+    }*/
 
     override fun saveScannedGoodList(goodsList: List<Good>) {
 
@@ -82,7 +82,7 @@ interface ICheckListTask : ITask {
 
     fun getGoodByMaterial(material: String): Good?
     fun getGoodByEan(ean: String): Good?
-    fun getGoodByMatcode(matcode: String): Good?
+    //fun getGoodByMatcode(matcode: String): Good?
 
     fun addGood(good: Good)
     fun deleteSelectedGoods(indices: MutableSet<Int>)
@@ -93,7 +93,7 @@ interface ICheckListTask : ITask {
 // --------------------------
 
 data class Good(
-        val ean: String,
+        val ean: String?,
         val material: String,
         val name: String,
         val units: Uom,
