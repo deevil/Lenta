@@ -22,23 +22,6 @@ class TaskManager @Inject constructor() {
 
 
 
-    fun setCurrentTaskFilter(
-            taskType: TaskType,
-            goodName: String?,
-            sectionNumber: String?,
-            goodsGroup: String?,
-            publicationDate: String?
-    ) {
-        currentTaskFilter = TaskFilter(
-                taskType = taskType,
-                goodName = if (goodName?.isNotEmpty() == true) goodName else null,
-                sectionNumber = if (sectionNumber?.isNotEmpty() == true) sectionNumber.toInt() else null,
-                goodsGroup = if (goodsGroup?.isNotEmpty() == true) goodsGroup else null,
-                publicationDate = if (publicationDate?.length == DATE_FORMAT_ddmmyy.length) {
-                    SimpleDateFormat(DATE_FORMAT_ddmmyy, Locale.getDefault()).parse(publicationDate)
-                } else null
-        )
-    }
 
 
     fun getTestGoodList(numberOfItems: Int): List<Good> {

@@ -24,6 +24,8 @@ class TasksSearchHelper @Inject constructor(
 
     override var filterParams: SearchTaskFilter? = null
 
+    override var isNewSearchData: Boolean = false
+
     override val taskList: MutableLiveData<List<TaskInfo>> = MutableLiveData(listOf())
 
     override val filteredTaskList: MutableLiveData<List<TaskInfo>> = MutableLiveData(listOf())
@@ -58,6 +60,7 @@ interface ITasksSearchHelper {
     var processedFilter: String?
     var searchFilter: String?
     var filterParams: SearchTaskFilter?
+    var isNewSearchData: Boolean
 
     val taskList: LiveData<List<TaskInfo>>
     val filteredTaskList: LiveData<List<TaskInfo>>

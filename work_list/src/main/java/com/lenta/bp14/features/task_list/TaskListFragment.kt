@@ -184,4 +184,9 @@ class TaskListFragment : CoreFragment<FragmentTaskListBinding, TaskListViewModel
         return false
     }
 
+    override fun onResume() {
+        super.onResume()
+        vm.onResume()
+    }
+
 }
