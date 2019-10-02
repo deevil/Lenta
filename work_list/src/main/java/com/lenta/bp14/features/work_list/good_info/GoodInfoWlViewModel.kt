@@ -240,10 +240,6 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
 
     }
 
-    fun onClickBack() {
-
-    }
-
 }
 
 

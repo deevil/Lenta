@@ -23,7 +23,7 @@ import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
 import com.lenta.shared.utilities.extentions.provideViewModel
 
 class GoodInfoWlFragment : CoreFragment<FragmentGoodInfoWlBinding, GoodInfoWlViewModel>(),
-        ViewPagerSettings, ToolbarButtonsClickListener, OnScanResultListener, OnBackPresserListener {
+        ViewPagerSettings, ToolbarButtonsClickListener, OnScanResultListener {
 
     override fun getLayoutId(): Int = R.layout.fragment_good_info_wl
 
@@ -146,11 +146,6 @@ class GoodInfoWlFragment : CoreFragment<FragmentGoodInfoWlBinding, GoodInfoWlVie
 
     override fun onScanResult(data: String) {
         vm.onScanResult(data)
-    }
-
-    override fun onBackPressed(): Boolean {
-        vm.onClickBack()
-        return false
     }
 
 }
