@@ -3,11 +3,9 @@ package com.lenta.bp14.features.task_list
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp14.models.data.TaskListTab
-import com.lenta.bp14.models.data.TaskManager
-import com.lenta.bp14.models.data.pojo.Task
+import com.lenta.bp14.models.general.ITasksSearchHelper
+import com.lenta.bp14.models.general.TaskInfo
 import com.lenta.bp14.platform.navigation.IScreenNavigator
-import com.lenta.bp14.requests.tasks.TaskListNetRequest
-import com.lenta.bp14.requests.tasks.TasksListParams
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.Logg
@@ -20,38 +18,65 @@ import javax.inject.Inject
 class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyboardListener {
 
     @Inject
+    lateinit var sessionInfo: ISessionInfo
+    @Inject
     lateinit var navigator: IScreenNavigator
     @Inject
-    lateinit var taskManager: TaskManager
-    @Inject
-    lateinit var taskListNetRequest: TaskListNetRequest
-    @Inject
-    lateinit var sessionInfo: ISessionInfo
+    lateinit var taskSearchHelper: ITasksSearchHelper
 
     val selectedPage = MutableLiveData(0)
 
-    val numberField: MutableLiveData<String> = MutableLiveData("")
+    val searchFieldProcessing: MutableLiveData<String> = MutableLiveData("")
+
+    val searchFieldFiltered: MutableLiveData<String> = MutableLiveData("")
+
     val requestFocusToNumberField: MutableLiveData<Boolean> = MutableLiveData()
 
-    val marketNumber = MutableLiveData<String>("")
+    val marketNumber by lazy { sessionInfo.market }
 
-    val processingTasks = MutableLiveData<List<Task>>()
-    val searchTasks = MutableLiveData<List<Task>>()
+    private val funcTaskAdapter = { taskList: List<TaskInfo>? ->
+        taskList?.map {
+            TaskUi(
+                    id = it.taskId,
+                    type = it.taskTypeInfo.taskType,
+                    name = it.taskName,
+                    status = if (it.isNotFinished) TaskStatus.STARTED else {
+                        if (it.isMyBlock) TaskStatus.SELF_BLOCK else TaskStatus.BLOCK
+                    },
+                    quantity = it.quantityPositions
+            )
+
+        } ?: emptyList()
+    }
+
+    val processingTasks by lazy {
+        taskSearchHelper.taskList.map(funcTaskAdapter)
+    }
+    val searchTasks by lazy {
+        taskSearchHelper.filteredTaskList.map(funcTaskAdapter)
+    }
 
     val thirdButtonVisibility = selectedPage.map { it == TaskListTab.PROCESSING.position }
 
     init {
         viewModelScope.launch {
-            marketNumber.value = taskManager.marketNumber
-
-            processingTasks.value = taskManager.getTestTaskList(4)
-            searchTasks.value = taskManager.getTestTaskList(3)
+            searchFieldProcessing.value = taskSearchHelper.processedFilter ?: ""
+            searchFieldFiltered.value = taskSearchHelper.searchFilter ?: ""
+            updateProcessing()
         }
+
     }
 
     override fun onOkInSoftKeyboard(): Boolean {
+        if (selectedPage.value == 0) {
+            updateProcessing()
+        } else {
+            updateFiltered()
+        }
         return true
     }
+
+
 
     override fun onPageSelected(position: Int) {
         Logg.d { "onPageSelected: $position" }
@@ -59,7 +84,33 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
     }
 
     fun onClickUpdate() {
+        updateProcessing()
+    }
 
+    private fun updateProcessing() {
+        viewModelScope.launch {
+            navigator.showProgressLoadingData()
+            taskSearchHelper.processedFilter = searchFieldProcessing.value
+            taskSearchHelper.updateTaskList().either({
+                navigator.openAlertScreen(it)
+            }) {
+                // not used
+            }
+            navigator.hideProgress()
+        }
+    }
+
+    private fun updateFiltered() {
+        viewModelScope.launch {
+            navigator.showProgressLoadingData()
+            taskSearchHelper.searchFilter = searchFieldFiltered.value
+            taskSearchHelper.updateFilteredTaskList().either({
+                navigator.openAlertScreen(it)
+            }) {
+                // not used
+            }
+            navigator.hideProgress()
+        }
     }
 
     fun onClickFilter() {
@@ -75,21 +126,22 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
     }
 
     fun onClickSearchTask(position: Int) {
-        //navigator.openJobCardScreen(taskNumber = "100")
-        viewModelScope.launch {
-            taskListNetRequest(
-                    TasksListParams(
-                            tkNumber = sessionInfo.market!!,
-                            user = sessionInfo.userName!!,
-                            mode = "1",
-                            filter = null
-                    )).either({
-                navigator.openAlertScreen(failure = it)
-            }) {
-                Logg.d { "result: $it" }
-            }
-        }
+        navigator.openJobCardScreen(taskNumber = "100")
     }
 
+}
+
+data class TaskUi(
+        val id: String,
+        val type: String,
+        val name: String,
+        val status: TaskStatus,
+        val quantity: Int
+)
+
+enum class TaskStatus {
+    STARTED,
+    SELF_BLOCK,
+    BLOCK
 }
 

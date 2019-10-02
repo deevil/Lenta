@@ -1,7 +1,7 @@
 package com.lenta.bp14.requests.check_price
 
 import com.lenta.bp14.models.check_price.ActualPriceInfo
-import com.lenta.bp14.models.general.TaskTypes
+import com.lenta.bp14.models.general.AppTaskTypes
 import com.lenta.bp14.requests.*
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.functional.Either
@@ -34,7 +34,7 @@ interface ICheckPriceNetRequest : UseCase<ActualPriceInfo, CheckPriceRequestPara
 private fun CheckPriceRequestParams.toCommonParams(): ProductInfoParams {
     require((!ean.isNullOrBlank() xor !matNr.isNullOrBlank()))
     return ProductInfoParams(
-            taskType = TaskTypes.CheckPrice.taskType.taskType,
+            taskType = AppTaskTypes.CheckPrice.taskType,
             withProductInfo = "X",
             withAdditionalInf = "X",
             tkNumber = tkNumber,

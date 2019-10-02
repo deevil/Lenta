@@ -1,6 +1,6 @@
 package com.lenta.bp14.requests.not_exposed_product
 
-import com.lenta.bp14.models.general.TaskTypes
+import com.lenta.bp14.models.general.AppTaskTypes
 import com.lenta.bp14.requests.*
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.fmp.resources.dao_ext.getUomInfo
@@ -41,7 +41,7 @@ interface IProductInfoForNotExposedNetRequest : UseCase<GoodInfo, NotExposedInfo
 private fun NotExposedInfoRequestParams.toCommonParams(): ProductInfoParams {
     require((!ean.isNullOrBlank() xor !matNr.isNullOrBlank()))
     return ProductInfoParams(
-            taskType = TaskTypes.NotExposedProducts.taskType.taskType,
+            taskType = AppTaskTypes.NotExposedProducts.taskType,
             withProductInfo = "X",
             withAdditionalInf = "X",
             tkNumber = tkNumber,

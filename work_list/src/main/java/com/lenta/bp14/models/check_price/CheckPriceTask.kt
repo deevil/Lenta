@@ -2,13 +2,15 @@ package com.lenta.bp14.models.check_price
 
 import androidx.lifecycle.LiveData
 import com.google.gson.Gson
+import com.lenta.bp14.di.CheckPriceScope
 import com.lenta.bp14.ml.CheckStatus
 import com.lenta.bp14.models.ITask
 import com.lenta.bp14.models.ITaskDescription
 import com.lenta.bp14.models.check_price.repo.IActualPricesRepo
 import com.lenta.bp14.models.check_price.repo.ICheckPriceResultsRepo
-import com.lenta.bp14.models.general.ITaskType
-import com.lenta.bp14.models.general.TaskTypes
+import com.lenta.bp14.models.general.ITaskTypeInfo
+import com.lenta.bp14.models.general.AppTaskTypes
+import com.lenta.bp14.models.general.IGeneralRepo
 import com.lenta.bp14.platform.IVibrateHelper
 import com.lenta.bp14.platform.sound.ISoundPlayer
 import com.lenta.bp14.requests.check_price.CheckPriceReport
@@ -16,19 +18,22 @@ import com.lenta.shared.exception.Failure
 import com.lenta.shared.functional.Either
 import com.lenta.shared.models.core.StateFromToString
 import com.lenta.shared.utilities.extentions.map
+import javax.inject.Inject
 import kotlin.math.min
 
-class CheckPriceTask(
+@CheckPriceScope
+class CheckPriceTask @Inject constructor(
+        private val generalRepo: IGeneralRepo,
         private val taskDescription: CheckPriceTaskDescription,
         private val actualPricesRepo: IActualPricesRepo,
         private val readyResultsRepo: ICheckPriceResultsRepo,
         private val priceInfoParser: IPriceInfoParser,
         private val gson: Gson,
-        override var processingMatNumber: String? = null,
         private val soundPlayer: ISoundPlayer,
         private val vibrateHelper: IVibrateHelper
 ) : ICheckPriceTask, StateFromToString {
 
+    override var processingMatNumber: String? = null
 
     override fun checkProductFromVideoScan(rawCode: String?): ICheckPriceResult? {
 
@@ -110,8 +115,8 @@ class CheckPriceTask(
         return ""
     }
 
-    override fun getTaskType(): ITaskType {
-        return TaskTypes.CheckPrice.taskType
+    override fun getTaskType(): ITaskTypeInfo {
+        return generalRepo.getTasksTypeInfo(AppTaskTypes.CheckPrice.taskType)!!
     }
 
     override fun getDescription(): ITaskDescription {

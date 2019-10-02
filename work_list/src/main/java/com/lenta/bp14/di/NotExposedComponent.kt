@@ -2,8 +2,6 @@ package com.lenta.bp14.di
 
 import com.lenta.bp14.features.not_exposed.good_info.GoodInfoNeViewModel
 import com.lenta.bp14.features.not_exposed.goods_list.GoodsListNeViewModel
-import com.lenta.bp14.models.check_price.repo.ActualPriceRepo
-import com.lenta.bp14.models.check_price.repo.IActualPricesRepo
 import com.lenta.bp14.models.filter.FilterFieldType.*
 import com.lenta.bp14.models.filter.FilterableDelegate
 import com.lenta.bp14.models.filter.IFilterable
