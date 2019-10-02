@@ -11,9 +11,6 @@ import com.lenta.bp14.features.job_card.JobCardViewModel
 import com.lenta.bp14.features.list_of_differences.ListOfDifferencesViewModel
 import com.lenta.bp14.features.loading.fast.FastLoadingViewModel
 import com.lenta.bp14.features.main_menu.MainMenuViewModel
-import com.lenta.bp14.features.price_check.good_info.GoodInfoPcViewModel
-import com.lenta.bp14.features.price_check.goods_list.GoodsListPcViewModel
-import com.lenta.bp14.features.price_check.price_scanner.PriceScannerViewModel
 import com.lenta.bp14.features.print_settings.PrintSettingsViewModel
 import com.lenta.bp14.features.report_result.ReportResultViewModel
 import com.lenta.bp14.features.select_market.SelectMarketViewModel
@@ -28,7 +25,9 @@ import com.lenta.bp14.main.MainActivity
 import com.lenta.bp14.main.MainViewModel
 import com.lenta.bp14.models.IGeneralTaskManager
 import com.lenta.bp14.models.check_price.IPriceInfoParser
+import com.lenta.bp14.platform.IVibrateHelper
 import com.lenta.bp14.platform.navigation.IScreenNavigator
+import com.lenta.bp14.platform.sound.ISoundPlayer
 import com.lenta.shared.di.AppScope
 import com.lenta.shared.di.CoreComponent
 import dagger.Component
@@ -41,6 +40,8 @@ interface AppComponent: CoreComponent {
     fun getIScreenNavigator(): IScreenNavigator
     fun getIGeneralTaskManager(): IGeneralTaskManager
     fun getIPriceInfoParser(): IPriceInfoParser
+    fun getISoundPlayer(): ISoundPlayer
+    fun getIVibrateHelper(): IVibrateHelper
 
     fun inject(mainActivity: MainActivity)
     fun inject(mainViewModel: MainViewModel)
@@ -57,15 +58,12 @@ interface AppComponent: CoreComponent {
     fun inject(it: PrintSettingsViewModel)
     fun inject(it: GoodsListWlViewModel)
     fun inject(it: GoodInfoWlViewModel)
-    fun inject(it: GoodInfoPcViewModel)
     fun inject(it: GoodDetailsViewModel)
-    fun inject(it: GoodsListPcViewModel)
     fun inject(it: ExpectedDeliveriesViewModel)
     fun inject(it: SearchFilterViewModel)
     fun inject(it: GoodSalesViewModel)
     fun inject(it: CoreScanBarCodeViewModel)
     fun inject(it: SearchFilterTlViewModel)
-    fun inject(it: PriceScannerViewModel)
     fun inject(it: EanVideoScannerViewModel)
 
 }

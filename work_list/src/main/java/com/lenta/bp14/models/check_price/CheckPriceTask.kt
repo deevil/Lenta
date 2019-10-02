@@ -2,6 +2,7 @@ package com.lenta.bp14.models.check_price
 
 import androidx.lifecycle.LiveData
 import com.google.gson.Gson
+import com.lenta.bp14.di.CheckPriceScope
 import com.lenta.bp14.ml.CheckStatus
 import com.lenta.bp14.models.ITask
 import com.lenta.bp14.models.ITaskDescription
@@ -16,19 +17,21 @@ import com.lenta.shared.exception.Failure
 import com.lenta.shared.functional.Either
 import com.lenta.shared.models.core.StateFromToString
 import com.lenta.shared.utilities.extentions.map
+import javax.inject.Inject
 import kotlin.math.min
 
-class CheckPriceTask(
+@CheckPriceScope
+class CheckPriceTask @Inject constructor(
         private val taskDescription: CheckPriceTaskDescription,
         private val actualPricesRepo: IActualPricesRepo,
         private val readyResultsRepo: ICheckPriceResultsRepo,
         private val priceInfoParser: IPriceInfoParser,
         private val gson: Gson,
-        override var processingMatNumber: String? = null,
         private val soundPlayer: ISoundPlayer,
         private val vibrateHelper: IVibrateHelper
 ) : ICheckPriceTask, StateFromToString {
 
+    override var processingMatNumber: String? = null
 
     override fun checkProductFromVideoScan(rawCode: String?): ICheckPriceResult? {
 

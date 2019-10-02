@@ -10,8 +10,6 @@ import com.lenta.bp14.models.check_price.IPriceInfoParser
 import com.lenta.bp14.models.check_price.PriceInfoParser
 import com.lenta.bp14.models.general.GeneralRepo
 import com.lenta.bp14.models.general.IGeneralRepo
-import com.lenta.bp14.models.not_exposed_products.INotExposedProductsTask
-import com.lenta.bp14.models.not_exposed_products.NotExposedProductsTaskManager
 import com.lenta.bp14.models.work_list.WorkListTask
 import com.lenta.bp14.models.work_list.WorkListTaskManager
 import com.lenta.bp14.platform.IVibrateHelper
@@ -22,8 +20,6 @@ import com.lenta.bp14.platform.sound.ISoundPlayer
 import com.lenta.bp14.platform.sound.SoundPlayer
 import com.lenta.bp14.repos.IRepoInMemoryHolder
 import com.lenta.bp14.repos.RepoInMemoryHolder
-import com.lenta.bp14.requests.check_price.CheckPriceNetRequest
-import com.lenta.bp14.requests.check_price.ICheckPriceNetRequest
 import com.lenta.bp14.requests.not_exposed_product.IProductInfoForNotExposedNetRequest
 import com.lenta.bp14.requests.not_exposed_product.ProductInfoForNotExposedNetRequest
 import com.lenta.shared.di.AppScope
@@ -48,13 +44,6 @@ class AppModule {
         @AppScope
         fun bindScreenNavigator(realisation: ScreenNavigator): IScreenNavigator
 
-        @Binds
-        @AppScope
-        fun bindCheckPriceRequest(realisation: CheckPriceNetRequest): ICheckPriceNetRequest
-
-        @Binds
-        @AppScope
-        fun bindProductInfoForNotExposedNetRequest(realisation: ProductInfoForNotExposedNetRequest): IProductInfoForNotExposedNetRequest
 
         @Binds
         @AppScope
@@ -73,11 +62,6 @@ class AppModule {
         fun bindPriceInfoParser(realisation: PriceInfoParser): IPriceInfoParser
 
 
-    }
-
-    @Provides
-    internal fun provideCheckPriceTask(checkPriceTaskManager: CheckPriceTaskManager): ICheckPriceTask {
-        return checkPriceTaskManager.getTask()!!
     }
 
     @Provides
