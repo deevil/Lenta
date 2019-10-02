@@ -13,9 +13,7 @@ import com.lenta.shared.models.core.MatrixType
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.databinding.PageSelectionListener
-import com.lenta.shared.utilities.extentions.combineLatest
-import com.lenta.shared.utilities.extentions.getFormattedDate
-import com.lenta.shared.utilities.extentions.map
+import com.lenta.shared.utilities.extentions.*
 import com.lenta.shared.view.OnPositionClickListener
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
@@ -43,12 +41,12 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
     val title = MutableLiveData<String>("")
 
     val quantity = MutableLiveData<String>()
-    val totalQuantity: MutableLiveData<Int> = quantity.map { quantity ->
-        var total = quantity?.toIntOrNull() ?: 0
+    val totalQuantity: MutableLiveData<String> = quantity.map { quantity ->
+        var total = quantity?.toDoubleOrNull() ?: 0.0
         for (scanResult in good.value!!.scanResults.value!!) {
-            total += scanResult.quantity
+            total = total.sumWith(scanResult.quantity)
         }
-        total
+        "${total.dropZeros()} ${task.currentGood.value!!.getUnits()}"
     }
 
     val day = MutableLiveData<String>("")
@@ -90,8 +88,23 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
 
     val shelfLifeTypeList = MutableLiveData<List<String>>()
 
-    val commentsList: MutableLiveData<List<String>> by lazy { task.comments }
+    val commentsList: MutableLiveData<List<String>> by lazy { task.currentGood.value!!.comments }
     val comment = MutableLiveData<String>("")
+
+    val additional: MutableLiveData<AdditionalInfoUi> by lazy {
+        task.currentGood.value!!.additional.map { additional ->
+            AdditionalInfoUi(
+                    storagePlaces = additional?.storagePlaces ?: "Not found!",
+                    minStock = "${additional?.minStock?.dropZeros()} ${task.currentGood.value!!.getUnits()}",
+                    inventory = additional?.movement?.inventory ?: "Not found!",
+                    arrival = additional?.movement?.arrival ?: "Not found!",
+                    commonPrice = "${additional?.price?.commonPrice?.dropZeros()}р.",
+                    discountPrice = "${additional?.price?.discountPrice?.dropZeros()}р.",
+                    promoName = additional?.promo?.name ?: "Not found!",
+                    promoPeriod = additional?.promo?.period ?: "Not found!"
+            )
+        }
+    }
 
     val stocks: MutableLiveData<List<ItemStockUi>> by lazy {
         task.getGoodStocks().map { list: List<Stock>? ->
@@ -99,7 +112,7 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
                 ItemStockUi(
                         number = (index + 1).toString(),
                         storage = stock.storage,
-                        quantity = "${stock.quantity} шт."
+                        quantity = "${stock.quantity} ${task.currentGood.value!!.getUnits()}"
                 )
             }
         }
@@ -142,7 +155,7 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
         viewModelScope.launch {
             title.value = good.value?.getFormattedMaterialWithName()
 
-            quantity.value = "1"
+            quantity.value = good.value?.common?.defaultQuantity?.dropZeros()
             comment.value = commentsList.value?.get(0)
 
             viewModelScope.launch {
@@ -187,11 +200,9 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
 
     fun onClickApply() {
         addScanResult()
-
-        // todo Потом удалить
-        // Имитация сканирования такого-же товара
-        resetGoodFields()
-
+        task.moveGoodToProcessedList()
+        navigator.closeAllScreen()
+        navigator.openGoodsListWlScreen()
     }
 
     private fun addScanResult() {
@@ -207,15 +218,15 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
         } else shelfLifeDate
 
         task.addScanResult(ScanResult(
-                quantity = quantity.value?.toInt() ?: 0,
-                comment =  if (comment.value.isNullOrEmpty()) task.comments.value?.get(0) ?: "" else comment.value!!,
+                quantity = quantity.value?.toDoubleOrNull() ?: 0.0,
+                comment =  if (comment.value.isNullOrEmpty()) task.currentGood.value?.comments?.value?.get(0) ?: "" else comment.value!!,
                 productionDate = productionDate,
                 expirationDate = expirationDate
         ))
     }
 
     private fun resetGoodFields() {
-        quantity.value = "1"
+        quantity.value = good.value?.common?.defaultQuantity?.dropZeros()
 
         shelfLifeTypePosition.value = 0
         comment.value = commentsList.value?.get(0)
@@ -223,6 +234,10 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
         day.value = ""
         month.value = ""
         year.value = ""
+    }
+
+    fun onScanResult(data: String) {
+
     }
 
 }
@@ -234,6 +249,17 @@ data class OptionsUi(
         val section: String,
         val healthFood: Boolean,
         val novelty: Boolean
+)
+
+data class AdditionalInfoUi(
+        val storagePlaces: String,
+        val minStock: String,
+        val inventory: String,
+        val arrival: String,
+        val commonPrice: String,
+        val discountPrice: String,
+        val promoName: String,
+        val promoPeriod: String
 )
 
 data class ItemProviderUi(

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    tools:context="com.lenta.bp14.features.work_list.goods_list.GoodsListWlFragment">
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        tools:context="com.lenta.bp14.features.work_list.goods_list.GoodsListWlFragment">
 
     <data>
 
@@ -13,12 +13,14 @@
         <variable
             name="rvConfig"
             type="com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig" />
+
     </data>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
+
 
         <!-- Наименования колонок -->
         <LinearLayout
@@ -62,6 +64,7 @@
 
         </LinearLayout>
 
+
         <!-- Список товаров -->
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv"
@@ -72,6 +75,7 @@
             app:items="@{vm.processingGoods}"
             app:rv_config="@{rvConfig}"
             tools:listitem="@layout/item_good_selectable" />
+
 
         <!-- Ввод номера товара -->
         <LinearLayout

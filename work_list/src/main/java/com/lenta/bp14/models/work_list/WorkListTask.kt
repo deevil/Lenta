@@ -15,6 +15,7 @@ import com.lenta.shared.platform.time.ITimeMonitor
 import com.lenta.shared.utilities.extentions.getFormattedDate
 import com.lenta.shared.utilities.extentions.map
 import kotlinx.coroutines.delay
+import java.math.BigDecimal
 import java.util.*
 
 class WorkListTask(
@@ -24,33 +25,25 @@ class WorkListTask(
         private val gson: Gson
 ) : IWorkListTask {
 
-    //val processing: MutableList<Good> = mutableListOf()
-    //val processed: MutableList<Good> = mutableListOf()
-    //val search: MutableList<Good> = mutableListOf()
     //private var currentList = processed
 
-    val goods = MutableLiveData<MutableList<Good>>(mutableListOf())
+    val processing = MutableLiveData<MutableList<Good>>(mutableListOf())
+    val processed = MutableLiveData<MutableList<Good>>(mutableListOf())
+    val search = MutableLiveData<MutableList<Good>>(mutableListOf())
 
     var currentGood = MutableLiveData<Good>()
 
-    val sales = MutableLiveData<SalesStatistics>()
-    val deliveries = MutableLiveData<List<Delivery>>(listOf())
-    val comments = MutableLiveData<List<String>>(listOf())
-
     override suspend fun addGoodByEan(ean: String): Boolean {
-        var good = goods.value?.find { it.common.ean == ean }
-        if (good != null) {
+        processed.value?.find { it.common.ean == "12345678" }?.let { good ->
             currentGood.value = good
             return true
         }
 
-        val commonGoodInfo = workListRepo.getCommonGoodInfoByEan(ean)
-        if (commonGoodInfo != null) {
-            good = Good(common = commonGoodInfo)
-
-            val goodsList = goods.value!!
-            goodsList.add(good)
-            goods.value = goodsList
+        workListRepo.getCommonGoodInfoByEan(ean)?.let { commonInfo ->
+            val good = Good(common = commonInfo)
+            val processingList = processing.value!!
+            processingList.add(good)
+            processing.value = processingList
             currentGood.value = good
             loadComments()
             return true
@@ -67,42 +60,33 @@ class WorkListTask(
 
     override suspend fun loadAdditionalGoodInfo() {
         delay(5000)
-
-        val good = currentGood.value
-        if (good != null) {
+        currentGood.value?.let { good ->
             val additionalGoodInfo = workListRepo.loadAdditionalGoodInfo(good)
-            good.additional = additionalGoodInfo
-            currentGood.value = good
+            good.additional.value = additionalGoodInfo
         }
     }
 
     override suspend fun loadSalesStatistics() {
         delay(500)
-
-        val good = currentGood.value
-        if (good != null) {
+        currentGood.value?.let { good ->
             val salesStatistics = workListRepo.loadSalesStatistics(good)
-            sales.value = salesStatistics
+            good.sales.value = salesStatistics
         }
     }
 
     override suspend fun loadDeliveries() {
         delay(500)
-
-        val good = currentGood.value
-        if (good != null) {
+        currentGood.value?.let { good ->
             val deliveriesList = workListRepo.loadDeliveries(good)
-            deliveries.value = deliveriesList
+            good.deliveries.value = deliveriesList
         }
     }
 
     override suspend fun loadComments() {
         delay(500)
-
-        val good = currentGood.value
-        if (good != null) {
+        currentGood.value?.let { good ->
             val commentsList = workListRepo.loadComments(good)
-            comments.value = commentsList
+            good.comments.value = commentsList
         }
     }
 
@@ -120,11 +104,11 @@ class WorkListTask(
     }
 
     override fun getGoodStocks(): LiveData<List<Stock>> {
-        return currentGood.map { it?.additional?.stocks?.toList() }
+        return currentGood.map { it?.additional?.value?.stocks?.toList() }
     }
 
     override fun getGoodProviders(): LiveData<List<Provider>> {
-        return currentGood.map { it?.additional?.providers?.toList() }
+        return currentGood.map { it?.additional?.value?.providers?.toList() }
     }
 
     override fun getTaskType(): ITaskType {
@@ -147,6 +131,26 @@ class WorkListTask(
         currentGood.value?.scanResults?.value = scanResultsList
     }
 
+    override fun moveGoodToProcessedList() {
+        processed.value?.let { list ->
+            currentGood.value?.let {good ->
+                if (!list.contains(good)) {
+                    list.add(good)
+                    processed.value = list
+                }
+            }
+        }
+
+        processing.value?.let { list ->
+            currentGood.value?.let {good ->
+                if (list.contains(good)) {
+                    list.remove(good)
+                    processing.value = list
+                }
+            }
+        }
+    }
+
 }
 
 
@@ -159,6 +163,7 @@ interface IWorkListTask : ITask {
     suspend fun loadComments()
 
     fun addScanResult(scanResult: ScanResult)
+    fun moveGoodToProcessedList()
 
     fun getGoodOptions(): LiveData<GoodOptions>
     fun getGoodStocks(): LiveData<List<Stock>>
@@ -169,9 +174,12 @@ interface IWorkListTask : ITask {
 
 data class Good(
         val common: CommonGoodInfo,
-        var additional: AdditionalGoodInfo? = null,
-        val scanResults: MutableLiveData<List<ScanResult>> = MutableLiveData(listOf()),
-        var processed: Boolean = false
+        var additional: MutableLiveData<AdditionalGoodInfo> = MutableLiveData(),
+        val sales: MutableLiveData<SalesStatistics> = MutableLiveData(),
+        val deliveries: MutableLiveData<List<Delivery>> = MutableLiveData(listOf()),
+        val comments: MutableLiveData<List<String>> = MutableLiveData(listOf()),
+
+        val scanResults: MutableLiveData<List<ScanResult>> = MutableLiveData(listOf())
 ) {
 
     fun getFormattedMaterialWithName(): String {
@@ -198,6 +206,19 @@ data class Good(
         return common.units.name.toLowerCase(Locale.getDefault())
     }
 
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is Good) return false
+
+        if (common.ean != other.common.ean) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        return common.ean.hashCode()
+    }
+
 }
 
 
@@ -207,6 +228,7 @@ data class CommonGoodInfo(
         val matcode: String,
         val name: String,
         val units: Uom,
+        val defaultQuantity: Double,
         var goodGroup: String,
         var purchaseGroup: String,
         var marks: Int = 0,
@@ -216,7 +238,7 @@ data class CommonGoodInfo(
 
 data class AdditionalGoodInfo(
         val storagePlaces: String,
-        val minStock: Int,
+        val minStock: Double,
         val movement: Movement,
         val price: Price,
         val promo: Promo,
@@ -252,8 +274,8 @@ data class Movement(
 )
 
 data class Price(
-        val commonPrice: Int,
-        val discountPrice: Int
+        val commonPrice: Double,
+        val discountPrice: Double
 )
 
 data class Promo(
@@ -283,7 +305,7 @@ data class SalesStatistics(
 data class Delivery(
         val status: DeliveryStatus,
         val info: String, // ПП, РЦ, ...
-        val quantity: Int,
+        val quantity: Double,
         val units: Uom,
         val date: Date
 ) {
@@ -302,7 +324,7 @@ enum class DeliveryStatus(val description: String) {
 // -----------------------------
 
 data class ScanResult(
-        val quantity: Int,
+        val quantity: Double,
         val comment: String,
         val productionDate: Date?,
         val expirationDate: Date?

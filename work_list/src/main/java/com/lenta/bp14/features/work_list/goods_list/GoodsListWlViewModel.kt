@@ -15,6 +15,8 @@ import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.map
+import com.lenta.shared.utilities.extentions.sumWith
+import com.lenta.shared.utilities.extentions.dropZeros
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -41,12 +43,17 @@ class GoodsListWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     val searchGoods = MutableLiveData<List<Good>>()
 
     val processedGoods: MutableLiveData<List<ProcessedListUi>> by lazy {
-        task.goods.map { list: MutableList<Good>? ->
-            list?.filter { it.processed }?.mapIndexed { index, good ->
+        task.processed.map { list: MutableList<Good>? ->
+            list?.mapIndexed { index, good ->
+                var total = 0.0
+                for (scanResult in good.scanResults.value!!) {
+                    total = total.sumWith(scanResult.quantity)
+                }
+
                 ProcessedListUi(
                         position = (index + 1).toString(),
                         name = good.getFormattedMaterialWithName(),
-                        quantity = "11111"
+                        quantity = total.dropZeros()
                 )
             }
         }
@@ -99,7 +106,7 @@ class GoodsListWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
                     addGoodByEan(matNr)
                 },
                 funcForPriceQrCode = { qrCode ->
-                    //addGoodByEan(matNr)
+                    //getGoodByEan(matNr)
                 },
                 funcForSapOrBar = navigator::showTwelveCharactersEntered,
                 funcForNotValidFormat = navigator::showGoodNotFound
@@ -150,6 +157,10 @@ class GoodsListWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     fun onDigitPressed(digit: Int) {
         numberField.postValue(numberField.value ?: "" + digit)
         requestFocusToNumberField.value = true
+    }
+
+    fun onScanResult(data: String) {
+
     }
 
 }

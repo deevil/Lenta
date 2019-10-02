@@ -50,7 +50,7 @@
 
                     <EditText
                         style="@style/CellEditTextStyle"
-                        android:digits="0123456789"
+
                         android:inputType="number"
                         android:text="@={vm.quantity}"
                         tools:text="1" />

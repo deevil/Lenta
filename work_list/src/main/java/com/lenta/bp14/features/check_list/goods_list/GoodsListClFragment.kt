@@ -6,7 +6,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.Observer
 import com.lenta.bp14.BR
 import com.lenta.bp14.R
 import com.lenta.bp14.databinding.*
@@ -18,6 +17,7 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
+import com.lenta.shared.scan.OnScanResultListener
 import com.lenta.shared.utilities.databinding.DataBindingAdapter
 import com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig
 import com.lenta.shared.utilities.databinding.RecyclerViewKeyHandler
@@ -26,7 +26,7 @@ import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.provideViewModel
 
 class GoodsListClFragment : CoreFragment<FragmentGoodsListClBinding, GoodsListClViewModel>(),
-        ToolbarButtonsClickListener, ViewPagerSettings, OnKeyDownListener {
+        ToolbarButtonsClickListener, ViewPagerSettings, OnKeyDownListener, OnScanResultListener {
 
     private var recyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
 
@@ -80,13 +80,13 @@ class GoodsListClFragment : CoreFragment<FragmentGoodsListClBinding, GoodsListCl
                     }
 
                     layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
-                            layoutId = R.layout.item_good_quantity_editable_selectable,
+                            layoutId = R.layout.item_cl_good_quantity_editable_selectable,
                             itemId = BR.good,
-                            realisation = object : DataBindingAdapter<ItemGoodQuantityEditableSelectableBinding> {
-                                override fun onCreate(binding: ItemGoodQuantityEditableSelectableBinding) {
+                            realisation = object : DataBindingAdapter<ItemClGoodQuantityEditableSelectableBinding> {
+                                override fun onCreate(binding: ItemClGoodQuantityEditableSelectableBinding) {
                                 }
 
-                                override fun onBind(binding: ItemGoodQuantityEditableSelectableBinding, position: Int) {
+                                override fun onBind(binding: ItemClGoodQuantityEditableSelectableBinding, position: Int) {
                                     binding.tvItemNumber.tag = position
                                     binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
                                     binding.selectedForDelete = vm.selectionsHelper.isSelected(position)
@@ -138,6 +138,10 @@ class GoodsListClFragment : CoreFragment<FragmentGoodsListClBinding, GoodsListCl
             return true
         }
         return false
+    }
+
+    override fun onScanResult(data: String) {
+        vm.onScanResult(data)
     }
 
 }

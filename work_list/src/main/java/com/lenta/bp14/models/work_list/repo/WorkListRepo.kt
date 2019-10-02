@@ -6,6 +6,7 @@ import com.lenta.shared.models.core.MatrixType
 import com.lenta.shared.models.core.Uom
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import java.math.BigDecimal
 import java.util.*
 import kotlin.random.Random
 
@@ -14,11 +15,12 @@ class WorkListRepo {
     suspend fun getCommonGoodInfoByEan(ean: String): CommonGoodInfo? {
         return withContext(Dispatchers.IO) {
             return@withContext CommonGoodInfo(
-                    ean = "11111111",
+                    ean = "12345678",
                     material = "000000000000222222",
                     matcode = "333333333333",
                     name = "Товар",
                     units = Uom.ST,
+                    defaultQuantity = 1.0,
                     goodGroup = "123456",
                     purchaseGroup = "1111",
                     shelfLife = (3..14).random(),
@@ -35,14 +37,14 @@ class WorkListRepo {
         return withContext(Dispatchers.IO) {
             return@withContext AdditionalGoodInfo(
                     storagePlaces = "125635; 652148; 635894",
-                    minStock = (10..50).random(),
+                    minStock = (10..50).random().toDouble(),
                     movement = Movement(
                             inventory = "19.07.19 (-25 шт.)",
                             arrival = "29.07.19 (+50 шт; Z5)"
                     ),
                     price = Price(
-                            commonPrice = (110..140).random(),
-                            discountPrice = (80..100).random()
+                            commonPrice = (110..140).random().toDouble(),
+                            discountPrice = (80..100).random().toDouble()
                     ),
                     promo = Promo(
                             name = "Распродажа кукурузы ТК 0007",
@@ -85,7 +87,7 @@ class WorkListRepo {
                 Delivery(
                         status = if (Random.nextBoolean()) DeliveryStatus.ORDERED else DeliveryStatus.ON_WAY,
                         info = if (Random.nextBoolean()) "ПП" else "РЦ",
-                        quantity = (1..99).random(),
+                        quantity = (1..99).random().toDouble(),
                         units = Uom.KAR,
                         date = Date()
                 )

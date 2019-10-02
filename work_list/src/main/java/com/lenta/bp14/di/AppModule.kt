@@ -4,7 +4,10 @@ import com.lenta.bp14.models.GeneralTaskManager
 import com.lenta.bp14.models.IGeneralTaskManager
 import com.lenta.bp14.models.check_list.CheckListTaskManager
 import com.lenta.bp14.models.check_list.ICheckListTask
-import com.lenta.bp14.models.check_price.*
+import com.lenta.bp14.models.check_price.CheckPriceTaskManager
+import com.lenta.bp14.models.check_price.ICheckPriceTask
+import com.lenta.bp14.models.check_price.IPriceInfoParser
+import com.lenta.bp14.models.check_price.PriceInfoParser
 import com.lenta.bp14.models.general.GeneralRepo
 import com.lenta.bp14.models.general.IGeneralRepo
 import com.lenta.bp14.models.not_exposed_products.INotExposedProductsTask

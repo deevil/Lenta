@@ -9,11 +9,13 @@ import com.lenta.bp14.BR
 import com.lenta.bp14.R
 import com.lenta.bp14.databinding.*
 import com.lenta.bp14.platform.extentions.getAppComponent
+import com.lenta.shared.platform.activity.OnBackPresserListener
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
+import com.lenta.shared.scan.OnScanResultListener
 import com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig
 import com.lenta.shared.utilities.databinding.ViewPagerSettings
 import com.lenta.shared.utilities.extentions.connectLiveData
@@ -21,7 +23,7 @@ import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
 import com.lenta.shared.utilities.extentions.provideViewModel
 
 class GoodInfoWlFragment : CoreFragment<FragmentGoodInfoWlBinding, GoodInfoWlViewModel>(),
-        ViewPagerSettings, ToolbarButtonsClickListener {
+        ViewPagerSettings, ToolbarButtonsClickListener, OnScanResultListener {
 
     override fun getLayoutId(): Int = R.layout.fragment_good_info_wl
 
@@ -140,6 +142,10 @@ class GoodInfoWlFragment : CoreFragment<FragmentGoodInfoWlBinding, GoodInfoWlVie
 
     private fun initSpinners() {
         vm.shelfLifeTypeList.value = resources.getStringArray(R.array.shelf_life_type).asList()
+    }
+
+    override fun onScanResult(data: String) {
+        vm.onScanResult(data)
     }
 
 }
