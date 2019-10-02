@@ -1,6 +1,5 @@
 package com.lenta.bp14.models.check_list.repo
 
-import androidx.lifecycle.MutableLiveData
 import com.lenta.bp14.models.check_list.Good
 import com.lenta.shared.models.core.Uom
 import kotlin.random.Random
@@ -15,16 +14,16 @@ class CheckListRepo : ICheckListRepo {
                             ean = "11111111",
                             material = "000000000000999921",
                             name = "Штучный",
-                            quantity = MutableLiveData("1"),
-                            uom = Uom.ST
+                            defaultQuantity = 1.0,
+                            units = Uom.ST
                     )
                 } else {
                     Good(
                             ean = (111111111111..999999999999).random().toString(),
                             material = "000000000000" + (111111..999999).random(),
                             name = "Товар",
-                            quantity = MutableLiveData("1"),
-                            uom = Uom.ST
+                            defaultQuantity = 1.0,
+                            units = Uom.ST
                     )
                 }
             }
@@ -33,8 +32,8 @@ class CheckListRepo : ICheckListRepo {
                         ean = "22222222",
                         material = "000000000000999921",
                         name = "Весовой",
-                        quantity = MutableLiveData("0.6"),
-                        uom = Uom.KG
+                        defaultQuantity = 0.6,
+                        units = Uom.KG
                 )
             }
         }
