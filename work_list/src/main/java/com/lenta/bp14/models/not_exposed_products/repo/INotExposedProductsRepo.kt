@@ -3,8 +3,9 @@ package com.lenta.bp14.models.not_exposed_products.repo
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.lenta.shared.models.core.Uom
+import javax.inject.Inject
 
-class NotExposedProductsRepo : INotExposedProductsRepo {
+class NotExposedProductsRepo @Inject constructor() : INotExposedProductsRepo {
 
     private val products = mutableListOf<INotExposedProductInfo>()
 

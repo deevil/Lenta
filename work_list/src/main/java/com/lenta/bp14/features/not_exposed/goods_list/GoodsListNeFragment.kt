@@ -1,7 +1,6 @@
 package com.lenta.bp14.features.not_exposed.goods_list
 
 import com.lenta.bp14.R
-import com.lenta.bp14.platform.extentions.getAppComponent
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
@@ -17,6 +16,8 @@ import androidx.lifecycle.Observer
 import com.lenta.bp14.BR
 import com.lenta.bp14.models.data.GoodsListTab
 import com.lenta.bp14.databinding.*
+import com.lenta.bp14.di.NotExposedComponent
+import com.lenta.shared.di.CoreInjectHelper
 import com.lenta.shared.keys.KeyCode
 import com.lenta.shared.keys.OnKeyDownListener
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
@@ -45,7 +46,7 @@ class GoodsListNeFragment : CoreFragment<FragmentGoodsListNeBinding, GoodsListNe
 
     override fun getViewModel(): GoodsListNeViewModel {
         provideViewModel(GoodsListNeViewModel::class.java).let {
-            getAppComponent()?.inject(it)
+            CoreInjectHelper.getComponent(NotExposedComponent::class.java)!!.inject(it)
             return it
         }
     }

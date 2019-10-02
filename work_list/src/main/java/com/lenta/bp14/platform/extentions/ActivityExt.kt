@@ -1,17 +1,22 @@
 package com.lenta.bp14.platform.extentions
 
-import com.lenta.bp14.di.AppComponent
-import com.lenta.bp14.di.AppModule
-import com.lenta.bp14.di.DaggerAppComponent
+import com.lenta.bp14.di.*
 import com.lenta.shared.di.CoreComponent
+import com.lenta.shared.di.CoreInjectHelper.createComponent
+import com.lenta.shared.di.CoreInjectHelper.getComponent
 
-var appComponent: AppComponent? = null
 
-fun getAppComponent(coreComponent: CoreComponent): AppComponent {
-    if (appComponent == null) {
-        appComponent = DaggerAppComponent.builder()
-                .appModule(AppModule())
-                .coreComponent(coreComponent).build()
+fun getAppComponent(coreComponent: CoreComponent?): AppComponent {
+    AppComponent::class.java.let { clazz ->
+        getComponent(clazz)?.let {
+            return it
+        }
+        return createComponent(clazz) {
+            DaggerAppComponent.builder()
+                    .appModule(AppModule())
+                    .coreComponent(coreComponent).build()
+        }
     }
-    return appComponent!!
+
 }
+

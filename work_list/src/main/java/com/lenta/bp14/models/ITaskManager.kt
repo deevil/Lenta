@@ -1,6 +1,7 @@
 package com.lenta.bp14.models
 
 import com.lenta.bp14.models.general.ITaskType
+import com.lenta.shared.di.CoreInjectHelper.removeComponent
 
 
 abstract class BaseTaskManager<S : ITask, D : ITaskDescription> : ITaskManager<S, D> {
@@ -15,8 +16,11 @@ abstract class BaseTaskManager<S : ITask, D : ITaskDescription> : ITaskManager<S
             return false
         }
         _task = null
+        removeComponent(getComponentClass())
         return true
     }
+
+    abstract fun getComponentClass(): Class<out Any>
 
     override fun setTask(task: S?) {
         _task = task
@@ -54,7 +58,6 @@ interface ITask {
         return this.getDescription().taskNumber.isBlank()
     }
 }
-
 
 
 interface ITaskDescription {

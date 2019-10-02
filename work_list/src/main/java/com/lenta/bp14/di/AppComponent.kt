@@ -11,8 +11,6 @@ import com.lenta.bp14.features.job_card.JobCardViewModel
 import com.lenta.bp14.features.list_of_differences.ListOfDifferencesViewModel
 import com.lenta.bp14.features.loading.fast.FastLoadingViewModel
 import com.lenta.bp14.features.main_menu.MainMenuViewModel
-import com.lenta.bp14.features.not_exposed.good_info.GoodInfoNeViewModel
-import com.lenta.bp14.features.not_exposed.goods_list.GoodsListNeViewModel
 import com.lenta.bp14.features.price_check.good_info.GoodInfoPcViewModel
 import com.lenta.bp14.features.price_check.goods_list.GoodsListPcViewModel
 import com.lenta.bp14.features.price_check.price_scanner.PriceScannerViewModel
@@ -28,15 +26,21 @@ import com.lenta.bp14.features.work_list.good_sales.GoodSalesViewModel
 import com.lenta.bp14.features.search_filter.SearchFilterViewModel
 import com.lenta.bp14.main.MainActivity
 import com.lenta.bp14.main.MainViewModel
+import com.lenta.bp14.models.IGeneralTaskManager
+import com.lenta.bp14.models.check_price.IPriceInfoParser
+import com.lenta.bp14.platform.navigation.IScreenNavigator
 import com.lenta.shared.di.AppScope
 import com.lenta.shared.di.CoreComponent
 import dagger.Component
 
 @Component(modules = [AppModule::class], dependencies = [CoreComponent::class])
 @AppScope
-interface AppComponent {
+interface AppComponent: CoreComponent {
 
     fun getTaskManager(): TaskManager
+    fun getIScreenNavigator(): IScreenNavigator
+    fun getIGeneralTaskManager(): IGeneralTaskManager
+    fun getIPriceInfoParser(): IPriceInfoParser
 
     fun inject(mainActivity: MainActivity)
     fun inject(mainViewModel: MainViewModel)
@@ -59,8 +63,6 @@ interface AppComponent {
     fun inject(it: ExpectedDeliveriesViewModel)
     fun inject(it: SearchFilterViewModel)
     fun inject(it: GoodSalesViewModel)
-    fun inject(it: GoodsListNeViewModel)
-    fun inject(it: GoodInfoNeViewModel)
     fun inject(it: CoreScanBarCodeViewModel)
     fun inject(it: SearchFilterTlViewModel)
     fun inject(it: PriceScannerViewModel)

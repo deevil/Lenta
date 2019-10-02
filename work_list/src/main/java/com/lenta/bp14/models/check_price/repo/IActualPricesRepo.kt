@@ -2,11 +2,12 @@ package com.lenta.bp14.models.check_price.repo
 
 import com.lenta.bp14.models.check_price.*
 import com.lenta.bp14.requests.check_price.CheckPriceRequestParams
+import com.lenta.bp14.requests.check_price.ICheckPriceNetRequest
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.functional.Either
 import com.lenta.shared.functional.map
-import com.lenta.shared.interactor.UseCase
 import kotlinx.coroutines.*
+import javax.inject.Inject
 
 interface IActualPricesRepo {
 
@@ -17,7 +18,7 @@ interface IActualPricesRepo {
 
 }
 
-class ActualPriceRepoForTest(private val checkPriceRequest: UseCase<ActualPriceInfo, CheckPriceRequestParams>) : IActualPricesRepo {
+class ActualPriceRepo @Inject constructor(private val checkPriceRequest: ICheckPriceNetRequest) : IActualPricesRepo {
 
     private val cashedResults = mutableMapOf<String, IActualPriceInfo?>()
 
