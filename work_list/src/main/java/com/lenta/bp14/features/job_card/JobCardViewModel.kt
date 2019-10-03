@@ -140,7 +140,7 @@ class JobCardViewModel : CoreViewModel() {
                                             comment = comment.value ?: "",
                                             description = description.value ?: "",
                                             isStrictList = taskFromTaskList?.isStrict ?: false,
-                                            checkPriceTaskInfoResult = checkPriceTaskInfoResult
+                                            additionalTaskInfo = checkPriceTaskInfoResult
                                     )
                             )
                             screenNavigator.openGoodsListPcScreen()

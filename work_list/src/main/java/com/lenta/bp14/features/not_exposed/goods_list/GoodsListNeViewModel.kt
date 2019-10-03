@@ -71,7 +71,7 @@ class GoodsListNeViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     val requestFocusToNumberField: MutableLiveData<Boolean> = MutableLiveData()
 
     val processingGoods by lazy {
-        task.getPlainedProducts().map {
+        task.getToProcessingProducts().map {
             it?.mapIndexed { index, productInfo ->
                 SimpleProductUi(
                         position = index + 1,

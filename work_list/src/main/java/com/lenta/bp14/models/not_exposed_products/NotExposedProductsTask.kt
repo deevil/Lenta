@@ -96,11 +96,9 @@ class NotExposedProductsTask @Inject constructor(
         return notExposedProductsRepo.getProducts()
     }
 
-    override fun getPlainedProducts(): LiveData<List<INotExposedProductInfo>> {
+    override fun getToProcessingProducts(): LiveData<List<INotExposedProductInfo>> {
         return getProducts().map { processedGoodInfo ->
             val processedMaterials = processedGoodInfo?.map { it.matNr }?.toSet() ?: emptySet()
-            val productsInfoMap = taskDescription.additionalTaskInfo?.productsInfo?.map { it.matNr to it }?.toMap()
-                    ?: emptyMap()
             val positions = taskDescription.additionalTaskInfo?.positions?.filter { !processedMaterials.contains(it.matNr) }
                     ?: emptyList()
             positions.map {
@@ -221,7 +219,7 @@ interface INotExposedProductsTask : ITask, IFilterable {
 
     fun getProcessedProductInfoResult(): GoodInfo?
 
-    fun getPlainedProducts(): LiveData<List<INotExposedProductInfo>>
+    fun getToProcessingProducts(): LiveData<List<INotExposedProductInfo>>
 
     fun getProducts(): LiveData<List<INotExposedProductInfo>>
 

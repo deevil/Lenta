@@ -50,7 +50,18 @@ class GoodsListPcViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     val numberField = MutableLiveData<String>("")
     val requestFocusToNumberField: MutableLiveData<Boolean> = MutableLiveData()
 
-    val processingGoods = MutableLiveData<List<SimpleProductUi>>(emptyList())
+    val processingGoods by lazy {
+        task.getToProcessingProducts().map {
+            it?.mapIndexed { index, iCheckPriceResult ->
+                SimpleProductUi(
+                        position = index + 1,
+                        matNr = iCheckPriceResult.matNr ?: "",
+                        name = "${iCheckPriceResult.matNr?.takeLast(6)} ${iCheckPriceResult.name}"
+                )
+            }
+        }
+
+    }
 
     private val funcUiAdapter = { list: List<ICheckPriceResult>? ->
         list?.reversed()?.mapIndexed { index, iCheckPriceResult ->

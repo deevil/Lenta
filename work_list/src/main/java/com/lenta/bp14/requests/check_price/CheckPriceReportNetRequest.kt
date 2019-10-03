@@ -99,7 +99,9 @@ data class FmpReport(
 data class CheckResult(
         @SerializedName("MATNR")
         val matNr: String,
-        // верно - 1, ошибка - 2, ценник отсутствует - 1
+        /**
+         * верно - 1, ошибка - 2, ценник отсутствует - 3
+         */
         @SerializedName("STAT_CHECK")
         val statCheck: String,
         @SerializedName("IS_PRINT")

@@ -10,5 +10,5 @@ data class CheckPriceTaskDescription(
         override val comment: String,
         override val description: String,
         override val isStrictList: Boolean,
-        val checkPriceTaskInfoResult: CheckPriceTaskInfoResult?
+        val additionalTaskInfo: CheckPriceTaskInfoResult?
 ) : ITaskDescription

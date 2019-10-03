@@ -17,6 +17,7 @@ import com.lenta.bp14.requests.check_price.CheckPriceReport
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.functional.Either
 import com.lenta.shared.models.core.StateFromToString
+import com.lenta.shared.utilities.extentions.isSapTrue
 import com.lenta.shared.utilities.extentions.map
 import javax.inject.Inject
 import kotlin.math.min
@@ -32,6 +33,51 @@ class CheckPriceTask @Inject constructor(
         private val soundPlayer: ISoundPlayer,
         private val vibrateHelper: IVibrateHelper
 ) : ICheckPriceTask, StateFromToString {
+
+    private val productsInfoMap by lazy {
+        taskDescription.additionalTaskInfo?.productsInfo?.map { it.matNr to it }?.toMap()
+                ?: emptyMap()
+    }
+
+    private val priceInfoMap by lazy {
+        taskDescription.additionalTaskInfo?.prices?.map { it.matnr to it }?.toMap()
+                ?: emptyMap()
+    }
+
+    private val checkPriceMap by lazy {
+        taskDescription.additionalTaskInfo?.checkPrices?.map { it.matNr to it }?.toMap()
+                ?: emptyMap()
+    }
+
+    init {
+        initProcessed()
+    }
+
+    private fun initProcessed() {
+
+        taskDescription.additionalTaskInfo?.prices?.forEach {
+            val productInfo = productsInfoMap[it.matnr]
+            actualPricesRepo.addToCacheActualPriceInfo(
+                    ActualPriceInfo(
+                            matNumber = it.matnr,
+                            productName = productInfo?.name,
+                            price1 = it.price1.toFloatOrNull(),
+                            price2 = it.price2.toFloatOrNull(),
+                            price3 = it.price3.toFloatOrNull(),
+                            price4 = it.price4.toFloatOrNull()
+                    )
+            )
+        }
+
+        taskDescription.additionalTaskInfo?.checkPrices?.let {
+            it.forEach { checkPrice ->
+                val productInfo = productsInfoMap[checkPrice.matNr]
+                readyResultsRepo.addCheckPriceResult(
+                        getCheckPriceByMatnr(checkPrice.matNr)
+                )
+            }
+        }
+    }
 
     override var processingMatNumber: String? = null
 
@@ -128,6 +174,50 @@ class CheckPriceTask @Inject constructor(
                 ?: return null)
     }
 
+    override fun getToProcessingProducts(): LiveData<List<ICheckPriceResult>> {
+        return getCheckResults().map { processedGoodInfo ->
+            val processedMaterials = processedGoodInfo?.map { it.matNr }?.toSet() ?: emptySet()
+            val positions = taskDescription.additionalTaskInfo?.positions?.filter { !processedMaterials.contains(it.matNr) }
+                    ?: emptyList()
+            positions.map {
+                getCheckPriceByMatnr(it.matNr)
+            }
+        }
+    }
+
+    private fun getCheckPriceByMatnr(matNr: String): ICheckPriceResult {
+        val productInfo = productsInfoMap[matNr]
+        val priceInfo = priceInfoMap[matNr]
+        val checkPriceInfo = checkPriceMap[matNr]
+        val emptyPriceInfo = ScanPriceInfo(
+                eanCode = matNr,
+                price = null,
+                discountCardPrice = null
+        )
+        return CheckPriceResult(
+                ean = "",
+                matNr = matNr,
+                name = productInfo?.name,
+                scannedPriceInfo = emptyPriceInfo,
+                actualPriceInfo = ActualPriceInfo(
+                        matNumber = matNr,
+                        productName = productInfo?.name,
+                        price1 = priceInfo?.price1?.toFloatOrNull(),
+                        price2 = priceInfo?.price2?.toFloatOrNull(),
+                        price3 = priceInfo?.price3?.toFloatOrNull(),
+                        price4 = priceInfo?.price4?.toFloatOrNull()
+                ),
+                userPriceInfo = UserPriceInfo(
+                        isValidPrice = when (checkPriceInfo?.statCheck) {
+                            "1" -> true
+                            "2" -> false
+                            else -> null
+                        }
+                ),
+                isPrinted = checkPriceInfo?.isPrinted.isSapTrue()
+        )
+    }
+
     override fun setCheckPriceStatus(isValid: Boolean?) {
         readyResultsRepo.getCheckPriceResult(matNr = processingMatNumber).apply {
 
@@ -211,6 +301,7 @@ fun ICheckPriceResult?.toCheckStatus(): CheckStatus? {
 interface ICheckPriceTask : ITask {
     fun checkProductFromVideoScan(rawCode: String?): ICheckPriceResult?
     fun getCheckResults(): LiveData<List<ICheckPriceResult>>
+    fun getToProcessingProducts(): LiveData<List<ICheckPriceResult>>
     fun removeCheckResultsByMatNumbers(matNumbers: Set<String>)
     fun getProcessingActualPrice(): IActualPriceInfo?
     fun setCheckPriceStatus(isValid: Boolean?)
