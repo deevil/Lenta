@@ -112,6 +112,7 @@ class JobCardViewModel : CoreViewModel() {
 
     fun onClickNext() {
         viewModelScope.launch {
+            screenNavigator.showProgressLoadingData()
             when (getSelectedTypeTask()?.taskType) {
                 AppTaskTypes.CheckPrice.taskType -> {
                     if (taskFromTaskList != null) {
@@ -217,6 +218,8 @@ class JobCardViewModel : CoreViewModel() {
                 }
                 else -> screenNavigator.openNotImplementedScreenAlert("")
             }
+
+            screenNavigator.hideProgress()
         }
 
     }

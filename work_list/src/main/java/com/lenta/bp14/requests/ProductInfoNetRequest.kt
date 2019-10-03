@@ -29,7 +29,7 @@ class ProductInfoNetRequest
 data class ProductInfoParams(
         @SerializedName("IV_MATNR_DATA_FLAG")
         val withProductInfo: String,
-        @SerializedName("IV_RBSINFO_FLG")
+        @SerializedName("IV_RBSINFO_FLAG")
         val withAdditionalInf: String,
         @SerializedName("IV_WERKS")
         val tkNumber: String,
