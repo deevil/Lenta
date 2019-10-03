@@ -29,6 +29,7 @@ import com.lenta.bp9.model.task.TaskBatchInfo
 import com.lenta.shared.account.IAuthenticator
 import com.lenta.shared.features.alert.AlertFragment
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
+import com.lenta.shared.platform.navigation.CustomAnimation
 import com.lenta.shared.platform.navigation.ICoreNavigator
 import com.lenta.shared.platform.navigation.runOrPostpone
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
@@ -248,6 +249,68 @@ class ScreenNavigator(
         }
     }
 
+    override fun openSupplyResultsSuccessDialog(numberSupply: String, leftCallbackFunc: () -> Unit, rightCallbackFunc: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.supply_results_success_dialog, numberSupply),
+                    codeConfirmForButton4 = backFragmentResultHelper.setFuncForResult(leftCallbackFunc),
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(rightCallbackFunc),
+                    iconRes = R.drawable.ic_done_green_80dp,
+                    pageNumber = "78",
+                    description = context.getString(R.string.supply_results),
+                    isVisibleLeftButton = false,
+                    rightButtonDecorationInfo = ButtonDecorationInfo.next,
+                    buttonDecorationInfo4 = ButtonDecorationInfo.supply))
+        }
+    }
+
+    override fun openSupplyResultsErrorDialog(numberSupply: String, userName: String) {
+        runOrPostpone {
+            getFragmentStack()?.let {
+
+                val fragment = AlertFragment.create(
+                        message = context.getString(R.string.supply_results_error_dialog, numberSupply, userName),
+                        iconRes = R.drawable.ic_info_pink,
+                        textColor = ContextCompat.getColor(context, com.lenta.shared.R.color.color_text_dialogWarning),
+                        pageNumber = "77",
+                        description = context.getString(R.string.supply_results)
+                )
+                it.push(fragment, CustomAnimation.vertical)
+
+            }
+        }
+    }
+
+    override fun openSupplyResultsAutomaticChargeSuccessDialog(numberSupply: String, leftCallbackFunc: () -> Unit, rightCallbackFunc: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.supply_results_automatic_charge_success, numberSupply),
+                    codeConfirmForButton4 = backFragmentResultHelper.setFuncForResult(leftCallbackFunc),
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(rightCallbackFunc),
+                    iconRes = R.drawable.ic_done_green_80dp,
+                    pageNumber = "76",
+                    description = context.getString(R.string.supply_results),
+                    isVisibleLeftButton = false,
+                    rightButtonDecorationInfo = ButtonDecorationInfo.next,
+                    buttonDecorationInfo4 = ButtonDecorationInfo.supply))
+        }
+    }
+
+    override fun openSupplyResultsAutomaticChargeErrorDialog() {
+        runOrPostpone {
+            getFragmentStack()?.let {
+
+                val fragment = AlertFragment.create(
+                        message = context.getString(R.string.supply_results_automatic_charge_error),
+                        iconRes = R.drawable.ic_info_pink,
+                        textColor = ContextCompat.getColor(context, com.lenta.shared.R.color.color_text_dialogWarning),
+                        pageNumber = "75",
+                        description = context.getString(R.string.supply_results)
+                )
+                it.push(fragment, CustomAnimation.vertical)
+
+            }
+        }
+    }
+
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 
 }
@@ -283,4 +346,8 @@ interface IScreenNavigator : ICoreNavigator {
     fun openSelectTypeCodeScreen(codeConfirmationForSap: Int, codeConfirmationForBarCode: Int)
     fun openAlertGoodsNotInOrderScreen()
     fun openNonExciseAlcoInfoScreen()
+    fun openSupplyResultsErrorDialog(numberSupply: String, userName: String)
+    fun openSupplyResultsSuccessDialog(numberSupply: String, leftCallbackFunc: () -> Unit, rightCallbackFunc: () -> Unit)
+    fun openSupplyResultsAutomaticChargeErrorDialog()
+    fun openSupplyResultsAutomaticChargeSuccessDialog(numberSupply: String, leftCallbackFunc: () -> Unit, rightCallbackFunc: () -> Unit)
 }

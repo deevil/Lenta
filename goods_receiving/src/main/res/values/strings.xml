@@ -84,4 +84,9 @@
     <string name="discrepancies_found">Обнаружены расхождения</string>
     <string name="select_type_code_description">Введено 12 знаков. Какой код вы ввели?</string>
     <string name="goods_not_in_order">Товара нет в заказе</string>
+    <string name="supply_results">Результаты проводки</string>
+    <string name="supply_results_success_dialog">ВП №%1$s оприходована успешно, соответствующие документы были отправлены на печать</string>
+    <string name="supply_results_error_dialog">При проведении ВП №%1$s возникла ошибка: ВП №%1$s заблокирована пользователем %2$s</string>
+    <string name="supply_results_automatic_charge_success">По ВП №%1$s выполнено автоматическое списание товаров не предназначенных для продажи согласно настройкам</string>
+    <string name="supply_results_automatic_charge_error">Автосписание не прошло, для дальнейшей обработки задания необходимо завершить автосписание через SAP ERP</string>
 </resources>
