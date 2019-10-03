@@ -47,7 +47,7 @@ class MainMenuViewModel : CoreViewModel() {
     }
 
     fun onClickCreateTask() {
-        navigator.openJobCardScreen("")
+        navigator.openJobCardScreen()
 
     }
 

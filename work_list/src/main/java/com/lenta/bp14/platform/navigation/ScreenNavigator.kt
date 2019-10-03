@@ -82,9 +82,9 @@ class ScreenNavigator @Inject constructor(
         }
     }
 
-    override fun openJobCardScreen(taskNumber: String) {
+    override fun openJobCardScreen() {
         runOrPostpone {
-            getFragmentStack()?.push(JobCardFragment.create(taskNumber = taskNumber))
+            getFragmentStack()?.push(JobCardFragment.create())
         }
     }
 
@@ -423,7 +423,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openLoginScreen()
     fun openFastDataLoadingScreen()
     fun openTaskListScreen()
-    fun openJobCardScreen(taskNumber: String)
+    fun openJobCardScreen()
     fun openGoodsListClScreen()
     fun openListOfDifferencesScreen()
     fun openReportResultScreen()

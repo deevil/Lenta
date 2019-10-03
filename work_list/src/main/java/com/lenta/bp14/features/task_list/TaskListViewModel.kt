@@ -22,7 +22,7 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
     @Inject
     lateinit var navigator: IScreenNavigator
     @Inject
-    lateinit var taskSearchHelper: ITasksSearchHelper
+    lateinit var tasksSearchHelper: ITasksSearchHelper
 
     val selectedPage = MutableLiveData(0)
 
@@ -50,18 +50,18 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
     }
 
     val processingTasks by lazy {
-        taskSearchHelper.taskList.map(funcTaskAdapter)
+        tasksSearchHelper.taskList.map(funcTaskAdapter)
     }
     val searchTasks by lazy {
-        taskSearchHelper.filteredTaskList.map(funcTaskAdapter)
+        tasksSearchHelper.filteredTaskList.map(funcTaskAdapter)
     }
 
     val thirdButtonVisibility = selectedPage.map { it == TaskListTab.PROCESSING.position }
 
     init {
         viewModelScope.launch {
-            searchFieldProcessing.value = taskSearchHelper.processedFilter ?: ""
-            searchFieldFiltered.value = taskSearchHelper.searchFilter ?: ""
+            searchFieldProcessing.value = tasksSearchHelper.processedFilter ?: ""
+            searchFieldFiltered.value = tasksSearchHelper.searchFilter ?: ""
             updateProcessing()
         }
 
@@ -77,7 +77,6 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
     }
 
 
-
     override fun onPageSelected(position: Int) {
         Logg.d { "onPageSelected: $position" }
         selectedPage.value = position
@@ -90,8 +89,8 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
     private fun updateProcessing() {
         viewModelScope.launch {
             navigator.showProgressLoadingData()
-            taskSearchHelper.processedFilter = searchFieldProcessing.value
-            taskSearchHelper.updateTaskList().either({
+            tasksSearchHelper.processedFilter = searchFieldProcessing.value
+            tasksSearchHelper.updateTaskList().either({
                 navigator.openAlertScreen(it)
             }) {
                 // not used
@@ -103,8 +102,8 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
     private fun updateFiltered() {
         viewModelScope.launch {
             navigator.showProgressLoadingData()
-            taskSearchHelper.searchFilter = searchFieldFiltered.value
-            taskSearchHelper.updateFilteredTaskList().either({
+            tasksSearchHelper.searchFilter = searchFieldFiltered.value
+            tasksSearchHelper.updateFilteredTaskList().either({
                 navigator.openAlertScreen(it)
             }) {
                 // not used
@@ -122,11 +121,47 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
     }
 
     fun onClickProcessingTask(position: Int) {
-        navigator.openJobCardScreen(taskNumber = "100")
+        setProcessedTask(getProcessingTaskId(position))
     }
 
     fun onClickSearchTask(position: Int) {
-        navigator.openJobCardScreen(taskNumber = "100")
+        setProcessedTask(getFilteredTaskId(position))
+    }
+
+    private fun getProcessingTaskId(position: Int): String {
+        return tasksSearchHelper.taskList.value?.getOrNull(position)?.taskId ?: ""
+    }
+
+    private fun getFilteredTaskId(position: Int): String {
+        return tasksSearchHelper.filteredTaskList.value?.getOrNull(position)?.taskId ?: ""
+    }
+
+
+    private fun setProcessedTask(taskId: String) {
+        viewModelScope.launch {
+            navigator.showProgressLoadingData()
+            tasksSearchHelper.setProcessedTask(taskId)
+            navigator.openJobCardScreen()
+            navigator.hideProgress()
+        }
+
+    }
+
+    fun onResume() {
+        if (tasksSearchHelper.isNewSearchData) {
+            tasksSearchHelper.isNewSearchData = false
+            selectedPage.postValue(1)
+        }
+    }
+
+    fun onDigitPressed(digit: Int) {
+        when (selectedPage.value) {
+            0 -> searchFieldProcessing
+            else -> searchFieldFiltered
+        }.let {
+            it.postValue(it.value ?: "" + digit)
+        }
+        requestFocusToNumberField.value = true
     }
 
 }

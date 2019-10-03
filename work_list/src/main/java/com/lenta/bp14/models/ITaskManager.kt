@@ -66,6 +66,7 @@ interface ITaskDescription {
     var taskName: String
     val description: String
     val comment: String
+    val isStrictList: Boolean
 }
 
 fun ITaskManager<*, *>.getTaskName(): String? {

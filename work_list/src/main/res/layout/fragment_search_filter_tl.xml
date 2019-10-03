@@ -44,8 +44,8 @@
                     android:id="@+id/spin_select_comment"
                     style="@style/CellSpinnerStyle"
                     app:items="@{vm.taskTypeList}"
-                    app:onPositionClickListener="@{vm}"
-                    tools:entries="@array/task_type" />
+                    app:position="@{vm.selectedPosition}"
+                    app:onPositionClickListener="@{vm}" />
 
             </LinearLayout>
 
@@ -78,6 +78,7 @@
 
                 <EditText
                     style="@style/CellEditTextStyle"
+                    android:inputType="number"
                     android:text="@={vm.goodField}" />
 
             </LinearLayout>
@@ -147,6 +148,7 @@
 
                 <EditText
                     style="@style/CellEditTextStyle"
+                    android:inputType="number"
                     android:text="@={vm.goodsGroupField}" />
 
             </LinearLayout>

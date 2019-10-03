@@ -12,12 +12,15 @@ import com.lenta.bp14.R
 import com.lenta.bp14.models.data.TaskListTab
 import com.lenta.bp14.databinding.*
 import com.lenta.bp14.platform.extentions.getAppComponent
+import com.lenta.shared.keys.KeyCode
+import com.lenta.shared.keys.OnKeyDownListener
 import com.lenta.shared.platform.activity.OnBackPresserListener
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
+import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.databinding.DataBindingAdapter
 import com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig
 import com.lenta.shared.utilities.databinding.RecyclerViewKeyHandler
@@ -27,7 +30,7 @@ import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
 import com.lenta.shared.utilities.extentions.provideViewModel
 
 class TaskListFragment : CoreFragment<FragmentTaskListBinding, TaskListViewModel>(),
-        ViewPagerSettings, ToolbarButtonsClickListener, OnBackPresserListener {
+        ViewPagerSettings, ToolbarButtonsClickListener, OnBackPresserListener, OnKeyDownListener {
 
     private var processingRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
     private var searchRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
@@ -181,6 +184,29 @@ class TaskListFragment : CoreFragment<FragmentTaskListBinding, TaskListViewModel
 
     override fun onBackPressed(): Boolean {
         vm.onClickMenu()
+        return false
+    }
+
+    override fun onResume() {
+        super.onResume()
+        vm.onResume()
+    }
+
+    override fun onKeyDown(keyCode: KeyCode): Boolean {
+        when (vm.selectedPage.value) {
+            0 -> processingRecyclerViewKeyHandler
+            1 -> searchRecyclerViewKeyHandler
+            else -> null
+        }?.let {
+            if (!it.onKeyDown(keyCode)) {
+                keyCode.digit?.let { digit ->
+                    vm.onDigitPressed(digit)
+                    return true
+                }
+                return false
+            }
+            return true
+        }
         return false
     }
 
