@@ -55,6 +55,7 @@ interface AppComponent {
     fun inject(it: ProductDocumentsReviseViewModel)
     fun inject(it: AlcoholBatchSelectViewModel)
     fun inject(it: AlcoFormReviseViewModel)
+    fun inject(it: RussianAlcoFormReviseViewModel)
     fun inject(it: DiscrepancyListViewModel)
     fun inject(it: NonExciseAlcoInfoViewModel)
 }

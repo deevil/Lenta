@@ -22,10 +22,7 @@ import com.lenta.bp9.features.goods_information.general.GoodsInfoFragment
 import com.lenta.bp9.features.goods_information.non_excise_alco.NonExciseAlcoInfoFragment
 import com.lenta.bp9.features.loading.tasks.*
 import com.lenta.bp9.features.reject.RejectFragment
-import com.lenta.bp9.features.revise.AlcoFormReviseFragment
-import com.lenta.bp9.features.revise.AlcoholBatchSelectFragment
-import com.lenta.bp9.features.revise.ProductDocumentsReviseFragment
-import com.lenta.bp9.features.revise.TaskReviseFragment
+import com.lenta.bp9.features.revise.*
 import com.lenta.bp9.model.task.TaskProductInfo
 import com.lenta.bp9.features.revise.invoice.InvoiceReviseFragment
 import com.lenta.bp9.model.task.revise.ProductDocumentType
@@ -249,6 +246,12 @@ class ScreenNavigator(
         }
     }
 
+    override fun openRussianAlcoFormReviseScreen(matnr: String, batchNumber: String) {
+        runOrPostpone {
+            getFragmentStack()?.push(RussianAlcoFormReviseFragment.create(matnr, batchNumber))
+        }
+    }
+
     override fun openDiscrepancyListScreen() {
         runOrPostpone {
             getFragmentStack()?.push(DiscrepancyListFragment())
@@ -314,6 +317,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openProductDocumentsReviseScreen()
     fun openAlcoholBatchSelectScreen(matnr: String, type: ProductDocumentType)
     fun openImportAlcoFormReviseScreen(matnr: String, batchNumber: String)
+    fun openRussianAlcoFormReviseScreen(matnr: String, batchNumber: String)
     fun openDiscrepancyListScreen()
     fun openSelectTypeCodeScreen(codeConfirmationForSap: Int, codeConfirmationForBarCode: Int)
     fun openAlertGoodsNotInOrderScreen()

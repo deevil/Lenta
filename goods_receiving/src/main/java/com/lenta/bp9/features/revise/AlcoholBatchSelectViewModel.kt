@@ -61,7 +61,7 @@ class AlcoholBatchSelectViewModel : CoreViewModel() {
                     screenNavigator.openImportAlcoFormReviseScreen(matnr, it.batchNumber)
                 }
                 ProductDocumentType.AlcoRus -> {
-                    Logg.d { "Open form for russian batch with matnr " + matnr + " and batch number " + it.batchNumber }
+                    screenNavigator.openRussianAlcoFormReviseScreen(matnr, it.batchNumber)
                 }
             }
         }
