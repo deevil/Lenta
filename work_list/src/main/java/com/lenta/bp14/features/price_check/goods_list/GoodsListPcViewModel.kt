@@ -36,7 +36,6 @@ class GoodsListPcViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     lateinit var generalTaskManager: IGeneralTaskManager
 
 
-
     val processedSelectionsHelper = SelectionItemsHelper()
     val searchSelectionsHelper = SelectionItemsHelper()
 
@@ -165,7 +164,12 @@ class GoodsListPcViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
 
         viewModelScope.launch {
             navigator.showProgressLoadingData()
-            checkPriceReportNetRequest(task.getReportData(deviceInfo.getDeviceIp())).either( {
+            checkPriceReportNetRequest(
+                    task.getReportData(
+                            ip = deviceInfo.getDeviceIp(),
+                            isNotFinish = true
+                    )
+            ).either({
                 navigator.openAlertScreen(it)
             }) {
                 Logg.d { "SentReportResult: $it" }
@@ -175,7 +179,6 @@ class GoodsListPcViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
             navigator.hideProgress()
 
         }
-
 
 
     }

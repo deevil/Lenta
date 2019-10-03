@@ -188,11 +188,11 @@ class CheckPriceTask @Inject constructor(
         )
     }
 
-    override fun getReportData(ip: String): CheckPriceReport {
+    override fun getReportData(ip: String, isNotFinish: Boolean): CheckPriceReport {
         return CheckPriceReport(
                 ip = ip,
                 description = taskDescription,
-                isNotFinish = false,
+                isNotFinish = isNotFinish,
                 checksResults = getCheckResults().value ?: emptyList()
 
         )
@@ -218,7 +218,7 @@ interface ICheckPriceTask : ITask {
     suspend fun getActualPriceByEan(eanCode: String): Either<Failure, IActualPriceInfo>
     suspend fun getActualPriceByMatNr(matNumber: String): Either<Failure, IActualPriceInfo>
     suspend fun checkPriceByQrCode(qrCode: String): Either<Failure, IActualPriceInfo>
-    fun getReportData(ip: String): CheckPriceReport
+    fun getReportData(ip: String, isNotFinish: Boolean): CheckPriceReport
 
     var processingMatNumber: String?
 
