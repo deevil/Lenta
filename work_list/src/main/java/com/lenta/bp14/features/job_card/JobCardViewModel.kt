@@ -18,6 +18,8 @@ import com.lenta.bp14.models.work_list.WorkListTaskManager
 import com.lenta.bp14.platform.navigation.IScreenNavigator
 import com.lenta.bp14.requests.check_price.CheckPriceTaskInfoParams
 import com.lenta.bp14.requests.check_price.ICheckPriceTaskInfoNetRequest
+import com.lenta.bp14.requests.not_exposed_product.NotExposedTaskInfoNetRequest
+import com.lenta.bp14.requests.not_exposed_product.NotExposedTaskInfoParams
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.functional.Either
 import com.lenta.shared.platform.device_info.DeviceInfo
@@ -52,6 +54,8 @@ class JobCardViewModel : CoreViewModel() {
     lateinit var deviceIndo: DeviceInfo
     @Inject
     lateinit var checkPriceTaskInfoNetRequest: ICheckPriceTaskInfoNetRequest
+    @Inject
+    lateinit var notExposedTaskInfoNetRequest: NotExposedTaskInfoNetRequest
 
 
     private val taskFromTaskList by lazy {
@@ -122,7 +126,7 @@ class JobCardViewModel : CoreViewModel() {
                     } else {
                         Either.Right(null)
                     }.let {
-                        it.either( { failure ->
+                        it.either({ failure ->
                             screenNavigator.openAlertScreen(failure)
                         }) { checkPriceTaskInfoResult ->
                             newTask(
@@ -175,19 +179,41 @@ class JobCardViewModel : CoreViewModel() {
                     screenNavigator.openGoodsListWlScreen()
                 }
                 AppTaskTypes.NotExposedProducts.taskType -> {
-                    newTask(
-                            taskManager = notExposedProductsTaskManager,
-                            taskDescription = NotExposedProductsTaskDescription(
-                                    tkNumber = sessionInfo.market!!,
-                                    taskNumber = taskFromTaskList?.taskId
-                                            ?: "",
-                                    taskName = taskName.value ?: "",
-                                    comment = comment.value ?: "",
-                                    description = description.value ?: "",
-                                    isStrictList = taskFromTaskList?.isStrict ?: false
+                    if (taskFromTaskList != null) {
+                        notExposedTaskInfoNetRequest(
+                                NotExposedTaskInfoParams(
+                                        taskNumber = taskFromTaskList!!.taskId,
+                                        ip = deviceIndo.getDeviceIp(),
+                                        withProductInfo = true.toSapBooleanString(),
+                                        mode = "1"
+                                )
+                        )
+                    } else {
+                        Either.Right(null)
+                    }.let {
+
+                        it.either({ failure ->
+                            screenNavigator.openAlertScreen(failure)
+                        }) { result ->
+                            newTask(
+                                    taskManager = notExposedProductsTaskManager,
+                                    taskDescription = NotExposedProductsTaskDescription(
+                                            tkNumber = sessionInfo.market!!,
+                                            taskNumber = taskFromTaskList?.taskId
+                                                    ?: "",
+                                            taskName = taskName.value ?: "",
+                                            comment = comment.value ?: "",
+                                            description = description.value ?: "",
+                                            isStrictList = taskFromTaskList?.isStrict ?: false,
+                                            additionalTaskInfo = result
+                                    )
                             )
-                    )
-                    screenNavigator.openGoodsListNeScreen()
+                            screenNavigator.openGoodsListNeScreen()
+                        }
+
+
+                    }
+
                 }
                 else -> screenNavigator.openNotImplementedScreenAlert("")
             }

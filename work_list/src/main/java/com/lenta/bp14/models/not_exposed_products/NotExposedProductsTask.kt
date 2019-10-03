@@ -142,7 +142,7 @@ class NotExposedProductsTask @Inject constructor(
         return NotExposedReport(
                 ip = ip,
                 description = taskDescription,
-                isNotFinish = false,
+                isNotFinish = true,
                 checksResults = notExposedProductsRepo.getProducts().value ?: emptyList()
         )
     }
