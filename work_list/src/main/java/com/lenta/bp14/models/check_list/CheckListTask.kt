@@ -27,41 +27,34 @@ class CheckListTask(
 
     override fun addGood(good: Good) {
         val goodsList = goods.value!!.toMutableList()
-        val existGood = goodsList.find { it.ean == good.ean }
-        if (existGood != null) {
+        goodsList.find {
+            it.ean == good.ean && it.material == good.material
+        }?.let { existGood ->
             val existQuantity = existGood.quantity.value!!.toDoubleOrNull()
             val quantity = good.quantity.value!!.toDoubleOrNull()
             goodsList[goodsList.indexOf(existGood)].quantity.value = existQuantity.sumWith(quantity).dropZeros()
-        } else {
-            goodsList.add(0, good)
-        }
+        } ?: goodsList.add(0, good)
 
         goods.value = goodsList
     }
 
     override fun deleteSelectedGoods(indices: MutableSet<Int>) {
         val goodsList = goods.value!!.toMutableList()
-        indices.apply {
-            val eans = goods.value?.filterIndexed { index, _ ->
-                this.contains(index)
-            }?.map { it.ean }?.toSet() ?: emptySet()
-
-            goodsList.removeAll { eans.contains(it.ean) }
+        val goodsForDelete = mutableListOf<Good>()
+        goodsList.mapIndexed { index, good ->
+            if (indices.contains(index)) goodsForDelete.add(good)
         }
 
+        goodsList.removeAll(goodsForDelete)
         goods.value = goodsList
     }
 
-    override fun getGoodByMaterial(material: String): Good? {
+    override suspend fun getGoodByMaterial(material: String): Good? {
         return checkListRepo.getGoodByMaterial(material)
     }
 
-    override fun getGoodByEan(ean: String): Good? {
+    override suspend fun getGoodByEan(ean: String): Good? {
         return checkListRepo.getGoodByEan(ean)
-    }
-
-    override fun getGoodByMatcode(matcode: String): Good? {
-        return checkListRepo.getGoodByMatcode(matcode)
     }
 
     override fun saveScannedGoodList(goodsList: List<Good>) {
@@ -82,9 +75,8 @@ interface ICheckListTask : ITask {
     var openToEdit: Boolean
     val goods: MutableLiveData<List<Good>>
 
-    fun getGoodByMaterial(material: String): Good?
-    fun getGoodByEan(ean: String): Good?
-    fun getGoodByMatcode(matcode: String): Good?
+    suspend fun getGoodByEan(ean: String): Good?
+    suspend fun getGoodByMaterial(material: String): Good?
 
     fun addGood(good: Good)
     fun deleteSelectedGoods(indices: MutableSet<Int>)
@@ -95,7 +87,7 @@ interface ICheckListTask : ITask {
 // --------------------------
 
 data class Good(
-        val ean: String,
+        val ean: String? = null,
         val material: String,
         val name: String,
         val units: Uom,
