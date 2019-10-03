@@ -16,8 +16,8 @@ import com.lenta.bp14.models.not_exposed_products.NotExposedProductsTaskManager
 import com.lenta.bp14.models.work_list.WorkListTaskDescription
 import com.lenta.bp14.models.work_list.WorkListTaskManager
 import com.lenta.bp14.platform.navigation.IScreenNavigator
-import com.lenta.bp14.requests.CheckPriceTaskInfoParams
-import com.lenta.bp14.requests.ICheckPriceTaskInfoNetRequest
+import com.lenta.bp14.requests.check_price.CheckPriceTaskInfoParams
+import com.lenta.bp14.requests.check_price.ICheckPriceTaskInfoNetRequest
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.functional.Either
 import com.lenta.shared.platform.device_info.DeviceInfo

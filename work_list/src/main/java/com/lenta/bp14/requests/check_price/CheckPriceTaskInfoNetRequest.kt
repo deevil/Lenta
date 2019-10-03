@@ -1,7 +1,9 @@
-package com.lenta.bp14.requests
+package com.lenta.bp14.requests.check_price
 
 import com.google.gson.annotations.SerializedName
-import com.lenta.bp14.requests.check_price.CheckResult
+import com.lenta.bp14.requests.pojo.Price
+import com.lenta.bp14.requests.pojo.ProductInfo
+import com.lenta.bp14.requests.pojo.Position
 import com.lenta.bp14.requests.pojo.RetCode
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.fmp.ObjectRawStatus
@@ -58,6 +60,6 @@ data class CheckPriceTaskInfoResult(
         @SerializedName("ET_RETCODE")
         val retCodes: List<RetCode>,
         @SerializedName("ET_TASK_POS")
-        val positions: List<RetCode>
+        val positions: List<Position>
 )
 

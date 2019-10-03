@@ -3,8 +3,7 @@ package com.lenta.bp14.requests.not_exposed_product
 import com.google.gson.annotations.SerializedName
 import com.lenta.bp14.models.not_exposed_products.NotExposedProductsTaskDescription
 import com.lenta.bp14.models.not_exposed_products.repo.INotExposedProductInfo
-import com.lenta.bp14.requests.pojo.ReportSentStatus
-import com.lenta.bp14.requests.pojo.SentReportResult
+import com.lenta.bp14.requests.pojo.*
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.functional.Either
 import com.lenta.shared.functional.map
@@ -19,13 +18,13 @@ class NotExposedSendReportNetRequest
 
     override suspend fun run(params: NotExposedReport): Either<Failure, SentReportResult> {
 
-        val checkPlaces = mutableListOf<Place>()
+        val checkPlaces = mutableListOf<CheckPlace>()
         val checkPositions = mutableListOf<Position>()
 
         params.checksResults.forEach {
 
             checkPlaces.add(
-                    Place(
+                    CheckPlace(
                             matNr = it.matNr,
                             statCheck = when (it.isEmptyPlaceMarked) {
                                 false -> "3"
@@ -103,26 +102,7 @@ data class FmpReport(
         val positions: List<Position>,
 
         @SerializedName("IT_CHECK_PLACE")
-        val places: List<Place>
-
-
-)
-
-data class Position(
-        @SerializedName("MATNR")
-        val matNr: String,
-        @SerializedName("XZAEL")
-        val isProcessed: String,
-        @SerializedName("FACT_QNT")
-        val quantity: Double
-)
-
-data class Place(
-        @SerializedName("MATNR")
-        val matNr: String,
-        // оформленно - 2, не оформленно - 3, есть кол-во - 1
-        @SerializedName("STAT_CHECK")
-        val statCheck: String
+        val places: List<CheckPlace>
 )
 
 

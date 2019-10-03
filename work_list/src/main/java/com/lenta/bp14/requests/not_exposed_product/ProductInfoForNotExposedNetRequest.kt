@@ -2,6 +2,8 @@ package com.lenta.bp14.requests.not_exposed_product
 
 import com.lenta.bp14.models.general.AppTaskTypes
 import com.lenta.bp14.requests.*
+import com.lenta.bp14.requests.pojo.ProductInfo
+import com.lenta.bp14.requests.pojo.Stock
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.fmp.resources.dao_ext.getUomInfo
 import com.lenta.shared.fmp.resources.fast.ZmpUtz07V001
