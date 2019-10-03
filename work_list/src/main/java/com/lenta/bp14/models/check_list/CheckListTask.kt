@@ -27,7 +27,7 @@ class CheckListTask(
 
     override fun addGood(good: Good) {
         val goodsList = goods.value!!.toMutableList()
-        val existGood = goodsList.find { it.ean == good.ean }
+        val existGood = goodsList.find { it.ean == good.ean && it.material == good.material }
         if (existGood != null) {
             val existQuantity = existGood.quantity.value!!.toDoubleOrNull()
             val quantity = good.quantity.value!!.toDoubleOrNull()
@@ -41,18 +41,16 @@ class CheckListTask(
 
     override fun deleteSelectedGoods(indices: MutableSet<Int>) {
         val goodsList = goods.value!!.toMutableList()
-        indices.apply {
-            val eans = goods.value?.filterIndexed { index, _ ->
-                this.contains(index)
-            }?.map { it.ean }?.toSet() ?: emptySet()
-
-            goodsList.removeAll { eans.contains(it.ean) }
+        val goodsForDelete = mutableListOf<Good>()
+        goodsList.mapIndexed { index, good ->
+            if (indices.contains(index)) goodsForDelete.add(good)
         }
 
+        goodsList.removeAll(goodsForDelete)
         goods.value = goodsList
     }
 
-    override fun getGoodByMaterial(material: String): Good? {
+    override suspend fun getGoodByMaterial(material: String): Good? {
         return goods.value?.find { it.material == material } ?: checkListRepo.getGoodByMaterial(material)
     }
 
@@ -82,7 +80,7 @@ interface ICheckListTask : ITask {
     var openToEdit: Boolean
     val goods: MutableLiveData<List<Good>>
 
-    fun getGoodByMaterial(material: String): Good?
+    suspend fun getGoodByMaterial(material: String): Good?
     fun getGoodByEan(ean: String): Good?
     //fun getGoodByMatcode(matcode: String): Good?
 
@@ -95,7 +93,7 @@ interface ICheckListTask : ITask {
 // --------------------------
 
 data class Good(
-        val ean: String?,
+        val ean: String? = null,
         val material: String,
         val name: String,
         val units: Uom,

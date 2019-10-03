@@ -96,7 +96,9 @@ class GoodsListClViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
                     addGood(task.getGoodByEan(eanCode))
                 },
                 funcForMatNr = { matNr ->
-                    addGood(task.getGoodByMaterial(matNr))
+                    viewModelScope.launch {
+                        addGood(task.getGoodByMaterial(matNr))
+                    }
                 },
                 funcForPriceQrCode = { qrCode ->
                     //getGoodByEan(matNr)
