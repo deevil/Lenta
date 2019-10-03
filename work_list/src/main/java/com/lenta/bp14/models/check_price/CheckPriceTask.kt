@@ -192,7 +192,7 @@ class CheckPriceTask @Inject constructor(
         return CheckPriceReport(
                 ip = ip,
                 description = taskDescription,
-                isNotFinish = true,
+                isNotFinish = false,
                 checksResults = getCheckResults().value ?: emptyList()
 
         )
