@@ -70,7 +70,17 @@ class GoodsListNeViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
 
     val requestFocusToNumberField: MutableLiveData<Boolean> = MutableLiveData()
 
-    val processingGoods = MutableLiveData<List<Good>>()
+    val processingGoods by lazy {
+        task.getPlainedProducts().map {
+            it?.mapIndexed { index, productInfo ->
+                SimpleProductUi(
+                        position = index + 1,
+                        matNr = productInfo.matNr,
+                        name = "${productInfo.matNr.takeLast(6)} ${productInfo.name}"
+                )
+            }
+        }
+    }
 
     private val toUiFunc = { products: List<INotExposedProductInfo>? ->
         products?.reversed()?.mapIndexed { index, productInfo ->
@@ -175,7 +185,10 @@ class GoodsListNeViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     fun onClickSave() {
         viewModelScope.launch {
             navigator.showProgressLoadingData()
-            sentReportRequest(task.getReportData(deviceInfo.getDeviceIp())).either(
+            sentReportRequest(task.getReportData(
+                    ip = deviceInfo.getDeviceIp(),
+                    isNotFinish = false
+            )).either(
                     {
                         navigator.openAlertScreen(failure = it)
                     }
@@ -208,6 +221,11 @@ class GoodsListNeViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     fun onClickItemPosition(position: Int) {
         val correctedPage = correctedSelectedPage.value
         when (correctedPage) {
+            0 -> {
+                processingGoods.value?.getOrNull(position)?.let {
+                    checkCode(it.matNr)
+                }
+            }
             1 -> {
                 (processedGoods.value)?.getOrNull(position)?.let {
                     checkCode(it.matNr)
@@ -254,4 +272,10 @@ data class NotExposedProductUi(
         val name: String,
         val quantity: String?,
         val isEmptyPlaceMarked: Boolean?
+)
+
+data class SimpleProductUi(
+        val position: Int,
+        val matNr: String,
+        val name: String
 )

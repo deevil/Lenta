@@ -27,7 +27,7 @@ class ProductInfoNetRequest
 }
 
 data class ProductInfoParams(
-        @SerializedName("IV_MATNR_DATA_FLG")
+        @SerializedName("IV_MATNR_DATA_FLAG")
         val withProductInfo: String,
         @SerializedName("IV_RBSINFO_FLG")
         val withAdditionalInf: String,

@@ -34,7 +34,7 @@ interface ICheckPriceTaskInfoNetRequest : UseCase<CheckPriceTaskInfoResult, Chec
 data class CheckPriceTaskInfoParams(
         @SerializedName("IV_IP")
         val ip: String,
-        @SerializedName("IV_MATNR_DATA_FLG")
+        @SerializedName("IV_MATNR_DATA_FLAG")
         val withProductInfo: String,
         /**
          * Режим работы:

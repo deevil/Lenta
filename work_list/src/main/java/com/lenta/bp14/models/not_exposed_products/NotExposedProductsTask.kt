@@ -52,6 +52,28 @@ class NotExposedProductsTask @Inject constructor(
         return notExposedProductsRepo.getProducts()
     }
 
+    override fun getPlainedProducts(): LiveData<List<INotExposedProductInfo>> {
+        return getProducts().map { processedGoodInfo ->
+            val processedMaterials = processedGoodInfo?.map { it.matNr }?.toSet() ?: emptySet()
+            val productsInfoMap = taskDescription.additionalTaskInfo?.productsInfo?.map { it.matNr to it }?.toMap()
+                    ?: emptyMap()
+            val positions = taskDescription.additionalTaskInfo?.positions?.filter { !processedMaterials.contains(it.matNr) }
+                    ?: emptyList()
+            positions.map {
+                val productInfo = productsInfoMap[it.matNr]
+                NotExposedProductInfo(
+                        ean = null,
+                        name = productInfo?.name ?: "",
+                        matNr = it.matNr,
+                        quantity = it.quantity,
+                        uom = null,
+                        isEmptyPlaceMarked = null,
+                        section = productInfo?.sectionNumber,
+                        group = productInfo?.eKGRP
+                )
+            }
+        }
+    }
 
     override fun setCheckInfo(quantity: Double?, isEmptyPlaceMarked: Boolean?) {
         processedGoodInfo.let {
@@ -138,11 +160,11 @@ class NotExposedProductsTask @Inject constructor(
     }
 
 
-    override fun getReportData(ip: String): NotExposedReport {
+    override fun getReportData(ip: String, isNotFinish: Boolean): NotExposedReport {
         return NotExposedReport(
                 ip = ip,
                 description = taskDescription,
-                isNotFinish = true,
+                isNotFinish = isNotFinish,
                 checksResults = notExposedProductsRepo.getProducts().value ?: emptyList()
         )
     }
@@ -154,6 +176,8 @@ class NotExposedProductsTask @Inject constructor(
 interface INotExposedProductsTask : ITask, IFilterable {
 
     fun getProcessedProductInfoResult(): GoodInfo?
+
+    fun getPlainedProducts(): LiveData<List<INotExposedProductInfo>>
 
     fun getProducts(): LiveData<List<INotExposedProductInfo>>
 
@@ -167,7 +191,7 @@ interface INotExposedProductsTask : ITask, IFilterable {
 
     suspend fun getProductInfoAndSetProcessed(ean: String? = null, matNr: String? = null): Either<Failure, GoodInfo>
 
-    fun getReportData(ip: String): NotExposedReport
+    fun getReportData(ip: String, isNotFinish: Boolean): NotExposedReport
 
 }
 
