@@ -1,7 +1,7 @@
 package com.lenta.bp14.requests
 
 import com.google.gson.annotations.SerializedName
-import com.lenta.bp14.requests.pojo.RetCode
+import com.lenta.bp14.requests.pojo.*
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.fmp.ObjectRawStatus
 import com.lenta.shared.functional.Either
@@ -73,69 +73,6 @@ data class ProductInfoResult(
 )
 
 
-data class ProductInfo(
-        //Номер отдела (секция)
-        @SerializedName("ABTNR")
-        val sectionNumber: String,
-        //ЕИ заказа на поставку
-        @SerializedName("BSTME")
-        val bSTME: String,
-        //Базисная единица измерения
-        @SerializedName("BUOM")
-        val bUom: String,
-        //Глобальный номер товара (GTIN)
-        @SerializedName("EAN")
-        val ean: String,
-        //Знаменатель при пересчете в базисные единицы измерения
-        @SerializedName("EAN_UMREN")
-        val eanUmRen: String,
-        //Числитель для пересчета в базисные единицы измерения
-        @SerializedName("EAN_UMREZ")
-        val eanUmRez: String,
-        @SerializedName("EAN_UOM")
-        //Единица измерения
-        val eanUOM: String,
-        //Группа закупок
-        @SerializedName("EKGRP")
-        val eKGRP: String,
-        //Признак - Товар алкоголь
-        @SerializedName("IS_ALCO")
-        val isAlco: String,
-        //Признак - Акцизный алкоголь
-        @SerializedName("IS_EXC")
-        val isExcise: String,
-        //Признак – товар здоровое питание
-        @SerializedName("IS_HF")
-        val isHealthyFood: String,
-        //Признак – Товар маркированный
-        @SerializedName("IS_MARK")
-        val iSMarked: String,
-        //Признак – товар новинка
-        @SerializedName("IS_NEW")
-        val isNew: String,
-        //Признак – товар ветеринарный
-        @SerializedName("IS_VET")
-        val isVet: String,
-        //SAP-код товара
-        @SerializedName("MATERIAL")
-        val matNr: String,
-        //Группа товаров
-        @SerializedName("MATKL")
-        val matKL: String,
-        //Тип матрицы SKU
-        @SerializedName("MATR_TYPE")
-        val matrixType: String,
-        //Общий срок годности в днях
-        @SerializedName("MHDHB_DAYS")
-        val expirationDate: Int,
-        //Остаточный срок годности в днях
-        @SerializedName("MHDRZ_DAYS")
-        val remainingExpirationDate: Int,
-        //Длинное наименование
-        @SerializedName("NAME")
-        val name: String
-)
-
 data class AdditionalInfo(
         @SerializedName("MATNR")
         val matnr: String,
@@ -163,55 +100,3 @@ data class AdditionalInfo(
 
 )
 
-data class Supplier(
-        @SerializedName("MATNR")
-        val matnr: String,
-
-        @SerializedName("LIFNR")
-        val lifnr: String,
-
-        @SerializedName("LIFNR_NAME")
-        val lifnrName: String,
-
-        @SerializedName("PERIOD_ACT")
-        val periodAct: String
-)
-
-data class Place(
-        @SerializedName("MATNR")
-        var matnr: String,
-        @SerializedName("PLACE_CODE")
-        var placeCode: String
-)
-
-data class Price(
-        @SerializedName("MATNR")
-        var matnr: String,
-
-        @SerializedName("PRICE1")
-        var price1: String,
-
-        @SerializedName("PRICE2")
-        var price2: String,
-
-        @SerializedName("PRICE3")
-        var price3: String,
-
-        @SerializedName("PRICE4")
-        var price4: String
-
-
-)
-
-
-data class Stock(
-
-        @SerializedName("MATNR")
-        var matnr: String,
-
-        @SerializedName("LGORT")
-        var lgort: String,
-
-        @SerializedName("STOCK")
-        var stock: Double
-)
