@@ -4,6 +4,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp14.models.check_list.Good
 import com.lenta.bp14.models.check_list.ICheckListTask
+import com.lenta.bp14.models.check_price.IPriceInfoParser
 import com.lenta.bp14.models.getTaskName
 import com.lenta.bp14.platform.navigation.IScreenNavigator
 import com.lenta.shared.models.core.Uom
@@ -22,6 +23,9 @@ class GoodsListClViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     lateinit var navigator: IScreenNavigator
     @Inject
     lateinit var task: ICheckListTask
+    @Inject
+    lateinit var priceInfoParser: IPriceInfoParser
+
 
     val selectionsHelper = SelectionItemsHelper()
 
@@ -93,7 +97,9 @@ class GoodsListClViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
         analyseCode(
                 code = number,
                 funcForEan = { eanCode ->
-                    addGood(task.getGoodByEan(eanCode))
+                    viewModelScope.launch {
+                        addGood(task.getGoodByEan(eanCode))
+                    }
                 },
                 funcForMatNr = { matNr ->
                     viewModelScope.launch {
@@ -101,7 +107,13 @@ class GoodsListClViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
                     }
                 },
                 funcForPriceQrCode = { qrCode ->
-                    //getGoodByEan(matNr)
+                    priceInfoParser.getPriceInfoFromRawCode(qrCode)?.let {
+                        viewModelScope.launch {
+                            addGood(task.getGoodByEan(it.eanCode))
+                        }
+                        return@analyseCode
+                    }
+                    navigator.showGoodNotFound()
                 },
                 funcForSapOrBar = navigator::showTwelveCharactersEntered,
                 funcForNotValidFormat = navigator::showGoodNotFound
@@ -131,7 +143,7 @@ class GoodsListClViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     }
 
     fun onScanResult(data: String) {
-
+        checkEnteredNumber(data)
     }
 
 }
