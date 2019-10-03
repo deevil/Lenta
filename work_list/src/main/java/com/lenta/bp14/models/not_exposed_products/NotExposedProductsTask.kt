@@ -20,6 +20,7 @@ import com.lenta.shared.exception.Failure
 import com.lenta.shared.functional.Either
 import com.lenta.shared.functional.map
 import com.lenta.shared.utilities.extentions.combineLatest
+import com.lenta.shared.utilities.extentions.isSapTrue
 import com.lenta.shared.utilities.extentions.map
 import javax.inject.Inject
 
@@ -31,6 +32,49 @@ class NotExposedProductsTask @Inject constructor(
         private val filterableDelegate: IFilterable,
         private val productInfoNotExposedInfoRequest: IProductInfoForNotExposedNetRequest
 ) : INotExposedProductsTask, IFilterable by filterableDelegate {
+
+    private val productsInfoMap by lazy {
+        taskDescription.additionalTaskInfo?.productsInfo?.map { it.matNr to it }?.toMap()
+                ?: emptyMap()
+    }
+
+    private val checkPlaces by lazy {
+        taskDescription.additionalTaskInfo?.checkPlaces?.map { it.matNr to it }?.toMap()
+                ?: emptyMap()
+    }
+
+    init {
+        initProcessed()
+    }
+
+    private fun initProcessed() {
+
+        taskDescription.additionalTaskInfo?.positions?.filter { it.isProcessed.isSapTrue() || it.quantity > 0 }?.let {
+            it.forEach { position ->
+                val productInfo = productsInfoMap[position.matNr]
+                val checkPlace = checkPlaces[position.matNr]
+                notExposedProductsRepo.addOrReplaceProduct(
+                        NotExposedProductInfo(
+                                ean = null,
+                                matNr = position.matNr,
+                                name = productInfo?.name ?: "",
+                                quantity = position.quantity,
+                                isEmptyPlaceMarked = checkPlace?.let { place ->
+                                    when {
+                                        place.statCheck == "2" -> true
+                                        place.statCheck == "3" -> false
+                                        else -> null
+                                    }
+                                },
+                                section = productInfo?.sectionNumber,
+                                group = productInfo?.eKGRP,
+                                uom = null
+                        )
+                )
+            }
+        }
+
+    }
 
 
     private var processedGoodInfo: GoodInfo? = null

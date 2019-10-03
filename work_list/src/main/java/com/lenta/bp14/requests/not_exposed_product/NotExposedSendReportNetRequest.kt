@@ -46,7 +46,7 @@ class NotExposedSendReportNetRequest
         }
 
         return fmpRequestsHelper.restRequest("ZMP_UTZ_WKL_08_V001",
-                FmpReport(
+                SapReport(
                         description = params.description.taskName,
                         ip = params.ip,
                         isNotFinished = params.isNotFinish.toSapBooleanString(),
@@ -80,7 +80,7 @@ data class NotExposedReport(
 )
 
 
-data class FmpReport(
+data class SapReport(
         @SerializedName("IV_DESCR")
         val description: String,
 
