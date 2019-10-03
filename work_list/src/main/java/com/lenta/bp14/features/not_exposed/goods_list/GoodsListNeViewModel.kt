@@ -4,12 +4,12 @@ import androidx.lifecycle.LiveData
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.lenta.bp14.features.common_ui_model.SimpleProductUi
 import com.lenta.bp14.models.IGeneralTaskManager
 import com.lenta.bp14.models.check_price.IPriceInfoParser
 import com.lenta.bp14.models.filter.FilterFieldType
 import com.lenta.bp14.models.filter.FilterParameter
 import com.lenta.bp14.models.data.GoodsListTab
-import com.lenta.bp14.models.data.pojo.Good
 import com.lenta.bp14.models.getTaskName
 import com.lenta.bp14.models.not_exposed_products.INotExposedProductsTask
 import com.lenta.bp14.models.not_exposed_products.repo.INotExposedProductInfo
@@ -274,8 +274,3 @@ data class NotExposedProductUi(
         val isEmptyPlaceMarked: Boolean?
 )
 
-data class SimpleProductUi(
-        val position: Int,
-        val matNr: String,
-        val name: String
-)

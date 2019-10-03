@@ -2,11 +2,11 @@ package com.lenta.bp14.features.price_check.goods_list
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.lenta.bp14.features.common_ui_model.SimpleProductUi
 import com.lenta.bp14.models.IGeneralTaskManager
 import com.lenta.bp14.models.check_price.ICheckPriceResult
 import com.lenta.bp14.models.check_price.ICheckPriceTask
 import com.lenta.bp14.models.data.GoodsListTab
-import com.lenta.bp14.models.data.pojo.Good
 import com.lenta.bp14.models.getTaskName
 import com.lenta.bp14.platform.navigation.IScreenNavigator
 import com.lenta.bp14.requests.check_price.CheckPriceReportNetRequest
@@ -50,7 +50,7 @@ class GoodsListPcViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     val numberField = MutableLiveData<String>("")
     val requestFocusToNumberField: MutableLiveData<Boolean> = MutableLiveData()
 
-    val processingGoods = MutableLiveData<List<Good>>(listOf())
+    val processingGoods = MutableLiveData<List<SimpleProductUi>>(emptyList())
 
     private val funcUiAdapter = { list: List<ICheckPriceResult>? ->
         list?.reversed()?.mapIndexed { index, iCheckPriceResult ->
@@ -223,7 +223,7 @@ class GoodsListPcViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
 
     private fun getMatNrByPosition(position: Int): String? {
         return when (correctedSelectedPage.value) {
-            0 -> processingGoods.value?.map { it.material }
+            0 -> processingGoods.value?.map { it.matNr }
             1 -> processedGoods.value?.map { it.matNr }
             2 -> searchGoods.value?.map { it.matNr }
             else -> null
