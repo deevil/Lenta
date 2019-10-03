@@ -85,6 +85,10 @@ class GeneralRepo @Inject constructor(
         return taskTypesInfoList.firstOrNull { it.taskType == taskType }
     }
 
+    override suspend fun onDbReady() {
+        getTasksTypes()
+    }
+
 }
 
 
@@ -93,6 +97,7 @@ interface IGeneralRepo {
     suspend fun getTaskList(params: SimpleParams): Either<Failure, List<TaskInfo>>
     suspend fun getFilteredTaskList(filterParams: FilteredParams): Either<Failure, List<TaskInfo>>
     fun getTasksTypeInfo(taskType: String): ITaskTypeInfo?
+    suspend fun onDbReady()
 }
 
 data class TaskInfo(
