@@ -20,8 +20,8 @@ import com.lenta.bp14.platform.sound.ISoundPlayer
 import com.lenta.bp14.platform.sound.SoundPlayer
 import com.lenta.bp14.repos.IRepoInMemoryHolder
 import com.lenta.bp14.repos.RepoInMemoryHolder
-import com.lenta.bp14.requests.CheckPriceTaskInfoNetRequest
-import com.lenta.bp14.requests.ICheckPriceTaskInfoNetRequest
+import com.lenta.bp14.requests.check_price.CheckPriceTaskInfoNetRequest
+import com.lenta.bp14.requests.check_price.ICheckPriceTaskInfoNetRequest
 import com.lenta.bp14.requests.tasks.ITaskListFilteredNetRequest
 import com.lenta.bp14.requests.tasks.ITaskListUpdateNetRequest
 import com.lenta.bp14.requests.tasks.TaskListFilteredNetRequest

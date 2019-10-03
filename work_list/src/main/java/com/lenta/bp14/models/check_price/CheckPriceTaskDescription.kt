@@ -1,7 +1,7 @@
 package com.lenta.bp14.models.check_price
 
 import com.lenta.bp14.models.ITaskDescription
-import com.lenta.bp14.requests.CheckPriceTaskInfoResult
+import com.lenta.bp14.requests.check_price.CheckPriceTaskInfoResult
 
 data class CheckPriceTaskDescription(
         override val tkNumber: String,
