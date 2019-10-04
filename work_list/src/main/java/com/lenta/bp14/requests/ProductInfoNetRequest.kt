@@ -8,6 +8,7 @@ import com.lenta.shared.functional.Either
 import com.lenta.shared.functional.rightToLeft
 import com.lenta.shared.interactor.UseCase
 import com.lenta.shared.requests.FmpRequestsHelper
+import com.lenta.shared.utilities.extentions.isSapTrue
 import javax.inject.Inject
 
 class ProductInfoNetRequest
@@ -15,11 +16,15 @@ class ProductInfoNetRequest
     override suspend fun run(params: ProductInfoParams): Either<Failure, ProductInfoResult> {
         return fmpRequestsHelper.restRequest("ZMP_UTZ_WKL_11_V001", params, ProductInfoStatus::class.java)
                 .rightToLeft(
-                        fnRtoL = {
-                                if (it.productsInfo.isNullOrEmpty()) {
-                                        return@rightToLeft Failure.GoodNotFound
+                        fnRtoL = { result ->
+                            if (params.withProductInfo.isSapTrue() && result.productsInfo.isNullOrEmpty()) {
+                                return@rightToLeft Failure.GoodNotFound
+                            } else {
+                                result.retCodes.firstOrNull { it.retCode == 1 }?.apply {
+                                    return@rightToLeft Failure.SapError(this.errorText)
                                 }
-                                else null
+                                null
+                            }
                         }
                 )
     }
