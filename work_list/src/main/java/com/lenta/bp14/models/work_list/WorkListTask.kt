@@ -154,7 +154,7 @@ class WorkListTask(
     }
 
     override fun isEmpty(): Boolean {
-        return getGoodStocks().value.isNullOrEmpty()
+        return processed.value.isNullOrEmpty()
     }
 
 }
