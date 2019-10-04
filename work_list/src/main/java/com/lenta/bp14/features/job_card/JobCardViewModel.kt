@@ -111,6 +111,25 @@ class JobCardViewModel : CoreViewModel() {
     }
 
     fun onClickNext() {
+        when {
+            taskFromTaskList?.isNotFinished == true -> openTask()
+            taskFromTaskList?.isMyBlock == true -> {
+                screenNavigator.showAlertBlockedTaskByMe(taskFromTaskList!!.blockingUser) {
+                    openTask()
+                }
+
+            }
+            taskFromTaskList?.isMyBlock == false -> {
+                screenNavigator.showAlertBlockedTaskAnotherUser(taskFromTaskList!!.blockingUser)
+            }
+            else -> openTask()
+
+        }
+
+
+    }
+
+    private fun openTask() {
         viewModelScope.launch {
             screenNavigator.showProgressLoadingData()
             when (getSelectedTypeTask()?.taskType) {
@@ -220,7 +239,10 @@ class JobCardViewModel : CoreViewModel() {
             }
 
             screenNavigator.hideProgress()
+
+
         }
+
 
     }
 
