@@ -23,30 +23,30 @@ class NotExposedSendReportNetRequest
 
         params.checksResults.forEach {
 
-            checkPlaces.add(
-                    CheckPlace(
-                            matNr = it.matNr,
-                            statCheck = when (it.isEmptyPlaceMarked) {
-                                false -> "3"
-                                true -> "2"
-                                else -> "1"
-                            }
-                    )
-            )
-
-            if (it.isEmptyPlaceMarked == null) {
-                checkPositions.add(
-                        Position(
+            if (it.isEmptyPlaceMarked != null) {
+                checkPlaces.add(
+                        CheckPlace(
                                 matNr = it.matNr,
-                                isProcessed = true.toSapBooleanString(),
-                                quantity = it.quantity ?: 0.0
+                                statCheck = when (it.isEmptyPlaceMarked) {
+                                    false -> "3"
+                                    true -> "2"
+                                    else -> "1"
+                                }
                         )
                 )
             }
+
+            checkPositions.add(
+                    Position(
+                            matNr = it.matNr,
+                            isProcessed = (it.isEmptyPlaceMarked != null).toSapBooleanString(),
+                            quantity = it.quantity ?: 0.0
+                    )
+            )
         }
 
         return fmpRequestsHelper.restRequest("ZMP_UTZ_WKL_08_V001",
-                FmpReport(
+                SapReport(
                         description = params.description.taskName,
                         ip = params.ip,
                         isNotFinished = params.isNotFinish.toSapBooleanString(),
@@ -80,9 +80,7 @@ data class NotExposedReport(
 )
 
 
-
-
-data class FmpReport(
+data class SapReport(
         @SerializedName("IV_DESCR")
         val description: String,
 

@@ -15,12 +15,17 @@ interface IActualPricesRepo {
     fun getActualPriceInfoByMatNumber(matNumber: String): IActualPriceInfo?
     suspend fun getActualPriceInfoByEan(tkNumber: String, eanCode: String): Either<Failure, IActualPriceInfo>
     suspend fun getActualPriceInfoByMatNr(tkNumber: String, matNumber: String): Either<Failure, IActualPriceInfo>
+    fun addToCacheActualPriceInfo(actualPriceinfo: IActualPriceInfo)
 
 }
 
 class ActualPriceRepo @Inject constructor(private val checkPriceRequest: ICheckPriceNetRequest) : IActualPricesRepo {
 
     private val cashedResults = mutableMapOf<String, IActualPriceInfo?>()
+
+    override fun addToCacheActualPriceInfo(actualPriceinfo: IActualPriceInfo) {
+        cashedResults[actualPriceinfo.matNumber] = actualPriceinfo
+    }
 
 
     override fun getActualPriceInfoFromCache(tkNumber: String, eanCode: String): IActualPriceInfo? {

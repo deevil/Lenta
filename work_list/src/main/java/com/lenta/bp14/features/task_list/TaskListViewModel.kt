@@ -138,13 +138,8 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
 
 
     private fun setProcessedTask(taskId: String) {
-        viewModelScope.launch {
-            navigator.showProgressLoadingData()
-            tasksSearchHelper.setProcessedTask(taskId)
-            navigator.openJobCardScreen()
-            navigator.hideProgress()
-        }
-
+        tasksSearchHelper.setProcessedTask(taskId)
+        navigator.openJobCardScreen()
     }
 
     fun onResume() {

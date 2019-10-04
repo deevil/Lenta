@@ -364,8 +364,8 @@ public class ZmpUtzWkl11V001Rfc {
             super(name, value);
         }
 
-        public static LimitedScalarParameter IV_MATNR_DATA_FLG(String value) {
-            return new LimitedScalarParameter("IV_MATNR_DATA_FLG", value);
+        public static LimitedScalarParameter IV_MATNR_DATA_FLAG(String value) {
+            return new LimitedScalarParameter("IV_MATNR_DATA_FLAG", value);
         }
 
         public static LimitedScalarParameter IV_RBSINFO_FLG(String value) {
