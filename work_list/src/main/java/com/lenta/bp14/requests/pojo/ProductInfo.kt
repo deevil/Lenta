@@ -46,7 +46,7 @@ data class ProductInfo(
         @SerializedName("IS_VET")
         val isVet: String,
         //SAP-код товара
-        @SerializedName("MATERIAL")
+        @SerializedName("MATNR")
         val matNr: String,
         //Группа товаров
         @SerializedName("MATKL")

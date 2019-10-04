@@ -1,10 +1,7 @@
 package com.lenta.bp14.requests.not_exposed_product
 
 import com.google.gson.annotations.SerializedName
-import com.lenta.bp14.requests.pojo.CheckPlace
-import com.lenta.bp14.requests.pojo.ProductInfo
-import com.lenta.bp14.requests.pojo.Stock
-import com.lenta.bp14.requests.pojo.RetCode
+import com.lenta.bp14.requests.pojo.*
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.fmp.ObjectRawStatus
 import com.lenta.shared.functional.Either
@@ -34,7 +31,7 @@ interface INotExposedTaskInfoNetRequest : UseCase<NotExposedTaskInfoResult, NotE
 data class NotExposedTaskInfoParams(
         @SerializedName("IV_IP")
         val ip: String,
-        @SerializedName("IV_MATNR_DATA_FLG")
+        @SerializedName("IV_MATNR_DATA_FLAG")
         val withProductInfo: String,
         /**
          * Режим работы:
@@ -52,7 +49,7 @@ class NotExposedTaskInfoStatus : ObjectRawStatus<NotExposedTaskInfoResult>()
 
 data class NotExposedTaskInfoResult(
         @SerializedName("ET_TASK_POS")
-        val positions: List<RetCode>,
+        val positions: List<Position>,
         @SerializedName("ET_STOCKS")
         val stocks: List<Stock>,
         @SerializedName("ET_MATERIALS")

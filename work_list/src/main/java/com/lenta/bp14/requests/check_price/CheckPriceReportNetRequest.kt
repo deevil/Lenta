@@ -3,6 +3,7 @@ package com.lenta.bp14.requests.check_price
 import com.google.gson.annotations.SerializedName
 import com.lenta.bp14.models.check_price.CheckPriceTaskDescription
 import com.lenta.bp14.models.check_price.ICheckPriceResult
+import com.lenta.bp14.requests.pojo.Position
 import com.lenta.bp14.requests.pojo.ReportSentStatus
 import com.lenta.bp14.requests.pojo.SentReportResult
 import com.lenta.shared.exception.Failure
@@ -36,6 +37,13 @@ class CheckPriceReportNetRequest
                                     },
                                     isPrinted = it.isPrinted.toSapBooleanString()
                             )
+                        },
+                        positions = params.checksResults.map {
+                            Position(
+                                    matNr = it.matNr!!,
+                                    isProcessed = true.toSapBooleanString(),
+                                    quantity = 0.0
+                            )
                         }
                 )
                 , ReportSentStatus::class.java)
@@ -63,7 +71,6 @@ data class CheckPriceReport(
 )
 
 
-
 data class FmpReport(
         @SerializedName("IV_DESCR")
         val description: String,
@@ -80,9 +87,11 @@ data class FmpReport(
         @SerializedName("IV_WERKS")
         val tkNumber: String,
 
-        @SerializedName("IT_CHECK_PLACE")
-        val checksResult: List<CheckResult>
+        @SerializedName("IT_CHECK_PRICE")
+        val checksResult: List<CheckResult>,
 
+        @SerializedName("IT_TASK_POS")
+        val positions: List<Position>
 
 )
 
@@ -90,7 +99,9 @@ data class FmpReport(
 data class CheckResult(
         @SerializedName("MATNR")
         val matNr: String,
-        // верно - 1, ошибка - 2, ценник отсутствует - 1
+        /**
+         * верно - 1, ошибка - 2, ценник отсутствует - 3
+         */
         @SerializedName("STAT_CHECK")
         val statCheck: String,
         @SerializedName("IS_PRINT")
