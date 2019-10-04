@@ -255,7 +255,7 @@ class ScreenNavigator @Inject constructor(
         }
     }
 
-    override fun showRawGoodsRemainedInTask(goodName: String, yesCallback: () -> Unit) {
+    override fun showPrintPriceOffer(goodName: String, yesCallback: () -> Unit) {
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.print_price_tag_for_good, goodName),
                     pageNumber = "43",
@@ -473,7 +473,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun showPriceTagsSubmitted(nextCallback: () -> Unit)
     fun showSetTaskToStatusCalculated(yesCallback: () -> Unit)
     fun showRawGoodsRemainedInTask(yesCallback: () -> Unit)
-    fun showRawGoodsRemainedInTask(goodName: String, yesCallback: () -> Unit)
+    fun showPrintPriceOffer(goodName: String, yesCallback: () -> Unit)
     fun showUnsavedDataFoundOnDevice(deleteCallback: () -> Unit, goOverCallback: () -> Unit)
     fun showUnsavedTaskFoundOnDevice(deleteCallback: () -> Unit, goOverCallback: () -> Unit)
     fun showGoodIsNotPartOfTask()

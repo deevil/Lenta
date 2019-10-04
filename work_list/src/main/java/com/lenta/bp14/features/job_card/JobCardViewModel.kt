@@ -248,17 +248,22 @@ class JobCardViewModel : CoreViewModel() {
 
     fun onBackPressed(): Boolean {
         if (generalTaskManager.getProcessedTask()?.isEmpty() != false) {
-            generalTaskManager.clearCurrentTask()
+            clearCurrentTask()
             return true
         }
 
         screenNavigator.openConfirmationExitTask(generalTaskManager.getProcessedTask()?.getDescription()?.taskName
                 ?: "") {
-            generalTaskManager.clearCurrentTask()
+            clearCurrentTask()
             screenNavigator.goBack()
         }
 
         return false
+    }
+
+    private fun clearCurrentTask() {
+        generalTaskManager.clearCurrentTask()
+        tasksSearchHelper.processedTaskInfo = null
     }
 
 
