@@ -94,18 +94,11 @@ data class PlannedDeliveries(
 )
 
 data class FmpRequest(
-        @SerializedName("IV_IP")
+        // Номер ТК
+        @SerializedName("IV_WERKS")
         val ip: String,
 
-        @SerializedName("IV_DESCR")
-        val description: String,
-
-        @SerializedName("IV_WERKS")
-        val tkNumber: String,
-
-        @SerializedName("IV_NOT_FINISH")
-        val isNotFinished: String,
-
-        @SerializedName("IT_TASK_POS")
-        val positions: List<Position>
+        // Номер товара
+        @SerializedName("IV_MATNR")
+        val description: String
 )
