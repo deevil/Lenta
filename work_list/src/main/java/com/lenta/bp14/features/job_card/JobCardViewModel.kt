@@ -225,7 +225,7 @@ class JobCardViewModel : CoreViewModel() {
     }
 
     fun onBackPressed(): Boolean {
-        if (generalTaskManager.getProcessedTaskType() == null) {
+        if (generalTaskManager.getProcessedTask()?.isEmpty() != false) {
             return true
         }
 

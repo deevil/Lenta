@@ -77,6 +77,10 @@ class CheckListTask(
 
     }
 
+    override fun isEmpty(): Boolean {
+        return goods.value.isNullOrEmpty()
+    }
+
 }
 
 interface ICheckListTask : ITask {

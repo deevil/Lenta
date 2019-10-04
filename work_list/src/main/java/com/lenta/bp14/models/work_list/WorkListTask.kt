@@ -12,6 +12,7 @@ import com.lenta.bp14.models.general.IGeneralRepo
 import com.lenta.bp14.models.work_list.repo.WorkListRepo
 import com.lenta.shared.models.core.MatrixType
 import com.lenta.shared.models.core.Uom
+import com.lenta.shared.platform.battery_state.getIconForStatus
 import com.lenta.shared.platform.time.ITimeMonitor
 import com.lenta.shared.utilities.extentions.getFormattedDate
 import com.lenta.shared.utilities.extentions.map
@@ -150,6 +151,10 @@ class WorkListTask(
                 }
             }
         }
+    }
+
+    override fun isEmpty(): Boolean {
+        return getGoodStocks().value.isNullOrEmpty()
     }
 
 }
