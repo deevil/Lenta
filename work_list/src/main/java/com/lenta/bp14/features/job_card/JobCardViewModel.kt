@@ -248,6 +248,7 @@ class JobCardViewModel : CoreViewModel() {
 
     fun onBackPressed(): Boolean {
         if (generalTaskManager.getProcessedTask()?.isEmpty() != false) {
+            generalTaskManager.clearCurrentTask()
             return true
         }
 
