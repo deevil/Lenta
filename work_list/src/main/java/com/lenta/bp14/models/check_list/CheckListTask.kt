@@ -8,6 +8,8 @@ import com.lenta.bp14.models.check_list.repo.ICheckListRepo
 import com.lenta.bp14.models.general.AppTaskTypes
 import com.lenta.bp14.models.general.IGeneralRepo
 import com.lenta.bp14.models.general.ITaskTypeInfo
+import com.lenta.bp14.platform.IVibrateHelper
+import com.lenta.bp14.platform.sound.ISoundPlayer
 import com.lenta.bp14.requests.check_list.CheckListReport
 import com.lenta.shared.models.core.Uom
 import com.lenta.shared.platform.time.ITimeMonitor
@@ -19,10 +21,16 @@ class CheckListTask(
         private val checkListRepo: ICheckListRepo,
         private val taskDescription: CheckListTaskDescription,
         private val timeMonitor: ITimeMonitor,
-        private val gson: Gson
+        private val gson: Gson,
+        private val soundPlayer: ISoundPlayer,
+        private val vibrateHelper: IVibrateHelper
 ) : ICheckListTask {
 
     override val goods = MutableLiveData<List<Good>>(listOf())
+
+    override fun getGoodByEanFromList(ean: String): Good? {
+        return goods.value?.find { it.ean == ean }
+    }
 
     override fun addGood(good: Good) {
         val goodsList = goods.value!!.toMutableList()
@@ -73,8 +81,17 @@ class CheckListTask(
         )
     }
 
-    override fun saveScannedGoodList(goodsList: List<Good>) {
+    override suspend fun checkProductFromVideoScan(rawCode: String?): Good? {
+        rawCode?.let {
+            checkListRepo.getGoodByEan(it)?.let { good ->
+                addGood(good)
+                soundPlayer.playBeep()
+                vibrateHelper.shortVibrate()
+                return good
+            }
+        }
 
+        return null
     }
 
 }
@@ -84,12 +101,12 @@ interface ICheckListTask : ITask {
 
     suspend fun getGoodByEan(ean: String): Good?
     suspend fun getGoodByMaterial(material: String): Good?
+    suspend fun checkProductFromVideoScan(rawCode: String?): Good?
 
     fun addGood(good: Good)
     fun deleteSelectedGoods(indices: MutableSet<Int>)
-
     fun getReportData(ip: String): CheckListReport
-    fun saveScannedGoodList(goodsList: List<Good>)
+    fun getGoodByEanFromList(ean: String): Good?
 }
 
 // --------------------------
@@ -102,12 +119,8 @@ data class Good(
         val quantity: MutableLiveData<String>
 ) {
 
-    fun getFormattedMaterial(): String {
-        return material.takeLast(6)
-    }
-
     fun getFormattedMaterialWithName(): String {
-        return getFormattedMaterial() + " " + name
+        return material.takeLast(6) + " " + name
     }
 
 }
