@@ -187,7 +187,7 @@ class RecyclerViewKeyHandler<T>(private val rv: RecyclerView,
             //rv.adapter?.notifyItemChanged(info.currentPos)
             rv.adapter?.notifyDataSetChanged()
             if (!info.isManualClick && info.currentPos > -1 && info.currentPos < items.value?.size ?: 0) {
-                rv.scrollToPosition(info.currentPos)
+                rv.post { rv.scrollToPosition(info.currentPos) }
             }
 
         })
