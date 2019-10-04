@@ -88,7 +88,7 @@ class JobCardViewModel : CoreViewModel() {
 
     val description = selectedTaskTypeInfo.map { it?.annotation }
 
-    val comment = selectedTaskTypeInfo.map { getComment(it) }
+    val comment = selectedTaskTypeInfo.map { taskFromTaskList?.comment ?: getComment(it) }
 
     val enabledNextButton = selectedTaskTypeInfo.map { it != null && it.taskType != AppTaskTypes.Empty.taskType }
 
