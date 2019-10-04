@@ -6,11 +6,13 @@ import com.lenta.bp14.models.general.IGeneralRepo
 import com.lenta.bp14.models.work_list.repo.WorkListRepo
 import com.lenta.shared.di.AppScope
 import com.lenta.shared.platform.time.ITimeMonitor
+import com.mobrun.plugin.api.HyperHive
 import javax.inject.Inject
 
 @AppScope
 class WorkListTaskManager @Inject constructor(
         private val generalRepo: IGeneralRepo,
+        private val hyperHive: HyperHive,
         private val timeMonitor: ITimeMonitor,
         private val gson: Gson
 ) : BaseTaskManager<WorkListTask, WorkListTaskDescription>() {
@@ -18,7 +20,7 @@ class WorkListTaskManager @Inject constructor(
     override fun newTask(taskDescription: WorkListTaskDescription): WorkListTask? {
         _task = WorkListTask(
                 generalRepo = generalRepo,
-                workListRepo = WorkListRepo(),
+                workListRepo = WorkListRepo(hyperHive),
                 taskDescription = taskDescription,
                 timeMonitor = timeMonitor,
                 gson = gson

@@ -22,8 +22,6 @@ import kotlinx.coroutines.withContext
 class CheckListRepo(
         hyperHive: HyperHive,
         val units: ZmpUtz07V001 = ZmpUtz07V001(hyperHive), // Единицы измерения
-        //val settings: ZmpUtz14V001 = ZmpUtz14V001(hyperHive), // Настройки
-        //val stores: ZmpUtz23V001 = ZmpUtz23V001(hyperHive), // Список магазинов
         val productInfo: ZfmpUtz48V001 = ZfmpUtz48V001(hyperHive), // Информация о товаре
         val eamInfo: ZmpUtz25V001 = ZmpUtz25V001(hyperHive) // Информация о штрих-коде
 ) : ICheckListRepo {

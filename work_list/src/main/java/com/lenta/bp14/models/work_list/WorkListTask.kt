@@ -26,8 +26,6 @@ class WorkListTask(
         private val gson: Gson
 ) : IWorkListTask {
 
-    //private var currentList = processed
-
     val processing = MutableLiveData<MutableList<Good>>(mutableListOf())
     val processed = MutableLiveData<MutableList<Good>>(mutableListOf())
     val search = MutableLiveData<MutableList<Good>>(mutableListOf())
@@ -90,15 +88,6 @@ class WorkListTask(
             good.comments.value = commentsList
         }
     }
-
-    /*fun setCurrentList(tabPosition: Int) {
-        currentList = when (tabPosition) {
-            GoodsListTab.PROCESSED.position -> processed
-            GoodsListTab.PROCESSING.position -> processing
-            GoodsListTab.SEARCH.position -> search
-            else -> processed
-        }
-    }*/
 
     override fun getGoodOptions(): LiveData<GoodOptions> {
         return currentGood.map { it?.common?.options }
@@ -224,9 +213,8 @@ data class Good(
 
 
 data class CommonGoodInfo(
-        val ean: String,
+        val ean: String?,
         val material: String,
-        val matcode: String,
         val name: String,
         val units: Uom,
         val defaultQuantity: Double,

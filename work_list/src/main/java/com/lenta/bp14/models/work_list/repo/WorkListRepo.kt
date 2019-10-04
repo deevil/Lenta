@@ -1,24 +1,36 @@
 package com.lenta.bp14.models.work_list.repo
 
+import com.lenta.bp14.fmp.resources.ZmpUtzWkl13V001Rfc
 import com.lenta.bp14.models.data.GoodType
 import com.lenta.bp14.models.work_list.*
+import com.lenta.shared.fmp.resources.fast.ZmpUtz07V001
+import com.lenta.shared.fmp.resources.slow.ZfmpUtz48V001
+import com.lenta.shared.fmp.resources.slow.ZmpUtz25V001
 import com.lenta.shared.models.core.MatrixType
 import com.lenta.shared.models.core.Uom
+import com.mobrun.plugin.api.HyperHive
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.math.BigDecimal
 import java.util.*
 import kotlin.random.Random
 
-class WorkListRepo {
+class WorkListRepo(
+        hyperHive: HyperHive,
+        val units: ZmpUtz07V001 = ZmpUtz07V001(hyperHive), // Единицы измерения
+        //val settings: ZmpUtz14V001 = ZmpUtz14V001(hyperHive), // Настройки
+        //val stores: ZmpUtz23V001 = ZmpUtz23V001(hyperHive), // Список магазинов
+        val productInfo: ZfmpUtz48V001 = ZfmpUtz48V001(hyperHive), // Информация о товаре
+        val eamInfo: ZmpUtz25V001 = ZmpUtz25V001(hyperHive), // Информация о штрих-коде
+        val deliveries: ZmpUtzWkl13V001Rfc = ZmpUtzWkl13V001Rfc(hyperHive) // Планируемые поставки
+) {
 
     suspend fun getCommonGoodInfoByEan(ean: String): CommonGoodInfo? {
         return withContext(Dispatchers.IO) {
             return@withContext CommonGoodInfo(
-                    ean = "12345678",
-                    material = "000000000000222222",
-                    matcode = "333333333333",
-                    name = "Товар",
+                    ean = "4005489741143",
+                    material = "000000000000000021",
+                    name = "Р/к горбуша (Россия) 230/250г",
                     units = Uom.ST,
                     defaultQuantity = 1.0,
                     goodGroup = "123456",
