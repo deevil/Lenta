@@ -3,6 +3,7 @@ package com.lenta.bp14.features.check_list.ean_scanner
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp14.ml.CheckStatus
+import com.lenta.bp14.models.check_list.GoodRequestResult
 import com.lenta.bp14.models.check_list.ICheckListTask
 import com.lenta.bp14.models.getTaskName
 import com.lenta.shared.platform.viewmodel.CoreViewModel
@@ -21,27 +22,37 @@ class EanVideoScannerViewModel : CoreViewModel() {
     }
 
     val isAdded = MutableLiveData(false)
-
     val productTitle = MutableLiveData("")
 
+    private var lastCode: String? = null
+    private var goodRequestResult: GoodRequestResult? = null
 
     fun checkStatus(rawCode: String): CheckStatus? {
         Logg.d { "rawCode: $rawCode" }
 
-        task.getGoodByEanFromList(rawCode)?.let {good ->
-            productTitle.value = good.material.takeLast(6)
-            isAdded.value = true
-            return CheckStatus.VALID
+        if (lastCode != rawCode) {
+            lastCode = rawCode
+            viewModelScope.launch {
+                goodRequestResult = task.getGoodRequestResult(rawCode)
+            }
         }
 
-        productTitle.value = ""
-        isAdded.value = false
+        if (goodRequestResult != null) {
+            val good = goodRequestResult!!.good
+            goodRequestResult = null
 
-        viewModelScope.launch {
-            task.checkProductFromVideoScan(rawCode)
+            good?.let {
+                isAdded.value = true
+                productTitle.value = it.material.takeLast(6)
+                return CheckStatus.VALID
+            }
+
+            isAdded.value = false
+            productTitle.value = "Не найден"
+            return CheckStatus.ERROR
         }
 
-        return CheckStatus.ERROR
+        return null
     }
 
 }

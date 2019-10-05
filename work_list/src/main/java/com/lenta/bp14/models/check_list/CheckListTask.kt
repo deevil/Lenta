@@ -28,10 +28,6 @@ class CheckListTask(
 
     override val goods = MutableLiveData<List<Good>>(listOf())
 
-    override fun getGoodByEanFromList(ean: String): Good? {
-        return goods.value?.find { it.ean == ean }
-    }
-
     override fun addGood(good: Good) {
         val goodsList = goods.value!!.toMutableList()
         goodsList.find {
@@ -81,17 +77,13 @@ class CheckListTask(
         )
     }
 
-    override suspend fun checkProductFromVideoScan(rawCode: String?): Good? {
-        rawCode?.let {
-            checkListRepo.getGoodByEan(it)?.let { good ->
-                addGood(good)
-                soundPlayer.playBeep()
-                vibrateHelper.shortVibrate()
-                return good
-            }
-        }
-
-        return null
+    override suspend fun getGoodRequestResult(ean: String): GoodRequestResult {
+        return checkListRepo.getGoodByEan(ean)?.let { good ->
+            addGood(good)
+            soundPlayer.playBeep()
+            vibrateHelper.shortVibrate()
+            GoodRequestResult(good = good)
+        } ?: GoodRequestResult(good = null)
     }
 
 }
@@ -101,12 +93,11 @@ interface ICheckListTask : ITask {
 
     suspend fun getGoodByEan(ean: String): Good?
     suspend fun getGoodByMaterial(material: String): Good?
-    suspend fun checkProductFromVideoScan(rawCode: String?): Good?
 
     fun addGood(good: Good)
     fun deleteSelectedGoods(indices: MutableSet<Int>)
     fun getReportData(ip: String): CheckListReport
-    fun getGoodByEanFromList(ean: String): Good?
+    suspend fun getGoodRequestResult(ean: String): GoodRequestResult
 }
 
 // --------------------------
@@ -124,4 +115,8 @@ data class Good(
     }
 
 }
+
+data class GoodRequestResult(
+        val good: Good?
+)
 
