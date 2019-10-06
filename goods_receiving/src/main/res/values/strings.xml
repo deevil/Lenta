@@ -89,4 +89,6 @@
     <string name="supply_results_error_dialog">При проведении ВП №%1$s возникла ошибка: ВП №%1$s заблокирована пользователем %2$s</string>
     <string name="supply_results_automatic_charge_success">По ВП №%1$s выполнено автоматическое списание товаров не предназначенных для продажи согласно настройкам</string>
     <string name="supply_results_automatic_charge_error">Автосписание не прошло, для дальнейшей обработки задания необходимо завершить автосписание через SAP ERP</string>
+    <string name="batch_with_spill_date">Партия (%1$s) с датой разлива</string>
+    <string name="alert_overlimit">Введенное количество больше планового. Измените количество.</string>
 </resources>

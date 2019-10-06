@@ -243,9 +243,9 @@ class ScreenNavigator(
         openInfoScreen(context.getString(R.string.goods_not_in_order))
     }
 
-    override fun openNonExciseAlcoInfoScreen() {
+    override fun openNonExciseAlcoInfoScreen(productInfo: TaskProductInfo) {
         runOrPostpone {
-            getFragmentStack()?.push(NonExciseAlcoInfoFragment())
+            getFragmentStack()?.push(NonExciseAlcoInfoFragment.create(productInfo))
         }
     }
 
@@ -311,6 +311,15 @@ class ScreenNavigator(
         }
     }
 
+    override fun openAlertOverlimit() {
+        openAlertScreen(message = context.getString(R.string.alert_overlimit),
+                iconRes = R.drawable.ic_info_pink,
+                textColor = ContextCompat.getColor(context, R.color.color_text_dialogWarning),
+                pageNumber = "96",
+                timeAutoExitInMillis = 3000
+        )
+    }
+
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 
 }
@@ -345,9 +354,10 @@ interface IScreenNavigator : ICoreNavigator {
     fun openDiscrepancyListScreen()
     fun openSelectTypeCodeScreen(codeConfirmationForSap: Int, codeConfirmationForBarCode: Int)
     fun openAlertGoodsNotInOrderScreen()
-    fun openNonExciseAlcoInfoScreen()
+    fun openNonExciseAlcoInfoScreen(productInfo: TaskProductInfo)
     fun openSupplyResultsErrorDialog(numberSupply: String, userName: String)
     fun openSupplyResultsSuccessDialog(numberSupply: String, leftCallbackFunc: () -> Unit, rightCallbackFunc: () -> Unit)
     fun openSupplyResultsAutomaticChargeErrorDialog()
     fun openSupplyResultsAutomaticChargeSuccessDialog(numberSupply: String, leftCallbackFunc: () -> Unit, rightCallbackFunc: () -> Unit)
+    fun openAlertOverlimit()
 }

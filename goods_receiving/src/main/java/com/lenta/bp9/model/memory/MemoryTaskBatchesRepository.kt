@@ -2,6 +2,7 @@ package com.lenta.bp9.model.memory
 
 import com.lenta.bp9.model.repositories.ITaskBatchesRepository
 import com.lenta.bp9.model.task.TaskBatchInfo
+import com.lenta.bp9.model.task.TaskProductInfo
 
 class MemoryTaskBatchesRepository : ITaskBatchesRepository {
 
@@ -13,6 +14,10 @@ class MemoryTaskBatchesRepository : ITaskBatchesRepository {
 
     override fun findBatch(batch: TaskBatchInfo): TaskBatchInfo? {
         return batchesInfo.firstOrNull { it.materialNumber == batch.materialNumber && it.batchNumber == batch.batchNumber}
+    }
+
+    override fun findBatchOfProduct(productInfo: TaskProductInfo): TaskBatchInfo? {
+        return batchesInfo.firstOrNull { it.materialNumber == productInfo.materialNumber}
     }
 
     override fun addBatch(batch: TaskBatchInfo): Boolean {

@@ -89,9 +89,9 @@ class MainMenuViewModel : CoreViewModel() {
         taskManager.getReceivingTask().let {
             it!!.taskRepository.getProducts().addProduct(TaskProductInfo(
                     materialNumber = "000000000000000021",
-                    description = "Р/к горбуша (Россия) 230/250г",
+                    description = "Р/к пиво (Россия) 230/250г",
                     uom = Uom("ST", "шт"),
-                    type = ProductType.General,
+                    type = ProductType.NonExciseAlcohol,
                     isSet = false,
                     sectionId = "01",
                     matrixType = MatrixType.Active,
@@ -188,20 +188,20 @@ class MainMenuViewModel : CoreViewModel() {
 
         taskManager.getReceivingTask().let {
             it!!.taskRepository.getBatches().addBatch(TaskBatchInfo(
-                    materialNumber = "000031",
+                    materialNumber = "000000000000000021",
                     description = "партия 1",
                     uom = Uom("ST", "шт"),
                     batchNumber = "1",
                     alcoСode = "",
                     manufacturer = "АО \"ПУПКИН\"",
                     bottlingDate = "11.09.2018",
-                    planQuantityBatch = "",
+                    planQuantityBatch = "8",
                     isNoEAN = false
             ))
         }
         taskManager.getReceivingTask().let {
             it!!.taskRepository.getBatchesDiscrepancies().addBatchDiscrepancies(TaskBatchesDiscrepancies(
-                    materialNumber = "000031",
+                    materialNumber = "000000000000000021",
                     batchNumber = "1",
                     numberDiscrepancies = "35.0",
                     uom = Uom("ST", "шт"),
@@ -213,7 +213,7 @@ class MainMenuViewModel : CoreViewModel() {
         }
         taskManager.getReceivingTask().let {
             it!!.taskRepository.getBatchesDiscrepancies().addBatchDiscrepancies(TaskBatchesDiscrepancies(
-                    materialNumber = "000031",
+                    materialNumber = "000000000000000021",
                     batchNumber = "1",
                     numberDiscrepancies = "35.0",
                     uom = Uom("ST", "шт"),
@@ -236,8 +236,38 @@ class MainMenuViewModel : CoreViewModel() {
                     isNoEAN = true
             ))
         }
-        //screenNavigator.openGoodsListScreen()
-        screenNavigator.openSupplyResultsAutomaticChargeSuccessDialog(
+        screenNavigator.openNonExciseAlcoInfoScreen(TaskProductInfo(
+                materialNumber = "000000000000000021",
+                description = "Р/к пиво (Россия) 230/250г",
+                uom = Uom("ST", "шт"),
+                type = ProductType.NonExciseAlcohol,
+                isSet = false,
+                sectionId = "01",
+                matrixType = MatrixType.Active,
+                materialType = "",
+                origQuantity = "",
+                orderQuantity = "",
+                quantityCapitalized = "",
+                overdToleranceLimit = "",
+                underdToleranceLimit = "",
+                upLimitCondAmount = "",
+                quantityInvest = "",
+                roundingSurplus = "",
+                roundingShortages = "",
+                isNoEAN = false,
+                isWithoutRecount = false,
+                isUFF = false,
+                isNotEdit = false,
+                totalExpirationDate = "",
+                remainingShelfLife = "",
+                isRus = false,
+                isBoxFl = false,
+                isMarkFl = false,
+                isVet = false,
+                numberBoxesControl = "",
+                numberStampsControl = ""
+        ))
+        /**screenNavigator.openSupplyResultsAutomaticChargeSuccessDialog(
                 numberSupply = "325478",
                 leftCallbackFunc = {
                     testLeft()
@@ -245,7 +275,7 @@ class MainMenuViewModel : CoreViewModel() {
                 rightCallbackFunc = {
                     testRight()
                 }
-        )
+        )*/
 
         //screenNavigator.openTaskListLoadingScreen(TaskListLoadingMode.Receiving)
     }
