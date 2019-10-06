@@ -5,6 +5,7 @@ import com.lenta.bp9.features.auth.AuthViewModel
 import com.lenta.bp9.features.change_datetime.ChangeDateTimeViewModel
 import com.lenta.bp9.features.discrepancy_list.DiscrepancyListViewModel
 import com.lenta.bp9.features.goods_details.GoodsDetailsViewModel
+import com.lenta.bp9.features.goods_information.excise_alco.ExciseAlcoInfoViewModel
 import com.lenta.bp9.features.goods_information.general.GoodsInfoViewModel
 import com.lenta.bp9.features.goods_information.non_excise_alco.NonExciseAlcoInfoViewModel
 import com.lenta.bp9.features.goods_list.GoodsListViewModel
@@ -54,4 +55,5 @@ interface AppComponent {
     fun inject(it: RejectViewModel)
     fun inject(it: DiscrepancyListViewModel)
     fun inject(it: NonExciseAlcoInfoViewModel)
+    fun inject(it: ExciseAlcoInfoViewModel)
 }

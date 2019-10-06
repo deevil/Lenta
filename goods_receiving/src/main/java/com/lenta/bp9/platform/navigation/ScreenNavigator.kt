@@ -18,6 +18,7 @@ import com.lenta.bp9.features.change_datetime.ChangeDateTimeFragment
 import com.lenta.bp9.features.change_datetime.ChangeDateTimeMode
 import com.lenta.bp9.features.discrepancy_list.DiscrepancyListFragment
 import com.lenta.bp9.features.goods_details.GoodsDetailsFragment
+import com.lenta.bp9.features.goods_information.excise_alco.ExciseAlcoInfoFragment
 import com.lenta.bp9.features.goods_information.general.GoodsInfoFragment
 import com.lenta.bp9.features.goods_information.non_excise_alco.NonExciseAlcoInfoFragment
 import com.lenta.bp9.features.loading.tasks.*
@@ -320,6 +321,12 @@ class ScreenNavigator(
         )
     }
 
+    override fun openExciseAlcoInfoScreen(productInfo: TaskProductInfo) {
+        runOrPostpone {
+            getFragmentStack()?.push(ExciseAlcoInfoFragment.create(productInfo))
+        }
+    }
+
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 
 }
@@ -360,4 +367,5 @@ interface IScreenNavigator : ICoreNavigator {
     fun openSupplyResultsAutomaticChargeErrorDialog()
     fun openSupplyResultsAutomaticChargeSuccessDialog(numberSupply: String, leftCallbackFunc: () -> Unit, rightCallbackFunc: () -> Unit)
     fun openAlertOverlimit()
+    fun openExciseAlcoInfoScreen(productInfo: TaskProductInfo)
 }

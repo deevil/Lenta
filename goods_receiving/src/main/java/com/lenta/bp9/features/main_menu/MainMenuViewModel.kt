@@ -236,11 +236,11 @@ class MainMenuViewModel : CoreViewModel() {
                     isNoEAN = true
             ))
         }
-        screenNavigator.openNonExciseAlcoInfoScreen(TaskProductInfo(
+        screenNavigator.openExciseAlcoInfoScreen(TaskProductInfo(
                 materialNumber = "000000000000000021",
-                description = "Р/к пиво (Россия) 230/250г",
+                description = "Р/к виски (Россия) 230/250г",
                 uom = Uom("ST", "шт"),
-                type = ProductType.NonExciseAlcohol,
+                type = ProductType.ExciseAlcohol,
                 isSet = false,
                 sectionId = "01",
                 matrixType = MatrixType.Active,
