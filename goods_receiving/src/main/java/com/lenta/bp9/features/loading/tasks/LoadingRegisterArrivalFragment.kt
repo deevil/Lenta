@@ -25,7 +25,9 @@ class LoadingRegisterArrivalFragment : CoreLoadingFragment() {
     }
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
-        topToolbarUiModel.description.value = getString(R.string.task_card)
+        (vm as? LoadingRegisterArrivalViewModel)?.let {
+            topToolbarUiModel.description.value = it.taskDescription
+        }
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
@@ -42,6 +44,6 @@ class LoadingRegisterArrivalFragment : CoreLoadingFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        vm.title.value = getString(R.string.task_loading)
+        vm.title.value = getString(R.string.status_change)
     }
 }

@@ -12,10 +12,10 @@ data class FormABRussianRevise(
         val EGAISName: String, // Наименование ( ЕГАИС )
         val EGAISAddress: String, // Адрес ( ЕГАИС )
         val longName: String, // Длинное наименование
-        val quantityByTTN: Int, // Количество по ТТН/ГТД
+        val quantityByTTN: Double, // Количество по ТТН/ГТД
         val numberTTN: String, // Номер ТТН/Номер ГТД
         val shipDate: String, // ??? - Дата
-        val isCheck: Boolean, // ??? - Общий флаг
+        var isCheck: Boolean, // ??? - Общий флаг
         val matnrOSN: String // ??? - Номер товара
 ) {
 
@@ -30,7 +30,7 @@ data class FormABRussianRevise(
                     EGAISName = restData.EGAISName,
                     EGAISAddress = restData.EGAISAddress,
                     longName = restData.longName,
-                    quantityByTTN = restData.quantityByTTN.toInt(),
+                    quantityByTTN = restData.quantityByTTN.toDouble(),
                     numberTTN = restData.numberTTN,
                     shipDate = restData.shipDate,
                     isCheck = restData.isCheck.isNotEmpty(),

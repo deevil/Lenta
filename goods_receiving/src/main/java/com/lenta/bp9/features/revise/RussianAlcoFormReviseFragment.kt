@@ -19,17 +19,17 @@ import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.generateScreenNumber
 import com.lenta.shared.utilities.state.state
 
-class AlcoFormReviseFragment : CoreFragment<FragmentAlcoFormReviseBinding, AlcoFormReviseViewModel>(), ViewPagerSettings, ToolbarButtonsClickListener {
+class RussianAlcoFormReviseFragment : CoreFragment<FragmentRussianAlcoFormReviseBinding, RussianAlcoFormReviseViewModel>(), ViewPagerSettings, ToolbarButtonsClickListener {
 
     private var matnr by state("")
     private var batchNumber by state("")
 
-    override fun getLayoutId(): Int = R.layout.fragment_alco_form_revise
+    override fun getLayoutId(): Int = R.layout.fragment_russian_alco_form_revise
 
     override fun getPageNumber() = generateScreenNumber()
 
-    override fun getViewModel(): AlcoFormReviseViewModel {
-        provideViewModel(AlcoFormReviseViewModel::class.java).let {
+    override fun getViewModel(): RussianAlcoFormReviseViewModel {
+        provideViewModel(RussianAlcoFormReviseViewModel::class.java).let {
             getAppComponent()?.inject(it)
             it.matnr = matnr
             it.batchNumber = batchNumber
@@ -59,8 +59,8 @@ class AlcoFormReviseFragment : CoreFragment<FragmentAlcoFormReviseBinding, AlcoF
 
     private fun prepareABPartView(container: ViewGroup): View {
         DataBindingUtil
-                .inflate<LayoutAlcoFormRevisePartABBinding>(LayoutInflater.from(container.context),
-                        R.layout.layout_alco_form_revise_part_a_b,
+                .inflate<LayoutRussianAlcoFormRevisePartABBinding>(LayoutInflater.from(container.context),
+                        R.layout.layout_russian_alco_form_revise_part_a_b,
                         container,
                         false).let { layoutBinding ->
                     layoutBinding.vm = vm
@@ -71,8 +71,8 @@ class AlcoFormReviseFragment : CoreFragment<FragmentAlcoFormReviseBinding, AlcoF
 
     private fun prepareAdditionalPartOneView(container: ViewGroup): View {
         DataBindingUtil
-                .inflate<LayoutAlcoFormRevisePartOneBinding>(LayoutInflater.from(container.context),
-                        R.layout.layout_alco_form_revise_part_one,
+                .inflate<LayoutRussianAlcoFormRevisePartOneBinding>(LayoutInflater.from(container.context),
+                        R.layout.layout_russian_alco_form_revise_part_one,
                         container,
                         false).let { layoutBinding ->
                     layoutBinding.vm = vm
@@ -83,8 +83,8 @@ class AlcoFormReviseFragment : CoreFragment<FragmentAlcoFormReviseBinding, AlcoF
 
     private fun prepareAdditionalPartTwoView(container: ViewGroup): View {
         DataBindingUtil
-                .inflate<LayoutAlcoFormRevisePartTwoBinding>(LayoutInflater.from(container.context),
-                        R.layout.layout_alco_form_revise_part_two,
+                .inflate<LayoutRussianAlcoFormRevisePartTwoBinding>(LayoutInflater.from(container.context),
+                        R.layout.layout_russian_alco_form_revise_part_two,
                         container,
                         false).let { layoutBinding ->
                     layoutBinding.vm = vm
@@ -112,8 +112,8 @@ class AlcoFormReviseFragment : CoreFragment<FragmentAlcoFormReviseBinding, AlcoF
     }
 
     companion object {
-        fun create(matnr: String, batchNumber: String): AlcoFormReviseFragment {
-            val fragment = AlcoFormReviseFragment()
+        fun create(matnr: String, batchNumber: String): RussianAlcoFormReviseFragment {
+            val fragment = RussianAlcoFormReviseFragment()
             fragment.matnr = matnr
             fragment.batchNumber = batchNumber
             return fragment
@@ -130,4 +130,5 @@ class AlcoFormReviseFragment : CoreFragment<FragmentAlcoFormReviseBinding, AlcoF
             R.id.b_5 -> vm.onClickNext()
         }
     }
+
 }

@@ -20,6 +20,29 @@ enum class TaskStatus(val taskStatusString: String) {
     Completed("90"), //Выполнено
     TemporaryRejected("98"); //Временно отказано
 
+    fun stringValue(): String {
+        return when (this) {
+            Other -> "Другой"
+            Ordered -> "Заказано"
+            Traveling -> "В пути"
+            Arrived -> "Прибыло"
+            Checking -> "Сверяется"
+            Checked -> "Сверено"
+            Unloading -> "Разгружается"
+            Unloaded -> "Разгружено"
+            Recounting -> "Пересчитывается"
+            Recounted -> "Пересчитано"
+            Booked -> "Проведено"
+            TransferringToSection -> "Передача (в секцию)"
+            TransferredToSection -> "Передано (в секцию)"
+            SentToGIS -> "Отправалено в ГИС"
+            RejectedByGIS -> "Отклонено ГИС"
+            AllowedByGIS -> "Разрешено ГИС"
+            Completed -> "Выполнено"
+            TemporaryRejected -> "Временно отказано"
+        }
+    }
+
     companion object {
         fun from(taskStatusString: String): TaskStatus {
             return when(taskStatusString) {

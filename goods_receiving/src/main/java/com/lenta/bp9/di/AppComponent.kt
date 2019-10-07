@@ -8,11 +8,9 @@ import com.lenta.bp9.features.goods_details.GoodsDetailsViewModel
 import com.lenta.bp9.features.goods_information.general.GoodsInfoViewModel
 import com.lenta.bp9.features.goods_information.non_excise_alco.NonExciseAlcoInfoViewModel
 import com.lenta.bp9.features.goods_list.GoodsListViewModel
-import com.lenta.bp9.features.loading.tasks.LoadingTasksViewModel
 import com.lenta.bp9.features.task_list.TaskListViewModel
 import com.lenta.bp9.features.loading.fast.FastDataLoadingViewModel
-import com.lenta.bp9.features.loading.tasks.LoadingRegisterArrivalViewModel
-import com.lenta.bp9.features.loading.tasks.LoadingTaskCardViewModel
+import com.lenta.bp9.features.loading.tasks.*
 import com.lenta.bp9.features.main_menu.MainMenuViewModel
 import com.lenta.bp9.features.reject.RejectViewModel
 import com.lenta.bp9.features.revise.*
@@ -55,6 +53,10 @@ interface AppComponent {
     fun inject(it: ProductDocumentsReviseViewModel)
     fun inject(it: AlcoholBatchSelectViewModel)
     fun inject(it: AlcoFormReviseViewModel)
+    fun inject(it: RussianAlcoFormReviseViewModel)
     fun inject(it: DiscrepancyListViewModel)
     fun inject(it: NonExciseAlcoInfoViewModel)
+    fun inject(it: LoadingFinishReviseViewModel)
+    fun inject(it: LoadingStartReviseViewModel)
+    fun inject(it: LoadingUnlockTaskViewModel)
 }

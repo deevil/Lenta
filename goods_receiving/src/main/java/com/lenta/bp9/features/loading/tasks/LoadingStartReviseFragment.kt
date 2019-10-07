@@ -18,14 +18,16 @@ class LoadingStartReviseFragment : CoreLoadingFragment() {
     }
 
     override fun getViewModel(): CoreLoadingViewModel {
-        provideViewModel(LoadingRegisterArrivalViewModel::class.java).let {
+        provideViewModel(LoadingStartReviseViewModel::class.java).let {
             getAppComponent()?.inject(it)
             return it
         }
     }
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
-        topToolbarUiModel.description.value = getString(R.string.task_card)
+        (vm as? LoadingStartReviseViewModel)?.let {
+            topToolbarUiModel.description.value = it.taskDescription
+        }
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
@@ -42,6 +44,6 @@ class LoadingStartReviseFragment : CoreLoadingFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        vm.title.value = getString(R.string.task_loading)
+        vm.title.value = getString(R.string.status_change)
     }
 }
