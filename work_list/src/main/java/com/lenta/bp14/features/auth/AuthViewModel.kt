@@ -66,7 +66,9 @@ class AuthViewModel : CoreAuthViewModel() {
                 sessionInfo.userName = login
                 sessionInfo.basicAuth = getBaseAuth(login, getPassword())
                 appSettings.lastLogin = login
-                if (sessionInfo.isAuthSkipped.value != true) {
+                //TODO удалить отключение проверки полномочий
+                val disablePermissionCheck = true
+                if (!disablePermissionCheck && sessionInfo.isAuthSkipped.value != true) {
                     userPermissionsNetRequest(PermissionsRequestParams(
                             userName = login
                     )).either(::handleFailure) {
