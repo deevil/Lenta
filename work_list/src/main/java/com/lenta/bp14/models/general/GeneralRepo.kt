@@ -63,7 +63,7 @@ class GeneralRepo @Inject constructor(
                 taskTypeInfo = getTasksTypeInfo(taskInfo.taskType) ?: emptyTaskTypeInfo,
                 taskName = taskInfo.taskName,
                 isNotFinished = taskInfo.notFinished.isSapTrue(),
-                isMyBlock = taskInfo.blockType == "1",
+                isMyBlock = if (taskInfo.blockType.isBlank()) null else taskInfo.blockType == "1",
                 blockingUser = taskInfo.lockUser,
                 isStrict = taskInfo.isStrict.isSapTrue(),
                 quantityPositions = taskInfo.quantityPositions,
@@ -108,7 +108,7 @@ data class TaskInfo(
         val taskName: String,
         val comment: String,
         val isNotFinished: Boolean,
-        val isMyBlock: Boolean,
+        val isMyBlock: Boolean?,
         val isStrict: Boolean,
         val blockingUser: String,
         val quantityPositions: Int

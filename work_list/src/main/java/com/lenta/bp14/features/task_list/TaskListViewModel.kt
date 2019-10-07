@@ -40,8 +40,9 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
                     id = it.taskId,
                     type = it.taskTypeInfo.taskType,
                     name = it.taskName,
-                    status = if (it.isNotFinished) TaskStatus.STARTED else {
-                        if (it.isMyBlock) TaskStatus.SELF_BLOCK else TaskStatus.BLOCK
+                    isProcessed = it.isNotFinished,
+                    blockingStatus = if (it.isMyBlock == null) TaskBlockingStatus.NOT_BLOCKED else {
+                        if (it.isMyBlock) TaskBlockingStatus.SELF_BLOCK else TaskBlockingStatus.BLOCK
                     },
                     quantity = it.quantityPositions
             )
@@ -165,12 +166,13 @@ data class TaskUi(
         val id: String,
         val type: String,
         val name: String,
-        val status: TaskStatus,
+        val blockingStatus: TaskBlockingStatus,
+        val isProcessed: Boolean,
         val quantity: Int
 )
 
-enum class TaskStatus {
-    STARTED,
+enum class TaskBlockingStatus {
+    NOT_BLOCKED,
     SELF_BLOCK,
     BLOCK
 }
