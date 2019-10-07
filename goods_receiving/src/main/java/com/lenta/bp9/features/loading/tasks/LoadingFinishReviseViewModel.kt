@@ -36,10 +36,6 @@ class LoadingFinishReviseViewModel : CoreLoadingViewModel() {
     override val speedKbInSec: MutableLiveData<Int> = MutableLiveData()
     override val sizeInMb: MutableLiveData<Float> = MutableLiveData()
 
-    val taskCaption: String by lazy {
-        taskManager.getReceivingTask()?.taskHeader?.caption ?: ""
-    }
-
     init {
         viewModelScope.launch {
             progress.value = true
@@ -69,7 +65,8 @@ class LoadingFinishReviseViewModel : CoreLoadingViewModel() {
 
     private fun handleSuccess(result: FinishReviseRequestResult) {
         Logg.d { "Finish revise request result $result" }
-        screenNavigator.goBack()
+        screenNavigator.openMainMenuScreen()
+        screenNavigator.openTaskListScreen()
         taskManager.updateTaskDescription(TaskDescription.from(result.taskDescription))
         val notifications = result.notifications.map { TaskNotification.from(it) }
         taskManager.getReceivingTask()?.taskRepository?.getNotifications()?.updateWithNotifications(general = notifications, document = null, product = null, condition = null)

@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp9.model.task.IReceivingTaskManager
 import com.lenta.bp9.model.task.TaskNotification
+import com.lenta.bp9.model.task.TaskStatus
 import com.lenta.bp9.model.task.revise.*
 import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.bp9.requests.network.StartReviseNetRequest
@@ -34,6 +35,10 @@ class LoadingStartReviseViewModel : CoreLoadingViewModel() {
     override val progress: MutableLiveData<Boolean> = MutableLiveData(true)
     override val speedKbInSec: MutableLiveData<Int> = MutableLiveData()
     override val sizeInMb: MutableLiveData<Float> = MutableLiveData()
+
+    val taskDescription: String by lazy {
+        "\"" + (taskManager.getReceivingTask()?.taskDescription?.currentStatus?.stringValue() ?: "") + "\" -> \"" + TaskStatus.Checking.stringValue() + "\""
+    }
 
     init {
         viewModelScope.launch {

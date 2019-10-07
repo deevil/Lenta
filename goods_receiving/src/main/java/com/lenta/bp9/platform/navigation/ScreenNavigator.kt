@@ -300,6 +300,18 @@ class ScreenNavigator(
         }
     }
 
+    override fun openRegisterArrivalLoadingScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(LoadingRegisterArrivalFragment())
+        }
+    }
+
+    override fun openStartReviseLoadingScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(LoadingStartReviseFragment())
+        }
+    }
+
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 
 }
@@ -342,4 +354,6 @@ interface IScreenNavigator : ICoreNavigator {
     fun openAlertGoodsNotInOrderScreen()
     fun openNonExciseAlcoInfoScreen()
     fun openFinishReviseLoadingScreen()
+    fun openRegisterArrivalLoadingScreen()
+    fun openStartReviseLoadingScreen()
 }
