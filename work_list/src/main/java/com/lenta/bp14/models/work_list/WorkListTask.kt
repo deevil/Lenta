@@ -3,6 +3,7 @@ package com.lenta.bp14.models.work_list
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.google.gson.Gson
+import com.lenta.bp14.di.WorkListScope
 import com.lenta.bp14.models.ITask
 import com.lenta.bp14.models.ITaskDescription
 import com.lenta.bp14.models.data.GoodType
@@ -17,8 +18,10 @@ import com.lenta.shared.utilities.extentions.getFormattedDate
 import com.lenta.shared.utilities.extentions.map
 import kotlinx.coroutines.delay
 import java.util.*
+import javax.inject.Inject
 
-class WorkListTask(
+@WorkListScope
+class WorkListTask @Inject constructor(
         private val generalRepo: IGeneralRepo,
         private val workListRepo: IWorkListRepo,
         private val taskDescription: WorkListTaskDescription,

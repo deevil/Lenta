@@ -2,7 +2,6 @@ package com.lenta.bp14.features.task_list.search_filter
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.lenta.bp14.models.data.TaskManager
 import com.lenta.bp14.models.general.IGeneralRepo
 import com.lenta.bp14.models.general.ITasksSearchHelper
 import com.lenta.bp14.platform.navigation.IScreenNavigator
@@ -17,8 +16,6 @@ class SearchFilterTlViewModel : CoreViewModel(), OnPositionClickListener {
 
     @Inject
     lateinit var navigator: IScreenNavigator
-    @Inject
-    lateinit var taskManager: TaskManager
     @Inject
     lateinit var sessionInfo: ISessionInfo
     @Inject

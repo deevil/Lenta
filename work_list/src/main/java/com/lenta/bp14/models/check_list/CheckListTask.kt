@@ -2,6 +2,7 @@ package com.lenta.bp14.models.check_list
 
 import androidx.lifecycle.MutableLiveData
 import com.google.gson.Gson
+import com.lenta.bp14.di.CheckListScope
 import com.lenta.bp14.models.ITask
 import com.lenta.bp14.models.ITaskDescription
 import com.lenta.bp14.models.check_list.repo.ICheckListRepo
@@ -13,8 +14,10 @@ import com.lenta.shared.models.core.Uom
 import com.lenta.shared.platform.time.ITimeMonitor
 import com.lenta.shared.utilities.extentions.dropZeros
 import com.lenta.shared.utilities.extentions.sumWith
+import javax.inject.Inject
 
-class CheckListTask(
+@CheckListScope
+class CheckListTask @Inject constructor(
         private val generalRepo: IGeneralRepo,
         private val checkListRepo: ICheckListRepo,
         private val taskDescription: CheckListTaskDescription,
