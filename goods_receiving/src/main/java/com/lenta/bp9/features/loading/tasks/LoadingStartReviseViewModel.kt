@@ -84,7 +84,17 @@ class LoadingStartReviseViewModel : CoreLoadingViewModel() {
             this.updateSetComponents(setComponenttsRevise)
             this.updateInvoiceInfo(invoiceRevise)
         }
-        screenNavigator.openTaskReviseScreen()
+        taskManager.getReceivingTask()?.let { task ->
+            if (task.taskRepository.getReviseDocuments().getDeliveryDocuments().isNotEmpty()) {
+                screenNavigator.openTaskReviseScreen()
+            } else if (task.taskRepository.getReviseDocuments().getProductDocuments().isNotEmpty()) {
+                screenNavigator.openProductDocumentsReviseScreen()
+            } else {
+                screenNavigator.openCheckingNotNeededAlert {
+                    screenNavigator.openFinishReviseLoadingScreen()
+                }
+            }
+        }
     }
 
     override fun clean() {

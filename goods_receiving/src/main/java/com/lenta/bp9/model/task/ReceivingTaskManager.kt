@@ -17,6 +17,14 @@ class ReceivingTaskManager : IReceivingTaskManager {
         return  currentReceivingTask
     }
 
+    override fun updateTaskDescription(taskDescription: TaskDescription) : ReceivingTask? {
+        currentReceivingTask?.let {
+            currentReceivingTask = ReceivingTask(it.taskHeader, taskDescription, it.taskRepository)
+        }
+        return currentReceivingTask
+    }
+
+
     override fun clearTask() {
         currentReceivingTask = null
     }

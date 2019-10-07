@@ -272,6 +272,18 @@ class ScreenNavigator(
         }
     }
 
+    override fun openCheckingNotNeededAlert(callbackFunc: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.revise_not_needed),
+                    iconRes = 0,
+                    isVisibleLeftButton = false,
+                    timeAutoExitInMillis = 3000,
+                    codeConfirmForExit = backFragmentResultHelper.setFuncForResult(callbackFunc))
+            )
+        }
+    }
+
     override fun openAlertGoodsNotInOrderScreen() {
         openInfoScreen(context.getString(R.string.goods_not_in_order))
     }
@@ -279,6 +291,12 @@ class ScreenNavigator(
     override fun openNonExciseAlcoInfoScreen() {
         runOrPostpone {
             getFragmentStack()?.push(NonExciseAlcoInfoFragment())
+        }
+    }
+
+    override fun openFinishReviseLoadingScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(LoadingFinishReviseFragment())
         }
     }
 
@@ -304,6 +322,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openConfirmationView(callbackFunc: () -> Unit)
     fun openConfirmationUnsavedData(callbackFunc: () -> Unit)
     fun openConfirmationProcessAsDiscrepancy(callbackFunc: () -> Unit)
+    fun openCheckingNotNeededAlert(callbackFunc: () -> Unit)
     fun openAlertWithoutConfirmation(message: String, callbackFunc: () -> Unit)
     fun openChangeDateTimeScreen(mode: ChangeDateTimeMode)
     fun openLoadingRegisterArrivalScreen()
@@ -322,4 +341,5 @@ interface IScreenNavigator : ICoreNavigator {
     fun openSelectTypeCodeScreen(codeConfirmationForSap: Int, codeConfirmationForBarCode: Int)
     fun openAlertGoodsNotInOrderScreen()
     fun openNonExciseAlcoInfoScreen()
+    fun openFinishReviseLoadingScreen()
 }

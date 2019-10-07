@@ -108,4 +108,7 @@
     <string name="discrepancies_found">Обнаружены расхождения</string>
     <string name="select_type_code_description">Введено 12 знаков. Какой код вы ввели?</string>
     <string name="goods_not_in_order">Товара нет в заказе</string>
+    <string name="revise_not_needed">Сверка документов не требуется, задание будет переключено в "Сверено"</string>
+    <string name="checking_to_checked">\"Сверяется\" -> \"Сверено\"</string>
+    <string name="status_change">Смена статуса</string>
 </resources>

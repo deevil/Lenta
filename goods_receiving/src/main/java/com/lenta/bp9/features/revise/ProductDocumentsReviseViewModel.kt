@@ -176,7 +176,7 @@ class ProductDocumentsReviseViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     private fun saveData() {
-        Logg.d { "Saving product documents" }
+        screenNavigator.openFinishReviseLoadingScreen()
     }
 }
 

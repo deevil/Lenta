@@ -126,11 +126,12 @@ class TaskReviseViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     fun onClickNext() {
-        screenNavigator.openProductDocumentsReviseScreen()
+        if (taskManager.getReceivingTask()?.taskRepository?.getReviseDocuments()?.getProductDocuments()?.isNotEmpty() == true) {
+            screenNavigator.openProductDocumentsReviseScreen()
+        } else {
+            screenNavigator.openFinishReviseLoadingScreen()
+        }
     }
-
-
-    // TODO: Implement the ViewModel
 }
 
 data class DeliveryDocumentVM(

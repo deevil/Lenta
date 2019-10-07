@@ -11,6 +11,7 @@ import com.lenta.bp9.features.goods_list.GoodsListViewModel
 import com.lenta.bp9.features.loading.tasks.LoadingTasksViewModel
 import com.lenta.bp9.features.task_list.TaskListViewModel
 import com.lenta.bp9.features.loading.fast.FastDataLoadingViewModel
+import com.lenta.bp9.features.loading.tasks.LoadingFinishReviseViewModel
 import com.lenta.bp9.features.loading.tasks.LoadingRegisterArrivalViewModel
 import com.lenta.bp9.features.loading.tasks.LoadingTaskCardViewModel
 import com.lenta.bp9.features.main_menu.MainMenuViewModel
@@ -58,4 +59,5 @@ interface AppComponent {
     fun inject(it: RussianAlcoFormReviseViewModel)
     fun inject(it: DiscrepancyListViewModel)
     fun inject(it: NonExciseAlcoInfoViewModel)
+    fun inject(it: LoadingFinishReviseViewModel)
 }
