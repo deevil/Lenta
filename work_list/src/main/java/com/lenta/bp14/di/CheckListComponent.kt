@@ -7,6 +7,7 @@ import com.lenta.bp14.models.check_list.CheckListTaskManager
 import com.lenta.bp14.models.check_list.ICheckListTask
 import com.lenta.bp14.models.check_list.repo.CheckListRepo
 import com.lenta.bp14.models.check_list.repo.ICheckListRepo
+import com.lenta.bp14.requests.check_list.CheckListSendReportNetRequest
 import dagger.Binds
 import dagger.Component
 import dagger.Module
@@ -37,6 +38,10 @@ class CheckListModule(private val taskDescription: CheckListTaskDescription) {
         @Binds
         @CheckPriceScope
         fun bindCheckListRepo(realisation: CheckListRepo): ICheckListRepo
+
+        @Binds
+        @WorkListScope
+        fun bindCheckListSendReportNetRequest(realisation: CheckListSendReportNetRequest): CheckListSendReportNetRequest
 
     }
 

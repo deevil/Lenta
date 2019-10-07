@@ -23,9 +23,9 @@ class WorkListRepo(
         val productInfo: ZfmpUtz48V001 = ZfmpUtz48V001(hyperHive), // Информация о товаре
         val eamInfo: ZmpUtz25V001 = ZmpUtz25V001(hyperHive), // Информация о штрих-коде
         val deliveries: ZmpUtzWkl13V001Rfc = ZmpUtzWkl13V001Rfc(hyperHive) // Планируемые поставки
-) {
+) : IWorkListRepo {
 
-    suspend fun getCommonGoodInfoByEan(ean: String): CommonGoodInfo? {
+    override suspend fun getCommonGoodInfoByEan(ean: String): CommonGoodInfo? {
         return withContext(Dispatchers.IO) {
             return@withContext CommonGoodInfo(
                     ean = "4005489741143",
@@ -45,7 +45,7 @@ class WorkListRepo(
         }
     }
 
-    suspend fun loadAdditionalGoodInfo(good: Good): AdditionalGoodInfo? {
+    override suspend fun loadAdditionalGoodInfo(good: Good): AdditionalGoodInfo? {
         return withContext(Dispatchers.IO) {
             return@withContext AdditionalGoodInfo(
                     storagePlaces = "125635; 652148; 635894",
@@ -82,7 +82,7 @@ class WorkListRepo(
         }
     }
 
-    suspend fun loadSalesStatistics(good: Good): SalesStatistics? {
+    override suspend fun loadSalesStatistics(good: Good): SalesStatistics? {
         return withContext(Dispatchers.IO) {
             return@withContext SalesStatistics(
                     lastSaleDate = Date(),
@@ -93,7 +93,7 @@ class WorkListRepo(
         }
     }
 
-    suspend fun loadDeliveries(good: Good): List<Delivery>? {
+    override suspend fun loadDeliveries(good: Good): List<Delivery>? {
         return withContext(Dispatchers.IO) {
             return@withContext List((3..5).random()) {
                 Delivery(
@@ -107,7 +107,7 @@ class WorkListRepo(
         }
     }
 
-    suspend fun loadComments(good: Good): List<String>? {
+    override suspend fun loadComments(good: Good): List<String>? {
         return withContext(Dispatchers.IO) {
             val comments = MutableList((1..3).random()) {
                 "Комментарий ${it + 1}"
@@ -118,4 +118,12 @@ class WorkListRepo(
         }
     }
 
+}
+
+interface IWorkListRepo {
+    suspend fun getCommonGoodInfoByEan(ean: String): CommonGoodInfo?
+    suspend fun loadAdditionalGoodInfo(good: Good): AdditionalGoodInfo?
+    suspend fun loadSalesStatistics(good: Good): SalesStatistics?
+    suspend fun loadDeliveries(good: Good): List<Delivery>?
+    suspend fun loadComments(good: Good): List<String>?
 }

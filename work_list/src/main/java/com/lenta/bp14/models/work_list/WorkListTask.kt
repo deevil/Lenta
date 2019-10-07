@@ -6,10 +6,10 @@ import com.google.gson.Gson
 import com.lenta.bp14.models.ITask
 import com.lenta.bp14.models.ITaskDescription
 import com.lenta.bp14.models.data.GoodType
-import com.lenta.bp14.models.general.ITaskTypeInfo
 import com.lenta.bp14.models.general.AppTaskTypes
 import com.lenta.bp14.models.general.IGeneralRepo
-import com.lenta.bp14.models.work_list.repo.WorkListRepo
+import com.lenta.bp14.models.general.ITaskTypeInfo
+import com.lenta.bp14.models.work_list.repo.IWorkListRepo
 import com.lenta.shared.models.core.MatrixType
 import com.lenta.shared.models.core.Uom
 import com.lenta.shared.platform.time.ITimeMonitor
@@ -20,7 +20,7 @@ import java.util.*
 
 class WorkListTask(
         private val generalRepo: IGeneralRepo,
-        private val workListRepo: WorkListRepo,
+        private val workListRepo: IWorkListRepo,
         private val taskDescription: WorkListTaskDescription,
         private val timeMonitor: ITimeMonitor,
         private val gson: Gson
