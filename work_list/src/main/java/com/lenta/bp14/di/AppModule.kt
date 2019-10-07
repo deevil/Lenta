@@ -2,16 +2,14 @@ package com.lenta.bp14.di
 
 import com.lenta.bp14.models.GeneralTaskManager
 import com.lenta.bp14.models.IGeneralTaskManager
-import com.lenta.bp14.models.check_list.CheckListTaskManager
-import com.lenta.bp14.models.check_list.ICheckListTask
 import com.lenta.bp14.models.check_price.IPriceInfoParser
 import com.lenta.bp14.models.check_price.PriceInfoParser
 import com.lenta.bp14.models.general.GeneralRepo
 import com.lenta.bp14.models.general.IGeneralRepo
 import com.lenta.bp14.models.general.ITasksSearchHelper
 import com.lenta.bp14.models.general.TasksSearchHelper
-import com.lenta.bp14.models.work_list.WorkListTask
-import com.lenta.bp14.models.work_list.WorkListTaskManager
+import com.lenta.bp14.models.print.IPrintTask
+import com.lenta.bp14.models.print.PrintTask
 import com.lenta.bp14.platform.IVibrateHelper
 import com.lenta.bp14.platform.VibrateHelper
 import com.lenta.bp14.platform.navigation.IScreenNavigator
@@ -79,6 +77,10 @@ class AppModule {
         @Binds
         @AppScope
         fun bindICheckPriceTaskInfoNetRequest(realisation: CheckPriceTaskInfoNetRequest): ICheckPriceTaskInfoNetRequest
+
+        @Binds
+        @AppScope
+        fun bindIPrintTask(printTask: PrintTask): IPrintTask
 
     }
 
