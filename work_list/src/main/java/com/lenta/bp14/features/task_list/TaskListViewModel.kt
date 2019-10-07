@@ -35,7 +35,7 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
     val marketNumber by lazy { sessionInfo.market }
 
     private val funcTaskAdapter = { taskList: List<TaskInfo>? ->
-        taskList?.map {
+        taskList?.sortedByDescending { it.taskId.toLongOrNull() }?.map {
             TaskUi(
                     id = it.taskId,
                     type = it.taskTypeInfo.taskType,
@@ -44,7 +44,8 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
                     blockingStatus = if (it.isMyBlock == null) TaskBlockingStatus.NOT_BLOCKED else {
                         if (it.isMyBlock) TaskBlockingStatus.SELF_BLOCK else TaskBlockingStatus.BLOCK
                     },
-                    quantity = it.quantityPositions
+                    quantity = it.quantityPositions,
+                    taskId = it.taskId
             )
 
         } ?: emptyList()
@@ -122,19 +123,15 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
     }
 
     fun onClickProcessingTask(position: Int) {
-        setProcessedTask(getProcessingTaskId(position))
+        processingTasks.value?.getOrNull(position)?.taskId?.let {
+            setProcessedTask(it)
+        }
     }
 
     fun onClickSearchTask(position: Int) {
-        setProcessedTask(getFilteredTaskId(position))
-    }
-
-    private fun getProcessingTaskId(position: Int): String {
-        return tasksSearchHelper.taskList.value?.getOrNull(position)?.taskId ?: ""
-    }
-
-    private fun getFilteredTaskId(position: Int): String {
-        return tasksSearchHelper.filteredTaskList.value?.getOrNull(position)?.taskId ?: ""
+        searchTasks.value?.getOrNull(position)?.taskId?.let {
+            setProcessedTask(it)
+        }
     }
 
 
@@ -163,6 +160,7 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
 }
 
 data class TaskUi(
+        val taskId: String,
         val id: String,
         val type: String,
         val name: String,
