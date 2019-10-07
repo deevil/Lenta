@@ -58,4 +58,5 @@ interface AppComponent {
     fun inject(it: NonExciseAlcoInfoViewModel)
     fun inject(it: LoadingFinishReviseViewModel)
     fun inject(it: LoadingStartReviseViewModel)
+    fun inject(it: LoadingUnlockTaskViewModel)
 }

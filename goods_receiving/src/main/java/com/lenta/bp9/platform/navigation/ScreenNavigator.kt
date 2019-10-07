@@ -312,6 +312,12 @@ class ScreenNavigator(
         }
     }
 
+    override fun openUnlockTaskLoadingScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(LoadingUnlockTaskFragment())
+        }
+    }
+
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 
 }
@@ -356,4 +362,5 @@ interface IScreenNavigator : ICoreNavigator {
     fun openFinishReviseLoadingScreen()
     fun openRegisterArrivalLoadingScreen()
     fun openStartReviseLoadingScreen()
+    fun openUnlockTaskLoadingScreen()
 }

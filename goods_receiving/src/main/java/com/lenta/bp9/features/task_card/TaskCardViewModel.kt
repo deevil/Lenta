@@ -176,6 +176,10 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
         }
     }
 
+    fun onBackPressed() {
+        screenNavigator.openUnlockTaskLoadingScreen()
+    }
+
     data class NotificationVM(
             val number: String,
             val text: String,

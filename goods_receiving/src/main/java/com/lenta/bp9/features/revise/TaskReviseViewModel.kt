@@ -132,6 +132,10 @@ class TaskReviseViewModel : CoreViewModel(), PageSelectionListener {
             screenNavigator.openFinishReviseLoadingScreen()
         }
     }
+
+    fun onBackPressed() {
+        screenNavigator.openUnlockTaskLoadingScreen()
+    }
 }
 
 data class DeliveryDocumentVM(

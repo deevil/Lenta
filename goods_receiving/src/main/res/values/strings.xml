@@ -111,4 +111,5 @@
     <string name="revise_not_needed">Сверка документов не требуется, задание будет переключено в "Сверено"</string>
     <string name="checking_to_checked">\"Сверяется\" -> \"Сверено\"</string>
     <string name="status_change">Смена статуса</string>
+    <string name="task_unlock">Разблокировка задания</string>
 </resources>
