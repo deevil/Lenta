@@ -11,21 +11,21 @@ import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
 import com.lenta.shared.utilities.extentions.provideViewModel
 
-class LoadingUnlockTaskFragment : CoreLoadingFragment() {
+class LoadingFinishReviseFragment : CoreLoadingFragment() {
 
     override fun getPageNumber(): String? {
         return generateScreenNumberFromPostfix("98")
     }
 
     override fun getViewModel(): CoreLoadingViewModel {
-        provideViewModel(LoadingUnlockTaskViewModel::class.java).let {
+        provideViewModel(LoadingFinishReviseViewModel::class.java).let {
             getAppComponent()?.inject(it)
             return it
         }
     }
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
-        topToolbarUiModel.description.value = getString(R.string.task_unlock)
+        topToolbarUiModel.description.value = getString(R.string.checking_to_checked)
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
@@ -42,6 +42,6 @@ class LoadingUnlockTaskFragment : CoreLoadingFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        vm.title.value = getString(R.string.task_unlock)
+        vm.title.value = getString(R.string.status_change)
     }
 }

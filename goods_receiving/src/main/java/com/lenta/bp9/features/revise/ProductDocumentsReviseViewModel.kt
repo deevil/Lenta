@@ -144,7 +144,7 @@ class ProductDocumentsReviseViewModel : CoreViewModel(), PageSelectionListener {
                             screenNavigator.openImportAlcoFormReviseScreen(batches.first().productNumber, batches.first().batchNumber)
                         }
                         ProductDocumentType.AlcoRus -> {
-                            Logg.d { "Open form for russian batch with matnr " + batches.first().productNumber + " and batch number " + batches.first().batchNumber }
+                            screenNavigator.openRussianAlcoFormReviseScreen(batches.first().productNumber, batches.first().batchNumber)
                         }
                     }
                 }
@@ -176,7 +176,7 @@ class ProductDocumentsReviseViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     private fun saveData() {
-        Logg.d { "Saving product documents" }
+        screenNavigator.openFinishReviseLoadingScreen()
     }
 }
 

@@ -18,11 +18,12 @@ import com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig
 import com.lenta.shared.utilities.databinding.RecyclerViewKeyHandler
 import com.lenta.shared.utilities.extentions.generateScreenNumber
 import com.lenta.shared.utilities.extentions.provideViewModel
+import com.lenta.shared.utilities.state.state
 
 class AlcoholBatchSelectFragment : CoreFragment<FragmentAlcoholBatchSelectBinding, AlcoholBatchSelectViewModel>() {
 
-    private lateinit var matnr: String
-    private lateinit var type: ProductDocumentType
+    private var matnr by state("")
+    private var type by state(ProductDocumentType.None)
 
     private var recyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
 

@@ -22,10 +22,7 @@ import com.lenta.bp9.features.goods_information.general.GoodsInfoFragment
 import com.lenta.bp9.features.goods_information.non_excise_alco.NonExciseAlcoInfoFragment
 import com.lenta.bp9.features.loading.tasks.*
 import com.lenta.bp9.features.reject.RejectFragment
-import com.lenta.bp9.features.revise.AlcoFormReviseFragment
-import com.lenta.bp9.features.revise.AlcoholBatchSelectFragment
-import com.lenta.bp9.features.revise.ProductDocumentsReviseFragment
-import com.lenta.bp9.features.revise.TaskReviseFragment
+import com.lenta.bp9.features.revise.*
 import com.lenta.bp9.model.task.TaskProductInfo
 import com.lenta.bp9.features.revise.invoice.InvoiceReviseFragment
 import com.lenta.bp9.model.task.revise.ProductDocumentType
@@ -249,6 +246,12 @@ class ScreenNavigator(
         }
     }
 
+    override fun openRussianAlcoFormReviseScreen(matnr: String, batchNumber: String) {
+        runOrPostpone {
+            getFragmentStack()?.push(RussianAlcoFormReviseFragment.create(matnr, batchNumber))
+        }
+    }
+
     override fun openDiscrepancyListScreen() {
         runOrPostpone {
             getFragmentStack()?.push(DiscrepancyListFragment())
@@ -269,6 +272,18 @@ class ScreenNavigator(
         }
     }
 
+    override fun openCheckingNotNeededAlert(callbackFunc: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.revise_not_needed),
+                    iconRes = 0,
+                    isVisibleLeftButton = false,
+                    timeAutoExitInMillis = 3000,
+                    codeConfirmForExit = backFragmentResultHelper.setFuncForResult(callbackFunc))
+            )
+        }
+    }
+
     override fun openAlertGoodsNotInOrderScreen() {
         openInfoScreen(context.getString(R.string.goods_not_in_order))
     }
@@ -276,6 +291,30 @@ class ScreenNavigator(
     override fun openNonExciseAlcoInfoScreen() {
         runOrPostpone {
             getFragmentStack()?.push(NonExciseAlcoInfoFragment())
+        }
+    }
+
+    override fun openFinishReviseLoadingScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(LoadingFinishReviseFragment())
+        }
+    }
+
+    override fun openRegisterArrivalLoadingScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(LoadingRegisterArrivalFragment())
+        }
+    }
+
+    override fun openStartReviseLoadingScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(LoadingStartReviseFragment())
+        }
+    }
+
+    override fun openUnlockTaskLoadingScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(LoadingUnlockTaskFragment())
         }
     }
 
@@ -301,6 +340,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openConfirmationView(callbackFunc: () -> Unit)
     fun openConfirmationUnsavedData(callbackFunc: () -> Unit)
     fun openConfirmationProcessAsDiscrepancy(callbackFunc: () -> Unit)
+    fun openCheckingNotNeededAlert(callbackFunc: () -> Unit)
     fun openAlertWithoutConfirmation(message: String, callbackFunc: () -> Unit)
     fun openChangeDateTimeScreen(mode: ChangeDateTimeMode)
     fun openLoadingRegisterArrivalScreen()
@@ -314,8 +354,13 @@ interface IScreenNavigator : ICoreNavigator {
     fun openProductDocumentsReviseScreen()
     fun openAlcoholBatchSelectScreen(matnr: String, type: ProductDocumentType)
     fun openImportAlcoFormReviseScreen(matnr: String, batchNumber: String)
+    fun openRussianAlcoFormReviseScreen(matnr: String, batchNumber: String)
     fun openDiscrepancyListScreen()
     fun openSelectTypeCodeScreen(codeConfirmationForSap: Int, codeConfirmationForBarCode: Int)
     fun openAlertGoodsNotInOrderScreen()
     fun openNonExciseAlcoInfoScreen()
+    fun openFinishReviseLoadingScreen()
+    fun openRegisterArrivalLoadingScreen()
+    fun openStartReviseLoadingScreen()
+    fun openUnlockTaskLoadingScreen()
 }

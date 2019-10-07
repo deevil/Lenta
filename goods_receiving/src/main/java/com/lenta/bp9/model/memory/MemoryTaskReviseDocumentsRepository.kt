@@ -105,6 +105,13 @@ class MemoryTaskReviseDocumentsRepository : ITaskReviseDocumentsRepository {
         }
     }
 
+    override fun approveRussianForm(matnr: String, batchNumber: String) {
+        russianABForms.findLast { it.productNumber == matnr && it.batchNumber == batchNumber }?.let { oldForm ->
+            oldForm.isCheck = true
+            approveBatch(matnr, batchNumber)
+        }
+    }
+
     override fun approveBatch(matnr: String, batchNumber: String) {
         productBatches.findLast { it.productNumber == matnr && it.batchNumber == batchNumber }?.let { batch ->
             batch.isCheck = true
