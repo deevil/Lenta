@@ -85,9 +85,9 @@ class GoodInfoPcViewModel : CoreViewModel() {
                         navigator.openAlertScreen(it)
                     }
             ) {
-                task.processingMatNumber = it.matNumber
                 onClickValid()
                 if (qrCode.isNullOrBlank()) {
+                    task.processingMatNumber = it.matNumber
                     navigator.openGoodInfoPcScreen()
                 }
             }
