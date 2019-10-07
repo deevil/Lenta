@@ -30,7 +30,7 @@ class PrintSettingsFragment : CoreFragment<FragmentPrintSettingsBinding, PrintSe
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
-        bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.print)
+        bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.print)
     }
 
 }

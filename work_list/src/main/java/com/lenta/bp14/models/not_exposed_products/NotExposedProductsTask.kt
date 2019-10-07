@@ -211,6 +211,10 @@ class NotExposedProductsTask @Inject constructor(
         )
     }
 
+    override fun isEmpty(): Boolean {
+        return getProducts().value.isNullOrEmpty()
+    }
+
 
 }
 

@@ -86,6 +86,10 @@ class CheckListTask(
         } ?: GoodRequestResult(good = null)
     }
 
+    override fun isEmpty(): Boolean {
+        return goods.value.isNullOrEmpty()
+    }
+
 }
 
 interface ICheckListTask : ITask {

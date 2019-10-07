@@ -255,7 +255,7 @@ class ScreenNavigator @Inject constructor(
         }
     }
 
-    override fun showRawGoodsRemainedInTask(goodName: String, yesCallback: () -> Unit) {
+    override fun showPrintPriceOffer(goodName: String, yesCallback: () -> Unit) {
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.print_price_tag_for_good, goodName),
                     pageNumber = "43",
@@ -360,6 +360,32 @@ class ScreenNavigator @Inject constructor(
         }
     }
 
+    override fun showAlertBlockedTaskAnotherUser(userName: String) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.another_user_block_task, userName),
+                    iconRes = R.drawable.ic_info_pink,
+                    pageNumber = "94",
+                    leftButtonDecorationInfo = ButtonDecorationInfo.back
+            )
+            )
+        }
+    }
+
+    override fun showAlertBlockedTaskByMe(blockingUser: String, yesCallback: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.user_self_block_task, blockingUser),
+                    iconRes = R.drawable.ic_question_80dp,
+                    pageNumber = "94",
+                    leftButtonDecorationInfo = ButtonDecorationInfo.back,
+                    rightButtonDecorationInfo = ButtonDecorationInfo.next,
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(yesCallback)
+            )
+            )
+        }
+    }
+
     override fun showGoodNotFound() {
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.good_not_found_in_database),
@@ -413,6 +439,7 @@ class ScreenNavigator @Inject constructor(
         }
     }
 
+
 }
 
 interface IScreenNavigator : ICoreNavigator {
@@ -446,7 +473,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun showPriceTagsSubmitted(nextCallback: () -> Unit)
     fun showSetTaskToStatusCalculated(yesCallback: () -> Unit)
     fun showRawGoodsRemainedInTask(yesCallback: () -> Unit)
-    fun showRawGoodsRemainedInTask(goodName: String, yesCallback: () -> Unit)
+    fun showPrintPriceOffer(goodName: String, yesCallback: () -> Unit)
     fun showUnsavedDataFoundOnDevice(deleteCallback: () -> Unit, goOverCallback: () -> Unit)
     fun showUnsavedTaskFoundOnDevice(deleteCallback: () -> Unit, goOverCallback: () -> Unit)
     fun showGoodIsNotPartOfTask()
@@ -457,6 +484,8 @@ interface IScreenNavigator : ICoreNavigator {
     fun showNoNetworkToSaveTask(nextCallback: () -> Unit)
     fun showGoodNotFound()
     fun showTwelveCharactersEntered(sapCallback: () -> Unit, barCallback: () -> Unit)
+    fun showAlertBlockedTaskAnotherUser(userName: String)
+    fun showAlertBlockedTaskByMe(blockingUser: String, yesCallback: () -> Unit)
 
     fun openTestScanBarcodeScreen()
     fun openScanPriceScreen()
@@ -465,4 +494,5 @@ interface IScreenNavigator : ICoreNavigator {
     fun openPictogrammInfoNova()
     fun openPictogrammInfoHealthyFood()
     fun openConfirmationNotSaveChanges(yesCallback: () -> Unit)
+
 }

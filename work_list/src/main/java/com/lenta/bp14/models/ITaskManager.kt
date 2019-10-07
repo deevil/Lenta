@@ -57,6 +57,7 @@ interface ITask {
     fun isFreeMode(): Boolean {
         return this.getDescription().taskNumber.isBlank()
     }
+    fun isEmpty(): Boolean
 }
 
 

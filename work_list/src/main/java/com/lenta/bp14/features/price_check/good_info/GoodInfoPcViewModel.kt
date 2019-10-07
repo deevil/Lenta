@@ -98,7 +98,15 @@ class GoodInfoPcViewModel : CoreViewModel() {
 
     private fun setNewCheckStatusAndGoBack(isValid: Boolean?) {
         task.setCheckPriceStatus(isValid)
-        navigator.goBack()
+        if (isValid != true) {
+            navigator.showPrintPriceOffer(getTitle()) {
+                navigator.goBack()
+                navigator.openPrintSettingsScreen()
+            }
+        } else {
+            navigator.goBack()
+        }
+
     }
 
 }
