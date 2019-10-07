@@ -13,6 +13,7 @@ import com.lenta.bp14.models.general.ITaskTypeInfo
 import com.lenta.bp14.models.work_list.repo.IWorkListRepo
 import com.lenta.shared.models.core.MatrixType
 import com.lenta.shared.models.core.Uom
+import com.lenta.shared.platform.battery_state.getIconForStatus
 import com.lenta.shared.platform.time.ITimeMonitor
 import com.lenta.shared.utilities.extentions.getFormattedDate
 import com.lenta.shared.utilities.extentions.map
@@ -142,6 +143,10 @@ class WorkListTask @Inject constructor(
                 }
             }
         }
+    }
+
+    override fun isEmpty(): Boolean {
+        return processed.value.isNullOrEmpty()
     }
 
 }

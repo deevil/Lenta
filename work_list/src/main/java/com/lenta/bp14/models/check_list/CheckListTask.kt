@@ -89,6 +89,10 @@ class CheckListTask @Inject constructor(
         } ?: GoodRequestResult(good = null)
     }
 
+    override fun isEmpty(): Boolean {
+        return goods.value.isNullOrEmpty()
+    }
+
 }
 
 interface ICheckListTask : ITask {

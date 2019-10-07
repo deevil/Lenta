@@ -288,6 +288,11 @@ class CheckPriceTask @Inject constructor(
         )
     }
 
+
+    override fun isEmpty(): Boolean {
+        return readyResultsRepo.getCheckPriceResults().value.isNullOrEmpty()
+    }
+
 }
 
 fun ICheckPriceResult?.toCheckStatus(): CheckStatus? {

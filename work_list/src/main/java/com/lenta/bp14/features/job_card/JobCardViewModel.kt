@@ -88,7 +88,7 @@ class JobCardViewModel : CoreViewModel() {
 
     val description = selectedTaskTypeInfo.map { it?.annotation }
 
-    val comment = selectedTaskTypeInfo.map { getComment(it) }
+    val comment = selectedTaskTypeInfo.map { taskFromTaskList?.comment ?: getComment(it) }
 
     val enabledNextButton = selectedTaskTypeInfo.map { it != null && it.taskType != AppTaskTypes.Empty.taskType }
 
@@ -111,6 +111,25 @@ class JobCardViewModel : CoreViewModel() {
     }
 
     fun onClickNext() {
+        when {
+            taskFromTaskList?.isNotFinished == true -> openTask()
+            taskFromTaskList?.isMyBlock == true -> {
+                screenNavigator.showAlertBlockedTaskByMe(taskFromTaskList!!.blockingUser) {
+                    openTask()
+                }
+
+            }
+            taskFromTaskList?.isMyBlock == false -> {
+                screenNavigator.showAlertBlockedTaskAnotherUser(taskFromTaskList!!.blockingUser)
+            }
+            else -> openTask()
+
+        }
+
+
+    }
+
+    private fun openTask() {
         viewModelScope.launch {
             screenNavigator.showProgressLoadingData()
             when (getSelectedTypeTask()?.taskType) {
@@ -220,22 +239,31 @@ class JobCardViewModel : CoreViewModel() {
             }
 
             screenNavigator.hideProgress()
+
+
         }
+
 
     }
 
     fun onBackPressed(): Boolean {
-        if (generalTaskManager.getProcessedTaskType() == null) {
+        if (generalTaskManager.getProcessedTask()?.isEmpty() != false) {
+            clearCurrentTask()
             return true
         }
 
         screenNavigator.openConfirmationExitTask(generalTaskManager.getProcessedTask()?.getDescription()?.taskName
                 ?: "") {
-            generalTaskManager.clearCurrentTask()
+            clearCurrentTask()
             screenNavigator.goBack()
         }
 
         return false
+    }
+
+    private fun clearCurrentTask() {
+        generalTaskManager.clearCurrentTask()
+        tasksSearchHelper.processedTaskInfo = null
     }
 
 
