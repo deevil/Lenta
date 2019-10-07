@@ -1,33 +1,32 @@
 package com.lenta.bp14.models.work_list
 
-import com.google.gson.Gson
+import com.lenta.bp14.di.DaggerWorkListComponent
+import com.lenta.bp14.di.WorkListComponent
+import com.lenta.bp14.di.WorkListModule
 import com.lenta.bp14.models.BaseTaskManager
-import com.lenta.bp14.models.general.IGeneralRepo
-import com.lenta.bp14.models.work_list.repo.WorkListRepo
+import com.lenta.bp14.platform.extentions.getAppComponent
 import com.lenta.shared.di.AppScope
-import com.lenta.shared.platform.time.ITimeMonitor
+import com.lenta.shared.di.CoreInjectHelper
 import javax.inject.Inject
 
 @AppScope
-class WorkListTaskManager @Inject constructor(
-        private val generalRepo: IGeneralRepo,
-        private val timeMonitor: ITimeMonitor,
-        private val gson: Gson
-) : BaseTaskManager<WorkListTask, WorkListTaskDescription>() {
+class WorkListTaskManager @Inject constructor() : BaseTaskManager<IWorkListTask, WorkListTaskDescription>() {
 
-    override fun newTask(taskDescription: WorkListTaskDescription): WorkListTask? {
-        _task = WorkListTask(
-                generalRepo = generalRepo,
-                workListRepo = WorkListRepo(),
-                taskDescription = taskDescription,
-                timeMonitor = timeMonitor,
-                gson = gson
-        )
+    private val componentClazz = WorkListComponent::class.java
+
+    override fun newTask(taskDescription: WorkListTaskDescription): IWorkListTask? {
+        _task = CoreInjectHelper.createComponent(componentClazz) {
+            DaggerWorkListComponent.builder()
+                    .appComponent(getAppComponent(null))
+                    .workListModule(WorkListModule(taskDescription))
+                    .build()
+        }.getTask()
+
         return _task
     }
 
     override fun getComponentClass(): Class<out Any> {
-        return Any::class.java
+        return componentClazz
     }
 
 }

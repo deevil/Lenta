@@ -2,12 +2,12 @@ package com.lenta.bp14.features.work_list.expected_deliveries
 
 import android.os.Bundle
 import android.view.View
-import androidx.lifecycle.Observer
 import com.lenta.bp14.BR
 import com.lenta.bp14.R
 import com.lenta.bp14.databinding.FragmentExpectedDeliveriesBinding
 import com.lenta.bp14.databinding.ItemStatusQuantityDateBinding
-import com.lenta.bp14.platform.extentions.getAppComponent
+import com.lenta.bp14.di.WorkListComponent
+import com.lenta.shared.di.CoreInjectHelper
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
@@ -26,7 +26,7 @@ class ExpectedDeliveriesFragment : CoreFragment<FragmentExpectedDeliveriesBindin
 
     override fun getViewModel(): ExpectedDeliveriesViewModel {
         provideViewModel(ExpectedDeliveriesViewModel::class.java).let {
-            getAppComponent()?.inject(it)
+            CoreInjectHelper.getComponent(WorkListComponent::class.java)!!.inject(it)
             return it
         }
     }

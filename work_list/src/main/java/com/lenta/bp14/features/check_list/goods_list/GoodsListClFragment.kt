@@ -8,8 +8,11 @@ import android.widget.AdapterView
 import androidx.databinding.DataBindingUtil
 import com.lenta.bp14.BR
 import com.lenta.bp14.R
-import com.lenta.bp14.databinding.*
-import com.lenta.bp14.platform.extentions.getAppComponent
+import com.lenta.bp14.databinding.FragmentGoodsListClBinding
+import com.lenta.bp14.databinding.ItemClGoodQuantityEditableSelectableBinding
+import com.lenta.bp14.databinding.LayoutClGoodsListGoodsBinding
+import com.lenta.bp14.di.CheckListComponent
+import com.lenta.shared.di.CoreInjectHelper
 import com.lenta.shared.keys.KeyCode
 import com.lenta.shared.keys.OnKeyDownListener
 import com.lenta.shared.platform.fragment.CoreFragment
@@ -36,7 +39,7 @@ class GoodsListClFragment : CoreFragment<FragmentGoodsListClBinding, GoodsListCl
 
     override fun getViewModel(): GoodsListClViewModel {
         provideViewModel(GoodsListClViewModel::class.java).let {
-            getAppComponent()?.inject(it)
+            CoreInjectHelper.getComponent(CheckListComponent::class.java)!!.inject(it)
             return it
         }
     }

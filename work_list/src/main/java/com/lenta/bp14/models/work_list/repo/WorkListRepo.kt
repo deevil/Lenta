@@ -1,24 +1,36 @@
 package com.lenta.bp14.models.work_list.repo
 
+import com.lenta.bp14.fmp.resources.ZmpUtzWkl13V001Rfc
 import com.lenta.bp14.models.data.GoodType
 import com.lenta.bp14.models.work_list.*
+import com.lenta.shared.fmp.resources.fast.ZmpUtz07V001
+import com.lenta.shared.fmp.resources.slow.ZfmpUtz48V001
+import com.lenta.shared.fmp.resources.slow.ZmpUtz25V001
 import com.lenta.shared.models.core.MatrixType
 import com.lenta.shared.models.core.Uom
+import com.mobrun.plugin.api.HyperHive
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.math.BigDecimal
 import java.util.*
+import javax.inject.Inject
 import kotlin.random.Random
 
-class WorkListRepo {
+class WorkListRepo @Inject constructor(
+        hyperHive: HyperHive
+) : IWorkListRepo {
 
-    suspend fun getCommonGoodInfoByEan(ean: String): CommonGoodInfo? {
+    val units: ZmpUtz07V001 by lazy { ZmpUtz07V001(hyperHive) } // Единицы измерения
+    val productInfo: ZfmpUtz48V001 by lazy { ZfmpUtz48V001(hyperHive) } // Информация о товаре
+    val eanInfo: ZmpUtz25V001 by lazy { ZmpUtz25V001(hyperHive) } // Информация о штрих-коде
+    val deliveries: ZmpUtzWkl13V001Rfc by lazy { ZmpUtzWkl13V001Rfc(hyperHive) } // Планируемые поставки
+
+    override suspend fun getCommonGoodInfoByEan(ean: String): CommonGoodInfo? {
         return withContext(Dispatchers.IO) {
             return@withContext CommonGoodInfo(
-                    ean = "12345678",
-                    material = "000000000000222222",
-                    matcode = "333333333333",
-                    name = "Товар",
+                    ean = "4005489741143",
+                    material = "000000000000000021",
+                    name = "Р/к горбуша (Россия) 230/250г",
                     units = Uom.ST,
                     defaultQuantity = 1.0,
                     goodGroup = "123456",
@@ -33,7 +45,7 @@ class WorkListRepo {
         }
     }
 
-    suspend fun loadAdditionalGoodInfo(good: Good): AdditionalGoodInfo? {
+    override suspend fun loadAdditionalGoodInfo(good: Good): AdditionalGoodInfo? {
         return withContext(Dispatchers.IO) {
             return@withContext AdditionalGoodInfo(
                     storagePlaces = "125635; 652148; 635894",
@@ -70,7 +82,7 @@ class WorkListRepo {
         }
     }
 
-    suspend fun loadSalesStatistics(good: Good): SalesStatistics? {
+    override suspend fun loadSalesStatistics(good: Good): SalesStatistics? {
         return withContext(Dispatchers.IO) {
             return@withContext SalesStatistics(
                     lastSaleDate = Date(),
@@ -81,7 +93,7 @@ class WorkListRepo {
         }
     }
 
-    suspend fun loadDeliveries(good: Good): List<Delivery>? {
+    override suspend fun loadDeliveries(good: Good): List<Delivery>? {
         return withContext(Dispatchers.IO) {
             return@withContext List((3..5).random()) {
                 Delivery(
@@ -95,7 +107,7 @@ class WorkListRepo {
         }
     }
 
-    suspend fun loadComments(good: Good): List<String>? {
+    override suspend fun loadComments(good: Good): List<String>? {
         return withContext(Dispatchers.IO) {
             val comments = MutableList((1..3).random()) {
                 "Комментарий ${it + 1}"
@@ -106,4 +118,12 @@ class WorkListRepo {
         }
     }
 
+}
+
+interface IWorkListRepo {
+    suspend fun getCommonGoodInfoByEan(ean: String): CommonGoodInfo?
+    suspend fun loadAdditionalGoodInfo(good: Good): AdditionalGoodInfo?
+    suspend fun loadSalesStatistics(good: Good): SalesStatistics?
+    suspend fun loadDeliveries(good: Good): List<Delivery>?
+    suspend fun loadComments(good: Good): List<String>?
 }

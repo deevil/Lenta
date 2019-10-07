@@ -3,13 +3,14 @@ package com.lenta.bp14.models.work_list
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.google.gson.Gson
+import com.lenta.bp14.di.WorkListScope
 import com.lenta.bp14.models.ITask
 import com.lenta.bp14.models.ITaskDescription
 import com.lenta.bp14.models.data.GoodType
-import com.lenta.bp14.models.general.ITaskTypeInfo
 import com.lenta.bp14.models.general.AppTaskTypes
 import com.lenta.bp14.models.general.IGeneralRepo
-import com.lenta.bp14.models.work_list.repo.WorkListRepo
+import com.lenta.bp14.models.general.ITaskTypeInfo
+import com.lenta.bp14.models.work_list.repo.IWorkListRepo
 import com.lenta.shared.models.core.MatrixType
 import com.lenta.shared.models.core.Uom
 import com.lenta.shared.platform.battery_state.getIconForStatus
@@ -18,16 +19,16 @@ import com.lenta.shared.utilities.extentions.getFormattedDate
 import com.lenta.shared.utilities.extentions.map
 import kotlinx.coroutines.delay
 import java.util.*
+import javax.inject.Inject
 
-class WorkListTask(
+@WorkListScope
+class WorkListTask @Inject constructor(
         private val generalRepo: IGeneralRepo,
-        private val workListRepo: WorkListRepo,
+        private val workListRepo: IWorkListRepo,
         private val taskDescription: WorkListTaskDescription,
         private val timeMonitor: ITimeMonitor,
         private val gson: Gson
 ) : IWorkListTask {
-
-    //private var currentList = processed
 
     val processing = MutableLiveData<MutableList<Good>>(mutableListOf())
     val processed = MutableLiveData<MutableList<Good>>(mutableListOf())
@@ -91,15 +92,6 @@ class WorkListTask(
             good.comments.value = commentsList
         }
     }
-
-    /*fun setCurrentList(tabPosition: Int) {
-        currentList = when (tabPosition) {
-            GoodsListTab.PROCESSED.position -> processed
-            GoodsListTab.PROCESSING.position -> processing
-            GoodsListTab.SEARCH.position -> search
-            else -> processed
-        }
-    }*/
 
     override fun getGoodOptions(): LiveData<GoodOptions> {
         return currentGood.map { it?.common?.options }
@@ -229,9 +221,8 @@ data class Good(
 
 
 data class CommonGoodInfo(
-        val ean: String,
+        val ean: String?,
         val material: String,
-        val matcode: String,
         val name: String,
         val units: Uom,
         val defaultQuantity: Double,

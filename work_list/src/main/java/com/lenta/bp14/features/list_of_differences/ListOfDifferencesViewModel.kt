@@ -2,7 +2,6 @@ package com.lenta.bp14.features.list_of_differences
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.lenta.bp14.models.data.TaskManager
 import com.lenta.bp14.models.data.pojo.Good
 import com.lenta.bp14.platform.navigation.IScreenNavigator
 import com.lenta.shared.platform.viewmodel.CoreViewModel
@@ -15,8 +14,6 @@ class ListOfDifferencesViewModel : CoreViewModel() {
 
     @Inject
     lateinit var navigator: IScreenNavigator
-    @Inject
-    lateinit var taskManager: TaskManager
 
 
     val selectionsHelper = SelectionItemsHelper()
@@ -29,7 +26,7 @@ class ListOfDifferencesViewModel : CoreViewModel() {
 
     init {
         viewModelScope.launch {
-            goods.value = taskManager.getTestGoodList(4)
+
         }
     }
 

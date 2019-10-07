@@ -48,7 +48,6 @@ class AppModule {
         @AppScope
         fun bindScreenNavigator(realisation: ScreenNavigator): IScreenNavigator
 
-
         @Binds
         @AppScope
         fun bindGeneralRepo(realisation: GeneralRepo): IGeneralRepo
@@ -81,16 +80,6 @@ class AppModule {
         @AppScope
         fun bindICheckPriceTaskInfoNetRequest(realisation: CheckPriceTaskInfoNetRequest): ICheckPriceTaskInfoNetRequest
 
-    }
-
-    @Provides
-    internal fun provideCheckListTask(checkListTaskManager: CheckListTaskManager): ICheckListTask {
-        return checkListTaskManager.getTask()!!
-    }
-
-    @Provides
-    internal fun provideWorkListTask(workListTaskManager: WorkListTaskManager): WorkListTask {
-        return workListTaskManager.getTask()!!
     }
 
 }
