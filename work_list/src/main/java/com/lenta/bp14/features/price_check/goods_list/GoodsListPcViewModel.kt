@@ -2,11 +2,11 @@ package com.lenta.bp14.features.price_check.goods_list
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.lenta.bp14.features.common_ui_model.SimpleProductUi
 import com.lenta.bp14.models.IGeneralTaskManager
 import com.lenta.bp14.models.check_price.ICheckPriceResult
 import com.lenta.bp14.models.check_price.ICheckPriceTask
 import com.lenta.bp14.models.data.GoodsListTab
-import com.lenta.bp14.models.data.pojo.Good
 import com.lenta.bp14.models.getTaskName
 import com.lenta.bp14.platform.navigation.IScreenNavigator
 import com.lenta.bp14.requests.check_price.CheckPriceReportNetRequest
@@ -36,7 +36,6 @@ class GoodsListPcViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     lateinit var generalTaskManager: IGeneralTaskManager
 
 
-
     val processedSelectionsHelper = SelectionItemsHelper()
     val searchSelectionsHelper = SelectionItemsHelper()
 
@@ -51,7 +50,18 @@ class GoodsListPcViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     val numberField = MutableLiveData<String>("")
     val requestFocusToNumberField: MutableLiveData<Boolean> = MutableLiveData()
 
-    val processingGoods = MutableLiveData<List<Good>>(listOf())
+    val processingGoods by lazy {
+        task.getToProcessingProducts().map {
+            it?.mapIndexed { index, iCheckPriceResult ->
+                SimpleProductUi(
+                        position = index + 1,
+                        matNr = iCheckPriceResult.matNr ?: "",
+                        name = "${iCheckPriceResult.matNr?.takeLast(6)} ${iCheckPriceResult.name}"
+                )
+            }
+        }
+
+    }
 
     private val funcUiAdapter = { list: List<ICheckPriceResult>? ->
         list?.reversed()?.mapIndexed { index, iCheckPriceResult ->
@@ -165,7 +175,12 @@ class GoodsListPcViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
 
         viewModelScope.launch {
             navigator.showProgressLoadingData()
-            checkPriceReportNetRequest(task.getReportData(deviceInfo.getDeviceIp())).either( {
+            checkPriceReportNetRequest(
+                    task.getReportData(
+                            ip = deviceInfo.getDeviceIp(),
+                            isNotFinish = true
+                    )
+            ).either({
                 navigator.openAlertScreen(it)
             }) {
                 Logg.d { "SentReportResult: $it" }
@@ -175,7 +190,6 @@ class GoodsListPcViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
             navigator.hideProgress()
 
         }
-
 
 
     }
@@ -220,7 +234,7 @@ class GoodsListPcViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
 
     private fun getMatNrByPosition(position: Int): String? {
         return when (correctedSelectedPage.value) {
-            0 -> processingGoods.value?.map { it.material }
+            0 -> processingGoods.value?.map { it.matNr }
             1 -> processedGoods.value?.map { it.matNr }
             2 -> searchGoods.value?.map { it.matNr }
             else -> null

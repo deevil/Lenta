@@ -94,13 +94,13 @@ class GoodsListNeFragment : CoreFragment<FragmentGoodsListNeBinding, GoodsListNe
                     false).let { layoutBinding ->
 
                 layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
-                        layoutId = R.layout.item_good,
-                        itemId = BR.good,
-                        realisation = object : DataBindingAdapter<ItemGoodBinding> {
-                            override fun onCreate(binding: ItemGoodBinding) {
+                        layoutId = R.layout.item_simple_good,
+                        itemId = BR.vm,
+                        realisation = object : DataBindingAdapter<ItemSimpleGoodBinding> {
+                            override fun onCreate(binding: ItemSimpleGoodBinding) {
                             }
 
-                            override fun onBind(binding: ItemGoodBinding, position: Int) {
+                            override fun onBind(binding: ItemSimpleGoodBinding, position: Int) {
                                 processingRecyclerViewKeyHandler?.let {
                                     binding.root.isSelected = it.isSelected(position)
                                 }

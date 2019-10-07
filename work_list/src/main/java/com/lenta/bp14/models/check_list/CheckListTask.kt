@@ -5,9 +5,10 @@ import com.google.gson.Gson
 import com.lenta.bp14.models.ITask
 import com.lenta.bp14.models.ITaskDescription
 import com.lenta.bp14.models.check_list.repo.ICheckListRepo
-import com.lenta.bp14.models.general.ITaskTypeInfo
 import com.lenta.bp14.models.general.AppTaskTypes
 import com.lenta.bp14.models.general.IGeneralRepo
+import com.lenta.bp14.models.general.ITaskTypeInfo
+import com.lenta.bp14.requests.check_list.CheckListReport
 import com.lenta.shared.models.core.Uom
 import com.lenta.shared.platform.time.ITimeMonitor
 import com.lenta.shared.utilities.extentions.dropZeros
@@ -20,8 +21,6 @@ class CheckListTask(
         private val timeMonitor: ITimeMonitor,
         private val gson: Gson
 ) : ICheckListTask {
-
-    override var openToEdit = true
 
     override val goods = MutableLiveData<List<Good>>(listOf())
 
@@ -57,10 +56,6 @@ class CheckListTask(
         return checkListRepo.getGoodByEan(ean)
     }
 
-    override fun saveScannedGoodList(goodsList: List<Good>) {
-
-    }
-
     override fun getTaskType(): ITaskTypeInfo {
         return generalRepo.getTasksTypeInfo(AppTaskTypes.CheckList.taskType)!!
     }
@@ -69,10 +64,22 @@ class CheckListTask(
         return taskDescription
     }
 
+    override fun getReportData(ip: String): CheckListReport {
+        return CheckListReport(
+                ip = ip,
+                description = taskDescription,
+                isNotFinish = false,
+                checksResults = goods.value ?: emptyList()
+        )
+    }
+
+    override fun saveScannedGoodList(goodsList: List<Good>) {
+
+    }
+
 }
 
 interface ICheckListTask : ITask {
-    var openToEdit: Boolean
     val goods: MutableLiveData<List<Good>>
 
     suspend fun getGoodByEan(ean: String): Good?
@@ -81,6 +88,7 @@ interface ICheckListTask : ITask {
     fun addGood(good: Good)
     fun deleteSelectedGoods(indices: MutableSet<Int>)
 
+    fun getReportData(ip: String): CheckListReport
     fun saveScannedGoodList(goodsList: List<Good>)
 }
 

@@ -20,6 +20,7 @@ import com.lenta.shared.exception.Failure
 import com.lenta.shared.functional.Either
 import com.lenta.shared.functional.map
 import com.lenta.shared.utilities.extentions.combineLatest
+import com.lenta.shared.utilities.extentions.isSapTrue
 import com.lenta.shared.utilities.extentions.map
 import javax.inject.Inject
 
@@ -31,6 +32,49 @@ class NotExposedProductsTask @Inject constructor(
         private val filterableDelegate: IFilterable,
         private val productInfoNotExposedInfoRequest: IProductInfoForNotExposedNetRequest
 ) : INotExposedProductsTask, IFilterable by filterableDelegate {
+
+    private val productsInfoMap by lazy {
+        taskDescription.additionalTaskInfo?.productsInfo?.map { it.matNr to it }?.toMap()
+                ?: emptyMap()
+    }
+
+    private val checkPlaces by lazy {
+        taskDescription.additionalTaskInfo?.checkPlaces?.map { it.matNr to it }?.toMap()
+                ?: emptyMap()
+    }
+
+    init {
+        initProcessed()
+    }
+
+    private fun initProcessed() {
+
+        taskDescription.additionalTaskInfo?.positions?.filter { it.isProcessed.isSapTrue() || it.quantity > 0 }?.let {
+            it.forEach { position ->
+                val productInfo = productsInfoMap[position.matNr]
+                val checkPlace = checkPlaces[position.matNr]
+                notExposedProductsRepo.addOrReplaceProduct(
+                        NotExposedProductInfo(
+                                ean = null,
+                                matNr = position.matNr,
+                                name = productInfo?.name ?: "",
+                                quantity = position.quantity,
+                                isEmptyPlaceMarked = checkPlace?.let { place ->
+                                    when {
+                                        place.statCheck == "2" -> true
+                                        place.statCheck == "3" -> false
+                                        else -> null
+                                    }
+                                },
+                                section = productInfo?.sectionNumber,
+                                group = productInfo?.eKGRP,
+                                uom = null
+                        )
+                )
+            }
+        }
+
+    }
 
 
     private var processedGoodInfo: GoodInfo? = null
@@ -52,6 +96,26 @@ class NotExposedProductsTask @Inject constructor(
         return notExposedProductsRepo.getProducts()
     }
 
+    override fun getToProcessingProducts(): LiveData<List<INotExposedProductInfo>> {
+        return getProducts().map { processedGoodInfo ->
+            val processedMaterials = processedGoodInfo?.map { it.matNr }?.toSet() ?: emptySet()
+            val positions = taskDescription.additionalTaskInfo?.positions?.filter { !processedMaterials.contains(it.matNr) }
+                    ?: emptyList()
+            positions.map {
+                val productInfo = productsInfoMap[it.matNr]
+                NotExposedProductInfo(
+                        ean = null,
+                        name = productInfo?.name ?: "",
+                        matNr = it.matNr,
+                        quantity = it.quantity,
+                        uom = null,
+                        isEmptyPlaceMarked = null,
+                        section = productInfo?.sectionNumber,
+                        group = productInfo?.eKGRP
+                )
+            }
+        }
+    }
 
     override fun setCheckInfo(quantity: Double?, isEmptyPlaceMarked: Boolean?) {
         processedGoodInfo.let {
@@ -138,11 +202,11 @@ class NotExposedProductsTask @Inject constructor(
     }
 
 
-    override fun getReportData(ip: String): NotExposedReport {
+    override fun getReportData(ip: String, isNotFinish: Boolean): NotExposedReport {
         return NotExposedReport(
                 ip = ip,
                 description = taskDescription,
-                isNotFinish = false,
+                isNotFinish = isNotFinish,
                 checksResults = notExposedProductsRepo.getProducts().value ?: emptyList()
         )
     }
@@ -154,6 +218,8 @@ class NotExposedProductsTask @Inject constructor(
 interface INotExposedProductsTask : ITask, IFilterable {
 
     fun getProcessedProductInfoResult(): GoodInfo?
+
+    fun getToProcessingProducts(): LiveData<List<INotExposedProductInfo>>
 
     fun getProducts(): LiveData<List<INotExposedProductInfo>>
 
@@ -167,7 +233,7 @@ interface INotExposedProductsTask : ITask, IFilterable {
 
     suspend fun getProductInfoAndSetProcessed(ean: String? = null, matNr: String? = null): Either<Failure, GoodInfo>
 
-    fun getReportData(ip: String): NotExposedReport
+    fun getReportData(ip: String, isNotFinish: Boolean): NotExposedReport
 
 }
 

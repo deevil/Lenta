@@ -2,14 +2,18 @@ package com.lenta.bp14.features.check_list.goods_list
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.lenta.bp14.models.IGeneralTaskManager
 import com.lenta.bp14.models.check_list.Good
 import com.lenta.bp14.models.check_list.ICheckListTask
 import com.lenta.bp14.models.check_price.IPriceInfoParser
 import com.lenta.bp14.models.getTaskName
 import com.lenta.bp14.platform.navigation.IScreenNavigator
+import com.lenta.bp14.requests.check_list.CheckListSendReportNetRequest
 import com.lenta.shared.models.core.Uom
+import com.lenta.shared.platform.device_info.DeviceInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.analyseCode
+import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.databinding.PageSelectionListener
@@ -25,6 +29,12 @@ class GoodsListClViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     lateinit var task: ICheckListTask
     @Inject
     lateinit var priceInfoParser: IPriceInfoParser
+    @Inject
+    lateinit var generalTaskManager: IGeneralTaskManager
+    @Inject
+    lateinit var deviceInfo: DeviceInfo
+    @Inject
+    lateinit var sentReportRequest: CheckListSendReportNetRequest
 
 
     val selectionsHelper = SelectionItemsHelper()
@@ -75,13 +85,24 @@ class GoodsListClViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     }
 
     fun onClickSave() {
+        navigator.showProgressLoadingData()
+
         // Подтверждение - Перевести задание в статус "Подсчитано" и закрыть его для редактирования? - Назад / Да
         navigator.showSetTaskToStatusCalculated {
-            task.openToEdit = false
-
-            // todo Реализовать сохранение задания?
-            task.saveScannedGoodList(task.goods.value!!)
+            viewModelScope.launch {
+                sentReportRequest(task.getReportData(deviceInfo.getDeviceIp())).either(
+                        {
+                            navigator.openAlertScreen(failure = it)
+                        }
+                ) {
+                    Logg.d { "SentReportResult: $it" }
+                    generalTaskManager.clearCurrentTask(sentReportResult = it)
+                    navigator.openReportResultScreen()
+                }
+            }
         }
+
+        navigator.hideProgress()
     }
 
     override fun onPageSelected(position: Int) {
