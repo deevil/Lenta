@@ -33,12 +33,9 @@ class DeliveriesNetRequest
         }
 
         return fmpRequestsHelper.restRequest("ZMP_UTZ_WKL_13_V001",
-                FmpReport(
+                FmpRequest(
                         ip = params.ip,
-                        description = params.description.taskName,
-                        tkNumber = params.description.tkNumber,
-                        isNotFinished = params.isNotFinish.toSapBooleanString(),
-                        positions = checkPositions
+                        description = params.description.taskName
                 )
                 , ReportSentStatus::class.java)
                 .rightToLeft { sentResult ->

@@ -1,6 +1,9 @@
 package com.lenta.bp14.di
 
+import com.lenta.bp14.features.work_list.expected_deliveries.ExpectedDeliveriesViewModel
+import com.lenta.bp14.features.work_list.good_details.GoodDetailsViewModel
 import com.lenta.bp14.features.work_list.good_info.GoodInfoWlViewModel
+import com.lenta.bp14.features.work_list.good_sales.GoodSalesViewModel
 import com.lenta.bp14.features.work_list.goods_list.GoodsListWlViewModel
 import com.lenta.bp14.models.filter.FilterFieldType.*
 import com.lenta.bp14.models.filter.FilterableDelegate
@@ -23,15 +26,19 @@ import dagger.Module
 import dagger.Provides
 import javax.inject.Scope
 
-@NotExposedScope
+@WorkListScope
 @Component(modules = [WorkListModule::class], dependencies = [AppComponent::class])
 
 interface WorkListComponent {
 
-    fun inject(it: GoodsListWlViewModel)
+    fun getTask(): IWorkListTask
+
     fun inject(it: WorkListTaskManager)
+    fun inject(it: GoodsListWlViewModel)
     fun inject(it: GoodInfoWlViewModel)
-    fun getWorkListTask(): IWorkListTask
+    fun inject(it: GoodDetailsViewModel)
+    fun inject(it: ExpectedDeliveriesViewModel)
+    fun inject(it: GoodSalesViewModel)
 
 }
 

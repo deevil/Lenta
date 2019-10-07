@@ -13,17 +13,17 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.math.BigDecimal
 import java.util.*
+import javax.inject.Inject
 import kotlin.random.Random
 
-class WorkListRepo(
-        hyperHive: HyperHive,
-        val units: ZmpUtz07V001 = ZmpUtz07V001(hyperHive), // Единицы измерения
-        //val settings: ZmpUtz14V001 = ZmpUtz14V001(hyperHive), // Настройки
-        //val stores: ZmpUtz23V001 = ZmpUtz23V001(hyperHive), // Список магазинов
-        val productInfo: ZfmpUtz48V001 = ZfmpUtz48V001(hyperHive), // Информация о товаре
-        val eamInfo: ZmpUtz25V001 = ZmpUtz25V001(hyperHive), // Информация о штрих-коде
-        val deliveries: ZmpUtzWkl13V001Rfc = ZmpUtzWkl13V001Rfc(hyperHive) // Планируемые поставки
+class WorkListRepo @Inject constructor(
+        hyperHive: HyperHive
 ) : IWorkListRepo {
+
+    val units: ZmpUtz07V001 by lazy { ZmpUtz07V001(hyperHive) } // Единицы измерения
+    val productInfo: ZfmpUtz48V001 by lazy { ZfmpUtz48V001(hyperHive) } // Информация о товаре
+    val eanInfo: ZmpUtz25V001 by lazy { ZmpUtz25V001(hyperHive) } // Информация о штрих-коде
+    val deliveries: ZmpUtzWkl13V001Rfc by lazy { ZmpUtzWkl13V001Rfc(hyperHive) } // Планируемые поставки
 
     override suspend fun getCommonGoodInfoByEan(ean: String): CommonGoodInfo? {
         return withContext(Dispatchers.IO) {

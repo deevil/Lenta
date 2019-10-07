@@ -1,5 +1,6 @@
 package com.lenta.bp14.di
 
+import com.lenta.bp14.features.check_list.ean_scanner.EanVideoScannerViewModel
 import com.lenta.bp14.features.check_list.goods_list.GoodsListClViewModel
 import com.lenta.bp14.models.check_list.CheckListTask
 import com.lenta.bp14.models.check_list.CheckListTaskDescription
@@ -19,9 +20,11 @@ import javax.inject.Scope
 
 interface CheckListComponent {
 
-    fun inject(it: GoodsListClViewModel)
+    fun getTask(): ICheckListTask
+
     fun inject(it: CheckListTaskManager)
-    fun getCheckListTask(): ICheckListTask
+    fun inject(it: GoodsListClViewModel)
+    fun inject(it: EanVideoScannerViewModel)
 
 }
 
@@ -32,21 +35,17 @@ class CheckListModule(private val taskDescription: CheckListTaskDescription) {
     internal interface Declarations {
 
         @Binds
-        @CheckPriceScope
+        @CheckListScope
         fun bindCheckListTask(realisation: CheckListTask): ICheckListTask
 
         @Binds
-        @CheckPriceScope
+        @CheckListScope
         fun bindCheckListRepo(realisation: CheckListRepo): ICheckListRepo
-
-        @Binds
-        @WorkListScope
-        fun bindCheckListSendReportNetRequest(realisation: CheckListSendReportNetRequest): CheckListSendReportNetRequest
 
     }
 
     @Provides
-    @CheckPriceScope
+    @CheckListScope
     internal fun provideTaskDescription(): CheckListTaskDescription {
         return taskDescription
     }

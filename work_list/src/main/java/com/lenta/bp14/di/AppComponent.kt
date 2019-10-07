@@ -52,18 +52,11 @@ interface AppComponent : CoreComponent {
     fun inject(it: MainMenuViewModel)
     fun inject(it: TaskListViewModel)
     fun inject(it: JobCardViewModel)
-    fun inject(it: GoodsListClViewModel)
     fun inject(it: ListOfDifferencesViewModel)
     fun inject(it: ReportResultViewModel)
     fun inject(it: PrintSettingsViewModel)
-    fun inject(it: GoodsListWlViewModel)
-    fun inject(it: GoodInfoWlViewModel)
-    fun inject(it: GoodDetailsViewModel)
-    fun inject(it: ExpectedDeliveriesViewModel)
     fun inject(it: SearchFilterViewModel)
-    fun inject(it: GoodSalesViewModel)
     fun inject(it: CoreScanBarCodeViewModel)
     fun inject(it: SearchFilterTlViewModel)
-    fun inject(it: EanVideoScannerViewModel)
 
 }

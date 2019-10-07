@@ -1,6 +1,7 @@
 package com.lenta.bp14.models.check_list.repo
 
 import androidx.lifecycle.MutableLiveData
+import com.lenta.bp14.di.CheckListScope
 import com.lenta.bp14.models.check_list.Good
 import com.lenta.bp14.platform.extentions.CheckListGoodInfo
 import com.lenta.bp14.platform.extentions.toCheckListGoodInfo
@@ -17,14 +18,15 @@ import com.lenta.shared.requests.combined.scan_info.pojo.EanInfo
 import com.mobrun.plugin.api.HyperHive
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
-@AppScope
-class CheckListRepo(
-        hyperHive: HyperHive,
-        val units: ZmpUtz07V001 = ZmpUtz07V001(hyperHive), // Единицы измерения
-        val productInfo: ZfmpUtz48V001 = ZfmpUtz48V001(hyperHive), // Информация о товаре
-        val eamInfo: ZmpUtz25V001 = ZmpUtz25V001(hyperHive) // Информация о штрих-коде
+class CheckListRepo @Inject constructor(
+        hyperHive: HyperHive
 ) : ICheckListRepo {
+
+    val units: ZmpUtz07V001 by lazy { ZmpUtz07V001(hyperHive) } // Единицы измерения
+    val productInfo: ZfmpUtz48V001 by lazy { ZfmpUtz48V001(hyperHive) } // Информация о товаре
+    val eanInfo: ZmpUtz25V001 = ZmpUtz25V001(hyperHive) // Информация о штрих-коде
 
     override suspend fun getGoodByMaterial(material: String): Good? {
         return withContext(Dispatchers.IO) {
@@ -66,7 +68,7 @@ class CheckListRepo(
 
     override suspend fun getEanInfoByEan(ean: String?): EanInfo? {
         return withContext(Dispatchers.IO) {
-            return@withContext eamInfo.getEanInfo(ean)?.toEanInfo()
+            return@withContext eanInfo.getEanInfo(ean)?.toEanInfo()
         }
     }
 

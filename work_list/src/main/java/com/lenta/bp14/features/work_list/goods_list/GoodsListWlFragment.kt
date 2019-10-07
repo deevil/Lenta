@@ -9,9 +9,10 @@ import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import com.lenta.bp14.BR
 import com.lenta.bp14.R
-import com.lenta.bp14.models.data.GoodsListTab
 import com.lenta.bp14.databinding.*
-import com.lenta.bp14.platform.extentions.getAppComponent
+import com.lenta.bp14.di.WorkListComponent
+import com.lenta.bp14.models.data.GoodsListTab
+import com.lenta.shared.di.CoreInjectHelper
 import com.lenta.shared.keys.KeyCode
 import com.lenta.shared.keys.OnKeyDownListener
 import com.lenta.shared.platform.fragment.CoreFragment
@@ -27,7 +28,6 @@ import com.lenta.shared.utilities.databinding.ViewPagerSettings
 import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
 import com.lenta.shared.utilities.extentions.provideViewModel
-import java.lang.IllegalArgumentException
 
 class GoodsListWlFragment : CoreFragment<FragmentGoodsListWlBinding, GoodsListWlViewModel>(),
         ViewPagerSettings, ToolbarButtonsClickListener, OnKeyDownListener, OnScanResultListener {
@@ -42,7 +42,7 @@ class GoodsListWlFragment : CoreFragment<FragmentGoodsListWlBinding, GoodsListWl
 
     override fun getViewModel(): GoodsListWlViewModel {
         provideViewModel(GoodsListWlViewModel::class.java).let {
-            getAppComponent()?.inject(it)
+            CoreInjectHelper.getComponent(WorkListComponent::class.java)!!.inject(it)
             return it
         }
     }

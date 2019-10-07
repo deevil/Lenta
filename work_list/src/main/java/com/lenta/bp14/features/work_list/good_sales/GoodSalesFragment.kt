@@ -1,10 +1,10 @@
 package com.lenta.bp14.features.work_list.good_sales
 
 import android.view.View
-import androidx.lifecycle.Observer
 import com.lenta.bp14.R
 import com.lenta.bp14.databinding.FragmentGoodSalesBinding
-import com.lenta.bp14.platform.extentions.getAppComponent
+import com.lenta.bp14.di.WorkListComponent
+import com.lenta.shared.di.CoreInjectHelper
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
@@ -22,7 +22,7 @@ class GoodSalesFragment : CoreFragment<FragmentGoodSalesBinding, GoodSalesViewMo
 
     override fun getViewModel(): GoodSalesViewModel {
         provideViewModel(GoodSalesViewModel::class.java).let {
-            getAppComponent()?.inject(it)
+            CoreInjectHelper.getComponent(WorkListComponent::class.java)!!.inject(it)
             return it
         }
     }
