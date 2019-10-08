@@ -57,6 +57,7 @@
                     <TextView
                         style="@style/CellTextStyle"
                         android:text="@{task.name}"
+                        app:zoom="@{true}"
                         tools:text="Рабочий список от 23.07.19 23:15" />
 
                 </LinearLayout>
