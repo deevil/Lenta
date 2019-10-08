@@ -13,8 +13,8 @@ import com.lenta.bp14.models.general.ITaskTypeInfo
 import com.lenta.bp14.models.work_list.repo.IWorkListRepo
 import com.lenta.shared.models.core.MatrixType
 import com.lenta.shared.models.core.Uom
-import com.lenta.shared.platform.battery_state.getIconForStatus
 import com.lenta.shared.platform.time.ITimeMonitor
+import com.lenta.shared.utilities.extentions.dropZeros
 import com.lenta.shared.utilities.extentions.getFormattedDate
 import com.lenta.shared.utilities.extentions.map
 import kotlinx.coroutines.delay
@@ -141,6 +141,10 @@ class WorkListTask @Inject constructor(
         return processed.value.isNullOrEmpty()
     }
 
+    override suspend fun getUnitsName(code: String?): String? {
+        return workListRepo.getUnitsName(code)
+    }
+
 }
 
 
@@ -162,6 +166,7 @@ interface IWorkListTask : ITask {
     fun getGoodOptions(): LiveData<GoodOptions>
     fun getGoodStocks(): LiveData<List<Stock>>
     fun getGoodProviders(): LiveData<List<Provider>>
+    suspend fun getUnitsName(code: String?): String?
 }
 
 // -----------------------------
@@ -296,15 +301,15 @@ data class SalesStatistics(
 }
 
 data class Delivery(
-        val status: DeliveryStatus,
-        val info: String, // ПП, РЦ, ...
+        val status: String,
+        val type: String,
         val quantity: Double,
-        val units: Uom,
-        val date: Date
+        val unitsName: String,
+        val date: Date?
 ) {
 
     fun getQuantityWithUnits(): String {
-        return "$quantity ${units.name.toLowerCase(Locale.getDefault())}"
+        return "${quantity.dropZeros()} $unitsName"
     }
 
 }

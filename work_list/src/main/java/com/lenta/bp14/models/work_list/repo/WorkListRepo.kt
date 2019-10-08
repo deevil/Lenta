@@ -2,6 +2,7 @@ package com.lenta.bp14.models.work_list.repo
 
 import com.lenta.bp14.models.data.GoodType
 import com.lenta.bp14.models.work_list.*
+import com.lenta.shared.fmp.resources.dao_ext.getUnitName
 import com.lenta.shared.fmp.resources.fast.ZmpUtz07V001
 import com.lenta.shared.fmp.resources.slow.ZfmpUtz48V001
 import com.lenta.shared.fmp.resources.slow.ZmpUtz25V001
@@ -101,6 +102,12 @@ class WorkListRepo @Inject constructor(
         }
     }
 
+    override suspend fun getUnitsName(code: String?): String? {
+        return withContext(Dispatchers.IO) {
+            return@withContext units.getUnitName(code)?.toLowerCase(Locale.getDefault())
+        }
+    }
+
 }
 
 interface IWorkListRepo {
@@ -108,4 +115,5 @@ interface IWorkListRepo {
     suspend fun loadAdditionalGoodInfo(good: Good): AdditionalGoodInfo?
     suspend fun loadSalesStatistics(good: Good): SalesStatistics?
     suspend fun loadComments(good: Good): List<String>?
+    suspend fun getUnitsName(code: String?): String?
 }

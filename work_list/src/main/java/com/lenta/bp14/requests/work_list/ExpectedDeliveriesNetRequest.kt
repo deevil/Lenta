@@ -40,7 +40,7 @@ class ExpectedDeliveriesStatus : ObjectRawStatus<ExpectedDeliveriesResult>()
 
 data class ExpectedDeliveriesResult(
         @SerializedName("ET_PLAN_DELIV") // Таблица планируемых поставок
-        val delivery: List<ExpectedDelivery>,
+        val deliveries: List<ExpectedDelivery>,
         @SerializedName("ET_RETCODE") // Код возврата + Текст ошибки
         val retCodes: List<RetCode>
 )
