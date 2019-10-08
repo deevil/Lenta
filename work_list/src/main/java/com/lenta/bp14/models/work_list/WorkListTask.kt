@@ -275,7 +275,7 @@ data class Promo(
 // -----------------------------
 
 data class SalesStatistics(
-        val lastSaleDate: Date?,
+        val lastSaleDate: Date,
         val daySales: Double,
         val weekSales: Double
 )
@@ -284,7 +284,7 @@ data class Delivery(
         val status: String,
         val type: String,
         val quantity: Double,
-        val date: Date?
+        val date: Date
 )
 
 // -----------------------------

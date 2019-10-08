@@ -77,7 +77,7 @@ class GoodSalesViewModel : CoreViewModel() {
         viewModelScope.launch {
             val sales = result.sales.first()
             task.currentGood.value?.sales?.value = SalesStatistics(
-                    lastSaleDate = DateTimeUtil.getDateFromString("${sales.lastSaleDate}_${sales.lastSaleTime}", Constants.DATE_TIME_ONE),
+                    lastSaleDate = "${sales.lastSaleDate}_${sales.lastSaleTime}".getDate(Constants.DATE_TIME_ONE),
                     daySales = sales.daySales,
                     weekSales = sales.weekSales
             )

@@ -1,6 +1,6 @@
 package com.lenta.shared.utilities.extentions
 
-import java.text.SimpleDateFormat
+import com.lenta.shared.utilities.date_time.DateTimeUtil
 import java.util.*
 
 fun Iterable<String>.toSQliteSet(): String {
@@ -11,6 +11,6 @@ fun String?.isSapTrue(): Boolean {
     return this == "X"
 }
 
-fun String?.getDate(pattern: String): Date? {
-    return SimpleDateFormat(pattern, Locale.getDefault()).parse(this)
+fun String.getDate(pattern: String): Date {
+    return DateTimeUtil.getDateFromString(this, pattern)
 }
