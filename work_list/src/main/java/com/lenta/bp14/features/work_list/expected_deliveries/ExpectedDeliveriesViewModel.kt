@@ -62,7 +62,7 @@ class ExpectedDeliveriesViewModel : CoreViewModel() {
                             tkNumber = sessionInfo.market ?: "Not Found!",
                             material = task.currentGood.value?.common?.material ?: ""
                     )
-            ).either(::handleFailure) { result -> updateDeliveries(result)}
+            ).either(::handleFailure, ::updateDeliveries)
         }
     }
 
