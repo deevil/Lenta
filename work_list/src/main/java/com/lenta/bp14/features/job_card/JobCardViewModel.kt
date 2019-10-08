@@ -276,14 +276,18 @@ class JobCardViewModel : CoreViewModel() {
                     ).either(::handleFailure) {
                         generalTaskManager.clearCurrentTask()
                         tasksSearchHelper.processedTaskInfo = null
+                        screenNavigator.goBack()
                         true
                     }
                     screenNavigator.hideProgress()
 
+                } else {
+                    generalTaskManager.clearCurrentTask()
+                    tasksSearchHelper.processedTaskInfo = null
+                    screenNavigator.goBack()
                 }
             }
 
-            screenNavigator.goBack()
 
         }
     }
