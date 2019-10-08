@@ -99,10 +99,16 @@ class GoodInfoPcViewModel : CoreViewModel() {
     private fun setNewCheckStatusAndGoBack(isValid: Boolean?) {
         task.setCheckPriceStatus(isValid)
         if (isValid != true) {
-            navigator.showPrintPriceOffer(getTitle()) {
-                navigator.goBack()
-                navigator.openPrintSettingsScreen()
-            }
+            navigator.showPrintPriceOffer(
+                    goodName = getTitle(),
+                    noCallback = {
+                        navigator.goBack()
+                    },
+                    yesCallback = {
+                        navigator.goBack()
+                        navigator.openPrintSettingsScreen()
+                    }
+            )
         } else {
             navigator.goBack()
         }

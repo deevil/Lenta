@@ -255,14 +255,17 @@ class ScreenNavigator @Inject constructor(
         }
     }
 
-    override fun showPrintPriceOffer(goodName: String, yesCallback: () -> Unit) {
+    override fun showPrintPriceOffer(goodName: String, noCallback: () -> Unit, yesCallback: () -> Unit) {
         runOrPostpone {
-            getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.print_price_tag_for_good, goodName),
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.print_price_tag_for_good, goodName),
                     pageNumber = "43",
                     iconRes = R.drawable.ic_question_80dp,
+                    codeConfirmForLeft = backFragmentResultHelper.setFuncForResult(noCallback),
                     codeConfirmForRight = backFragmentResultHelper.setFuncForResult(yesCallback),
-                    leftButtonDecorationInfo = ButtonDecorationInfo.backNo,
-                    rightButtonDecorationInfo = ButtonDecorationInfo.yes))
+                    leftButtonDecorationInfo = ButtonDecorationInfo.no,
+                    rightButtonDecorationInfo = ButtonDecorationInfo.yes
+            ))
         }
     }
 
@@ -473,7 +476,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun showPriceTagsSubmitted(nextCallback: () -> Unit)
     fun showSetTaskToStatusCalculated(yesCallback: () -> Unit)
     fun showRawGoodsRemainedInTask(yesCallback: () -> Unit)
-    fun showPrintPriceOffer(goodName: String, yesCallback: () -> Unit)
+    fun showPrintPriceOffer(goodName: String, noCallback: () -> Unit, yesCallback: () -> Unit)
     fun showUnsavedDataFoundOnDevice(deleteCallback: () -> Unit, goOverCallback: () -> Unit)
     fun showUnsavedTaskFoundOnDevice(deleteCallback: () -> Unit, goOverCallback: () -> Unit)
     fun showGoodIsNotPartOfTask()
