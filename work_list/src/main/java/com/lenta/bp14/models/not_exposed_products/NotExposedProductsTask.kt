@@ -215,6 +215,10 @@ class NotExposedProductsTask @Inject constructor(
         return getProducts().value.isNullOrEmpty()
     }
 
+    override fun isHaveDiscrepancies(): Boolean {
+        return getToProcessingProducts().value!!.isEmpty()
+    }
+
 
 }
 

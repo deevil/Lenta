@@ -37,8 +37,7 @@ class ListOfDifferencesFragment : CoreFragment<FragmentListOfDifferencesBinding,
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
         topToolbarUiModel.description.value = getString(R.string.list_of_differences)
-
-        connectLiveData(vm.title, topToolbarUiModel.title)
+        topToolbarUiModel.title.value = vm.title
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {

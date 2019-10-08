@@ -93,6 +93,11 @@ class CheckListTask @Inject constructor(
         return goods.value.isNullOrEmpty()
     }
 
+    override fun isHaveDiscrepancies(): Boolean {
+        //TODO implement this
+        return false
+    }
+
 }
 
 interface ICheckListTask : ITask {

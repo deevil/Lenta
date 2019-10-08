@@ -34,6 +34,17 @@ class CheckPriceTask @Inject constructor(
         private val vibrateHelper: IVibrateHelper
 ) : ICheckPriceTask, StateFromToString {
 
+    private val processingProducts by lazy {
+        getCheckResults().map { processedGoodInfo ->
+            val processedMaterials = processedGoodInfo?.map { it.matNr }?.toSet() ?: emptySet()
+            val positions = taskDescription.additionalTaskInfo?.positions?.filter { !processedMaterials.contains(it.matNr) }
+                    ?: emptyList()
+            positions.map {
+                getCheckPriceByMatnr(it.matNr)
+            }
+        }
+    }
+
     private val productsInfoMap by lazy {
         taskDescription.additionalTaskInfo?.productsInfo?.map { it.matNr to it }?.toMap()
                 ?: emptyMap()
@@ -175,14 +186,7 @@ class CheckPriceTask @Inject constructor(
     }
 
     override fun getToProcessingProducts(): LiveData<List<ICheckPriceResult>> {
-        return getCheckResults().map { processedGoodInfo ->
-            val processedMaterials = processedGoodInfo?.map { it.matNr }?.toSet() ?: emptySet()
-            val positions = taskDescription.additionalTaskInfo?.positions?.filter { !processedMaterials.contains(it.matNr) }
-                    ?: emptyList()
-            positions.map {
-                getCheckPriceByMatnr(it.matNr)
-            }
-        }
+        return processingProducts
     }
 
     private fun getCheckPriceByMatnr(matNr: String): ICheckPriceResult {
@@ -291,6 +295,10 @@ class CheckPriceTask @Inject constructor(
 
     override fun isEmpty(): Boolean {
         return readyResultsRepo.getCheckPriceResults().value.isNullOrEmpty()
+    }
+
+    override fun isHaveDiscrepancies(): Boolean {
+        return processingProducts.value!!.isNotEmpty()
     }
 
 }

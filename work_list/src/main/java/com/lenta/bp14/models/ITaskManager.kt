@@ -59,6 +59,9 @@ interface ITask {
     }
 
     fun isEmpty(): Boolean
+
+    fun isHaveDiscrepancies(): Boolean
+
 }
 
 

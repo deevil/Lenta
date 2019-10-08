@@ -133,6 +133,11 @@ class WorkListTask @Inject constructor(
         return processed.value.isNullOrEmpty()
     }
 
+    override fun isHaveDiscrepancies(): Boolean {
+        //TODO implement this
+        return false
+    }
+
     override suspend fun getUnitsName(code: String?): String? {
         return workListRepo.getUnitsName(code)
     }
