@@ -8,7 +8,7 @@ import javax.inject.Inject
 
 
 class IconDescriptionHelper @Inject constructor(hyperHive: HyperHive) : IIconDescriptionHelper {
-    private val descriptionForIconMap = mutableMapOf<String, String>()
+    private val descriptionForIconMap = mutableMapOf<String, String?>()
 
     private val zmpUtz38V001 by lazy {
         ZmpUtz38V001(hyperHive)
@@ -20,7 +20,7 @@ class IconDescriptionHelper @Inject constructor(hyperHive: HyperHive) : IIconDes
             return descriptionForIconMap[iconCode.code]
         }
 
-        return (zmpUtz38V001.getIconDescriptionByCode(iconCode.code) ?: "").apply {
+        return (zmpUtz38V001.getIconDescriptionByCode(iconCode.code)).apply {
             descriptionForIconMap[iconCode.code] = this
         }
 

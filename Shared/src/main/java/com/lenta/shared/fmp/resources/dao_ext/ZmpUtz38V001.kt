@@ -22,6 +22,7 @@ enum class IconCode(val code: String) {
     EXCISE_ALCO("07"),
     RETURN_POSSIBLE("08"),
     USUALY_PRODUCT("09"),
-    TASK_WITH_ALCO("10")
+    TASK_WITH_ALCO("10"),
+    QR_CODE("11")
 }
 

@@ -246,7 +246,8 @@ class CoreNavigator @Inject constructor(
     override fun openQrCodeInfoScreen() {
         runOrPostpone {
             getFragmentStack()?.push(
-                    AlertFragment.create(message = context.getString(R.string.qr_code_info),
+                    AlertFragment.create(message = iconDescriptionHelper.getDescription(IconCode.QR_CODE)
+                            ?: context.getString(R.string.qr_code_info),
                             iconRes = R.drawable.ic_scan_qrcode_48dp), CustomAnimation.vertical)
         }
     }
