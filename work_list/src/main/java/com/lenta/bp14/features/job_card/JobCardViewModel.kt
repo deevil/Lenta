@@ -269,7 +269,7 @@ class JobCardViewModel : CoreViewModel() {
                     tasksSearchHelper.isDataChanged = true
                     unlockTaskNetRequest(
                             UnlockTaskParams(
-                                    ip = deviceIndo.getDeviceIp(),
+                                    ip = deviceInfo.getDeviceIp(),
                                     taskNumber = taskNumber
 
                             )
