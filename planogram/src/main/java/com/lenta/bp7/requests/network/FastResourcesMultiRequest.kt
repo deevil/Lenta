@@ -3,6 +3,7 @@ package com.lenta.bp7.requests.network
 import com.lenta.shared.fmp.resources.fast.ZmpUtz07V001
 import com.lenta.shared.fmp.resources.fast.ZmpUtz14V001
 import com.lenta.shared.fmp.resources.fast.ZmpUtz23V001
+import com.lenta.shared.fmp.resources.fast.ZmpUtz38V001
 import com.lenta.shared.fmp.resources.slow.ZfmpUtz48V001
 import com.lenta.shared.fmp.resources.slow.ZmpUtz25V001
 import com.lenta.shared.requests.network.CoreResourcesMultiRequest
@@ -21,6 +22,7 @@ class FastResourcesMultiRequest @Inject constructor(val hyperHive: HyperHive) : 
                 ZmpUtz07V001.NAME_RESOURCE to ZmpUtz07V001(hyperHive).newRequest(),
                 ZmpUtz14V001.NAME_RESOURCE to ZmpUtz14V001(hyperHive).newRequest(),
                 ZmpUtz23V001.NAME_RESOURCE to ZmpUtz23V001(hyperHive).newRequest(),
+                ZmpUtz38V001.NAME_RESOURCE to ZmpUtz38V001(hyperHive).newRequest(),
 
                 //TODO удалить загрузку SlowData после добавления в FMP sdk возможности обращения к базе во время синхронизации
                 ZfmpUtz48V001.NAME_RESOURCE to ZfmpUtz48V001(hyperHive).newRequest(),

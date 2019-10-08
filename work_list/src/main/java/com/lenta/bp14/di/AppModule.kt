@@ -2,16 +2,14 @@ package com.lenta.bp14.di
 
 import com.lenta.bp14.models.GeneralTaskManager
 import com.lenta.bp14.models.IGeneralTaskManager
-import com.lenta.bp14.models.check_list.CheckListTaskManager
-import com.lenta.bp14.models.check_list.ICheckListTask
 import com.lenta.bp14.models.check_price.IPriceInfoParser
 import com.lenta.bp14.models.check_price.PriceInfoParser
 import com.lenta.bp14.models.general.GeneralRepo
 import com.lenta.bp14.models.general.IGeneralRepo
 import com.lenta.bp14.models.general.ITasksSearchHelper
 import com.lenta.bp14.models.general.TasksSearchHelper
-import com.lenta.bp14.models.work_list.WorkListTask
-import com.lenta.bp14.models.work_list.WorkListTaskManager
+import com.lenta.bp14.models.print.IPrintTask
+import com.lenta.bp14.models.print.PrintTask
 import com.lenta.bp14.platform.IVibrateHelper
 import com.lenta.bp14.platform.VibrateHelper
 import com.lenta.bp14.platform.navigation.IScreenNavigator
@@ -22,14 +20,10 @@ import com.lenta.bp14.repos.IRepoInMemoryHolder
 import com.lenta.bp14.repos.RepoInMemoryHolder
 import com.lenta.bp14.requests.check_price.CheckPriceTaskInfoNetRequest
 import com.lenta.bp14.requests.check_price.ICheckPriceTaskInfoNetRequest
-import com.lenta.bp14.requests.tasks.ITaskListFilteredNetRequest
-import com.lenta.bp14.requests.tasks.ITaskListUpdateNetRequest
-import com.lenta.bp14.requests.tasks.TaskListFilteredNetRequest
-import com.lenta.bp14.requests.tasks.TaskListUpdateNetRequest
+import com.lenta.bp14.requests.tasks.*
 import com.lenta.shared.di.AppScope
 import dagger.Binds
 import dagger.Module
-import dagger.Provides
 
 @Module(includes = [AppModule.Declarations::class])
 class AppModule {
@@ -79,6 +73,14 @@ class AppModule {
         @Binds
         @AppScope
         fun bindICheckPriceTaskInfoNetRequest(realisation: CheckPriceTaskInfoNetRequest): ICheckPriceTaskInfoNetRequest
+
+        @Binds
+        @AppScope
+        fun bindIPrintTask(realisation: PrintTask): IPrintTask
+
+        @Binds
+        @AppScope
+        fun bindIUnlockTaskNetRequest(realisation: UnlockTaskNetRequest): IUnlockTaskNetRequest
 
     }
 

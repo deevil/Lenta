@@ -1,4 +1,4 @@
-package com.lenta.bp10.fmp.resources.fast;
+package com.lenta.shared.fmp.resources.fast;
 
 import com.google.gson.annotations.SerializedName;
 import com.mobrun.plugin.api.HyperHive;
@@ -8,7 +8,6 @@ import com.mobrun.plugin.api.request_assistant.RequestBuilder;
 import com.mobrun.plugin.api.helper.LocalTableResourceHelper;
 import com.mobrun.plugin.models.StatusSelectTable;
 
-@SuppressWarnings("ALL")
 public class ZmpUtz38V001 {
 
     public static final String NAME_RESOURCE = "ZMP_UTZ_38_V001";
@@ -24,20 +23,17 @@ public class ZmpUtz38V001 {
 
         this.hyperHive = hyperHive;
 
-        localHelper_ET_ICONS =
-                new LocalTableResourceHelper<ItemLocal_ET_ICONS, Status_ET_ICONS>(NAME_RESOURCE,
-                        NAME_OUT_PARAM_ET_ICONS,
-                        hyperHive,
-                        Status_ET_ICONS.class);
+        localHelper_ET_ICONS = 
+                 new LocalTableResourceHelper<ItemLocal_ET_ICONS, Status_ET_ICONS>(NAME_RESOURCE, 
+                         NAME_OUT_PARAM_ET_ICONS, 
+                         hyperHive,
+                         Status_ET_ICONS.class);
 
     }
 
-    public RequestBuilder<Params, LimitedScalarParameter> newRequest() {
-        return new RequestBuilder<Params, LimitedScalarParameter>(hyperHive, NAME_RESOURCE, true);
-    }
+    public RequestBuilder<Params, LimitedScalarParameter> newRequest() { return new RequestBuilder<Params, LimitedScalarParameter>(hyperHive, NAME_RESOURCE, true);}
 
-    static final class Status_ET_ICONS extends StatusSelectTable<ItemLocal_ET_ICONS> {
-    }
+    static final class Status_ET_ICONS extends StatusSelectTable<ItemLocal_ET_ICONS> {}
 
     public static class ItemLocal_ET_ICONS {
         //  type: TEXT, source: {'name': 'SAP', 'type': 'C'}
@@ -52,8 +48,7 @@ public class ZmpUtz38V001 {
     }
 
 
-    public interface Params extends CustomParameter {
-    }
+    public interface Params extends CustomParameter {}
 
 
     public static class LimitedScalarParameter extends ScalarParameter {

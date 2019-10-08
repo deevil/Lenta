@@ -29,6 +29,7 @@ import com.lenta.shared.platform.high_priority.MainService
 import com.lenta.shared.platform.navigation.BackFragmentResultHelper
 import com.lenta.shared.platform.navigation.FragmentStack
 import com.lenta.shared.platform.navigation.ICoreNavigator
+import com.lenta.shared.platform.navigation.pictogram.IIconDescriptionHelper
 import com.lenta.shared.platform.network_state.INetworkStateMonitor
 import com.lenta.shared.platform.network_state.NetworkStateMonitor
 import com.lenta.shared.platform.resources.ISharedStringResourceManager
@@ -78,6 +79,7 @@ interface CoreComponent {
     fun getLockManager(): LockManager
     fun getDeviceInfo(): DeviceInfo
     fun getDefaultSettingsManager(): DefaultSettingsManager
+    fun getIIconDescriptionHelper(): IIconDescriptionHelper
 
 
     fun inject(it: FmpSettingsViewModel)

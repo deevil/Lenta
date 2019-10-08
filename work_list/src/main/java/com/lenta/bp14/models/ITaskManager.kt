@@ -57,6 +57,7 @@ interface ITask {
     fun isFreeMode(): Boolean {
         return this.getDescription().taskNumber.isBlank()
     }
+
     fun isEmpty(): Boolean
 }
 
@@ -80,4 +81,8 @@ fun ITaskManager<*, *>.getTaskType(): String? {
 
 fun ITask.getTaskName(): String {
     return getDescription().taskName
+}
+
+fun ITask.getTaskNumber(): String {
+    return getDescription().taskNumber
 }

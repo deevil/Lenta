@@ -33,6 +33,8 @@ import com.lenta.shared.platform.device_info.DeviceInfo
 import com.lenta.shared.platform.navigation.BackFragmentResultHelper
 import com.lenta.shared.platform.navigation.CoreNavigator
 import com.lenta.shared.platform.navigation.ICoreNavigator
+import com.lenta.shared.platform.navigation.pictogram.IIconDescriptionHelper
+import com.lenta.shared.platform.navigation.pictogram.IconDescriptionHelper
 import com.lenta.shared.platform.resources.ISharedStringResourceManager
 import com.lenta.shared.platform.resources.SharedStringResourceManager
 import com.lenta.shared.platform.time.ITimeMonitor
@@ -53,13 +55,26 @@ import com.lenta.shared.utilities.prepareFolder
 import com.mobrun.plugin.api.HyperHive
 import com.mobrun.plugin.api.HyperHiveState
 import com.mobrun.plugin.api.VersionAPI
+import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import javax.inject.Singleton
 
 
-@Module
+@Module(includes = [CoreModule.Declarations::class])
 class CoreModule(val application: Application, val defaultConnectionSettings: DefaultConnectionSettings) {
+
+    @Module
+    internal interface Declarations {
+        @Binds
+        @Singleton
+        fun bindIIconDescriptionHelper(realisation: IconDescriptionHelper): IIconDescriptionHelper
+
+        @Binds
+        @Singleton
+        fun bindICoreNavigator(realisation: CoreNavigator): ICoreNavigator
+
+    }
 
 
     @Provides
@@ -167,19 +182,6 @@ class CoreModule(val application: Application, val defaultConnectionSettings: De
         return CoreFailureInterpreter(context)
     }
 
-
-    @Provides
-    @Singleton
-    internal fun provideICoreNavigator(context: Context,
-                                       hyperHive: HyperHive,
-                                       foregroundActivityProvider: ForegroundActivityProvider,
-                                       failureInterpreter: IFailureInterpreter,
-                                       analytics: IAnalytics,
-                                       analyticsHelper: AnalyticsHelper,
-                                       roomAppDatabase: RoomAppDatabase,
-                                       backFragmentResultHelper: BackFragmentResultHelper): ICoreNavigator {
-        return CoreNavigator(context, hyperHive, foregroundActivityProvider, failureInterpreter, analytics, analyticsHelper, roomAppDatabase, backFragmentResultHelper)
-    }
 
     @Provides
     @Singleton

@@ -1,13 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-
-    <string-array name="price_tag_color">
-        <item>Не выбрано</item>
-        <item>Желтый ценник</item>
-        <item>Красный ценник</item>
-    </string-array>
-
     <string-array name="selected_comment">
         <item>Не выбран</item>
         <item>Случайный коммент 1</item>
