@@ -13,6 +13,7 @@ import com.lenta.shared.exception.Failure
 import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.Logg
+import com.lenta.shared.utilities.date_time.DateTimeUtil
 import com.lenta.shared.utilities.extentions.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -76,7 +77,7 @@ class GoodSalesViewModel : CoreViewModel() {
         viewModelScope.launch {
             val sales = result.sales.first()
             task.currentGood.value?.sales?.value = SalesStatistics(
-                    lastSaleDate = "${sales.lastSaleDate}_${sales.lastSaleTime}".getDate(Constants.DATE_TIME_ONE),
+                    lastSaleDate = DateTimeUtil.getDateFromString("${sales.lastSaleDate}_${sales.lastSaleTime}", Constants.DATE_TIME_ONE),
                     daySales = sales.daySales,
                     weekSales = sales.weekSales
             )

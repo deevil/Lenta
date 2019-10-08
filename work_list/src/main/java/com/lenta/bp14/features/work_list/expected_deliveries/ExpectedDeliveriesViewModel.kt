@@ -13,6 +13,7 @@ import com.lenta.shared.exception.Failure
 import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.Logg
+import com.lenta.shared.utilities.date_time.DateTimeUtil
 import com.lenta.shared.utilities.extentions.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -79,7 +80,7 @@ class ExpectedDeliveriesViewModel : CoreViewModel() {
                         status = delivery.status,
                         type = delivery.type,
                         quantity = delivery.quantityInDelivery,
-                        date = "${delivery.date}_${delivery.time}".getDate(Constants.DATE_TIME_ONE)
+                        date = DateTimeUtil.getDateFromString("${delivery.date}_${delivery.time}", Constants.DATE_TIME_ONE)
                 )
             }
             navigator.hideProgress()
