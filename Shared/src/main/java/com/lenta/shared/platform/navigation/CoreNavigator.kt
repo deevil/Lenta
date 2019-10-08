@@ -24,26 +24,33 @@ import com.lenta.shared.features.support.SupportFragment
 import com.lenta.shared.features.tech_login.TechLoginFragment
 import com.lenta.shared.features.test_environment.PinCodeFragment
 import com.lenta.shared.features.test_environment.failure.FailurePinCodeFragment
+import com.lenta.shared.fmp.resources.dao_ext.IconCode
 import com.lenta.shared.interactor.UseCase
 import com.lenta.shared.models.core.MatrixType
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
+import com.lenta.shared.platform.navigation.pictogram.IIconDescriptionHelper
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.utilities.extentions.getApplicationName
 import com.lenta.shared.utilities.extentions.openAnotherApp
 import com.lenta.shared.utilities.extentions.restartApp
 import com.lenta.shared.utilities.extentions.setFragmentResultCode
 import com.mobrun.plugin.api.HyperHive
+import javax.inject.Inject
 import kotlin.system.exitProcess
 
 
-class CoreNavigator constructor(private val context: Context,
-                                private val hyperHive: HyperHive,
-                                private val foregroundActivityProvider: ForegroundActivityProvider,
-                                private val failureInterpreter: IFailureInterpreter,
-                                private val analytics: IAnalytics,
-                                private val analyticsHelper: AnalyticsHelper,
-                                private val roomAppDatabase: RoomAppDatabase,
-                                override val backFragmentResultHelper: BackFragmentResultHelper) : ICoreNavigator {
+class CoreNavigator @Inject constructor(
+        private val context: Context,
+        private val hyperHive: HyperHive,
+        private val foregroundActivityProvider: ForegroundActivityProvider,
+        private val failureInterpreter: IFailureInterpreter,
+        private val analytics: IAnalytics,
+        private val analyticsHelper: AnalyticsHelper,
+        private val roomAppDatabase: RoomAppDatabase,
+        override val backFragmentResultHelper: BackFragmentResultHelper,
+        private val iconDescriptionHelper: IIconDescriptionHelper
+) : ICoreNavigator {
+
 
     override val functionsCollector: FunctionsCollector by lazy {
         FunctionsCollector(foregroundActivityProvider.onPauseStateLiveData)
@@ -230,7 +237,8 @@ class CoreNavigator constructor(private val context: Context,
 
     override fun openEanInfoScreen() {
         runOrPostpone {
-            getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.ean_info),
+            getFragmentStack()?.push(AlertFragment.create(message = iconDescriptionHelper.getDescription(IconCode.EAN)
+                    ?: context.getString(R.string.ean_info),
                     iconRes = R.drawable.ic_scan_barcode_48dp), CustomAnimation.vertical)
         }
     }
@@ -245,14 +253,16 @@ class CoreNavigator constructor(private val context: Context,
 
     override fun openESInfoScreen() {
         runOrPostpone {
-            getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.es_info),
+            getFragmentStack()?.push(AlertFragment.create(message = iconDescriptionHelper.getDescription(IconCode.EXCISE_STAMP)
+                    ?: context.getString(R.string.es_info),
                     iconRes = R.drawable.is_scan_barcode_es), CustomAnimation.vertical)
         }
     }
 
     override fun openBoxInfoScreen() {
         runOrPostpone {
-            getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.box_info),
+            getFragmentStack()?.push(AlertFragment.create(message = iconDescriptionHelper.getDescription(IconCode.BOX_SCAN)
+                    ?: context.getString(R.string.box_info),
                     iconRes = R.drawable.is_scan_box), CustomAnimation.vertical)
         }
     }

@@ -9,7 +9,7 @@ fun ZmpUtz38V001.getIconDescriptionByCode(code: String): String? {
 
 fun ZmpUtz38V001.getIconDescription(iconCode: IconCode): String? {
     @Suppress("INACCESSIBLE_TYPE")
-    return localHelper_ET_ICONS.getWhere("CODE = \"${iconCode.code}\" LIMIT 1").getOrNull(0)?.text
+    return getIconDescriptionByCode(iconCode.code)
 }
 
 enum class IconCode(val code: String) {
