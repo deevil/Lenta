@@ -13,8 +13,8 @@ import com.lenta.bp14.models.general.ITaskTypeInfo
 import com.lenta.bp14.models.work_list.repo.IWorkListRepo
 import com.lenta.shared.models.core.MatrixType
 import com.lenta.shared.models.core.Uom
-import com.lenta.shared.platform.battery_state.getIconForStatus
 import com.lenta.shared.platform.time.ITimeMonitor
+import com.lenta.shared.utilities.extentions.dropZeros
 import com.lenta.shared.utilities.extentions.getFormattedDate
 import com.lenta.shared.utilities.extentions.map
 import kotlinx.coroutines.delay
@@ -30,11 +30,11 @@ class WorkListTask @Inject constructor(
         private val gson: Gson
 ) : IWorkListTask {
 
-    val processing = MutableLiveData<MutableList<Good>>(mutableListOf())
-    val processed = MutableLiveData<MutableList<Good>>(mutableListOf())
-    val search = MutableLiveData<MutableList<Good>>(mutableListOf())
+    override val processing = MutableLiveData<MutableList<Good>>(mutableListOf())
+    override val processed = MutableLiveData<MutableList<Good>>(mutableListOf())
+    override val search = MutableLiveData<MutableList<Good>>(mutableListOf())
 
-    var currentGood = MutableLiveData<Good>()
+    override var currentGood = MutableLiveData<Good>()
 
     override suspend fun addGoodByEan(ean: String): Boolean {
         processed.value?.find { it.common.ean == "12345678" }?.let { good ->
@@ -66,22 +66,6 @@ class WorkListTask @Inject constructor(
         currentGood.value?.let { good ->
             val additionalGoodInfo = workListRepo.loadAdditionalGoodInfo(good)
             good.additional.value = additionalGoodInfo
-        }
-    }
-
-    override suspend fun loadSalesStatistics() {
-        delay(500)
-        currentGood.value?.let { good ->
-            val salesStatistics = workListRepo.loadSalesStatistics(good)
-            good.sales.value = salesStatistics
-        }
-    }
-
-    override suspend fun loadDeliveries() {
-        delay(500)
-        currentGood.value?.let { good ->
-            val deliveriesList = workListRepo.loadDeliveries(good)
-            good.deliveries.value = deliveriesList
         }
     }
 
@@ -149,15 +133,22 @@ class WorkListTask @Inject constructor(
         return processed.value.isNullOrEmpty()
     }
 
+    override suspend fun getUnitsName(code: String?): String? {
+        return workListRepo.getUnitsName(code)
+    }
+
 }
 
 
 interface IWorkListTask : ITask {
+    val processing: MutableLiveData<MutableList<Good>>
+    val processed: MutableLiveData<MutableList<Good>>
+    val search: MutableLiveData<MutableList<Good>>
+    var currentGood: MutableLiveData<Good>
+
     suspend fun addGoodByEan(ean: String): Boolean
 
     suspend fun loadAdditionalGoodInfo()
-    suspend fun loadSalesStatistics()
-    suspend fun loadDeliveries()
     suspend fun loadComments()
 
     fun addScanResult(scanResult: ScanResult)
@@ -166,6 +157,7 @@ interface IWorkListTask : ITask {
     fun getGoodOptions(): LiveData<GoodOptions>
     fun getGoodStocks(): LiveData<List<Stock>>
     fun getGoodProviders(): LiveData<List<Provider>>
+    suspend fun getUnitsName(code: String?): String?
 }
 
 // -----------------------------
@@ -283,40 +275,17 @@ data class Promo(
 // -----------------------------
 
 data class SalesStatistics(
-        val lastSaleDate: Date,
-        val daySales: Int,
-        val weekSales: Int,
-        val units: Uom
-) {
-
-    fun getDaySalesWithUnits(): String {
-        return "$daySales ${units.name.toLowerCase(Locale.getDefault())}"
-    }
-
-    fun getWeekSalesWithUnits(): String {
-        return "$weekSales ${units.name.toLowerCase(Locale.getDefault())}"
-    }
-
-}
+        val lastSaleDate: Date?,
+        val daySales: Double,
+        val weekSales: Double
+)
 
 data class Delivery(
-        val status: DeliveryStatus,
-        val info: String, // ПП, РЦ, ...
+        val status: String,
+        val type: String,
         val quantity: Double,
-        val units: Uom,
-        val date: Date
-) {
-
-    fun getQuantityWithUnits(): String {
-        return "$quantity ${units.name.toLowerCase(Locale.getDefault())}"
-    }
-
-}
-
-enum class DeliveryStatus(val description: String) {
-    ON_WAY("В пути"),
-    ORDERED("Заказан")
-}
+        val date: Date?
+)
 
 // -----------------------------
 

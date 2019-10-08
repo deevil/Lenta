@@ -23,6 +23,9 @@ object Constants {
     const val DATE_FORMAT_mm = "MM"
     const val DATE_FORMAT_yy = "yy"
 
+    // Other date formats
+    const val DATE_TIME_ONE = "yyyy-MM-dd_HH:mm:ss"
+
     // Entered length
     const val COMMON_SAP_LENGTH = 6
     const val COMMON_SAP_FULL_LENGTH = 18
