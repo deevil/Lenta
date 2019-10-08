@@ -1,6 +1,5 @@
 package com.lenta.bp14.models.work_list.repo
 
-import com.lenta.bp14.fmp.resources.ZmpUtzWkl13V001Rfc
 import com.lenta.bp14.models.data.GoodType
 import com.lenta.bp14.models.work_list.*
 import com.lenta.shared.fmp.resources.fast.ZmpUtz07V001
@@ -11,19 +10,17 @@ import com.lenta.shared.models.core.Uom
 import com.mobrun.plugin.api.HyperHive
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import java.math.BigDecimal
 import java.util.*
 import javax.inject.Inject
 import kotlin.random.Random
 
 class WorkListRepo @Inject constructor(
-        hyperHive: HyperHive
+        private val hyperHive: HyperHive
 ) : IWorkListRepo {
 
     val units: ZmpUtz07V001 by lazy { ZmpUtz07V001(hyperHive) } // Единицы измерения
     val productInfo: ZfmpUtz48V001 by lazy { ZfmpUtz48V001(hyperHive) } // Информация о товаре
     val eanInfo: ZmpUtz25V001 by lazy { ZmpUtz25V001(hyperHive) } // Информация о штрих-коде
-    val deliveries: ZmpUtzWkl13V001Rfc by lazy { ZmpUtzWkl13V001Rfc(hyperHive) } // Планируемые поставки
 
     override suspend fun getCommonGoodInfoByEan(ean: String): CommonGoodInfo? {
         return withContext(Dispatchers.IO) {
@@ -93,20 +90,6 @@ class WorkListRepo @Inject constructor(
         }
     }
 
-    override suspend fun loadDeliveries(good: Good): List<Delivery>? {
-        return withContext(Dispatchers.IO) {
-            return@withContext List((3..5).random()) {
-                Delivery(
-                        status = if (Random.nextBoolean()) DeliveryStatus.ORDERED else DeliveryStatus.ON_WAY,
-                        info = if (Random.nextBoolean()) "ПП" else "РЦ",
-                        quantity = (1..99).random().toDouble(),
-                        units = Uom.KAR,
-                        date = Date()
-                )
-            }
-        }
-    }
-
     override suspend fun loadComments(good: Good): List<String>? {
         return withContext(Dispatchers.IO) {
             val comments = MutableList((1..3).random()) {
@@ -124,6 +107,5 @@ interface IWorkListRepo {
     suspend fun getCommonGoodInfoByEan(ean: String): CommonGoodInfo?
     suspend fun loadAdditionalGoodInfo(good: Good): AdditionalGoodInfo?
     suspend fun loadSalesStatistics(good: Good): SalesStatistics?
-    suspend fun loadDeliveries(good: Good): List<Delivery>?
     suspend fun loadComments(good: Good): List<String>?
 }

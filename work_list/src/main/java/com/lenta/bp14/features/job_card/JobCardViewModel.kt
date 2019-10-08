@@ -51,7 +51,7 @@ class JobCardViewModel : CoreViewModel() {
     @Inject
     lateinit var tasksSearchHelper: ITasksSearchHelper
     @Inject
-    lateinit var deviceIndo: DeviceInfo
+    lateinit var deviceInfo: DeviceInfo
     @Inject
     lateinit var checkPriceTaskInfoNetRequest: ICheckPriceTaskInfoNetRequest
     @Inject
@@ -138,7 +138,7 @@ class JobCardViewModel : CoreViewModel() {
                         checkPriceTaskInfoNetRequest(
                                 CheckPriceTaskInfoParams(
                                         taskNumber = taskFromTaskList!!.taskId,
-                                        ip = deviceIndo.getDeviceIp(),
+                                        ip = deviceInfo.getDeviceIp(),
                                         withProductInfo = true.toSapBooleanString(),
                                         mode = "1"
                                 )
@@ -203,7 +203,7 @@ class JobCardViewModel : CoreViewModel() {
                         notExposedTaskInfoNetRequest(
                                 NotExposedTaskInfoParams(
                                         taskNumber = taskFromTaskList!!.taskId,
-                                        ip = deviceIndo.getDeviceIp(),
+                                        ip = deviceInfo.getDeviceIp(),
                                         withProductInfo = true.toSapBooleanString(),
                                         mode = "1"
                                 )

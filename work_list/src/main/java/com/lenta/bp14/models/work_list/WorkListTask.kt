@@ -30,11 +30,11 @@ class WorkListTask @Inject constructor(
         private val gson: Gson
 ) : IWorkListTask {
 
-    val processing = MutableLiveData<MutableList<Good>>(mutableListOf())
-    val processed = MutableLiveData<MutableList<Good>>(mutableListOf())
-    val search = MutableLiveData<MutableList<Good>>(mutableListOf())
+    override val processing = MutableLiveData<MutableList<Good>>(mutableListOf())
+    override val processed = MutableLiveData<MutableList<Good>>(mutableListOf())
+    override val search = MutableLiveData<MutableList<Good>>(mutableListOf())
 
-    var currentGood = MutableLiveData<Good>()
+    override var currentGood = MutableLiveData<Good>()
 
     override suspend fun addGoodByEan(ean: String): Boolean {
         processed.value?.find { it.common.ean == "12345678" }?.let { good ->
@@ -74,14 +74,6 @@ class WorkListTask @Inject constructor(
         currentGood.value?.let { good ->
             val salesStatistics = workListRepo.loadSalesStatistics(good)
             good.sales.value = salesStatistics
-        }
-    }
-
-    override suspend fun loadDeliveries() {
-        delay(500)
-        currentGood.value?.let { good ->
-            val deliveriesList = workListRepo.loadDeliveries(good)
-            good.deliveries.value = deliveriesList
         }
     }
 
@@ -153,11 +145,15 @@ class WorkListTask @Inject constructor(
 
 
 interface IWorkListTask : ITask {
+    val processing: MutableLiveData<MutableList<Good>>
+    val processed: MutableLiveData<MutableList<Good>>
+    val search: MutableLiveData<MutableList<Good>>
+    var currentGood: MutableLiveData<Good>
+
     suspend fun addGoodByEan(ean: String): Boolean
 
     suspend fun loadAdditionalGoodInfo()
     suspend fun loadSalesStatistics()
-    suspend fun loadDeliveries()
     suspend fun loadComments()
 
     fun addScanResult(scanResult: ScanResult)
@@ -315,7 +311,8 @@ data class Delivery(
 
 enum class DeliveryStatus(val description: String) {
     ON_WAY("В пути"),
-    ORDERED("Заказан")
+    ORDERED("Заказан"),
+    UNKNOWN("Не известно")
 }
 
 // -----------------------------

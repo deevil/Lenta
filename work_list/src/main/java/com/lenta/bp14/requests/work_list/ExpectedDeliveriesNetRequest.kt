@@ -11,10 +11,10 @@ import com.lenta.shared.interactor.UseCase
 import com.lenta.shared.requests.FmpRequestsHelper
 import javax.inject.Inject
 
-class PlannedDeliveriesNetRequest
-@Inject constructor(private val fmpRequestsHelper: FmpRequestsHelper) : IPlannedDeliveriesNetRequest {
-    override suspend fun run(params: PlannedDeliveriesParams): Either<Failure, PlannedDeliveriesResult> {
-        return fmpRequestsHelper.restRequest("ZMP_UTZ_WKL_13_V001", params, PlannedDeliveriesStatus::class.java)
+class ExpectedDeliveriesNetRequest
+@Inject constructor(private val fmpRequestsHelper: FmpRequestsHelper) : IExpectedDeliveriesNetRequest {
+    override suspend fun run(params: ExpectedDeliveriesParams): Either<Failure, ExpectedDeliveriesResult> {
+        return fmpRequestsHelper.restRequest("ZMP_UTZ_WKL_13_V001", params, ExpectedDeliveriesStatus::class.java)
                 .rightToLeft(
                         fnRtoL = { result ->
                             result.retCodes.firstOrNull { retCode ->
@@ -27,32 +27,37 @@ class PlannedDeliveriesNetRequest
     }
 }
 
-interface IPlannedDeliveriesNetRequest : UseCase<PlannedDeliveriesResult, PlannedDeliveriesParams>
+interface IExpectedDeliveriesNetRequest : UseCase<ExpectedDeliveriesResult, ExpectedDeliveriesParams>
 
-data class PlannedDeliveriesParams(
+data class ExpectedDeliveriesParams(
         @SerializedName("IV_WERKS") // Номер ТК
         val tkNumber: String,
         @SerializedName("IV_MATNR") // Номер товара
-        val material: CheckListTaskDescription
+        val material: String
 )
 
-class PlannedDeliveriesStatus : ObjectRawStatus<PlannedDeliveriesResult>()
+class ExpectedDeliveriesStatus : ObjectRawStatus<ExpectedDeliveriesResult>()
 
-data class PlannedDeliveriesResult(
+data class ExpectedDeliveriesResult(
+        @SerializedName("ET_PLAN_DELIV") // Таблица планируемых поставок
+        val delivery: List<ExpectedDelivery>,
+        @SerializedName("ET_RETCODE") // Код возврата + Текст ошибки
+        val retCodes: List<RetCode>
+)
+
+data class ExpectedDelivery(
         @SerializedName("TYPE_DELIV") // Тип поставки
         val type: String,
         @SerializedName("STAT_DELIV") // Статус поставки
         val status: String,
         @SerializedName("MENGE") // Количество в заказе
-        val quantityInOrder: String,
+        val quantityInOrder: Double,
         @SerializedName("ORMNG") // Количество в входящей поставке
-        val quantityInDelivery: String,
+        val quantityInDelivery: Double,
         @SerializedName("BSTME") // ЕИ заказа на поставку
         val unitsCode: String,
         @SerializedName("DATE_PLAN") // Планируемая дата поставки
         val date: String,
         @SerializedName("TIME_PLAN") // Планируемое время поставки
-        val time: String,
-        @SerializedName("ET_RETCODE") // Код возврата + Текст ошибки
-        val retCodes: List<RetCode>
+        val time: String
 )
