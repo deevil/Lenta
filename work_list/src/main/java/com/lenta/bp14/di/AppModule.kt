@@ -20,14 +20,10 @@ import com.lenta.bp14.repos.IRepoInMemoryHolder
 import com.lenta.bp14.repos.RepoInMemoryHolder
 import com.lenta.bp14.requests.check_price.CheckPriceTaskInfoNetRequest
 import com.lenta.bp14.requests.check_price.ICheckPriceTaskInfoNetRequest
-import com.lenta.bp14.requests.tasks.ITaskListFilteredNetRequest
-import com.lenta.bp14.requests.tasks.ITaskListUpdateNetRequest
-import com.lenta.bp14.requests.tasks.TaskListFilteredNetRequest
-import com.lenta.bp14.requests.tasks.TaskListUpdateNetRequest
+import com.lenta.bp14.requests.tasks.*
 import com.lenta.shared.di.AppScope
 import dagger.Binds
 import dagger.Module
-import dagger.Provides
 
 @Module(includes = [AppModule.Declarations::class])
 class AppModule {
@@ -80,7 +76,11 @@ class AppModule {
 
         @Binds
         @AppScope
-        fun bindIPrintTask(printTask: PrintTask): IPrintTask
+        fun bindIPrintTask(realisation: PrintTask): IPrintTask
+
+        @Binds
+        @AppScope
+        fun bindIUnlockTaskNetRequest(realisation: UnlockTaskNetRequest): IUnlockTaskNetRequest
 
     }
 

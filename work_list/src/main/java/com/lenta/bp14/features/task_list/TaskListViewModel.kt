@@ -145,6 +145,10 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
             tasksSearchHelper.isNewSearchData = false
             selectedPage.postValue(1)
         }
+        if (tasksSearchHelper.isDataChanged) {
+            tasksSearchHelper.isDataChanged = false
+            onClickUpdate()
+        }
     }
 
     fun onDigitPressed(digit: Int) {
