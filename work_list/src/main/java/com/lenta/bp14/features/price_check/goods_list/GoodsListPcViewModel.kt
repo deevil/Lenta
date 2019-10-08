@@ -195,23 +195,24 @@ class GoodsListPcViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
 
 
     fun onClickSave() {
+        navigator.showSetTaskToStatusCalculated {
+            viewModelScope.launch {
+                navigator.showProgressLoadingData()
+                checkPriceReportNetRequest(
+                        task.getReportData(
+                                ip = deviceInfo.getDeviceIp(),
+                                isNotFinish = true
+                        )
+                ).either({
+                    navigator.openAlertScreen(it)
+                }) {
+                    Logg.d { "SentReportResult: $it" }
+                    generalTaskManager.clearCurrentTask(sentReportResult = it)
+                    navigator.openReportResultScreen()
+                }
+                navigator.hideProgress()
 
-        viewModelScope.launch {
-            navigator.showProgressLoadingData()
-            checkPriceReportNetRequest(
-                    task.getReportData(
-                            ip = deviceInfo.getDeviceIp(),
-                            isNotFinish = true
-                    )
-            ).either({
-                navigator.openAlertScreen(it)
-            }) {
-                Logg.d { "SentReportResult: $it" }
-                generalTaskManager.clearCurrentTask(sentReportResult = it)
-                navigator.openReportResultScreen()
             }
-            navigator.hideProgress()
-
         }
 
 

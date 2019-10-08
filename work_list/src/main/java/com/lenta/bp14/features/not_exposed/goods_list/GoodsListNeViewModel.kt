@@ -183,22 +183,25 @@ class GoodsListNeViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
 
 
     fun onClickSave() {
-        viewModelScope.launch {
-            navigator.showProgressLoadingData()
-            sentReportRequest(task.getReportData(
-                    ip = deviceInfo.getDeviceIp(),
-                    isNotFinish = false
-            )).either(
-                    {
-                        navigator.openAlertScreen(failure = it)
-                    }
-            ) {
-                Logg.d { "SentReportResult: $it" }
-                generalTaskManager.clearCurrentTask(sentReportResult = it)
-                navigator.openReportResultScreen()
+        navigator.showSetTaskToStatusCalculated {
+            viewModelScope.launch {
+                navigator.showProgressLoadingData()
+                sentReportRequest(task.getReportData(
+                        ip = deviceInfo.getDeviceIp(),
+                        isNotFinish = false
+                )).either(
+                        {
+                            navigator.openAlertScreen(failure = it)
+                        }
+                ) {
+                    Logg.d { "SentReportResult: $it" }
+                    generalTaskManager.clearCurrentTask(sentReportResult = it)
+                    navigator.openReportResultScreen()
+                }
+                navigator.hideProgress()
             }
-            navigator.hideProgress()
         }
+
     }
 
     private fun onClickDelete() {
