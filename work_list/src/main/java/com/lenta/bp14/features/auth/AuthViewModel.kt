@@ -3,6 +3,8 @@ package com.lenta.bp14.features.auth
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp14.platform.navigation.IScreenNavigator
+import com.lenta.bp14.requests.user_permitions.PermissionsRequestParams
+import com.lenta.bp14.requests.user_permitions.UserPermissionsNetRequest
 import com.lenta.shared.utilities.runIfDebug
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
@@ -29,6 +31,8 @@ class AuthViewModel : CoreAuthViewModel() {
     lateinit var sessionInfo: ISessionInfo
     @Inject
     lateinit var appSettings: IAppSettings
+    @Inject
+    lateinit var userPermissionsNetRequest: UserPermissionsNetRequest
 
 
     val packageName = MutableLiveData<String>()
@@ -62,15 +66,32 @@ class AuthViewModel : CoreAuthViewModel() {
                 sessionInfo.userName = login
                 sessionInfo.basicAuth = getBaseAuth(login, getPassword())
                 appSettings.lastLogin = login
+                //TODO удалить отключение проверки полномочий
+                val disablePermissionCheck = true
+                if (!disablePermissionCheck && sessionInfo.isAuthSkipped.value != true) {
+                    userPermissionsNetRequest(PermissionsRequestParams(
+                            userName = login
+                    )).either(::handleFailure) {
+                        onAuthSuccess(login)
+                    }
+                } else {
+                    onAuthSuccess(login)
+                }
+
+
             }
 
-            progress.value = false
-            navigator.openFastDataLoadingScreen()
         }
+    }
+
+    private fun onAuthSuccess(login: String) {
+        progress.value = false
+        navigator.openFastDataLoadingScreen()
     }
 
     override fun handleFailure(failure: Failure) {
         super.handleFailure(failure)
+        sessionInfo.isAuthSkipped.value = false
         progress.value = false
         navigator.openAlertScreen(failure, pageNumber = "97")
     }

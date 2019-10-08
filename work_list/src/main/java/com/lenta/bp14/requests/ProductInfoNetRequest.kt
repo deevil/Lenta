@@ -83,7 +83,7 @@ data class AdditionalInfo(
         val matnr: String,
 
         @SerializedName("MIN_STOCK")
-        val minStock: String,
+        val minStock: Double,
 
         @SerializedName("LAST_INV")
         val lastInv: String,

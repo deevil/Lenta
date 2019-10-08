@@ -8,6 +8,7 @@ import com.lenta.bp14.models.check_price.ICheckPriceResult
 import com.lenta.bp14.models.check_price.ICheckPriceTask
 import com.lenta.bp14.models.data.GoodsListTab
 import com.lenta.bp14.models.getTaskName
+import com.lenta.bp14.models.print.IPrintTask
 import com.lenta.bp14.platform.navigation.IScreenNavigator
 import com.lenta.bp14.requests.check_price.CheckPriceReportNetRequest
 import com.lenta.shared.platform.device_info.DeviceInfo
@@ -19,10 +20,11 @@ import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.map
+import com.lenta.shared.view.OnPositionClickListener
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class GoodsListPcViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyboardListener {
+class GoodsListPcViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyboardListener, OnPositionClickListener {
 
     @Inject
     lateinit var navigator: IScreenNavigator
@@ -34,7 +36,28 @@ class GoodsListPcViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     lateinit var deviceInfo: DeviceInfo
     @Inject
     lateinit var generalTaskManager: IGeneralTaskManager
+    @Inject
+    lateinit var printTask: IPrintTask
 
+    val tagTypeIds by lazy {
+        mutableListOf("")
+    }
+
+    val tagTypeTitles by lazy {
+        MutableLiveData<List<String>>(
+                emptyList()
+        ).also { liveData ->
+            viewModelScope.launch {
+                tagTypeIds.clear()
+                liveData.value = printTask.getPriceTagTypes().map {
+                    tagTypeIds.add(it.id)
+                    it.name
+                }
+            }
+        }
+    }
+
+    val tagTypesPosition = MutableLiveData(0)
 
     val processedSelectionsHelper = SelectionItemsHelper()
     val searchSelectionsHelper = SelectionItemsHelper()
@@ -172,23 +195,24 @@ class GoodsListPcViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
 
 
     fun onClickSave() {
+        navigator.showSetTaskToStatusCalculated {
+            viewModelScope.launch {
+                navigator.showProgressLoadingData()
+                checkPriceReportNetRequest(
+                        task.getReportData(
+                                ip = deviceInfo.getDeviceIp(),
+                                isNotFinish = true
+                        )
+                ).either({
+                    navigator.openAlertScreen(it)
+                }) {
+                    Logg.d { "SentReportResult: $it" }
+                    generalTaskManager.clearCurrentTask(sentReportResult = it)
+                    navigator.openReportResultScreen()
+                }
+                navigator.hideProgress()
 
-        viewModelScope.launch {
-            navigator.showProgressLoadingData()
-            checkPriceReportNetRequest(
-                    task.getReportData(
-                            ip = deviceInfo.getDeviceIp(),
-                            isNotFinish = true
-                    )
-            ).either({
-                navigator.openAlertScreen(it)
-            }) {
-                Logg.d { "SentReportResult: $it" }
-                generalTaskManager.clearCurrentTask(sentReportResult = it)
-                navigator.openReportResultScreen()
             }
-            navigator.hideProgress()
-
         }
 
 
@@ -258,6 +282,10 @@ class GoodsListPcViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
 
     fun onScanResult(data: String) {
         checkCode(data)
+    }
+
+    override fun onClickPosition(position: Int) {
+        tagTypesPosition.value = position
     }
 }
 

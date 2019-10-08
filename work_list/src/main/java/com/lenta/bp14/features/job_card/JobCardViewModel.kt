@@ -2,10 +2,7 @@ package com.lenta.bp14.features.job_card
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.lenta.bp14.models.IGeneralTaskManager
-import com.lenta.bp14.models.ITask
-import com.lenta.bp14.models.ITaskDescription
-import com.lenta.bp14.models.ITaskManager
+import com.lenta.bp14.models.*
 import com.lenta.bp14.models.check_list.CheckListTaskDescription
 import com.lenta.bp14.models.check_list.CheckListTaskManager
 import com.lenta.bp14.models.check_price.CheckPriceTaskDescription
@@ -20,7 +17,10 @@ import com.lenta.bp14.requests.check_price.CheckPriceTaskInfoParams
 import com.lenta.bp14.requests.check_price.ICheckPriceTaskInfoNetRequest
 import com.lenta.bp14.requests.not_exposed_product.NotExposedTaskInfoNetRequest
 import com.lenta.bp14.requests.not_exposed_product.NotExposedTaskInfoParams
+import com.lenta.bp14.requests.tasks.UnlockTaskNetRequest
+import com.lenta.bp14.requests.tasks.UnlockTaskParams
 import com.lenta.shared.account.ISessionInfo
+import com.lenta.shared.exception.Failure
 import com.lenta.shared.functional.Either
 import com.lenta.shared.platform.device_info.DeviceInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
@@ -56,6 +56,8 @@ class JobCardViewModel : CoreViewModel() {
     lateinit var checkPriceTaskInfoNetRequest: ICheckPriceTaskInfoNetRequest
     @Inject
     lateinit var notExposedTaskInfoNetRequest: NotExposedTaskInfoNetRequest
+    @Inject
+    lateinit var unlockTaskNetRequest: UnlockTaskNetRequest
 
 
     private val taskFromTaskList by lazy {
@@ -248,22 +250,51 @@ class JobCardViewModel : CoreViewModel() {
 
     fun onBackPressed(): Boolean {
         if (generalTaskManager.getProcessedTask()?.isEmpty() != false) {
-            clearCurrentTask()
-            return true
-        }
-
-        screenNavigator.openConfirmationExitTask(generalTaskManager.getProcessedTask()?.getDescription()?.taskName
-                ?: "") {
-            clearCurrentTask()
-            screenNavigator.goBack()
+            clearCurrentTaskAndGoBack()
+        } else {
+            screenNavigator.openConfirmationExitTask(generalTaskManager.getProcessedTask()?.getDescription()?.taskName
+                    ?: "") {
+                clearCurrentTaskAndGoBack()
+            }
         }
 
         return false
     }
 
-    private fun clearCurrentTask() {
-        generalTaskManager.clearCurrentTask()
-        tasksSearchHelper.processedTaskInfo = null
+    private fun clearCurrentTaskAndGoBack() {
+        viewModelScope.launch {
+            generalTaskManager.getProcessedTask()?.getTaskNumber().let { taskNumber ->
+                if (taskNumber?.isNotBlank() == true) {
+                    screenNavigator.showProgress(unlockTaskNetRequest)
+                    tasksSearchHelper.isDataChanged = true
+                    unlockTaskNetRequest(
+                            UnlockTaskParams(
+                                    ip = deviceInfo.getDeviceIp(),
+                                    taskNumber = taskNumber
+
+                            )
+                    ).either(::handleFailure) {
+                        generalTaskManager.clearCurrentTask()
+                        tasksSearchHelper.processedTaskInfo = null
+                        screenNavigator.goBack()
+                        true
+                    }
+                    screenNavigator.hideProgress()
+
+                } else {
+                    generalTaskManager.clearCurrentTask()
+                    tasksSearchHelper.processedTaskInfo = null
+                    screenNavigator.goBack()
+                }
+            }
+
+
+        }
+    }
+
+    override fun handleFailure(failure: Failure) {
+        super.handleFailure(failure)
+        screenNavigator.openAlertScreen(failure)
     }
 
 

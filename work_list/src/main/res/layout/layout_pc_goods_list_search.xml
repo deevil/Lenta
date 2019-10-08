@@ -93,11 +93,13 @@
 
             <com.lenta.shared.view.ClickableSpinner
                 android:id="@+id/spin_price_tag"
+                app:items="@{vm.tagTypeTitles}"
+                app:onPositionClickListener="@{vm}"
+                app:position="@{vm.tagTypesPosition}"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_margin="8dp"
-                android:layout_weight="1"
-                android:entries="@array/price_tag_color" />
+                android:layout_weight="1" />
 
             <ImageButton
                 android:layout_width="wrap_content"
