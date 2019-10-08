@@ -15,7 +15,9 @@ import com.lenta.bp14.models.work_list.WorkListTaskManager
 import com.lenta.bp14.models.work_list.repo.IWorkListRepo
 import com.lenta.bp14.models.work_list.repo.WorkListRepo
 import com.lenta.bp14.requests.work_list.ExpectedDeliveriesNetRequest
+import com.lenta.bp14.requests.work_list.GoodSalesNetRequest
 import com.lenta.bp14.requests.work_list.IExpectedDeliveriesNetRequest
+import com.lenta.bp14.requests.work_list.IGoodSalesNetRequest
 import dagger.Binds
 import dagger.Component
 import dagger.Module
@@ -55,6 +57,10 @@ class WorkListModule(private val taskDescription: WorkListTaskDescription) {
         @Binds
         @WorkListScope
         fun bindExpectedDeliveriesNetRequest(realisation: ExpectedDeliveriesNetRequest): IExpectedDeliveriesNetRequest
+
+        @Binds
+        @WorkListScope
+        fun bindGoodSalesNetRequest(realisation: GoodSalesNetRequest): IGoodSalesNetRequest
 
     }
 

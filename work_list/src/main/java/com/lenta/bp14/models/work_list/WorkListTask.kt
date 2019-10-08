@@ -69,14 +69,6 @@ class WorkListTask @Inject constructor(
         }
     }
 
-    override suspend fun loadSalesStatistics() {
-        delay(500)
-        currentGood.value?.let { good ->
-            val salesStatistics = workListRepo.loadSalesStatistics(good)
-            good.sales.value = salesStatistics
-        }
-    }
-
     override suspend fun loadComments() {
         delay(500)
         currentGood.value?.let { good ->
@@ -157,7 +149,6 @@ interface IWorkListTask : ITask {
     suspend fun addGoodByEan(ean: String): Boolean
 
     suspend fun loadAdditionalGoodInfo()
-    suspend fun loadSalesStatistics()
     suspend fun loadComments()
 
     fun addScanResult(scanResult: ScanResult)
@@ -284,41 +275,17 @@ data class Promo(
 // -----------------------------
 
 data class SalesStatistics(
-        val lastSaleDate: Date,
-        val daySales: Int,
-        val weekSales: Int,
-        val units: Uom
-) {
-
-    fun getDaySalesWithUnits(): String {
-        return "$daySales ${units.name.toLowerCase(Locale.getDefault())}"
-    }
-
-    fun getWeekSalesWithUnits(): String {
-        return "$weekSales ${units.name.toLowerCase(Locale.getDefault())}"
-    }
-
-}
+        val lastSaleDate: Date?,
+        val daySales: Double,
+        val weekSales: Double
+)
 
 data class Delivery(
         val status: String,
         val type: String,
         val quantity: Double,
-        val unitsName: String,
         val date: Date?
-) {
-
-    fun getQuantityWithUnits(): String {
-        return "${quantity.dropZeros()} $unitsName"
-    }
-
-}
-
-enum class DeliveryStatus(val description: String) {
-    ON_WAY("В пути"),
-    ORDERED("Заказан"),
-    UNKNOWN("Не известно")
-}
+)
 
 // -----------------------------
 

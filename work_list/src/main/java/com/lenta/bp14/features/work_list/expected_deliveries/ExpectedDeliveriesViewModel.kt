@@ -38,7 +38,7 @@ class ExpectedDeliveriesViewModel : CoreViewModel() {
                         position = (index + 1).toString(),
                         status = delivery.status,
                         info = delivery.type,
-                        quantity = delivery.getQuantityWithUnits(),
+                        quantity = "${delivery.quantity.dropZeros()} ${task.currentGood.value!!.getUnits()}",
                         date = delivery.date.getFormattedDate(),
                         time = delivery.date.getFormattedTime()
                 )
@@ -79,7 +79,6 @@ class ExpectedDeliveriesViewModel : CoreViewModel() {
                         status = delivery.status,
                         type = delivery.type,
                         quantity = delivery.quantityInDelivery,
-                        unitsName = task.getUnitsName(delivery.unitsCode) ?: "",
                         date = "${delivery.date}_${delivery.time}".getDate(Constants.DATE_TIME_ONE)
                 )
             }

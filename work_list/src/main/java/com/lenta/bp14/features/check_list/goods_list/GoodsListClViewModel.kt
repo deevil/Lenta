@@ -85,11 +85,10 @@ class GoodsListClViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     }
 
     fun onClickSave() {
-        navigator.showProgressLoadingData()
-
         // Подтверждение - Перевести задание в статус "Подсчитано" и закрыть его для редактирования? - Назад / Да
         navigator.showSetTaskToStatusCalculated {
             viewModelScope.launch {
+                navigator.showProgressLoadingData()
                 sentReportRequest(task.getReportData(deviceInfo.getDeviceIp())).either(
                         {
                             navigator.openAlertScreen(failure = it)
@@ -99,10 +98,9 @@ class GoodsListClViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
                     generalTaskManager.clearCurrentTask(sentReportResult = it)
                     navigator.openReportResultScreen()
                 }
+                navigator.hideProgress()
             }
         }
-
-        navigator.hideProgress()
     }
 
     override fun onPageSelected(position: Int) {

@@ -80,17 +80,6 @@ class WorkListRepo @Inject constructor(
         }
     }
 
-    override suspend fun loadSalesStatistics(good: Good): SalesStatistics? {
-        return withContext(Dispatchers.IO) {
-            return@withContext SalesStatistics(
-                    lastSaleDate = Date(),
-                    daySales = (10..50).random(),
-                    weekSales = (80..150).random(),
-                    units = Uom.ST
-            )
-        }
-    }
-
     override suspend fun loadComments(good: Good): List<String>? {
         return withContext(Dispatchers.IO) {
             val comments = MutableList((1..3).random()) {
@@ -113,7 +102,6 @@ class WorkListRepo @Inject constructor(
 interface IWorkListRepo {
     suspend fun getCommonGoodInfoByEan(ean: String): CommonGoodInfo?
     suspend fun loadAdditionalGoodInfo(good: Good): AdditionalGoodInfo?
-    suspend fun loadSalesStatistics(good: Good): SalesStatistics?
     suspend fun loadComments(good: Good): List<String>?
     suspend fun getUnitsName(code: String?): String?
 }
