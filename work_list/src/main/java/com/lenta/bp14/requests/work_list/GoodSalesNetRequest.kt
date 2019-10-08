@@ -29,28 +29,36 @@ class GoodSalesNetRequest
 interface IGoodSalesNetRequest : UseCase<GoodSalesResult, GoodSalesParams>
 
 data class GoodSalesParams(
-        @SerializedName("IV_WERKS") // Номер ТК
+        /** Номер ТК */
+        @SerializedName("IV_WERKS")
         val tkNumber: String,
-        @SerializedName("IV_MATNR") // Номер товара
+        /** Номер товара */
+        @SerializedName("IV_MATNR")
         val material: String
 )
 
 class GoodSalesStatus : ObjectRawStatus<GoodSalesResult>()
 
 data class GoodSalesResult(
-        @SerializedName("ET_SALE_MATNR") // Таблица продажи товара
+        /** Таблица продажи товара */
+        @SerializedName("ET_SALE_MATNR")
         val sales: List<GoodSales>,
-        @SerializedName("ET_RETCODE") // Код возврата + Текст ошибки
+        /** Код возврата + Текст ошибки */
+        @SerializedName("ET_RETCODE")
         val retCodes: List<RetCode>
 )
 
 data class GoodSales(
-        @SerializedName("LAST_SALE_DATE") // Дата последней продажи
+        /** Дата последней продажи */
+        @SerializedName("LAST_SALE_DATE")
         val lastSaleDate: String,
-        @SerializedName("LAST_SALE_TIME") // Время последней продажи
+        /** Время последней продажи */
+        @SerializedName("LAST_SALE_TIME")
         val lastSaleTime: String,
-        @SerializedName("LAST_SALE_QNT") // Количество последней продажи
+        /** Количество последней продажи */
+        @SerializedName("LAST_SALE_QNT")
         val daySales: Double,
-        @SerializedName("SALE_WEEK") // Количество продаж за 7 дней
+        /** Количество продаж за 7 дней */
+        @SerializedName("SALE_WEEK")
         val weekSales: Double
 )
