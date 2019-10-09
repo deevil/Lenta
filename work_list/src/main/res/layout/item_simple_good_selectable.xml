@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
@@ -7,6 +8,10 @@
         <variable
             name="vm"
             type="com.lenta.bp14.features.common_ui_model.SimpleProductUi" />
+
+        <variable
+            name="selectedForDelete"
+            type="Boolean" />
 
     </data>
 
@@ -29,8 +34,12 @@
                 <TextView
                     android:id="@+id/tv_item_number"
                     style="@style/CellTextStyle"
-                    android:layout_width="wrap_content"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:background="@drawable/bg_border_circle_white_selectable_for_delete"
+                    android:gravity="center"
                     android:text='@{"" + vm.position}'
+                    app:selected="@{selectedForDelete}"
                     tools:text="1" />
 
             </LinearLayout>

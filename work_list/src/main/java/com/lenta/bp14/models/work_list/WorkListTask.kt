@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.google.gson.Gson
 import com.lenta.bp14.di.WorkListScope
+import com.lenta.bp14.models.BaseProductInfo
 import com.lenta.bp14.models.ITask
 import com.lenta.bp14.models.ITaskDescription
 import com.lenta.bp14.models.data.GoodType
@@ -14,7 +15,6 @@ import com.lenta.bp14.models.work_list.repo.IWorkListRepo
 import com.lenta.shared.models.core.MatrixType
 import com.lenta.shared.models.core.Uom
 import com.lenta.shared.platform.time.ITimeMonitor
-import com.lenta.shared.utilities.extentions.dropZeros
 import com.lenta.shared.utilities.extentions.getFormattedDate
 import com.lenta.shared.utilities.extentions.map
 import kotlinx.coroutines.delay
@@ -136,6 +136,15 @@ class WorkListTask @Inject constructor(
     override fun isHaveDiscrepancies(): Boolean {
         //TODO implement this
         return false
+    }
+
+    override fun getListOfDifferences(): LiveData<List<BaseProductInfo>> {
+        //TODO implement this
+        return MutableLiveData(emptyList())
+    }
+
+    override fun setMissing(matNrList: List<String>) {
+        //TODO implement this
     }
 
     override suspend fun getUnitsName(code: String?): String? {

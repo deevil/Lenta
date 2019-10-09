@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import com.google.gson.Gson
 import com.lenta.bp14.di.CheckPriceScope
 import com.lenta.bp14.ml.CheckStatus
+import com.lenta.bp14.models.BaseProductInfo
 import com.lenta.bp14.models.ITask
 import com.lenta.bp14.models.ITaskDescription
 import com.lenta.bp14.models.check_price.repo.IActualPricesRepo
@@ -223,11 +224,15 @@ class CheckPriceTask @Inject constructor(
     }
 
     override fun setCheckPriceStatus(isValid: Boolean?) {
-        readyResultsRepo.getCheckPriceResult(matNr = processingMatNumber).apply {
+        setCheckPriceStatus(isValid, processingMatNumber ?: "")
+
+    }
+
+    private fun setCheckPriceStatus(isValid: Boolean?, matNr: String) {
+        readyResultsRepo.getCheckPriceResult(matNr = matNr).apply {
 
             if (this == null) {
-                actualPricesRepo.getActualPriceInfoByMatNumber(processingMatNumber
-                        ?: "")?.let { actualPriceInfo ->
+                actualPricesRepo.getActualPriceInfoByMatNumber(matNr)?.let { actualPriceInfo ->
                     readyResultsRepo.addCheckPriceResult(
                             CheckPriceResult(
                                     ean = actualPriceInfo.matNumber,
@@ -299,6 +304,23 @@ class CheckPriceTask @Inject constructor(
 
     override fun isHaveDiscrepancies(): Boolean {
         return processingProducts.value!!.isNotEmpty()
+    }
+
+    override fun getListOfDifferences(): LiveData<List<BaseProductInfo>> {
+        return processingProducts.map { list ->
+            list?.map { item ->
+                BaseProductInfo(
+                        matNr = item.matNr ?: "",
+                        name = item.name ?: ""
+                )
+            }
+        }
+    }
+
+    override fun setMissing(matNrList: List<String>) {
+        matNrList.forEach {
+            setCheckPriceStatus(null, matNr = it)
+        }
     }
 
 }

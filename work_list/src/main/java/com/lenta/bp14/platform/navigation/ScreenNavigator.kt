@@ -94,9 +94,11 @@ class ScreenNavigator @Inject constructor(
         }
     }
 
-    override fun openListOfDifferencesScreen() {
+    override fun openListOfDifferencesScreen(onClickSkipCallback: () -> Unit) {
         runOrPostpone {
-            getFragmentStack()?.push(ListOfDifferencesFragment())
+            getFragmentStack()?.push(ListOfDifferencesFragment.create(
+                    onClickSkipCallbackID = backFragmentResultHelper.setFuncForResult(onClickSkipCallback)
+            ))
         }
     }
 
@@ -455,7 +457,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openTaskListScreen()
     fun openJobCardScreen()
     fun openGoodsListClScreen()
-    fun openListOfDifferencesScreen()
+    fun openListOfDifferencesScreen(onClickSkipCallback: () -> Unit)
     fun openReportResultScreen()
     fun openPrintSettingsScreen()
     fun openGoodDetailsScreen()

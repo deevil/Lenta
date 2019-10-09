@@ -6,7 +6,7 @@ import android.widget.AdapterView
 import com.lenta.bp14.BR
 import com.lenta.bp14.R
 import com.lenta.bp14.databinding.FragmentListOfDifferencesBinding
-import com.lenta.bp14.databinding.ItemGoodSelectableBinding
+import com.lenta.bp14.databinding.ItemSimpleGoodSelectableBinding
 import com.lenta.bp14.platform.extentions.getAppComponent
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
@@ -19,8 +19,11 @@ import com.lenta.shared.utilities.databinding.RecyclerViewKeyHandler
 import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
 import com.lenta.shared.utilities.extentions.provideViewModel
+import com.lenta.shared.utilities.state.state
 
 class ListOfDifferencesFragment : CoreFragment<FragmentListOfDifferencesBinding, ListOfDifferencesViewModel>(), ToolbarButtonsClickListener {
+
+    private var onClickSkipCallbackID: Int? by state(null)
 
     private var recyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
 
@@ -31,6 +34,8 @@ class ListOfDifferencesFragment : CoreFragment<FragmentListOfDifferencesBinding,
     override fun getViewModel(): ListOfDifferencesViewModel {
         provideViewModel(ListOfDifferencesViewModel::class.java).let {
             getAppComponent()?.inject(it)
+            requireNotNull(onClickSkipCallbackID)
+            it.onClickSkipCallbackID = onClickSkipCallbackID
             return it
         }
     }
@@ -69,13 +74,13 @@ class ListOfDifferencesFragment : CoreFragment<FragmentListOfDifferencesBinding,
             }
 
             layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
-                    layoutId = R.layout.item_good_selectable,
-                    itemId = BR.good,
-                    realisation = object : DataBindingAdapter<ItemGoodSelectableBinding> {
-                        override fun onCreate(binding: ItemGoodSelectableBinding) {
+                    layoutId = R.layout.item_simple_good_selectable,
+                    itemId = BR.vm,
+                    realisation = object : DataBindingAdapter<ItemSimpleGoodSelectableBinding> {
+                        override fun onCreate(binding: ItemSimpleGoodSelectableBinding) {
                         }
 
-                        override fun onBind(binding: ItemGoodSelectableBinding, position: Int) {
+                        override fun onBind(binding: ItemSimpleGoodSelectableBinding, position: Int) {
                             binding.tvItemNumber.tag = position
                             binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
                             binding.selectedForDelete = vm.selectionsHelper.isSelected(position)
@@ -104,6 +109,14 @@ class ListOfDifferencesFragment : CoreFragment<FragmentListOfDifferencesBinding,
                     lifecycleOwner = layoutBinding.lifecycleOwner!!,
                     initPosInfo = recyclerViewKeyHandler?.posInfo?.value
             )
+        }
+    }
+
+    companion object {
+        fun create(onClickSkipCallbackID: Int): ListOfDifferencesFragment {
+            return ListOfDifferencesFragment().apply {
+                this.onClickSkipCallbackID = onClickSkipCallbackID
+            }
         }
     }
 

@@ -1,7 +1,9 @@
 package com.lenta.bp14.models.not_exposed_products
 
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.lenta.bp14.di.NotExposedScope
+import com.lenta.bp14.models.BaseProductInfo
 import com.lenta.bp14.models.ITask
 import com.lenta.bp14.models.ITaskDescription
 import com.lenta.bp14.models.filter.FilterFieldType
@@ -41,6 +43,27 @@ class NotExposedProductsTask @Inject constructor(
     private val checkPlaces by lazy {
         taskDescription.additionalTaskInfo?.checkPlaces?.map { it.matNr to it }?.toMap()
                 ?: emptyMap()
+    }
+
+    private val processingProducts by lazy {
+        getProducts().map { processedGoodInfo ->
+            val processedMaterials = processedGoodInfo?.map { it.matNr }?.toSet() ?: emptySet()
+            val positions = taskDescription.additionalTaskInfo?.positions?.filter { !processedMaterials.contains(it.matNr) }
+                    ?: emptyList()
+            positions.map {
+                val productInfo = productsInfoMap[it.matNr]
+                NotExposedProductInfo(
+                        ean = null,
+                        name = productInfo?.name ?: "",
+                        matNr = it.matNr,
+                        quantity = it.quantity,
+                        uom = null,
+                        isEmptyPlaceMarked = null,
+                        section = productInfo?.sectionNumber,
+                        group = productInfo?.eKGRP
+                ) as INotExposedProductInfo
+            }
+        }
     }
 
     init {
@@ -97,24 +120,7 @@ class NotExposedProductsTask @Inject constructor(
     }
 
     override fun getToProcessingProducts(): LiveData<List<INotExposedProductInfo>> {
-        return getProducts().map { processedGoodInfo ->
-            val processedMaterials = processedGoodInfo?.map { it.matNr }?.toSet() ?: emptySet()
-            val positions = taskDescription.additionalTaskInfo?.positions?.filter { !processedMaterials.contains(it.matNr) }
-                    ?: emptyList()
-            positions.map {
-                val productInfo = productsInfoMap[it.matNr]
-                NotExposedProductInfo(
-                        ean = null,
-                        name = productInfo?.name ?: "",
-                        matNr = it.matNr,
-                        quantity = it.quantity,
-                        uom = null,
-                        isEmptyPlaceMarked = null,
-                        section = productInfo?.sectionNumber,
-                        group = productInfo?.eKGRP
-                )
-            }
-        }
+        return processingProducts
     }
 
     override fun setCheckInfo(quantity: Double?, isEmptyPlaceMarked: Boolean?) {
@@ -217,6 +223,20 @@ class NotExposedProductsTask @Inject constructor(
 
     override fun isHaveDiscrepancies(): Boolean {
         return getToProcessingProducts().value!!.isEmpty()
+    }
+
+    override fun getListOfDifferences(): LiveData<List<BaseProductInfo>> {
+        return processingProducts.map { list ->
+            list?.map { item ->
+                BaseProductInfo(
+                        matNr = item.matNr,
+                        name = item.name
+                )
+            } }
+    }
+
+    override fun setMissing(matNrList: List<String>) {
+        //TODO implement this
     }
 
 

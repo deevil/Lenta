@@ -1,18 +1,18 @@
 package com.lenta.bp14.features.list_of_differences
 
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
+import com.lenta.bp14.features.common_ui_model.SimpleProductUi
 import com.lenta.bp14.models.IGeneralTaskManager
-import com.lenta.bp14.models.data.pojo.Good
 import com.lenta.bp14.models.getTaskName
 import com.lenta.bp14.platform.navigation.IScreenNavigator
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.extentions.map
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class ListOfDifferencesViewModel : CoreViewModel() {
+
+    var onClickSkipCallbackID: Int? = null
 
     @Inject
     lateinit var navigator: IScreenNavigator
@@ -30,18 +30,32 @@ class ListOfDifferencesViewModel : CoreViewModel() {
         "${task.getTaskType().taskType} // ${task.getTaskName()}"
     }
 
-    val goods = MutableLiveData<List<Good>>()
+    val goods by lazy {
+        task.getListOfDifferences().map {
+            it?.mapIndexed { index, productInfo ->
+                SimpleProductUi(
+                        position = index + 1,
+                        matNr = productInfo.matNr,
+                        name = "${productInfo.matNr.takeLast(6)} ${productInfo.name}"
+                )
+            }
+        }
+    }
 
     val missingButtonEnabled: MutableLiveData<Boolean> = selectionsHelper.selectedPositions.map { it?.isNotEmpty() }
 
 
-
     fun onClickMissing() {
-
+        task.setMissing(
+                selectionsHelper.selectedPositions.value!!.map {
+                    goods.value!![it].matNr
+                }
+        )
+        selectionsHelper.clearPositions()
     }
 
     fun onClickSkip() {
-
+        navigator.goBackWithResultCode(onClickSkipCallbackID)
     }
 
     fun onClickItemPosition(position: Int) {

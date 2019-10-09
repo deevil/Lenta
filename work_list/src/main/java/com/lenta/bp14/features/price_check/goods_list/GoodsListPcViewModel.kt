@@ -196,29 +196,38 @@ class GoodsListPcViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
 
     fun onClickSave() {
         if (task.isHaveDiscrepancies()) {
-            navigator.openListOfDifferencesScreen()
-        } else {
-            navigator.showSetTaskToStatusCalculated {
-                viewModelScope.launch {
-                    navigator.showProgressLoadingData()
-                    checkPriceReportNetRequest(
-                            task.getReportData(
-                                    ip = deviceInfo.getDeviceIp(),
-                                    isNotFinish = false
-                            )
-                    ).either({
-                        navigator.openAlertScreen(it)
-                    }) {
-                        Logg.d { "SentReportResult: $it" }
-                        generalTaskManager.clearCurrentTask(sentReportResult = it)
-                        navigator.openReportResultScreen()
+            navigator.openListOfDifferencesScreen(
+                    onClickSkipCallback = {
+                        showConfirmationForSentReportScreen()
                     }
-                    navigator.hideProgress()
-
-                }
-            }
+            )
+        } else {
+            showConfirmationForSentReportScreen()
         }
 
+
+    }
+
+    private fun showConfirmationForSentReportScreen() {
+        navigator.showSetTaskToStatusCalculated {
+            viewModelScope.launch {
+                navigator.showProgressLoadingData()
+                checkPriceReportNetRequest(
+                        task.getReportData(
+                                ip = deviceInfo.getDeviceIp(),
+                                isNotFinish = false
+                        )
+                ).either({
+                    navigator.openAlertScreen(it)
+                }) {
+                    Logg.d { "SentReportResult: $it" }
+                    generalTaskManager.clearCurrentTask(sentReportResult = it)
+                    navigator.openReportResultScreen()
+                }
+                navigator.hideProgress()
+
+            }
+        }
 
     }
 
