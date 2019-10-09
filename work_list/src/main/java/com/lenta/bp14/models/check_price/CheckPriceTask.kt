@@ -303,7 +303,7 @@ class CheckPriceTask @Inject constructor(
     }
 
     override fun isHaveDiscrepancies(): Boolean {
-        return processingProducts.value!!.isNotEmpty()
+        return processingProducts.value?.isNotEmpty() == true
     }
 
     override fun getListOfDifferences(): LiveData<List<BaseProductInfo>> {

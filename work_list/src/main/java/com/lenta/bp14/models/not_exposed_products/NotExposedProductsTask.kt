@@ -222,7 +222,7 @@ class NotExposedProductsTask @Inject constructor(
     }
 
     override fun isHaveDiscrepancies(): Boolean {
-        return getToProcessingProducts().value!!.isEmpty()
+        return getToProcessingProducts().value?.isNotEmpty() == true
     }
 
     override fun getListOfDifferences(): LiveData<List<BaseProductInfo>> {
