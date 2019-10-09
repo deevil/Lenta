@@ -36,26 +36,20 @@ class WorkListTask @Inject constructor(
 
     override var currentGood = MutableLiveData<Good>()
 
-    override suspend fun addGoodByEan(ean: String): Boolean {
-        processed.value?.find { it.common.ean == "12345678" }?.let { good ->
-            currentGood.value = good
-            return true
+    override suspend fun addGood(good: Good) {
+        processed.value?.find { it.ean == good.ean && it.material == good.material }?.let { existGood ->
+            currentGood.value = existGood
+            return
         }
 
-        workListRepo.getCommonGoodInfoByEan(ean)?.let { commonInfo ->
-            val good = Good(common = commonInfo)
-            val processingList = processing.value!!
-            processingList.add(good)
-            processing.value = processingList
-            currentGood.value = good
-            loadComments()
-            return true
-        }
-
-        return false
+        val processingList = processing.value!!
+        processingList.add(good)
+        processing.value = processingList
+        currentGood.value = good
     }
 
-    suspend fun getGoodByMaterial(material: String): Good {
+
+    override suspend fun getGoodByMaterial(material: String): Good? {
         return workListRepo.getGoodByMaterial(material)
     }
 
@@ -137,9 +131,9 @@ class WorkListTask @Inject constructor(
         return processed.value.isNullOrEmpty()
     }
 
-    override suspend fun getUnitsName(code: String?): String? {
+    /*override suspend fun getUnitsName(code: String?): String? {
         return workListRepo.getUnitsName(code)
-    }
+    }*/
 
 }
 
@@ -150,7 +144,9 @@ interface IWorkListTask : ITask {
     val search: MutableLiveData<MutableList<Good>>
     var currentGood: MutableLiveData<Good>
 
-    suspend fun addGoodByEan(ean: String): Boolean
+    suspend fun getGoodByMaterial(material: String): Good?
+    suspend fun addGood(good: Good)
+
 
     suspend fun loadAdditionalGoodInfo()
     suspend fun loadComments()
@@ -161,22 +157,22 @@ interface IWorkListTask : ITask {
     fun getGoodOptions(): LiveData<GoodOptions>
     fun getGoodStocks(): LiveData<List<Stock>>
     fun getGoodProviders(): LiveData<List<Provider>>
-    suspend fun getUnitsName(code: String?): String?
+    //suspend fun getUnitsName(code: String?): String?
 }
 
 // -----------------------------
 
 data class Good(
-        val ean: String? = null, // Отображать, если был отсканирован штрих-код
-        val material: String, // ZFMP_UTZ_48_V001 параметр MATERIAL
-        val name: String, // ZFMP_UTZ_48_V001 параметр NAME
+        val ean: String? = null,
+        val material: String,
+        val name: String,
         val units: Uom,
-        var goodGroup: String, // ZFMP_UTZ_48_V001 параметр MATKL (группа товаров)
-        var purchaseGroup: String, // ZFMP_UTZ_48_V001 параметр EKGRP (группа закупок)
-        val shelfLife: Int, // ZFMP_UTZ_48_V001 параметр MHDHB_DAYS
-        val remainingShelfLife: Int, // ZFMP_UTZ_48_V001 параметр MHDRZ_DAYS
-        val shelfLifeType: MutableLiveData<List<String>> = MutableLiveData(emptyList()), // ZMP_UTZ_17_V001 (TID=007)
-        val comments: MutableLiveData<List<String>> = MutableLiveData(emptyList()), // ZMP_UTZ_17_V001 (TID=019)
+        var goodGroup: String,
+        var purchaseGroup: String,
+        val shelfLife: Int,
+        val remainingShelfLife: Int,
+        val shelfLifeType: MutableLiveData<List<String>> = MutableLiveData(emptyList()),
+        val comments: MutableLiveData<List<String>> = MutableLiveData(emptyList()),
         val options: GoodOptions,
 
         var additional: MutableLiveData<AdditionalGoodInfo> = MutableLiveData(),
@@ -194,7 +190,7 @@ data class Good(
     }
 
     fun getEanWithUnits(): String? {
-        return if(ean != null) "${ean}/${getUnits()}" else ""
+        return if (ean != null) "${ean}/${getUnits()}" else ""
     }
 
     fun getGoodWithPurchaseGroups(): String? {
@@ -212,15 +208,15 @@ data class Good(
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is Good) return false
-
         if (ean != other.ean) return false
         if (material != other.material) return false
-
         return true
     }
 
     override fun hashCode(): Int {
-        return ean.hashCode() + material.hashCode()
+        var result = ean?.hashCode() ?: 0
+        result = 31 * result + material.hashCode()
+        return result
     }
 
 }
@@ -236,11 +232,11 @@ data class AdditionalGoodInfo(
 )
 
 data class GoodOptions(
-        val matrixType: MatrixType, // ZFMP_UTZ_48_V001 параметр MATR_TYPE
-        val section: String, // ZFMP_UTZ_48_V001 параметр ABTNR
-        val goodType: GoodType, // ZFMP_UTZ_48_V001 нет признака IS_ALCO, IS_MARK
-        val healthFood: Boolean = false, // ZFMP_UTZ_48_V001 имеется признак IS_HF
-        val novelty: Boolean = false // ZFMP_UTZ_48_V001 имеется признак IS_NEW
+        val matrixType: MatrixType,
+        val section: String,
+        val goodType: GoodType,
+        val healthFood: Boolean = false,
+        val novelty: Boolean = false
 )
 
 data class Stock(

@@ -103,10 +103,10 @@ class GoodsListWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
                     addGoodByEan(eanCode)
                 },
                 funcForMatNr = { matNr ->
-                    addGoodByEan(matNr)
+                    addGoodByMaterial(matNr)
                 },
                 funcForPriceQrCode = { qrCode ->
-                    //getGoodByEan(matNr)
+                    addGoodByEan(qrCode)
                 },
                 funcForSapOrBar = navigator::showTwelveCharactersEntered,
                 funcForNotValidFormat = navigator::showGoodNotFound
@@ -116,25 +116,22 @@ class GoodsListWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     private fun addGoodByEan(ean: String) {
         Logg.d { "Entered EAN: $ean" }
         viewModelScope.launch {
-            if (task.addGoodByEan(ean)) {
+            /*if (task.addGood(ean)) {
                 navigator.openGoodInfoWlScreen()
-            }
+            }*/
         }
     }
 
     private fun addGoodByMaterial(material: String) {
         Logg.d { "Entered MATERIAL: $material" }
         viewModelScope.launch {
-            if (task.addGoodByEan(material)) {
+            navigator.showProgressLoadingData()
+            task.getGoodByMaterial(material)?.let { good ->
+                task.addGood(good)
+                navigator.hideProgress()
                 navigator.openGoodInfoWlScreen()
             }
-        }
-    }
-
-    private fun addGoodByMatcode(matcode: String) {
-        Logg.d { "Entered MATCODE: $matcode" }
-        viewModelScope.launch {
-
+            navigator.hideProgress()
         }
     }
 

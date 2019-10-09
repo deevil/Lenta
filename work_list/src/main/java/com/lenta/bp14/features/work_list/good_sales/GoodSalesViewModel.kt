@@ -60,7 +60,7 @@ class GoodSalesViewModel : CoreViewModel() {
             goodSalesNetRequest(
                     GoodSalesParams(
                             tkNumber = sessionInfo.market ?: "Not Found!",
-                            material = task.currentGood.value?.common?.material ?: ""
+                            material = task.currentGood.value?.material ?: ""
                     )
             ).either(::handleFailure, ::updateSales)
         }
