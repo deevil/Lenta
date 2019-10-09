@@ -195,13 +195,27 @@ class GoodsListPcViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
 
 
     fun onClickSave() {
+        if (task.isHaveDiscrepancies()) {
+            navigator.openListOfDifferencesScreen(
+                    onClickSkipCallback = {
+                        showConfirmationForSentReportScreen()
+                    }
+            )
+        } else {
+            showConfirmationForSentReportScreen()
+        }
+
+
+    }
+
+    private fun showConfirmationForSentReportScreen() {
         navigator.showSetTaskToStatusCalculated {
             viewModelScope.launch {
                 navigator.showProgressLoadingData()
                 checkPriceReportNetRequest(
                         task.getReportData(
                                 ip = deviceInfo.getDeviceIp(),
-                                isNotFinish = true
+                                isNotFinish = false
                         )
                 ).either({
                     navigator.openAlertScreen(it)
@@ -214,7 +228,6 @@ class GoodsListPcViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
 
             }
         }
-
 
     }
 

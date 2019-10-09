@@ -1,5 +1,6 @@
 package com.lenta.bp14.models
 
+import androidx.lifecycle.LiveData
 import com.lenta.bp14.models.general.ITaskTypeInfo
 import com.lenta.shared.di.CoreInjectHelper.removeComponent
 
@@ -59,6 +60,13 @@ interface ITask {
     }
 
     fun isEmpty(): Boolean
+
+    fun isHaveDiscrepancies(): Boolean
+
+    fun getListOfDifferences() : LiveData<List<BaseProductInfo>>
+
+    fun setMissing(matNrList: List<String>)
+
 }
 
 
@@ -70,6 +78,11 @@ interface ITaskDescription {
     val comment: String
     val isStrictList: Boolean
 }
+
+data class BaseProductInfo(
+        val matNr: String,
+        val name: String
+)
 
 fun ITaskManager<*, *>.getTaskName(): String? {
     return this.getTask()?.getDescription()?.taskName ?: ""
