@@ -55,6 +55,10 @@ class WorkListTask @Inject constructor(
         return false
     }
 
+    suspend fun getGoodByMaterial(material: String): Good {
+        return workListRepo.getGoodByMaterial(material)
+    }
+
     override fun addScanResult(scanResult: ScanResult) {
         val scanResultsList = currentGood.value?.scanResults?.value?.toMutableList()
         scanResultsList?.add(scanResult)
@@ -78,7 +82,7 @@ class WorkListTask @Inject constructor(
     }
 
     override fun getGoodOptions(): LiveData<GoodOptions> {
-        return currentGood.map { it?.common?.options }
+        return currentGood.map { it?.options }
     }
 
     override fun getGoodStocks(): LiveData<List<Stock>> {
@@ -163,67 +167,63 @@ interface IWorkListTask : ITask {
 // -----------------------------
 
 data class Good(
-        val common: CommonGoodInfo,
+        val ean: String? = null, // Отображать, если был отсканирован штрих-код
+        val material: String, // ZFMP_UTZ_48_V001 параметр MATERIAL
+        val name: String, // ZFMP_UTZ_48_V001 параметр NAME
+        val units: Uom,
+        var goodGroup: String, // ZFMP_UTZ_48_V001 параметр MATKL (группа товаров)
+        var purchaseGroup: String, // ZFMP_UTZ_48_V001 параметр EKGRP (группа закупок)
+        val shelfLife: Int, // ZFMP_UTZ_48_V001 параметр MHDHB_DAYS
+        val remainingShelfLife: Int, // ZFMP_UTZ_48_V001 параметр MHDRZ_DAYS
+        val shelfLifeType: MutableLiveData<List<String>> = MutableLiveData(emptyList()), // ZMP_UTZ_17_V001 (TID=007)
+        val comments: MutableLiveData<List<String>> = MutableLiveData(emptyList()), // ZMP_UTZ_17_V001 (TID=019)
+        val options: GoodOptions,
+
         var additional: MutableLiveData<AdditionalGoodInfo> = MutableLiveData(),
         val sales: MutableLiveData<SalesStatistics> = MutableLiveData(),
-        val deliveries: MutableLiveData<List<Delivery>> = MutableLiveData(listOf()),
-        val comments: MutableLiveData<List<String>> = MutableLiveData(listOf()),
-
-        val scanResults: MutableLiveData<List<ScanResult>> = MutableLiveData(listOf())
+        val deliveries: MutableLiveData<List<Delivery>> = MutableLiveData(emptyList()),
+        val scanResults: MutableLiveData<List<ScanResult>> = MutableLiveData(emptyList())
 ) {
 
     fun getFormattedMaterialWithName(): String {
-        return "${common.material.takeLast(6)} ${common.name}"
+        return "${material.takeLast(6)} $name"
     }
 
     fun isCommonGood(): Boolean {
-        return common.options.goodType == GoodType.COMMON
+        return options.goodType == GoodType.COMMON
     }
 
     fun getEanWithUnits(): String? {
-        return "${common.ean}/${common.units.name}"
+        return if(ean != null) "${ean}/${getUnits()}" else ""
     }
 
     fun getGoodWithPurchaseGroups(): String? {
-        return "${common.goodGroup}/${common.purchaseGroup}"
+        return "$goodGroup/$purchaseGroup"
     }
 
     fun getShelfLifeInMills(): Long {
-        return (common.shelfLife * 24 * 60 * 60 * 1000).toLong()
+        return (shelfLife * 24 * 60 * 60 * 1000).toLong()
     }
 
     fun getUnits(): String {
-        return common.units.name.toLowerCase(Locale.getDefault())
+        return units.name.toLowerCase(Locale.getDefault())
     }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is Good) return false
 
-        if (common.ean != other.common.ean) return false
+        if (ean != other.ean) return false
+        if (material != other.material) return false
 
         return true
     }
 
     override fun hashCode(): Int {
-        return common.ean.hashCode()
+        return ean.hashCode() + material.hashCode()
     }
 
 }
-
-
-data class CommonGoodInfo(
-        val ean: String?,
-        val material: String,
-        val name: String,
-        val units: Uom,
-        val defaultQuantity: Double,
-        var goodGroup: String,
-        var purchaseGroup: String,
-        var marks: Int = 0,
-        val shelfLife: Int,
-        val options: GoodOptions
-)
 
 data class AdditionalGoodInfo(
         val storagePlaces: String,
@@ -236,11 +236,11 @@ data class AdditionalGoodInfo(
 )
 
 data class GoodOptions(
-        val matrixType: MatrixType,
-        val goodType: GoodType,
-        val section: String,
-        val healthFood: Boolean = false,
-        val novelty: Boolean = false
+        val matrixType: MatrixType, // ZFMP_UTZ_48_V001 параметр MATR_TYPE
+        val section: String, // ZFMP_UTZ_48_V001 параметр ABTNR
+        val goodType: GoodType, // ZFMP_UTZ_48_V001 нет признака IS_ALCO, IS_MARK
+        val healthFood: Boolean = false, // ZFMP_UTZ_48_V001 имеется признак IS_HF
+        val novelty: Boolean = false // ZFMP_UTZ_48_V001 имеется признак IS_NEW
 )
 
 data class Stock(

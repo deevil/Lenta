@@ -219,7 +219,7 @@
 
                     <TextView
                         style="@style/CellTextStyle"
-                        android:text="@{String.valueOf(vm.good.common.marks)}"
+                        android:text="@{vm.totalQuantity}"
                         tools:text="10" />
 
                 </LinearLayout>
