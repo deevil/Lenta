@@ -93,10 +93,10 @@ class GoodInfoNeViewModel : CoreViewModel(), PageSelectionListener {
     val cancelButtonEnabled by lazy { isEmptyPlaceMarked.map { it != null } }
 
     val framedButtonEnabled by lazy {
-        isEmptyPlaceMarked.map { it != true }
+        isEmptyPlaceMarked.map { it == null }
     }
     val notFramedButtonEnabled by lazy {
-        isEmptyPlaceMarked.map { it != false }
+        isEmptyPlaceMarked.map { it == null }
     }
 
 
