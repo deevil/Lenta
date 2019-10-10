@@ -159,7 +159,7 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
     init {
         viewModelScope.launch {
             title.value = good.value?.getFormattedMaterialWithName()
-            quantity.value = "1"
+            quantity.value = good.value?.defaultValue.dropZeros()
             comment.value = commentsList.value?.get(0)
 
             viewModelScope.launch {
@@ -247,7 +247,7 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     private fun resetGoodFields() {
-        quantity.value = "1"
+        quantity.value = good.value?.defaultValue.dropZeros()
 
         shelfLifeTypePosition.value = 0
         comment.value = commentsList.value?.get(0)

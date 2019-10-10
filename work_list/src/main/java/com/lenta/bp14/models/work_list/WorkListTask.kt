@@ -157,6 +157,7 @@ data class Good(
         val material: String,
         val name: String,
         val units: Uom,
+        val defaultValue: Double = 0.0,
         var goodGroup: String,
         var purchaseGroup: String,
         val shelfLife: Int,
