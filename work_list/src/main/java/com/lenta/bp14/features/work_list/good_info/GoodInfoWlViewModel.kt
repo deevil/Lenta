@@ -100,8 +100,8 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
                     arrival = additional?.movement?.arrival ?: "Not found!",
                     commonPrice = "${additional?.price?.commonPrice?.dropZeros()}р.",
                     discountPrice = "${additional?.price?.discountPrice?.dropZeros()}р.",
-                    promoName = additional?.promo?.name ?: "Not found!",
-                    promoPeriod = additional?.promo?.period ?: "Not found!"
+                    promoName = additional?.promo?.promoName ?: "Not found!",
+                    promoPeriod = additional?.promo?.promoPeriod ?: "Not found!"
             )
         }
     }

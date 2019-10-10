@@ -79,8 +79,8 @@ class WorkListRepo @Inject constructor(
                             discountPrice = (80..100).random().toDouble()
                     ),
                     promo = Promo(
-                            name = "Распродажа кукурузы ТК 0007",
-                            period = "Период 30.05.19 - 12.09.19"
+                            promoName = "Распродажа кукурузы ТК 0007",
+                            promoPeriod = "Период 30.05.19 - 12.09.19"
                     ),
                     providers = MutableList((3..5).random()) {
                         Provider(

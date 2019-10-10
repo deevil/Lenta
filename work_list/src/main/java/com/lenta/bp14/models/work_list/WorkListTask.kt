@@ -224,11 +224,14 @@ data class Good(
 data class AdditionalGoodInfo(
         val storagePlaces: String,
         val minStock: Double,
-        val movement: Movement,
-        val price: Price,
-        val promo: Promo,
-        val providers: MutableList<Provider>,
-        val stocks: MutableList<Stock>
+        val inventory: String,
+        val arrival: String,
+        val commonPrice: Double,
+        val discountPrice: Double,
+        val promoName: String,
+        val promoPeriod: String,
+        val providers: List<Provider>,
+        val stocks: List<Stock>
 )
 
 data class GoodOptions(
@@ -240,30 +243,12 @@ data class GoodOptions(
 )
 
 data class Stock(
-        val number: Int,
         val storage: String,
         val quantity: Double
 )
 
 data class Provider(
-        val number: Int,
         val code: String,
-        val name: String,
-        val kipStart: Date,
-        val kipEnd: Date
-)
-
-data class Movement(
-        val inventory: String,
-        val arrival: String
-)
-
-data class Price(
-        val commonPrice: Double,
-        val discountPrice: Double
-)
-
-data class Promo(
         val name: String,
         val period: String
 )
