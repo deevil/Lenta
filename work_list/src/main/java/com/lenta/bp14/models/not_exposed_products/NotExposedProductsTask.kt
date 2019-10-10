@@ -20,7 +20,7 @@ import com.lenta.bp14.requests.not_exposed_product.NotExposedInfoRequestParams
 import com.lenta.bp14.requests.not_exposed_product.NotExposedReport
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.functional.Either
-import com.lenta.shared.functional.map
+import com.lenta.shared.functional.rightToLeft
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.isSapTrue
 import com.lenta.shared.utilities.extentions.map
@@ -200,9 +200,12 @@ class NotExposedProductsTask @Inject constructor(
                         tkNumber = taskDescription.tkNumber
                 )
 
-        ).also {
-            it.map {
-                processedGoodInfo = it
+        ).rightToLeft { goodInfo ->
+            if (!isAllowedProduct(goodInfo.productInfo.matNr)) {
+                Failure.InvalidProductForTask
+            } else {
+                processedGoodInfo = goodInfo
+                null
             }
         }
     }
