@@ -45,13 +45,13 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
 
     val title = MutableLiveData<String>("")
 
-    val quantity = MutableLiveData<String>()
-    val totalQuantity: MutableLiveData<String> = quantity.map { quantity ->
-        var total = quantity?.toDoubleOrNull() ?: 0.0
+    val quantity = MutableLiveData<String>("")
+    val totalQuantity: MutableLiveData<String> = quantity.map {
+        var quantity = it?.toDoubleOrNull() ?: 0.0
         for (scanResult in good.value!!.scanResults.value!!) {
-            total = total.sumWith(scanResult.quantity)
+            quantity = quantity.sumWith(scanResult.quantity)
         }
-        "${total.dropZeros()} ${task.currentGood.value!!.getUnits()}"
+        "${quantity.dropZeros()} ${task.currentGood.value!!.getUnits()}"
     }
 
     val day = MutableLiveData<String>("")
@@ -75,9 +75,9 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
         parseDate
     }
 
-    val daysLeft: MutableLiveData<Int> = enteredDate.combineLatest(shelfLifeTypePosition).map { pair ->
-        val enteredDate = pair?.first
-        val shelfLifeType = pair?.second
+    val daysLeft: MutableLiveData<Int> = enteredDate.combineLatest(shelfLifeTypePosition).map {
+        val enteredDate = it?.first
+        val shelfLifeType = it?.second
         val daysLeft: Int? = if (enteredDate != null && shelfLifeType != null) {
             val expirationDate = if (shelfLifeType == ShelfLifeType.PRODUCTION.position){
                 enteredDate.time + good.value!!.getShelfLifeInMills()
@@ -148,10 +148,24 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
         }
     }
 
-    val applyButtonEnabled = quantity.combineLatest(daysLeft).map { pair ->
-        val quantityNotNull = pair?.first?.toIntOrNull() ?: 0 != 0
-        val shelfLifeIsEntered = pair?.second != null
-        quantityNotNull && shelfLifeIsEntered
+    private val quantityCondition: MutableLiveData<Boolean> = quantity.map {
+        it?.toDoubleOrNull() ?: 0.0 != 0.0
+    }
+
+    private val commentCondition: MutableLiveData<Boolean> = comment.map {
+        !it.isNullOrEmpty() && it != good.value?.comments?.value?.get(0)
+    }
+
+    private val dateCondition: MutableLiveData<Boolean> = enteredDate.map {
+        it != null
+    }
+
+    val applyButtonEnabled = quantityCondition.combineLatest(commentCondition).combineLatest(dateCondition).map {
+        val quantity = it?.first?.first ?: false
+        val comment = it?.first?.second ?: false
+        val date = it?.second ?: false
+
+        quantity || comment || date
     }
 
     // -----------------------------
