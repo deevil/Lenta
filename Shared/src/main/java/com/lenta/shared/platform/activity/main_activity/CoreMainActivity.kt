@@ -96,12 +96,12 @@ abstract class CoreMainActivity : CoreActivity<ActivityMainBinding>(), ToolbarBu
     }
 
     private fun setupScanner() {
-        var lastTimeScanned = Long.MIN_VALUE
+        var lastTimeScanned = 0L
         val scanObserver = Observer<String> {
             Logg.d { "scan result: $it" }
             it?.let { code ->
                 val currentTime = System.currentTimeMillis()
-                if (currentTime - lastTimeScanned > 500) {
+                if (currentTime - lastTimeScanned > 500L) {
                     getCurrentFragment()?.implementationOf(OnScanResultListener::class.java)?.onScanResult(code)
                 }
                 lastTimeScanned = currentTime
