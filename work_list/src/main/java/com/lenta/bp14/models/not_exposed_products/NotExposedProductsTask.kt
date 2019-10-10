@@ -240,7 +240,23 @@ class NotExposedProductsTask @Inject constructor(
     }
 
     override fun setMissing(matNrList: List<String>) {
-        //TODO implement this
+        matNrList.forEach { matNr ->
+            taskDescription.additionalTaskInfo?.productsInfo?.firstOrNull { it.matNr == matNr }?.let {
+                notExposedProductsRepo.addOrReplaceProduct(
+                        NotExposedProductInfo(
+                                ean = null,
+                                matNr = it.matNr,
+                                name = it.name,
+                                quantity = 0.0,
+                                uom = null,
+                                isEmptyPlaceMarked = false,
+                                section = it.sectionNumber,
+                                group = it.matKL
+                        )
+                )
+            }
+        }
+
     }
 
     override fun isAllowedProduct(materialNumber: String): Boolean {
