@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import com.google.gson.Gson
 import com.lenta.bp14.di.CheckPriceScope
 import com.lenta.bp14.ml.CheckStatus
+import com.lenta.bp14.models.BaseProductInfo
 import com.lenta.bp14.models.ITask
 import com.lenta.bp14.models.ITaskDescription
 import com.lenta.bp14.models.check_price.repo.IActualPricesRepo
@@ -33,6 +34,17 @@ class CheckPriceTask @Inject constructor(
         private val soundPlayer: ISoundPlayer,
         private val vibrateHelper: IVibrateHelper
 ) : ICheckPriceTask, StateFromToString {
+
+    private val processingProducts by lazy {
+        getCheckResults().map { processedGoodInfo ->
+            val processedMaterials = processedGoodInfo?.map { it.matNr }?.toSet() ?: emptySet()
+            val positions = taskDescription.additionalTaskInfo?.positions?.filter { !processedMaterials.contains(it.matNr) }
+                    ?: emptyList()
+            positions.map {
+                getCheckPriceByMatnr(it.matNr)
+            }
+        }
+    }
 
     private val productsInfoMap by lazy {
         taskDescription.additionalTaskInfo?.productsInfo?.map { it.matNr to it }?.toMap()
@@ -175,14 +187,7 @@ class CheckPriceTask @Inject constructor(
     }
 
     override fun getToProcessingProducts(): LiveData<List<ICheckPriceResult>> {
-        return getCheckResults().map { processedGoodInfo ->
-            val processedMaterials = processedGoodInfo?.map { it.matNr }?.toSet() ?: emptySet()
-            val positions = taskDescription.additionalTaskInfo?.positions?.filter { !processedMaterials.contains(it.matNr) }
-                    ?: emptyList()
-            positions.map {
-                getCheckPriceByMatnr(it.matNr)
-            }
-        }
+        return processingProducts
     }
 
     private fun getCheckPriceByMatnr(matNr: String): ICheckPriceResult {
@@ -219,11 +224,15 @@ class CheckPriceTask @Inject constructor(
     }
 
     override fun setCheckPriceStatus(isValid: Boolean?) {
-        readyResultsRepo.getCheckPriceResult(matNr = processingMatNumber).apply {
+        setCheckPriceStatus(isValid, processingMatNumber ?: "")
+
+    }
+
+    private fun setCheckPriceStatus(isValid: Boolean?, matNr: String) {
+        readyResultsRepo.getCheckPriceResult(matNr = matNr).apply {
 
             if (this == null) {
-                actualPricesRepo.getActualPriceInfoByMatNumber(processingMatNumber
-                        ?: "")?.let { actualPriceInfo ->
+                actualPricesRepo.getActualPriceInfoByMatNumber(matNr)?.let { actualPriceInfo ->
                     readyResultsRepo.addCheckPriceResult(
                             CheckPriceResult(
                                     ean = actualPriceInfo.matNumber,
@@ -291,6 +300,27 @@ class CheckPriceTask @Inject constructor(
 
     override fun isEmpty(): Boolean {
         return readyResultsRepo.getCheckPriceResults().value.isNullOrEmpty()
+    }
+
+    override fun isHaveDiscrepancies(): Boolean {
+        return processingProducts.value!!.isNotEmpty()
+    }
+
+    override fun getListOfDifferences(): LiveData<List<BaseProductInfo>> {
+        return processingProducts.map { list ->
+            list?.map { item ->
+                BaseProductInfo(
+                        matNr = item.matNr ?: "",
+                        name = item.name ?: ""
+                )
+            }
+        }
+    }
+
+    override fun setMissing(matNrList: List<String>) {
+        matNrList.forEach {
+            setCheckPriceStatus(null, matNr = it)
+        }
     }
 
 }

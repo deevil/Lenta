@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.google.gson.Gson
 import com.lenta.bp14.di.WorkListScope
+import com.lenta.bp14.models.BaseProductInfo
 import com.lenta.bp14.models.ITask
 import com.lenta.bp14.models.ITaskDescription
 import com.lenta.bp14.models.data.GoodType
@@ -113,6 +114,20 @@ class WorkListTask @Inject constructor(
 
     override fun isEmpty(): Boolean {
         return processed.value.isNullOrEmpty()
+    }
+
+    override fun isHaveDiscrepancies(): Boolean {
+        //TODO implement this
+        return false
+    }
+
+    override fun getListOfDifferences(): LiveData<List<BaseProductInfo>> {
+        //TODO implement this
+        return MutableLiveData(emptyList())
+    }
+
+    override fun setMissing(matNrList: List<String>) {
+        //TODO implement this
     }
 
 }
