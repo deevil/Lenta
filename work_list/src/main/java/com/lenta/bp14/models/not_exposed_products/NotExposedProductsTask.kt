@@ -232,11 +232,20 @@ class NotExposedProductsTask @Inject constructor(
                         matNr = item.matNr,
                         name = item.name
                 )
-            } }
+            }
+        }
     }
 
     override fun setMissing(matNrList: List<String>) {
         //TODO implement this
+    }
+
+    override fun isAllowedProduct(materialNumber: String): Boolean {
+        if (!taskDescription.isStrictList) {
+            return true
+        }
+        return taskDescription.additionalTaskInfo?.positions?.any { it.matNr == materialNumber }
+                ?: true
     }
 
 
@@ -262,6 +271,8 @@ interface INotExposedProductsTask : ITask, IFilterable {
     suspend fun getProductInfoAndSetProcessed(ean: String? = null, matNr: String? = null): Either<Failure, GoodInfo>
 
     fun getReportData(ip: String, isNotFinish: Boolean): NotExposedReport
+
+    fun isAllowedProduct(materialNumber: String): Boolean
 
 }
 

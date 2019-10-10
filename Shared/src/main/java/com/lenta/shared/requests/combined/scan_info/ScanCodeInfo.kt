@@ -87,7 +87,7 @@ fun analyseCode(
         code: String,
         funcForEan: (eanCode: String) -> Unit,
         funcForMatNr: (matNumber: String) -> Unit,
-        funcForSapOrBar: (sapCallback: () -> Unit, barCallback: () -> Unit) -> Unit,
+        funcForSapOrBar: ((sapCallback: () -> Unit, barCallback: () -> Unit) -> Unit)?,
         funcForPriceQrCode: ((matNumber: String) -> Unit)? = null,
         funcForNotValidFormat: () -> Unit
 ) {
@@ -113,10 +113,15 @@ fun analyseCode(
                 Constants.COMMON_SAP_LENGTH -> funcForMatNr("000000000000${code.takeLast(6)}")
                 Constants.COMMON_SAP_FULL_LENGTH -> funcForMatNr(code)
                 Constants.SAP_OR_BAR_LENGTH -> {
-                    funcForSapOrBar(
-                            { funcForMatNr(code) },
-                            { funcForEan(code) }
-                    )
+                    if (funcForSapOrBar == null) {
+                        funcForNotValidFormat()
+                    } else {
+                        funcForSapOrBar(
+                                { funcForMatNr(code) },
+                                { funcForEan(code) }
+                        )
+                    }
+
                 }
                 else -> funcForEan(code)
             }

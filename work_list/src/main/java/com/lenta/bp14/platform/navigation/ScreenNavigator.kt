@@ -332,7 +332,7 @@ class ScreenNavigator @Inject constructor(
         }
     }
 
-    override fun showScannedGoodNotListedInTk() {
+    override fun showMaxCountProductAlert() {
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.number_of_positions_exceeded_in_task),
                     pageNumber = "118",
@@ -485,7 +485,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun showScannedGoodNotListedInLenta(nextCallback: () -> Unit)
     fun showScannedGoodNotListedInTk(marketNumber: String)
     fun showScannedGoodAlreadyAddedToTask(yesCallback: () -> Unit)
-    fun showScannedGoodNotListedInTk()
+    fun showMaxCountProductAlert()
     fun showNoNetworkToSaveTask(nextCallback: () -> Unit)
     fun showGoodNotFound()
     fun showTwelveCharactersEntered(sapCallback: () -> Unit, barCallback: () -> Unit)
