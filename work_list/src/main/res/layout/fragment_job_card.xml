@@ -84,7 +84,7 @@
             app:onPositionClickListener="@{vm.onClickTaskTypes}"
             app:position="@{vm.selectedTaskTypePosition}" />
 
-        <EditText
+        <com.lenta.shared.view.EditTextWithSuffix
             android:id="@+id/et_name"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -95,6 +95,7 @@
             android:importantForAutofill="no"
             android:inputType="text"
             android:maxLines="1"
+            android:enabled="@{vm.isEnabledChangeTaskName}"
             android:text="@={vm.taskName}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
