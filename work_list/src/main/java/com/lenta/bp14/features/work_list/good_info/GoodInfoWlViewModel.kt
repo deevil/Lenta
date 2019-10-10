@@ -4,11 +4,12 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp14.models.data.GoodType
 import com.lenta.bp14.models.data.ShelfLifeType
-import com.lenta.bp14.models.work_list.Provider
-import com.lenta.bp14.models.work_list.ScanResult
-import com.lenta.bp14.models.work_list.Stock
-import com.lenta.bp14.models.work_list.WorkListTask
+import com.lenta.bp14.models.work_list.*
 import com.lenta.bp14.platform.navigation.IScreenNavigator
+import com.lenta.bp14.requests.work_list.IAdditionalGoodInfoNetRequest
+import com.lenta.bp14.requests.work_list.AdditionalGoodInfoParams
+import com.lenta.shared.account.ISessionInfo
+import com.lenta.shared.exception.Failure
 import com.lenta.shared.models.core.MatrixType
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.Logg
@@ -27,6 +28,10 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
     lateinit var navigator: IScreenNavigator
     @Inject
     lateinit var task: WorkListTask
+    @Inject
+    lateinit var additionalGoodInfoNetRequest: IAdditionalGoodInfoNetRequest
+    @Inject
+    lateinit var sessionInfo: ISessionInfo
 
 
     val selectedPage = MutableLiveData(0)
@@ -40,13 +45,13 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
 
     val title = MutableLiveData<String>("")
 
-    val quantity = MutableLiveData<String>()
-    val totalQuantity: MutableLiveData<String> = quantity.map { quantity ->
-        var total = quantity?.toDoubleOrNull() ?: 0.0
+    val quantity = MutableLiveData<String>("")
+    val totalQuantity: MutableLiveData<String> = quantity.map {
+        var quantity = it?.toDoubleOrNull() ?: 0.0
         for (scanResult in good.value!!.scanResults.value!!) {
-            total = total.sumWith(scanResult.quantity)
+            quantity = quantity.sumWith(scanResult.quantity)
         }
-        "${total.dropZeros()} ${task.currentGood.value!!.getUnits()}"
+        "${quantity.dropZeros()} ${task.currentGood.value!!.getUnits()}"
     }
 
     val day = MutableLiveData<String>("")
@@ -70,9 +75,9 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
         parseDate
     }
 
-    val daysLeft: MutableLiveData<Int> = enteredDate.combineLatest(shelfLifeTypePosition).map { pair ->
-        val enteredDate = pair?.first
-        val shelfLifeType = pair?.second
+    val daysLeft: MutableLiveData<Int> = enteredDate.combineLatest(shelfLifeTypePosition).map {
+        val enteredDate = it?.first
+        val shelfLifeType = it?.second
         val daysLeft: Int? = if (enteredDate != null && shelfLifeType != null) {
             val expirationDate = if (shelfLifeType == ShelfLifeType.PRODUCTION.position){
                 enteredDate.time + good.value!!.getShelfLifeInMills()
@@ -96,12 +101,12 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
             AdditionalInfoUi(
                     storagePlaces = additional?.storagePlaces ?: "Not found!",
                     minStock = "${additional?.minStock?.dropZeros()} ${task.currentGood.value!!.getUnits()}",
-                    inventory = additional?.movement?.inventory ?: "Not found!",
-                    arrival = additional?.movement?.arrival ?: "Not found!",
-                    commonPrice = "${additional?.price?.commonPrice?.dropZeros()}р.",
-                    discountPrice = "${additional?.price?.discountPrice?.dropZeros()}р.",
-                    promoName = additional?.promo?.name ?: "Not found!",
-                    promoPeriod = additional?.promo?.period ?: "Not found!"
+                    inventory = additional?.inventory ?: "Not found!",
+                    arrival = additional?.arrival ?: "Not found!",
+                    commonPrice = "${additional?.commonPrice?.dropZeros()}р.",
+                    discountPrice = "${additional?.discountPrice?.dropZeros()}р.",
+                    promoName = additional?.promoName ?: "Not found!",
+                    promoPeriod = additional?.promoPeriod ?: "Not found!"
             )
         }
     }
@@ -125,7 +130,7 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
                         number = (index + 1).toString(),
                         code = provider.code,
                         name = provider.name,
-                        period = "${provider.kipStart.getFormattedDate()} - ${provider.kipEnd.getFormattedDate()}"
+                        period = provider.period
                 )
             }
         }
@@ -143,10 +148,24 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
         }
     }
 
-    val applyButtonEnabled = quantity.combineLatest(daysLeft).map { pair ->
-        val quantityNotNull = pair?.first?.toIntOrNull() ?: 0 != 0
-        val shelfLifeIsEntered = pair?.second != null
-        quantityNotNull && shelfLifeIsEntered
+    private val quantityCondition: MutableLiveData<Boolean> = quantity.map {
+        it?.toDoubleOrNull() ?: 0.0 != 0.0
+    }
+
+    private val commentCondition: MutableLiveData<Boolean> = comment.map {
+        !it.isNullOrEmpty() && it != good.value?.comments?.value?.get(0)
+    }
+
+    private val dateCondition: MutableLiveData<Boolean> = enteredDate.map {
+        it != null
+    }
+
+    val applyButtonEnabled = quantityCondition.combineLatest(commentCondition).combineLatest(dateCondition).map {
+        val quantity = it?.first?.first ?: false
+        val comment = it?.first?.second ?: false
+        val date = it?.second ?: false
+
+        quantity || comment || date
     }
 
     // -----------------------------
@@ -154,18 +173,34 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
     init {
         viewModelScope.launch {
             title.value = good.value?.getFormattedMaterialWithName()
-
-            quantity.value = good.value?.common?.defaultQuantity?.dropZeros()
+            quantity.value = good.value?.defaultValue.dropZeros()
             comment.value = commentsList.value?.get(0)
 
             viewModelScope.launch {
-                task.loadAdditionalGoodInfo()
-                showProgress.value = false
+                additionalGoodInfoNetRequest(AdditionalGoodInfoParams(
+                        tkNumber = sessionInfo.market ?: "Not Found!",
+                        ean = task.currentGood.value?.ean,
+                        matNr = task.currentGood.value?.material
+                )).either(::handleFailure, ::updateAdditionalGoodInfo)
             }
         }
     }
 
     // -----------------------------
+
+    override fun handleFailure(failure: Failure) {
+        super.handleFailure(failure)
+        showProgress.value = false
+        navigator.openAlertScreen(failure)
+    }
+
+    private fun updateAdditionalGoodInfo(result: AdditionalGoodInfo) {
+        Logg.d { "AdditionalGoodInfo: $result" }
+        viewModelScope.launch {
+            task.currentGood.value?.additional?.value = result
+        }
+        showProgress.value = false
+    }
 
     override fun onPageSelected(position: Int) {
         selectedPage.value = position
@@ -226,7 +261,7 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     private fun resetGoodFields() {
-        quantity.value = good.value?.common?.defaultQuantity?.dropZeros()
+        quantity.value = good.value?.defaultValue.dropZeros()
 
         shelfLifeTypePosition.value = 0
         comment.value = commentsList.value?.get(0)

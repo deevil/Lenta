@@ -15,5 +15,5 @@ fun Double?.sumWith(other: Double?): Double {
 }
 
 fun Double?.dropZeros(): String {
-    return this.toString().dropLastWhile { it == '0' || it == '.' }
+    return this.toStringFormatted()
 }

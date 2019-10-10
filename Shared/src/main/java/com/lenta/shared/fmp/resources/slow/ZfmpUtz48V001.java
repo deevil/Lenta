@@ -23,11 +23,11 @@ public class ZfmpUtz48V001 {
 
         this.hyperHive = hyperHive;
 
-        localHelper_ET_MATNR_LIST =
-                new LocalTableResourceHelper<ItemLocal_ET_MATNR_LIST, Status_ET_MATNR_LIST>(NAME_RESOURCE,
-                        NAME_OUT_PARAM_ET_MATNR_LIST,
-                        hyperHive,
-                        Status_ET_MATNR_LIST.class);
+        localHelper_ET_MATNR_LIST = 
+                 new LocalTableResourceHelper<ItemLocal_ET_MATNR_LIST, Status_ET_MATNR_LIST>(NAME_RESOURCE, 
+                         NAME_OUT_PARAM_ET_MATNR_LIST, 
+                         hyperHive,
+                         Status_ET_MATNR_LIST.class);
 
     }
 
@@ -99,6 +99,22 @@ public class ZfmpUtz48V001 {
         //  type: BIGINT, source: {'name': 'SAP', 'type': 'I'}
         @SerializedName("MHDRZ_DAYS")
         public Integer mhdrzDays;
+
+        //  type: TEXT, source: {'name': 'SAP', 'type': 'C'}
+        @SerializedName("IS_MARK")
+        public String isMark;
+
+        //  type: TEXT, source: {'name': 'SAP', 'type': 'C'}
+        @SerializedName("IS_VET")
+        public String isVet;
+
+        //  type: TEXT, source: {'name': 'SAP', 'type': 'C'}
+        @SerializedName("IS_HF")
+        public String isHf;
+
+        //  type: TEXT, source: {'name': 'SAP', 'type': 'C'}
+        @SerializedName("IS_NEW")
+        public String isNew;
 
 
     }

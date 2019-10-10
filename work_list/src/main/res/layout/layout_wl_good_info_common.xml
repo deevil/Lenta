@@ -219,7 +219,7 @@
 
                     <TextView
                         style="@style/CellTextStyle"
-                        android:text="@{String.valueOf(vm.good.common.marks)}"
+                        android:text="@{vm.totalQuantity}"
                         tools:text="10" />
 
                 </LinearLayout>
@@ -258,7 +258,7 @@
 
                     <TextView
                         style="@style/CellTextStyle"
-                        android:text="@{@string/shelf_life_days(vm.good.common.shelfLife)}"
+                        android:text="@{@string/shelf_life_days(vm.good.shelfLife)}"
                         tools:text="10 сут." />
 
                     <TextView

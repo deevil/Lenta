@@ -60,9 +60,9 @@ class ExpectedDeliveriesViewModel : CoreViewModel() {
             expectedDeliveriesNetRequest(
                     ExpectedDeliveriesParams(
                             tkNumber = sessionInfo.market ?: "Not Found!",
-                            material = task.currentGood.value?.common?.material ?: ""
+                            material = task.currentGood.value?.material ?: ""
                     )
-            ).either(::handleFailure) { result -> updateDeliveries(result)}
+            ).either(::handleFailure, ::updateDeliveries)
         }
     }
 
@@ -80,7 +80,7 @@ class ExpectedDeliveriesViewModel : CoreViewModel() {
                         status = delivery.status,
                         type = delivery.type,
                         quantity = delivery.quantityInDelivery,
-                        date = DateTimeUtil.getDateFromString("${delivery.date}_${delivery.time}", Constants.DATE_TIME_ONE)
+                        date = "${delivery.date}_${delivery.time}".getDate(Constants.DATE_TIME_ONE)
                 )
             }
             navigator.hideProgress()

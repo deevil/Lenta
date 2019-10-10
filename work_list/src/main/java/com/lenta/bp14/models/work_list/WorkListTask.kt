@@ -15,6 +15,7 @@ import com.lenta.bp14.models.work_list.repo.IWorkListRepo
 import com.lenta.shared.models.core.MatrixType
 import com.lenta.shared.models.core.Uom
 import com.lenta.shared.platform.time.ITimeMonitor
+import com.lenta.shared.utilities.extentions.dropZeros
 import com.lenta.shared.utilities.extentions.getFormattedDate
 import com.lenta.shared.utilities.extentions.map
 import kotlinx.coroutines.delay
@@ -36,23 +37,21 @@ class WorkListTask @Inject constructor(
 
     override var currentGood = MutableLiveData<Good>()
 
-    override suspend fun addGoodByEan(ean: String): Boolean {
-        processed.value?.find { it.common.ean == "12345678" }?.let { good ->
-            currentGood.value = good
-            return true
+    override suspend fun addGood(good: Good) {
+        processed.value?.find { it.ean == good.ean && it.material == good.material }?.let { existGood ->
+            currentGood.value = existGood
+            return
         }
 
-        workListRepo.getCommonGoodInfoByEan(ean)?.let { commonInfo ->
-            val good = Good(common = commonInfo)
-            val processingList = processing.value!!
-            processingList.add(good)
-            processing.value = processingList
-            currentGood.value = good
-            loadComments()
-            return true
-        }
+        val processingList = processing.value!!
+        processingList.add(good)
+        processing.value = processingList
+        currentGood.value = good
+    }
 
-        return false
+
+    override suspend fun getGoodByMaterial(material: String): Good? {
+        return workListRepo.getGoodByMaterial(material)
     }
 
     override fun addScanResult(scanResult: ScanResult) {
@@ -61,24 +60,8 @@ class WorkListTask @Inject constructor(
         currentGood.value?.scanResults?.value = scanResultsList
     }
 
-    override suspend fun loadAdditionalGoodInfo() {
-        delay(5000)
-        currentGood.value?.let { good ->
-            val additionalGoodInfo = workListRepo.loadAdditionalGoodInfo(good)
-            good.additional.value = additionalGoodInfo
-        }
-    }
-
-    override suspend fun loadComments() {
-        delay(500)
-        currentGood.value?.let { good ->
-            val commentsList = workListRepo.loadComments(good)
-            good.comments.value = commentsList
-        }
-    }
-
     override fun getGoodOptions(): LiveData<GoodOptions> {
-        return currentGood.map { it?.common?.options }
+        return currentGood.map { it?.options }
     }
 
     override fun getGoodStocks(): LiveData<List<Stock>> {
@@ -147,10 +130,6 @@ class WorkListTask @Inject constructor(
         //TODO implement this
     }
 
-    override suspend fun getUnitsName(code: String?): String? {
-        return workListRepo.getUnitsName(code)
-    }
-
 }
 
 
@@ -160,10 +139,8 @@ interface IWorkListTask : ITask {
     val search: MutableLiveData<MutableList<Good>>
     var currentGood: MutableLiveData<Good>
 
-    suspend fun addGoodByEan(ean: String): Boolean
-
-    suspend fun loadAdditionalGoodInfo()
-    suspend fun loadComments()
+    suspend fun getGoodByMaterial(material: String): Good?
+    suspend fun addGood(good: Good)
 
     fun addScanResult(scanResult: ScanResult)
     fun moveGoodToProcessedList()
@@ -171,117 +148,98 @@ interface IWorkListTask : ITask {
     fun getGoodOptions(): LiveData<GoodOptions>
     fun getGoodStocks(): LiveData<List<Stock>>
     fun getGoodProviders(): LiveData<List<Provider>>
-    suspend fun getUnitsName(code: String?): String?
 }
 
 // -----------------------------
 
 data class Good(
-        val common: CommonGoodInfo,
+        val ean: String? = null,
+        val material: String,
+        val name: String,
+        val units: Uom,
+        val defaultValue: Double = 0.0,
+        var goodGroup: String,
+        var purchaseGroup: String,
+        val shelfLife: Int,
+        val remainingShelfLife: Int,
+        val shelfLifeType: MutableLiveData<List<String>> = MutableLiveData(emptyList()),
+        val comments: MutableLiveData<List<String>> = MutableLiveData(emptyList()),
+        val options: GoodOptions,
+
         var additional: MutableLiveData<AdditionalGoodInfo> = MutableLiveData(),
         val sales: MutableLiveData<SalesStatistics> = MutableLiveData(),
-        val deliveries: MutableLiveData<List<Delivery>> = MutableLiveData(listOf()),
-        val comments: MutableLiveData<List<String>> = MutableLiveData(listOf()),
-
-        val scanResults: MutableLiveData<List<ScanResult>> = MutableLiveData(listOf())
+        val deliveries: MutableLiveData<List<Delivery>> = MutableLiveData(emptyList()),
+        val scanResults: MutableLiveData<List<ScanResult>> = MutableLiveData(emptyList())
 ) {
 
     fun getFormattedMaterialWithName(): String {
-        return "${common.material.takeLast(6)} ${common.name}"
+        return "${material.takeLast(6)} $name"
     }
 
     fun isCommonGood(): Boolean {
-        return common.options.goodType == GoodType.COMMON
+        return options.goodType == GoodType.COMMON
     }
 
     fun getEanWithUnits(): String? {
-        return "${common.ean}/${common.units.name}"
+        return if (ean != null) "${ean}/${getUnits()}" else ""
     }
 
     fun getGoodWithPurchaseGroups(): String? {
-        return "${common.goodGroup}/${common.purchaseGroup}"
+        return "$goodGroup/$purchaseGroup"
     }
 
     fun getShelfLifeInMills(): Long {
-        return (common.shelfLife * 24 * 60 * 60 * 1000).toLong()
+        return (shelfLife * 24 * 60 * 60 * 1000).toLong()
     }
 
     fun getUnits(): String {
-        return common.units.name.toLowerCase(Locale.getDefault())
+        return units.name.toLowerCase(Locale.getDefault())
     }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is Good) return false
-
-        if (common.ean != other.common.ean) return false
-
+        if (ean != other.ean) return false
+        if (material != other.material) return false
         return true
     }
 
     override fun hashCode(): Int {
-        return common.ean.hashCode()
+        var result = ean?.hashCode() ?: 0
+        result = 31 * result + material.hashCode()
+        return result
     }
 
 }
 
-
-data class CommonGoodInfo(
-        val ean: String?,
-        val material: String,
-        val name: String,
-        val units: Uom,
-        val defaultQuantity: Double,
-        var goodGroup: String,
-        var purchaseGroup: String,
-        var marks: Int = 0,
-        val shelfLife: Int,
-        val options: GoodOptions
-)
-
 data class AdditionalGoodInfo(
         val storagePlaces: String,
         val minStock: Double,
-        val movement: Movement,
-        val price: Price,
-        val promo: Promo,
-        val providers: MutableList<Provider>,
-        val stocks: MutableList<Stock>
+        val inventory: String,
+        val arrival: String,
+        val commonPrice: Double,
+        val discountPrice: Double,
+        val promoName: String,
+        val promoPeriod: String,
+        val providers: List<Provider>,
+        val stocks: List<Stock>
 )
 
 data class GoodOptions(
         val matrixType: MatrixType,
-        val goodType: GoodType,
         val section: String,
+        val goodType: GoodType,
         val healthFood: Boolean = false,
         val novelty: Boolean = false
 )
 
 data class Stock(
-        val number: Int,
         val storage: String,
         val quantity: Double
 )
 
 data class Provider(
-        val number: Int,
         val code: String,
-        val name: String,
-        val kipStart: Date,
-        val kipEnd: Date
-)
-
-data class Movement(
-        val inventory: String,
-        val arrival: String
-)
-
-data class Price(
-        val commonPrice: Double,
-        val discountPrice: Double
-)
-
-data class Promo(
         val name: String,
         val period: String
 )
@@ -289,7 +247,7 @@ data class Promo(
 // -----------------------------
 
 data class SalesStatistics(
-        val lastSaleDate: Date?,
+        val lastSaleDate: Date,
         val daySales: Double,
         val weekSales: Double
 )
@@ -298,7 +256,7 @@ data class Delivery(
         val status: String,
         val type: String,
         val quantity: Double,
-        val date: Date?
+        val date: Date
 )
 
 // -----------------------------

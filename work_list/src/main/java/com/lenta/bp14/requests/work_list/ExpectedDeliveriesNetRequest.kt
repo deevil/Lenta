@@ -30,34 +30,45 @@ class ExpectedDeliveriesNetRequest
 interface IExpectedDeliveriesNetRequest : UseCase<ExpectedDeliveriesResult, ExpectedDeliveriesParams>
 
 data class ExpectedDeliveriesParams(
-        @SerializedName("IV_WERKS") // Номер ТК
+        /** Номер ТК */
+        @SerializedName("IV_WERKS")
         val tkNumber: String,
-        @SerializedName("IV_MATNR") // Номер товара
+        /** Номер товара */
+        @SerializedName("IV_MATNR")
         val material: String
 )
 
 class ExpectedDeliveriesStatus : ObjectRawStatus<ExpectedDeliveriesResult>()
 
 data class ExpectedDeliveriesResult(
-        @SerializedName("ET_PLAN_DELIV") // Таблица планируемых поставок
+        /** Таблица планируемых поставок */
+        @SerializedName("ET_PLAN_DELIV")
         val deliveries: List<ExpectedDelivery>,
-        @SerializedName("ET_RETCODE") // Код возврата + Текст ошибки
+        /** Код возврата + Текст ошибки */
+        @SerializedName("ET_RETCODE")
         val retCodes: List<RetCode>
 )
 
 data class ExpectedDelivery(
-        @SerializedName("TYPE_DELIV") // Тип поставки
+        /** Тип поставки */
+        @SerializedName("TYPE_DELIV") //
         val type: String,
-        @SerializedName("STAT_DELIV") // Статус поставки
+        /** Статус поставки */
+        @SerializedName("STAT_DELIV") //
         val status: String,
-        @SerializedName("MENGE") // Количество в заказе
+        /** Количество в заказе */
+        @SerializedName("MENGE") //
         val quantityInOrder: Double,
-        @SerializedName("ORMNG") // Количество в входящей поставке
+        /** Количество в входящей поставке */
+        @SerializedName("ORMNG") //
         val quantityInDelivery: Double,
-        @SerializedName("BSTME") // ЕИ заказа на поставку
+        /** ЕИ заказа на поставку */
+        @SerializedName("BSTME") //
         val unitsCode: String,
-        @SerializedName("DATE_PLAN") // Планируемая дата поставки
+        /** Планируемая дата поставки */
+        @SerializedName("DATE_PLAN") //
         val date: String,
-        @SerializedName("TIME_PLAN") // Планируемое время поставки
+        /** Планируемое время поставки */
+        @SerializedName("TIME_PLAN") //
         val time: String
 )

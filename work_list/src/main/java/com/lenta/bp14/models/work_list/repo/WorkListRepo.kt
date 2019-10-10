@@ -1,19 +1,27 @@
 package com.lenta.bp14.models.work_list.repo
 
-import com.lenta.bp14.models.data.GoodType
-import com.lenta.bp14.models.work_list.*
+import androidx.lifecycle.MutableLiveData
+import com.lenta.bp14.models.data.getGoodType
+import com.lenta.bp14.models.work_list.Good
+import com.lenta.bp14.models.work_list.GoodOptions
+import com.lenta.bp14.platform.extentions.WorkListGoodInfo
+import com.lenta.bp14.platform.extentions.toWorkListGoodInfo
+import com.lenta.shared.fmp.resources.dao_ext.getItemsByTid
+import com.lenta.shared.fmp.resources.dao_ext.getProductInfoByMaterial
 import com.lenta.shared.fmp.resources.dao_ext.getUnitName
+import com.lenta.shared.fmp.resources.dao_ext.toDescriptionsList
 import com.lenta.shared.fmp.resources.fast.ZmpUtz07V001
+import com.lenta.shared.fmp.resources.fast.ZmpUtz17V001
 import com.lenta.shared.fmp.resources.slow.ZfmpUtz48V001
 import com.lenta.shared.fmp.resources.slow.ZmpUtz25V001
-import com.lenta.shared.models.core.MatrixType
 import com.lenta.shared.models.core.Uom
+import com.lenta.shared.models.core.getMatrixType
+import com.lenta.shared.utilities.extentions.isSapTrue
 import com.mobrun.plugin.api.HyperHive
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.util.*
 import javax.inject.Inject
-import kotlin.random.Random
 
 class WorkListRepo @Inject constructor(
         private val hyperHive: HyperHive
@@ -22,76 +30,65 @@ class WorkListRepo @Inject constructor(
     val units: ZmpUtz07V001 by lazy { ZmpUtz07V001(hyperHive) } // Единицы измерения
     val productInfo: ZfmpUtz48V001 by lazy { ZfmpUtz48V001(hyperHive) } // Информация о товаре
     val eanInfo: ZmpUtz25V001 by lazy { ZmpUtz25V001(hyperHive) } // Информация о штрих-коде
+    val dictonary: ZmpUtz17V001 by lazy { ZmpUtz17V001(hyperHive) } // Справочник с наборами данных
 
-    override suspend fun getCommonGoodInfoByEan(ean: String): CommonGoodInfo? {
+    override suspend fun getGoodByMaterial(material: String): Good? {
         return withContext(Dispatchers.IO) {
-            return@withContext CommonGoodInfo(
-                    ean = "4005489741143",
-                    material = "000000000000000021",
-                    name = "Р/к горбуша (Россия) 230/250г",
-                    units = Uom.ST,
-                    defaultQuantity = 1.0,
-                    goodGroup = "123456",
-                    purchaseGroup = "1111",
-                    shelfLife = (3..14).random(),
-                    options = GoodOptions(
-                            matrixType = MatrixType.Active,
-                            section = "5",
-                            goodType = GoodType.COMMON
-                    )
-            )
-        }
-    }
+            getGoodInfoByMaterial(material)?.let { goodInfo ->
+                val unitsName = getUnitsName(goodInfo.unitsCode)
+                val shelfLifeTypes = getShelfLifeTypes()
+                val comments = getWorkListComments()
 
-    override suspend fun loadAdditionalGoodInfo(good: Good): AdditionalGoodInfo? {
-        return withContext(Dispatchers.IO) {
-            return@withContext AdditionalGoodInfo(
-                    storagePlaces = "125635; 652148; 635894",
-                    minStock = (10..50).random().toDouble(),
-                    movement = Movement(
-                            inventory = "19.07.19 (-25 шт.)",
-                            arrival = "29.07.19 (+50 шт; Z5)"
-                    ),
-                    price = Price(
-                            commonPrice = (110..140).random().toDouble(),
-                            discountPrice = (80..100).random().toDouble()
-                    ),
-                    promo = Promo(
-                            name = "Распродажа кукурузы ТК 0007",
-                            period = "Период 30.05.19 - 12.09.19"
-                    ),
-                    providers = MutableList((3..5).random()) {
-                        Provider(
-                                number = it + 1,
-                                code = (111111..999999).random().toString(),
-                                name = "Поставщик ${it + 1}",
-                                kipStart = Date(),
-                                kipEnd = Date()
+                return@withContext Good(
+                        material = material,
+                        name = goodInfo.name,
+                        units = Uom(
+                                code = goodInfo.unitsCode,
+                                name = unitsName ?: ""
+                        ),
+                        goodGroup = goodInfo.goodGroup,
+                        purchaseGroup = goodInfo.purchaseGroup,
+                        shelfLife = goodInfo.shelfLife,
+                        remainingShelfLife = goodInfo.remainingShelfLife,
+                        shelfLifeType = MutableLiveData(shelfLifeTypes),
+                        comments = MutableLiveData(comments),
+                        options = GoodOptions(
+                                matrixType = getMatrixType(goodInfo.matrixType),
+                                section = goodInfo.section,
+                                goodType = getGoodType(goodInfo.isAlcohol, goodInfo.isMark),
+                                healthFood = goodInfo.healthFood.isSapTrue(),
+                                novelty = goodInfo.novelty.isSapTrue()
                         )
-                    },
-                    stocks = MutableList((5..9).random()) {
-                        Stock(
-                                number = it + 1,
-                                storage = "0" + (0..9).random() + (0..9).random() + (0..9).random(),
-                                quantity = (1..99).random().toDouble()
-                        )
-                    }
-            )
-        }
-    }
-
-    override suspend fun loadComments(good: Good): List<String>? {
-        return withContext(Dispatchers.IO) {
-            val comments = MutableList((1..3).random()) {
-                "Комментарий ${it + 1}"
+                )
             }
-            comments.add(0, "Не выбран")
 
+            return@withContext null
+        }
+    }
+
+    override suspend fun getGoodInfoByMaterial(material: String?): WorkListGoodInfo? {
+        return withContext(Dispatchers.IO) {
+            return@withContext productInfo.getProductInfoByMaterial(material)?.toWorkListGoodInfo()
+        }
+    }
+
+    private suspend fun getShelfLifeTypes(): List<String> {
+        return withContext(Dispatchers.IO) {
+            return@withContext dictonary.getItemsByTid("007")?.toDescriptionsList()
+                    ?: listOf() // 007 - Типы сроков годности
+        }
+    }
+
+    private suspend fun getWorkListComments(): List<String> {
+        return withContext(Dispatchers.IO) {
+            val comments = dictonary.getItemsByTid("019")?.toDescriptionsList()?.toMutableList()
+                    ?: mutableListOf() // 019 - Комментарии
+            comments.add(0, "Не выбран")
             return@withContext comments
         }
     }
 
-    override suspend fun getUnitsName(code: String?): String? {
+    private suspend fun getUnitsName(code: String?): String? {
         return withContext(Dispatchers.IO) {
             return@withContext units.getUnitName(code)?.toLowerCase(Locale.getDefault())
         }
@@ -100,8 +97,6 @@ class WorkListRepo @Inject constructor(
 }
 
 interface IWorkListRepo {
-    suspend fun getCommonGoodInfoByEan(ean: String): CommonGoodInfo?
-    suspend fun loadAdditionalGoodInfo(good: Good): AdditionalGoodInfo?
-    suspend fun loadComments(good: Good): List<String>?
-    suspend fun getUnitsName(code: String?): String?
+    suspend fun getGoodByMaterial(material: String): Good?
+    suspend fun getGoodInfoByMaterial(material: String?): WorkListGoodInfo?
 }

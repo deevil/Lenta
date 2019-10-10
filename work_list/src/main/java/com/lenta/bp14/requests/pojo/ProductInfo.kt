@@ -38,7 +38,7 @@ data class ProductInfo(
         val isHealthyFood: String,
         //Признак – Товар маркированный
         @SerializedName("IS_MARK")
-        val iSMarked: String,
+        val isMarked: String,
         //Признак – товар новинка
         @SerializedName("IS_NEW")
         val isNew: String,
