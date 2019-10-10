@@ -2,7 +2,8 @@ package com.lenta.bp14.models.work_list.repo
 
 import androidx.lifecycle.MutableLiveData
 import com.lenta.bp14.models.data.getGoodType
-import com.lenta.bp14.models.work_list.*
+import com.lenta.bp14.models.work_list.Good
+import com.lenta.bp14.models.work_list.GoodOptions
 import com.lenta.bp14.platform.extentions.WorkListGoodInfo
 import com.lenta.bp14.platform.extentions.toWorkListGoodInfo
 import com.lenta.shared.fmp.resources.dao_ext.getItemsByTid
@@ -65,54 +66,6 @@ class WorkListRepo @Inject constructor(
         }
     }
 
-    override suspend fun loadAdditionalGoodInfo(good: Good): AdditionalGoodInfo? {
-        return withContext(Dispatchers.IO) {
-            return@withContext AdditionalGoodInfo(
-                    storagePlaces = "125635; 652148; 635894",
-                    minStock = (10..50).random().toDouble(),
-                    movement = Movement(
-                            inventory = "19.07.19 (-25 шт.)",
-                            arrival = "29.07.19 (+50 шт; Z5)"
-                    ),
-                    price = Price(
-                            commonPrice = (110..140).random().toDouble(),
-                            discountPrice = (80..100).random().toDouble()
-                    ),
-                    promo = Promo(
-                            promoName = "Распродажа кукурузы ТК 0007",
-                            promoPeriod = "Период 30.05.19 - 12.09.19"
-                    ),
-                    providers = MutableList((3..5).random()) {
-                        Provider(
-                                number = it + 1,
-                                code = (111111..999999).random().toString(),
-                                name = "Поставщик ${it + 1}",
-                                kipStart = Date(),
-                                kipEnd = Date()
-                        )
-                    },
-                    stocks = MutableList((5..9).random()) {
-                        Stock(
-                                number = it + 1,
-                                storage = "0" + (0..9).random() + (0..9).random() + (0..9).random(),
-                                quantity = (1..99).random().toDouble()
-                        )
-                    }
-            )
-        }
-    }
-
-    override suspend fun loadComments(good: Good): List<String>? {
-        return withContext(Dispatchers.IO) {
-            val comments = MutableList((1..3).random()) {
-                "Комментарий ${it + 1}"
-            }
-            comments.add(0, "Не выбран")
-
-            return@withContext comments
-        }
-    }
-
     override suspend fun getGoodInfoByMaterial(material: String?): WorkListGoodInfo? {
         return withContext(Dispatchers.IO) {
             return@withContext productInfo.getProductInfoByMaterial(material)?.toWorkListGoodInfo()
@@ -145,10 +98,5 @@ class WorkListRepo @Inject constructor(
 
 interface IWorkListRepo {
     suspend fun getGoodByMaterial(material: String): Good?
-
     suspend fun getGoodInfoByMaterial(material: String?): WorkListGoodInfo?
-
-
-    suspend fun loadAdditionalGoodInfo(good: Good): AdditionalGoodInfo?
-    suspend fun loadComments(good: Good): List<String>?
 }

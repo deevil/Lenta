@@ -14,10 +14,10 @@ import com.lenta.shared.functional.map
 import com.lenta.shared.interactor.UseCase
 import javax.inject.Inject
 
-class WorkListAdditionalInfoNetRequest
-@Inject constructor(private val productInfoNetRequest: ProductInfoNetRequest) : IWorkListAdditionalInfoNetRequest {
+class AdditionalGoodInfoNetRequest
+@Inject constructor(private val productInfoNetRequest: ProductInfoNetRequest) : IAdditionalGoodInfoNetRequest {
 
-    override suspend fun run(params: WorkListAdditionalInfoParams): Either<Failure, AdditionalGoodInfo> {
+    override suspend fun run(params: AdditionalGoodInfoParams): Either<Failure, AdditionalGoodInfo> {
         return productInfoNetRequest(params = params.toCommonParams()).map {
             val additional = it.additionalInfoList[0]
             val providers = it.suppliers
@@ -26,7 +26,7 @@ class WorkListAdditionalInfoNetRequest
             var storagePlaces = ""
             val lastPlace = it.places.last()
             it.places.map { place ->
-                storagePlaces += place
+                storagePlaces += place.placeCode
                 if (place != lastPlace) storagePlaces += ", "
             }
 
@@ -58,9 +58,9 @@ class WorkListAdditionalInfoNetRequest
 
 }
 
-interface IWorkListAdditionalInfoNetRequest : UseCase<AdditionalGoodInfo, WorkListAdditionalInfoParams>
+interface IAdditionalGoodInfoNetRequest : UseCase<AdditionalGoodInfo, AdditionalGoodInfoParams>
 
-private fun WorkListAdditionalInfoParams.toCommonParams(): ProductInfoParams {
+private fun AdditionalGoodInfoParams.toCommonParams(): ProductInfoParams {
     require((!ean.isNullOrBlank() xor !matNr.isNullOrBlank()))
     return ProductInfoParams(
             taskType = AppTaskTypes.WorkList.taskType,
@@ -72,7 +72,7 @@ private fun WorkListAdditionalInfoParams.toCommonParams(): ProductInfoParams {
     )
 }
 
-data class WorkListAdditionalInfoParams(
+data class AdditionalGoodInfoParams(
         val tkNumber: String,
         val ean: String?,
         val matNr: String?

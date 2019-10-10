@@ -59,22 +59,6 @@ class WorkListTask @Inject constructor(
         currentGood.value?.scanResults?.value = scanResultsList
     }
 
-    override suspend fun loadAdditionalGoodInfo() {
-        delay(5000)
-        currentGood.value?.let { good ->
-            val additionalGoodInfo = workListRepo.loadAdditionalGoodInfo(good)
-            good.additional.value = additionalGoodInfo
-        }
-    }
-
-    override suspend fun loadComments() {
-        delay(500)
-        currentGood.value?.let { good ->
-            val commentsList = workListRepo.loadComments(good)
-            good.comments.value = commentsList
-        }
-    }
-
     override fun getGoodOptions(): LiveData<GoodOptions> {
         return currentGood.map { it?.options }
     }
@@ -131,10 +115,6 @@ class WorkListTask @Inject constructor(
         return processed.value.isNullOrEmpty()
     }
 
-    /*override suspend fun getUnitsName(code: String?): String? {
-        return workListRepo.getUnitsName(code)
-    }*/
-
 }
 
 
@@ -147,17 +127,12 @@ interface IWorkListTask : ITask {
     suspend fun getGoodByMaterial(material: String): Good?
     suspend fun addGood(good: Good)
 
-
-    suspend fun loadAdditionalGoodInfo()
-    suspend fun loadComments()
-
     fun addScanResult(scanResult: ScanResult)
     fun moveGoodToProcessedList()
 
     fun getGoodOptions(): LiveData<GoodOptions>
     fun getGoodStocks(): LiveData<List<Stock>>
     fun getGoodProviders(): LiveData<List<Provider>>
-    //suspend fun getUnitsName(code: String?): String?
 }
 
 // -----------------------------

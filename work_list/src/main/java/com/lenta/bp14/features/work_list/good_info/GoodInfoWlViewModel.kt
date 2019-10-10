@@ -4,11 +4,12 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp14.models.data.GoodType
 import com.lenta.bp14.models.data.ShelfLifeType
-import com.lenta.bp14.models.work_list.Provider
-import com.lenta.bp14.models.work_list.ScanResult
-import com.lenta.bp14.models.work_list.Stock
-import com.lenta.bp14.models.work_list.WorkListTask
+import com.lenta.bp14.models.work_list.*
 import com.lenta.bp14.platform.navigation.IScreenNavigator
+import com.lenta.bp14.requests.work_list.IAdditionalGoodInfoNetRequest
+import com.lenta.bp14.requests.work_list.AdditionalGoodInfoParams
+import com.lenta.shared.account.ISessionInfo
+import com.lenta.shared.exception.Failure
 import com.lenta.shared.models.core.MatrixType
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.Logg
@@ -27,6 +28,10 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
     lateinit var navigator: IScreenNavigator
     @Inject
     lateinit var task: WorkListTask
+    @Inject
+    lateinit var additionalGoodInfoNetRequest: IAdditionalGoodInfoNetRequest
+    @Inject
+    lateinit var sessionInfo: ISessionInfo
 
 
     val selectedPage = MutableLiveData(0)
@@ -96,12 +101,12 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
             AdditionalInfoUi(
                     storagePlaces = additional?.storagePlaces ?: "Not found!",
                     minStock = "${additional?.minStock?.dropZeros()} ${task.currentGood.value!!.getUnits()}",
-                    inventory = additional?.movement?.inventory ?: "Not found!",
-                    arrival = additional?.movement?.arrival ?: "Not found!",
-                    commonPrice = "${additional?.price?.commonPrice?.dropZeros()}р.",
-                    discountPrice = "${additional?.price?.discountPrice?.dropZeros()}р.",
-                    promoName = additional?.promo?.promoName ?: "Not found!",
-                    promoPeriod = additional?.promo?.promoPeriod ?: "Not found!"
+                    inventory = additional?.inventory ?: "Not found!",
+                    arrival = additional?.arrival ?: "Not found!",
+                    commonPrice = "${additional?.commonPrice?.dropZeros()}р.",
+                    discountPrice = "${additional?.discountPrice?.dropZeros()}р.",
+                    promoName = additional?.promoName ?: "Not found!",
+                    promoPeriod = additional?.promoPeriod ?: "Not found!"
             )
         }
     }
@@ -125,7 +130,7 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
                         number = (index + 1).toString(),
                         code = provider.code,
                         name = provider.name,
-                        period = "${provider.kipStart.getFormattedDate()} - ${provider.kipEnd.getFormattedDate()}"
+                        period = provider.period
                 )
             }
         }
@@ -154,18 +159,34 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
     init {
         viewModelScope.launch {
             title.value = good.value?.getFormattedMaterialWithName()
-
             quantity.value = "1"
             comment.value = commentsList.value?.get(0)
 
             viewModelScope.launch {
-                task.loadAdditionalGoodInfo()
-                showProgress.value = false
+                additionalGoodInfoNetRequest(AdditionalGoodInfoParams(
+                        tkNumber = sessionInfo.market ?: "Not Found!",
+                        ean = task.currentGood.value?.ean,
+                        matNr = task.currentGood.value?.material
+                )).either(::handleFailure, ::updateAdditionalGoodInfo)
             }
         }
     }
 
     // -----------------------------
+
+    override fun handleFailure(failure: Failure) {
+        super.handleFailure(failure)
+        showProgress.value = false
+        navigator.openAlertScreen(failure)
+    }
+
+    private fun updateAdditionalGoodInfo(result: AdditionalGoodInfo) {
+        Logg.d { "AdditionalGoodInfo: $result" }
+        viewModelScope.launch {
+            task.currentGood.value?.additional?.value = result
+        }
+        showProgress.value = false
+    }
 
     override fun onPageSelected(position: Int) {
         selectedPage.value = position
