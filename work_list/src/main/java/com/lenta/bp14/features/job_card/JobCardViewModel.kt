@@ -71,6 +71,7 @@ class JobCardViewModel : CoreViewModel() {
     val selectedTaskTypePosition: MutableLiveData<Int> = MutableLiveData(0)
     private val selectedTaskTypeInfo: MutableLiveData<ITaskTypeInfo> = selectedTaskTypePosition.map { getSelectedTypeTask() }
     val enabledChangeTaskType: MutableLiveData<Boolean> = processedTask.map { it == null && taskFromTaskList == null }
+    val isEnabledChangeTaskName: MutableLiveData<Boolean> = processedTask.map { taskFromTaskList == null || processedTask.value?.isFreeMode() == true }
     val isStrictList = MutableLiveData(false)
 
     val taskName by lazy {

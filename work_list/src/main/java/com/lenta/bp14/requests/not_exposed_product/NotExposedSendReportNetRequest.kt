@@ -23,18 +23,16 @@ class NotExposedSendReportNetRequest
 
         params.checksResults.forEach {
 
-            if (it.isEmptyPlaceMarked != null) {
-                checkPlaces.add(
-                        CheckPlace(
-                                matNr = it.matNr,
-                                statCheck = when (it.isEmptyPlaceMarked) {
-                                    false -> "3"
-                                    true -> "2"
-                                    else -> "1"
-                                }
-                        )
-                )
-            }
+            checkPlaces.add(
+                    CheckPlace(
+                            matNr = it.matNr,
+                            statCheck = when (it.isEmptyPlaceMarked) {
+                                false -> "3"
+                                true -> "2"
+                                else -> "1"
+                            }
+                    )
+            )
 
             checkPositions.add(
                     Position(

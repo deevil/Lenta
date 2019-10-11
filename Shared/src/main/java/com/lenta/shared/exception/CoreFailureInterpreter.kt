@@ -21,6 +21,9 @@ class CoreFailureInterpreter
                     iconRes = R.drawable.is_warning_red_80dp,
                     textColor = ContextCompat.getColor(context, R.color.color_text_dialogWarning))
 
+            Failure.InvalidProductForTask -> FailureDescription(message = context.getString(R.string.good_is_not_part_of_task),
+                    iconRes = R.drawable.is_warning_red_80dp)
+
             Failure.NotValidEnterNumber -> FailureDescription(message = context.getString(R.string.not_valid_format_ean))
 
             is Failure.SapError -> FailureDescription(

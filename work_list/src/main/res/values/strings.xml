@@ -36,7 +36,6 @@
     <string name="print_price_tag_for_good">Распечатать ценник по товару \"%1$s\"?</string>
     <string name="unsaved_data_found_on_device">На устройстве обнаружены несохраненные данные. Перейти к данным?</string>
     <string name="unsaved_task_found_on_device">На устройстве обнаружены несохраненные задания. Перейти к данным?</string>
-    <string name="good_is_not_part_of_task">Данный товар не входит в состав задания. Добавление товара невозможно.</string>
     <string name="scanned_good_not_listed_in_lenta">Отсканированная марка не числится в сети "Лента". Проведите инвентаризацию данного товара для выявления расхождений.</string>
     <string name="scanned_good_not_listed_in_tk">Отсканированная марка числится в ТК - %1$s. Проведите инвентаризацию данного товара для выявления расхождений.</string>
     <string name="scanned_good_already_added_to_task">Отсканированная марка уже добавлена в задание. Удалить марку?</string>

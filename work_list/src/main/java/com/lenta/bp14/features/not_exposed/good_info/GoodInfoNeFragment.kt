@@ -19,6 +19,7 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
+import com.lenta.shared.scan.OnScanResultListener
 import com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig
 import com.lenta.shared.utilities.databinding.ViewPagerSettings
 import com.lenta.shared.utilities.extentions.connectLiveData
@@ -26,7 +27,7 @@ import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
 import com.lenta.shared.utilities.extentions.provideViewModel
 
 class GoodInfoNeFragment : CoreFragment<FragmentGoodInfoNeBinding, GoodInfoNeViewModel>(),
-        ViewPagerSettings, ToolbarButtonsClickListener, OnBackPresserListener {
+        ViewPagerSettings, ToolbarButtonsClickListener, OnBackPresserListener, OnScanResultListener {
 
     override fun getLayoutId(): Int = R.layout.fragment_good_info_ne
 
@@ -113,6 +114,10 @@ class GoodInfoNeFragment : CoreFragment<FragmentGoodInfoNeBinding, GoodInfoNeVie
 
     override fun onBackPressed(): Boolean {
         return vm.onBackPressed()
+    }
+
+    override fun onScanResult(data: String) {
+        vm.onScanResult(data)
     }
 
 }
