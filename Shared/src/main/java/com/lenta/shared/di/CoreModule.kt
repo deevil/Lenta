@@ -98,7 +98,10 @@ class CoreModule(val application: Application, val defaultConnectionSettings: De
 
         prepareFolder(DB_PATH)
 
-        val fmpDbName = "resources_${appSettings.getCurrentServerAddress().replace("/", "")}_" +
+        val fmpDbName = "resources_${appSettings.getCurrentServerAddress().
+                replace("/", "").
+                replace(".", "_").
+                replace(":", "_")}_" +
                 "${appSettings.getCurrentEnvironment()}_" +
                 "${appSettings.getCurrentProject()}.sqlite"
 
