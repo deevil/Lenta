@@ -38,7 +38,7 @@ class MainMenuViewModel : CoreViewModel() {
 
 
     fun onClickPrint() {
-        navigator.openGoodsListClScreen()
+        navigator.openPrintSettingsScreen()
     }
 
     fun onClickCreateTask() {

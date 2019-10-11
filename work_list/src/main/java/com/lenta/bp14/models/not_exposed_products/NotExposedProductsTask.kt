@@ -20,7 +20,7 @@ import com.lenta.bp14.requests.not_exposed_product.NotExposedInfoRequestParams
 import com.lenta.bp14.requests.not_exposed_product.NotExposedReport
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.functional.Either
-import com.lenta.shared.functional.map
+import com.lenta.shared.functional.rightToLeft
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.isSapTrue
 import com.lenta.shared.utilities.extentions.map
@@ -200,9 +200,12 @@ class NotExposedProductsTask @Inject constructor(
                         tkNumber = taskDescription.tkNumber
                 )
 
-        ).also {
-            it.map {
-                processedGoodInfo = it
+        ).rightToLeft { goodInfo ->
+            if (!isAllowedProduct(goodInfo.productInfo.matNr)) {
+                Failure.InvalidProductForTask
+            } else {
+                processedGoodInfo = goodInfo
+                null
             }
         }
     }
@@ -222,7 +225,7 @@ class NotExposedProductsTask @Inject constructor(
     }
 
     override fun isHaveDiscrepancies(): Boolean {
-        return getToProcessingProducts().value!!.isEmpty()
+        return getToProcessingProducts().value?.isNotEmpty() == true
     }
 
     override fun getListOfDifferences(): LiveData<List<BaseProductInfo>> {
@@ -232,11 +235,36 @@ class NotExposedProductsTask @Inject constructor(
                         matNr = item.matNr,
                         name = item.name
                 )
-            } }
+            }
+        }
     }
 
     override fun setMissing(matNrList: List<String>) {
-        //TODO implement this
+        matNrList.forEach { matNr ->
+            taskDescription.additionalTaskInfo?.productsInfo?.firstOrNull { it.matNr == matNr }?.let {
+                notExposedProductsRepo.addOrReplaceProduct(
+                        NotExposedProductInfo(
+                                ean = null,
+                                matNr = it.matNr,
+                                name = it.name,
+                                quantity = 0.0,
+                                uom = null,
+                                isEmptyPlaceMarked = false,
+                                section = it.sectionNumber,
+                                group = it.matKL
+                        )
+                )
+            }
+        }
+
+    }
+
+    override fun isAllowedProduct(materialNumber: String): Boolean {
+        if (!taskDescription.isStrictList) {
+            return true
+        }
+        return taskDescription.additionalTaskInfo?.positions?.any { it.matNr == materialNumber }
+                ?: true
     }
 
 
@@ -262,6 +290,8 @@ interface INotExposedProductsTask : ITask, IFilterable {
     suspend fun getProductInfoAndSetProcessed(ean: String? = null, matNr: String? = null): Either<Failure, GoodInfo>
 
     fun getReportData(ip: String, isNotFinish: Boolean): NotExposedReport
+
+    fun isAllowedProduct(materialNumber: String): Boolean
 
 }
 

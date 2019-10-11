@@ -183,6 +183,16 @@ class GoodsListNeViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
 
 
     fun onClickSave() {
+        if (task.isHaveDiscrepancies()) {
+            navigator.openListOfDifferencesScreen {
+                showConfirmationForSave()
+            }
+        } else {
+            showConfirmationForSave()
+        }
+    }
+
+    private fun showConfirmationForSave() {
         navigator.showSetTaskToStatusCalculated {
             viewModelScope.launch {
                 navigator.showProgressLoadingData()
