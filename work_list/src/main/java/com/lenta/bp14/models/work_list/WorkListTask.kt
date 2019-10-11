@@ -275,7 +275,8 @@ data class ScanResult(
         val quantity: Double,
         val comment: String,
         val productionDate: Date?,
-        val expirationDate: Date?
+        val expirationDate: Date?,
+        val markNumber: String? = null
 ) {
 
     fun getFormattedProductionDate(): String {

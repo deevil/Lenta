@@ -8,7 +8,7 @@ data class CheckResult(
         val matNr: String,
         /** Фактическое кол-во */
         @SerializedName("FACT_QNT")
-        val quantity: String,
+        val quantity: Double,
         /** Комментарий (код) */
         @SerializedName("COMMENT")
         val comment: String,
