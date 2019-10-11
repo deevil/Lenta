@@ -34,6 +34,7 @@ import com.lenta.shared.platform.network_state.INetworkStateMonitor
 import com.lenta.shared.platform.network_state.NetworkStateMonitor
 import com.lenta.shared.platform.resources.ISharedStringResourceManager
 import com.lenta.shared.platform.time.ITimeMonitor
+import com.lenta.shared.print.IPriceTagGenerator
 import com.lenta.shared.progress.IProgressUseCaseInformator
 import com.lenta.shared.requests.FmpRequestsHelper
 import com.lenta.shared.requests.combined.scan_info.ScanInfoRequest
@@ -80,6 +81,7 @@ interface CoreComponent {
     fun getDeviceInfo(): DeviceInfo
     fun getDefaultSettingsManager(): DefaultSettingsManager
     fun getIIconDescriptionHelper(): IIconDescriptionHelper
+    fun getIPriceTagGenerator(): IPriceTagGenerator
 
 
     fun inject(it: FmpSettingsViewModel)

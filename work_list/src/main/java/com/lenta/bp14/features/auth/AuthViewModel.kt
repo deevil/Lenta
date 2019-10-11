@@ -21,6 +21,7 @@ import com.lenta.shared.utilities.getBaseAuth
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+
 class AuthViewModel : CoreAuthViewModel() {
 
     @Inject
