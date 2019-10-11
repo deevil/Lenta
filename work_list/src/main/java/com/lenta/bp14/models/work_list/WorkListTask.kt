@@ -12,13 +12,12 @@ import com.lenta.bp14.models.general.AppTaskTypes
 import com.lenta.bp14.models.general.IGeneralRepo
 import com.lenta.bp14.models.general.ITaskTypeInfo
 import com.lenta.bp14.models.work_list.repo.IWorkListRepo
+import com.lenta.bp14.requests.work_list.WorkListReport
 import com.lenta.shared.models.core.MatrixType
 import com.lenta.shared.models.core.Uom
 import com.lenta.shared.platform.time.ITimeMonitor
-import com.lenta.shared.utilities.extentions.dropZeros
 import com.lenta.shared.utilities.extentions.getFormattedDate
 import com.lenta.shared.utilities.extentions.map
-import kotlinx.coroutines.delay
 import java.util.*
 import javax.inject.Inject
 
@@ -112,6 +111,15 @@ class WorkListTask @Inject constructor(
         }
     }
 
+    override fun getReportData(ip: String): WorkListReport {
+        return WorkListReport(
+                ip = ip,
+                description = taskDescription,
+                isNotFinish = false,
+                checksResults = processed.value ?: emptyList()
+        )
+    }
+
     override fun isEmpty(): Boolean {
         return processed.value.isNullOrEmpty()
     }
@@ -148,6 +156,8 @@ interface IWorkListTask : ITask {
     fun getGoodOptions(): LiveData<GoodOptions>
     fun getGoodStocks(): LiveData<List<Stock>>
     fun getGoodProviders(): LiveData<List<Provider>>
+
+    fun getReportData(ip: String): WorkListReport
 }
 
 // -----------------------------
