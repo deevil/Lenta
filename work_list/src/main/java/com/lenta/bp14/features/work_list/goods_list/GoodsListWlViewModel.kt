@@ -2,11 +2,15 @@ package com.lenta.bp14.features.work_list.goods_list
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.lenta.bp14.models.IGeneralTaskManager
+import com.lenta.bp14.models.check_price.IPriceInfoParser
 import com.lenta.bp14.models.data.GoodsListTab
 import com.lenta.bp14.models.getTaskName
 import com.lenta.bp14.models.work_list.Good
 import com.lenta.bp14.models.work_list.WorkListTask
 import com.lenta.bp14.platform.navigation.IScreenNavigator
+import com.lenta.bp14.requests.work_list.WorkListSendReportNetRequest
+import com.lenta.shared.platform.device_info.DeviceInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.analyseCode
 import com.lenta.shared.utilities.Logg
@@ -26,6 +30,14 @@ class GoodsListWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     lateinit var navigator: IScreenNavigator
     @Inject
     lateinit var task: WorkListTask
+    @Inject
+    lateinit var priceInfoParser: IPriceInfoParser
+    @Inject
+    lateinit var generalTaskManager: IGeneralTaskManager
+    @Inject
+    lateinit var deviceInfo: DeviceInfo
+    @Inject
+    lateinit var sentReportRequest: WorkListSendReportNetRequest
 
 
     val processedSelectionsHelper = SelectionItemsHelper()
@@ -84,7 +96,22 @@ class GoodsListWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     }
 
     fun onClickSave() {
-
+        // Подтверждение - Перевести задание в статус "Подсчитано" и закрыть его для редактирования? - Назад / Да
+        navigator.showSetTaskToStatusCalculated {
+            viewModelScope.launch {
+                navigator.showProgressLoadingData()
+                sentReportRequest(task.getReportData(deviceInfo.getDeviceIp())).either(
+                        {
+                            navigator.openAlertScreen(failure = it)
+                        }
+                ) {
+                    Logg.d { "SentReportResult: $it" }
+                    generalTaskManager.clearCurrentTask(sentReportResult = it)
+                    navigator.openReportResultScreen()
+                }
+                navigator.hideProgress()
+            }
+        }
     }
 
     fun onClickDelete() {
@@ -106,7 +133,13 @@ class GoodsListWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
                     addGoodByMaterial(matNr)
                 },
                 funcForPriceQrCode = { qrCode ->
-                    addGoodByEan(qrCode)
+                    priceInfoParser.getPriceInfoFromRawCode(qrCode)?.let {
+                        viewModelScope.launch {
+                            addGoodByEan(it.eanCode)
+                        }
+                        return@analyseCode
+                    }
+                    navigator.showGoodNotFound()
                 },
                 funcForSapOrBar = navigator::showTwelveCharactersEntered,
                 funcForNotValidFormat = navigator::showGoodNotFound
