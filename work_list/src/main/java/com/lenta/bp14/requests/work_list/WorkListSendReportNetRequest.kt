@@ -32,7 +32,15 @@ class WorkListSendReportNetRequest
             )
 
             checkResults.add(
-                    Position(
+                    CheckResult(
+                            matNr = it.material,
+                            isProcessed = true.toSapBooleanString(),
+                            quantity = it.quantity.value?.toDoubleOrNull() ?: 0.0
+                    )
+            )
+
+            marks.add(
+                    Mark(
                             matNr = it.material,
                             isProcessed = true.toSapBooleanString(),
                             quantity = it.quantity.value?.toDoubleOrNull() ?: 0.0
@@ -44,9 +52,12 @@ class WorkListSendReportNetRequest
                 FmpReport(
                         ip = params.ip,
                         description = params.description.taskName,
+                        taskNumber = params.description.taskNumber,
                         tkNumber = params.description.tkNumber,
                         isNotFinished = params.isNotFinish.toSapBooleanString(),
-                        positions = positions
+                        positions = positions,
+                        checkResults = checkResults,
+                        marks = marks
                 )
                 , ReportSentStatus::class.java)
                 .rightToLeft { sentResult ->
@@ -70,7 +81,6 @@ data class WorkListReport(
         val isNotFinish: Boolean,
         val checksResults: List<Good>
 )
-
 
 data class FmpReport(
         /** IP адрес ТСД */
