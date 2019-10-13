@@ -5,6 +5,7 @@ import com.lenta.shared.exception.Failure
 import com.lenta.shared.functional.Either
 import com.lenta.shared.utilities.extentions.divideRoubleWithKop
 import com.lenta.shared.utilities.extentions.getFormattedTimeForPriceTag
+import com.lenta.shared.utilities.extentions.splitByLines
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.BufferedReader
@@ -43,6 +44,7 @@ class PriceTagGenerator @Inject constructor(private val context: Context) : IPri
 
         return when (printTemplate.printerType) {
             NetPrinterType.Zebra -> generatePricePrintStringForZebra(printPriceInfo, template)
+            NetPrinterType.Datamax -> generatePricePrintStringForDatamax(printPriceInfo, template)
             else -> null
         }
 
@@ -92,6 +94,75 @@ class PriceTagGenerator @Inject constructor(private val context: Context) : IPri
             put("COPIES", printPriceInfo.copies.toString())
             put("PROMOBEGIN", printPriceInfo.promoBegin)
             put("PROMOEND", printPriceInfo.promoEnd)
+        }.forEach {
+            res = res.replace("@${it.key}", it.value)
+        }
+        return res
+    }
+
+    private fun generatePricePrintStringForDatamax(printPriceInfo: PrintPriceInfo, template: String): String? {
+
+        if (template.isBlank()) {
+            return null
+        }
+        var res = template
+
+        mutableMapOf<String, String>().apply {
+
+            printPriceInfo.goodsName.splitByLines(25).let {
+                put("GOODSNAME1", it.getOrNull(0) ?: "")
+                put("GOODSNAME2", it.getOrNull(1) ?: "")
+                put("GOODSNAME3", it.getOrNull(2) ?: "")
+            }
+
+            printPriceInfo.price1.let { price ->
+                price.divideRoubleWithKop().let {
+                    put("RUB1", it.first.apply {
+                        put("POS1", (120 - (this.length * 20)).toString())
+                    })
+                    put("KOP1", it.second)
+                }
+            }
+
+            printPriceInfo.price2.let { price ->
+                price.divideRoubleWithKop().let {
+                    put("RUB2", it.first.apply {
+                        put("POS2", (370 - (this.length * 40)).toString())
+                    })
+                    put("KOP2", it.second)
+                }
+            }
+
+            put("GOODSCODE", printPriceInfo.productNumber)
+
+            val barcode = if (printPriceInfo.ean.isBlank() || printPriceInfo.ean.length < 13) {
+                ""
+            } else printPriceInfo.ean
+
+            val barcodeDigit = barcode.take(12)
+
+            put("BARCODEDIGIT", barcode)
+            put("BARCODE", barcodeDigit)
+
+            put("DATETIME", printPriceInfo.date.getFormattedTimeForPriceTag())
+
+            val address = printPriceInfo.address.let {
+                if (it.length > LENGTH_MAX_ADDRESS) {
+                    "${it.takeLast(LENGTH_MAX_ADDRESS)}..."
+                } else {
+                    it
+                }
+            }
+
+            address.splitByLines(LENGTH_MAX_ADDRESS / 2).also {
+                put("ADDRESS1", it.getOrNull(0) ?: "")
+                put("ADDRESS2", it.getOrNull(1) ?: "")
+            }
+
+            put("COPIES", printPriceInfo.copies.toString())
+            put("PROMOBEGIN", printPriceInfo.promoBegin)
+            put("PROMOEND", printPriceInfo.promoEnd)
+
         }.forEach {
             res = res.replace("@${it.key}", it.value)
         }
