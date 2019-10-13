@@ -80,6 +80,7 @@
     <string name="components">Компоненты</string>
     <string name="total">Итого</string>
     <string name="not_selected">Не выбрано</string>
+    <string name="not_selected_one">Не выбран</string>
     <string name="tk">TK</string>
     <string name="data_saving">Сохранение данных</string>
     <string name="connection_settings">Настройки подключения</string>
