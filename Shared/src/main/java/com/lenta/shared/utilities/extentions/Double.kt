@@ -1,5 +1,7 @@
 package com.lenta.shared.utilities.extentions
 
+import kotlin.math.roundToInt
+
 fun Double?.toStringFormatted(): String {
     if (this == null) {
         return "0"
@@ -16,4 +18,20 @@ fun Double?.sumWith(other: Double?): Double {
 
 fun Double?.dropZeros(): String {
     return this.toStringFormatted()
+}
+
+fun Double.divideIntWithDecimal(): Pair<Int, Double> {
+    val intPart = this.toInt()
+    return Pair(intPart, this - intPart)
+}
+
+
+fun Double.divideRoubleWithKop(): Pair<String, String> {
+    this.divideIntWithDecimal().let {
+        return Pair(
+                it.first.toString(),
+                (it.second * 100).roundToInt().toString()
+        )
+
+    }
 }

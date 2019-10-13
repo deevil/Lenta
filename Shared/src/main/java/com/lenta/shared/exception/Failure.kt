@@ -32,6 +32,7 @@ sealed class Failure {
     class DbError(val message: String) : Failure()
     object NotValidQrCode : Failure()
     object FileReadingError: Failure()
+    object PrintTemplateError: Failure()
 
     /** * Extend this class for feature specific failures.*/
     abstract class FeatureFailure : Failure()

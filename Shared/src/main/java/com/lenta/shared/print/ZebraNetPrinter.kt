@@ -1,11 +1,16 @@
 package com.lenta.shared.print
 
+import com.lenta.shared.exception.Failure
+import com.lenta.shared.functional.Either
+
 class ZebraNetPrinter(override val ip: String) : INetPrinter() {
+
+    private val CALIBRATE = "! U1 setvar \"media.type\" \"label\"\r\n! U1 setvar \"media.sense_mode\" \"bar\"\r\n~JC^XA^JUS^XZ\r\n! U1 do \"device.reset\" \"\"\r\n"
 
     //val test = "^XA^FO17,16^GB379,371,8^FS^FT65,255^A0N,135,134^FDTEST^FS^XZ".toByteArray()
 
-    override val printerType: PrinterType
-        get() = PrinterType.Zebra
+    override val printerType: NetPrinterType
+        get() = NetPrinterType.Zebra
 
     override val port: Int = 6101
 
@@ -30,6 +35,10 @@ class ZebraNetPrinter(override val ip: String) : INetPrinter() {
         } else {
             byteArray
         })
+    }
+
+    override fun calibrate(): Either<Failure, Boolean> {
+        return print(CALIBRATE)
     }
 
 

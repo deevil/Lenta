@@ -1,29 +1,34 @@
 package com.lenta.shared.print
 
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
+import androidx.annotation.WorkerThread
+import com.lenta.shared.exception.Failure
+import com.lenta.shared.functional.Either
+import java.lang.Exception
 import java.net.Socket
 
 abstract class INetPrinter {
 
     abstract val ip: String
     abstract val port: Int
-    abstract val printerType: PrinterType
+    abstract val printerType: NetPrinterType
 
-    private val CALIBRATE = "! U1 setvar \"media.type\" \"label\"\r\n! U1 setvar \"media.sense_mode\" \"bar\"\r\n~JC^XA^JUS^XZ\r\n! U1 do \"device.reset\" \"\"\r\n"
-
-    open suspend fun print(data: String) {
-        withContext(Dispatchers.IO) {
-            val bytes = convertStringToBytes(data)
-            val socket = Socket(ip, port)
+    @WorkerThread
+    fun print(data: String): Either<Failure, Boolean> {
+        val bytes = convertStringToBytes(data)
+        var socket: Socket? = null
+        try {
+            socket = Socket(ip, port)
             socket.getOutputStream().write(bytes)
             socket.close()
+        } catch (e: Exception) {
+            return Either.Left(Failure.NetworkConnection)
+        } finally {
+            socket?.close()
         }
+        return Either.Right(true)
     }
 
-    suspend fun calibrate() {
-        print(CALIBRATE)
-    }
+    abstract fun calibrate(): Either<Failure, Boolean>
 
 
     open fun convertStringToBytes(data: String): ByteArray {

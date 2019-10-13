@@ -1,6 +1,6 @@
 package com.lenta.shared.print
 
-enum class PrinterType {
+enum class NetPrinterType {
     Datamax,
     Zebra
 }

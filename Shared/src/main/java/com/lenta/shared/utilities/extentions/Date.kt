@@ -15,3 +15,9 @@ fun Date?.getFormattedTime(): String {
         DateTimeUtil.formatDate(this, Constants.TIME_FORMAT_HHmm)
     } else ""
 }
+
+fun Date?.getFormattedTimeForPriceTag(): String {
+    return if (this != null) {
+        DateTimeUtil.formatDate(this, Constants.PRICE_TAG_DATE_TIME_ONE)
+    } else ""
+}
