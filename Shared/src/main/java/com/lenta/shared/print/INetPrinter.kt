@@ -4,6 +4,7 @@ import androidx.annotation.WorkerThread
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.functional.Either
 import java.lang.Exception
+import java.net.InetSocketAddress
 import java.net.Socket
 
 abstract class INetPrinter {
@@ -17,7 +18,8 @@ abstract class INetPrinter {
         val bytes = convertStringToBytes(data)
         var socket: Socket? = null
         try {
-            socket = Socket(ip, port)
+            socket = Socket()
+            socket.connect(InetSocketAddress(ip, port), 3000)
             socket.getOutputStream().write(bytes)
             socket.close()
         } catch (e: Exception) {
