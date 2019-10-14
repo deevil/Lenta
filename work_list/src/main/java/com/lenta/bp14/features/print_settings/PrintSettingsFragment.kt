@@ -51,8 +51,16 @@ class PrintSettingsFragment : CoreFragment<FragmentPrintSettingsBinding, PrintSe
         when (view.id) {
             R.id.b_5 -> vm.onClickPrint()
         }
+    }
 
+    override fun onResume() {
+        super.onResume()
+        vm.restoreSettings()
+    }
 
+    override fun onPause() {
+        super.onPause()
+        vm.saveSettings()
     }
 
 }

@@ -1,5 +1,6 @@
 package com.lenta.bp14.features.print_settings
 
+import android.content.SharedPreferences
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp14.models.check_price.IPriceInfoParser
@@ -38,6 +39,10 @@ class PrintSettingsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInS
 
     @Inject
     lateinit var priceInfoParser: IPriceInfoParser
+
+    @Inject
+    lateinit var printSettings: PrintSettings
+
 
     private var productInfoResult: MutableLiveData<ProductInfoResult?> = MutableLiveData(null)
 
@@ -221,7 +226,7 @@ class PrintSettingsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInS
                     ip = ipAddress.value ?: "",
                     productInfoResult = productInfoResult.value!!,
                     printerType = getSelectedPrinterType()!!,
-                    isRegular = getSelectedPriceType()!!.isRegular?: false,
+                    isRegular = getSelectedPriceType()!!.isRegular ?: false,
                     copies = numberOfCopies.value?.toIntOrNull() ?: 0
             ).either({
                 navigator.openAlertScreen(it)
@@ -233,5 +238,59 @@ class PrintSettingsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInS
 
         }
     }
+
+    fun restoreSettings() {
+        printSettings.printerIp?.let {
+            ipAddress.value = it
+        }
+
+        printSettings.printerTypePos.let {
+            if (it > -1) {
+                selectedPrinterTypePos.value = it
+            }
+        }
+
+        printSettings.priceTypePos.let {
+            if (it > -1) {
+                selectedPriceTagTypePos.value = it
+            }
+        }
+
+    }
+
+    fun saveSettings() {
+        printSettings.printerIp = ipAddress.value
+        printSettings.printerTypePos = selectedPrinterTypePos.value ?: 0
+        printSettings.priceTypePos = selectedPriceTagTypePos.value ?: 0
+    }
+}
+
+
+class PrintSettings @Inject constructor(private val sharedPreferences: SharedPreferences) {
+
+    var printerTypePos: Int
+        get() = sharedPreferences.getInt(KEY_PRINTER_TYPE, 0)
+        set(value) {
+            sharedPreferences.edit().putInt(KEY_PRINTER_TYPE, value).apply()
+        }
+
+    var priceTypePos: Int
+        get() = sharedPreferences.getInt(KEY_PRICE_TYPE, 0)
+        set(value) {
+            sharedPreferences.edit().putInt(KEY_PRICE_TYPE, value).apply()
+        }
+
+    var printerIp: String?
+        get() = sharedPreferences.getString(KEY_PRINTER_IP, null)
+        set(value) {
+            sharedPreferences.edit().putString(KEY_PRINTER_IP, value).apply()
+        }
+
+    companion object {
+        val KEY_PRINTER_TYPE = "KEY_PRINTER_TYPE"
+        val KEY_PRICE_TYPE = "KEY_PRICE_TYPE"
+        val KEY_PRINTER_IP = "KEY_PRINTER_IP"
+    }
+
 }
 
