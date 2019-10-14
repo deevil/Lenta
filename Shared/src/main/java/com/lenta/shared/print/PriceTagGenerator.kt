@@ -167,6 +167,8 @@ class PriceTagGenerator @Inject constructor(private val context: Context) : IPri
             res = res.replace("@${it.key}", it.value)
         }
         return res
+                .replace("ё", "е")
+                .replace("Ё", "Е")
     }
 
 
