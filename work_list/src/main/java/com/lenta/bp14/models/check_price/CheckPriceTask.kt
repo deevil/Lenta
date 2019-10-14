@@ -73,10 +73,10 @@ class CheckPriceTask @Inject constructor(
                     ActualPriceInfo(
                             matNumber = it.matnr,
                             productName = productInfo?.name,
-                            price1 = it.price1.toFloatOrNull(),
-                            price2 = it.price2.toFloatOrNull(),
-                            price3 = it.price3.toFloatOrNull(),
-                            price4 = it.price4.toFloatOrNull()
+                            price1 = it.price1,
+                            price2 = it.price2,
+                            price3 = it.price3,
+                            price4 = it.price4
                     )
             )
         }
@@ -207,10 +207,10 @@ class CheckPriceTask @Inject constructor(
                 actualPriceInfo = ActualPriceInfo(
                         matNumber = matNr,
                         productName = productInfo?.name,
-                        price1 = priceInfo?.price1?.toFloatOrNull(),
-                        price2 = priceInfo?.price2?.toFloatOrNull(),
-                        price3 = priceInfo?.price3?.toFloatOrNull(),
-                        price4 = priceInfo?.price4?.toFloatOrNull()
+                        price1 = priceInfo?.price1,
+                        price2 = priceInfo?.price2,
+                        price3 = priceInfo?.price3,
+                        price4 = priceInfo?.price4
                 ),
                 userPriceInfo = UserPriceInfo(
                         isValidPrice = when (checkPriceInfo?.statCheck) {
@@ -389,23 +389,23 @@ data class CheckPriceResult(
 
 data class ScanPriceInfo(
         override val eanCode: String,
-        override val price: Float?,
-        override val discountCardPrice: Float?
+        override val price: Double?,
+        override val discountCardPrice: Double?
 ) : IScanPriceInfo
 
 data class ActualPriceInfo(
         override val matNumber: String,
         override val productName: String?,
-        override val price1: Float?,
-        override val price2: Float?,
-        override val price3: Float?,
-        override val price4: Float?
+        override val price1: Double?,
+        override val price2: Double?,
+        override val price3: Double?,
+        override val price4: Double?
 ) : IActualPriceInfo {
-    override fun getPrice(): Float? {
+    override fun getPrice(): Double? {
         return price1
     }
 
-    override fun getDiscountCardPrice(): Float? {
+    override fun getDiscountCardPrice(): Double? {
         return when {
             price2 != null && price3 != null && price4 != null -> min(min(price2, price3), price4)
             price2 != null && price3 == null && price4 == null -> price2
@@ -432,19 +432,19 @@ interface ICheckPriceResult {
 
 interface IScanPriceInfo {
     val eanCode: String
-    val price: Float?
-    val discountCardPrice: Float?
+    val price: Double?
+    val discountCardPrice: Double?
 }
 
 interface IActualPriceInfo {
     val matNumber: String
     val productName: String?
-    val price1: Float?
-    val price2: Float?
-    val price3: Float?
-    val price4: Float?
-    fun getPrice(): Float?
-    fun getDiscountCardPrice(): Float?
+    val price1: Double?
+    val price2: Double?
+    val price3: Double?
+    val price4: Double?
+    fun getPrice(): Double?
+    fun getDiscountCardPrice(): Double?
 }
 
 data class UserPriceInfo(override val isValidPrice: Boolean?) : IUserPriceInfo

@@ -30,7 +30,7 @@ fun Double.divideRoubleWithKop(): Pair<String, String> {
     this.divideIntWithDecimal().let {
         return Pair(
                 it.first.toString(),
-                (it.second * 100).roundToInt().toString()
+                String.format("%02d", (it.second * 100).roundToInt())
         )
 
     }

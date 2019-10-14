@@ -7,16 +7,16 @@ data class Price(
         var matnr: String,
 
         @SerializedName("PRICE1")
-        var price1: String,
+        var price1: Double,
 
         @SerializedName("PRICE2")
-        var price2: String,
+        var price2: Double,
 
         @SerializedName("PRICE3")
-        var price3: String,
+        var price3: Double,
 
         @SerializedName("PRICE4")
-        var price4: String
+        var price4: Double
 
 
 )

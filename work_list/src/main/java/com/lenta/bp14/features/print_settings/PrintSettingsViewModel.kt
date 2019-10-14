@@ -2,16 +2,15 @@ package com.lenta.bp14.features.print_settings
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.lenta.bp14.models.check_price.IPriceInfoParser
 import com.lenta.bp14.models.print.IPrintTask
 import com.lenta.bp14.models.print.PriceTagType
 import com.lenta.bp14.models.print.PrinterType
 import com.lenta.bp14.platform.navigation.IScreenNavigator
-import com.lenta.bp14.requests.MatNrParam
-import com.lenta.bp14.requests.ProductInfoNetRequest
-import com.lenta.bp14.requests.ProductInfoParams
-import com.lenta.bp14.requests.ProductInfoResult
+import com.lenta.bp14.requests.*
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
+import com.lenta.shared.requests.combined.scan_info.analyseCode
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.extentions.combineLatest
@@ -36,10 +35,13 @@ class PrintSettingsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInS
     @Inject
     lateinit var printTask: IPrintTask
 
+    @Inject
+    lateinit var priceInfoParser: IPriceInfoParser
 
-    var notSelected = ""
+    private var productInfoResult: MutableLiveData<ProductInfoResult?> = MutableLiveData(null)
 
     val numberField = MutableLiveData("")
+
     private val printerTypes by lazy {
         MutableLiveData<List<PrinterType>>().also {
             viewModelScope.launch {
@@ -57,7 +59,6 @@ class PrintSettingsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInS
         }
     }
 
-    private var productInfoResult: MutableLiveData<ProductInfoResult?> = MutableLiveData(null)
 
     val title = productInfoResult.map {
         it?.productsInfo?.getOrNull(0)?.let {
@@ -78,6 +79,10 @@ class PrintSettingsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInS
 
     private fun getSelectedPrinterType(): PrinterType? {
         return printerTypes.value?.getOrNull(selectedPrinterTypePos.value ?: 0)
+    }
+
+    private fun getSelectedPriceType(): PriceTagType? {
+        return printerPriceTypes.value?.getOrNull(selectedPriceTagTypePos.value ?: 0)
     }
 
 
@@ -133,17 +138,50 @@ class PrintSettingsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInS
     }
 
     override fun onOkInSoftKeyboard(): Boolean {
+        checkCode(numberField.value)
+        return true
+    }
+
+    fun onScanResult(data: String) {
+        checkCode(data)
+    }
+
+
+    private fun checkCode(code: String?) {
+        analyseCode(
+                code = code ?: "",
+                funcForEan = { eanCode ->
+                    searchCode(eanCode = eanCode)
+                },
+                funcForMatNr = { matNr ->
+                    searchCode(matNr = matNr)
+                },
+                funcForPriceQrCode = { qrCode ->
+                    priceInfoParser.getPriceInfoFromRawCode(qrCode)?.let {
+                        searchCode(eanCode = it.eanCode)
+                        return@analyseCode
+                    }
+                    navigator.showGoodNotFound()
+                },
+                funcForSapOrBar = navigator::showTwelveCharactersEntered,
+                funcForNotValidFormat = navigator::showGoodNotFound
+        )
+    }
+
+
+    private fun searchCode(eanCode: String? = null, matNr: String? = null) {
+        require((!eanCode.isNullOrBlank() xor !matNr.isNullOrBlank()))
         viewModelScope.launch {
             navigator.showProgressLoadingData()
+
             productInfoNetRequest(
                     ProductInfoParams(
                             withProductInfo = true.toSapBooleanString(),
                             withAdditionalInf = true.toSapBooleanString(),
                             tkNumber = sessionInfo.market!!,
                             taskType = "ПЦН",
-                            eanList = null,
-                            matNrList = listOf(MatNrParam(numberField.value ?: ""))
-
+                            eanList = if (eanCode != null) listOf(EanParam(eanCode)) else null,
+                            matNrList = if (matNr != null) listOf(MatNrParam(matNr)) else null
                     )
             ).either({
                 productInfoResult.value = null
@@ -153,11 +191,32 @@ class PrintSettingsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInS
                 productInfoResult.value = it
                 true
             }
+
             navigator.hideProgress()
         }
-        return true
+
+
     }
 
+    fun onClickPrint() {
+        viewModelScope.launch {
 
+            navigator.showProgressLoadingData()
+            printTask.printPrice(
+                    ip = ipAddress.value ?: "",
+                    productInfoResult = productInfoResult.value!!,
+                    printerType = getSelectedPrinterType()!!,
+                    isRegular = getSelectedPriceType()!!.isRegular,
+                    copies = numberOfCopies.value?.toIntOrNull() ?: 0
+            ).either({
+                navigator.openAlertScreen(it)
+            }) {
+
+            }
+
+            navigator.hideProgress()
+
+        }
+    }
 }
 

@@ -19,10 +19,10 @@ class CheckPriceNetRequest
             ActualPriceInfo(
                     matNumber = productInfo.matNr,
                     productName = productInfo.name,
-                    price1 = price.price1.toFloatOrNull(),
-                    price2 = price.price2.toFloatOrNull(),
-                    price3 = price.price3.toFloatOrNull(),
-                    price4 = price.price4.toFloatOrNull()
+                    price1 = price.price1,
+                    price2 = price.price2,
+                    price3 = price.price3,
+                    price4 = price.price4
             )
         }
     }

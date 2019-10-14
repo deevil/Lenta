@@ -118,8 +118,8 @@ class GoodInfoPcViewModel : CoreViewModel() {
 }
 
 data class ActualPriceInfoUi(
-        val price1: Float?,
-        val price2: Float?,
-        val price1Promotion: Float?,
-        val price2Sale: Float?
+        val price1: Double?,
+        val price2: Double?,
+        val price1Promotion: Double?,
+        val price2Sale: Double?
 )
