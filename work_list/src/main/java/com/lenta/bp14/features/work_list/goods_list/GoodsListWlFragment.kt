@@ -68,7 +68,6 @@ class GoodsListWlFragment : CoreFragment<FragmentGoodsListWlBinding, GoodsListWl
         }
 
         connectLiveData(vm.deleteButtonEnabled, getBottomToolBarUIModel()!!.uiModelButton3.enabled)
-        connectLiveData(vm.saveButtonEnabled, getBottomToolBarUIModel()!!.uiModelButton5.enabled)
         connectLiveData(vm.thirdButtonVisibility, getBottomToolBarUIModel()!!.uiModelButton3.visibility)
     }
 
@@ -92,13 +91,13 @@ class GoodsListWlFragment : CoreFragment<FragmentGoodsListWlBinding, GoodsListWl
                     false).let { layoutBinding ->
 
                 layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
-                        layoutId = R.layout.item_good,
+                        layoutId = R.layout.item_wl_processing_good,
                         itemId = BR.good,
-                        realisation = object : DataBindingAdapter<ItemGoodBinding> {
-                            override fun onCreate(binding: ItemGoodBinding) {
+                        realisation = object : DataBindingAdapter<ItemWlProcessingGoodBinding> {
+                            override fun onCreate(binding: ItemWlProcessingGoodBinding) {
                             }
 
-                            override fun onBind(binding: ItemGoodBinding, position: Int) {
+                            override fun onBind(binding: ItemWlProcessingGoodBinding, position: Int) {
                                 processingRecyclerViewKeyHandler?.let {
                                     binding.root.isSelected = it.isSelected(position)
                                 }

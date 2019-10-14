@@ -196,7 +196,7 @@ class JobCardViewModel : CoreViewModel() {
                                 TaskInfoParams(
                                         taskNumber = taskFromTaskList!!.taskId,
                                         ip = deviceInfo.getDeviceIp(),
-                                        withProductInfo = true.toSapBooleanString(),
+                                        withProductInfo = false.toSapBooleanString(),
                                         mode = "1"
                                 )
                         )
@@ -215,7 +215,7 @@ class JobCardViewModel : CoreViewModel() {
                                             comment = comment.value ?: "",
                                             description = description.value ?: "",
                                             isStrictList = taskFromTaskList?.isStrict ?: false,
-                                            additionalTaskInfo = result
+                                            taskInfoResult = result
                                     )
                             )
                             screenNavigator.openGoodsListWlScreen()

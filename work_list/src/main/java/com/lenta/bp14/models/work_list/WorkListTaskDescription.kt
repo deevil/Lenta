@@ -10,5 +10,5 @@ class WorkListTaskDescription(
         override val comment: String,
         override val description: String,
         override val isStrictList: Boolean,
-        val additionalTaskInfo: WorkListTaskInfoResult?
+        val taskInfoResult: WorkListTaskInfoResult?
 ) : ITaskDescription

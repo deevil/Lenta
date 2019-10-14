@@ -17,6 +17,7 @@ import com.lenta.shared.models.core.MatrixType
 import com.lenta.shared.models.core.Uom
 import com.lenta.shared.platform.time.ITimeMonitor
 import com.lenta.shared.utilities.extentions.getFormattedDate
+import com.lenta.shared.utilities.extentions.isSapTrue
 import com.lenta.shared.utilities.extentions.map
 import java.util.*
 import javax.inject.Inject
@@ -30,11 +31,46 @@ class WorkListTask @Inject constructor(
         private val gson: Gson
 ) : IWorkListTask {
 
+    private val additionalInfo by lazy {
+        taskDescription.taskInfoResult?.additionalInfoList?.map { it.matnr to it }?.toMap()
+                ?: emptyMap()
+    }
+
+    private val places by lazy {
+        taskDescription.taskInfoResult?.places?.map { it.matnr to it }?.toMap() ?: emptyMap()
+    }
+
+    private val suppliers by lazy {
+        taskDescription.taskInfoResult?.suppliers?.map { it.matnr to it }?.toMap() ?: emptyMap()
+    }
+
+    private val stocks by lazy {
+        taskDescription.taskInfoResult?.stocks?.map { it.matnr to it }?.toMap() ?: emptyMap()
+    }
+
     override val processing = MutableLiveData<MutableList<Good>>(mutableListOf())
     override val processed = MutableLiveData<MutableList<Good>>(mutableListOf())
     override val search = MutableLiveData<MutableList<Good>>(mutableListOf())
 
     override var currentGood = MutableLiveData<Good>()
+
+    // Общий список товаров
+    override val goods = MutableLiveData<MutableList<Good>>(mutableListOf())
+
+    override suspend fun loadTaskList() {
+        val goodsList = mutableListOf<Good>()
+        taskDescription.taskInfoResult?.positions?.let {
+            it.forEach { position ->
+                val good = getGoodByMaterial(position.matNr)
+                if (good != null){
+                    good.isProcessed = position.isProcessed.isSapTrue()
+                    goodsList.add(good)
+                }
+            }
+        }
+
+        goods.value = goodsList
+    }
 
     override suspend fun addGood(good: Good) {
         processed.value?.find { it.ean == good.ean && it.material == good.material }?.let { existGood ->
@@ -147,6 +183,9 @@ interface IWorkListTask : ITask {
     val search: MutableLiveData<MutableList<Good>>
     var currentGood: MutableLiveData<Good>
 
+    val goods: MutableLiveData<MutableList<Good>>
+
+    suspend fun loadTaskList()
     suspend fun getGoodByMaterial(material: String): Good?
     suspend fun addGood(good: Good)
 
@@ -175,6 +214,7 @@ data class Good(
         val shelfLifeType: MutableLiveData<List<String>> = MutableLiveData(emptyList()),
         val comments: MutableLiveData<List<String>> = MutableLiveData(emptyList()),
         val options: GoodOptions,
+        var isProcessed: Boolean = false,
 
         var additional: MutableLiveData<AdditionalGoodInfo> = MutableLiveData(),
         val sales: MutableLiveData<SalesStatistics> = MutableLiveData(),

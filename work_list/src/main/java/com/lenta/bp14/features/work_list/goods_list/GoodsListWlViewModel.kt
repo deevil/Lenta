@@ -51,8 +51,17 @@ class GoodsListWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     val numberField: MutableLiveData<String> = MutableLiveData("")
     val requestFocusToNumberField: MutableLiveData<Boolean> = MutableLiveData()
 
-    val processingGoods = MutableLiveData<List<Good>>()
-    val searchGoods = MutableLiveData<List<Good>>()
+    val processingGoods: MutableLiveData<List<ProcessingListUi>> by lazy {
+        task.goods.map { list ->
+            list?.filter { !it.isProcessed }?.mapIndexed { index, good ->
+                ProcessingListUi(
+                        position = (index + 1).toString(),
+                        material = good.material,
+                        name = good.getFormattedMaterialWithName()
+                )
+            }
+        }
+    }
 
     val processedGoods: MutableLiveData<List<ProcessedListUi>> by lazy {
         task.processed.map { list: MutableList<Good>? ->
@@ -64,12 +73,15 @@ class GoodsListWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
 
                 ProcessedListUi(
                         position = (index + 1).toString(),
+                        material = good.material,
                         name = good.getFormattedMaterialWithName(),
                         quantity = total.dropZeros()
                 )
             }
         }
     }
+
+    val searchGoods = MutableLiveData<List<Good>>()
 
     private val selectedItemOnCurrentTab: MutableLiveData<Boolean> = selectedPage
             .combineLatest(processedSelectionsHelper.selectedPositions)
@@ -80,16 +92,21 @@ class GoodsListWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
             }
 
     val deleteButtonEnabled = selectedItemOnCurrentTab.map { it }
-    val saveButtonEnabled = processingGoods.map { it?.isNotEmpty() ?: false }
-
     val thirdButtonVisibility = selectedPage.map { it != GoodsListTab.PROCESSING.position }
+
+    // -----------------------------
 
     init {
         viewModelScope.launch {
+            task.loadTaskList()
+            task.currentGood.value = task.goods.value?.get(0)
+
             requestFocusToNumberField.value = true
             taskName.value = "${task.getTaskType().taskType} // ${task.getTaskName()}"
         }
     }
+
+    // -----------------------------
 
     override fun onPageSelected(position: Int) {
         selectedPage.value = position
@@ -173,7 +190,22 @@ class GoodsListWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     }
 
     fun onClickItemPosition(position: Int) {
-        navigator.openGoodInfoWlScreen()
+        when(getCorrectedPagePosition(selectedPage.value)){
+            0 -> processingGoods.value?.get(position)?.material
+            1 -> processedGoods.value?.get(position)?.material
+            2 -> searchGoods.value?.get(position)?.material
+            else -> null
+        }?.let { material ->
+            viewModelScope.launch {
+                navigator.showProgressLoadingData()
+                task.getGoodByMaterial(material)?.let { good ->
+                    task.addGood(good)
+                    navigator.hideProgress()
+                    navigator.openGoodInfoWlScreen()
+                }
+                navigator.hideProgress()
+            }
+        }
     }
 
     fun getPagesCount(): Int {
@@ -195,8 +227,15 @@ class GoodsListWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
 
 }
 
+data class ProcessingListUi(
+        val position: String,
+        val material: String,
+        val name: String
+)
+
 data class ProcessedListUi(
         val position: String,
+        val material: String,
         val name: String,
         val quantity: String
 )
