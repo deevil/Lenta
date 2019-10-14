@@ -226,7 +226,7 @@ class PrintSettingsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInS
             ).either({
                 navigator.openAlertScreen(it)
             }) {
-
+                navigator.showPriceTagsSubmitted()
             }
 
             navigator.hideProgress()
