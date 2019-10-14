@@ -14,6 +14,7 @@ import com.lenta.shared.print.IPrintPriceNetService
 import com.lenta.shared.print.PrintPriceInfo
 import com.lenta.shared.print.PrintTemplate
 import com.lenta.shared.utilities.extentions.isSapTrue
+import com.lenta.shared.utilities.extentions.toNullIfEmpty
 import com.mobrun.plugin.api.HyperHive
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.withContext
@@ -29,7 +30,7 @@ class PrintTask @Inject constructor(
 ) : IPrintTask {
 
     private val emptyPriceTag = PriceTagType(
-            id = "", name = "Не выбранно", isRegular = false
+            id = "", name = "Не выбранно", isRegular = null
     )
 
     private val emptyPrinterType = PrinterType(
@@ -89,9 +90,9 @@ class PrintTask @Inject constructor(
                     matNumber = serverPriceInfo.matnr.takeLast(6),
                     productName = productInfo.name,
                     price1 = serverPriceInfo.price1,
-                    price2 = serverPriceInfo.price2,
-                    price3 = serverPriceInfo.price3,
-                    price4 = serverPriceInfo.price4
+                    price2 = serverPriceInfo.price2.toNullIfEmpty(),
+                    price3 = serverPriceInfo.price3.toNullIfEmpty(),
+                    price4 = serverPriceInfo.price4.toNullIfEmpty()
             )
 
             var price2 = if (isRegular) actualPriceInfo.price2
@@ -158,7 +159,7 @@ data class PriceTagType(
         /**
          * Признак – цена товара регулярная
          */
-        val isRegular: Boolean
+        val isRegular: Boolean?
 )
 
 data class PrinterType(

@@ -4,25 +4,25 @@ import com.google.gson.annotations.SerializedName
 
 data class Price(
         @SerializedName("MATNR")
-        var matnr: String,
+        val matnr: String,
 
         @SerializedName("PRICE1")
-        var price1: Double,
+        val price1: Double,
 
         @SerializedName("PRICE2")
-        var price2: Double,
+        val price2: Double,
 
         @SerializedName("PRICE3")
-        var price3: Double,
+        val price3: Double,
 
         @SerializedName("PRICE4")
-        var price4: Double,
+        val price4: Double,
 
         @SerializedName("START_PROMO")
-        var startPromo: String,
+        val startPromo: String,
 
         @SerializedName("END_PROMO")
-        var endPromo: String
+        val endPromo: String
 
 
 )

@@ -15,6 +15,7 @@ import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.map
+import com.lenta.shared.utilities.extentions.toNullIfEmpty
 import com.lenta.shared.utilities.extentions.toSapBooleanString
 import com.lenta.shared.view.OnPositionClickListener
 import kotlinx.coroutines.launch
@@ -189,6 +190,11 @@ class PrintSettingsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInS
             }) {
                 Logg.d { "productInfoResult: $it" }
                 productInfoResult.value = it
+
+                it.prices.getOrNull(0)?.let { priceInfo ->
+                    setLabel(isRegular = priceInfo.price3.toNullIfEmpty() == null && priceInfo.price4.toNullIfEmpty() == null)
+                }
+
                 true
             }
 
@@ -196,6 +202,15 @@ class PrintSettingsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInS
         }
 
 
+    }
+
+    private fun setLabel(isRegular: Boolean) {
+        printerPriceTypes
+                .value?.indexOfFirst { it.isRegular == isRegular }?.let { pos ->
+            if (pos >= 0) {
+                selectedPriceTagTypePos.postValue(pos)
+            }
+        }
     }
 
     fun onClickPrint() {
@@ -206,7 +221,7 @@ class PrintSettingsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInS
                     ip = ipAddress.value ?: "",
                     productInfoResult = productInfoResult.value!!,
                     printerType = getSelectedPrinterType()!!,
-                    isRegular = getSelectedPriceType()!!.isRegular,
+                    isRegular = getSelectedPriceType()!!.isRegular?: false,
                     copies = numberOfCopies.value?.toIntOrNull() ?: 0
             ).either({
                 navigator.openAlertScreen(it)

@@ -20,6 +20,7 @@ import com.lenta.shared.functional.Either
 import com.lenta.shared.models.core.StateFromToString
 import com.lenta.shared.utilities.extentions.isSapTrue
 import com.lenta.shared.utilities.extentions.map
+import com.lenta.shared.utilities.extentions.toNullIfEmpty
 import javax.inject.Inject
 import kotlin.math.min
 
@@ -74,9 +75,9 @@ class CheckPriceTask @Inject constructor(
                             matNumber = it.matnr,
                             productName = productInfo?.name,
                             price1 = it.price1,
-                            price2 = it.price2,
-                            price3 = it.price3,
-                            price4 = it.price4
+                            price2 = it.price2.toNullIfEmpty(),
+                            price3 = it.price3.toNullIfEmpty(),
+                            price4 = it.price4.toNullIfEmpty()
                     )
             )
         }
@@ -208,9 +209,9 @@ class CheckPriceTask @Inject constructor(
                         matNumber = matNr,
                         productName = productInfo?.name,
                         price1 = priceInfo?.price1,
-                        price2 = priceInfo?.price2,
-                        price3 = priceInfo?.price3,
-                        price4 = priceInfo?.price4
+                        price2 = priceInfo?.price2.toNullIfEmpty(),
+                        price3 = priceInfo?.price3.toNullIfEmpty(),
+                        price4 = priceInfo?.price4.toNullIfEmpty()
                 ),
                 userPriceInfo = UserPriceInfo(
                         isValidPrice = when (checkPriceInfo?.statCheck) {
