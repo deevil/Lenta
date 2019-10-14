@@ -133,8 +133,8 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
     init {
         viewModelScope.launch {
             val timeInMillis = timeMonitor.getUnixTime()
-            taskManager.getReceivingTask()?.taskDescription?.nextStatusDate = DateTimeUtil.formatDate(timeInMillis, Constants.DATE_FORMAT_ddmmyy)
-            taskManager.getReceivingTask()?.taskDescription?.nextStatusTime = DateTimeUtil.formatDate(timeInMillis, Constants.TIME_FORMAT_HHmm)
+            taskManager.getReceivingTask()?.taskDescription?.nextStatusDate = DateTimeUtil.formatDate(timeInMillis, Constants.DATE_FORMAT_yyyy_mm_dd)
+            taskManager.getReceivingTask()?.taskDescription?.nextStatusTime = DateTimeUtil.formatDate(timeInMillis, Constants.TIME_FORMAT_hhmmss)
         }
     }
 
@@ -165,7 +165,20 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
         screenNavigator.openChangeDateTimeScreen(ChangeDateTimeMode.NextStatus)
     }
 
-    // TODO: Implement the ViewModel
+    fun onClickNext() {
+        when (taskManager.getReceivingTask()?.taskDescription?.currentStatus) {
+            TaskStatus.Ordered, TaskStatus.Traveling -> {
+                screenNavigator.openLoadingRegisterArrivalScreen()
+            }
+            TaskStatus.Arrived -> {
+                screenNavigator.openStartReviseLoadingScreen()
+            }
+        }
+    }
+
+    fun onBackPressed() {
+        screenNavigator.openUnlockTaskLoadingScreen()
+    }
 
     data class NotificationVM(
             val number: String,

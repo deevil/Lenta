@@ -3,7 +3,7 @@ package com.lenta.inventory.models.task
 import com.lenta.inventory.models.RecountType
 import com.lenta.inventory.models.repositories.ITaskRepository
 import com.lenta.inventory.requests.network.*
-import com.lenta.shared.utilities.date_time.DateTimeUtil.convertMilisecondsToHHMm
+import com.lenta.shared.utilities.date_time.DateTimeUtil.convertMillisecondsToHHMm
 
 class InventoryTask(val taskDescription: TaskDescription, val taskRepository: ITaskRepository) {
 
@@ -192,7 +192,7 @@ class InventoryTask(val taskDescription: TaskDescription, val taskRepository: IT
             return ""
         }
 
-        return convertMilisecondsToHHMm(elapsedTimeInMillis)
+        return convertMillisecondsToHHMm(elapsedTimeInMillis)
     }
 
     fun isChanged(): Boolean {

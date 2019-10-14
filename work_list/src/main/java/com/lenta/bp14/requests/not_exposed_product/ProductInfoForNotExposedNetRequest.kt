@@ -1,7 +1,9 @@
 package com.lenta.bp14.requests.not_exposed_product
 
-import com.lenta.bp14.models.general.TaskTypes
+import com.lenta.bp14.models.general.AppTaskTypes
 import com.lenta.bp14.requests.*
+import com.lenta.bp14.requests.pojo.ProductInfo
+import com.lenta.bp14.requests.pojo.Stock
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.fmp.resources.dao_ext.getUomInfo
 import com.lenta.shared.fmp.resources.fast.ZmpUtz07V001
@@ -13,7 +15,7 @@ import com.mobrun.plugin.api.HyperHive
 import javax.inject.Inject
 
 class ProductInfoForNotExposedNetRequest
-@Inject constructor(private val productInfoNetRequest: ProductInfoNetRequest, hyperHive: HyperHive) : UseCase<GoodInfo, NotExposedInfoRequestParams>() {
+@Inject constructor(private val productInfoNetRequest: ProductInfoNetRequest, hyperHive: HyperHive) : IProductInfoForNotExposedNetRequest {
 
     val zmpUtz07V001 by lazy {
         ZmpUtz07V001(hyperHive)
@@ -36,10 +38,12 @@ class ProductInfoForNotExposedNetRequest
 
 }
 
+interface IProductInfoForNotExposedNetRequest : UseCase<GoodInfo, NotExposedInfoRequestParams>
+
 private fun NotExposedInfoRequestParams.toCommonParams(): ProductInfoParams {
     require((!ean.isNullOrBlank() xor !matNr.isNullOrBlank()))
     return ProductInfoParams(
-            taskType = TaskTypes.NotExposedProducts.taskType.taskType,
+            taskType = AppTaskTypes.NotExposedProducts.taskType,
             withProductInfo = "X",
             withAdditionalInf = "X",
             tkNumber = tkNumber,

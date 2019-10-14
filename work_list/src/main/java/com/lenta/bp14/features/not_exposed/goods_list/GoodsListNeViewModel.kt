@@ -4,17 +4,20 @@ import androidx.lifecycle.LiveData
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.lenta.bp14.features.common_ui_model.SimpleProductUi
+import com.lenta.bp14.models.IGeneralTaskManager
+import com.lenta.bp14.models.check_price.IPriceInfoParser
 import com.lenta.bp14.models.filter.FilterFieldType
 import com.lenta.bp14.models.filter.FilterParameter
 import com.lenta.bp14.models.data.GoodsListTab
-import com.lenta.bp14.models.data.pojo.Good
 import com.lenta.bp14.models.getTaskName
 import com.lenta.bp14.models.not_exposed_products.INotExposedProductsTask
 import com.lenta.bp14.models.not_exposed_products.repo.INotExposedProductInfo
 import com.lenta.bp14.platform.navigation.IScreenNavigator
-import com.lenta.bp14.requests.ProductInfoNetRequest
-import com.lenta.shared.requests.combined.scan_info.ScanInfoRequest
+import com.lenta.bp14.requests.not_exposed_product.NotExposedSendReportNetRequest
+import com.lenta.shared.platform.device_info.DeviceInfo
 import com.lenta.shared.requests.combined.scan_info.analyseCode
+import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.databinding.PageSelectionListener
@@ -33,10 +36,16 @@ class GoodsListNeViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     lateinit var task: INotExposedProductsTask
 
     @Inject
-    lateinit var scanInfoRequest: ScanInfoRequest
+    lateinit var deviceInfo: DeviceInfo
 
     @Inject
-    lateinit var productInfoNetRequest: ProductInfoNetRequest
+    lateinit var sentReportRequest: NotExposedSendReportNetRequest
+
+    @Inject
+    lateinit var generalTaskManager: IGeneralTaskManager
+
+    @Inject
+    lateinit var priceInfoParser: IPriceInfoParser
 
     val onOkFilterListener = object : OnOkInSoftKeyboardListener {
         override fun onOkInSoftKeyboard(): Boolean {
@@ -61,7 +70,17 @@ class GoodsListNeViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
 
     val requestFocusToNumberField: MutableLiveData<Boolean> = MutableLiveData()
 
-    val processingGoods = MutableLiveData<List<Good>>()
+    val processingGoods by lazy {
+        task.getToProcessingProducts().map {
+            it?.mapIndexed { index, productInfo ->
+                SimpleProductUi(
+                        position = index + 1,
+                        matNr = productInfo.matNr,
+                        name = "${productInfo.matNr.takeLast(6)} ${productInfo.name}"
+                )
+            }
+        }
+    }
 
     private val toUiFunc = { products: List<INotExposedProductInfo>? ->
         products?.reversed()?.mapIndexed { index, productInfo ->
@@ -132,6 +151,10 @@ class GoodsListNeViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
                     searchCode(matNr = matNr)
                 },
                 funcForPriceQrCode = { qrCode ->
+                    priceInfoParser.getPriceInfoFromRawCode(qrCode)?.let {
+                        searchCode(eanCode = it.eanCode)
+                        return@analyseCode
+                    }
                     navigator.showGoodNotFound()
                 },
                 funcForSapOrBar = navigator::showTwelveCharactersEntered,
@@ -159,8 +182,35 @@ class GoodsListNeViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     }
 
 
-
     fun onClickSave() {
+        if (task.isHaveDiscrepancies()) {
+            navigator.openListOfDifferencesScreen {
+                showConfirmationForSave()
+            }
+        } else {
+            showConfirmationForSave()
+        }
+    }
+
+    private fun showConfirmationForSave() {
+        navigator.showSetTaskToStatusCalculated {
+            viewModelScope.launch {
+                navigator.showProgressLoadingData()
+                sentReportRequest(task.getReportData(
+                        ip = deviceInfo.getDeviceIp(),
+                        isNotFinish = false
+                )).either(
+                        {
+                            navigator.openAlertScreen(failure = it)
+                        }
+                ) {
+                    Logg.d { "SentReportResult: $it" }
+                    generalTaskManager.clearCurrentTask(sentReportResult = it)
+                    navigator.openReportResultScreen()
+                }
+                navigator.hideProgress()
+            }
+        }
 
     }
 
@@ -184,6 +234,11 @@ class GoodsListNeViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     fun onClickItemPosition(position: Int) {
         val correctedPage = correctedSelectedPage.value
         when (correctedPage) {
+            0 -> {
+                processingGoods.value?.getOrNull(position)?.let {
+                    checkCode(it.matNr)
+                }
+            }
             1 -> {
                 (processedGoods.value)?.getOrNull(position)?.let {
                     checkCode(it.matNr)
@@ -217,6 +272,10 @@ class GoodsListNeViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
                 ?: ""))
     }
 
+    fun onScanResult(data: String) {
+        checkCode(data)
+    }
+
 }
 
 
@@ -227,3 +286,4 @@ data class NotExposedProductUi(
         val quantity: String?,
         val isEmptyPlaceMarked: Boolean?
 )
+

@@ -11,6 +11,8 @@ import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.map
+import com.lenta.shared.utilities.extentions.sumWith
+import com.lenta.shared.utilities.extentions.dropZeros
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -35,7 +37,7 @@ class GoodDetailsViewModel : CoreViewModel(), PageSelectionListener {
             list?.map { result ->
                 val key = result.getKeyFromDates()
                 combinedResults[key] = if (combinedResults.containsKey(key)) {
-                    val totalQuantity = combinedResults[key]!!.quantity + result.quantity
+                    val totalQuantity = combinedResults[key]!!.quantity.sumWith(result.quantity)
                     combinedResults[key]!!.copy(quantity = totalQuantity)
                 } else result
             }
@@ -46,7 +48,7 @@ class GoodDetailsViewModel : CoreViewModel(), PageSelectionListener {
                         expirationDate = scanResult.getFormattedExpirationDate(),
                         productionDate = scanResult.getFormattedProductionDate(),
                         productionDateVisibility = scanResult.productionDate != null,
-                        quantity = "${scanResult.quantity} ${task.currentGood.value!!.getUnits()}"
+                        quantity = "${scanResult.quantity.dropZeros()} ${task.currentGood.value!!.getUnits()}"
                 )
             }
         }
@@ -58,7 +60,7 @@ class GoodDetailsViewModel : CoreViewModel(), PageSelectionListener {
             list?.map { result ->
                 val key = result.comment
                 combinedResults[key] = if (combinedResults.containsKey(key)) {
-                    val totalQuantity = combinedResults[key]!!.quantity + result.quantity
+                    val totalQuantity = combinedResults[key]!!.quantity.sumWith(result.quantity)
                     combinedResults[key]!!.copy(quantity = totalQuantity)
                 } else result
             }
@@ -67,7 +69,7 @@ class GoodDetailsViewModel : CoreViewModel(), PageSelectionListener {
                 ItemCommentUi(
                         position = (index + 1).toString(),
                         comment = scanResult.comment,
-                        quantity = "${scanResult.quantity} ${task.currentGood.value!!.getUnits()}"
+                        quantity = "${scanResult.quantity.dropZeros()} ${task.currentGood.value!!.getUnits()}"
                 )
             }
         }

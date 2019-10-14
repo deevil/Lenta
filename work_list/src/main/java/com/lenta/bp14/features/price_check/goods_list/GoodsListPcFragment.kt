@@ -1,7 +1,6 @@
 package com.lenta.bp14.features.price_check.goods_list
 
 import com.lenta.bp14.R
-import com.lenta.bp14.platform.extentions.getAppComponent
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
@@ -15,6 +14,8 @@ import android.widget.AdapterView
 import androidx.databinding.DataBindingUtil
 import com.lenta.bp14.BR
 import com.lenta.bp14.databinding.*
+import com.lenta.bp14.di.CheckPriceComponent
+import com.lenta.shared.di.CoreInjectHelper
 import com.lenta.shared.keys.KeyCode
 import com.lenta.shared.keys.OnKeyDownListener
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
@@ -40,7 +41,7 @@ class GoodsListPcFragment : CoreFragment<FragmentGoodsListPcBinding, GoodsListPc
 
     override fun getViewModel(): GoodsListPcViewModel {
         provideViewModel(GoodsListPcViewModel::class.java).let {
-            getAppComponent()?.inject(it)
+            CoreInjectHelper.getComponent(CheckPriceComponent::class.java)!!.inject(it)
             return it
         }
     }
@@ -86,13 +87,13 @@ class GoodsListPcFragment : CoreFragment<FragmentGoodsListPcBinding, GoodsListPc
                     false).let { layoutBinding ->
 
                 layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
-                        layoutId = R.layout.item_good,
-                        itemId = BR.good,
-                        realisation = object : DataBindingAdapter<ItemGoodBinding> {
-                            override fun onCreate(binding: ItemGoodBinding) {
+                        layoutId = R.layout.item_simple_good,
+                        itemId = BR.vm,
+                        realisation = object : DataBindingAdapter<ItemSimpleGoodBinding> {
+                            override fun onCreate(binding: ItemSimpleGoodBinding) {
                             }
 
-                            override fun onBind(binding: ItemGoodBinding, position: Int) {
+                            override fun onBind(binding: ItemSimpleGoodBinding, position: Int) {
                                 processingRecyclerViewKeyHandler?.let {
                                     binding.root.isSelected = it.isSelected(position)
                                 }

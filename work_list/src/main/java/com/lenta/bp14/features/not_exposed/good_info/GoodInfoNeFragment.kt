@@ -11,13 +11,15 @@ import com.lenta.bp14.databinding.FragmentGoodInfoNeBinding
 import com.lenta.bp14.databinding.ItemStorageStockBinding
 import com.lenta.bp14.databinding.LayoutNeGoodInfoCommonBinding
 import com.lenta.bp14.databinding.LayoutNeGoodInfoStocksBinding
-import com.lenta.bp14.platform.extentions.getAppComponent
+import com.lenta.bp14.di.NotExposedComponent
+import com.lenta.shared.di.CoreInjectHelper.getComponent
 import com.lenta.shared.platform.activity.OnBackPresserListener
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
+import com.lenta.shared.scan.OnScanResultListener
 import com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig
 import com.lenta.shared.utilities.databinding.ViewPagerSettings
 import com.lenta.shared.utilities.extentions.connectLiveData
@@ -25,7 +27,7 @@ import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
 import com.lenta.shared.utilities.extentions.provideViewModel
 
 class GoodInfoNeFragment : CoreFragment<FragmentGoodInfoNeBinding, GoodInfoNeViewModel>(),
-        ViewPagerSettings, ToolbarButtonsClickListener, OnBackPresserListener {
+        ViewPagerSettings, ToolbarButtonsClickListener, OnBackPresserListener, OnScanResultListener {
 
     override fun getLayoutId(): Int = R.layout.fragment_good_info_ne
 
@@ -33,7 +35,7 @@ class GoodInfoNeFragment : CoreFragment<FragmentGoodInfoNeBinding, GoodInfoNeVie
 
     override fun getViewModel(): GoodInfoNeViewModel {
         provideViewModel(GoodInfoNeViewModel::class.java).let {
-            getAppComponent()?.inject(it)
+            getComponent(NotExposedComponent::class.java)!!.inject(it)
             return it
         }
     }
@@ -112,6 +114,10 @@ class GoodInfoNeFragment : CoreFragment<FragmentGoodInfoNeBinding, GoodInfoNeVie
 
     override fun onBackPressed(): Boolean {
         return vm.onBackPressed()
+    }
+
+    override fun onScanResult(data: String) {
+        vm.onScanResult(data)
     }
 
 }

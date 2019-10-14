@@ -59,15 +59,17 @@
 
                     <ImageButton
                         android:id="@+id/btn_reduce_quantity"
-                        android:layout_width="37dp"
+                        android:layout_width="40dp"
                         android:layout_height="40dp"
                         android:layout_marginEnd="8dp"
+                        android:background="@drawable/bg_border_rectangle"
                         android:src="@drawable/ic_remove_white_24dp"/>
 
                     <ImageButton
                         android:id="@+id/btn_increase_quantity"
-                        android:layout_width="37dp"
+                        android:layout_width="40dp"
                         android:layout_height="40dp"
+                        android:background="@drawable/bg_border_rectangle"
                         android:layout_marginEnd="8dp"
                         android:src="@drawable/ic_add_white_24dp"/>
 
@@ -103,7 +105,7 @@
                     <com.lenta.shared.view.ClickableSpinner
                         android:id="@+id/spin_printer"
                         style="@style/CellSpinnerStyle"
-                        android:entries="@array/printer_name"
+                        app:items="@{vm.printerTypesTitles}"
                         app:onPositionClickListener="@{vm}"
                         app:position="@{vm.selectedPrinterType}"/>
 
@@ -139,7 +141,7 @@
                     <com.lenta.shared.view.ClickableSpinner
                         android:id="@+id/spin_price_tag"
                         style="@style/CellSpinnerStyle"
-                        android:entries="@array/price_tag_name"
+                        app:items="@{vm.printerPriceTypesTitles}"
                         app:position="@{vm.selectedPriceTagType}"/>
 
                 </LinearLayout>
@@ -210,6 +212,8 @@
                 android:layout_margin="8dp"
                 android:layout_weight="1"
                 android:digits="0123456789"
+                android:maxLines="1"
+                android:ellipsize="end"
                 android:hint="@string/enter_item_number_or_barcode"
                 android:imeOptions="actionGo"
                 android:inputType="number"
@@ -231,7 +235,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
                 android:background="?selectableItemBackground"
-                android:onClick="@{(v) -> vm.navigator.openQrCodeInfoScreen()}"
+                android:onClick="@{(v) -> vm.navigator.openEanInfoScreen()}"
                 android:src="@drawable/ic_scan_barcode_48dp"/>
 
         </LinearLayout>

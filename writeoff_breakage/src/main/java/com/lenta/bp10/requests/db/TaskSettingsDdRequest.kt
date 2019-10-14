@@ -8,7 +8,7 @@ import com.mobrun.plugin.api.HyperHive
 import javax.inject.Inject
 
 class TaskSettingsDbRequest
-@Inject constructor(private val hyperHive: HyperHive) : UseCase<List<ZmpUtz29V001Rfc.ItemLocal_ET_TASK_TPS>, Nothing?>() {
+@Inject constructor(private val hyperHive: HyperHive) : UseCase<List<ZmpUtz29V001Rfc.ItemLocal_ET_TASK_TPS>, Nothing?> {
     override suspend fun run(params: Nothing?): Either<Failure, List<ZmpUtz29V001Rfc.ItemLocal_ET_TASK_TPS>> {
         @Suppress("INACCESSIBLE_TYPE")
         return Either.Right(ZmpUtz29V001Rfc(hyperHive).localHelper_ET_TASK_TPS.all)

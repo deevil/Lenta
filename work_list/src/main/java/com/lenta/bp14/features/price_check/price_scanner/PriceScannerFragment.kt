@@ -5,9 +5,10 @@ import android.os.Bundle
 import android.view.View
 import com.lenta.bp14.R
 import com.lenta.bp14.databinding.FragmentPriceScannerBinding
+import com.lenta.bp14.di.CheckPriceComponent
 import com.lenta.bp14.ml.FireBaseMlScanHelper
 import com.lenta.bp14.ml.ScanType
-import com.lenta.bp14.platform.extentions.getAppComponent
+import com.lenta.shared.di.CoreInjectHelper
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
@@ -28,7 +29,7 @@ class PriceScannerFragment : CoreFragment<FragmentPriceScannerBinding, PriceScan
 
     override fun getViewModel(): PriceScannerViewModel {
         provideViewModel(PriceScannerViewModel::class.java).let {
-            getAppComponent()?.inject(it)
+            CoreInjectHelper.getComponent(CheckPriceComponent::class.java)!!.inject(it)
             return it
         }
     }

@@ -3,22 +3,23 @@ package com.lenta.bp14.platform.databinding
 import android.widget.ImageView
 import androidx.databinding.BindingAdapter
 import com.lenta.bp14.R
+import com.lenta.bp14.features.task_list.TaskBlockingStatus
 import com.lenta.bp14.models.data.GoodType
 import com.lenta.bp14.models.data.getDescriptionResId
 import com.lenta.bp14.models.data.pojo.PrintStatus
-import com.lenta.bp14.models.data.pojo.TaskStatus
 import com.lenta.shared.utilities.databinding.dataBindingHelpHolder
 import com.lenta.shared.utilities.extentions.setInvisible
 import com.lenta.shared.utilities.extentions.setVisible
 
 @BindingAdapter("taskStatusIcon")
-fun setTaskStatusIcon(imageView: ImageView, taskStatus: TaskStatus) {
-    taskStatus.let {
+fun setTaskStatusIcon(imageView: ImageView, taskBlockingStatus: TaskBlockingStatus) {
+    taskBlockingStatus.let {
         when (it) {
-            TaskStatus.STARTED -> imageView.setImageResource(R.drawable.ic_play_arrow_dark_24dp)
-            TaskStatus.SELF_BLOCK -> imageView.setImageResource(R.drawable.ic_lock_open_dark_24dp)
-            TaskStatus.BLOCK -> imageView.setImageResource(R.drawable.ic_processed_status_dark_24dp)
+            TaskBlockingStatus.NOT_BLOCKED -> imageView.setImageResource(R.drawable.ic_play_arrow_white_24dp)
+            TaskBlockingStatus.SELF_BLOCK -> imageView.setImageResource(R.drawable.ic_lock_open_dark_24dp)
+            TaskBlockingStatus.BLOCK -> imageView.setImageResource(R.drawable.ic_processed_status_dark_24dp)
         }
+        imageView.setInvisible(it == TaskBlockingStatus.NOT_BLOCKED)
     }
 }
 

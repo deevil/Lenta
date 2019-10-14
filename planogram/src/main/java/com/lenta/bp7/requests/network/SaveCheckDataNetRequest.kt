@@ -10,14 +10,14 @@ import javax.inject.Inject
 
 
 class SaveSelfControlDataNetRequest
-@Inject constructor(private val fmpRequestsHelper: FmpRequestsHelper) : UseCase<SaveCheckDataRestInfo, SaveCheckDataParams>() {
+@Inject constructor(private val fmpRequestsHelper: FmpRequestsHelper) : UseCase<SaveCheckDataRestInfo, SaveCheckDataParams> {
     override suspend fun run(params: SaveCheckDataParams): Either<Failure, SaveCheckDataRestInfo> {
         return fmpRequestsHelper.restRequest("SQL_Q_01Mp", params, SaveCheckDataStatus::class.java) // Сервер самоконтроля
     }
 }
 
 class SaveExternalAuditDataNetRequest
-@Inject constructor(private val fmpRequestsHelper: FmpRequestsHelper) : UseCase<SaveCheckDataRestInfo, SaveCheckDataParams>() {
+@Inject constructor(private val fmpRequestsHelper: FmpRequestsHelper) : UseCase<SaveCheckDataRestInfo, SaveCheckDataParams> {
     override suspend fun run(params: SaveCheckDataParams): Either<Failure, SaveCheckDataRestInfo> {
         return fmpRequestsHelper.restRequest("SQL_P_01Mp", params, SaveCheckDataStatus::class.java) // Сервер внешнего аудита
     }

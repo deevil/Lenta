@@ -3,7 +3,7 @@ package com.lenta.bp9.model.task.revise
 import com.google.gson.annotations.SerializedName
 import com.lenta.shared.utilities.extentions.toStringFormatted
 
-//ES_TTN_CHK - Структура сверки накладной
+//ET_VBELN_POS - Структура сверки накладной
 data class InvoiceRevise(
         val numberTTN: String, // Номер ТТН/Номер ГТД
         val dateTTN: String, // Дата
@@ -71,22 +71,24 @@ data class InvoiceReviseRestData(
 ) {
 
     companion object {
-        fun from(data: InvoiceRevise): InvoiceReviseRestData {
-            return InvoiceReviseRestData(
-                    numberTTN = data.numberTTN,
-                    dateTTN = data.dateTTN,
-                    supplierAccountNumber = data.supplierAccountNumber,
-                    supplierName = data.supplierName,
-                    supplierINN = data.supplierINN,
-                    supplierAddress = data.supplierAddress,
-                    quantityPositions = data.quantityPositions.toString(),
-                    quantityST = data.quantityST.toString(),
-                    quantityKG = data.quantityKG.toStringFormatted(),
-                    quantityAll = data.quantityAll.toStringFormatted(),
-                    quantityString = data.quantityString,
-                    quantityUOM = data.quantityUOM.toStringFormatted(),
-                    isEDO = if (data.isEDO) "X" else ""
-            )
+        fun from(data: InvoiceRevise?): InvoiceReviseRestData? {
+            return if (data == null) null else {
+                InvoiceReviseRestData(
+                        numberTTN = data.numberTTN,
+                        dateTTN = data.dateTTN,
+                        supplierAccountNumber = data.supplierAccountNumber,
+                        supplierName = data.supplierName,
+                        supplierINN = data.supplierINN,
+                        supplierAddress = data.supplierAddress,
+                        quantityPositions = data.quantityPositions.toString(),
+                        quantityST = data.quantityST.toString(),
+                        quantityKG = data.quantityKG.toStringFormatted(),
+                        quantityAll = data.quantityAll.toStringFormatted(),
+                        quantityString = data.quantityString,
+                        quantityUOM = data.quantityUOM.toStringFormatted(),
+                        isEDO = if (data.isEDO) "X" else ""
+                )
+            }
         }
     }
 }

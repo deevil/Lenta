@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
-        tools:context=".features.task_list.TaskListFragment">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".features.task_list.TaskListFragment">
 
     <data>
 
@@ -106,7 +106,6 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="8dp"
                 android:layout_weight="1"
-                android:digits="0123456789"
                 android:drawableEnd="@drawable/ic_filter_white_24"
                 android:ellipsize="end"
                 android:hint="@string/enter_task_number_sap_login"
@@ -114,7 +113,8 @@
                 android:inputType="textNoSuggestions|textVisiblePassword"
                 android:maxLength="14"
                 android:maxLines="1"
-                android:text="@={vm.numberField}"
+                android:text="@={vm.searchFieldFiltered}"
+                app:textAllCaps="@{true}"
                 app:onOkInSoftKeyboard="@{vm}"
                 app:requestFocus="@{vm.requestFocusToNumberField}"
                 tools:ignore="Autofill" />

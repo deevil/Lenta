@@ -15,6 +15,13 @@ class ReceivingTask(val taskHeader: TaskInfo,
         return taskRepository.getReviseDocuments().getDeliveryDocuments().filter { it.isCheck }
     }
 
+    fun getUncheckedProductDocuments(): List<DeliveryProductDocumentRevise> {
+        return taskRepository.getReviseDocuments().getProductDocuments().filter { !it.isCheck }
+    }
+
+    fun getCheckedProductDocuments(): List<DeliveryProductDocumentRevise> {
+        return taskRepository.getReviseDocuments().getProductDocuments().filter { it.isCheck }
+    }
 
     fun getProcessedProducts(): List<TaskProductInfo> {
         return taskRepository.getProducts().getProducts()

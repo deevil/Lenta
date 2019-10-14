@@ -1,10 +1,10 @@
 package com.lenta.bp14.features.report_result
 
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
+import com.lenta.bp14.models.IGeneralTaskManager
+import com.lenta.bp14.platform.navigation.IScreenNavigator
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class ReportResultViewModel : CoreViewModel() {
@@ -12,32 +12,30 @@ class ReportResultViewModel : CoreViewModel() {
     @Inject
     lateinit var sessionInfo: ISessionInfo
 
-    val reports = MutableLiveData<List<ItemTaskReport>>()
+    @Inject
+    lateinit var generalTaskManager: IGeneralTaskManager
+
+    @Inject
+    lateinit var navigator: IScreenNavigator
+
+    val reports by lazy {
+        MutableLiveData<List<ItemTaskReport>>(generalTaskManager.getLatestSentReportResult()?.createdTasks?.map {
+            ItemTaskReport(
+                    number = it.taskNumber,
+                    description = it.text1
+            )
+        } ?: emptyList())
+    }
 
     fun getMarket(): String {
         return sessionInfo.market!!
     }
 
     fun onNextClick() {
-
+        generalTaskManager.clearCurrentTask()
+        navigator.closeAllScreen()
+        navigator.openMainMenuScreen()
     }
-
-    init {
-        viewModelScope.launch {
-            reports.value = getTestData()
-        }
-
-    }
-
-    private fun getTestData(): List<ItemTaskReport>? {
-        return List(100) {
-            ItemTaskReport(
-                    "${it + 1}",
-                    "Отчет $it"
-            )
-        }
-    }
-
 }
 
 data class ItemTaskReport(val number: String, val description: String)

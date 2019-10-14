@@ -7,7 +7,7 @@
 
         <variable
             name="good"
-            type="com.lenta.bp14.models.check_list.Good" />
+            type="com.lenta.bp14.features.check_list.goods_list.ItemGoodUi" />
 
         <variable
             name="selectedForDelete"
@@ -38,7 +38,7 @@
                     android:layout_height="32dp"
                     android:background="@drawable/bg_border_circle_white_selectable_for_delete"
                     android:gravity="center"
-                    android:text="@{String.valueOf(good.number)}"
+                    android:text="@{good.position}"
                     app:selected="@{selectedForDelete}"
                     tools:text="1" />
 
@@ -53,7 +53,7 @@
                 <TextView
                     style="@style/CellTextStyle"
                     android:maxLines="2"
-                    android:text="@{good.formattedMaterialWithName}"
+                    android:text="@{good.name}"
                     tools:text="000021 Масло" />
 
             </LinearLayout>
@@ -70,8 +70,8 @@
                     android:inputType="number"
                     android:maxLines="1"
                     android:text="@={good.quantity}"
-                    app:digitsForUom="@{good.uom}"
-                    app:suffix="@{good.uom.name}"
+                    app:digitsForUom="@{good.units}"
+                    app:suffix="@{good.units.name}"
                     tools:text="10 кор" />
 
             </LinearLayout>

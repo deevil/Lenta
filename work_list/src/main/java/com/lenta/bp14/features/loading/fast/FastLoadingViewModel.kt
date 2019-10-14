@@ -2,6 +2,7 @@ package com.lenta.bp14.features.loading.fast
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.lenta.bp14.models.general.IGeneralRepo
 import com.lenta.bp14.platform.navigation.IScreenNavigator
 import com.lenta.bp14.repos.IRepoInMemoryHolder
 import com.lenta.bp14.requests.FastResourcesMultiRequest
@@ -29,6 +30,8 @@ class FastLoadingViewModel : CoreLoadingViewModel() {
     lateinit var repoInMemoryHolder: IRepoInMemoryHolder
     @Inject
     lateinit var storesRequest: StoresRequest
+    @Inject
+    lateinit var generalRepo: IGeneralRepo
     @Inject
     lateinit var auth: Auth
 
@@ -74,7 +77,11 @@ class FastLoadingViewModel : CoreLoadingViewModel() {
             }
         }*/
 
-        navigator.openSelectMarketScreen()
+        viewModelScope.launch {
+            generalRepo.onDbReady()
+            navigator.openSelectMarketScreen()
+        }
+
 
     }
 

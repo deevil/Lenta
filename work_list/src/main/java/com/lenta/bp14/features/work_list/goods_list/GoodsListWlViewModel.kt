@@ -2,11 +2,15 @@ package com.lenta.bp14.features.work_list.goods_list
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.lenta.bp14.models.IGeneralTaskManager
+import com.lenta.bp14.models.check_price.IPriceInfoParser
 import com.lenta.bp14.models.data.GoodsListTab
 import com.lenta.bp14.models.getTaskName
 import com.lenta.bp14.models.work_list.Good
 import com.lenta.bp14.models.work_list.WorkListTask
 import com.lenta.bp14.platform.navigation.IScreenNavigator
+import com.lenta.bp14.requests.work_list.WorkListSendReportNetRequest
+import com.lenta.shared.platform.device_info.DeviceInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.analyseCode
 import com.lenta.shared.utilities.Logg
@@ -15,6 +19,8 @@ import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.map
+import com.lenta.shared.utilities.extentions.sumWith
+import com.lenta.shared.utilities.extentions.dropZeros
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -24,6 +30,14 @@ class GoodsListWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     lateinit var navigator: IScreenNavigator
     @Inject
     lateinit var task: WorkListTask
+    @Inject
+    lateinit var priceInfoParser: IPriceInfoParser
+    @Inject
+    lateinit var generalTaskManager: IGeneralTaskManager
+    @Inject
+    lateinit var deviceInfo: DeviceInfo
+    @Inject
+    lateinit var sentReportRequest: WorkListSendReportNetRequest
 
 
     val processedSelectionsHelper = SelectionItemsHelper()
@@ -41,12 +55,17 @@ class GoodsListWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     val searchGoods = MutableLiveData<List<Good>>()
 
     val processedGoods: MutableLiveData<List<ProcessedListUi>> by lazy {
-        task.goods.map { list: MutableList<Good>? ->
-            list?.filter { it.processed }?.mapIndexed { index, good ->
+        task.processed.map { list: MutableList<Good>? ->
+            list?.mapIndexed { index, good ->
+                var total = 0.0
+                for (scanResult in good.scanResults.value!!) {
+                    total = total.sumWith(scanResult.quantity)
+                }
+
                 ProcessedListUi(
                         position = (index + 1).toString(),
                         name = good.getFormattedMaterialWithName(),
-                        quantity = "11111"
+                        quantity = total.dropZeros()
                 )
             }
         }
@@ -77,7 +96,22 @@ class GoodsListWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     }
 
     fun onClickSave() {
-
+        // Подтверждение - Перевести задание в статус "Подсчитано" и закрыть его для редактирования? - Назад / Да
+        navigator.showSetTaskToStatusCalculated {
+            viewModelScope.launch {
+                navigator.showProgressLoadingData()
+                sentReportRequest(task.getReportData(deviceInfo.getDeviceIp())).either(
+                        {
+                            navigator.openAlertScreen(failure = it)
+                        }
+                ) {
+                    Logg.d { "SentReportResult: $it" }
+                    generalTaskManager.clearCurrentTask(sentReportResult = it)
+                    navigator.openReportResultScreen()
+                }
+                navigator.hideProgress()
+            }
+        }
     }
 
     fun onClickDelete() {
@@ -96,10 +130,16 @@ class GoodsListWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
                     addGoodByEan(eanCode)
                 },
                 funcForMatNr = { matNr ->
-                    addGoodByEan(matNr)
+                    addGoodByMaterial(matNr)
                 },
                 funcForPriceQrCode = { qrCode ->
-                    //addGoodByEan(matNr)
+                    priceInfoParser.getPriceInfoFromRawCode(qrCode)?.let {
+                        viewModelScope.launch {
+                            addGoodByEan(it.eanCode)
+                        }
+                        return@analyseCode
+                    }
+                    navigator.showGoodNotFound()
                 },
                 funcForSapOrBar = navigator::showTwelveCharactersEntered,
                 funcForNotValidFormat = navigator::showGoodNotFound
@@ -109,25 +149,22 @@ class GoodsListWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     private fun addGoodByEan(ean: String) {
         Logg.d { "Entered EAN: $ean" }
         viewModelScope.launch {
-            if (task.addGoodByEan(ean)) {
+            /*if (task.addGood(ean)) {
                 navigator.openGoodInfoWlScreen()
-            }
+            }*/
         }
     }
 
     private fun addGoodByMaterial(material: String) {
         Logg.d { "Entered MATERIAL: $material" }
         viewModelScope.launch {
-            if (task.addGoodByEan(material)) {
+            navigator.showProgressLoadingData()
+            task.getGoodByMaterial(material)?.let { good ->
+                task.addGood(good)
+                navigator.hideProgress()
                 navigator.openGoodInfoWlScreen()
             }
-        }
-    }
-
-    private fun addGoodByMatcode(matcode: String) {
-        Logg.d { "Entered MATCODE: $matcode" }
-        viewModelScope.launch {
-
+            navigator.hideProgress()
         }
     }
 
@@ -150,6 +187,10 @@ class GoodsListWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     fun onDigitPressed(digit: Int) {
         numberField.postValue(numberField.value ?: "" + digit)
         requestFocusToNumberField.value = true
+    }
+
+    fun onScanResult(data: String) {
+
     }
 
 }

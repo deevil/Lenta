@@ -1,7 +1,7 @@
 package com.lenta.bp14.models.data
 
 import com.lenta.bp14.R
-import com.lenta.bp14.requests.ProductInfo
+import com.lenta.bp14.requests.pojo.ProductInfo
 import com.lenta.shared.utilities.extentions.isSapTrue
 
 enum class GoodsListTab(val position: Int) {
@@ -31,10 +31,16 @@ enum class GoodType {
     MARKED
 }
 
+fun getGoodType(alcohol: String, marked: String): GoodType {
+    if (alcohol.isSapTrue()) return GoodType.ALCOHOL
+    if (marked.isSapTrue()) return GoodType.MARKED
+    return GoodType.COMMON
+}
+
 fun ProductInfo.getGoodType(): GoodType {
     return when {
         this.isAlco.isSapTrue() -> GoodType.ALCOHOL
-        this.iSMarked.isSapTrue() -> GoodType.MARKED
+        this.isMarked.isSapTrue() -> GoodType.MARKED
         else -> GoodType.COMMON
     }
 }

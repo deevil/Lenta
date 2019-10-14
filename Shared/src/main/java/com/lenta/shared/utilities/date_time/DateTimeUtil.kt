@@ -36,7 +36,7 @@ object DateTimeUtil {
         return getDateFormat(format).parse(dateString)
     }
 
-    fun convertMilisecondsToHHMm(mSecs: Long?): String {
+    fun convertMillisecondsToHHMm(mSecs: Long?): String {
         if (mSecs == null) {
             return ""
         }

@@ -85,9 +85,9 @@ class GoodInfoPcViewModel : CoreViewModel() {
                         navigator.openAlertScreen(it)
                     }
             ) {
-                task.processingMatNumber = it.matNumber
                 onClickValid()
                 if (qrCode.isNullOrBlank()) {
+                    task.processingMatNumber = it.matNumber
                     navigator.openGoodInfoPcScreen()
                 }
             }
@@ -98,7 +98,21 @@ class GoodInfoPcViewModel : CoreViewModel() {
 
     private fun setNewCheckStatusAndGoBack(isValid: Boolean?) {
         task.setCheckPriceStatus(isValid)
-        navigator.goBack()
+        if (isValid != true) {
+            navigator.showPrintPriceOffer(
+                    goodName = getTitle(),
+                    noCallback = {
+                        navigator.goBack()
+                    },
+                    yesCallback = {
+                        navigator.goBack()
+                        navigator.openPrintSettingsScreen()
+                    }
+            )
+        } else {
+            navigator.goBack()
+        }
+
     }
 
 }

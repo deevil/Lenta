@@ -15,7 +15,7 @@ import com.mobrun.plugin.api.HyperHive
 import javax.inject.Inject
 
 class ProductInfoDbRequest
-@Inject constructor(private val hyperHive: HyperHive) : UseCase<ProductInfo, ProductInfoRequestParams>() {
+@Inject constructor(private val hyperHive: HyperHive) : UseCase<ProductInfo, ProductInfoRequestParams> {
 
     private val zmpUtz25V001: ZmpUtz25V001 by lazy {
         ZmpUtz25V001(hyperHive)

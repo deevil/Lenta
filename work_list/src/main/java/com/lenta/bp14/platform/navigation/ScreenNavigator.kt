@@ -34,8 +34,9 @@ import com.lenta.shared.platform.navigation.ICoreNavigator
 import com.lenta.shared.platform.navigation.runOrPostpone
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.progress.IProgressUseCaseInformator
+import javax.inject.Inject
 
-class ScreenNavigator(
+class ScreenNavigator @Inject constructor(
         private val context: Context,
         private val coreNavigator: ICoreNavigator,
         private val foregroundActivityProvider: ForegroundActivityProvider,
@@ -81,9 +82,9 @@ class ScreenNavigator(
         }
     }
 
-    override fun openJobCardScreen(taskNumber: String) {
+    override fun openJobCardScreen() {
         runOrPostpone {
-            getFragmentStack()?.push(JobCardFragment.create(taskNumber = taskNumber))
+            getFragmentStack()?.push(JobCardFragment.create())
         }
     }
 
@@ -93,9 +94,11 @@ class ScreenNavigator(
         }
     }
 
-    override fun openListOfDifferencesScreen() {
+    override fun openListOfDifferencesScreen(onClickSkipCallback: () -> Unit) {
         runOrPostpone {
-            getFragmentStack()?.push(ListOfDifferencesFragment())
+            getFragmentStack()?.push(ListOfDifferencesFragment.create(
+                    onClickSkipCallbackID = backFragmentResultHelper.setFuncForResult(onClickSkipCallback)
+            ))
         }
     }
 
@@ -254,14 +257,17 @@ class ScreenNavigator(
         }
     }
 
-    override fun showRawGoodsRemainedInTask(goodName: String, yesCallback: () -> Unit) {
+    override fun showPrintPriceOffer(goodName: String, noCallback: () -> Unit, yesCallback: () -> Unit) {
         runOrPostpone {
-            getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.print_price_tag_for_good, goodName),
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.print_price_tag_for_good, goodName),
                     pageNumber = "43",
                     iconRes = R.drawable.ic_question_80dp,
+                    codeConfirmForLeft = backFragmentResultHelper.setFuncForResult(noCallback),
                     codeConfirmForRight = backFragmentResultHelper.setFuncForResult(yesCallback),
-                    leftButtonDecorationInfo = ButtonDecorationInfo.backNo,
-                    rightButtonDecorationInfo = ButtonDecorationInfo.yes))
+                    leftButtonDecorationInfo = ButtonDecorationInfo.no,
+                    rightButtonDecorationInfo = ButtonDecorationInfo.yes
+            ))
         }
     }
 
@@ -326,7 +332,7 @@ class ScreenNavigator(
         }
     }
 
-    override fun showScannedGoodNotListedInTk() {
+    override fun showMaxCountProductAlert() {
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.number_of_positions_exceeded_in_task),
                     pageNumber = "118",
@@ -354,6 +360,32 @@ class ScreenNavigator(
                     pageNumber = "94",
                     leftButtonDecorationInfo = ButtonDecorationInfo.back,
                     rightButtonDecorationInfo = ButtonDecorationInfo.confirm
+            )
+            )
+        }
+    }
+
+    override fun showAlertBlockedTaskAnotherUser(userName: String) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.another_user_block_task, userName),
+                    iconRes = R.drawable.ic_info_pink,
+                    pageNumber = "94",
+                    leftButtonDecorationInfo = ButtonDecorationInfo.back
+            )
+            )
+        }
+    }
+
+    override fun showAlertBlockedTaskByMe(blockingUser: String, yesCallback: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.user_self_block_task, blockingUser),
+                    iconRes = R.drawable.ic_question_80dp,
+                    pageNumber = "94",
+                    leftButtonDecorationInfo = ButtonDecorationInfo.back,
+                    rightButtonDecorationInfo = ButtonDecorationInfo.next,
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(yesCallback)
             )
             )
         }
@@ -412,6 +444,7 @@ class ScreenNavigator(
         }
     }
 
+
 }
 
 interface IScreenNavigator : ICoreNavigator {
@@ -422,9 +455,9 @@ interface IScreenNavigator : ICoreNavigator {
     fun openLoginScreen()
     fun openFastDataLoadingScreen()
     fun openTaskListScreen()
-    fun openJobCardScreen(taskNumber: String)
+    fun openJobCardScreen()
     fun openGoodsListClScreen()
-    fun openListOfDifferencesScreen()
+    fun openListOfDifferencesScreen(onClickSkipCallback: () -> Unit)
     fun openReportResultScreen()
     fun openPrintSettingsScreen()
     fun openGoodDetailsScreen()
@@ -445,17 +478,19 @@ interface IScreenNavigator : ICoreNavigator {
     fun showPriceTagsSubmitted(nextCallback: () -> Unit)
     fun showSetTaskToStatusCalculated(yesCallback: () -> Unit)
     fun showRawGoodsRemainedInTask(yesCallback: () -> Unit)
-    fun showRawGoodsRemainedInTask(goodName: String, yesCallback: () -> Unit)
+    fun showPrintPriceOffer(goodName: String, noCallback: () -> Unit, yesCallback: () -> Unit)
     fun showUnsavedDataFoundOnDevice(deleteCallback: () -> Unit, goOverCallback: () -> Unit)
     fun showUnsavedTaskFoundOnDevice(deleteCallback: () -> Unit, goOverCallback: () -> Unit)
     fun showGoodIsNotPartOfTask()
     fun showScannedGoodNotListedInLenta(nextCallback: () -> Unit)
     fun showScannedGoodNotListedInTk(marketNumber: String)
     fun showScannedGoodAlreadyAddedToTask(yesCallback: () -> Unit)
-    fun showScannedGoodNotListedInTk()
+    fun showMaxCountProductAlert()
     fun showNoNetworkToSaveTask(nextCallback: () -> Unit)
     fun showGoodNotFound()
     fun showTwelveCharactersEntered(sapCallback: () -> Unit, barCallback: () -> Unit)
+    fun showAlertBlockedTaskAnotherUser(userName: String)
+    fun showAlertBlockedTaskByMe(blockingUser: String, yesCallback: () -> Unit)
 
     fun openTestScanBarcodeScreen()
     fun openScanPriceScreen()
@@ -464,4 +499,5 @@ interface IScreenNavigator : ICoreNavigator {
     fun openPictogrammInfoNova()
     fun openPictogrammInfoHealthyFood()
     fun openConfirmationNotSaveChanges(yesCallback: () -> Unit)
+
 }

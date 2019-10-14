@@ -16,3 +16,12 @@ fun List<ZmpUtz17V001.ItemLocal_ET_DICT>.toQualityInfoList(): List<QualityInfo> 
                 name = it.shtxt)
     }
 }
+
+fun ZmpUtz17V001.getItemsByTid(tid: String): MutableList<ZmpUtz17V001.ItemLocal_ET_DICT>? {
+    @Suppress("INACCESSIBLE_TYPE")
+    return localHelper_ET_DICT.getWhere("TID = \"$tid\"")
+}
+
+fun List<ZmpUtz17V001.ItemLocal_ET_DICT>.toDescriptionsList(): List<String> {
+    return this.map { it.shtxt }
+}

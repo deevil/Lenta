@@ -1,5 +1,10 @@
 package com.lenta.bp14.features.main_menu
 
+import com.lenta.bp14.models.IGeneralTaskManager
+import com.lenta.bp14.models.check_list.CheckListTaskDescription
+import com.lenta.bp14.models.check_list.CheckListTaskManager
+import com.lenta.bp14.models.general.AppTaskTypes
+import com.lenta.bp14.models.general.IGeneralRepo
 import com.lenta.bp14.platform.navigation.IScreenNavigator
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
@@ -12,6 +17,12 @@ class MainMenuViewModel : CoreViewModel() {
     lateinit var navigator: IScreenNavigator
     @Inject
     lateinit var sessionInfo: ISessionInfo
+    @Inject
+    lateinit var checkListTaskManager: CheckListTaskManager
+    @Inject
+    lateinit var generalRepo: IGeneralRepo
+    @Inject
+    lateinit var generalTaskManager: IGeneralTaskManager
 
 
     private val authorizationSkipped by lazy {
@@ -27,27 +38,11 @@ class MainMenuViewModel : CoreViewModel() {
 
 
     fun onClickPrint() {
-        // Тестирование запуска различных экранов
-        //navigator.openPrintSettingsScreen()
-        //navigator.openGoodInfoWlScreen()
-        //navigator.openGoodsListWlScreen()
-        //navigator.openGoodsListPcScreen()
-        //navigator.openSearchFilterWlScreen()
-        //navigator.openGoodsListNeScreen()
-        //navigator.openGoodDetailsScreen()
-        //navigator.openTestScanBarcodeScreen()
-        //navigator.openSearchFilterTlScreen()
-        //navigator.openTaskListScreen()
-        //navigator.openListOfDifferencesScreen()
-        //navigator.openExpectedDeliveriesScreen()
-        //navigator.openGoodSalesScreen()
-        //navigator.openGoodInfoNeScreen()
-        //navigator.openGoodInfoPcScreen()
-        navigator.openGoodsListClScreen()
+        navigator.openPrintSettingsScreen()
     }
 
     fun onClickCreateTask() {
-        navigator.openJobCardScreen("")
+        navigator.openJobCardScreen()
 
     }
 
@@ -56,7 +51,22 @@ class MainMenuViewModel : CoreViewModel() {
     }
 
     fun onClickCheckList() {
-        navigator.openGoodsListClScreen()
+        generalRepo.getTasksTypeInfo(AppTaskTypes.CheckList.taskType)?.let { taskTypeInfo ->
+            checkListTaskManager.newTask(
+                    CheckListTaskDescription(
+                            tkNumber = sessionInfo.market!!,
+                            taskNumber = "",
+                            taskName = generalTaskManager.generateNewNameForTask(taskTypeInfo),
+                            comment = "",
+                            description = taskTypeInfo.annotation,
+                            isStrictList = false
+                    )
+            )
+            navigator.openJobCardScreen()
+            navigator.openGoodsListClScreen()
+
+        }
+
     }
 
     fun onClickAuxiliaryMenu() {

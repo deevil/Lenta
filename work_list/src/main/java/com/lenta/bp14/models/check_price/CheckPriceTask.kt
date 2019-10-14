@@ -2,37 +2,96 @@ package com.lenta.bp14.models.check_price
 
 import androidx.lifecycle.LiveData
 import com.google.gson.Gson
+import com.lenta.bp14.di.CheckPriceScope
 import com.lenta.bp14.ml.CheckStatus
+import com.lenta.bp14.models.BaseProductInfo
 import com.lenta.bp14.models.ITask
 import com.lenta.bp14.models.ITaskDescription
-import com.lenta.bp14.models.check_price.repo.ActualPriceRepoForTest
 import com.lenta.bp14.models.check_price.repo.IActualPricesRepo
 import com.lenta.bp14.models.check_price.repo.ICheckPriceResultsRepo
-import com.lenta.bp14.models.general.ITaskType
-import com.lenta.bp14.models.general.TaskTypes
+import com.lenta.bp14.models.general.ITaskTypeInfo
+import com.lenta.bp14.models.general.AppTaskTypes
+import com.lenta.bp14.models.general.IGeneralRepo
 import com.lenta.bp14.platform.IVibrateHelper
 import com.lenta.bp14.platform.sound.ISoundPlayer
+import com.lenta.bp14.requests.check_price.CheckPriceReport
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.functional.Either
 import com.lenta.shared.models.core.StateFromToString
-import com.lenta.shared.utilities.Logg
-import com.lenta.shared.utilities.extentions.implementationOf
+import com.lenta.shared.utilities.extentions.isSapTrue
 import com.lenta.shared.utilities.extentions.map
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
+import javax.inject.Inject
 import kotlin.math.min
 
-class CheckPriceTask(
+@CheckPriceScope
+class CheckPriceTask @Inject constructor(
+        private val generalRepo: IGeneralRepo,
         private val taskDescription: CheckPriceTaskDescription,
         private val actualPricesRepo: IActualPricesRepo,
         private val readyResultsRepo: ICheckPriceResultsRepo,
         private val priceInfoParser: IPriceInfoParser,
         private val gson: Gson,
-        override var processingMatNumber: String? = null,
         private val soundPlayer: ISoundPlayer,
         private val vibrateHelper: IVibrateHelper
 ) : ICheckPriceTask, StateFromToString {
 
+    private val processingProducts by lazy {
+        getCheckResults().map { processedGoodInfo ->
+            val processedMaterials = processedGoodInfo?.map { it.matNr }?.toSet() ?: emptySet()
+            val positions = taskDescription.additionalTaskInfo?.positions?.filter { !processedMaterials.contains(it.matNr) }
+                    ?: emptyList()
+            positions.map {
+                getCheckPriceByMatnr(it.matNr)
+            }
+        }
+    }
+
+    private val productsInfoMap by lazy {
+        taskDescription.additionalTaskInfo?.productsInfo?.map { it.matNr to it }?.toMap()
+                ?: emptyMap()
+    }
+
+    private val priceInfoMap by lazy {
+        taskDescription.additionalTaskInfo?.prices?.map { it.matnr to it }?.toMap()
+                ?: emptyMap()
+    }
+
+    private val checkPriceMap by lazy {
+        taskDescription.additionalTaskInfo?.checkPrices?.map { it.matNr to it }?.toMap()
+                ?: emptyMap()
+    }
+
+    init {
+        initProcessed()
+    }
+
+    private fun initProcessed() {
+
+        taskDescription.additionalTaskInfo?.prices?.forEach {
+            val productInfo = productsInfoMap[it.matnr]
+            actualPricesRepo.addToCacheActualPriceInfo(
+                    ActualPriceInfo(
+                            matNumber = it.matnr,
+                            productName = productInfo?.name,
+                            price1 = it.price1.toFloatOrNull(),
+                            price2 = it.price2.toFloatOrNull(),
+                            price3 = it.price3.toFloatOrNull(),
+                            price4 = it.price4.toFloatOrNull()
+                    )
+            )
+        }
+
+        taskDescription.additionalTaskInfo?.checkPrices?.let {
+            it.forEach { checkPrice ->
+                val productInfo = productsInfoMap[checkPrice.matNr]
+                readyResultsRepo.addCheckPriceResult(
+                        getCheckPriceByMatnr(checkPrice.matNr)
+                )
+            }
+        }
+    }
+
+    override var processingMatNumber: String? = null
 
     override fun checkProductFromVideoScan(rawCode: String?): ICheckPriceResult? {
 
@@ -40,11 +99,10 @@ class CheckPriceTask(
 
         val scannedPriceInfo = priceInfoParser.getPriceInfoFromRawCode(rawCode) ?: return null
 
-        actualPricesRepo.implementationOf(ActualPriceRepoForTest::class.java).apply {
-            Logg.d { "ActualPriceRepoForTest: $this" }
-        }?.putTestResult(scannedPriceInfo)
-
-        val actualPriceInfo = actualPricesRepo.getActualPriceInfoFromCache(scannedPriceInfo.eanCode)
+        val actualPriceInfo = actualPricesRepo.getActualPriceInfoFromCache(
+                tkNumber = taskDescription.tkNumber,
+                eanCode = scannedPriceInfo.eanCode
+        )
                 ?: return null
 
         return CheckPriceResult(
@@ -59,7 +117,11 @@ class CheckPriceTask(
             readyResultsRepo.addCheckPriceResult(this).let { isAdded ->
                 if (isAdded) {
                     vibrateHelper.shortVibrate()
-                    soundPlayer.playBeep()
+                    if (this.isAllValid() == true) {
+                        soundPlayer.playBeep()
+                    } else {
+                        soundPlayer.playError()
+                    }
                 }
             }
         }
@@ -70,12 +132,10 @@ class CheckPriceTask(
         val scannedPriceInfo = priceInfoParser.getPriceInfoFromRawCode(qrCode)
                 ?: return Either.Left(Failure.NotValidQrCode)
 
-        actualPricesRepo.implementationOf(ActualPriceRepoForTest::class.java).apply {
-            Logg.d { "ActualPriceRepoForTest: $this" }
-        }?.putTestResult(scannedPriceInfo)
-
-
-        return actualPricesRepo.getActualPriceInfoByEan(scannedPriceInfo.eanCode).also {
+        return actualPricesRepo.getActualPriceInfoByEan(
+                tkNumber = taskDescription.tkNumber,
+                eanCode = scannedPriceInfo.eanCode
+        ).also {
             it.either({}, { actualPriceInfo ->
                 CheckPriceResult(
                         ean = scannedPriceInfo.eanCode,
@@ -113,8 +173,8 @@ class CheckPriceTask(
         return ""
     }
 
-    override fun getTaskType(): ITaskType {
-        return TaskTypes.CheckPrice.taskType
+    override fun getTaskType(): ITaskTypeInfo {
+        return generalRepo.getTasksTypeInfo(AppTaskTypes.CheckPrice.taskType)!!
     }
 
     override fun getDescription(): ITaskDescription {
@@ -126,12 +186,53 @@ class CheckPriceTask(
                 ?: return null)
     }
 
+    override fun getToProcessingProducts(): LiveData<List<ICheckPriceResult>> {
+        return processingProducts
+    }
+
+    private fun getCheckPriceByMatnr(matNr: String): ICheckPriceResult {
+        val productInfo = productsInfoMap[matNr]
+        val priceInfo = priceInfoMap[matNr]
+        val checkPriceInfo = checkPriceMap[matNr]
+        val emptyPriceInfo = ScanPriceInfo(
+                eanCode = matNr,
+                price = null,
+                discountCardPrice = null
+        )
+        return CheckPriceResult(
+                ean = "",
+                matNr = matNr,
+                name = productInfo?.name,
+                scannedPriceInfo = emptyPriceInfo,
+                actualPriceInfo = ActualPriceInfo(
+                        matNumber = matNr,
+                        productName = productInfo?.name,
+                        price1 = priceInfo?.price1?.toFloatOrNull(),
+                        price2 = priceInfo?.price2?.toFloatOrNull(),
+                        price3 = priceInfo?.price3?.toFloatOrNull(),
+                        price4 = priceInfo?.price4?.toFloatOrNull()
+                ),
+                userPriceInfo = UserPriceInfo(
+                        isValidPrice = when (checkPriceInfo?.statCheck) {
+                            "1" -> true
+                            "2" -> false
+                            else -> null
+                        }
+                ),
+                isPrinted = checkPriceInfo?.isPrinted.isSapTrue()
+        )
+    }
+
     override fun setCheckPriceStatus(isValid: Boolean?) {
-        readyResultsRepo.getCheckPriceResult(matNr = processingMatNumber).apply {
+        setCheckPriceStatus(isValid, processingMatNumber ?: "")
+
+    }
+
+    private fun setCheckPriceStatus(isValid: Boolean?, matNr: String) {
+        readyResultsRepo.getCheckPriceResult(matNr = matNr).apply {
 
             if (this == null) {
-                actualPricesRepo.getActualPriceInfoByMatNumber(processingMatNumber
-                        ?: "")?.let { actualPriceInfo ->
+                actualPricesRepo.getActualPriceInfoByMatNumber(matNr)?.let { actualPriceInfo ->
                     readyResultsRepo.addCheckPriceResult(
                             CheckPriceResult(
                                     ean = actualPriceInfo.matNumber,
@@ -173,28 +274,52 @@ class CheckPriceTask(
     }
 
     override suspend fun getActualPriceByEan(eanCode: String): Either<Failure, IActualPriceInfo> {
-        actualPricesRepo.implementationOf(ActualPriceRepoForTest::class.java).apply {
-            Logg.d { "ActualPriceRepoForTest: $this" }
-        }?.putTestResult(ScanPriceInfo(
-                eanCode = eanCode,
-                price = 4555.99F,
-                discountCardPrice = 4554.99F
-        ))
-        return withContext(Dispatchers.IO) {
-            return@withContext actualPricesRepo.getActualPriceInfoByEan(eanCode)
-        }
+        return actualPricesRepo.getActualPriceInfoByEan(
+                tkNumber = taskDescription.tkNumber,
+                eanCode = eanCode
+        )
     }
 
     override suspend fun getActualPriceByMatNr(matNumber: String): Either<Failure, IActualPriceInfo> {
-        actualPricesRepo.implementationOf(ActualPriceRepoForTest::class.java).apply {
-            Logg.d { "ActualPriceRepoForTest: $this" }
-        }?.putTestResult(ScanPriceInfo(
-                eanCode = matNumber,
-                price = 4555.99F,
-                discountCardPrice = 4554.99F
-        ))
-        return withContext(Dispatchers.IO) {
-            return@withContext actualPricesRepo.getActualPriceInfoByMatNr(matNumber)
+        return actualPricesRepo.getActualPriceInfoByMatNr(
+                tkNumber = taskDescription.tkNumber,
+                matNumber = matNumber
+        )
+    }
+
+    override fun getReportData(ip: String, isNotFinish: Boolean): CheckPriceReport {
+        return CheckPriceReport(
+                ip = ip,
+                description = taskDescription,
+                isNotFinish = isNotFinish,
+                checksResults = getCheckResults().value ?: emptyList()
+
+        )
+    }
+
+
+    override fun isEmpty(): Boolean {
+        return readyResultsRepo.getCheckPriceResults().value.isNullOrEmpty()
+    }
+
+    override fun isHaveDiscrepancies(): Boolean {
+        return processingProducts.value?.isNotEmpty() == true
+    }
+
+    override fun getListOfDifferences(): LiveData<List<BaseProductInfo>> {
+        return processingProducts.map { list ->
+            list?.map { item ->
+                BaseProductInfo(
+                        matNr = item.matNr ?: "",
+                        name = item.name ?: ""
+                )
+            }
+        }
+    }
+
+    override fun setMissing(matNrList: List<String>) {
+        matNrList.forEach {
+            setCheckPriceStatus(null, matNr = it)
         }
     }
 
@@ -211,6 +336,7 @@ fun ICheckPriceResult?.toCheckStatus(): CheckStatus? {
 interface ICheckPriceTask : ITask {
     fun checkProductFromVideoScan(rawCode: String?): ICheckPriceResult?
     fun getCheckResults(): LiveData<List<ICheckPriceResult>>
+    fun getToProcessingProducts(): LiveData<List<ICheckPriceResult>>
     fun removeCheckResultsByMatNumbers(matNumbers: Set<String>)
     fun getProcessingActualPrice(): IActualPriceInfo?
     fun setCheckPriceStatus(isValid: Boolean?)
@@ -218,6 +344,7 @@ interface ICheckPriceTask : ITask {
     suspend fun getActualPriceByEan(eanCode: String): Either<Failure, IActualPriceInfo>
     suspend fun getActualPriceByMatNr(matNumber: String): Either<Failure, IActualPriceInfo>
     suspend fun checkPriceByQrCode(qrCode: String): Either<Failure, IActualPriceInfo>
+    fun getReportData(ip: String, isNotFinish: Boolean): CheckPriceReport
 
     var processingMatNumber: String?
 

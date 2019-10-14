@@ -50,14 +50,14 @@
                     <TextView
                         android:id="@+id/tv_storage_places"
                         style="@style/CellTextStyle"
-                        android:text="@{vm.good.additional.storagePlaces}"
+                        android:text="@{vm.additional.storagePlaces}"
                         app:zoom="@{true}"
                         tools:text="125635; 652148; 635894" />
 
                     <TextView
                         android:id="@+id/tv_remaining_quantity"
                         style="@style/CellTextStyle"
-                        android:text="@{@string/quantity_st(vm.good.additional.minStock)}"
+                        android:text="@{vm.additional.minStock}"
                         tools:text="50 шт." />
 
                 </LinearLayout>
@@ -96,13 +96,13 @@
                     <TextView
                         android:id="@+id/tv_removed_good"
                         style="@style/CellTextStyle"
-                        android:text="@{vm.good.additional.movement.inventory}"
+                        android:text="@{vm.additional.inventory}"
                         tools:text="19.07.19 (-25 шт.)" />
 
                     <TextView
                         android:id="@+id/tv_added_good"
                         style="@style/CellTextStyle"
-                        android:text="@{vm.good.additional.movement.arrival}"
+                        android:text="@{vm.additional.arrival}"
                         tools:text="29.07.19 (+50 шт; Z5)" />
 
                 </LinearLayout>
@@ -140,12 +140,12 @@
 
                     <TextView
                         style="@style/CellTextStyle"
-                        android:text="@{@string/price_r(vm.good.additional.price.discountPrice)}"
+                        android:text="@{vm.additional.commonPrice}"
                         tools:text="100р." />
 
                     <TextView
                         style="@style/CellTextStyle"
-                        android:text="@{@string/price_r(vm.good.additional.price.commonPrice)}"
+                        android:text="@{vm.additional.discountPrice}"
                         tools:text="140р." />
 
                 </LinearLayout>
@@ -180,14 +180,14 @@
                     <TextView
                         android:id="@+id/tv_promotion_name"
                         style="@style/CellTextStyle"
-                        android:text="@{vm.good.additional.promo.name}"
+                        android:text="@{vm.additional.promoName}"
                         app:zoom="@{true}"
                         tools:text="Распродажа кукурузы ТК 0007" />
 
                     <TextView
                         android:id="@+id/tv_promotion_period"
                         style="@style/CellTextStyle"
-                        android:text="@{vm.good.additional.promo.period}"
+                        android:text="@{vm.additional.promoPeriod}"
                         tools:text="Период 30.05.19 - 12.09.19" />
 
                 </LinearLayout>

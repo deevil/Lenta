@@ -16,6 +16,9 @@ class PrintSettingsViewModel : CoreViewModel(), OnPositionClickListener {
         const val ZEBRA = 1
     }
 
+    val printerTypesTitles = MutableLiveData(listOf("DataMax", "Zebra"))
+    val printerPriceTypesTitles = MutableLiveData(listOf("Регуляр", "Акция", "Распродажа"))
+
     val numberOfCopies: MutableLiveData<String> = MutableLiveData("1")
     val selectedPrinterType: MutableLiveData<Int> = MutableLiveData(0)
     val selectedPriceTagType: MutableLiveData<Int> = MutableLiveData(0)

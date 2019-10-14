@@ -86,6 +86,41 @@ class MemoryTaskReviseDocumentsRepository : ITaskReviseDocumentsRepository {
         document?.let { it.isCheck = !it.isCheck }
     }
 
+    override fun changeProductDocumentStatus(documentID: String, matnr: String) {
+        val document = productDocuments.findLast { it.documentID == documentID && it.productNumber == matnr }
+        document?.let { it.isCheck = !it.isCheck }
+    }
+
+    override fun approveAlcoDocument(matnr: String) {
+        val document = productDocuments.findLast { it.productNumber == matnr && (it.documentType == ProductDocumentType.AlcoImport || it.documentType == ProductDocumentType.AlcoRus) }
+        document?.let { it.isCheck = !it.isCheck }
+    }
+
+    override fun approveImportForm(matnr: String, batchNumber: String, updatedGTDA: String?, updatedGTDB: String?) {
+        importABForms.findLast { it.productNumber == matnr && it.batchNumber == batchNumber }?.let { oldForm ->
+            val newForm = oldForm.approvedCopy(updatedGTDA, updatedGTDB)
+            importABForms.remove(oldForm)
+            importABForms.add(newForm)
+            approveBatch(matnr, batchNumber)
+        }
+    }
+
+    override fun approveRussianForm(matnr: String, batchNumber: String) {
+        russianABForms.findLast { it.productNumber == matnr && it.batchNumber == batchNumber }?.let { oldForm ->
+            oldForm.isCheck = true
+            approveBatch(matnr, batchNumber)
+        }
+    }
+
+    override fun approveBatch(matnr: String, batchNumber: String) {
+        productBatches.findLast { it.productNumber == matnr && it.batchNumber == batchNumber }?.let { batch ->
+            batch.isCheck = true
+            if (productBatches.findLast { it.productNumber == matnr && !it.isCheck } == null) {
+                approveAlcoDocument(matnr)
+            }
+        }
+    }
+
     override fun clear() {
         deliveryDocuments.clear()
         productDocuments.clear()

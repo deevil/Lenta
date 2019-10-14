@@ -1,33 +1,30 @@
 package com.lenta.bp14.models.not_exposed_products
 
-import com.google.gson.Gson
+import com.lenta.bp14.di.DaggerNotExposedComponent
+import com.lenta.bp14.di.NotExposedComponent
+import com.lenta.bp14.di.NotExposedModule
 import com.lenta.bp14.models.BaseTaskManager
-import com.lenta.bp14.models.filter.FilterableDelegate
-import com.lenta.bp14.models.filter.FilterFieldType.*
-import com.lenta.bp14.models.not_exposed_products.repo.NotExposedProductsRepo
-import com.lenta.bp14.requests.not_exposed_product.GoodInfo
-import com.lenta.bp14.requests.not_exposed_product.NotExposedInfoRequestParams
-import com.lenta.shared.interactor.UseCase
-import com.lenta.shared.platform.time.ITimeMonitor
+import com.lenta.bp14.platform.extentions.getAppComponent
+import com.lenta.shared.di.AppScope
+import com.lenta.shared.di.CoreInjectHelper
+import javax.inject.Inject
 
-class NotExposedProductsTaskManager(private val timeMonitor: ITimeMonitor,
-                                    private val gson: Gson,
-                                    private val productInfoNetNotExposedInfoRequest: UseCase<GoodInfo, NotExposedInfoRequestParams>) : BaseTaskManager<INotExposedProductsTask, NotExposedProductsTaskDescription>() {
+@AppScope
+class NotExposedProductsTaskManager @Inject constructor() : BaseTaskManager<INotExposedProductsTask, NotExposedProductsTaskDescription>() {
+
+    private val componentClazz = NotExposedComponent::class.java
 
     override fun newTask(taskDescription: NotExposedProductsTaskDescription): INotExposedProductsTask? {
-        _task = NotExposedProductsTask(
-                taskDescription = taskDescription,
-                notExposedProductsRepo = NotExposedProductsRepo(),
-                filterableDelegate = FilterableDelegate(
-                        supportedFilters = setOf(
-                                NUMBER,
-                                SECTION,
-                                GROUP
-                        )
-                ),
-                productInfoNotExposedInfoRequest = productInfoNetNotExposedInfoRequest
-        )
+        _task = CoreInjectHelper.createComponent(componentClazz) {
+            DaggerNotExposedComponent.builder()
+                    .appComponent(getAppComponent(null))
+                    .notExposedModule(NotExposedModule(taskDescription))
+                    .build()
+        }.getNotExposedProductsTask()
         return _task
     }
 
+    override fun getComponentClass(): Class<out Any> {
+        return componentClazz
+    }
 }

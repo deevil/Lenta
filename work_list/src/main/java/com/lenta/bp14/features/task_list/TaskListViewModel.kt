@@ -3,9 +3,10 @@ package com.lenta.bp14.features.task_list
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp14.models.data.TaskListTab
-import com.lenta.bp14.models.data.TaskManager
-import com.lenta.bp14.models.data.pojo.Task
+import com.lenta.bp14.models.general.ITasksSearchHelper
+import com.lenta.bp14.models.general.TaskInfo
 import com.lenta.bp14.platform.navigation.IScreenNavigator
+import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
@@ -17,34 +18,66 @@ import javax.inject.Inject
 class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyboardListener {
 
     @Inject
+    lateinit var sessionInfo: ISessionInfo
+    @Inject
     lateinit var navigator: IScreenNavigator
     @Inject
-    lateinit var taskManager: TaskManager
+    lateinit var tasksSearchHelper: ITasksSearchHelper
 
     val selectedPage = MutableLiveData(0)
 
-    val numberField: MutableLiveData<String> = MutableLiveData("")
+    val searchFieldProcessing: MutableLiveData<String> = MutableLiveData("")
+
+    val searchFieldFiltered: MutableLiveData<String> = MutableLiveData("")
+
     val requestFocusToNumberField: MutableLiveData<Boolean> = MutableLiveData()
 
-    val marketNumber = MutableLiveData<String>("")
+    val marketNumber by lazy { sessionInfo.market }
 
-    val processingTasks = MutableLiveData<List<Task>>()
-    val searchTasks = MutableLiveData<List<Task>>()
+    private val funcTaskAdapter = { taskList: List<TaskInfo>? ->
+        taskList?.sortedByDescending { it.taskId.toLongOrNull() }?.map {
+            TaskUi(
+                    id = it.taskId,
+                    type = it.taskTypeInfo.taskType,
+                    name = it.taskName,
+                    isProcessed = it.isNotFinished,
+                    blockingStatus = if (it.isMyBlock == null) TaskBlockingStatus.NOT_BLOCKED else {
+                        if (it.isMyBlock) TaskBlockingStatus.SELF_BLOCK else TaskBlockingStatus.BLOCK
+                    },
+                    quantity = it.quantityPositions,
+                    taskId = it.taskId
+            )
+
+        } ?: emptyList()
+    }
+
+    val processingTasks by lazy {
+        tasksSearchHelper.taskList.map(funcTaskAdapter)
+    }
+    val searchTasks by lazy {
+        tasksSearchHelper.filteredTaskList.map(funcTaskAdapter)
+    }
 
     val thirdButtonVisibility = selectedPage.map { it == TaskListTab.PROCESSING.position }
 
     init {
         viewModelScope.launch {
-            marketNumber.value = taskManager.marketNumber
-
-            processingTasks.value = taskManager.getTestTaskList(4)
-            searchTasks.value = taskManager.getTestTaskList(3)
+            searchFieldProcessing.value = tasksSearchHelper.processedFilter ?: ""
+            searchFieldFiltered.value = tasksSearchHelper.searchFilter ?: ""
+            updateProcessing()
         }
+
     }
 
     override fun onOkInSoftKeyboard(): Boolean {
+        if (selectedPage.value == 0) {
+            updateProcessing()
+        } else {
+            updateFiltered()
+        }
         return true
     }
+
 
     override fun onPageSelected(position: Int) {
         Logg.d { "onPageSelected: $position" }
@@ -52,7 +85,33 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
     }
 
     fun onClickUpdate() {
+        updateProcessing()
+    }
 
+    private fun updateProcessing() {
+        viewModelScope.launch {
+            navigator.showProgressLoadingData()
+            tasksSearchHelper.processedFilter = searchFieldProcessing.value
+            tasksSearchHelper.updateTaskList().either({
+                navigator.openAlertScreen(it)
+            }) {
+                // not used
+            }
+            navigator.hideProgress()
+        }
+    }
+
+    private fun updateFiltered() {
+        viewModelScope.launch {
+            navigator.showProgressLoadingData()
+            tasksSearchHelper.searchFilter = searchFieldFiltered.value
+            tasksSearchHelper.updateFilteredTaskList().either({
+                navigator.openAlertScreen(it)
+            }) {
+                // not used
+            }
+            navigator.hideProgress()
+        }
     }
 
     fun onClickFilter() {
@@ -64,12 +123,59 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
     }
 
     fun onClickProcessingTask(position: Int) {
-        navigator.openJobCardScreen(taskNumber = "100")
+        processingTasks.value?.getOrNull(position)?.taskId?.let {
+            setProcessedTask(it)
+        }
     }
 
     fun onClickSearchTask(position: Int) {
-        navigator.openJobCardScreen(taskNumber = "100")
+        searchTasks.value?.getOrNull(position)?.taskId?.let {
+            setProcessedTask(it)
+        }
     }
 
+
+    private fun setProcessedTask(taskId: String) {
+        tasksSearchHelper.setProcessedTask(taskId)
+        navigator.openJobCardScreen()
+    }
+
+    fun onResume() {
+        if (tasksSearchHelper.isNewSearchData) {
+            tasksSearchHelper.isNewSearchData = false
+            selectedPage.postValue(1)
+        }
+        if (tasksSearchHelper.isDataChanged) {
+            tasksSearchHelper.isDataChanged = false
+            onClickUpdate()
+        }
+    }
+
+    fun onDigitPressed(digit: Int) {
+        when (selectedPage.value) {
+            0 -> searchFieldProcessing
+            else -> searchFieldFiltered
+        }.let {
+            it.postValue(it.value ?: "" + digit)
+        }
+        requestFocusToNumberField.value = true
+    }
+
+}
+
+data class TaskUi(
+        val taskId: String,
+        val id: String,
+        val type: String,
+        val name: String,
+        val blockingStatus: TaskBlockingStatus,
+        val isProcessed: Boolean,
+        val quantity: Int
+)
+
+enum class TaskBlockingStatus {
+    NOT_BLOCKED,
+    SELF_BLOCK,
+    BLOCK
 }
 

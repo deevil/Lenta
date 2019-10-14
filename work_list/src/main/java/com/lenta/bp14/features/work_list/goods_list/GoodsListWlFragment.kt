@@ -9,9 +9,10 @@ import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import com.lenta.bp14.BR
 import com.lenta.bp14.R
-import com.lenta.bp14.models.data.GoodsListTab
 import com.lenta.bp14.databinding.*
-import com.lenta.bp14.platform.extentions.getAppComponent
+import com.lenta.bp14.di.WorkListComponent
+import com.lenta.bp14.models.data.GoodsListTab
+import com.lenta.shared.di.CoreInjectHelper
 import com.lenta.shared.keys.KeyCode
 import com.lenta.shared.keys.OnKeyDownListener
 import com.lenta.shared.platform.fragment.CoreFragment
@@ -19,6 +20,7 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
+import com.lenta.shared.scan.OnScanResultListener
 import com.lenta.shared.utilities.databinding.DataBindingAdapter
 import com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig
 import com.lenta.shared.utilities.databinding.RecyclerViewKeyHandler
@@ -26,10 +28,9 @@ import com.lenta.shared.utilities.databinding.ViewPagerSettings
 import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
 import com.lenta.shared.utilities.extentions.provideViewModel
-import java.lang.IllegalArgumentException
 
 class GoodsListWlFragment : CoreFragment<FragmentGoodsListWlBinding, GoodsListWlViewModel>(),
-        ViewPagerSettings, ToolbarButtonsClickListener, OnKeyDownListener {
+        ViewPagerSettings, ToolbarButtonsClickListener, OnKeyDownListener, OnScanResultListener {
 
     private var processingRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
     private var processedRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
@@ -41,7 +42,7 @@ class GoodsListWlFragment : CoreFragment<FragmentGoodsListWlBinding, GoodsListWl
 
     override fun getViewModel(): GoodsListWlViewModel {
         provideViewModel(GoodsListWlViewModel::class.java).let {
-            getAppComponent()?.inject(it)
+            CoreInjectHelper.getComponent(WorkListComponent::class.java)!!.inject(it)
             return it
         }
     }
@@ -140,13 +141,13 @@ class GoodsListWlFragment : CoreFragment<FragmentGoodsListWlBinding, GoodsListWl
                 }
 
                 layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
-                        layoutId = R.layout.item_good_selectable,
+                        layoutId = R.layout.item_wl_good_quantity_selectable,
                         itemId = BR.good,
-                        realisation = object : DataBindingAdapter<ItemGoodSelectableBinding> {
-                            override fun onCreate(binding: ItemGoodSelectableBinding) {
+                        realisation = object : DataBindingAdapter<ItemWlGoodQuantitySelectableBinding> {
+                            override fun onCreate(binding: ItemWlGoodQuantitySelectableBinding) {
                             }
 
-                            override fun onBind(binding: ItemGoodSelectableBinding, position: Int) {
+                            override fun onBind(binding: ItemWlGoodQuantitySelectableBinding, position: Int) {
                                 binding.tvItemNumber.tag = position
                                 binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
                                 binding.selectedForDelete = vm.processedSelectionsHelper.isSelected(position)
@@ -263,6 +264,10 @@ class GoodsListWlFragment : CoreFragment<FragmentGoodsListWlBinding, GoodsListWl
             return true
         }
         return false
+    }
+
+    override fun onScanResult(data: String) {
+        vm.onScanResult(data)
     }
 
 }

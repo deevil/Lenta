@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.lenta.bp9.model.task.IReceivingTaskManager
 import com.lenta.bp9.model.task.TaskDescription
 import com.lenta.bp9.model.task.TaskNotification
+import com.lenta.bp9.model.task.TaskStatus
 import com.lenta.bp9.model.task.revise.*
 import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.bp9.repos.IRepoInMemoryHolder
@@ -88,19 +89,21 @@ class LoadingTaskCardViewModel : CoreLoadingViewModel() {
             val productNotifications = result.productNotifications.map { TaskNotification.from(it) }
             val conditionNotifications = result.conditionNotifications.map { TaskNotification.from(it) }
             val deliveryDocumentsRevise = result.deliveryDocumentsRevise.map { DeliveryDocumentRevise.from(it) }.toMutableList()
-            deliveryDocumentsRevise.add(DeliveryDocumentRevise(documentID = "123", documentName = "Простой 1", documentType = DocumentType.Simple, isCheck = false, isObligatory = false))
-            deliveryDocumentsRevise.add(DeliveryDocumentRevise(documentID = "124", documentName = "Простой 2", documentType = DocumentType.Simple, isCheck = false, isObligatory = true))
-            deliveryDocumentsRevise.add(DeliveryDocumentRevise(documentID = "125", documentName = "Простой 3", documentType = DocumentType.Simple, isCheck = false, isObligatory = false))
+//            deliveryDocumentsRevise.add(DeliveryDocumentRevise(documentID = "123", documentName = "Простой 1", documentType = DocumentType.Simple, isCheck = false, isObligatory = false))
+//            deliveryDocumentsRevise.add(DeliveryDocumentRevise(documentID = "124", documentName = "Простой 2", documentType = DocumentType.Simple, isCheck = false, isObligatory = true))
+//            deliveryDocumentsRevise.add(DeliveryDocumentRevise(documentID = "125", documentName = "Простой 3", documentType = DocumentType.Simple, isCheck = false, isObligatory = false))
 
-            val deliveryProductDocumentsRevise = result.deliveryProductDocumentsRevise.map { DeliveryProductDocumentRevise.from(it) }
+            val deliveryProductDocumentsRevise = result.deliveryProductDocumentsRevise.map { DeliveryProductDocumentRevise.from(it) }.toMutableList()
+//            deliveryProductDocumentsRevise.add(DeliveryProductDocumentRevise(documentID = "123", documentName = "Простой 1", documentType = ProductDocumentType.Simple, isCheck = false, isObligatory = false, initialCount = 1.0, isSet = false, productNumber = "000123", measureUnits = "ШТ"))
+//            deliveryProductDocumentsRevise.add(DeliveryProductDocumentRevise(documentID = "124", documentName = "Простой 2", documentType = ProductDocumentType.Simple, isCheck = false, isObligatory = true, initialCount = 1.0, isSet = false, productNumber = "000124", measureUnits = "ШТ"))
+//            deliveryProductDocumentsRevise.add(DeliveryProductDocumentRevise(documentID = "125", documentName = "Простой 3", documentType = ProductDocumentType.Simple, isCheck = false, isObligatory = false, initialCount = 1.0, isSet = false, productNumber = "000125", measureUnits = "ШТ"))
+
             val productBatchesRevise = result.productBatchesRevise.map { ProductBatchRevise.from(it) }
             val formsABRussianRevise = result.formsABRussianRevise.map { FormABRussianRevise.from(it) }
             val formsABImportRevise = result.formsABImportRevise.map { FormABImportRevise.from(it) }
             val setComponenttsRevise = result.setComponenttsRevise.map { SetComponentRevise.from(it) }
             val invoiceRevise = InvoiceRevise.from(result.invoiceRevise)
             val commentsToVP = result.commentsToVP.map { CommentToVP.from(it) }.toMutableList()
-            commentsToVP.add(CommentToVP(1, "Какой-то текст для теста"))
-            commentsToVP.add(CommentToVP(2, "Ещё текст для теста"))
             val productsVetDocumentRevise = result.productsVetDocumentRevise.map { ProductVetDocumentRevise.from(it) }
             val complexDocumentsRevise = result.complexDocumentsRevise.map { ComplexDocumentRevise.from(it) }
 
@@ -117,7 +120,28 @@ class LoadingTaskCardViewModel : CoreLoadingViewModel() {
                 this.updateInvoiceInfo(invoiceRevise)
             }
             taskManager.setTask(newTask)
-            screenNavigator.openTaskReviseScreen()
+            transferToNextScreen()
+        }
+    }
+
+    private fun transferToNextScreen() {
+        taskManager.getReceivingTask()?.let { task ->
+            when (task.taskDescription.currentStatus) {
+                TaskStatus.Checking -> {
+                    if (task.taskRepository.getReviseDocuments().getDeliveryDocuments().isNotEmpty()) {
+                        screenNavigator.openTaskReviseScreen()
+                    } else if (task.taskRepository.getReviseDocuments().getProductDocuments().isNotEmpty()) {
+                        screenNavigator.openProductDocumentsReviseScreen()
+                    } else {
+                        screenNavigator.openCheckingNotNeededAlert {
+                            screenNavigator.openFinishReviseLoadingScreen()
+                        }
+                    }
+                }
+                else -> {
+                    screenNavigator.openTaskCardScreen(TaskCardMode.Full)
+                }
+            }
         }
     }
 

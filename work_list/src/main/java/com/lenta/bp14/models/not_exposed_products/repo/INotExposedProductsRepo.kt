@@ -3,8 +3,9 @@ package com.lenta.bp14.models.not_exposed_products.repo
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.lenta.shared.models.core.Uom
+import javax.inject.Inject
 
-class NotExposedProductsRepo : INotExposedProductsRepo {
+class NotExposedProductsRepo @Inject constructor() : INotExposedProductsRepo {
 
     private val products = mutableListOf<INotExposedProductInfo>()
 
@@ -59,7 +60,9 @@ data class NotExposedProductInfo(
         override val name: String,
         override val quantity: Double?,
         override val uom: Uom?,
-        override val isEmptyPlaceMarked: Boolean?
+        override val isEmptyPlaceMarked: Boolean?,
+        override val section: String?,
+        override val group: String?
 ) : INotExposedProductInfo
 
 
@@ -70,4 +73,6 @@ interface INotExposedProductInfo {
     val quantity: Double?
     val uom: Uom?
     val isEmptyPlaceMarked: Boolean?
+    val section: String?
+    val group: String?
 }

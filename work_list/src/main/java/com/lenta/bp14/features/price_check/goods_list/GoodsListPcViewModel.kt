@@ -2,29 +2,62 @@ package com.lenta.bp14.features.price_check.goods_list
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.lenta.bp14.features.common_ui_model.SimpleProductUi
+import com.lenta.bp14.models.IGeneralTaskManager
 import com.lenta.bp14.models.check_price.ICheckPriceResult
 import com.lenta.bp14.models.check_price.ICheckPriceTask
 import com.lenta.bp14.models.data.GoodsListTab
-import com.lenta.bp14.models.data.pojo.Good
 import com.lenta.bp14.models.getTaskName
+import com.lenta.bp14.models.print.IPrintTask
 import com.lenta.bp14.platform.navigation.IScreenNavigator
+import com.lenta.bp14.requests.check_price.CheckPriceReportNetRequest
+import com.lenta.shared.platform.device_info.DeviceInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.analyseCode
+import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.map
+import com.lenta.shared.view.OnPositionClickListener
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class GoodsListPcViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyboardListener {
+class GoodsListPcViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyboardListener, OnPositionClickListener {
 
     @Inject
     lateinit var navigator: IScreenNavigator
     @Inject
     lateinit var task: ICheckPriceTask
+    @Inject
+    lateinit var checkPriceReportNetRequest: CheckPriceReportNetRequest
+    @Inject
+    lateinit var deviceInfo: DeviceInfo
+    @Inject
+    lateinit var generalTaskManager: IGeneralTaskManager
+    @Inject
+    lateinit var printTask: IPrintTask
 
+    val tagTypeIds by lazy {
+        mutableListOf("")
+    }
+
+    val tagTypeTitles by lazy {
+        MutableLiveData<List<String>>(
+                emptyList()
+        ).also { liveData ->
+            viewModelScope.launch {
+                tagTypeIds.clear()
+                liveData.value = printTask.getPriceTagTypes().map {
+                    tagTypeIds.add(it.id)
+                    it.name
+                }
+            }
+        }
+    }
+
+    val tagTypesPosition = MutableLiveData(0)
 
     val processedSelectionsHelper = SelectionItemsHelper()
     val searchSelectionsHelper = SelectionItemsHelper()
@@ -40,7 +73,18 @@ class GoodsListPcViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     val numberField = MutableLiveData<String>("")
     val requestFocusToNumberField: MutableLiveData<Boolean> = MutableLiveData()
 
-    val processingGoods = MutableLiveData<List<Good>>(listOf())
+    val processingGoods by lazy {
+        task.getToProcessingProducts().map {
+            it?.mapIndexed { index, iCheckPriceResult ->
+                SimpleProductUi(
+                        position = index + 1,
+                        matNr = iCheckPriceResult.matNr ?: "",
+                        name = "${iCheckPriceResult.matNr?.takeLast(6)} ${iCheckPriceResult.name}"
+                )
+            }
+        }
+
+    }
 
     private val funcUiAdapter = { list: List<ICheckPriceResult>? ->
         list?.reversed()?.mapIndexed { index, iCheckPriceResult ->
@@ -88,27 +132,6 @@ class GoodsListPcViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     init {
         viewModelScope.launch {
             requestFocusToNumberField.value = true
-
-            /*processedGoods.value = List(10) {
-                CheckPriceResultUi(
-                        matNr = "4546465",
-                        position = it + 1,
-                        name = "4546465 nameeeee",
-                        isPriceValid = true,
-                        isPrinted = false
-                )
-            }
-
-            searchGoods.value = List(10) {
-                CheckPriceResultUi(
-                        matNr = "4546465",
-                        position = it + 1,
-                        name = "4546465 nameeeee",
-                        isPriceValid = true,
-                        isPrinted = false
-                )
-            }*/
-
         }
     }
 
@@ -172,6 +195,39 @@ class GoodsListPcViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
 
 
     fun onClickSave() {
+        if (task.isHaveDiscrepancies()) {
+            navigator.openListOfDifferencesScreen(
+                    onClickSkipCallback = {
+                        showConfirmationForSentReportScreen()
+                    }
+            )
+        } else {
+            showConfirmationForSentReportScreen()
+        }
+
+
+    }
+
+    private fun showConfirmationForSentReportScreen() {
+        navigator.showSetTaskToStatusCalculated {
+            viewModelScope.launch {
+                navigator.showProgressLoadingData()
+                checkPriceReportNetRequest(
+                        task.getReportData(
+                                ip = deviceInfo.getDeviceIp(),
+                                isNotFinish = false
+                        )
+                ).either({
+                    navigator.openAlertScreen(it)
+                }) {
+                    Logg.d { "SentReportResult: $it" }
+                    generalTaskManager.clearCurrentTask(sentReportResult = it)
+                    navigator.openReportResultScreen()
+                }
+                navigator.hideProgress()
+
+            }
+        }
 
     }
 
@@ -215,7 +271,7 @@ class GoodsListPcViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
 
     private fun getMatNrByPosition(position: Int): String? {
         return when (correctedSelectedPage.value) {
-            0 -> processingGoods.value?.map { it.material }
+            0 -> processingGoods.value?.map { it.matNr }
             1 -> processedGoods.value?.map { it.matNr }
             2 -> searchGoods.value?.map { it.matNr }
             else -> null
@@ -239,6 +295,10 @@ class GoodsListPcViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
 
     fun onScanResult(data: String) {
         checkCode(data)
+    }
+
+    override fun onClickPosition(position: Int) {
+        tagTypesPosition.value = position
     }
 }
 

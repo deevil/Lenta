@@ -1,7 +1,6 @@
 package com.lenta.bp14.features.job_card
 
 import android.view.View
-import androidx.activity.OnBackPressedCallback
 import com.lenta.bp14.R
 import com.lenta.bp14.databinding.FragmentJobCardBinding
 import com.lenta.bp14.platform.extentions.getAppComponent
@@ -14,11 +13,8 @@ import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
 import com.lenta.shared.utilities.extentions.provideViewModel
-import com.lenta.shared.utilities.state.state
 
 class JobCardFragment : CoreFragment<FragmentJobCardBinding, JobCardViewModel>(), ToolbarButtonsClickListener, OnBackPresserListener {
-
-    var taskNumber: String by state("")
 
     override fun getLayoutId(): Int = R.layout.fragment_job_card
 
@@ -27,7 +23,6 @@ class JobCardFragment : CoreFragment<FragmentJobCardBinding, JobCardViewModel>()
     override fun getViewModel(): JobCardViewModel {
         provideViewModel(JobCardViewModel::class.java).let {
             getAppComponent()?.inject(it)
-            it.setTaskNumber(taskNumber)
             return it
         }
     }
@@ -55,10 +50,8 @@ class JobCardFragment : CoreFragment<FragmentJobCardBinding, JobCardViewModel>()
 
 
     companion object {
-        fun create(taskNumber: String): JobCardFragment {
-            return JobCardFragment().apply {
-                this.taskNumber = taskNumber
-            }
+        fun create(): JobCardFragment {
+            return JobCardFragment()
 
         }
     }

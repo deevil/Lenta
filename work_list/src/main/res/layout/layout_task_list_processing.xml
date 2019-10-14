@@ -106,7 +106,7 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="8dp"
                 android:layout_weight="1"
-                android:digits="0123456789"
+                app:textAllCaps="@{true}"
                 android:drawableEnd="@drawable/ic_filter_white_24"
                 android:ellipsize="end"
                 android:hint="@string/enter_task_number_sap_login"
@@ -114,7 +114,7 @@
                 android:inputType="textNoSuggestions|textVisiblePassword"
                 android:maxLength="14"
                 android:maxLines="1"
-                android:text="@={vm.numberField}"
+                android:text="@={vm.searchFieldProcessing}"
                 app:onOkInSoftKeyboard="@{vm}"
                 app:requestFocus="@{vm.requestFocusToNumberField}"
                 tools:ignore="Autofill" />

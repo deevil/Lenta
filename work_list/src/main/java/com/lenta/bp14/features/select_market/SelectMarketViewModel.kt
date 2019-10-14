@@ -2,7 +2,6 @@ package com.lenta.bp14.features.select_market
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.lenta.bp14.models.data.TaskManager
 import com.lenta.bp14.platform.navigation.IScreenNavigator
 import com.lenta.bp14.repos.IRepoInMemoryHolder
 import com.lenta.shared.account.ISessionInfo
@@ -35,8 +34,6 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
     lateinit var serverTimeRequest: ServerTimeRequest
     @Inject
     lateinit var printerManager: PrinterManager
-    @Inject
-    lateinit var taskManager: TaskManager
 
 
     private val markets: MutableLiveData<List<MarketUi>> = MutableLiveData()
@@ -97,8 +94,6 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
     }
 
     private fun handleSuccessServerTime(serverTime: ServerTime) {
-        taskManager.marketNumber = sessionInfo.market ?: "Not found!"
-
         navigator.hideProgress()
         timeMonitor.setServerTime(time = serverTime.time, date = serverTime.date)
         navigator.openMainMenuScreen()

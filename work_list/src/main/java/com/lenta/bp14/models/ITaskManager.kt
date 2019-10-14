@@ -1,6 +1,8 @@
 package com.lenta.bp14.models
 
-import com.lenta.bp14.models.general.ITaskType
+import androidx.lifecycle.LiveData
+import com.lenta.bp14.models.general.ITaskTypeInfo
+import com.lenta.shared.di.CoreInjectHelper.removeComponent
 
 
 abstract class BaseTaskManager<S : ITask, D : ITaskDescription> : ITaskManager<S, D> {
@@ -15,14 +17,17 @@ abstract class BaseTaskManager<S : ITask, D : ITaskDescription> : ITaskManager<S
             return false
         }
         _task = null
+        removeComponent(getComponentClass())
         return true
     }
+
+    abstract fun getComponentClass(): Class<out Any>
 
     override fun setTask(task: S?) {
         _task = task
     }
 
-    override fun getCurrentTaskType(): ITaskType? {
+    override fun getCurrentTaskType(): ITaskTypeInfo? {
         return _task?.getTaskType()
     }
 
@@ -39,11 +44,11 @@ interface ITaskManager<S : ITask, D : ITaskDescription> {
 
     fun setTask(task: S?)
 
-    fun getCurrentTaskType(): ITaskType?
+    fun getCurrentTaskType(): ITaskTypeInfo?
 }
 
 interface ITask {
-    fun getTaskType(): ITaskType
+    fun getTaskType(): ITaskTypeInfo
     fun getDescription(): ITaskDescription
     /**
      * Проверяет режим работы. Возвращает:
@@ -53,8 +58,16 @@ interface ITask {
     fun isFreeMode(): Boolean {
         return this.getDescription().taskNumber.isBlank()
     }
-}
 
+    fun isEmpty(): Boolean
+
+    fun isHaveDiscrepancies(): Boolean
+
+    fun getListOfDifferences() : LiveData<List<BaseProductInfo>>
+
+    fun setMissing(matNrList: List<String>)
+
+}
 
 
 interface ITaskDescription {
@@ -63,7 +76,13 @@ interface ITaskDescription {
     var taskName: String
     val description: String
     val comment: String
+    val isStrictList: Boolean
 }
+
+data class BaseProductInfo(
+        val matNr: String,
+        val name: String
+)
 
 fun ITaskManager<*, *>.getTaskName(): String? {
     return this.getTask()?.getDescription()?.taskName ?: ""
@@ -75,4 +94,8 @@ fun ITaskManager<*, *>.getTaskType(): String? {
 
 fun ITask.getTaskName(): String {
     return getDescription().taskName
+}
+
+fun ITask.getTaskNumber(): String {
+    return getDescription().taskNumber
 }

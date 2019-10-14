@@ -1,23 +1,32 @@
 package com.lenta.bp14.models.check_list
 
-import com.google.gson.Gson
+import com.lenta.bp14.di.CheckListComponent
+import com.lenta.bp14.di.CheckListModule
+import com.lenta.bp14.di.DaggerCheckListComponent
 import com.lenta.bp14.models.BaseTaskManager
-import com.lenta.bp14.models.check_list.repo.CheckListRepo
-import com.lenta.shared.platform.time.ITimeMonitor
+import com.lenta.bp14.platform.extentions.getAppComponent
+import com.lenta.shared.di.AppScope
+import com.lenta.shared.di.CoreInjectHelper
+import javax.inject.Inject
 
-class CheckListTaskManager(
-        private val timeMonitor: ITimeMonitor,
-        private val gson: Gson
-) : BaseTaskManager<ICheckListTask, CheckListTaskDescription>() {
+@AppScope
+class CheckListTaskManager @Inject constructor() : BaseTaskManager<ICheckListTask, CheckListTaskDescription>() {
+
+    private val componentClazz = CheckListComponent::class.java
 
     override fun newTask(taskDescription: CheckListTaskDescription): ICheckListTask? {
-        _task = CheckListTask(
-                checkListRepo = CheckListRepo(),
-                taskDescription = taskDescription,
-                timeMonitor = timeMonitor,
-                gson = gson
-        )
+        _task = CoreInjectHelper.createComponent(componentClazz) {
+            DaggerCheckListComponent.builder()
+                    .appComponent(getAppComponent(null))
+                    .checkListModule(CheckListModule(taskDescription))
+                    .build()
+        }.getTask()
+
         return _task
+    }
+
+    override fun getComponentClass(): Class<out Any> {
+        return componentClazz
     }
 
 }

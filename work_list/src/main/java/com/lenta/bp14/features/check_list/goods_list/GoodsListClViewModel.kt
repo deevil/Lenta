@@ -2,12 +2,17 @@ package com.lenta.bp14.features.check_list.goods_list
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.lenta.bp14.models.check_list.*
+import com.lenta.bp14.models.IGeneralTaskManager
+import com.lenta.bp14.models.check_list.Good
+import com.lenta.bp14.models.check_list.ICheckListTask
+import com.lenta.bp14.models.check_price.IPriceInfoParser
 import com.lenta.bp14.models.getTaskName
 import com.lenta.bp14.platform.navigation.IScreenNavigator
-import com.lenta.shared.models.core.isOnlyInt
-import com.lenta.shared.platform.constants.Constants
+import com.lenta.bp14.requests.check_list.CheckListSendReportNetRequest
+import com.lenta.shared.models.core.Uom
+import com.lenta.shared.platform.device_info.DeviceInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
+import com.lenta.shared.requests.combined.scan_info.analyseCode
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
@@ -22,6 +27,15 @@ class GoodsListClViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     lateinit var navigator: IScreenNavigator
     @Inject
     lateinit var task: ICheckListTask
+    @Inject
+    lateinit var priceInfoParser: IPriceInfoParser
+    @Inject
+    lateinit var generalTaskManager: IGeneralTaskManager
+    @Inject
+    lateinit var deviceInfo: DeviceInfo
+    @Inject
+    lateinit var sentReportRequest: CheckListSendReportNetRequest
+
 
     val selectionsHelper = SelectionItemsHelper()
 
@@ -32,10 +46,28 @@ class GoodsListClViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     val numberField: MutableLiveData<String> = MutableLiveData("")
     val requestFocusToNumberField: MutableLiveData<Boolean> = MutableLiveData()
 
-    val goods = MutableLiveData<List<Good>>(listOf())
+    val goods: MutableLiveData<List<ItemGoodUi>> by lazy {
+        task.goods.map { list: List<Good>? ->
+            list?.mapIndexed { index, good ->
+                ItemGoodUi(
+                        position = (index + 1).toString(),
+                        name = good.getFormattedMaterialWithName(),
+                        quantity = good.quantity,
+                        units = good.units
+                )
+            }
+        }
+    }
 
-    val deleteButtonEnabled = selectionsHelper.selectedPositions.map { it?.isNotEmpty() ?: false }
-    val saveButtonEnabled = goods.map { it?.isNotEmpty() ?: false }
+    val deleteButtonEnabled by lazy {
+        selectionsHelper.selectedPositions.map { it?.isNotEmpty() ?: false }
+    }
+
+    val saveButtonEnabled by lazy {
+        goods.map { it?.isNotEmpty() ?: false }
+    }
+
+    // -----------------------------
 
     init {
         viewModelScope.launch {
@@ -44,32 +76,30 @@ class GoodsListClViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
         }
     }
 
+    // -----------------------------
+
     fun onClickDelete() {
-        val goodsList = goods.value!!.toMutableList()
-
-        selectionsHelper.selectedPositions.value?.apply {
-            val eans = goods.value?.filterIndexed { index, _ ->
-                this.contains(index)
-            }?.map { it.ean }?.toSet() ?: emptySet()
-
-            goodsList.removeAll { eans.contains(it.ean) }
-        }
-
-        for (index in goodsList.lastIndex downTo 0) {
-            goodsList[index].number = goodsList.lastIndex + 1 - index
-        }
-
+        task.deleteSelectedGoods(selectionsHelper.selectedPositions.value!!)
         selectionsHelper.clearPositions()
-        goods.value = goodsList.toList()
+
     }
 
     fun onClickSave() {
         // Подтверждение - Перевести задание в статус "Подсчитано" и закрыть его для редактирования? - Назад / Да
         navigator.showSetTaskToStatusCalculated {
-            task.openToEdit = false
-
-            // todo Реализовать сохранение задания?
-            task.saveScannedGoodList(goods.value!!)
+            viewModelScope.launch {
+                navigator.showProgressLoadingData()
+                sentReportRequest(task.getReportData(deviceInfo.getDeviceIp())).either(
+                        {
+                            navigator.openAlertScreen(failure = it)
+                        }
+                ) {
+                    Logg.d { "SentReportResult: $it" }
+                    generalTaskManager.clearCurrentTask(sentReportResult = it)
+                    navigator.openReportResultScreen()
+                }
+                navigator.hideProgress()
+            }
         }
     }
 
@@ -83,48 +113,30 @@ class GoodsListClViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     }
 
     private fun checkEnteredNumber(number: String) {
-        number.length.let { length ->
-            if (length < Constants.COMMON_SAP_LENGTH) {
-                // Сообщение - Данный товар не найден в справочнике
-                navigator.showGoodNotFound()
-                return
-            }
-
-            if (length >= Constants.COMMON_SAP_LENGTH) {
-                when (length) {
-                    Constants.COMMON_SAP_LENGTH -> addGoodByMaterial(number)
-                    Constants.SAP_OR_BAR_LENGTH -> {
-                        // Выбор - Введено 12 знаков. Какой код вы ввели? - SAP-код / Штрихкод
-                        navigator.showTwelveCharactersEntered(
-                                sapCallback = { addGoodByMatcode(number) },
-                                barCallback = { addGoodByEan(number) }
-                        )
+        analyseCode(
+                code = number,
+                funcForEan = { eanCode ->
+                    viewModelScope.launch {
+                        addGood(task.getGoodByEan(eanCode))
                     }
-                    else -> addGoodByEan(number)
-                }
-            }
-        }
-    }
-
-    private fun addGoodByMaterial(material: String) {
-        Logg.d { "Entered MATERIAL: $material" }
-        viewModelScope.launch {
-            addGood(task.getGoodByMaterial(material))
-        }
-    }
-
-    private fun addGoodByEan(ean: String) {
-        Logg.d { "Entered EAN: $ean" }
-        viewModelScope.launch {
-            addGood(task.getGoodByEan(ean))
-        }
-    }
-
-    private fun addGoodByMatcode(matcode: String) {
-        Logg.d { "Entered MATCODE: $matcode" }
-        viewModelScope.launch {
-            addGood(task.getGoodByMatcode(matcode))
-        }
+                },
+                funcForMatNr = { matNr ->
+                    viewModelScope.launch {
+                        addGood(task.getGoodByMaterial(matNr))
+                    }
+                },
+                funcForPriceQrCode = { qrCode ->
+                    priceInfoParser.getPriceInfoFromRawCode(qrCode)?.let {
+                        viewModelScope.launch {
+                            addGood(task.getGoodByEan(it.eanCode))
+                        }
+                        return@analyseCode
+                    }
+                    navigator.showGoodNotFound()
+                },
+                funcForSapOrBar = navigator::showTwelveCharactersEntered,
+                funcForNotValidFormat = navigator::showGoodNotFound
+        )
     }
 
     private fun addGood(good: Good?) {
@@ -134,22 +146,8 @@ class GoodsListClViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
             return
         }
 
-        val goodsList = goods.value!!.toMutableList()
-        val existGood = goodsList.find { it.ean == good.ean }
-        if (existGood != null) {
-            val index = goodsList.indexOf(existGood)
-            goodsList[index].quantity.value = "" + if (good.uom.isOnlyInt()) {
-                existGood.quantity.value!!.toInt() + good.quantity.value!!.toInt()
-            } else {
-                val goodQuantity = good.quantity.value!!.toBigDecimal()
-                val existGoodQuantity = existGood.quantity.value!!.toBigDecimal()
-                existGoodQuantity.plus(goodQuantity).toString().dropLastWhile { it == '0' || it == '.' }
-            }
-        } else {
-            goodsList.add(0, good)
-        }
+        task.addGood(good)
 
-        goods.value = goodsList.toList()
         numberField.value = ""
     }
 
@@ -163,4 +161,15 @@ class GoodsListClViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
 
     }
 
+    fun onScanResult(data: String) {
+        checkEnteredNumber(data)
+    }
+
 }
+
+data class ItemGoodUi(
+        val position: String,
+        val name: String,
+        val quantity: MutableLiveData<String>,
+        val units: Uom
+)
