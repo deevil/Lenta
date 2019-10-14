@@ -124,8 +124,8 @@ class PrintTask @Inject constructor(
                             date = timeMonitor.getServerDate(),
                             address = repoInMemoryHolder.storesRequestResult?.markets?.firstOrNull { it.number == sessionInfo.market }?.address
                                     ?: "",
-                            promoBegin = "????",
-                            promoEnd = "????",
+                            promoBegin = serverPriceInfo.startPromo,
+                            promoEnd = serverPriceInfo.endPromo,
                             copies = copies
                     )
 

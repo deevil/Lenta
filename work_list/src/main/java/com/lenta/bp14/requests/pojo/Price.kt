@@ -16,7 +16,13 @@ data class Price(
         var price3: Double,
 
         @SerializedName("PRICE4")
-        var price4: Double
+        var price4: Double,
+
+        @SerializedName("START_PROMO")
+        var startPromo: String,
+
+        @SerializedName("END_PROMO")
+        var endPromo: String
 
 
 )
