@@ -43,6 +43,16 @@ class NotExposedSendReportNetRequest
             )
         }
 
+        params.notProcessed.forEach {
+            checkPositions.add(
+                    Position(
+                            matNr = it.matNr,
+                            isProcessed = false.toSapBooleanString(),
+                            quantity = 0.0
+                    )
+            )
+        }
+
         return fmpRequestsHelper.restRequest("ZMP_UTZ_WKL_08_V001",
                 SapReport(
                         description = params.description.taskName,
@@ -73,8 +83,8 @@ data class NotExposedReport(
         val ip: String,
         val description: NotExposedProductsTaskDescription,
         val isNotFinish: Boolean,
-        val checksResults: List<INotExposedProductInfo>
-
+        val checksResults: List<INotExposedProductInfo>,
+        val notProcessed: List<INotExposedProductInfo>
 )
 
 
