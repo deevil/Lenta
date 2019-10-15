@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
-        tools:context=".features.print_settings.PrintSettingsFragment">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".features.print_settings.PrintSettingsFragment">
 
     <data>
 
         <variable
             name="vm"
-            type="com.lenta.bp14.features.print_settings.PrintSettingsViewModel"/>
+            type="com.lenta.bp14.features.print_settings.PrintSettingsViewModel" />
 
     </data>
 
@@ -25,8 +25,7 @@
 
 
             <!-- Количество копий -->
-            <LinearLayout
-                style="@style/LinearRowStyle">
+            <LinearLayout style="@style/LinearRowStyle">
 
                 <LinearLayout
                     style="@style/LinearCellStyle"
@@ -34,12 +33,11 @@
 
                     <TextView
                         style="@style/CellTextStyle"
-                        android:text="@string/copy_quantity"/>
+                        android:text="@string/copy_quantity" />
 
                 </LinearLayout>
 
-                <View
-                    style="@style/VerticalDivider"/>
+                <View style="@style/VerticalDivider" />
 
                 <LinearLayout
                     style="@style/LinearCellStyle"
@@ -55,7 +53,7 @@
                         android:inputType="number"
                         android:maxLength="2"
                         android:text="@={vm.numberOfCopies}"
-                        tools:text="2"/>
+                        tools:text="2" />
 
                     <ImageButton
                         android:id="@+id/btn_reduce_quantity"
@@ -63,27 +61,29 @@
                         android:layout_height="40dp"
                         android:layout_marginEnd="8dp"
                         android:background="@drawable/bg_border_rectangle"
-                        android:src="@drawable/ic_remove_white_24dp"/>
+                        android:foreground="?selectableItemBackground"
+                        android:onClick="@{(v) -> vm.reduceNumberOfCopies()}"
+                        android:src="@drawable/ic_remove_white_24dp" />
 
                     <ImageButton
                         android:id="@+id/btn_increase_quantity"
                         android:layout_width="40dp"
                         android:layout_height="40dp"
-                        android:background="@drawable/bg_border_rectangle"
                         android:layout_marginEnd="8dp"
-                        android:src="@drawable/ic_add_white_24dp"/>
+                        android:background="@drawable/bg_border_rectangle"
+                        android:foreground="?selectableItemBackground"
+                        android:onClick="@{(v) -> vm.increaseNumberOfCopies()}"
+                        android:src="@drawable/ic_add_white_24dp" />
 
                 </LinearLayout>
 
             </LinearLayout>
 
-            <View
-                style="@style/HorizontalDivider"/>
+            <View style="@style/HorizontalDivider" />
 
 
             <!-- Тип принтера -->
-            <LinearLayout
-                style="@style/LinearRowStyle">
+            <LinearLayout style="@style/LinearRowStyle">
 
                 <LinearLayout
                     style="@style/LinearCellStyle"
@@ -91,12 +91,11 @@
 
                     <TextView
                         style="@style/CellTextStyle"
-                        android:text="@string/printer_type"/>
+                        android:text="@string/printer_type" />
 
                 </LinearLayout>
 
-                <View
-                    style="@style/VerticalDivider"/>
+                <View style="@style/VerticalDivider" />
 
                 <LinearLayout
                     style="@style/LinearCellStyle"
@@ -107,19 +106,17 @@
                         style="@style/CellSpinnerStyle"
                         app:items="@{vm.printerTypesTitles}"
                         app:onPositionClickListener="@{vm}"
-                        app:position="@{vm.selectedPrinterType}"/>
+                        app:position="@{vm.selectedPrinterTypePos}" />
 
                 </LinearLayout>
 
             </LinearLayout>
 
-            <View
-                style="@style/HorizontalDivider"/>
+            <View style="@style/HorizontalDivider" />
 
 
             <!-- Тип ценника -->
-            <LinearLayout
-                style="@style/LinearRowStyle">
+            <LinearLayout style="@style/LinearRowStyle">
 
                 <LinearLayout
                     style="@style/LinearCellStyle"
@@ -127,12 +124,11 @@
 
                     <TextView
                         style="@style/CellTextStyle"
-                        android:text="@string/price_tag_type"/>
+                        android:text="@string/price_tag_type" />
 
                 </LinearLayout>
 
-                <View
-                    style="@style/VerticalDivider"/>
+                <View style="@style/VerticalDivider" />
 
                 <LinearLayout
                     style="@style/LinearCellStyle"
@@ -142,14 +138,14 @@
                         android:id="@+id/spin_price_tag"
                         style="@style/CellSpinnerStyle"
                         app:items="@{vm.printerPriceTypesTitles}"
-                        app:position="@{vm.selectedPriceTagType}"/>
+                        app:onPositionClickListener="@{vm.onTypeTagPositionClick}"
+                        app:position="@{vm.selectedPriceTagTypePos}" />
 
                 </LinearLayout>
 
             </LinearLayout>
 
-            <View
-                style="@style/HorizontalDivider"/>
+            <View style="@style/HorizontalDivider" />
 
 
             <!-- IP устройства -->
@@ -161,8 +157,7 @@
                 android:visibility="@{vm.ipAddressVisibility}"
                 tools:visibility="visible">
 
-                <LinearLayout
-                    style="@style/LinearRowStyle">
+                <LinearLayout style="@style/LinearRowStyle">
 
                     <LinearLayout
                         style="@style/LinearCellStyle"
@@ -170,12 +165,11 @@
 
                         <TextView
                             style="@style/CellTextStyle"
-                            android:text="@string/device_ip"/>
+                            android:text="@string/device_ip" />
 
                     </LinearLayout>
 
-                    <View
-                        style="@style/VerticalDivider"/>
+                    <View style="@style/VerticalDivider" />
 
                     <LinearLayout
                         style="@style/LinearCellStyle"
@@ -183,15 +177,16 @@
 
                         <EditText
                             style="@style/CellEditTextStyle"
+                            android:digits="0123456789."
+                            android:inputType="number"
                             android:text="@={vm.ipAddress}"
-                            tools:text="10.254.25.12"/>
+                            tools:text="10.254.25.12" />
 
                     </LinearLayout>
 
                 </LinearLayout>
 
-                <View
-                    style="@style/HorizontalDivider"/>
+                <View style="@style/HorizontalDivider" />
 
             </LinearLayout>
 
@@ -212,13 +207,15 @@
                 android:layout_margin="8dp"
                 android:layout_weight="1"
                 android:digits="0123456789"
-                android:maxLines="1"
                 android:ellipsize="end"
                 android:hint="@string/enter_item_number_or_barcode"
                 android:imeOptions="actionGo"
                 android:inputType="number"
                 android:maxLength="14"
-                tools:ignore="Autofill"/>
+                android:maxLines="1"
+                android:text="@={vm.numberField}"
+                app:onOkInSoftKeyboard="@{vm}"
+                tools:ignore="Autofill" />
 
             <ImageView
                 android:id="@+id/btn_qrcode"
@@ -227,7 +224,7 @@
                 android:layout_marginEnd="8dp"
                 android:background="?selectableItemBackground"
                 android:onClick="@{(v) -> vm.navigator.openQrCodeInfoScreen()}"
-                android:src="@drawable/ic_scan_qrcode_48dp"/>
+                android:src="@drawable/ic_scan_qrcode_48dp" />
 
             <ImageView
                 android:id="@+id/btn_barcode"
@@ -236,7 +233,7 @@
                 android:layout_marginEnd="8dp"
                 android:background="?selectableItemBackground"
                 android:onClick="@{(v) -> vm.navigator.openEanInfoScreen()}"
-                android:src="@drawable/ic_scan_barcode_48dp"/>
+                android:src="@drawable/ic_scan_barcode_48dp" />
 
         </LinearLayout>
 

@@ -2,22 +2,39 @@ package com.lenta.bp14.models.print
 
 import com.lenta.bp14.fmp.resources.ZfmpUtz50V001
 import com.lenta.bp14.fmp.resources.ZfmpUtz51V001
+import com.lenta.bp14.models.check_price.ActualPriceInfo
+import com.lenta.bp14.repos.IRepoInMemoryHolder
+import com.lenta.bp14.requests.ProductInfoResult
+import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.di.AppScope
+import com.lenta.shared.exception.Failure
+import com.lenta.shared.functional.Either
+import com.lenta.shared.platform.time.ITimeMonitor
+import com.lenta.shared.print.IPrintPriceNetService
+import com.lenta.shared.print.PrintPriceInfo
+import com.lenta.shared.print.PrintTemplate
 import com.lenta.shared.utilities.extentions.isSapTrue
+import com.lenta.shared.utilities.extentions.toNullIfEmpty
 import com.mobrun.plugin.api.HyperHive
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @AppScope
-class PrintTask @Inject constructor(hyperHive: HyperHive) : IPrintTask {
+class PrintTask @Inject constructor(
+        hyperHive: HyperHive,
+        private val printPriceNetService: IPrintPriceNetService,
+        private val timeMonitor: ITimeMonitor,
+        private var repoInMemoryHolder: IRepoInMemoryHolder,
+        private var sessionInfo: ISessionInfo
+) : IPrintTask {
 
     private val emptyPriceTag = PriceTagType(
-            id = "", name = "Не выбранно", isRegular = false
+            id = "", name = "Не выбранно", isRegular = null
     )
 
     private val emptyPrinterType = PrinterType(
-            id = "", name = "Не выбранно", isMobile = false, isStatic = false
+            id = "", name = "Не выбранно", isMobile = null, isStatic = null
     )
 
     val zfmpUtz51V001 by lazy {
@@ -56,6 +73,70 @@ class PrintTask @Inject constructor(hyperHive: HyperHive) : IPrintTask {
         }
     }
 
+    override suspend fun printPrice(
+            ip: String,
+            productInfoResult: ProductInfoResult,
+            printerType: PrinterType,
+            isRegular: Boolean,
+            copies: Int): Either<Failure, Boolean> {
+
+        val serverPriceInfo = productInfoResult.prices.getOrNull(0)
+                ?: return Either.Left(Failure.ServerError)
+
+
+        productInfoResult.productsInfo.getOrNull(0)?.let { productInfo ->
+
+            val actualPriceInfo = ActualPriceInfo(
+                    matNumber = serverPriceInfo.matnr.takeLast(6),
+                    productName = productInfo.name,
+                    price1 = serverPriceInfo.price1,
+                    price2 = serverPriceInfo.price2.toNullIfEmpty(),
+                    price3 = serverPriceInfo.price3.toNullIfEmpty(),
+                    price4 = serverPriceInfo.price4.toNullIfEmpty()
+            )
+
+            var price2 = if (isRegular) actualPriceInfo.price2
+                    ?: actualPriceInfo.price1!! else actualPriceInfo.getDiscountCardPrice() ?: 0.0
+
+            val printTemplate = when (printerType.id) {
+                "01" -> if (isRegular) {
+                    PrintTemplate.Zebra_Yellow_6_6
+                } else {
+                    PrintTemplate.Zebra_Red_6_6
+                }
+                "02" -> if (isRegular) {
+                    PrintTemplate.Datamax_Yellow_6_6
+                } else {
+                    PrintTemplate.Datamax_Red_6_6
+                }
+                else -> null
+
+            } ?: return Either.Left(Failure.PrintTemplateError)
+
+            return printPriceNetService.print(
+                    ip = ip,
+                    printTemplate = printTemplate,
+                    printPriceInfo = PrintPriceInfo(
+                            goodsName = productInfo.name,
+                            price1 = actualPriceInfo.getPrice() ?: 0.0,
+                            price2 = price2,
+                            productNumber = productInfo.matNr.takeLast(6),
+                            ean = productInfo.ean,
+                            date = timeMonitor.getServerDate(),
+                            address = repoInMemoryHolder.storesRequestResult?.markets?.firstOrNull { it.number == sessionInfo.market }?.address
+                                    ?: "",
+                            promoBegin = serverPriceInfo.startPromo,
+                            promoEnd = serverPriceInfo.endPromo,
+                            copies = copies
+                    )
+
+            )
+        }
+
+        return Either.Left(Failure.ServerError)
+
+    }
+
 
 }
 
@@ -63,6 +144,12 @@ interface IPrintTask {
 
     suspend fun getPriceTagTypes(): List<PriceTagType>
     suspend fun getPrinterTypes(): List<PrinterType>
+    suspend fun printPrice(
+            ip: String,
+            productInfoResult: ProductInfoResult,
+            printerType: PrinterType,
+            isRegular: Boolean,
+            copies: Int): Either<Failure, Boolean>
 
 }
 
@@ -72,7 +159,7 @@ data class PriceTagType(
         /**
          * Признак – цена товара регулярная
          */
-        val isRegular: Boolean
+        val isRegular: Boolean?
 )
 
 data class PrinterType(
@@ -81,9 +168,9 @@ data class PrinterType(
         /**
          * Признак - Мобильный принтер
          */
-        val isMobile: Boolean,
+        val isMobile: Boolean?,
         /**
          * Признак - Стационарный принтер
          */
-        val isStatic: Boolean
+        val isStatic: Boolean?
 )

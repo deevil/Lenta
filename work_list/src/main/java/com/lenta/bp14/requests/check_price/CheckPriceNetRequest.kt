@@ -7,6 +7,7 @@ import com.lenta.shared.exception.Failure
 import com.lenta.shared.functional.Either
 import com.lenta.shared.functional.map
 import com.lenta.shared.interactor.UseCase
+import com.lenta.shared.utilities.extentions.toNullIfEmpty
 import javax.inject.Inject
 
 class CheckPriceNetRequest
@@ -19,10 +20,10 @@ class CheckPriceNetRequest
             ActualPriceInfo(
                     matNumber = productInfo.matNr,
                     productName = productInfo.name,
-                    price1 = price.price1.toFloatOrNull(),
-                    price2 = price.price2.toFloatOrNull(),
-                    price3 = price.price3.toFloatOrNull(),
-                    price4 = price.price4.toFloatOrNull()
+                    price1 = price.price1,
+                    price2 = price.price2.toNullIfEmpty(),
+                    price3 = price.price3.toNullIfEmpty(),
+                    price4 = price.price4.toNullIfEmpty()
             )
         }
     }
