@@ -17,6 +17,7 @@ import com.lenta.bp14.platform.sound.ISoundPlayer
 import com.lenta.bp14.requests.check_price.CheckPriceReport
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.functional.Either
+import com.lenta.shared.functional.rightToLeft
 import com.lenta.shared.models.core.StateFromToString
 import com.lenta.shared.utilities.extentions.isSapTrue
 import com.lenta.shared.utilities.extentions.map
@@ -84,7 +85,6 @@ class CheckPriceTask @Inject constructor(
 
         taskDescription.additionalTaskInfo?.checkPrices?.let {
             it.forEach { checkPrice ->
-                val productInfo = productsInfoMap[checkPrice.matNr]
                 readyResultsRepo.addCheckPriceResult(
                         getCheckPriceByMatnr(checkPrice.matNr)
                 )
@@ -136,21 +136,24 @@ class CheckPriceTask @Inject constructor(
         return actualPricesRepo.getActualPriceInfoByEan(
                 tkNumber = taskDescription.tkNumber,
                 eanCode = scannedPriceInfo.eanCode
-        ).also {
-            it.either({}, { actualPriceInfo ->
-                CheckPriceResult(
-                        ean = scannedPriceInfo.eanCode,
-                        matNr = actualPriceInfo.matNumber,
-                        name = actualPriceInfo.productName,
-                        scannedPriceInfo = scannedPriceInfo,
-                        actualPriceInfo = actualPriceInfo,
-                        userPriceInfo = null,
-                        isPrinted = false
-                ).apply {
-                    readyResultsRepo.addCheckPriceResult(this)
+        ).rightToLeft(
+                fnRtoL = checksForAddFunc
+        )
+                .also {
+                    it.either({}, { actualPriceInfo ->
+                        CheckPriceResult(
+                                ean = scannedPriceInfo.eanCode,
+                                matNr = actualPriceInfo.matNumber,
+                                name = actualPriceInfo.productName,
+                                scannedPriceInfo = scannedPriceInfo,
+                                actualPriceInfo = actualPriceInfo,
+                                userPriceInfo = null,
+                                isPrinted = false
+                        ).apply {
+                            readyResultsRepo.addCheckPriceResult(this)
+                        }
+                    })
                 }
-            })
-        }
 
 
     }
@@ -274,10 +277,18 @@ class CheckPriceTask @Inject constructor(
 
     }
 
+    private val checksForAddFunc = { iActualPriceInfo: IActualPriceInfo ->
+        if (!isAllowedProductForTask(iActualPriceInfo.matNumber)) {
+            Failure.InvalidProductForTask
+        } else null
+    }
+
     override suspend fun getActualPriceByEan(eanCode: String): Either<Failure, IActualPriceInfo> {
         return actualPricesRepo.getActualPriceInfoByEan(
                 tkNumber = taskDescription.tkNumber,
                 eanCode = eanCode
+        ).rightToLeft(
+                fnRtoL = checksForAddFunc
         )
     }
 
@@ -285,6 +296,8 @@ class CheckPriceTask @Inject constructor(
         return actualPricesRepo.getActualPriceInfoByMatNr(
                 tkNumber = taskDescription.tkNumber,
                 matNumber = matNumber
+        ).rightToLeft(
+                fnRtoL = checksForAddFunc
         )
     }
 
@@ -323,6 +336,14 @@ class CheckPriceTask @Inject constructor(
         matNrList.forEach {
             setCheckPriceStatus(null, matNr = it)
         }
+    }
+
+    private fun isAllowedProductForTask(matNr: String): Boolean {
+        if (!taskDescription.isStrictList) {
+            return true
+        }
+        return taskDescription.additionalTaskInfo?.positions?.any { it.matNr == matNr }
+                ?: true
     }
 
 }
