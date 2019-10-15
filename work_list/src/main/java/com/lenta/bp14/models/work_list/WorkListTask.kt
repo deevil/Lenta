@@ -67,8 +67,8 @@ class WorkListTask @Inject constructor(
         }
     }
 
-    override suspend fun addGood(good: Good) {
-        goods.value?.find { it.ean == good.ean && it.material == good.material }?.let { existGood ->
+    override suspend fun addGoodToList(good: Good) {
+        goods.value?.find { it.material == good.material }?.let { existGood ->
             currentGood.value = existGood
             return
         }
@@ -82,6 +82,10 @@ class WorkListTask @Inject constructor(
 
     override suspend fun getGoodByMaterial(material: String): Good? {
         return workListRepo.getGoodByMaterial(material)
+    }
+
+    override suspend fun getGoodByEan(ean: String): Good? {
+        return workListRepo.getGoodByEan(ean)
     }
 
     override fun addScanResult(scanResult: ScanResult) {
@@ -171,7 +175,8 @@ interface IWorkListTask : ITask {
 
     suspend fun loadTaskList()
     suspend fun getGoodByMaterial(material: String): Good?
-    suspend fun addGood(good: Good)
+    suspend fun getGoodByEan(ean: String): Good?
+    suspend fun addGoodToList(good: Good)
 
     fun addScanResult(scanResult: ScanResult)
     fun setGoodProcessed()

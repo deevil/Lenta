@@ -99,7 +99,7 @@ class GoodsListWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     init {
         viewModelScope.launch {
             if (!task.isLoadedTaskList) task.loadTaskList()
-            task.currentGood.value = task.goods.value?.get(0)
+            if (!task.isEmpty()) task.currentGood.value = task.goods.value?.get(0)
 
             requestFocusToNumberField.value = true
             taskName.value = "${task.getTaskType().taskType} // ${task.getTaskName()}"
@@ -156,7 +156,6 @@ class GoodsListWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
                         }
                         return@analyseCode
                     }
-                    navigator.showGoodNotFound()
                 },
                 funcForSapOrBar = navigator::showTwelveCharactersEntered,
                 funcForNotValidFormat = navigator::showGoodNotFound
@@ -166,9 +165,13 @@ class GoodsListWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     private fun addGoodByEan(ean: String) {
         Logg.d { "Entered EAN: $ean" }
         viewModelScope.launch {
-            /*if (task.addGood(ean)) {
+            navigator.showProgressLoadingData()
+            task.getGoodByEan(ean)?.let { good ->
+                task.addGoodToList(good)
+                navigator.hideProgress()
                 navigator.openGoodInfoWlScreen()
-            }*/
+            }
+            navigator.hideProgress()
         }
     }
 
@@ -177,7 +180,7 @@ class GoodsListWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
         viewModelScope.launch {
             navigator.showProgressLoadingData()
             task.getGoodByMaterial(material)?.let { good ->
-                task.addGood(good)
+                task.addGoodToList(good)
                 navigator.hideProgress()
                 navigator.openGoodInfoWlScreen()
             }
@@ -199,7 +202,7 @@ class GoodsListWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
             viewModelScope.launch {
                 navigator.showProgressLoadingData()
                 task.getGoodByMaterial(material)?.let { good ->
-                    task.addGood(good)
+                    task.addGoodToList(good)
                     navigator.hideProgress()
                     navigator.openGoodInfoWlScreen()
                 }

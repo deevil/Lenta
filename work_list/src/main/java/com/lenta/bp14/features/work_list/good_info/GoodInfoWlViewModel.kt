@@ -211,8 +211,6 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
             commentsPosition.value = position
             comment.value = commentsList.value?.get(position)
         }
-
-
     }
 
     val onSelectShelfLifeType = object : OnPositionClickListener {
@@ -236,7 +234,6 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
     fun onClickApply() {
         addScanResult()
         task.setGoodProcessed()
-
         navigator.openGoodsListWlScreen()
     }
 
