@@ -15,7 +15,9 @@ import com.lenta.bp14.models.work_list.repo.IWorkListRepo
 import com.lenta.bp14.requests.work_list.WorkListReport
 import com.lenta.shared.models.core.MatrixType
 import com.lenta.shared.models.core.Uom
+import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.platform.time.ITimeMonitor
+import com.lenta.shared.utilities.extentions.getDate
 import com.lenta.shared.utilities.extentions.getFormattedDate
 import com.lenta.shared.utilities.extentions.isSapTrue
 import com.lenta.shared.utilities.extentions.map
@@ -31,6 +33,10 @@ class WorkListTask @Inject constructor(
         private val gson: Gson
 ) : IWorkListTask {
 
+    private val checkResults by lazy {
+        taskDescription.taskInfoResult?.checkResults?.toList() ?: emptyList()
+    }
+
     override var isLoadedTaskList = false
 
     override val goods = MutableLiveData<MutableList<Good>>(mutableListOf())
@@ -38,11 +44,20 @@ class WorkListTask @Inject constructor(
     override var currentGood = MutableLiveData<Good>()
 
     override suspend fun loadTaskList() {
-        taskDescription.taskInfoResult?.positions?.let {
+        taskDescription.taskInfoResult?.positions?.let { positions ->
             val goodsList = mutableListOf<Good>()
-            it.forEach { position ->
+            positions.forEach { position ->
                 getGoodByMaterial(position.matNr)?.let { good ->
                     good.isProcessed = position.isProcessed.isSapTrue()
+                    good.scanResults.value = checkResults.filter { it.matNr == position.matNr }.map { result ->
+                        ScanResult(
+                                quantity = result.quantity,
+                                comment = result.comment,
+                                productionDate = result.producedDate.getDate(Constants.DATE_FORMAT_ddmmyy),
+                                expirationDate = result.shelfLife.getDate(Constants.DATE_FORMAT_ddmmyy)
+                        )
+                    }
+
                     goodsList.add(good)
                 }
             }
