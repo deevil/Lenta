@@ -126,7 +126,7 @@ class WorkListTask @Inject constructor(
         currentGood.value?.scanResults?.value = scanResultsList
     }
 
-    override fun setGoodProcessed() {
+    override fun setCurrentGoodProcessed() {
         val goodsList = goods.value!!
 
         currentGood.value?.let { good ->
@@ -165,6 +165,26 @@ class WorkListTask @Inject constructor(
         //TODO implement this
     }
 
+    override fun deleteSelectedGoods(materials: List<String>) {
+        val goodsList = goods.value!!
+        materials.forEach { material ->
+            goodsList.find { it.material == material }?.let { good ->
+                if (isGoodFromTaskList(material)) {
+                    good.scanResults.value = emptyList()
+                    good.isProcessed = false
+                } else {
+                    goodsList.remove(good)
+                }
+            }
+        }
+
+        goods.value = goodsList
+    }
+
+    private fun isGoodFromTaskList(material: String): Boolean {
+        return taskDescription.taskInfoResult?.positions?.find { it.matNr == material } != null
+    }
+
 }
 
 
@@ -178,8 +198,9 @@ interface IWorkListTask : ITask {
     suspend fun getGoodByEan(ean: String): Good?
     suspend fun addGoodToList(good: Good)
 
+    fun deleteSelectedGoods(materials: List<String>)
     fun addScanResult(scanResult: ScanResult)
-    fun setGoodProcessed()
+    fun setCurrentGoodProcessed()
 
     fun getGoodOptions(): LiveData<GoodOptions>
     fun getGoodStocks(): LiveData<List<Stock>>

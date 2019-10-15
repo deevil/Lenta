@@ -91,8 +91,21 @@ class GoodsListWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
                 tab == GoodsListTab.PROCESSED.position && processedSelected || tab == GoodsListTab.SEARCH.position
             }
 
-    val deleteButtonEnabled = selectedItemOnCurrentTab.map { it }
-    val thirdButtonVisibility = selectedPage.map { it != GoodsListTab.PROCESSING.position }
+    val deleteButtonVisibility by lazy {
+        correctedSelectedPage.map { it == GoodsListTab.PROCESSED.position }
+    }
+
+    val deleteButtonEnabled by lazy {
+        selectedItemOnCurrentTab.map { it }
+    }
+
+    val filterButtonVisibility by lazy {
+        selectedPage.map { it != GoodsListTab.PROCESSING.position }
+    }
+
+    val filterButtonEnabled by lazy {
+        task.goods.map { it?.size ?: 0 > 1 }
+    }
 
     // -----------------------------
 
@@ -132,7 +145,15 @@ class GoodsListWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     }
 
     fun onClickDelete() {
+        val materials = mutableListOf<String>()
+        processedSelectionsHelper.selectedPositions.value?.map { position ->
+            processedGoods.value?.get(position)?.material?.let {
+                materials.add(it)
+            }
+        }
 
+        processedSelectionsHelper.clearPositions()
+        task.deleteSelectedGoods(materials)
     }
 
     override fun onOkInSoftKeyboard(): Boolean {
@@ -193,7 +214,7 @@ class GoodsListWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     }
 
     fun onClickItemPosition(position: Int) {
-        when(getCorrectedPagePosition(selectedPage.value)){
+        when(correctedSelectedPage.value){
             0 -> processingGoods.value?.get(position)?.material
             1 -> processedGoods.value?.get(position)?.material
             2 -> searchGoods.value?.get(position)?.material
@@ -226,6 +247,10 @@ class GoodsListWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
 
     fun onScanResult(data: String) {
 
+    }
+
+    fun onClickBack() {
+        navigator.openTaskListScreen()
     }
 
 }

@@ -6,7 +6,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.Observer
 import com.lenta.bp14.BR
 import com.lenta.bp14.R
 import com.lenta.bp14.databinding.*
@@ -15,6 +14,7 @@ import com.lenta.bp14.models.data.GoodsListTab
 import com.lenta.shared.di.CoreInjectHelper
 import com.lenta.shared.keys.KeyCode
 import com.lenta.shared.keys.OnKeyDownListener
+import com.lenta.shared.platform.activity.OnBackPresserListener
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
@@ -30,7 +30,7 @@ import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
 import com.lenta.shared.utilities.extentions.provideViewModel
 
 class GoodsListWlFragment : CoreFragment<FragmentGoodsListWlBinding, GoodsListWlViewModel>(),
-        ViewPagerSettings, ToolbarButtonsClickListener, OnKeyDownListener, OnScanResultListener {
+        ViewPagerSettings, ToolbarButtonsClickListener, OnKeyDownListener, OnScanResultListener, OnBackPresserListener {
 
     private var processingRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
     private var processedRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
@@ -55,20 +55,14 @@ class GoodsListWlFragment : CoreFragment<FragmentGoodsListWlBinding, GoodsListWl
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
+        bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.delete)
+        bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.filter)
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.save)
 
-        viewLifecycleOwner.apply {
-            vm.selectedPage.observe(this, Observer {
-                if (it == GoodsListTab.SEARCH.position) {
-                    bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.filter)
-                } else {
-                    bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.delete)
-                }
-            })
-        }
-
+        connectLiveData(vm.deleteButtonVisibility, getBottomToolBarUIModel()!!.uiModelButton3.visibility)
         connectLiveData(vm.deleteButtonEnabled, getBottomToolBarUIModel()!!.uiModelButton3.enabled)
-        connectLiveData(vm.thirdButtonVisibility, getBottomToolBarUIModel()!!.uiModelButton3.visibility)
+        connectLiveData(vm.filterButtonVisibility, getBottomToolBarUIModel()!!.uiModelButton3.visibility)
+        connectLiveData(vm.filterButtonEnabled, getBottomToolBarUIModel()!!.uiModelButton3.enabled)
     }
 
     override fun onToolbarButtonClick(view: View) {
@@ -267,6 +261,11 @@ class GoodsListWlFragment : CoreFragment<FragmentGoodsListWlBinding, GoodsListWl
 
     override fun onScanResult(data: String) {
         vm.onScanResult(data)
+    }
+
+    override fun onBackPressed(): Boolean {
+        vm.onClickBack()
+        return true
     }
 
 }
