@@ -211,12 +211,14 @@ class NotExposedProductsTask @Inject constructor(
     }
 
 
-    override fun getReportData(ip: String, isNotFinish: Boolean): NotExposedReport {
+    override fun getReportData(ip: String): NotExposedReport {
+        val processingProducts = getToProcessingProducts().value ?: emptyList()
         return NotExposedReport(
                 ip = ip,
                 description = taskDescription,
-                isNotFinish = isNotFinish,
-                checksResults = notExposedProductsRepo.getProducts().value ?: emptyList()
+                isNotFinish = processingProducts.isNotEmpty(),
+                checksResults = notExposedProductsRepo.getProducts().value ?: emptyList(),
+                notProcessed = processingProducts
         )
     }
 
@@ -289,7 +291,7 @@ interface INotExposedProductsTask : ITask, IFilterable {
 
     suspend fun getProductInfoAndSetProcessed(ean: String? = null, matNr: String? = null): Either<Failure, GoodInfo>
 
-    fun getReportData(ip: String, isNotFinish: Boolean): NotExposedReport
+    fun getReportData(ip: String): NotExposedReport
 
     fun isAllowedProduct(materialNumber: String): Boolean
 

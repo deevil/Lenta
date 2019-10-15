@@ -17,6 +17,7 @@ import com.lenta.bp14.platform.sound.ISoundPlayer
 import com.lenta.bp14.requests.check_price.CheckPriceReport
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.functional.Either
+import com.lenta.shared.functional.rightToLeft
 import com.lenta.shared.models.core.StateFromToString
 import com.lenta.shared.utilities.extentions.isSapTrue
 import com.lenta.shared.utilities.extentions.map
@@ -84,7 +85,6 @@ class CheckPriceTask @Inject constructor(
 
         taskDescription.additionalTaskInfo?.checkPrices?.let {
             it.forEach { checkPrice ->
-                val productInfo = productsInfoMap[checkPrice.matNr]
                 readyResultsRepo.addCheckPriceResult(
                         getCheckPriceByMatnr(checkPrice.matNr)
                 )
@@ -136,21 +136,24 @@ class CheckPriceTask @Inject constructor(
         return actualPricesRepo.getActualPriceInfoByEan(
                 tkNumber = taskDescription.tkNumber,
                 eanCode = scannedPriceInfo.eanCode
-        ).also {
-            it.either({}, { actualPriceInfo ->
-                CheckPriceResult(
-                        ean = scannedPriceInfo.eanCode,
-                        matNr = actualPriceInfo.matNumber,
-                        name = actualPriceInfo.productName,
-                        scannedPriceInfo = scannedPriceInfo,
-                        actualPriceInfo = actualPriceInfo,
-                        userPriceInfo = null,
-                        isPrinted = false
-                ).apply {
-                    readyResultsRepo.addCheckPriceResult(this)
+        ).rightToLeft(
+                fnRtoL = checksForAddFunc
+        )
+                .also {
+                    it.either({}, { actualPriceInfo ->
+                        CheckPriceResult(
+                                ean = scannedPriceInfo.eanCode,
+                                matNr = actualPriceInfo.matNumber,
+                                name = actualPriceInfo.productName,
+                                scannedPriceInfo = scannedPriceInfo,
+                                actualPriceInfo = actualPriceInfo,
+                                userPriceInfo = null,
+                                isPrinted = false
+                        ).apply {
+                            readyResultsRepo.addCheckPriceResult(this)
+                        }
+                    })
                 }
-            })
-        }
 
 
     }
@@ -274,10 +277,18 @@ class CheckPriceTask @Inject constructor(
 
     }
 
+    private val checksForAddFunc = { iActualPriceInfo: IActualPriceInfo ->
+        if (!isAllowedProductForTask(iActualPriceInfo.matNumber)) {
+            Failure.InvalidProductForTask
+        } else null
+    }
+
     override suspend fun getActualPriceByEan(eanCode: String): Either<Failure, IActualPriceInfo> {
         return actualPricesRepo.getActualPriceInfoByEan(
                 tkNumber = taskDescription.tkNumber,
                 eanCode = eanCode
+        ).rightToLeft(
+                fnRtoL = checksForAddFunc
         )
     }
 
@@ -285,16 +296,19 @@ class CheckPriceTask @Inject constructor(
         return actualPricesRepo.getActualPriceInfoByMatNr(
                 tkNumber = taskDescription.tkNumber,
                 matNumber = matNumber
+        ).rightToLeft(
+                fnRtoL = checksForAddFunc
         )
     }
 
-    override fun getReportData(ip: String, isNotFinish: Boolean): CheckPriceReport {
+    override fun getReportData(ip: String): CheckPriceReport {
+        val notProcessedProducts = getToProcessingProducts().value ?: emptyList()
         return CheckPriceReport(
                 ip = ip,
                 description = taskDescription,
-                isNotFinish = isNotFinish,
-                checksResults = getCheckResults().value ?: emptyList()
-
+                isNotFinish = notProcessedProducts.isNotEmpty(),
+                checksResults = getCheckResults().value ?: emptyList(),
+                notProcessedResults = notProcessedProducts
         )
     }
 
@@ -324,6 +338,14 @@ class CheckPriceTask @Inject constructor(
         }
     }
 
+    private fun isAllowedProductForTask(matNr: String): Boolean {
+        if (!taskDescription.isStrictList) {
+            return true
+        }
+        return taskDescription.additionalTaskInfo?.positions?.any { it.matNr == matNr }
+                ?: true
+    }
+
 }
 
 fun ICheckPriceResult?.toCheckStatus(): CheckStatus? {
@@ -345,7 +367,7 @@ interface ICheckPriceTask : ITask {
     suspend fun getActualPriceByEan(eanCode: String): Either<Failure, IActualPriceInfo>
     suspend fun getActualPriceByMatNr(matNumber: String): Either<Failure, IActualPriceInfo>
     suspend fun checkPriceByQrCode(qrCode: String): Either<Failure, IActualPriceInfo>
-    fun getReportData(ip: String, isNotFinish: Boolean): CheckPriceReport
+    fun getReportData(ip: String): CheckPriceReport
 
     var processingMatNumber: String?
 

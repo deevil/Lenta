@@ -37,8 +37,18 @@ class NotExposedSendReportNetRequest
             checkPositions.add(
                     Position(
                             matNr = it.matNr,
-                            isProcessed = (it.isEmptyPlaceMarked != null).toSapBooleanString(),
+                            isProcessed = true.toSapBooleanString(),
                             quantity = it.quantity ?: 0.0
+                    )
+            )
+        }
+
+        params.notProcessed.forEach {
+            checkPositions.add(
+                    Position(
+                            matNr = it.matNr,
+                            isProcessed = false.toSapBooleanString(),
+                            quantity = 0.0
                     )
             )
         }
@@ -73,8 +83,8 @@ data class NotExposedReport(
         val ip: String,
         val description: NotExposedProductsTaskDescription,
         val isNotFinish: Boolean,
-        val checksResults: List<INotExposedProductInfo>
-
+        val checksResults: List<INotExposedProductInfo>,
+        val notProcessed: List<INotExposedProductInfo>
 )
 
 
