@@ -88,12 +88,13 @@ class GoodsListPcViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
 
     private val funcUiAdapter = { list: List<ICheckPriceResult>? ->
         list?.reversed()?.mapIndexed { index, iCheckPriceResult ->
+            val isAllValid = iCheckPriceResult.isAllValid()
             CheckPriceResultUi(
                     matNr = iCheckPriceResult.matNr!!,
                     position = list.size - index,
                     name = "${iCheckPriceResult.matNr?.takeLast(6)} ${iCheckPriceResult.name}",
-                    isPriceValid = iCheckPriceResult.isAllValid(),
-                    isPrinted = iCheckPriceResult.isPrinted
+                    isPriceValid = isAllValid,
+                    isPrinted = if (isAllValid == true) null else iCheckPriceResult.isPrinted
             )
         }
     }
@@ -307,7 +308,7 @@ data class CheckPriceResultUi(
         val position: Int,
         val name: String,
         val isPriceValid: Boolean?,
-        val isPrinted: Boolean
+        val isPrinted: Boolean?
 )
 
 
