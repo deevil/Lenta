@@ -235,8 +235,8 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
 
     fun onClickApply() {
         addScanResult()
-        task.moveGoodToProcessedList()
-        navigator.closeAllScreen()
+        task.setGoodProcessed()
+
         navigator.openGoodsListWlScreen()
     }
 

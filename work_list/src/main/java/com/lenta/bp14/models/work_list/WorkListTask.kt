@@ -31,59 +31,39 @@ class WorkListTask @Inject constructor(
         private val gson: Gson
 ) : IWorkListTask {
 
-    private val additionalInfo by lazy {
-        taskDescription.taskInfoResult?.additionalInfoList?.map { it.matnr to it }?.toMap()
-                ?: emptyMap()
-    }
+    override var isLoadedTaskList = false
 
-    private val places by lazy {
-        taskDescription.taskInfoResult?.places?.map { it.matnr to it }?.toMap() ?: emptyMap()
-    }
-
-    private val suppliers by lazy {
-        taskDescription.taskInfoResult?.suppliers?.map { it.matnr to it }?.toMap() ?: emptyMap()
-    }
-
-    private val stocks by lazy {
-        taskDescription.taskInfoResult?.stocks?.map { it.matnr to it }?.toMap() ?: emptyMap()
-    }
-
-    override val processing = MutableLiveData<MutableList<Good>>(mutableListOf())
-    override val processed = MutableLiveData<MutableList<Good>>(mutableListOf())
-    override val search = MutableLiveData<MutableList<Good>>(mutableListOf())
+    override val goods = MutableLiveData<MutableList<Good>>(mutableListOf())
 
     override var currentGood = MutableLiveData<Good>()
 
-    // Общий список товаров
-    override val goods = MutableLiveData<MutableList<Good>>(mutableListOf())
-
     override suspend fun loadTaskList() {
-        val goodsList = mutableListOf<Good>()
         taskDescription.taskInfoResult?.positions?.let {
+            val goodsList = mutableListOf<Good>()
             it.forEach { position ->
-                val good = getGoodByMaterial(position.matNr)
-                if (good != null){
+                getGoodByMaterial(position.matNr)?.let { good ->
                     good.isProcessed = position.isProcessed.isSapTrue()
                     goodsList.add(good)
                 }
             }
-        }
 
-        goods.value = goodsList
+            goods.value = goodsList
+            isLoadedTaskList = true
+        }
     }
 
     override suspend fun addGood(good: Good) {
-        processed.value?.find { it.ean == good.ean && it.material == good.material }?.let { existGood ->
+        goods.value?.find { it.ean == good.ean && it.material == good.material }?.let { existGood ->
             currentGood.value = existGood
             return
         }
 
-        val processingList = processing.value!!
-        processingList.add(good)
-        processing.value = processingList
+        val goodsList = goods.value!!
+        goodsList.add(0, good)
+        goods.value = goodsList
+
         currentGood.value = good
     }
-
 
     override suspend fun getGoodByMaterial(material: String): Good? {
         return workListRepo.getGoodByMaterial(material)
@@ -127,24 +107,16 @@ class WorkListTask @Inject constructor(
         currentGood.value?.scanResults?.value = scanResultsList
     }
 
-    override fun moveGoodToProcessedList() {
-        processed.value?.let { list ->
-            currentGood.value?.let { good ->
-                if (!list.contains(good)) {
-                    list.add(good)
-                    processed.value = list
-                }
-            }
+    override fun setGoodProcessed() {
+        val goodsList = goods.value!!
+
+        currentGood.value?.let { good ->
+            good.isProcessed = true
+            goodsList.removeAll { it.material == good.material }
+            goodsList.add(0, good)
         }
 
-        processing.value?.let { list ->
-            currentGood.value?.let { good ->
-                if (list.contains(good)) {
-                    list.remove(good)
-                    processing.value = list
-                }
-            }
-        }
+        goods.value = goodsList
     }
 
     override fun getReportData(ip: String): WorkListReport {
@@ -152,12 +124,12 @@ class WorkListTask @Inject constructor(
                 ip = ip,
                 description = taskDescription,
                 isNotFinish = false,
-                checksResults = processed.value ?: emptyList()
+                checksResults = goods.value ?: emptyList()
         )
     }
 
     override fun isEmpty(): Boolean {
-        return processed.value.isNullOrEmpty()
+        return goods.value.isNullOrEmpty()
     }
 
     override fun isHaveDiscrepancies(): Boolean {
@@ -178,19 +150,16 @@ class WorkListTask @Inject constructor(
 
 
 interface IWorkListTask : ITask {
-    val processing: MutableLiveData<MutableList<Good>>
-    val processed: MutableLiveData<MutableList<Good>>
-    val search: MutableLiveData<MutableList<Good>>
-    var currentGood: MutableLiveData<Good>
-
+    var isLoadedTaskList: Boolean
     val goods: MutableLiveData<MutableList<Good>>
+    var currentGood: MutableLiveData<Good>
 
     suspend fun loadTaskList()
     suspend fun getGoodByMaterial(material: String): Good?
     suspend fun addGood(good: Good)
 
     fun addScanResult(scanResult: ScanResult)
-    fun moveGoodToProcessedList()
+    fun setGoodProcessed()
 
     fun getGoodOptions(): LiveData<GoodOptions>
     fun getGoodStocks(): LiveData<List<Stock>>

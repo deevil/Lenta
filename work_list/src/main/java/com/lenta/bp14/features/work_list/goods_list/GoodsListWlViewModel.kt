@@ -64,8 +64,8 @@ class GoodsListWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     }
 
     val processedGoods: MutableLiveData<List<ProcessedListUi>> by lazy {
-        task.processed.map { list: MutableList<Good>? ->
-            list?.mapIndexed { index, good ->
+        task.goods.map { list ->
+            list?.filter { it.isProcessed }?.mapIndexed { index, good ->
                 var total = 0.0
                 for (scanResult in good.scanResults.value!!) {
                     total = total.sumWith(scanResult.quantity)
@@ -98,7 +98,7 @@ class GoodsListWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
 
     init {
         viewModelScope.launch {
-            task.loadTaskList()
+            if (!task.isLoadedTaskList) task.loadTaskList()
             task.currentGood.value = task.goods.value?.get(0)
 
             requestFocusToNumberField.value = true
