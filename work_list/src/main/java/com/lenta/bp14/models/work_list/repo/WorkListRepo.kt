@@ -6,10 +6,7 @@ import com.lenta.bp14.models.work_list.Good
 import com.lenta.bp14.models.work_list.GoodOptions
 import com.lenta.bp14.platform.extentions.WorkListGoodInfo
 import com.lenta.bp14.platform.extentions.toWorkListGoodInfo
-import com.lenta.shared.fmp.resources.dao_ext.getItemsByTid
-import com.lenta.shared.fmp.resources.dao_ext.getProductInfoByMaterial
-import com.lenta.shared.fmp.resources.dao_ext.getUnitName
-import com.lenta.shared.fmp.resources.dao_ext.toDescriptionsList
+import com.lenta.shared.fmp.resources.dao_ext.*
 import com.lenta.shared.fmp.resources.fast.ZmpUtz07V001
 import com.lenta.shared.fmp.resources.fast.ZmpUtz17V001
 import com.lenta.shared.fmp.resources.slow.ZfmpUtz48V001
@@ -66,9 +63,23 @@ class WorkListRepo @Inject constructor(
         }
     }
 
+    override suspend fun getGoodByEan(ean: String): Good? {
+        getMaterialByEan(ean)?.let { material ->
+            return getGoodByMaterial(material)
+        }
+
+        return null
+    }
+
     override suspend fun getGoodInfoByMaterial(material: String?): WorkListGoodInfo? {
         return withContext(Dispatchers.IO) {
             return@withContext productInfo.getProductInfoByMaterial(material)?.toWorkListGoodInfo()
+        }
+    }
+
+    override suspend fun getMaterialByEan(ean: String?): String? {
+        return withContext(Dispatchers.IO) {
+            return@withContext eanInfo.getEanInfo(ean)?.toEanInfo()?.materialNumber
         }
     }
 
@@ -98,5 +109,7 @@ class WorkListRepo @Inject constructor(
 
 interface IWorkListRepo {
     suspend fun getGoodByMaterial(material: String): Good?
+    suspend fun getGoodByEan(ean: String): Good?
     suspend fun getGoodInfoByMaterial(material: String?): WorkListGoodInfo?
+    suspend fun getMaterialByEan(ean: String?): String?
 }

@@ -21,6 +21,8 @@ import com.lenta.bp14.repos.RepoInMemoryHolder
 import com.lenta.bp14.requests.check_price.CheckPriceTaskInfoNetRequest
 import com.lenta.bp14.requests.check_price.ICheckPriceTaskInfoNetRequest
 import com.lenta.bp14.requests.tasks.*
+import com.lenta.bp14.requests.work_list.IWorkListTaskInfoNetRequest
+import com.lenta.bp14.requests.work_list.WorkListTaskInfoNetRequest
 import com.lenta.shared.di.AppScope
 import dagger.Binds
 import dagger.Module
@@ -81,6 +83,10 @@ class AppModule {
         @Binds
         @AppScope
         fun bindIUnlockTaskNetRequest(realisation: UnlockTaskNetRequest): IUnlockTaskNetRequest
+
+        @Binds
+        @AppScope
+        fun bindWorkListTaskInfoNetRequest(realisation: WorkListTaskInfoNetRequest): IWorkListTaskInfoNetRequest
 
     }
 

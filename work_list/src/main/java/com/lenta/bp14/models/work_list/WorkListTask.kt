@@ -15,8 +15,11 @@ import com.lenta.bp14.models.work_list.repo.IWorkListRepo
 import com.lenta.bp14.requests.work_list.WorkListReport
 import com.lenta.shared.models.core.MatrixType
 import com.lenta.shared.models.core.Uom
+import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.platform.time.ITimeMonitor
+import com.lenta.shared.utilities.extentions.getDate
 import com.lenta.shared.utilities.extentions.getFormattedDate
+import com.lenta.shared.utilities.extentions.isSapTrue
 import com.lenta.shared.utilities.extentions.map
 import java.util.*
 import javax.inject.Inject
@@ -30,27 +33,59 @@ class WorkListTask @Inject constructor(
         private val gson: Gson
 ) : IWorkListTask {
 
-    override val processing = MutableLiveData<MutableList<Good>>(mutableListOf())
-    override val processed = MutableLiveData<MutableList<Good>>(mutableListOf())
-    override val search = MutableLiveData<MutableList<Good>>(mutableListOf())
+    private val checkResults by lazy {
+        taskDescription.taskInfoResult?.checkResults?.toList() ?: emptyList()
+    }
+
+    override var isLoadedTaskList = false
+
+    override val goods = MutableLiveData<MutableList<Good>>(mutableListOf())
 
     override var currentGood = MutableLiveData<Good>()
 
-    override suspend fun addGood(good: Good) {
-        processed.value?.find { it.ean == good.ean && it.material == good.material }?.let { existGood ->
+    override suspend fun loadTaskList() {
+        taskDescription.taskInfoResult?.positions?.let { positions ->
+            val goodsList = mutableListOf<Good>()
+            positions.forEach { position ->
+                getGoodByMaterial(position.matNr)?.let { good ->
+                    good.isProcessed = position.isProcessed.isSapTrue()
+                    good.scanResults.value = checkResults.filter { it.matNr == position.matNr }.map { result ->
+                        ScanResult(
+                                quantity = result.quantity,
+                                comment = result.comment,
+                                productionDate = result.producedDate.getDate(Constants.DATE_FORMAT_ddmmyy),
+                                expirationDate = result.shelfLife.getDate(Constants.DATE_FORMAT_ddmmyy)
+                        )
+                    }
+
+                    goodsList.add(good)
+                }
+            }
+
+            goods.value = goodsList
+            isLoadedTaskList = true
+        }
+    }
+
+    override suspend fun addGoodToList(good: Good) {
+        goods.value?.find { it.material == good.material }?.let { existGood ->
             currentGood.value = existGood
             return
         }
 
-        val processingList = processing.value!!
-        processingList.add(good)
-        processing.value = processingList
+        val goodsList = goods.value!!
+        goodsList.add(0, good)
+        goods.value = goodsList
+
         currentGood.value = good
     }
 
-
     override suspend fun getGoodByMaterial(material: String): Good? {
         return workListRepo.getGoodByMaterial(material)
+    }
+
+    override suspend fun getGoodByEan(ean: String): Good? {
+        return workListRepo.getGoodByEan(ean)
     }
 
     override fun addScanResult(scanResult: ScanResult) {
@@ -91,24 +126,16 @@ class WorkListTask @Inject constructor(
         currentGood.value?.scanResults?.value = scanResultsList
     }
 
-    override fun moveGoodToProcessedList() {
-        processed.value?.let { list ->
-            currentGood.value?.let { good ->
-                if (!list.contains(good)) {
-                    list.add(good)
-                    processed.value = list
-                }
-            }
+    override fun setCurrentGoodProcessed() {
+        val goodsList = goods.value!!
+
+        currentGood.value?.let { good ->
+            good.isProcessed = true
+            goodsList.removeAll { it.material == good.material }
+            goodsList.add(0, good)
         }
 
-        processing.value?.let { list ->
-            currentGood.value?.let { good ->
-                if (list.contains(good)) {
-                    list.remove(good)
-                    processing.value = list
-                }
-            }
-        }
+        goods.value = goodsList
     }
 
     override fun getReportData(ip: String): WorkListReport {
@@ -116,12 +143,12 @@ class WorkListTask @Inject constructor(
                 ip = ip,
                 description = taskDescription,
                 isNotFinish = false,
-                checksResults = processed.value ?: emptyList()
+                checksResults = goods.value ?: emptyList()
         )
     }
 
     override fun isEmpty(): Boolean {
-        return processed.value.isNullOrEmpty()
+        return goods.value.isNullOrEmpty()
     }
 
     override fun isHaveDiscrepancies(): Boolean {
@@ -138,20 +165,42 @@ class WorkListTask @Inject constructor(
         //TODO implement this
     }
 
+    override fun deleteSelectedGoods(materials: List<String>) {
+        val goodsList = goods.value!!
+        materials.forEach { material ->
+            goodsList.find { it.material == material }?.let { good ->
+                if (isGoodFromTaskList(material)) {
+                    good.scanResults.value = emptyList()
+                    good.isProcessed = false
+                } else {
+                    goodsList.remove(good)
+                }
+            }
+        }
+
+        goods.value = goodsList
+    }
+
+    private fun isGoodFromTaskList(material: String): Boolean {
+        return taskDescription.taskInfoResult?.positions?.find { it.matNr == material } != null
+    }
+
 }
 
 
 interface IWorkListTask : ITask {
-    val processing: MutableLiveData<MutableList<Good>>
-    val processed: MutableLiveData<MutableList<Good>>
-    val search: MutableLiveData<MutableList<Good>>
+    var isLoadedTaskList: Boolean
+    val goods: MutableLiveData<MutableList<Good>>
     var currentGood: MutableLiveData<Good>
 
+    suspend fun loadTaskList()
     suspend fun getGoodByMaterial(material: String): Good?
-    suspend fun addGood(good: Good)
+    suspend fun getGoodByEan(ean: String): Good?
+    suspend fun addGoodToList(good: Good)
 
+    fun deleteSelectedGoods(materials: List<String>)
     fun addScanResult(scanResult: ScanResult)
-    fun moveGoodToProcessedList()
+    fun setCurrentGoodProcessed()
 
     fun getGoodOptions(): LiveData<GoodOptions>
     fun getGoodStocks(): LiveData<List<Stock>>
@@ -175,6 +224,7 @@ data class Good(
         val shelfLifeType: MutableLiveData<List<String>> = MutableLiveData(emptyList()),
         val comments: MutableLiveData<List<String>> = MutableLiveData(emptyList()),
         val options: GoodOptions,
+        var isProcessed: Boolean = false,
 
         var additional: MutableLiveData<AdditionalGoodInfo> = MutableLiveData(),
         val sales: MutableLiveData<SalesStatistics> = MutableLiveData(),

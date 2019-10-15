@@ -17,8 +17,10 @@ import com.lenta.bp14.requests.check_price.CheckPriceTaskInfoParams
 import com.lenta.bp14.requests.check_price.ICheckPriceTaskInfoNetRequest
 import com.lenta.bp14.requests.not_exposed_product.NotExposedTaskInfoNetRequest
 import com.lenta.bp14.requests.not_exposed_product.NotExposedTaskInfoParams
+import com.lenta.bp14.requests.pojo.TaskInfoParams
 import com.lenta.bp14.requests.tasks.UnlockTaskNetRequest
 import com.lenta.bp14.requests.tasks.UnlockTaskParams
+import com.lenta.bp14.requests.work_list.IWorkListTaskInfoNetRequest
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.functional.Either
@@ -56,6 +58,8 @@ class JobCardViewModel : CoreViewModel() {
     lateinit var checkPriceTaskInfoNetRequest: ICheckPriceTaskInfoNetRequest
     @Inject
     lateinit var notExposedTaskInfoNetRequest: NotExposedTaskInfoNetRequest
+    @Inject
+    lateinit var workListTaskInfoNetRequest: IWorkListTaskInfoNetRequest
     @Inject
     lateinit var unlockTaskNetRequest: UnlockTaskNetRequest
 
@@ -187,19 +191,36 @@ class JobCardViewModel : CoreViewModel() {
                     screenNavigator.openGoodsListClScreen()
                 }
                 AppTaskTypes.WorkList.taskType -> {
-                    newTask(
-                            taskManager = workListTaskManager,
-                            taskDescription = WorkListTaskDescription(
-                                    tkNumber = sessionInfo.market!!,
-                                    taskNumber = taskFromTaskList?.taskId
-                                            ?: "",
-                                    taskName = taskName.value ?: "",
-                                    comment = comment.value ?: "",
-                                    description = description.value ?: "",
-                                    isStrictList = taskFromTaskList?.isStrict ?: false
+                    if (taskFromTaskList != null) {
+                        workListTaskInfoNetRequest(
+                                TaskInfoParams(
+                                        taskNumber = taskFromTaskList!!.taskId,
+                                        ip = deviceInfo.getDeviceIp(),
+                                        withProductInfo = false.toSapBooleanString(),
+                                        mode = "1"
+                                )
+                        )
+                    } else {
+                        Either.Right(null)
+                    }.let {
+                        it.either({ failure ->
+                            screenNavigator.openAlertScreen(failure)
+                        }) { result ->
+                            newTask(
+                                    taskManager = workListTaskManager,
+                                    taskDescription = WorkListTaskDescription(
+                                            tkNumber = sessionInfo.market!!,
+                                            taskNumber = taskFromTaskList?.taskId ?: "",
+                                            taskName = taskName.value ?: "",
+                                            comment = comment.value ?: "",
+                                            description = description.value ?: "",
+                                            isStrictList = taskFromTaskList?.isStrict ?: false,
+                                            taskInfoResult = result
+                                    )
                             )
-                    )
-                    screenNavigator.openGoodsListWlScreen()
+                            screenNavigator.openGoodsListWlScreen()
+                        }
+                    }
                 }
                 AppTaskTypes.NotExposedProducts.taskType -> {
                     if (taskFromTaskList != null) {
@@ -214,7 +235,6 @@ class JobCardViewModel : CoreViewModel() {
                     } else {
                         Either.Right(null)
                     }.let {
-
                         it.either({ failure ->
                             screenNavigator.openAlertScreen(failure)
                         }) { result ->
@@ -233,20 +253,13 @@ class JobCardViewModel : CoreViewModel() {
                             )
                             screenNavigator.openGoodsListNeScreen()
                         }
-
-
                     }
-
                 }
                 else -> screenNavigator.openNotImplementedScreenAlert("")
             }
 
             screenNavigator.hideProgress()
-
-
         }
-
-
     }
 
     fun onBackPressed(): Boolean {

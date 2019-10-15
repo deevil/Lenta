@@ -51,12 +51,21 @@ class GoodsListWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     val numberField: MutableLiveData<String> = MutableLiveData("")
     val requestFocusToNumberField: MutableLiveData<Boolean> = MutableLiveData()
 
-    val processingGoods = MutableLiveData<List<Good>>()
-    val searchGoods = MutableLiveData<List<Good>>()
+    val processingGoods: MutableLiveData<List<ProcessingListUi>> by lazy {
+        task.goods.map { list ->
+            list?.filter { !it.isProcessed }?.mapIndexed { index, good ->
+                ProcessingListUi(
+                        position = (index + 1).toString(),
+                        material = good.material,
+                        name = good.getFormattedMaterialWithName()
+                )
+            }
+        }
+    }
 
     val processedGoods: MutableLiveData<List<ProcessedListUi>> by lazy {
-        task.processed.map { list: MutableList<Good>? ->
-            list?.mapIndexed { index, good ->
+        task.goods.map { list ->
+            list?.filter { it.isProcessed }?.mapIndexed { index, good ->
                 var total = 0.0
                 for (scanResult in good.scanResults.value!!) {
                     total = total.sumWith(scanResult.quantity)
@@ -64,12 +73,15 @@ class GoodsListWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
 
                 ProcessedListUi(
                         position = (index + 1).toString(),
+                        material = good.material,
                         name = good.getFormattedMaterialWithName(),
                         quantity = total.dropZeros()
                 )
             }
         }
     }
+
+    val searchGoods = MutableLiveData<List<Good>>()
 
     private val selectedItemOnCurrentTab: MutableLiveData<Boolean> = selectedPage
             .combineLatest(processedSelectionsHelper.selectedPositions)
@@ -79,17 +91,35 @@ class GoodsListWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
                 tab == GoodsListTab.PROCESSED.position && processedSelected || tab == GoodsListTab.SEARCH.position
             }
 
-    val deleteButtonEnabled = selectedItemOnCurrentTab.map { it }
-    val saveButtonEnabled = processingGoods.map { it?.isNotEmpty() ?: false }
+    val deleteButtonVisibility by lazy {
+        correctedSelectedPage.map { it == GoodsListTab.PROCESSED.position }
+    }
 
-    val thirdButtonVisibility = selectedPage.map { it != GoodsListTab.PROCESSING.position }
+    val deleteButtonEnabled by lazy {
+        selectedItemOnCurrentTab.map { it }
+    }
+
+    val filterButtonVisibility by lazy {
+        selectedPage.map { it != GoodsListTab.PROCESSING.position }
+    }
+
+    val filterButtonEnabled by lazy {
+        task.goods.map { it?.size ?: 0 > 1 }
+    }
+
+    // -----------------------------
 
     init {
         viewModelScope.launch {
+            if (!task.isLoadedTaskList) task.loadTaskList()
+            if (!task.isEmpty()) task.currentGood.value = task.goods.value?.get(0)
+
             requestFocusToNumberField.value = true
             taskName.value = "${task.getTaskType().taskType} // ${task.getTaskName()}"
         }
     }
+
+    // -----------------------------
 
     override fun onPageSelected(position: Int) {
         selectedPage.value = position
@@ -115,7 +145,15 @@ class GoodsListWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     }
 
     fun onClickDelete() {
+        val materials = mutableListOf<String>()
+        processedSelectionsHelper.selectedPositions.value?.map { position ->
+            processedGoods.value?.get(position)?.material?.let {
+                materials.add(it)
+            }
+        }
 
+        processedSelectionsHelper.clearPositions()
+        task.deleteSelectedGoods(materials)
     }
 
     override fun onOkInSoftKeyboard(): Boolean {
@@ -139,7 +177,6 @@ class GoodsListWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
                         }
                         return@analyseCode
                     }
-                    navigator.showGoodNotFound()
                 },
                 funcForSapOrBar = navigator::showTwelveCharactersEntered,
                 funcForNotValidFormat = navigator::showGoodNotFound
@@ -149,9 +186,13 @@ class GoodsListWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     private fun addGoodByEan(ean: String) {
         Logg.d { "Entered EAN: $ean" }
         viewModelScope.launch {
-            /*if (task.addGood(ean)) {
+            navigator.showProgressLoadingData()
+            task.getGoodByEan(ean)?.let { good ->
+                task.addGoodToList(good)
+                navigator.hideProgress()
                 navigator.openGoodInfoWlScreen()
-            }*/
+            }
+            navigator.hideProgress()
         }
     }
 
@@ -160,7 +201,7 @@ class GoodsListWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
         viewModelScope.launch {
             navigator.showProgressLoadingData()
             task.getGoodByMaterial(material)?.let { good ->
-                task.addGood(good)
+                task.addGoodToList(good)
                 navigator.hideProgress()
                 navigator.openGoodInfoWlScreen()
             }
@@ -173,7 +214,22 @@ class GoodsListWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     }
 
     fun onClickItemPosition(position: Int) {
-        navigator.openGoodInfoWlScreen()
+        when(correctedSelectedPage.value){
+            0 -> processingGoods.value?.get(position)?.material
+            1 -> processedGoods.value?.get(position)?.material
+            2 -> searchGoods.value?.get(position)?.material
+            else -> null
+        }?.let { material ->
+            viewModelScope.launch {
+                navigator.showProgressLoadingData()
+                task.getGoodByMaterial(material)?.let { good ->
+                    task.addGoodToList(good)
+                    navigator.hideProgress()
+                    navigator.openGoodInfoWlScreen()
+                }
+                navigator.hideProgress()
+            }
+        }
     }
 
     fun getPagesCount(): Int {
@@ -193,10 +249,21 @@ class GoodsListWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
 
     }
 
+    fun onClickBack() {
+        navigator.openTaskListScreen()
+    }
+
 }
+
+data class ProcessingListUi(
+        val position: String,
+        val material: String,
+        val name: String
+)
 
 data class ProcessedListUi(
         val position: String,
+        val material: String,
         val name: String,
         val quantity: String
 )

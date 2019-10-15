@@ -1,11 +1,9 @@
 package com.lenta.bp14.models.check_list.repo
 
 import androidx.lifecycle.MutableLiveData
-import com.lenta.bp14.di.CheckListScope
 import com.lenta.bp14.models.check_list.Good
 import com.lenta.bp14.platform.extentions.CheckListGoodInfo
 import com.lenta.bp14.platform.extentions.toCheckListGoodInfo
-import com.lenta.shared.di.AppScope
 import com.lenta.shared.fmp.resources.dao_ext.getEanInfo
 import com.lenta.shared.fmp.resources.dao_ext.getProductInfoByMaterial
 import com.lenta.shared.fmp.resources.dao_ext.getUnitName
