@@ -142,9 +142,18 @@ class WorkListTask @Inject constructor(
         return WorkListReport(
                 ip = ip,
                 description = taskDescription,
-                isNotFinish = false,
+                isNotFinish = isNotAllGoodsProcessed(),
                 checksResults = goods.value ?: emptyList()
         )
+    }
+
+    private fun isNotAllGoodsProcessed(): Boolean {
+        taskDescription.taskInfoResult?.positions?.map { it.matNr }?.forEach { material ->
+            val good = goods.value?.find { it.material == material }
+            if (good == null || !good.isProcessed) return false
+        }
+
+        return true
     }
 
     override fun isEmpty(): Boolean {
