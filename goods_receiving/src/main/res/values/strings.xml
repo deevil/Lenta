@@ -121,4 +121,7 @@
     <string name="alert_overlimit">Введенное количество больше планового. Измените количество.</string>
     <string name="stamp_control">Контроль марок</string>
     <string name="bottling_date">Дата розлива</string>
+    <string name="general_shelf_life">Общий СГ</string>
+    <string name="remaining_shelf_life">Остаточный СГ</string>
+    <string name="format_date">дд.мм.гггг</string>
 </resources>

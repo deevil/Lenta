@@ -8,6 +8,7 @@ import com.lenta.bp9.features.goods_details.GoodsDetailsViewModel
 import com.lenta.bp9.features.goods_information.excise_alco.ExciseAlcoInfoViewModel
 import com.lenta.bp9.features.goods_information.general.GoodsInfoViewModel
 import com.lenta.bp9.features.goods_information.non_excise_alco.NonExciseAlcoInfoViewModel
+import com.lenta.bp9.features.goods_information.perishables.PerishablesInfoViewModel
 import com.lenta.bp9.features.goods_list.GoodsListViewModel
 import com.lenta.bp9.features.task_list.TaskListViewModel
 import com.lenta.bp9.features.loading.fast.FastDataLoadingViewModel
@@ -22,7 +23,6 @@ import com.lenta.bp9.features.select_personnel_number.SelectPersonnelNumberViewM
 import com.lenta.bp9.features.task_card.TaskCardViewModel
 import com.lenta.bp9.main.MainActivity
 import com.lenta.bp9.main.MainViewModel
-import com.lenta.bp9.model.task.revise.InvoiceRevise
 import com.lenta.shared.di.AppScope
 import com.lenta.shared.di.CoreComponent
 import dagger.Component
@@ -61,4 +61,5 @@ interface AppComponent {
     fun inject(it: LoadingFinishReviseViewModel)
     fun inject(it: LoadingStartReviseViewModel)
     fun inject(it: LoadingUnlockTaskViewModel)
+    fun inject(it: PerishablesInfoViewModel)
 }

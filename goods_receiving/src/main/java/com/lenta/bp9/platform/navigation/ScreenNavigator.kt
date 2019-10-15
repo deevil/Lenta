@@ -21,6 +21,7 @@ import com.lenta.bp9.features.goods_details.GoodsDetailsFragment
 import com.lenta.bp9.features.goods_information.excise_alco.ExciseAlcoInfoFragment
 import com.lenta.bp9.features.goods_information.general.GoodsInfoFragment
 import com.lenta.bp9.features.goods_information.non_excise_alco.NonExciseAlcoInfoFragment
+import com.lenta.bp9.features.goods_information.perishables.PerishablesInfoFragment
 import com.lenta.bp9.features.loading.tasks.*
 import com.lenta.bp9.features.reject.RejectFragment
 import com.lenta.bp9.features.revise.*
@@ -397,6 +398,12 @@ class ScreenNavigator(
         }
     }
 
+    override fun openPerishablesInfoScreen(productInfo: TaskProductInfo) {
+        runOrPostpone {
+            getFragmentStack()?.push(PerishablesInfoFragment.create(productInfo))
+        }
+    }
+
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 
 }
@@ -448,4 +455,5 @@ interface IScreenNavigator : ICoreNavigator {
     fun openRegisterArrivalLoadingScreen()
     fun openStartReviseLoadingScreen()
     fun openUnlockTaskLoadingScreen()
+    fun openPerishablesInfoScreen(productInfo: TaskProductInfo)
 }

@@ -27,7 +27,7 @@ class TaskProductInfo(materialNumber: String,
                       val isWithoutRecount: Boolean, //Без пересчета
                       val isUFF: Boolean, //Индикатор: UFF (фрукты, овощи)
                       val isNotEdit: Boolean,
-                      val totalExpirationDate: String, //общий срок годности
+                      val generalShelfLife: String, //общий срок годности
                       val remainingShelfLife: String, //остаточный срок годности
                       val isRus: Boolean,
                       val isBoxFl: Boolean,
@@ -58,7 +58,7 @@ class TaskProductInfo(materialNumber: String,
              isWithoutRecount: Boolean = this.isWithoutRecount,
              isUFF: Boolean = this.isUFF,
              isNotEdit: Boolean = this.isNotEdit,
-             totalExpirationDate: String = this.totalExpirationDate,
+             generalShelfLife: String = this.generalShelfLife,
              remainingShelfLife: String = this.remainingShelfLife,
              isRus: Boolean = this.isRus,
              isBoxFl: Boolean = this.isBoxFl,
@@ -88,7 +88,7 @@ class TaskProductInfo(materialNumber: String,
                 isWithoutRecount = isWithoutRecount,
                 isUFF = isUFF,
                 isNotEdit = isNotEdit,
-                totalExpirationDate = totalExpirationDate,
+                generalShelfLife = generalShelfLife,
                 remainingShelfLife = remainingShelfLife,
                 isRus = isRus,
                 isBoxFl = isBoxFl,

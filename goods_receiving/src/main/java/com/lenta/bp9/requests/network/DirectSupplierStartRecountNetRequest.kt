@@ -89,7 +89,7 @@ data class TaskComposition(
         val isAlco: String, //Признак алкогольного товара
         val isExc: String, //Признак акцизного алкоголя
         val notEdit: String, //Запрет редактирования
-        val totalExpirationDate: String, //общий срок годности
+        val generalShelfLife: String, //общий срок годности
         val remainingShelfLife: String, //оставшийся срок годности
         val isSet: String, //признак набора
         val isRus:String,

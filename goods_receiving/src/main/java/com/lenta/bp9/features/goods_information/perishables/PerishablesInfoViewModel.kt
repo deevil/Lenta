@@ -1,12 +1,11 @@
-package com.lenta.bp9.features.goods_information.excise_alco
+package com.lenta.bp9.features.goods_information.perishables
 
+import android.annotation.SuppressLint
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp9.features.goods_list.SearchProductDelegate
-import com.lenta.bp9.model.processing.ProcessExciseAlcoProductService
-import com.lenta.bp9.model.processing.ProcessNonExciseAlcoProductService
+import com.lenta.bp9.model.processing.ProcessPerishablesService
 import com.lenta.bp9.model.task.IReceivingTaskManager
-import com.lenta.bp9.model.task.TaskBatchInfo
 import com.lenta.bp9.model.task.TaskProductInfo
 import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.bp9.repos.IDataBaseRepo
@@ -15,12 +14,13 @@ import com.lenta.shared.requests.combined.scan_info.pojo.QualityInfo
 import com.lenta.shared.requests.combined.scan_info.pojo.ReasonRejectionInfo
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.map
-import com.lenta.shared.utilities.extentions.toStringFormatted
 import com.lenta.shared.view.OnPositionClickListener
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.*
 import javax.inject.Inject
 
-class ExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
+class PerishablesInfoViewModel : CoreViewModel(), OnPositionClickListener {
 
     @Inject
     lateinit var screenNavigator: IScreenNavigator
@@ -29,7 +29,7 @@ class ExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
     lateinit var taskManager: IReceivingTaskManager
 
     @Inject
-    lateinit var processExciseAlcoProductService: ProcessExciseAlcoProductService
+    lateinit var processPerishablesService: ProcessPerishablesService
 
     @Inject
     lateinit var dataBase: IDataBaseRepo
@@ -38,24 +38,20 @@ class ExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
     lateinit var searchProductDelegate: SearchProductDelegate
 
     val productInfo: MutableLiveData<TaskProductInfo> = MutableLiveData()
-    val batchInfo: MutableLiveData<TaskBatchInfo> = productInfo.map {
-        taskManager.getReceivingTask()!!.taskRepository.getBatches().findBatchOfProduct(it!!)
-    }
-    val planQuantityBatch: MutableLiveData<String> = MutableLiveData()
     val spinQuality: MutableLiveData<List<String>> = MutableLiveData()
     val spinQualitySelectedPosition: MutableLiveData<Int> = MutableLiveData(0)
-    val spinManufacturers: MutableLiveData<List<String>> = MutableLiveData()
-    val spinManufacturersSelectedPosition: MutableLiveData<Int> = MutableLiveData(0)
-    val spinBottlingDate: MutableLiveData<List<String>> = MutableLiveData()
-    val spinBottlingDateSelectedPosition: MutableLiveData<Int> = MutableLiveData(0)
     val spinReasonRejection: MutableLiveData<List<String>> = MutableLiveData()
     val spinReasonRejectionSelectedPosition: MutableLiveData<Int> = MutableLiveData(0)
+    val spinShelfLife: MutableLiveData<List<String>> = MutableLiveData()
+    val spinShelfLifeSelectedPosition: MutableLiveData<Int> = MutableLiveData(0)
     val suffix: MutableLiveData<String> = MutableLiveData()
+    val remainingShelfLife: MutableLiveData<String> = MutableLiveData()
+    val generalShelfLife: MutableLiveData<String> = MutableLiveData()
+    val shelfLifeDate: MutableLiveData<String> = MutableLiveData("")
     val isDefect: MutableLiveData<Boolean> = spinQualitySelectedPosition.map {
         it != 0
     }
 
-    private val scannedStampCode: MutableLiveData<String> = MutableLiveData()
     private val qualityInfo: MutableLiveData<List<QualityInfo>> = MutableLiveData()
     private val reasonRejectionInfo: MutableLiveData<List<ReasonRejectionInfo>> = MutableLiveData()
 
@@ -72,7 +68,7 @@ class ExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
         }
     }
 
-    val refusalTotalCount: MutableLiveData<Double> = //by lazy  {
+    val refusalTotalCount: MutableLiveData<Double> by lazy  {
         countValue.
                 combineLatest(spinReasonRejectionSelectedPosition).
                 combineLatest(spinQualitySelectedPosition).
@@ -87,28 +83,7 @@ class ExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
                         0.0
                     }
                 }
-    //}
-
-    /**val totalCountExciseStamps: MutableLiveData<String> by lazy {
-        countValue.map {
-            "${taskManager.
-                    getReceivingTask()!!.
-                    taskRepository.
-                    getExciseStamps().
-                    findExciseStampsOfProduct(productInfo.value!!).
-                    size} из ${((productInfo.value!!.numberStampsControl).toDouble()).toStringFormatted()}"
-        }
-    }*/
-    val totalCountExciseStamps: MutableLiveData<String> =
-        countValue.map {
-            "${taskManager.
-                    getReceivingTask()!!.
-                    taskRepository.
-                    getExciseStamps().
-                    findExciseStampsOfProduct(productInfo.value!!).
-                    size + processExciseAlcoProductService.getCountExciseStamps()} из ${((productInfo.value!!.numberStampsControl).toDouble()).toStringFormatted()}"
-        }
-
+    }
 
     val enabledApplyButton: MutableLiveData<Boolean> = countValue.
             map {
@@ -118,25 +93,18 @@ class ExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
     init {
         viewModelScope.launch {
             suffix.value = productInfo.value?.uom?.name
+            generalShelfLife.value = productInfo.value?.generalShelfLife
+            remainingShelfLife.value = productInfo.value?.remainingShelfLife
             qualityInfo.value = dataBase.getQualityInfo()
             spinQuality.value = qualityInfo.value?.map {
                 it.name
             }
-            spinManufacturers.value = listOf(taskManager.getReceivingTask()!!.taskRepository.getBatches().findBatchOfProduct(productInfo.value!!)?.manufacturer ?: "")
-            spinBottlingDate.value = listOf(taskManager.getReceivingTask()!!.taskRepository.getBatches().findBatchOfProduct(productInfo.value!!)?.bottlingDate ?: "")
-            batchInfo.value = taskManager.getReceivingTask()!!.taskRepository.getBatches().findBatchOfProduct(productInfo.value!!)
-            planQuantityBatch.value = batchInfo.value?.planQuantityBatch + " " + batchInfo.value?.uom?.name + "."
-            if (processExciseAlcoProductService.newProcessNonExciseAlcoProductService(productInfo.value!!) == null){
+            spinShelfLife.value = dataBase.getTermControlInfo()
+            if (processPerishablesService.newProcessPerishablesService(productInfo.value!!) == null){
                 screenNavigator.goBack()
                 screenNavigator.openAlertWrongProductType()
             }
         }
-    }
-
-    fun onClickRollback() {
-        //todo
-        /**processExciseAlcoProductService.rollback()
-        updateCounts()*/
     }
 
     fun onClickDetails(){
@@ -144,14 +112,10 @@ class ExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
     }
 
     fun onClickAdd() {
-        if (processExciseAlcoProductService.overlimit(countValue.value!!)) {
-            screenNavigator.openAlertOverlimit()
+        if (qualityInfo.value?.get(spinQualitySelectedPosition.value ?: 0)?.code == "1") {
+            processPerishablesService.add(acceptTotalCount.value!!.toString(), "1")
         } else {
-            if (qualityInfo.value?.get(spinQualitySelectedPosition.value ?: 0)?.code == "1") {
-                processExciseAlcoProductService.add(acceptTotalCount.value!!.toString(), "1")
-            } else {
-                processExciseAlcoProductService.add(refusalTotalCount.value!!.toString(), reasonRejectionInfo.value!![spinReasonRejectionSelectedPosition.value!!].code)
-            }
+            processPerishablesService.add(refusalTotalCount.value!!.toString(), reasonRejectionInfo.value!![spinReasonRejectionSelectedPosition.value!!].code)
         }
 
         count.value = "0"
@@ -163,25 +127,11 @@ class ExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
     }
 
     fun onScanResult(data: String) {
-        scannedStampCode.value = data
-        when (data.length) {
-            68, 150 -> {
-
-            }
-            else -> searchProductDelegate.searchCode(code = data, fromScan = true)
-        }
+        searchProductDelegate.searchCode(code = data, fromScan = true)
     }
 
     override fun onClickPosition(position: Int) {
         spinReasonRejectionSelectedPosition.value = position
-    }
-
-    fun onClickPositionSpinManufacturers(position: Int){
-        spinManufacturersSelectedPosition.value = position
-    }
-
-    fun onClickPositionSpinBottlingDate(position: Int){
-        spinBottlingDateSelectedPosition.value = position
     }
 
     fun onClickPositionSpinQuality(position: Int){
@@ -189,6 +139,10 @@ class ExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
             spinQualitySelectedPosition.value = position
             updateDataSpinReasonRejection(qualityInfo.value!![position].code)
         }
+    }
+
+    fun onClickPositionSpinShelfLife(position: Int){
+        spinShelfLifeSelectedPosition.value = position
     }
 
     private suspend fun updateDataSpinReasonRejection(selectedQuality: String) {
@@ -201,6 +155,17 @@ class ExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
             }
             count.value = count.value
             screenNavigator.hideProgress()
+        }
+    }
+
+    @SuppressLint("SimpleDateFormat")
+    private fun isCorrectDate(checkDate: String?): Boolean {
+        return try {
+            val formatter = SimpleDateFormat("dd.MM.yyyy")
+            val date = formatter.parse(checkDate)
+            !(checkDate != formatter.format(date) || date!! > Date())
+        } catch (e: Exception) {
+            false
         }
     }
 }

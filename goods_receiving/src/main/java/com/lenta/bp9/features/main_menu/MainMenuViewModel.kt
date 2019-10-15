@@ -109,8 +109,8 @@ class MainMenuViewModel : CoreViewModel() {
                     isWithoutRecount = false,
                     isUFF = false,
                     isNotEdit = false,
-                    totalExpirationDate = "",
-                    remainingShelfLife = "",
+                    generalShelfLife = "100 сут",
+                    remainingShelfLife = "70 сут",
                     isRus = false,
                     isBoxFl = false,
                     isMarkFl = false,
@@ -175,8 +175,8 @@ class MainMenuViewModel : CoreViewModel() {
                     isWithoutRecount = false,
                     isUFF = false,
                     isNotEdit = false,
-                    totalExpirationDate = "",
-                    remainingShelfLife = "",
+                    generalShelfLife = "100 сут",
+                    remainingShelfLife = "70 сут",
                     isRus = false,
                     isBoxFl = false,
                     isMarkFl = false,
@@ -236,11 +236,11 @@ class MainMenuViewModel : CoreViewModel() {
                     isNoEAN = true
             ))
         }
-        screenNavigator.openExciseAlcoInfoScreen(TaskProductInfo(
+        screenNavigator.openPerishablesInfoScreen(TaskProductInfo(
                 materialNumber = "000000000000000021",
                 description = "Р/к виски (Россия) 230/250г",
                 uom = Uom("ST", "шт"),
-                type = ProductType.ExciseAlcohol,
+                type = ProductType.General,
                 isSet = false,
                 sectionId = "01",
                 matrixType = MatrixType.Active,
@@ -258,14 +258,14 @@ class MainMenuViewModel : CoreViewModel() {
                 isWithoutRecount = false,
                 isUFF = false,
                 isNotEdit = false,
-                totalExpirationDate = "",
-                remainingShelfLife = "",
+                generalShelfLife = "100 сут",
+                remainingShelfLife = "70 сут",
                 isRus = false,
                 isBoxFl = false,
                 isMarkFl = false,
                 isVet = false,
                 numberBoxesControl = "",
-                numberStampsControl = ""
+                numberStampsControl = "10"
         ))
         /**screenNavigator.openSupplyResultsAutomaticChargeSuccessDialog(
                 numberSupply = "325478",
