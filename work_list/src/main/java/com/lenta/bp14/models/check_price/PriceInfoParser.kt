@@ -34,7 +34,7 @@ class PriceInfoParser @Inject constructor() : IPriceInfoParser {
                 .substringBefore("(")
     }
 
-    private fun getPrice(rawCode: String): Float? {
+    private fun getPrice(rawCode: String): Double? {
         return rawCode.substringAfter("(390y)", "")
                 .substringBefore("(")
                 .apply {
@@ -43,10 +43,10 @@ class PriceInfoParser @Inject constructor() : IPriceInfoParser {
                     }
                 }
                 .replace(",", ".")
-                .toFloatOrNull()
+                .toDoubleOrNull()
     }
 
-    private fun getPriceWithDiscountCard(rawCode: String): Float? {
+    private fun getPriceWithDiscountCard(rawCode: String): Double? {
         return rawCode.substringAfter("(392y)", "")
                 .substringBefore("(")
                 .apply {
@@ -55,7 +55,7 @@ class PriceInfoParser @Inject constructor() : IPriceInfoParser {
                     }
                 }
                 .replace(",", ".")
-                .toFloatOrNull()
+                .toDoubleOrNull()
     }
 
 

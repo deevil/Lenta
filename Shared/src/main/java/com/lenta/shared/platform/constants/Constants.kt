@@ -25,6 +25,7 @@ object Constants {
 
     // Other date formats
     const val DATE_TIME_ONE = "yyyy-MM-dd_HH:mm:ss"
+    const val PRICE_TAG_DATE_TIME_ONE = "dd.MM.yyyy HH:mm"
 
     // Entered length
     const val COMMON_SAP_LENGTH = 6

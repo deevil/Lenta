@@ -1,6 +1,7 @@
 package com.lenta.shared.utilities.extentions
 
 import com.lenta.shared.utilities.date_time.DateTimeUtil
+import java.lang.StringBuilder
 import java.util.*
 
 fun Iterable<String>.toSQliteSet(): String {
@@ -13,4 +14,29 @@ fun String?.isSapTrue(): Boolean {
 
 fun String.getDate(pattern: String): Date {
     return DateTimeUtil.getDateFromString(this, pattern)
+}
+
+fun String.splitByLines(oneLineMaxLength: Int): List<String> {
+
+    val lines = mutableListOf<String>()
+
+    var line = StringBuilder()
+    var prefix = ""
+
+    this.split(" ").forEach { word ->
+        if ((line.length + word.length + 1) > oneLineMaxLength) {
+            lines.add(line.toString())
+            line.clear()
+            line.append(word)
+        } else {
+            line.append(prefix)
+            line.append(word)
+        }
+        prefix = " "
+    }
+
+    lines.add(line.toString())
+
+    return lines
+
 }
