@@ -78,7 +78,7 @@ class PrintSettingsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInS
     val numberOfCopies: MutableLiveData<String> = MutableLiveData("1")
     val selectedPrinterTypePos: MutableLiveData<Int> = MutableLiveData(0)
     val selectedPriceTagTypePos: MutableLiveData<Int> = MutableLiveData(0)
-    val ipAddressVisibility: MutableLiveData<Boolean> = selectedPrinterTypePos.map {
+    val ipAddressVisibility: MutableLiveData<Boolean> = selectedPrinterTypePos.combineLatest(printerTypes).map {
         getSelectedPrinterType()?.isMobile == true
     }
 

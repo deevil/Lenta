@@ -34,7 +34,7 @@ class PrintTask @Inject constructor(
     )
 
     private val emptyPrinterType = PrinterType(
-            id = "", name = "Не выбранно", isMobile = false, isStatic = false
+            id = "", name = "Не выбранно", isMobile = null, isStatic = null
     )
 
     val zfmpUtz51V001 by lazy {
@@ -168,9 +168,9 @@ data class PrinterType(
         /**
          * Признак - Мобильный принтер
          */
-        val isMobile: Boolean,
+        val isMobile: Boolean?,
         /**
          * Признак - Стационарный принтер
          */
-        val isStatic: Boolean
+        val isStatic: Boolean?
 )
