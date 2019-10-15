@@ -214,8 +214,7 @@ class GoodsListPcViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
                 navigator.showProgressLoadingData()
                 checkPriceReportNetRequest(
                         task.getReportData(
-                                ip = deviceInfo.getDeviceIp(),
-                                isNotFinish = false
+                                ip = deviceInfo.getDeviceIp()
                         )
                 ).either({
                     navigator.openAlertScreen(it)

@@ -288,13 +288,14 @@ class CheckPriceTask @Inject constructor(
         )
     }
 
-    override fun getReportData(ip: String, isNotFinish: Boolean): CheckPriceReport {
+    override fun getReportData(ip: String): CheckPriceReport {
+        val notProcessedProducts = getToProcessingProducts().value ?: emptyList()
         return CheckPriceReport(
                 ip = ip,
                 description = taskDescription,
-                isNotFinish = isNotFinish,
-                checksResults = getCheckResults().value ?: emptyList()
-
+                isNotFinish = notProcessedProducts.isNotEmpty(),
+                checksResults = getCheckResults().value ?: emptyList(),
+                notProcessedResults = notProcessedProducts
         )
     }
 
@@ -345,7 +346,7 @@ interface ICheckPriceTask : ITask {
     suspend fun getActualPriceByEan(eanCode: String): Either<Failure, IActualPriceInfo>
     suspend fun getActualPriceByMatNr(matNumber: String): Either<Failure, IActualPriceInfo>
     suspend fun checkPriceByQrCode(qrCode: String): Either<Failure, IActualPriceInfo>
-    fun getReportData(ip: String, isNotFinish: Boolean): CheckPriceReport
+    fun getReportData(ip: String): CheckPriceReport
 
     var processingMatNumber: String?
 
