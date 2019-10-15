@@ -37,7 +37,7 @@ class NotExposedSendReportNetRequest
             checkPositions.add(
                     Position(
                             matNr = it.matNr,
-                            isProcessed = (it.isEmptyPlaceMarked != null).toSapBooleanString(),
+                            isProcessed = true.toSapBooleanString(),
                             quantity = it.quantity ?: 0.0
                     )
             )
