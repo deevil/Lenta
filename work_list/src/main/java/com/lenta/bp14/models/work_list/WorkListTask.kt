@@ -8,6 +8,7 @@ import com.lenta.bp14.models.BaseProductInfo
 import com.lenta.bp14.models.ITask
 import com.lenta.bp14.models.ITaskDescription
 import com.lenta.bp14.models.data.GoodType
+import com.lenta.bp14.models.filter.IFilterable
 import com.lenta.bp14.models.general.AppTaskTypes
 import com.lenta.bp14.models.general.IGeneralRepo
 import com.lenta.bp14.models.general.ITaskTypeInfo
@@ -161,17 +162,30 @@ class WorkListTask @Inject constructor(
     }
 
     override fun isHaveDiscrepancies(): Boolean {
-        //TODO implement this
-        return false
+        return getProcessingList().value?.isNotEmpty() == true
     }
 
     override fun getListOfDifferences(): LiveData<List<BaseProductInfo>> {
-        //TODO implement this
-        return MutableLiveData(emptyList())
+        return getProcessingList().map { list ->
+            list?.map { item ->
+                BaseProductInfo(
+                        matNr = item.material,
+                        name = item.name
+                )
+            }
+        }
     }
 
     override fun setMissing(matNrList: List<String>) {
         //TODO implement this
+    }
+
+    fun getProcessingList(): LiveData<List<Good>> {
+        return goods.map { list -> list?.filter { !it.isProcessed } }
+    }
+
+    fun getProcessedList(): LiveData<List<Good>> {
+        return goods.map { list -> list?.filter { it.isProcessed } }
     }
 
     override fun deleteSelectedGoods(materials: List<String>) {
