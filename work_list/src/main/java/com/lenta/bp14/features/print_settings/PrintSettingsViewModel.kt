@@ -221,7 +221,7 @@ class PrintSettingsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInS
     fun onClickPrint() {
         viewModelScope.launch {
 
-            navigator.showProgressLoadingData()
+            navigator.showProgressConnection()
             printTask.printPrice(
                     ip = ipAddress.value ?: "",
                     productInfoResult = productInfoResult.value!!,
