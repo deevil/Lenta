@@ -6,7 +6,7 @@
 
         <variable
             name="good"
-            type="com.lenta.bp14.features.work_list.goods_list.ProcessingListUi" />
+            type="com.lenta.bp14.features.work_list.goods_list.ItemWorkListUi" />
 
         <variable
             name="selectedForDelete"

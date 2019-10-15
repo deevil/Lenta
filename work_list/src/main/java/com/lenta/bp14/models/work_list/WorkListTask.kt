@@ -8,6 +8,8 @@ import com.lenta.bp14.models.BaseProductInfo
 import com.lenta.bp14.models.ITask
 import com.lenta.bp14.models.ITaskDescription
 import com.lenta.bp14.models.data.GoodType
+import com.lenta.bp14.models.filter.FilterFieldType
+import com.lenta.bp14.models.filter.IFilterable
 import com.lenta.bp14.models.general.AppTaskTypes
 import com.lenta.bp14.models.general.IGeneralRepo
 import com.lenta.bp14.models.general.ITaskTypeInfo
@@ -17,10 +19,7 @@ import com.lenta.shared.models.core.MatrixType
 import com.lenta.shared.models.core.Uom
 import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.platform.time.ITimeMonitor
-import com.lenta.shared.utilities.extentions.getDate
-import com.lenta.shared.utilities.extentions.getFormattedDate
-import com.lenta.shared.utilities.extentions.isSapTrue
-import com.lenta.shared.utilities.extentions.map
+import com.lenta.shared.utilities.extentions.*
 import java.util.*
 import javax.inject.Inject
 
@@ -29,9 +28,10 @@ class WorkListTask @Inject constructor(
         private val generalRepo: IGeneralRepo,
         private val workListRepo: IWorkListRepo,
         private val taskDescription: WorkListTaskDescription,
+        private val filterableDelegate: IFilterable,
         private val timeMonitor: ITimeMonitor,
         private val gson: Gson
-) : IWorkListTask {
+) : IWorkListTask, IFilterable by filterableDelegate {
 
     private val checkResults by lazy {
         taskDescription.taskInfoResult?.checkResults?.toList() ?: emptyList()
@@ -142,9 +142,18 @@ class WorkListTask @Inject constructor(
         return WorkListReport(
                 ip = ip,
                 description = taskDescription,
-                isNotFinish = false,
+                isNotFinish = isNotAllGoodsProcessed(),
                 checksResults = goods.value ?: emptyList()
         )
+    }
+
+    private fun isNotAllGoodsProcessed(): Boolean {
+        taskDescription.taskInfoResult?.positions?.map { it.matNr }?.forEach { material ->
+            val good = goods.value?.find { it.material == material }
+            if (good == null || !good.isProcessed) return false
+        }
+
+        return true
     }
 
     override fun isEmpty(): Boolean {
@@ -152,17 +161,30 @@ class WorkListTask @Inject constructor(
     }
 
     override fun isHaveDiscrepancies(): Boolean {
-        //TODO implement this
-        return false
+        return getProcessingList().value?.isNotEmpty() == true
     }
 
     override fun getListOfDifferences(): LiveData<List<BaseProductInfo>> {
-        //TODO implement this
-        return MutableLiveData(emptyList())
+        return getProcessingList().map { list ->
+            list?.map { item ->
+                BaseProductInfo(
+                        matNr = item.material,
+                        name = item.name
+                )
+            }
+        }
     }
 
     override fun setMissing(matNrList: List<String>) {
         //TODO implement this
+    }
+
+    fun getProcessingList(): LiveData<List<Good>> {
+        return goods.map { list -> list?.filter { !it.isProcessed } }
+    }
+
+    fun getProcessedList(): LiveData<List<Good>> {
+        return goods.map { list -> list?.filter { it.isProcessed } }
     }
 
     override fun deleteSelectedGoods(materials: List<String>) {
@@ -185,10 +207,59 @@ class WorkListTask @Inject constructor(
         return taskDescription.taskInfoResult?.positions?.find { it.matNr == material } != null
     }
 
+    override fun getSearchList(): LiveData<List<Good>> {
+        return goods.combineLatest(filterableDelegate.onFiltersChangesLiveData).map {
+            requireNotNull(it)
+            val goodsList = it.first
+            goodsList.filter { good ->
+                filter(good)
+            }
+        }
+    }
+
+    private fun filter(good: Good): Boolean {
+        filterableDelegate.filtersMap.forEach {
+            @Suppress("NON_EXHAUSTIVE_WHEN")
+            when (it.key) {
+                FilterFieldType.SECTION -> {
+                    if (!good.options.section.contains(it.value.value)) {
+                        return false
+                    }
+                }
+                FilterFieldType.GROUP -> {
+                    if (!good.goodGroup.contains(it.value.value)) {
+                        return false
+                    }
+                }
+                FilterFieldType.PLACE_STORAGE -> {
+                    val storagePlaces = good.additional.value?.storagePlaces ?: ""
+                    if (!storagePlaces.contains(it.value.value)) {
+                        return false
+                    }
+                }
+                FilterFieldType.COMMENT -> {
+                    var existComment = false
+                    good.comments.value!!.map { comment ->
+                        if (comment.contains(it.value.value)) {
+                            existComment = true
+                            return@map
+                        }
+                    }
+
+                    if (!existComment) {
+                        return false
+                    }
+                }
+            }
+        }
+
+        return true
+    }
+
 }
 
 
-interface IWorkListTask : ITask {
+interface IWorkListTask : ITask, IFilterable {
     var isLoadedTaskList: Boolean
     val goods: MutableLiveData<MutableList<Good>>
     var currentGood: MutableLiveData<Good>
@@ -207,6 +278,7 @@ interface IWorkListTask : ITask {
     fun getGoodProviders(): LiveData<List<Provider>>
 
     fun getReportData(ip: String): WorkListReport
+    fun getSearchList(): LiveData<List<Good>>
 }
 
 // -----------------------------

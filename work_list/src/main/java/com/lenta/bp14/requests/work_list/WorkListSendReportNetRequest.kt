@@ -48,7 +48,7 @@ class WorkListSendReportNetRequest
             positions.add(
                     Position(
                             matNr = good.material,
-                            isProcessed = true.toSapBooleanString(),
+                            isProcessed = good.isProcessed.toSapBooleanString(),
                             quantity = quantity
                     )
             )

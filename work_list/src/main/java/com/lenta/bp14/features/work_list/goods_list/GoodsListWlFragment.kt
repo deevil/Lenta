@@ -10,7 +10,6 @@ import com.lenta.bp14.BR
 import com.lenta.bp14.R
 import com.lenta.bp14.databinding.*
 import com.lenta.bp14.di.WorkListComponent
-import com.lenta.bp14.models.data.GoodsListTab
 import com.lenta.shared.di.CoreInjectHelper
 import com.lenta.shared.keys.KeyCode
 import com.lenta.shared.keys.OnKeyDownListener
@@ -67,10 +66,8 @@ class GoodsListWlFragment : CoreFragment<FragmentGoodsListWlBinding, GoodsListWl
 
     override fun onToolbarButtonClick(view: View) {
         when (view.id) {
-            R.id.b_3 -> {
-                if (vm.getCorrectedPagePosition(vm.selectedPage.value) == GoodsListTab.SEARCH.position) vm.onClickFilter()
-                else vm.onClickDelete()
-            }
+            R.id.b_3 -> vm.onClickDelete()
+            R.id.b_4 -> vm.onClickFilter()
             R.id.b_5 -> vm.onClickSave()
         }
     }
@@ -85,13 +82,13 @@ class GoodsListWlFragment : CoreFragment<FragmentGoodsListWlBinding, GoodsListWl
                     false).let { layoutBinding ->
 
                 layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
-                        layoutId = R.layout.item_wl_processing_good,
+                        layoutId = R.layout.item_wl_processing_list,
                         itemId = BR.good,
-                        realisation = object : DataBindingAdapter<ItemWlProcessingGoodBinding> {
-                            override fun onCreate(binding: ItemWlProcessingGoodBinding) {
+                        realisation = object : DataBindingAdapter<ItemWlProcessingListBinding> {
+                            override fun onCreate(binding: ItemWlProcessingListBinding) {
                             }
 
-                            override fun onBind(binding: ItemWlProcessingGoodBinding, position: Int) {
+                            override fun onBind(binding: ItemWlProcessingListBinding, position: Int) {
                                 processingRecyclerViewKeyHandler?.let {
                                     binding.root.isSelected = it.isSelected(position)
                                 }
@@ -134,13 +131,13 @@ class GoodsListWlFragment : CoreFragment<FragmentGoodsListWlBinding, GoodsListWl
                 }
 
                 layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
-                        layoutId = R.layout.item_wl_good_quantity_selectable,
+                        layoutId = R.layout.item_wl_processed_list,
                         itemId = BR.good,
-                        realisation = object : DataBindingAdapter<ItemWlGoodQuantitySelectableBinding> {
-                            override fun onCreate(binding: ItemWlGoodQuantitySelectableBinding) {
+                        realisation = object : DataBindingAdapter<ItemWlProcessedListBinding> {
+                            override fun onCreate(binding: ItemWlProcessedListBinding) {
                             }
 
-                            override fun onBind(binding: ItemWlGoodQuantitySelectableBinding, position: Int) {
+                            override fun onBind(binding: ItemWlProcessedListBinding, position: Int) {
                                 binding.tvItemNumber.tag = position
                                 binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
                                 binding.selectedForDelete = vm.processedSelectionsHelper.isSelected(position)
@@ -185,13 +182,13 @@ class GoodsListWlFragment : CoreFragment<FragmentGoodsListWlBinding, GoodsListWl
             }
 
             layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
-                    layoutId = R.layout.item_good_selectable,
+                    layoutId = R.layout.item_wl_search_list,
                     itemId = BR.good,
-                    realisation = object : DataBindingAdapter<ItemGoodSelectableBinding> {
-                        override fun onCreate(binding: ItemGoodSelectableBinding) {
+                    realisation = object : DataBindingAdapter<ItemWlSearchListBinding> {
+                        override fun onCreate(binding: ItemWlSearchListBinding) {
                         }
 
-                        override fun onBind(binding: ItemGoodSelectableBinding, position: Int) {
+                        override fun onBind(binding: ItemWlSearchListBinding, position: Int) {
                             binding.tvItemNumber.tag = position
                             binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
                             binding.selectedForDelete = vm.searchSelectionsHelper.isSelected(position)

@@ -51,37 +51,33 @@ class GoodsListWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     val numberField: MutableLiveData<String> = MutableLiveData("")
     val requestFocusToNumberField: MutableLiveData<Boolean> = MutableLiveData()
 
-    val processingGoods: MutableLiveData<List<ProcessingListUi>> by lazy {
-        task.goods.map { list ->
-            list?.filter { !it.isProcessed }?.mapIndexed { index, good ->
-                ProcessingListUi(
-                        position = (index + 1).toString(),
-                        material = good.material,
-                        name = good.getFormattedMaterialWithName()
-                )
+    private val toUiFunc = { products: List<Good>? ->
+        products?.reversed()?.mapIndexed { index, good ->
+            var total = 0.0
+            for (scanResult in good.scanResults.value!!) {
+                total = total.sumWith(scanResult.quantity)
             }
+
+            ItemWorkListUi(
+                    position = (index + 1).toString(),
+                    material = good.material,
+                    name = good.getFormattedMaterialWithName(),
+                    quantity = total.dropZeros()
+            )
         }
     }
 
-    val processedGoods: MutableLiveData<List<ProcessedListUi>> by lazy {
-        task.goods.map { list ->
-            list?.filter { it.isProcessed }?.mapIndexed { index, good ->
-                var total = 0.0
-                for (scanResult in good.scanResults.value!!) {
-                    total = total.sumWith(scanResult.quantity)
-                }
-
-                ProcessedListUi(
-                        position = (index + 1).toString(),
-                        material = good.material,
-                        name = good.getFormattedMaterialWithName(),
-                        quantity = total.dropZeros()
-                )
-            }
-        }
+    val processingGoods: MutableLiveData<List<ItemWorkListUi>> by lazy {
+        task.getProcessingList().map(toUiFunc)
     }
 
-    val searchGoods = MutableLiveData<List<Good>>()
+    val processedGoods: MutableLiveData<List<ItemWorkListUi>> by lazy {
+        task.getProcessedList().map(toUiFunc)
+    }
+
+    val searchGoods: MutableLiveData<List<ItemWorkListUi>> by lazy {
+        task.getSearchList().map(toUiFunc)
+    }
 
     private val selectedItemOnCurrentTab: MutableLiveData<Boolean> = selectedPage
             .combineLatest(processedSelectionsHelper.selectedPositions)
@@ -214,7 +210,7 @@ class GoodsListWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     }
 
     fun onClickItemPosition(position: Int) {
-        when(correctedSelectedPage.value){
+        when (correctedSelectedPage.value) {
             0 -> processingGoods.value?.get(position)?.material
             1 -> processedGoods.value?.get(position)?.material
             2 -> searchGoods.value?.get(position)?.material
@@ -255,15 +251,9 @@ class GoodsListWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
 
 }
 
-data class ProcessingListUi(
-        val position: String,
-        val material: String,
-        val name: String
-)
-
-data class ProcessedListUi(
+data class ItemWorkListUi(
         val position: String,
         val material: String,
         val name: String,
-        val quantity: String
+        val quantity: String = ""
 )
