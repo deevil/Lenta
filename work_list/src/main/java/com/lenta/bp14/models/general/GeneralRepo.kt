@@ -26,11 +26,9 @@ class GeneralRepo @Inject constructor(
             taskType = "",
             taskName = "Не выбрано",
             annotation = "Не выбрано"
-
     )
 
     val taskTypesInfoList: MutableList<ITaskTypeInfo> = mutableListOf()
-
 
     override suspend fun getTasksTypes(): List<ITaskTypeInfo> {
         return withContext(Dispatchers.IO) {
@@ -60,7 +58,7 @@ class GeneralRepo @Inject constructor(
     private val funcAdapter = { taskInfo: com.lenta.bp14.requests.tasks.TaskInfo ->
         TaskInfo(
                 taskId = taskInfo.taskNumber,
-                taskTypeInfo = getTasksTypeInfo(taskInfo.taskType) ?: emptyTaskTypeInfo,
+                taskTypeInfo = taskInfo.text1,
                 taskName = taskInfo.taskName,
                 isNotFinished = taskInfo.notFinished.isSapTrue(),
                 isMyBlock = if (taskInfo.blockType.isBlank()) null else taskInfo.blockType == "1",
@@ -104,7 +102,7 @@ interface IGeneralRepo {
 
 data class TaskInfo(
         val taskId: String,
-        val taskTypeInfo: ITaskTypeInfo,
+        val taskTypeInfo: String,
         val taskName: String,
         val comment: String,
         val isNotFinished: Boolean,
@@ -114,12 +112,10 @@ data class TaskInfo(
         val quantityPositions: Int
 )
 
-
 data class TaskTypeInfo(
         override val taskType: String,
         override val taskName: String,
         override val annotation: String
-
 ) : ITaskTypeInfo
 
 enum class AppTaskTypes(val taskType: String) {

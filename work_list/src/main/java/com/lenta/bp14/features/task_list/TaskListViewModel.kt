@@ -38,7 +38,7 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
         taskList?.mapIndexed { index, taskInfo ->
             ItemTaskUi(
                     position = (taskList.size - index).toString(),
-                    type = taskInfo.taskTypeInfo.taskType,
+                    type = taskInfo.taskTypeInfo,
                     name = taskInfo.taskName,
                     isProcessed = taskInfo.isNotFinished,
                     blockingStatus = if (taskInfo.isMyBlock == null) TaskBlockingStatus.NOT_BLOCKED else {
@@ -48,22 +48,6 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
                     taskId = taskInfo.taskId
             )
         } ?: emptyList()
-
-
-        /*taskList?.sortedByDescending { it.taskId.toLongOrNull() }?.map {
-            ItemTaskUi(
-                    position = it.taskId,
-                    type = it.taskTypeInfo.taskType,
-                    name = it.taskName,
-                    isProcessed = it.isNotFinished,
-                    blockingStatus = if (it.isMyBlock == null) TaskBlockingStatus.NOT_BLOCKED else {
-                        if (it.isMyBlock) TaskBlockingStatus.SELF_BLOCK else TaskBlockingStatus.BLOCK
-                    },
-                    quantity = it.quantityPositions.toString(),
-                    taskId = it.taskId
-            )
-
-        } ?: emptyList()*/
     }
 
     val processingTasks by lazy {
@@ -177,6 +161,7 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
     }
 
 }
+
 
 data class ItemTaskUi(
         val taskId: String,
