@@ -51,7 +51,7 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
         for (scanResult in good.value!!.scanResults.value!!) {
             quantity = quantity.sumWith(scanResult.quantity)
         }
-        "${quantity.dropZeros()} ${task.currentGood.value!!.getUnits()}"
+        "${quantity.dropZeros()} ${task.currentGood.value!!.units.name}"
     }
 
     val day = MutableLiveData<String>("")
@@ -100,7 +100,7 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
         task.currentGood.value!!.additional.map { additional ->
             AdditionalInfoUi(
                     storagePlaces = additional?.storagePlaces ?: "Not found!",
-                    minStock = "${additional?.minStock?.dropZeros()} ${task.currentGood.value!!.getUnits()}",
+                    minStock = "${additional?.minStock?.dropZeros()} ${task.currentGood.value!!.units.name}",
                     inventory = additional?.inventory ?: "Not found!",
                     arrival = additional?.arrival ?: "Not found!",
                     commonPrice = "${additional?.commonPrice?.dropZeros()}р.",
@@ -117,7 +117,7 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
                 ItemStockUi(
                         number = (index + 1).toString(),
                         storage = stock.storage,
-                        quantity = "${stock.quantity} ${task.currentGood.value!!.getUnits()}"
+                        quantity = "${stock.quantity} ${task.currentGood.value!!.units.name}"
                 )
             }
         }
@@ -211,8 +211,6 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
             commentsPosition.value = position
             comment.value = commentsList.value?.get(position)
         }
-
-
     }
 
     val onSelectShelfLifeType = object : OnPositionClickListener {
@@ -235,8 +233,7 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
 
     fun onClickApply() {
         addScanResult()
-        task.moveGoodToProcessedList()
-        navigator.closeAllScreen()
+        task.setCurrentGoodProcessed()
         navigator.openGoodsListWlScreen()
     }
 

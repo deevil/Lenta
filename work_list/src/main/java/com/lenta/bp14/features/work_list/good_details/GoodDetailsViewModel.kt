@@ -48,7 +48,7 @@ class GoodDetailsViewModel : CoreViewModel(), PageSelectionListener {
                         expirationDate = scanResult.getFormattedExpirationDate(),
                         productionDate = scanResult.getFormattedProductionDate(),
                         productionDateVisibility = scanResult.productionDate != null,
-                        quantity = "${scanResult.quantity.dropZeros()} ${task.currentGood.value!!.getUnits()}"
+                        quantity = "${scanResult.quantity.dropZeros()} ${task.currentGood.value!!.units.name}"
                 )
             }
         }
@@ -69,7 +69,7 @@ class GoodDetailsViewModel : CoreViewModel(), PageSelectionListener {
                 ItemCommentUi(
                         position = (index + 1).toString(),
                         comment = scanResult.comment,
-                        quantity = "${scanResult.quantity.dropZeros()} ${task.currentGood.value!!.getUnits()}"
+                        quantity = "${scanResult.quantity.dropZeros()} ${task.currentGood.value!!.units.name}"
                 )
             }
         }

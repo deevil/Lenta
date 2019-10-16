@@ -10,7 +10,7 @@ import com.lenta.bp14.BR
 import com.lenta.bp14.R
 import com.lenta.bp14.databinding.FragmentGoodsListClBinding
 import com.lenta.bp14.databinding.ItemClGoodQuantityEditableSelectableBinding
-import com.lenta.bp14.databinding.LayoutClGoodsListGoodsBinding
+import com.lenta.bp14.databinding.LayoutClGoodsListBinding
 import com.lenta.bp14.di.CheckListComponent
 import com.lenta.shared.di.CoreInjectHelper
 import com.lenta.shared.keys.KeyCode
@@ -70,8 +70,8 @@ class GoodsListClFragment : CoreFragment<FragmentGoodsListClBinding, GoodsListCl
 
     override fun getPagerItemView(container: ViewGroup, position: Int): View {
         DataBindingUtil
-                .inflate<LayoutClGoodsListGoodsBinding>(LayoutInflater.from(container.context),
-                        R.layout.layout_cl_goods_list_goods,
+                .inflate<LayoutClGoodsListBinding>(LayoutInflater.from(container.context),
+                        R.layout.layout_cl_goods_list,
                         container,
                         false).let { layoutBinding ->
 

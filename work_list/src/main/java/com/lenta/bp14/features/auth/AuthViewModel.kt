@@ -2,7 +2,9 @@ package com.lenta.bp14.features.auth
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.lenta.bp14.models.general.IGeneralRepo
 import com.lenta.bp14.platform.navigation.IScreenNavigator
+import com.lenta.bp14.repos.IRepoInMemoryHolder
 import com.lenta.bp14.requests.user_permitions.PermissionsRequestParams
 import com.lenta.bp14.requests.user_permitions.UserPermissionsNetRequest
 import com.lenta.shared.utilities.runIfDebug
@@ -21,6 +23,7 @@ import com.lenta.shared.utilities.getBaseAuth
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+
 class AuthViewModel : CoreAuthViewModel() {
 
     @Inject
@@ -33,6 +36,10 @@ class AuthViewModel : CoreAuthViewModel() {
     lateinit var appSettings: IAppSettings
     @Inject
     lateinit var userPermissionsNetRequest: UserPermissionsNetRequest
+    @Inject
+    lateinit var generalRepo: IGeneralRepo
+    @Inject
+    lateinit var repoInMemoryHolder: IRepoInMemoryHolder
 
 
     val packageName = MutableLiveData<String>()
@@ -66,12 +73,11 @@ class AuthViewModel : CoreAuthViewModel() {
                 sessionInfo.userName = login
                 sessionInfo.basicAuth = getBaseAuth(login, getPassword())
                 appSettings.lastLogin = login
-                //TODO удалить отключение проверки полномочий
-                val disablePermissionCheck = true
-                if (!disablePermissionCheck && sessionInfo.isAuthSkipped.value != true) {
+                if (sessionInfo.isAuthSkipped.value != true) {
                     userPermissionsNetRequest(PermissionsRequestParams(
                             userName = login
                     )).either(::handleFailure) {
+                        repoInMemoryHolder.storesRequestResult = it
                         onAuthSuccess(login)
                     }
                 } else {
@@ -116,10 +122,10 @@ class AuthViewModel : CoreAuthViewModel() {
             runIfDebug {
                 Logg.d { "login.value ${login.value}" }
                 if (login.value.isNullOrEmpty()) {
-                    login.value = "MAKAROV"
+                    login.value = "USER902"
                 }
-                if (login.value == "MAKAROV" && getPassword().isEmpty()) {
-                    password.value = "1q2w3e4r"
+                if (login.value == "USER902" && getPassword().isEmpty()) {
+                    password.value = "987654321"
                 }
 
             }

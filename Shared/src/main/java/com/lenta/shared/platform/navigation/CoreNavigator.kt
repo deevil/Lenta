@@ -154,6 +154,12 @@ class CoreNavigator @Inject constructor(
         }
     }
 
+    override fun showProgressConnection() {
+        runOrPostpone {
+            showProgress(context.getString(R.string.connection_setup))
+        }
+    }
+
     override fun hideProgress() {
         runOrPostpone {
             foregroundActivityProvider.getActivity()?.hideProgress()
@@ -438,6 +444,7 @@ interface ICoreNavigator {
     fun showUnsavedDataDetected(confirmCallback: () -> Unit)
     fun openDetectedSavedDataScreen(deleteCallback: () -> Unit, confirmCallback: () -> Unit)
     fun openChangedDefaultSettingsAlert(noCallback: () -> Unit, yesCallback: () -> Unit)
+    fun showProgressConnection()
 }
 
 class FunctionsCollector(private val needCollectLiveData: LiveData<Boolean>) {

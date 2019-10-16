@@ -19,10 +19,10 @@ class ReportResultViewModel : CoreViewModel() {
     lateinit var navigator: IScreenNavigator
 
     val reports by lazy {
-        MutableLiveData<List<ItemTaskReport>>(generalTaskManager.getLatestSentReportResult()?.createdTasks?.map {
+        MutableLiveData<List<ItemTaskReport>>(generalTaskManager.getLatestSentReportResult()?.createdTasks?.mapIndexed { index, createdTaskInfo ->
             ItemTaskReport(
-                    number = it.taskNumber,
-                    description = it.text1
+                    number = "${index + 1}",
+                    description = createdTaskInfo.text1
             )
         } ?: emptyList())
     }

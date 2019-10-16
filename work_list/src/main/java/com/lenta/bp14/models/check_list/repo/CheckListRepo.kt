@@ -1,11 +1,9 @@
 package com.lenta.bp14.models.check_list.repo
 
 import androidx.lifecycle.MutableLiveData
-import com.lenta.bp14.di.CheckListScope
 import com.lenta.bp14.models.check_list.Good
 import com.lenta.bp14.platform.extentions.CheckListGoodInfo
 import com.lenta.bp14.platform.extentions.toCheckListGoodInfo
-import com.lenta.shared.di.AppScope
 import com.lenta.shared.fmp.resources.dao_ext.getEanInfo
 import com.lenta.shared.fmp.resources.dao_ext.getProductInfoByMaterial
 import com.lenta.shared.fmp.resources.dao_ext.getUnitName
@@ -41,34 +39,22 @@ class CheckListRepo @Inject constructor(
                                 name = unitsName ?: ""))
 
             }
+
             return@withContext null
         }
     }
 
     override suspend fun getGoodByEan(ean: String): Good? {
-        return withContext(Dispatchers.IO) {
-            getEanInfoByEan(ean)?.let { eanInfo ->
-                getCheckListGoodInfoByMaterial(eanInfo.materialNumber)?.let { checkListGoodInfo ->
-                    val unitsName = getUnitsName(checkListGoodInfo.buom)
-                    return@withContext Good(
-                            ean = ean,
-                            material = checkListGoodInfo.material,
-                            name = checkListGoodInfo.name,
-                            quantity = MutableLiveData("1"),
-                            units = Uom(
-                                    code = checkListGoodInfo.buom,
-                                    name = unitsName ?: ""))
-
-                }
-                return@withContext null
-            }
-            return@withContext null
+        getMaterialByEan(ean)?.let { material ->
+            return getGoodByMaterial(material)
         }
+
+        return null
     }
 
-    override suspend fun getEanInfoByEan(ean: String?): EanInfo? {
+    override suspend fun getMaterialByEan(ean: String?): String? {
         return withContext(Dispatchers.IO) {
-            return@withContext eanInfo.getEanInfo(ean)?.toEanInfo()
+            return@withContext eanInfo.getEanInfo(ean)?.toEanInfo()?.materialNumber
         }
     }
 
@@ -90,7 +76,7 @@ interface ICheckListRepo {
     suspend fun getGoodByEan(ean: String): Good?
     suspend fun getGoodByMaterial(material: String): Good?
 
-    suspend fun getEanInfoByEan(ean: String?): EanInfo?
+    suspend fun getMaterialByEan(ean: String?): String?
     suspend fun getCheckListGoodInfoByMaterial(material: String?): CheckListGoodInfo?
     suspend fun getUnitsName(code: String?): String?
 }

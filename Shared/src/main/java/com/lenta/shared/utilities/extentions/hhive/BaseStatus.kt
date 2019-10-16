@@ -46,11 +46,19 @@ fun <T> BaseStatus.toEither(data: T?, resourceName: String? = null): Either<Fail
         Either.Right(data)
     } else {
         ANALYTICS_HELPER?.logRequestError(resourceName, this)
-        Logg.w { "Failure FMP request for resource $resourceName: ${this}" }
+        Logg.w { "Failure FMP request for resource $resourceName: ${this.toStringSafety()}" }
         Either.Left(this.getFailure())
     }
 }
 
 fun BaseStatus.isNotBad(): Boolean {
     return this.isOk || this.httpStatus?.status == 304
+}
+
+fun BaseStatus.toStringSafety(): String {
+    return "BaseStatusV08{status=" + this.status + ", httpStatus=" + this.httpStatus + ", errors=" + this.errors.map { it.toStringSafety() } + ", retryCount=" + this.retryCount + '}'.toString()
+}
+
+fun Error.toStringSafety(): String {
+    return "Error{code=" + this.code + ", source='" + this.source + '\''.toString() + ", description='" + this.description + '\''.toString() + ", descriptions=" + this.descriptions + '}'.toString()
 }

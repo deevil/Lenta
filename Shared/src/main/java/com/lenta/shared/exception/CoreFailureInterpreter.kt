@@ -17,6 +17,8 @@ class CoreFailureInterpreter
 
             Failure.NetworkConnection -> FailureDescription(message = context.getString(R.string.error_network))
 
+            Failure.FileReadingError -> FailureDescription(message = context.getString(R.string.file_reding_error))
+
             Failure.GoodNotFound -> FailureDescription(message = context.getString(R.string.good_not_found),
                     iconRes = R.drawable.is_warning_red_80dp,
                     textColor = ContextCompat.getColor(context, R.color.color_text_dialogWarning))

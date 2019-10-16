@@ -39,7 +39,7 @@ class ExpectedDeliveriesViewModel : CoreViewModel() {
                         position = (index + 1).toString(),
                         status = delivery.status,
                         info = delivery.type,
-                        quantity = "${delivery.quantity.dropZeros()} ${task.currentGood.value!!.getUnits()}",
+                        quantity = "${delivery.quantity.dropZeros()} ${task.currentGood.value!!.units.name}",
                         date = delivery.date.getFormattedDate(),
                         time = delivery.date.getFormattedTime()
                 )

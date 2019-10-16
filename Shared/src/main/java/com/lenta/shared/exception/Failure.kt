@@ -31,6 +31,8 @@ sealed class Failure {
     class SapError(val message: String, val retCode: Int? = null) : Failure()
     class DbError(val message: String) : Failure()
     object NotValidQrCode : Failure()
+    object FileReadingError: Failure()
+    object PrintTemplateError: Failure()
 
     /** * Extend this class for feature specific failures.*/
     abstract class FeatureFailure : Failure()
