@@ -35,20 +35,35 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
     val marketNumber by lazy { sessionInfo.market }
 
     private val funcTaskAdapter = { taskList: List<TaskInfo>? ->
-        taskList?.sortedByDescending { it.taskId.toLongOrNull() }?.map {
-            TaskUi(
-                    id = it.taskId,
+        taskList?.mapIndexed { index, taskInfo ->
+            ItemTaskUi(
+                    position = (taskList.size - index).toString(),
+                    type = taskInfo.taskTypeInfo.taskType,
+                    name = taskInfo.taskName,
+                    isProcessed = taskInfo.isNotFinished,
+                    blockingStatus = if (taskInfo.isMyBlock == null) TaskBlockingStatus.NOT_BLOCKED else {
+                        if (taskInfo.isMyBlock) TaskBlockingStatus.SELF_BLOCK else TaskBlockingStatus.BLOCK
+                    },
+                    quantity = taskInfo.quantityPositions.toString(),
+                    taskId = taskInfo.taskId
+            )
+        } ?: emptyList()
+
+
+        /*taskList?.sortedByDescending { it.taskId.toLongOrNull() }?.map {
+            ItemTaskUi(
+                    position = it.taskId,
                     type = it.taskTypeInfo.taskType,
                     name = it.taskName,
                     isProcessed = it.isNotFinished,
                     blockingStatus = if (it.isMyBlock == null) TaskBlockingStatus.NOT_BLOCKED else {
                         if (it.isMyBlock) TaskBlockingStatus.SELF_BLOCK else TaskBlockingStatus.BLOCK
                     },
-                    quantity = it.quantityPositions,
+                    quantity = it.quantityPositions.toString(),
                     taskId = it.taskId
             )
 
-        } ?: emptyList()
+        } ?: emptyList()*/
     }
 
     val processingTasks by lazy {
@@ -163,14 +178,14 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
 
 }
 
-data class TaskUi(
+data class ItemTaskUi(
         val taskId: String,
-        val id: String,
+        val position: String,
         val type: String,
         val name: String,
         val blockingStatus: TaskBlockingStatus,
         val isProcessed: Boolean,
-        val quantity: Int
+        val quantity: String
 )
 
 enum class TaskBlockingStatus {

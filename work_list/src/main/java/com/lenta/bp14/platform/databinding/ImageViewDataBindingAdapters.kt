@@ -10,6 +10,7 @@ import com.lenta.bp14.models.data.pojo.PrintStatus
 import com.lenta.shared.utilities.databinding.dataBindingHelpHolder
 import com.lenta.shared.utilities.extentions.setInvisible
 import com.lenta.shared.utilities.extentions.setVisible
+import com.lenta.shared.utilities.extentions.setVisibleGone
 
 @BindingAdapter("taskStatusIcon")
 fun setTaskStatusIcon(imageView: ImageView, taskBlockingStatus: TaskBlockingStatus) {
@@ -19,7 +20,7 @@ fun setTaskStatusIcon(imageView: ImageView, taskBlockingStatus: TaskBlockingStat
             TaskBlockingStatus.SELF_BLOCK -> imageView.setImageResource(R.drawable.ic_lock_open_dark_24dp)
             TaskBlockingStatus.BLOCK -> imageView.setImageResource(R.drawable.ic_processed_status_dark_24dp)
         }
-        imageView.setInvisible(it == TaskBlockingStatus.NOT_BLOCKED)
+        imageView.setVisibleGone(it == TaskBlockingStatus.NOT_BLOCKED)
     }
 }
 
