@@ -69,7 +69,7 @@
         <item name="android:selectAllOnFocus">true</item>
     </style>
 
-    <style name="recycler_view_style" parent="Widget.AppCompat.EditText">
+    <style name="recycler_view_style">
         <item name="android:scrollbars">vertical</item>
         <item name="android:fadeScrollbars">false</item>
     </style>
