@@ -78,7 +78,9 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
     val daysLeft: MutableLiveData<Int> = enteredDate.combineLatest(shelfLifeTypePosition).map {
         val enteredDate = it?.first
         val shelfLifeType = it?.second
-        val daysLeft: Int? = if (enteredDate != null && shelfLifeType != null) {
+        val shelfLifeTimeMills = good.value!!.getShelfLifeInMills()
+
+        val daysLeft: Int? = if (enteredDate != null && shelfLifeType != null && shelfLifeTimeMills != 0L) {
             val expirationDate = if (shelfLifeType == ShelfLifeType.PRODUCTION.position){
                 enteredDate.time + good.value!!.getShelfLifeInMills()
             } else enteredDate.time

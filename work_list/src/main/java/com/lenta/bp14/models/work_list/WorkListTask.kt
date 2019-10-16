@@ -321,7 +321,7 @@ data class Good(
     }
 
     fun getShelfLifeInMills(): Long {
-        return (shelfLife * 24 * 60 * 60 * 1000).toLong()
+        return shelfLife.toLong() * 24 * 60 * 60 * 1000
     }
 
     override fun equals(other: Any?): Boolean {
