@@ -25,6 +25,9 @@ interface ITaskReviseDocumentsRepository {
     fun getInvoiceInfo(): InvoiceRevise?
     fun updateInvoiceInfo(invoice: InvoiceRevise)
 
+    fun getTransportConditions(): List<TransportCondition>
+    fun updateTransportCondition(conditions: List<TransportCondition>)
+
     fun clear()
 
     fun changeDeliveryDocumentStatus(documentID: String)
@@ -34,4 +37,6 @@ interface ITaskReviseDocumentsRepository {
     fun approveRussianForm(matnr: String, batchNumber: String)
     fun approveBatch(matnr: String, batchNumber: String)
     fun changeInvoiceStatus()
+    fun changeTransportConditionStatus(id: String)
+    fun changeTransportConditionValue(id: String, newValue: String)
 }

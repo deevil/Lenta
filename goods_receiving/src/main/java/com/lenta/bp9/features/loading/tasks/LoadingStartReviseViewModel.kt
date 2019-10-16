@@ -3,6 +3,7 @@ package com.lenta.bp9.features.loading.tasks
 import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.lenta.bp9.R
 import com.lenta.bp9.model.task.IReceivingTaskManager
 import com.lenta.bp9.model.task.TaskNotification
 import com.lenta.bp9.model.task.TaskStatus
@@ -95,7 +96,7 @@ class LoadingStartReviseViewModel : CoreLoadingViewModel() {
             } else if (task.taskRepository.getReviseDocuments().getProductDocuments().isNotEmpty()) {
                 screenNavigator.openProductDocumentsReviseScreen()
             } else {
-                screenNavigator.openCheckingNotNeededAlert {
+                screenNavigator.openCheckingNotNeededAlert(context.getString(R.string.revise_not_needed_checking)) {
                     screenNavigator.openFinishReviseLoadingScreen()
                 }
             }

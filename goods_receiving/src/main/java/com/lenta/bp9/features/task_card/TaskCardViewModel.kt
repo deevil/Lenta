@@ -173,6 +173,9 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
             TaskStatus.Arrived -> {
                 screenNavigator.openStartReviseLoadingScreen()
             }
+            TaskStatus.Checked -> {
+                screenNavigator.openStartConditionsReviseLoadingScreen()
+            }
         }
     }
 
