@@ -86,32 +86,14 @@
                     style="@style/LinearCellStyle"
                     android:layout_weight="1">
 
-                    <FrameLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent">
-
-                        <com.lenta.shared.view.ClickableSpinner
-                            android:id="@+id/spin_select_comment"
-                            style="@style/CellSpinnerStyle"
-                            android:layout_height="match_parent"
-                            app:items="@{vm.commentsList}"
-                            app:onPositionClickListener="@{vm.onSelectComment}"
-                            app:position="@{vm.commentsPosition}"
-                            tools:entries="@array/selected_comment" />
-
-                        <EditText
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:layout_marginStart="10dp"
-                            android:layout_marginTop="10dp"
-                            android:layout_marginEnd="44dp"
-                            android:layout_marginBottom="10dp"
-                            android:backgroundTint="@color/color_background"
-                            android:maxLines="1"
-                            android:text="@={vm.comment}"
-                            tools:text="Не выбран" />
-
-                    </FrameLayout>
+                    <com.lenta.shared.view.ClickableSpinner
+                        android:id="@+id/spin_select_comment"
+                        style="@style/CellSpinnerStyle"
+                        android:layout_height="match_parent"
+                        app:items="@{vm.commentsList}"
+                        app:onPositionClickListener="@{vm.onSelectComment}"
+                        app:position="@{vm.commentsPosition}"
+                        tools:entries="@array/selected_comment" />
 
                 </LinearLayout>
 
@@ -131,7 +113,6 @@
                     android:layout_weight="1">
 
                     <com.lenta.shared.view.ClickableSpinner
-                        android:id="@+id/spin_shelf_life"
                         style="@style/CellSpinnerStyle"
                         app:items="@{vm.shelfLifeTypeList}"
                         app:onPositionClickListener="@{vm.onSelectShelfLifeType}"

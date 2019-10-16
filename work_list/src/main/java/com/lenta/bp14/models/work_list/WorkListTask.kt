@@ -293,7 +293,7 @@ data class Good(
         var purchaseGroup: String,
         val shelfLife: Int,
         val remainingShelfLife: Int,
-        val shelfLifeType: MutableLiveData<List<String>> = MutableLiveData(emptyList()),
+        val shelfLifeType: MutableLiveData<List<String>> = MutableLiveData(emptyList()), // Не используется, типы сроков предустановлены.
         val comments: MutableLiveData<List<String>> = MutableLiveData(emptyList()),
         val options: GoodOptions,
         var isProcessed: Boolean = false,
