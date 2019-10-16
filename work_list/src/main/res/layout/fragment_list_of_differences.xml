@@ -72,7 +72,7 @@
             android:layout_weight="1"
             app:items="@{vm.goods}"
             app:rv_config="@{rvConfig}"
-            tools:listitem="@layout/item_good_selectable" />
+            tools:listitem="@layout/item_simple_good_selectable" />
 
     </LinearLayout>
 
