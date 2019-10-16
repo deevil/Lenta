@@ -104,9 +104,10 @@
                             android:layout_height="match_parent"
                             android:layout_marginStart="10dp"
                             android:layout_marginTop="10dp"
-                            android:layout_marginEnd="48dp"
+                            android:layout_marginEnd="44dp"
                             android:layout_marginBottom="10dp"
                             android:backgroundTint="@color/color_background"
+                            android:maxLines="1"
                             android:text="@={vm.comment}"
                             tools:text="Не выбран" />
 
