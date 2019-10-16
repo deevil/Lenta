@@ -51,7 +51,7 @@
 
                     <TextView
                         style="@style/CellTextStyle"
-                        android:text="@{task.type}"
+                        android:text="@{task.number}"
                         tools:text="РБС - 120//" />
 
                     <TextView

@@ -38,7 +38,7 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
         taskList?.mapIndexed { index, taskInfo ->
             ItemTaskUi(
                     position = (taskList.size - index).toString(),
-                    type = taskInfo.taskTypeInfo,
+                    number = taskInfo.taskNumber,
                     name = taskInfo.taskName,
                     isProcessed = taskInfo.isNotFinished,
                     blockingStatus = if (taskInfo.isMyBlock == null) TaskBlockingStatus.NOT_BLOCKED else {
@@ -166,7 +166,7 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
 data class ItemTaskUi(
         val taskId: String,
         val position: String,
-        val type: String,
+        val number: String,
         val name: String,
         val blockingStatus: TaskBlockingStatus,
         val isProcessed: Boolean,

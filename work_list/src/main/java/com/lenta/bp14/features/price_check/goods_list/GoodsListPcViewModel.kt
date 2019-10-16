@@ -127,7 +127,7 @@ class GoodsListPcViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     }
 
     val deleteButtonVisibility = correctedSelectedPage.map { it != GoodsListTab.PROCESSING.position }
-    val printButtonVisibility = correctedSelectedPage.map { it != GoodsListTab.PROCESSING.position }
+    val printButtonVisibility = correctedSelectedPage.map { it != GoodsListTab.PROCESSED.position }
 
 
     init {

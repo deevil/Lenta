@@ -58,7 +58,8 @@ class GeneralRepo @Inject constructor(
     private val funcAdapter = { taskInfo: com.lenta.bp14.requests.tasks.TaskInfo ->
         TaskInfo(
                 taskId = taskInfo.taskNumber,
-                taskTypeInfo = taskInfo.text1,
+                taskTypeInfo = getTasksTypeInfo(taskInfo.taskType) ?: emptyTaskTypeInfo,
+                taskNumber = taskInfo.text1,
                 taskName = taskInfo.taskName,
                 isNotFinished = taskInfo.notFinished.isSapTrue(),
                 isMyBlock = if (taskInfo.blockType.isBlank()) null else taskInfo.blockType == "1",
@@ -102,7 +103,8 @@ interface IGeneralRepo {
 
 data class TaskInfo(
         val taskId: String,
-        val taskTypeInfo: String,
+        val taskTypeInfo: ITaskTypeInfo,
+        val taskNumber: String,
         val taskName: String,
         val comment: String,
         val isNotFinished: Boolean,
