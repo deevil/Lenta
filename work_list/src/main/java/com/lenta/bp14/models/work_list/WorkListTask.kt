@@ -313,7 +313,7 @@ data class Good(
     }
 
     fun getEanWithUnits(): String? {
-        return if (ean != null) "${ean}/${getUnits()}" else ""
+        return if (ean != null) "${ean}/${units.name}" else ""
     }
 
     fun getGoodWithPurchaseGroups(): String? {
@@ -322,10 +322,6 @@ data class Good(
 
     fun getShelfLifeInMills(): Long {
         return (shelfLife * 24 * 60 * 60 * 1000).toLong()
-    }
-
-    fun getUnits(): String {
-        return units.name.toLowerCase(Locale.getDefault())
     }
 
     override fun equals(other: Any?): Boolean {

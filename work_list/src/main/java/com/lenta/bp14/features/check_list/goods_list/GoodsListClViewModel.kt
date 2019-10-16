@@ -81,7 +81,6 @@ class GoodsListClViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     fun onClickDelete() {
         task.deleteSelectedGoods(selectionsHelper.selectedPositions.value!!)
         selectionsHelper.clearPositions()
-
     }
 
     fun onClickSave() {
@@ -132,7 +131,6 @@ class GoodsListClViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
                         }
                         return@analyseCode
                     }
-                    navigator.showGoodNotFound()
                 },
                 funcForSapOrBar = navigator::showTwelveCharactersEntered,
                 funcForNotValidFormat = navigator::showGoodNotFound
@@ -147,7 +145,6 @@ class GoodsListClViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
         }
 
         task.addGood(good)
-
         numberField.value = ""
     }
 
