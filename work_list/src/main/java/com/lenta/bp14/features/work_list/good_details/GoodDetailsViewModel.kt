@@ -36,10 +36,12 @@ class GoodDetailsViewModel : CoreViewModel(), PageSelectionListener {
             val combinedResults = mutableMapOf<String, ScanResult>()
             list?.map { result ->
                 val key = result.getKeyFromDates()
-                combinedResults[key] = if (combinedResults.containsKey(key)) {
-                    val totalQuantity = combinedResults[key]!!.quantity.sumWith(result.quantity)
-                    combinedResults[key]!!.copy(quantity = totalQuantity)
-                } else result
+                if (result.productionDate != null || result.expirationDate != null) {
+                    combinedResults[key] = if (combinedResults.containsKey(key)) {
+                        val totalQuantity = combinedResults[key]!!.quantity.sumWith(result.quantity)
+                        combinedResults[key]!!.copy(quantity = totalQuantity)
+                    } else result
+                }
             }
 
             combinedResults.values.mapIndexed { index, scanResult ->
@@ -57,12 +59,15 @@ class GoodDetailsViewModel : CoreViewModel(), PageSelectionListener {
     val comments: MutableLiveData<List<ItemCommentUi>> by lazy {
         task.currentGood.value!!.scanResults.map { list: List<ScanResult>? ->
             val combinedResults = mutableMapOf<String, ScanResult>()
+            val commentNotSelected = task.currentGood.value!!.comments.value!![0]
             list?.map { result ->
                 val key = result.comment
-                combinedResults[key] = if (combinedResults.containsKey(key)) {
-                    val totalQuantity = combinedResults[key]!!.quantity.sumWith(result.quantity)
-                    combinedResults[key]!!.copy(quantity = totalQuantity)
-                } else result
+                if (key != commentNotSelected) {
+                    combinedResults[key] = if (combinedResults.containsKey(key)) {
+                        val totalQuantity = combinedResults[key]!!.quantity.sumWith(result.quantity)
+                        combinedResults[key]!!.copy(quantity = totalQuantity)
+                    } else result
+                }
             }
 
             combinedResults.values.mapIndexed { index, scanResult ->

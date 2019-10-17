@@ -296,16 +296,16 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     private fun saveScanResult() {
-        val shelfLifeDate = enteredDate.value
+        val enteredDate = enteredDate.value
         val shelfLifeType = shelfLifeTypePosition.value
 
-        val productionDate = if (shelfLifeDate != null && shelfLifeType == ShelfLifeType.PRODUCTION.position) {
-            shelfLifeDate
+        val productionDate = if (enteredDate != null && shelfLifeType == ShelfLifeType.PRODUCTION.position) {
+            enteredDate
         } else null
 
-        val expirationDate = if (shelfLifeDate != null && shelfLifeType == ShelfLifeType.PRODUCTION.position) {
-            Date(shelfLifeDate.time + good.value!!.getShelfLifeInMills())
-        } else shelfLifeDate
+        val expirationDate = if (enteredDate != null && shelfLifeType == ShelfLifeType.PRODUCTION.position) {
+            Date(enteredDate.time + good.value!!.getShelfLifeInMills())
+        } else enteredDate
 
         task.addScanResult(ScanResult(
                 quantity = quantity.value?.toDoubleOrNull() ?: 0.0,
