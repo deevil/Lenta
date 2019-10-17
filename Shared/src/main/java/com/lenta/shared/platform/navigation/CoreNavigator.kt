@@ -262,7 +262,7 @@ class CoreNavigator @Inject constructor(
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(message = iconDescriptionHelper.getDescription(IconCode.EXCISE_STAMP)
                     ?: context.getString(R.string.es_info),
-                    iconRes = R.drawable.is_scan_barcode_es), CustomAnimation.vertical)
+                    iconRes = R.drawable.ic_scan_barcode_es_48dp), CustomAnimation.vertical)
         }
     }
 

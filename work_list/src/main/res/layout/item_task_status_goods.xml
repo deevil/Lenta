@@ -7,7 +7,7 @@
 
         <variable
             name="task"
-            type="com.lenta.bp14.features.task_list.TaskUi" />
+            type="com.lenta.bp14.features.task_list.ItemTaskUi" />
 
     </data>
 
@@ -31,7 +31,7 @@
                     android:id="@+id/tv_item_number"
                     style="@style/CellTextStyle"
                     android:layout_width="wrap_content"
-                    android:text="@{task.id}"
+                    android:text="@{task.position}"
                     tools:text="1" />
 
             </LinearLayout>
@@ -51,7 +51,7 @@
 
                     <TextView
                         style="@style/CellTextStyle"
-                        android:text="@{task.type}"
+                        android:text="@{task.number}"
                         tools:text="РБС - 120//" />
 
                     <TextView
@@ -83,7 +83,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="4dp"
                     android:src="@drawable/ic_play_arrow_dark_24dp"
-                    app:invisible="@{task.processed == false}" />
+                    android:visibility="@{task.processed == true}" />
 
                 <ImageView
                     android:layout_width="wrap_content"
@@ -103,7 +103,7 @@
                     style="@style/CellTextStyle"
                     android:layout_width="wrap_content"
                     android:layout_gravity="center"
-                    android:text="@{String.valueOf(task.quantity)}"
+                    android:text="@{task.quantity}"
                     tools:text="10" />
 
             </LinearLayout>

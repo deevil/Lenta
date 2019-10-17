@@ -78,7 +78,9 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
     val daysLeft: MutableLiveData<Int> = enteredDate.combineLatest(shelfLifeTypePosition).map {
         val enteredDate = it?.first
         val shelfLifeType = it?.second
-        val daysLeft: Int? = if (enteredDate != null && shelfLifeType != null) {
+        val shelfLifeTimeMills = good.value!!.getShelfLifeInMills()
+
+        val daysLeft: Int? = if (enteredDate != null && shelfLifeType != null && shelfLifeTimeMills != 0L) {
             val expirationDate = if (shelfLifeType == ShelfLifeType.PRODUCTION.position){
                 enteredDate.time + good.value!!.getShelfLifeInMills()
             } else enteredDate.time
@@ -94,7 +96,6 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
     val shelfLifeTypeList = MutableLiveData<List<String>>()
 
     val commentsList: MutableLiveData<List<String>> by lazy { task.currentGood.value!!.comments }
-    val comment = MutableLiveData<String>("")
 
     val additional: MutableLiveData<AdditionalInfoUi> by lazy {
         task.currentGood.value!!.additional.map { additional ->
@@ -112,8 +113,8 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     val stocks: MutableLiveData<List<ItemStockUi>> by lazy {
-        task.getGoodStocks().map { list: List<Stock>? ->
-            list?.mapIndexed { index, stock ->
+        task.currentGood.value!!.additional.map { additional ->
+            additional?.stocks?.mapIndexed { index, stock ->
                 ItemStockUi(
                         number = (index + 1).toString(),
                         storage = stock.storage,
@@ -124,8 +125,8 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     val providers: MutableLiveData<List<ItemProviderUi>> by lazy {
-        task.getGoodProviders().map { list: List<Provider>? ->
-            list?.mapIndexed { index, provider ->
+        task.currentGood.value!!.additional.map { additional ->
+            additional?.providers?.mapIndexed { index, provider ->
                 ItemProviderUi(
                         number = (index + 1).toString(),
                         code = provider.code,
@@ -137,14 +138,16 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     val options: MutableLiveData<OptionsUi> by lazy {
-        task.getGoodOptions().map { options ->
-            OptionsUi(
-                    matrixType = options?.matrixType ?: MatrixType.Unknown,
-                    goodType = options?.goodType ?: GoodType.COMMON,
-                    section = options?.section ?: "",
-                    healthFood = options?.healthFood ?: false,
-                    novelty = options?.novelty ?: false
-            )
+        task.currentGood.map { good ->
+            good?.options?.let { options ->
+                OptionsUi(
+                        matrixType = options.matrixType,
+                        goodType = options.goodType,
+                        section = options.section,
+                        healthFood = options.healthFood,
+                        novelty = options.novelty
+                )
+            }
         }
     }
 
@@ -152,8 +155,8 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
         it?.toDoubleOrNull() ?: 0.0 != 0.0
     }
 
-    private val commentCondition: MutableLiveData<Boolean> = comment.map {
-        !it.isNullOrEmpty() && it != good.value?.comments?.value?.get(0)
+    private val commentCondition: MutableLiveData<Boolean> = commentsPosition.map {
+        it ?: 0 != 0
     }
 
     private val dateCondition: MutableLiveData<Boolean> = enteredDate.map {
@@ -174,7 +177,6 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
         viewModelScope.launch {
             title.value = good.value?.getFormattedMaterialWithName()
             quantity.value = good.value?.defaultValue.dropZeros()
-            comment.value = commentsList.value?.get(0)
 
             viewModelScope.launch {
                 additionalGoodInfoNetRequest(AdditionalGoodInfoParams(
@@ -209,7 +211,6 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
     val onSelectComment = object : OnPositionClickListener {
         override fun onClickPosition(position: Int) {
             commentsPosition.value = position
-            comment.value = commentsList.value?.get(position)
         }
     }
 
@@ -251,7 +252,7 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
 
         task.addScanResult(ScanResult(
                 quantity = quantity.value?.toDoubleOrNull() ?: 0.0,
-                comment =  if (comment.value.isNullOrEmpty()) task.currentGood.value?.comments?.value?.get(0) ?: "" else comment.value!!,
+                comment =  good.value?.comments?.value?.get(commentsPosition.value ?: 0)!!,
                 productionDate = productionDate,
                 expirationDate = expirationDate
         ))
@@ -261,7 +262,6 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
         quantity.value = good.value?.defaultValue.dropZeros()
 
         shelfLifeTypePosition.value = 0
-        comment.value = commentsList.value?.get(0)
 
         day.value = ""
         month.value = ""

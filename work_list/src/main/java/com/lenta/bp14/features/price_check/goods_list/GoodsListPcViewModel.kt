@@ -126,15 +126,19 @@ class GoodsListPcViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
         processedGoods.map { it?.isNotEmpty() ?: false }
     }
 
+    val videoButtonVisibility = correctedSelectedPage.map { it != GoodsListTab.SEARCH.position }
     val deleteButtonVisibility = correctedSelectedPage.map { it != GoodsListTab.PROCESSING.position }
-    val printButtonVisibility = correctedSelectedPage.map { it != GoodsListTab.PROCESSING.position }
+    val printButtonVisibility = correctedSelectedPage.map { it != GoodsListTab.PROCESSED.position }
 
+    // -----------------------------
 
     init {
         viewModelScope.launch {
             requestFocusToNumberField.value = true
         }
     }
+
+    // -----------------------------
 
     override fun onPageSelected(position: Int) {
         selectedPage.value = position
