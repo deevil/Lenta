@@ -6,6 +6,7 @@ import com.lenta.bp9.R
 import com.lenta.bp9.features.task_list.TaskPostponedStatus
 import com.lenta.bp9.model.task.NotificationIndicatorType
 import com.lenta.bp9.model.task.TaskLockStatus
+import com.lenta.bp9.model.task.revise.ConditionViewType
 import com.lenta.shared.utilities.extentions.setVisible
 import com.lenta.shared.utilities.extentions.setVisibleGone
 import com.lenta.bp9.model.task.revise.DocumentType
@@ -61,6 +62,16 @@ fun setProductDocumentTypeIcon(imageView: ImageView, docType: ProductDocumentTyp
     imageView.setVisibleGone()
 }
 
+@BindingAdapter("conditionViewTypeIcon")
+fun setProductDocumentTypeIcon(imageView: ImageView, condViewType: ConditionViewType?) {
+    condViewType?.getIconRes()?.let {
+        imageView.setVisible()
+        imageView.setImageResource(it)
+        return
+    }
+    imageView.setVisibleGone()
+}
+
 @BindingAdapter("visibleOrGone")
 fun setVisibleOrGone(imageView: ImageView, isVisible: Boolean?) {
     if (isVisible == true) {
@@ -106,6 +117,14 @@ fun ProductDocumentType.getIconRes(): Int? {
     return when (this) {
         ProductDocumentType.Simple -> R.drawable.ic_simple_product_doc
         ProductDocumentType.AlcoRus, ProductDocumentType.AlcoImport -> R.drawable.ic_alco_task_icon
+        else -> null
+    }
+}
+
+fun ConditionViewType.getIconRes(): Int? {
+    return when (this) {
+        ConditionViewType.Temperature -> R.drawable.ic_temperature
+        ConditionViewType.Simple, ConditionViewType.Seal -> R.drawable.ic_simple_delivery_doc
         else -> null
     }
 }

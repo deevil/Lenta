@@ -74,6 +74,7 @@
     <string name="error">Ошибка</string>
     <string name="to_find">Найти</string>
     <string name="number">№</string>
+    <string name="celsius">°C</string>>
     <string name="good">Товар</string>
     <string name="quantity">Количество</string>
     <string name="quantity_short">Кол-во</string>
