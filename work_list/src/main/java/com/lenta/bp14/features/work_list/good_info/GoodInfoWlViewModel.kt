@@ -2,19 +2,26 @@ package com.lenta.bp14.features.work_list.good_info
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.lenta.bp14.models.check_price.IPriceInfoParser
 import com.lenta.bp14.models.data.GoodType
 import com.lenta.bp14.models.data.ShelfLifeType
-import com.lenta.bp14.models.work_list.*
+import com.lenta.bp14.models.work_list.AdditionalGoodInfo
+import com.lenta.bp14.models.work_list.ScanResult
+import com.lenta.bp14.models.work_list.WorkListTask
 import com.lenta.bp14.platform.navigation.IScreenNavigator
-import com.lenta.bp14.requests.work_list.IAdditionalGoodInfoNetRequest
 import com.lenta.bp14.requests.work_list.AdditionalGoodInfoParams
+import com.lenta.bp14.requests.work_list.IAdditionalGoodInfoNetRequest
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.models.core.MatrixType
 import com.lenta.shared.platform.viewmodel.CoreViewModel
+import com.lenta.shared.requests.combined.scan_info.analyseCode
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.databinding.PageSelectionListener
-import com.lenta.shared.utilities.extentions.*
+import com.lenta.shared.utilities.extentions.combineLatest
+import com.lenta.shared.utilities.extentions.dropZeros
+import com.lenta.shared.utilities.extentions.map
+import com.lenta.shared.utilities.extentions.sumWith
 import com.lenta.shared.view.OnPositionClickListener
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
@@ -32,6 +39,8 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
     lateinit var additionalGoodInfoNetRequest: IAdditionalGoodInfoNetRequest
     @Inject
     lateinit var sessionInfo: ISessionInfo
+    @Inject
+    lateinit var priceInfoParser: IPriceInfoParser
 
 
     val selectedPage = MutableLiveData(0)
@@ -81,7 +90,7 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
         val shelfLifeTimeMills = good.value!!.getShelfLifeInMills()
 
         val daysLeft: Int? = if (enteredDate != null && shelfLifeType != null && shelfLifeTimeMills != 0L) {
-            val expirationDate = if (shelfLifeType == ShelfLifeType.PRODUCTION.position){
+            val expirationDate = if (shelfLifeType == ShelfLifeType.PRODUCTION.position) {
                 enteredDate.time + good.value!!.getShelfLifeInMills()
             } else enteredDate.time
 
@@ -233,12 +242,60 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     fun onClickApply() {
-        addScanResult()
+        saveScanResult()
         task.setCurrentGoodProcessed()
         navigator.openGoodsListWlScreen()
     }
 
-    private fun addScanResult() {
+    fun onScanResult(data: String) {
+        analyseCode(
+                code = data,
+                funcForEan = { ean ->
+                    searchCode(ean = ean)
+                },
+                funcForMatNr = { material ->
+                    searchCode(material = material)
+                },
+                funcForPriceQrCode = { qrCode ->
+                    priceInfoParser.getPriceInfoFromRawCode(qrCode)?.let {
+                        searchCode(ean = it.eanCode)
+                        return@analyseCode
+                    }
+                },
+                funcForSapOrBar = navigator::showTwelveCharactersEntered,
+                funcForNotValidFormat = navigator::showGoodNotFound
+        )
+    }
+
+    private fun searchCode(ean: String? = null, material: String? = null) {
+        viewModelScope.launch {
+            require((ean != null) xor (material != null)) {
+                "Only one param allowed - ean: $ean, material: $material"
+            }
+
+            navigator.showProgressLoadingData()
+
+            when {
+                !ean.isNullOrBlank() -> task.getGoodByEan(ean)
+                !material.isNullOrBlank() -> task.getGoodByMaterial(material)
+                else -> null
+            }.also {
+                navigator.hideProgress()
+            }?.let { good ->
+                if (applyButtonEnabled.value == true) {
+                    saveScanResult()
+                    task.setCurrentGoodProcessed()
+                }
+                task.addGoodToList(good)
+                navigator.openGoodInfoWlScreen(popLast = true)
+                return@launch
+            }
+
+            navigator.showGoodNotFound()
+        }
+    }
+
+    private fun saveScanResult() {
         val shelfLifeDate = enteredDate.value
         val shelfLifeType = shelfLifeTypePosition.value
 
@@ -252,24 +309,10 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
 
         task.addScanResult(ScanResult(
                 quantity = quantity.value?.toDoubleOrNull() ?: 0.0,
-                comment =  good.value?.comments?.value?.get(commentsPosition.value ?: 0)!!,
+                comment = good.value?.comments?.value?.get(commentsPosition.value ?: 0)!!,
                 productionDate = productionDate,
                 expirationDate = expirationDate
         ))
-    }
-
-    private fun resetGoodFields() {
-        quantity.value = good.value?.defaultValue.dropZeros()
-
-        shelfLifeTypePosition.value = 0
-
-        day.value = ""
-        month.value = ""
-        year.value = ""
-    }
-
-    fun onScanResult(data: String) {
-
     }
 
 }

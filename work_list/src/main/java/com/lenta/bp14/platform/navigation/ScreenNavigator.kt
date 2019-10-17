@@ -120,9 +120,14 @@ class ScreenNavigator @Inject constructor(
         }
     }
 
-    override fun openGoodInfoWlScreen() {
+    override fun openGoodInfoWlScreen(popLast: Boolean) {
         runOrPostpone {
-            getFragmentStack()?.push(GoodInfoWlFragment())
+            getFragmentStack()?.let {
+                if (popLast) {
+                    it.pop()
+                }
+                it.push(GoodInfoWlFragment())
+            }
         }
     }
 
@@ -460,7 +465,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openReportResultScreen()
     fun openPrintSettingsScreen()
     fun openGoodDetailsScreen()
-    fun openGoodInfoWlScreen()
+    fun openGoodInfoWlScreen(popLast: Boolean = false)
     fun openGoodsListWlScreen()
     fun openGoodInfoPcScreen()
     fun openGoodsListPcScreen()

@@ -168,9 +168,7 @@ class GoodsListWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
                 },
                 funcForPriceQrCode = { qrCode ->
                     priceInfoParser.getPriceInfoFromRawCode(qrCode)?.let {
-                        viewModelScope.launch {
-                            addGoodByEan(it.eanCode)
-                        }
+                        addGoodByEan(it.eanCode)
                         return@analyseCode
                     }
                 },
