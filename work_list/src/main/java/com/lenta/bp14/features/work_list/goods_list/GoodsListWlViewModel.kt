@@ -160,15 +160,15 @@ class GoodsListWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     private fun checkEnteredNumber(number: String) {
         analyseCode(
                 code = number,
-                funcForEan = { eanCode ->
-                    addGoodByEan(eanCode)
+                funcForEan = { ean ->
+                    searchCode(ean = ean)
                 },
-                funcForMatNr = { matNr ->
-                    addGoodByMaterial(matNr)
+                funcForMatNr = { material ->
+                    searchCode(material = material)
                 },
                 funcForPriceQrCode = { qrCode ->
                     priceInfoParser.getPriceInfoFromRawCode(qrCode)?.let {
-                        addGoodByEan(it.eanCode)
+                        searchCode(ean = it.eanCode)
                         return@analyseCode
                     }
                 },
@@ -177,35 +177,27 @@ class GoodsListWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
         )
     }
 
-    private fun addGoodByEan(ean: String) {
-        Logg.d { "Entered EAN: $ean" }
+    private fun searchCode(ean: String? = null, material: String? = null) {
         viewModelScope.launch {
-            navigator.showProgressLoadingData()
-            val good = task.getGoodByEan(ean)
-            if (good != null) {
-                task.addGoodToList(good)
-                navigator.hideProgress()
-                navigator.openGoodInfoWlScreen()
-            } else {
-                navigator.hideProgress()
-                navigator.showGoodNotFound()
+            require((ean != null) xor (material != null)) {
+                "Only one param allowed - ean: $ean, material: $material"
             }
-        }
-    }
 
-    private fun addGoodByMaterial(material: String) {
-        Logg.d { "Entered MATERIAL: $material" }
-        viewModelScope.launch {
             navigator.showProgressLoadingData()
-            val good = task.getGoodByMaterial(material)
-            if (good != null) {
+
+            when {
+                !ean.isNullOrBlank() -> task.getGoodByEan(ean)
+                !material.isNullOrBlank() -> task.getGoodByMaterial(material)
+                else -> null
+            }.also {
+                navigator.hideProgress()
+            }?.let { good ->
                 task.addGoodToList(good)
-                navigator.hideProgress()
                 navigator.openGoodInfoWlScreen()
-            } else {
-                navigator.hideProgress()
-                navigator.showGoodNotFound()
+                return@launch
             }
+
+            navigator.showGoodNotFound()
         }
     }
 
@@ -220,7 +212,7 @@ class GoodsListWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
             2 -> searchGoods.value?.get(position)?.material
             else -> null
         }?.let { material ->
-            addGoodByMaterial(material)
+            searchCode(material = material)
         }
     }
 
@@ -238,7 +230,7 @@ class GoodsListWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     }
 
     fun onScanResult(data: String) {
-
+        checkEnteredNumber(data)
     }
 
     fun onClickBack() {
