@@ -236,7 +236,10 @@ class MainMenuViewModel : CoreViewModel() {
                     isNoEAN = true
             ))
         }
-        screenNavigator.openGoodsInfoScreen(TaskProductInfo(
+
+        //todo openScreen
+        screenNavigator.openTransferGoodsSectionScreen()
+        /**screenNavigator.openGoodsInfoScreen(TaskProductInfo(
                 materialNumber = "000000000000000021",
                 description = "Р/к виски (Россия) 230/250г",
                 uom = Uom("ST", "шт"),
@@ -266,7 +269,7 @@ class MainMenuViewModel : CoreViewModel() {
                 isVet = false,
                 numberBoxesControl = "",
                 numberStampsControl = "10"
-        ))
+        ))*/
         /**screenNavigator.openSupplyResultsAutomaticChargeSuccessDialog(
                 numberSupply = "325478",
                 leftCallbackFunc = {

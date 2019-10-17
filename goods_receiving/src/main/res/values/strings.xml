@@ -125,4 +125,10 @@
     <string name="remaining_shelf_life">Остаточный СГ</string>
     <string name="format_date">дд.мм.гггг</string>
     <string name="rounding_issue">Вы хотите округлить кол-во по товару до планового?</string>
+    <string name="transfer_goods_section">Передача товаров в секцию</string>
+    <string name="condition">Условие</string>
+    <string name="representative">Представитель</string>
+    <string name="of_goods">Товаров</string>
+    <string name="transmitted">Передается</string>
+    <string name="transferred">Передано</string>
 </resources>

@@ -139,7 +139,7 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
     }
 
     //блок 6.16
-    private fun onClickAdd() {
+    fun onClickAdd() {
         if (processGeneralProductService.countEqualOrigQuantity(countValue.value!!)) {//блок 6.16 (да)
             //блок 6.160
             paramGrsGrundPos()
