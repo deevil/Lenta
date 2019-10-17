@@ -64,4 +64,7 @@ interface AppComponent {
     fun inject(it: LoadingUnlockTaskViewModel)
     fun inject(it: PerishablesInfoViewModel)
     fun inject(it: TransferGoodsSectionViewModel)
+    fun inject(it: TransportConditionsReviseViewModel)
+    fun inject(it: LoadingFinishConditionsReviseViewModel)
+    fun inject(it: LoadingStartConditionsReviseViewModel)
 }

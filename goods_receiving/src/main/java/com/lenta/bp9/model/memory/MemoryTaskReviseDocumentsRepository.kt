@@ -11,6 +11,7 @@ class MemoryTaskReviseDocumentsRepository : ITaskReviseDocumentsRepository {
     private val russianABForms: ArrayList<FormABRussianRevise> = ArrayList()
     private val productBatches: ArrayList<ProductBatchRevise> = ArrayList()
     private val setComponents: ArrayList<SetComponentRevise> = ArrayList()
+    private val transportConditions: ArrayList<TransportCondition> = ArrayList()
 
     private var invoiceInfo: InvoiceRevise? = null
 
@@ -76,6 +77,15 @@ class MemoryTaskReviseDocumentsRepository : ITaskReviseDocumentsRepository {
         invoiceInfo = newInvoice
     }
 
+    override fun getTransportConditions(): List<TransportCondition> {
+        return transportConditions.toList()
+    }
+
+    override fun updateTransportCondition(conditions: List<TransportCondition>) {
+        transportConditions.clear()
+        transportConditions.addAll(conditions)
+    }
+
     override fun changeDeliveryDocumentStatus(documentID: String) {
         val document = deliveryDocuments.findLast { it.documentID == documentID }
         document?.let { it.isCheck = !it.isCheck }
@@ -118,6 +128,19 @@ class MemoryTaskReviseDocumentsRepository : ITaskReviseDocumentsRepository {
             if (productBatches.findLast { it.productNumber == matnr && !it.isCheck } == null) {
                 approveAlcoDocument(matnr)
             }
+        }
+    }
+
+    override fun changeTransportConditionStatus(id: String) {
+        transportConditions.findLast { it.conditionID == id }?.let { condition ->
+            condition.isCheck = !condition.isCheck
+        }
+    }
+
+    override fun changeTransportConditionValue(id: String, newValue: String) {
+        transportConditions.findLast { it.conditionID == id }?.let { condition ->
+            condition.value = newValue
+            condition.isCheck = newValue.isNotEmpty()
         }
     }
 

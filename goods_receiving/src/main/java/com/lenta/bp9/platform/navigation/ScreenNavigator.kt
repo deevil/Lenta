@@ -276,10 +276,10 @@ class ScreenNavigator(
         }
     }
 
-    override fun openCheckingNotNeededAlert(callbackFunc: () -> Unit) {
+    override fun openCheckingNotNeededAlert(message: String, callbackFunc: () -> Unit) {
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
-                    message = context.getString(R.string.revise_not_needed),
+                    message = message,
                     iconRes = 0,
                     isVisibleLeftButton = false,
                     timeAutoExitInMillis = 3000,
@@ -424,8 +424,25 @@ class ScreenNavigator(
         }
     }
 
-    private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
+    override fun openTransportConditionsScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(TransportConditionsReviseFragment())
+        }
+    }
 
+    override fun openFinishConditionsReviseLoadingScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(LoadingFinishConditionsReviseFragment())
+        }
+    }
+
+    override fun openStartConditionsReviseLoadingScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(LoadingStartConditionsReviseFragment())
+        }
+    }
+
+    private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 }
 
 interface IScreenNavigator : ICoreNavigator {
@@ -446,7 +463,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openConfirmationView(callbackFunc: () -> Unit)
     fun openConfirmationUnsavedData(callbackFunc: () -> Unit)
     fun openConfirmationProcessAsDiscrepancy(callbackFunc: () -> Unit)
-    fun openCheckingNotNeededAlert(callbackFunc: () -> Unit)
+    fun openCheckingNotNeededAlert(message: String, callbackFunc: () -> Unit)
     fun openAlertWithoutConfirmation(message: String, callbackFunc: () -> Unit)
     fun openChangeDateTimeScreen(mode: ChangeDateTimeMode)
     fun openLoadingRegisterArrivalScreen()
@@ -475,6 +492,9 @@ interface IScreenNavigator : ICoreNavigator {
     fun openRegisterArrivalLoadingScreen()
     fun openStartReviseLoadingScreen()
     fun openUnlockTaskLoadingScreen()
+    fun openTransportConditionsScreen()
+    fun openFinishConditionsReviseLoadingScreen()
+    fun openStartConditionsReviseLoadingScreen()
     fun openPerishablesInfoScreen(productInfo: TaskProductInfo)
     fun openRoundingIssueDialog(noCallbackFunc: () -> Unit, yesCallbackFunc: () -> Unit)
     fun openTransferGoodsSectionScreen()

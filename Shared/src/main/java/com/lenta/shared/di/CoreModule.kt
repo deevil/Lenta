@@ -39,6 +39,10 @@ import com.lenta.shared.platform.resources.ISharedStringResourceManager
 import com.lenta.shared.platform.resources.SharedStringResourceManager
 import com.lenta.shared.platform.time.ITimeMonitor
 import com.lenta.shared.platform.time.TimeMonitor
+import com.lenta.shared.print.IPriceTagGenerator
+import com.lenta.shared.print.IPrintPriceNetService
+import com.lenta.shared.print.PriceTagGenerator
+import com.lenta.shared.print.PrintPriceNetService
 import com.lenta.shared.progress.CoreProgressUseCaseInformator
 import com.lenta.shared.progress.IProgressUseCaseInformator
 import com.lenta.shared.requests.FmpRequestsHelper
@@ -74,6 +78,14 @@ class CoreModule(val application: Application, val defaultConnectionSettings: De
         @Singleton
         fun bindICoreNavigator(realisation: CoreNavigator): ICoreNavigator
 
+        @Binds
+        @Singleton
+        fun bindIPrintPriceNetService(realisation: PrintPriceNetService): IPrintPriceNetService
+
+        @Binds
+        @Singleton
+        fun bindIPriceTagGenerator(realisation: PriceTagGenerator): IPriceTagGenerator
+
     }
 
 
@@ -98,10 +110,10 @@ class CoreModule(val application: Application, val defaultConnectionSettings: De
 
         prepareFolder(DB_PATH)
 
-        val fmpDbName = "resources_${appSettings.getCurrentServerAddress().
-                replace("/", "").
-                replace(".", "_").
-                replace(":", "_")}_" +
+        val fmpDbName = "resources_${appSettings.getCurrentServerAddress()
+                .replace("/", "")
+                .replace(".", "_")
+                .replace(":", "_")}_" +
                 "${appSettings.getCurrentEnvironment()}_" +
                 "${appSettings.getCurrentProject()}.sqlite"
 

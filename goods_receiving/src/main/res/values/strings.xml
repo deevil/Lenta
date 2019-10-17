@@ -108,8 +108,10 @@
     <string name="discrepancies_found">Обнаружены расхождения</string>
     <string name="select_type_code_description">Введено 12 знаков. Какой код вы ввели?</string>
     <string name="goods_not_in_order">Товара нет в заказе</string>
-    <string name="revise_not_needed">Сверка документов не требуется, задание будет переключено в "Сверено"</string>
+    <string name="revise_not_needed_checking">Сверка документов не требуется, задание будет переключено в \"Сверено\"</string>
+    <string name="revise_not_needed_unloading">Контроль условий не требуется, задание будет переключено в \"Разгружено\"</string>
     <string name="checking_to_checked">\"Сверяется\" -> \"Сверено\"</string>
+    <string name="unloading_to_unloaded">\"Разгружается\" -> \"Разгружено\"</string>
     <string name="status_change">Смена статуса</string>
     <string name="task_unlock">Разблокировка задания</string>
     <string name="supply_results">Результаты проводки</string>
@@ -131,4 +133,6 @@
     <string name="of_goods">Товаров</string>
     <string name="transmitted">Передается</string>
     <string name="transferred">Передано</string>
+    <string name="transport_conditions_revise">Контроль условий перевозки</string>
+    <string name="condition">Условие</string>
 </resources>

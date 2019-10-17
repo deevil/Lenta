@@ -83,7 +83,7 @@ fun floatWithVisibilities(textView: TextView, value: Float?, prefix: String? = n
 }
 
 @BindingAdapter(value = ["price"])
-fun price(textView: TextView, price: Float?) {
+fun price(textView: TextView, price: Double?) {
     textView.text = if (
             price != null
             && price > 0F

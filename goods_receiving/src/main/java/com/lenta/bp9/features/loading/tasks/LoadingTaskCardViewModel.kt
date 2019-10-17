@@ -3,6 +3,7 @@ package com.lenta.bp9.features.loading.tasks
 import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.lenta.bp9.R
 import com.lenta.bp9.model.task.IReceivingTaskManager
 import com.lenta.bp9.model.task.TaskDescription
 import com.lenta.bp9.model.task.TaskNotification
@@ -106,6 +107,7 @@ class LoadingTaskCardViewModel : CoreLoadingViewModel() {
             val commentsToVP = result.commentsToVP.map { CommentToVP.from(it) }.toMutableList()
             val productsVetDocumentRevise = result.productsVetDocumentRevise.map { ProductVetDocumentRevise.from(it) }
             val complexDocumentsRevise = result.complexDocumentsRevise.map { ComplexDocumentRevise.from(it) }
+            val transportConditions = result.transportConditions.map { TransportCondition.from(it) }
 
             val newTask = taskManager.newReceivingTask(taskHeader, TaskDescription.from(result.taskDescription))
             newTask?.taskRepository?.getNotifications()?.updateWithNotifications(notifications, documentNotifications, productNotifications, conditionNotifications)
@@ -118,6 +120,7 @@ class LoadingTaskCardViewModel : CoreLoadingViewModel() {
                 this.updateProductBatches(productBatchesRevise)
                 this.updateSetComponents(setComponenttsRevise)
                 this.updateInvoiceInfo(invoiceRevise)
+                this.updateTransportCondition(transportConditions)
             }
             taskManager.setTask(newTask)
             transferToNextScreen()
@@ -133,8 +136,17 @@ class LoadingTaskCardViewModel : CoreLoadingViewModel() {
                     } else if (task.taskRepository.getReviseDocuments().getProductDocuments().isNotEmpty()) {
                         screenNavigator.openProductDocumentsReviseScreen()
                     } else {
-                        screenNavigator.openCheckingNotNeededAlert {
+                        screenNavigator.openCheckingNotNeededAlert(context.getString(R.string.revise_not_needed_checking)) {
                             screenNavigator.openFinishReviseLoadingScreen()
+                        }
+                    }
+                }
+                TaskStatus.Unloading -> {
+                    if (task.taskRepository.getReviseDocuments().getTransportConditions().isNotEmpty()) {
+                        screenNavigator.openTransportConditionsScreen()
+                    } else {
+                        screenNavigator.openCheckingNotNeededAlert(context.getString(R.string.revise_not_needed_unloading)) {
+                            screenNavigator.openFinishConditionsReviseLoadingScreen()
                         }
                     }
                 }

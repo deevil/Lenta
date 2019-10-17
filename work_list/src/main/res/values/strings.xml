@@ -31,7 +31,7 @@
     <string name="make_sure_yellow_paper_installed">Убедитесь, что в принтере %1$s установлена бумага для желтых ценников и подтвердите количество копий для печати (%2$d шт.)</string>
     <string name="make_sure_red_paper_installed">Убедитесь, что в принтере %1$s установлена бумага для красных ценников и подтвердите количество копий для печати (%2$d шт.)</string>
     <string name="price_tags_submitted">Ценники переданы на печать</string>
-    <string name="set_task_to_status_calculated">Перевести задание в статус "Подсчитано" и закрыть его для редактирования?</string>
+    <string name="set_task_to_status_calculated">Провести задание в статус \"Посчитано\" и закрыть его для редактирования?</string>
     <string name="raw_goods_remained_in_task">В задании остались необработанные товары. Сохранить в статусе "Опубликовано" и оставить доступным для продолжения пересчета?</string>
     <string name="print_price_tag_for_good">Распечатать ценник по товару \"%1$s\"?</string>
     <string name="unsaved_data_found_on_device">На устройстве обнаружены несохраненные данные. Перейти к данным?</string>
@@ -60,7 +60,7 @@
     <string name="copy_quantity">Кол-во копий</string>
     <string name="printer_type">Тип принтера</string>
     <string name="price_tag_type">Тип ценника</string>
-    <string name="device_ip">IP адрес ТСД</string>
+    <string name="device_ip">IP адрес</string>
     <string name="quantity">Количество</string>
     <string name="publication_date">Дата публикации</string>
     <string name="comment">Комментарий</string>

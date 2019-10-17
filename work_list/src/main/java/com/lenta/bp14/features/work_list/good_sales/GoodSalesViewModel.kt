@@ -37,8 +37,8 @@ class GoodSalesViewModel : CoreViewModel() {
             SalesStatisticsUi(
                     lastSaleDate = sales?.lastSaleDate.getFormattedDate(),
                     lastSaleTime = sales?.lastSaleDate.getFormattedTime(),
-                    daySales = "${sales?.daySales.dropZeros()} ${task.currentGood.value!!.getUnits()}",
-                    weekSales = "${sales?.weekSales.dropZeros()} ${task.currentGood.value!!.getUnits()}"
+                    daySales = "${sales?.daySales.dropZeros()} ${task.currentGood.value!!.units.name}",
+                    weekSales = "${sales?.weekSales.dropZeros()} ${task.currentGood.value!!.units.name}"
             )
         }
     }

@@ -83,7 +83,7 @@
             android:layout_weight="1"
             app:items="@{vm.processedGoods}"
             app:rv_config="@{rvConfig}"
-            tools:listitem="@layout/item_wl_good_quantity_selectable" />
+            tools:listitem="@layout/item_wl_processed_list" />
 
 
         <!-- Ввод номера товара -->

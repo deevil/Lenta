@@ -76,32 +76,3 @@ data class ProductInfoResult(
         @SerializedName("ET_STOCKS")
         val stocks: List<Stock>
 )
-
-
-data class AdditionalInfo(
-        @SerializedName("MATNR")
-        val matnr: String,
-
-        @SerializedName("MIN_STOCK")
-        val minStock: Double,
-
-        @SerializedName("LAST_INV")
-        val lastInv: String,
-
-        @SerializedName("PLAN_DELIVERY")
-        val planDelivery: String,
-
-        @SerializedName("PRICE1")
-        val price1: String,
-
-        @SerializedName("PRICE2")
-        val price2: String,
-
-        @SerializedName("PROMO_TEXT1")
-        val promoText1: String,
-
-        @SerializedName("PROMO_TEXT2")
-        val promoText2: String
-
-)
-

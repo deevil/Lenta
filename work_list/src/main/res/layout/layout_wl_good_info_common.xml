@@ -46,13 +46,15 @@
 
                 <LinearLayout
                     style="@style/LinearCellStyle"
-                    android:layout_weight="2">
+                    android:layout_weight="1">
 
-                    <EditText
+                    <com.lenta.shared.view.EditTextWithSuffix
                         style="@style/CellEditTextStyle"
-
-                        android:inputType="number"
+                        android:inputType="numberDecimal"
+                        android:maxLines="1"
                         android:text="@={vm.quantity}"
+                        app:digitsForUom="@{vm.good.units}"
+                        app:suffix="@{vm.good.units.name}"
                         tools:text="1" />
 
                 </LinearLayout>
@@ -82,33 +84,16 @@
 
                 <LinearLayout
                     style="@style/LinearCellStyle"
-                    android:layout_weight="2">
+                    android:layout_weight="1">
 
-                    <FrameLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent">
-
-                        <com.lenta.shared.view.ClickableSpinner
-                            android:id="@+id/spin_select_comment"
-                            style="@style/CellSpinnerStyle"
-                            android:layout_height="match_parent"
-                            app:items="@{vm.commentsList}"
-                            app:onPositionClickListener="@{vm.onSelectComment}"
-                            app:position="@{vm.commentsPosition}"
-                            tools:entries="@array/selected_comment" />
-
-                        <EditText
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:layout_marginStart="10dp"
-                            android:layout_marginTop="10dp"
-                            android:layout_marginEnd="48dp"
-                            android:layout_marginBottom="10dp"
-                            android:backgroundTint="@color/color_background"
-                            android:text="@={vm.comment}"
-                            tools:text="Не выбран" />
-
-                    </FrameLayout>
+                    <com.lenta.shared.view.ClickableSpinner
+                        android:id="@+id/spin_select_comment"
+                        style="@style/CellSpinnerStyle"
+                        android:layout_height="match_parent"
+                        app:items="@{vm.commentsList}"
+                        app:onPositionClickListener="@{vm.onSelectComment}"
+                        app:position="@{vm.commentsPosition}"
+                        tools:entries="@array/selected_comment" />
 
                 </LinearLayout>
 
@@ -128,7 +113,6 @@
                     android:layout_weight="1">
 
                     <com.lenta.shared.view.ClickableSpinner
-                        android:id="@+id/spin_shelf_life"
                         style="@style/CellSpinnerStyle"
                         app:items="@{vm.shelfLifeTypeList}"
                         app:onPositionClickListener="@{vm.onSelectShelfLifeType}"
@@ -142,7 +126,7 @@
 
                 <LinearLayout
                     style="@style/LinearCellStyle"
-                    android:layout_weight="2">
+                    android:layout_weight="1">
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -159,6 +143,14 @@
                             android:text="@={vm.day}"
                             tools:text="31" />
 
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:layout_marginTop="8dp"
+                            android:layout_marginBottom="8dp"
+                            android:gravity="bottom"
+                            android:text="." />
+
                         <EditText
                             style="@style/CellEditTextStyle"
                             android:layout_width="0dp"
@@ -169,6 +161,14 @@
                             android:text="@={vm.month}"
                             tools:text="07" />
 
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:layout_marginTop="8dp"
+                            android:layout_marginBottom="8dp"
+                            android:gravity="bottom"
+                            android:text="." />
+
                         <EditText
                             style="@style/CellEditTextStyle"
                             android:layout_width="0dp"
@@ -178,11 +178,6 @@
                             android:maxLength="2"
                             android:text="@={vm.year}"
                             tools:text="19" />
-
-                        <View
-                            android:layout_width="0dp"
-                            android:layout_height="match_parent"
-                            android:layout_weight="1" />
 
                     </LinearLayout>
 
@@ -215,7 +210,7 @@
 
                 <LinearLayout
                     style="@style/LinearCellStyle"
-                    android:layout_weight="2">
+                    android:layout_weight="1">
 
                     <TextView
                         style="@style/CellTextStyle"
@@ -254,7 +249,7 @@
 
                 <LinearLayout
                     style="@style/LinearCellStyle"
-                    android:layout_weight="2">
+                    android:layout_weight="1">
 
                     <TextView
                         style="@style/CellTextStyle"
@@ -298,7 +293,7 @@
 
                 <LinearLayout
                     style="@style/LinearCellStyle"
-                    android:layout_weight="2">
+                    android:layout_weight="1">
 
                     <TextView
                         android:id="@+id/tv_barcode_number_units"

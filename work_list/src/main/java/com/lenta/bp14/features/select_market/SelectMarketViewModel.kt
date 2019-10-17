@@ -50,12 +50,12 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
     init {
         viewModelScope.launch {
             repoInMemoryHolder.storesRequestResult?.markets?.let { list ->
-                markets.value = list.map { MarketUi(number = it.number, address = it.address) }
+                markets.value = list.map { MarketUi(number = it.tkNumber, address = it.address) }
 
                 if (selectedPosition.value == null) {
                     if (appSettings.lastTK != null) {
                         list.forEachIndexed { index, market ->
-                            if (market.number == appSettings.lastTK) {
+                            if (market.tkNumber == appSettings.lastTK) {
                                 onClickPosition(index)
                             }
                         }

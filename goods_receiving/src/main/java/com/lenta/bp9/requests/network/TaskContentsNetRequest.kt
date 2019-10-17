@@ -53,6 +53,8 @@ data class TaskContentsRequestResult(
         val productsVetDocumentRevise: List<ProductVetDocumentReviseRestData>,
         @SerializedName("ET_CMPLX_DOC")
         val complexDocumentsRevise: List<ComplexDocumentReviseRestData>,
+        @SerializedName("ET_COND_CHECK")
+        val transportConditions: List<TransportConditionRestData>,
         @SerializedName("EV_RETCODE")
         override val retCode: Int,
         @SerializedName("EV_ERROR_TEXT")

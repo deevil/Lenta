@@ -38,12 +38,26 @@ class CheckPriceReportNetRequest
                                     isPrinted = it.isPrinted.toSapBooleanString()
                             )
                         },
-                        positions = params.checksResults.map {
-                            Position(
-                                    matNr = it.matNr!!,
-                                    isProcessed = true.toSapBooleanString(),
-                                    quantity = 0.0
-                            )
+                        positions = mutableListOf<Position>().apply {
+                            params.checksResults.forEach {
+                                add(
+                                        Position(
+                                                matNr = it.matNr!!,
+                                                isProcessed = true.toSapBooleanString(),
+                                                quantity = 0.0
+                                        )
+                                )
+                            }
+
+                            params.notProcessedResults.forEach {
+                                add(
+                                        Position(
+                                                matNr = it.matNr!!,
+                                                isProcessed = false.toSapBooleanString(),
+                                                quantity = 0.0
+                                        )
+                                )
+                            }
                         }
                 )
                 , ReportSentStatus::class.java)
@@ -66,7 +80,8 @@ data class CheckPriceReport(
         val ip: String,
         val description: CheckPriceTaskDescription,
         val isNotFinish: Boolean,
-        val checksResults: List<ICheckPriceResult>
+        val checksResults: List<ICheckPriceResult>,
+        val notProcessedResults: List<ICheckPriceResult>
 
 )
 

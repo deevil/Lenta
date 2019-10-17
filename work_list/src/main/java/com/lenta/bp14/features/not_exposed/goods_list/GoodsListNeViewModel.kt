@@ -197,8 +197,7 @@ class GoodsListNeViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
             viewModelScope.launch {
                 navigator.showProgressLoadingData()
                 sentReportRequest(task.getReportData(
-                        ip = deviceInfo.getDeviceIp(),
-                        isNotFinish = false
+                        ip = deviceInfo.getDeviceIp()
                 )).either(
                         {
                             navigator.openAlertScreen(failure = it)

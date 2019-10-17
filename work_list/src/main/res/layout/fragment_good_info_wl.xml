@@ -90,8 +90,8 @@
                     android:layout_height="36dp"
                     android:background="@drawable/bg_white_circle"
                     android:gravity="center"
-                    android:text="@{vm.options.section}"
                     android:textSize="16sp"
+                    app:section="@{vm.options.section}"
                     tools:text="02" />
 
             </LinearLayout>
@@ -107,6 +107,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:onClick="@{(v) -> vm.navigator.openPictogrammInfoNova()}"
                 app:invisible="@{!vm.options.novelty}"
                 tools:src="@drawable/ic_new_48dp" />
 
@@ -114,6 +115,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:onClick="@{(v) -> vm.navigator.openPictogrammInfoHealthyFood()}"
                 app:invisible="@{!vm.options.healthFood}"
                 tools:src="@drawable/ic_natural_48dp" />
 
@@ -122,7 +124,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:background="?selectableItemBackground"
-                android:onClick="@{(v) -> vm.navigator.openQrCodeInfoScreen()}"
+                android:onClick="@{(v) -> vm.navigator.openESInfoScreen()}"
                 android:src="@drawable/ic_scan_barcode_es_48dp" />
 
             <ImageView

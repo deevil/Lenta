@@ -35,19 +35,18 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
     val marketNumber by lazy { sessionInfo.market }
 
     private val funcTaskAdapter = { taskList: List<TaskInfo>? ->
-        taskList?.sortedByDescending { it.taskId.toLongOrNull() }?.map {
-            TaskUi(
-                    id = it.taskId,
-                    type = it.taskTypeInfo.taskType,
-                    name = it.taskName,
-                    isProcessed = it.isNotFinished,
-                    blockingStatus = if (it.isMyBlock == null) TaskBlockingStatus.NOT_BLOCKED else {
-                        if (it.isMyBlock) TaskBlockingStatus.SELF_BLOCK else TaskBlockingStatus.BLOCK
+        taskList?.mapIndexed { index, taskInfo ->
+            ItemTaskUi(
+                    position = (taskList.size - index).toString(),
+                    number = taskInfo.taskNumber,
+                    name = taskInfo.taskName,
+                    isProcessed = taskInfo.isNotFinished,
+                    blockingStatus = if (taskInfo.isMyBlock == null) TaskBlockingStatus.NOT_BLOCKED else {
+                        if (taskInfo.isMyBlock) TaskBlockingStatus.SELF_BLOCK else TaskBlockingStatus.BLOCK
                     },
-                    quantity = it.quantityPositions,
-                    taskId = it.taskId
+                    quantity = taskInfo.quantityPositions.toString(),
+                    taskId = taskInfo.taskId
             )
-
         } ?: emptyList()
     }
 
@@ -163,14 +162,15 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
 
 }
 
-data class TaskUi(
+
+data class ItemTaskUi(
         val taskId: String,
-        val id: String,
-        val type: String,
+        val position: String,
+        val number: String,
         val name: String,
         val blockingStatus: TaskBlockingStatus,
         val isProcessed: Boolean,
-        val quantity: Int
+        val quantity: String
 )
 
 enum class TaskBlockingStatus {

@@ -1,6 +1,7 @@
 package com.lenta.bp14.models.work_list
 
 import com.lenta.bp14.models.ITaskDescription
+import com.lenta.bp14.requests.work_list.WorkListTaskInfoResult
 
 class WorkListTaskDescription(
         override val tkNumber: String,
@@ -8,5 +9,6 @@ class WorkListTaskDescription(
         override var taskName: String,
         override val comment: String,
         override val description: String,
-        override val isStrictList: Boolean
+        override val isStrictList: Boolean,
+        val taskInfoResult: WorkListTaskInfoResult?
 ) : ITaskDescription
