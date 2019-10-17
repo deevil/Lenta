@@ -47,7 +47,7 @@ class GoodsListWlFragment : CoreFragment<FragmentGoodsListWlBinding, GoodsListWl
     }
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
-        topToolbarUiModel.description.value = getString(R.string.product_information)
+        topToolbarUiModel.description.value = getString(R.string.goods_list)
 
         connectLiveData(vm.taskName, topToolbarUiModel.title)
     }
