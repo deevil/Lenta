@@ -56,7 +56,7 @@ fun BaseStatus.isNotBad(): Boolean {
 }
 
 fun BaseStatus.toStringSafety(): String {
-    return "BaseStatusV08{status=" + this.status + ", httpStatus=" + this.httpStatus + ", errors=" + this.errors.map { it.toStringSafety() } + ", retryCount=" + this.retryCount + '}'.toString()
+    return "BaseStatusV08{status=" + this.status + ", httpStatus=" + this.httpStatus + ", errors=" + this.errors?.map { it.toStringSafety() } + ", retryCount=" + this.retryCount + '}'.toString()
 }
 
 fun Error.toStringSafety(): String {
