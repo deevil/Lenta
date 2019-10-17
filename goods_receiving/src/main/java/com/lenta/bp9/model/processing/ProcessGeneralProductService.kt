@@ -3,6 +3,7 @@ package com.lenta.bp9.model.processing
 import com.lenta.bp9.model.task.IReceivingTaskManager
 import com.lenta.bp9.model.task.TaskProductDiscrepancies
 import com.lenta.bp9.model.task.TaskProductInfo
+import com.lenta.bp9.repos.IDataBaseRepo
 import com.lenta.shared.di.AppScope
 import com.lenta.shared.models.core.ProductType
 import javax.inject.Inject
@@ -14,6 +15,9 @@ class ProcessGeneralProductService
     @Inject
     lateinit var taskManager: IReceivingTaskManager
 
+    @Inject
+    lateinit var dataBase: IDataBaseRepo
+
     private lateinit var productInfo: TaskProductInfo
 
     fun newProcessGeneralProductService(productInfo: TaskProductInfo) : ProcessGeneralProductService? {
@@ -22,6 +26,27 @@ class ProcessGeneralProductService
             this
         }
         else null
+    }
+
+    fun countEqualOrigQuantity (count: Double) : Boolean {
+        return productInfo.origQuantity.toDouble() == ((taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.getCountAcceptOfProduct(productInfo) ?: 0.0)
+                + (taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.getCountRefusalOfProduct(productInfo) ?: 0.0) + count)
+    }
+
+    fun countLargerOrigQuantity (count: Double) : Boolean {
+        return productInfo.origQuantity.toDouble() > ((taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.getCountAcceptOfProduct(productInfo) ?: 0.0)
+                + (taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.getCountRefusalOfProduct(productInfo) ?: 0.0) + count)
+    }
+
+    fun getRoundingQuantity (origQuantity: Double) : Double {
+        return origQuantity - ((taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.getCountAcceptOfProduct(productInfo) ?: 0.0)
+                + (taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.getCountRefusalOfProduct(productInfo) ?: 0.0))
+    }
+
+    fun paramGrsGrundNeg (paramGrsGrundNeg: String) : Boolean {
+        return !taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.findProductDiscrepanciesOfProduct(productInfo)?.filter {
+            it.materialNumber == productInfo.materialNumber && it.typeDiscrepancies == paramGrsGrundNeg
+        }.isNullOrEmpty()
     }
 
     fun add(count: String, reasonRejectionCode: String){

@@ -1,6 +1,7 @@
 package com.lenta.bp9.repos
 
 import com.lenta.shared.fmp.resources.dao_ext.*
+import com.lenta.shared.fmp.resources.fast.ZmpUtz14V001
 import com.lenta.shared.fmp.resources.fast.ZmpUtz17V001
 import com.lenta.shared.fmp.resources.fast.ZmpUtz20V001
 import com.lenta.shared.requests.combined.scan_info.pojo.QualityInfo
@@ -11,6 +12,7 @@ import kotlinx.coroutines.withContext
 
 class DataBaseRepo(
         hyperHive: HyperHive,
+        private val zmpUtz14V001: ZmpUtz14V001 = ZmpUtz14V001(hyperHive), //параметры
         private val zmpUtz17V001: ZmpUtz17V001 = ZmpUtz17V001(hyperHive), //Качество
         private val zmpUtz20V001: ZmpUtz20V001 = ZmpUtz20V001(hyperHive) //Причины отказа
 
@@ -37,6 +39,14 @@ class DataBaseRepo(
     override suspend fun getTermControlInfo(): List<String>? = withContext(Dispatchers.IO) {
         zmpUtz17V001.getItemsByTidSorted("007")?.toDescriptionsList()
     }
+
+    override suspend fun getParamGrsGrundPos(): String? = withContext(Dispatchers.IO) {
+        zmpUtz14V001.getGrsGrundPos()
+    }
+
+    override suspend fun getParamGrsGrundNeg(): String? = withContext(Dispatchers.IO) {
+        zmpUtz14V001.getGrsGrundNeg()
+    }
 }
 
 interface IDataBaseRepo {
@@ -44,4 +54,6 @@ interface IDataBaseRepo {
     suspend fun getReasonRejectionInfoOfQuality(quality: String): List<ReasonRejectionInfo>?
     suspend fun getAllReasonRejectionInfo(): List<ReasonRejectionInfo>?
     suspend fun getTermControlInfo(): List<String>?
+    suspend fun getParamGrsGrundPos(): String?
+    suspend fun getParamGrsGrundNeg(): String?
 }

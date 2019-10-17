@@ -236,7 +236,7 @@ class MainMenuViewModel : CoreViewModel() {
                     isNoEAN = true
             ))
         }
-        screenNavigator.openPerishablesInfoScreen(TaskProductInfo(
+        screenNavigator.openGoodsInfoScreen(TaskProductInfo(
                 materialNumber = "000000000000000021",
                 description = "Р/к виски (Россия) 230/250г",
                 uom = Uom("ST", "шт"),
@@ -245,7 +245,7 @@ class MainMenuViewModel : CoreViewModel() {
                 sectionId = "01",
                 matrixType = MatrixType.Active,
                 materialType = "",
-                origQuantity = "",
+                origQuantity = "100",
                 orderQuantity = "",
                 quantityCapitalized = "",
                 overdToleranceLimit = "",

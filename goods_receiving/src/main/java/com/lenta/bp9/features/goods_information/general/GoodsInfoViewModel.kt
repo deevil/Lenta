@@ -43,6 +43,8 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
     val spinReasonRejection: MutableLiveData<List<String>> = MutableLiveData()
     val spinReasonRejectionSelectedPosition: MutableLiveData<Int> = MutableLiveData(0)
     val suffix: MutableLiveData<String> = MutableLiveData()
+    val roundingQuantity: MutableLiveData<Double> = MutableLiveData()
+    val isClickApply: MutableLiveData<Boolean> = MutableLiveData(false)
     val isDefect: MutableLiveData<Boolean> = spinQualitySelectedPosition.map {
         it != 0
     }
@@ -103,19 +105,9 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
         screenNavigator.openGoodsDetailsScreen(productInfo.value!!)
     }
 
-    fun onClickAdd() {
-        if (qualityInfo.value?.get(spinQualitySelectedPosition.value ?: 0)?.code == "1") {
-            processGeneralProductService.add(acceptTotalCount.value!!.toString(), "1")
-        } else {
-            processGeneralProductService.add(refusalTotalCount.value!!.toString(), reasonRejectionInfo.value!![spinReasonRejectionSelectedPosition.value!!].code)
-        }
-
-        count.value = "0"
-    }
-
     fun onClickApply() {
+        isClickApply.value = true
         onClickAdd()
-        screenNavigator.goBack()
     }
 
     fun onScanResult(data: String) {
@@ -143,6 +135,87 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
             }
             count.value = count.value
             screenNavigator.hideProgress()
+        }
+    }
+
+    //блок 6.16
+    private fun onClickAdd() {
+        if (processGeneralProductService.countEqualOrigQuantity(countValue.value!!)) {//блок 6.16 (да)
+            //блок 6.160
+            paramGrsGrundPos()
+        } else {//блок 6.16 (нет)
+            //блок 6.22
+            if (processGeneralProductService.countLargerOrigQuantity(countValue.value!!)) {//блок 6.22 (да)
+                //блок 6.58
+                paramGrsGrundNeg()
+            } else {//блок 6.22 (нет)
+                //блок 6.26
+                if (productInfo.value!!.uom.name == "г") {//блок 6.26 (да)
+                    roundingQuantity.value = processGeneralProductService.getRoundingQuantity(productInfo.value!!.origQuantity.toDouble())
+                    //блок 6.90
+                    if (roundingQuantity.value!! <= productInfo.value!!.roundingShortages.toDouble()) {//блок 6.90 (да)
+                        //блок 6.109
+                        screenNavigator.openRoundingIssueDialog(
+                                //блок 6.148
+                                noCallbackFunc = {
+                                    //блок 6.160
+                                    paramGrsGrundPos()
+                                },
+                                //блок 6.149
+                                yesCallbackFunc = {
+                                    //блок 6.154
+                                    count.value = (countValue.value!! + roundingQuantity.value!!).toString()
+                                    //блок 6.160
+                                    paramGrsGrundPos()
+                                }
+                        )
+                    } else {//блок 6.90 (нет)
+                        //блок 6.160
+                        paramGrsGrundPos()
+                    }
+                } else {//блок 6.26 (нет)
+                    //блок 6.160
+                    paramGrsGrundPos()
+                }
+            }
+        }
+    }
+
+    //блок 6.58
+    private fun paramGrsGrundNeg() {
+        //todo
+        viewModelScope.launch {
+            val paramGrsGrundNeg = dataBase.getParamGrsGrundNeg()
+            if (processGeneralProductService.paramGrsGrundNeg(paramGrsGrundNeg!!)) {//блок 6.58 (да)
+                processGeneralProductService.add(acceptTotalCount.value!!.toString(), "1")
+            } else {//блок 6.58 (нет)
+                processGeneralProductService.add(refusalTotalCount.value!!.toString(), reasonRejectionInfo.value!![spinReasonRejectionSelectedPosition.value!!].code)
+            }
+        }
+    }
+
+    //блок 6.160
+    private fun paramGrsGrundPos() {
+        viewModelScope.launch {
+            if (reasonRejectionInfo.value!![spinReasonRejectionSelectedPosition.value!!].code == dataBase.getParamGrsGrundPos()) {//блок 6.160 (да)
+                processGeneralProductService.add(acceptTotalCount.value!!.toString(), "1")
+            } else {//блок 6.160 (нет)
+                processGeneralProductService.add(refusalTotalCount.value!!.toString(), reasonRejectionInfo.value!![spinReasonRejectionSelectedPosition.value!!].code)
+            }
+
+            //блок 6.176
+            clickBtnApply()
+        }
+    }
+
+    //блок 6.176
+    private fun clickBtnApply() {
+        if (isClickApply.value!!) {//блок 6.176 (да)
+            //блок 6.181
+            screenNavigator.goBack()
+        } else {//блок 6.176 (нет)
+            //блок 6.180
+            count.value = "0"
         }
     }
 

@@ -51,6 +51,15 @@ fun ZmpUtz14V001.getMaxQuantityProdWkl(): Double? {
     return getParams("WKL_MAX_PROD_QNT:").getOrNull(0)?.toDoubleOrNull()
 }
 
+fun ZmpUtz14V001.getGrsGrundPos(): String? {
+    return getParams("GRS_GRUND_POS").firstOrNull()
+}
+
+fun ZmpUtz14V001.getGrsGrundNeg(): String? {
+    return getParams("GRS_GRUND_NEG").firstOrNull()
+}
+
+
 private fun ZmpUtz14V001.getParams(paramName: String): List<String> {
     @Suppress("INACCESSIBLE_TYPE")
     return localHelper_ET_PARAMS.getWhere("PARAMNAME = \"$paramName\"").map { it.paramvalue }

@@ -124,4 +124,5 @@
     <string name="general_shelf_life">Общий СГ</string>
     <string name="remaining_shelf_life">Остаточный СГ</string>
     <string name="format_date">дд.мм.гггг</string>
+    <string name="rounding_issue">Вы хотите округлить кол-во по товару до планового?</string>
 </resources>
