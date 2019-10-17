@@ -94,18 +94,6 @@ class WorkListTask @Inject constructor(
         currentGood.value?.scanResults?.value = scanResultsList
     }
 
-    override fun getGoodOptions(): LiveData<GoodOptions> {
-        return currentGood.map { it?.options }
-    }
-
-    override fun getGoodStocks(): LiveData<List<Stock>> {
-        return currentGood.map { it?.additional?.value?.stocks?.toList() }
-    }
-
-    override fun getGoodProviders(): LiveData<List<Provider>> {
-        return currentGood.map { it?.additional?.value?.providers?.toList() }
-    }
-
     override fun getTaskType(): ITaskTypeInfo {
         return generalRepo.getTasksTypeInfo(AppTaskTypes.WorkList.taskType)!!
     }
@@ -272,10 +260,6 @@ interface IWorkListTask : ITask, IFilterable {
     fun deleteSelectedGoods(materials: List<String>)
     fun addScanResult(scanResult: ScanResult)
     fun setCurrentGoodProcessed()
-
-    fun getGoodOptions(): LiveData<GoodOptions>
-    fun getGoodStocks(): LiveData<List<Stock>>
-    fun getGoodProviders(): LiveData<List<Provider>>
 
     fun getReportData(ip: String): WorkListReport
     fun getSearchList(): LiveData<List<Good>>

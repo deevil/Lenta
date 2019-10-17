@@ -113,8 +113,8 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     val stocks: MutableLiveData<List<ItemStockUi>> by lazy {
-        task.getGoodStocks().map { list: List<Stock>? ->
-            list?.mapIndexed { index, stock ->
+        task.currentGood.value!!.additional.map { additional ->
+            additional?.stocks?.mapIndexed { index, stock ->
                 ItemStockUi(
                         number = (index + 1).toString(),
                         storage = stock.storage,
@@ -125,8 +125,8 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     val providers: MutableLiveData<List<ItemProviderUi>> by lazy {
-        task.getGoodProviders().map { list: List<Provider>? ->
-            list?.mapIndexed { index, provider ->
+        task.currentGood.value!!.additional.map { additional ->
+            additional?.providers?.mapIndexed { index, provider ->
                 ItemProviderUi(
                         number = (index + 1).toString(),
                         code = provider.code,
@@ -138,14 +138,16 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     val options: MutableLiveData<OptionsUi> by lazy {
-        task.getGoodOptions().map { options ->
-            OptionsUi(
-                    matrixType = options?.matrixType ?: MatrixType.Unknown,
-                    goodType = options?.goodType ?: GoodType.COMMON,
-                    section = options?.section ?: "",
-                    healthFood = options?.healthFood ?: false,
-                    novelty = options?.novelty ?: false
-            )
+        task.currentGood.map { good ->
+            good?.options?.let { options ->
+                OptionsUi(
+                        matrixType = options.matrixType,
+                        goodType = options.goodType,
+                        section = options.section,
+                        healthFood = options.healthFood,
+                        novelty = options.novelty
+                )
+            }
         }
     }
 

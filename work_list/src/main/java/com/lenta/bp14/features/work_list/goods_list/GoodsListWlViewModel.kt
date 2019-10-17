@@ -183,12 +183,15 @@ class GoodsListWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
         Logg.d { "Entered EAN: $ean" }
         viewModelScope.launch {
             navigator.showProgressLoadingData()
-            task.getGoodByEan(ean)?.let { good ->
+            val good = task.getGoodByEan(ean)
+            if (good != null) {
                 task.addGoodToList(good)
                 navigator.hideProgress()
                 navigator.openGoodInfoWlScreen()
+            } else {
+                navigator.hideProgress()
+                navigator.showGoodNotFound()
             }
-            navigator.hideProgress()
         }
     }
 
@@ -196,12 +199,15 @@ class GoodsListWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
         Logg.d { "Entered MATERIAL: $material" }
         viewModelScope.launch {
             navigator.showProgressLoadingData()
-            task.getGoodByMaterial(material)?.let { good ->
+            val good = task.getGoodByMaterial(material)
+            if (good != null) {
                 task.addGoodToList(good)
                 navigator.hideProgress()
                 navigator.openGoodInfoWlScreen()
+            } else {
+                navigator.hideProgress()
+                navigator.showGoodNotFound()
             }
-            navigator.hideProgress()
         }
     }
 
@@ -216,15 +222,7 @@ class GoodsListWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
             2 -> searchGoods.value?.get(position)?.material
             else -> null
         }?.let { material ->
-            viewModelScope.launch {
-                navigator.showProgressLoadingData()
-                task.getGoodByMaterial(material)?.let { good ->
-                    task.addGoodToList(good)
-                    navigator.hideProgress()
-                    navigator.openGoodInfoWlScreen()
-                }
-                navigator.hideProgress()
-            }
+            addGoodByMaterial(material)
         }
     }
 
