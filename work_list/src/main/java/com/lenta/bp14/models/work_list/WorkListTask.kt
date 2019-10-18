@@ -296,11 +296,11 @@ data class Good(
         return options.goodType == GoodType.COMMON
     }
 
-    fun getEanWithUnits(): String? {
+    fun getEanWithUnits(): String {
         return if (ean != null) "${ean}/${units.name}" else ""
     }
 
-    fun getGoodWithPurchaseGroups(): String? {
+    fun getGroups(): String {
         return "$goodGroup/$purchaseGroup"
     }
 

@@ -55,9 +55,10 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
     val title = MutableLiveData<String>("")
 
     val quantity = MutableLiveData<String>("")
-    val totalQuantity: MutableLiveData<String> = quantity.map {
-        val quantity = good.value?.getTotalQuantity().sumWith(it?.toDoubleOrNull() ?: 0.0)
-        "${quantity.dropZeros()} ${good.value!!.units.name}"
+    val totalQuantity: MutableLiveData<String> by lazy {
+        good.combineLatest(quantity).map {
+            it?.first?.getTotalQuantity().sumWith(it?.second?.toDoubleOrNull() ?: 0.0).dropZeros()
+        }
     }
 
     val day = MutableLiveData<String>("")
@@ -97,17 +98,30 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
         daysLeft
     }
 
-    val shelfLifeDaysFieldVisibility = daysLeft.map { it != null }
+    val remainingDaysFieldVisibility = daysLeft.map { it != null }
 
     val shelfLifeTypeList = MutableLiveData<List<String>>()
 
-    val commentsList: MutableLiveData<List<String>> by lazy { task.currentGood.value!!.comments }
+    val commentsList: MutableLiveData<List<String>> by lazy { good.value!!.comments }
+
+    val common: MutableLiveData<CommonInfoUi> by lazy {
+        good.map {
+            it?.let { good ->
+                CommonInfoUi(
+                        shelfLife = "${good.shelfLife} сут.",
+                        remainingDays = "${daysLeft.value} сут.",
+                        eanWithUnits = good.getEanWithUnits(),
+                        groups = good.getGroups()
+                )
+            }
+        }
+    }
 
     val additional: MutableLiveData<AdditionalInfoUi> by lazy {
-        task.currentGood.value!!.additional.map { additional ->
+        good.value!!.additional.map { additional ->
             AdditionalInfoUi(
                     storagePlaces = additional?.storagePlaces ?: "Not found!",
-                    minStock = "${additional?.minStock?.dropZeros()} ${task.currentGood.value!!.units.name}",
+                    minStock = "${additional?.minStock?.dropZeros()} ${good.value!!.units.name}",
                     inventory = additional?.inventory ?: "Not found!",
                     arrival = additional?.arrival ?: "Not found!",
                     commonPrice = "${additional?.commonPrice?.dropZeros()}р.",
@@ -119,19 +133,19 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     val stocks: MutableLiveData<List<ItemStockUi>> by lazy {
-        task.currentGood.value!!.additional.map { additional ->
+        good.value!!.additional.map { additional ->
             additional?.stocks?.mapIndexed { index, stock ->
                 ItemStockUi(
                         number = (index + 1).toString(),
                         storage = stock.storage,
-                        quantity = "${stock.quantity.dropZeros()} ${task.currentGood.value!!.units.name}"
+                        quantity = "${stock.quantity.dropZeros()} ${good.value!!.units.name}"
                 )
             }
         }
     }
 
     val providers: MutableLiveData<List<ItemProviderUi>> by lazy {
-        task.currentGood.value!!.additional.map { additional ->
+        good.value!!.additional.map { additional ->
             additional?.providers?.mapIndexed { index, provider ->
                 ItemProviderUi(
                         number = (index + 1).toString(),
@@ -144,7 +158,7 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     val options: MutableLiveData<OptionsUi> by lazy {
-        task.currentGood.map { good ->
+        good.map { good ->
             good?.options?.let { options ->
                 OptionsUi(
                         matrixType = options.matrixType,
@@ -187,8 +201,8 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
             viewModelScope.launch {
                 additionalGoodInfoNetRequest(AdditionalGoodInfoParams(
                         tkNumber = sessionInfo.market ?: "Not Found!",
-                        ean = task.currentGood.value?.ean,
-                        matNr = task.currentGood.value?.material
+                        ean = good.value?.ean,
+                        matNr = good.value?.material
                 )).either(::handleFailure, ::updateAdditionalGoodInfo)
             }
         }
@@ -205,7 +219,7 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
     private fun updateAdditionalGoodInfo(result: AdditionalGoodInfo) {
         Logg.d { "AdditionalGoodInfo: $result" }
         viewModelScope.launch {
-            task.currentGood.value?.additional?.value = result
+            good.value?.additional?.value = result
         }
         showProgress.value = false
     }
@@ -321,6 +335,13 @@ data class OptionsUi(
         val section: String,
         val healthFood: Boolean,
         val novelty: Boolean
+)
+
+data class CommonInfoUi(
+        val shelfLife: String,
+        val remainingDays: String,
+        val eanWithUnits: String,
+        val groups: String
 )
 
 data class AdditionalInfoUi(
