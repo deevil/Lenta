@@ -1,6 +1,5 @@
 package com.lenta.bp14.models.work_list.repo
 
-import androidx.lifecycle.MutableLiveData
 import com.lenta.bp14.models.data.getGoodType
 import com.lenta.bp14.models.work_list.Good
 import com.lenta.bp14.models.work_list.GoodOptions
@@ -32,7 +31,8 @@ class WorkListRepo @Inject constructor(
     override suspend fun getGoodByMaterial(material: String): Good? {
         return withContext(Dispatchers.IO) {
             getGoodInfoByMaterial(material)?.let { goodInfo ->
-                val unitsName = getUnitsName(goodInfo.unitsCode)
+                val unitsCode = if (goodInfo.unitsCode == Uom.G.code) Uom.KG.code else goodInfo.unitsCode
+                val unitsName = getUnitsName(unitsCode)
                 val shelfLifeTypes = getShelfLifeTypes()
                 val comments = getWorkListComments()
 
@@ -40,7 +40,7 @@ class WorkListRepo @Inject constructor(
                         material = material,
                         name = goodInfo.name,
                         units = Uom(
-                                code = goodInfo.unitsCode,
+                                code = unitsCode,
                                 name = unitsName ?: ""
                         ),
                         goodGroup = goodInfo.goodGroup,

@@ -5,6 +5,7 @@ data class Uom(val code: String, val name: String) {
         val DEFAULT = Uom("ST", "шт")
         val ST = Uom("ST", "шт")
         val KAR = Uom("KAR", "кор")
+        val G = Uom("G", "г")
         val KG = Uom("KG", "кг")
     }
 
