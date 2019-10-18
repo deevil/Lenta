@@ -82,7 +82,7 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
         parseDate
     }
 
-    val daysLeft: MutableLiveData<Int> = enteredDate.combineLatest(shelfLifeTypePosition).map {
+    private val daysLeft: MutableLiveData<Int> = enteredDate.combineLatest(shelfLifeTypePosition).map {
         val enteredDate = it?.first
         val shelfLifeType = it?.second
         val shelfLifeTimeMills = good.value!!.getShelfLifeInMills()
@@ -102,7 +102,11 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
 
     val shelfLifeTypeList = MutableLiveData<List<String>>()
 
-    val commentsList: MutableLiveData<List<String>> by lazy { good.value!!.comments }
+    val commentsList: MutableLiveData<List<String>> by lazy {
+        good.map { good ->
+            good?.comments
+        }
+    }
 
     val common: MutableLiveData<CommonInfoUi> by lazy {
         good.map {
@@ -320,7 +324,7 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
 
         task.addScanResult(ScanResult(
                 quantity = quantity.value?.toDoubleOrNull() ?: 0.0,
-                comment = good.value?.comments?.value?.get(commentsPosition.value ?: 0)!!,
+                comment = good.value!!.comments[commentsPosition.value ?: 0],
                 productionDate = productionDate,
                 expirationDate = expirationDate
         ))

@@ -61,8 +61,8 @@ class GoodDetailsViewModel : CoreViewModel(), PageSelectionListener {
     val comments: MutableLiveData<List<ItemCommentUi>> by lazy {
         good.map { good ->
             val combinedResults = mutableMapOf<String, ScanResult>()
-            val commentNotSelected = good?.comments?.value!![0]
-            good.scanResults.map { result ->
+            val commentNotSelected = good?.comments?.get(0)
+            good?.scanResults?.map { result ->
                 val key = result.comment
                 if (key != commentNotSelected) {
                     combinedResults[key] = if (combinedResults.containsKey(key)) {

@@ -227,7 +227,7 @@ class WorkListTask @Inject constructor(
                 }
                 FilterFieldType.COMMENT -> {
                     var existComment = false
-                    good.comments.value!!.map { comment ->
+                    good.comments.map { comment ->
                         if (comment.contains(it.value.value)) {
                             existComment = true
                             return@map
@@ -277,8 +277,8 @@ data class Good(
         var purchaseGroup: String,
         val shelfLife: Int,
         val remainingShelfLife: Int,
-        val shelfLifeType: MutableLiveData<List<String>> = MutableLiveData(emptyList()), // Не используется, типы сроков предустановлены.
-        val comments: MutableLiveData<List<String>> = MutableLiveData(emptyList()),
+        val shelfLifeType: List<String>, // Не используется, типы сроков предустановлены.
+        val comments: List<String>,
         val options: GoodOptions,
         var isProcessed: Boolean = false,
 

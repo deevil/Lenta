@@ -47,8 +47,8 @@ class WorkListRepo @Inject constructor(
                         purchaseGroup = goodInfo.purchaseGroup,
                         shelfLife = goodInfo.shelfLife,
                         remainingShelfLife = goodInfo.remainingShelfLife,
-                        shelfLifeType = MutableLiveData(shelfLifeTypes),
-                        comments = MutableLiveData(comments),
+                        shelfLifeType = shelfLifeTypes,
+                        comments = comments,
                         options = GoodOptions(
                                 matrixType = getMatrixType(goodInfo.matrixType),
                                 section = goodInfo.section,
@@ -86,7 +86,7 @@ class WorkListRepo @Inject constructor(
     private suspend fun getShelfLifeTypes(): List<String> {
         return withContext(Dispatchers.IO) {
             return@withContext dictonary.getItemsByTid("007")?.toDescriptionsList()
-                    ?: listOf() // 007 - Типы сроков годности
+                    ?: emptyList() // 007 - Типы сроков годности
         }
     }
 
