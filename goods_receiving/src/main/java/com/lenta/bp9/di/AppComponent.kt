@@ -10,11 +10,13 @@ import com.lenta.bp9.features.goods_information.general.GoodsInfoViewModel
 import com.lenta.bp9.features.goods_information.non_excise_alco.NonExciseAlcoInfoViewModel
 import com.lenta.bp9.features.goods_information.perishables.PerishablesInfoViewModel
 import com.lenta.bp9.features.goods_list.GoodsListViewModel
+import com.lenta.bp9.features.list_goods_transfer.ListGoodsTransferViewModel
 import com.lenta.bp9.features.task_list.TaskListViewModel
 import com.lenta.bp9.features.loading.fast.FastDataLoadingViewModel
 import com.lenta.bp9.features.loading.tasks.*
 import com.lenta.bp9.features.main_menu.MainMenuViewModel
 import com.lenta.bp9.features.reject.RejectViewModel
+import com.lenta.bp9.features.repres_person_num_entry.RepresPersonNumEntryViewModel
 import com.lenta.bp9.features.revise.*
 import com.lenta.bp9.features.revise.invoice.InvoiceReviseViewModel
 import com.lenta.bp9.features.search_task.SearchTaskViewModel
@@ -67,4 +69,6 @@ interface AppComponent {
     fun inject(it: TransportConditionsReviseViewModel)
     fun inject(it: LoadingFinishConditionsReviseViewModel)
     fun inject(it: LoadingStartConditionsReviseViewModel)
+    fun inject(it: ListGoodsTransferViewModel)
+    fun inject(it: RepresPersonNumEntryViewModel)
 }

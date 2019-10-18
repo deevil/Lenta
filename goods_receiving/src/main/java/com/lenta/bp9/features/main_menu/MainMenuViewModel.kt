@@ -238,7 +238,7 @@ class MainMenuViewModel : CoreViewModel() {
         }
 
         //todo openScreen
-        screenNavigator.openTransferGoodsSectionScreen()
+        screenNavigator.openRepresPersonNumEntryScreen()
         /**screenNavigator.openGoodsInfoScreen(TaskProductInfo(
                 materialNumber = "000000000000000021",
                 description = "Р/к виски (Россия) 230/250г",

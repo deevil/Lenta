@@ -134,5 +134,6 @@
     <string name="transmitted">Передается</string>
     <string name="transferred">Передано</string>
     <string name="transport_conditions_revise">Контроль условий перевозки</string>
-    <string name="condition">Условие</string>
+    <string name="choose_tabnumber_representative">Укажите табельный номер для учёта представителя</string>
+
 </resources>

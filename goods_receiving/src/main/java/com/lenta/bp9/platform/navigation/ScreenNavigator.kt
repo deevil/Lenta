@@ -22,8 +22,10 @@ import com.lenta.bp9.features.goods_information.excise_alco.ExciseAlcoInfoFragme
 import com.lenta.bp9.features.goods_information.general.GoodsInfoFragment
 import com.lenta.bp9.features.goods_information.non_excise_alco.NonExciseAlcoInfoFragment
 import com.lenta.bp9.features.goods_information.perishables.PerishablesInfoFragment
+import com.lenta.bp9.features.list_goods_transfer.ListGoodsTransferFragment
 import com.lenta.bp9.features.loading.tasks.*
 import com.lenta.bp9.features.reject.RejectFragment
+import com.lenta.bp9.features.repres_person_num_entry.RepresPersonNumEntryFragment
 import com.lenta.bp9.features.revise.*
 import com.lenta.bp9.model.task.TaskProductInfo
 import com.lenta.bp9.features.revise.invoice.InvoiceReviseFragment
@@ -442,6 +444,18 @@ class ScreenNavigator(
         }
     }
 
+    override fun openListGoodsTransferScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(ListGoodsTransferFragment())
+        }
+    }
+
+    override fun openRepresPersonNumEntryScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(RepresPersonNumEntryFragment())
+        }
+    }
+
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 }
 
@@ -498,4 +512,6 @@ interface IScreenNavigator : ICoreNavigator {
     fun openPerishablesInfoScreen(productInfo: TaskProductInfo)
     fun openRoundingIssueDialog(noCallbackFunc: () -> Unit, yesCallbackFunc: () -> Unit)
     fun openTransferGoodsSectionScreen()
+    fun openListGoodsTransferScreen()
+    fun openRepresPersonNumEntryScreen()
 }
