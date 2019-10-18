@@ -17,7 +17,7 @@ class RepresPersonNumEntryFragment : CoreFragment<FragmentRepresPersonNumEntryBi
 
     override fun getLayoutId(): Int = R.layout.fragment_repres_person_num_entry
 
-    override fun getPageNumber(): String = "09/71"
+    override fun getPageNumber(): String = "9/71"
 
     override fun getViewModel(): RepresPersonNumEntryViewModel {
         provideViewModel(RepresPersonNumEntryViewModel::class.java).let {vm ->

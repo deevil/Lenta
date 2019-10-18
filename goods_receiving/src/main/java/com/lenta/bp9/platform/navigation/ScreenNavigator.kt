@@ -463,6 +463,14 @@ class ScreenNavigator(
         }
     }
 
+    override fun openAlertCountLargerOverdelivery() {
+        openAlertScreen(message = context.getString(R.string.alert_count_larger_overdelivery),
+                iconRes = R.drawable.ic_info_pink,
+                textColor = ContextCompat.getColor(context, R.color.color_text_dialogWarning),
+                pageNumber = "96"
+        )
+    }
+
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 }
 
@@ -522,4 +530,5 @@ interface IScreenNavigator : ICoreNavigator {
     fun openListGoodsTransferScreen()
     fun openRepresPersonNumEntryScreen()
     fun openFormedDocsScreen()
+    fun openAlertCountLargerOverdelivery()
 }

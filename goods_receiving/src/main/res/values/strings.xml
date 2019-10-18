@@ -138,5 +138,6 @@
     <string name="choose_tabnumber_representative">Укажите табельный номер для учёта представителя</string>
     <string name="type_doc">Тип документа</string>
     <string name="formed_docs">Сформированные документы</string>
+    <string name="alert_count_larger_overdelivery">Введенное кол-во больше чем открытое кол-во в заказе с учетом допуска</string>
 
 </resources>

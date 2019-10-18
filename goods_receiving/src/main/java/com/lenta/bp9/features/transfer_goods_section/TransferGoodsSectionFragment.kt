@@ -29,7 +29,7 @@ class TransferGoodsSectionFragment : CoreFragment<FragmentTransferGoodsSectionBi
 
     override fun getLayoutId(): Int = R.layout.fragment_transfer_goods_section
 
-    override fun getPageNumber(): String = "09/36"
+    override fun getPageNumber(): String = "9/36"
 
     override fun getViewModel(): TransferGoodsSectionViewModel {
         provideViewModel(TransferGoodsSectionViewModel::class.java).let {vm ->
