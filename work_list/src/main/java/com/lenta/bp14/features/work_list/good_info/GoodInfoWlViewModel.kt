@@ -56,11 +56,8 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
 
     val quantity = MutableLiveData<String>("")
     val totalQuantity: MutableLiveData<String> = quantity.map {
-        var quantity = it?.toDoubleOrNull() ?: 0.0
-        for (scanResult in good.value!!.scanResults.value!!) {
-            quantity = quantity.sumWith(scanResult.quantity)
-        }
-        "${quantity.dropZeros()} ${task.currentGood.value!!.units.name}"
+        val quantity = good.value?.getTotalQuantity().sumWith(it?.toDoubleOrNull() ?: 0.0)
+        "${quantity.dropZeros()} ${good.value!!.units.name}"
     }
 
     val day = MutableLiveData<String>("")
@@ -127,7 +124,7 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
                 ItemStockUi(
                         number = (index + 1).toString(),
                         storage = stock.storage,
-                        quantity = "${stock.quantity} ${task.currentGood.value!!.units.name}"
+                        quantity = "${stock.quantity.dropZeros()} ${task.currentGood.value!!.units.name}"
                 )
             }
         }

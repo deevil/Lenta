@@ -31,10 +31,12 @@ class GoodDetailsViewModel : CoreViewModel(), PageSelectionListener {
 
     val title = MutableLiveData<String>("")
 
+    val good by lazy { task.currentGood }
+
     val shelfLives: MutableLiveData<List<ItemShelfLifeUi>> by lazy {
-        task.currentGood.value!!.scanResults.map { list: List<ScanResult>? ->
+        good.map { good ->
             val combinedResults = mutableMapOf<String, ScanResult>()
-            list?.map { result ->
+            good?.scanResults?.map { result ->
                 val key = result.getKeyFromDates()
                 if (result.productionDate != null || result.expirationDate != null) {
                     combinedResults[key] = if (combinedResults.containsKey(key)) {
@@ -57,10 +59,10 @@ class GoodDetailsViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     val comments: MutableLiveData<List<ItemCommentUi>> by lazy {
-        task.currentGood.value!!.scanResults.map { list: List<ScanResult>? ->
+        good.map { good ->
             val combinedResults = mutableMapOf<String, ScanResult>()
-            val commentNotSelected = task.currentGood.value!!.comments.value!![0]
-            list?.map { result ->
+            val commentNotSelected = good?.comments?.value!![0]
+            good.scanResults.map { result ->
                 val key = result.comment
                 if (key != commentNotSelected) {
                     combinedResults[key] = if (combinedResults.containsKey(key)) {
@@ -79,6 +81,7 @@ class GoodDetailsViewModel : CoreViewModel(), PageSelectionListener {
             }
         }
     }
+
 
     private val selectedItemOnCurrentTab: MutableLiveData<Boolean> = selectedPage
             .combineLatest(shelfLifeSelectionsHelper.selectedPositions)

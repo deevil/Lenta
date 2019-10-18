@@ -48,16 +48,14 @@ class GoodsListWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
 
     val taskName = MutableLiveData("")
 
+    val good by lazy { task.currentGood }
+
     val numberField: MutableLiveData<String> = MutableLiveData("")
     val requestFocusToNumberField: MutableLiveData<Boolean> = MutableLiveData()
 
     private val toUiFunc = { products: List<Good>? ->
         products?.reversed()?.mapIndexed { index, good ->
-            var total = 0.0
-            for (scanResult in good.scanResults.value!!) {
-                total = total.sumWith(scanResult.quantity)
-            }
-
+            val total = good.getTotalQuantity()
             ItemWorkListUi(
                     position = (index + 1).toString(),
                     material = good.material,

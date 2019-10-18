@@ -49,14 +49,14 @@ class WorkListTask @Inject constructor(
             positions.forEach { position ->
                 getGoodByMaterial(position.matNr)?.let { good ->
                     good.isProcessed = position.isProcessed.isSapTrue()
-                    good.scanResults.value = checkResults.filter { it.matNr == position.matNr }.map { result ->
+                    good.scanResults = checkResults.filter { it.matNr == position.matNr }.map { result ->
                         ScanResult(
                                 quantity = result.quantity,
                                 comment = result.comment,
                                 productionDate = result.producedDate.getDate(Constants.DATE_FORMAT_ddmmyy),
                                 expirationDate = result.shelfLife.getDate(Constants.DATE_FORMAT_ddmmyy)
                         )
-                    }
+                    }.toMutableList()
 
                     goodsList.add(good)
                 }
@@ -89,9 +89,7 @@ class WorkListTask @Inject constructor(
     }
 
     override fun addScanResult(scanResult: ScanResult) {
-        val scanResultsList = currentGood.value?.scanResults?.value?.toMutableList()
-        scanResultsList?.add(scanResult)
-        currentGood.value?.scanResults?.value = scanResultsList
+        currentGood.value!!.scanResults.add(scanResult)
     }
 
     override fun getTaskType(): ITaskTypeInfo {
@@ -103,15 +101,15 @@ class WorkListTask @Inject constructor(
     }
 
     fun deleteScanResultsByComments(comments: List<String>) {
-        val scanResultsList = currentGood.value?.scanResults?.value?.toMutableList()
-        scanResultsList?.removeAll { comments.contains(it.comment) }
-        currentGood.value?.scanResults?.value = scanResultsList
+        val good = currentGood.value!!
+        good.scanResults.removeAll { comments.contains(it.comment) }
+        currentGood.value = good
     }
 
     fun deleteScanResultsByShelfLives(shelfLives: List<String>) {
-        val scanResultsList = currentGood.value?.scanResults?.value?.toMutableList()
-        scanResultsList?.removeAll { shelfLives.contains(it.getFormattedProductionDate() + it.getFormattedExpirationDate()) }
-        currentGood.value?.scanResults?.value = scanResultsList
+        val good = currentGood.value!!
+        good.scanResults.removeAll { shelfLives.contains(it.getFormattedProductionDate() + it.getFormattedExpirationDate()) }
+        currentGood.value = good
     }
 
     override fun setCurrentGoodProcessed() {
@@ -131,17 +129,19 @@ class WorkListTask @Inject constructor(
                 ip = ip,
                 description = taskDescription,
                 isNotFinish = isNotAllGoodsProcessed(),
-                checksResults = goods.value ?: emptyList()
+                checksResults = goods.value!!
         )
     }
 
     private fun isNotAllGoodsProcessed(): Boolean {
-        taskDescription.taskInfoResult?.positions?.map { it.matNr }?.forEach { material ->
-            val good = goods.value?.find { it.material == material }
-            if (good == null || !good.isProcessed) return false
+        taskDescription.taskInfoResult?.positions?.let { positions ->
+            positions.map { it.matNr }.forEach { material ->
+                val good = goods.value?.find { it.material == material }
+                if (good == null || !good.isProcessed) return true
+            }
         }
 
-        return true
+        return false
     }
 
     override fun isEmpty(): Boolean {
@@ -180,8 +180,8 @@ class WorkListTask @Inject constructor(
         materials.forEach { material ->
             goodsList.find { it.material == material }?.let { good ->
                 if (isGoodFromTaskList(material)) {
-                    good.scanResults.value = emptyList()
                     good.isProcessed = false
+                    good.scanResults.clear()
                 } else {
                     goodsList.remove(good)
                 }
@@ -285,7 +285,7 @@ data class Good(
         var additional: MutableLiveData<AdditionalGoodInfo> = MutableLiveData(),
         val sales: MutableLiveData<SalesStatistics> = MutableLiveData(),
         val deliveries: MutableLiveData<List<Delivery>> = MutableLiveData(emptyList()),
-        val scanResults: MutableLiveData<List<ScanResult>> = MutableLiveData(emptyList())
+        var scanResults: MutableList<ScanResult> = mutableListOf()
 ) {
 
     fun getFormattedMaterialWithName(): String {
@@ -306,6 +306,14 @@ data class Good(
 
     fun getShelfLifeInMills(): Long {
         return shelfLife.toLong() * 24 * 60 * 60 * 1000
+    }
+
+    fun getTotalQuantity(): Double {
+        var quantity = 0.0
+        scanResults.map { result ->
+            quantity = quantity.sumWith(result.quantity)
+        }
+        return quantity
     }
 
     override fun equals(other: Any?): Boolean {
