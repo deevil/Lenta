@@ -122,35 +122,37 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     val additional: MutableLiveData<AdditionalInfoUi> by lazy {
-        good.value!!.additional.map { additional ->
-            AdditionalInfoUi(
-                    storagePlaces = additional?.storagePlaces ?: "Not found!",
-                    minStock = "${additional?.minStock}",
-                    inventory = additional?.inventory ?: "Not found!",
-                    arrival = additional?.arrival ?: "Not found!",
-                    commonPrice = "${additional?.commonPrice?.dropZeros()}р.",
-                    discountPrice = "${additional?.discountPrice?.dropZeros()}р.",
-                    promoName = additional?.promoName ?: "Not found!",
-                    promoPeriod = additional?.promoPeriod ?: "Not found!"
-            )
+        good.map { good ->
+            good?.additional?.let { additional ->
+                AdditionalInfoUi(
+                        storagePlaces = additional.storagePlaces,
+                        minStock = additional.minStock,
+                        inventory = additional.inventory,
+                        arrival = additional.arrival,
+                        commonPrice = "${additional.commonPrice.dropZeros()}р.",
+                        discountPrice = "${additional.discountPrice.dropZeros()}р.",
+                        promoName = additional.promoName,
+                        promoPeriod = additional.promoPeriod
+                )
+            }
         }
     }
 
     val stocks: MutableLiveData<List<ItemStockUi>> by lazy {
-        good.value!!.additional.map { additional ->
-            additional?.stocks?.mapIndexed { index, stock ->
+        good.map { good ->
+            good?.additional?.stocks?.mapIndexed { index, stock ->
                 ItemStockUi(
                         number = (index + 1).toString(),
                         storage = stock.storage,
-                        quantity = "${stock.quantity.dropZeros()} ${good.value!!.units.name}"
+                        quantity = "${stock.quantity.dropZeros()} ${good.units.name}"
                 )
             }
         }
     }
 
     val providers: MutableLiveData<List<ItemProviderUi>> by lazy {
-        good.value!!.additional.map { additional ->
-            additional?.providers?.mapIndexed { index, provider ->
+        good.map { good ->
+            good?.additional?.providers?.mapIndexed { index, provider ->
                 ItemProviderUi(
                         number = (index + 1).toString(),
                         code = provider.code,
@@ -207,7 +209,9 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
                         tkNumber = sessionInfo.market ?: "Not Found!",
                         ean = good.value?.ean,
                         matNr = good.value?.material
-                )).either(::handleFailure, ::updateAdditionalGoodInfo)
+                )).also {
+                    showProgress.value = false
+                }.either(::handleFailure, ::updateAdditionalGoodInfo)
             }
         }
     }
@@ -216,16 +220,12 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
 
     override fun handleFailure(failure: Failure) {
         super.handleFailure(failure)
-        showProgress.value = false
         navigator.openAlertScreen(failure)
     }
 
     private fun updateAdditionalGoodInfo(result: AdditionalGoodInfo) {
         Logg.d { "AdditionalGoodInfo: $result" }
-        viewModelScope.launch {
-            good.value?.additional?.value = result
-        }
-        showProgress.value = false
+        task.updateAdditionalGoodInfo(result)
     }
 
     override fun onPageSelected(position: Int) {

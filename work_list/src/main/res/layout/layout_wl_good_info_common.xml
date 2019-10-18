@@ -105,7 +105,7 @@
             <!-- Срок годности -->
             <LinearLayout
                 style="@style/LinearRowStyle"
-                app:isGone="@{!vm.good.commonGood}">
+                android:visibility="@{!vm.good.marked}">
 
                 <LinearLayout
                     style="@style/LinearCellStyle"
@@ -186,13 +186,13 @@
 
             <View
                 style="@style/HorizontalDivider"
-                app:isGone="@{!vm.good.commonGood}" />
+                android:visibility="@{!vm.good.marked}" />
 
 
             <!-- Количество марок -->
             <LinearLayout
                 style="@style/LinearRowStyle"
-                app:isGone="@{vm.good.commonGood}">
+                android:visibility="@{vm.good.marked}">
 
                 <LinearLayout
                     style="@style/LinearCellStyle"
@@ -222,7 +222,7 @@
 
             <View
                 style="@style/HorizontalDivider"
-                app:isGone="@{vm.good.commonGood}" />
+                android:visibility="@{vm.good.marked}" />
 
 
             <!-- Оставшийся срок годности -->

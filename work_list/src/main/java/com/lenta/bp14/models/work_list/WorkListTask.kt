@@ -88,6 +88,12 @@ class WorkListTask @Inject constructor(
         return workListRepo.getGoodByEan(ean)
     }
 
+    override fun updateAdditionalGoodInfo(additionalGoodInfo: AdditionalGoodInfo) {
+        val good = currentGood.value!!
+        good.additional = additionalGoodInfo
+        currentGood.value = good
+    }
+
     override fun addScanResult(scanResult: ScanResult) {
         currentGood.value!!.scanResults.add(scanResult)
     }
@@ -220,7 +226,7 @@ class WorkListTask @Inject constructor(
                     }
                 }
                 FilterFieldType.PLACE_STORAGE -> {
-                    val storagePlaces = good.additional.value?.storagePlaces ?: ""
+                    val storagePlaces = good.additional?.storagePlaces ?: ""
                     if (!storagePlaces.contains(it.value.value)) {
                         return false
                     }
@@ -263,6 +269,7 @@ interface IWorkListTask : ITask, IFilterable {
 
     fun getReportData(ip: String): WorkListReport
     fun getSearchList(): LiveData<List<Good>>
+    fun updateAdditionalGoodInfo(additionalGoodInfo: AdditionalGoodInfo)
 }
 
 // -----------------------------
@@ -282,7 +289,7 @@ data class Good(
         val options: GoodOptions,
         var isProcessed: Boolean = false,
 
-        var additional: MutableLiveData<AdditionalGoodInfo> = MutableLiveData(),
+        var additional: AdditionalGoodInfo? = null,
         val sales: MutableLiveData<SalesStatistics> = MutableLiveData(),
         val deliveries: MutableLiveData<List<Delivery>> = MutableLiveData(emptyList()),
         var scanResults: MutableList<ScanResult> = mutableListOf()
@@ -292,8 +299,8 @@ data class Good(
         return "${material.takeLast(6)} $name"
     }
 
-    fun isCommonGood(): Boolean {
-        return options.goodType == GoodType.COMMON
+    fun isMarked(): Boolean {
+        return options.goodType == GoodType.MARKED
     }
 
     fun getEanWithUnits(): String {
