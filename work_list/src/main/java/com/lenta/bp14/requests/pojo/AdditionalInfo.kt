@@ -9,7 +9,7 @@ data class AdditionalInfo(
         val matnr: String,
         /** Постоянный не снижаемый запас */
         @SerializedName("MIN_STOCK")
-        val minStock: Double,
+        val minStock: String,
         /** Данные последней инвентаризации */
         @SerializedName("LAST_INV")
         val lastInv: String,

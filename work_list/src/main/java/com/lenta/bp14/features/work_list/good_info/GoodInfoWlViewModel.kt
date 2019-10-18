@@ -125,7 +125,7 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
         good.value!!.additional.map { additional ->
             AdditionalInfoUi(
                     storagePlaces = additional?.storagePlaces ?: "Not found!",
-                    minStock = "${additional?.minStock?.dropZeros()} ${good.value!!.units.name}",
+                    minStock = "${additional?.minStock}",
                     inventory = additional?.inventory ?: "Not found!",
                     arrival = additional?.arrival ?: "Not found!",
                     commonPrice = "${additional?.commonPrice?.dropZeros()}р.",

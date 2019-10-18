@@ -334,7 +334,7 @@ data class Good(
 
 data class AdditionalGoodInfo(
         val storagePlaces: String,
-        val minStock: Double,
+        val minStock: String,
         val inventory: String,
         val arrival: String,
         val commonPrice: Double,
