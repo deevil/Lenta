@@ -4,6 +4,7 @@ import com.lenta.bp9.ExceptionHandler
 import com.lenta.bp9.features.auth.AuthViewModel
 import com.lenta.bp9.features.change_datetime.ChangeDateTimeViewModel
 import com.lenta.bp9.features.discrepancy_list.DiscrepancyListViewModel
+import com.lenta.bp9.features.formed_docs.FormedDocsViewModel
 import com.lenta.bp9.features.goods_details.GoodsDetailsViewModel
 import com.lenta.bp9.features.goods_information.excise_alco.ExciseAlcoInfoViewModel
 import com.lenta.bp9.features.goods_information.general.GoodsInfoViewModel
@@ -71,4 +72,5 @@ interface AppComponent {
     fun inject(it: LoadingStartConditionsReviseViewModel)
     fun inject(it: ListGoodsTransferViewModel)
     fun inject(it: RepresPersonNumEntryViewModel)
+    fun inject(it: FormedDocsViewModel)
 }

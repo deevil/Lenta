@@ -17,6 +17,7 @@ import com.lenta.bp9.R
 import com.lenta.bp9.features.change_datetime.ChangeDateTimeFragment
 import com.lenta.bp9.features.change_datetime.ChangeDateTimeMode
 import com.lenta.bp9.features.discrepancy_list.DiscrepancyListFragment
+import com.lenta.bp9.features.formed_docs.FormedDocsFragment
 import com.lenta.bp9.features.goods_details.GoodsDetailsFragment
 import com.lenta.bp9.features.goods_information.excise_alco.ExciseAlcoInfoFragment
 import com.lenta.bp9.features.goods_information.general.GoodsInfoFragment
@@ -456,6 +457,12 @@ class ScreenNavigator(
         }
     }
 
+    override fun openFormedDocsScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(FormedDocsFragment())
+        }
+    }
+
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 }
 
@@ -514,4 +521,5 @@ interface IScreenNavigator : ICoreNavigator {
     fun openTransferGoodsSectionScreen()
     fun openListGoodsTransferScreen()
     fun openRepresPersonNumEntryScreen()
+    fun openFormedDocsScreen()
 }

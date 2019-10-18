@@ -115,6 +115,7 @@
     <string name="status_change">Смена статуса</string>
     <string name="task_unlock">Разблокировка задания</string>
     <string name="supply_results">Результаты проводки</string>
+    <string name="supply_number">Номер проводки</string>
     <string name="supply_results_success_dialog">ВП №%1$s оприходована успешно, соответствующие документы были отправлены на печать</string>
     <string name="supply_results_error_dialog">При проведении ВП №%1$s возникла ошибка: ВП №%1$s заблокирована пользователем %2$s</string>
     <string name="supply_results_automatic_charge_success">По ВП №%1$s выполнено автоматическое списание товаров не предназначенных для продажи согласно настройкам</string>
@@ -135,5 +136,7 @@
     <string name="transferred">Передано</string>
     <string name="transport_conditions_revise">Контроль условий перевозки</string>
     <string name="choose_tabnumber_representative">Укажите табельный номер для учёта представителя</string>
+    <string name="type_doc">Тип документа</string>
+    <string name="formed_docs">Сформированные документы</string>
 
 </resources>
