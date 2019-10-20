@@ -28,6 +28,7 @@ class FastLoadingViewModel : CoreLoadingViewModel() {
     @Inject
     lateinit var auth: Auth
 
+
     override val title: MutableLiveData<String> = MutableLiveData()
     override val progress: MutableLiveData<Boolean> = MutableLiveData(true)
     override val speedKbInSec: MutableLiveData<Int> = MutableLiveData()
@@ -41,7 +42,6 @@ class FastLoadingViewModel : CoreLoadingViewModel() {
     }
 
 
-
     override fun handleFailure(failure: Failure) {
         progress.value = false
         navigator.openLoginScreen()
@@ -50,10 +50,9 @@ class FastLoadingViewModel : CoreLoadingViewModel() {
 
     private fun handleSuccess(notUsed: Boolean) {
         progress.value = true
-        //TODO добавить проверку необходимости обновления
 
-        /*viewModelScope.launch {
-            if (appUpdateChecker.isNeedUpdate(database.getAllowedAppVersion())) {
+        viewModelScope.launch {
+            if (appUpdateChecker.isNeedUpdate(generalRepo.getAllowedAppVersion())) {
                 auth.cancelAuthorization()
                 navigator.closeAllScreen()
                 navigator.openLoginScreen()
@@ -61,17 +60,16 @@ class FastLoadingViewModel : CoreLoadingViewModel() {
             } else {
                 navigator.openSelectMarketScreen()
             }
-        }*/
+        }
 
         viewModelScope.launch {
             generalRepo.onDbReady()
             navigator.openSelectMarketScreen()
         }
-
-
     }
 
     override fun clean() {
         progress.postValue(false)
     }
+
 }
