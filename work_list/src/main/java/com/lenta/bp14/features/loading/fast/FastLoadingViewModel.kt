@@ -50,7 +50,7 @@ class FastLoadingViewModel : CoreLoadingViewModel() {
     private fun handleSuccess(notUsed: Boolean) {
         progress.value = true
 
-        /*viewModelScope.launch {
+        viewModelScope.launch {
             if (appUpdateChecker.isNeedUpdate(generalRepo.getAllowedAppVersion())) {
                 auth.cancelAuthorization()
                 navigator.closeAllScreen()
@@ -59,7 +59,7 @@ class FastLoadingViewModel : CoreLoadingViewModel() {
             } else {
                 navigator.openSelectMarketScreen()
             }
-        }*/
+        }
 
         viewModelScope.launch {
             generalRepo.onDbReady()
