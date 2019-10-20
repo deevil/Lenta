@@ -139,5 +139,6 @@
     <string name="type_doc">Тип документа</string>
     <string name="formed_docs">Сформированные документы</string>
     <string name="alert_count_larger_overdelivery">Введенное кол-во больше чем открытое кол-во в заказе с учетом допуска</string>
-
+    <string name="alert_not_correct_date">Некорректная дата</string>
+    <string name="the_shelf_life_has_expired">Срок годности истек. Пометить как брак?</string>
 </resources>

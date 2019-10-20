@@ -471,6 +471,27 @@ class ScreenNavigator(
         )
     }
 
+    override fun openAlertNotCorrectDate() {
+        openAlertScreen(message = context.getString(R.string.alert_not_correct_date),
+                iconRes = R.drawable.ic_info_pink,
+                textColor = ContextCompat.getColor(context, R.color.color_text_dialogWarning),
+                pageNumber = "96"
+        )
+    }
+
+    override fun openExpiredDialog(noCallbackFunc: () -> Unit, yesCallbackFunc: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.the_shelf_life_has_expired),
+                    codeConfirmForLeft = backFragmentResultHelper.setFuncForResult(noCallbackFunc),
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(yesCallbackFunc),
+                    iconRes = R.drawable.ic_question_80dp,
+                    pageNumber = "97",
+                    leftButtonDecorationInfo = ButtonDecorationInfo.no,
+                    rightButtonDecorationInfo = ButtonDecorationInfo.yes))
+        }
+    }
+
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 }
 
@@ -531,4 +552,6 @@ interface IScreenNavigator : ICoreNavigator {
     fun openRepresPersonNumEntryScreen()
     fun openFormedDocsScreen()
     fun openAlertCountLargerOverdelivery()
+    fun openAlertNotCorrectDate()
+    fun openExpiredDialog(noCallbackFunc: () -> Unit, yesCallbackFunc: () -> Unit)
 }

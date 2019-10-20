@@ -1,8 +1,10 @@
 package com.lenta.bp9.features.goods_information.perishables
 
+import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.widget.AdapterView
+import androidx.annotation.RequiresApi
 import com.lenta.bp9.R
 import com.lenta.bp9.databinding.FragmentPerishablesInfoBinding
 import com.lenta.bp9.model.task.TaskProductInfo
@@ -83,6 +85,7 @@ class PerishablesInfoFragment : CoreFragment<FragmentPerishablesInfoBinding, Per
         connectLiveData(vm.enabledApplyButton, bottomToolbarUiModel.uiModelButton5.enabled)
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onToolbarButtonClick(view: View) {
         when (view.id) {
             R.id.b_3 -> vm.onClickDetails()
