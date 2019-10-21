@@ -237,7 +237,11 @@ class ScreenNavigator @Inject constructor(
                     pageNumber = "11",
                     iconRes = R.drawable.ic_done_green_80dp,
                     isVisibleLeftButton = false,
-                    rightButtonDecorationInfo = ButtonDecorationInfo.next))
+                    rightButtonDecorationInfo = ButtonDecorationInfo.next,
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult {
+                        // ничего не делаем
+                    })
+            )
         }
     }
 

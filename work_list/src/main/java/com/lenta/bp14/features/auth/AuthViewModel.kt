@@ -122,9 +122,9 @@ class AuthViewModel : CoreAuthViewModel() {
             runIfDebug {
                 Logg.d { "login.value ${login.value}" }
                 if (login.value.isNullOrEmpty()) {
-                    login.value = "USER902"
+                    login.value = "USER102"
                 }
-                if (login.value == "USER902" && getPassword().isEmpty()) {
+                if (login.value == "USER102" && getPassword().isEmpty()) {
                     password.value = "987654321"
                 }
 

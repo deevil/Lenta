@@ -23,6 +23,7 @@ import javax.inject.Inject
 @AppScope
 class PrintTask @Inject constructor(
         hyperHive: HyperHive,
+        private val bigDatamaxPrint: BigDatamaxPrint,
         private val printPriceNetService: IPrintPriceNetService,
         private val timeMonitor: ITimeMonitor,
         private var repoInMemoryHolder: IRepoInMemoryHolder,
@@ -80,6 +81,17 @@ class PrintTask @Inject constructor(
             isRegular: Boolean,
             copies: Int): Either<Failure, Boolean> {
 
+        // большой datamax
+        if (printerType.id == "03") {
+            return withContext(IO) {
+                productInfoResult.productsInfo.getOrNull(0)?.let {
+                    bigDatamaxPrint.printToBigDatamax(it.ean, isRegular, copies)
+                } ?: Either.Left(Failure.ServerError)
+            }
+
+        }
+
+
         val serverPriceInfo = productInfoResult.prices.getOrNull(0)
                 ?: return Either.Left(Failure.ServerError)
 
@@ -95,7 +107,7 @@ class PrintTask @Inject constructor(
                     price4 = serverPriceInfo.price4.toNullIfEmpty()
             )
 
-            var price2 = if (isRegular) actualPriceInfo.price2
+            val price2 = if (isRegular) actualPriceInfo.price2
                     ?: actualPriceInfo.price1!! else actualPriceInfo.getDiscountCardPrice() ?: 0.0
 
             val printTemplate = when (printerType.id) {

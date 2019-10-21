@@ -30,8 +30,7 @@ class PrintPriceNetService @Inject constructor(private val priceTagGenerator: IP
     private fun getPrinter(printerType: NetPrinterType, ip: String): INetPrinter {
         return when (printerType) {
             NetPrinterType.Zebra -> ZebraNetPrinter(ip)
-            NetPrinterType.Datamax -> DatamaxNetPrinter(ip)
-            else -> throw IllegalArgumentException("printerType: $printerType is not supported")
+            NetPrinterType.Oneil -> DatamaxNetPrinter(ip)
         }
 
     }
