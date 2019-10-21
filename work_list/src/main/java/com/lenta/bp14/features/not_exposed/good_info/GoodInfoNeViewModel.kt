@@ -61,7 +61,6 @@ class GoodInfoNeViewModel : CoreViewModel(), PageSelectionListener {
         )
     }
 
-
     val selectedPage = MutableLiveData(0)
 
     val stocks: MutableLiveData<List<ItemStockUi>> by lazy {
@@ -79,7 +78,6 @@ class GoodInfoNeViewModel : CoreViewModel(), PageSelectionListener {
                 }
         )
     }
-
 
     val originalProcessedProductInfo by lazy {
         task.getProcessedCheckInfo()
@@ -122,7 +120,6 @@ class GoodInfoNeViewModel : CoreViewModel(), PageSelectionListener {
     val notFramedButtonEnabled by lazy {
         isEmptyPlaceMarked.map { it == null }
     }
-
 
     override fun onPageSelected(position: Int) {
         selectedPage.value = position
@@ -192,10 +189,8 @@ class GoodInfoNeViewModel : CoreViewModel(), PageSelectionListener {
         )
     }
 
-
     private fun searchCode(code: String) {
         viewModelScope.launch {
-
             navigator.showProgressLoadingData()
 
             scanInfoRequest(
@@ -214,7 +209,6 @@ class GoodInfoNeViewModel : CoreViewModel(), PageSelectionListener {
                     } else {
                         quantityField.value = newQuantity.toStringFormatted()
                     }
-
                 } else {
                     if (applyButtonEnabled.value == true) {
                         viewModelScope.launch {
@@ -239,16 +233,12 @@ class GoodInfoNeViewModel : CoreViewModel(), PageSelectionListener {
                             } else {
                                 navigator.showGoodIsNotPartOfTask()
                             }
-
-
                         }
                     }
-
                 }
             }
 
             navigator.hideProgress()
-
         }
     }
 

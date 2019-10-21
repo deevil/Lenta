@@ -12,6 +12,7 @@ import com.lenta.shared.functional.map
 import com.lenta.shared.interactor.UseCase
 import com.lenta.shared.models.core.Uom
 import com.mobrun.plugin.api.HyperHive
+import java.util.*
 import javax.inject.Inject
 
 class ProductInfoForNotExposedNetRequest
@@ -29,7 +30,7 @@ class ProductInfoForNotExposedNetRequest
                     uom = zmpUtz07V001.getUomInfo(it.productsInfo[0].bUom)?.let { etUom ->
                         Uom(
                                 code = etUom.uom,
-                                name = etUom.name
+                                name = etUom.name.toLowerCase(Locale.getDefault())
                         )
                     }
             )
