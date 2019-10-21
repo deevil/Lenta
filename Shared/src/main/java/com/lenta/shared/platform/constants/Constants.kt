@@ -32,5 +32,6 @@ object Constants {
     const val COMMON_SAP_FULL_LENGTH = 18
     const val SAP_OR_BAR_LENGTH = 12
     const val MARK_CODE_LENGTH = 68
+    const val ALCOHOL_MARK_CODE_LENGTH = 150
 
 }
