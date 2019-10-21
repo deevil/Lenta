@@ -7,7 +7,7 @@ import com.lenta.bp14.models.check_price.IPriceInfoParser
 import com.lenta.bp14.models.data.GoodsListTab
 import com.lenta.bp14.models.getTaskName
 import com.lenta.bp14.models.work_list.Good
-import com.lenta.bp14.models.work_list.WorkListTask
+import com.lenta.bp14.models.work_list.IWorkListTask
 import com.lenta.bp14.platform.navigation.IScreenNavigator
 import com.lenta.bp14.requests.work_list.WorkListSendReportNetRequest
 import com.lenta.shared.platform.device_info.DeviceInfo
@@ -18,9 +18,8 @@ import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.extentions.combineLatest
-import com.lenta.shared.utilities.extentions.map
-import com.lenta.shared.utilities.extentions.sumWith
 import com.lenta.shared.utilities.extentions.dropZeros
+import com.lenta.shared.utilities.extentions.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -29,7 +28,7 @@ class GoodsListWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     @Inject
     lateinit var navigator: IScreenNavigator
     @Inject
-    lateinit var task: WorkListTask
+    lateinit var task: IWorkListTask
     @Inject
     lateinit var priceInfoParser: IPriceInfoParser
     @Inject
@@ -229,10 +228,6 @@ class GoodsListWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
 
     fun onScanResult(data: String) {
         checkEnteredNumber(data)
-    }
-
-    fun onClickBack() {
-        navigator.openTaskListScreen()
     }
 
 }

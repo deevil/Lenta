@@ -29,18 +29,15 @@ class GoodInfoNeViewModel : CoreViewModel(), PageSelectionListener {
 
     @Inject
     lateinit var navigator: IScreenNavigator
-
     @Inject
     lateinit var task: INotExposedProductsTask
-
     @Inject
     lateinit var scanInfoRequest: ScanInfoRequest
-
     @Inject
     lateinit var priceInfoParser: IPriceInfoParser
-
     @Inject
     lateinit var hyperHive: HyperHive
+
 
     private val maxQuantity: Double? by lazy {
         ZmpUtz14V001(hyperHive).getMaxQuantityProdWkl()

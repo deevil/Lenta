@@ -173,11 +173,11 @@ class WorkListTask @Inject constructor(
         //TODO implement this
     }
 
-    fun getProcessingList(): LiveData<List<Good>> {
+    override fun getProcessingList(): LiveData<List<Good>> {
         return goods.map { list -> list?.filter { !it.isProcessed } }
     }
 
-    fun getProcessedList(): LiveData<List<Good>> {
+    override fun getProcessedList(): LiveData<List<Good>> {
         return goods.map { list -> list?.filter { it.isProcessed } }
     }
 
@@ -266,6 +266,8 @@ interface IWorkListTask : ITask, IFilterable {
     fun deleteSelectedGoods(materials: List<String>)
     fun addScanResult(scanResult: ScanResult)
     fun setCurrentGoodProcessed()
+    fun getProcessingList(): LiveData<List<Good>>
+    fun getProcessedList(): LiveData<List<Good>>
 
     fun getReportData(ip: String): WorkListReport
     fun getSearchList(): LiveData<List<Good>>

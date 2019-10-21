@@ -29,7 +29,7 @@ import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
 import com.lenta.shared.utilities.extentions.provideViewModel
 
 class GoodsListWlFragment : CoreFragment<FragmentGoodsListWlBinding, GoodsListWlViewModel>(),
-        ViewPagerSettings, ToolbarButtonsClickListener, OnKeyDownListener, OnScanResultListener, OnBackPresserListener {
+        ViewPagerSettings, ToolbarButtonsClickListener, OnKeyDownListener, OnScanResultListener {
 
     private var processingRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
     private var processedRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
@@ -258,11 +258,6 @@ class GoodsListWlFragment : CoreFragment<FragmentGoodsListWlBinding, GoodsListWl
 
     override fun onScanResult(data: String) {
         vm.onScanResult(data)
-    }
-
-    override fun onBackPressed(): Boolean {
-        vm.onClickBack()
-        return true
     }
 
 }
