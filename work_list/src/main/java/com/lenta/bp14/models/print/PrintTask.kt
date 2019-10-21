@@ -149,6 +149,10 @@ class PrintTask @Inject constructor(
 
     }
 
+    override suspend fun printToBigDataMax(printTasks: List<PrintInfo>): Either<Failure, Boolean> {
+        return bigDatamaxPrint.printToBigDatamax(printTasks)
+    }
+
 
 }
 
@@ -162,6 +166,10 @@ interface IPrintTask {
             printerType: PrinterType,
             isRegular: Boolean,
             copies: Int): Either<Failure, Boolean>
+
+    suspend fun printToBigDataMax(
+            printTasks: List<PrintInfo>
+    ): Either<Failure, Boolean>
 
 }
 

@@ -9,6 +9,7 @@ import com.lenta.bp14.models.check_price.ICheckPriceTask
 import com.lenta.bp14.models.data.GoodsListTab
 import com.lenta.bp14.models.getTaskName
 import com.lenta.bp14.models.print.IPrintTask
+import com.lenta.bp14.models.print.PrintInfo
 import com.lenta.bp14.platform.navigation.IScreenNavigator
 import com.lenta.bp14.requests.check_price.CheckPriceReportNetRequest
 import com.lenta.shared.platform.device_info.DeviceInfo
@@ -39,7 +40,7 @@ class GoodsListPcViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     @Inject
     lateinit var printTask: IPrintTask
 
-    val tagTypeIds by lazy {
+    private val tagTypeIds by lazy {
         mutableListOf("")
     }
 
@@ -259,7 +260,30 @@ class GoodsListPcViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     }
 
     fun onClickPrint() {
+        viewModelScope.launch {
+            navigator.showProgressLoadingData()
+            printTask.printToBigDataMax(getPrintTasks()).either( {
+                navigator.openAlertScreen(failure = it)
+            }) {
+                navigator.showPriceTagsSubmitted()
+            }
+            navigator.hideProgress()
+        }
 
+    }
+
+    private fun getPrintTasks(): List<PrintInfo> {
+        val searchList = task.getCheckResultsForPrint().value ?: return emptyList()
+        return searchSelectionsHelper.selectedPositions.value!!.map {
+            searchList.getOrNull(it)!!.let {
+                PrintInfo(
+                        barCode = it.ean,
+                        amount = 1,
+                        templateCode = if (tagTypeIds.getOrNull(tagTypesPosition.value
+                                        ?: -1) == "01") 1 else 2
+                )
+            }
+        }
     }
 
     fun onClickVideo() {
