@@ -104,7 +104,7 @@ fun analyseCode(
             return
         }
 
-        if (length == Constants.MARK_CODE_LENGTH) {
+        if (length == Constants.ALCOHOL_SIMPLE_CODE) {
             funcForMarkCode?.let {
                 it(code)
                 return
