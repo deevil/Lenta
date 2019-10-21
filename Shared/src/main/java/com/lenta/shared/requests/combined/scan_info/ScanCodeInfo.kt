@@ -89,6 +89,7 @@ fun analyseCode(
         funcForMatNr: (matNumber: String) -> Unit,
         funcForSapOrBar: ((sapCallback: () -> Unit, barCallback: () -> Unit) -> Unit)?,
         funcForPriceQrCode: ((matNumber: String) -> Unit)? = null,
+        funcForMarkCode: ((markCode: String) -> Unit)? = null,
         funcForNotValidFormat: () -> Unit
 ) {
 
@@ -96,6 +97,15 @@ fun analyseCode(
 
         if (code.startsWith("(01)")) {
             funcForPriceQrCode?.let {
+                it(code)
+                return
+            }
+            funcForNotValidFormat()
+            return
+        }
+
+        if (length == Constants.MARK_CODE_LENGTH) {
+            funcForMarkCode?.let {
                 it(code)
                 return
             }

@@ -28,14 +28,15 @@ class CheckListRepo @Inject constructor(
 
     override suspend fun getGoodByMaterial(material: String): Good? {
         return withContext(Dispatchers.IO) {
-            getCheckListGoodInfoByMaterial(material)?.let { checkListGoodInfo ->
-                val unitsName = getUnitsName(checkListGoodInfo.buom)
+            getCheckListGoodInfoByMaterial(material)?.let { goodInfo ->
+                val unitsCode = if (goodInfo.buom == Uom.G.code) Uom.KG.code else goodInfo.buom
+                val unitsName = getUnitsName(unitsCode)
                 return@withContext Good(
-                        material = checkListGoodInfo.material,
-                        name = checkListGoodInfo.name,
+                        material = goodInfo.material,
+                        name = goodInfo.name,
                         quantity = MutableLiveData("1"),
                         units = Uom(
-                                code = checkListGoodInfo.buom,
+                                code = unitsCode,
                                 name = unitsName ?: ""))
 
             }

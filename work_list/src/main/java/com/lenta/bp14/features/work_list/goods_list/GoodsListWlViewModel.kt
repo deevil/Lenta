@@ -7,7 +7,7 @@ import com.lenta.bp14.models.check_price.IPriceInfoParser
 import com.lenta.bp14.models.data.GoodsListTab
 import com.lenta.bp14.models.getTaskName
 import com.lenta.bp14.models.work_list.Good
-import com.lenta.bp14.models.work_list.WorkListTask
+import com.lenta.bp14.models.work_list.IWorkListTask
 import com.lenta.bp14.platform.navigation.IScreenNavigator
 import com.lenta.bp14.requests.work_list.WorkListSendReportNetRequest
 import com.lenta.shared.platform.device_info.DeviceInfo
@@ -18,9 +18,8 @@ import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.extentions.combineLatest
-import com.lenta.shared.utilities.extentions.map
-import com.lenta.shared.utilities.extentions.sumWith
 import com.lenta.shared.utilities.extentions.dropZeros
+import com.lenta.shared.utilities.extentions.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -29,7 +28,7 @@ class GoodsListWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     @Inject
     lateinit var navigator: IScreenNavigator
     @Inject
-    lateinit var task: WorkListTask
+    lateinit var task: IWorkListTask
     @Inject
     lateinit var priceInfoParser: IPriceInfoParser
     @Inject
@@ -48,16 +47,14 @@ class GoodsListWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
 
     val taskName = MutableLiveData("")
 
+    val good by lazy { task.currentGood }
+
     val numberField: MutableLiveData<String> = MutableLiveData("")
     val requestFocusToNumberField: MutableLiveData<Boolean> = MutableLiveData()
 
     private val toUiFunc = { products: List<Good>? ->
         products?.reversed()?.mapIndexed { index, good ->
-            var total = 0.0
-            for (scanResult in good.scanResults.value!!) {
-                total = total.sumWith(scanResult.quantity)
-            }
-
+            val total = good.getTotalQuantity()
             ItemWorkListUi(
                     position = (index + 1).toString(),
                     material = good.material,
@@ -160,17 +157,15 @@ class GoodsListWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     private fun checkEnteredNumber(number: String) {
         analyseCode(
                 code = number,
-                funcForEan = { eanCode ->
-                    addGoodByEan(eanCode)
+                funcForEan = { ean ->
+                    searchCode(ean = ean)
                 },
-                funcForMatNr = { matNr ->
-                    addGoodByMaterial(matNr)
+                funcForMatNr = { material ->
+                    searchCode(material = material)
                 },
                 funcForPriceQrCode = { qrCode ->
                     priceInfoParser.getPriceInfoFromRawCode(qrCode)?.let {
-                        viewModelScope.launch {
-                            addGoodByEan(it.eanCode)
-                        }
+                        searchCode(ean = it.eanCode)
                         return@analyseCode
                     }
                 },
@@ -179,35 +174,27 @@ class GoodsListWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
         )
     }
 
-    private fun addGoodByEan(ean: String) {
-        Logg.d { "Entered EAN: $ean" }
+    private fun searchCode(ean: String? = null, material: String? = null) {
         viewModelScope.launch {
-            navigator.showProgressLoadingData()
-            val good = task.getGoodByEan(ean)
-            if (good != null) {
-                task.addGoodToList(good)
-                navigator.hideProgress()
-                navigator.openGoodInfoWlScreen()
-            } else {
-                navigator.hideProgress()
-                navigator.showGoodNotFound()
+            require((ean != null) xor (material != null)) {
+                "Only one param allowed - ean: $ean, material: $material"
             }
-        }
-    }
 
-    private fun addGoodByMaterial(material: String) {
-        Logg.d { "Entered MATERIAL: $material" }
-        viewModelScope.launch {
             navigator.showProgressLoadingData()
-            val good = task.getGoodByMaterial(material)
-            if (good != null) {
+
+            when {
+                !ean.isNullOrBlank() -> task.getGoodByEan(ean)
+                !material.isNullOrBlank() -> task.getGoodByMaterial(material)
+                else -> null
+            }.also {
+                navigator.hideProgress()
+            }?.let { good ->
                 task.addGoodToList(good)
-                navigator.hideProgress()
                 navigator.openGoodInfoWlScreen()
-            } else {
-                navigator.hideProgress()
-                navigator.showGoodNotFound()
+                return@launch
             }
+
+            navigator.showGoodNotFound()
         }
     }
 
@@ -222,7 +209,7 @@ class GoodsListWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
             2 -> searchGoods.value?.get(position)?.material
             else -> null
         }?.let { material ->
-            addGoodByMaterial(material)
+            searchCode(material = material)
         }
     }
 
@@ -240,11 +227,7 @@ class GoodsListWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     }
 
     fun onScanResult(data: String) {
-
-    }
-
-    fun onClickBack() {
-        navigator.openTaskListScreen()
+        checkEnteredNumber(data)
     }
 
 }

@@ -5,33 +5,33 @@ import com.lenta.bp14.requests.*
 import com.lenta.bp14.requests.pojo.ProductInfo
 import com.lenta.bp14.requests.pojo.Stock
 import com.lenta.shared.exception.Failure
-import com.lenta.shared.fmp.resources.dao_ext.getUomInfo
+import com.lenta.shared.fmp.resources.dao_ext.getUnitName
 import com.lenta.shared.fmp.resources.fast.ZmpUtz07V001
 import com.lenta.shared.functional.Either
 import com.lenta.shared.functional.map
 import com.lenta.shared.interactor.UseCase
 import com.lenta.shared.models.core.Uom
 import com.mobrun.plugin.api.HyperHive
+import java.util.*
 import javax.inject.Inject
 
 class ProductInfoForNotExposedNetRequest
 @Inject constructor(private val productInfoNetRequest: ProductInfoNetRequest, hyperHive: HyperHive) : IProductInfoForNotExposedNetRequest {
 
-    val zmpUtz07V001 by lazy {
-        ZmpUtz07V001(hyperHive)
-    }
+    val units by lazy { ZmpUtz07V001(hyperHive) } // Единицы измерения
 
     override suspend fun run(params: NotExposedInfoRequestParams): Either<Failure, GoodInfo> {
         return productInfoNetRequest(params = params.toCommonParams()).map {
+            val unitsCode = if (it.productsInfo[0].bUom == Uom.G.code) Uom.KG.code else it.productsInfo[0].bUom
+            val unitsName = units.getUnitName(unitsCode)?.toLowerCase(Locale.getDefault())
+
             GoodInfo(
                     productInfo = it.productsInfo[0],
                     stocks = it.stocks,
-                    uom = zmpUtz07V001.getUomInfo(it.productsInfo[0].bUom)?.let { etUom ->
-                        Uom(
-                                code = etUom.uom,
-                                name = etUom.name
-                        )
-                    }
+                    uom = Uom(
+                            code = unitsCode,
+                            name = unitsName ?: ""
+                    )
             )
         }
     }

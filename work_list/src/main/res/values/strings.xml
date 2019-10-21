@@ -45,7 +45,7 @@
     <string name="twelve_characters_entered">Введено 12 знаков. Какой код вы ввели?</string>
 
 
-    <string name="total_quantity">Итого: %1$s</string>
+    <string name="total_quantity">Итого: %1$s %2$s</string>
     <string name="quantity_st">%1$d шт.</string>
     <string name="quantity_units">%1$d %2$s.</string>
     <string name="sl_date">СГ - %1$s</string>

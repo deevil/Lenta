@@ -2,19 +2,26 @@ package com.lenta.bp14.features.work_list.good_info
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.lenta.bp14.models.check_price.IPriceInfoParser
 import com.lenta.bp14.models.data.GoodType
 import com.lenta.bp14.models.data.ShelfLifeType
-import com.lenta.bp14.models.work_list.*
+import com.lenta.bp14.models.work_list.AdditionalGoodInfo
+import com.lenta.bp14.models.work_list.ScanResult
+import com.lenta.bp14.models.work_list.WorkListTask
 import com.lenta.bp14.platform.navigation.IScreenNavigator
-import com.lenta.bp14.requests.work_list.IAdditionalGoodInfoNetRequest
 import com.lenta.bp14.requests.work_list.AdditionalGoodInfoParams
+import com.lenta.bp14.requests.work_list.IAdditionalGoodInfoNetRequest
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.models.core.MatrixType
 import com.lenta.shared.platform.viewmodel.CoreViewModel
+import com.lenta.shared.requests.combined.scan_info.analyseCode
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.databinding.PageSelectionListener
-import com.lenta.shared.utilities.extentions.*
+import com.lenta.shared.utilities.extentions.combineLatest
+import com.lenta.shared.utilities.extentions.dropZeros
+import com.lenta.shared.utilities.extentions.map
+import com.lenta.shared.utilities.extentions.sumWith
 import com.lenta.shared.view.OnPositionClickListener
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
@@ -32,6 +39,8 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
     lateinit var additionalGoodInfoNetRequest: IAdditionalGoodInfoNetRequest
     @Inject
     lateinit var sessionInfo: ISessionInfo
+    @Inject
+    lateinit var priceInfoParser: IPriceInfoParser
 
 
     val selectedPage = MutableLiveData(0)
@@ -46,12 +55,10 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
     val title = MutableLiveData<String>("")
 
     val quantity = MutableLiveData<String>("")
-    val totalQuantity: MutableLiveData<String> = quantity.map {
-        var quantity = it?.toDoubleOrNull() ?: 0.0
-        for (scanResult in good.value!!.scanResults.value!!) {
-            quantity = quantity.sumWith(scanResult.quantity)
+    val totalQuantity: MutableLiveData<String> by lazy {
+        good.combineLatest(quantity).map {
+            it?.first?.getTotalQuantity().sumWith(it?.second?.toDoubleOrNull() ?: 0.0).dropZeros()
         }
-        "${quantity.dropZeros()} ${task.currentGood.value!!.units.name}"
     }
 
     val day = MutableLiveData<String>("")
@@ -75,13 +82,13 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
         parseDate
     }
 
-    val daysLeft: MutableLiveData<Int> = enteredDate.combineLatest(shelfLifeTypePosition).map {
+    private val daysLeft: MutableLiveData<Int> = enteredDate.combineLatest(shelfLifeTypePosition).map {
         val enteredDate = it?.first
         val shelfLifeType = it?.second
         val shelfLifeTimeMills = good.value!!.getShelfLifeInMills()
 
         val daysLeft: Int? = if (enteredDate != null && shelfLifeType != null && shelfLifeTimeMills != 0L) {
-            val expirationDate = if (shelfLifeType == ShelfLifeType.PRODUCTION.position){
+            val expirationDate = if (shelfLifeType == ShelfLifeType.PRODUCTION.position) {
                 enteredDate.time + good.value!!.getShelfLifeInMills()
             } else enteredDate.time
 
@@ -91,42 +98,61 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
         daysLeft
     }
 
-    val shelfLifeDaysFieldVisibility = daysLeft.map { it != null }
+    val remainingDaysFieldVisibility = daysLeft.map { it != null }
 
     val shelfLifeTypeList = MutableLiveData<List<String>>()
 
-    val commentsList: MutableLiveData<List<String>> by lazy { task.currentGood.value!!.comments }
+    val commentsList: MutableLiveData<List<String>> by lazy {
+        good.map { good ->
+            good?.comments
+        }
+    }
+
+    val common: MutableLiveData<CommonInfoUi> by lazy {
+        good.map {
+            it?.let { good ->
+                CommonInfoUi(
+                        shelfLife = "${good.shelfLife} сут.",
+                        remainingDays = "${daysLeft.value} сут.",
+                        eanWithUnits = good.getEanWithUnits(),
+                        groups = good.getGroups()
+                )
+            }
+        }
+    }
 
     val additional: MutableLiveData<AdditionalInfoUi> by lazy {
-        task.currentGood.value!!.additional.map { additional ->
-            AdditionalInfoUi(
-                    storagePlaces = additional?.storagePlaces ?: "Not found!",
-                    minStock = "${additional?.minStock?.dropZeros()} ${task.currentGood.value!!.units.name}",
-                    inventory = additional?.inventory ?: "Not found!",
-                    arrival = additional?.arrival ?: "Not found!",
-                    commonPrice = "${additional?.commonPrice?.dropZeros()}р.",
-                    discountPrice = "${additional?.discountPrice?.dropZeros()}р.",
-                    promoName = additional?.promoName ?: "Not found!",
-                    promoPeriod = additional?.promoPeriod ?: "Not found!"
-            )
+        good.map { good ->
+            good?.additional?.let { additional ->
+                AdditionalInfoUi(
+                        storagePlaces = additional.storagePlaces,
+                        minStock = additional.minStock,
+                        inventory = additional.inventory,
+                        arrival = additional.arrival,
+                        commonPrice = "${additional.commonPrice.dropZeros()}р.",
+                        discountPrice = "${additional.discountPrice.dropZeros()}р.",
+                        promoName = additional.promoName,
+                        promoPeriod = additional.promoPeriod
+                )
+            }
         }
     }
 
     val stocks: MutableLiveData<List<ItemStockUi>> by lazy {
-        task.currentGood.value!!.additional.map { additional ->
-            additional?.stocks?.mapIndexed { index, stock ->
+        good.map { good ->
+            good?.additional?.stocks?.mapIndexed { index, stock ->
                 ItemStockUi(
                         number = (index + 1).toString(),
                         storage = stock.storage,
-                        quantity = "${stock.quantity} ${task.currentGood.value!!.units.name}"
+                        quantity = "${stock.quantity.dropZeros()} ${good.units.name}"
                 )
             }
         }
     }
 
     val providers: MutableLiveData<List<ItemProviderUi>> by lazy {
-        task.currentGood.value!!.additional.map { additional ->
-            additional?.providers?.mapIndexed { index, provider ->
+        good.map { good ->
+            good?.additional?.providers?.mapIndexed { index, provider ->
                 ItemProviderUi(
                         number = (index + 1).toString(),
                         code = provider.code,
@@ -138,7 +164,7 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     val options: MutableLiveData<OptionsUi> by lazy {
-        task.currentGood.map { good ->
+        good.map { good ->
             good?.options?.let { options ->
                 OptionsUi(
                         matrixType = options.matrixType,
@@ -181,9 +207,11 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
             viewModelScope.launch {
                 additionalGoodInfoNetRequest(AdditionalGoodInfoParams(
                         tkNumber = sessionInfo.market ?: "Not Found!",
-                        ean = task.currentGood.value?.ean,
-                        matNr = task.currentGood.value?.material
-                )).either(::handleFailure, ::updateAdditionalGoodInfo)
+                        ean = good.value?.ean,
+                        matNr = good.value?.material
+                )).also {
+                    showProgress.value = false
+                }.either(::handleFailure, ::updateAdditionalGoodInfo)
             }
         }
     }
@@ -192,16 +220,12 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
 
     override fun handleFailure(failure: Failure) {
         super.handleFailure(failure)
-        showProgress.value = false
         navigator.openAlertScreen(failure)
     }
 
     private fun updateAdditionalGoodInfo(result: AdditionalGoodInfo) {
         Logg.d { "AdditionalGoodInfo: $result" }
-        viewModelScope.launch {
-            task.currentGood.value?.additional?.value = result
-        }
-        showProgress.value = false
+        task.updateAdditionalGoodInfo(result)
     }
 
     override fun onPageSelected(position: Int) {
@@ -233,43 +257,77 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     fun onClickApply() {
-        addScanResult()
+        saveScanResult()
         task.setCurrentGoodProcessed()
         navigator.openGoodsListWlScreen()
     }
 
-    private fun addScanResult() {
-        val shelfLifeDate = enteredDate.value
+    fun onScanResult(data: String) {
+        analyseCode(
+                code = data,
+                funcForEan = { ean ->
+                    searchCode(ean = ean)
+                },
+                funcForMatNr = { material ->
+                    searchCode(material = material)
+                },
+                funcForPriceQrCode = { qrCode ->
+                    priceInfoParser.getPriceInfoFromRawCode(qrCode)?.let {
+                        searchCode(ean = it.eanCode)
+                        return@analyseCode
+                    }
+                },
+                funcForSapOrBar = navigator::showTwelveCharactersEntered,
+                funcForNotValidFormat = navigator::showGoodNotFound
+        )
+    }
+
+    private fun searchCode(ean: String? = null, material: String? = null) {
+        viewModelScope.launch {
+            require((ean != null) xor (material != null)) {
+                "Only one param allowed - ean: $ean, material: $material"
+            }
+
+            navigator.showProgressLoadingData()
+
+            when {
+                !ean.isNullOrBlank() -> task.getGoodByEan(ean)
+                !material.isNullOrBlank() -> task.getGoodByMaterial(material)
+                else -> null
+            }.also {
+                navigator.hideProgress()
+            }?.let { good ->
+                if (applyButtonEnabled.value == true) {
+                    saveScanResult()
+                    task.setCurrentGoodProcessed()
+                }
+                task.addGoodToList(good)
+                navigator.openGoodInfoWlScreen(popLast = true)
+                return@launch
+            }
+
+            navigator.showGoodNotFound()
+        }
+    }
+
+    private fun saveScanResult() {
+        val enteredDate = enteredDate.value
         val shelfLifeType = shelfLifeTypePosition.value
 
-        val productionDate = if (shelfLifeDate != null && shelfLifeType == ShelfLifeType.PRODUCTION.position) {
-            shelfLifeDate
+        val productionDate = if (enteredDate != null && shelfLifeType == ShelfLifeType.PRODUCTION.position) {
+            enteredDate
         } else null
 
-        val expirationDate = if (shelfLifeDate != null && shelfLifeType == ShelfLifeType.PRODUCTION.position) {
-            Date(shelfLifeDate.time + good.value!!.getShelfLifeInMills())
-        } else shelfLifeDate
+        val expirationDate = if (enteredDate != null && shelfLifeType == ShelfLifeType.PRODUCTION.position) {
+            Date(enteredDate.time + good.value!!.getShelfLifeInMills())
+        } else enteredDate
 
         task.addScanResult(ScanResult(
                 quantity = quantity.value?.toDoubleOrNull() ?: 0.0,
-                comment =  good.value?.comments?.value?.get(commentsPosition.value ?: 0)!!,
+                comment = good.value!!.comments[commentsPosition.value ?: 0],
                 productionDate = productionDate,
                 expirationDate = expirationDate
         ))
-    }
-
-    private fun resetGoodFields() {
-        quantity.value = good.value?.defaultValue.dropZeros()
-
-        shelfLifeTypePosition.value = 0
-
-        day.value = ""
-        month.value = ""
-        year.value = ""
-    }
-
-    fun onScanResult(data: String) {
-
     }
 
 }
@@ -281,6 +339,13 @@ data class OptionsUi(
         val section: String,
         val healthFood: Boolean,
         val novelty: Boolean
+)
+
+data class CommonInfoUi(
+        val shelfLife: String,
+        val remainingDays: String,
+        val eanWithUnits: String,
+        val groups: String
 )
 
 data class AdditionalInfoUi(

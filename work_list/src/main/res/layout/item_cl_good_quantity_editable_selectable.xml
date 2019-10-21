@@ -67,7 +67,7 @@
                 <com.lenta.shared.view.EditTextWithSuffix
                     style="@style/CellTextStyle"
                     android:ellipsize="end"
-                    android:inputType="number"
+                    android:inputType="numberDecimal"
                     android:maxLines="1"
                     android:text="@={good.quantity}"
                     app:digitsForUom="@{good.units}"
