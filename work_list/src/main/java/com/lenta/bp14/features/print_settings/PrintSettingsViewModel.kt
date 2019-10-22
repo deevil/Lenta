@@ -219,7 +219,34 @@ class PrintSettingsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInS
     }
 
     fun onClickPrint() {
+
+        if (selectedPrinterIsBigDatamax()) {
+            if (selectedPriceTagIsRed()) {
+                navigator.showMakeSureRedPaperInstalled(getSelectedPrinterType()!!.name, numberOfCopies.value?.toIntOrNull()
+                        ?: 0) {
+                    print()
+                }
+            } else {
+                navigator.showMakeSureYellowPaperInstalled(getSelectedPrinterType()!!.name, numberOfCopies.value?.toIntOrNull()
+                        ?: 0) {
+                    print()
+                }
+            }
+        } else if (numberOfCopies.value?.toIntOrNull() ?: 0 > 1) {
+            navigator.showConfirmPriceTagsPrinting(numberOfCopies.value?.toIntOrNull()
+                    ?: 0) {
+                print()
+            }
+        } else {
+            print()
+        }
+
+
+    }
+
+    private fun print() {
         viewModelScope.launch {
+
 
             navigator.showProgressConnection()
             printTask.printPrice(
@@ -237,6 +264,15 @@ class PrintSettingsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInS
             navigator.hideProgress()
 
         }
+
+    }
+
+    private fun selectedPriceTagIsRed(): Boolean {
+        return getSelectedPriceType()?.isRegular == false
+    }
+
+    private fun selectedPrinterIsBigDatamax(): Boolean {
+        return getSelectedPrinterType()?.isStatic == true
     }
 
     fun restoreSettings() {
