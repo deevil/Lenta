@@ -8,6 +8,8 @@ import com.lenta.bp14.models.general.GeneralRepo
 import com.lenta.bp14.models.general.IGeneralRepo
 import com.lenta.bp14.models.general.ITasksSearchHelper
 import com.lenta.bp14.models.general.TasksSearchHelper
+import com.lenta.bp14.models.print.BigDatamaxPrint
+import com.lenta.bp14.models.print.BigDatamaxPrintImpl
 import com.lenta.bp14.models.print.IPrintTask
 import com.lenta.bp14.models.print.PrintTask
 import com.lenta.bp14.platform.IVibrateHelper
@@ -87,6 +89,10 @@ class AppModule {
         @Binds
         @AppScope
         fun bindWorkListTaskInfoNetRequest(realisation: WorkListTaskInfoNetRequest): IWorkListTaskInfoNetRequest
+
+        @Binds
+        @AppScope
+        fun bindBigDataMaxPrint(realisation: BigDatamaxPrintImpl): BigDatamaxPrint
 
     }
 

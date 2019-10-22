@@ -17,7 +17,7 @@ class DatamaxNetPrinter(override val ip: String) : INetPrinter() {
     val magicByte = 63.toByte()
 
     override val printerType: NetPrinterType
-        get() = NetPrinterType.Datamax
+        get() = NetPrinterType.Oneil
 
     override fun calibrate(): Either<Failure, Boolean> {
         return Either.Right(true)

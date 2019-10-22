@@ -44,8 +44,7 @@ class PriceTagGenerator @Inject constructor(private val context: Context) : IPri
 
         return when (printTemplate.printerType) {
             NetPrinterType.Zebra -> generatePricePrintStringForZebra(printPriceInfo, template)
-            NetPrinterType.Datamax -> generatePricePrintStringForDatamax(printPriceInfo, template)
-            else -> null
+            NetPrinterType.Oneil -> generatePricePrintStringForDatamax(printPriceInfo, template)
         }
 
     }
@@ -218,7 +217,7 @@ enum class PrintTemplate(
 ) {
     Zebra_Red_6_6(NetPrinterType.Zebra, "print_templates/Red6x6_Zebra.zpl"),
     Zebra_Yellow_6_6(NetPrinterType.Zebra, "print_templates/Yellow6x6_Zebra.zpl"),
-    Datamax_Red_6_6(NetPrinterType.Datamax, "print_templates/Red6x6_Datamax.trf"),
-    Datamax_Yellow_6_6(NetPrinterType.Datamax, "print_templates/Yellow6x6_Datamax.trf")
+    Datamax_Red_6_6(NetPrinterType.Oneil, "print_templates/Red6x6_Datamax.trf"),
+    Datamax_Yellow_6_6(NetPrinterType.Oneil, "print_templates/Yellow6x6_Datamax.trf")
 }
 
