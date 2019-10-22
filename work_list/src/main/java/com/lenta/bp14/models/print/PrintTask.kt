@@ -23,11 +23,14 @@ import javax.inject.Inject
 @AppScope
 class PrintTask @Inject constructor(
         hyperHive: HyperHive,
+        private val bigDatamaxPrint: BigDatamaxPrint,
         private val printPriceNetService: IPrintPriceNetService,
         private val timeMonitor: ITimeMonitor,
         private var repoInMemoryHolder: IRepoInMemoryHolder,
         private var sessionInfo: ISessionInfo
 ) : IPrintTask {
+
+    override var matNrForPrint: String? = null
 
     private val emptyPriceTag = PriceTagType(
             id = "", name = "Не выбранно", isRegular = null
@@ -80,6 +83,17 @@ class PrintTask @Inject constructor(
             isRegular: Boolean,
             copies: Int): Either<Failure, Boolean> {
 
+        // большой datamax
+        if (printerType.id == "03") {
+            return withContext(IO) {
+                productInfoResult.productsInfo.getOrNull(0)?.let {
+                    bigDatamaxPrint.printToBigDatamax(it.ean, isRegular, copies)
+                } ?: Either.Left(Failure.ServerError)
+            }
+
+        }
+
+
         val serverPriceInfo = productInfoResult.prices.getOrNull(0)
                 ?: return Either.Left(Failure.ServerError)
 
@@ -95,7 +109,7 @@ class PrintTask @Inject constructor(
                     price4 = serverPriceInfo.price4.toNullIfEmpty()
             )
 
-            var price2 = if (isRegular) actualPriceInfo.price2
+            val price2 = if (isRegular) actualPriceInfo.price2
                     ?: actualPriceInfo.price1!! else actualPriceInfo.getDiscountCardPrice() ?: 0.0
 
             val printTemplate = when (printerType.id) {
@@ -137,10 +151,16 @@ class PrintTask @Inject constructor(
 
     }
 
+    override suspend fun printToBigDataMax(printTasks: List<PrintInfo>): Either<Failure, Boolean> {
+        return bigDatamaxPrint.printToBigDatamax(printTasks)
+    }
+
 
 }
 
 interface IPrintTask {
+
+    var matNrForPrint: String?
 
     suspend fun getPriceTagTypes(): List<PriceTagType>
     suspend fun getPrinterTypes(): List<PrinterType>
@@ -150,6 +170,10 @@ interface IPrintTask {
             printerType: PrinterType,
             isRegular: Boolean,
             copies: Int): Either<Failure, Boolean>
+
+    suspend fun printToBigDataMax(
+            printTasks: List<PrintInfo>
+    ): Either<Failure, Boolean>
 
 }
 

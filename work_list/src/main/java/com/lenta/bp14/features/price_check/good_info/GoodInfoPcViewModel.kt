@@ -2,6 +2,7 @@ package com.lenta.bp14.features.price_check.good_info
 
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp14.models.check_price.ICheckPriceTask
+import com.lenta.bp14.models.print.IPrintTask
 import com.lenta.bp14.platform.navigation.IScreenNavigator
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.analyseCode
@@ -13,6 +14,8 @@ class GoodInfoPcViewModel : CoreViewModel() {
     lateinit var navigator: IScreenNavigator
     @Inject
     lateinit var task: ICheckPriceTask
+    @Inject
+    lateinit var printTask: IPrintTask
 
     private val priceInfo by lazy {
         task.getProcessingActualPrice()
@@ -106,6 +109,7 @@ class GoodInfoPcViewModel : CoreViewModel() {
                     },
                     yesCallback = {
                         navigator.goBack()
+                        printTask.matNrForPrint = task.processingMatNumber
                         navigator.openPrintSettingsScreen()
                     }
             )

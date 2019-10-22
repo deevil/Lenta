@@ -346,6 +346,18 @@ class CheckPriceTask @Inject constructor(
                 ?: true
     }
 
+    override fun markPrinted(listOfMatNrs: List<String>) {
+        listOfMatNrs.forEach {
+            readyResultsRepo.getCheckPriceResult(matNr = it)?.let { priceResult ->
+                readyResultsRepo.addCheckPriceResult(
+                        checkPriceResult = (priceResult as CheckPriceResult).copy(
+                                isPrinted = true
+                        )
+                )
+            }
+        }
+    }
+
 }
 
 fun ICheckPriceResult?.toCheckStatus(): CheckStatus? {
@@ -368,6 +380,7 @@ interface ICheckPriceTask : ITask {
     suspend fun getActualPriceByMatNr(matNumber: String): Either<Failure, IActualPriceInfo>
     suspend fun checkPriceByQrCode(qrCode: String): Either<Failure, IActualPriceInfo>
     fun getReportData(ip: String): CheckPriceReport
+    fun markPrinted(listOfMatNrs: List<String>)
 
     var processingMatNumber: String?
 

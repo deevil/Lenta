@@ -52,8 +52,13 @@ fun ZmpUtz14V001.getAllowedMatTypesINV(): List<String> {
 }
 
 fun ZmpUtz14V001.getMaxQuantityProdWkl(): Double? {
-    return getParams("WKL_MAX_PROD_QNT:").getOrNull(0)?.toDoubleOrNull()
+    return getParams("WKL_MAX_PROD_QNT").getOrNull(0)?.toDoubleOrNull()
 }
+
+fun ZmpUtz14V001.getPrintServerMask(): String? {
+    return getParams("WKL_PRNT_SERVER_MASK:").getOrNull(0)
+}
+
 
 private fun ZmpUtz14V001.getParams(paramName: String): List<String> {
     @Suppress("INACCESSIBLE_TYPE")
