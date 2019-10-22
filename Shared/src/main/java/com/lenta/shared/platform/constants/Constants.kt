@@ -27,10 +27,15 @@ object Constants {
     const val DATE_TIME_ONE = "yyyy-MM-dd_HH:mm:ss"
     const val PRICE_TAG_DATE_TIME_ONE = "dd.MM.yyyy HH:mm"
 
-    // Entered length
+    // Entered code length
     const val COMMON_SAP_LENGTH = 6
     const val COMMON_SAP_FULL_LENGTH = 18
     const val SAP_OR_BAR_LENGTH = 12
-    const val MARK_CODE_LENGTH = 68
+
+    // Mark code length
+    const val EXCISE_FULL_CODE = 150
+    const val EXCISE_SIMPLE_CODE = 68
+    const val MARKED_FULL_CODE = 134
+    const val MARKED_SIMPLE_CODE = 39
 
 }

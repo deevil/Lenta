@@ -1,7 +1,7 @@
 package com.lenta.bp14.requests.work_list
 
 import com.google.gson.annotations.SerializedName
-import com.lenta.bp14.requests.pojo.ExpectedDelivery
+import com.lenta.bp14.requests.pojo.MarkStatus
 import com.lenta.bp14.requests.pojo.RetCode
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.fmp.ObjectRawStatus
@@ -11,10 +11,10 @@ import com.lenta.shared.interactor.UseCase
 import com.lenta.shared.requests.FmpRequestsHelper
 import javax.inject.Inject
 
-class ExpectedDeliveriesNetRequest
-@Inject constructor(private val fmpRequestsHelper: FmpRequestsHelper) : IExpectedDeliveriesNetRequest {
-    override suspend fun run(params: ExpectedDeliveriesParams): Either<Failure, ExpectedDeliveriesResult> {
-        return fmpRequestsHelper.restRequest("ZMP_UTZ_WKL_13_V001", params, ExpectedDeliveriesStatus::class.java)
+class CheckMarkNetRequest
+@Inject constructor(private val fmpRequestsHelper: FmpRequestsHelper) : ICheckMarkNetRequest {
+    override suspend fun run(params: CheckMarkParams): Either<Failure, CheckMarkResult> {
+        return fmpRequestsHelper.restRequest("ZMP_UTZ_WKL_12_V001", params, CheckMarkStatus::class.java)
                 .rightToLeft(
                         fnRtoL = { result ->
                             result.retCodes.firstOrNull { retCode ->
@@ -27,24 +27,30 @@ class ExpectedDeliveriesNetRequest
     }
 }
 
-interface IExpectedDeliveriesNetRequest : UseCase<ExpectedDeliveriesResult, ExpectedDeliveriesParams>
+interface ICheckMarkNetRequest : UseCase<CheckMarkResult, CheckMarkParams>
 
-data class ExpectedDeliveriesParams(
+data class CheckMarkParams(
         /** Номер ТК */
         @SerializedName("IV_WERKS")
         val tkNumber: String,
         /** Номер товара */
         @SerializedName("IV_MATNR")
-        val material: String
+        val material: String,
+        /** Номер марки */
+        @SerializedName("IV_MARK_NUM")
+        val markNumber: String,
+        /** Режим обработки: 1 - Алкогольная марка, 2 - Контрольная марка */
+        @SerializedName("IV_MODE")
+        val mode: String
 )
 
-class ExpectedDeliveriesStatus : ObjectRawStatus<ExpectedDeliveriesResult>()
+class CheckMarkStatus : ObjectRawStatus<CheckMarkResult>()
 
-data class ExpectedDeliveriesResult(
-        /** Таблица планируемых поставок */
-        @SerializedName("ET_PLAN_DELIV")
-        val deliveries: List<ExpectedDelivery>,
-        /** Код возврата + Текст ошибки */
+data class CheckMarkResult(
+        /** Таблица результатов проверки */
+        @SerializedName("ET_RESULT")
+        val markStatus: List<MarkStatus>,
+        /** Таблица возврата */
         @SerializedName("ET_RETCODE")
         val retCodes: List<RetCode>
 )
