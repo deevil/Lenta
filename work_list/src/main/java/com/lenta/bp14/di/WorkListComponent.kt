@@ -63,6 +63,10 @@ class WorkListModule(private val taskDescription: WorkListTaskDescription) {
         @WorkListScope
         fun bindAdditionalGoodInfoNetRequest(realisation: AdditionalGoodInfoNetRequest): IAdditionalGoodInfoNetRequest
 
+        @Binds
+        @WorkListScope
+        fun bindCheckMarkNetRequest(realisation: CheckMarkNetRequest): ICheckMarkNetRequest
+
     }
 
     @Provides

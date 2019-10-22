@@ -326,7 +326,7 @@ class ScreenNavigator @Inject constructor(
         }
     }
 
-    override fun showScannedGoodAlreadyAddedToTask(yesCallback: () -> Unit) {
+    override fun showScannedMarkAlreadyAddedToList(yesCallback: () -> Unit) {
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.scanned_good_already_added_to_task),
                     pageNumber = "116",
@@ -398,6 +398,14 @@ class ScreenNavigator @Inject constructor(
     override fun showGoodNotFound() {
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.good_not_found_in_database),
+                    pageNumber = "100",
+                    timeAutoExitInMillis = 2000))
+        }
+    }
+
+    override fun showWrongBarcodeFormat() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.wrong_barcode_format),
                     pageNumber = "100",
                     timeAutoExitInMillis = 2000))
         }
@@ -488,10 +496,11 @@ interface IScreenNavigator : ICoreNavigator {
     fun showGoodIsNotPartOfTask()
     fun showScannedGoodNotListedInLenta(nextCallback: () -> Unit)
     fun showScannedGoodNotListedInTk(marketNumber: String)
-    fun showScannedGoodAlreadyAddedToTask(yesCallback: () -> Unit)
+    fun showScannedMarkAlreadyAddedToList(yesCallback: () -> Unit)
     fun showMaxCountProductAlert()
     fun showNoNetworkToSaveTask(nextCallback: () -> Unit)
     fun showGoodNotFound()
+    fun showWrongBarcodeFormat()
     fun showTwelveCharactersEntered(sapCallback: () -> Unit, barCallback: () -> Unit)
     fun showAlertBlockedTaskAnotherUser(userName: String)
     fun showAlertBlockedTaskByMe(blockingUser: String, yesCallback: () -> Unit)

@@ -43,6 +43,7 @@
     <string name="no_network_to_save_task">Для сохранения задания в SAP ERP отсутствует сеть. Задание будет сохранено позже.</string>
     <string name="good_not_found_in_database">Данный товар не найден в справочнике</string>
     <string name="twelve_characters_entered">Введено 12 знаков. Какой код вы ввели?</string>
+    <string name="wrong_barcode_format">Неверный формат штрихкода</string>
 
 
     <string name="total_quantity">Итого: %1$s %2$s</string>

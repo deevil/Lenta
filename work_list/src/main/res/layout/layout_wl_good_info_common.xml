@@ -214,7 +214,7 @@
 
                     <TextView
                         style="@style/CellTextStyle"
-                        android:text="@{vm.totalQuantity}"
+                        android:text="@{vm.totalMarks}"
                         tools:text="10" />
 
                 </LinearLayout>

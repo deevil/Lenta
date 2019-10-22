@@ -33,9 +33,9 @@ object Constants {
     const val SAP_OR_BAR_LENGTH = 12
 
     // Mark code length
-    const val ALCOHOL_FULL_CODE = 150
-    const val ALCOHOL_SIMPLE_CODE = 68
-    const val MARKED_GOOD_FULL_CODE = 134
-    const val MARKED_GOOD_SIMPLE_CODE = 39
+    const val EXCISE_FULL_CODE = 150
+    const val EXCISE_SIMPLE_CODE = 68
+    const val MARKED_FULL_CODE = 134
+    const val MARKED_SIMPLE_CODE = 39
 
 }

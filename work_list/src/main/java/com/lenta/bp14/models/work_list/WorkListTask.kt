@@ -37,6 +37,10 @@ class WorkListTask @Inject constructor(
         taskDescription.taskInfoResult?.checkResults?.toList() ?: emptyList()
     }
 
+    private val marks by lazy {
+        taskDescription.taskInfoResult?.marks?.toList() ?: emptyList()
+    }
+
     override var isLoadedTaskList = false
 
     override val goods = MutableLiveData<MutableList<Good>>(mutableListOf())
@@ -57,6 +61,9 @@ class WorkListTask @Inject constructor(
                                 expirationDate = result.shelfLife.getDate(Constants.DATE_FORMAT_ddmmyy)
                         )
                     }.toMutableList()
+                    good.marks = marks.filter { it.matNr == position.matNr }.map { mark ->
+                        mark.markNumber
+                    }.toMutableSet()
 
                     goodsList.add(good)
                 }
@@ -250,6 +257,22 @@ class WorkListTask @Inject constructor(
         return true
     }
 
+    override fun isMarkAlreadyAdded(markNumber: String): Boolean {
+        return currentGood.value?.marks?.contains(markNumber) ?: false
+    }
+
+    override fun deleteMark(markNumber: String) {
+        val good = currentGood.value!!
+        currentGood.value?.marks?.remove(markNumber)
+        currentGood.value = good
+    }
+
+    override fun addMark(mark: String) {
+        val good = currentGood.value!!
+        good.marks.add(mark)
+        currentGood.value = good
+    }
+
 }
 
 
@@ -272,6 +295,9 @@ interface IWorkListTask : ITask, IFilterable {
     fun getReportData(ip: String): WorkListReport
     fun getSearchList(): LiveData<List<Good>>
     fun updateAdditionalGoodInfo(additionalGoodInfo: AdditionalGoodInfo)
+    fun isMarkAlreadyAdded(markNumber: String): Boolean
+    fun deleteMark(markNumber: String)
+    fun addMark(mark: String)
 }
 
 // -----------------------------
@@ -294,7 +320,8 @@ data class Good(
         var additional: AdditionalGoodInfo? = null,
         val sales: MutableLiveData<SalesStatistics> = MutableLiveData(),
         val deliveries: MutableLiveData<List<Delivery>> = MutableLiveData(emptyList()),
-        var scanResults: MutableList<ScanResult> = mutableListOf()
+        var scanResults: MutableList<ScanResult> = mutableListOf(),
+        var marks: MutableSet<String> = mutableSetOf()
 ) {
 
     fun getFormattedMaterialWithName(): String {
@@ -319,9 +346,14 @@ data class Good(
 
     fun getTotalQuantity(): Double {
         var quantity = 0.0
-        scanResults.map { result ->
-            quantity = quantity.sumWith(result.quantity)
+        if (isNotMarkedGood()) {
+            scanResults.map { result ->
+                quantity = quantity.sumWith(result.quantity)
+            }
+        } else {
+            quantity = quantity.sumWith(marks.size.toDouble())
         }
+
         return quantity
     }
 

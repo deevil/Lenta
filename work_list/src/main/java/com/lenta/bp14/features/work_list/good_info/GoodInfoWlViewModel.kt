@@ -9,8 +9,8 @@ import com.lenta.bp14.models.work_list.AdditionalGoodInfo
 import com.lenta.bp14.models.work_list.ScanResult
 import com.lenta.bp14.models.work_list.WorkListTask
 import com.lenta.bp14.platform.navigation.IScreenNavigator
-import com.lenta.bp14.requests.work_list.AdditionalGoodInfoParams
-import com.lenta.bp14.requests.work_list.IAdditionalGoodInfoNetRequest
+import com.lenta.bp14.requests.pojo.MarkStatus
+import com.lenta.bp14.requests.work_list.*
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.models.core.MatrixType
@@ -41,6 +41,8 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
     lateinit var sessionInfo: ISessionInfo
     @Inject
     lateinit var priceInfoParser: IPriceInfoParser
+    @Inject
+    lateinit var checkMarkNetRequest: ICheckMarkNetRequest
 
 
     val selectedPage = MutableLiveData(0)
@@ -64,6 +66,12 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
     val quantityFieldEnabled by lazy {
         good.map { good ->
             good?.isNotMarkedGood()
+        }
+    }
+
+    val totalMarks: MutableLiveData<String> by lazy {
+        good.map { good ->
+            good?.marks?.size.toString()
         }
     }
 
@@ -183,24 +191,40 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
         }
     }
 
-    private val quantityCondition: MutableLiveData<Boolean> = quantity.map {
-        it?.toDoubleOrNull() ?: 0.0 != 0.0
+    private val quantityCondition: MutableLiveData<Boolean> by lazy {
+        quantity.map {
+            it?.toDoubleOrNull() ?: 0.0 != 0.0
+        }
     }
 
-    private val commentCondition: MutableLiveData<Boolean> = commentsPosition.map {
-        it ?: 0 != 0
+    private val commentCondition: MutableLiveData<Boolean> by lazy {
+        commentsPosition.map {
+            it ?: 0 != 0
+        }
     }
 
-    private val dateCondition: MutableLiveData<Boolean> = enteredDate.map {
-        it != null
+    private val dateCondition: MutableLiveData<Boolean> by lazy {
+        enteredDate.map {
+            it != null
+        }
     }
 
-    val applyButtonEnabled = quantityCondition.combineLatest(commentCondition).combineLatest(dateCondition).map {
-        val quantity = it?.first?.first ?: false
-        val comment = it?.first?.second ?: false
-        val date = it?.second ?: false
+    private val markCondition: MutableLiveData<Boolean> by lazy {
+        good.map { good ->
+            good?.marks?.size ?: 0 > 0
+        }
+    }
 
-        quantity || comment || date
+    val applyButtonEnabled by lazy {
+        quantityCondition.combineLatest(commentCondition).combineLatest(dateCondition)
+                .combineLatest(markCondition).map {
+                    val quantity = it?.first?.first?.first ?: false
+                    val comment = it?.first?.first?.second ?: false
+                    val date = it?.first?.second ?: false
+                    val mark = it?.second ?: false
+
+                    quantity || comment || date || mark
+                }
     }
 
     // -----------------------------
@@ -217,14 +241,14 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
                         matNr = good.value?.material
                 )).also {
                     showProgress.value = false
-                }.either(::handleFailure, ::updateAdditionalGoodInfo)
+                }.either(::handleAdditionalInfoFailure, ::updateAdditionalGoodInfo)
             }
         }
     }
 
     // -----------------------------
 
-    override fun handleFailure(failure: Failure) {
+    private fun handleAdditionalInfoFailure(failure: Failure) {
         super.handleFailure(failure)
         navigator.openAlertScreen(failure)
     }
@@ -263,9 +287,12 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     fun onClickApply() {
-        saveScanResult()
+        if (good.value!!.isNotMarkedGood()) {
+            saveScanResult()
+        }
+
         task.setCurrentGoodProcessed()
-        navigator.openGoodsListWlScreen()
+        navigator.goBack()
     }
 
     fun onScanResult(data: String) {
@@ -284,7 +311,10 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
                     }
                 },
                 funcForMarkCode = { mark ->
-                    addMarkNumber(mark)
+                    searchGoodMark(mark)
+                },
+                funcForExciseCode = { excise ->
+                    searchExciseMark(excise)
                 },
                 funcForSapOrBar = navigator::showTwelveCharactersEntered,
                 funcForNotValidFormat = navigator::showGoodNotFound
@@ -319,8 +349,76 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
         }
     }
 
-    private fun addMarkNumber(mark: String) {
+    private fun searchGoodMark(goodMark: String) {
+        if (good.value!!.options.goodType != GoodType.MARKED) {
+            navigator.showWrongBarcodeFormat()
+            return
+        }
 
+        if (task.isMarkAlreadyAdded(goodMark)) {
+            navigator.showScannedMarkAlreadyAddedToList {
+                task.deleteMark(goodMark)
+            }
+        } else {
+            viewModelScope.launch {
+                navigator.showProgressLoadingData()
+
+                checkMarkNetRequest(CheckMarkParams(
+                        tkNumber = sessionInfo.market ?: "Not Found!",
+                        material = good.value!!.material,
+                        markNumber = goodMark,
+                        mode = "2"
+                )).also {
+                    navigator.hideProgress()
+                }.either(::handleMarkFailure) {
+                    addMarkToList(goodMark, it.markStatus[0])
+                }
+            }
+        }
+    }
+
+    private fun searchExciseMark(exciseMark: String) {
+        if (good.value!!.options.goodType != GoodType.EXCISE) {
+            navigator.showWrongBarcodeFormat()
+            return
+        }
+
+        if (task.isMarkAlreadyAdded(exciseMark)) {
+            navigator.showScannedMarkAlreadyAddedToList {
+                task.deleteMark(exciseMark)
+            }
+        } else {
+            viewModelScope.launch {
+                navigator.showProgressLoadingData()
+
+                checkMarkNetRequest(CheckMarkParams(
+                        tkNumber = sessionInfo.market ?: "Not Found!",
+                        material = good.value!!.material,
+                        markNumber = exciseMark,
+                        mode = "1"
+                )).also {
+                    navigator.hideProgress()
+                }.either(::handleMarkFailure) {
+                    addMarkToList(exciseMark, it.markStatus[0])
+                }
+            }
+        }
+    }
+
+    private fun handleMarkFailure(failure: Failure) {
+        super.handleFailure(failure)
+        navigator.openAlertScreen(failure)
+    }
+
+    private fun addMarkToList(markNumber: String, markStatus: MarkStatus) {
+        when (markStatus.status) {
+            "1" -> task.addMark(markNumber)
+            "2" -> {
+                task.addMark(markNumber)
+                navigator.openInfoScreen(markStatus.description)
+            }
+            "3" -> navigator.openInfoScreen(markStatus.description)
+        }
     }
 
     private fun saveScanResult() {
