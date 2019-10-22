@@ -231,16 +231,16 @@ class ScreenNavigator @Inject constructor(
         }
     }
 
-    override fun showPriceTagsSubmitted() {
+    override fun showPriceTagsSubmitted(nextCallback: () -> Unit) {
         runOrPostpone {
-            getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.price_tags_submitted),
-                    pageNumber = "11",
-                    iconRes = R.drawable.ic_done_green_80dp,
-                    isVisibleLeftButton = false,
-                    rightButtonDecorationInfo = ButtonDecorationInfo.next,
-                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult {
-                        // ничего не делаем
-                    })
+            getFragmentStack()?.push(
+                    AlertFragment.create(message = context.getString(R.string.price_tags_submitted),
+                            pageNumber = "11",
+                            iconRes = R.drawable.ic_done_green_80dp,
+                            isVisibleLeftButton = false,
+                            rightButtonDecorationInfo = ButtonDecorationInfo.next,
+                            codeConfirmForRight = backFragmentResultHelper.setFuncForResult(nextCallback)
+                    )
             )
         }
     }
@@ -483,7 +483,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun showConfirmPriceTagsPrinting(priceTagNumber: Int, confirmCallback: () -> Unit)
     fun showMakeSureYellowPaperInstalled(printerName: String, numberOfCopy: Int, confirmCallback: () -> Unit)
     fun showMakeSureRedPaperInstalled(printerName: String, numberOfCopy: Int, confirmCallback: () -> Unit)
-    fun showPriceTagsSubmitted()
+    fun showPriceTagsSubmitted(nextCallback: () -> Unit)
     fun showSetTaskToStatusCalculated(yesCallback: () -> Unit)
     fun showRawGoodsRemainedInTask(yesCallback: () -> Unit)
     fun showPrintPriceOffer(goodName: String, noCallback: () -> Unit, yesCallback: () -> Unit)

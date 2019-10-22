@@ -22,7 +22,9 @@ import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.view.OnPositionClickListener
+import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class GoodsListPcViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyboardListener, OnPositionClickListener {
@@ -103,8 +105,11 @@ class GoodsListPcViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     val processedGoods by lazy {
         task.getCheckResults().map(funcUiAdapter)
     }
+
+    private val searchCheckResults by lazy { task.getCheckResultsForPrint() }
+
     val searchGoods by lazy {
-        task.getCheckResultsForPrint().map(funcUiAdapter)
+        searchCheckResults.map(funcUiAdapter)
     }
 
     private val selectedItemOnCurrentTab: MutableLiveData<Boolean> = correctedSelectedPage
@@ -118,7 +123,7 @@ class GoodsListPcViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
             }
 
     val deleteButtonEnabled = selectedItemOnCurrentTab.map { it }
-    val printButtonEnabled = selectedItemOnCurrentTab.map { it }
+    val printButtonEnabled = tagTypesPosition.map { it ?: 0 > 0 }
     val videoButtonEnabled by lazy {
         MutableLiveData(task.isFreeMode())
     }
@@ -261,28 +266,63 @@ class GoodsListPcViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
 
     fun onClickPrint() {
         viewModelScope.launch {
+            var printerName = ""
+            withContext(IO) {
+                printerName = printTask.getPrinterTypes().firstOrNull { it.isStatic == true }?.name
+                        ?: ""
+            }
+            if (selectedPriceTagIsRed()) {
+                navigator.showMakeSureRedPaperInstalled(printerName, numberOfCopy = 1) {
+                    print()
+                }
+            } else {
+                navigator.showMakeSureYellowPaperInstalled(printerName, numberOfCopy = 1) {
+                    print()
+                }
+            }
+        }
+    }
+
+    private fun selectedPriceTagIsRed(): Boolean {
+        return tagTypeIds.getOrNull(tagTypesPosition.value ?: -1) == "02"
+    }
+
+    private fun print() {
+        viewModelScope.launch {
             navigator.showProgressLoadingData()
-            printTask.printToBigDataMax(getPrintTasks()).either( {
+            val selectedSearchTasks = getResultsForPrint()
+            val printTasks = getPrintTasks()
+            printTask.printToBigDataMax(printTasks).either({
                 navigator.openAlertScreen(failure = it)
+
             }) {
-                navigator.showPriceTagsSubmitted()
+                task.markPrinted(selectedSearchTasks.map { it.matNr!! })
+                navigator.showPriceTagsSubmitted {
+                    //ничего не делаем
+                }
             }
             navigator.hideProgress()
         }
-
     }
 
     private fun getPrintTasks(): List<PrintInfo> {
-        val searchList = task.getCheckResultsForPrint().value ?: return emptyList()
+        return getResultsForPrint().map {
+            PrintInfo(
+                    barCode = it.ean,
+                    amount = 1,
+                    templateCode = if (tagTypeIds.getOrNull(tagTypesPosition.value
+                                    ?: -1) == "01") 1 else 2
+            )
+        }
+    }
+
+    private fun getResultsForPrint(): List<ICheckPriceResult> {
+        val searchList = searchCheckResults.value!!
+        if (searchSelectionsHelper.isSelectedEmpty()) {
+            return searchList
+        }
         return searchSelectionsHelper.selectedPositions.value!!.map {
-            searchList.getOrNull(it)!!.let {
-                PrintInfo(
-                        barCode = it.ean,
-                        amount = 1,
-                        templateCode = if (tagTypeIds.getOrNull(tagTypesPosition.value
-                                        ?: -1) == "01") 1 else 2
-                )
-            }
+            searchList.get(it)
         }
     }
 

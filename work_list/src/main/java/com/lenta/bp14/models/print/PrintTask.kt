@@ -30,6 +30,8 @@ class PrintTask @Inject constructor(
         private var sessionInfo: ISessionInfo
 ) : IPrintTask {
 
+    override var matNrForPrint: String? = null
+
     private val emptyPriceTag = PriceTagType(
             id = "", name = "Не выбранно", isRegular = null
     )
@@ -157,6 +159,8 @@ class PrintTask @Inject constructor(
 }
 
 interface IPrintTask {
+
+    var matNrForPrint: String?
 
     suspend fun getPriceTagTypes(): List<PriceTagType>
     suspend fun getPrinterTypes(): List<PrinterType>
