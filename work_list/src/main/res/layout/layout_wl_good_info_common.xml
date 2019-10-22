@@ -50,6 +50,7 @@
                     <com.lenta.shared.view.EditTextWithSuffix
                         style="@style/CellEditTextStyle"
                         android:inputType="numberDecimal"
+                        android:enabled="@{vm.quantityFieldEnabled}"
                         android:maxLines="1"
                         android:text="@={vm.quantity}"
                         app:digitsForUom="@{vm.good.units}"
@@ -105,7 +106,7 @@
             <!-- Срок годности -->
             <LinearLayout
                 style="@style/LinearRowStyle"
-                android:visibility="@{!vm.good.marked}">
+                android:visibility="@{vm.good.notMarkedGood}">
 
                 <LinearLayout
                     style="@style/LinearCellStyle"
@@ -186,13 +187,13 @@
 
             <View
                 style="@style/HorizontalDivider"
-                android:visibility="@{!vm.good.marked}" />
+                android:visibility="@{vm.good.notMarkedGood}" />
 
 
             <!-- Количество марок -->
             <LinearLayout
                 style="@style/LinearRowStyle"
-                android:visibility="@{vm.good.marked}">
+                android:visibility="@{!vm.good.notMarkedGood}">
 
                 <LinearLayout
                     style="@style/LinearCellStyle"
@@ -222,7 +223,7 @@
 
             <View
                 style="@style/HorizontalDivider"
-                android:visibility="@{vm.good.marked}" />
+                android:visibility="@{!vm.good.notMarkedGood}" />
 
 
             <!-- Оставшийся срок годности -->

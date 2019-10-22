@@ -52,7 +52,10 @@ class WorkListRepo @Inject constructor(
                         options = GoodOptions(
                                 matrixType = getMatrixType(goodInfo.matrixType),
                                 section = goodInfo.section,
-                                goodType = getGoodType(goodInfo.isAlcohol, goodInfo.isMark),
+                                goodType = getGoodType(
+                                        alcohol = goodInfo.isAlcohol,
+                                        excise = goodInfo.isExcise,
+                                        marked = goodInfo.isMark),
                                 healthFood = goodInfo.healthFood.isSapTrue(),
                                 novelty = goodInfo.novelty.isSapTrue()
                         )

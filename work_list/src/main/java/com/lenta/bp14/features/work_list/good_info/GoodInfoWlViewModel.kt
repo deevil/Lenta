@@ -61,6 +61,12 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
         }
     }
 
+    val quantityFieldEnabled by lazy {
+        good.map { good ->
+            good?.isNotMarkedGood()
+        }
+    }
+
     val day = MutableLiveData<String>("")
     val month = MutableLiveData<String>("")
     val year = MutableLiveData<String>("")
@@ -277,6 +283,9 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
                         return@analyseCode
                     }
                 },
+                funcForMarkCode = { mark ->
+                    addMarkNumber(mark)
+                },
                 funcForSapOrBar = navigator::showTwelveCharactersEntered,
                 funcForNotValidFormat = navigator::showGoodNotFound
         )
@@ -308,6 +317,10 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
 
             navigator.showGoodNotFound()
         }
+    }
+
+    private fun addMarkNumber(mark: String) {
+
     }
 
     private fun saveScanResult() {

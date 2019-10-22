@@ -301,8 +301,8 @@ data class Good(
         return "${material.takeLast(6)} $name"
     }
 
-    fun isMarked(): Boolean {
-        return options.goodType == GoodType.MARKED
+    fun isNotMarkedGood(): Boolean {
+        return options.goodType == GoodType.COMMON || options.goodType == GoodType.ALCOHOL
     }
 
     fun getEanWithUnits(): String {
