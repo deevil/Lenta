@@ -241,14 +241,14 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
                         matNr = good.value?.material
                 )).also {
                     showProgress.value = false
-                }.either(::handleAdditionalInfoFailure, ::updateAdditionalGoodInfo)
+                }.either(::handleFailure, ::updateAdditionalGoodInfo)
             }
         }
     }
 
     // -----------------------------
 
-    private fun handleAdditionalInfoFailure(failure: Failure) {
+    override fun handleFailure(failure: Failure) {
         super.handleFailure(failure)
         navigator.openAlertScreen(failure)
     }
@@ -370,7 +370,7 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
                         mode = "2"
                 )).also {
                     navigator.hideProgress()
-                }.either(::handleMarkFailure) {
+                }.either(::handleFailure) {
                     addMarkToList(goodMark, it.markStatus[0])
                 }
             }
@@ -398,16 +398,11 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
                         mode = "1"
                 )).also {
                     navigator.hideProgress()
-                }.either(::handleMarkFailure) {
+                }.either(::handleFailure) {
                     addMarkToList(exciseMark, it.markStatus[0])
                 }
             }
         }
-    }
-
-    private fun handleMarkFailure(failure: Failure) {
-        super.handleFailure(failure)
-        navigator.openAlertScreen(failure)
     }
 
     private fun addMarkToList(markNumber: String, markStatus: MarkStatus) {
