@@ -1,8 +1,7 @@
 package com.lenta.bp9.requests.network
 
 import com.google.gson.annotations.SerializedName
-import com.lenta.bp9.model.task.TaskDescriptionRestInfo
-import com.lenta.bp9.model.task.TaskNotificationRestInfo
+import com.lenta.bp9.model.task.*
 import com.lenta.bp9.model.task.revise.*
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.fmp.ObjectRawStatus
@@ -55,6 +54,10 @@ data class TaskContentsRequestResult(
         val complexDocumentsRevise: List<ComplexDocumentReviseRestData>,
         @SerializedName("ET_COND_CHECK")
         val transportConditions: List<TransportConditionRestData>,
+        @SerializedName("ET_TASK_PERNR")
+        val sectionsInfo: List<TaskSectionRestData>,
+        @SerializedName("ET_MATNR_ABTNR")
+        val sectionProducts: List<TaskSectionProductsRestData>,
         @SerializedName("EV_RETCODE")
         override val retCode: Int,
         @SerializedName("EV_ERROR_TEXT")
