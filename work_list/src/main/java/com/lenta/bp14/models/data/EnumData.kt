@@ -54,7 +54,7 @@ fun GoodType.getDescriptionResId(): Int {
     return when (this) {
         GoodType.COMMON -> R.string.common_product
         GoodType.ALCOHOL -> R.string.alcohol
-        GoodType.EXCISE -> R.string.marked_alcohol
+        GoodType.EXCISE -> R.string.excise_alcohol
         GoodType.MARKED -> R.string.marked_product
     }
 }

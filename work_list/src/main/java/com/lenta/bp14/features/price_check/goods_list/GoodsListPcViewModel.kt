@@ -368,6 +368,11 @@ class GoodsListPcViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     override fun onClickPosition(position: Int) {
         tagTypesPosition.value = position
     }
+
+    fun showVideoErrorMessage() {
+        navigator.showDeviceNotSupportVideoScan()
+    }
+
 }
 
 
