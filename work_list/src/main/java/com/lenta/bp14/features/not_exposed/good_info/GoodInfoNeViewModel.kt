@@ -128,22 +128,16 @@ class GoodInfoNeViewModel : CoreViewModel(), PageSelectionListener {
     // -----------------------------
 
     fun onClickCancel() {
-        task.setCheckInfo(quantity = null, isEmptyPlaceMarked = null)
-        quantityValue.value = 0.0
         isEmptyPlaceMarked.value = null
     }
 
     fun onClickFramed() {
-        quantityValue.value?.let {
-            task.setCheckInfo(quantity = it, isEmptyPlaceMarked = true)
-        }
+        task.setCheckInfo(quantity = null, isEmptyPlaceMarked = true)
         navigator.goBack()
     }
 
     fun onClickNotFramed() {
-        quantityValue.value?.let {
-            task.setCheckInfo(quantity = it, isEmptyPlaceMarked = false)
-        }
+        task.setCheckInfo(quantity = null, isEmptyPlaceMarked = false)
         navigator.goBack()
     }
 
