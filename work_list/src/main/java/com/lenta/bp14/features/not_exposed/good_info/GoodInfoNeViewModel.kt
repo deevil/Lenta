@@ -18,9 +18,7 @@ import com.lenta.shared.requests.combined.scan_info.ScanInfoRequest
 import com.lenta.shared.requests.combined.scan_info.ScanInfoRequestParams
 import com.lenta.shared.requests.combined.scan_info.analyseCode
 import com.lenta.shared.utilities.databinding.PageSelectionListener
-import com.lenta.shared.utilities.extentions.isSapTrue
-import com.lenta.shared.utilities.extentions.map
-import com.lenta.shared.utilities.extentions.toStringFormatted
+import com.lenta.shared.utilities.extentions.*
 import com.mobrun.plugin.api.HyperHive
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -43,7 +41,7 @@ class GoodInfoNeViewModel : CoreViewModel(), PageSelectionListener {
         ZmpUtz14V001(hyperHive).getMaxQuantityProdWkl()
     }
 
-    private val goodInfo by lazy {
+    val goodInfo by lazy {
         task.getProcessedProductInfoResult()!!
     }
 
@@ -88,17 +86,19 @@ class GoodInfoNeViewModel : CoreViewModel(), PageSelectionListener {
                 ?: ""}"
     }
 
-    val quantityField by lazy {
-        MutableLiveData<String>().also {
-            viewModelScope.launch {
-                it.value = originalProcessedProductInfo?.quantity?.toStringFormatted() ?: "0"
-            }
-        }
-    }
+    val quantityField = MutableLiveData<String>("0")
 
     private val quantityValue by lazy {
         quantityField.map {
-            it?.toDoubleOrNull()
+            val saved = task.getProcessedCheckInfo()?.quantity ?: 0.0
+            val entered = it?.toDoubleOrNull() ?: 0.0
+            saved.sumWith(entered)
+        }
+    }
+
+    val totalQuantity: MutableLiveData<String> by lazy {
+        quantityValue.map {
+            "${it?.dropZeros()} ${goodInfo.uom?.name ?: ""}"
         }
     }
 
@@ -125,17 +125,25 @@ class GoodInfoNeViewModel : CoreViewModel(), PageSelectionListener {
         selectedPage.value = position
     }
 
+    // -----------------------------
+
     fun onClickCancel() {
+        task.setCheckInfo(quantity = null, isEmptyPlaceMarked = null)
+        quantityValue.value = 0.0
         isEmptyPlaceMarked.value = null
     }
 
     fun onClickFramed() {
-        task.setCheckInfo(quantity = null, isEmptyPlaceMarked = true)
+        quantityValue.value?.let {
+            task.setCheckInfo(quantity = it, isEmptyPlaceMarked = true)
+        }
         navigator.goBack()
     }
 
     fun onClickNotFramed() {
-        task.setCheckInfo(quantity = null, isEmptyPlaceMarked = false)
+        quantityValue.value?.let {
+            task.setCheckInfo(quantity = it, isEmptyPlaceMarked = false)
+        }
         navigator.goBack()
     }
 

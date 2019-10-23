@@ -49,8 +49,8 @@
                         android:inputType="numberDecimal"
                         android:text="@={vm.quantityField}"
                         app:digitsForUom="@{vm.originalProcessedProductInfo.uom}"
-                        app:suffix="@{vm.originalProcessedProductInfo.uom.name}"
-                        tools:text="5 шт" />
+                        app:suffix="@{vm.goodInfo.uom.name}"
+                        tools:text="0 шт" />
 
                 </LinearLayout>
 
@@ -83,7 +83,7 @@
 
                     <TextView
                         style="@style/CellTextStyle"
-                        android:text="@{vm.marketStorage}"
+                        android:text="@{vm.totalQuantity}"
                         tools:text="12 шт" />
 
                 </LinearLayout>
