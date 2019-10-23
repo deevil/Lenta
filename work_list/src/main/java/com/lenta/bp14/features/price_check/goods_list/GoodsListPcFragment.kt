@@ -12,6 +12,8 @@ import android.view.ViewGroup
 import android.view.View
 import android.widget.AdapterView
 import androidx.databinding.DataBindingUtil
+import com.google.android.gms.common.ConnectionResult
+import com.google.android.gms.common.GoogleApiAvailability
 import com.lenta.bp14.BR
 import com.lenta.bp14.databinding.*
 import com.lenta.bp14.di.CheckPriceComponent
@@ -70,7 +72,7 @@ class GoodsListPcFragment : CoreFragment<FragmentGoodsListPcBinding, GoodsListPc
 
     override fun onToolbarButtonClick(view: View) {
         when (view.id) {
-            R.id.b_2 -> vm.onClickVideo()
+            R.id.b_2 -> if (isGoogleServicesAvailable()) vm.onClickVideo() else vm.showVideoErrorMessage()
             R.id.b_3 -> vm.onClickDelete()
             R.id.b_4 -> vm.onClickPrint()
             R.id.b_5 -> vm.onClickSave()
@@ -265,6 +267,12 @@ class GoodsListPcFragment : CoreFragment<FragmentGoodsListPcBinding, GoodsListPc
             return true
         }
         return false
+    }
+
+    private fun isGoogleServicesAvailable(): Boolean {
+        val googleApiAvailability = GoogleApiAvailability.getInstance()
+        val status = googleApiAvailability.isGooglePlayServicesAvailable(context)
+        return status == ConnectionResult.SUCCESS
     }
 
 }
