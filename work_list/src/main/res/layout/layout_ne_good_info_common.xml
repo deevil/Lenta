@@ -49,8 +49,8 @@
                         android:inputType="numberDecimal"
                         android:text="@={vm.quantityField}"
                         app:digitsForUom="@{vm.originalProcessedProductInfo.uom}"
-                        app:suffix="@{vm.originalProcessedProductInfo.uom.name}"
-                        tools:text="5 шт" />
+                        app:suffix="@{vm.goodInfo.uom.name}"
+                        tools:text="0 шт" />
 
                 </LinearLayout>
 
@@ -60,7 +60,41 @@
                 style="@style/HorizontalDivider" />
 
 
-            <!-- Запас -->
+            <!-- Итого -->
+            <LinearLayout
+                style="@style/LinearRowStyle">
+
+                <LinearLayout
+                    style="@style/LinearCellStyle"
+                    android:layout_weight="1">
+
+                    <TextView
+                        style="@style/CellTextStyle"
+                        android:text="@string/total" />
+
+                </LinearLayout>
+
+                <View
+                    style="@style/VerticalDivider" />
+
+                <LinearLayout
+                    style="@style/LinearCellStyle"
+                    android:layout_weight="2">
+
+                    <TextView
+                        style="@style/CellTextStyle"
+                        android:text="@{vm.totalQuantity}"
+                        tools:text="12 шт" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <View
+                style="@style/HorizontalDivider" />
+
+
+            <!-- Общий запас в ТК -->
             <LinearLayout
                 style="@style/LinearRowStyle">
 
