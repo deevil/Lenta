@@ -60,7 +60,7 @@
                 style="@style/HorizontalDivider" />
 
 
-            <!-- Общий запас в ТК -->
+            <!-- Итого -->
             <LinearLayout
                 style="@style/LinearRowStyle">
 
