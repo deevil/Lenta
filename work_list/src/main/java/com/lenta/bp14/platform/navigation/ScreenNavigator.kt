@@ -407,6 +407,14 @@ class ScreenNavigator @Inject constructor(
         }
     }
 
+    override fun showDeviceNotSupportVideoScan() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.device_not_support_video_scan),
+                    iconRes = com.lenta.shared.R.drawable.ic_info_pink,
+                    pageNumber = "100"))
+        }
+    }
+
     override fun showWrongBarcodeFormat() {
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.wrong_barcode_format),
@@ -508,6 +516,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun showTwelveCharactersEntered(sapCallback: () -> Unit, barCallback: () -> Unit)
     fun showAlertBlockedTaskAnotherUser(userName: String)
     fun showAlertBlockedTaskByMe(blockingUser: String, yesCallback: () -> Unit)
+    fun showDeviceNotSupportVideoScan()
 
     fun openTestScanBarcodeScreen()
     fun openScanPriceScreen()

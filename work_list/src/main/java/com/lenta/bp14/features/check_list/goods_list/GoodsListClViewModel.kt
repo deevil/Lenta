@@ -169,6 +169,10 @@ class GoodsListClViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
         checkEnteredNumber(data)
     }
 
+    fun showVideoErrorMessage() {
+        navigator.showDeviceNotSupportVideoScan()
+    }
+
 }
 
 data class ItemGoodUi(

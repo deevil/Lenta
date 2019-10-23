@@ -44,6 +44,7 @@
     <string name="good_not_found_in_database">Данный товар не найден в справочнике</string>
     <string name="twelve_characters_entered">Введено 12 знаков. Какой код вы ввели?</string>
     <string name="wrong_barcode_format">Неверный формат штрихкода</string>
+    <string name="device_not_support_video_scan">На данном устройстве не поддерживается потоковое сканирование.</string>
 
 
     <string name="total_quantity">Итого: %1$s %2$s</string>
