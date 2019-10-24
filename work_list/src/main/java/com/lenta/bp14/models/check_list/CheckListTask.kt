@@ -14,6 +14,7 @@ import com.lenta.bp14.models.general.ITaskTypeInfo
 import com.lenta.bp14.platform.IVibrateHelper
 import com.lenta.bp14.platform.sound.ISoundPlayer
 import com.lenta.bp14.requests.check_list.CheckListReport
+import com.lenta.shared.models.core.StateFromToString
 import com.lenta.shared.models.core.Uom
 import com.lenta.shared.platform.time.ITimeMonitor
 import com.lenta.shared.utilities.extentions.dropZeros
@@ -29,7 +30,7 @@ class CheckListTask @Inject constructor(
         private val gson: Gson,
         private val soundPlayer: ISoundPlayer,
         private val vibrateHelper: IVibrateHelper
-) : ICheckListTask {
+) : ICheckListTask, StateFromToString {
 
     override val goods = MutableLiveData<List<Good>>(listOf())
 
@@ -109,6 +110,14 @@ class CheckListTask @Inject constructor(
         //TODO implement this
     }
 
+    override fun stateFromString(state: String) {
+        goods.value = gson.fromJson(state, CheckListData::class.java).data
+    }
+
+    override fun stateToString(): String {
+        return gson.toJson(CheckListData(goods.value ?: emptyList()))
+    }
+
 }
 
 interface ICheckListTask : ITask {
@@ -141,5 +150,9 @@ data class Good(
 
 data class GoodRequestResult(
         val good: Good?
+)
+
+data class CheckListData(
+        val data: List<Good>
 )
 
