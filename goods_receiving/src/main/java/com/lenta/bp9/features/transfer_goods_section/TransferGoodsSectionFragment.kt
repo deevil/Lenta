@@ -16,11 +16,13 @@ import androidx.databinding.DataBindingUtil
 import com.lenta.bp9.BR
 import com.lenta.bp9.databinding.ItemTileTransferGoodsSectionBinding
 import com.lenta.bp9.databinding.LayoutTransferGoodsSectionBinding
+import com.lenta.bp9.model.task.TaskSectionInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.utilities.databinding.DataBindingAdapter
 import com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig
 import com.lenta.shared.utilities.databinding.PageSelectionListener
+import com.lenta.shared.utilities.state.state
 
 class TransferGoodsSectionFragment : CoreFragment<FragmentTransferGoodsSectionBinding, TransferGoodsSectionViewModel>(),
         ViewPagerSettings,
@@ -73,7 +75,7 @@ class TransferGoodsSectionFragment : CoreFragment<FragmentTransferGoodsSectionBi
                     }
 
                     layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
-                            layoutId = R.layout.item_tile_goods_list_without_barcode,
+                            layoutId = R.layout.item_tile_transfer_goods_section,
                             itemId = BR.vm,
                             realisation = object : DataBindingAdapter<ItemTileTransferGoodsSectionBinding> {
                                 override fun onCreate(binding: ItemTileTransferGoodsSectionBinding) {
@@ -101,5 +103,10 @@ class TransferGoodsSectionFragment : CoreFragment<FragmentTransferGoodsSectionBi
 
     override fun onPageSelected(position: Int) {
         vm.onPageSelected(position)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        vm.onResume()
     }
 }

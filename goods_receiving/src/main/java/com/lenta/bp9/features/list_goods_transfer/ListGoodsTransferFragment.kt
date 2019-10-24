@@ -6,6 +6,7 @@ import com.lenta.bp9.BR
 import com.lenta.bp9.R
 import com.lenta.bp9.databinding.FragmentListGoodsTransferBinding
 import com.lenta.bp9.databinding.ItemTileListGoodsTransferBinding
+import com.lenta.bp9.model.task.TaskSectionInfo
 import com.lenta.bp9.platform.extentions.getAppComponent
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
@@ -15,9 +16,21 @@ import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.utilities.databinding.DataBindingAdapter
 import com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig
 import com.lenta.shared.utilities.extentions.provideViewModel
+import com.lenta.shared.utilities.state.state
 
 class ListGoodsTransferFragment : CoreFragment<FragmentListGoodsTransferBinding, ListGoodsTransferViewModel>(),
         ToolbarButtonsClickListener {
+
+    companion object {
+        fun create(sectionInfo: TaskSectionInfo): ListGoodsTransferFragment {
+            ListGoodsTransferFragment().let {
+                it.sectionInfo = sectionInfo
+                return it
+            }
+        }
+    }
+
+    private var sectionInfo by state<TaskSectionInfo?>(null)
 
     override fun getLayoutId(): Int = R.layout.fragment_list_goods_transfer
 
@@ -26,14 +39,14 @@ class ListGoodsTransferFragment : CoreFragment<FragmentListGoodsTransferBinding,
     override fun getViewModel(): ListGoodsTransferViewModel {
         provideViewModel(ListGoodsTransferViewModel::class.java).let {vm ->
             getAppComponent()?.inject(vm)
+            vm.sectionInfo.value = sectionInfo
             return vm
         }
     }
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
         topToolbarUiModel.title.value = vm.getTitle()
-        //todo
-        topToolbarUiModel.description.value = "Секция 02-Бакалея" //getString(R.string.list_of_goods)
+        topToolbarUiModel.description.value = getString(R.string.section) + " " + vm.getDescription()
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {

@@ -33,6 +33,7 @@ import com.lenta.bp9.features.revise.invoice.InvoiceReviseFragment
 import com.lenta.bp9.features.transfer_goods_section.TransferGoodsSectionFragment
 import com.lenta.bp9.model.task.revise.ProductDocumentType
 import com.lenta.bp9.model.task.TaskBatchInfo
+import com.lenta.bp9.model.task.TaskSectionInfo
 import com.lenta.shared.account.IAuthenticator
 import com.lenta.shared.features.alert.AlertFragment
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
@@ -445,9 +446,9 @@ class ScreenNavigator(
         }
     }
 
-    override fun openListGoodsTransferScreen() {
+    override fun openListGoodsTransferScreen(sectionInfo: TaskSectionInfo) {
         runOrPostpone {
-            getFragmentStack()?.push(ListGoodsTransferFragment())
+            getFragmentStack()?.push(ListGoodsTransferFragment.create(sectionInfo))
         }
     }
 
@@ -554,7 +555,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openPerishablesInfoScreen(productInfo: TaskProductInfo)
     fun openRoundingIssueDialog(noCallbackFunc: () -> Unit, yesCallbackFunc: () -> Unit)
     fun openTransferGoodsSectionScreen()
-    fun openListGoodsTransferScreen()
+    fun openListGoodsTransferScreen(sectionInfo: TaskSectionInfo)
     fun openRepresPersonNumEntryScreen()
     fun openFormedDocsScreen()
     fun openAlertCountLargerOverdelivery()

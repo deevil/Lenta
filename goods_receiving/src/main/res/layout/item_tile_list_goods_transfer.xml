@@ -7,7 +7,7 @@
 
         <variable
             name="vm"
-            type="com.lenta.bp9.features.goods_details.GoodsDetailsCategoriesItem" />
+            type="com.lenta.bp9.features.list_goods_transfer.ListGoodsTransferItem" />
 
     </data>
 

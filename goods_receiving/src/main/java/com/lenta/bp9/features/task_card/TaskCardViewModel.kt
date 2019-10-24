@@ -6,12 +6,12 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp9.features.change_datetime.ChangeDateTimeMode
 import com.lenta.bp9.features.loading.tasks.TaskCardMode
-import com.lenta.bp9.model.task.IReceivingTaskManager
-import com.lenta.bp9.model.task.NotificationIndicatorType
-import com.lenta.bp9.model.task.TaskNotification
-import com.lenta.bp9.model.task.TaskStatus
+import com.lenta.bp9.model.task.*
 import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.shared.account.ISessionInfo
+import com.lenta.shared.models.core.MatrixType
+import com.lenta.shared.models.core.ProductType
+import com.lenta.shared.models.core.Uom
 import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.platform.time.ITimeMonitor
 import com.lenta.shared.utilities.Logg
@@ -180,6 +180,113 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
                 screenNavigator.openRecountStartLoadingScreen()
             }
             TaskStatus.TransferringToSection -> {
+                screenNavigator.openTransferGoodsSectionScreen()
+            }
+            else -> {
+                taskManager.getReceivingTask().let {
+                    it!!.taskRepository.getProducts().addProduct(TaskProductInfo(
+                            materialNumber = "000000000000000021",
+                            description = "Р/к горбуша (Россия) 230/250г",
+                            uom = Uom("ST", "шт"),
+                            type = ProductType.General,
+                            isSet = false,
+                            sectionId = "01",
+                            matrixType = MatrixType.Active,
+                            materialType = "",
+                            origQuantity = "",
+                            orderQuantity = "",
+                            quantityCapitalized = "",
+                            overdToleranceLimit = "",
+                            underdToleranceLimit = "",
+                            upLimitCondAmount = "",
+                            quantityInvest = "",
+                            roundingSurplus = "",
+                            roundingShortages = "",
+                            isNoEAN = false,
+                            isWithoutRecount = false,
+                            isUFF = false,
+                            isNotEdit = false,
+                            generalShelfLife = "",
+                            remainingShelfLife = "",
+                            isRus = false,
+                            isBoxFl = false,
+                            isMarkFl = false,
+                            isVet = false,
+                            numberBoxesControl = "",
+                            numberStampsControl = ""
+                    ))
+
+                    it!!.taskRepository.getProducts().addProduct(TaskProductInfo(
+                            materialNumber = "000000000000000017",
+                            description = "sordina",
+                            uom = Uom("ST", "шт"),
+                            type = ProductType.General,
+                            isSet = false,
+                            sectionId = "01",
+                            matrixType = MatrixType.Active,
+                            materialType = "",
+                            origQuantity = "",
+                            orderQuantity = "",
+                            quantityCapitalized = "",
+                            overdToleranceLimit = "",
+                            underdToleranceLimit = "",
+                            upLimitCondAmount = "",
+                            quantityInvest = "",
+                            roundingSurplus = "",
+                            roundingShortages = "",
+                            isNoEAN = false,
+                            isWithoutRecount = false,
+                            isUFF = false,
+                            isNotEdit = false,
+                            generalShelfLife = "",
+                            remainingShelfLife = "",
+                            isRus = false,
+                            isBoxFl = false,
+                            isMarkFl = false,
+                            isVet = false,
+                            numberBoxesControl = "",
+                            numberStampsControl = ""
+                    ))
+                }
+                taskManager.getReceivingTask().let {
+                    it!!.taskRepository.getProductsDiscrepancies().addProductDiscrepancy(TaskProductDiscrepancies(
+                            materialNumber = "000000000000000021",
+                            exidv = "",
+                            numberDiscrepancies = "20.0",
+                            uom = Uom("ST", "шт"),
+                            typeDiscrepancies = "1",
+                            isNotEdit = false,
+                            isNew = false
+                    ))
+                }
+                val sectionInfo = listOf(TaskSectionInfo(
+                sectionNumber = "12",
+                personnelNumber = "00000000",
+                quantitySectionProducts = "2",
+                dateTransferSection = "0000-00-00",
+                timeTransferSection = "00:00:00",
+                isNotEdit = true
+                ),
+                TaskSectionInfo(
+                sectionNumber = "13",
+                personnelNumber = "3",
+                quantitySectionProducts = "1",
+                dateTransferSection = "0000-00-00",
+                timeTransferSection = "00:00:00",
+                isNotEdit = true
+                )
+                )
+
+                val sectionProducts = listOf(TaskSectionProducts(
+                sectionNumber = "12",
+                materialNumber = "000000000000000021"
+                ),
+                TaskSectionProducts(
+                sectionNumber = "12",
+                materialNumber = "000000000000000017"
+                )
+                )
+                taskManager.getReceivingTask()?.taskRepository?.getSections()?.updateSections(sectionInfo, sectionProducts)
                 screenNavigator.openTransferGoodsSectionScreen()
             }
         }

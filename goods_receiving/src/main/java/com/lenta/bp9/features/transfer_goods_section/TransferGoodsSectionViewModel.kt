@@ -4,6 +4,7 @@ import com.lenta.shared.platform.viewmodel.CoreViewModel
 import androidx.lifecycle.MutableLiveData
 import com.lenta.bp9.model.task.IReceivingTaskManager
 import com.lenta.bp9.platform.navigation.IScreenNavigator
+import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.databinding.PageSelectionListener
 import javax.inject.Inject
 
@@ -14,8 +15,46 @@ class TransferGoodsSectionViewModel : CoreViewModel(), PageSelectionListener {
     @Inject
     lateinit var taskManager: IReceivingTaskManager
 
-    val listSection: MutableLiveData<List<TransferGoodsSectionItem>> = MutableLiveData()
+    val listSections: MutableLiveData<List<TransferGoodsSectionItem>> = MutableLiveData()
     val selectedPage = MutableLiveData(0)
+
+    fun onResume() {
+        if (selectedPage.value == 0) {
+            updateTransmitted()
+        } else {
+            updateTransferred()
+        }
+    }
+
+    private fun updateTransmitted() {
+        listSections.postValue(
+                taskManager.getReceivingTask()?.getProcessedSections()?.filter {
+                    it.personnelNumber == "00000000"
+                }?.mapIndexed { index, taskSectionInfo ->
+                    TransferGoodsSectionItem(
+                            number = index + 1,
+                            condition = taskSectionInfo.sectionNumber,
+                            representative = "",
+                            ofGoods = taskSectionInfo.quantitySectionProducts,
+                            sectionInfo = taskSectionInfo,
+                            even = index % 2 == 0)
+                }?.reversed())
+    }
+
+    private fun updateTransferred() {
+        listSections.postValue(
+                taskManager.getReceivingTask()?.getProcessedSections()?.filter {
+                    it.personnelNumber != "00000000"
+                }?.mapIndexed { index, taskSectionInfo ->
+                    TransferGoodsSectionItem(
+                            number = index + 1,
+                            condition = taskSectionInfo.sectionNumber,
+                            representative = taskSectionInfo.personnelNumber,
+                            ofGoods = taskSectionInfo.quantitySectionProducts,
+                            sectionInfo = taskSectionInfo,
+                            even = index % 2 == 0)
+                }?.reversed())
+    }
 
     fun getTitle(): String {
         return taskManager.getReceivingTask()?.taskHeader?.caption ?: ""
@@ -23,10 +62,11 @@ class TransferGoodsSectionViewModel : CoreViewModel(), PageSelectionListener {
 
     override fun onPageSelected(position: Int) {
         selectedPage.value = position
+        onResume()
     }
 
     fun onClickItemPosition(position: Int) {
-        return
+        screenNavigator.openListGoodsTransferScreen(listSections.value!![position].sectionInfo)
     }
 
     fun onClickSave() {

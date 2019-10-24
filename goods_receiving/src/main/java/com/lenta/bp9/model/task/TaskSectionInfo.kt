@@ -2,7 +2,7 @@ package com.lenta.bp9.model.task
 
 import com.google.gson.annotations.SerializedName
 
-//ET_TASK_PERNR Таблица Секция\представитель  (ZSGRZ_MATNR_ABTNR_EXCH )
+//ET_TASK_PERNR Таблица Секция\представитель (ZSGRZ_TASK_PERNR_EXCH)
 data class TaskSectionInfo(
     val sectionNumber: String, //Номер секции
     val personnelNumber: String, //Табельный номер представителя

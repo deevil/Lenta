@@ -32,6 +32,10 @@ class ReceivingTask(val taskHeader: TaskInfo,
         return taskRepository.getBatches().getBatches()
     }
 
+    fun getProcessedSections(): List<TaskSectionInfo> {
+        return taskRepository.getSections().getSections()
+    }
+
     private fun updateProducts(products: List<TaskProductInfo>) {
         taskRepository.getProducts().clear()
         taskRepository.getProducts().updateProducts(products)
