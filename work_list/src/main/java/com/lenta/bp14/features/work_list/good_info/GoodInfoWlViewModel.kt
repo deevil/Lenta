@@ -52,14 +52,23 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
     val commentsPosition = MutableLiveData(0)
     val shelfLifeTypePosition = MutableLiveData(0)
 
+    private val maxQuantity = MutableLiveData<Double>(0.0)
+
     val good by lazy { task.currentGood }
 
     val title = MutableLiveData<String>("")
 
     val quantity = MutableLiveData<String>("")
-    val totalQuantity: MutableLiveData<String> by lazy {
+
+    private val totalQuantityValue: MutableLiveData<Double> by lazy {
         good.combineLatest(quantity).map {
-            it?.first?.getTotalQuantity().sumWith(it?.second?.toDoubleOrNull() ?: 0.0).dropZeros()
+            it?.first?.getTotalQuantity().sumWith(it?.second?.toDoubleOrNull() ?: 0.0)
+        }
+    }
+
+    val totalQuantity: MutableLiveData<String> by lazy {
+        totalQuantityValue.map {
+            it?.dropZeros()
         }
     }
 
@@ -231,6 +240,7 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
 
     init {
         viewModelScope.launch {
+            maxQuantity.value = task.getMaxQuantity()
             title.value = good.value?.getFormattedMaterialWithName()
             quantity.value = good.value?.defaultValue.dropZeros()
 
@@ -287,6 +297,12 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     fun onClickApply() {
+        Logg.d { "--> totalQuantityValue = ${totalQuantityValue.value}, maxQuantity = ${maxQuantity.value}" }
+        if (totalQuantityValue.value ?: 0.0 > maxQuantity.value ?: 0.0) {
+            navigator.showMaxCountProductAlert()
+            return
+        }
+
         if (good.value!!.isNotMarkedGood()) {
             saveScanResult()
         }

@@ -273,6 +273,10 @@ class WorkListTask @Inject constructor(
         currentGood.value = good
     }
 
+    override suspend fun getMaxQuantity(): Double? {
+        return workListRepo.getMaxQuantity()
+    }
+
 }
 
 
@@ -285,6 +289,7 @@ interface IWorkListTask : ITask, IFilterable {
     suspend fun getGoodByMaterial(material: String): Good?
     suspend fun getGoodByEan(ean: String): Good?
     suspend fun addGoodToList(good: Good)
+    suspend fun getMaxQuantity(): Double?
 
     fun deleteSelectedGoods(materials: List<String>)
     fun addScanResult(scanResult: ScanResult)
