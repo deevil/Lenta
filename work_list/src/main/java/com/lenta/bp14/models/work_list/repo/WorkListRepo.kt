@@ -7,6 +7,7 @@ import com.lenta.bp14.platform.extentions.WorkListGoodInfo
 import com.lenta.bp14.platform.extentions.toWorkListGoodInfo
 import com.lenta.shared.fmp.resources.dao_ext.*
 import com.lenta.shared.fmp.resources.fast.ZmpUtz07V001
+import com.lenta.shared.fmp.resources.fast.ZmpUtz14V001
 import com.lenta.shared.fmp.resources.fast.ZmpUtz17V001
 import com.lenta.shared.fmp.resources.slow.ZfmpUtz48V001
 import com.lenta.shared.fmp.resources.slow.ZmpUtz25V001
@@ -27,6 +28,7 @@ class WorkListRepo @Inject constructor(
     val productInfo: ZfmpUtz48V001 by lazy { ZfmpUtz48V001(hyperHive) } // Информация о товаре
     val eanInfo: ZmpUtz25V001 by lazy { ZmpUtz25V001(hyperHive) } // Информация о штрих-коде
     val dictonary: ZmpUtz17V001 by lazy { ZmpUtz17V001(hyperHive) } // Справочник с наборами данных
+    val settings: ZmpUtz14V001 by lazy { ZmpUtz14V001(hyperHive) } // Настройки
 
     override suspend fun getGoodByMaterial(material: String): Good? {
         return withContext(Dispatchers.IO) {
@@ -108,6 +110,12 @@ class WorkListRepo @Inject constructor(
         }
     }
 
+    override suspend fun getMaxQuantity(): Double? {
+        return withContext(Dispatchers.IO) {
+            return@withContext settings.getMaxQuantityProdWkl()
+        }
+    }
+
 }
 
 interface IWorkListRepo {
@@ -115,4 +123,5 @@ interface IWorkListRepo {
     suspend fun getGoodByEan(ean: String): Good?
     suspend fun getGoodInfoByMaterial(material: String?): WorkListGoodInfo?
     suspend fun getMaterialByEan(ean: String?): String?
+    suspend fun getMaxQuantity(): Double?
 }

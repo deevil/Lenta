@@ -23,6 +23,7 @@ import com.lenta.shared.utilities.extentions.dropZeros
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.sumWith
 import com.lenta.shared.view.OnPositionClickListener
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
@@ -52,14 +53,23 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
     val commentsPosition = MutableLiveData(0)
     val shelfLifeTypePosition = MutableLiveData(0)
 
+    private val maxQuantity = MutableLiveData<Double>(0.0)
+
     val good by lazy { task.currentGood }
 
     val title = MutableLiveData<String>("")
 
     val quantity = MutableLiveData<String>("")
-    val totalQuantity: MutableLiveData<String> by lazy {
+
+    private val totalQuantityValue: MutableLiveData<Double> by lazy {
         good.combineLatest(quantity).map {
-            it?.first?.getTotalQuantity().sumWith(it?.second?.toDoubleOrNull() ?: 0.0).dropZeros()
+            it?.first?.getTotalQuantity().sumWith(it?.second?.toDoubleOrNull() ?: 0.0)
+        }
+    }
+
+    val totalQuantity: MutableLiveData<String> by lazy {
+        totalQuantityValue.map {
+            it?.dropZeros()
         }
     }
 
@@ -231,31 +241,38 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
 
     init {
         viewModelScope.launch {
+            maxQuantity.value = task.getMaxQuantity()
             title.value = good.value?.getFormattedMaterialWithName()
             quantity.value = good.value?.defaultValue.dropZeros()
 
-            viewModelScope.launch {
-                additionalGoodInfoNetRequest(AdditionalGoodInfoParams(
-                        tkNumber = sessionInfo.market ?: "Not Found!",
-                        ean = good.value?.ean,
-                        matNr = good.value?.material
-                )).also {
-                    showProgress.value = false
-                }.either(::handleFailure, ::updateAdditionalGoodInfo)
-            }
+            loadAdditionalInfo()
         }
     }
 
     // -----------------------------
 
-    override fun handleFailure(failure: Failure) {
+    private fun loadAdditionalInfo() {
+        viewModelScope.launch {
+            additionalGoodInfoNetRequest(AdditionalGoodInfoParams(
+                    tkNumber = sessionInfo.market ?: "Not Found!",
+                    ean = good.value?.ean,
+                    matNr = good.value?.material
+            )).either(::handleAdditionalInfoFailure, ::updateAdditionalGoodInfo)
+        }
+    }
+
+    private fun handleAdditionalInfoFailure(failure: Failure) {
         super.handleFailure(failure)
-        navigator.openAlertScreen(failure)
+        viewModelScope.launch {
+            delay(1500)
+            loadAdditionalInfo()
+        }
     }
 
     private fun updateAdditionalGoodInfo(result: AdditionalGoodInfo) {
         Logg.d { "AdditionalGoodInfo: $result" }
         task.updateAdditionalGoodInfo(result)
+        showProgress.value = false
     }
 
     override fun onPageSelected(position: Int) {
@@ -287,6 +304,12 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     fun onClickApply() {
+        Logg.d { "--> totalQuantityValue = ${totalQuantityValue.value}, maxQuantity = ${maxQuantity.value}" }
+        if (totalQuantityValue.value ?: 0.0 > maxQuantity.value ?: 0.0) {
+            navigator.showMaxCountProductAlert()
+            return
+        }
+
         if (good.value!!.isNotMarkedGood()) {
             saveScanResult()
         }
@@ -403,6 +426,11 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
                 }
             }
         }
+    }
+
+    override fun handleFailure(failure: Failure) {
+        super.handleFailure(failure)
+        navigator.openAlertScreen(failure)
     }
 
     private fun addMarkToList(markNumber: String, markStatus: MarkStatus) {

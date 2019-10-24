@@ -273,6 +273,14 @@ class WorkListTask @Inject constructor(
         currentGood.value = good
     }
 
+    override suspend fun getMaxQuantity(): Double? {
+        return workListRepo.getMaxQuantity()
+    }
+
+    override fun isGoodFromTask(good: Good): Boolean {
+        return taskDescription.taskInfoResult?.positions?.find { it.matNr == good.material } != null
+    }
+
 }
 
 
@@ -285,6 +293,7 @@ interface IWorkListTask : ITask, IFilterable {
     suspend fun getGoodByMaterial(material: String): Good?
     suspend fun getGoodByEan(ean: String): Good?
     suspend fun addGoodToList(good: Good)
+    suspend fun getMaxQuantity(): Double?
 
     fun deleteSelectedGoods(materials: List<String>)
     fun addScanResult(scanResult: ScanResult)
@@ -298,6 +307,7 @@ interface IWorkListTask : ITask, IFilterable {
     fun isMarkAlreadyAdded(markNumber: String): Boolean
     fun deleteMark(markNumber: String)
     fun addMark(mark: String)
+    fun isGoodFromTask(good: Good): Boolean
 }
 
 // -----------------------------

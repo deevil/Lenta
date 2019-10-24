@@ -189,8 +189,12 @@ class GoodsListWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
             }.also {
                 navigator.hideProgress()
             }?.let { good ->
-                task.addGoodToList(good)
-                navigator.openGoodInfoWlScreen()
+                if (task.getDescription().isStrictList && !task.isGoodFromTask(good)) {
+                    navigator.showGoodIsNotPartOfTask()
+                } else {
+                    task.addGoodToList(good)
+                    navigator.openGoodInfoWlScreen()
+                }
                 return@launch
             }
 
