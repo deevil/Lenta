@@ -23,6 +23,7 @@ import com.lenta.shared.utilities.extentions.dropZeros
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.sumWith
 import com.lenta.shared.view.OnPositionClickListener
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
@@ -244,28 +245,34 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
             title.value = good.value?.getFormattedMaterialWithName()
             quantity.value = good.value?.defaultValue.dropZeros()
 
-            viewModelScope.launch {
-                additionalGoodInfoNetRequest(AdditionalGoodInfoParams(
-                        tkNumber = sessionInfo.market ?: "Not Found!",
-                        ean = good.value?.ean,
-                        matNr = good.value?.material
-                )).also {
-                    showProgress.value = false
-                }.either(::handleFailure, ::updateAdditionalGoodInfo)
-            }
+            loadAdditionalInfo()
         }
     }
 
     // -----------------------------
 
-    override fun handleFailure(failure: Failure) {
+    private fun loadAdditionalInfo() {
+        viewModelScope.launch {
+            additionalGoodInfoNetRequest(AdditionalGoodInfoParams(
+                    tkNumber = sessionInfo.market ?: "Not Found!",
+                    ean = good.value?.ean,
+                    matNr = good.value?.material
+            )).either(::handleAdditionalInfoFailure, ::updateAdditionalGoodInfo)
+        }
+    }
+
+    private fun handleAdditionalInfoFailure(failure: Failure) {
         super.handleFailure(failure)
-        navigator.openAlertScreen(failure)
+        viewModelScope.launch {
+            delay(1500)
+            loadAdditionalInfo()
+        }
     }
 
     private fun updateAdditionalGoodInfo(result: AdditionalGoodInfo) {
         Logg.d { "AdditionalGoodInfo: $result" }
         task.updateAdditionalGoodInfo(result)
+        showProgress.value = false
     }
 
     override fun onPageSelected(position: Int) {
@@ -419,6 +426,11 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
                 }
             }
         }
+    }
+
+    override fun handleFailure(failure: Failure) {
+        super.handleFailure(failure)
+        navigator.openAlertScreen(failure)
     }
 
     private fun addMarkToList(markNumber: String, markStatus: MarkStatus) {
