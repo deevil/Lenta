@@ -277,6 +277,10 @@ class WorkListTask @Inject constructor(
         return workListRepo.getMaxQuantity()
     }
 
+    override fun isGoodFromTask(good: Good): Boolean {
+        return taskDescription.taskInfoResult?.positions?.find { it.matNr == good.material } != null
+    }
+
 }
 
 
@@ -303,6 +307,7 @@ interface IWorkListTask : ITask, IFilterable {
     fun isMarkAlreadyAdded(markNumber: String): Boolean
     fun deleteMark(markNumber: String)
     fun addMark(mark: String)
+    fun isGoodFromTask(good: Good): Boolean
 }
 
 // -----------------------------
