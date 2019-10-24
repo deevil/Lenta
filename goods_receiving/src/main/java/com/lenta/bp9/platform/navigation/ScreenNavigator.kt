@@ -452,9 +452,9 @@ class ScreenNavigator(
         }
     }
 
-    override fun openRepresPersonNumEntryScreen() {
+    override fun openRepresPersonNumEntryScreen(sectionInfo: TaskSectionInfo) {
         runOrPostpone {
-            getFragmentStack()?.push(RepresPersonNumEntryFragment())
+            getFragmentStack()?.push(RepresPersonNumEntryFragment.create(sectionInfo))
         }
     }
 
@@ -556,7 +556,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openRoundingIssueDialog(noCallbackFunc: () -> Unit, yesCallbackFunc: () -> Unit)
     fun openTransferGoodsSectionScreen()
     fun openListGoodsTransferScreen(sectionInfo: TaskSectionInfo)
-    fun openRepresPersonNumEntryScreen()
+    fun openRepresPersonNumEntryScreen(sectionInfo: TaskSectionInfo)
     fun openFormedDocsScreen()
     fun openAlertCountLargerOverdelivery()
     fun openAlertNotCorrectDate()

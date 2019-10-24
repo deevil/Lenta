@@ -261,7 +261,7 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
                 }
                 val sectionInfo = listOf(TaskSectionInfo(
                 sectionNumber = "12",
-                personnelNumber = "00000000",
+                personnelNumber = "",
                 quantitySectionProducts = "2",
                 dateTransferSection = "0000-00-00",
                 timeTransferSection = "00:00:00",
@@ -269,7 +269,7 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
                 ),
                 TaskSectionInfo(
                 sectionNumber = "13",
-                personnelNumber = "3",
+                personnelNumber = "003",
                 quantitySectionProducts = "1",
                 dateTransferSection = "0000-00-00",
                 timeTransferSection = "00:00:00",

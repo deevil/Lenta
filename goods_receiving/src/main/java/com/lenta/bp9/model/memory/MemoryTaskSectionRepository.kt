@@ -3,6 +3,7 @@ package com.lenta.bp9.model.memory
 import com.lenta.bp9.model.repositories.ITaskSectionRepository
 import com.lenta.bp9.model.task.TaskSectionInfo
 import com.lenta.bp9.model.task.TaskSectionProducts
+import com.lenta.shared.utilities.Logg
 
 class MemoryTaskSectionRepository : ITaskSectionRepository {
 
@@ -88,6 +89,20 @@ class MemoryTaskSectionRepository : ITaskSectionRepository {
         return sectionProducts.map {
             addSectionProduct(it)
         }.any()
+    }
+
+    override fun changeSection(section: TaskSectionInfo): Boolean {
+        var index = -1
+        for (i in sectionInfo.indices) {
+            if (section.sectionNumber == sectionInfo[i].sectionNumber) {
+                index = i
+            }
+        }
+
+        if (index != -1) {
+            sectionInfo.removeAt(index)
+        }
+        return addSection(section)
     }
 
     override fun updateSections(newSections: List<TaskSectionInfo>, newSectionProducts: List<TaskSectionProducts>) {

@@ -14,3 +14,9 @@ data class TransferGoodsSectionItem(
     override fun isEven() = even
 
 }
+
+data class SectionPersonnelNumberInfo (
+        val sectionNumber: String, //Номер секции
+        val personnelNumber: String, //Табельный номоер
+        val fio: String
+)

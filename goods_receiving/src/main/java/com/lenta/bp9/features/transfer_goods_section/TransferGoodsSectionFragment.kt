@@ -105,8 +105,4 @@ class TransferGoodsSectionFragment : CoreFragment<FragmentTransferGoodsSectionBi
         vm.onPageSelected(position)
     }
 
-    override fun onResume() {
-        super.onResume()
-        vm.onResume()
-    }
 }

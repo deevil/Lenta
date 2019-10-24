@@ -15,7 +15,7 @@ data class TaskSectionInfo(
                 fun from(restData: TaskSectionRestData): TaskSectionInfo {
                         return TaskSectionInfo(
                                 sectionNumber = restData.sectionNumber,
-                                personnelNumber = restData.personnelNumber,
+                                personnelNumber = if (restData.personnelNumber == "00000000") {""} else {restData.personnelNumber},
                                 quantitySectionProducts = restData.quantitySectionProducts,
                                 dateTransferSection = restData.dateTransferSection,
                                 timeTransferSection = restData.timeTransferSection,

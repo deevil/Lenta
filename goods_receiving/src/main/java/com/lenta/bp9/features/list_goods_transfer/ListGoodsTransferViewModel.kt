@@ -47,6 +47,6 @@ class ListGoodsTransferViewModel : CoreViewModel() {
     }
 
     fun onClickNext() {
-        screenNavigator.openRepresPersonNumEntryScreen()
+        screenNavigator.openRepresPersonNumEntryScreen(sectionInfo.value!!)
     }
 }
