@@ -53,7 +53,7 @@ class GoodsListWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     val requestFocusToNumberField: MutableLiveData<Boolean> = MutableLiveData()
 
     private val toUiFunc = { products: List<Good>? ->
-        products?.reversed()?.mapIndexed { index, good ->
+        products?.mapIndexed { index, good ->
             val total = good.getTotalQuantity()
             ItemWorkListUi(
                     position = (index + 1).toString(),

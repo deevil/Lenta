@@ -36,14 +36,15 @@ class CheckListTask @Inject constructor(
 
     override fun addGood(good: Good) {
         val goodsList = goods.value!!.toMutableList()
-        goodsList.find {
-            it.ean == good.ean && it.material == good.material
-        }?.let { existGood ->
+
+        goodsList.find { it.material == good.material }?.let { existGood ->
             val existQuantity = existGood.quantity.value!!.toDoubleOrNull()
             val quantity = good.quantity.value!!.toDoubleOrNull()
-            goodsList[goodsList.indexOf(existGood)].quantity.value = existQuantity.sumWith(quantity).dropZeros()
-        } ?: goodsList.add(0, good)
+            good.quantity.value = existQuantity.sumWith(quantity).dropZeros()
+            goodsList.remove(existGood)
+        }
 
+        goodsList.add(0, good)
         goods.value = goodsList
     }
 
