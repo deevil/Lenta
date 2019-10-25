@@ -3,7 +3,6 @@ package com.lenta.bp9.model.memory
 import com.lenta.bp9.model.repositories.ITaskSectionRepository
 import com.lenta.bp9.model.task.TaskSectionInfo
 import com.lenta.bp9.model.task.TaskSectionProducts
-import com.lenta.shared.utilities.Logg
 
 class MemoryTaskSectionRepository : ITaskSectionRepository {
 
@@ -106,8 +105,7 @@ class MemoryTaskSectionRepository : ITaskSectionRepository {
     }
 
     override fun updateSections(newSections: List<TaskSectionInfo>, newSectionProducts: List<TaskSectionProducts>) {
-        sectionInfo.clear()
-        sectionProductsInfo.clear()
+        clear()
         addSections(newSections)
         addSectionProductsList(newSectionProducts)
     }

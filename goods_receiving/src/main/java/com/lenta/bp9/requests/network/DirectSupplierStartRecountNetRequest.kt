@@ -41,32 +41,6 @@ data class DirectSupplierStartRecountRestInfo(
         val taskComposition: List<TaskComposition>,
         @SerializedName("ET_TASK_DIFF") //Таблица расхождений по товару	ZTT_GRZ_TASK_DIF_EXCH
         val taskProductDiscrepancies: List<TaskProductDiscrepancies>,
-        /**@SerializedName("ET_TASK_PARTS") //Таблица партий задания	ZTT_GRZ_TASK_PARTS_EXCH
-        val taskBatchInfo: List<TaskBatchInfo>,
-        @SerializedName("ET_PARTS_DIFF") //Таблица расхождений по партиям	ZTT_GRZ_PARTS_DIF_EXCH
-        val taskBatchesDiscrepancies: List<TaskBatchesDiscrepancies>,
-        @SerializedName("ET_PROD_TEXT") //Таблица названий производителей	ZTT_GRZ_PROD_TEXT
-        val manufacturers: List<Manufacturer>,
-        @SerializedName("ET_TASK_SETS") //список наборов
-        val taskSets: String,
-        @SerializedName("ET_TASK_BOX") //список коробок задания
-        val taskBoxes: String,
-        @SerializedName("ET_TASK_MARK") //список марок задания
-        val taskStamps: String,
-        @SerializedName("ET_MARK_DIFF") //таблица обработанных марок
-        val processedStamps: String,
-        @SerializedName("ET_MARK_BAD") //таблица плохих марок
-        val badStamps: String,
-        @SerializedName("ET_BOX_DIFF") //таблица обработанных коробов
-        val processedBoxes: String,
-        @SerializedName("ET_BOX_DIFF") //структура карточки задания
-        val taskStructure: String,
-        @SerializedName("ET_VET_NOT_ACTUAL") //таблица неактуальных ВСД
-        val vetNotActual: String,
-        @SerializedName("ET_VET_DIFF") //таблица расхождений по вет. товарам
-        val vetDiscrepancies: String,
-        @SerializedName("ET_VBELN_COM") //таблица примечаний к ВП
-        val vetNotes: String,*/
         @SerializedName("EV_RETCODE")
         val retcode: String,
         @SerializedName("EV_ERROR_TEXT")

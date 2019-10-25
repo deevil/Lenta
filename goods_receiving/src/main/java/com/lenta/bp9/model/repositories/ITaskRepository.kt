@@ -9,4 +9,5 @@ interface ITaskRepository {
     fun getBatches(): ITaskBatchesRepository
     fun getBatchesDiscrepancies(): ITaskBatchesDiscrepanciesRepository
     fun getSections():ITaskSectionRepository
+    fun getDocumentsPrinting():ITaskDocumentsPrintingRepository
 }

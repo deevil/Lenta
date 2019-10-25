@@ -3,7 +3,10 @@ package com.lenta.bp9.features.loading.tasks
 import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.lenta.bp9.model.task.*
+import com.lenta.bp9.model.task.IReceivingTaskManager
+import com.lenta.bp9.model.task.TaskContents
+import com.lenta.bp9.model.task.TaskDescription
+import com.lenta.bp9.model.task.TaskDocumentsPrinting
 import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.bp9.requests.network.*
 import com.lenta.shared.account.ISessionInfo
@@ -11,24 +14,21 @@ import com.lenta.shared.exception.Failure
 import com.lenta.shared.features.loading.CoreLoadingViewModel
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.getDeviceIp
-import com.mobrun.plugin.api.HyperHive
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class LoadingRecountStartViewModel : CoreLoadingViewModel() {
+class LoadingSubmittedViewModel : CoreLoadingViewModel() {
 
     @Inject
     lateinit var screenNavigator: IScreenNavigator
     @Inject
-    lateinit var directSupplierStartRecountNetRequest: DirectSupplierStartRecountNetRequest
+    lateinit var submittedNetRequest: SubmittedNetRequest
     @Inject
     lateinit var sessionInfo: ISessionInfo
     @Inject
     lateinit var context: Context
     @Inject
     lateinit var taskManager: IReceivingTaskManager
-    @Inject
-    lateinit var taskContents: TaskContents
 
     override val title: MutableLiveData<String> = MutableLiveData()
     override val progress: MutableLiveData<Boolean> = MutableLiveData(true)
@@ -39,29 +39,44 @@ class LoadingRecountStartViewModel : CoreLoadingViewModel() {
         viewModelScope.launch {
             progress.value = true
             taskManager.getReceivingTask()?.let { task ->
-                val params = DirectSupplierStartRecountParams(
+                val params = SubmittedParams(
                         taskNumber = task.taskHeader.taskNumber,
                         deviceIP = context.getDeviceIp(),
                         personnelNumber = sessionInfo.personnelNumber ?: "",
-                        dateRecount = task.taskDescription.currentStatusDate,
-                        timeRecount = task.taskDescription.currentStatusTime,
-                        unbindVSD = ""
+                        sectionsInfo = task.taskRepository.getSections().getSections()
                 )
-                directSupplierStartRecountNetRequest(params).either(::handleFailure, ::handleSuccess)
+                submittedNetRequest(params).either(::handleFailure, ::handleSuccess)
             }
             progress.value = false
         }
     }
 
     override fun handleFailure(failure: Failure) {
-        screenNavigator.goBack()
-        screenNavigator.openAlertScreen(failure)
+        /**screenNavigator.goBack()
+        screenNavigator.openAlertScreen(failure)*/
+        val newDocs = listOf(TaskDocumentsPrinting(
+                appConditionsOutputDoc = "app1",
+                outputTypeDoc = "type1",
+                name = "name1"
+        ),
+                TaskDocumentsPrinting(
+                        appConditionsOutputDoc = "app2",
+                        outputTypeDoc = "type2",
+                        name = "name2"
+                ),
+                TaskDocumentsPrinting(
+                        appConditionsOutputDoc = "app3",
+                        outputTypeDoc = "type2",
+                        name = "name3"
+                ))
+        taskManager.getReceivingTask()?.taskRepository?.getDocumentsPrinting()?.updateDocumentsPrinting(newDocs)
+        screenNavigator.openFormedDocsScreen()
     }
 
-    private fun handleSuccess(result: DirectSupplierStartRecountRestInfo) {
+    private fun handleSuccess(result: SubmittedRestInfo) {
         taskManager.updateTaskDescription(TaskDescription.from(result.taskDescription))
-        taskManager.getReceivingTask()?.updateTaskWithContents(taskContents.getTaskContentsInfo(result))
-        screenNavigator.openGoodsListScreen()
+        taskManager.getReceivingTask()?.taskRepository?.getDocumentsPrinting()?.updateDocumentsPrinting(result.listDocumentsPrinting)
+        screenNavigator.openTaskCardScreen(TaskCardMode.Full)
     }
 
     override fun clean() {

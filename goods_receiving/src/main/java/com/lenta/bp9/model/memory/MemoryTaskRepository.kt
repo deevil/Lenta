@@ -20,6 +20,8 @@ class MemoryTaskRepository : ITaskRepository {
 
     private val taskSectionRepository: ITaskSectionRepository = MemoryTaskSectionRepository()
 
+    private val taskDocumentsPrintingRepository: ITaskDocumentsPrintingRepository = MemoryTaskDocumentsPrintingRepository()
+
     override fun getProducts(): ITaskProductRepository {
         return taskProductRepository
     }
@@ -50,5 +52,9 @@ class MemoryTaskRepository : ITaskRepository {
 
     override fun getSections(): ITaskSectionRepository {
         return taskSectionRepository
+    }
+
+    override fun getDocumentsPrinting(): ITaskDocumentsPrintingRepository {
+        return taskDocumentsPrintingRepository
     }
 }

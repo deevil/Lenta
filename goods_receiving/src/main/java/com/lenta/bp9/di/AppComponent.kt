@@ -74,4 +74,5 @@ interface AppComponent {
     fun inject(it: RepresPersonNumEntryViewModel)
     fun inject(it: FormedDocsViewModel)
     fun inject(it: LoadingRecountStartViewModel)
+    fun inject(it: LoadingSubmittedViewModel)
 }

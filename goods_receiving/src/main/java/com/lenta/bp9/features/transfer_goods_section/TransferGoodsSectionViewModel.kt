@@ -77,8 +77,7 @@ class TransferGoodsSectionViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     fun onClickSave() {
-        //todo
-        return
+        screenNavigator.openSubmittedLoadingScreen()
     }
 
     private fun updatePersonnelNumberInfo() {

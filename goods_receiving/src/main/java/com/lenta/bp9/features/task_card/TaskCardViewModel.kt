@@ -182,6 +182,9 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
             TaskStatus.TransferringToSection -> {
                 screenNavigator.openTransferGoodsSectionScreen()
             }
+            TaskStatus.Completed -> {
+                screenNavigator.openFormedDocsScreen()
+            }
             else -> {
                 taskManager.getReceivingTask().let {
                     it!!.taskRepository.getProducts().addProduct(TaskProductInfo(
