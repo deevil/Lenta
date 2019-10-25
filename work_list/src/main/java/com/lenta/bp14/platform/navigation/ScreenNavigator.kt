@@ -120,9 +120,14 @@ class ScreenNavigator @Inject constructor(
         }
     }
 
-    override fun openGoodInfoWlScreen() {
+    override fun openGoodInfoWlScreen(popLast: Boolean) {
         runOrPostpone {
-            getFragmentStack()?.push(GoodInfoWlFragment())
+            getFragmentStack()?.let {
+                if (popLast) {
+                    it.pop()
+                }
+                it.push(GoodInfoWlFragment())
+            }
         }
     }
 
@@ -226,13 +231,17 @@ class ScreenNavigator @Inject constructor(
         }
     }
 
-    override fun showPriceTagsSubmitted() {
+    override fun showPriceTagsSubmitted(nextCallback: () -> Unit) {
         runOrPostpone {
-            getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.price_tags_submitted),
-                    pageNumber = "11",
-                    iconRes = R.drawable.ic_done_green_80dp,
-                    isVisibleLeftButton = false,
-                    rightButtonDecorationInfo = ButtonDecorationInfo.next))
+            getFragmentStack()?.push(
+                    AlertFragment.create(message = context.getString(R.string.price_tags_submitted),
+                            pageNumber = "11",
+                            iconRes = R.drawable.ic_done_green_80dp,
+                            isVisibleLeftButton = false,
+                            rightButtonDecorationInfo = ButtonDecorationInfo.next,
+                            codeConfirmForRight = backFragmentResultHelper.setFuncForResult(nextCallback)
+                    )
+            )
         }
     }
 
@@ -321,7 +330,7 @@ class ScreenNavigator @Inject constructor(
         }
     }
 
-    override fun showScannedGoodAlreadyAddedToTask(yesCallback: () -> Unit) {
+    override fun showScannedMarkAlreadyAddedToList(yesCallback: () -> Unit) {
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.scanned_good_already_added_to_task),
                     pageNumber = "116",
@@ -398,6 +407,22 @@ class ScreenNavigator @Inject constructor(
         }
     }
 
+    override fun showDeviceNotSupportVideoScan() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.device_not_support_video_scan),
+                    iconRes = com.lenta.shared.R.drawable.ic_info_pink,
+                    pageNumber = "100"))
+        }
+    }
+
+    override fun showWrongBarcodeFormat() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.wrong_barcode_format),
+                    pageNumber = "100",
+                    timeAutoExitInMillis = 2000))
+        }
+    }
+
     override fun showTwelveCharactersEntered(sapCallback: () -> Unit, barCallback: () -> Unit) {
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.twelve_characters_entered),
@@ -460,7 +485,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openReportResultScreen()
     fun openPrintSettingsScreen()
     fun openGoodDetailsScreen()
-    fun openGoodInfoWlScreen()
+    fun openGoodInfoWlScreen(popLast: Boolean = false)
     fun openGoodsListWlScreen()
     fun openGoodInfoPcScreen()
     fun openGoodsListPcScreen()
@@ -474,7 +499,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun showConfirmPriceTagsPrinting(priceTagNumber: Int, confirmCallback: () -> Unit)
     fun showMakeSureYellowPaperInstalled(printerName: String, numberOfCopy: Int, confirmCallback: () -> Unit)
     fun showMakeSureRedPaperInstalled(printerName: String, numberOfCopy: Int, confirmCallback: () -> Unit)
-    fun showPriceTagsSubmitted()
+    fun showPriceTagsSubmitted(nextCallback: () -> Unit)
     fun showSetTaskToStatusCalculated(yesCallback: () -> Unit)
     fun showRawGoodsRemainedInTask(yesCallback: () -> Unit)
     fun showPrintPriceOffer(goodName: String, noCallback: () -> Unit, yesCallback: () -> Unit)
@@ -483,13 +508,15 @@ interface IScreenNavigator : ICoreNavigator {
     fun showGoodIsNotPartOfTask()
     fun showScannedGoodNotListedInLenta(nextCallback: () -> Unit)
     fun showScannedGoodNotListedInTk(marketNumber: String)
-    fun showScannedGoodAlreadyAddedToTask(yesCallback: () -> Unit)
+    fun showScannedMarkAlreadyAddedToList(yesCallback: () -> Unit)
     fun showMaxCountProductAlert()
     fun showNoNetworkToSaveTask(nextCallback: () -> Unit)
     fun showGoodNotFound()
+    fun showWrongBarcodeFormat()
     fun showTwelveCharactersEntered(sapCallback: () -> Unit, barCallback: () -> Unit)
     fun showAlertBlockedTaskAnotherUser(userName: String)
     fun showAlertBlockedTaskByMe(blockingUser: String, yesCallback: () -> Unit)
+    fun showDeviceNotSupportVideoScan()
 
     fun openTestScanBarcodeScreen()
     fun openScanPriceScreen()

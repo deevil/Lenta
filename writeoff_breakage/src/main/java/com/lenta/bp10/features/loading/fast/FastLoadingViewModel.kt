@@ -62,7 +62,6 @@ class FastLoadingViewModel : CoreLoadingViewModel() {
             progress.value = true
             serverTimeRequest(ServerTimeRequestParam(sessionInfo.market
                     ?: "")).either(::handleFailure, ::handleSuccessServerTime)
-            progress.value = false
 
         }
     }
@@ -70,9 +69,7 @@ class FastLoadingViewModel : CoreLoadingViewModel() {
     private fun handleSuccessServerTime(serverTime: ServerTime) {
         timeMonitor.setServerTime(time = serverTime.time, date = serverTime.date)
         viewModelScope.launch {
-            progress.value = true
             fastResourcesNetRequest(null).either(::handleFailure, ::loadStocks)
-            progress.value = false
         }
     }
 
@@ -80,12 +77,12 @@ class FastLoadingViewModel : CoreLoadingViewModel() {
         viewModelScope.launch {
             stockNetRequest(null).either(::handleFailure, ::handleSuccess)
         }
-
     }
 
     override fun handleFailure(failure: Failure) {
         screenNavigator.openLoginScreen()
         screenNavigator.openAlertScreen(failureInterpreter.getFailureDescription(failure).message)
+        progress.value = false
     }
 
     private fun handleSuccess(stockLockRequestResult: StockLockRequestResult) {
@@ -104,6 +101,7 @@ class FastLoadingViewModel : CoreLoadingViewModel() {
                 //resourceLoader.startLoadSlowResources()
                 screenNavigator.openSelectionPersonnelNumberScreen()
             }
+            progress.value = false
         }
 
     }

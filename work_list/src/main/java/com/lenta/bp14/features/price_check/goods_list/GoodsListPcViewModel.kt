@@ -9,6 +9,7 @@ import com.lenta.bp14.models.check_price.ICheckPriceTask
 import com.lenta.bp14.models.data.GoodsListTab
 import com.lenta.bp14.models.getTaskName
 import com.lenta.bp14.models.print.IPrintTask
+import com.lenta.bp14.models.print.PrintInfo
 import com.lenta.bp14.platform.navigation.IScreenNavigator
 import com.lenta.bp14.requests.check_price.CheckPriceReportNetRequest
 import com.lenta.shared.platform.device_info.DeviceInfo
@@ -21,7 +22,9 @@ import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.view.OnPositionClickListener
+import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class GoodsListPcViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyboardListener, OnPositionClickListener {
@@ -39,7 +42,7 @@ class GoodsListPcViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     @Inject
     lateinit var printTask: IPrintTask
 
-    val tagTypeIds by lazy {
+    private val tagTypeIds by lazy {
         mutableListOf("")
     }
 
@@ -102,8 +105,11 @@ class GoodsListPcViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     val processedGoods by lazy {
         task.getCheckResults().map(funcUiAdapter)
     }
+
+    private val searchCheckResults by lazy { task.getCheckResultsForPrint() }
+
     val searchGoods by lazy {
-        task.getCheckResultsForPrint().map(funcUiAdapter)
+        searchCheckResults.map(funcUiAdapter)
     }
 
     private val selectedItemOnCurrentTab: MutableLiveData<Boolean> = correctedSelectedPage
@@ -117,7 +123,7 @@ class GoodsListPcViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
             }
 
     val deleteButtonEnabled = selectedItemOnCurrentTab.map { it }
-    val printButtonEnabled = selectedItemOnCurrentTab.map { it }
+    val printButtonEnabled = tagTypesPosition.map { it ?: 0 > 0 }
     val videoButtonEnabled by lazy {
         MutableLiveData(task.isFreeMode())
     }
@@ -259,7 +265,65 @@ class GoodsListPcViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     }
 
     fun onClickPrint() {
+        viewModelScope.launch {
+            var printerName = ""
+            withContext(IO) {
+                printerName = printTask.getPrinterTypes().firstOrNull { it.isStatic == true }?.name
+                        ?: ""
+            }
+            if (selectedPriceTagIsRed()) {
+                navigator.showMakeSureRedPaperInstalled(printerName, numberOfCopy = 1) {
+                    print()
+                }
+            } else {
+                navigator.showMakeSureYellowPaperInstalled(printerName, numberOfCopy = 1) {
+                    print()
+                }
+            }
+        }
+    }
 
+    private fun selectedPriceTagIsRed(): Boolean {
+        return tagTypeIds.getOrNull(tagTypesPosition.value ?: -1) == "02"
+    }
+
+    private fun print() {
+        viewModelScope.launch {
+            navigator.showProgressLoadingData()
+            val selectedSearchTasks = getResultsForPrint()
+            val printTasks = getPrintTasks()
+            printTask.printToBigDataMax(printTasks).either({
+                navigator.openAlertScreen(failure = it)
+
+            }) {
+                task.markPrinted(selectedSearchTasks.map { it.matNr!! })
+                navigator.showPriceTagsSubmitted {
+                    //ничего не делаем
+                }
+            }
+            navigator.hideProgress()
+        }
+    }
+
+    private fun getPrintTasks(): List<PrintInfo> {
+        return getResultsForPrint().map {
+            PrintInfo(
+                    barCode = it.ean,
+                    amount = 1,
+                    templateCode = if (tagTypeIds.getOrNull(tagTypesPosition.value
+                                    ?: -1) == "01") 1 else 2
+            )
+        }
+    }
+
+    private fun getResultsForPrint(): List<ICheckPriceResult> {
+        val searchList = searchCheckResults.value!!
+        if (searchSelectionsHelper.isSelectedEmpty()) {
+            return searchList
+        }
+        return searchSelectionsHelper.selectedPositions.value!!.map {
+            searchList.get(it)
+        }
     }
 
     fun onClickVideo() {
@@ -304,6 +368,11 @@ class GoodsListPcViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     override fun onClickPosition(position: Int) {
         tagTypesPosition.value = position
     }
+
+    fun showVideoErrorMessage() {
+        navigator.showDeviceNotSupportVideoScan()
+    }
+
 }
 
 

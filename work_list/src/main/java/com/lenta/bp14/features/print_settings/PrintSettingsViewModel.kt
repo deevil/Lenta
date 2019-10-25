@@ -3,6 +3,8 @@ package com.lenta.bp14.features.print_settings
 import android.content.SharedPreferences
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.lenta.bp14.models.IGeneralTaskManager
+import com.lenta.bp14.models.check_price.ICheckPriceTask
 import com.lenta.bp14.models.check_price.IPriceInfoParser
 import com.lenta.bp14.models.print.IPrintTask
 import com.lenta.bp14.models.print.PriceTagType
@@ -42,6 +44,9 @@ class PrintSettingsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInS
 
     @Inject
     lateinit var printSettings: PrintSettings
+
+    @Inject
+    lateinit var generalManager: IGeneralTaskManager
 
 
     private var productInfoResult: MutableLiveData<ProductInfoResult?> = MutableLiveData(null)
@@ -129,6 +134,19 @@ class PrintSettingsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInS
         }
     }
 
+    private var needGoBackAfterPrint = false
+
+    init {
+        viewModelScope.launch {
+            printTask.matNrForPrint?.let {
+                numberField.value
+                checkCode(it)
+                needGoBackAfterPrint = true
+                printTask.matNrForPrint = null
+            }
+        }
+    }
+
     fun increaseNumberOfCopies() {
         val copy = numberOfCopies.value?.toIntOrNull() ?: 0
         numberOfCopies.value = "" + (copy + 1)
@@ -152,6 +170,53 @@ class PrintSettingsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInS
         checkCode(data)
     }
 
+    fun onClickPrint() {
+        if (selectedPrinterIsBigDatamax()) {
+            if (selectedPriceTagIsRed()) {
+                navigator.showMakeSureRedPaperInstalled(getSelectedPrinterType()!!.name, numberOfCopies.value?.toIntOrNull()
+                        ?: 0) {
+                    print()
+                }
+            } else {
+                navigator.showMakeSureYellowPaperInstalled(getSelectedPrinterType()!!.name, numberOfCopies.value?.toIntOrNull()
+                        ?: 0) {
+                    print()
+                }
+            }
+        } else if (numberOfCopies.value?.toIntOrNull() ?: 0 > 1) {
+            navigator.showConfirmPriceTagsPrinting(numberOfCopies.value?.toIntOrNull()
+                    ?: 0) {
+                print()
+            }
+        } else {
+            print()
+        }
+    }
+
+    fun restoreSettings() {
+        printSettings.printerIp?.let {
+            ipAddress.value = it
+        }
+
+        printSettings.printerTypePos.let {
+            if (it > -1) {
+                selectedPrinterTypePos.value = it
+            }
+        }
+
+        printSettings.priceTypePos.let {
+            if (it > -1) {
+                selectedPriceTagTypePos.value = it
+            }
+        }
+
+    }
+
+    fun saveSettings() {
+        printSettings.printerIp = ipAddress.value
+        printSettings.printerTypePos = selectedPrinterTypePos.value ?: 0
+        printSettings.priceTypePos = selectedPriceTagTypePos.value ?: 0
+    }
 
     private fun checkCode(code: String?) {
         analyseCode(
@@ -218,8 +283,10 @@ class PrintSettingsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInS
         }
     }
 
-    fun onClickPrint() {
+
+    private fun print() {
         viewModelScope.launch {
+
 
             navigator.showProgressConnection()
             printTask.printPrice(
@@ -230,39 +297,44 @@ class PrintSettingsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInS
                     copies = numberOfCopies.value?.toIntOrNull() ?: 0
             ).either({
                 navigator.openAlertScreen(it)
+                setPrintedProductForCheckPriceTask()
+
             }) {
-                navigator.showPriceTagsSubmitted()
+                setPrintedProductForCheckPriceTask()
+                navigator.showPriceTagsSubmitted {
+                    if (needGoBackAfterPrint) {
+                        navigator.goBack()
+                    }
+                }
             }
 
             navigator.hideProgress()
 
         }
+
     }
 
-    fun restoreSettings() {
-        printSettings.printerIp?.let {
-            ipAddress.value = it
-        }
-
-        printSettings.printerTypePos.let {
-            if (it > -1) {
-                selectedPrinterTypePos.value = it
+    private fun setPrintedProductForCheckPriceTask() {
+        generalManager.getProcessedTask()?.let { iTask ->
+            productInfoResult.value?.productsInfo?.getOrNull(0) ?.let {
+                if (iTask is ICheckPriceTask) {
+                    iTask.markPrinted(listOf(it.matNr))
+                }
             }
-        }
 
-        printSettings.priceTypePos.let {
-            if (it > -1) {
-                selectedPriceTagTypePos.value = it
-            }
         }
 
     }
 
-    fun saveSettings() {
-        printSettings.printerIp = ipAddress.value
-        printSettings.printerTypePos = selectedPrinterTypePos.value ?: 0
-        printSettings.priceTypePos = selectedPriceTagTypePos.value ?: 0
+    private fun selectedPriceTagIsRed(): Boolean {
+        return getSelectedPriceType()?.isRegular == false
     }
+
+    private fun selectedPrinterIsBigDatamax(): Boolean {
+        return getSelectedPrinterType()?.isStatic == true
+    }
+
+
 }
 
 

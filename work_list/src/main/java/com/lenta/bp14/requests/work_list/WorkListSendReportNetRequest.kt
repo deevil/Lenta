@@ -26,44 +26,36 @@ class WorkListSendReportNetRequest
         val checkResults = mutableListOf<CheckResult>()
         val marks = mutableListOf<Mark>()
 
-        params.checksResults.filter { it.options.goodType != GoodType.MARKED }.forEach { good ->
-            var quantity = 0.0
-
-            good.scanResults.map { results ->
-                results?.map { result ->
-                    quantity = quantity.sumWith(result.quantity)
-
-                    checkResults.add(
-                            CheckResult(
-                                    matNr = good.material,
-                                    quantity = result.quantity,
-                                    comment = result.comment,
-                                    producedDate = result.productionDate.getFormattedDate(),
-                                    shelfLife = result.expirationDate.getFormattedDate()
-                            )
-                    )
-                }
-            }
-
+        params.checksResults.filter { it.isNotMarkedGood() }.forEach { good ->
             positions.add(
                     Position(
                             matNr = good.material,
                             isProcessed = good.isProcessed.toSapBooleanString(),
-                            quantity = quantity
+                            quantity = good.getTotalQuantity()
                     )
             )
+
+            good.scanResults.map { result ->
+                checkResults.add(
+                        CheckResult(
+                                matNr = good.material,
+                                quantity = result.quantity,
+                                comment = result.comment,
+                                producedDate = result.productionDate.getFormattedDate(),
+                                shelfLife = result.expirationDate.getFormattedDate()
+                        )
+                )
+            }
         }
 
-        params.checksResults.filter { it.options.goodType == GoodType.MARKED }.forEach { good ->
-            good.scanResults.map { results ->
-                results?.map { result ->
-                    marks.add(
-                            Mark(
-                                    matNr = good.material,
-                                    markNumber = result.markNumber ?: ""
-                            )
-                    )
-                }
+        params.checksResults.filter { !it.isNotMarkedGood() }.forEach { good ->
+            good.marks.map { markNumber ->
+                marks.add(
+                        Mark(
+                                matNr = good.material,
+                                markNumber = markNumber
+                        )
+                )
             }
         }
 

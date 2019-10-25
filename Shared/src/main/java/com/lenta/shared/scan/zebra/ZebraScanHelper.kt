@@ -12,13 +12,13 @@ import com.lenta.shared.utilities.Logg
 class ZebraScanHelper : IScanHelper {
 
     companion object {
-        private val intentFilterAction = "com.lenta"
-        private val datawedgeIntentKeySource = "com.symbol.datawedge.source"
-        private val datawedgeIntentKeyLabelType = "com.symbol.datawedge.label_type"
-        private val datawedgeIntentKeyData = "com.symbol.datawedge.data_string"
-        private val datawedgeIntentKeySourceLegacy = "com.motorolasolutions.emdk.datawedge.source"
-        private val datawedgeIntentKeyLabelTypeLegacy = "com.motorolasolutions.emdk.datawedge.label_type"
-        private val datawedgeIntentKeyDataLegacy = "com.motorolasolutions.emdk.datawedge.data_string"
+        private const val intentFilterAction = "com.lenta"
+        private const val datawedgeIntentKeySource = "com.symbol.datawedge.source"
+        private const val datawedgeIntentKeyLabelType = "com.symbol.datawedge.label_type"
+        private const val datawedgeIntentKeyData = "com.symbol.datawedge.data_string"
+        private const val datawedgeIntentKeySourceLegacy = "com.motorolasolutions.emdk.datawedge.source"
+        private const val datawedgeIntentKeyLabelTypeLegacy = "com.motorolasolutions.emdk.datawedge.label_type"
+        private const val datawedgeIntentKeyDataLegacy = "com.motorolasolutions.emdk.datawedge.data_string"
     }
 
 

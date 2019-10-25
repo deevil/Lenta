@@ -1,6 +1,5 @@
 package com.lenta.bp14.models.work_list.repo
 
-import androidx.lifecycle.MutableLiveData
 import com.lenta.bp14.models.data.getGoodType
 import com.lenta.bp14.models.work_list.Good
 import com.lenta.bp14.models.work_list.GoodOptions
@@ -8,6 +7,7 @@ import com.lenta.bp14.platform.extentions.WorkListGoodInfo
 import com.lenta.bp14.platform.extentions.toWorkListGoodInfo
 import com.lenta.shared.fmp.resources.dao_ext.*
 import com.lenta.shared.fmp.resources.fast.ZmpUtz07V001
+import com.lenta.shared.fmp.resources.fast.ZmpUtz14V001
 import com.lenta.shared.fmp.resources.fast.ZmpUtz17V001
 import com.lenta.shared.fmp.resources.slow.ZfmpUtz48V001
 import com.lenta.shared.fmp.resources.slow.ZmpUtz25V001
@@ -28,11 +28,13 @@ class WorkListRepo @Inject constructor(
     val productInfo: ZfmpUtz48V001 by lazy { ZfmpUtz48V001(hyperHive) } // Информация о товаре
     val eanInfo: ZmpUtz25V001 by lazy { ZmpUtz25V001(hyperHive) } // Информация о штрих-коде
     val dictonary: ZmpUtz17V001 by lazy { ZmpUtz17V001(hyperHive) } // Справочник с наборами данных
+    val settings: ZmpUtz14V001 by lazy { ZmpUtz14V001(hyperHive) } // Настройки
 
     override suspend fun getGoodByMaterial(material: String): Good? {
         return withContext(Dispatchers.IO) {
             getGoodInfoByMaterial(material)?.let { goodInfo ->
-                val unitsName = getUnitsName(goodInfo.unitsCode)
+                val unitsCode = if (goodInfo.unitsCode == Uom.G.code) Uom.KG.code else goodInfo.unitsCode
+                val unitsName = getUnitsName(unitsCode)
                 val shelfLifeTypes = getShelfLifeTypes()
                 val comments = getWorkListComments()
 
@@ -40,19 +42,22 @@ class WorkListRepo @Inject constructor(
                         material = material,
                         name = goodInfo.name,
                         units = Uom(
-                                code = goodInfo.unitsCode,
+                                code = unitsCode,
                                 name = unitsName ?: ""
                         ),
                         goodGroup = goodInfo.goodGroup,
                         purchaseGroup = goodInfo.purchaseGroup,
                         shelfLife = goodInfo.shelfLife,
                         remainingShelfLife = goodInfo.remainingShelfLife,
-                        shelfLifeType = MutableLiveData(shelfLifeTypes),
-                        comments = MutableLiveData(comments),
+                        shelfLifeType = shelfLifeTypes,
+                        comments = comments,
                         options = GoodOptions(
                                 matrixType = getMatrixType(goodInfo.matrixType),
                                 section = goodInfo.section,
-                                goodType = getGoodType(goodInfo.isAlcohol, goodInfo.isMark),
+                                goodType = getGoodType(
+                                        alcohol = goodInfo.isAlcohol,
+                                        excise = goodInfo.isExcise,
+                                        marked = goodInfo.isMark),
                                 healthFood = goodInfo.healthFood.isSapTrue(),
                                 novelty = goodInfo.novelty.isSapTrue()
                         )
@@ -86,7 +91,7 @@ class WorkListRepo @Inject constructor(
     private suspend fun getShelfLifeTypes(): List<String> {
         return withContext(Dispatchers.IO) {
             return@withContext dictonary.getItemsByTid("007")?.toDescriptionsList()
-                    ?: listOf() // 007 - Типы сроков годности
+                    ?: emptyList() // 007 - Типы сроков годности
         }
     }
 
@@ -105,6 +110,12 @@ class WorkListRepo @Inject constructor(
         }
     }
 
+    override suspend fun getMaxQuantity(): Double? {
+        return withContext(Dispatchers.IO) {
+            return@withContext settings.getMaxQuantityProdWkl()
+        }
+    }
+
 }
 
 interface IWorkListRepo {
@@ -112,4 +123,5 @@ interface IWorkListRepo {
     suspend fun getGoodByEan(ean: String): Good?
     suspend fun getGoodInfoByMaterial(material: String?): WorkListGoodInfo?
     suspend fun getMaterialByEan(ean: String?): String?
+    suspend fun getMaxQuantity(): Double?
 }

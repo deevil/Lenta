@@ -11,6 +11,10 @@ fun ZmpUtz14V001.getAllowedPleAppVersion(): String? {
     return getParams("PLE_ANDR_ALLOWED_V").firstOrNull()
 }
 
+fun ZmpUtz14V001.getAllowedWklAppVersion(): String? {
+    return getParams("WKL_ALLOWED_VRSN_A").firstOrNull()
+}
+
 fun ZmpUtz14V001.getSelfControlPinCode(): String? {
     return getParams("PLE_INTERNAL_PINCODE").firstOrNull()
 }
@@ -48,8 +52,13 @@ fun ZmpUtz14V001.getAllowedMatTypesINV(): List<String> {
 }
 
 fun ZmpUtz14V001.getMaxQuantityProdWkl(): Double? {
-    return getParams("WKL_MAX_PROD_QNT:").getOrNull(0)?.toDoubleOrNull()
+    return getParams("WKL_MAX_PROD_QNT").getOrNull(0)?.toDoubleOrNull()
 }
+
+fun ZmpUtz14V001.getPrintServerMask(): String? {
+    return getParams("WKL_PRNT_SERVER_MASK:").getOrNull(0)
+}
+
 
 fun ZmpUtz14V001.getGrsGrundPos(): String? {
     return getParams("GRS_GRUND_POS").firstOrNull()

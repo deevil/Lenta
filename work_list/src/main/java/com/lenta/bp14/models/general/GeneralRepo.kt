@@ -1,8 +1,13 @@
 package com.lenta.bp14.models.general
 
 import com.lenta.bp14.fmp.resources.ZfmpUtz49V001
-import com.lenta.bp14.requests.tasks.*
+import com.lenta.bp14.requests.tasks.FilteredParams
+import com.lenta.bp14.requests.tasks.ITaskListFilteredNetRequest
+import com.lenta.bp14.requests.tasks.SimpleParams
+import com.lenta.bp14.requests.tasks.TaskListUpdateNetRequest
 import com.lenta.shared.exception.Failure
+import com.lenta.shared.fmp.resources.dao_ext.getAllowedWklAppVersion
+import com.lenta.shared.fmp.resources.fast.ZmpUtz14V001
 import com.lenta.shared.functional.Either
 import com.lenta.shared.functional.map
 import com.lenta.shared.utilities.extentions.isSapTrue
@@ -18,9 +23,8 @@ class GeneralRepo @Inject constructor(
         private val hyperHive: HyperHive
 ) : IGeneralRepo {
 
-    private val zfmpUtz49V001 by lazy {
-        ZfmpUtz49V001(hyperHive)
-    }
+    private val zfmpUtz49V001 by lazy { ZfmpUtz49V001(hyperHive) } // Типы заданий
+    private val settings: ZmpUtz14V001 by lazy { ZmpUtz14V001(hyperHive) } // Настройки
 
     private val emptyTaskTypeInfo = TaskTypeInfo(
             taskType = "",
@@ -90,6 +94,12 @@ class GeneralRepo @Inject constructor(
         getTasksTypes()
     }
 
+    override suspend fun getAllowedAppVersion(): String? {
+        return withContext(Dispatchers.IO) {
+            return@withContext settings.getAllowedWklAppVersion()
+        }
+    }
+
 }
 
 
@@ -99,6 +109,7 @@ interface IGeneralRepo {
     suspend fun getFilteredTaskList(filterParams: FilteredParams): Either<Failure, List<TaskInfo>>
     fun getTasksTypeInfo(taskType: String): ITaskTypeInfo?
     suspend fun onDbReady()
+    suspend fun getAllowedAppVersion(): String?
 }
 
 data class TaskInfo(

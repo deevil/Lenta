@@ -31,15 +31,19 @@ class GoodDetailsViewModel : CoreViewModel(), PageSelectionListener {
 
     val title = MutableLiveData<String>("")
 
+    val good by lazy { task.currentGood }
+
     val shelfLives: MutableLiveData<List<ItemShelfLifeUi>> by lazy {
-        task.currentGood.value!!.scanResults.map { list: List<ScanResult>? ->
+        good.map { good ->
             val combinedResults = mutableMapOf<String, ScanResult>()
-            list?.map { result ->
+            good?.scanResults?.map { result ->
                 val key = result.getKeyFromDates()
-                combinedResults[key] = if (combinedResults.containsKey(key)) {
-                    val totalQuantity = combinedResults[key]!!.quantity.sumWith(result.quantity)
-                    combinedResults[key]!!.copy(quantity = totalQuantity)
-                } else result
+                if (result.productionDate != null || result.expirationDate != null) {
+                    combinedResults[key] = if (combinedResults.containsKey(key)) {
+                        val totalQuantity = combinedResults[key]!!.quantity.sumWith(result.quantity)
+                        combinedResults[key]!!.copy(quantity = totalQuantity)
+                    } else result
+                }
             }
 
             combinedResults.values.mapIndexed { index, scanResult ->
@@ -55,14 +59,17 @@ class GoodDetailsViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     val comments: MutableLiveData<List<ItemCommentUi>> by lazy {
-        task.currentGood.value!!.scanResults.map { list: List<ScanResult>? ->
+        good.map { good ->
             val combinedResults = mutableMapOf<String, ScanResult>()
-            list?.map { result ->
+            val commentNotSelected = good?.comments?.get(0)
+            good?.scanResults?.map { result ->
                 val key = result.comment
-                combinedResults[key] = if (combinedResults.containsKey(key)) {
-                    val totalQuantity = combinedResults[key]!!.quantity.sumWith(result.quantity)
-                    combinedResults[key]!!.copy(quantity = totalQuantity)
-                } else result
+                if (key != commentNotSelected) {
+                    combinedResults[key] = if (combinedResults.containsKey(key)) {
+                        val totalQuantity = combinedResults[key]!!.quantity.sumWith(result.quantity)
+                        combinedResults[key]!!.copy(quantity = totalQuantity)
+                    } else result
+                }
             }
 
             combinedResults.values.mapIndexed { index, scanResult ->
@@ -74,6 +81,7 @@ class GoodDetailsViewModel : CoreViewModel(), PageSelectionListener {
             }
         }
     }
+
 
     private val selectedItemOnCurrentTab: MutableLiveData<Boolean> = selectedPage
             .combineLatest(shelfLifeSelectionsHelper.selectedPositions)

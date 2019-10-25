@@ -114,21 +114,15 @@ class GoodsListClViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     private fun checkEnteredNumber(number: String) {
         analyseCode(
                 code = number,
-                funcForEan = { eanCode ->
-                    viewModelScope.launch {
-                        addGood(task.getGoodByEan(eanCode))
-                    }
+                funcForEan = { ean ->
+                    searchCode(ean = ean)
                 },
-                funcForMatNr = { matNr ->
-                    viewModelScope.launch {
-                        addGood(task.getGoodByMaterial(matNr))
-                    }
+                funcForMatNr = { material ->
+                    searchCode(material = material)
                 },
                 funcForPriceQrCode = { qrCode ->
                     priceInfoParser.getPriceInfoFromRawCode(qrCode)?.let {
-                        viewModelScope.launch {
-                            addGood(task.getGoodByEan(it.eanCode))
-                        }
+                        searchCode(ean = it.eanCode)
                         return@analyseCode
                     }
                 },
@@ -137,15 +131,28 @@ class GoodsListClViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
         )
     }
 
-    private fun addGood(good: Good?) {
-        if (good == null) {
-            // Сообщение - Данный товар не найден в справочнике
-            navigator.showGoodNotFound()
-            return
-        }
+    private fun searchCode(ean: String? = null, material: String? = null) {
+        viewModelScope.launch {
+            require((ean != null) xor (material != null)) {
+                "Only one param allowed - ean: $ean, material: $material"
+            }
 
-        task.addGood(good)
-        numberField.value = ""
+            navigator.showProgressLoadingData()
+
+            when {
+                !ean.isNullOrBlank() -> task.getGoodByEan(ean)
+                !material.isNullOrBlank() -> task.getGoodByMaterial(material)
+                else -> null
+            }.also {
+                numberField.value = ""
+                navigator.hideProgress()
+            }?.let { good ->
+                task.addGood(good)
+                return@launch
+            }
+
+            navigator.showGoodNotFound()
+        }
     }
 
     fun onDigitPressed(digit: Int) {
@@ -160,6 +167,10 @@ class GoodsListClViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
 
     fun onScanResult(data: String) {
         checkEnteredNumber(data)
+    }
+
+    fun showVideoErrorMessage() {
+        navigator.showDeviceNotSupportVideoScan()
     }
 
 }

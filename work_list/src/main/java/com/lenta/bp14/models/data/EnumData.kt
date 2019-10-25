@@ -28,17 +28,22 @@ enum class ShelfLifeType(val position: Int) {
 enum class GoodType {
     COMMON,
     ALCOHOL,
+    EXCISE,
     MARKED
 }
 
-fun getGoodType(alcohol: String, marked: String): GoodType {
-    if (alcohol.isSapTrue()) return GoodType.ALCOHOL
-    if (marked.isSapTrue()) return GoodType.MARKED
-    return GoodType.COMMON
+fun getGoodType(alcohol: String, excise: String, marked: String): GoodType {
+    return when {
+        excise.isSapTrue() -> GoodType.EXCISE
+        alcohol.isSapTrue() -> GoodType.ALCOHOL
+        marked.isSapTrue() -> GoodType.MARKED
+        else -> GoodType.COMMON
+    }
 }
 
 fun ProductInfo.getGoodType(): GoodType {
     return when {
+        this.isExcise.isSapTrue() -> GoodType.EXCISE
         this.isAlco.isSapTrue() -> GoodType.ALCOHOL
         this.isMarked.isSapTrue() -> GoodType.MARKED
         else -> GoodType.COMMON
@@ -49,6 +54,7 @@ fun GoodType.getDescriptionResId(): Int {
     return when (this) {
         GoodType.COMMON -> R.string.common_product
         GoodType.ALCOHOL -> R.string.alcohol
+        GoodType.EXCISE -> R.string.excise_alcohol
         GoodType.MARKED -> R.string.marked_product
     }
 }

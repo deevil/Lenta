@@ -71,6 +71,7 @@ fun setPrintStatusIcon(imageView: ImageView, isPrinted: Boolean?) {
 fun setGoodTypeIcon(imageView: ImageView, goodType: GoodType?) {
     imageView.setImageResource(when (goodType) {
         GoodType.ALCOHOL -> R.drawable.ic_alco_white_48dp
+        GoodType.EXCISE -> R.drawable.ic_alco_white_48dp
         GoodType.MARKED -> R.drawable.ic_marked_white_48dp
         else -> R.drawable.ic_kandy_48dp
     }.also { iconRes ->

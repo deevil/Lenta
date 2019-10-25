@@ -18,9 +18,7 @@ import com.lenta.shared.requests.combined.scan_info.ScanInfoRequest
 import com.lenta.shared.requests.combined.scan_info.ScanInfoRequestParams
 import com.lenta.shared.requests.combined.scan_info.analyseCode
 import com.lenta.shared.utilities.databinding.PageSelectionListener
-import com.lenta.shared.utilities.extentions.isSapTrue
-import com.lenta.shared.utilities.extentions.map
-import com.lenta.shared.utilities.extentions.toStringFormatted
+import com.lenta.shared.utilities.extentions.*
 import com.mobrun.plugin.api.HyperHive
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -29,24 +27,21 @@ class GoodInfoNeViewModel : CoreViewModel(), PageSelectionListener {
 
     @Inject
     lateinit var navigator: IScreenNavigator
-
     @Inject
     lateinit var task: INotExposedProductsTask
-
     @Inject
     lateinit var scanInfoRequest: ScanInfoRequest
-
     @Inject
     lateinit var priceInfoParser: IPriceInfoParser
-
     @Inject
     lateinit var hyperHive: HyperHive
+
 
     private val maxQuantity: Double? by lazy {
         ZmpUtz14V001(hyperHive).getMaxQuantityProdWkl()
     }
 
-    private val goodInfo by lazy {
+    val goodInfo by lazy {
         task.getProcessedProductInfoResult()!!
     }
 
@@ -63,7 +58,6 @@ class GoodInfoNeViewModel : CoreViewModel(), PageSelectionListener {
                 }
         )
     }
-
 
     val selectedPage = MutableLiveData(0)
 
@@ -83,7 +77,6 @@ class GoodInfoNeViewModel : CoreViewModel(), PageSelectionListener {
         )
     }
 
-
     val originalProcessedProductInfo by lazy {
         task.getProcessedCheckInfo()
     }
@@ -93,17 +86,19 @@ class GoodInfoNeViewModel : CoreViewModel(), PageSelectionListener {
                 ?: ""}"
     }
 
-    val quantityField by lazy {
-        MutableLiveData<String>().also {
-            viewModelScope.launch {
-                it.value = originalProcessedProductInfo?.quantity?.toStringFormatted() ?: "0"
-            }
-        }
-    }
+    val quantityField = MutableLiveData<String>("0")
 
     private val quantityValue by lazy {
         quantityField.map {
-            it?.toDoubleOrNull()
+            val saved = task.getProcessedCheckInfo()?.quantity ?: 0.0
+            val entered = it?.toDoubleOrNull() ?: 0.0
+            saved.sumWith(entered)
+        }
+    }
+
+    val totalQuantity: MutableLiveData<String> by lazy {
+        quantityValue.map {
+            "${it?.dropZeros()} ${goodInfo.uom?.name ?: ""}"
         }
     }
 
@@ -126,10 +121,11 @@ class GoodInfoNeViewModel : CoreViewModel(), PageSelectionListener {
         isEmptyPlaceMarked.map { it == null }
     }
 
-
     override fun onPageSelected(position: Int) {
         selectedPage.value = position
     }
+
+    // -----------------------------
 
     fun onClickCancel() {
         isEmptyPlaceMarked.value = null
@@ -195,10 +191,8 @@ class GoodInfoNeViewModel : CoreViewModel(), PageSelectionListener {
         )
     }
 
-
     private fun searchCode(code: String) {
         viewModelScope.launch {
-
             navigator.showProgressLoadingData()
 
             scanInfoRequest(
@@ -217,7 +211,6 @@ class GoodInfoNeViewModel : CoreViewModel(), PageSelectionListener {
                     } else {
                         quantityField.value = newQuantity.toStringFormatted()
                     }
-
                 } else {
                     if (applyButtonEnabled.value == true) {
                         viewModelScope.launch {
@@ -242,16 +235,12 @@ class GoodInfoNeViewModel : CoreViewModel(), PageSelectionListener {
                             } else {
                                 navigator.showGoodIsNotPartOfTask()
                             }
-
-
                         }
                     }
-
                 }
             }
 
             navigator.hideProgress()
-
         }
     }
 
