@@ -52,30 +52,13 @@ class LoadingSubmittedViewModel : CoreLoadingViewModel() {
     }
 
     override fun handleFailure(failure: Failure) {
-        /**screenNavigator.goBack()
-        screenNavigator.openAlertScreen(failure)*/
-        val newDocs = listOf(TaskDocumentsPrinting(
-                appConditionsOutputDoc = "app1",
-                outputTypeDoc = "type1",
-                name = "name1"
-        ),
-                TaskDocumentsPrinting(
-                        appConditionsOutputDoc = "app2",
-                        outputTypeDoc = "type2",
-                        name = "name2"
-                ),
-                TaskDocumentsPrinting(
-                        appConditionsOutputDoc = "app3",
-                        outputTypeDoc = "type2",
-                        name = "name3"
-                ))
-        taskManager.getReceivingTask()?.taskRepository?.getDocumentsPrinting()?.updateDocumentsPrinting(newDocs)
-        screenNavigator.openFormedDocsScreen()
+        screenNavigator.goBack()
+        screenNavigator.openAlertScreen(failure)
     }
 
     private fun handleSuccess(result: SubmittedRestInfo) {
         taskManager.updateTaskDescription(TaskDescription.from(result.taskDescription))
-        taskManager.getReceivingTask()?.taskRepository?.getDocumentsPrinting()?.updateDocumentsPrinting(result.listDocumentsPrinting)
+        taskManager.getReceivingTask()?.taskRepository?.getDocumentsPrinting()?.updateDocumentsPrinting(result.listDocumentsPrinting.map { TaskDocumentsPrinting.from(it) })
         screenNavigator.openTaskCardScreen(TaskCardMode.Full)
     }
 

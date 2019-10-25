@@ -1,10 +1,7 @@
 package com.lenta.bp9.requests.network
 
 import com.google.gson.annotations.SerializedName
-import com.lenta.bp9.model.task.TaskDescriptionRestInfo
-import com.lenta.bp9.model.task.TaskDocumentsPrinting
-import com.lenta.bp9.model.task.TaskNotificationRestInfo
-import com.lenta.bp9.model.task.TaskSectionInfo
+import com.lenta.bp9.model.task.*
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.fmp.ObjectRawStatus
 import com.lenta.shared.functional.Either
@@ -34,7 +31,7 @@ class SubmittedStatus : ObjectRawStatus<SubmittedRestInfo>()
 
 data class SubmittedRestInfo(
         @SerializedName("ET_DOC_PRINT")
-        val listDocumentsPrinting: List<TaskDocumentsPrinting>, //Список документов для печати
+        val listDocumentsPrinting: List<TaskDocumentsPrintingRestInfo>, //Список документов для печати
         @SerializedName("ES_TASK")
         val taskDescription: TaskDescriptionRestInfo, //Структура карточки задания
         @SerializedName("ET_NOTIFY")
