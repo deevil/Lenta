@@ -2,6 +2,7 @@ package com.lenta.bp14.features.select_market
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.lenta.bp14.models.IGeneralTaskManager
 import com.lenta.bp14.platform.navigation.IScreenNavigator
 import com.lenta.bp14.repos.IRepoInMemoryHolder
 import com.lenta.shared.account.ISessionInfo
@@ -34,6 +35,8 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
     lateinit var serverTimeRequest: ServerTimeRequest
     @Inject
     lateinit var printerManager: PrinterManager
+    @Inject
+    lateinit var generalTaskManager: IGeneralTaskManager
 
 
     private val markets: MutableLiveData<List<MarketUi>> = MutableLiveData()
@@ -82,10 +85,8 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
                 navigator.showProgress(serverTimeRequest)
                 serverTimeRequest(ServerTimeRequestParam(sessionInfo.market
                         ?: "")).either(::handleFailure, ::handleSuccessServerTime)
-
             }
         }
-
     }
 
     override fun handleFailure(failure: Failure) {
@@ -96,12 +97,32 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
     private fun handleSuccessServerTime(serverTime: ServerTime) {
         navigator.hideProgress()
         timeMonitor.setServerTime(time = serverTime.time, date = serverTime.date)
-        navigator.openMainMenuScreen()
+
+
+        // Раскомментировать для удаление сохраненных данных
+        //generalTaskManager.clearSavedTaskData()
+
+        if (generalTaskManager.isExistSavedTaskData()) {
+            navigator.showUnsavedDataFoundOnDevice(
+                    deleteCallback = {
+                        generalTaskManager.clearSavedTaskData()
+                        navigator.openMainMenuScreen()
+                    },
+                    goOverCallback = {
+                        // TODO Доработать логику
+                        // Сделать восстановление данных и открытие соответствующей задачи
+                        navigator.openMainMenuScreen()
+                    }
+            )
+        } else {
+            navigator.openMainMenuScreen()
+        }
     }
 
     override fun onClickPosition(position: Int) {
         selectedPosition.value = position
     }
+
 }
 
 data class MarketUi(
