@@ -18,12 +18,8 @@ import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.analyseCode
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.databinding.PageSelectionListener
-import com.lenta.shared.utilities.extentions.combineLatest
-import com.lenta.shared.utilities.extentions.dropZeros
-import com.lenta.shared.utilities.extentions.map
-import com.lenta.shared.utilities.extentions.sumWith
+import com.lenta.shared.utilities.extentions.*
 import com.lenta.shared.view.OnPositionClickListener
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
@@ -48,7 +44,15 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
 
     val selectedPage = MutableLiveData(0)
 
-    val showProgress = MutableLiveData<Boolean>(true)
+    val loadingIndicatorVisibility = MutableLiveData<Boolean>(true)
+
+    val dataLoadingErrorVisibility = MutableLiveData<Boolean>(false)
+
+    val dataLoadingError = MutableLiveData<String>("")
+
+    val dataVisibility = loadingIndicatorVisibility.combineLatest(dataLoadingErrorVisibility).map {
+        it?.first == false && it.second == false
+    }
 
     val commentsPosition = MutableLiveData(0)
     val shelfLifeTypePosition = MutableLiveData(0)
@@ -257,22 +261,21 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
                     tkNumber = sessionInfo.market ?: "Not Found!",
                     ean = good.value?.ean,
                     matNr = good.value?.material
-            )).either(::handleAdditionalInfoFailure, ::updateAdditionalGoodInfo)
+            )).also {
+                loadingIndicatorVisibility.value = false
+            }.either(::handleAdditionalInfoFailure, ::updateAdditionalGoodInfo)
         }
     }
 
     private fun handleAdditionalInfoFailure(failure: Failure) {
         super.handleFailure(failure)
-        viewModelScope.launch {
-            delay(1500)
-            loadAdditionalInfo()
-        }
+        dataLoadingError.value = if (failure is Failure.SapError) failure.message else failure.toString()
+        dataLoadingErrorVisibility.value = true
     }
 
     private fun updateAdditionalGoodInfo(result: AdditionalGoodInfo) {
         Logg.d { "AdditionalGoodInfo: $result" }
         task.updateAdditionalGoodInfo(result)
-        showProgress.value = false
     }
 
     override fun onPageSelected(position: Int) {

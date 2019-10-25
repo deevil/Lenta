@@ -12,6 +12,7 @@ data class SessionInfo(
         override var printerNumber: String? = null,
         override var market: String? = null,
         override var basicAuth: String? = null,
+        override var existUnsavedData: Boolean? = null,
         override var isAuthSkipped: MutableLiveData<Boolean> = MutableLiveData(false)
 ) : ISessionInfo
 
@@ -24,5 +25,6 @@ interface ISessionInfo {
     var printerNumber: String?
     var market: String?
     var basicAuth: String?
+    var existUnsavedData: Boolean?
     var isAuthSkipped: MutableLiveData<Boolean>
 }
