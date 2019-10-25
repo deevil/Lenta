@@ -35,6 +35,7 @@ import com.lenta.shared.scan.newland.NewLandScanHelper
 import com.lenta.shared.utilities.Logg
 import javax.inject.Inject
 import com.lenta.shared.platform.navigation.ICoreNavigator
+import com.lenta.shared.scan.atol.AtolScanHelper
 import com.lenta.shared.scan.zebra.ZebraScanHelper
 import com.lenta.shared.utilities.extentions.*
 import com.lenta.shared.utilities.extentions.hhive.ANALYTICS_HELPER
@@ -59,6 +60,7 @@ abstract class CoreMainActivity : CoreActivity<ActivityMainBinding>(), ToolbarBu
     val honeywellScanHelper = HoneywellScanHelper()
     val newLandScanHelper = NewLandScanHelper()
     val zebraScanHelper = ZebraScanHelper()
+    val atolScanHelper = AtolScanHelper()
 
     private val vm: CoreMainViewModel by lazy {
         getViewModel().apply {
@@ -117,6 +119,8 @@ abstract class CoreMainActivity : CoreActivity<ActivityMainBinding>(), ToolbarBu
         newLandScanHelper.scanResult.observe(this, scanObserver)
 
         zebraScanHelper.scanResult.observe(this, scanObserver)
+
+        atolScanHelper.scanResult.observe(this, scanObserver)
     }
 
     override fun onResume() {
@@ -137,6 +141,7 @@ abstract class CoreMainActivity : CoreActivity<ActivityMainBinding>(), ToolbarBu
         honeywellScanHelper.startListen(this)
         newLandScanHelper.startListen(this)
         zebraScanHelper.startListen(this)
+        atolScanHelper.startListen(this)
         vm.onResume()
     }
 
@@ -162,6 +167,7 @@ abstract class CoreMainActivity : CoreActivity<ActivityMainBinding>(), ToolbarBu
         honeywellScanHelper.stopListen(this)
         newLandScanHelper.stopListen(this)
         zebraScanHelper.stopListen(this)
+        atolScanHelper.stopListen(this)
         vm.onPause()
     }
 
