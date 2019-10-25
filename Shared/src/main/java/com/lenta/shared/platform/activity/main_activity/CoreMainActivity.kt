@@ -36,6 +36,7 @@ import com.lenta.shared.utilities.Logg
 import javax.inject.Inject
 import com.lenta.shared.platform.navigation.ICoreNavigator
 import com.lenta.shared.scan.atol.AtolScanHelper
+import com.lenta.shared.scan.cipherlab.CipherLabScanHelper
 import com.lenta.shared.scan.zebra.ZebraScanHelper
 import com.lenta.shared.utilities.extentions.*
 import com.lenta.shared.utilities.extentions.hhive.ANALYTICS_HELPER
@@ -61,6 +62,7 @@ abstract class CoreMainActivity : CoreActivity<ActivityMainBinding>(), ToolbarBu
     val newLandScanHelper = NewLandScanHelper()
     val zebraScanHelper = ZebraScanHelper()
     val atolScanHelper = AtolScanHelper()
+    val cipherLabScanHelper = CipherLabScanHelper()
 
     private val vm: CoreMainViewModel by lazy {
         getViewModel().apply {
@@ -121,6 +123,8 @@ abstract class CoreMainActivity : CoreActivity<ActivityMainBinding>(), ToolbarBu
         zebraScanHelper.scanResult.observe(this, scanObserver)
 
         atolScanHelper.scanResult.observe(this, scanObserver)
+
+        cipherLabScanHelper.scanResult.observe(this, scanObserver)
     }
 
     override fun onResume() {
@@ -142,6 +146,7 @@ abstract class CoreMainActivity : CoreActivity<ActivityMainBinding>(), ToolbarBu
         newLandScanHelper.startListen(this)
         zebraScanHelper.startListen(this)
         atolScanHelper.startListen(this)
+        cipherLabScanHelper.startListen(this)
         vm.onResume()
     }
 
@@ -168,6 +173,7 @@ abstract class CoreMainActivity : CoreActivity<ActivityMainBinding>(), ToolbarBu
         newLandScanHelper.stopListen(this)
         zebraScanHelper.stopListen(this)
         atolScanHelper.stopListen(this)
+        cipherLabScanHelper.stopListen(this)
         vm.onPause()
     }
 

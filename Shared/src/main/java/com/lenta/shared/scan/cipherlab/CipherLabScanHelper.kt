@@ -1,4 +1,4 @@
-package com.lenta.shared.scan.atol
+package com.lenta.shared.scan.cipherlab
 
 import android.app.Activity
 import android.content.BroadcastReceiver
@@ -9,12 +9,11 @@ import androidx.lifecycle.MutableLiveData
 import com.lenta.shared.scan.IScanHelper
 import com.lenta.shared.utilities.Logg
 
-class AtolScanHelper : IScanHelper {
+class CipherLabScanHelper : IScanHelper {
 
     companion object {
-        private const val intentFilterAction = "com.xcheng.scanner.action.BARCODE_DECODING_BROADCAST"
-        private const val barcodeDataKey = "EXTRA_BARCODE_DECODING_DATA"
-        private const val symbologyTypeKey = "EXTRA_BARCODE_DECODING_SYMBOLE"
+        private const val intentFilterAction = "com.lenta.cipherscan"
+        private const val barcodeDataKey = "EXTRA_CIPHER_DATA"
     }
 
 
@@ -35,17 +34,12 @@ class AtolScanHelper : IScanHelper {
     private val mBarcodeReadBroadCast = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             val action = intent.action
-            Logg.d { "atol action: $action" }
+            Logg.d { "cipherlab action: $action" }
 
 
             if (action == intentFilterAction) {
-
                 val decodedData = intent.getStringExtra(barcodeDataKey)
-                val symbologyType = intent.getStringExtra(symbologyTypeKey)
-
                 Logg.d { "decodedData: $decodedData" }
-                Logg.d { "symbologyType: $symbologyType" }
-
                 if (decodedData != null) {
                     scanResult.postValue(decodedData)
                 }
