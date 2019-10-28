@@ -94,14 +94,14 @@ class GeneralTaskManager @Inject constructor(
         }
     }
 
-    override fun getSavedData(): TaskData? {
-        return savedTaskData
-    }
-
     override fun loadTaskData() {
         persistTaskData.getSavedTaskData()?.let { taskData ->
             savedTaskData = taskData
         }
+    }
+
+    override fun getSavedData(): TaskData? {
+        return savedTaskData
     }
 
     override fun clearSavedTaskData() {
@@ -119,7 +119,7 @@ interface IGeneralTaskManager {
     fun getLatestSentReportResult(): SentReportResult?
     fun isExistSavedTaskData(): Boolean
     fun saveTaskData()
-    fun getSavedData(): TaskData?
     fun loadTaskData()
+    fun getSavedData(): TaskData?
     fun clearSavedTaskData()
 }

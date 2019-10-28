@@ -1,16 +1,16 @@
 package com.lenta.bp14.models.not_exposed_products
 
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
+import com.google.gson.Gson
 import com.lenta.bp14.di.NotExposedScope
 import com.lenta.bp14.models.BaseProductInfo
 import com.lenta.bp14.models.ITask
 import com.lenta.bp14.models.ITaskDescription
 import com.lenta.bp14.models.filter.FilterFieldType
 import com.lenta.bp14.models.filter.IFilterable
-import com.lenta.bp14.models.general.ITaskTypeInfo
 import com.lenta.bp14.models.general.AppTaskTypes
 import com.lenta.bp14.models.general.IGeneralRepo
+import com.lenta.bp14.models.general.ITaskTypeInfo
 import com.lenta.bp14.models.not_exposed_products.repo.INotExposedProductInfo
 import com.lenta.bp14.models.not_exposed_products.repo.INotExposedProductsRepo
 import com.lenta.bp14.models.not_exposed_products.repo.NotExposedProductInfo
@@ -21,6 +21,7 @@ import com.lenta.bp14.requests.not_exposed_product.NotExposedReport
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.functional.Either
 import com.lenta.shared.functional.rightToLeft
+import com.lenta.shared.models.core.StateFromToString
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.isSapTrue
 import com.lenta.shared.utilities.extentions.map
@@ -32,8 +33,9 @@ class NotExposedProductsTask @Inject constructor(
         private val taskDescription: NotExposedProductsTaskDescription,
         private val notExposedProductsRepo: INotExposedProductsRepo,
         private val filterableDelegate: IFilterable,
-        private val productInfoNotExposedInfoRequest: IProductInfoForNotExposedNetRequest
-) : INotExposedProductsTask, IFilterable by filterableDelegate {
+        private val productInfoNotExposedInfoRequest: IProductInfoForNotExposedNetRequest,
+        private val gson: Gson
+) : INotExposedProductsTask, StateFromToString, IFilterable by filterableDelegate {
 
     private val productsInfoMap by lazy {
         taskDescription.additionalTaskInfo?.productsInfo?.map { it.matNr to it }?.toMap()
@@ -269,6 +271,20 @@ class NotExposedProductsTask @Inject constructor(
                 ?: true
     }
 
+    override fun saveStateToString(): String {
+        return gson.toJson(NotExposedData(
+                taskDescription = taskDescription
+        ))
+    }
+
+    override fun getStateFromString(state: String) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun restoreData(data: Any) {
+        val notExposedData = data as NotExposedData
+        // Логика восстановления данных...
+    }
 
 }
 
@@ -296,4 +312,9 @@ interface INotExposedProductsTask : ITask, IFilterable {
     fun isAllowedProduct(materialNumber: String): Boolean
 
 }
+
+data class NotExposedData(
+        val taskDescription: NotExposedProductsTaskDescription
+        //val goods: List<Good>
+)
 

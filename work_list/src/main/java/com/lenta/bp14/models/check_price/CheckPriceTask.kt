@@ -68,7 +68,6 @@ class CheckPriceTask @Inject constructor(
     }
 
     private fun initProcessed() {
-
         taskDescription.additionalTaskInfo?.prices?.forEach {
             val productInfo = productsInfoMap[it.matnr]
             actualPricesRepo.addToCacheActualPriceInfo(
@@ -350,8 +349,9 @@ class CheckPriceTask @Inject constructor(
     }
 
     override fun saveStateToString(): String {
-        //TODO будет реализовано позже
-        return ""
+        return gson.toJson(CheckPriceData(
+                taskDescription = taskDescription
+        ))
     }
 
     override fun getStateFromString(state: String) {
@@ -359,7 +359,8 @@ class CheckPriceTask @Inject constructor(
     }
 
     override fun restoreData(data: Any) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        val checkPriceData = data as CheckPriceData
+        // Логика восстановления данных...
     }
 
 }
@@ -496,3 +497,8 @@ interface IUserPriceInfo {
      */
     val isValidPrice: Boolean?
 }
+
+data class  CheckPriceData(
+        val taskDescription: CheckPriceTaskDescription
+        //val goods: List<Good>
+)
