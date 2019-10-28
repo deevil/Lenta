@@ -258,6 +258,10 @@ data class ButtonDecorationInfo(
             ButtonDecorationInfo(R.drawable.ic_temp_rejection, R.string.temporary)
         }
 
+        val supply: ButtonDecorationInfo by lazy {
+            ButtonDecorationInfo(R.drawable.ic_supply_white_24dp, R.string.supply)
+        }
+
         val sort: ButtonDecorationInfo by lazy {
             ButtonDecorationInfo(R.drawable.ic_sort, R.string.sort)
         }

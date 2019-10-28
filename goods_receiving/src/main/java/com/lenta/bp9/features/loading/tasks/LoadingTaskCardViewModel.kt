@@ -4,10 +4,7 @@ import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp9.R
-import com.lenta.bp9.model.task.IReceivingTaskManager
-import com.lenta.bp9.model.task.TaskDescription
-import com.lenta.bp9.model.task.TaskNotification
-import com.lenta.bp9.model.task.TaskStatus
+import com.lenta.bp9.model.task.*
 import com.lenta.bp9.model.task.revise.*
 import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.bp9.repos.IRepoInMemoryHolder
@@ -109,6 +106,9 @@ class LoadingTaskCardViewModel : CoreLoadingViewModel() {
             val complexDocumentsRevise = result.complexDocumentsRevise.map { ComplexDocumentRevise.from(it) }
             val transportConditions = result.transportConditions.map { TransportCondition.from(it) }
 
+            val sectionInfo = result.sectionsInfo.map { TaskSectionInfo.from(it) }
+            val sectionProducts = result.sectionProducts.map { TaskSectionProducts.from(it) }
+
             val newTask = taskManager.newReceivingTask(taskHeader, TaskDescription.from(result.taskDescription))
             newTask?.taskRepository?.getNotifications()?.updateWithNotifications(notifications, documentNotifications, productNotifications, conditionNotifications)
             newTask?.taskRepository?.getNotifications()?.updateWithInvoiceNotes(commentsToVP)
@@ -122,6 +122,7 @@ class LoadingTaskCardViewModel : CoreLoadingViewModel() {
                 this.updateInvoiceInfo(invoiceRevise)
                 this.updateTransportCondition(transportConditions)
             }
+            newTask?.taskRepository?.getSections()?.updateSections(sectionInfo, sectionProducts)
             taskManager.setTask(newTask)
             transferToNextScreen()
         }

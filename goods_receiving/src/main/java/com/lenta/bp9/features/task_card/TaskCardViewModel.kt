@@ -6,12 +6,12 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp9.features.change_datetime.ChangeDateTimeMode
 import com.lenta.bp9.features.loading.tasks.TaskCardMode
-import com.lenta.bp9.model.task.IReceivingTaskManager
-import com.lenta.bp9.model.task.NotificationIndicatorType
-import com.lenta.bp9.model.task.TaskNotification
-import com.lenta.bp9.model.task.TaskStatus
+import com.lenta.bp9.model.task.*
 import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.shared.account.ISessionInfo
+import com.lenta.shared.models.core.MatrixType
+import com.lenta.shared.models.core.ProductType
+import com.lenta.shared.models.core.Uom
 import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.platform.time.ITimeMonitor
 import com.lenta.shared.utilities.Logg
@@ -175,6 +175,15 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
             }
             TaskStatus.Checked -> {
                 screenNavigator.openStartConditionsReviseLoadingScreen()
+            }
+            TaskStatus.Unloaded -> {
+                screenNavigator.openRecountStartLoadingScreen()
+            }
+            TaskStatus.TransferringToSection -> {
+                screenNavigator.openTransferGoodsSectionScreen()
+            }
+            TaskStatus.Completed -> {
+                screenNavigator.openFormedDocsScreen()
             }
         }
     }

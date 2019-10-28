@@ -7,6 +7,7 @@ interface ITaskProductsDiscrepanciesRepository {
     fun getProductsDiscrepancies(): List<TaskProductDiscrepancies>
     fun findProductDiscrepanciesOfProduct(product: TaskProductInfo): List<TaskProductDiscrepancies>
     fun addProductDiscrepancy(discrepancy: TaskProductDiscrepancies): Boolean
+    fun updateProductsDiscrepancy(newProductsDiscrepancies: List<TaskProductDiscrepancies>)
     fun changeProductDiscrepancy(discrepancy: TaskProductDiscrepancies): Boolean
     fun deleteProductDiscrepancy(discrepancy: TaskProductDiscrepancies): Boolean
     fun deleteProductsDiscrepanciesForProduct(product: TaskProductInfo): Boolean

@@ -8,4 +8,6 @@ interface ITaskRepository {
     fun getProductsDiscrepancies(): ITaskProductsDiscrepanciesRepository
     fun getBatches(): ITaskBatchesRepository
     fun getBatchesDiscrepancies(): ITaskBatchesDiscrepanciesRepository
+    fun getSections():ITaskSectionRepository
+    fun getDocumentsPrinting():ITaskDocumentsPrintingRepository
 }

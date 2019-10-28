@@ -39,6 +39,11 @@ class MemoryTaskBatchesDiscrepanciesRepository : ITaskBatchesDiscrepanciesReposi
         return false
     }
 
+    override fun changeBatchDiscrepancy(discrepancy: TaskBatchesDiscrepancies): Boolean {
+        deleteBatchDiscrepancies(discrepancy)
+        return addBatchDiscrepancies(discrepancy)
+    }
+
     override fun deleteBatchDiscrepancies(discrepancies: TaskBatchesDiscrepancies): Boolean {
         var index = -1
         for (i in batchesDiscrepancies.indices) {

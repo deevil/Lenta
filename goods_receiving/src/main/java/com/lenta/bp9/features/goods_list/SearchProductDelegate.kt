@@ -124,19 +124,17 @@ class SearchProductDelegate @Inject constructor(
     }
 
     fun openProductScreen(taskProductInfo: TaskProductInfo) {
-        //todo доработать, когда будут реализованы экраны для всех типов продуктов
-        screenNavigator.openGoodsInfoScreen(taskProductInfo)
-        /**when (taskProductInfo.type) {
-            ProductType.General -> screenNavigator.openGoodsInfoScreen(taskProductInfo, initialCount)
+        when (taskProductInfo.type) {
+            ProductType.General -> screenNavigator.openGoodsInfoScreen(taskProductInfo)
             ProductType.ExciseAlcohol -> {
                 if (taskProductInfo.isSet) {
-                    screenNavigator.openSetsInfoScreen(taskProductInfo)
+                    screenNavigator.openNotImplementedScreenAlert("Информация о наборе")
+                    //screenNavigator.openSetsInfoScreen(taskProductInfo)
                     return
                 } else
-                    Logg.d { "taskProductInfo: $taskProductInfo" }
                 screenNavigator.openExciseAlcoInfoScreen(taskProductInfo)
             }
-            else -> screenNavigator.openGoodsInfoScreen(taskProductInfo, initialCount)
-        }*/
+            else -> screenNavigator.openGoodsInfoScreen(taskProductInfo)
+        }
     }
 }

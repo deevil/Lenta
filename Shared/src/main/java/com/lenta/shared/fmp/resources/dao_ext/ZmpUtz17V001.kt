@@ -22,6 +22,11 @@ fun ZmpUtz17V001.getItemsByTid(tid: String): MutableList<ZmpUtz17V001.ItemLocal_
     return localHelper_ET_DICT.getWhere("TID = \"$tid\"")
 }
 
+fun ZmpUtz17V001.getItemsByTidSorted(tid: String): MutableList<ZmpUtz17V001.ItemLocal_ET_DICT>? {
+    @Suppress("INACCESSIBLE_TYPE")
+    return localHelper_ET_DICT.getWhere("TID = \"$tid\" ORDER BY SORDER")
+}
+
 fun List<ZmpUtz17V001.ItemLocal_ET_DICT>.toDescriptionsList(): List<String> {
     return this.map { it.shtxt }
 }
