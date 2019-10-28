@@ -7,6 +7,7 @@ interface ITaskBatchesDiscrepanciesRepository {
     fun getBatchesDiscrepancies(): List<TaskBatchesDiscrepancies>
     fun findBatchDiscrepanciesOfBatch(batch: TaskBatchInfo): List<TaskBatchesDiscrepancies>
     fun addBatchDiscrepancies(discrepancies: TaskBatchesDiscrepancies): Boolean
+    fun changeBatchDiscrepancy(discrepancy: TaskBatchesDiscrepancies): Boolean
     fun deleteBatchDiscrepancies(discrepancies: TaskBatchesDiscrepancies): Boolean
     fun deleteBatchesDiscrepanciesForBatch(batch: TaskBatchInfo): Boolean
     fun getCountAcceptOfBatch(batch: TaskBatchInfo): Double

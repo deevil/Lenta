@@ -37,6 +37,12 @@ class MemoryTaskProductsDiscrepanciesRepository : ITaskProductsDiscrepanciesRepo
         return false
     }
 
+    override fun updateProductsDiscrepancy(newProductsDiscrepancies: List<TaskProductDiscrepancies>) {
+        for (productsDiscrepancies in newProductsDiscrepancies) {
+            addProductDiscrepancy(productsDiscrepancies)
+        }
+    }
+
     override fun changeProductDiscrepancy(discrepancy: TaskProductDiscrepancies): Boolean {
         deleteProductDiscrepancy(discrepancy)
         return addProductDiscrepancy(discrepancy)

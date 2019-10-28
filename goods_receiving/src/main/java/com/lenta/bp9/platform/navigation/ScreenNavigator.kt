@@ -17,19 +17,27 @@ import com.lenta.bp9.R
 import com.lenta.bp9.features.change_datetime.ChangeDateTimeFragment
 import com.lenta.bp9.features.change_datetime.ChangeDateTimeMode
 import com.lenta.bp9.features.discrepancy_list.DiscrepancyListFragment
+import com.lenta.bp9.features.formed_docs.FormedDocsFragment
 import com.lenta.bp9.features.goods_details.GoodsDetailsFragment
+import com.lenta.bp9.features.goods_information.excise_alco.ExciseAlcoInfoFragment
 import com.lenta.bp9.features.goods_information.general.GoodsInfoFragment
 import com.lenta.bp9.features.goods_information.non_excise_alco.NonExciseAlcoInfoFragment
+import com.lenta.bp9.features.goods_information.perishables.PerishablesInfoFragment
+import com.lenta.bp9.features.list_goods_transfer.ListGoodsTransferFragment
 import com.lenta.bp9.features.loading.tasks.*
 import com.lenta.bp9.features.reject.RejectFragment
+import com.lenta.bp9.features.repres_person_num_entry.RepresPersonNumEntryFragment
 import com.lenta.bp9.features.revise.*
 import com.lenta.bp9.model.task.TaskProductInfo
 import com.lenta.bp9.features.revise.invoice.InvoiceReviseFragment
+import com.lenta.bp9.features.transfer_goods_section.TransferGoodsSectionFragment
 import com.lenta.bp9.model.task.revise.ProductDocumentType
 import com.lenta.bp9.model.task.TaskBatchInfo
+import com.lenta.bp9.model.task.TaskSectionInfo
 import com.lenta.shared.account.IAuthenticator
 import com.lenta.shared.features.alert.AlertFragment
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
+import com.lenta.shared.platform.navigation.CustomAnimation
 import com.lenta.shared.platform.navigation.ICoreNavigator
 import com.lenta.shared.platform.navigation.runOrPostpone
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
@@ -288,9 +296,86 @@ class ScreenNavigator(
         openInfoScreen(context.getString(R.string.goods_not_in_order))
     }
 
-    override fun openNonExciseAlcoInfoScreen() {
+    override fun openNonExciseAlcoInfoScreen(productInfo: TaskProductInfo) {
         runOrPostpone {
-            getFragmentStack()?.push(NonExciseAlcoInfoFragment())
+            getFragmentStack()?.push(NonExciseAlcoInfoFragment.create(productInfo))
+        }
+    }
+
+    override fun openSupplyResultsSuccessDialog(numberSupply: String, leftCallbackFunc: () -> Unit, rightCallbackFunc: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.supply_results_success_dialog, numberSupply),
+                    codeConfirmForButton4 = backFragmentResultHelper.setFuncForResult(leftCallbackFunc),
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(rightCallbackFunc),
+                    iconRes = R.drawable.ic_done_green_80dp,
+                    pageNumber = "78",
+                    description = context.getString(R.string.supply_results),
+                    isVisibleLeftButton = false,
+                    rightButtonDecorationInfo = ButtonDecorationInfo.next,
+                    buttonDecorationInfo4 = ButtonDecorationInfo.supply))
+        }
+    }
+
+    override fun openSupplyResultsErrorDialog(numberSupply: String, userName: String) {
+        runOrPostpone {
+            getFragmentStack()?.let {
+
+                val fragment = AlertFragment.create(
+                        message = context.getString(R.string.supply_results_error_dialog, numberSupply, userName),
+                        iconRes = R.drawable.ic_info_pink,
+                        textColor = ContextCompat.getColor(context, com.lenta.shared.R.color.color_text_dialogWarning),
+                        pageNumber = "77",
+                        description = context.getString(R.string.supply_results)
+                )
+                it.push(fragment, CustomAnimation.vertical)
+
+            }
+        }
+    }
+
+    override fun openSupplyResultsAutomaticChargeSuccessDialog(numberSupply: String, leftCallbackFunc: () -> Unit, rightCallbackFunc: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.supply_results_automatic_charge_success, numberSupply),
+                    codeConfirmForButton4 = backFragmentResultHelper.setFuncForResult(leftCallbackFunc),
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(rightCallbackFunc),
+                    iconRes = R.drawable.ic_done_green_80dp,
+                    pageNumber = "76",
+                    description = context.getString(R.string.supply_results),
+                    isVisibleLeftButton = false,
+                    rightButtonDecorationInfo = ButtonDecorationInfo.next,
+                    buttonDecorationInfo4 = ButtonDecorationInfo.supply))
+        }
+    }
+
+    override fun openSupplyResultsAutomaticChargeErrorDialog() {
+        runOrPostpone {
+            getFragmentStack()?.let {
+
+                val fragment = AlertFragment.create(
+                        message = context.getString(R.string.supply_results_automatic_charge_error),
+                        iconRes = R.drawable.ic_info_pink,
+                        textColor = ContextCompat.getColor(context, com.lenta.shared.R.color.color_text_dialogWarning),
+                        pageNumber = "75",
+                        description = context.getString(R.string.supply_results)
+                )
+                it.push(fragment, CustomAnimation.vertical)
+
+            }
+        }
+    }
+
+    override fun openAlertOverlimit() {
+        openAlertScreen(message = context.getString(R.string.alert_overlimit),
+                iconRes = R.drawable.ic_info_pink,
+                textColor = ContextCompat.getColor(context, R.color.color_text_dialogWarning),
+                pageNumber = "96",
+                timeAutoExitInMillis = 3000
+        )
+    }
+
+    override fun openExciseAlcoInfoScreen(productInfo: TaskProductInfo) {
+        runOrPostpone {
+            getFragmentStack()?.push(ExciseAlcoInfoFragment.create(productInfo))
         }
     }
 
@@ -318,6 +403,31 @@ class ScreenNavigator(
         }
     }
 
+    override fun openPerishablesInfoScreen(productInfo: TaskProductInfo) {
+        runOrPostpone {
+            getFragmentStack()?.push(PerishablesInfoFragment.create(productInfo))
+        }
+    }
+
+    override fun openRoundingIssueDialog(noCallbackFunc: () -> Unit, yesCallbackFunc: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.rounding_issue),
+                    codeConfirmForLeft = backFragmentResultHelper.setFuncForResult(noCallbackFunc),
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(yesCallbackFunc),
+                    iconRes = R.drawable.ic_question_80dp,
+                    pageNumber = "97",
+                    leftButtonDecorationInfo = ButtonDecorationInfo.no,
+                    rightButtonDecorationInfo = ButtonDecorationInfo.yes))
+        }
+    }
+
+    override fun openTransferGoodsSectionScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(TransferGoodsSectionFragment())
+        }
+    }
+
     override fun openTransportConditionsScreen() {
         runOrPostpone {
             getFragmentStack()?.push(TransportConditionsReviseFragment())
@@ -333,6 +443,65 @@ class ScreenNavigator(
     override fun openStartConditionsReviseLoadingScreen() {
         runOrPostpone {
             getFragmentStack()?.push(LoadingStartConditionsReviseFragment())
+        }
+    }
+
+    override fun openListGoodsTransferScreen(sectionInfo: TaskSectionInfo) {
+        runOrPostpone {
+            getFragmentStack()?.push(ListGoodsTransferFragment.create(sectionInfo))
+        }
+    }
+
+    override fun openRepresPersonNumEntryScreen(sectionInfo: TaskSectionInfo) {
+        runOrPostpone {
+            getFragmentStack()?.push(RepresPersonNumEntryFragment.create(sectionInfo))
+        }
+    }
+
+    override fun openFormedDocsScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(FormedDocsFragment())
+        }
+    }
+
+    override fun openAlertCountLargerOverdelivery() {
+        openAlertScreen(message = context.getString(R.string.alert_count_larger_overdelivery),
+                iconRes = R.drawable.ic_info_pink,
+                textColor = ContextCompat.getColor(context, R.color.color_text_dialogWarning),
+                pageNumber = "96"
+        )
+    }
+
+    override fun openAlertNotCorrectDate() {
+        openAlertScreen(message = context.getString(R.string.alert_not_correct_date),
+                iconRes = R.drawable.ic_info_pink,
+                textColor = ContextCompat.getColor(context, R.color.color_text_dialogWarning),
+                pageNumber = "96"
+        )
+    }
+
+    override fun openExpiredDialog(noCallbackFunc: () -> Unit, yesCallbackFunc: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.the_shelf_life_has_expired),
+                    codeConfirmForLeft = backFragmentResultHelper.setFuncForResult(noCallbackFunc),
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(yesCallbackFunc),
+                    iconRes = R.drawable.ic_question_80dp,
+                    pageNumber = "97",
+                    leftButtonDecorationInfo = ButtonDecorationInfo.no,
+                    rightButtonDecorationInfo = ButtonDecorationInfo.yes))
+        }
+    }
+
+    override fun openRecountStartLoadingScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(LoadingRecountStartFragment())
+        }
+    }
+
+    override fun openSubmittedLoadingScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(LoadingSubmittedFragment())
         }
     }
 
@@ -375,7 +544,13 @@ interface IScreenNavigator : ICoreNavigator {
     fun openDiscrepancyListScreen()
     fun openSelectTypeCodeScreen(codeConfirmationForSap: Int, codeConfirmationForBarCode: Int)
     fun openAlertGoodsNotInOrderScreen()
-    fun openNonExciseAlcoInfoScreen()
+    fun openNonExciseAlcoInfoScreen(productInfo: TaskProductInfo)
+    fun openSupplyResultsErrorDialog(numberSupply: String, userName: String)
+    fun openSupplyResultsSuccessDialog(numberSupply: String, leftCallbackFunc: () -> Unit, rightCallbackFunc: () -> Unit)
+    fun openSupplyResultsAutomaticChargeErrorDialog()
+    fun openSupplyResultsAutomaticChargeSuccessDialog(numberSupply: String, leftCallbackFunc: () -> Unit, rightCallbackFunc: () -> Unit)
+    fun openAlertOverlimit()
+    fun openExciseAlcoInfoScreen(productInfo: TaskProductInfo)
     fun openFinishReviseLoadingScreen()
     fun openRegisterArrivalLoadingScreen()
     fun openStartReviseLoadingScreen()
@@ -383,4 +558,15 @@ interface IScreenNavigator : ICoreNavigator {
     fun openTransportConditionsScreen()
     fun openFinishConditionsReviseLoadingScreen()
     fun openStartConditionsReviseLoadingScreen()
+    fun openPerishablesInfoScreen(productInfo: TaskProductInfo)
+    fun openRoundingIssueDialog(noCallbackFunc: () -> Unit, yesCallbackFunc: () -> Unit)
+    fun openTransferGoodsSectionScreen()
+    fun openListGoodsTransferScreen(sectionInfo: TaskSectionInfo)
+    fun openRepresPersonNumEntryScreen(sectionInfo: TaskSectionInfo)
+    fun openFormedDocsScreen()
+    fun openAlertCountLargerOverdelivery()
+    fun openAlertNotCorrectDate()
+    fun openExpiredDialog(noCallbackFunc: () -> Unit, yesCallbackFunc: () -> Unit)
+    fun openRecountStartLoadingScreen()
+    fun openSubmittedLoadingScreen()
 }

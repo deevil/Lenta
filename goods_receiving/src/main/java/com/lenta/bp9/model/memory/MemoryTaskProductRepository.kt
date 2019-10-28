@@ -40,6 +40,12 @@ class MemoryTaskProductRepository : ITaskProductRepository {
         return false
     }
 
+    override fun updateProducts(newProducts: List<TaskProductInfo>) {
+        for (productInfo in newProducts) {
+            addProduct(productInfo)
+        }
+    }
+
     override fun changeProduct(product: TaskProductInfo): Boolean {
         deleteProduct(product)
         return addProduct(product)

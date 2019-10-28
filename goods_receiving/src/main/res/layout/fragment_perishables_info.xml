@@ -1,0 +1,327 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".features.goods_information.perishables.PerishablesInfoFragment">
+
+    <data>
+
+        <variable
+            name="vm"
+            type="com.lenta.bp9.features.goods_information.perishables.PerishablesInfoViewModel" />
+
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <View
+            android:id="@+id/div_hor1"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="8dp"
+            android:background="@color/color_divider"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.5" />
+
+        <View
+            android:id="@+id/div_vert"
+            android:layout_width="1dp"
+            android:layout_height="0dp"
+            android:background="@color/color_divider"
+            app:layout_constraintBottom_toBottomOf="@+id/div_hor6"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="@+id/guideline"
+            app:layout_constraintTop_toBottomOf="@+id/div_hor1" />
+
+        <com.lenta.shared.view.ClickableSpinner
+            android:id="@+id/spinner_quality"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            app:items="@{vm.spinQuality}"
+            app:layout_constraintBottom_toBottomOf="@+id/et_inventory"
+            app:layout_constraintEnd_toStartOf="@+id/div_vert"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/et_inventory"
+            app:position="@{vm.spinQualitySelectedPosition}"/>
+
+        <com.lenta.shared.view.EditTextWithSuffix
+            android:id="@+id/et_inventory"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:ellipsize="end"
+            android:inputType="numberDecimal"
+            android:maxLines="1"
+            android:maxLength="6"
+            app:requestFocus="@{true}"
+            android:text="@={vm.count}"
+            app:digitsForUom="@{vm.productInfo.uom}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/div_vert"
+            app:layout_constraintTop_toTopOf="@+id/div_vert"
+            app:suffix="@{vm.suffix}"
+            tools:text="1" />
+
+        <View
+            android:id="@+id/div_hor2"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="8dp"
+            android:background="@color/color_divider"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/et_inventory" />
+
+        <TextView
+            android:id="@+id/tv_accept"
+            style="@style/TextTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:text="@string/accept"
+            app:layout_constraintBottom_toBottomOf="@+id/tv_accept_val"
+            app:layout_constraintEnd_toStartOf="@+id/div_vert"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/tv_accept_val" />
+
+        <TextView
+            android:id="@+id/tv_accept_val"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:gravity="start|center_vertical"
+            android:text='@{vm.acceptTotalCount != 0.0 ? "+ " + vm.acceptTotalCount + " " + vm.productInfo.uom.name : "0 " + vm.productInfo.uom.name }'
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/guideline"
+            app:layout_constraintTop_toBottomOf="@+id/div_hor2"
+            tools:text="+ 10 шт" />
+
+        <View
+            android:id="@+id/div_hor3"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="28dp"
+            android:background="@color/color_divider"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_accept_val" />
+
+        <TextView
+            android:id="@+id/tv_refusal"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:text="@string/refusal"
+            app:layout_constraintEnd_toStartOf="@+id/guideline"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_accept" />
+
+        <TextView
+            android:id="@+id/tv_refusal_val"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:gravity="start|center_vertical"
+            android:textColor="@color/color_pressed_red"
+            android:text='@{vm.refusalTotalCount != 0.0 ? "- " + vm.refusalTotalCount + " " + vm.productInfo.uom.name : "0 " + vm.productInfo.uom.name }'
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/guideline"
+            app:layout_constraintTop_toBottomOf="@+id/tv_accept_val"
+            tools:text="- 10 шт"/>
+
+        <TextView
+            android:id="@+id/tv_general_shelf_life"
+            style="@style/TextTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:text="@string/general_shelf_life"
+            app:layout_constraintBottom_toBottomOf="@+id/tv_general_shelf_life_val"
+            app:layout_constraintEnd_toStartOf="@+id/div_vert"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/tv_general_shelf_life_val" />
+
+        <TextView
+            android:id="@+id/tv_general_shelf_life_val"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:gravity="start|center_vertical"
+            android:text='@{vm.generalShelfLife }'
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/guideline"
+            app:layout_constraintTop_toBottomOf="@+id/div_hor3"
+            tools:text="100 сут" />
+
+        <TextView
+            android:id="@+id/tv_remaining_shelf_life"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:text="@string/remaining_shelf_life"
+            app:layout_constraintEnd_toStartOf="@+id/guideline"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_general_shelf_life" />
+
+        <TextView
+            android:id="@+id/tv_remaining_shelf_life_val"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:gravity="start|center_vertical"
+            android:text='@{vm.remainingShelfLife }'
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/guideline"
+            app:layout_constraintTop_toBottomOf="@+id/tv_general_shelf_life_val"
+            tools:text="70 сут"/>
+
+        <View
+            android:id="@+id/div_hor6"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="28dp"
+            android:background="@color/color_divider"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_general_shelf_life_val" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/constraint_shelf_life"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="@{!vm.isDefect}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/div_hor6">
+
+            <View
+                android:id="@+id/div_vert1"
+                android:layout_width="1dp"
+                android:layout_height="0dp"
+                android:layout_marginStart="1dp"
+                android:background="@color/color_divider"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <View
+                android:id="@+id/div_hor5"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="8dp"
+                android:background="@color/color_divider"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/spinner_shelf_life" />
+
+            <com.lenta.shared.view.ClickableSpinner
+                android:id="@+id/spinner_shelf_life"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                app:items="@{vm.spinShelfLife}"
+                app:layout_constraintEnd_toStartOf="@+id/div_vert1"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:position="@{vm.spinShelfLifeSelectedPosition}" />
+
+            <EditText
+                android:id="@+id/et_shelf_life"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:ems="10"
+                android:hint="@string/format_date"
+                android:inputType="date"
+                android:text="@={vm.shelfLifeDate}"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/div_vert1"
+                app:layout_constraintTop_toTopOf="@+id/spinner_shelf_life" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/ConstraintDefect"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="@{vm.isDefect}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/constraint_shelf_life">
+
+            <View
+                android:id="@+id/div_hor4"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="8dp"
+                android:background="@color/color_divider"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/spinner_reject_rejection" />
+
+            <com.lenta.shared.view.ClickableSpinner
+                android:id="@+id/spinner_reject_rejection"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                app:items="@{vm.spinReasonRejection}"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:onPositionClickListener="@{vm}"
+                app:position="@{vm.spinReasonRejectionSelectedPosition}" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+</layout>

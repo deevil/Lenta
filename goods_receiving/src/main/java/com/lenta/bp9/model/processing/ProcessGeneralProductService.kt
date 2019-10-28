@@ -3,6 +3,7 @@ package com.lenta.bp9.model.processing
 import com.lenta.bp9.model.task.IReceivingTaskManager
 import com.lenta.bp9.model.task.TaskProductDiscrepancies
 import com.lenta.bp9.model.task.TaskProductInfo
+import com.lenta.bp9.repos.IDataBaseRepo
 import com.lenta.shared.di.AppScope
 import com.lenta.shared.models.core.ProductType
 import javax.inject.Inject
@@ -14,6 +15,9 @@ class ProcessGeneralProductService
     @Inject
     lateinit var taskManager: IReceivingTaskManager
 
+    @Inject
+    lateinit var dataBase: IDataBaseRepo
+
     private lateinit var productInfo: TaskProductInfo
 
     fun newProcessGeneralProductService(productInfo: TaskProductInfo) : ProcessGeneralProductService? {
@@ -22,6 +26,73 @@ class ProcessGeneralProductService
             this
         }
         else null
+    }
+
+    fun countEqualOrigQuantity (count: Double) : Boolean {
+        return productInfo.origQuantity.toDouble() == ((taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.getCountAcceptOfProduct(productInfo) ?: 0.0)
+                + (taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.getCountRefusalOfProduct(productInfo) ?: 0.0) + count)
+    }
+
+    fun countLargerOrigQuantity (count: Double) : Boolean {
+        return productInfo.origQuantity.toDouble() > ((taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.getCountAcceptOfProduct(productInfo) ?: 0.0)
+                + (taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.getCountRefusalOfProduct(productInfo) ?: 0.0) + count)
+    }
+
+    fun categNormNotOrderLargerOrigQuantity () : Boolean {
+        val countCategoryNorm = taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.findProductDiscrepanciesOfProduct(productInfo)?.findLast {
+            it.typeDiscrepancies == "1"
+        }?.numberDiscrepancies?.toDouble() ?: 0.0
+        val countCategoryNotOrder = taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.findProductDiscrepanciesOfProduct(productInfo)?.findLast {
+            it.typeDiscrepancies == "41"
+        }?.numberDiscrepancies?.toDouble() ?: 0.0
+
+
+        return productInfo.origQuantity.toDouble() < countCategoryNorm + countCategoryNotOrder
+    }
+
+    fun getRoundingQuantity (origQuantity: Double) : Double {
+        return origQuantity - ((taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.getCountAcceptOfProduct(productInfo) ?: 0.0)
+                + (taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.getCountRefusalOfProduct(productInfo) ?: 0.0))
+    }
+
+    fun paramGrsGrundNeg (paramGrsGrundNeg: String) : Boolean {
+        return !taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.findProductDiscrepanciesOfProduct(productInfo)?.filter {
+            it.typeDiscrepancies == paramGrsGrundNeg
+        }.isNullOrEmpty()
+    }
+
+    fun countWithoutParamGrsGrundNeg(paramGrsGrundNeg: String) : Double {
+        return productInfo.origQuantity.toDouble() -
+                (taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.getCountAcceptOfProduct(productInfo) ?: 0.0) -
+                (taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.getCountRefusalOfProduct(productInfo) ?: 0.0) +
+                (taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.getCountRefusalOfProductOfReasonRejection(productInfo, paramGrsGrundNeg) ?: 0.0)
+    }
+
+    fun delCategoryParamGrsGrundNeg(paramGrsGrundNeg: String) {
+        val delProductDiscrepancy = taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.findProductDiscrepanciesOfProduct(productInfo)?.findLast {
+            it.typeDiscrepancies == paramGrsGrundNeg
+        }
+        if (delProductDiscrepancy != null) {
+            taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.changeProductDiscrepancy(delProductDiscrepancy.copy(numberDiscrepancies = "0"))
+        }
+    }
+
+    fun addWithoutUnderload(paramGrsGrundNeg: String, count: String) {
+        val delProductDiscrepancy = taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.findProductDiscrepanciesOfProduct(productInfo)?.findLast {
+            it.typeDiscrepancies == paramGrsGrundNeg
+        }
+        if (delProductDiscrepancy != null) {
+            taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.changeProductDiscrepancy(delProductDiscrepancy.copy(numberDiscrepancies = count))
+        }
+    }
+
+    fun getQuantityCapitalized() : Double {
+        return productInfo.quantityCapitalized.toDouble()
+    }
+
+    fun getQuantityAllCategory() : Double {
+        return (taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.getCountAcceptOfProduct(productInfo) ?: 0.0) +
+                (taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.getCountRefusalOfProduct(productInfo) ?: 0.0)
     }
 
     fun add(count: String, reasonRejectionCode: String){
@@ -49,9 +120,15 @@ class ProcessGeneralProductService
                     changeProductDiscrepancy(foundDiscrepancy.copy(numberDiscrepancies = count))
         }
 
+        //Кол-во, которое было оприходовано по этому заказу и этому товару
+        val quantityCapitalized = ((taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.getCountAcceptOfProduct(productInfo) ?: 0.0) +
+                (taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.getCountRefusalOfProduct(productInfo) ?: 0.0)).toString()
+
+        productInfo = productInfo.copy(quantityCapitalized =  quantityCapitalized)
+
         taskManager.getReceivingTask()?.
                 taskRepository?.
                 getProducts()?.
-                changeProduct(productInfo.copy(isNoEAN = false))
+                changeProduct(productInfo.copy(isNoEAN = count.toDouble() == 0.0, quantityCapitalized = quantityCapitalized))
     }
 }

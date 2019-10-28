@@ -35,7 +35,7 @@ class GoodsDetailsFragment : CoreFragment<FragmentGoodsDetailsBinding, GoodsDeta
 
     override fun getLayoutId(): Int = R.layout.fragment_goods_details
 
-    override fun getPageNumber(): String = "09/25"
+    override fun getPageNumber(): String = "9/25"
 
     override fun getViewModel(): GoodsDetailsViewModel {
         provideViewModel(GoodsDetailsViewModel::class.java).let {vm ->
