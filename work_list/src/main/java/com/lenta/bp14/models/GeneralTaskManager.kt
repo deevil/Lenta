@@ -88,10 +88,14 @@ class GeneralTaskManager @Inject constructor(
             taskManager.getTask()?.implementationOf(StateFromToString::class.java)?.let { task ->
                 persistTaskData.saveTaskData(TaskData(
                         taskType = taskManager.getTaskType(),
-                        data = task.stateToString()
+                        data = task.saveStateToString()
                 ))
             }
         }
+    }
+
+    override fun getSavedData(): TaskData? {
+        return savedTaskData
     }
 
     override fun loadTaskData() {
@@ -115,6 +119,7 @@ interface IGeneralTaskManager {
     fun getLatestSentReportResult(): SentReportResult?
     fun isExistSavedTaskData(): Boolean
     fun saveTaskData()
+    fun getSavedData(): TaskData?
     fun loadTaskData()
     fun clearSavedTaskData()
 }

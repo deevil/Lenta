@@ -168,15 +168,6 @@ class CheckPriceTask @Inject constructor(
         return readyResultsRepo.getCheckPriceResults()
     }
 
-    override fun stateFromString(state: String) {
-        //TODO будет реализовано позже
-    }
-
-    override fun stateToString(): String {
-        //TODO будет реализовано позже
-        return ""
-    }
-
     override fun getTaskType(): ITaskTypeInfo {
         return generalRepo.getTasksTypeInfo(AppTaskTypes.CheckPrice.taskType)!!
     }
@@ -356,6 +347,19 @@ class CheckPriceTask @Inject constructor(
                 )
             }
         }
+    }
+
+    override fun saveStateToString(): String {
+        //TODO будет реализовано позже
+        return ""
+    }
+
+    override fun getStateFromString(state: String) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun restoreData(data: Any) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
 }

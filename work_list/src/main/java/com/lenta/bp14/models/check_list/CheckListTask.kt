@@ -111,12 +111,20 @@ class CheckListTask @Inject constructor(
         //TODO implement this
     }
 
-    override fun stateFromString(state: String) {
-        goods.value = gson.fromJson(state, CheckListData::class.java).data
+    override fun saveStateToString(): String {
+        return gson.toJson(CheckListData(
+                taskDescription = taskDescription,
+                goods = goods.value ?: emptyList()
+        ))
     }
 
-    override fun stateToString(): String {
-        return gson.toJson(CheckListData(goods.value ?: emptyList()))
+    override fun getStateFromString(state: String) {
+
+    }
+
+    override fun restoreData(data: Any) {
+        val checkListData = data as CheckListData
+        goods.value = checkListData.goods
     }
 
 }
@@ -154,6 +162,7 @@ data class GoodRequestResult(
 )
 
 data class CheckListData(
-        val data: List<Good>
+        val taskDescription: CheckListTaskDescription,
+        val goods: List<Good>
 )
 
