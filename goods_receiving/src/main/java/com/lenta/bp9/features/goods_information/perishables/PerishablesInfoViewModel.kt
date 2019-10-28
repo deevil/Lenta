@@ -11,6 +11,7 @@ import com.lenta.bp9.model.task.IReceivingTaskManager
 import com.lenta.bp9.model.task.TaskProductInfo
 import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.bp9.repos.IDataBaseRepo
+import com.lenta.shared.platform.time.ITimeMonitor
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.pojo.QualityInfo
 import com.lenta.shared.requests.combined.scan_info.pojo.ReasonRejectionInfo
@@ -19,6 +20,9 @@ import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.view.OnPositionClickListener
 import kotlinx.coroutines.launch
+import org.joda.time.DateTime
+import org.joda.time.Days
+import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.time.Duration
 import java.time.LocalDate
@@ -43,6 +47,9 @@ class PerishablesInfoViewModel : CoreViewModel(), OnPositionClickListener {
     @Inject
     lateinit var searchProductDelegate: SearchProductDelegate
 
+    @Inject
+    lateinit var timeMonitor: ITimeMonitor
+
     val productInfo: MutableLiveData<TaskProductInfo> = MutableLiveData()
     val spinQuality: MutableLiveData<List<String>> = MutableLiveData()
     val spinQualitySelectedPosition: MutableLiveData<Int> = MutableLiveData(0)
@@ -64,7 +71,11 @@ class PerishablesInfoViewModel : CoreViewModel(), OnPositionClickListener {
     private val roundingQuantity: MutableLiveData<Double> = MutableLiveData()
     private val countWithoutParamGrsGrundNeg: MutableLiveData<Double> = MutableLiveData()
     private val countOverdelivery: MutableLiveData<Double> = MutableLiveData()
-    private lateinit var expirationDate: LocalDate
+
+    @SuppressLint("SimpleDateFormat")
+    private val formatter = SimpleDateFormat("dd.MM.yyyy")
+    private val expirationDate: MutableLiveData<Calendar> = MutableLiveData()
+    private val currentDate: MutableLiveData<Date> = MutableLiveData()
 
     val count: MutableLiveData<String> = MutableLiveData("0")
     private val countValue: MutableLiveData<Double> = count.map { it?.toDoubleOrNull() ?: 0.0 }
@@ -103,6 +114,8 @@ class PerishablesInfoViewModel : CoreViewModel(), OnPositionClickListener {
 
     init {
         viewModelScope.launch {
+            currentDate.value = timeMonitor.getServerDate()
+            expirationDate.value = Calendar.getInstance()
             suffix.value = productInfo.value?.uom?.name
             generalShelfLife.value = productInfo.value?.generalShelfLife
             remainingShelfLife.value = productInfo.value?.remainingShelfLife
@@ -123,7 +136,6 @@ class PerishablesInfoViewModel : CoreViewModel(), OnPositionClickListener {
     }
 
     //блок 6.3
-    @RequiresApi(Build.VERSION_CODES.O)
     fun onClickAdd() {
         //блок 6.101
         if (qualityInfo.value?.get(spinQualitySelectedPosition.value ?: 0)?.code == "1") {
@@ -139,15 +151,16 @@ class PerishablesInfoViewModel : CoreViewModel(), OnPositionClickListener {
         //блок 6.131
         if (spinShelfLifeSelectedPosition.value == 1) {
             //блок 6.146
-            expirationDate = LocalDate.parse(shelfLifeDate.value, DateTimeFormatter.ofPattern("dd.MM.yyyy"))
+            expirationDate.value!!.time = formatter.parse(shelfLifeDate.value)
             return
         } else {
             //блок 6.144
-            expirationDate = LocalDate.parse(shelfLifeDate.value, DateTimeFormatter.ofPattern("dd.MM.yyyy")).plusDays(productInfo.value!!.generalShelfLife.toLong())
+            expirationDate.value!!.time = formatter.parse(shelfLifeDate.value)
+            expirationDate.value!!.add(Calendar.DATE, productInfo.value!!.generalShelfLife.toInt())
         }
 
         //блок 6.152
-        if (expirationDate <= LocalDate.now()) {
+        if (expirationDate.value!!.time <= currentDate.value) {
             //блок 6.158
             screenNavigator.openExpiredDialog(
                     //блок 6.169
@@ -164,7 +177,7 @@ class PerishablesInfoViewModel : CoreViewModel(), OnPositionClickListener {
         }
 
         //блоки 6.157 и 6.182
-        if ( Duration.between(LocalDate.now().atStartOfDay(),expirationDate.atStartOfDay()).toDays() > productInfo.value!!.remainingShelfLife.toLong() ) {
+        if ( Days.daysBetween(DateTime(currentDate.value),DateTime(expirationDate.value!!.time)).days > productInfo.value!!.remainingShelfLife.toLong() ) {
             //блок 6.192
             add()
             return
@@ -224,10 +237,10 @@ class PerishablesInfoViewModel : CoreViewModel(), OnPositionClickListener {
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     private fun isCorrectDate(checkDate: String?): Boolean {
         return try {
-            LocalDate.parse(checkDate, DateTimeFormatter.ofPattern("dd.MM.yyyy")) <= LocalDate.now()
+            val date = formatter.parse(checkDate)
+            !(checkDate != formatter.format(date) || date!! > Date())
         } catch (e: Exception) {
             false
         }
