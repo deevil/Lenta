@@ -1,6 +1,7 @@
 package com.lenta.bp14.main
 
 import androidx.lifecycle.viewModelScope
+import com.lenta.bp14.models.IGeneralTaskManager
 import com.lenta.bp14.platform.navigation.IScreenNavigator
 import com.lenta.bp14.platform.sound.ISoundPlayer
 import com.lenta.shared.features.loading.startProgressTimer
@@ -18,7 +19,8 @@ class MainViewModel : CoreMainViewModel() {
     lateinit var screenNavigator: IScreenNavigator
     @Inject
     lateinit var soundPlayer: ISoundPlayer
-
+    @Inject
+    lateinit var generalTaskManager: IGeneralTaskManager
 
 
     override fun onNewEnter() {
@@ -39,7 +41,6 @@ class MainViewModel : CoreMainViewModel() {
                         timeoutInSec = 60
                 )
             }
-
         }
         bottomToolbarUiModel.visibility.value = false
     }
@@ -61,15 +62,12 @@ class MainViewModel : CoreMainViewModel() {
 
     override fun onPause() {
         super.onPause()
-        soundPlayer.stop()
-        //TODO реализовать сохранение задачи
-        //persistWriteOffTask.saveWriteOffTask(writeOffTaskManager.getWriteOffTask())
+        preparingForExit()
     }
 
     override fun preparingForExit() {
-        //TODO реализовать сохранение задачи
+        soundPlayer.stop()
+        generalTaskManager.saveTaskData()
     }
-
-
 
 }
