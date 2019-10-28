@@ -199,7 +199,6 @@ class PerishablesInfoViewModel : CoreViewModel(), OnPositionClickListener {
 
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     fun onClickApply() {
         isClickApply.value = true
         onClickAdd()

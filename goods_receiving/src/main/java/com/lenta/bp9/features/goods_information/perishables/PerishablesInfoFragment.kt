@@ -85,7 +85,6 @@ class PerishablesInfoFragment : CoreFragment<FragmentPerishablesInfoBinding, Per
         connectLiveData(vm.enabledApplyButton, bottomToolbarUiModel.uiModelButton5.enabled)
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     override fun onToolbarButtonClick(view: View) {
         when (view.id) {
             R.id.b_3 -> vm.onClickDetails()
