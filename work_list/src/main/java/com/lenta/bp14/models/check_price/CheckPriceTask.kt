@@ -350,7 +350,8 @@ class CheckPriceTask @Inject constructor(
 
     override fun saveStateToString(): String {
         return gson.toJson(CheckPriceData(
-                taskDescription = taskDescription
+                taskDescription = taskDescription,
+                goods = getCheckResults().value ?: emptyList()
         ))
     }
 
@@ -360,7 +361,9 @@ class CheckPriceTask @Inject constructor(
 
     override fun restoreData(data: Any) {
         val checkPriceData = data as CheckPriceData
-        // Логика восстановления данных...
+        checkPriceData.goods.map { good ->
+            readyResultsRepo.addCheckPriceResult(good)
+        }
     }
 
 }
@@ -499,6 +502,6 @@ interface IUserPriceInfo {
 }
 
 data class  CheckPriceData(
-        val taskDescription: CheckPriceTaskDescription
-        //val goods: List<Good>
+        val taskDescription: CheckPriceTaskDescription,
+        val goods: List<ICheckPriceResult>
 )

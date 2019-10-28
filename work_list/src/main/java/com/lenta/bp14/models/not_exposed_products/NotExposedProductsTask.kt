@@ -273,7 +273,8 @@ class NotExposedProductsTask @Inject constructor(
 
     override fun saveStateToString(): String {
         return gson.toJson(NotExposedData(
-                taskDescription = taskDescription
+                taskDescription = taskDescription,
+                goods = getProducts().value ?: emptyList()
         ))
     }
 
@@ -283,7 +284,9 @@ class NotExposedProductsTask @Inject constructor(
 
     override fun restoreData(data: Any) {
         val notExposedData = data as NotExposedData
-        // Логика восстановления данных...
+        notExposedData.goods.map { good ->
+            notExposedProductsRepo.addOrReplaceProduct(good)
+        }
     }
 
 }
@@ -314,7 +317,7 @@ interface INotExposedProductsTask : ITask, IFilterable {
 }
 
 data class NotExposedData(
-        val taskDescription: NotExposedProductsTaskDescription
-        //val goods: List<Good>
+        val taskDescription: NotExposedProductsTaskDescription,
+        val goods: List<INotExposedProductInfo>
 )
 

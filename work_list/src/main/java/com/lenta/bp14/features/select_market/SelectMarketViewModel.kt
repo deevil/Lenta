@@ -9,7 +9,11 @@ import com.lenta.bp14.models.ITaskDescription
 import com.lenta.bp14.models.ITaskManager
 import com.lenta.bp14.models.check_list.CheckListData
 import com.lenta.bp14.models.check_list.CheckListTaskManager
+import com.lenta.bp14.models.check_price.CheckPriceData
+import com.lenta.bp14.models.check_price.CheckPriceTaskManager
 import com.lenta.bp14.models.general.AppTaskTypes
+import com.lenta.bp14.models.not_exposed_products.NotExposedData
+import com.lenta.bp14.models.not_exposed_products.NotExposedProductsTaskManager
 import com.lenta.bp14.models.work_list.WorkListData
 import com.lenta.bp14.models.work_list.WorkListTaskManager
 import com.lenta.bp14.platform.navigation.IScreenNavigator
@@ -52,6 +56,10 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
     lateinit var checkListTaskManager: CheckListTaskManager
     @Inject
     lateinit var workListTaskManager: WorkListTaskManager
+    @Inject
+    lateinit var checkPriceTaskManager: CheckPriceTaskManager
+    @Inject
+    lateinit var notExposedTaskManager: NotExposedProductsTaskManager
     @Inject
     lateinit var gson: Gson
 
@@ -144,41 +152,16 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
 
         generalTaskManager.getSavedData()?.let { taskData ->
             when (taskData.taskType) {
-                /*AppTaskTypes.CheckPrice.taskType -> {
-                    if (taskFromTaskList != null) {
-                        checkPriceTaskInfoNetRequest(
-                                CheckPriceTaskInfoParams(
-                                        taskNumber = taskFromTaskList!!.taskId,
-                                        ip = deviceInfo.getDeviceIp(),
-                                        withProductInfo = true.toSapBooleanString(),
-                                        mode = "1"
-                                )
-                        )
-                    } else {
-                        Either.Right(null)
-                    }.let {
-                        it.either({ failure ->
-                            navigator.openAlertScreen(failure)
-                        }) { checkPriceTaskInfoResult ->
-                            newTask(
-                                    taskManager = checkPriceTaskManager,
-                                    taskDescription = CheckPriceTaskDescription(
-                                            tkNumber = sessionInfo.market!!,
-                                            taskNumber = taskFromTaskList?.taskId
-                                                    ?: "",
-                                            taskName = taskName.value ?: "",
-                                            comment = comment.value ?: "",
-                                            description = description.value ?: "",
-                                            isStrictList = taskFromTaskList?.isStrict ?: false,
-                                            additionalTaskInfo = checkPriceTaskInfoResult
-                                    )
-                            )
-                            navigator.openGoodsListPcScreen()
-                        }
-
-                    }
-
-                }*/
+                AppTaskTypes.CheckPrice.taskType -> {
+                    val data = gson.fromJson(taskData.data, CheckPriceData::class.java)
+                    newTask(
+                            taskName = data.taskDescription.taskName,
+                            taskManager = checkPriceTaskManager,
+                            taskDescription = data.taskDescription
+                    )
+                    checkPriceTaskManager.getTask().implementationOf(StateFromToString::class.java)?.restoreData(data)
+                    navigator.openGoodsListPcScreen()
+                }
 
                 AppTaskTypes.CheckList.taskType -> {
                     val data = gson.fromJson(taskData.data, CheckListData::class.java)
@@ -202,39 +185,17 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
                     navigator.openGoodsListWlScreen()
                 }
 
-                /*AppTaskTypes.NotExposedProducts.taskType -> {
-                    if (taskFromTaskList != null) {
-                        notExposedTaskInfoNetRequest(
-                                NotExposedTaskInfoParams(
-                                        taskNumber = taskFromTaskList!!.taskId,
-                                        ip = deviceInfo.getDeviceIp(),
-                                        withProductInfo = true.toSapBooleanString(),
-                                        mode = "1"
-                                )
-                        )
-                    } else {
-                        Either.Right(null)
-                    }.let {
-                        it.either({ failure ->
-                            navigator.openAlertScreen(failure)
-                        }) { result ->
-                            newTask(
-                                    taskManager = notExposedProductsTaskManager,
-                                    taskDescription = NotExposedProductsTaskDescription(
-                                            tkNumber = sessionInfo.market!!,
-                                            taskNumber = taskFromTaskList?.taskId
-                                                    ?: "",
-                                            taskName = taskName.value ?: "",
-                                            comment = comment.value ?: "",
-                                            description = description.value ?: "",
-                                            isStrictList = taskFromTaskList?.isStrict ?: false,
-                                            additionalTaskInfo = result
-                                    )
-                            )
-                            navigator.openGoodsListNeScreen()
-                        }
-                    }
-                }*/
+                AppTaskTypes.NotExposedProducts.taskType -> {
+                    val data = gson.fromJson(taskData.data, NotExposedData::class.java)
+                    newTask(
+                            taskName = data.taskDescription.taskName,
+                            taskManager = notExposedTaskManager,
+                            taskDescription = data.taskDescription
+                    )
+                    notExposedTaskManager.getTask().implementationOf(StateFromToString::class.java)?.restoreData(data)
+                    navigator.openGoodsListNeScreen()
+                }
+
                 else -> navigator.openNotImplementedScreenAlert("")
             }
         }
