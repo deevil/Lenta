@@ -26,10 +26,7 @@ class CheckListTask @Inject constructor(
         private val generalRepo: IGeneralRepo,
         private val checkListRepo: ICheckListRepo,
         private val taskDescription: CheckListTaskDescription,
-        private val timeMonitor: ITimeMonitor,
-        private val gson: Gson,
-        private val soundPlayer: ISoundPlayer,
-        private val vibrateHelper: IVibrateHelper
+        private val gson: Gson
 ) : ICheckListTask, StateFromToString {
 
     override val goods = MutableLiveData<List<Good>>(listOf())
@@ -86,11 +83,12 @@ class CheckListTask @Inject constructor(
 
     override suspend fun getGoodRequestResult(ean: String): GoodRequestResult {
         return checkListRepo.getGoodByEan(ean)?.let { good ->
-            addGood(good)
-            soundPlayer.playBeep()
-            vibrateHelper.shortVibrate()
             GoodRequestResult(good = good)
         } ?: GoodRequestResult(good = null)
+    }
+
+    override fun isNotAddedToList(good: Good): Boolean {
+        return goods.value?.find { it.material == good.material } == null
     }
 
     override fun isEmpty(): Boolean {
@@ -139,6 +137,7 @@ interface ICheckListTask : ITask {
     fun deleteSelectedGoods(indices: MutableSet<Int>)
     fun getReportData(ip: String): CheckListReport
     suspend fun getGoodRequestResult(ean: String): GoodRequestResult
+    fun isNotAddedToList(good: Good): Boolean
 }
 
 // --------------------------
