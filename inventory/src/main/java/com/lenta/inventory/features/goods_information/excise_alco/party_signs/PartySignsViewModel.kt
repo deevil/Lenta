@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.lifecycle.MutableLiveData
 import com.lenta.shared.platform.navigation.ICoreNavigator
+import com.lenta.shared.platform.time.ITimeMonitor
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.view.OnPositionClickListener
@@ -15,6 +16,9 @@ class PartySignsViewModel : CoreViewModel(), OnPositionClickListener {
 
     @Inject
     lateinit var screenNavigator: ICoreNavigator
+
+    @Inject
+    lateinit var timeMonitor: ITimeMonitor
 
     val selectedPosition: MutableLiveData<Int> = MutableLiveData(0)
 
@@ -41,7 +45,7 @@ class PartySignsViewModel : CoreViewModel(), OnPositionClickListener {
         return try {
             val formatter = SimpleDateFormat("dd.MM.yyyy")
             val date = formatter.parse(checkDate)
-            !(checkDate != formatter.format(date) || date!! > Date())
+            !(checkDate != formatter.format(date) || date!! > timeMonitor.getServerDate())
         } catch (e: Exception) {
             false
         }

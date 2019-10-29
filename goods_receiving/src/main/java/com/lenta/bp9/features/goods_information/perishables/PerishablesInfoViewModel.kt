@@ -239,7 +239,7 @@ class PerishablesInfoViewModel : CoreViewModel(), OnPositionClickListener {
     private fun isCorrectDate(checkDate: String?): Boolean {
         return try {
             val date = formatter.parse(checkDate)
-            !(checkDate != formatter.format(date) || date!! > Date())
+            !(checkDate != formatter.format(date) || date!! > currentDate.value)
         } catch (e: Exception) {
             false
         }

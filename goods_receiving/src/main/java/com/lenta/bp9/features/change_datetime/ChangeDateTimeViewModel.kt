@@ -1,5 +1,6 @@
 package com.lenta.bp9.features.change_datetime
 
+import android.annotation.SuppressLint
 import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
@@ -10,8 +11,13 @@ import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.platform.time.ITimeMonitor
 import com.lenta.shared.platform.viewmodel.CoreViewModel
+import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.date_time.DateTimeUtil
+import com.lenta.shared.utilities.extentions.combineLatest
+import com.lenta.shared.utilities.extentions.map
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.*
 import javax.inject.Inject
 
 class ChangeDateTimeViewModel : CoreViewModel() {
@@ -25,7 +31,7 @@ class ChangeDateTimeViewModel : CoreViewModel() {
     @Inject
     lateinit var timeMonitor: ITimeMonitor
 
-    var mode: ChangeDateTimeMode = ChangeDateTimeMode.None
+    val mode: MutableLiveData<ChangeDateTimeMode> = MutableLiveData()
 
     val taskCaption: String by lazy {
         taskManager.getReceivingTask()?.taskHeader?.caption ?: ""
@@ -35,7 +41,7 @@ class ChangeDateTimeViewModel : CoreViewModel() {
         val status = taskManager.getReceivingTask()?.taskDescription?.currentStatus
         if (status == TaskStatus.Checked)
             context.getString(R.string.unloading_start)
-        else if (status == TaskStatus.Arrived && mode == ChangeDateTimeMode.NextStatus)
+        else if (status == TaskStatus.Arrived && mode.value == ChangeDateTimeMode.NextStatus)
             context.getString(R.string.checking_start)
         else
             context.getString(R.string.register_arrival)
@@ -45,7 +51,7 @@ class ChangeDateTimeViewModel : CoreViewModel() {
         val status = taskManager.getReceivingTask()?.taskDescription?.currentStatus
         if (status == TaskStatus.Checked)
             context.getString(R.string.unloading_date)
-        else if (status == TaskStatus.Arrived && mode == ChangeDateTimeMode.NextStatus)
+        else if (status == TaskStatus.Arrived && mode.value == ChangeDateTimeMode.NextStatus)
             context.getString(R.string.checking_date)
         else
             context.getString(R.string.arrival_date)
@@ -55,7 +61,7 @@ class ChangeDateTimeViewModel : CoreViewModel() {
         val status = taskManager.getReceivingTask()?.taskDescription?.currentStatus
         if (status == TaskStatus.Checked)
             context.getString(R.string.unloading_time)
-        else if (status == TaskStatus.Arrived && mode == ChangeDateTimeMode.NextStatus)
+        else if (status == TaskStatus.Arrived && mode.value == ChangeDateTimeMode.NextStatus)
             context.getString(R.string.checking_time)
         else
             context.getString(R.string.arrival_time)
@@ -66,6 +72,16 @@ class ChangeDateTimeViewModel : CoreViewModel() {
     val years: MutableLiveData<String> = MutableLiveData("")
     val hours: MutableLiveData<String> = MutableLiveData("")
     val minutes: MutableLiveData<String> = MutableLiveData("")
+
+    val enabledApplyButton: MutableLiveData<Boolean> = days.
+            combineLatest(months).
+            combineLatest(years).
+            combineLatest(hours).
+            combineLatest(minutes).map {
+        val dateString = days.value + "." + months.value + "." + years.value
+        val timeString = hours.value + ":" + minutes.value
+        isCorrectDateTime("$dateString $timeString")
+    }
 
     fun onResume() {
         viewModelScope.launch {
@@ -81,7 +97,7 @@ class ChangeDateTimeViewModel : CoreViewModel() {
     fun onClickApply() {
         val dateString = days.value + "." + months.value + "." + years.value
         val timeString = hours.value + ":" + minutes.value
-        if (mode == ChangeDateTimeMode.NextStatus) {
+        if (mode.value == ChangeDateTimeMode.NextStatus) {
             taskManager.getReceivingTask()?.taskDescription?.nextStatusDate = dateString
             taskManager.getReceivingTask()?.taskDescription?.nextStatusTime = timeString
         } else {
@@ -89,6 +105,17 @@ class ChangeDateTimeViewModel : CoreViewModel() {
             taskManager.getReceivingTask()?.taskDescription?.currentStatusTime = timeString
         }
         screenNavigator.goBack()
+    }
+
+    @SuppressLint("SimpleDateFormat")
+    private fun isCorrectDateTime(checkDateTime: String?): Boolean {
+        return try {
+            val formatter = SimpleDateFormat("dd.MM.yy HH:mm")
+            val date = formatter.parse(checkDateTime)
+            !(checkDateTime != formatter.format(date) || date!! > timeMonitor.getServerDate())
+        } catch (e: Exception) {
+            false
+        }
     }
 }
 
