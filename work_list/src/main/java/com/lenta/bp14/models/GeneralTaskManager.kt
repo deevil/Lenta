@@ -106,6 +106,7 @@ class GeneralTaskManager @Inject constructor(
 
     override fun clearSavedTaskData() {
         persistTaskData.clearSavedData()
+        savedTaskData = null
     }
 
     override fun restoreSavedData() {
@@ -114,6 +115,8 @@ class GeneralTaskManager @Inject constructor(
                 task.loadStateFromString(data)
             }
         }
+
+        clearSavedTaskData()
     }
 
 }
