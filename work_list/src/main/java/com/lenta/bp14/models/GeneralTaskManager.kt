@@ -25,7 +25,7 @@ class GeneralTaskManager @Inject constructor(
 
     private var latestSentReportResult: SentReportResult? = null
 
-    var savedTaskData: TaskData? = null
+    private var savedTaskData: TaskData? = null
 
     private val allManagers = listOf<ITaskManager<*, *>>(checkPriceTaskManager, checkListTaskManager, workListTaskManager, notExposedProductsTaskManager)
 
@@ -108,6 +108,14 @@ class GeneralTaskManager @Inject constructor(
         persistTaskData.clearSavedData()
     }
 
+    override fun restoreSavedData() {
+        getCurrentTaskManager()?.getTask()?.implementationOf(StateFromToString::class.java)?.let { task ->
+            savedTaskData?.data?.let { data ->
+                task.loadStateFromString(data)
+            }
+        }
+    }
+
 }
 
 
@@ -122,4 +130,5 @@ interface IGeneralTaskManager {
     fun loadTaskData()
     fun getSavedData(): TaskData?
     fun clearSavedTaskData()
+    fun restoreSavedData()
 }

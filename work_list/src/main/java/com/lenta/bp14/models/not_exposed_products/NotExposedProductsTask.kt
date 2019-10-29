@@ -278,13 +278,9 @@ class NotExposedProductsTask @Inject constructor(
         ))
     }
 
-    override fun getStateFromString(state: String) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    override fun restoreData(data: Any) {
-        val notExposedData = data as NotExposedData
-        notExposedData.goods.map { good ->
+    override fun loadStateFromString(state: String) {
+        val data = gson.fromJson(state, NotExposedData::class.java)
+        data.goods.map { good ->
             notExposedProductsRepo.addOrReplaceProduct(good)
         }
     }

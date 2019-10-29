@@ -116,13 +116,9 @@ class CheckListTask @Inject constructor(
         ))
     }
 
-    override fun getStateFromString(state: String) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    override fun restoreData(data: Any) {
-        val checkListData = data as CheckListData
-        goods.value = checkListData.goods
+    override fun loadStateFromString(state: String) {
+        val data = gson.fromJson(state, CheckListData::class.java)
+        goods.value = data.goods
     }
 
 }

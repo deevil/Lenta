@@ -290,14 +290,10 @@ class WorkListTask @Inject constructor(
         ))
     }
 
-    override fun getStateFromString(state: String) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    override fun restoreData(data: Any) {
-        val workListData = data as WorkListData
-        goods.value = workListData.goods.toMutableList()
-        isLoadedTaskList = workListData.isLoadedTaskList
+    override fun loadStateFromString(state: String) {
+        val data = gson.fromJson(state, WorkListData::class.java)
+        goods.value = data.goods.toMutableList()
+        isLoadedTaskList = data.isLoadedTaskList
     }
 
 }

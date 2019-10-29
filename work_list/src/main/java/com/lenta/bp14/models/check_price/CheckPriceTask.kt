@@ -355,13 +355,9 @@ class CheckPriceTask @Inject constructor(
         ))
     }
 
-    override fun getStateFromString(state: String) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    override fun restoreData(data: Any) {
-        val checkPriceData = data as CheckPriceData
-        checkPriceData.goods.map { good ->
+    override fun loadStateFromString(state: String) {
+        val data = gson.fromJson(state, CheckPriceData::class.java)
+        data.goods.map { good ->
             readyResultsRepo.addCheckPriceResult(good)
         }
     }

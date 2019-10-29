@@ -159,7 +159,6 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
                             taskManager = checkPriceTaskManager,
                             taskDescription = data.taskDescription
                     )
-                    checkPriceTaskManager.getTask().implementationOf(StateFromToString::class.java)?.restoreData(data)
                     navigator.openGoodsListPcScreen()
                 }
 
@@ -170,7 +169,6 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
                             taskManager = checkListTaskManager,
                             taskDescription = data.taskDescription
                     )
-                    checkListTaskManager.getTask().implementationOf(StateFromToString::class.java)?.restoreData(data)
                     navigator.openGoodsListClScreen()
                 }
 
@@ -181,7 +179,6 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
                             taskManager = workListTaskManager,
                             taskDescription = data.taskDescription
                     )
-                    workListTaskManager.getTask().implementationOf(StateFromToString::class.java)?.restoreData(data)
                     navigator.openGoodsListWlScreen()
                 }
 
@@ -192,7 +189,6 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
                             taskManager = notExposedTaskManager,
                             taskDescription = data.taskDescription
                     )
-                    notExposedTaskManager.getTask().implementationOf(StateFromToString::class.java)?.restoreData(data)
                     navigator.openGoodsListNeScreen()
                 }
 
@@ -212,6 +208,9 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
         } else {
             taskManager.getTask()?.getDescription()?.taskName = taskName
         }
+
+        generalTaskManager.restoreSavedData()
+
         //updateProcessedTask()
     }
 
