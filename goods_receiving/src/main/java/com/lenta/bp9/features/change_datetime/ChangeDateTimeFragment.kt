@@ -22,10 +22,10 @@ class ChangeDateTimeFragment : CoreFragment<FragmentChangeDateTimeBinding, Chang
     override fun getPageNumber() = generateScreenNumber()
 
     override fun getViewModel(): ChangeDateTimeViewModel {
-        provideViewModel(ChangeDateTimeViewModel::class.java).let {
-            getAppComponent()?.inject(it)
-            it.mode = mode
-            return it
+        provideViewModel(ChangeDateTimeViewModel::class.java).let {vm ->
+            getAppComponent()?.inject(vm)
+            vm.mode.value = mode
+            return vm
         }
     }
 
@@ -37,6 +37,8 @@ class ChangeDateTimeFragment : CoreFragment<FragmentChangeDateTimeBinding, Chang
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.apply)
+
+        connectLiveData(vm.enabledApplyButton, bottomToolbarUiModel.uiModelButton5.enabled)
     }
 
     override fun onResume() {
