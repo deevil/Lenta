@@ -62,7 +62,7 @@ class NotExposedProductsTask @Inject constructor(
                         isEmptyPlaceMarked = null,
                         section = productInfo?.sectionNumber,
                         group = productInfo?.eKGRP
-                ) as NotExposedProductInfo
+                )
             }
         }
     }
