@@ -28,14 +28,12 @@ class AuthViewModel : CoreAuthViewModel() {
     lateinit var sessionInfo: ISessionInfo
     @Inject
     lateinit var appSettings: IAppSettings
-    @Inject
-    lateinit var checkData: CheckData
+
 
     val packageName: MutableLiveData<String> = MutableLiveData()
 
     init {
         viewModelScope.launch {
-            sessionInfo.existUnsavedData = checkData.isExistUnsentData()
             sessionInfo.packageName = packageName.value
         }
     }

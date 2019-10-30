@@ -1,11 +1,14 @@
 package com.lenta.bp14
 
+import com.lenta.bp14.models.IGeneralTaskManager
 import com.lenta.bp14.platform.extentions.getAppComponent
 import com.lenta.shared.CoreApplication
 import com.lenta.shared.settings.DefaultConnectionSettings
 import com.lenta.shared.utilities.Logg
+import javax.inject.Inject
 
 class AndroidApplication : CoreApplication() {
+
     override fun getDefaultConnectionSettings(): DefaultConnectionSettings {
         Logg.d { "default serverAddress: ${getString(R.string.ds_serverAddress)}"}
         return DefaultConnectionSettings(
@@ -25,13 +28,17 @@ class AndroidApplication : CoreApplication() {
             getAppComponent(coreComponent).inject(it)
             it.handleException()
         }
-
     }
+
 }
 
 class ExceptionHandler {
 
+    @Inject
+    lateinit var generalTaskManager: IGeneralTaskManager
+
     fun handleException() {
-        //TODO need implement
+        generalTaskManager.saveTaskData()
     }
+
 }

@@ -23,7 +23,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            app:invisible="@{vm.showProgress}">
+            android:visibility="@{vm.dataVisibility}">
 
 
             <!-- Наименования колонок -->
@@ -99,7 +99,7 @@
             android:layout_gravity="center"
             android:gravity="center_horizontal"
             android:orientation="vertical"
-            app:isGone="@{!vm.showProgress}">
+            app:isGone="@{!vm.loadingIndicatorVisibility}">
 
             <ProgressBar
                 android:layout_width="wrap_content"
@@ -112,6 +112,16 @@
                 android:text="@string/data_loading" />
 
         </LinearLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_margin="20dp"
+            android:gravity="center"
+            android:text="@{vm.dataLoadingError}"
+            android:visibility="@{vm.dataLoadingErrorVisibility}"
+            tools:text="Описание ошибки произошедшей при загрузке данных" />
 
     </FrameLayout>
 

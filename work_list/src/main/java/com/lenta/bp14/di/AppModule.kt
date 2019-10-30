@@ -2,6 +2,8 @@ package com.lenta.bp14.di
 
 import com.lenta.bp14.models.GeneralTaskManager
 import com.lenta.bp14.models.IGeneralTaskManager
+import com.lenta.bp14.models.IPersistTaskData
+import com.lenta.bp14.models.PersistTaskData
 import com.lenta.bp14.models.check_price.IPriceInfoParser
 import com.lenta.bp14.models.check_price.PriceInfoParser
 import com.lenta.bp14.models.general.GeneralRepo
@@ -93,6 +95,10 @@ class AppModule {
         @Binds
         @AppScope
         fun bindBigDataMaxPrint(realisation: BigDatamaxPrintImpl): BigDatamaxPrint
+
+        @Binds
+        @AppScope
+        fun bindPersistTaskData(realisation: PersistTaskData): IPersistTaskData
 
     }
 

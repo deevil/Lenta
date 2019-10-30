@@ -68,7 +68,6 @@ class CheckPriceTask @Inject constructor(
     }
 
     private fun initProcessed() {
-
         taskDescription.additionalTaskInfo?.prices?.forEach {
             val productInfo = productsInfoMap[it.matnr]
             actualPricesRepo.addToCacheActualPriceInfo(
@@ -166,15 +165,6 @@ class CheckPriceTask @Inject constructor(
 
     override fun getCheckResults(): LiveData<List<ICheckPriceResult>> {
         return readyResultsRepo.getCheckPriceResults()
-    }
-
-    override fun stateFromString(state: String) {
-        //TODO будет реализовано позже
-    }
-
-    override fun stateToString(): String {
-        //TODO будет реализовано позже
-        return ""
     }
 
     override fun getTaskType(): ITaskTypeInfo {
@@ -358,6 +348,21 @@ class CheckPriceTask @Inject constructor(
         }
     }
 
+    override fun getStateAsString(): String {
+        val goods = getCheckResults().value?.map { it as CheckPriceResult }
+        return gson.toJson(CheckPriceData(
+                taskDescription = taskDescription,
+                goods = goods ?: emptyList()
+        ))
+    }
+
+    override fun loadStateFromString(state: String) {
+        val data = gson.fromJson(state, CheckPriceData::class.java)
+        data.goods.map { good ->
+            readyResultsRepo.addCheckPriceResult(good)
+        }
+    }
+
 }
 
 fun ICheckPriceResult?.toCheckStatus(): CheckStatus? {
@@ -492,3 +497,8 @@ interface IUserPriceInfo {
      */
     val isValidPrice: Boolean?
 }
+
+data class  CheckPriceData(
+        val taskDescription: CheckPriceTaskDescription,
+        val goods: List<CheckPriceResult>
+)

@@ -11,11 +11,9 @@ import com.lenta.bp14.models.check_list.repo.ICheckListRepo
 import com.lenta.bp14.models.general.AppTaskTypes
 import com.lenta.bp14.models.general.IGeneralRepo
 import com.lenta.bp14.models.general.ITaskTypeInfo
-import com.lenta.bp14.platform.IVibrateHelper
-import com.lenta.bp14.platform.sound.ISoundPlayer
 import com.lenta.bp14.requests.check_list.CheckListReport
+import com.lenta.shared.models.core.StateFromToString
 import com.lenta.shared.models.core.Uom
-import com.lenta.shared.platform.time.ITimeMonitor
 import com.lenta.shared.utilities.extentions.dropZeros
 import com.lenta.shared.utilities.extentions.sumWith
 import javax.inject.Inject
@@ -25,24 +23,22 @@ class CheckListTask @Inject constructor(
         private val generalRepo: IGeneralRepo,
         private val checkListRepo: ICheckListRepo,
         private val taskDescription: CheckListTaskDescription,
-        private val timeMonitor: ITimeMonitor,
-        private val gson: Gson,
-        private val soundPlayer: ISoundPlayer,
-        private val vibrateHelper: IVibrateHelper
-) : ICheckListTask {
+        private val gson: Gson
+) : ICheckListTask, StateFromToString {
 
     override val goods = MutableLiveData<List<Good>>(listOf())
 
     override fun addGood(good: Good) {
         val goodsList = goods.value!!.toMutableList()
-        goodsList.find {
-            it.ean == good.ean && it.material == good.material
-        }?.let { existGood ->
+
+        goodsList.find { it.material == good.material }?.let { existGood ->
             val existQuantity = existGood.quantity.value!!.toDoubleOrNull()
             val quantity = good.quantity.value!!.toDoubleOrNull()
-            goodsList[goodsList.indexOf(existGood)].quantity.value = existQuantity.sumWith(quantity).dropZeros()
-        } ?: goodsList.add(0, good)
+            good.quantity.value = existQuantity.sumWith(quantity).dropZeros()
+            goodsList.remove(existGood)
+        }
 
+        goodsList.add(0, good)
         goods.value = goodsList
     }
 
@@ -84,11 +80,12 @@ class CheckListTask @Inject constructor(
 
     override suspend fun getGoodRequestResult(ean: String): GoodRequestResult {
         return checkListRepo.getGoodByEan(ean)?.let { good ->
-            addGood(good)
-            soundPlayer.playBeep()
-            vibrateHelper.shortVibrate()
             GoodRequestResult(good = good)
         } ?: GoodRequestResult(good = null)
+    }
+
+    override fun isNotAddedToList(good: Good): Boolean {
+        return goods.value?.find { it.material == good.material } == null
     }
 
     override fun isEmpty(): Boolean {
@@ -109,6 +106,18 @@ class CheckListTask @Inject constructor(
         //TODO implement this
     }
 
+    override fun getStateAsString(): String {
+        return gson.toJson(CheckListData(
+                taskDescription = taskDescription,
+                goods = goods.value ?: emptyList()
+        ))
+    }
+
+    override fun loadStateFromString(state: String) {
+        val data = gson.fromJson(state, CheckListData::class.java)
+        goods.value = data.goods
+    }
+
 }
 
 interface ICheckListTask : ITask {
@@ -121,6 +130,7 @@ interface ICheckListTask : ITask {
     fun deleteSelectedGoods(indices: MutableSet<Int>)
     fun getReportData(ip: String): CheckListReport
     suspend fun getGoodRequestResult(ean: String): GoodRequestResult
+    fun isNotAddedToList(good: Good): Boolean
 }
 
 // --------------------------
@@ -141,5 +151,10 @@ data class Good(
 
 data class GoodRequestResult(
         val good: Good?
+)
+
+data class CheckListData(
+        val taskDescription: CheckListTaskDescription,
+        val goods: List<Good>
 )
 

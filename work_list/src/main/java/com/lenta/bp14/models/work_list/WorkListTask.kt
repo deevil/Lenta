@@ -16,6 +16,7 @@ import com.lenta.bp14.models.general.ITaskTypeInfo
 import com.lenta.bp14.models.work_list.repo.IWorkListRepo
 import com.lenta.bp14.requests.work_list.WorkListReport
 import com.lenta.shared.models.core.MatrixType
+import com.lenta.shared.models.core.StateFromToString
 import com.lenta.shared.models.core.Uom
 import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.platform.time.ITimeMonitor
@@ -31,7 +32,7 @@ class WorkListTask @Inject constructor(
         private val filterableDelegate: IFilterable,
         private val timeMonitor: ITimeMonitor,
         private val gson: Gson
-) : IWorkListTask, IFilterable by filterableDelegate {
+) : IWorkListTask, StateFromToString, IFilterable by filterableDelegate {
 
     private val checkResults by lazy {
         taskDescription.taskInfoResult?.checkResults?.toList() ?: emptyList()
@@ -281,6 +282,20 @@ class WorkListTask @Inject constructor(
         return taskDescription.taskInfoResult?.positions?.find { it.matNr == good.material } != null
     }
 
+    override fun getStateAsString(): String {
+        return gson.toJson(WorkListData(
+                taskDescription = taskDescription,
+                isLoadedTaskList = isLoadedTaskList,
+                goods = goods.value ?: emptyList()
+        ))
+    }
+
+    override fun loadStateFromString(state: String) {
+        val data = gson.fromJson(state, WorkListData::class.java)
+        goods.value = data.goods.toMutableList()
+        isLoadedTaskList = data.isLoadedTaskList
+    }
+
 }
 
 
@@ -453,3 +468,9 @@ data class ScanResult(
     }
 
 }
+
+data class WorkListData(
+        val taskDescription: WorkListTaskDescription,
+        val isLoadedTaskList: Boolean,
+        val goods: List<Good>
+)
