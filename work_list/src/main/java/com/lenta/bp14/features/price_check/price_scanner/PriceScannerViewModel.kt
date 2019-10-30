@@ -32,7 +32,9 @@ class PriceScannerViewModel : CoreViewModel() {
     fun checkStatus(rawCode: String): CheckStatus? {
         return task.checkProductFromVideoScan(rawCode = rawCode)?.apply {
             checkPriceResult.value = this
-        }?.toCheckStatus()
+        }?.toCheckStatus() ?: CheckStatus.ERROR.apply {
+            checkPriceResult.value = null
+        }
     }
 
 }
@@ -47,7 +49,14 @@ private fun CheckPriceResult?.toUi(): CheckPriceResultUi? {
                 discountPriceIsValid = this.isDiscountPriceValid(),
                 isAdded = true
         )
-    }
+    } ?: CheckPriceResultUi(
+            productTitle = "Неизвестный",
+            price = "",
+            discountPrice = "",
+            priceIsValid = null,
+            discountPriceIsValid = null,
+            isAdded = false
+    )
 }
 
 data class CheckPriceResultUi(
