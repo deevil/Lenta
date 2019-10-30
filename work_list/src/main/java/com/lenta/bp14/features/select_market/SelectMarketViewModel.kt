@@ -149,12 +149,14 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
         generalTaskManager.getSavedData()?.let { taskData ->
             when (taskData.taskType) {
                 AppTaskTypes.CheckPrice.taskType -> {
-                    val data = gson.fromJson(taskData.data, CheckPriceData::class.java)
+                    // TODO Реализовать восстановление данных
+                    /*val data = gson.fromJson(taskData.data, CheckPriceData::class.java)
                     newTask(
                             taskName = data.taskDescription.taskName,
                             taskManager = checkPriceTaskManager,
                             taskDescription = data.taskDescription
-                    )
+                    )*/
+                    navigator.openMainMenuScreen()
                 }
 
                 AppTaskTypes.CheckList.taskType -> {
@@ -176,12 +178,14 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
                 }
 
                 AppTaskTypes.NotExposedProducts.taskType -> {
-                    val data = gson.fromJson(taskData.data, NotExposedData::class.java)
+                    // TODO Реализовать восстановление данных
+                    /*val data = gson.fromJson(taskData.data, NotExposedData::class.java)
                     newTask(
                             taskName = data.taskDescription.taskName,
                             taskManager = notExposedTaskManager,
                             taskDescription = data.taskDescription
-                    )
+                    )*/
+                    navigator.openMainMenuScreen()
                 }
 
                 else -> navigator.openNotImplementedScreenAlert("")
