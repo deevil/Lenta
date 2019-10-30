@@ -4,6 +4,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp14.features.common_ui_model.SimpleProductUi
 import com.lenta.bp14.models.IGeneralTaskManager
+import com.lenta.bp14.models.check_price.ActualPriceInfo
 import com.lenta.bp14.models.check_price.CheckPriceResult
 import com.lenta.bp14.models.check_price.ICheckPriceTask
 import com.lenta.bp14.models.data.GoodsListTab
@@ -194,10 +195,25 @@ class GoodsListPcViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
                         navigator.openAlertScreen(it)
                     }
             ) {
-                task.processingMatNumber = it.matNumber
-                if (qrCode.isNullOrBlank()) {
+                if (it is ActualPriceInfo) {
+                    task.processingMatNumber = it.matNumber
                     navigator.openGoodInfoPcScreen()
+                } else if (it is CheckPriceResult) {
+                    if (it.isPriceValid() != true) {
+                        navigator.showPrintPriceOffer(
+                                goodName = "${it.matNr?.takeLast(6)} ${it.name}",
+                                noCallback = {
+
+                                },
+                                yesCallback = {
+                                    printTask.matNrForPrint = it.matNr
+                                    navigator.openPrintSettingsScreen()
+                                }
+                        )
+
+                    }
                 }
+
             }
             navigator.hideProgress()
 

@@ -24,7 +24,7 @@ data class DocsPrintingParams(
 class DocsPrintingStatus : ObjectRawStatus<DocsPrintingRestInfo>()
 
 data class DocsPrintingRestInfo(
-        @SerializedName("ET_DOC_PRINT")
+        @SerializedName("ET_DOC_PRINT") //Список документов для печати
         val listDocumentsPrinting: List<TaskDocumentsPrintingRestInfo>,
         @SerializedName("EV_RETCODE")
         val retcode: String,
