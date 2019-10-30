@@ -1,6 +1,8 @@
 package com.lenta.bp14.features.price_check.good_info
 
 import androidx.lifecycle.viewModelScope
+import com.lenta.bp14.models.check_price.ActualPriceInfo
+import com.lenta.bp14.models.check_price.CheckPriceResult
 import com.lenta.bp14.models.check_price.ICheckPriceTask
 import com.lenta.bp14.models.print.IPrintTask
 import com.lenta.bp14.platform.navigation.IScreenNavigator
@@ -88,11 +90,30 @@ class GoodInfoPcViewModel : CoreViewModel() {
                         navigator.openAlertScreen(it)
                     }
             ) {
-                onClickValid()
-                if (qrCode.isNullOrBlank()) {
+                if (it is ActualPriceInfo) {
+                    onClickValid()
                     task.processingMatNumber = it.matNumber
                     navigator.openGoodInfoPcScreen()
+                } else if (it is CheckPriceResult) {
+                    if (it.isPriceValid() != true) {
+                        navigator.showPrintPriceOffer(
+                                goodName = "${it.matNr?.takeLast(6)} ${it.name}",
+                                noCallback = {
+                                    onClickValid()
+                                    task.processingMatNumber = it.matNr
+                                    navigator.openGoodInfoPcScreen()
+                                },
+                                yesCallback = {
+                                    onClickValid()
+                                    printTask.matNrForPrint = it.matNr
+                                    navigator.openPrintSettingsScreen()
+                                }
+                        )
+
+                    }
+
                 }
+
             }
             navigator.hideProgress()
 

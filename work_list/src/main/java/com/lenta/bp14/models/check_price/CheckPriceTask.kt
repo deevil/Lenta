@@ -17,6 +17,7 @@ import com.lenta.bp14.platform.sound.ISoundPlayer
 import com.lenta.bp14.requests.check_price.CheckPriceReport
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.functional.Either
+import com.lenta.shared.functional.map
 import com.lenta.shared.functional.rightToLeft
 import com.lenta.shared.models.core.StateFromToString
 import com.lenta.shared.utilities.extentions.isSapTrue
@@ -128,7 +129,7 @@ class CheckPriceTask @Inject constructor(
 
     }
 
-    override suspend fun checkPriceByQrCode(qrCode: String): Either<Failure, ActualPriceInfo> {
+    override suspend fun checkPriceByQrCode(qrCode: String): Either<Failure, CheckPriceResult> {
         val scannedPriceInfo = priceInfoParser.getPriceInfoFromRawCode(qrCode)
                 ?: return Either.Left(Failure.NotValidQrCode)
 
@@ -137,22 +138,19 @@ class CheckPriceTask @Inject constructor(
                 eanCode = scannedPriceInfo.eanCode
         ).rightToLeft(
                 fnRtoL = checksForAddFunc
-        )
-                .also {
-                    it.either({}, { actualPriceInfo ->
-                        CheckPriceResult(
-                                ean = scannedPriceInfo.eanCode,
-                                matNr = actualPriceInfo.matNumber,
-                                name = actualPriceInfo.productName,
-                                scannedPriceInfo = scannedPriceInfo,
-                                actualPriceInfo = actualPriceInfo,
-                                userPriceInfo = null,
-                                isPrinted = false
-                        ).apply {
-                            readyResultsRepo.addCheckPriceResult(this)
-                        }
-                    })
-                }
+        ).map { actualPriceInfo ->
+            CheckPriceResult(
+                    ean = scannedPriceInfo.eanCode,
+                    matNr = actualPriceInfo.matNumber,
+                    name = actualPriceInfo.productName,
+                    scannedPriceInfo = scannedPriceInfo,
+                    actualPriceInfo = actualPriceInfo,
+                    userPriceInfo = null,
+                    isPrinted = false
+            ).apply {
+                readyResultsRepo.addCheckPriceResult(this)
+            }
+        }
 
 
     }
@@ -382,7 +380,7 @@ interface ICheckPriceTask : ITask {
     fun getCheckResultsForPrint(): LiveData<List<CheckPriceResult>>
     suspend fun getActualPriceByEan(eanCode: String): Either<Failure, ActualPriceInfo>
     suspend fun getActualPriceByMatNr(matNumber: String): Either<Failure, ActualPriceInfo>
-    suspend fun checkPriceByQrCode(qrCode: String): Either<Failure, ActualPriceInfo>
+    suspend fun checkPriceByQrCode(qrCode: String): Either<Failure, CheckPriceResult>
     fun getReportData(ip: String): CheckPriceReport
     fun markPrinted(listOfMatNrs: List<String>)
 
