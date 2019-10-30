@@ -58,7 +58,6 @@ class LoadingSubmittedViewModel : CoreLoadingViewModel() {
 
     private fun handleSuccess(result: SubmittedRestInfo) {
         taskManager.updateTaskDescription(TaskDescription.from(result.taskDescription))
-        taskManager.getReceivingTask()?.taskRepository?.getDocumentsPrinting()?.updateDocumentsPrinting(result.listDocumentsPrinting.map { TaskDocumentsPrinting.from(it) })
         screenNavigator.openTaskCardScreen(TaskCardMode.Full)
     }
 

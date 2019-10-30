@@ -97,8 +97,4 @@ class FormedDocsFragment : CoreFragment<FragmentFormedDocsBinding, FormedDocsVie
         }
     }
 
-    override fun onResume() {
-        super.onResume()
-        vm.onResume()
-    }
 }
