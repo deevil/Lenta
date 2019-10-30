@@ -42,7 +42,7 @@ class GoodInfoNeViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     val goodInfo by lazy {
-        task.getProcessedProductInfoResult()!!
+        task.getProcessedProductInfoResult()!!.goodInfo
     }
 
     val productParamsUi: MutableLiveData<ProductParamsUi> by lazy {
@@ -94,10 +94,16 @@ class GoodInfoNeViewModel : CoreViewModel(), PageSelectionListener {
         }
     }
 
-    val totalQuantity: MutableLiveData<String> by lazy {
+    private val totalQuantityValue: MutableLiveData<Double> by lazy {
         quantityValue.map {
             val saved = task.getProcessedCheckInfo()?.quantity ?: 0.0
-            "${saved.sumWith(it).dropZeros()} ${goodInfo.uom?.name ?: ""}"
+            saved.sumWith(it)
+        }
+    }
+
+    val totalQuantity: MutableLiveData<String> by lazy {
+        totalQuantityValue.map {
+            "${it.dropZeros()} ${goodInfo.uom?.name ?: ""}"
         }
     }
 
@@ -141,7 +147,7 @@ class GoodInfoNeViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     fun onClickApply() {
-        quantityValue.value?.let {
+        totalQuantityValue.value?.let {
             task.setCheckInfo(quantity = it, isEmptyPlaceMarked = null)
         }
         navigator.goBack()
@@ -202,7 +208,7 @@ class GoodInfoNeViewModel : CoreViewModel(), PageSelectionListener {
                             isBarCode = true
                     )
             ).either(::handleFailure) { scanInfoResult ->
-                if (scanInfoResult.productInfo.materialNumber == task.getProcessedProductInfoResult()?.productInfo?.matNr) {
+                if (scanInfoResult.productInfo.materialNumber == goodInfo.productInfo.matNr) {
                     val newQuantity = ((quantityValue.value
                             ?: 0.0) + scanInfoResult.quantity)
                     //TODO maxQuantity - это максимальное количество позиций в задании. Нужно переделать
@@ -222,7 +228,9 @@ class GoodInfoNeViewModel : CoreViewModel(), PageSelectionListener {
                                         isEmptyPlaceMarked = null
                                 )
                                 task.getProductInfoAndSetProcessed(
-                                        matNr = scanInfoResult.productInfo.materialNumber
+                                        matNr = scanInfoResult.productInfo.materialNumber,
+                                        quantity = scanInfoResult.quantity,
+                                        ean = null
                                 ).either(
                                         {
                                             navigator.openAlertScreen(failure = it)
