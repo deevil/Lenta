@@ -33,6 +33,7 @@ internal class CheckListTaskTest {
     }
 
 
+    // TODO Разобраться почему не работает...
     @Test
     fun `Save data to string and loading`() {
         val goods = List(3) {
@@ -57,6 +58,5 @@ internal class CheckListTaskTest {
         assertEquals(3, task.goods.value!!.size)
 
     }
-
 
 }

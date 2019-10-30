@@ -349,11 +349,10 @@ class CheckPriceTask @Inject constructor(
     }
 
     override fun getStateAsString(): String {
-        //val goods = getCheckResults().value?.map { it as CheckPriceResult }
-
+        val goods = getCheckResults().value?.map { it as CheckPriceResult }
         return gson.toJson(CheckPriceData(
                 taskDescription = taskDescription,
-                goods = getCheckResults().value ?: emptyList()
+                goods = goods ?: emptyList()
         ))
     }
 
@@ -501,5 +500,5 @@ interface IUserPriceInfo {
 
 data class  CheckPriceData(
         val taskDescription: CheckPriceTaskDescription,
-        val goods: List<ICheckPriceResult>
+        val goods: List<CheckPriceResult>
 )
