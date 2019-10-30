@@ -271,15 +271,25 @@ class GoodsListPcViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
                 printerName = printTask.getPrinterTypes().firstOrNull { it.isStatic == true }?.name
                         ?: ""
             }
-            if (selectedPriceTagIsRed()) {
-                navigator.showMakeSureRedPaperInstalled(printerName, numberOfCopy = 1) {
-                    print()
-                }
-            } else {
-                navigator.showMakeSureYellowPaperInstalled(printerName, numberOfCopy = 1) {
-                    print()
+
+            getResultsForPrint().let { printList ->
+                if (printList.size == 1) {
+                    printTask.matNrForPrint = printList[0].matNr
+                    navigator.openPrintSettingsScreen()
+                } else {
+                    if (selectedPriceTagIsRed()) {
+                        navigator.showMakeSureRedPaperInstalled(printerName, numberOfCopy = 1) {
+                            print()
+                        }
+                    } else {
+                        navigator.showMakeSureYellowPaperInstalled(printerName, numberOfCopy = 1) {
+                            print()
+                        }
+                    }
                 }
             }
+
+
         }
     }
 
