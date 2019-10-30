@@ -155,7 +155,6 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
                             taskManager = checkPriceTaskManager,
                             taskDescription = data.taskDescription
                     )
-                    navigator.openMainMenuScreen()
                 }
 
                 AppTaskTypes.CheckList.taskType -> {
@@ -183,7 +182,6 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
                             taskManager = notExposedTaskManager,
                             taskDescription = data.taskDescription
                     )
-                    navigator.openMainMenuScreen()
                 }
 
                 else -> navigator.openNotImplementedScreenAlert("")

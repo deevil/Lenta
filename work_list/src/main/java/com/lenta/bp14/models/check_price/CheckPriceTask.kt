@@ -248,7 +248,7 @@ class CheckPriceTask @Inject constructor(
 
             } else {
                 readyResultsRepo.addCheckPriceResult(
-                        checkPriceResult = (this as CheckPriceResult).copy(
+                        checkPriceResult = (this).copy(
                                 userPriceInfo = UserPriceInfo(isValidPrice = isValid)
                         )
                 )
@@ -340,7 +340,7 @@ class CheckPriceTask @Inject constructor(
         listOfMatNrs.forEach {
             readyResultsRepo.getCheckPriceResult(matNr = it)?.let { priceResult ->
                 readyResultsRepo.addCheckPriceResult(
-                        checkPriceResult = (priceResult as CheckPriceResult).copy(
+                        checkPriceResult = (priceResult).copy(
                                 isPrinted = true
                         )
                 )
@@ -349,10 +349,9 @@ class CheckPriceTask @Inject constructor(
     }
 
     override fun getStateAsString(): String {
-        val goods = getCheckResults().value?.map { it as CheckPriceResult }
         return gson.toJson(CheckPriceData(
                 taskDescription = taskDescription,
-                goods = goods ?: emptyList()
+                goods = getCheckResults().value ?: emptyList()
         ))
     }
 
