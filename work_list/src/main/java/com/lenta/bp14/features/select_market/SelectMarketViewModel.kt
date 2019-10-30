@@ -149,13 +149,12 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
         generalTaskManager.getSavedData()?.let { taskData ->
             when (taskData.taskType) {
                 AppTaskTypes.CheckPrice.taskType -> {
-                    // TODO Реализовать восстановление данных
-                    /*val data = gson.fromJson(taskData.data, CheckPriceData::class.java)
+                    val data = gson.fromJson(taskData.data, CheckPriceData::class.java)
                     newTask(
                             taskName = data.taskDescription.taskName,
                             taskManager = checkPriceTaskManager,
                             taskDescription = data.taskDescription
-                    )*/
+                    )
                     navigator.openMainMenuScreen()
                 }
 
@@ -178,13 +177,12 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
                 }
 
                 AppTaskTypes.NotExposedProducts.taskType -> {
-                    // TODO Реализовать восстановление данных
-                    /*val data = gson.fromJson(taskData.data, NotExposedData::class.java)
+                    val data = gson.fromJson(taskData.data, NotExposedData::class.java)
                     newTask(
                             taskName = data.taskDescription.taskName,
                             taskManager = notExposedTaskManager,
                             taskDescription = data.taskDescription
-                    )*/
+                    )
                     navigator.openMainMenuScreen()
                 }
 
