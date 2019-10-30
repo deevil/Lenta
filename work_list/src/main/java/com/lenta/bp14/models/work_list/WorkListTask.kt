@@ -58,7 +58,7 @@ class WorkListTask @Inject constructor(
                     good.scanResults = checkResults.filter { it.matNr == position.matNr }.map { result ->
                         ScanResult(
                                 quantity = result.quantity,
-                                commentCode = result.comment,
+                                comment = result.comment,
                                 productionDate = result.producedDate.getDate(Constants.DATE_FORMAT_ddmmyy),
                                 expirationDate = result.shelfLife.getDate(Constants.DATE_FORMAT_ddmmyy)
                         )
@@ -450,7 +450,8 @@ data class Delivery(
 
 data class ScanResult(
         val quantity: Double,
-        val commentCode: String,
+        val commentCode: String? = null,
+        val comment: String,
         val productionDate: Date?,
         val expirationDate: Date?,
         val markNumber: String? = null

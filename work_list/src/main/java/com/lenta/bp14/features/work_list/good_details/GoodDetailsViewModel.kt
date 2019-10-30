@@ -52,6 +52,7 @@ class GoodDetailsViewModel : CoreViewModel(), PageSelectionListener {
                         expirationDate = scanResult.getFormattedExpirationDate(),
                         productionDate = scanResult.getFormattedProductionDate(),
                         productionDateVisibility = scanResult.productionDate != null,
+                        expirationDateVisibility = scanResult.expirationDate != null,
                         quantity = "${scanResult.quantity.dropZeros()} ${task.currentGood.value!!.units.name}"
                 )
             }
@@ -61,9 +62,9 @@ class GoodDetailsViewModel : CoreViewModel(), PageSelectionListener {
     val comments: MutableLiveData<List<ItemCommentUi>> by lazy {
         good.map { good ->
             val combinedResults = mutableMapOf<String, ScanResult>()
-            val commentNotSelected = good?.comments?.get(0)?.code
+            val commentNotSelected = good?.comments?.get(0)?.description
             good?.scanResults?.map { result ->
-                val key = result.commentCode
+                val key = result.comment
                 if (key != commentNotSelected) {
                     combinedResults[key] = if (combinedResults.containsKey(key)) {
                         val totalQuantity = combinedResults[key]!!.quantity.sumWith(result.quantity)
@@ -75,7 +76,7 @@ class GoodDetailsViewModel : CoreViewModel(), PageSelectionListener {
             combinedResults.values.mapIndexed { index, scanResult ->
                 ItemCommentUi(
                         position = (index + 1).toString(),
-                        comment = scanResult.commentCode,
+                        comment = scanResult.comment,
                         quantity = "${scanResult.quantity.dropZeros()} ${task.currentGood.value!!.units.name}"
                 )
             }
@@ -147,6 +148,7 @@ data class ItemShelfLifeUi(
         val expirationDate: String,
         val productionDate: String,
         val productionDateVisibility: Boolean,
+        val expirationDateVisibility: Boolean,
         val quantity: String
 )
 

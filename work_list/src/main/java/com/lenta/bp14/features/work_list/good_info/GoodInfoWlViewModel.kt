@@ -449,6 +449,7 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
         task.addScanResult(ScanResult(
                 quantity = quantity.value?.toDoubleOrNull() ?: 0.0,
                 commentCode = comment.code,
+                comment = comment.description,
                 productionDate = productionDate,
                 expirationDate = expirationDate
         ))
