@@ -6,9 +6,8 @@ import com.lenta.bp9.features.loading.tasks.TaskCardMode
 import com.lenta.bp9.model.task.IReceivingTaskManager
 import com.lenta.bp9.model.task.TaskDocumentsPrinting
 import com.lenta.bp9.platform.navigation.IScreenNavigator
-import com.lenta.bp9.requests.network.DocsPrintingNetRequest
-import com.lenta.bp9.requests.network.DocsPrintingParams
-import com.lenta.bp9.requests.network.DocsPrintingRestInfo
+import com.lenta.bp9.requests.network.*
+import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.SelectionItemsHelper
@@ -24,13 +23,16 @@ class FormedDocsViewModel : CoreViewModel() {
     lateinit var screenNavigator: IScreenNavigator
     @Inject
     lateinit var docsPrintingNetRequest: DocsPrintingNetRequest
+    @Inject
+    lateinit var printingDocsNetRequest: PrintingDocsNetRequest
+    @Inject
+    lateinit var sessionInfo: ISessionInfo
 
     val listDocs: MutableLiveData<List<FormedDocsItem>> = MutableLiveData()
     val docsSelectionsHelper = SelectionItemsHelper()
 
     val enabledPrintButton: MutableLiveData<Boolean> = docsSelectionsHelper.selectedPositions.map {
-        val selectedComponentsPositions = docsSelectionsHelper.selectedPositions.value
-        !selectedComponentsPositions.isNullOrEmpty()
+        !it.isNullOrEmpty()
     }
 
     fun getTitle(): String {
@@ -69,6 +71,19 @@ class FormedDocsViewModel : CoreViewModel() {
     }
 
     fun onClickPrint() {
-        //todo
+        viewModelScope.launch {
+            screenNavigator.showProgressLoadingData()
+            taskManager.getReceivingTask()?.let { task ->
+                val params = PrintingDocsParams(
+                        listDocumentsPrinting = taskManager.getReceivingTask()!!.taskRepository.getDocumentsPrinting().getDocumentsPrinting(),
+                        printerName = sessionInfo.printer ?: ""
+                )
+                printingDocsNetRequest(params).either(::handleFailure) {
+                    docsSelectionsHelper.clearPositions()
+                    updateDocs()
+                }
+            }
+            screenNavigator.hideProgress()
+        }
     }
 }
