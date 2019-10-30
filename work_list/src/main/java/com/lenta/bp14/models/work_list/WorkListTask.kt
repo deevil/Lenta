@@ -276,7 +276,7 @@ class WorkListTask @Inject constructor(
     }
 
     override suspend fun getMaxQuantity(): Double? {
-        return workListRepo.getMaxQuantity()
+        return workListRepo.getMaxPositionsForTask()
     }
 
     override fun isGoodFromTask(good: Good): Boolean {

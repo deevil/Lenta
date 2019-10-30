@@ -10,7 +10,7 @@ import com.lenta.bp14.models.data.getGoodType
 import com.lenta.bp14.models.not_exposed_products.INotExposedProductsTask
 import com.lenta.bp14.platform.navigation.IScreenNavigator
 import com.lenta.shared.exception.Failure
-import com.lenta.shared.fmp.resources.dao_ext.getMaxQuantityProdWkl
+import com.lenta.shared.fmp.resources.dao_ext.getMaxPositionsProdWkl
 import com.lenta.shared.fmp.resources.fast.ZmpUtz14V001
 import com.lenta.shared.models.core.MatrixType
 import com.lenta.shared.models.core.getMatrixType
@@ -38,7 +38,7 @@ class GoodInfoNeViewModel : CoreViewModel(), PageSelectionListener {
 
 
     private val maxQuantity: Double? by lazy {
-        ZmpUtz14V001(hyperHive).getMaxQuantityProdWkl()
+        ZmpUtz14V001(hyperHive).getMaxPositionsProdWkl()
     }
 
     val goodInfo by lazy {
@@ -206,11 +206,13 @@ class GoodInfoNeViewModel : CoreViewModel(), PageSelectionListener {
                 if (scanInfoResult.productInfo.materialNumber == task.getProcessedProductInfoResult()?.productInfo?.matNr) {
                     val newQuantity = ((quantityValue.value
                             ?: 0.0) + scanInfoResult.quantity)
-                    if (maxQuantity != null && newQuantity > maxQuantity!!) {
+                    //TODO maxQuantity - это максимальное количество позиций в задании. Нужно переделать
+                    /*if (maxQuantity != null && newQuantity > maxQuantity!!) {
                         navigator.showMaxCountProductAlert()
                     } else {
                         quantityField.value = newQuantity.toStringFormatted()
-                    }
+                    }*/
+                    quantityField.value = newQuantity.toStringFormatted()
                 } else {
                     if (applyButtonEnabled.value == true) {
                         viewModelScope.launch {
