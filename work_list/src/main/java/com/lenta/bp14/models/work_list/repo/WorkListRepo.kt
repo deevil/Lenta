@@ -13,6 +13,7 @@ import com.lenta.shared.fmp.resources.slow.ZfmpUtz48V001
 import com.lenta.shared.fmp.resources.slow.ZmpUtz25V001
 import com.lenta.shared.models.core.Uom
 import com.lenta.shared.models.core.getMatrixType
+import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.isSapTrue
 import com.mobrun.plugin.api.HyperHive
 import kotlinx.coroutines.Dispatchers
@@ -93,7 +94,7 @@ class WorkListRepo @Inject constructor(
             val selfLives = dictonary.getItemsByTid("007")?.toElementList()?.toMutableList()
                     ?: mutableListOf() // 007 - Типы сроков годности
             selfLives.sortBy { it.order }
-
+            Logg.d { "--> selfLives: $selfLives" }
             return@withContext selfLives
         }
     }
@@ -108,7 +109,7 @@ class WorkListRepo @Inject constructor(
                     description = "Не выбран"
             ))
             comments.sortBy { it.order }
-
+            Logg.d { "--> comments: $comments" }
             return@withContext comments
         }
     }
