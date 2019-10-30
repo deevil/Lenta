@@ -61,9 +61,9 @@ class GoodDetailsViewModel : CoreViewModel(), PageSelectionListener {
     val comments: MutableLiveData<List<ItemCommentUi>> by lazy {
         good.map { good ->
             val combinedResults = mutableMapOf<String, ScanResult>()
-            val commentNotSelected = good?.comments?.get(0)
+            val commentNotSelected = good?.comments?.get(0)?.code
             good?.scanResults?.map { result ->
-                val key = result.comment
+                val key = result.commentCode
                 if (key != commentNotSelected) {
                     combinedResults[key] = if (combinedResults.containsKey(key)) {
                         val totalQuantity = combinedResults[key]!!.quantity.sumWith(result.quantity)
@@ -75,7 +75,7 @@ class GoodDetailsViewModel : CoreViewModel(), PageSelectionListener {
             combinedResults.values.mapIndexed { index, scanResult ->
                 ItemCommentUi(
                         position = (index + 1).toString(),
-                        comment = scanResult.comment,
+                        comment = scanResult.commentCode,
                         quantity = "${scanResult.quantity.dropZeros()} ${task.currentGood.value!!.units.name}"
                 )
             }

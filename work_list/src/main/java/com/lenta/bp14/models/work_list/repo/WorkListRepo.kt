@@ -88,18 +88,27 @@ class WorkListRepo @Inject constructor(
         }
     }
 
-    private suspend fun getShelfLifeTypes(): List<String> {
+    private suspend fun getShelfLifeTypes(): List<DictElement> {
         return withContext(Dispatchers.IO) {
-            return@withContext dictonary.getItemsByTid("007")?.toDescriptionsList()
-                    ?: emptyList() // 007 - Типы сроков годности
+            val selfLives = dictonary.getItemsByTid("007")?.toElementList()?.toMutableList()
+                    ?: mutableListOf() // 007 - Типы сроков годности
+            selfLives.sortBy { it.order }
+
+            return@withContext selfLives
         }
     }
 
-    private suspend fun getWorkListComments(): List<String> {
+    private suspend fun getWorkListComments(): List<DictElement> {
         return withContext(Dispatchers.IO) {
-            val comments = dictonary.getItemsByTid("019")?.toDescriptionsList()?.toMutableList()
+            val comments = dictonary.getItemsByTid("019")?.toElementList()?.toMutableList()
                     ?: mutableListOf() // 019 - Комментарии
-            comments.add(0, "Не выбран")
+            comments.add(0, DictElement(
+                    code = "0",
+                    order = "0",
+                    description = "Не выбран"
+            ))
+            comments.sortBy { it.order }
+
             return@withContext comments
         }
     }

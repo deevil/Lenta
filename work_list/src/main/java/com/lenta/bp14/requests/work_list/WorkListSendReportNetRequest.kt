@@ -1,7 +1,6 @@
 package com.lenta.bp14.requests.work_list
 
 import com.google.gson.annotations.SerializedName
-import com.lenta.bp14.models.data.GoodType
 import com.lenta.bp14.models.work_list.Good
 import com.lenta.bp14.models.work_list.WorkListTaskDescription
 import com.lenta.bp14.requests.pojo.*
@@ -12,8 +11,6 @@ import com.lenta.shared.functional.rightToLeft
 import com.lenta.shared.interactor.UseCase
 import com.lenta.shared.requests.FmpRequestsHelper
 import com.lenta.shared.utilities.extentions.getFormattedDate
-import com.lenta.shared.utilities.extentions.map
-import com.lenta.shared.utilities.extentions.sumWith
 import com.lenta.shared.utilities.extentions.toSapBooleanString
 import javax.inject.Inject
 
@@ -40,7 +37,7 @@ class WorkListSendReportNetRequest
                         CheckResult(
                                 matNr = good.material,
                                 quantity = result.quantity,
-                                comment = result.comment,
+                                comment = result.commentCode,
                                 producedDate = result.productionDate.getFormattedDate(),
                                 shelfLife = result.expirationDate.getFormattedDate()
                         )
