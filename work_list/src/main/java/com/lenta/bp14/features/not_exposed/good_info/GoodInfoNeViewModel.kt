@@ -90,15 +90,14 @@ class GoodInfoNeViewModel : CoreViewModel(), PageSelectionListener {
 
     private val quantityValue by lazy {
         quantityField.map {
-            val saved = task.getProcessedCheckInfo()?.quantity ?: 0.0
-            val entered = it?.toDoubleOrNull() ?: 0.0
-            saved.sumWith(entered)
+            it?.toDoubleOrNull() ?: 0.0
         }
     }
 
     val totalQuantity: MutableLiveData<String> by lazy {
         quantityValue.map {
-            "${it?.dropZeros()} ${goodInfo.uom?.name ?: ""}"
+            val saved = task.getProcessedCheckInfo()?.quantity ?: 0.0
+            "${saved.sumWith(it).dropZeros()} ${goodInfo.uom?.name ?: ""}"
         }
     }
 
