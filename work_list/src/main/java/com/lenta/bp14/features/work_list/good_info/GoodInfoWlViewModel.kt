@@ -109,7 +109,11 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
         parseDate
     }
 
-    val shelfLifeTypeList = MutableLiveData<List<String>>()
+    val shelfLifeTypeList: MutableLiveData<List<String>> by lazy {
+        good.map { good ->
+            good?.shelfLifeTypes?.map { it.description }
+        }
+    }
 
     val commentsList: MutableLiveData<List<String>> by lazy {
         good.map { good ->
@@ -432,13 +436,13 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
         val enteredDate = enteredDate.value
         val shelfLifeType = shelfLifeTypePosition.value
 
-        val productionDate = if (enteredDate != null && shelfLifeType == ShelfLifeType.PRODUCTION.position) {
-            enteredDate
-        } else null
+        val productionDate = enteredDate?.let {
+            if (shelfLifeType == ShelfLifeType.PRODUCTION.position) it else null
+        }
 
-        val expirationDate = if (enteredDate != null && shelfLifeType == ShelfLifeType.PRODUCTION.position) {
-            Date(enteredDate.time + good.value!!.getShelfLifeInMills())
-        } else enteredDate
+        val expirationDate = enteredDate?.let {
+            if (shelfLifeType == ShelfLifeType.EXPIRATION.position) it else null
+        }
 
         val comment = good.value!!.comments[commentsPosition.value ?: 0]
 

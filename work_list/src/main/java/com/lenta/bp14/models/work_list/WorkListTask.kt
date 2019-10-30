@@ -338,7 +338,7 @@ data class Good(
         var purchaseGroup: String,
         val shelfLife: Int,
         val remainingShelfLife: Int,
-        val shelfLifeType: List<DictElement>,
+        val shelfLifeTypes: List<DictElement>,
         val comments: List<DictElement>,
         val options: GoodOptions,
         var isProcessed: Boolean = false,

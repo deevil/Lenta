@@ -49,7 +49,7 @@ class WorkListRepo @Inject constructor(
                         purchaseGroup = goodInfo.purchaseGroup,
                         shelfLife = goodInfo.shelfLife,
                         remainingShelfLife = goodInfo.remainingShelfLife,
-                        shelfLifeType = shelfLifeTypes,
+                        shelfLifeTypes = shelfLifeTypes,
                         comments = comments,
                         options = GoodOptions(
                                 matrixType = getMatrixType(goodInfo.matrixType),
