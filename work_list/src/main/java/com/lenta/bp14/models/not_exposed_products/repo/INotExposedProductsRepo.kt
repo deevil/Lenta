@@ -7,12 +7,12 @@ import javax.inject.Inject
 
 class NotExposedProductsRepo @Inject constructor() : INotExposedProductsRepo {
 
-    private val products = mutableListOf<INotExposedProductInfo>()
+    private val products = mutableListOf<NotExposedProductInfo>()
 
     private val resultsLiveData = MutableLiveData(products.toList())
 
-    override fun getProduct(matNr: String?, ean: String?): INotExposedProductInfo? {
-        val res = mutableListOf<INotExposedProductInfo>()
+    override fun getProduct(matNr: String?, ean: String?): NotExposedProductInfo? {
+        val res = mutableListOf<NotExposedProductInfo>()
         matNr?.apply {
             res.addAll(products.filter { it.matNr == this })
         }
@@ -22,11 +22,11 @@ class NotExposedProductsRepo @Inject constructor() : INotExposedProductsRepo {
         return res.getOrNull(0)
     }
 
-    override fun getProducts(): LiveData<List<INotExposedProductInfo>> {
+    override fun getProducts(): LiveData<List<NotExposedProductInfo>> {
         return resultsLiveData
     }
 
-    override fun addOrReplaceProduct(product: INotExposedProductInfo): Boolean {
+    override fun addOrReplaceProduct(product: NotExposedProductInfo): Boolean {
         products.removeAll { it.matNr == product.matNr }
         products.add(product)
         resultsLiveData.value = products
@@ -44,35 +44,25 @@ class NotExposedProductsRepo @Inject constructor() : INotExposedProductsRepo {
 
 interface INotExposedProductsRepo {
 
-    fun getProduct(matNr: String? = null, ean: String? = null): INotExposedProductInfo?
+    fun getProduct(matNr: String? = null, ean: String? = null): NotExposedProductInfo?
 
-    fun getProducts(): LiveData<List<INotExposedProductInfo>>
+    fun getProducts(): LiveData<List<NotExposedProductInfo>>
 
-    fun addOrReplaceProduct(product: INotExposedProductInfo): Boolean
+    fun addOrReplaceProduct(product: NotExposedProductInfo): Boolean
 
     fun removeProducts(matNumbers: Set<String>)
 
 }
 
 data class NotExposedProductInfo(
-        override val ean: String?,
-        override val matNr: String,
-        override val name: String,
-        override val quantity: Double?,
-        override val uom: Uom?,
-        override val isEmptyPlaceMarked: Boolean?,
-        override val section: String?,
-        override val group: String?
-) : INotExposedProductInfo
+        val ean: String?,
+        val matNr: String,
+        val name: String,
+        val quantity: Double?,
+        val uom: Uom?,
+        val isEmptyPlaceMarked: Boolean?,
+        val section: String?,
+        val group: String?
+)
 
 
-interface INotExposedProductInfo {
-    val ean: String?
-    val matNr: String
-    val name: String
-    val quantity: Double?
-    val uom: Uom?
-    val isEmptyPlaceMarked: Boolean?
-    val section: String?
-    val group: String?
-}
