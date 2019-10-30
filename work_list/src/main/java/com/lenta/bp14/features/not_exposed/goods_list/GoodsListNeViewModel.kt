@@ -12,7 +12,7 @@ import com.lenta.bp14.models.filter.FilterParameter
 import com.lenta.bp14.models.data.GoodsListTab
 import com.lenta.bp14.models.getTaskName
 import com.lenta.bp14.models.not_exposed_products.INotExposedProductsTask
-import com.lenta.bp14.models.not_exposed_products.repo.INotExposedProductInfo
+import com.lenta.bp14.models.not_exposed_products.repo.NotExposedProductInfo
 import com.lenta.bp14.platform.navigation.IScreenNavigator
 import com.lenta.bp14.requests.not_exposed_product.NotExposedSendReportNetRequest
 import com.lenta.shared.platform.device_info.DeviceInfo
@@ -82,7 +82,7 @@ class GoodsListNeViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
         }
     }
 
-    private val toUiFunc = { products: List<INotExposedProductInfo>? ->
+    private val toUiFunc = { products: List<NotExposedProductInfo>? ->
         products?.reversed()?.mapIndexed { index, productInfo ->
             NotExposedProductUi(
                     position = products.size - index,

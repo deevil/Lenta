@@ -11,9 +11,8 @@ import com.lenta.bp14.models.filter.IFilterable
 import com.lenta.bp14.models.general.AppTaskTypes
 import com.lenta.bp14.models.general.IGeneralRepo
 import com.lenta.bp14.models.general.ITaskTypeInfo
-import com.lenta.bp14.models.not_exposed_products.repo.INotExposedProductInfo
-import com.lenta.bp14.models.not_exposed_products.repo.INotExposedProductsRepo
 import com.lenta.bp14.models.not_exposed_products.repo.NotExposedProductInfo
+import com.lenta.bp14.models.not_exposed_products.repo.INotExposedProductsRepo
 import com.lenta.bp14.requests.not_exposed_product.GoodInfo
 import com.lenta.bp14.requests.not_exposed_product.IProductInfoForNotExposedNetRequest
 import com.lenta.bp14.requests.not_exposed_product.NotExposedInfoRequestParams
@@ -63,7 +62,7 @@ class NotExposedProductsTask @Inject constructor(
                         isEmptyPlaceMarked = null,
                         section = productInfo?.sectionNumber,
                         group = productInfo?.eKGRP
-                ) as INotExposedProductInfo
+                ) as NotExposedProductInfo
             }
         }
     }
@@ -117,11 +116,11 @@ class NotExposedProductsTask @Inject constructor(
         return taskDescription
     }
 
-    override fun getProducts(): LiveData<List<INotExposedProductInfo>> {
+    override fun getProducts(): LiveData<List<NotExposedProductInfo>> {
         return notExposedProductsRepo.getProducts()
     }
 
-    override fun getToProcessingProducts(): LiveData<List<INotExposedProductInfo>> {
+    override fun getToProcessingProducts(): LiveData<List<NotExposedProductInfo>> {
         return processingProducts
     }
 
@@ -148,7 +147,7 @@ class NotExposedProductsTask @Inject constructor(
         notExposedProductsRepo.removeProducts(matNumbers)
     }
 
-    override fun getFilteredProducts(): LiveData<List<INotExposedProductInfo>> {
+    override fun getFilteredProducts(): LiveData<List<NotExposedProductInfo>> {
         return getProducts().combineLatest(filterableDelegate.onFiltersChangesLiveData).map {
             requireNotNull(it)
             val products = it.first
@@ -159,7 +158,7 @@ class NotExposedProductsTask @Inject constructor(
 
     }
 
-    private fun filter(product: INotExposedProductInfo): Boolean {
+    private fun filter(product: NotExposedProductInfo): Boolean {
         filterableDelegate.filtersMap.forEach {
             @Suppress("NON_EXHAUSTIVE_WHEN")
             when (it.key) {
@@ -190,7 +189,7 @@ class NotExposedProductsTask @Inject constructor(
         return true
     }
 
-    override fun getProcessedCheckInfo(): INotExposedProductInfo? {
+    override fun getProcessedCheckInfo(): NotExposedProductInfo? {
         return getProducts().value?.firstOrNull { it.matNr == processedGoodInfo?.productInfo?.matNr }
     }
 
@@ -292,17 +291,17 @@ interface INotExposedProductsTask : ITask, IFilterable {
 
     fun getProcessedProductInfoResult(): GoodInfo?
 
-    fun getToProcessingProducts(): LiveData<List<INotExposedProductInfo>>
+    fun getToProcessingProducts(): LiveData<List<NotExposedProductInfo>>
 
-    fun getProducts(): LiveData<List<INotExposedProductInfo>>
+    fun getProducts(): LiveData<List<NotExposedProductInfo>>
 
-    fun getFilteredProducts(): LiveData<List<INotExposedProductInfo>>
+    fun getFilteredProducts(): LiveData<List<NotExposedProductInfo>>
 
     fun setCheckInfo(quantity: Double?, isEmptyPlaceMarked: Boolean?)
 
     fun removeCheckResultsByMatNumbers(matNumbers: Set<String>)
 
-    fun getProcessedCheckInfo(): INotExposedProductInfo?
+    fun getProcessedCheckInfo(): NotExposedProductInfo?
 
     suspend fun getProductInfoAndSetProcessed(ean: String? = null, matNr: String? = null): Either<Failure, GoodInfo>
 
@@ -314,6 +313,6 @@ interface INotExposedProductsTask : ITask, IFilterable {
 
 data class NotExposedData(
         val taskDescription: NotExposedProductsTaskDescription,
-        val goods: List<INotExposedProductInfo>
+        val goods: List<NotExposedProductInfo>
 )
 

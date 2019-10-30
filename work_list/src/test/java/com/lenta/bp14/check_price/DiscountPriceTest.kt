@@ -1,7 +1,6 @@
 package com.lenta.bp14.check_price
 
 import com.lenta.bp14.models.check_price.ActualPriceInfo
-import com.lenta.bp14.models.check_price.IActualPriceInfo
 import org.hamcrest.core.IsEqual
 import org.hamcrest.core.IsNull
 import org.junit.Assert
@@ -10,13 +9,13 @@ import org.junit.Test
 @Suppress("NonAsciiCharacters")
 class DiscountPriceTest {
 
-    lateinit var actualPriceInfo: IActualPriceInfo
+    lateinit var actualPriceInfo: ActualPriceInfo
 
-    val PRICE_1 = 40.0F
-    val PRICE_2 = 30.0F
-    val PRICE_3 = 20.0F
-    val PRICE_4 = 10.0F
-    val MIN_PRICE = 10.0F
+    val PRICE_1 = 40.0
+    val PRICE_2 = 30.0
+    val PRICE_3 = 20.0
+    val PRICE_4 = 10.0
+    val MIN_PRICE = 10.0
 
     @Test
     fun `Нет ни одной цены`() {

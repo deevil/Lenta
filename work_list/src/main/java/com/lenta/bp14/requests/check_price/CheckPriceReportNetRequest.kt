@@ -1,8 +1,8 @@
 package com.lenta.bp14.requests.check_price
 
 import com.google.gson.annotations.SerializedName
+import com.lenta.bp14.models.check_price.CheckPriceResult
 import com.lenta.bp14.models.check_price.CheckPriceTaskDescription
-import com.lenta.bp14.models.check_price.ICheckPriceResult
 import com.lenta.bp14.requests.pojo.Position
 import com.lenta.bp14.requests.pojo.ReportSentStatus
 import com.lenta.bp14.requests.pojo.SentReportResult
@@ -80,8 +80,8 @@ data class CheckPriceReport(
         val ip: String,
         val description: CheckPriceTaskDescription,
         val isNotFinish: Boolean,
-        val checksResults: List<ICheckPriceResult>,
-        val notProcessedResults: List<ICheckPriceResult>
+        val checksResults: List<CheckPriceResult>,
+        val notProcessedResults: List<CheckPriceResult>
 
 )
 
