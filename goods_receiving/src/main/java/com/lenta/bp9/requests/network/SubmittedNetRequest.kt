@@ -30,8 +30,6 @@ data class SubmittedParams(
 class SubmittedStatus : ObjectRawStatus<SubmittedRestInfo>()
 
 data class SubmittedRestInfo(
-        @SerializedName("ET_DOC_PRINT")
-        val listDocumentsPrinting: List<TaskDocumentsPrintingRestInfo>, //Список документов для печати
         @SerializedName("ES_TASK")
         val taskDescription: TaskDescriptionRestInfo, //Структура карточки задания
         @SerializedName("ET_NOTIFY")
