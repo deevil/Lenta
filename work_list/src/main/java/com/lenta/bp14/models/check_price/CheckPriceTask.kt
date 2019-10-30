@@ -8,7 +8,7 @@ import com.lenta.bp14.models.BaseProductInfo
 import com.lenta.bp14.models.ITask
 import com.lenta.bp14.models.ITaskDescription
 import com.lenta.bp14.models.check_price.repo.IActualPricesRepo
-import com.lenta.bp14.models.check_price.repo.ICheckPriceResultsRepo
+import com.lenta.bp14.models.check_price.repo.CheckPriceResultsRepo
 import com.lenta.bp14.models.general.ITaskTypeInfo
 import com.lenta.bp14.models.general.AppTaskTypes
 import com.lenta.bp14.models.general.IGeneralRepo
@@ -30,7 +30,7 @@ class CheckPriceTask @Inject constructor(
         private val generalRepo: IGeneralRepo,
         private val taskDescription: CheckPriceTaskDescription,
         private val actualPricesRepo: IActualPricesRepo,
-        private val readyResultsRepo: ICheckPriceResultsRepo,
+        private val readyResultsRepo: CheckPriceResultsRepo,
         private val priceInfoParser: IPriceInfoParser,
         private val gson: Gson,
         private val soundPlayer: ISoundPlayer,
@@ -93,7 +93,7 @@ class CheckPriceTask @Inject constructor(
 
     override var processingMatNumber: String? = null
 
-    override fun checkProductFromVideoScan(rawCode: String?): ICheckPriceResult? {
+    override fun checkProductFromVideoScan(rawCode: String?): CheckPriceResult? {
 
         //Logg.d { "checkProductFromVideoScan: $rawCode" }
 
@@ -128,7 +128,7 @@ class CheckPriceTask @Inject constructor(
 
     }
 
-    override suspend fun checkPriceByQrCode(qrCode: String): Either<Failure, IActualPriceInfo> {
+    override suspend fun checkPriceByQrCode(qrCode: String): Either<Failure, ActualPriceInfo> {
         val scannedPriceInfo = priceInfoParser.getPriceInfoFromRawCode(qrCode)
                 ?: return Either.Left(Failure.NotValidQrCode)
 
@@ -163,7 +163,7 @@ class CheckPriceTask @Inject constructor(
     }
 
 
-    override fun getCheckResults(): LiveData<List<ICheckPriceResult>> {
+    override fun getCheckResults(): LiveData<List<CheckPriceResult>> {
         return readyResultsRepo.getCheckPriceResults()
     }
 
@@ -175,16 +175,16 @@ class CheckPriceTask @Inject constructor(
         return taskDescription
     }
 
-    override fun getProcessingActualPrice(): IActualPriceInfo? {
+    override fun getProcessingActualPrice(): ActualPriceInfo? {
         return actualPricesRepo.getActualPriceInfoByMatNumber(matNumber = processingMatNumber
                 ?: return null)
     }
 
-    override fun getToProcessingProducts(): LiveData<List<ICheckPriceResult>> {
+    override fun getToProcessingProducts(): LiveData<List<CheckPriceResult>> {
         return processingProducts
     }
 
-    private fun getCheckPriceByMatnr(matNr: String): ICheckPriceResult {
+    private fun getCheckPriceByMatnr(matNr: String): CheckPriceResult {
         val productInfo = productsInfoMap[matNr]
         val priceInfo = priceInfoMap[matNr]
         val checkPriceInfo = checkPriceMap[matNr]
@@ -258,7 +258,7 @@ class CheckPriceTask @Inject constructor(
         }
     }
 
-    override fun getCheckResultsForPrint(): LiveData<List<ICheckPriceResult>> {
+    override fun getCheckResultsForPrint(): LiveData<List<CheckPriceResult>> {
         return getCheckResults().map { checkResults ->
             checkResults?.filter {
                 !it.isPrinted && !(it.isAllValid() ?: false)
@@ -267,13 +267,13 @@ class CheckPriceTask @Inject constructor(
 
     }
 
-    private val checksForAddFunc = { iActualPriceInfo: IActualPriceInfo ->
+    private val checksForAddFunc = { iActualPriceInfo: ActualPriceInfo ->
         if (!isAllowedProductForTask(iActualPriceInfo.matNumber)) {
             Failure.InvalidProductForTask
         } else null
     }
 
-    override suspend fun getActualPriceByEan(eanCode: String): Either<Failure, IActualPriceInfo> {
+    override suspend fun getActualPriceByEan(eanCode: String): Either<Failure, ActualPriceInfo> {
         return actualPricesRepo.getActualPriceInfoByEan(
                 tkNumber = taskDescription.tkNumber,
                 eanCode = eanCode
@@ -282,7 +282,7 @@ class CheckPriceTask @Inject constructor(
         )
     }
 
-    override suspend fun getActualPriceByMatNr(matNumber: String): Either<Failure, IActualPriceInfo> {
+    override suspend fun getActualPriceByMatNr(matNumber: String): Either<Failure, ActualPriceInfo> {
         return actualPricesRepo.getActualPriceInfoByMatNr(
                 tkNumber = taskDescription.tkNumber,
                 matNumber = matNumber
@@ -365,7 +365,7 @@ class CheckPriceTask @Inject constructor(
 
 }
 
-fun ICheckPriceResult?.toCheckStatus(): CheckStatus? {
+fun CheckPriceResult?.toCheckStatus(): CheckStatus? {
     return when (this?.isAllValid()) {
         true -> CheckStatus.VALID
         false -> CheckStatus.NOT_VALID
@@ -374,16 +374,16 @@ fun ICheckPriceResult?.toCheckStatus(): CheckStatus? {
 }
 
 interface ICheckPriceTask : ITask {
-    fun checkProductFromVideoScan(rawCode: String?): ICheckPriceResult?
-    fun getCheckResults(): LiveData<List<ICheckPriceResult>>
-    fun getToProcessingProducts(): LiveData<List<ICheckPriceResult>>
+    fun checkProductFromVideoScan(rawCode: String?): CheckPriceResult?
+    fun getCheckResults(): LiveData<List<CheckPriceResult>>
+    fun getToProcessingProducts(): LiveData<List<CheckPriceResult>>
     fun removeCheckResultsByMatNumbers(matNumbers: Set<String>)
-    fun getProcessingActualPrice(): IActualPriceInfo?
+    fun getProcessingActualPrice(): ActualPriceInfo?
     fun setCheckPriceStatus(isValid: Boolean?)
-    fun getCheckResultsForPrint(): LiveData<List<ICheckPriceResult>>
-    suspend fun getActualPriceByEan(eanCode: String): Either<Failure, IActualPriceInfo>
-    suspend fun getActualPriceByMatNr(matNumber: String): Either<Failure, IActualPriceInfo>
-    suspend fun checkPriceByQrCode(qrCode: String): Either<Failure, IActualPriceInfo>
+    fun getCheckResultsForPrint(): LiveData<List<CheckPriceResult>>
+    suspend fun getActualPriceByEan(eanCode: String): Either<Failure, ActualPriceInfo>
+    suspend fun getActualPriceByMatNr(matNumber: String): Either<Failure, ActualPriceInfo>
+    suspend fun checkPriceByQrCode(qrCode: String): Either<Failure, ActualPriceInfo>
     fun getReportData(ip: String): CheckPriceReport
     fun markPrinted(listOfMatNrs: List<String>)
 
@@ -392,27 +392,27 @@ interface ICheckPriceTask : ITask {
 }
 
 data class CheckPriceResult(
-        override val ean: String,
-        override val matNr: String?,
-        override val name: String?,
-        override val scannedPriceInfo: IScanPriceInfo,
-        override val actualPriceInfo: IActualPriceInfo,
-        override val userPriceInfo: IUserPriceInfo?,
-        override val isPrinted: Boolean
-) : ICheckPriceResult {
+        val ean: String,
+        val matNr: String?,
+        val name: String?,
+        val scannedPriceInfo: ScanPriceInfo,
+        val actualPriceInfo: ActualPriceInfo,
+        val userPriceInfo: UserPriceInfo?,
+        val isPrinted: Boolean
+) {
 
-    override fun isPriceValid(): Boolean? {
+    fun isPriceValid(): Boolean? {
         if (userPriceInfo != null) {
             return userPriceInfo.isValidPrice
         }
         return scannedPriceInfo.price == actualPriceInfo.getPrice()
     }
 
-    override fun isDiscountPriceValid(): Boolean? {
+    fun isDiscountPriceValid(): Boolean? {
         return scannedPriceInfo.discountCardPrice == actualPriceInfo.getDiscountCardPrice()
     }
 
-    override fun isAllValid(): Boolean? {
+    fun isAllValid(): Boolean? {
         if (userPriceInfo != null) {
             return userPriceInfo.isValidPrice
         }
@@ -429,24 +429,24 @@ data class CheckPriceResult(
 }
 
 data class ScanPriceInfo(
-        override val eanCode: String,
-        override val price: Double?,
-        override val discountCardPrice: Double?
-) : IScanPriceInfo
+        val eanCode: String,
+        val price: Double?,
+        val discountCardPrice: Double?
+)
 
 data class ActualPriceInfo(
-        override val matNumber: String,
-        override val productName: String?,
-        override val price1: Double?,
-        override val price2: Double?,
-        override val price3: Double?,
-        override val price4: Double?
-) : IActualPriceInfo {
-    override fun getPrice(): Double? {
+        val matNumber: String,
+        val productName: String?,
+        val price1: Double?,
+        val price2: Double?,
+        val price3: Double?,
+        val price4: Double?
+) {
+    fun getPrice(): Double? {
         return price1
     }
 
-    override fun getDiscountCardPrice(): Double? {
+    fun getDiscountCardPrice(): Double? {
         return when {
             price2 != null && price3 != null && price4 != null -> min(min(price2, price3), price4)
             price2 != null && price3 == null && price4 == null -> price2
@@ -457,36 +457,6 @@ data class ActualPriceInfo(
     }
 }
 
-interface ICheckPriceResult {
-    val ean: String
-    val matNr: String?
-    val name: String?
-    val scannedPriceInfo: IScanPriceInfo
-    val actualPriceInfo: IActualPriceInfo
-    val userPriceInfo: IUserPriceInfo?
-    fun isPriceValid(): Boolean?
-    fun isDiscountPriceValid(): Boolean?
-    fun isAllValid(): Boolean?
-    val isPrinted: Boolean
-}
-
-
-interface IScanPriceInfo {
-    val eanCode: String
-    val price: Double?
-    val discountCardPrice: Double?
-}
-
-interface IActualPriceInfo {
-    val matNumber: String
-    val productName: String?
-    val price1: Double?
-    val price2: Double?
-    val price3: Double?
-    val price4: Double?
-    fun getPrice(): Double?
-    fun getDiscountCardPrice(): Double?
-}
 
 data class UserPriceInfo(override val isValidPrice: Boolean?) : IUserPriceInfo
 
@@ -498,7 +468,7 @@ interface IUserPriceInfo {
     val isValidPrice: Boolean?
 }
 
-data class  CheckPriceData(
+data class CheckPriceData(
         val taskDescription: CheckPriceTaskDescription,
         val goods: List<CheckPriceResult>
 )

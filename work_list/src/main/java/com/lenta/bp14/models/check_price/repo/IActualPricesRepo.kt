@@ -11,24 +11,24 @@ import javax.inject.Inject
 
 interface IActualPricesRepo {
 
-    fun getActualPriceInfoFromCache(tkNumber: String, eanCode: String): IActualPriceInfo?
-    fun getActualPriceInfoByMatNumber(matNumber: String): IActualPriceInfo?
-    suspend fun getActualPriceInfoByEan(tkNumber: String, eanCode: String): Either<Failure, IActualPriceInfo>
-    suspend fun getActualPriceInfoByMatNr(tkNumber: String, matNumber: String): Either<Failure, IActualPriceInfo>
-    fun addToCacheActualPriceInfo(actualPriceinfo: IActualPriceInfo)
+    fun getActualPriceInfoFromCache(tkNumber: String, eanCode: String): ActualPriceInfo?
+    fun getActualPriceInfoByMatNumber(matNumber: String): ActualPriceInfo?
+    suspend fun getActualPriceInfoByEan(tkNumber: String, eanCode: String): Either<Failure, ActualPriceInfo>
+    suspend fun getActualPriceInfoByMatNr(tkNumber: String, matNumber: String): Either<Failure, ActualPriceInfo>
+    fun addToCacheActualPriceInfo(actualPriceinfo: ActualPriceInfo)
 
 }
 
 class ActualPriceRepo @Inject constructor(private val checkPriceRequest: ICheckPriceNetRequest) : IActualPricesRepo {
 
-    private val cashedResults = mutableMapOf<String, IActualPriceInfo?>()
+    private val cashedResults = mutableMapOf<String, ActualPriceInfo?>()
 
-    override fun addToCacheActualPriceInfo(actualPriceinfo: IActualPriceInfo) {
+    override fun addToCacheActualPriceInfo(actualPriceinfo: ActualPriceInfo) {
         cashedResults[actualPriceinfo.matNumber] = actualPriceinfo
     }
 
 
-    override fun getActualPriceInfoFromCache(tkNumber: String, eanCode: String): IActualPriceInfo? {
+    override fun getActualPriceInfoFromCache(tkNumber: String, eanCode: String): ActualPriceInfo? {
         if (!cashedResults.containsKey(eanCode)) {
             cashedResults[eanCode] = null
             GlobalScope.launch {
@@ -44,7 +44,7 @@ class ActualPriceRepo @Inject constructor(private val checkPriceRequest: ICheckP
 
     }
 
-    override suspend fun getActualPriceInfoByEan(tkNumber: String, eanCode: String): Either<Failure, IActualPriceInfo> {
+    override suspend fun getActualPriceInfoByEan(tkNumber: String, eanCode: String): Either<Failure, ActualPriceInfo> {
         return checkPriceRequest(CheckPriceRequestParams(
                 tkNumber = tkNumber,
                 ean = eanCode,
@@ -55,7 +55,7 @@ class ActualPriceRepo @Inject constructor(private val checkPriceRequest: ICheckP
         }
     }
 
-    override suspend fun getActualPriceInfoByMatNr(tkNumber: String, matNumber: String): Either<Failure, IActualPriceInfo> {
+    override suspend fun getActualPriceInfoByMatNr(tkNumber: String, matNumber: String): Either<Failure, ActualPriceInfo> {
         return checkPriceRequest(CheckPriceRequestParams(
                 tkNumber = tkNumber,
                 ean = null,
@@ -67,7 +67,7 @@ class ActualPriceRepo @Inject constructor(private val checkPriceRequest: ICheckP
     }
 
 
-    override fun getActualPriceInfoByMatNumber(matNumber: String): IActualPriceInfo? {
+    override fun getActualPriceInfoByMatNumber(matNumber: String): ActualPriceInfo? {
         return cashedResults.values.firstOrNull { it?.matNumber == matNumber }
     }
 

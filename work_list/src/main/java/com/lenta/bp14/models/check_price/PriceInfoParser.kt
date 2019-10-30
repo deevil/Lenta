@@ -5,7 +5,7 @@ import javax.inject.Inject
 class PriceInfoParser @Inject constructor() : IPriceInfoParser {
 
 
-    override fun getPriceInfoFromRawCode(rawCode: String?): IScanPriceInfo? {
+    override fun getPriceInfoFromRawCode(rawCode: String?): ScanPriceInfo? {
 
         if (rawCode == null) {
             return null
@@ -62,5 +62,5 @@ class PriceInfoParser @Inject constructor() : IPriceInfoParser {
 }
 
 interface IPriceInfoParser {
-    fun getPriceInfoFromRawCode(rawCode: String?): IScanPriceInfo?
+    fun getPriceInfoFromRawCode(rawCode: String?): ScanPriceInfo?
 }

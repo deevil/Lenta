@@ -4,7 +4,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp14.features.common_ui_model.SimpleProductUi
 import com.lenta.bp14.models.IGeneralTaskManager
-import com.lenta.bp14.models.check_price.ICheckPriceResult
+import com.lenta.bp14.models.check_price.CheckPriceResult
 import com.lenta.bp14.models.check_price.ICheckPriceTask
 import com.lenta.bp14.models.data.GoodsListTab
 import com.lenta.bp14.models.getTaskName
@@ -89,7 +89,7 @@ class GoodsListPcViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
 
     }
 
-    private val funcUiAdapter = { list: List<ICheckPriceResult>? ->
+    private val funcUiAdapter = { list: List<CheckPriceResult>? ->
         list?.reversed()?.mapIndexed { index, iCheckPriceResult ->
             val isAllValid = iCheckPriceResult.isAllValid()
             CheckPriceResultUi(
@@ -316,7 +316,7 @@ class GoodsListPcViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
         }
     }
 
-    private fun getResultsForPrint(): List<ICheckPriceResult> {
+    private fun getResultsForPrint(): List<CheckPriceResult> {
         val searchList = searchCheckResults.value!!
         if (searchSelectionsHelper.isSelectedEmpty()) {
             return searchList

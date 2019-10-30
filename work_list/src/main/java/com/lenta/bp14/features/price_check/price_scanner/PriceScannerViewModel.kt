@@ -3,7 +3,7 @@ package com.lenta.bp14.features.price_check.price_scanner
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.lenta.bp14.ml.CheckStatus
-import com.lenta.bp14.models.check_price.ICheckPriceResult
+import com.lenta.bp14.models.check_price.CheckPriceResult
 import com.lenta.bp14.models.check_price.ICheckPriceTask
 import com.lenta.bp14.models.check_price.toCheckStatus
 import com.lenta.bp14.models.getTaskName
@@ -20,7 +20,7 @@ class PriceScannerViewModel : CoreViewModel() {
     @Inject
     lateinit var sessionInfo: ISessionInfo
 
-    private val checkPriceResult: MutableLiveData<ICheckPriceResult?> = MutableLiveData()
+    private val checkPriceResult: MutableLiveData<CheckPriceResult?> = MutableLiveData()
 
     val resultUi: LiveData<CheckPriceResultUi> = checkPriceResult.map { it.toUi() }
 
@@ -37,7 +37,7 @@ class PriceScannerViewModel : CoreViewModel() {
 
 }
 
-private fun ICheckPriceResult?.toUi(): CheckPriceResultUi? {
+private fun CheckPriceResult?.toUi(): CheckPriceResultUi? {
     return this?.let {
         CheckPriceResultUi(
                 productTitle = this.matNr?.takeLast(6) ?: "",
