@@ -11,12 +11,9 @@ import com.lenta.bp14.models.check_list.repo.ICheckListRepo
 import com.lenta.bp14.models.general.AppTaskTypes
 import com.lenta.bp14.models.general.IGeneralRepo
 import com.lenta.bp14.models.general.ITaskTypeInfo
-import com.lenta.bp14.platform.IVibrateHelper
-import com.lenta.bp14.platform.sound.ISoundPlayer
 import com.lenta.bp14.requests.check_list.CheckListReport
 import com.lenta.shared.models.core.StateFromToString
 import com.lenta.shared.models.core.Uom
-import com.lenta.shared.platform.time.ITimeMonitor
 import com.lenta.shared.utilities.extentions.dropZeros
 import com.lenta.shared.utilities.extentions.sumWith
 import javax.inject.Inject
