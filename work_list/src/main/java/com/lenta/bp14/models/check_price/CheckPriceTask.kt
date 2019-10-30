@@ -20,6 +20,7 @@ import com.lenta.shared.functional.Either
 import com.lenta.shared.functional.map
 import com.lenta.shared.functional.rightToLeft
 import com.lenta.shared.models.core.StateFromToString
+import com.lenta.shared.requests.combined.scan_info.ScanCodeInfo
 import com.lenta.shared.utilities.extentions.isSapTrue
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.toNullIfEmpty
@@ -272,9 +273,13 @@ class CheckPriceTask @Inject constructor(
     }
 
     override suspend fun getActualPriceByEan(eanCode: String): Either<Failure, ActualPriceInfo> {
+        val scanCodeInfo = ScanCodeInfo(
+                originalNumber = eanCode,
+                fixedQuantity = null
+        )
         return actualPricesRepo.getActualPriceInfoByEan(
                 tkNumber = taskDescription.tkNumber,
-                eanCode = eanCode
+                eanCode = scanCodeInfo.eanNumberForSearch ?: eanCode
         ).rightToLeft(
                 fnRtoL = checksForAddFunc
         )
