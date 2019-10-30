@@ -271,7 +271,7 @@ class NotExposedProductsTask @Inject constructor(
                 ?: true
     }
 
-    override fun saveStateToString(): String {
+    override fun gatStateAsString(): String {
         return gson.toJson(NotExposedData(
                 taskDescription = taskDescription,
                 goods = getProducts().value ?: emptyList()

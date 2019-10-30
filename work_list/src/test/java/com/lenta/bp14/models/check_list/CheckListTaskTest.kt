@@ -47,7 +47,7 @@ internal class CheckListTaskTest {
 
         task.goods.value = goods
 
-        val savedData = task.saveStateToString()
+        val savedData = task.gatStateAsString()
         assertNotNull(savedData)
 
         task.goods.value = emptyList()

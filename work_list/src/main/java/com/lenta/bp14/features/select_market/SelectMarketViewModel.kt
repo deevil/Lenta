@@ -123,10 +123,6 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
         navigator.hideProgress()
         timeMonitor.setServerTime(time = serverTime.time, date = serverTime.date)
 
-
-        // Раскомментировать для удаление сохраненных данных
-        //generalTaskManager.clearSavedTaskData()
-
         if (generalTaskManager.isExistSavedTaskData()) {
             navigator.showUnsavedDataFoundOnDevice(
                     deleteCallback = {
@@ -159,7 +155,6 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
                             taskManager = checkPriceTaskManager,
                             taskDescription = data.taskDescription
                     )
-                    navigator.openGoodsListPcScreen()
                 }
 
                 AppTaskTypes.CheckList.taskType -> {
@@ -169,7 +164,6 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
                             taskManager = checkListTaskManager,
                             taskDescription = data.taskDescription
                     )
-                    navigator.openGoodsListClScreen()
                 }
 
                 AppTaskTypes.WorkList.taskType -> {
@@ -179,7 +173,6 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
                             taskManager = workListTaskManager,
                             taskDescription = data.taskDescription
                     )
-                    navigator.openGoodsListWlScreen()
                 }
 
                 AppTaskTypes.NotExposedProducts.taskType -> {
@@ -189,7 +182,6 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
                             taskManager = notExposedTaskManager,
                             taskDescription = data.taskDescription
                     )
-                    navigator.openGoodsListNeScreen()
                 }
 
                 else -> navigator.openNotImplementedScreenAlert("")
@@ -210,27 +202,8 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
         }
 
         generalTaskManager.restoreSavedData()
-
-        //updateProcessedTask()
+        navigator.openJobCardScreen()
     }
-
-    /*private fun updateProcessedTask() {
-        generalTaskManager.getProcessedTask().let { processedTask ->
-            this.processedTask.value = generalTaskManager.getProcessedTask()
-            val taskType = processedTask?.getTaskType()
-                    ?: taskFromTaskList?.taskTypeInfo
-            taskType?.let {
-                taskTypesInfo.value?.apply {
-                    for (pos in 0..this.size) {
-                        if (it == this[pos]) {
-                            selectedTaskTypePosition.value = pos
-                            return
-                        }
-                    }
-                }
-            }
-        }
-    }*/
 
 }
 
