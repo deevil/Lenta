@@ -41,7 +41,7 @@
 
                 <LinearLayout
                     style="@style/LinearCellStyle"
-                    android:layout_weight="2">
+                    android:layout_weight="1">
 
                     <com.lenta.shared.view.EditTextWithSuffix
                         style="@style/CellTextStyle"
@@ -79,7 +79,7 @@
 
                 <LinearLayout
                     style="@style/LinearCellStyle"
-                    android:layout_weight="2">
+                    android:layout_weight="1">
 
                     <TextView
                         style="@style/CellTextStyle"
@@ -113,7 +113,7 @@
 
                 <LinearLayout
                     style="@style/LinearCellStyle"
-                    android:layout_weight="2">
+                    android:layout_weight="1">
 
                     <TextView
                         android:id="@+id/tv_removed_good"
@@ -148,7 +148,7 @@
 
                 <LinearLayout
                     style="@style/LinearCellStyle"
-                    android:layout_weight="2">
+                    android:layout_weight="1">
 
                     <TextView
                         android:id="@+id/tv_price_with_dk"
