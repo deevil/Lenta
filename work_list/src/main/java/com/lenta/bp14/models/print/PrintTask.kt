@@ -33,11 +33,11 @@ class PrintTask @Inject constructor(
     override var matNrForPrint: String? = null
 
     private val emptyPriceTag = PriceTagType(
-            id = "", name = "Не выбранно", isRegular = null
+            id = "", name = "Не выбрано", isRegular = null
     )
 
     private val emptyPrinterType = PrinterType(
-            id = "", name = "Не выбранно", isMobile = null, isStatic = null
+            id = "", name = "Не выбрано", isMobile = null, isStatic = null
     )
 
     val zfmpUtz51V001 by lazy {
