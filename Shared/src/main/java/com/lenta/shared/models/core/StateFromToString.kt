@@ -1,6 +1,6 @@
 package com.lenta.shared.models.core
 
 interface StateFromToString {
-    fun gatStateAsString(): String
+    fun getStateAsString(): String
     fun loadStateFromString(state: String)
 }

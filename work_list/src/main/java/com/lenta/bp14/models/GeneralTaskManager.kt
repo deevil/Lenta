@@ -88,7 +88,7 @@ class GeneralTaskManager @Inject constructor(
             taskManager.getTask()?.implementationOf(StateFromToString::class.java)?.let { task ->
                 persistTaskData.saveTaskData(TaskData(
                         taskType = taskManager.getTaskType(),
-                        data = task.gatStateAsString()
+                        data = task.getStateAsString()
                 ))
             }
         }

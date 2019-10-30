@@ -106,7 +106,7 @@ class CheckListTask @Inject constructor(
         //TODO implement this
     }
 
-    override fun gatStateAsString(): String {
+    override fun getStateAsString(): String {
         return gson.toJson(CheckListData(
                 taskDescription = taskDescription,
                 goods = goods.value ?: emptyList()

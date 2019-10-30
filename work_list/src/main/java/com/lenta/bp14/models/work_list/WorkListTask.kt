@@ -282,7 +282,7 @@ class WorkListTask @Inject constructor(
         return taskDescription.taskInfoResult?.positions?.find { it.matNr == good.material } != null
     }
 
-    override fun gatStateAsString(): String {
+    override fun getStateAsString(): String {
         return gson.toJson(WorkListData(
                 taskDescription = taskDescription,
                 isLoadedTaskList = isLoadedTaskList,

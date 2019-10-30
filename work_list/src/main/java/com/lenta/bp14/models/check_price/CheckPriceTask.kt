@@ -348,7 +348,9 @@ class CheckPriceTask @Inject constructor(
         }
     }
 
-    override fun gatStateAsString(): String {
+    override fun getStateAsString(): String {
+        //val goods = getCheckResults().value?.map { it as CheckPriceResult }
+
         return gson.toJson(CheckPriceData(
                 taskDescription = taskDescription,
                 goods = getCheckResults().value ?: emptyList()
