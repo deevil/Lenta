@@ -17,6 +17,19 @@ class EndRecountDirectDeliveriesNetRequest
     }
 }
 
+data class EndRecountDDParameters(
+        @SerializedName("IV_TASK_NUM")
+        val taskNumber: String,
+        @SerializedName("IV_IP")
+        val deviceIP: String,
+        @SerializedName("IV_PERNR")
+        val personalNumber: String,
+        @SerializedName("IT_TASK_DIFF")
+        val discrepanciesProduct: List<TaskProductDiscrepancies>,
+        @SerializedName("IT_PARTS_DIFF")
+        val discrepanciesBatches: List<TaskBatchesDiscrepancies>
+)
+
 class EndRecountDDStatus : ObjectRawStatus<EndRecountDDResult>()
 
 
@@ -30,16 +43,3 @@ data class EndRecountDDResult(
         @SerializedName("EV_ERROR_TEXT")
         override val errorText: String
 ) : SapResponse
-
-data class EndRecountDDParameters(
-        @SerializedName("IV_TASK_NUM")
-        val taskNumber: String,
-        @SerializedName("IV_IP")
-        val deviceIP: String,
-        @SerializedName("IV_PERNR")
-        val personalNumber: String,
-        @SerializedName("IT_TASK_DIFF")
-        val discrepanciesProduct: List<TaskProductDiscrepancies>,
-        @SerializedName("IT_PARTS_DIFF")
-        val discrepanciesBatches: List<TaskBatchesDiscrepancies>
-)

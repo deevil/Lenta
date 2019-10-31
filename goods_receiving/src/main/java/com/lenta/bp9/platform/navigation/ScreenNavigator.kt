@@ -505,6 +505,12 @@ class ScreenNavigator(
         }
     }
 
+    override fun openTransmittedLoadingScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(LoadingTransmittedFragment())
+        }
+    }
+
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 }
 
@@ -569,4 +575,5 @@ interface IScreenNavigator : ICoreNavigator {
     fun openExpiredDialog(noCallbackFunc: () -> Unit, yesCallbackFunc: () -> Unit)
     fun openRecountStartLoadingScreen()
     fun openSubmittedLoadingScreen()
+    fun openTransmittedLoadingScreen()
 }
