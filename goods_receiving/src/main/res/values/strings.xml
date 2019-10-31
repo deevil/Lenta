@@ -114,6 +114,7 @@
     <string name="unloading_to_unloaded">\"Разгружается\" -> \"Разгружено\"</string>
     <string name="unloaded_to_recounting">\"Разгружено\" -> \"Пересчитывается\"</string>
     <string name="transmitted_to_transferred">\"Передается\" -> \"Передано\"</string>
+    <string name="recounted_to_booked">\"Пересчитано\" -> \"Проведено\"</string>
     <string name="status_change">Смена статуса</string>
     <string name="task_unlock">Разблокировка задания</string>
     <string name="supply_results">Результаты проводки</string>

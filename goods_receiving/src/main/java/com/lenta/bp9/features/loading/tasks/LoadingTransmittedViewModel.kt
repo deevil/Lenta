@@ -4,25 +4,23 @@ import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp9.model.task.IReceivingTaskManager
-import com.lenta.bp9.model.task.TaskContents
 import com.lenta.bp9.model.task.TaskDescription
-import com.lenta.bp9.model.task.TaskDocumentsPrinting
 import com.lenta.bp9.platform.navigation.IScreenNavigator
-import com.lenta.bp9.requests.network.*
+import com.lenta.bp9.requests.network.TransmittedNetRequest
+import com.lenta.bp9.requests.network.TransmittedParams
+import com.lenta.bp9.requests.network.TransmittedRestInfo
 import com.lenta.shared.account.ISessionInfo
-import com.lenta.shared.exception.Failure
 import com.lenta.shared.features.loading.CoreLoadingViewModel
-import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.getDeviceIp
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class LoadingSubmittedViewModel : CoreLoadingViewModel() {
+class LoadingTransmittedViewModel : CoreLoadingViewModel() {
 
     @Inject
     lateinit var screenNavigator: IScreenNavigator
     @Inject
-    lateinit var submittedNetRequest: SubmittedNetRequest
+    lateinit var transmittedNetRequest: TransmittedNetRequest
     @Inject
     lateinit var sessionInfo: ISessionInfo
     @Inject
@@ -39,24 +37,18 @@ class LoadingSubmittedViewModel : CoreLoadingViewModel() {
         viewModelScope.launch {
             progress.value = true
             taskManager.getReceivingTask()?.let { task ->
-                val params = SubmittedParams(
+                val params = TransmittedParams(
                         taskNumber = task.taskHeader.taskNumber,
                         deviceIP = context.getDeviceIp(),
-                        personnelNumber = sessionInfo.personnelNumber ?: "",
-                        sectionsInfo = task.taskRepository.getSections().getSections()
+                        personnelNumber = sessionInfo.personnelNumber ?: ""
                 )
-                submittedNetRequest(params).either(::handleFailure, ::handleSuccess)
+                transmittedNetRequest(params).either(::handleFailure, ::handleSuccess)
             }
             progress.value = false
         }
     }
 
-    override fun handleFailure(failure: Failure) {
-        screenNavigator.openAlertScreen(failure)
-        screenNavigator.goBack()
-    }
-
-    private fun handleSuccess(result: SubmittedRestInfo) {
+    private fun handleSuccess(result: TransmittedRestInfo) {
         taskManager.updateTaskDescription(TaskDescription.from(result.taskDescription))
         screenNavigator.openTaskCardScreen(TaskCardMode.Full)
     }
