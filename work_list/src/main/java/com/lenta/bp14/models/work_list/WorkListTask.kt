@@ -15,6 +15,7 @@ import com.lenta.bp14.models.general.IGeneralRepo
 import com.lenta.bp14.models.general.ITaskTypeInfo
 import com.lenta.bp14.models.work_list.repo.IWorkListRepo
 import com.lenta.bp14.requests.work_list.WorkListReport
+import com.lenta.shared.fmp.resources.dao_ext.DictElement
 import com.lenta.shared.models.core.MatrixType
 import com.lenta.shared.models.core.StateFromToString
 import com.lenta.shared.models.core.Uom
@@ -116,7 +117,7 @@ class WorkListTask @Inject constructor(
 
     fun deleteScanResultsByComments(comments: List<String>) {
         val good = currentGood.value!!
-        good.scanResults.removeAll { comments.contains(it.comment) }
+        good.scanResults.removeAll { comments.contains(it.commentCode) }
         currentGood.value = good
     }
 
@@ -242,7 +243,7 @@ class WorkListTask @Inject constructor(
                 FilterFieldType.COMMENT -> {
                     var existComment = false
                     good.comments.map { comment ->
-                        if (comment.contains(it.value.value)) {
+                        if (comment.description == it.value.value) {
                             existComment = true
                             return@map
                         }
@@ -328,7 +329,7 @@ interface IWorkListTask : ITask, IFilterable {
 // -----------------------------
 
 data class Good(
-        val ean: String? = null,
+        val ean: String?,
         val material: String,
         val name: String,
         val units: Uom,
@@ -337,8 +338,8 @@ data class Good(
         var purchaseGroup: String,
         val shelfLife: Int,
         val remainingShelfLife: Int,
-        val shelfLifeType: List<String>, // Не используется, типы сроков предустановлены.
-        val comments: List<String>,
+        val shelfLifeTypes: List<DictElement>,
+        val comments: List<DictElement>,
         val options: GoodOptions,
         var isProcessed: Boolean = false,
 
@@ -363,10 +364,6 @@ data class Good(
 
     fun getGroups(): String {
         return "$goodGroup/$purchaseGroup"
-    }
-
-    fun getShelfLifeInMills(): Long {
-        return shelfLife.toLong() * 24 * 60 * 60 * 1000
     }
 
     fun getTotalQuantity(): Double {
@@ -449,6 +446,7 @@ data class Delivery(
 
 data class ScanResult(
         val quantity: Double,
+        val commentCode: String? = null,
         val comment: String,
         val productionDate: Date?,
         val expirationDate: Date?,

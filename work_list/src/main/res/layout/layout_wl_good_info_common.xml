@@ -258,8 +258,7 @@
 
                     <TextView
                         style="@style/CellTextStyle"
-                        android:text="@{vm.common.remainingDays}"
-                        app:invisible="@{!vm.remainingDaysFieldVisibility}"
+                        android:text="@{vm.common.remainingShelfLife}"
                         tools:text="5 сут." />
 
                 </LinearLayout>

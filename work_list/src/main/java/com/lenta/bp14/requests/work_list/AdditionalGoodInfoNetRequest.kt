@@ -62,7 +62,7 @@ class AdditionalGoodInfoNetRequest
 interface IAdditionalGoodInfoNetRequest : UseCase<AdditionalGoodInfo, AdditionalGoodInfoParams>
 
 private fun AdditionalGoodInfoParams.toCommonParams(): ProductInfoParams {
-    require((!ean.isNullOrBlank() xor !matNr.isNullOrBlank()))
+    require(!ean.isNullOrBlank() || !matNr.isNullOrBlank())
     return ProductInfoParams(
             taskType = AppTaskTypes.WorkList.taskType,
             withProductInfo = "",

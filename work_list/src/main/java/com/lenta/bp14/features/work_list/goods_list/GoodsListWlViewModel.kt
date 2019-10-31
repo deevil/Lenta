@@ -40,7 +40,6 @@ class GoodsListWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
 
 
     val processedSelectionsHelper = SelectionItemsHelper()
-    val searchSelectionsHelper = SelectionItemsHelper()
 
     val selectedPage = MutableLiveData(0)
     val correctedSelectedPage = selectedPage.map { getCorrectedPagePosition(it) }
@@ -76,29 +75,14 @@ class GoodsListWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
         task.getSearchList().map(toUiFunc)
     }
 
-    private val selectedItemOnCurrentTab: MutableLiveData<Boolean> = selectedPage
+    val middleButtonEnabled: MutableLiveData<Boolean> = correctedSelectedPage
             .combineLatest(processedSelectionsHelper.selectedPositions)
             .map {
-                val tab = it?.first?.toInt()
-                val processedSelected = it?.second?.isNotEmpty() == true
-                tab == GoodsListTab.PROCESSED.position && processedSelected || tab == GoodsListTab.SEARCH.position
+                val tab = it?.first
+                val isItemsSelected = it?.second?.isNotEmpty() ?: false
+
+                tab == GoodsListTab.PROCESSED.position && isItemsSelected || tab == GoodsListTab.SEARCH.position
             }
-
-    val deleteButtonVisibility by lazy {
-        correctedSelectedPage.map { it == GoodsListTab.PROCESSED.position }
-    }
-
-    val deleteButtonEnabled by lazy {
-        selectedItemOnCurrentTab.map { it }
-    }
-
-    val filterButtonVisibility by lazy {
-        selectedPage.map { it != GoodsListTab.PROCESSING.position }
-    }
-
-    val filterButtonEnabled by lazy {
-        task.goods.map { it?.size ?: 0 > 1 }
-    }
 
     // -----------------------------
 

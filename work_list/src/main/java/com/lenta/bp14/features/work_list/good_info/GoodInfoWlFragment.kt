@@ -136,12 +136,6 @@ class GoodInfoWlFragment : CoreFragment<FragmentGoodInfoWlBinding, GoodInfoWlVie
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding?.viewPagerSettings = this
-
-        initSpinners()
-    }
-
-    private fun initSpinners() {
-        vm.shelfLifeTypeList.value = resources.getStringArray(R.array.shelf_life_type).asList()
     }
 
     override fun onScanResult(data: String) {
