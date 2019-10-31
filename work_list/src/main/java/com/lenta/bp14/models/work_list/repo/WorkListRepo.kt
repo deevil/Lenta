@@ -147,7 +147,6 @@ class WorkListRepo @Inject constructor(
             val selfLives = dictonary.getItemsByTid("007")?.toElementList()?.toMutableList()
                     ?: mutableListOf() // 007 - Типы сроков годности
             selfLives.sortBy { it.order }
-            Logg.d { "--> selfLives: $selfLives" }
             return@withContext selfLives
         }
     }
@@ -162,7 +161,6 @@ class WorkListRepo @Inject constructor(
                     description = "Не выбран"
             ))
             comments.sortBy { it.order }
-            Logg.d { "--> comments: $comments" }
             return@withContext comments
         }
     }

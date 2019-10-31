@@ -38,7 +38,7 @@ class WorkListSendReportNetRequest
                         CheckResult(
                                 matNr = good.material,
                                 quantity = result.quantity,
-                                comment = result.commentCode ?: "",
+                                commentCode = result.commentCode ?: "",
                                 producedDate = result.productionDate.getFormattedDate(Constants.DATE_FORMAT_yyyyMMdd),
                                 shelfLife = result.expirationDate.getFormattedDate(Constants.DATE_FORMAT_yyyyMMdd)
                         )

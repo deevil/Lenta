@@ -11,7 +11,7 @@ data class CheckResult(
         val quantity: Double,
         /** Комментарий (код) */
         @SerializedName("COMMENT")
-        val comment: String,
+        val commentCode: String,
         /** Дата производства */
         @SerializedName("DATA_PROD")
         val producedDate: String,
