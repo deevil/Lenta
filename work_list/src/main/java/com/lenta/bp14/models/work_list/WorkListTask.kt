@@ -47,7 +47,7 @@ class WorkListTask @Inject constructor(
 
     override val goods = MutableLiveData<MutableList<Good>>(mutableListOf())
 
-    override var currentGood = MutableLiveData<Good>()
+    override val currentGood = MutableLiveData<Good>()
 
     override suspend fun loadTaskList() {
         taskDescription.taskInfoResult?.positions?.let { positions ->
@@ -303,7 +303,7 @@ class WorkListTask @Inject constructor(
 interface IWorkListTask : ITask, IFilterable {
     var isLoadedTaskList: Boolean
     val goods: MutableLiveData<MutableList<Good>>
-    var currentGood: MutableLiveData<Good>
+    val currentGood: MutableLiveData<Good>
 
     suspend fun loadTaskList()
     suspend fun getGoodByMaterial(material: String): Good?
