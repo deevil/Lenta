@@ -82,12 +82,6 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
         }
     }
 
-    val quantityFieldEnabled by lazy {
-        good.map { good ->
-            good?.isNotMarkedGood()
-        }
-    }
-
     val totalMarks: MutableLiveData<String> by lazy {
         good.map { good ->
             good?.marks?.size.toString()

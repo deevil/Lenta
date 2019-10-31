@@ -56,8 +56,7 @@ class WorkListTask @Inject constructor(
                     good.scanResults = checkResults.filter { it.matNr == position.matNr }.map { result ->
                         ScanResult(
                                 quantity = result.quantity,
-                                comment = good.comments.find {
-                                    it.code == result.commentCode }?.description ?: "",
+                                comment = good.comments.find { it.code == result.commentCode }?.description ?: "",
                                 productionDate = if (result.producedDate != "0000-00-00") result.producedDate.getDate(Constants.DATE_FORMAT_yyyy_mm_dd) else null,
                                 expirationDate = if (result.shelfLife != "0000-00-00") result.shelfLife.getDate(Constants.DATE_FORMAT_yyyy_mm_dd) else null
                         )
