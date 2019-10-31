@@ -20,7 +20,6 @@ import com.lenta.shared.models.core.MatrixType
 import com.lenta.shared.models.core.StateFromToString
 import com.lenta.shared.models.core.Uom
 import com.lenta.shared.platform.constants.Constants
-import com.lenta.shared.platform.time.ITimeMonitor
 import com.lenta.shared.utilities.extentions.*
 import java.util.*
 import javax.inject.Inject
@@ -31,7 +30,6 @@ class WorkListTask @Inject constructor(
         private val workListRepo: IWorkListRepo,
         private val taskDescription: WorkListTaskDescription,
         private val filterableDelegate: IFilterable,
-        private val timeMonitor: ITimeMonitor,
         private val gson: Gson
 ) : IWorkListTask, StateFromToString, IFilterable by filterableDelegate {
 

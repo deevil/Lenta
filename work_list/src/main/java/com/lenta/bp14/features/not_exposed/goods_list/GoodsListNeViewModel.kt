@@ -213,7 +213,8 @@ class GoodsListNeViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
 
             task.getProductInfoAndSetProcessed(
                     matNr = scanInfoResult?.productInfo?.materialNumber
-                            ?: matNr, quantity = 0.0,
+                            ?: matNr,
+                    quantity = scanInfoResult?.quantity ?: 0.0,
                     ean = null
             ).either(
                     {
