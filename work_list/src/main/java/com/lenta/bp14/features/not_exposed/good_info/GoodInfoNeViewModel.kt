@@ -86,7 +86,14 @@ class GoodInfoNeViewModel : CoreViewModel(), PageSelectionListener {
                 ?: ""}"
     }
 
-    val quantityField = MutableLiveData<String>("0")
+    val quantityField by lazy {
+        MutableLiveData("0").apply {
+            val needUseQuantity = task.getProcessedCheckInfo()?.quantity ?: 0.0 > 0.0
+            if (needUseQuantity) {
+                this.value = task.getProcessedProductInfoResult()?.quantity?.toStringFormatted()
+            }
+        }
+    }
 
     private val quantityValue by lazy {
         quantityField.map {
@@ -209,15 +216,17 @@ class GoodInfoNeViewModel : CoreViewModel(), PageSelectionListener {
                     )
             ).either(::handleFailure) { scanInfoResult ->
                 if (scanInfoResult.productInfo.materialNumber == goodInfo.productInfo.matNr) {
-                    val newQuantity = ((quantityValue.value
-                            ?: 0.0) + scanInfoResult.quantity)
-                    //TODO maxQuantity - это максимальное количество позиций в задании. Нужно переделать
-                    /*if (maxQuantity != null && newQuantity > maxQuantity!!) {
-                        navigator.showMaxCountProductAlert()
-                    } else {
+                    if (isEmptyPlaceMarked.value == null) {
+                        val newQuantity = ((quantityValue.value
+                                ?: 0.0) + scanInfoResult.quantity)
+                        //TODO maxQuantity - это максимальное количество позиций в задании. Нужно переделать
+                        /*if (maxQuantity != null && newQuantity > maxQuantity!!) {
+                            navigator.showMaxCountProductAlert()
+                        } else {
+                            quantityField.value = newQuantity.toStringFormatted()
+                        }*/
                         quantityField.value = newQuantity.toStringFormatted()
-                    }*/
-                    quantityField.value = newQuantity.toStringFormatted()
+                    }
                 } else {
                     if (applyButtonEnabled.value == true) {
                         viewModelScope.launch {

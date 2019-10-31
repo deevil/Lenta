@@ -3,6 +3,7 @@ package com.lenta.bp14.models.print
 import com.lenta.bp14.fmp.resources.ZfmpUtz50V001
 import com.lenta.bp14.fmp.resources.ZfmpUtz51V001
 import com.lenta.bp14.models.check_price.ActualPriceInfo
+import com.lenta.bp14.models.print.PriceTagType.Companion.emptyPriceTag
 import com.lenta.bp14.repos.IRepoInMemoryHolder
 import com.lenta.bp14.requests.ProductInfoResult
 import com.lenta.shared.account.ISessionInfo
@@ -32,9 +33,6 @@ class PrintTask @Inject constructor(
 
     override var matNrForPrint: String? = null
 
-    private val emptyPriceTag = PriceTagType(
-            id = "", name = "Не выбрано", isRegular = null
-    )
 
     private val emptyPrinterType = PrinterType(
             id = "", name = "Не выбрано", isMobile = null, isStatic = null
@@ -184,7 +182,16 @@ data class PriceTagType(
          * Признак – цена товара регулярная
          */
         val isRegular: Boolean?
-)
+) {
+    companion object {
+        val emptyPriceTag by lazy {
+            PriceTagType(
+                    id = "", name = "Не выбрано", isRegular = null
+            )
+        }
+
+    }
+}
 
 data class PrinterType(
         val id: String,

@@ -12,6 +12,7 @@ import com.lenta.bp14.models.check_price.repo.CheckPriceResultsRepo
 import com.lenta.bp14.models.general.ITaskTypeInfo
 import com.lenta.bp14.models.general.AppTaskTypes
 import com.lenta.bp14.models.general.IGeneralRepo
+import com.lenta.bp14.models.print.PriceTagType
 import com.lenta.bp14.platform.IVibrateHelper
 import com.lenta.bp14.platform.sound.ISoundPlayer
 import com.lenta.bp14.requests.check_price.CheckPriceReport
@@ -21,6 +22,7 @@ import com.lenta.shared.functional.map
 import com.lenta.shared.functional.rightToLeft
 import com.lenta.shared.models.core.StateFromToString
 import com.lenta.shared.requests.combined.scan_info.ScanCodeInfo
+import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.isSapTrue
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.toNullIfEmpty
@@ -257,14 +259,21 @@ class CheckPriceTask @Inject constructor(
         }
     }
 
-    override fun getCheckResultsForPrint(): LiveData<List<CheckPriceResult>> {
+    override fun getCheckResultsForPrint(priceTagType: LiveData<PriceTagType>): LiveData<List<CheckPriceResult>> {
         return getCheckResults().map { checkResults ->
             checkResults?.filter {
                 !it.isPrinted && !(it.isAllValid() ?: false)
             }
+        }.combineLatest(priceTagType).map {
+            val forPrintTask = it!!.first
+            val priceTagTypeValue = it.second
+            return@map forPrintTask.filter { checkPriceResult ->
+                checkPriceResult.isForPriceTag(priceTagTypeValue)
+            }
         }
 
     }
+
 
     private val checksForAddFunc = { iActualPriceInfo: ActualPriceInfo ->
         if (!isAllowedProductForTask(iActualPriceInfo.matNumber)) {
@@ -365,6 +374,14 @@ class CheckPriceTask @Inject constructor(
         }
     }
 
+
+}
+
+private fun CheckPriceResult.isForPriceTag(priceTagType: PriceTagType?): Boolean {
+    if (priceTagType?.isRegular == null) {
+        return true
+    }
+    return priceTagType.isRegular == actualPriceInfo.isRegular()
 }
 
 fun CheckPriceResult?.toCheckStatus(): CheckStatus? {
@@ -382,7 +399,7 @@ interface ICheckPriceTask : ITask {
     fun removeCheckResultsByMatNumbers(matNumbers: Set<String>)
     fun getProcessingActualPrice(): ActualPriceInfo?
     fun setCheckPriceStatus(isValid: Boolean?)
-    fun getCheckResultsForPrint(): LiveData<List<CheckPriceResult>>
+    fun getCheckResultsForPrint(priceTagType: LiveData<PriceTagType>): LiveData<List<CheckPriceResult>>
     suspend fun getActualPriceByEan(eanCode: String): Either<Failure, ActualPriceInfo>
     suspend fun getActualPriceByMatNr(matNumber: String): Either<Failure, ActualPriceInfo>
     suspend fun checkPriceByQrCode(qrCode: String): Either<Failure, CheckPriceResult>
@@ -456,6 +473,10 @@ data class ActualPriceInfo(
             price2 != null && price4 != null -> price4
             else -> null
         }
+    }
+
+    fun isRegular() : Boolean {
+        return price3.toNullIfEmpty() == null && price4.toNullIfEmpty() == null
     }
 }
 

@@ -20,7 +20,6 @@ import com.lenta.shared.models.core.MatrixType
 import com.lenta.shared.models.core.StateFromToString
 import com.lenta.shared.models.core.Uom
 import com.lenta.shared.platform.constants.Constants
-import com.lenta.shared.platform.time.ITimeMonitor
 import com.lenta.shared.utilities.extentions.*
 import java.util.*
 import javax.inject.Inject
@@ -31,7 +30,6 @@ class WorkListTask @Inject constructor(
         private val workListRepo: IWorkListRepo,
         private val taskDescription: WorkListTaskDescription,
         private val filterableDelegate: IFilterable,
-        private val timeMonitor: ITimeMonitor,
         private val gson: Gson
 ) : IWorkListTask, StateFromToString, IFilterable by filterableDelegate {
 
@@ -47,7 +45,7 @@ class WorkListTask @Inject constructor(
 
     override val goods = MutableLiveData<MutableList<Good>>(mutableListOf())
 
-    override var currentGood = MutableLiveData<Good>()
+    override val currentGood = MutableLiveData<Good>()
 
     override suspend fun loadTaskList() {
         taskDescription.taskInfoResult?.positions?.let { positions ->
@@ -76,9 +74,9 @@ class WorkListTask @Inject constructor(
         }
     }
 
-    override suspend fun addGoodToList(good: Good) {
+    override suspend fun addGoodToList(good: Good, forceQuantity: Double?) {
         goods.value?.find { it.material == good.material }?.let { existGood ->
-            currentGood.value = existGood
+            currentGood.value = if (forceQuantity == null) existGood else existGood.copy(defaultValue = forceQuantity)
             return
         }
 
@@ -303,12 +301,12 @@ class WorkListTask @Inject constructor(
 interface IWorkListTask : ITask, IFilterable {
     var isLoadedTaskList: Boolean
     val goods: MutableLiveData<MutableList<Good>>
-    var currentGood: MutableLiveData<Good>
+    val currentGood: MutableLiveData<Good>
 
     suspend fun loadTaskList()
     suspend fun getGoodByMaterial(material: String): Good?
     suspend fun getGoodByEan(ean: String): Good?
-    suspend fun addGoodToList(good: Good)
+    suspend fun addGoodToList(good: Good, forceQuantity: Double? = null)
     suspend fun getMaxQuantity(): Double?
 
     fun deleteSelectedGoods(materials: List<String>)

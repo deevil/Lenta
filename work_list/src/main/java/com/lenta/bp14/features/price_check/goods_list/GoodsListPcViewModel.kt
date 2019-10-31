@@ -10,6 +10,7 @@ import com.lenta.bp14.models.check_price.ICheckPriceTask
 import com.lenta.bp14.models.data.GoodsListTab
 import com.lenta.bp14.models.getTaskName
 import com.lenta.bp14.models.print.IPrintTask
+import com.lenta.bp14.models.print.PriceTagType
 import com.lenta.bp14.models.print.PrintInfo
 import com.lenta.bp14.platform.navigation.IScreenNavigator
 import com.lenta.bp14.requests.check_price.CheckPriceReportNetRequest
@@ -43,8 +44,8 @@ class GoodsListPcViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     @Inject
     lateinit var printTask: IPrintTask
 
-    private val tagTypeIds by lazy {
-        mutableListOf("")
+    private val tagTypes by lazy {
+        mutableListOf<PriceTagType>()
     }
 
     val tagTypeTitles by lazy {
@@ -52,9 +53,9 @@ class GoodsListPcViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
                 emptyList()
         ).also { liveData ->
             viewModelScope.launch {
-                tagTypeIds.clear()
+                tagTypes.clear()
                 liveData.value = printTask.getPriceTagTypes().map {
-                    tagTypeIds.add(it.id)
+                    tagTypes.add(it)
                     it.name
                 }
             }
@@ -107,7 +108,11 @@ class GoodsListPcViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
         task.getCheckResults().map(funcUiAdapter)
     }
 
-    private val searchCheckResults by lazy { task.getCheckResultsForPrint() }
+    private val searchCheckResults by lazy {
+        task.getCheckResultsForPrint(tagTypesPosition.map {
+            tagTypes.getOrNull(it ?: -1)
+        })
+    }
 
     val searchGoods by lazy {
         searchCheckResults.map(funcUiAdapter)
@@ -310,7 +315,7 @@ class GoodsListPcViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     }
 
     private fun selectedPriceTagIsRed(): Boolean {
-        return tagTypeIds.getOrNull(tagTypesPosition.value ?: -1) == "02"
+        return tagTypes.getOrNull(tagTypesPosition.value ?: -1)?.isRegular == false
     }
 
     private fun print() {
@@ -336,8 +341,8 @@ class GoodsListPcViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
             PrintInfo(
                     barCode = it.ean,
                     amount = 1,
-                    templateCode = if (tagTypeIds.getOrNull(tagTypesPosition.value
-                                    ?: -1) == "01") 1 else 2
+                    templateCode = if (tagTypes.getOrNull(tagTypesPosition.value
+                                    ?: -1)?.isRegular == true) 1 else 2
             )
         }
     }

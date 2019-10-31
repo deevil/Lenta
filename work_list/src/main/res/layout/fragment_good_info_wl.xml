@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
-        tools:context=".features.work_list.good_info.GoodInfoWlFragment">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".features.work_list.good_info.GoodInfoWlFragment">
 
     <data>
 
@@ -42,7 +42,6 @@
                 android:background="@color/colorBottomPanelBackground"
                 android:elevation="0dp"
                 android:textSize="15sp"
-                app:tabBackground="?selectableItemBackground"
                 app:tabIndicatorColor="@color/colorTabIndicator"
                 app:tabIndicatorHeight="4dp"
                 app:tabMode="scrollable"

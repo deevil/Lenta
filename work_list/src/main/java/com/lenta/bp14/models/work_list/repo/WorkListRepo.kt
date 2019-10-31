@@ -13,6 +13,8 @@ import com.lenta.shared.fmp.resources.slow.ZfmpUtz48V001
 import com.lenta.shared.fmp.resources.slow.ZmpUtz25V001
 import com.lenta.shared.models.core.Uom
 import com.lenta.shared.models.core.getMatrixType
+import com.lenta.shared.requests.combined.scan_info.ScanCodeInfo
+import com.lenta.shared.requests.combined.scan_info.pojo.EanInfo
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.isSapTrue
 import com.mobrun.plugin.api.HyperHive
@@ -35,7 +37,9 @@ class WorkListRepo @Inject constructor(
         return withContext(Dispatchers.IO) {
             getGoodInfoByMaterial(material)?.let { goodInfo ->
                 val ean = getEanByMaterial(material)
-                val unitsCode = if (goodInfo.unitsCode == Uom.G.code) Uom.KG.code else goodInfo.unitsCode
+                //TODO реализовать конвертацию грамм в килограммы. Учесть отправку отчетов
+                //val unitsCode = if (goodInfo.unitsCode == Uom.G.code) Uom.KG.code else goodInfo.unitsCode
+                val unitsCode = goodInfo.unitsCode
                 val unitsName = getUnitsName(unitsCode)
                 val shelfLifeTypes = getShelfLifeTypes()
                 val comments = getWorkListComments()
@@ -72,17 +76,24 @@ class WorkListRepo @Inject constructor(
     }
 
     override suspend fun getGoodByEan(ean: String): Good? {
+        val scanCodeInfo = ScanCodeInfo(ean, null)
         return withContext(Dispatchers.IO) {
-            getMaterialByEan(ean)?.let { material ->
-                getGoodInfoByMaterial(material)?.let { goodInfo ->
-                    val unitsCode = if (goodInfo.unitsCode == Uom.G.code) Uom.KG.code else goodInfo.unitsCode
+            getMaterialByEan(scanCodeInfo.eanNumberForSearch ?: ean)?.let { eanInfo ->
+                getGoodInfoByMaterial(eanInfo.materialNumber)?.let { goodInfo ->
+                    //TODO реализовать конвертацию грамм в килограммы. Учесть отправку отчетов
+                    //val unitsCode = if (goodInfo.unitsCode == Uom.G.code) Uom.KG.code else goodInfo.unitsCode
+                    val unitsCode = goodInfo.unitsCode
                     val unitsName = getUnitsName(unitsCode)
                     val shelfLifeTypes = getShelfLifeTypes()
                     val comments = getWorkListComments()
 
+                    val quantity = scanCodeInfo.extractQuantityFromEan(
+                            eanInfo
+                    )
+
                     return@withContext Good(
-                            ean = ean,
-                            material = material,
+                            ean = scanCodeInfo.eanNumberForSearch,
+                            material = eanInfo.materialNumber,
                             name = goodInfo.name,
                             units = Uom(
                                     code = unitsCode,
@@ -94,6 +105,7 @@ class WorkListRepo @Inject constructor(
                             remainingShelfLife = goodInfo.remainingShelfLife,
                             shelfLifeTypes = shelfLifeTypes,
                             comments = comments,
+                            defaultValue = quantity,
                             options = GoodOptions(
                                     matrixType = getMatrixType(goodInfo.matrixType),
                                     section = goodInfo.section,
@@ -118,9 +130,9 @@ class WorkListRepo @Inject constructor(
         }
     }
 
-    override suspend fun getMaterialByEan(ean: String?): String? {
+    private suspend fun getMaterialByEan(ean: String?): EanInfo? {
         return withContext(Dispatchers.IO) {
-            return@withContext eanInfo.getEanInfo(ean)?.toEanInfo()?.materialNumber
+            return@withContext eanInfo.getEanInfo(ean)?.toEanInfo()
         }
     }
 
@@ -173,7 +185,6 @@ interface IWorkListRepo {
     suspend fun getGoodByMaterial(material: String): Good?
     suspend fun getGoodByEan(ean: String): Good?
     suspend fun getGoodInfoByMaterial(material: String?): WorkListGoodInfo?
-    suspend fun getMaterialByEan(ean: String?): String?
     suspend fun getEanByMaterial(material: String?): String?
     suspend fun getMaxPositionsForTask(): Double?
 }
