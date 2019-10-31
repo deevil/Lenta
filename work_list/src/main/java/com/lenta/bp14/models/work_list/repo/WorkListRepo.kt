@@ -37,7 +37,9 @@ class WorkListRepo @Inject constructor(
         return withContext(Dispatchers.IO) {
             getGoodInfoByMaterial(material)?.let { goodInfo ->
                 val ean = getEanByMaterial(material)
-                val unitsCode = if (goodInfo.unitsCode == Uom.G.code) Uom.KG.code else goodInfo.unitsCode
+                //TODO реализовать конвертацию грамм в килограммы. Учесть отправку отчетов
+                //val unitsCode = if (goodInfo.unitsCode == Uom.G.code) Uom.KG.code else goodInfo.unitsCode
+                val unitsCode = goodInfo.unitsCode
                 val unitsName = getUnitsName(unitsCode)
                 val shelfLifeTypes = getShelfLifeTypes()
                 val comments = getWorkListComments()

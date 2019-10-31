@@ -76,9 +76,9 @@ class WorkListTask @Inject constructor(
         }
     }
 
-    override suspend fun addGoodToList(good: Good) {
+    override suspend fun addGoodToList(good: Good, forceQuantity: Double?) {
         goods.value?.find { it.material == good.material }?.let { existGood ->
-            currentGood.value = existGood
+            currentGood.value = if (forceQuantity == null) existGood else existGood.copy(defaultValue = forceQuantity)
             return
         }
 
@@ -308,7 +308,7 @@ interface IWorkListTask : ITask, IFilterable {
     suspend fun loadTaskList()
     suspend fun getGoodByMaterial(material: String): Good?
     suspend fun getGoodByEan(ean: String): Good?
-    suspend fun addGoodToList(good: Good)
+    suspend fun addGoodToList(good: Good, forceQuantity: Double? = null)
     suspend fun getMaxQuantity(): Double?
 
     fun deleteSelectedGoods(materials: List<String>)

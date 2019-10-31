@@ -158,7 +158,7 @@ class GoodsListWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
         )
     }
 
-    private fun searchCode(ean: String? = null, material: String? = null) {
+    private fun searchCode(ean: String? = null, material: String? = null, byClickItem: Boolean = false) {
         viewModelScope.launch {
             require((ean != null) xor (material != null)) {
                 "Only one param allowed - ean: $ean, material: $material"
@@ -176,7 +176,7 @@ class GoodsListWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
                 if (task.getDescription().isStrictList && !task.isGoodFromTask(good)) {
                     navigator.showGoodIsNotPartOfTask()
                 } else {
-                    task.addGoodToList(good)
+                    task.addGoodToList(good, if (byClickItem) 0.0 else null)
                     navigator.openGoodInfoWlScreen()
                 }
                 return@launch
@@ -197,7 +197,7 @@ class GoodsListWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
             2 -> searchGoods.value?.get(position)?.material
             else -> null
         }?.let { material ->
-            searchCode(material = material)
+            searchCode(material = material, byClickItem = true)
         }
     }
 
