@@ -426,8 +426,9 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
         when (markStatus.status) {
             "1" -> task.addMark(markNumber)
             "2" -> {
-                task.addMark(markNumber)
-                navigator.openInfoScreen(markStatus.description)
+                navigator.openAddMarkToList(
+                        message = markStatus.description,
+                        nextCallback = { task.addMark(markNumber) })
             }
             "3" -> navigator.openInfoScreen(markStatus.description)
         }

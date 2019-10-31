@@ -1,6 +1,7 @@
 package com.lenta.bp14.platform.navigation
 
 import android.content.Context
+import androidx.core.content.ContextCompat
 import com.lenta.bp14.R
 import com.lenta.bp14.features.auth.AuthFragment
 import com.lenta.bp14.features.barcode_detection.CoreScanBarCodeFragment
@@ -468,6 +469,16 @@ class ScreenNavigator @Inject constructor(
         }
     }
 
+    override fun openAddMarkToList(nextCallback: () -> Unit, message: String) {
+        getFragmentStack()?.push(AlertFragment.create(message = message,
+                iconRes = R.drawable.ic_info_pink,
+                textColor = ContextCompat.getColor(context, R.color.color_text_dialogWarning),
+                pageNumber = "15",
+                codeConfirmForRight = backFragmentResultHelper.setFuncForResult(nextCallback),
+                rightButtonDecorationInfo = ButtonDecorationInfo.next
+        )
+        )
+    }
 
 }
 
@@ -517,6 +528,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun showAlertBlockedTaskAnotherUser(userName: String)
     fun showAlertBlockedTaskByMe(blockingUser: String, yesCallback: () -> Unit)
     fun showDeviceNotSupportVideoScan()
+    fun openAddMarkToList(nextCallback: () -> Unit, message: String)
 
     fun openTestScanBarcodeScreen()
     fun openScanPriceScreen()
