@@ -10,7 +10,10 @@ import com.lenta.bp14.models.work_list.ScanResult
 import com.lenta.bp14.models.work_list.WorkListTask
 import com.lenta.bp14.platform.navigation.IScreenNavigator
 import com.lenta.bp14.requests.pojo.MarkStatus
-import com.lenta.bp14.requests.work_list.*
+import com.lenta.bp14.requests.work_list.AdditionalGoodInfoParams
+import com.lenta.bp14.requests.work_list.CheckMarkParams
+import com.lenta.bp14.requests.work_list.IAdditionalGoodInfoNetRequest
+import com.lenta.bp14.requests.work_list.ICheckMarkNetRequest
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.models.core.MatrixType
@@ -18,7 +21,10 @@ import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.analyseCode
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.databinding.PageSelectionListener
-import com.lenta.shared.utilities.extentions.*
+import com.lenta.shared.utilities.extentions.combineLatest
+import com.lenta.shared.utilities.extentions.dropZeros
+import com.lenta.shared.utilities.extentions.map
+import com.lenta.shared.utilities.extentions.sumWith
 import com.lenta.shared.view.OnPositionClickListener
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat

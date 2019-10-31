@@ -329,7 +329,7 @@ interface IWorkListTask : ITask, IFilterable {
 // -----------------------------
 
 data class Good(
-        val ean: String? = null,
+        val ean: String?,
         val material: String,
         val name: String,
         val units: Uom,
@@ -364,10 +364,6 @@ data class Good(
 
     fun getGroups(): String {
         return "$goodGroup/$purchaseGroup"
-    }
-
-    fun getShelfLifeInMills(): Long {
-        return shelfLife.toLong() * 24 * 60 * 60 * 1000
     }
 
     fun getTotalQuantity(): Double {
