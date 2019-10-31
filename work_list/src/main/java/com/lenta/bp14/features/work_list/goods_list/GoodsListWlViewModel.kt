@@ -191,10 +191,6 @@ class GoodsListWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     }
 
     fun onClickItemPosition(position: Int) {
-
-
-
-
         when (correctedSelectedPage.value) {
             0 -> processingGoods.value?.get(position)?.material
             1 -> processedGoods.value?.get(position)?.material
