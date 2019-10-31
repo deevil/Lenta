@@ -299,10 +299,11 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
 
     fun onClickApply() {
         Logg.d { "--> totalQuantityValue = ${totalQuantityValue.value}, maxQuantity = ${maxQuantity.value}" }
-        if (totalQuantityValue.value ?: 0.0 > maxQuantity.value ?: 0.0) {
+        //TODO maxQuantity - это максимальное количество позиций в задании. Нужно переделать
+        /*if (totalQuantityValue.value ?: 0.0 > maxQuantity.value ?: 0.0) {
             navigator.showMaxCountProductAlert()
             return
-        }
+        }*/
 
         if (good.value!!.isNotMarkedGood()) {
             saveScanResult()

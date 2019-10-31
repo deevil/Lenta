@@ -42,6 +42,7 @@ class PriceInfoParser @Inject constructor() : IPriceInfoParser {
                         return null
                     }
                 }
+                .replace(" ", "")
                 .replace(",", ".")
                 .toDoubleOrNull()
     }
@@ -54,6 +55,7 @@ class PriceInfoParser @Inject constructor() : IPriceInfoParser {
                         return null
                     }
                 }
+                .replace(" ", "")
                 .replace(",", ".")
                 .toDoubleOrNull()
     }

@@ -10,7 +10,7 @@ import com.lenta.bp14.models.data.getGoodType
 import com.lenta.bp14.models.not_exposed_products.INotExposedProductsTask
 import com.lenta.bp14.platform.navigation.IScreenNavigator
 import com.lenta.shared.exception.Failure
-import com.lenta.shared.fmp.resources.dao_ext.getMaxQuantityProdWkl
+import com.lenta.shared.fmp.resources.dao_ext.getMaxPositionsProdWkl
 import com.lenta.shared.fmp.resources.fast.ZmpUtz14V001
 import com.lenta.shared.models.core.MatrixType
 import com.lenta.shared.models.core.getMatrixType
@@ -38,11 +38,11 @@ class GoodInfoNeViewModel : CoreViewModel(), PageSelectionListener {
 
 
     private val maxQuantity: Double? by lazy {
-        ZmpUtz14V001(hyperHive).getMaxQuantityProdWkl()
+        ZmpUtz14V001(hyperHive).getMaxPositionsProdWkl()
     }
 
     val goodInfo by lazy {
-        task.getProcessedProductInfoResult()!!
+        task.getProcessedProductInfoResult()!!.goodInfo
     }
 
     val productParamsUi: MutableLiveData<ProductParamsUi> by lazy {
@@ -90,15 +90,20 @@ class GoodInfoNeViewModel : CoreViewModel(), PageSelectionListener {
 
     private val quantityValue by lazy {
         quantityField.map {
+            it?.toDoubleOrNull() ?: 0.0
+        }
+    }
+
+    private val totalQuantityValue: MutableLiveData<Double> by lazy {
+        quantityValue.map {
             val saved = task.getProcessedCheckInfo()?.quantity ?: 0.0
-            val entered = it?.toDoubleOrNull() ?: 0.0
-            saved.sumWith(entered)
+            saved.sumWith(it)
         }
     }
 
     val totalQuantity: MutableLiveData<String> by lazy {
-        quantityValue.map {
-            "${it?.dropZeros()} ${goodInfo.uom?.name ?: ""}"
+        totalQuantityValue.map {
+            "${it.dropZeros()} ${goodInfo.uom?.name ?: ""}"
         }
     }
 
@@ -142,7 +147,7 @@ class GoodInfoNeViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     fun onClickApply() {
-        quantityValue.value?.let {
+        totalQuantityValue.value?.let {
             task.setCheckInfo(quantity = it, isEmptyPlaceMarked = null)
         }
         navigator.goBack()
@@ -203,14 +208,16 @@ class GoodInfoNeViewModel : CoreViewModel(), PageSelectionListener {
                             isBarCode = true
                     )
             ).either(::handleFailure) { scanInfoResult ->
-                if (scanInfoResult.productInfo.materialNumber == task.getProcessedProductInfoResult()?.productInfo?.matNr) {
+                if (scanInfoResult.productInfo.materialNumber == goodInfo.productInfo.matNr) {
                     val newQuantity = ((quantityValue.value
                             ?: 0.0) + scanInfoResult.quantity)
-                    if (maxQuantity != null && newQuantity > maxQuantity!!) {
+                    //TODO maxQuantity - это максимальное количество позиций в задании. Нужно переделать
+                    /*if (maxQuantity != null && newQuantity > maxQuantity!!) {
                         navigator.showMaxCountProductAlert()
                     } else {
                         quantityField.value = newQuantity.toStringFormatted()
-                    }
+                    }*/
+                    quantityField.value = newQuantity.toStringFormatted()
                 } else {
                     if (applyButtonEnabled.value == true) {
                         viewModelScope.launch {
@@ -221,7 +228,9 @@ class GoodInfoNeViewModel : CoreViewModel(), PageSelectionListener {
                                         isEmptyPlaceMarked = null
                                 )
                                 task.getProductInfoAndSetProcessed(
-                                        matNr = scanInfoResult.productInfo.materialNumber
+                                        matNr = scanInfoResult.productInfo.materialNumber,
+                                        quantity = scanInfoResult.quantity,
+                                        ean = null
                                 ).either(
                                         {
                                             navigator.openAlertScreen(failure = it)
