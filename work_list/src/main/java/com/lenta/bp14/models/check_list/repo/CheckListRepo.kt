@@ -31,7 +31,8 @@ class CheckListRepo @Inject constructor(
     override suspend fun getGoodByMaterial(material: String, scanCodeInfo: ScanCodeInfo?, eanInfo: EanInfo?): Good? {
         return withContext(Dispatchers.IO) {
             getCheckListGoodInfoByMaterial(material)?.let { goodInfo ->
-                val isGrammUom = goodInfo.buom == Uom.G.code
+                //val isGrammUom = goodInfo.buom == Uom.G.code
+                val isGrammUom = false
                 val unitsCode = if (isGrammUom) Uom.KG.code else goodInfo.buom
                 val unitsName = getUnitsName(unitsCode)
 
