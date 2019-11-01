@@ -88,6 +88,7 @@ class GoodsListWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
 
     init {
         viewModelScope.launch {
+            task.loadMaxTaskPositions()
             if (!task.isLoadedTaskList) task.loadTaskList()
             if (!task.isEmpty()) task.currentGood.value = task.goods.value?.get(0)
 

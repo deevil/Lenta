@@ -10,9 +10,9 @@ import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.extentions.combineLatest
+import com.lenta.shared.utilities.extentions.dropZeros
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.sumWith
-import com.lenta.shared.utilities.extentions.dropZeros
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -147,8 +147,8 @@ data class ItemShelfLifeUi(
         val position: String,
         val expirationDate: String,
         val productionDate: String,
-        val productionDateVisibility: Boolean,
         val expirationDateVisibility: Boolean,
+        val productionDateVisibility: Boolean,
         val quantity: String
 )
 

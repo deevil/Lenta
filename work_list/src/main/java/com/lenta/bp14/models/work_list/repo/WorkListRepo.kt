@@ -147,7 +147,6 @@ class WorkListRepo @Inject constructor(
             val selfLives = dictonary.getItemsByTid("007")?.toElementList()?.toMutableList()
                     ?: mutableListOf() // 007 - Типы сроков годности
             selfLives.sortBy { it.order }
-            Logg.d { "--> selfLives: $selfLives" }
             return@withContext selfLives
         }
     }
@@ -162,7 +161,6 @@ class WorkListRepo @Inject constructor(
                     description = "Не выбран"
             ))
             comments.sortBy { it.order }
-            Logg.d { "--> comments: $comments" }
             return@withContext comments
         }
     }
@@ -173,12 +171,6 @@ class WorkListRepo @Inject constructor(
         }
     }
 
-    override suspend fun getMaxPositionsForTask(): Double? {
-        return withContext(Dispatchers.IO) {
-            return@withContext settings.getMaxPositionsProdWkl()
-        }
-    }
-
 }
 
 interface IWorkListRepo {
@@ -186,5 +178,4 @@ interface IWorkListRepo {
     suspend fun getGoodByEan(ean: String): Good?
     suspend fun getGoodInfoByMaterial(material: String?): WorkListGoodInfo?
     suspend fun getEanByMaterial(material: String?): String?
-    suspend fun getMaxPositionsForTask(): Double?
 }

@@ -71,6 +71,7 @@ class GoodsListClViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
 
     init {
         viewModelScope.launch {
+            task.loadMaxTaskPositions()
             requestFocusToNumberField.value = true
             taskName.value = "${task.getTaskType().taskType} // ${task.getTaskName()}"
         }
@@ -147,6 +148,12 @@ class GoodsListClViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
                 numberField.value = ""
                 navigator.hideProgress()
             }?.let { good ->
+                Logg.d { "--> Max task positions: ${task.getMaxTaskPositions()}" }
+                if (task.isReachLimitPositions(good.material)) {
+                    navigator.showMaxCountProductAlert()
+                    return@launch
+                }
+
                 task.addGood(good)
                 return@launch
             }

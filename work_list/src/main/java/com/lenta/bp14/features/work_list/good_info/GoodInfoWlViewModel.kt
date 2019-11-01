@@ -62,8 +62,6 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
     val commentsPosition = MutableLiveData(0)
     val shelfLifeTypePosition = MutableLiveData(0)
 
-    private val maxQuantity = MutableLiveData<Double>(0.0)
-
     val good by lazy { task.currentGood }
 
     val title = MutableLiveData<String>("")
@@ -79,12 +77,6 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
     val totalQuantity: MutableLiveData<String> by lazy {
         totalQuantityValue.map {
             it?.dropZeros()
-        }
-    }
-
-    val quantityFieldEnabled by lazy {
-        good.map { good ->
-            good?.isNotMarkedGood()
         }
     }
 
@@ -236,7 +228,6 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
 
     init {
         viewModelScope.launch {
-            maxQuantity.value = task.getMaxQuantity()
             title.value = good.value?.getFormattedMaterialWithName()
             quantity.value = good.value?.defaultValue.dropZeros()
 
@@ -298,12 +289,11 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     fun onClickApply() {
-        Logg.d { "--> totalQuantityValue = ${totalQuantityValue.value}, maxQuantity = ${maxQuantity.value}" }
-        //TODO maxQuantity - это максимальное количество позиций в задании. Нужно переделать
-        /*if (totalQuantityValue.value ?: 0.0 > maxQuantity.value ?: 0.0) {
+        Logg.d { "--> Max task positions: ${task.getMaxTaskPositions()}" }
+        if (task.isReachLimitPositions()) {
             navigator.showMaxCountProductAlert()
             return
-        }*/
+        }
 
         if (good.value!!.isNotMarkedGood()) {
             saveScanResult()
@@ -432,8 +422,9 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
         when (markStatus.status) {
             "1" -> task.addMark(markNumber)
             "2" -> {
-                task.addMark(markNumber)
-                navigator.openInfoScreen(markStatus.description)
+                navigator.openAddMarkToList(
+                        message = markStatus.description,
+                        nextCallback = { task.addMark(markNumber) })
             }
             "3" -> navigator.openInfoScreen(markStatus.description)
         }
