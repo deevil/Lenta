@@ -175,6 +175,7 @@
             android:maxLines="1"
             android:paddingTop="8dp"
             android:paddingBottom="8dp"
+            app:maxLengthForScanProtect="@{10}"
             android:textSize="18sp"
             android:text="@={vm.value}"
             android:layout_marginStart="8dp"
