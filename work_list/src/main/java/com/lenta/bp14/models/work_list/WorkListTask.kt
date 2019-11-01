@@ -121,7 +121,7 @@ class WorkListTask @Inject constructor(
 
     fun deleteScanResultsByComments(comments: List<String>) {
         val good = currentGood.value!!
-        good.scanResults.removeAll { comments.contains(it.commentCode) }
+        good.scanResults.removeAll { comments.contains(it.comment) }
         currentGood.value = good
     }
 
@@ -310,6 +310,11 @@ class WorkListTask @Inject constructor(
         return maxTaskPositions
     }
 
+    override fun updateGoodList() {
+        val goodsList = goods.value
+        goods.value = goodsList
+    }
+
 }
 
 
@@ -339,6 +344,7 @@ interface IWorkListTask : ITask, IFilterable {
     fun isGoodFromTask(good: Good): Boolean
     fun getMaxTaskPositions(): Double
     fun isReachLimitPositions(): Boolean
+    fun updateGoodList()
 }
 
 // -----------------------------

@@ -258,4 +258,8 @@ class GoodsListWlFragment : CoreFragment<FragmentGoodsListWlBinding, GoodsListWl
         vm.onScanResult(data)
     }
 
+    override fun onResume() {
+        super.onResume()
+        vm.updateGoodList()
+    }
 }

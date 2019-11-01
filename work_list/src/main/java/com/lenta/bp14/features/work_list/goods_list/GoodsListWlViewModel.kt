@@ -58,7 +58,7 @@ class GoodsListWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
                     position = (index + 1).toString(),
                     material = good.material,
                     name = good.getFormattedMaterialWithName(),
-                    quantity = total.dropZeros()
+                    quantity = "${total.dropZeros()} ${good.units.name}"
             )
         }
     }
@@ -217,6 +217,10 @@ class GoodsListWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
 
     fun onScanResult(data: String) {
         checkEnteredNumber(data)
+    }
+
+    fun updateGoodList() {
+        task.updateGoodList()
     }
 
 }
