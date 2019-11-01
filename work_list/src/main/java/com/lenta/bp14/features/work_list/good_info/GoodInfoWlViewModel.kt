@@ -9,6 +9,7 @@ import com.lenta.bp14.models.work_list.AdditionalGoodInfo
 import com.lenta.bp14.models.work_list.ScanResult
 import com.lenta.bp14.models.work_list.WorkListTask
 import com.lenta.bp14.platform.navigation.IScreenNavigator
+import com.lenta.bp14.platform.resource.IResourceManager
 import com.lenta.bp14.requests.pojo.MarkStatus
 import com.lenta.bp14.requests.work_list.AdditionalGoodInfoParams
 import com.lenta.bp14.requests.work_list.CheckMarkParams
@@ -45,6 +46,8 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
     lateinit var priceInfoParser: IPriceInfoParser
     @Inject
     lateinit var checkMarkNetRequest: ICheckMarkNetRequest
+    @Inject
+    lateinit var resourceManager: IResourceManager
 
 
     val selectedPage = MutableLiveData(0)
@@ -251,7 +254,7 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
 
     private fun handleAdditionalInfoFailure(failure: Failure) {
         super.handleFailure(failure)
-        dataLoadingError.value = if (failure is Failure.SapError) failure.message else failure.toString()
+        dataLoadingError.value = if (failure is Failure.SapError) failure.message else resourceManager.serverConnectionError()
         dataLoadingErrorVisibility.value = true
     }
 

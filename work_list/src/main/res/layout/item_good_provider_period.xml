@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools">
 
     <data>
@@ -27,7 +28,6 @@
                 android:layout_weight="@integer/number_provider_period_column_1">
 
                 <TextView
-                    android:id="@+id/tv_item_number"
                     style="@style/CellTextStyle"
                     android:layout_width="wrap_content"
                     android:text="@{provider.number}"
@@ -42,15 +42,14 @@
                 android:layout_weight="@integer/number_provider_period_column_2">
 
                 <TextView
-                    android:id="@+id/tv_good_provider_number"
                     style="@style/CellTextStyle"
                     android:text="@{provider.code}"
                     tools:text="165832" />
 
                 <TextView
-                    android:id="@+id/tv_good_provider_name"
                     style="@style/CellTextStyle"
                     android:text="@{provider.name}"
+                    app:zoom="@{true}"
                     tools:text="Поставщик 1" />
 
             </LinearLayout>
@@ -62,7 +61,6 @@
                 android:layout_weight="@integer/number_provider_period_column_3">
 
                 <TextView
-                    android:id="@+id/tv_period_kip"
                     style="@style/CellTextStyle"
                     android:text="@{provider.period}"
                     tools:text="12.05.19 - 01.12.19" />
