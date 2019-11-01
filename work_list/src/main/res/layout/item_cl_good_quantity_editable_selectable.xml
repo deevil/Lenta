@@ -69,6 +69,7 @@
                     android:ellipsize="end"
                     android:inputType="numberDecimal"
                     android:maxLines="1"
+                    app:maxLengthForScanProtect="@{10}"
                     android:text="@={good.quantity}"
                     app:digitsForUom="@{good.units}"
                     app:suffix="@{good.units.name}"
