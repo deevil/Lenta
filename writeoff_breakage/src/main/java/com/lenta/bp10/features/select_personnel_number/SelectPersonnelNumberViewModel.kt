@@ -57,6 +57,7 @@ class SelectPersonnelNumberViewModel : CoreViewModel(), OnOkInSoftKeyboardListen
                         }
                     }
             )
+            selectPersonnelNumberDelegate.codeConfirm = codeConfirm
         }
 
     }
