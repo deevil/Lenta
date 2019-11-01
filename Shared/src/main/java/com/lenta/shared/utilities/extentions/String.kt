@@ -1,7 +1,6 @@
 package com.lenta.shared.utilities.extentions
 
 import com.lenta.shared.utilities.date_time.DateTimeUtil
-import java.lang.StringBuilder
 import java.util.*
 
 fun Iterable<String>.toSQliteSet(): String {
@@ -39,4 +38,14 @@ fun String.splitByLines(oneLineMaxLength: Int): List<String> {
 
     return lines
 
+}
+
+fun String.getSapDate(pattern: String): Date? {
+    return if (this != "0000-00-00" && this.isNotEmpty()) {
+        try {
+            DateTimeUtil.getDateFromString(this, pattern)
+        } catch (e: Exception) {
+            null
+        }
+    } else null
 }
