@@ -73,6 +73,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/div_vert"
             app:layout_constraintTop_toTopOf="@+id/div_vert"
+            app:maxLengthForScanProtect="@{6}"
             app:suffix="@{vm.suffix}"
             tools:text="1" />
 
@@ -149,9 +150,9 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_marginEnd="8dp"
-                android:paddingTop="8dp"
                 android:ellipsize="end"
                 android:maxLines="1"
+                android:paddingTop="8dp"
                 android:text="@string/storage_place"
                 app:layout_constraintBottom_toBottomOf="@+id/tv_storage_place_value"
                 app:layout_constraintEnd_toStartOf="@+id/div_vert2"
@@ -177,9 +178,9 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_marginEnd="8dp"
-                android:paddingTop="8dp"
                 android:ellipsize="end"
                 android:maxLines="1"
+                android:paddingTop="8dp"
                 android:text="@{vm.storePlaceNumber}"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
@@ -209,8 +210,8 @@
             android:layout_marginBottom="24dp"
             android:fontFamily="@font/tahoma_bold"
             android:gravity="center"
-            android:textSize="18sp"
             android:onClick="@{(v) -> vm.screenNavigator.openMatrixInfoScreen(vm.componentInfo.matrixType)}"
+            android:textSize="18sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintVertical_bias="1.0"
@@ -220,15 +221,15 @@
 
         <TextView
             android:id="@+id/tv_section"
+            style="@style/NumberSectionTxt"
             android:layout_width="36sp"
             android:layout_height="36sp"
             android:layout_marginStart="16dp"
             android:layout_marginTop="8dp"
             android:layout_marginBottom="24dp"
-            style="@style/NumberSectionTxt"
             android:gravity="center"
-            android:text='@{"" + vm.componentInfo.sectionId}'
             android:onClick="@{(v) -> vm.screenNavigator.openSectionInfoScreen(vm.componentInfo.sectionId)}"
+            android:text='@{"" + vm.componentInfo.sectionId}'
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@+id/tv_matrix"
             app:layout_constraintVertical_bias="1.0"

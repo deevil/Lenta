@@ -46,6 +46,7 @@
                     <com.lenta.shared.view.EditTextWithSuffix
                         style="@style/CellTextStyle"
                         android:enabled="@{vm.isInputNumberEnabled()}"
+                        app:maxLengthForScanProtect="@{6}"
                         android:inputType="numberDecimal"
                         android:text="@={vm.quantityField}"
                         app:digitsForUom="@{vm.originalProcessedProductInfo.uom}"
