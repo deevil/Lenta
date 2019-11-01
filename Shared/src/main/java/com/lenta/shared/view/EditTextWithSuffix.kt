@@ -12,6 +12,8 @@ class EditTextWithSuffix : AppCompatEditText {
     private var textPaint = TextPaint()
     private var suffix = ""
     private val suffixPadding: Float = 0.toFloat()
+    private var latestNormalText: String? = ""
+    var maxLengthForScanProtect: Int? = 0
 
     constructor(context: Context) : super(context)
 
@@ -27,6 +29,20 @@ class EditTextWithSuffix : AppCompatEditText {
         val suffixXPosition = textPaint.measureText(text!!.toString()).toInt() + paddingLeft
         textPaint.color = currentTextColor
         c.drawText(suffix, Math.max(suffixXPosition.toFloat(), suffixPadding), baseline.toFloat(), textPaint)
+    }
+
+    override fun onTextChanged(text: CharSequence?, start: Int, lengthBefore: Int, lengthAfter: Int) {
+        maxLengthForScanProtect?.let {
+            val currentText = text.toString()
+            if (currentText.length > 6) {
+                this.text?.clear()
+                this.text?.append(latestNormalText)
+                return
+            } else {
+                latestNormalText = currentText
+            }
+        }
+        super.onTextChanged(text, start, lengthBefore, lengthAfter)
     }
 
     override fun onFinishInflate() {
@@ -48,4 +64,9 @@ fun setSuffix(editText: EditTextWithSuffix, suffix: String?) {
     editText.setSuffix(" $suffix")
     editText.hint = suffix
 
+}
+
+@BindingAdapter(value = ["maxLengthForScanProtect"])
+fun setSuffix(editText: EditTextWithSuffix, maxLengthForScanProtect: Int?) {
+    editText.maxLengthForScanProtect = maxLengthForScanProtect
 }
