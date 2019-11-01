@@ -1,6 +1,5 @@
 package com.lenta.bp10.features.select_personnel_number
 
-import android.os.Bundle
 import android.view.View
 import com.lenta.bp10.R
 import com.lenta.bp10.databinding.FragmentSelectPersonnelNumberBinding
