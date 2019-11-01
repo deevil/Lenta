@@ -171,7 +171,7 @@ class WorkListRepo @Inject constructor(
         }
     }
 
-    override suspend fun getMaxPositionsForTask(): Double? {
+    override suspend fun getMaxTaskPositions(): Double? {
         return withContext(Dispatchers.IO) {
             return@withContext settings.getMaxPositionsProdWkl()
         }
@@ -184,5 +184,5 @@ interface IWorkListRepo {
     suspend fun getGoodByEan(ean: String): Good?
     suspend fun getGoodInfoByMaterial(material: String?): WorkListGoodInfo?
     suspend fun getEanByMaterial(material: String?): String?
-    suspend fun getMaxPositionsForTask(): Double?
+    suspend fun getMaxTaskPositions(): Double?
 }

@@ -47,6 +47,12 @@ class WorkListTask @Inject constructor(
 
     override val currentGood = MutableLiveData<Good>()
 
+    private var maxTaskPositions: Double = 0.0
+
+    override suspend fun loadMaxTaskPositions() {
+        maxTaskPositions = workListRepo.getMaxTaskPositions() ?: 0.0
+    }
+
     override suspend fun loadTaskList() {
         taskDescription.taskInfoResult?.positions?.let { positions ->
             val goodsList = mutableListOf<Good>()
@@ -273,8 +279,13 @@ class WorkListTask @Inject constructor(
         currentGood.value = good
     }
 
-    override suspend fun getMaxQuantity(): Double? {
-        return workListRepo.getMaxPositionsForTask()
+    fun isReachLimitPositions(): Boolean {
+        var positions = goods.value?.size ?: 0
+        if (goods.value?.find { it.material == currentGood.value?.material } == null) {
+            positions += 1
+        }
+
+        return positions > maxTaskPositions
     }
 
     override fun isGoodFromTask(good: Good): Boolean {
@@ -295,6 +306,10 @@ class WorkListTask @Inject constructor(
         isLoadedTaskList = data.isLoadedTaskList
     }
 
+    override fun getMaxTaskPositions(): Double {
+        return maxTaskPositions
+    }
+
 }
 
 
@@ -307,7 +322,7 @@ interface IWorkListTask : ITask, IFilterable {
     suspend fun getGoodByMaterial(material: String): Good?
     suspend fun getGoodByEan(ean: String): Good?
     suspend fun addGoodToList(good: Good, forceQuantity: Double? = null)
-    suspend fun getMaxQuantity(): Double?
+    suspend fun loadMaxTaskPositions()
 
     fun deleteSelectedGoods(materials: List<String>)
     fun addScanResult(scanResult: ScanResult)
@@ -322,6 +337,7 @@ interface IWorkListTask : ITask, IFilterable {
     fun deleteMark(markNumber: String)
     fun addMark(mark: String)
     fun isGoodFromTask(good: Good): Boolean
+    fun getMaxTaskPositions(): Double
 }
 
 // -----------------------------
