@@ -7,6 +7,7 @@ import com.lenta.bp14.requests.tasks.SimpleParams
 import com.lenta.bp14.requests.tasks.TaskListUpdateNetRequest
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.fmp.resources.dao_ext.getAllowedWklAppVersion
+import com.lenta.shared.fmp.resources.dao_ext.getMaxPositionsProdWkl
 import com.lenta.shared.fmp.resources.fast.ZmpUtz14V001
 import com.lenta.shared.functional.Either
 import com.lenta.shared.functional.map
@@ -100,6 +101,12 @@ class GeneralRepo @Inject constructor(
         }
     }
 
+    override suspend fun getMaxTaskPositions(): Double? {
+        return withContext(Dispatchers.IO) {
+            return@withContext settings.getMaxPositionsProdWkl()
+        }
+    }
+
 }
 
 
@@ -110,6 +117,7 @@ interface IGeneralRepo {
     fun getTasksTypeInfo(taskType: String): ITaskTypeInfo?
     suspend fun onDbReady()
     suspend fun getAllowedAppVersion(): String?
+    suspend fun getMaxTaskPositions(): Double?
 }
 
 data class TaskInfo(

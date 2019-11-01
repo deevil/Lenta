@@ -28,6 +28,12 @@ class CheckListTask @Inject constructor(
 
     override val goods = MutableLiveData<List<Good>>(listOf())
 
+    private var maxTaskPositions: Double = 0.0
+
+    override suspend fun loadMaxTaskPositions() {
+        maxTaskPositions = generalRepo.getMaxTaskPositions() ?: 0.0
+    }
+
     override fun addGood(good: Good) {
         val goodsList = goods.value!!.toMutableList()
 
@@ -118,6 +124,19 @@ class CheckListTask @Inject constructor(
         goods.value = data.goods
     }
 
+    override fun getMaxTaskPositions(): Double {
+        return maxTaskPositions
+    }
+
+    override fun isReachLimitPositions(material: String): Boolean {
+        var positions = goods.value?.size ?: 0
+        if (goods.value?.find { it.material == material } == null) {
+            positions += 1
+        }
+
+        return positions > maxTaskPositions
+    }
+
 }
 
 interface ICheckListTask : ITask {
@@ -125,12 +144,15 @@ interface ICheckListTask : ITask {
 
     suspend fun getGoodByEan(ean: String): Good?
     suspend fun getGoodByMaterial(material: String): Good?
+    suspend fun loadMaxTaskPositions()
 
     fun addGood(good: Good)
     fun deleteSelectedGoods(indices: MutableSet<Int>)
     fun getReportData(ip: String): CheckListReport
     suspend fun getGoodRequestResult(ean: String): GoodRequestResult
     fun isNotAddedToList(good: Good): Boolean
+    fun getMaxTaskPositions(): Double
+    fun isReachLimitPositions(material: String): Boolean
 }
 
 // --------------------------

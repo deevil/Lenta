@@ -50,7 +50,7 @@ class WorkListTask @Inject constructor(
     private var maxTaskPositions: Double = 0.0
 
     override suspend fun loadMaxTaskPositions() {
-        maxTaskPositions = workListRepo.getMaxTaskPositions() ?: 0.0
+        maxTaskPositions = generalRepo.getMaxTaskPositions() ?: 0.0
     }
 
     override suspend fun loadTaskList() {
@@ -279,7 +279,7 @@ class WorkListTask @Inject constructor(
         currentGood.value = good
     }
 
-    fun isReachLimitPositions(): Boolean {
+    override fun isReachLimitPositions(): Boolean {
         var positions = goods.value?.size ?: 0
         if (goods.value?.find { it.material == currentGood.value?.material } == null) {
             positions += 1
@@ -338,6 +338,7 @@ interface IWorkListTask : ITask, IFilterable {
     fun addMark(mark: String)
     fun isGoodFromTask(good: Good): Boolean
     fun getMaxTaskPositions(): Double
+    fun isReachLimitPositions(): Boolean
 }
 
 // -----------------------------
