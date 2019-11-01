@@ -7,14 +7,13 @@ import android.text.TextPaint
 import android.util.AttributeSet
 import androidx.appcompat.widget.AppCompatEditText
 import androidx.databinding.BindingAdapter
-import com.lenta.shared.utilities.Logg
 
 class EditTextWithSuffix : AppCompatEditText {
     private var textPaint = TextPaint()
     private var suffix = ""
     private val suffixPadding: Float = 0.toFloat()
     private var latestNormalText: String? = ""
-    var maxLengthForScanProtect: Int? = 0
+    var maxLengthForScanProtect: Int? = null
 
     constructor(context: Context) : super(context)
 
@@ -34,7 +33,6 @@ class EditTextWithSuffix : AppCompatEditText {
 
     override fun onTextChanged(text: CharSequence?, start: Int, lengthBefore: Int, lengthAfter: Int) {
         maxLengthForScanProtect?.let {
-            Logg.d { "test drawText: $text, latestNormalText: $latestNormalText" }
             val currentText = text.toString()
             if (currentText.length > it) {
                 setText(latestNormalText)
