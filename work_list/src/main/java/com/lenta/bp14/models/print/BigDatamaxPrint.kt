@@ -3,6 +3,7 @@ package com.lenta.bp14.models.print
 import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
 import com.lenta.shared.account.ISessionInfo
+import com.lenta.shared.analytics.AnalyticsHelper
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.functional.Either
 import com.lenta.shared.utilities.Logg
@@ -16,7 +17,8 @@ import javax.inject.Inject
 
 class BigDatamaxPrintImpl @Inject constructor(
         private val sessionInfo: ISessionInfo,
-        private val gson: Gson
+        private val gson: Gson,
+        private val analyticsHelper: AnalyticsHelper
 ) : BigDatamaxPrint {
 
     private val client = OkHttpClient()
@@ -58,11 +60,17 @@ class BigDatamaxPrintImpl @Inject constructor(
     }
 
     private fun sendJsonToPrint(json: String): Either<Failure, Boolean> {
+
+        val url = getUrl()
+        val data = getBigDatamaxData(json)
+
+        analyticsHelper.logPrintDatamaxRequest(url, data)
+
+        Logg.d { "datamax print request. url: $url, data: $data" }
+
         val request = Request.Builder()
-                .url(getUrl().apply {
-                    Logg.d { "Big Datamax print: $json, print url: $this" }
-                })
-                .post(RequestBody.create(MediaType.parse("text/xml"), getBigDatamaxData(json)))
+                .url(url)
+                .post(RequestBody.create(MediaType.parse("text/xml"), data))
                 .addHeader("authorization", "Basic TUFLQVJPVjoxcTJ3M2U0cg==")
                 .addHeader("content-type", "text/xml")
                 .build()
@@ -70,6 +78,9 @@ class BigDatamaxPrintImpl @Inject constructor(
         try {
             client.newCall(request).execute().apply {
                 Logg.d { "Big Datamax response: $this" }
+                val responceBody = this.body()?.string() ?: ""
+                Logg.d { "Big Datamax response body: $responceBody" }
+                analyticsHelper.logPrintDatamaxResponce(this.code(), responceBody)
             }
         } catch (e: Exception) {
             Logg.d { "Big Datamax request error: $e" }
