@@ -480,6 +480,19 @@ class ScreenNavigator @Inject constructor(
         )
     }
 
+    override fun showIncorrectProductionDate(backCallback: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.incorrect_production_date),
+                    iconRes = R.drawable.ic_info_pink,
+                    pageNumber = "15",
+                    codeConfirmForLeft = backFragmentResultHelper.setFuncForResult(backCallback),
+                    leftButtonDecorationInfo = ButtonDecorationInfo.back
+            )
+            )
+        }
+    }
+
 }
 
 interface IScreenNavigator : ICoreNavigator {
@@ -529,6 +542,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun showAlertBlockedTaskByMe(blockingUser: String, yesCallback: () -> Unit)
     fun showDeviceNotSupportVideoScan()
     fun openAddMarkToList(nextCallback: () -> Unit, message: String)
+    fun showIncorrectProductionDate(backCallback: () -> Unit)
 
     fun openTestScanBarcodeScreen()
     fun openScanPriceScreen()

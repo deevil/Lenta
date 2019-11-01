@@ -295,6 +295,15 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
             return
         }
 
+        if (isIncorrectEnteredDate()) {
+            navigator.showIncorrectProductionDate {
+                day.value = ""
+                month.value = ""
+                year.value = ""
+            }
+            return
+        }
+
         if (good.value!!.isNotMarkedGood()) {
             saveScanResult()
         }
@@ -451,6 +460,11 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
                 productionDate = productionDate,
                 expirationDate = expirationDate
         ))
+    }
+
+    private fun isIncorrectEnteredDate(): Boolean {
+        return enteredDate.value != null && shelfLifeTypePosition.value == ShelfLifeType.PRODUCTION.position
+                && enteredDate.value!!.after(Date())
     }
 
 }
