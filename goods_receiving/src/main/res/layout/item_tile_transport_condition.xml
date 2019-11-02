@@ -173,6 +173,7 @@
             android:imeOptions="actionDone"
             android:inputType="textNoSuggestions|numberDecimal"
             android:maxLines="1"
+            android:maxLength="2"
             android:paddingTop="8dp"
             android:paddingBottom="8dp"
             android:textSize="18sp"
