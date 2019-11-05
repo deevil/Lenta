@@ -25,7 +25,21 @@ class ScanCodeInfo(val originalNumber: String, val fixedQuantity: Double? = null
     }
 
     private val withWeightInTens by lazy {
-        originalNumber.length == 13 && prefix == "27"
+        withWeight && prefix == "27"
+    }
+
+    private val weight: Double by lazy {
+        if (withWeight) {
+            originalNumber.takeLast(6).let { tail ->
+                if (withWeightInTens) tail.dropLast(1) else tail
+            }.toDoubleOrNull() ?: 0.0
+        } else {
+            1.0
+        }
+    }
+
+    val eanWithoutWeight: String by lazy {
+        if (withWeight) "${originalNumber.dropLast(6)}000000" else originalNumber
     }
 
     val isMaterialNumber: Boolean? by lazy {
@@ -86,22 +100,7 @@ class ScanCodeInfo(val originalNumber: String, val fixedQuantity: Double? = null
     }
 
     fun getQuantity(defaultUnits: Uom): Double {
-        fixedQuantity?.let {
-            return it
-        }
-
-        var quantity = 1.0
-        if (withWeight) {
-            quantity = originalNumber.takeLast(6).let { tail ->
-                if (withWeightInTens) tail.dropLast(1) else tail
-            }.toDoubleOrNull() ?: 0.0
-
-            if (defaultUnits == Uom.G) {
-                quantity /= 1000
-            }
-        }
-
-        return quantity
+        return if (defaultUnits == Uom.G) weight / 1000 else weight
     }
 
     private fun isEAN128Valid(code: String): Boolean {

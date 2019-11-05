@@ -74,7 +74,7 @@ class WorkListRepo @Inject constructor(
         val scanCodeInfo = ScanCodeInfo(ean)
 
         return withContext(Dispatchers.IO) {
-            getMaterialByEan(scanCodeInfo.eanNumberForSearch ?: ean)?.let { eanInfo ->
+            getMaterialByEan(scanCodeInfo.eanWithoutWeight)?.let { eanInfo ->
                 getGoodInfoByMaterial(eanInfo.materialNumber)?.let { goodInfo ->
                     val defaultUnits = Uom(code = goodInfo.unitsCode, name = getUnitsName(goodInfo.unitsCode))
                     val units = if (defaultUnits == Uom.G) Uom.KG else defaultUnits
@@ -83,7 +83,7 @@ class WorkListRepo @Inject constructor(
                     val quantity = scanCodeInfo.getQuantity(defaultUnits)
 
                     return@withContext Good(
-                            ean = scanCodeInfo.eanNumberForSearch,
+                            ean = eanInfo.ean,
                             material = eanInfo.materialNumber,
                             name = goodInfo.name,
                             defaultUnits = defaultUnits,
