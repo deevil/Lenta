@@ -81,7 +81,7 @@ data class TaskDescriptionRestInfo(
         val ttnNumber: String,
         @SerializedName("EBELN")
         val orderNumber: String,
-        @SerializedName("VEBELN")
+        @SerializedName("VBELN")
         val deliveryNumber: String?,
         @SerializedName("DATE_PLAN")
         val plannedDeliveryDate: String,
