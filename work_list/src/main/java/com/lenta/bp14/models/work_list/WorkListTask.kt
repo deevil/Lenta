@@ -80,9 +80,9 @@ class WorkListTask @Inject constructor(
         }
     }
 
-    override suspend fun addGoodToList(good: Good, forceQuantity: Double?) {
+    override suspend fun addGoodToList(good: Good) {
         goods.value?.find { it.material == good.material }?.let { existGood ->
-            currentGood.value = if (forceQuantity == null) existGood else existGood.copy(defaultValue = forceQuantity)
+            currentGood.value = existGood.copy(defaultValue = good.defaultValue)
             return
         }
 
@@ -136,6 +136,7 @@ class WorkListTask @Inject constructor(
 
         currentGood.value?.let { good ->
             good.isProcessed = true
+            good.defaultValue = 0.0
             goodsList.removeAll { it.material == good.material }
             goodsList.add(0, good)
         }
@@ -326,7 +327,7 @@ interface IWorkListTask : ITask, IFilterable {
     suspend fun loadTaskList()
     suspend fun getGoodByMaterial(material: String): Good?
     suspend fun getGoodByEan(ean: String): Good?
-    suspend fun addGoodToList(good: Good, forceQuantity: Double? = null)
+    suspend fun addGoodToList(good: Good)
     suspend fun loadMaxTaskPositions()
 
     fun deleteSelectedGoods(materials: List<String>)
@@ -355,7 +356,7 @@ data class Good(
         val name: String,
         val defaultUnits: Uom,
         val units: Uom,
-        val defaultValue: Double = 0.0, // значение в граммах
+        var defaultValue: Double = 0.0, // значение в граммах
         var goodGroup: String,
         var purchaseGroup: String,
         val shelfLife: Int,
