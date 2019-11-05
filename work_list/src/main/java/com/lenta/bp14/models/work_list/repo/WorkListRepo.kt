@@ -35,11 +35,9 @@ class WorkListRepo @Inject constructor(
     override suspend fun getGoodByMaterial(material: String): Good? {
         return withContext(Dispatchers.IO) {
             getGoodInfoByMaterial(material)?.let { goodInfo ->
-                //TODO реализовать конвертацию грамм в килограммы. Учесть отправку отчетов
-                //val unitsCode = if (goodInfo.unitsCode == Uom.G.code) Uom.KG.code else goodInfo.unitsCode
-                val unitsCode = goodInfo.unitsCode
-                val unitsName = getUnitsName(unitsCode)
-                val ean = getEanByMaterialUnits(material, unitsCode)
+                val defaultUnits = Uom(code = goodInfo.unitsCode, name = getUnitsName(goodInfo.unitsCode))
+                val units = if (defaultUnits == Uom.G) Uom.KG else defaultUnits
+                val ean = getEanByMaterialUnits(material, defaultUnits.code)
                 val shelfLifeTypes = getShelfLifeTypes()
                 val comments = getWorkListComments()
 
@@ -47,10 +45,8 @@ class WorkListRepo @Inject constructor(
                         ean = ean,
                         material = material,
                         name = goodInfo.name,
-                        units = Uom(
-                                code = unitsCode,
-                                name = unitsName ?: ""
-                        ),
+                        defaultUnits = defaultUnits,
+                        units = units,
                         goodGroup = goodInfo.goodGroup,
                         purchaseGroup = goodInfo.purchaseGroup,
                         shelfLife = goodInfo.shelfLife,
@@ -75,29 +71,23 @@ class WorkListRepo @Inject constructor(
     }
 
     override suspend fun getGoodByEan(ean: String): Good? {
-        val scanCodeInfo = ScanCodeInfo(ean, null)
+        val scanCodeInfo = ScanCodeInfo(ean)
+
         return withContext(Dispatchers.IO) {
             getMaterialByEan(scanCodeInfo.eanNumberForSearch ?: ean)?.let { eanInfo ->
                 getGoodInfoByMaterial(eanInfo.materialNumber)?.let { goodInfo ->
-                    //TODO реализовать конвертацию грамм в килограммы. Учесть отправку отчетов
-                    //val unitsCode = if (goodInfo.unitsCode == Uom.G.code) Uom.KG.code else goodInfo.unitsCode
-                    val unitsCode = goodInfo.unitsCode
-                    val unitsName = getUnitsName(unitsCode)
+                    val defaultUnits = Uom(code = goodInfo.unitsCode, name = getUnitsName(goodInfo.unitsCode))
+                    val units = if (defaultUnits == Uom.G) Uom.KG else defaultUnits
                     val shelfLifeTypes = getShelfLifeTypes()
                     val comments = getWorkListComments()
-
-                    val quantity = scanCodeInfo.extractQuantityFromEan(
-                            eanInfo
-                    )
+                    val quantity = scanCodeInfo.getQuantity(defaultUnits)
 
                     return@withContext Good(
                             ean = scanCodeInfo.eanNumberForSearch,
                             material = eanInfo.materialNumber,
                             name = goodInfo.name,
-                            units = Uom(
-                                    code = unitsCode,
-                                    name = unitsName ?: ""
-                            ),
+                            defaultUnits = defaultUnits,
+                            units = units,
                             goodGroup = goodInfo.goodGroup,
                             purchaseGroup = goodInfo.purchaseGroup,
                             shelfLife = goodInfo.shelfLife,
@@ -164,9 +154,9 @@ class WorkListRepo @Inject constructor(
         }
     }
 
-    private suspend fun getUnitsName(code: String?): String? {
+    private suspend fun getUnitsName(code: String?): String {
         return withContext(Dispatchers.IO) {
-            return@withContext units.getUnitName(code)?.toLowerCase(Locale.getDefault())
+            return@withContext units.getUnitName(code)?.toLowerCase(Locale.getDefault()) ?: ""
         }
     }
 

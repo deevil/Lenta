@@ -353,6 +353,7 @@ data class Good(
         val ean: String?,
         val material: String,
         val name: String,
+        val defaultUnits: Uom,
         val units: Uom,
         val defaultValue: Double = 0.0,
         var goodGroup: String,

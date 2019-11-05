@@ -1,10 +1,11 @@
 package com.lenta.shared.requests.combined.scan_info
 
+import com.lenta.shared.models.core.Uom
 import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.requests.combined.scan_info.pojo.EanInfo
 import java.util.*
 
-class ScanCodeInfo(val originalNumber: String, val fixedQuantity: Double?) {
+class ScanCodeInfo(val originalNumber: String, val fixedQuantity: Double? = null) {
 
     val codeWithoutQuantity by lazy {
         "${originalNumber.dropLast(6)}000000"
@@ -13,6 +14,18 @@ class ScanCodeInfo(val originalNumber: String, val fixedQuantity: Double?) {
     val withQuantity by lazy {
         val prefix = originalNumber.take(2)
         originalNumber.length == 13 && (prefix in arrayOf("23", "24", "27", "28"))
+    }
+
+    private val prefix by lazy {
+        originalNumber.take(2)
+    }
+
+    private val withWeight by lazy {
+        originalNumber.length == 13 && (prefix in arrayOf("23", "24", "27", "28"))
+    }
+
+    private val withWeightInTens by lazy {
+        originalNumber.length == 13 && prefix == "27"
     }
 
     val isMaterialNumber: Boolean? by lazy {
@@ -69,6 +82,25 @@ class ScanCodeInfo(val originalNumber: String, val fixedQuantity: Double?) {
             }
             quantity = quantity * it.umrez / it.umren
         }
+        return quantity
+    }
+
+    fun getQuantity(defaultUnits: Uom): Double {
+        fixedQuantity?.let {
+            return it
+        }
+
+        var quantity = 1.0
+        if (withWeight) {
+            quantity = originalNumber.takeLast(6).let { tail ->
+                if (withWeightInTens) tail.dropLast(1) else tail
+            }.toDoubleOrNull() ?: 0.0
+
+            if (defaultUnits == Uom.G) {
+                quantity /= 1000
+            }
+        }
+
         return quantity
     }
 
