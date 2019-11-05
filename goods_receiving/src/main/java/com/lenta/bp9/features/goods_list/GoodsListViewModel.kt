@@ -262,4 +262,8 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
         screenNavigator.openAlertScreen(failure, pageNumber = "97")
     }
 
+    fun onBackPressed() {
+        screenNavigator.openTaskCardScreen(TaskCardMode.Full)
+    }
+
 }

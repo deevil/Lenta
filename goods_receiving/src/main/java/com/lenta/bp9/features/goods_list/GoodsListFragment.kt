@@ -16,6 +16,7 @@ import com.lenta.bp9.BR
 import com.lenta.bp9.databinding.*
 import com.lenta.shared.keys.KeyCode
 import com.lenta.shared.keys.OnKeyDownListener
+import com.lenta.shared.platform.activity.OnBackPresserListener
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.scan.OnScanResultListener
@@ -27,7 +28,8 @@ class GoodsListFragment : CoreFragment<FragmentGoodsListBinding, GoodsListViewMo
         ViewPagerSettings,
         OnScanResultListener,
         PageSelectionListener,
-        ToolbarButtonsClickListener {
+        ToolbarButtonsClickListener,
+        OnBackPresserListener {
 
     private var countedRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
 
@@ -187,6 +189,11 @@ class GoodsListFragment : CoreFragment<FragmentGoodsListBinding, GoodsListViewMo
     override fun onFragmentResult(arguments: Bundle) {
         super.onFragmentResult(arguments)
         vm.onResult(arguments.getFragmentResultCode())
+    }
+
+    override fun onBackPressed(): Boolean {
+        vm.onBackPressed()
+        return false
     }
 
 }
