@@ -9,6 +9,7 @@ import com.lenta.shared.functional.Either
 import com.lenta.shared.functional.map
 import com.lenta.shared.functional.rightToLeft
 import com.lenta.shared.interactor.UseCase
+import com.lenta.shared.models.core.Uom
 import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.requests.FmpRequestsHelper
 import com.lenta.shared.utilities.extentions.getFormattedDate
@@ -37,7 +38,7 @@ class WorkListSendReportNetRequest
                 checkResults.add(
                         CheckResult(
                                 matNr = good.material,
-                                quantity = result.quantity,
+                                quantity = if (good.defaultUnits == Uom.G) result.quantity * 1000 else result.quantity,
                                 commentCode = result.commentCode ?: "",
                                 producedDate = result.productionDate.getFormattedDate(Constants.DATE_FORMAT_yyyyMMdd),
                                 shelfLife = result.expirationDate.getFormattedDate(Constants.DATE_FORMAT_yyyyMMdd)
