@@ -55,7 +55,7 @@ class WorkListRepo @Inject constructor(
                         comments = comments,
                         options = GoodOptions(
                                 matrixType = getMatrixType(goodInfo.matrixType),
-                                section = goodInfo.section,
+                                section = if (goodInfo.section.isNotEmpty()) goodInfo.section else "91",
                                 goodType = getGoodType(
                                         alcohol = goodInfo.isAlcohol,
                                         excise = goodInfo.isExcise,
@@ -97,7 +97,7 @@ class WorkListRepo @Inject constructor(
                             defaultValue = quantity,
                             options = GoodOptions(
                                     matrixType = getMatrixType(goodInfo.matrixType),
-                                    section = goodInfo.section,
+                                    section = if (goodInfo.section.isNotEmpty()) goodInfo.section else "91",
                                     goodType = getGoodType(
                                             alcohol = goodInfo.isAlcohol,
                                             excise = goodInfo.isExcise,
