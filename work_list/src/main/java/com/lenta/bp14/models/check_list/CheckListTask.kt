@@ -163,7 +163,7 @@ data class Good(
         val name: String,
         val defaultUnits: Uom,
         val units: Uom,
-        val quantity: MutableLiveData<String>
+        val quantity: MutableLiveData<String> // значение в килограммах
 ) {
 
     fun getFormattedMaterialWithName(): String {

@@ -11,6 +11,7 @@ import com.lenta.shared.functional.Either
 import com.lenta.shared.functional.map
 import com.lenta.shared.functional.rightToLeft
 import com.lenta.shared.interactor.UseCase
+import com.lenta.shared.models.core.Uom
 import com.lenta.shared.requests.FmpRequestsHelper
 import com.lenta.shared.utilities.extentions.toSapBooleanString
 import javax.inject.Inject
@@ -22,12 +23,13 @@ class CheckListSendReportNetRequest
 
         val checkPositions = mutableListOf<Position>()
 
-        params.checksResults.forEach {
+        params.checksResults.forEach { good ->
+            val quantity = good.quantity.value?.toDoubleOrNull() ?: 0.0
             checkPositions.add(
                     Position(
-                            matNr = it.material,
+                            matNr = good.material,
                             isProcessed = true.toSapBooleanString(),
-                            quantity = it.quantity.value?.toDoubleOrNull() ?: 0.0
+                            quantity = if (good.defaultUnits == Uom.G) quantity * 1000 else quantity
                     )
             )
         }
@@ -65,18 +67,19 @@ data class CheckListReport(
 
 
 data class FmpReport(
+        /** IP адрес ТСД */
         @SerializedName("IV_IP")
         val ip: String,
-
+        /** Название задания */
         @SerializedName("IV_DESCR")
         val description: String,
-
+        /** Номер ТК */
         @SerializedName("IV_WERKS")
         val tkNumber: String,
-
+        /** Обработка задания не закончена */
         @SerializedName("IV_NOT_FINISH")
         val isNotFinished: String,
-
+        /** Таблица состава задания */
         @SerializedName("IT_TASK_POS")
         val positions: List<Position>
 )

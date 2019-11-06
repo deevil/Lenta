@@ -356,7 +356,7 @@ data class Good(
         val name: String,
         val defaultUnits: Uom,
         val units: Uom,
-        var defaultValue: Double = 0.0, // значение в граммах
+        var defaultValue: Double = 0.0, // значение в килограммах
         var goodGroup: String,
         var purchaseGroup: String,
         val shelfLife: Int,
@@ -468,7 +468,7 @@ data class Delivery(
 // -----------------------------
 
 data class ScanResult(
-        val quantity: Double, // значение в граммах
+        val quantity: Double, // значение в килограммах
         val commentCode: String? = null,
         val comment: String,
         val productionDate: Date?,
