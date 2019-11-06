@@ -9,6 +9,7 @@ import com.lenta.shared.functional.Either
 import com.lenta.shared.functional.map
 import com.lenta.shared.functional.rightToLeft
 import com.lenta.shared.interactor.UseCase
+import com.lenta.shared.models.core.Uom
 import com.lenta.shared.requests.FmpRequestsHelper
 import com.lenta.shared.utilities.extentions.toSapBooleanString
 import javax.inject.Inject
@@ -22,6 +23,7 @@ class NotExposedSendReportNetRequest
         val checkPositions = mutableListOf<Position>()
 
         params.checksResults.forEach {
+            val quantity = it.quantity ?: 0.0
 
             checkPlaces.add(
                     CheckPlace(
@@ -38,7 +40,7 @@ class NotExposedSendReportNetRequest
                     Position(
                             matNr = it.matNr,
                             isProcessed = true.toSapBooleanString(),
-                            quantity = it.quantity ?: 0.0
+                            quantity = if (it.defaultUnits == Uom.G) quantity * 1000 else quantity
                     )
             )
         }
@@ -86,7 +88,6 @@ data class NotExposedReport(
         val checksResults: List<NotExposedProductInfo>,
         val notProcessed: List<NotExposedProductInfo>
 )
-
 
 data class SapReport(
         @SerializedName("IV_DESCR")
