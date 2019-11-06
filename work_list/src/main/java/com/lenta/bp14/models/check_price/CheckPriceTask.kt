@@ -282,13 +282,10 @@ class CheckPriceTask @Inject constructor(
     }
 
     override suspend fun getActualPriceByEan(eanCode: String): Either<Failure, ActualPriceInfo> {
-        val scanCodeInfo = ScanCodeInfo(
-                originalNumber = eanCode,
-                fixedQuantity = null
-        )
+        val scanCodeInfo = ScanCodeInfo(eanCode)
         return actualPricesRepo.getActualPriceInfoByEan(
                 tkNumber = taskDescription.tkNumber,
-                eanCode = scanCodeInfo.eanNumberForSearch ?: eanCode
+                eanCode = scanCodeInfo.eanWithoutWeight
         ).rightToLeft(
                 fnRtoL = checksForAddFunc
         )

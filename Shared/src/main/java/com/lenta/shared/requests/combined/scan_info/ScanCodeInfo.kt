@@ -3,18 +3,10 @@ package com.lenta.shared.requests.combined.scan_info
 import com.lenta.shared.models.core.Uom
 import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.requests.combined.scan_info.pojo.EanInfo
+import java.lang.Long.parseLong
 import java.util.*
 
 class ScanCodeInfo(val originalNumber: String, val fixedQuantity: Double? = null) {
-
-    val codeWithoutQuantity by lazy {
-        "${originalNumber.dropLast(6)}000000"
-    }
-
-    val withQuantity by lazy {
-        val prefix = originalNumber.take(2)
-        originalNumber.length == 13 && (prefix in arrayOf("23", "24", "27", "28"))
-    }
 
     private val prefix by lazy {
         originalNumber.take(2)
@@ -28,45 +20,29 @@ class ScanCodeInfo(val originalNumber: String, val fixedQuantity: Double? = null
         withWeight && prefix == "27"
     }
 
-    private val weight: Double by lazy {
+    private val quantity: Double by lazy {
         if (withWeight) {
-            originalNumber.takeLast(6).let { tail ->
-                if (withWeightInTens) tail.dropLast(1) else tail
-            }.toDoubleOrNull() ?: 0.0
-        } else {
-            1.0
-        }
+            originalNumber.takeLast(6).dropLast(1).toDoubleOrNull() ?: 0.0.let { weight ->
+                if (withWeightInTens) weight * 10 else weight
+            }
+        } else 1.0
     }
 
     val eanWithoutWeight: String by lazy {
         if (withWeight) "${originalNumber.dropLast(6)}000000" else originalNumber
     }
 
-    val isMaterialNumber: Boolean? by lazy {
-        originalNumber.length == 6 || originalNumber.length == 18
-    }
-
-    val isUnknownNumber: Boolean by lazy {
-        isMaterialNumber == null
+    private val isMaterialNumber: Boolean by lazy {
+        originalNumber.length.let { it == 6 || it == 18 }
     }
 
     val eanNumberForSearch: String? by lazy {
-        if (isUnknownNumber) {
-            null
-        } else if (isMaterialNumber == false) {
-            if (withQuantity) {
-                codeWithoutQuantity
-            } else {
-                originalNumber
-            }
-        } else {
-            null
-        }
+        if (!isMaterialNumber) eanWithoutWeight else null
     }
 
     val materialNumberForSearch: String? by lazy {
-        if (isMaterialNumber == true) {
-            String.format(Locale.US, "%018d", java.lang.Long.parseLong(originalNumber))
+        if (isMaterialNumber) {
+            String.format(Locale.US, "%018d", parseLong(originalNumber))
         } else {
             null
         }
@@ -77,7 +53,7 @@ class ScanCodeInfo(val originalNumber: String, val fixedQuantity: Double? = null
         if (originalNumber.length == 6 || originalNumber.length == 8
                 || originalNumber.length == 12 || originalNumber.length == 13
                 || originalNumber.length == 14 || originalNumber.length == 16
-                || isMaterialNumber == true) {
+                || isMaterialNumber) {
             res = true
         } else if (originalNumber.length > 16) {
             res = isEAN128Valid(originalNumber)
@@ -100,7 +76,7 @@ class ScanCodeInfo(val originalNumber: String, val fixedQuantity: Double? = null
     }
 
     fun getQuantity(defaultUnits: Uom): Double {
-        return if (defaultUnits == Uom.G) weight / 1000 else weight
+        return if (defaultUnits == Uom.G) quantity / 1000 else quantity
     }
 
     private fun isEAN128Valid(code: String): Boolean {
