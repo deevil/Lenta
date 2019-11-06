@@ -58,13 +58,6 @@ class SelectPersonnelNumberViewModel : CoreViewModel(), OnOkInSoftKeyboardListen
         }
     }
 
-    override fun handleFailure(failure: Failure) {
-        Logg.d { "test_ddi" }
-        //super.handleFailure(failure)
-        //screenNavigator.openAlertWrongProductType()
-        //selectPersonnelNumberDelegate.handleFailure(failure)
-    }
-
     override fun onOkInSoftKeyboard(): Boolean {
         return selectPersonnelNumberDelegate.onOkInSoftKeyboard()
     }
