@@ -73,8 +73,9 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/div_vert"
             app:layout_constraintTop_toTopOf="@+id/div_vert"
+            app:maxLengthForScanProtect="@{6}"
             app:suffix="@{vm.suffix}"
-            tools:text="1"/>
+            tools:text="1" />
 
         <View
             android:id="@+id/div_hor2"
@@ -175,6 +176,7 @@
 
         <TextView
             android:id="@+id/tv_section"
+            style="@style/NumberSectionTxt"
             android:layout_width="36sp"
             android:layout_height="36sp"
             android:layout_marginStart="16dp"
@@ -182,7 +184,6 @@
             android:layout_marginBottom="24dp"
             android:clickable="true"
             android:focusable="true"
-            style="@style/NumberSectionTxt"
             android:foreground="?selectableItemBackground"
             android:gravity="center"
             android:onClick="@{(v) -> vm.screenNavigator.openSectionInfoScreen(vm.productInfo.sectionId)}"

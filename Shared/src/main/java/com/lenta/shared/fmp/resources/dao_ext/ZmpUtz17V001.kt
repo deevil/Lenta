@@ -30,3 +30,19 @@ fun ZmpUtz17V001.getItemsByTidSorted(tid: String): MutableList<ZmpUtz17V001.Item
 fun List<ZmpUtz17V001.ItemLocal_ET_DICT>.toDescriptionsList(): List<String> {
     return this.map { it.shtxt }
 }
+
+fun List<ZmpUtz17V001.ItemLocal_ET_DICT>.toElementList(): List<DictElement> {
+    return this.map {
+        DictElement(
+                code = it.code,
+                order = it.sorder,
+                description = it.shtxt
+        )
+    }
+}
+
+data class DictElement(
+        val code: String,
+        val order: String,
+        val description: String
+)

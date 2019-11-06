@@ -67,12 +67,13 @@
             android:ellipsize="end"
             android:inputType="numberDecimal"
             android:maxLines="1"
-            app:requestFocus="@{vm.editTextFocus}"
             android:text="@={vm.count}"
             app:digitsForUom="@{vm.setProductInfo.uom}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/div_vert"
             app:layout_constraintTop_toTopOf="@+id/div_vert"
+            app:maxLengthForScanProtect="@{6}"
+            app:requestFocus="@{vm.editTextFocus}"
             app:suffix="@{vm.suffix}"
             tools:text="1" />
 
@@ -171,15 +172,15 @@
 
         <TextView
             android:id="@+id/tv_section"
+            style="@style/NumberSectionTxt"
             android:layout_width="36sp"
             android:layout_height="36sp"
             android:layout_marginStart="16dp"
             android:layout_marginTop="8dp"
             android:layout_marginBottom="24dp"
             android:gravity="center"
-            style="@style/NumberSectionTxt"
-            android:text='@{"" + vm.setProductInfo.sectionId}'
             android:onClick="@{(v) -> vm.screenNavigator.openSectionInfoScreen(vm.setProductInfo.sectionId)}"
+            android:text='@{"" + vm.setProductInfo.sectionId}'
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@+id/tv_matrix"
             app:layout_constraintTop_toTopOf="@+id/div_hor4"

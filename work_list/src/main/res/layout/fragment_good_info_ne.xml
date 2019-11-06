@@ -39,7 +39,6 @@
                 android:background="@color/colorBottomPanelBackground"
                 android:elevation="0dp"
                 android:textSize="15sp"
-                app:tabBackground="?selectableItemBackground"
                 app:tabIndicatorColor="@color/colorTabIndicator"
                 app:tabIndicatorHeight="4dp"
                 app:tabMode="scrollable"
@@ -114,8 +113,8 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:background="?selectableItemBackground"
-                android:src="@drawable/ic_new_48dp"
                 android:onClick="@{(v) -> vm.navigator.openPictogrammInfoNova()}"
+                android:src="@drawable/ic_new_48dp"
                 app:invisible="@{!vm.productParamsUi.new}" />
 
             <ImageButton
@@ -124,8 +123,8 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:background="?selectableItemBackground"
-                android:src="@drawable/ic_natural_48dp"
                 android:onClick="@{(v) -> vm.navigator.openPictogrammInfoHealthyFood()}"
+                android:src="@drawable/ic_natural_48dp"
                 app:invisible="@{!vm.productParamsUi.healthyFood}" />
 
             <ImageButton
@@ -134,10 +133,10 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="4dp"
                 android:layout_weight="1"
-                android:visibility="invisible"
                 android:background="?selectableItemBackground"
                 android:onClick="@{(v) -> vm.navigator.openESInfoScreen()}"
-                android:src="@drawable/ic_scan_qrcode_48dp" />
+                android:src="@drawable/ic_scan_qrcode_48dp"
+                android:visibility="invisible" />
 
             <ImageButton
                 android:id="@+id/btn_7"

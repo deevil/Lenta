@@ -50,7 +50,7 @@
                     <com.lenta.shared.view.EditTextWithSuffix
                         style="@style/CellEditTextStyle"
                         android:inputType="numberDecimal"
-                        android:enabled="@{vm.quantityFieldEnabled}"
+                        app:maxLengthForScanProtect="@{6}"
                         android:maxLines="1"
                         android:text="@={vm.quantity}"
                         app:digitsForUom="@{vm.good.units}"
@@ -258,8 +258,7 @@
 
                     <TextView
                         style="@style/CellTextStyle"
-                        android:text="@{vm.common.remainingDays}"
-                        app:invisible="@{!vm.remainingDaysFieldVisibility}"
+                        android:text="@{vm.common.remainingShelfLife}"
                         tools:text="5 сут." />
 
                 </LinearLayout>

@@ -6,14 +6,15 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.Observer
 import com.lenta.bp14.BR
 import com.lenta.bp14.R
 import com.lenta.bp14.databinding.*
 import com.lenta.bp14.di.WorkListComponent
+import com.lenta.bp14.models.data.GoodsListTab
 import com.lenta.shared.di.CoreInjectHelper
 import com.lenta.shared.keys.KeyCode
 import com.lenta.shared.keys.OnKeyDownListener
-import com.lenta.shared.platform.activity.OnBackPresserListener
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
@@ -54,20 +55,27 @@ class GoodsListWlFragment : CoreFragment<FragmentGoodsListWlBinding, GoodsListWl
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
-        bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.delete)
-        bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.filter)
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.save)
 
-        connectLiveData(vm.deleteButtonVisibility, getBottomToolBarUIModel()!!.uiModelButton3.visibility)
-        connectLiveData(vm.deleteButtonEnabled, getBottomToolBarUIModel()!!.uiModelButton3.enabled)
-        connectLiveData(vm.filterButtonVisibility, getBottomToolBarUIModel()!!.uiModelButton3.visibility)
-        connectLiveData(vm.filterButtonEnabled, getBottomToolBarUIModel()!!.uiModelButton3.enabled)
+        viewLifecycleOwner.apply {
+            vm.selectedPage.observe(this, Observer {
+                if (vm.getCorrectedPagePosition(it) == GoodsListTab.SEARCH.position) {
+                    bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.filter)
+                } else {
+                    bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.delete)
+                }
+            })
+        }
+
+        connectLiveData(vm.middleButtonEnabled, getBottomToolBarUIModel()!!.uiModelButton3.enabled)
     }
 
     override fun onToolbarButtonClick(view: View) {
         when (view.id) {
-            R.id.b_3 -> vm.onClickDelete()
-            R.id.b_4 -> vm.onClickFilter()
+            R.id.b_3 -> {
+                if (vm.getCorrectedPagePosition(vm.selectedPage.value) == GoodsListTab.SEARCH.position) vm.onClickFilter()
+                else vm.onClickDelete()
+            }
             R.id.b_5 -> vm.onClickSave()
         }
     }
@@ -174,13 +182,6 @@ class GoodsListWlFragment : CoreFragment<FragmentGoodsListWlBinding, GoodsListWl
                 container,
                 false).let { layoutBinding ->
 
-            val onClickSelectionListener = View.OnClickListener {
-                (it!!.tag as Int).let { position ->
-                    vm.searchSelectionsHelper.revert(position = position)
-                    layoutBinding.rv.adapter?.notifyItemChanged(position)
-                }
-            }
-
             layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
                     layoutId = R.layout.item_wl_search_list,
                     itemId = BR.good,
@@ -189,9 +190,6 @@ class GoodsListWlFragment : CoreFragment<FragmentGoodsListWlBinding, GoodsListWl
                         }
 
                         override fun onBind(binding: ItemWlSearchListBinding, position: Int) {
-                            binding.tvItemNumber.tag = position
-                            binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
-                            binding.selectedForDelete = vm.searchSelectionsHelper.isSelected(position)
                             searchRecyclerViewKeyHandler?.let {
                                 binding.root.isSelected = it.isSelected(position)
                             }

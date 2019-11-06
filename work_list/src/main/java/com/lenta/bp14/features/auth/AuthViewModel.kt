@@ -71,18 +71,12 @@ class AuthViewModel : CoreAuthViewModel() {
                 sessionInfo.userName = login
                 sessionInfo.basicAuth = getBaseAuth(login, getPassword())
                 appSettings.lastLogin = login
-                if (sessionInfo.isAuthSkipped.value != true) {
-                    userPermissionsNetRequest(PermissionsRequestParams(
-                            userName = login
-                    )).either(::handleFailure) {
-                        repoInMemoryHolder.storesRequestResult = it
-                        onAuthSuccess(login)
-                    }
-                } else {
+                userPermissionsNetRequest(PermissionsRequestParams(
+                        userName = login
+                )).either(::handleFailure) {
+                    repoInMemoryHolder.storesRequestResult = it
                     onAuthSuccess(login)
                 }
-
-
             }
 
         }

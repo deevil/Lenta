@@ -13,10 +13,7 @@ import com.lenta.bp14.models.general.IGeneralRepo
 import com.lenta.bp14.models.general.ITaskTypeInfo
 import com.lenta.bp14.models.not_exposed_products.repo.NotExposedProductInfo
 import com.lenta.bp14.models.not_exposed_products.repo.INotExposedProductsRepo
-import com.lenta.bp14.requests.not_exposed_product.GoodInfo
-import com.lenta.bp14.requests.not_exposed_product.IProductInfoForNotExposedNetRequest
-import com.lenta.bp14.requests.not_exposed_product.NotExposedInfoRequestParams
-import com.lenta.bp14.requests.not_exposed_product.NotExposedReport
+import com.lenta.bp14.requests.not_exposed_product.*
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.functional.Either
 import com.lenta.shared.functional.rightToLeft
@@ -101,9 +98,9 @@ class NotExposedProductsTask @Inject constructor(
     }
 
 
-    private var processedGoodInfo: GoodInfo? = null
+    private var processedGoodInfo: GoodInfoWithQuantity? = null
 
-    override fun getProcessedProductInfoResult(): GoodInfo? {
+    override fun getProcessedProductInfoResult(): GoodInfoWithQuantity? {
         return processedGoodInfo
     }
 
@@ -130,13 +127,13 @@ class NotExposedProductsTask @Inject constructor(
             notExposedProductsRepo.addOrReplaceProduct(
                     NotExposedProductInfo(
                             ean = null,
-                            matNr = it.productInfo.matNr,
-                            name = it.productInfo.name,
+                            matNr = it.goodInfo.productInfo.matNr,
+                            name = it.goodInfo.productInfo.name,
                             quantity = quantity,
-                            uom = it.uom,
+                            uom = it.goodInfo.uom,
                             isEmptyPlaceMarked = isEmptyPlaceMarked,
-                            section = it.productInfo.sectionNumber,
-                            group = it.productInfo.matKL
+                            section = it.goodInfo.productInfo.sectionNumber,
+                            group = it.goodInfo.productInfo.matKL
                     )
             )
         }
@@ -190,10 +187,10 @@ class NotExposedProductsTask @Inject constructor(
     }
 
     override fun getProcessedCheckInfo(): NotExposedProductInfo? {
-        return getProducts().value?.firstOrNull { it.matNr == processedGoodInfo?.productInfo?.matNr }
+        return getProducts().value?.firstOrNull { it.matNr == processedGoodInfo?.goodInfo?.productInfo?.matNr }
     }
 
-    override suspend fun getProductInfoAndSetProcessed(ean: String?, matNr: String?): Either<Failure, GoodInfo> {
+    override suspend fun getProductInfoAndSetProcessed(ean: String?, matNr: String?, quantity: Double): Either<Failure, GoodInfo> {
         return productInfoNotExposedInfoRequest(
                 NotExposedInfoRequestParams(
                         ean = ean,
@@ -205,7 +202,7 @@ class NotExposedProductsTask @Inject constructor(
             if (!isAllowedProduct(goodInfo.productInfo.matNr)) {
                 Failure.InvalidProductForTask
             } else {
-                processedGoodInfo = goodInfo
+                processedGoodInfo = GoodInfoWithQuantity(goodInfo, quantity)
                 null
             }
         }
@@ -289,7 +286,7 @@ class NotExposedProductsTask @Inject constructor(
 
 interface INotExposedProductsTask : ITask, IFilterable {
 
-    fun getProcessedProductInfoResult(): GoodInfo?
+    fun getProcessedProductInfoResult(): GoodInfoWithQuantity?
 
     fun getToProcessingProducts(): LiveData<List<NotExposedProductInfo>>
 
@@ -303,7 +300,7 @@ interface INotExposedProductsTask : ITask, IFilterable {
 
     fun getProcessedCheckInfo(): NotExposedProductInfo?
 
-    suspend fun getProductInfoAndSetProcessed(ean: String? = null, matNr: String? = null): Either<Failure, GoodInfo>
+    suspend fun getProductInfoAndSetProcessed(ean: String?, matNr: String?, quantity: Double): Either<Failure, GoodInfo>
 
     fun getReportData(ip: String): NotExposedReport
 

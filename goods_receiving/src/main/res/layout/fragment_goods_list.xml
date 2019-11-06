@@ -32,7 +32,6 @@
             android:background="@color/colorBottomPanelBackground"
             android:elevation="0dp"
             android:textSize="15sp"
-            app:tabBackground="?selectableItemBackground"
             app:tabIndicatorColor="@color/colorTabIndicator"
             app:tabIndicatorHeight="4dp"
             app:tabMode="scrollable"

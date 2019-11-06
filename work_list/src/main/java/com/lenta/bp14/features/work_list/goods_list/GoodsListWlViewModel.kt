@@ -40,7 +40,6 @@ class GoodsListWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
 
 
     val processedSelectionsHelper = SelectionItemsHelper()
-    val searchSelectionsHelper = SelectionItemsHelper()
 
     val selectedPage = MutableLiveData(0)
     val correctedSelectedPage = selectedPage.map { getCorrectedPagePosition(it) }
@@ -76,34 +75,20 @@ class GoodsListWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
         task.getSearchList().map(toUiFunc)
     }
 
-    private val selectedItemOnCurrentTab: MutableLiveData<Boolean> = selectedPage
+    val middleButtonEnabled: MutableLiveData<Boolean> = correctedSelectedPage
             .combineLatest(processedSelectionsHelper.selectedPositions)
             .map {
-                val tab = it?.first?.toInt()
-                val processedSelected = it?.second?.isNotEmpty() == true
-                tab == GoodsListTab.PROCESSED.position && processedSelected || tab == GoodsListTab.SEARCH.position
+                val tab = it?.first
+                val isItemsSelected = it?.second?.isNotEmpty() ?: false
+
+                tab == GoodsListTab.PROCESSED.position && isItemsSelected || tab == GoodsListTab.SEARCH.position
             }
-
-    val deleteButtonVisibility by lazy {
-        correctedSelectedPage.map { it == GoodsListTab.PROCESSED.position }
-    }
-
-    val deleteButtonEnabled by lazy {
-        selectedItemOnCurrentTab.map { it }
-    }
-
-    val filterButtonVisibility by lazy {
-        selectedPage.map { it != GoodsListTab.PROCESSING.position }
-    }
-
-    val filterButtonEnabled by lazy {
-        task.goods.map { it?.size ?: 0 > 1 }
-    }
 
     // -----------------------------
 
     init {
         viewModelScope.launch {
+            task.loadMaxTaskPositions()
             if (!task.isLoadedTaskList) task.loadTaskList()
             if (!task.isEmpty()) task.currentGood.value = task.goods.value?.get(0)
 
@@ -174,7 +159,7 @@ class GoodsListWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
         )
     }
 
-    private fun searchCode(ean: String? = null, material: String? = null) {
+    private fun searchCode(ean: String? = null, material: String? = null, byClickItem: Boolean = false) {
         viewModelScope.launch {
             require((ean != null) xor (material != null)) {
                 "Only one param allowed - ean: $ean, material: $material"
@@ -192,7 +177,7 @@ class GoodsListWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
                 if (task.getDescription().isStrictList && !task.isGoodFromTask(good)) {
                     navigator.showGoodIsNotPartOfTask()
                 } else {
-                    task.addGoodToList(good)
+                    task.addGoodToList(good, if (byClickItem) 0.0 else null)
                     navigator.openGoodInfoWlScreen()
                 }
                 return@launch
@@ -213,7 +198,7 @@ class GoodsListWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
             2 -> searchGoods.value?.get(position)?.material
             else -> null
         }?.let { material ->
-            searchCode(material = material)
+            searchCode(material = material, byClickItem = true)
         }
     }
 

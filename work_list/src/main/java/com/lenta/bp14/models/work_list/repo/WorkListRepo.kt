@@ -13,6 +13,9 @@ import com.lenta.shared.fmp.resources.slow.ZfmpUtz48V001
 import com.lenta.shared.fmp.resources.slow.ZmpUtz25V001
 import com.lenta.shared.models.core.Uom
 import com.lenta.shared.models.core.getMatrixType
+import com.lenta.shared.requests.combined.scan_info.ScanCodeInfo
+import com.lenta.shared.requests.combined.scan_info.pojo.EanInfo
+import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.isSapTrue
 import com.mobrun.plugin.api.HyperHive
 import kotlinx.coroutines.Dispatchers
@@ -33,12 +36,16 @@ class WorkListRepo @Inject constructor(
     override suspend fun getGoodByMaterial(material: String): Good? {
         return withContext(Dispatchers.IO) {
             getGoodInfoByMaterial(material)?.let { goodInfo ->
-                val unitsCode = if (goodInfo.unitsCode == Uom.G.code) Uom.KG.code else goodInfo.unitsCode
+                val ean = getEanByMaterial(material)
+                //TODO реализовать конвертацию грамм в килограммы. Учесть отправку отчетов
+                //val unitsCode = if (goodInfo.unitsCode == Uom.G.code) Uom.KG.code else goodInfo.unitsCode
+                val unitsCode = goodInfo.unitsCode
                 val unitsName = getUnitsName(unitsCode)
                 val shelfLifeTypes = getShelfLifeTypes()
                 val comments = getWorkListComments()
 
                 return@withContext Good(
+                        ean = ean,
                         material = material,
                         name = goodInfo.name,
                         units = Uom(
@@ -49,7 +56,7 @@ class WorkListRepo @Inject constructor(
                         purchaseGroup = goodInfo.purchaseGroup,
                         shelfLife = goodInfo.shelfLife,
                         remainingShelfLife = goodInfo.remainingShelfLife,
-                        shelfLifeType = shelfLifeTypes,
+                        shelfLifeTypes = shelfLifeTypes,
                         comments = comments,
                         options = GoodOptions(
                                 matrixType = getMatrixType(goodInfo.matrixType),
@@ -69,11 +76,52 @@ class WorkListRepo @Inject constructor(
     }
 
     override suspend fun getGoodByEan(ean: String): Good? {
-        getMaterialByEan(ean)?.let { material ->
-            return getGoodByMaterial(material)
-        }
+        val scanCodeInfo = ScanCodeInfo(ean, null)
+        return withContext(Dispatchers.IO) {
+            getMaterialByEan(scanCodeInfo.eanNumberForSearch ?: ean)?.let { eanInfo ->
+                getGoodInfoByMaterial(eanInfo.materialNumber)?.let { goodInfo ->
+                    //TODO реализовать конвертацию грамм в килограммы. Учесть отправку отчетов
+                    //val unitsCode = if (goodInfo.unitsCode == Uom.G.code) Uom.KG.code else goodInfo.unitsCode
+                    val unitsCode = goodInfo.unitsCode
+                    val unitsName = getUnitsName(unitsCode)
+                    val shelfLifeTypes = getShelfLifeTypes()
+                    val comments = getWorkListComments()
 
-        return null
+                    val quantity = scanCodeInfo.extractQuantityFromEan(
+                            eanInfo
+                    )
+
+                    return@withContext Good(
+                            ean = scanCodeInfo.eanNumberForSearch,
+                            material = eanInfo.materialNumber,
+                            name = goodInfo.name,
+                            units = Uom(
+                                    code = unitsCode,
+                                    name = unitsName ?: ""
+                            ),
+                            goodGroup = goodInfo.goodGroup,
+                            purchaseGroup = goodInfo.purchaseGroup,
+                            shelfLife = goodInfo.shelfLife,
+                            remainingShelfLife = goodInfo.remainingShelfLife,
+                            shelfLifeTypes = shelfLifeTypes,
+                            comments = comments,
+                            defaultValue = quantity,
+                            options = GoodOptions(
+                                    matrixType = getMatrixType(goodInfo.matrixType),
+                                    section = goodInfo.section,
+                                    goodType = getGoodType(
+                                            alcohol = goodInfo.isAlcohol,
+                                            excise = goodInfo.isExcise,
+                                            marked = goodInfo.isMark),
+                                    healthFood = goodInfo.healthFood.isSapTrue(),
+                                    novelty = goodInfo.novelty.isSapTrue()
+                            )
+                    )
+                }
+            }
+
+            return@withContext null
+        }
     }
 
     override suspend fun getGoodInfoByMaterial(material: String?): WorkListGoodInfo? {
@@ -82,24 +130,37 @@ class WorkListRepo @Inject constructor(
         }
     }
 
-    override suspend fun getMaterialByEan(ean: String?): String? {
+    private suspend fun getMaterialByEan(ean: String?): EanInfo? {
         return withContext(Dispatchers.IO) {
-            return@withContext eanInfo.getEanInfo(ean)?.toEanInfo()?.materialNumber
+            return@withContext eanInfo.getEanInfo(ean)?.toEanInfo()
         }
     }
 
-    private suspend fun getShelfLifeTypes(): List<String> {
+    override suspend fun getEanByMaterial(material: String?): String? {
         return withContext(Dispatchers.IO) {
-            return@withContext dictonary.getItemsByTid("007")?.toDescriptionsList()
-                    ?: emptyList() // 007 - Типы сроков годности
+            return@withContext eanInfo.getEanInfoFromMaterial(material)?.toEanInfo()?.ean
         }
     }
 
-    private suspend fun getWorkListComments(): List<String> {
+    private suspend fun getShelfLifeTypes(): List<DictElement> {
         return withContext(Dispatchers.IO) {
-            val comments = dictonary.getItemsByTid("019")?.toDescriptionsList()?.toMutableList()
+            val selfLives = dictonary.getItemsByTid("007")?.toElementList()?.toMutableList()
+                    ?: mutableListOf() // 007 - Типы сроков годности
+            selfLives.sortBy { it.order }
+            return@withContext selfLives
+        }
+    }
+
+    private suspend fun getWorkListComments(): List<DictElement> {
+        return withContext(Dispatchers.IO) {
+            val comments = dictonary.getItemsByTid("019")?.toElementList()?.toMutableList()
                     ?: mutableListOf() // 019 - Комментарии
-            comments.add(0, "Не выбран")
+            comments.add(0, DictElement(
+                    code = "0",
+                    order = "0",
+                    description = "Не выбран"
+            ))
+            comments.sortBy { it.order }
             return@withContext comments
         }
     }
@@ -110,18 +171,11 @@ class WorkListRepo @Inject constructor(
         }
     }
 
-    override suspend fun getMaxQuantity(): Double? {
-        return withContext(Dispatchers.IO) {
-            return@withContext settings.getMaxQuantityProdWkl()
-        }
-    }
-
 }
 
 interface IWorkListRepo {
     suspend fun getGoodByMaterial(material: String): Good?
     suspend fun getGoodByEan(ean: String): Good?
     suspend fun getGoodInfoByMaterial(material: String?): WorkListGoodInfo?
-    suspend fun getMaterialByEan(ean: String?): String?
-    suspend fun getMaxQuantity(): Double?
+    suspend fun getEanByMaterial(material: String?): String?
 }

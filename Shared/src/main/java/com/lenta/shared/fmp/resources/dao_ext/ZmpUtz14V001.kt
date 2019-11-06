@@ -51,7 +51,7 @@ fun ZmpUtz14V001.getAllowedMatTypesINV(): List<String> {
     return getParams("INV_MATTYPE_USED")
 }
 
-fun ZmpUtz14V001.getMaxQuantityProdWkl(): Double? {
+fun ZmpUtz14V001.getMaxPositionsProdWkl(): Double? {
     return getParams("WKL_MAX_PROD_QNT").getOrNull(0)?.toDoubleOrNull()
 }
 

@@ -95,5 +95,13 @@ class AnalyticsHelper(
         analytics.logTrace(message = "Переход к предыдущему экрану")
     }
 
+    fun logPrintDatamaxRequest(address: String, data: String) {
+        analytics.logTrace(message = "Печать на DataMax. address: $address, data: $data")
+    }
+
+    fun logPrintDatamaxResponce(code: Int, data: String) {
+        analytics.logTrace(message = "Ответ от DataMax. Код ответа: $code, data: $data")
+    }
+
 
 }

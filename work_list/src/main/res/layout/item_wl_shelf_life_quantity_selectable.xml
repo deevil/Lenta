@@ -53,6 +53,7 @@
                 <TextView
                     style="@style/CellTextStyle"
                     android:text="@{shelfLife.expirationDate}"
+                    android:visibility="@{shelfLife.expirationDateVisibility}"
                     tools:text="СГ - 12.11.13" />
 
                 <TextView

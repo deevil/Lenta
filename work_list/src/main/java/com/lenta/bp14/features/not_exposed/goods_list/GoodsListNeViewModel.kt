@@ -15,7 +15,12 @@ import com.lenta.bp14.models.not_exposed_products.INotExposedProductsTask
 import com.lenta.bp14.models.not_exposed_products.repo.NotExposedProductInfo
 import com.lenta.bp14.platform.navigation.IScreenNavigator
 import com.lenta.bp14.requests.not_exposed_product.NotExposedSendReportNetRequest
+import com.lenta.shared.account.ISessionInfo
+import com.lenta.shared.exception.Failure
 import com.lenta.shared.platform.device_info.DeviceInfo
+import com.lenta.shared.requests.combined.scan_info.ScanInfoRequest
+import com.lenta.shared.requests.combined.scan_info.ScanInfoRequestParams
+import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
 import com.lenta.shared.requests.combined.scan_info.analyseCode
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.SelectionItemsHelper
@@ -46,6 +51,12 @@ class GoodsListNeViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
 
     @Inject
     lateinit var priceInfoParser: IPriceInfoParser
+
+    @Inject
+    lateinit var scanInfoRequest: ScanInfoRequest
+
+    @Inject
+    lateinit var sessionInfo: ISessionInfo
 
     val onOkFilterListener = object : OnOkInSoftKeyboardListener {
         override fun onOkInSoftKeyboard(): Boolean {
@@ -167,7 +178,45 @@ class GoodsListNeViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
         require((!eanCode.isNullOrBlank() xor !matNr.isNullOrBlank()))
         viewModelScope.launch {
             navigator.showProgressLoadingData()
-            task.getProductInfoAndSetProcessed(ean = eanCode, matNr = matNr).either(
+
+            var scanInfoResult: ScanInfoResult? = null
+
+            if (eanCode != null) {
+
+                var failureScanInfoRequest: Failure? = null
+
+                scanInfoRequest(
+                        ScanInfoRequestParams(
+                                number = eanCode,
+                                fromScan = true,
+                                isBarCode = true,
+                                tkNumber = sessionInfo.market!!
+                        )
+                ).either(
+                        fnL = {
+                            failureScanInfoRequest = it
+                            true
+                        }
+                ) {
+                    scanInfoResult = it
+                    true
+                }
+
+                failureScanInfoRequest?.let {
+                    navigator.openAlertScreen(it)
+                    return@launch
+                }
+
+            }
+
+
+
+            task.getProductInfoAndSetProcessed(
+                    matNr = scanInfoResult?.productInfo?.materialNumber
+                            ?: matNr,
+                    quantity = scanInfoResult?.quantity ?: 0.0,
+                    ean = null
+            ).either(
                     {
                         navigator.openAlertScreen(failure = it)
                     }

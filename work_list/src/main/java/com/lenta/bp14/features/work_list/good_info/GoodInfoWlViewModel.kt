@@ -10,7 +10,10 @@ import com.lenta.bp14.models.work_list.ScanResult
 import com.lenta.bp14.models.work_list.WorkListTask
 import com.lenta.bp14.platform.navigation.IScreenNavigator
 import com.lenta.bp14.requests.pojo.MarkStatus
-import com.lenta.bp14.requests.work_list.*
+import com.lenta.bp14.requests.work_list.AdditionalGoodInfoParams
+import com.lenta.bp14.requests.work_list.CheckMarkParams
+import com.lenta.bp14.requests.work_list.IAdditionalGoodInfoNetRequest
+import com.lenta.bp14.requests.work_list.ICheckMarkNetRequest
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.models.core.MatrixType
@@ -18,12 +21,14 @@ import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.analyseCode
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.databinding.PageSelectionListener
-import com.lenta.shared.utilities.extentions.*
+import com.lenta.shared.utilities.extentions.combineLatest
+import com.lenta.shared.utilities.extentions.dropZeros
+import com.lenta.shared.utilities.extentions.map
+import com.lenta.shared.utilities.extentions.sumWith
 import com.lenta.shared.view.OnPositionClickListener
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
-import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
@@ -57,8 +62,6 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
     val commentsPosition = MutableLiveData(0)
     val shelfLifeTypePosition = MutableLiveData(0)
 
-    private val maxQuantity = MutableLiveData<Double>(0.0)
-
     val good by lazy { task.currentGood }
 
     val title = MutableLiveData<String>("")
@@ -77,12 +80,6 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
         }
     }
 
-    val quantityFieldEnabled by lazy {
-        good.map { good ->
-            good?.isNotMarkedGood()
-        }
-    }
-
     val totalMarks: MutableLiveData<String> by lazy {
         good.map { good ->
             good?.marks?.size.toString()
@@ -93,7 +90,7 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
     val month = MutableLiveData<String>("")
     val year = MutableLiveData<String>("")
 
-    private val enteredDate = day.combineLatest(month).combineLatest(year).map {
+    private val enteredDate: MutableLiveData<Date> = day.combineLatest(month).combineLatest(year).map {
         val day = it?.first?.first?.toIntOrNull()
         val month = it?.first?.second?.toIntOrNull()
         val year = it?.second?.toIntOrNull()
@@ -110,29 +107,15 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
         parseDate
     }
 
-    private val daysLeft: MutableLiveData<Int> = enteredDate.combineLatest(shelfLifeTypePosition).map {
-        val enteredDate = it?.first
-        val shelfLifeType = it?.second
-        val shelfLifeTimeMills = good.value!!.getShelfLifeInMills()
-
-        val daysLeft: Int? = if (enteredDate != null && shelfLifeType != null && shelfLifeTimeMills != 0L) {
-            val expirationDate = if (shelfLifeType == ShelfLifeType.PRODUCTION.position) {
-                enteredDate.time + good.value!!.getShelfLifeInMills()
-            } else enteredDate.time
-
-            TimeUnit.DAYS.convert(expirationDate - Date().time, TimeUnit.MILLISECONDS).toInt()
-        } else null
-
-        daysLeft
+    val shelfLifeTypeList: MutableLiveData<List<String>> by lazy {
+        good.map { good ->
+            good?.shelfLifeTypes?.map { it.description }
+        }
     }
-
-    val remainingDaysFieldVisibility = daysLeft.map { it != null }
-
-    val shelfLifeTypeList = MutableLiveData<List<String>>()
 
     val commentsList: MutableLiveData<List<String>> by lazy {
         good.map { good ->
-            good?.comments
+            good?.comments?.map { it.description }
         }
     }
 
@@ -141,7 +124,7 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
             it?.let { good ->
                 CommonInfoUi(
                         shelfLife = "${good.shelfLife} сут.",
-                        remainingDays = "${daysLeft.value} сут.",
+                        remainingShelfLife = "${good.remainingShelfLife} сут.",
                         eanWithUnits = good.getEanWithUnits(),
                         groups = good.getGroups()
                 )
@@ -245,7 +228,6 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
 
     init {
         viewModelScope.launch {
-            maxQuantity.value = task.getMaxQuantity()
             title.value = good.value?.getFormattedMaterialWithName()
             quantity.value = good.value?.defaultValue.dropZeros()
 
@@ -307,8 +289,8 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     fun onClickApply() {
-        Logg.d { "--> totalQuantityValue = ${totalQuantityValue.value}, maxQuantity = ${maxQuantity.value}" }
-        if (totalQuantityValue.value ?: 0.0 > maxQuantity.value ?: 0.0) {
+        Logg.d { "--> Max task positions: ${task.getMaxTaskPositions()}" }
+        if (task.isReachLimitPositions()) {
             navigator.showMaxCountProductAlert()
             return
         }
@@ -440,8 +422,9 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
         when (markStatus.status) {
             "1" -> task.addMark(markNumber)
             "2" -> {
-                task.addMark(markNumber)
-                navigator.openInfoScreen(markStatus.description)
+                navigator.openAddMarkToList(
+                        message = markStatus.description,
+                        nextCallback = { task.addMark(markNumber) })
             }
             "3" -> navigator.openInfoScreen(markStatus.description)
         }
@@ -451,17 +434,20 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
         val enteredDate = enteredDate.value
         val shelfLifeType = shelfLifeTypePosition.value
 
-        val productionDate = if (enteredDate != null && shelfLifeType == ShelfLifeType.PRODUCTION.position) {
-            enteredDate
-        } else null
+        val productionDate = enteredDate?.let {
+            if (shelfLifeType == ShelfLifeType.PRODUCTION.position) it else null
+        }
 
-        val expirationDate = if (enteredDate != null && shelfLifeType == ShelfLifeType.PRODUCTION.position) {
-            Date(enteredDate.time + good.value!!.getShelfLifeInMills())
-        } else enteredDate
+        val expirationDate = enteredDate?.let {
+            if (shelfLifeType == ShelfLifeType.EXPIRATION.position) it else null
+        }
+
+        val comment = good.value!!.comments[commentsPosition.value ?: 0]
 
         task.addScanResult(ScanResult(
                 quantity = quantity.value?.toDoubleOrNull() ?: 0.0,
-                comment = good.value!!.comments[commentsPosition.value ?: 0],
+                commentCode = comment.code,
+                comment = comment.description,
                 productionDate = productionDate,
                 expirationDate = expirationDate
         ))
@@ -480,7 +466,7 @@ data class OptionsUi(
 
 data class CommonInfoUi(
         val shelfLife: String,
-        val remainingDays: String,
+        val remainingShelfLife: String,
         val eanWithUnits: String,
         val groups: String
 )
