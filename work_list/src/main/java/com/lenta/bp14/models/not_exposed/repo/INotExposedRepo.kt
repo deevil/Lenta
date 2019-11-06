@@ -59,7 +59,8 @@ data class NotExposedProductInfo(
         val matNr: String,
         val name: String,
         val quantity: Double?,
-        val uom: Uom?,
+        val defaultUnits: Uom?,
+        val units: Uom?,
         val isEmptyPlaceMarked: Boolean?,
         val section: String?,
         val group: String?

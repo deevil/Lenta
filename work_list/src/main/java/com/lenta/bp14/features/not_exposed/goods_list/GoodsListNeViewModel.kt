@@ -36,27 +36,21 @@ class GoodsListNeViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
 
     @Inject
     lateinit var navigator: IScreenNavigator
-
     @Inject
     lateinit var task: INotExposedTask
-
     @Inject
     lateinit var deviceInfo: DeviceInfo
-
     @Inject
     lateinit var sentReportRequest: NotExposedSendReportNetRequest
-
     @Inject
     lateinit var generalTaskManager: IGeneralTaskManager
-
     @Inject
     lateinit var priceInfoParser: IPriceInfoParser
-
     @Inject
     lateinit var scanInfoRequest: ScanInfoRequest
-
     @Inject
     lateinit var sessionInfo: ISessionInfo
+
 
     val onOkFilterListener = object : OnOkInSoftKeyboardListener {
         override fun onOkInSoftKeyboard(): Boolean {
@@ -99,7 +93,7 @@ class GoodsListNeViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
                     position = products.size - index,
                     matNr = productInfo.matNr,
                     name = "${productInfo.matNr.takeLast(6)} ${productInfo.name}",
-                    quantity = "${productInfo.quantity.toStringFormatted()} ${productInfo.uom?.name
+                    quantity = "${productInfo.quantity.toStringFormatted()} ${productInfo.units?.name
                             ?: ""}",
                     isEmptyPlaceMarked = productInfo.isEmptyPlaceMarked
             )
@@ -133,13 +127,11 @@ class GoodsListNeViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
         }
     }
 
-
     val thirdButtonVisibility = correctedSelectedPage.map { it != GoodsListTab.PROCESSING.position }
 
     init {
         viewModelScope.launch {
             requestFocusToNumberField.value = true
-
         }
     }
 

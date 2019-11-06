@@ -55,7 +55,8 @@ class NotExposedTask @Inject constructor(
                         name = productInfo?.name ?: "",
                         matNr = it.matNr,
                         quantity = it.quantity,
-                        uom = null,
+                        defaultUnits = null,
+                        units = null,
                         isEmptyPlaceMarked = null,
                         section = productInfo?.sectionNumber,
                         group = productInfo?.eKGRP
@@ -89,7 +90,8 @@ class NotExposedTask @Inject constructor(
                                 },
                                 section = productInfo?.sectionNumber,
                                 group = productInfo?.eKGRP,
-                                uom = null
+                                defaultUnits = null,
+                                units = null
                         )
                 )
             }
@@ -130,7 +132,8 @@ class NotExposedTask @Inject constructor(
                             matNr = it.goodInfo.productInfo.matNr,
                             name = it.goodInfo.productInfo.name,
                             quantity = quantity,
-                            uom = it.goodInfo.uom,
+                            defaultUnits = it.goodInfo.defaultUnits,
+                            units = it.goodInfo.units,
                             isEmptyPlaceMarked = isEmptyPlaceMarked,
                             section = it.goodInfo.productInfo.sectionNumber,
                             group = it.goodInfo.productInfo.matKL
@@ -248,7 +251,8 @@ class NotExposedTask @Inject constructor(
                                 matNr = it.matNr,
                                 name = it.name,
                                 quantity = 0.0,
-                                uom = null,
+                                defaultUnits = null,
+                                units = null,
                                 isEmptyPlaceMarked = false,
                                 section = it.sectionNumber,
                                 group = it.matKL

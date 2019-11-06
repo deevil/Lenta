@@ -22,20 +22,20 @@ class ProductInfoForNotExposedNetRequest
 
     override suspend fun run(params: NotExposedInfoRequestParams): Either<Failure, GoodInfo> {
         return productInfoNetRequest(params = params.toCommonParams()).map {
-            //TODO зачем нужен этот код? Закоментировал до выяснения
-            //val unitsCode = if (it.productsInfo[0].bUom == Uom.G.code) Uom.KG.code else it.productsInfo[0].bUom
-            val unitsCode = it.productsInfo[0].bUom
-            val unitsName = units.getUnitName(unitsCode)?.toLowerCase(Locale.getDefault())
+            val defaultUnits = Uom(code = it.productsInfo[0].bUom, name = getUnitsName(it.productsInfo[0].bUom))
+            val units = if (defaultUnits == Uom.G) Uom.KG else defaultUnits
 
             GoodInfo(
                     productInfo = it.productsInfo[0],
                     stocks = it.stocks,
-                    uom = Uom(
-                            code = unitsCode,
-                            name = unitsName ?: ""
-                    )
+                    defaultUnits = defaultUnits,
+                    units = units
             )
         }
+    }
+
+    private fun getUnitsName(code: String?): String {
+        return units.getUnitName(code)?.toLowerCase(Locale.getDefault()) ?: ""
     }
 
 }
@@ -63,7 +63,8 @@ data class GoodInfoWithQuantity(
 data class GoodInfo(
         val productInfo: ProductInfo,
         val stocks: List<Stock>,
-        val uom: Uom?
+        val defaultUnits: Uom?,
+        val units: Uom?
 )
 
 data class NotExposedInfoRequestParams(

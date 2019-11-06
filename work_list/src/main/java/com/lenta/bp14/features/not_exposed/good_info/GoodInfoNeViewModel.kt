@@ -68,7 +68,7 @@ class GoodInfoNeViewModel : CoreViewModel(), PageSelectionListener {
                         ItemStockUi(
                                 number = "${index + 1}",
                                 storage = stock.lgort,
-                                quantity = "${stock.stock.toStringFormatted()} ${goodInfo.uom?.name
+                                quantity = "${stock.stock.toStringFormatted()} ${goodInfo.units?.name
                                         ?: ""}"
                         )
 
@@ -82,7 +82,7 @@ class GoodInfoNeViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     val marketStorage by lazy {
-        "${(goodInfo.stocks.sumByDouble { it.stock }).toStringFormatted()} ${goodInfo.uom?.name
+        "${(goodInfo.stocks.sumByDouble { it.stock }).toStringFormatted()} ${goodInfo.units?.name
                 ?: ""}"
     }
 
@@ -110,7 +110,7 @@ class GoodInfoNeViewModel : CoreViewModel(), PageSelectionListener {
 
     val totalQuantity: MutableLiveData<String> by lazy {
         totalQuantityValue.map {
-            "${it.dropZeros()} ${goodInfo.uom?.name ?: ""}"
+            "${it.dropZeros()} ${goodInfo.units?.name ?: ""}"
         }
     }
 
