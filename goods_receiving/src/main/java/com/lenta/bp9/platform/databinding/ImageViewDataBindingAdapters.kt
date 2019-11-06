@@ -83,16 +83,16 @@ fun setVisibleOrGone(imageView: ImageView, isVisible: Boolean?) {
 
 fun TaskPostponedStatus.getIconRes(): Int? {
     return when (this) {
-        TaskPostponedStatus.PauseSign -> R.drawable.ic_pause_white_24dp
-        TaskPostponedStatus.PlaySign -> R.drawable.ic_play_arrow_white_24dp
+        TaskPostponedStatus.PauseSign -> R.drawable.ic_pause_dark_24dp
+        TaskPostponedStatus.PlaySign -> R.drawable.ic_play_arrow_dark_24dp
         else -> null
     }
 }
 
 fun TaskLockStatus.getIconRes(): Int? {
     return when (this) {
-        TaskLockStatus.LockedByMe -> R.drawable.ic_pause_white_24dp //todo ic_lock_open_dark_24dp
-        TaskLockStatus.LockedByOthers -> R.drawable.ic_lock_white_24dp
+        TaskLockStatus.LockedByMe -> R.drawable.ic_lock_open_dark_24dp
+        TaskLockStatus.LockedByOthers -> R.drawable.ic_lock_dark_24dp
         else -> null
     }
 }
