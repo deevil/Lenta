@@ -113,7 +113,7 @@ class WorkListRepo @Inject constructor(
         }
     }
 
-    override suspend fun getGoodInfoByMaterial(material: String?): WorkListGoodInfo? {
+    private suspend fun getGoodInfoByMaterial(material: String?): WorkListGoodInfo? {
         return withContext(Dispatchers.IO) {
             return@withContext productInfo.getProductInfoByMaterial(material)?.toWorkListGoodInfo()
         }
@@ -125,7 +125,7 @@ class WorkListRepo @Inject constructor(
         }
     }
 
-    override suspend fun getEanByMaterialUnits(material: String, unitsCode: String): String? {
+    private suspend fun getEanByMaterialUnits(material: String, unitsCode: String): String? {
         return withContext(Dispatchers.IO) {
             return@withContext eanInfo.getEanInfoByMaterialUnits(material, unitsCode)?.toEanInfo()?.ean
         }
@@ -165,6 +165,4 @@ class WorkListRepo @Inject constructor(
 interface IWorkListRepo {
     suspend fun getGoodByMaterial(material: String): Good?
     suspend fun getGoodByEan(ean: String): Good?
-    suspend fun getGoodInfoByMaterial(material: String?): WorkListGoodInfo?
-    suspend fun getEanByMaterialUnits(material: String, unitsCode: String): String?
 }

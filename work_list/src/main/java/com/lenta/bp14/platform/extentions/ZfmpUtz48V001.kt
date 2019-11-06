@@ -6,7 +6,7 @@ fun ZfmpUtz48V001.ItemLocal_ET_MATNR_LIST.toCheckListGoodInfo(): CheckListGoodIn
     return CheckListGoodInfo(
             material = material,
             name = name,
-            buom = buom
+            unitsCode = buom
     )
 }
 
@@ -32,7 +32,7 @@ fun ZfmpUtz48V001.ItemLocal_ET_MATNR_LIST.toWorkListGoodInfo(): WorkListGoodInfo
 data class CheckListGoodInfo(
         val material: String,
         val name: String,
-        val buom: String
+        val unitsCode: String
 )
 
 data class WorkListGoodInfo(

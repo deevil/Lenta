@@ -158,9 +158,10 @@ interface ICheckListTask : ITask {
 // --------------------------
 
 data class Good(
-        val ean: String? = null,
+        val ean: String?,
         val material: String,
         val name: String,
+        val defaultUnits: Uom,
         val units: Uom,
         val quantity: MutableLiveData<String>
 ) {
