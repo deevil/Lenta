@@ -7,7 +7,7 @@ import com.lenta.bp14.features.work_list.good_info.ItemStockUi
 import com.lenta.bp14.models.check_price.IPriceInfoParser
 import com.lenta.bp14.models.data.GoodType
 import com.lenta.bp14.models.data.getGoodType
-import com.lenta.bp14.models.not_exposed_products.INotExposedProductsTask
+import com.lenta.bp14.models.not_exposed.INotExposedTask
 import com.lenta.bp14.platform.navigation.IScreenNavigator
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.fmp.resources.dao_ext.getMaxPositionsProdWkl
@@ -28,7 +28,7 @@ class GoodInfoNeViewModel : CoreViewModel(), PageSelectionListener {
     @Inject
     lateinit var navigator: IScreenNavigator
     @Inject
-    lateinit var task: INotExposedProductsTask
+    lateinit var task: INotExposedTask
     @Inject
     lateinit var scanInfoRequest: ScanInfoRequest
     @Inject

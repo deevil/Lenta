@@ -1,8 +1,8 @@
 package com.lenta.bp14.requests.not_exposed_product
 
 import com.google.gson.annotations.SerializedName
-import com.lenta.bp14.models.not_exposed_products.NotExposedProductsTaskDescription
-import com.lenta.bp14.models.not_exposed_products.repo.NotExposedProductInfo
+import com.lenta.bp14.models.not_exposed.NotExposedTaskDescription
+import com.lenta.bp14.models.not_exposed.repo.NotExposedProductInfo
 import com.lenta.bp14.requests.pojo.*
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.functional.Either
@@ -81,7 +81,7 @@ class NotExposedSendReportNetRequest
 
 data class NotExposedReport(
         val ip: String,
-        val description: NotExposedProductsTaskDescription,
+        val description: NotExposedTaskDescription,
         val isNotFinish: Boolean,
         val checksResults: List<NotExposedProductInfo>,
         val notProcessed: List<NotExposedProductInfo>

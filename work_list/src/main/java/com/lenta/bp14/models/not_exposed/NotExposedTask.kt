@@ -1,4 +1,4 @@
-package com.lenta.bp14.models.not_exposed_products
+package com.lenta.bp14.models.not_exposed
 
 import androidx.lifecycle.LiveData
 import com.google.gson.Gson
@@ -11,8 +11,8 @@ import com.lenta.bp14.models.filter.IFilterable
 import com.lenta.bp14.models.general.AppTaskTypes
 import com.lenta.bp14.models.general.IGeneralRepo
 import com.lenta.bp14.models.general.ITaskTypeInfo
-import com.lenta.bp14.models.not_exposed_products.repo.NotExposedProductInfo
-import com.lenta.bp14.models.not_exposed_products.repo.INotExposedProductsRepo
+import com.lenta.bp14.models.not_exposed.repo.NotExposedProductInfo
+import com.lenta.bp14.models.not_exposed.repo.INotExposedRepo
 import com.lenta.bp14.requests.not_exposed_product.*
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.functional.Either
@@ -24,14 +24,14 @@ import com.lenta.shared.utilities.extentions.map
 import javax.inject.Inject
 
 @NotExposedScope
-class NotExposedProductsTask @Inject constructor(
+class NotExposedTask @Inject constructor(
         private val generalRepo: IGeneralRepo,
-        private val taskDescription: NotExposedProductsTaskDescription,
-        private val notExposedProductsRepo: INotExposedProductsRepo,
+        private val taskDescription: NotExposedTaskDescription,
+        private val notExposedRepo: INotExposedRepo,
         private val filterableDelegate: IFilterable,
         private val productInfoNotExposedInfoRequest: IProductInfoForNotExposedNetRequest,
         private val gson: Gson
-) : INotExposedProductsTask, StateFromToString, IFilterable by filterableDelegate {
+) : INotExposedTask, StateFromToString, IFilterable by filterableDelegate {
 
     private val productsInfoMap by lazy {
         taskDescription.additionalTaskInfo?.productsInfo?.map { it.matNr to it }?.toMap()
@@ -74,7 +74,7 @@ class NotExposedProductsTask @Inject constructor(
             it.forEach { position ->
                 val productInfo = productsInfoMap[position.matNr]
                 val checkPlace = checkPlaces[position.matNr]
-                notExposedProductsRepo.addOrReplaceProduct(
+                notExposedRepo.addOrReplaceProduct(
                         NotExposedProductInfo(
                                 ean = null,
                                 matNr = position.matNr,
@@ -114,7 +114,7 @@ class NotExposedProductsTask @Inject constructor(
     }
 
     override fun getProducts(): LiveData<List<NotExposedProductInfo>> {
-        return notExposedProductsRepo.getProducts()
+        return notExposedRepo.getProducts()
     }
 
     override fun getToProcessingProducts(): LiveData<List<NotExposedProductInfo>> {
@@ -124,7 +124,7 @@ class NotExposedProductsTask @Inject constructor(
     override fun setCheckInfo(quantity: Double?, isEmptyPlaceMarked: Boolean?) {
         processedGoodInfo.let {
             requireNotNull(it)
-            notExposedProductsRepo.addOrReplaceProduct(
+            notExposedRepo.addOrReplaceProduct(
                     NotExposedProductInfo(
                             ean = null,
                             matNr = it.goodInfo.productInfo.matNr,
@@ -141,7 +141,7 @@ class NotExposedProductsTask @Inject constructor(
     }
 
     override fun removeCheckResultsByMatNumbers(matNumbers: Set<String>) {
-        notExposedProductsRepo.removeProducts(matNumbers)
+        notExposedRepo.removeProducts(matNumbers)
     }
 
     override fun getFilteredProducts(): LiveData<List<NotExposedProductInfo>> {
@@ -215,7 +215,7 @@ class NotExposedProductsTask @Inject constructor(
                 ip = ip,
                 description = taskDescription,
                 isNotFinish = processingProducts.isNotEmpty(),
-                checksResults = notExposedProductsRepo.getProducts().value ?: emptyList(),
+                checksResults = notExposedRepo.getProducts().value ?: emptyList(),
                 notProcessed = processingProducts
         )
     }
@@ -242,7 +242,7 @@ class NotExposedProductsTask @Inject constructor(
     override fun setMissing(matNrList: List<String>) {
         matNrList.forEach { matNr ->
             taskDescription.additionalTaskInfo?.productsInfo?.firstOrNull { it.matNr == matNr }?.let {
-                notExposedProductsRepo.addOrReplaceProduct(
+                notExposedRepo.addOrReplaceProduct(
                         NotExposedProductInfo(
                                 ean = null,
                                 matNr = it.matNr,
@@ -277,14 +277,14 @@ class NotExposedProductsTask @Inject constructor(
     override fun loadStateFromString(state: String) {
         val data = gson.fromJson(state, NotExposedData::class.java)
         data.goods.map { good ->
-            notExposedProductsRepo.addOrReplaceProduct(good)
+            notExposedRepo.addOrReplaceProduct(good)
         }
     }
 
 }
 
 
-interface INotExposedProductsTask : ITask, IFilterable {
+interface INotExposedTask : ITask, IFilterable {
 
     fun getProcessedProductInfoResult(): GoodInfoWithQuantity?
 
@@ -309,7 +309,7 @@ interface INotExposedProductsTask : ITask, IFilterable {
 }
 
 data class NotExposedData(
-        val taskDescription: NotExposedProductsTaskDescription,
+        val taskDescription: NotExposedTaskDescription,
         val goods: List<NotExposedProductInfo>
 )
 

@@ -12,8 +12,8 @@ import com.lenta.bp14.models.check_list.CheckListTaskManager
 import com.lenta.bp14.models.check_price.CheckPriceData
 import com.lenta.bp14.models.check_price.CheckPriceTaskManager
 import com.lenta.bp14.models.general.AppTaskTypes
-import com.lenta.bp14.models.not_exposed_products.NotExposedData
-import com.lenta.bp14.models.not_exposed_products.NotExposedProductsTaskManager
+import com.lenta.bp14.models.not_exposed.NotExposedData
+import com.lenta.bp14.models.not_exposed.NotExposedTaskManager
 import com.lenta.bp14.models.work_list.WorkListData
 import com.lenta.bp14.models.work_list.WorkListTaskManager
 import com.lenta.bp14.platform.navigation.IScreenNavigator
@@ -21,14 +21,12 @@ import com.lenta.bp14.repos.IRepoInMemoryHolder
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.features.printer_change.PrinterManager
-import com.lenta.shared.models.core.StateFromToString
 import com.lenta.shared.platform.time.ITimeMonitor
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.network.ServerTime
 import com.lenta.shared.requests.network.ServerTimeRequest
 import com.lenta.shared.requests.network.ServerTimeRequestParam
 import com.lenta.shared.settings.IAppSettings
-import com.lenta.shared.utilities.extentions.implementationOf
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.view.OnPositionClickListener
 import kotlinx.coroutines.launch
@@ -59,7 +57,7 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
     @Inject
     lateinit var checkPriceTaskManager: CheckPriceTaskManager
     @Inject
-    lateinit var notExposedTaskManager: NotExposedProductsTaskManager
+    lateinit var notExposedTaskManager: NotExposedTaskManager
     @Inject
     lateinit var gson: Gson
 

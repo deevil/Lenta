@@ -8,8 +8,8 @@ import com.lenta.bp14.models.check_list.CheckListTaskManager
 import com.lenta.bp14.models.check_price.CheckPriceTaskDescription
 import com.lenta.bp14.models.check_price.CheckPriceTaskManager
 import com.lenta.bp14.models.general.*
-import com.lenta.bp14.models.not_exposed_products.NotExposedProductsTaskDescription
-import com.lenta.bp14.models.not_exposed_products.NotExposedProductsTaskManager
+import com.lenta.bp14.models.not_exposed.NotExposedTaskDescription
+import com.lenta.bp14.models.not_exposed.NotExposedTaskManager
 import com.lenta.bp14.models.work_list.WorkListTaskDescription
 import com.lenta.bp14.models.work_list.WorkListTaskManager
 import com.lenta.bp14.platform.navigation.IScreenNavigator
@@ -47,7 +47,7 @@ class JobCardViewModel : CoreViewModel() {
     @Inject
     lateinit var checkListTaskManager: CheckListTaskManager
     @Inject
-    lateinit var notExposedProductsTaskManager: NotExposedProductsTaskManager
+    lateinit var notExposedTaskManager: NotExposedTaskManager
     @Inject
     lateinit var workListTaskManager: WorkListTaskManager
     @Inject
@@ -239,8 +239,8 @@ class JobCardViewModel : CoreViewModel() {
                             screenNavigator.openAlertScreen(failure)
                         }) { result ->
                             newTask(
-                                    taskManager = notExposedProductsTaskManager,
-                                    taskDescription = NotExposedProductsTaskDescription(
+                                    taskManager = notExposedTaskManager,
+                                    taskDescription = NotExposedTaskDescription(
                                             tkNumber = sessionInfo.market!!,
                                             taskNumber = taskFromTaskList?.taskId
                                                     ?: "",

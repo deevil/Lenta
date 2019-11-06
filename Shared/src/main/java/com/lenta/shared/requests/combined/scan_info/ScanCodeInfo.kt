@@ -6,7 +6,10 @@ import com.lenta.shared.requests.combined.scan_info.pojo.EanInfo
 import java.lang.Long.parseLong
 import java.util.*
 
-class ScanCodeInfo(val originalNumber: String, val fixedQuantity: Double? = null) {
+class ScanCodeInfo(
+        private val originalNumber: String,
+        private val fixedQuantity: Double? = null
+) {
 
     private val prefix by lazy {
         originalNumber.take(2)
