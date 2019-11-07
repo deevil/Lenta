@@ -34,7 +34,7 @@ class TaskCardFragment : CoreFragment<FragmentTaskCardBinding, TaskCardViewModel
 
     override fun getLayoutId(): Int = R.layout.fragment_task_card
 
-    override fun getPageNumber() = generateScreenNumber()
+    override fun getPageNumber() = "09/06"
 
     override fun getViewModel(): TaskCardViewModel {
         provideViewModel(TaskCardViewModel::class.java).let {
@@ -52,6 +52,7 @@ class TaskCardFragment : CoreFragment<FragmentTaskCardBinding, TaskCardViewModel
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
         if (vm.mode == TaskCardMode.Full) {
+            bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.supply)
             bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.nextAlternate)
             connectLiveData(source = vm.redIndicatorAbsent, target = bottomToolbarUiModel.uiModelButton5.enabled)
         }
@@ -68,6 +69,7 @@ class TaskCardFragment : CoreFragment<FragmentTaskCardBinding, TaskCardViewModel
 
     override fun onToolbarButtonClick(view: View) {
         when (view.id) {
+            R.id.b_4 -> vm.onClickSupply()
             R.id.b_5 -> vm.onClickNext()
         }
     }

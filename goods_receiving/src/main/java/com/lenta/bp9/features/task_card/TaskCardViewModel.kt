@@ -166,6 +166,10 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
         screenNavigator.openChangeDateTimeScreen(ChangeDateTimeMode.NextStatus)
     }
 
+    fun onClickSupply() {
+        screenNavigator.openFormedDocsScreen()
+    }
+
     fun onClickNext() {
         when (taskManager.getReceivingTask()?.taskDescription?.currentStatus) {
             TaskStatus.Ordered, TaskStatus.Traveling -> {
