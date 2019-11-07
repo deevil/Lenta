@@ -72,10 +72,6 @@ class InvoiceReviseViewModel : CoreViewModel(), PageSelectionListener {
         taskManager.getReceivingTask()?.taskRepository?.getReviseDocuments()?.getInvoiceInfo()?.quantityAll.toStringFormatted()
     }
 
-    val editingAvailable: Boolean by lazy {
-        taskManager.getReceivingTask()?.taskDescription?.isAlco != true
-    }
-
     val notes: MutableLiveData<List<InvoiceNoteVM>> = MutableLiveData()
 
     val numberTTN: MutableLiveData<String> = MutableLiveData("")
@@ -83,11 +79,23 @@ class InvoiceReviseViewModel : CoreViewModel(), PageSelectionListener {
     val months: MutableLiveData<String> = MutableLiveData("")
     val years: MutableLiveData<String> = MutableLiveData("")
 
+    val isNumInvEmty: MutableLiveData<Boolean> = numberTTN.map {
+        it.isNullOrEmpty()
+    }
+
     val headerCheck: MutableLiveData<Boolean> = MutableLiveData(false)
     val supplierCheck: MutableLiveData<Boolean> = MutableLiveData(false)
     val detailsCheck: MutableLiveData<Boolean> = MutableLiveData(false)
     val nextPossible: MutableLiveData<Boolean> = combineLatest(headerCheck, supplierCheck, detailsCheck).map {
         it?.first == true && it?.second == true && it?.third == true
+    }
+
+    val editingAvailable: MutableLiveData<Boolean> = headerCheck.map {
+        if (taskManager.getReceivingTask()?.taskDescription?.isAlco == true) {
+            false
+        } else {
+            !it!!
+        }
     }
 
     init {
