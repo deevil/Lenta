@@ -7,8 +7,12 @@ import com.lenta.bp14.models.check_list.Good
 import com.lenta.bp14.models.check_list.ICheckListTask
 import com.lenta.bp14.models.check_price.IPriceInfoParser
 import com.lenta.bp14.models.getTaskName
+import com.lenta.bp14.models.getTaskNumber
 import com.lenta.bp14.platform.navigation.IScreenNavigator
 import com.lenta.bp14.requests.check_list.CheckListSendReportNetRequest
+import com.lenta.bp14.requests.tasks.IUnlockTaskNetRequest
+import com.lenta.bp14.requests.tasks.UnlockTaskParams
+import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.models.core.Uom
 import com.lenta.shared.platform.device_info.DeviceInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
@@ -35,6 +39,10 @@ class GoodsListClViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     lateinit var deviceInfo: DeviceInfo
     @Inject
     lateinit var sentReportRequest: CheckListSendReportNetRequest
+    @Inject
+    lateinit var sessionInfo: ISessionInfo
+    @Inject
+    lateinit var unlockTaskNetRequest: IUnlockTaskNetRequest
 
 
     val selectionsHelper = SelectionItemsHelper()
@@ -178,6 +186,42 @@ class GoodsListClViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
 
     fun showVideoErrorMessage() {
         navigator.showDeviceNotSupportVideoScan()
+    }
+
+    fun onBackPressed(): Boolean {
+        if (!task.isEmpty() && sessionInfo.isAuthSkipped.value == true) {
+            navigator.openConfirmationExitTask(task.getDescription().taskName) {
+                clearCurrentTaskAndGoBack()
+            }
+        } else {
+            navigator.goBack()
+        }
+
+        return false
+    }
+
+    private fun clearCurrentTaskAndGoBack() {
+        viewModelScope.launch {
+            generalTaskManager.getProcessedTask()?.getTaskNumber().let { taskNumber ->
+                if (taskNumber?.isNotBlank() == true) {
+                    navigator.showProgress(unlockTaskNetRequest)
+                    unlockTaskNetRequest(
+                            UnlockTaskParams(
+                                    ip = deviceInfo.getDeviceIp(),
+                                    taskNumber = taskNumber
+                            )
+                    ).either(::handleFailure) {
+                        generalTaskManager.clearCurrentTask()
+                        navigator.goBack()
+                        true
+                    }
+                    navigator.hideProgress()
+                } else {
+                    generalTaskManager.clearCurrentTask()
+                    navigator.goBack()
+                }
+            }
+        }
     }
 
 }

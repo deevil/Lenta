@@ -285,7 +285,6 @@ class JobCardViewModel : CoreViewModel() {
                             UnlockTaskParams(
                                     ip = deviceInfo.getDeviceIp(),
                                     taskNumber = taskNumber
-
                             )
                     ).either(::handleFailure) {
                         generalTaskManager.clearCurrentTask()
@@ -294,26 +293,18 @@ class JobCardViewModel : CoreViewModel() {
                         true
                     }
                     screenNavigator.hideProgress()
-
                 } else {
                     generalTaskManager.clearCurrentTask()
                     tasksSearchHelper.processedTaskInfo = null
                     screenNavigator.goBack()
                 }
             }
-
-
         }
     }
 
     override fun handleFailure(failure: Failure) {
         super.handleFailure(failure)
         screenNavigator.openAlertScreen(failure)
-    }
-
-
-    private fun getComment(taskTypeInfo: ITaskTypeInfo?): String {
-        return taskTypeInfo?.annotation ?: ""
     }
 
     private fun <S : ITask, D : ITaskDescription> newTask(taskManager: ITaskManager<S, D>, taskDescription: D) {

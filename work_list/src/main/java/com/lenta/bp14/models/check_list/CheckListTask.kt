@@ -26,7 +26,7 @@ class CheckListTask @Inject constructor(
         private val gson: Gson
 ) : ICheckListTask, StateFromToString {
 
-    override val goods = MutableLiveData<List<Good>>(listOf())
+    override val goods = MutableLiveData<List<Good>>(emptyList())
 
     private var maxTaskPositions: Double = 0.0
 

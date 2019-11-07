@@ -23,6 +23,7 @@ import com.lenta.bp14.platform.IVibrateHelper
 import com.lenta.bp14.platform.navigation.IScreenNavigator
 import com.lenta.bp14.platform.resource.IResourceManager
 import com.lenta.bp14.platform.sound.ISoundPlayer
+import com.lenta.bp14.requests.tasks.IUnlockTaskNetRequest
 import com.lenta.shared.di.AppScope
 import com.lenta.shared.di.CoreComponent
 import dagger.Component
@@ -39,6 +40,7 @@ interface AppComponent : CoreComponent {
     fun getIGeneralRepo(): IGeneralRepo
     fun getIPrintTask(): IPrintTask
     fun getIResourceManager(): IResourceManager
+    fun getIUnlockTaskNetRequest(): IUnlockTaskNetRequest
 
     fun inject(mainActivity: MainActivity)
     fun inject(mainViewModel: MainViewModel)
