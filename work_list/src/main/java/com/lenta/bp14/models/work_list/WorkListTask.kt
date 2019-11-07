@@ -391,10 +391,8 @@ data class Good(
 
     fun getTotalQuantity(): Double {
         var quantity = 0.0
-        if (isNotMarkedGood()) {
-            scanResults.map { result ->
-                quantity = quantity.sumWith(result.quantity)
-            }
+        scanResults.map { result ->
+            quantity = quantity.sumWith(result.quantity)
         }
 
         return quantity

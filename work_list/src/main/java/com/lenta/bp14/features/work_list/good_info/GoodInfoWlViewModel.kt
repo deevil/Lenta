@@ -307,9 +307,7 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
             return
         }
 
-        if (good.value!!.isNotMarkedGood()) {
-            saveScanResult()
-        }
+        saveScanResult()
 
         task.setCurrentGoodProcessed()
         navigator.goBack()

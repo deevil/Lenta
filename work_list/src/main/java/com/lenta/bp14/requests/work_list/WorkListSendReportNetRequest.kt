@@ -25,7 +25,7 @@ class WorkListSendReportNetRequest
         val checkResults = mutableListOf<CheckResult>()
         val marks = mutableListOf<Mark>()
 
-        params.checksResults.filter { it.isNotMarkedGood() }.forEach { good ->
+        params.checksResults.forEach { good ->
             positions.add(
                     Position(
                             matNr = good.material,
