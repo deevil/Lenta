@@ -34,7 +34,7 @@ class TaskReviseFragment : CoreFragment<FragmentTaskReviseBinding, TaskReviseVie
 
     override fun getLayoutId(): Int = R.layout.fragment_task_revise
 
-    override fun getPageNumber() = generateScreenNumber()
+    override fun getPageNumber() = "09/07"
 
     override fun getViewModel(): TaskReviseViewModel {
         provideViewModel(TaskReviseViewModel::class.java).let {
@@ -51,7 +51,7 @@ class TaskReviseFragment : CoreFragment<FragmentTaskReviseBinding, TaskReviseVie
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
         bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.refusal)
-        bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.nextAlternate)
+        bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.save)
         connectLiveData(vm.nextEnabled, bottomToolbarUiModel.uiModelButton5.enabled)
     }
 
@@ -75,8 +75,8 @@ class TaskReviseFragment : CoreFragment<FragmentTaskReviseBinding, TaskReviseVie
 
     override fun onToolbarButtonClick(view: View) {
         when (view.id) {
-            R.id.b_2 -> vm.onClickReject()
-            R.id.b_5 -> vm.onClickNext()
+            R.id.b_2 -> vm.onClickRefusal()
+            R.id.b_5 -> vm.onClickSave()
         }
     }
 
