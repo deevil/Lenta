@@ -16,7 +16,7 @@ class MainMenuFragment : CoreFragment<FragmentMainMenuBinding, MainMenuViewModel
 
     override fun getLayoutId(): Int = R.layout.fragment_main_menu
 
-    override fun getPageNumber(): String = "9/04"
+    override fun getPageNumber(): String = "09/04"
 
     override fun getViewModel(): MainMenuViewModel {
         provideViewModel(MainMenuViewModel::class.java).let {

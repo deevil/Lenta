@@ -20,7 +20,7 @@ class SelectPersonnelNumberFragment : CoreFragment<FragmentSelectPersonnelNumber
 
     override fun getLayoutId(): Int = R.layout.fragment_select_personnel_number
 
-    override fun getPageNumber(): String = "9/35"
+    override fun getPageNumber(): String = "09/35"
 
     override fun getViewModel(): SelectPersonnelNumberViewModel {
         provideViewModel(SelectPersonnelNumberViewModel::class.java).let {

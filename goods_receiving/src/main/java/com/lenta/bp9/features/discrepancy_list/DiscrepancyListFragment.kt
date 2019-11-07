@@ -28,7 +28,7 @@ class DiscrepancyListFragment : CoreFragment<FragmentDiscrepancyListBinding, Dis
 
     override fun getLayoutId(): Int = R.layout.fragment_discrepancy_list
 
-    override fun getPageNumber(): String = "9/22"
+    override fun getPageNumber(): String = "09/22"
 
     override fun getViewModel(): DiscrepancyListViewModel {
         provideViewModel(DiscrepancyListViewModel::class.java).let {vm ->

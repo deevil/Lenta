@@ -37,7 +37,7 @@ class PerishablesInfoFragment : CoreFragment<FragmentPerishablesInfoBinding, Per
 
     override fun getLayoutId(): Int = R.layout.fragment_perishables_info
 
-    override fun getPageNumber(): String = "9/17"
+    override fun getPageNumber(): String = "09/17"
 
     override fun getViewModel(): PerishablesInfoViewModel {
         provideViewModel(PerishablesInfoViewModel::class.java).let { vm ->

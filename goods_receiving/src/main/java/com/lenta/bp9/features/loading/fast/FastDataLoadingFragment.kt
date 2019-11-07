@@ -15,7 +15,7 @@ import com.lenta.shared.utilities.extentions.provideViewModel
 
 class FastDataLoadingFragment : CoreLoadingFragment() {
 
-    override fun getPageNumber(): String = "9/03"
+    override fun getPageNumber(): String = "09/03"
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
