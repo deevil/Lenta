@@ -484,6 +484,10 @@ data class ScanResult(
         return "${productionDate?.time}${expirationDate?.time}"
     }
 
+    fun isExistSomeData(): Boolean {
+        return (commentCode != null && commentCode != "0") || productionDate != null || expirationDate != null
+    }
+
 }
 
 data class WorkListData(

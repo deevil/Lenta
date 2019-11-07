@@ -34,7 +34,7 @@ class WorkListSendReportNetRequest
                     )
             )
 
-            good.scanResults.map { result ->
+            good.scanResults.filter { it.isExistSomeData() }.map { result ->
                 checkResults.add(
                         CheckResult(
                                 matNr = good.material,
