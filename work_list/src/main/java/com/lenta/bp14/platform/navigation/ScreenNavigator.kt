@@ -493,6 +493,16 @@ class ScreenNavigator @Inject constructor(
         }
     }
 
+    override fun showNumberOfCopiesExceedsMaximum() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.number_of_copies_exceeds_maximum),
+                    pageNumber = "7"
+            )
+            )
+        }
+    }
+
 }
 
 interface IScreenNavigator : ICoreNavigator {
@@ -543,6 +553,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun showDeviceNotSupportVideoScan()
     fun openAddMarkToList(nextCallback: () -> Unit, message: String)
     fun showIncorrectProductionDate(backCallback: () -> Unit)
+    fun showNumberOfCopiesExceedsMaximum()
 
     fun openTestScanBarcodeScreen()
     fun openScanPriceScreen()

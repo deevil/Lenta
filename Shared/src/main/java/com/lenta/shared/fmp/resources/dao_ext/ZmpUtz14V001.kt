@@ -55,6 +55,10 @@ fun ZmpUtz14V001.getMaxPositionsProdWkl(): Double? {
     return getParams("WKL_MAX_PROD_QNT").getOrNull(0)?.toDoubleOrNull()
 }
 
+fun ZmpUtz14V001.getMaxAllowedPrintCopyWkl(): Int? {
+    return getParams("WKL_MAX_COPY").getOrNull(0)?.toIntOrNull()
+}
+
 fun ZmpUtz14V001.getPrintServerMask(): String? {
     return getParams("WKL_PRNT_SERVER_MASK:").getOrNull(0)
 }

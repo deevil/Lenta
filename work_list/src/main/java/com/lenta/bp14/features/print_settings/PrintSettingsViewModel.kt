@@ -29,22 +29,16 @@ class PrintSettingsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInS
 
     @Inject
     lateinit var navigator: IScreenNavigator
-
     @Inject
     lateinit var productInfoNetRequest: ProductInfoNetRequest
-
     @Inject
     lateinit var sessionInfo: ISessionInfo
-
     @Inject
-    lateinit var printTask: IPrintTask
-
+    lateinit var task: IPrintTask
     @Inject
     lateinit var priceInfoParser: IPriceInfoParser
-
     @Inject
     lateinit var printSettings: PrintSettings
-
     @Inject
     lateinit var generalManager: IGeneralTaskManager
 
@@ -56,7 +50,7 @@ class PrintSettingsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInS
     private val printerTypes by lazy {
         MutableLiveData<List<PrinterType>>().also {
             viewModelScope.launch {
-                it.value = printTask.getPrinterTypes()
+                it.value = task.getPrinterTypes()
             }
         }
     }
@@ -64,7 +58,7 @@ class PrintSettingsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInS
     private val printerPriceTypes by lazy {
         MutableLiveData<List<PriceTagType>>().also {
             viewModelScope.launch {
-                it.value = printTask.getPriceTagTypes()
+                it.value = task.getPriceTagTypes()
 
             }
         }
@@ -136,16 +130,21 @@ class PrintSettingsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInS
 
     private var needGoBackAfterPrint = false
 
+    // -----------------------------
+
     init {
         viewModelScope.launch {
-            printTask.matNrForPrint?.let {
+            task.loadMaxPrintCopy()
+            task.matNrForPrint?.let {
                 numberField.value
                 checkCode(it)
                 needGoBackAfterPrint = true
-                printTask.matNrForPrint = null
+                task.matNrForPrint = null
             }
         }
     }
+
+    // -----------------------------
 
     fun increaseNumberOfCopies() {
         val copy = numberOfCopies.value?.toIntOrNull() ?: 0
@@ -171,21 +170,26 @@ class PrintSettingsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInS
     }
 
     fun onClickPrint() {
+        val copies = numberOfCopies.value?.toIntOrNull() ?: 0
+
+        Logg.d { "--> Max allowed copies: ${task.getMaxCopies()} / Current copies: $copies" }
+        if (copies > task.getMaxCopies()) {
+            navigator.showNumberOfCopiesExceedsMaximum()
+            return
+        }
+
         if (selectedPrinterIsBigDatamax()) {
             if (selectedPriceTagIsRed()) {
-                navigator.showMakeSureRedPaperInstalled(getSelectedPrinterType()!!.name, numberOfCopies.value?.toIntOrNull()
-                        ?: 0) {
+                navigator.showMakeSureRedPaperInstalled(getSelectedPrinterType()!!.name, copies) {
                     print()
                 }
             } else {
-                navigator.showMakeSureYellowPaperInstalled(getSelectedPrinterType()!!.name, numberOfCopies.value?.toIntOrNull()
-                        ?: 0) {
+                navigator.showMakeSureYellowPaperInstalled(getSelectedPrinterType()!!.name, copies) {
                     print()
                 }
             }
-        } else if (numberOfCopies.value?.toIntOrNull() ?: 0 > 1) {
-            navigator.showConfirmPriceTagsPrinting(numberOfCopies.value?.toIntOrNull()
-                    ?: 0) {
+        } else if (copies > 1) {
+            navigator.showConfirmPriceTagsPrinting(copies) {
                 print()
             }
         } else {
@@ -289,7 +293,7 @@ class PrintSettingsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInS
 
 
             navigator.showProgressConnection()
-            printTask.printPrice(
+            task.printPrice(
                     ip = ipAddress.value ?: "",
                     productInfoResult = productInfoResult.value!!,
                     printerType = getSelectedPrinterType()!!,

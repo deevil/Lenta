@@ -47,6 +47,7 @@
     <string name="device_not_support_video_scan">На данном устройстве не поддерживается потоковое сканирование.</string>
     <string name="incorrect_production_date">Некорректная дата производства.</string>
     <string name="server_connection_error">Ошибка подключения к серверу</string>
+    <string name="number_of_copies_exceeds_maximum">Количество копий превышает максимально допустимое.</string>
 
 
     <string name="total_quantity">Итого: %1$s %2$s</string>

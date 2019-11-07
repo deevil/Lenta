@@ -9,6 +9,8 @@ import com.lenta.bp14.requests.ProductInfoResult
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.di.AppScope
 import com.lenta.shared.exception.Failure
+import com.lenta.shared.fmp.resources.dao_ext.getMaxAllowedPrintCopyWkl
+import com.lenta.shared.fmp.resources.fast.ZmpUtz14V001
 import com.lenta.shared.functional.Either
 import com.lenta.shared.platform.time.ITimeMonitor
 import com.lenta.shared.print.IPrintPriceNetService
@@ -33,18 +35,15 @@ class PrintTask @Inject constructor(
 
     override var matNrForPrint: String? = null
 
+    private var maxPrintCopy: Int = 0
 
     private val emptyPrinterType = PrinterType(
             id = "", name = "Не выбрано", isMobile = null, isStatic = null
     )
 
-    val zfmpUtz51V001 by lazy {
-        ZfmpUtz51V001(hyperHive)
-    }
-
-    val zfmpUtz50V001 by lazy {
-        ZfmpUtz50V001(hyperHive)
-    }
+    val zfmpUtz51V001 by lazy { ZfmpUtz51V001(hyperHive) }
+    val zfmpUtz50V001 by lazy { ZfmpUtz50V001(hyperHive) }
+    val settings: ZmpUtz14V001 by lazy { ZmpUtz14V001(hyperHive) } // Настройки
 
     override suspend fun getPriceTagTypes(): List<PriceTagType> {
         return withContext(IO) {
@@ -153,6 +152,15 @@ class PrintTask @Inject constructor(
         return bigDatamaxPrint.printToBigDatamax(printTasks)
     }
 
+    override suspend fun loadMaxPrintCopy() {
+        return withContext(IO) {
+            maxPrintCopy = settings.getMaxAllowedPrintCopyWkl() ?: 0
+        }
+    }
+
+    override fun getMaxCopies(): Int {
+        return maxPrintCopy
+    }
 
 }
 
@@ -173,6 +181,8 @@ interface IPrintTask {
             printTasks: List<PrintInfo>
     ): Either<Failure, Boolean>
 
+    suspend fun loadMaxPrintCopy()
+    fun getMaxCopies(): Int
 }
 
 data class PriceTagType(
