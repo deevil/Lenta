@@ -395,8 +395,6 @@ data class Good(
             scanResults.map { result ->
                 quantity = quantity.sumWith(result.quantity)
             }
-        } else {
-            quantity = quantity.sumWith(marks.size.toDouble())
         }
 
         return quantity
