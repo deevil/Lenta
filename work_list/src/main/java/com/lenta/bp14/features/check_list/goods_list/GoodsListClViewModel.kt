@@ -58,7 +58,7 @@ class GoodsListClViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
         task.goods.map { list: List<Good>? ->
             list?.mapIndexed { index, good ->
                 ItemGoodUi(
-                        position = (index + 1).toString(),
+                        position = (list.size - index).toString(),
                         name = good.getFormattedMaterialWithName(),
                         quantity = good.quantity,
                         units = good.units

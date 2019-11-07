@@ -55,7 +55,7 @@ class GoodsListWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
         products?.mapIndexed { index, good ->
             val total = good.getTotalQuantity()
             ItemWorkListUi(
-                    position = (index + 1).toString(),
+                    position = (products.size - index).toString(),
                     material = good.material,
                     name = good.getFormattedMaterialWithName(),
                     quantity = "${total.dropZeros()} ${good.units.name}"
