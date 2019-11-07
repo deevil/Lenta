@@ -38,18 +38,16 @@ class FastLoadingViewModel : CoreLoadingViewModel() {
         viewModelScope.launch {
             progress.value = true
             fastResourcesNetRequest(null).either(::handleFailure, ::handleSuccess)
+            progress.value = false
         }
     }
 
     override fun handleFailure(failure: Failure) {
-        progress.value = false
         navigator.openLoginScreen()
         navigator.openAlertScreen(failureInterpreter.getFailureDescription(failure).message)
     }
 
     private fun handleSuccess(notUsed: Boolean) {
-        progress.value = true
-
         viewModelScope.launch {
             if (appUpdateChecker.isNeedUpdate(generalRepo.getAllowedAppVersion())) {
                 auth.cancelAuthorization()
@@ -57,13 +55,9 @@ class FastLoadingViewModel : CoreLoadingViewModel() {
                 navigator.openLoginScreen()
                 navigator.openNeedUpdateScreen()
             } else {
+                generalRepo.onDbReady()
                 navigator.openSelectMarketScreen()
             }
-        }
-
-        viewModelScope.launch {
-            generalRepo.onDbReady()
-            navigator.openSelectMarketScreen()
         }
     }
 
