@@ -520,6 +520,18 @@ class ScreenNavigator(
         }
     }
 
+    override fun openUnsavedDataDialog(yesCallbackFunc: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.unsaved_data_will_lost),
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(yesCallbackFunc),
+                    iconRes = R.drawable.ic_delete_red_80dp,
+                    pageNumber = "80",
+                    leftButtonDecorationInfo = ButtonDecorationInfo.no,
+                    rightButtonDecorationInfo = ButtonDecorationInfo.yes))
+        }
+    }
+
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 }
 
@@ -586,4 +598,5 @@ interface IScreenNavigator : ICoreNavigator {
     fun openSubmittedLoadingScreen()
     fun openTransmittedLoadingScreen()
     fun openAlertNotFoundTaskScreen(failure: Failure)
+    fun openUnsavedDataDialog(yesCallbackFunc: () -> Unit)
 }

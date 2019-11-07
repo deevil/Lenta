@@ -193,9 +193,6 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
             TaskStatus.Unloaded -> {
                 screenNavigator.openRecountStartLoadingScreen()
             }
-            TaskStatus.Recounting -> {
-                screenNavigator.openGoodsListScreen()
-            }
             TaskStatus.Recounted -> {
                 screenNavigator.openTransmittedLoadingScreen()
             }

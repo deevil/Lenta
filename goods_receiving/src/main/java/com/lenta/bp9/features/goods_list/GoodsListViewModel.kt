@@ -263,7 +263,11 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
     }
 
     fun onBackPressed() {
-        screenNavigator.openTaskCardScreen(TaskCardMode.Full)
+        screenNavigator.openUnsavedDataDialog(
+                yesCallbackFunc = {
+                    screenNavigator.openUnlockTaskLoadingScreen()
+                }
+        )
     }
 
 }

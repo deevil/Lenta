@@ -151,6 +151,9 @@ class LoadingTaskCardViewModel : CoreLoadingViewModel() {
                         }
                     }
                 }
+                TaskStatus.Recounting -> {
+                    screenNavigator.openGoodsListScreen()
+                }
                 else -> {
                     screenNavigator.openTaskCardScreen(TaskCardMode.Full)
                 }

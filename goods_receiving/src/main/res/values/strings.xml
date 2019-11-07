@@ -144,4 +144,5 @@
     <string name="alert_not_correct_date">Некорректная дата</string>
     <string name="the_shelf_life_has_expired">Срок годности истек. Пометить как брак?</string>
     <string name="section">Секция</string>
+    <string name="unsaved_data_will_lost">Не сохранённые данные будут утеряны. Всё равно выйти?</string>
 </resources>
