@@ -5,7 +5,6 @@ import androidx.databinding.BindingAdapter
 import com.lenta.bp14.R
 import com.lenta.bp14.features.task_list.TaskBlockingStatus
 import com.lenta.bp14.models.data.GoodType
-import com.lenta.bp14.models.data.PrintStatus
 import com.lenta.bp14.models.data.getDescriptionResId
 import com.lenta.shared.utilities.databinding.dataBindingHelpHolder
 import com.lenta.shared.utilities.extentions.setInvisible
@@ -30,16 +29,6 @@ fun setPriceTagStatusIcon(imageView: ImageView, isValid: Boolean?) {
         false -> imageView.setImageResource(R.drawable.ic_close_white_24dp)
     }
     imageView.setVisible(isValid != null)
-}
-
-@BindingAdapter("printStatusIcon")
-fun setPrintStatusIcon(imageView: ImageView, printStatus: PrintStatus) {
-    printStatus.let {
-        when (it) {
-            PrintStatus.NOT_PRINTED -> imageView.setImageResource(R.drawable.ic_print_no_dark_24dp)
-            PrintStatus.PRINTED -> imageView.setImageResource(R.drawable.ic_print_dark_24dp)
-        }
-    }
 }
 
 @BindingAdapter("isValidPrice")

@@ -10,11 +10,6 @@ enum class GoodsListTab(val position: Int) {
     SEARCH(2)
 }
 
-enum class PrintStatus {
-    NOT_PRINTED,
-    PRINTED
-}
-
 enum class TaskListTab(val position: Int) {
     PROCESSING(0),
     SEARCH(1)
