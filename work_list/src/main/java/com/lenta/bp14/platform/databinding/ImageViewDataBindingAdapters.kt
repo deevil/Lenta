@@ -5,12 +5,11 @@ import androidx.databinding.BindingAdapter
 import com.lenta.bp14.R
 import com.lenta.bp14.features.task_list.TaskBlockingStatus
 import com.lenta.bp14.models.data.GoodType
+import com.lenta.bp14.models.data.PrintStatus
 import com.lenta.bp14.models.data.getDescriptionResId
-import com.lenta.bp14.models.data.pojo.PrintStatus
 import com.lenta.shared.utilities.databinding.dataBindingHelpHolder
 import com.lenta.shared.utilities.extentions.setInvisible
 import com.lenta.shared.utilities.extentions.setVisible
-import com.lenta.shared.utilities.extentions.setVisibleGone
 
 @BindingAdapter("taskStatusIcon")
 fun setTaskStatusIcon(imageView: ImageView, taskBlockingStatus: TaskBlockingStatus) {
@@ -84,11 +83,8 @@ fun setGoodTypeIcon(imageView: ImageView, goodType: GoodType?) {
                         message = imageView.context.getString(goodType.getDescriptionResId()),
                         iconRes = iconRes
                 )
-
             }
         }
     }
     )
-
-
 }
