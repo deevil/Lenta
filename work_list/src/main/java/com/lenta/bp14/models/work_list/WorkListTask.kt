@@ -169,7 +169,7 @@ class WorkListTask @Inject constructor(
     }
 
     override fun isHaveDiscrepancies(): Boolean {
-        return getProcessingList().value?.isNotEmpty() == true
+        return isNotAllGoodsProcessed()
     }
 
     override fun getListOfDifferences(): LiveData<List<BaseProductInfo>> {
@@ -184,7 +184,14 @@ class WorkListTask @Inject constructor(
     }
 
     override fun setMissing(matNrList: List<String>) {
-        //TODO implement this
+        val goodsList = goods.value
+        matNrList.forEach {material ->
+            goodsList?.find { it.material == material }?.let { good ->
+                good.isProcessed = true
+            }
+        }
+
+        goods.value = goodsList
     }
 
     override fun getProcessingList(): LiveData<List<Good>> {

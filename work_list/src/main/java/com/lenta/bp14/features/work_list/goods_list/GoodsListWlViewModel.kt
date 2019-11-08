@@ -104,6 +104,18 @@ class GoodsListWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     }
 
     fun onClickSave() {
+        if (task.isHaveDiscrepancies()) {
+            navigator.openListOfDifferencesScreen(
+                    onClickSkipCallback = {
+                        showConfirmationForSentReportScreen()
+                    }
+            )
+        } else {
+            showConfirmationForSentReportScreen()
+        }
+    }
+
+    private fun showConfirmationForSentReportScreen() {
         // Подтверждение - Перевести задание в статус "Подсчитано" и закрыть его для редактирования? - Назад / Да
         navigator.showSetTaskToStatusCalculated {
             viewModelScope.launch {
