@@ -1,12 +1,16 @@
 package com.lenta.bp14.requests.check_price
 
 import com.lenta.bp14.models.check_price.ActualPriceInfo
+import com.lenta.bp14.models.check_price.GoodOptions
+import com.lenta.bp14.models.data.getGoodType
 import com.lenta.bp14.models.general.AppTaskTypes
 import com.lenta.bp14.requests.*
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.functional.Either
 import com.lenta.shared.functional.map
 import com.lenta.shared.interactor.UseCase
+import com.lenta.shared.models.core.getMatrixType
+import com.lenta.shared.utilities.extentions.isSapTrue
 import com.lenta.shared.utilities.extentions.toNullIfEmpty
 import javax.inject.Inject
 
@@ -23,7 +27,17 @@ class CheckPriceNetRequest
                     price1 = price.price1,
                     price2 = price.price2.toNullIfEmpty(),
                     price3 = price.price3.toNullIfEmpty(),
-                    price4 = price.price4.toNullIfEmpty()
+                    price4 = price.price4.toNullIfEmpty(),
+                    options = GoodOptions(
+                            matrixType = getMatrixType(productInfo.matrixType),
+                            section = if (productInfo.sectionNumber.isNotEmpty()) productInfo.sectionNumber else "91",
+                            goodType = getGoodType(
+                                    alcohol = productInfo.isAlco,
+                                    excise = productInfo.isExcise,
+                                    marked = productInfo.isMarked),
+                            healthFood = productInfo.isHealthyFood.isSapTrue(),
+                            novelty = productInfo.isNew.isSapTrue()
+                    )
             )
         }
     }

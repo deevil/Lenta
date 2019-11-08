@@ -4,8 +4,10 @@ import androidx.lifecycle.viewModelScope
 import com.lenta.bp14.models.check_price.ActualPriceInfo
 import com.lenta.bp14.models.check_price.CheckPriceResult
 import com.lenta.bp14.models.check_price.ICheckPriceTask
+import com.lenta.bp14.models.data.GoodType
 import com.lenta.bp14.models.print.IPrintTask
 import com.lenta.bp14.platform.navigation.IScreenNavigator
+import com.lenta.shared.models.core.MatrixType
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.analyseCode
 import kotlinx.coroutines.launch
@@ -29,6 +31,17 @@ class GoodInfoPcViewModel : CoreViewModel() {
                 price2 = priceInfo?.price2,
                 price1Promotion = priceInfo?.price3,
                 price2Sale = priceInfo?.price4
+        )
+    }
+
+    val options by lazy {
+        val options = priceInfo!!.options
+        OptionsUi(
+                matrixType = options.matrixType,
+                goodType = options.goodType,
+                section = options.section,
+                healthFood = options.healthFood,
+                novelty = options.novelty
         )
     }
 
@@ -147,4 +160,12 @@ data class ActualPriceInfoUi(
         val price2: Double?,
         val price1Promotion: Double?,
         val price2Sale: Double?
+)
+
+data class OptionsUi(
+        val matrixType: MatrixType,
+        val goodType: GoodType,
+        val section: String,
+        val healthFood: Boolean,
+        val novelty: Boolean
 )

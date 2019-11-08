@@ -7,10 +7,6 @@
     <data>
 
         <variable
-            name="options"
-            type="com.lenta.bp14.features.work_list.good_info.OptionsUi" />
-
-        <variable
             name="vm"
             type="com.lenta.bp14.features.work_list.good_info.GoodInfoWlViewModel" />
 

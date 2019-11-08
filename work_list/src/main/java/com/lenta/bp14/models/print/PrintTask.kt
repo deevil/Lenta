@@ -3,6 +3,8 @@ package com.lenta.bp14.models.print
 import com.lenta.bp14.fmp.resources.ZfmpUtz50V001
 import com.lenta.bp14.fmp.resources.ZfmpUtz51V001
 import com.lenta.bp14.models.check_price.ActualPriceInfo
+import com.lenta.bp14.models.check_price.GoodOptions
+import com.lenta.bp14.models.data.getGoodType
 import com.lenta.bp14.models.print.PriceTagType.Companion.emptyPriceTag
 import com.lenta.bp14.repos.IRepoInMemoryHolder
 import com.lenta.bp14.requests.ProductInfoResult
@@ -12,6 +14,7 @@ import com.lenta.shared.exception.Failure
 import com.lenta.shared.fmp.resources.dao_ext.getMaxAllowedPrintCopyWkl
 import com.lenta.shared.fmp.resources.fast.ZmpUtz14V001
 import com.lenta.shared.functional.Either
+import com.lenta.shared.models.core.getMatrixType
 import com.lenta.shared.platform.time.ITimeMonitor
 import com.lenta.shared.print.IPrintPriceNetService
 import com.lenta.shared.print.PrintPriceInfo
@@ -103,7 +106,17 @@ class PrintTask @Inject constructor(
                     price1 = serverPriceInfo.price1,
                     price2 = serverPriceInfo.price2.toNullIfEmpty(),
                     price3 = serverPriceInfo.price3.toNullIfEmpty(),
-                    price4 = serverPriceInfo.price4.toNullIfEmpty()
+                    price4 = serverPriceInfo.price4.toNullIfEmpty(),
+                    options = GoodOptions(
+                            matrixType = getMatrixType(productInfo.matrixType),
+                            section = if (productInfo.sectionNumber.isNotEmpty()) productInfo.sectionNumber else "91",
+                            goodType = getGoodType(
+                                    alcohol = productInfo.isAlco,
+                                    excise = productInfo.isExcise,
+                                    marked = productInfo.isMarked),
+                            healthFood = productInfo.isHealthyFood.isSapTrue(),
+                            novelty = productInfo.isNew.isSapTrue()
+                    )
             )
 
             val price2 = if (isRegular) actualPriceInfo.price2
