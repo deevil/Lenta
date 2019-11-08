@@ -98,10 +98,6 @@ class TaskListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
         repoInMemoryHolder.taskList.map { repoInMemoryHolder.taskList.value?.taskCount ?: 0 }
     }
 
-    init {
-
-    }
-
     fun onClickRight() {
         if (selectedPage.value == 1) {
             screenNavigator.openTaskSearchScreen()

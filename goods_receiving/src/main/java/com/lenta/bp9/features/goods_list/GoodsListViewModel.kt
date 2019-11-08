@@ -82,7 +82,8 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
                 listCounted.postValue(
                         task.getProcessedProducts()
                                 .filter {
-                                    !it.isNoEAN
+                                    task.taskRepository.getProductsDiscrepancies().getCountAcceptOfProduct(it) > 0.0
+                                            && task.taskRepository.getProductsDiscrepancies().getCountRefusalOfProduct(it) > 0.0
                                 }
                                 .mapIndexed { index, productInfo ->
                                     ListCountedItem(
@@ -119,7 +120,6 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
         }
 
         countedSelectionsHelper.clearPositions()
-
     }
 
     private fun updateListWithoutBarcode() {

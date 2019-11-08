@@ -35,6 +35,12 @@ class MemoryTaskBatchesRepository : ITaskBatchesRepository {
         return false
     }
 
+    override fun updateBatches(newBatches: List<TaskBatchInfo>) {
+        for (batchesInfo in newBatches) {
+            addBatch(batchesInfo)
+        }
+    }
+
     override fun changeBatch(batch: TaskBatchInfo): Boolean {
         deleteBatch(batch)
         return addBatch(batch)

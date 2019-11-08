@@ -24,6 +24,14 @@ class TaskContentsRequestStatus : ObjectRawStatus<TaskContentsRequestResult>()
 data class TaskContentsRequestResult(
         @SerializedName("ES_TASK")
         val taskDescription: TaskDescriptionRestInfo,
+        @SerializedName("ET_TASK_POS") //Таблица состава задания ППП	ZTT_GRZ_TASK_DS_POS_EXCH
+        val taskComposition: List<TaskComposition>,
+        @SerializedName("ET_TASK_DIFF") //Таблица расхождений по товару	ZTT_GRZ_TASK_DIF_EXCH
+        val taskProductDiscrepancies: List<TaskProductDiscrepancies>,
+        @SerializedName("ET_TASK_PARTS") //Таблица партий задания
+        val taskBatches: List<TaskBatchInfo>,
+        @SerializedName("ET_PARTS_DIFF") //Таблица расхождений по партиям
+        val taskBatchesDiscrepancies: List<TaskBatchesDiscrepancies>,
         @SerializedName("ET_NOTIFY")
         val notifications: List<TaskNotificationRestInfo>,
         @SerializedName("ET_DOC_NOTIFY")

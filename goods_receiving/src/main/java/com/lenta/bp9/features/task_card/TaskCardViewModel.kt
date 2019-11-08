@@ -178,15 +178,6 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
             TaskStatus.Arrived -> {
                 screenNavigator.openStartReviseLoadingScreen()
             }
-            TaskStatus.Checking -> {
-                when {
-                    taskManager.getReceivingTask()?.taskRepository?.getReviseDocuments()?.getDeliveryDocuments()?.isNotEmpty() == true -> screenNavigator.openTaskReviseScreen()
-                    taskManager.getReceivingTask()?.taskRepository?.getReviseDocuments()?.getProductDocuments()?.isNotEmpty() == true -> screenNavigator.openProductDocumentsReviseScreen()
-                    else -> screenNavigator.openCheckingNotNeededAlert(context.getString(R.string.revise_not_needed_checking)) {
-                        screenNavigator.openFinishReviseLoadingScreen()
-                    }
-                }
-            }
             TaskStatus.Checked -> {
                 screenNavigator.openStartConditionsReviseLoadingScreen()
             }
