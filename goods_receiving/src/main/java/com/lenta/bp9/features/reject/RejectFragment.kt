@@ -17,7 +17,7 @@ class RejectFragment : CoreFragment<FragmentRejectBinding, RejectViewModel>(), T
 
     override fun getLayoutId(): Int = R.layout.fragment_reject
 
-    override fun getPageNumber() = generateScreenNumber()
+    override fun getPageNumber() = "09/24"
 
     override fun getViewModel(): RejectViewModel {
         provideViewModel(RejectViewModel::class.java).let {
