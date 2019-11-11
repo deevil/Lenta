@@ -1,5 +1,6 @@
 package com.lenta.bp14.features.list_of_differences
 
+import androidx.lifecycle.viewModelScope
 import com.lenta.bp14.features.common_ui_model.SimpleProductUi
 import com.lenta.bp14.models.IGeneralTaskManager
 import com.lenta.bp14.models.getTaskName
@@ -7,6 +8,8 @@ import com.lenta.bp14.platform.navigation.IScreenNavigator
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.extentions.map
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class ListOfDifferencesViewModel : CoreViewModel() {
@@ -48,10 +51,20 @@ class ListOfDifferencesViewModel : CoreViewModel() {
     fun onClickMissing() {
         selectionsHelper.selectedPositions.value.let { positions ->
             if (positions!!.isEmpty()) {
-                selectionsHelper.addAll(goods.value!!)
+                navigator.showSetZeroQuantity(
+                        quantity = goods.value!!.size,
+                        yesCallback = {
+                            selectionsHelper.addAll(goods.value!!)
+                            task.setMissing(positions.map { goods.value!![it].matNr })
+                            onClickSkip()
+                            /*viewModelScope.launch {
+                                delay(500)
+                            }*/
+                        }
+                )
+            } else {
+                task.setMissing(positions.map { goods.value!![it].matNr })
             }
-
-            task.setMissing(positions.map { goods.value!![it].matNr })
         }
 
         selectionsHelper.clearPositions()

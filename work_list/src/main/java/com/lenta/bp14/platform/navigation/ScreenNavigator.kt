@@ -503,6 +503,19 @@ class ScreenNavigator @Inject constructor(
         }
     }
 
+    override fun showSetZeroQuantity(yesCallback: () -> Unit, quantity: Int) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.set_zero_quantity, quantity),
+                    iconRes = R.drawable.ic_question_80dp,
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(yesCallback),
+                    pageNumber = "65",
+                    rightButtonDecorationInfo = ButtonDecorationInfo.yes
+            )
+            )
+        }
+    }
+
 }
 
 interface IScreenNavigator : ICoreNavigator {
@@ -554,6 +567,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openAddMarkToList(nextCallback: () -> Unit, message: String)
     fun showIncorrectProductionDate(backCallback: () -> Unit)
     fun showNumberOfCopiesExceedsMaximum()
+    fun showSetZeroQuantity(yesCallback: () -> Unit, quantity: Int)
 
     fun openTestScanBarcodeScreen()
     fun openScanPriceScreen()
