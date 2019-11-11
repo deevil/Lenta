@@ -14,7 +14,7 @@ class BackFragmentResultHelper {
 
     fun getFuncAndClear(idCodeFunc: Int?): (() -> Unit)? {
         val reference = referenceHashMap[idCodeFunc]
-        referenceHashMap.clear()
+        referenceHashMap.remove(idCodeFunc)
         return reference?.get()
     }
 
