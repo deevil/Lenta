@@ -26,7 +26,7 @@ class CheckListTask @Inject constructor(
         private val gson: Gson
 ) : ICheckListTask, StateFromToString {
 
-    override val goods = MutableLiveData<List<Good>>(listOf())
+    override val goods = MutableLiveData<List<Good>>(emptyList())
 
     private var maxTaskPositions: Double = 0.0
 
@@ -158,11 +158,12 @@ interface ICheckListTask : ITask {
 // --------------------------
 
 data class Good(
-        val ean: String? = null,
+        val ean: String?,
         val material: String,
         val name: String,
+        val defaultUnits: Uom,
         val units: Uom,
-        val quantity: MutableLiveData<String>
+        val quantity: MutableLiveData<String> // значение в килограммах
 ) {
 
     fun getFormattedMaterialWithName(): String {

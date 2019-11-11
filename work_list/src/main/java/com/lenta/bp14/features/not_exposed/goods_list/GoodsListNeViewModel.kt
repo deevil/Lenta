@@ -11,8 +11,8 @@ import com.lenta.bp14.models.filter.FilterFieldType
 import com.lenta.bp14.models.filter.FilterParameter
 import com.lenta.bp14.models.data.GoodsListTab
 import com.lenta.bp14.models.getTaskName
-import com.lenta.bp14.models.not_exposed_products.INotExposedProductsTask
-import com.lenta.bp14.models.not_exposed_products.repo.NotExposedProductInfo
+import com.lenta.bp14.models.not_exposed.INotExposedTask
+import com.lenta.bp14.models.not_exposed.repo.NotExposedProductInfo
 import com.lenta.bp14.platform.navigation.IScreenNavigator
 import com.lenta.bp14.requests.not_exposed_product.NotExposedSendReportNetRequest
 import com.lenta.shared.account.ISessionInfo
@@ -36,27 +36,21 @@ class GoodsListNeViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
 
     @Inject
     lateinit var navigator: IScreenNavigator
-
     @Inject
-    lateinit var task: INotExposedProductsTask
-
+    lateinit var task: INotExposedTask
     @Inject
     lateinit var deviceInfo: DeviceInfo
-
     @Inject
     lateinit var sentReportRequest: NotExposedSendReportNetRequest
-
     @Inject
     lateinit var generalTaskManager: IGeneralTaskManager
-
     @Inject
     lateinit var priceInfoParser: IPriceInfoParser
-
     @Inject
     lateinit var scanInfoRequest: ScanInfoRequest
-
     @Inject
     lateinit var sessionInfo: ISessionInfo
+
 
     val onOkFilterListener = object : OnOkInSoftKeyboardListener {
         override fun onOkInSoftKeyboard(): Boolean {
@@ -82,10 +76,10 @@ class GoodsListNeViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     val requestFocusToNumberField: MutableLiveData<Boolean> = MutableLiveData()
 
     val processingGoods by lazy {
-        task.getToProcessingProducts().map {
-            it?.mapIndexed { index, productInfo ->
+        task.getToProcessingProducts().map { list ->
+            list?.mapIndexed { index, productInfo ->
                 SimpleProductUi(
-                        position = index + 1,
+                        position = list.size - index,
                         matNr = productInfo.matNr,
                         name = "${productInfo.matNr.takeLast(6)} ${productInfo.name}"
                 )
@@ -99,7 +93,7 @@ class GoodsListNeViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
                     position = products.size - index,
                     matNr = productInfo.matNr,
                     name = "${productInfo.matNr.takeLast(6)} ${productInfo.name}",
-                    quantity = "${productInfo.quantity.toStringFormatted()} ${productInfo.uom?.name
+                    quantity = "${productInfo.quantity.toStringFormatted()} ${productInfo.units?.name
                             ?: ""}",
                     isEmptyPlaceMarked = productInfo.isEmptyPlaceMarked
             )
@@ -133,13 +127,11 @@ class GoodsListNeViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
         }
     }
 
-
     val thirdButtonVisibility = correctedSelectedPage.map { it != GoodsListTab.PROCESSING.position }
 
     init {
         viewModelScope.launch {
             requestFocusToNumberField.value = true
-
         }
     }
 

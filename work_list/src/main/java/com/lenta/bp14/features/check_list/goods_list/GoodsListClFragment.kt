@@ -17,6 +17,7 @@ import com.lenta.bp14.di.CheckListComponent
 import com.lenta.shared.di.CoreInjectHelper
 import com.lenta.shared.keys.KeyCode
 import com.lenta.shared.keys.OnKeyDownListener
+import com.lenta.shared.platform.activity.OnBackPresserListener
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
@@ -31,7 +32,7 @@ import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.provideViewModel
 
 class GoodsListClFragment : CoreFragment<FragmentGoodsListClBinding, GoodsListClViewModel>(),
-        ToolbarButtonsClickListener, ViewPagerSettings, OnKeyDownListener, OnScanResultListener {
+        ToolbarButtonsClickListener, ViewPagerSettings, OnKeyDownListener, OnScanResultListener, OnBackPresserListener {
 
     private var recyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
 
@@ -153,6 +154,10 @@ class GoodsListClFragment : CoreFragment<FragmentGoodsListClBinding, GoodsListCl
         val googleApiAvailability = GoogleApiAvailability.getInstance()
         val status = googleApiAvailability.isGooglePlayServicesAvailable(context)
         return status == ConnectionResult.SUCCESS
+    }
+
+    override fun onBackPressed(): Boolean {
+        return vm.onBackPressed()
     }
 
 }

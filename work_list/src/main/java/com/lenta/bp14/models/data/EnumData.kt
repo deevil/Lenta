@@ -4,13 +4,6 @@ import com.lenta.bp14.R
 import com.lenta.bp14.requests.pojo.ProductInfo
 import com.lenta.shared.utilities.extentions.isSapTrue
 
-enum class TaskType {
-    WORK_LIST,
-    PRICE_CHECK,
-    CHECK_LIST,
-    NOT_EXPOSED
-}
-
 enum class GoodsListTab(val position: Int) {
     PROCESSING(0),
     PROCESSED(1),

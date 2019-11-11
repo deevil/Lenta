@@ -43,7 +43,6 @@ class MainMenuViewModel : CoreViewModel() {
 
     fun onClickCreateTask() {
         navigator.openJobCardScreen()
-
     }
 
     fun onClickWorkWithTask() {
@@ -62,11 +61,13 @@ class MainMenuViewModel : CoreViewModel() {
                             isStrictList = false
                     )
             )
-            navigator.openJobCardScreen()
+
+            if (sessionInfo.isAuthSkipped.value == false) {
+                navigator.openJobCardScreen()
+            }
+
             navigator.openGoodsListClScreen()
-
         }
-
     }
 
     fun onClickAuxiliaryMenu() {

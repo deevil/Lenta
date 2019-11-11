@@ -24,21 +24,10 @@ import com.mobrun.plugin.api.callparams.WebCallParams
 
 class ScanInfoRequest(private val hyperHive: HyperHive, private val gson: Gson, private val sessionInfo: ISessionInfo) : UseCase<ScanInfoResult, ScanInfoRequestParams> {
 
-    private val zmpUtz25V001: ZmpUtz25V001 by lazy {
-        ZmpUtz25V001(hyperHive)
-    }
-
-    private val zfmpUtz48V001: ZfmpUtz48V001 by lazy {
-        ZfmpUtz48V001(hyperHive)
-    }
-
-    private val zmpUtz07V001: ZmpUtz07V001 by lazy {
-        ZmpUtz07V001(hyperHive)
-    }
-
-    private val zmpUtz46V001: ZmpUtz46V001 by lazy {
-        ZmpUtz46V001(hyperHive)
-    }
+    private val eanInfo: ZmpUtz25V001 by lazy { ZmpUtz25V001(hyperHive) }
+    private val productInfo: ZfmpUtz48V001 by lazy { ZfmpUtz48V001(hyperHive) }
+    private val units: ZmpUtz07V001 by lazy { ZmpUtz07V001(hyperHive) }
+    private val zmpUtz46V001: ZmpUtz46V001 by lazy { ZmpUtz46V001(hyperHive) }
 
     override suspend fun run(params: ScanInfoRequestParams): Either<Failure, ScanInfoResult> {
 
@@ -51,7 +40,7 @@ class ScanInfoRequest(private val hyperHive: HyperHive, private val gson: Gson, 
         val eanInfo = if (params.isBarCode == false) {
             null
         } else {
-            zmpUtz25V001.getEanInfo(scanCodeInfo.eanNumberForSearch)?.toEanInfo()
+            eanInfo.getEanInfo(scanCodeInfo.eanNumberForSearch)?.toEanInfo()
         }
 
         Logg.d { "eanInfo $eanInfo" }
@@ -96,7 +85,7 @@ class ScanInfoRequest(private val hyperHive: HyperHive, private val gson: Gson, 
                 )
 
                 productInfoStatus.result?.raw?.let {
-                    val productInfo = it.getProductInfo(zmpUtz07V001.getUomInfo(it.material?.buom))
+                    val productInfo = it.getProductInfo(units.getUomInfo(it.material?.buom))
                     productInfo?.let { info ->
                         return Either.Right(ScanInfoResult(info, quantity))
                     }
@@ -117,7 +106,7 @@ class ScanInfoRequest(private val hyperHive: HyperHive, private val gson: Gson, 
 
         val quantity = scanCodeInfo.extractQuantityFromEan(eanInfo = eanInfo)
 
-        val materialInfo = zfmpUtz48V001.getProductInfoByMaterial(eanInfo?.materialNumber
+        val materialInfo = productInfo.getProductInfoByMaterial(eanInfo?.materialNumber
                 ?: scanCodeInfo.materialNumberForSearch ?: return null)
                 ?: return null
 
@@ -125,7 +114,7 @@ class ScanInfoRequest(private val hyperHive: HyperHive, private val gson: Gson, 
     }
 
     private fun getResult(materialInfo: ZfmpUtz48V001.ItemLocal_ET_MATNR_LIST, quantity: Double): Either<Failure, ScanInfoResult> {
-        val uomInfo = zmpUtz07V001.getUomInfo(materialInfo.buom)
+        val uomInfo = units.getUomInfo(materialInfo.buom)
                 ?: return Either.Left(Failure.GoodNotFound)
 
         return Either.Right(

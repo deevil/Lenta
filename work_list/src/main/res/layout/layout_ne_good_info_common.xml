@@ -49,8 +49,8 @@
                         app:maxLengthForScanProtect="@{6}"
                         android:inputType="numberDecimal"
                         android:text="@={vm.quantityField}"
-                        app:digitsForUom="@{vm.originalProcessedProductInfo.uom}"
-                        app:suffix="@{vm.goodInfo.uom.name}"
+                        app:digitsForUom="@{vm.originalProcessedProductInfo.units}"
+                        app:suffix="@{vm.goodInfo.units.name}"
                         tools:text="0 шт" />
 
                 </LinearLayout>

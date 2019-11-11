@@ -1,6 +1,6 @@
 package com.lenta.bp14.features.list_of_differences
 
-import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import com.lenta.bp14.features.common_ui_model.SimpleProductUi
 import com.lenta.bp14.models.IGeneralTaskManager
 import com.lenta.bp14.models.getTaskName
@@ -8,6 +8,8 @@ import com.lenta.bp14.platform.navigation.IScreenNavigator
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.extentions.map
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class ListOfDifferencesViewModel : CoreViewModel() {
@@ -19,10 +21,10 @@ class ListOfDifferencesViewModel : CoreViewModel() {
     @Inject
     lateinit var generalTaskManager: IGeneralTaskManager
 
+
     private val task by lazy {
         generalTaskManager.getProcessedTask()!!
     }
-
 
     val selectionsHelper = SelectionItemsHelper()
 
@@ -42,15 +44,25 @@ class ListOfDifferencesViewModel : CoreViewModel() {
         }
     }
 
-    val missingButtonEnabled: MutableLiveData<Boolean> = selectionsHelper.selectedPositions.map { it?.isNotEmpty() }
-
+    val missingButtonEnabled by lazy {
+        goods.map { it?.isNotEmpty() }
+    }
 
     fun onClickMissing() {
-        task.setMissing(
-                selectionsHelper.selectedPositions.value!!.map {
-                    goods.value!![it].matNr
-                }
-        )
+        selectionsHelper.selectedPositions.value.let { positions ->
+            if (positions!!.isEmpty()) {
+                navigator.showSetZeroQuantity(
+                        quantity = goods.value!!.size,
+                        yesCallback = {
+                            selectionsHelper.addAll(goods.value!!)
+                            task.setMissing(positions.map { goods.value!![it].matNr })
+                        }
+                )
+            } else {
+                task.setMissing(positions.map { goods.value!![it].matNr })
+            }
+        }
+
         selectionsHelper.clearPositions()
     }
 

@@ -9,6 +9,8 @@ import com.lenta.bp14.models.ITask
 import com.lenta.bp14.models.ITaskDescription
 import com.lenta.bp14.models.check_price.repo.IActualPricesRepo
 import com.lenta.bp14.models.check_price.repo.CheckPriceResultsRepo
+import com.lenta.bp14.models.data.GoodType
+import com.lenta.bp14.models.data.getGoodType
 import com.lenta.bp14.models.general.ITaskTypeInfo
 import com.lenta.bp14.models.general.AppTaskTypes
 import com.lenta.bp14.models.general.IGeneralRepo
@@ -20,7 +22,9 @@ import com.lenta.shared.exception.Failure
 import com.lenta.shared.functional.Either
 import com.lenta.shared.functional.map
 import com.lenta.shared.functional.rightToLeft
+import com.lenta.shared.models.core.MatrixType
 import com.lenta.shared.models.core.StateFromToString
+import com.lenta.shared.models.core.getMatrixType
 import com.lenta.shared.requests.combined.scan_info.ScanCodeInfo
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.isSapTrue
@@ -81,7 +85,17 @@ class CheckPriceTask @Inject constructor(
                             price1 = it.price1,
                             price2 = it.price2.toNullIfEmpty(),
                             price3 = it.price3.toNullIfEmpty(),
-                            price4 = it.price4.toNullIfEmpty()
+                            price4 = it.price4.toNullIfEmpty(),
+                            options = GoodOptions(
+                                    matrixType = getMatrixType(productInfo?.matrixType ?: ""),
+                                    section = if (productInfo?.sectionNumber?.isNotEmpty() == true) productInfo.sectionNumber else "91",
+                                    goodType = getGoodType(
+                                            alcohol = productInfo?.isAlco ?: "",
+                                            excise = productInfo?.isExcise ?: "",
+                                            marked = productInfo?.isMarked ?: ""),
+                                    healthFood = productInfo?.isHealthyFood.isSapTrue(),
+                                    novelty = productInfo?.isNew.isSapTrue()
+                            )
                     )
             )
         }
@@ -205,7 +219,17 @@ class CheckPriceTask @Inject constructor(
                         price1 = priceInfo?.price1,
                         price2 = priceInfo?.price2.toNullIfEmpty(),
                         price3 = priceInfo?.price3.toNullIfEmpty(),
-                        price4 = priceInfo?.price4.toNullIfEmpty()
+                        price4 = priceInfo?.price4.toNullIfEmpty(),
+                        options = GoodOptions(
+                                matrixType = getMatrixType(productInfo?.matrixType ?: ""),
+                                section = if (productInfo?.sectionNumber?.isNotEmpty() == true) productInfo.sectionNumber else "91",
+                                goodType = getGoodType(
+                                        alcohol = productInfo?.isAlco ?: "",
+                                        excise = productInfo?.isExcise ?: "",
+                                        marked = productInfo?.isMarked ?: ""),
+                                healthFood = productInfo?.isHealthyFood.isSapTrue(),
+                                novelty = productInfo?.isNew.isSapTrue()
+                        )
                 ),
                 userPriceInfo = UserPriceInfo(
                         isValidPrice = when (checkPriceInfo?.statCheck) {
@@ -282,13 +306,10 @@ class CheckPriceTask @Inject constructor(
     }
 
     override suspend fun getActualPriceByEan(eanCode: String): Either<Failure, ActualPriceInfo> {
-        val scanCodeInfo = ScanCodeInfo(
-                originalNumber = eanCode,
-                fixedQuantity = null
-        )
+        val scanCodeInfo = ScanCodeInfo(eanCode)
         return actualPricesRepo.getActualPriceInfoByEan(
                 tkNumber = taskDescription.tkNumber,
-                eanCode = scanCodeInfo.eanNumberForSearch ?: eanCode
+                eanCode = scanCodeInfo.eanWithoutWeight
         ).rightToLeft(
                 fnRtoL = checksForAddFunc
         )
@@ -459,7 +480,8 @@ data class ActualPriceInfo(
         val price1: Double?,
         val price2: Double?,
         val price3: Double?,
-        val price4: Double?
+        val price4: Double?,
+        val options: GoodOptions
 ) {
     fun getPrice(): Double? {
         return price1
@@ -479,6 +501,14 @@ data class ActualPriceInfo(
         return price3.toNullIfEmpty() == null && price4.toNullIfEmpty() == null
     }
 }
+
+data class GoodOptions(
+        val matrixType: MatrixType,
+        val section: String,
+        val goodType: GoodType,
+        val healthFood: Boolean = false,
+        val novelty: Boolean = false
+)
 
 
 data class UserPriceInfo(override val isValidPrice: Boolean?) : IUserPriceInfo

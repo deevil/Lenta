@@ -4,7 +4,7 @@ import com.lenta.bp14.models.check_list.CheckListTaskManager
 import com.lenta.bp14.models.check_price.CheckPriceTaskManager
 import com.lenta.bp14.models.general.AppTaskTypes
 import com.lenta.bp14.models.general.ITaskTypeInfo
-import com.lenta.bp14.models.not_exposed_products.NotExposedProductsTaskManager
+import com.lenta.bp14.models.not_exposed.NotExposedTaskManager
 import com.lenta.bp14.models.work_list.WorkListTaskManager
 import com.lenta.bp14.requests.pojo.SentReportResult
 import com.lenta.shared.models.core.StateFromToString
@@ -18,7 +18,7 @@ class GeneralTaskManager @Inject constructor(
         checkPriceTaskManager: CheckPriceTaskManager,
         checkListTaskManager: CheckListTaskManager,
         workListTaskManager: WorkListTaskManager,
-        notExposedProductsTaskManager: NotExposedProductsTaskManager,
+        notExposedTaskManager: NotExposedTaskManager,
         private val timeMonitor: ITimeMonitor,
         private val persistTaskData: IPersistTaskData
 ) : IGeneralTaskManager {
@@ -27,7 +27,7 @@ class GeneralTaskManager @Inject constructor(
 
     private var savedTaskData: TaskData? = null
 
-    private val allManagers = listOf<ITaskManager<*, *>>(checkPriceTaskManager, checkListTaskManager, workListTaskManager, notExposedProductsTaskManager)
+    private val allManagers = listOf<ITaskManager<*, *>>(checkPriceTaskManager, checkListTaskManager, workListTaskManager, notExposedTaskManager)
 
     init {
         loadTaskData()

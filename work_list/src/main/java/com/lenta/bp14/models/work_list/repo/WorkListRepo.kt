@@ -15,7 +15,6 @@ import com.lenta.shared.models.core.Uom
 import com.lenta.shared.models.core.getMatrixType
 import com.lenta.shared.requests.combined.scan_info.ScanCodeInfo
 import com.lenta.shared.requests.combined.scan_info.pojo.EanInfo
-import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.isSapTrue
 import com.mobrun.plugin.api.HyperHive
 import kotlinx.coroutines.Dispatchers
@@ -36,11 +35,9 @@ class WorkListRepo @Inject constructor(
     override suspend fun getGoodByMaterial(material: String): Good? {
         return withContext(Dispatchers.IO) {
             getGoodInfoByMaterial(material)?.let { goodInfo ->
-                val ean = getEanByMaterial(material)
-                //TODO реализовать конвертацию грамм в килограммы. Учесть отправку отчетов
-                //val unitsCode = if (goodInfo.unitsCode == Uom.G.code) Uom.KG.code else goodInfo.unitsCode
-                val unitsCode = goodInfo.unitsCode
-                val unitsName = getUnitsName(unitsCode)
+                val defaultUnits = Uom(code = goodInfo.unitsCode, name = getUnitsName(goodInfo.unitsCode))
+                val units = if (defaultUnits == Uom.G) Uom.KG else defaultUnits
+                val ean = getEanByMaterialUnits(material, defaultUnits.code)
                 val shelfLifeTypes = getShelfLifeTypes()
                 val comments = getWorkListComments()
 
@@ -48,10 +45,8 @@ class WorkListRepo @Inject constructor(
                         ean = ean,
                         material = material,
                         name = goodInfo.name,
-                        units = Uom(
-                                code = unitsCode,
-                                name = unitsName ?: ""
-                        ),
+                        defaultUnits = defaultUnits,
+                        units = units,
                         goodGroup = goodInfo.goodGroup,
                         purchaseGroup = goodInfo.purchaseGroup,
                         shelfLife = goodInfo.shelfLife,
@@ -60,7 +55,7 @@ class WorkListRepo @Inject constructor(
                         comments = comments,
                         options = GoodOptions(
                                 matrixType = getMatrixType(goodInfo.matrixType),
-                                section = goodInfo.section,
+                                section = if (goodInfo.section.isNotEmpty()) goodInfo.section else "91",
                                 goodType = getGoodType(
                                         alcohol = goodInfo.isAlcohol,
                                         excise = goodInfo.isExcise,
@@ -76,29 +71,23 @@ class WorkListRepo @Inject constructor(
     }
 
     override suspend fun getGoodByEan(ean: String): Good? {
-        val scanCodeInfo = ScanCodeInfo(ean, null)
+        val scanCodeInfo = ScanCodeInfo(ean)
+
         return withContext(Dispatchers.IO) {
-            getMaterialByEan(scanCodeInfo.eanNumberForSearch ?: ean)?.let { eanInfo ->
+            getMaterialByEan(scanCodeInfo.eanWithoutWeight)?.let { eanInfo ->
                 getGoodInfoByMaterial(eanInfo.materialNumber)?.let { goodInfo ->
-                    //TODO реализовать конвертацию грамм в килограммы. Учесть отправку отчетов
-                    //val unitsCode = if (goodInfo.unitsCode == Uom.G.code) Uom.KG.code else goodInfo.unitsCode
-                    val unitsCode = goodInfo.unitsCode
-                    val unitsName = getUnitsName(unitsCode)
+                    val defaultUnits = Uom(code = goodInfo.unitsCode, name = getUnitsName(goodInfo.unitsCode))
+                    val units = if (defaultUnits == Uom.G) Uom.KG else defaultUnits
                     val shelfLifeTypes = getShelfLifeTypes()
                     val comments = getWorkListComments()
-
-                    val quantity = scanCodeInfo.extractQuantityFromEan(
-                            eanInfo
-                    )
+                    val quantity = scanCodeInfo.getQuantity(defaultUnits)
 
                     return@withContext Good(
-                            ean = scanCodeInfo.eanNumberForSearch,
+                            ean = eanInfo.ean,
                             material = eanInfo.materialNumber,
                             name = goodInfo.name,
-                            units = Uom(
-                                    code = unitsCode,
-                                    name = unitsName ?: ""
-                            ),
+                            defaultUnits = defaultUnits,
+                            units = units,
                             goodGroup = goodInfo.goodGroup,
                             purchaseGroup = goodInfo.purchaseGroup,
                             shelfLife = goodInfo.shelfLife,
@@ -108,7 +97,7 @@ class WorkListRepo @Inject constructor(
                             defaultValue = quantity,
                             options = GoodOptions(
                                     matrixType = getMatrixType(goodInfo.matrixType),
-                                    section = goodInfo.section,
+                                    section = if (goodInfo.section.isNotEmpty()) goodInfo.section else "91",
                                     goodType = getGoodType(
                                             alcohol = goodInfo.isAlcohol,
                                             excise = goodInfo.isExcise,
@@ -124,7 +113,7 @@ class WorkListRepo @Inject constructor(
         }
     }
 
-    override suspend fun getGoodInfoByMaterial(material: String?): WorkListGoodInfo? {
+    private suspend fun getGoodInfoByMaterial(material: String?): WorkListGoodInfo? {
         return withContext(Dispatchers.IO) {
             return@withContext productInfo.getProductInfoByMaterial(material)?.toWorkListGoodInfo()
         }
@@ -136,9 +125,9 @@ class WorkListRepo @Inject constructor(
         }
     }
 
-    override suspend fun getEanByMaterial(material: String?): String? {
+    private suspend fun getEanByMaterialUnits(material: String, unitsCode: String): String? {
         return withContext(Dispatchers.IO) {
-            return@withContext eanInfo.getEanInfoFromMaterial(material)?.toEanInfo()?.ean
+            return@withContext eanInfo.getEanInfoByMaterialUnits(material, unitsCode)?.toEanInfo()?.ean
         }
     }
 
@@ -165,9 +154,9 @@ class WorkListRepo @Inject constructor(
         }
     }
 
-    private suspend fun getUnitsName(code: String?): String? {
+    private suspend fun getUnitsName(code: String?): String {
         return withContext(Dispatchers.IO) {
-            return@withContext units.getUnitName(code)?.toLowerCase(Locale.getDefault())
+            return@withContext units.getUnitName(code)?.toLowerCase(Locale.getDefault()) ?: ""
         }
     }
 
@@ -176,6 +165,4 @@ class WorkListRepo @Inject constructor(
 interface IWorkListRepo {
     suspend fun getGoodByMaterial(material: String): Good?
     suspend fun getGoodByEan(ean: String): Good?
-    suspend fun getGoodInfoByMaterial(material: String?): WorkListGoodInfo?
-    suspend fun getEanByMaterial(material: String?): String?
 }

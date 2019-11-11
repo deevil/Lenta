@@ -18,6 +18,8 @@ import com.lenta.bp14.platform.IVibrateHelper
 import com.lenta.bp14.platform.VibrateHelper
 import com.lenta.bp14.platform.navigation.IScreenNavigator
 import com.lenta.bp14.platform.navigation.ScreenNavigator
+import com.lenta.bp14.platform.resource.IResourceManager
+import com.lenta.bp14.platform.resource.ResourceManager
 import com.lenta.bp14.platform.sound.ISoundPlayer
 import com.lenta.bp14.platform.sound.SoundPlayer
 import com.lenta.bp14.repos.IRepoInMemoryHolder
@@ -99,6 +101,10 @@ class AppModule {
         @Binds
         @AppScope
         fun bindPersistTaskData(realisation: PersistTaskData): IPersistTaskData
+
+        @Binds
+        @AppScope
+        fun bindResourceManager(realisation: ResourceManager): IResourceManager
 
     }
 

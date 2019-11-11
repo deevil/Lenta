@@ -480,6 +480,42 @@ class ScreenNavigator @Inject constructor(
         )
     }
 
+    override fun showIncorrectProductionDate(backCallback: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.incorrect_production_date),
+                    iconRes = R.drawable.ic_info_pink,
+                    pageNumber = "15",
+                    codeConfirmForLeft = backFragmentResultHelper.setFuncForResult(backCallback),
+                    leftButtonDecorationInfo = ButtonDecorationInfo.back
+            )
+            )
+        }
+    }
+
+    override fun showNumberOfCopiesExceedsMaximum() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.number_of_copies_exceeds_maximum),
+                    pageNumber = "7"
+            )
+            )
+        }
+    }
+
+    override fun showSetZeroQuantity(yesCallback: () -> Unit, quantity: Int) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.set_zero_quantity, quantity),
+                    iconRes = R.drawable.ic_question_80dp,
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(yesCallback),
+                    pageNumber = "65",
+                    rightButtonDecorationInfo = ButtonDecorationInfo.yes
+            )
+            )
+        }
+    }
+
 }
 
 interface IScreenNavigator : ICoreNavigator {
@@ -529,6 +565,9 @@ interface IScreenNavigator : ICoreNavigator {
     fun showAlertBlockedTaskByMe(blockingUser: String, yesCallback: () -> Unit)
     fun showDeviceNotSupportVideoScan()
     fun openAddMarkToList(nextCallback: () -> Unit, message: String)
+    fun showIncorrectProductionDate(backCallback: () -> Unit)
+    fun showNumberOfCopiesExceedsMaximum()
+    fun showSetZeroQuantity(yesCallback: () -> Unit, quantity: Int)
 
     fun openTestScanBarcodeScreen()
     fun openScanPriceScreen()

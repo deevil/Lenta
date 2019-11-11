@@ -20,6 +20,11 @@ fun ZmpUtz25V001.getEanInfoFromMaterial(material: String?): ZmpUtz25V001.ItemLoc
     return localHelper_ET_EANS.getWhere("MATERIAL = \"$material\" LIMIT 1").getOrNull(0)
 }
 
+fun ZmpUtz25V001.getEanInfoByMaterialUnits(material: String, unitsCode: String): ZmpUtz25V001.ItemLocal_ET_EANS? {
+    @Suppress("INACCESSIBLE_TYPE")
+    return localHelper_ET_EANS.getWhere("MATERIAL = \"$material\" AND UOM = \"${unitsCode.toUpperCase()}\" LIMIT 1").getOrNull(0)
+}
+
 fun ZmpUtz25V001.getEansFromMaterial(material: String?): List<ZmpUtz25V001.ItemLocal_ET_EANS> {
     if (material == null) {
         return emptyList()

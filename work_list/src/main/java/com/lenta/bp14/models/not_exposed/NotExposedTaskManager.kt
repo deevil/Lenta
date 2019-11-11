@@ -1,4 +1,4 @@
-package com.lenta.bp14.models.not_exposed_products
+package com.lenta.bp14.models.not_exposed
 
 import com.lenta.bp14.di.DaggerNotExposedComponent
 import com.lenta.bp14.di.NotExposedComponent
@@ -10,11 +10,11 @@ import com.lenta.shared.di.CoreInjectHelper
 import javax.inject.Inject
 
 @AppScope
-class NotExposedProductsTaskManager @Inject constructor() : BaseTaskManager<INotExposedProductsTask, NotExposedProductsTaskDescription>() {
+class NotExposedTaskManager @Inject constructor() : BaseTaskManager<INotExposedTask, NotExposedTaskDescription>() {
 
     private val componentClazz = NotExposedComponent::class.java
 
-    override fun newTask(taskDescription: NotExposedProductsTaskDescription): INotExposedProductsTask? {
+    override fun newTask(taskDescription: NotExposedTaskDescription): INotExposedTask? {
         _task = CoreInjectHelper.createComponent(componentClazz) {
             DaggerNotExposedComponent.builder()
                     .appComponent(getAppComponent(null))

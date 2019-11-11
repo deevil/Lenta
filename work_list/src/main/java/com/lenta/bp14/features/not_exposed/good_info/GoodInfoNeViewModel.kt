@@ -7,7 +7,7 @@ import com.lenta.bp14.features.work_list.good_info.ItemStockUi
 import com.lenta.bp14.models.check_price.IPriceInfoParser
 import com.lenta.bp14.models.data.GoodType
 import com.lenta.bp14.models.data.getGoodType
-import com.lenta.bp14.models.not_exposed_products.INotExposedProductsTask
+import com.lenta.bp14.models.not_exposed.INotExposedTask
 import com.lenta.bp14.platform.navigation.IScreenNavigator
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.fmp.resources.dao_ext.getMaxPositionsProdWkl
@@ -28,7 +28,7 @@ class GoodInfoNeViewModel : CoreViewModel(), PageSelectionListener {
     @Inject
     lateinit var navigator: IScreenNavigator
     @Inject
-    lateinit var task: INotExposedProductsTask
+    lateinit var task: INotExposedTask
     @Inject
     lateinit var scanInfoRequest: ScanInfoRequest
     @Inject
@@ -68,7 +68,7 @@ class GoodInfoNeViewModel : CoreViewModel(), PageSelectionListener {
                         ItemStockUi(
                                 number = "${index + 1}",
                                 storage = stock.lgort,
-                                quantity = "${stock.stock.toStringFormatted()} ${goodInfo.uom?.name
+                                quantity = "${stock.stock.toStringFormatted()} ${goodInfo.units?.name
                                         ?: ""}"
                         )
 
@@ -82,7 +82,7 @@ class GoodInfoNeViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     val marketStorage by lazy {
-        "${(goodInfo.stocks.sumByDouble { it.stock }).toStringFormatted()} ${goodInfo.uom?.name
+        "${(goodInfo.stocks.sumByDouble { it.stock }).toStringFormatted()} ${goodInfo.units?.name
                 ?: ""}"
     }
 
@@ -110,7 +110,7 @@ class GoodInfoNeViewModel : CoreViewModel(), PageSelectionListener {
 
     val totalQuantity: MutableLiveData<String> by lazy {
         totalQuantityValue.map {
-            "${it.dropZeros()} ${goodInfo.uom?.name ?: ""}"
+            "${it.dropZeros()} ${goodInfo.units?.name ?: ""}"
         }
     }
 

@@ -6,11 +6,9 @@ import com.lenta.bp14.R
 import com.lenta.bp14.features.task_list.TaskBlockingStatus
 import com.lenta.bp14.models.data.GoodType
 import com.lenta.bp14.models.data.getDescriptionResId
-import com.lenta.bp14.models.data.pojo.PrintStatus
 import com.lenta.shared.utilities.databinding.dataBindingHelpHolder
 import com.lenta.shared.utilities.extentions.setInvisible
 import com.lenta.shared.utilities.extentions.setVisible
-import com.lenta.shared.utilities.extentions.setVisibleGone
 
 @BindingAdapter("taskStatusIcon")
 fun setTaskStatusIcon(imageView: ImageView, taskBlockingStatus: TaskBlockingStatus) {
@@ -31,16 +29,6 @@ fun setPriceTagStatusIcon(imageView: ImageView, isValid: Boolean?) {
         false -> imageView.setImageResource(R.drawable.ic_close_white_24dp)
     }
     imageView.setVisible(isValid != null)
-}
-
-@BindingAdapter("printStatusIcon")
-fun setPrintStatusIcon(imageView: ImageView, printStatus: PrintStatus) {
-    printStatus.let {
-        when (it) {
-            PrintStatus.NOT_PRINTED -> imageView.setImageResource(R.drawable.ic_print_no_dark_24dp)
-            PrintStatus.PRINTED -> imageView.setImageResource(R.drawable.ic_print_dark_24dp)
-        }
-    }
 }
 
 @BindingAdapter("isValidPrice")
@@ -84,11 +72,8 @@ fun setGoodTypeIcon(imageView: ImageView, goodType: GoodType?) {
                         message = imageView.context.getString(goodType.getDescriptionResId()),
                         iconRes = iconRes
                 )
-
             }
         }
     }
     )
-
-
 }

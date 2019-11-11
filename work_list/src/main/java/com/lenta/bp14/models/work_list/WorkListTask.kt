@@ -63,8 +63,8 @@ class WorkListTask @Inject constructor(
                         ScanResult(
                                 quantity = result.quantity,
                                 comment = good.comments.find { it.code == result.commentCode }?.description ?: "",
-                                productionDate = if (result.producedDate != "0000-00-00") result.producedDate.getDate(Constants.DATE_FORMAT_yyyy_mm_dd) else null,
-                                expirationDate = if (result.shelfLife != "0000-00-00") result.shelfLife.getDate(Constants.DATE_FORMAT_yyyy_mm_dd) else null
+                                productionDate = result.producedDate.getSapDate(Constants.DATE_FORMAT_yyyy_mm_dd),
+                                expirationDate = result.shelfLife.getSapDate(Constants.DATE_FORMAT_yyyy_mm_dd)
                         )
                     }.toMutableList()
                     good.marks = marks.filter { it.matNr == position.matNr }.map { mark ->
@@ -80,9 +80,9 @@ class WorkListTask @Inject constructor(
         }
     }
 
-    override suspend fun addGoodToList(good: Good, forceQuantity: Double?) {
+    override suspend fun addGoodToList(good: Good) {
         goods.value?.find { it.material == good.material }?.let { existGood ->
-            currentGood.value = if (forceQuantity == null) existGood else existGood.copy(defaultValue = forceQuantity)
+            currentGood.value = existGood.copy(defaultValue = good.defaultValue)
             return
         }
 
@@ -121,7 +121,7 @@ class WorkListTask @Inject constructor(
 
     fun deleteScanResultsByComments(comments: List<String>) {
         val good = currentGood.value!!
-        good.scanResults.removeAll { comments.contains(it.commentCode) }
+        good.scanResults.removeAll { comments.contains(it.comment) }
         currentGood.value = good
     }
 
@@ -136,6 +136,7 @@ class WorkListTask @Inject constructor(
 
         currentGood.value?.let { good ->
             good.isProcessed = true
+            good.defaultValue = 0.0
             goodsList.removeAll { it.material == good.material }
             goodsList.add(0, good)
         }
@@ -168,7 +169,7 @@ class WorkListTask @Inject constructor(
     }
 
     override fun isHaveDiscrepancies(): Boolean {
-        return getProcessingList().value?.isNotEmpty() == true
+        return isNotAllGoodsProcessed()
     }
 
     override fun getListOfDifferences(): LiveData<List<BaseProductInfo>> {
@@ -183,7 +184,14 @@ class WorkListTask @Inject constructor(
     }
 
     override fun setMissing(matNrList: List<String>) {
-        //TODO implement this
+        val goodsList = goods.value
+        matNrList.forEach {material ->
+            goodsList?.find { it.material == material }?.let { good ->
+                good.isProcessed = true
+            }
+        }
+
+        goods.value = goodsList
     }
 
     override fun getProcessingList(): LiveData<List<Good>> {
@@ -310,6 +318,11 @@ class WorkListTask @Inject constructor(
         return maxTaskPositions
     }
 
+    override fun updateGoodList() {
+        val goodsList = goods.value
+        goods.value = goodsList
+    }
+
 }
 
 
@@ -321,7 +334,7 @@ interface IWorkListTask : ITask, IFilterable {
     suspend fun loadTaskList()
     suspend fun getGoodByMaterial(material: String): Good?
     suspend fun getGoodByEan(ean: String): Good?
-    suspend fun addGoodToList(good: Good, forceQuantity: Double? = null)
+    suspend fun addGoodToList(good: Good)
     suspend fun loadMaxTaskPositions()
 
     fun deleteSelectedGoods(materials: List<String>)
@@ -339,6 +352,7 @@ interface IWorkListTask : ITask, IFilterable {
     fun isGoodFromTask(good: Good): Boolean
     fun getMaxTaskPositions(): Double
     fun isReachLimitPositions(): Boolean
+    fun updateGoodList()
 }
 
 // -----------------------------
@@ -347,8 +361,9 @@ data class Good(
         val ean: String?,
         val material: String,
         val name: String,
+        val defaultUnits: Uom,
         val units: Uom,
-        val defaultValue: Double = 0.0,
+        var defaultValue: Double = 0.0, // значение в килограммах
         var goodGroup: String,
         var purchaseGroup: String,
         val shelfLife: Int,
@@ -383,12 +398,8 @@ data class Good(
 
     fun getTotalQuantity(): Double {
         var quantity = 0.0
-        if (isNotMarkedGood()) {
-            scanResults.map { result ->
-                quantity = quantity.sumWith(result.quantity)
-            }
-        } else {
-            quantity = quantity.sumWith(marks.size.toDouble())
+        scanResults.map { result ->
+            quantity = quantity.sumWith(result.quantity)
         }
 
         return quantity
@@ -460,7 +471,7 @@ data class Delivery(
 // -----------------------------
 
 data class ScanResult(
-        val quantity: Double,
+        val quantity: Double, // значение в килограммах
         val commentCode: String? = null,
         val comment: String,
         val productionDate: Date?,
@@ -478,6 +489,10 @@ data class ScanResult(
 
     fun getKeyFromDates(): String {
         return "${productionDate?.time}${expirationDate?.time}"
+    }
+
+    fun isExistSomeData(): Boolean {
+        return (commentCode != null && commentCode != "0") || productionDate != null || expirationDate != null
     }
 
 }

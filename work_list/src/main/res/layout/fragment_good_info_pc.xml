@@ -108,74 +108,92 @@
 
         </LinearLayout>
 
+
         <!-- Блок с кнопками -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
+            android:gravity="center_vertical"
             android:orientation="horizontal">
 
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:background="@drawable/bg_white_circle"
+                    android:gravity="center"
+                    android:textSize="16sp"
+                    app:matrixType="@{vm.options.matrixType}"
+                    tools:text="A" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:background="@drawable/bg_white_circle"
+                    android:gravity="center"
+                    android:textSize="16sp"
+                    app:section="@{vm.options.section}"
+                    tools:text="02" />
+
+            </LinearLayout>
+
             <ImageView
-                android:id="@+id/btn_1"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:src="@drawable/ic_round_a_48dp"
-                android:visibility="invisible" />
+                app:goodTypeIcon="@{vm.options.goodType}"
+                tools:src="@drawable/ic_kandy_48dp" />
 
             <ImageView
-                android:id="@+id/btn_2"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:src="@drawable/ic_round_a_48dp"
-                android:visibility="invisible" />
+                android:onClick="@{(v) -> vm.navigator.openPictogrammInfoNova()}"
+                app:invisible="@{!vm.options.novelty}"
+                tools:src="@drawable/ic_new_48dp" />
 
             <ImageView
-                android:id="@+id/btn_3"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:src="@drawable/ic_kandy_48dp"
-                android:visibility="invisible" />
+                android:onClick="@{(v) -> vm.navigator.openPictogrammInfoHealthyFood()}"
+                app:invisible="@{!vm.options.healthFood}"
+                tools:src="@drawable/ic_natural_48dp" />
 
             <ImageView
-                android:id="@+id/btn_4"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:src="@drawable/ic_new_48dp"
-                android:visibility="invisible" />
-
-            <ImageView
-                android:id="@+id/btn_5"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:src="@drawable/ic_natural_48dp"
-                android:visibility="invisible" />
-
-            <ImageView
-                android:id="@+id/btn_6"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
                 android:layout_weight="1"
                 android:background="?selectableItemBackground"
                 android:onClick="@{(v) -> vm.navigator.openQrCodeInfoScreen()}"
                 android:src="@drawable/ic_scan_qrcode_48dp" />
 
             <ImageView
-                android:id="@+id/btn_7"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
                 android:layout_weight="1"
                 android:background="?selectableItemBackground"
                 android:onClick="@{(v) -> vm.navigator.openEanInfoScreen()}"
                 android:src="@drawable/ic_scan_barcode_48dp" />
 
         </LinearLayout>
+
+
 
     </LinearLayout>
 

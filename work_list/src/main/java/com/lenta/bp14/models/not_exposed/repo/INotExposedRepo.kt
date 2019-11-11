@@ -1,11 +1,11 @@
-package com.lenta.bp14.models.not_exposed_products.repo
+package com.lenta.bp14.models.not_exposed.repo
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.lenta.shared.models.core.Uom
 import javax.inject.Inject
 
-class NotExposedProductsRepo @Inject constructor() : INotExposedProductsRepo {
+class NotExposedRepo @Inject constructor() : INotExposedRepo {
 
     private val products = mutableListOf<NotExposedProductInfo>()
 
@@ -42,7 +42,7 @@ class NotExposedProductsRepo @Inject constructor() : INotExposedProductsRepo {
 }
 
 
-interface INotExposedProductsRepo {
+interface INotExposedRepo {
 
     fun getProduct(matNr: String? = null, ean: String? = null): NotExposedProductInfo?
 
@@ -59,7 +59,8 @@ data class NotExposedProductInfo(
         val matNr: String,
         val name: String,
         val quantity: Double?,
-        val uom: Uom?,
+        val defaultUnits: Uom?,
+        val units: Uom?,
         val isEmptyPlaceMarked: Boolean?,
         val section: String?,
         val group: String?

@@ -24,7 +24,7 @@ class GeneralRepo @Inject constructor(
         private val hyperHive: HyperHive
 ) : IGeneralRepo {
 
-    private val zfmpUtz49V001 by lazy { ZfmpUtz49V001(hyperHive) } // Типы заданий
+    private val taskTypes by lazy { ZfmpUtz49V001(hyperHive) } // Типы заданий
     private val settings: ZmpUtz14V001 by lazy { ZmpUtz14V001(hyperHive) } // Настройки
 
     private val emptyTaskTypeInfo = TaskTypeInfo(
@@ -37,7 +37,8 @@ class GeneralRepo @Inject constructor(
 
     override suspend fun getTasksTypes(): List<ITaskTypeInfo> {
         return withContext(Dispatchers.IO) {
-            @Suppress("INACCESSIBLE_TYPE") val serverTaskTypeInfoList = zfmpUtz49V001.localHelper_ET_TASK_TPS.all
+            @Suppress("INACCESSIBLE_TYPE")
+            val serverTaskTypeInfoList = taskTypes.localHelper_ET_TASK_TPS.all
             val serverTaskTypes = serverTaskTypeInfoList.map { it.taskType to it }.toMap()
 
             return@withContext AppTaskTypes.values().filter { it === AppTaskTypes.Empty || serverTaskTypes.contains(it.taskType) }.map {

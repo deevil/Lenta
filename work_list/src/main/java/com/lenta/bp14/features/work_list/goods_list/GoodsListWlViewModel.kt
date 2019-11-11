@@ -55,10 +55,10 @@ class GoodsListWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
         products?.mapIndexed { index, good ->
             val total = good.getTotalQuantity()
             ItemWorkListUi(
-                    position = (index + 1).toString(),
+                    position = (products.size - index).toString(),
                     material = good.material,
                     name = good.getFormattedMaterialWithName(),
-                    quantity = total.dropZeros()
+                    quantity = "${total.dropZeros()} ${good.units.name}"
             )
         }
     }
@@ -104,6 +104,18 @@ class GoodsListWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     }
 
     fun onClickSave() {
+        if (task.isHaveDiscrepancies()) {
+            navigator.openListOfDifferencesScreen(
+                    onClickSkipCallback = {
+                        showConfirmationForSentReportScreen()
+                    }
+            )
+        } else {
+            showConfirmationForSentReportScreen()
+        }
+    }
+
+    private fun showConfirmationForSentReportScreen() {
         // Подтверждение - Перевести задание в статус "Подсчитано" и закрыть его для редактирования? - Назад / Да
         navigator.showSetTaskToStatusCalculated {
             viewModelScope.launch {
@@ -159,7 +171,7 @@ class GoodsListWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
         )
     }
 
-    private fun searchCode(ean: String? = null, material: String? = null, byClickItem: Boolean = false) {
+    private fun searchCode(ean: String? = null, material: String? = null) {
         viewModelScope.launch {
             require((ean != null) xor (material != null)) {
                 "Only one param allowed - ean: $ean, material: $material"
@@ -177,7 +189,7 @@ class GoodsListWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
                 if (task.getDescription().isStrictList && !task.isGoodFromTask(good)) {
                     navigator.showGoodIsNotPartOfTask()
                 } else {
-                    task.addGoodToList(good, if (byClickItem) 0.0 else null)
+                    task.addGoodToList(good)
                     navigator.openGoodInfoWlScreen()
                 }
                 return@launch
@@ -198,7 +210,7 @@ class GoodsListWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
             2 -> searchGoods.value?.get(position)?.material
             else -> null
         }?.let { material ->
-            searchCode(material = material, byClickItem = true)
+            searchCode(material = material)
         }
     }
 
@@ -217,6 +229,10 @@ class GoodsListWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
 
     fun onScanResult(data: String) {
         checkEnteredNumber(data)
+    }
+
+    fun updateGoodList() {
+        task.updateGoodList()
     }
 
 }
