@@ -56,10 +56,6 @@ class ListOfDifferencesViewModel : CoreViewModel() {
                         yesCallback = {
                             selectionsHelper.addAll(goods.value!!)
                             task.setMissing(positions.map { goods.value!![it].matNr })
-                            onClickSkip()
-                            /*viewModelScope.launch {
-                                delay(500)
-                            }*/
                         }
                 )
             } else {
