@@ -52,12 +52,7 @@ class LoadingTasksViewModel : CoreLoadingViewModel() {
     }
 
     override fun handleFailure(failure: Failure) {
-        if (searchParams == null) {
-            screenNavigator.openMainMenuScreen()
-        } else {
-            screenNavigator.goBack()
-        }
-        screenNavigator.openAlertScreen(failure)
+        screenNavigator.openAlertNotFoundTaskScreen(failure)
     }
 
     private fun handleSuccess(taskList: TaskList) {

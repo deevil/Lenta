@@ -50,9 +50,7 @@ class LoadingUnlockTaskViewModel : CoreLoadingViewModel() {
     }
 
     private fun handleSuccess(result: UnlockTaskRequestResult) {
-        Logg.d { "Register arrival request result $result" }
-        screenNavigator.goBack()
-        screenNavigator.goBack()
+        screenNavigator.openTaskListScreen()
     }
 
     override fun clean() {

@@ -32,7 +32,7 @@ class ProductDocumentsReviseFragment : CoreFragment<FragmentProductDocumentsRevi
 
     override fun getLayoutId(): Int = R.layout.fragment_product_documents_revise
 
-    override fun getPageNumber() = generateScreenNumber()
+    override fun getPageNumber() = "09/10"
 
     override fun getViewModel(): ProductDocumentsReviseViewModel {
         provideViewModel(ProductDocumentsReviseViewModel::class.java).let {

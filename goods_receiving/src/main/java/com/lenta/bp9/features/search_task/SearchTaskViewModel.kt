@@ -7,11 +7,12 @@ import com.lenta.bp9.repos.IRepoInMemoryHolder
 import com.lenta.bp9.requests.network.TaskListSearchParams
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
+import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.map
 import javax.inject.Inject
 
-class SearchTaskViewModel: CoreViewModel() {
+class SearchTaskViewModel: CoreViewModel(), OnOkInSoftKeyboardListener {
 
     @Inject
     lateinit var repoInMemoryHolder: IRepoInMemoryHolder
@@ -42,10 +43,6 @@ class SearchTaskViewModel: CoreViewModel() {
         sessionInfo.market ?: ""
     }
 
-    fun init() {
-
-    }
-
     fun onClickFind() {
         screenNavigator.openTaskListLoadingScreen(TaskListLoadingMode.Receiving,
                 TaskListSearchParams(taskNumber = if (taskNumber.value.isNullOrEmpty()) null else taskNumber.value,
@@ -57,4 +54,10 @@ class SearchTaskViewModel: CoreViewModel() {
                         numberEO = if (numberEO.value.isNullOrEmpty()) null else numberEO.value)
         )
     }
+
+    override fun onOkInSoftKeyboard(): Boolean {
+        onClickFind()
+        return true
+    }
+
 }

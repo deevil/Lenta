@@ -32,6 +32,8 @@ class LoadingTaskCardViewModel : CoreLoadingViewModel() {
     lateinit var taskManager: IReceivingTaskManager
     @Inject
     lateinit var repoInMemoryHolder: IRepoInMemoryHolder
+    @Inject
+    lateinit var taskContents: TaskContents
 
     override val title: MutableLiveData<String> = MutableLiveData()
     override val progress: MutableLiveData<Boolean> = MutableLiveData(true)
@@ -122,6 +124,7 @@ class LoadingTaskCardViewModel : CoreLoadingViewModel() {
                 this.updateInvoiceInfo(invoiceRevise)
                 this.updateTransportCondition(transportConditions)
             }
+            taskManager.getReceivingTask()?.updateTaskWithContents(taskContents.getTaskContentsInfo(result))
             newTask?.taskRepository?.getSections()?.updateSections(sectionInfo, sectionProducts)
             taskManager.setTask(newTask)
             transferToNextScreen()
@@ -150,6 +153,9 @@ class LoadingTaskCardViewModel : CoreLoadingViewModel() {
                             screenNavigator.openFinishConditionsReviseLoadingScreen()
                         }
                     }
+                }
+                TaskStatus.Recounting -> {
+                    screenNavigator.openGoodsListScreen()
                 }
                 else -> {
                     screenNavigator.openTaskCardScreen(TaskCardMode.Full)

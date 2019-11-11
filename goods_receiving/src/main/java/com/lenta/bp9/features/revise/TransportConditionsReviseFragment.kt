@@ -35,7 +35,7 @@ class TransportConditionsReviseFragment : CoreFragment<FragmentTransportConditio
 
     override fun getLayoutId(): Int = R.layout.fragment_transport_conditions_revise
 
-    override fun getPageNumber() = generateScreenNumber()
+    override fun getPageNumber() = "09/14"
 
     override fun getViewModel(): TransportConditionsReviseViewModel {
         provideViewModel(TransportConditionsReviseViewModel::class.java).let {

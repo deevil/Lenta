@@ -59,7 +59,6 @@
     <string name="information">Информация</string>
     <string name="delivery_documents">Документы по поставке</string>
     <string name="accept">Принять</string>
-    <string name="refusal">Отказать</string>
     <string name="wrong_product_type">Неверный тип продукта</string>
     <string name="categories">Категории</string>
     <string name="details_quantities_entered">Детали по введенным количествам</string>
@@ -145,4 +144,5 @@
     <string name="alert_not_correct_date">Некорректная дата</string>
     <string name="the_shelf_life_has_expired">Срок годности истек. Пометить как брак?</string>
     <string name="section">Секция</string>
+    <string name="unsaved_data_will_lost">Не сохранённые данные будут утеряны. Всё равно выйти?</string>
 </resources>

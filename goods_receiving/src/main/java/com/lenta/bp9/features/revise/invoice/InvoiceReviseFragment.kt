@@ -30,7 +30,7 @@ class InvoiceReviseFragment : CoreFragment<FragmentInvoiceReviseBinding, Invoice
 
     override fun getLayoutId(): Int = R.layout.fragment_invoice_revise
 
-    override fun getPageNumber() = generateScreenNumber()
+    override fun getPageNumber() = "09/08"
 
     override fun getViewModel(): InvoiceReviseViewModel {
         provideViewModel(InvoiceReviseViewModel::class.java).let {

@@ -114,7 +114,7 @@
             android:ellipsize="end"
             android:maxLines="1"
             android:gravity="start|center_vertical"
-            android:text='@{vm.acceptTotalCount != 0.0 ? "+ " + vm.acceptTotalCount + " " + vm.productInfo.uom.name : "0 " + vm.productInfo.uom.name }'
+            android:text='@{vm.acceptTotalCountWithUom }'
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@+id/guideline"
             app:layout_constraintTop_toBottomOf="@+id/div_hor2"
@@ -152,7 +152,7 @@
             android:maxLines="1"
             android:gravity="start|center_vertical"
             android:textColor="@color/color_pressed_red"
-            android:text='@{vm.refusalTotalCount != 0.0 ? "- " + vm.refusalTotalCount + " " + vm.productInfo.uom.name : "0 " + vm.productInfo.uom.name }'
+            android:text='@{vm.refusalTotalCountWithUom}'
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@+id/guideline"
             app:layout_constraintTop_toBottomOf="@+id/tv_accept_val"

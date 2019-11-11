@@ -13,6 +13,7 @@ import com.lenta.shared.requests.combined.scan_info.pojo.QualityInfo
 import com.lenta.shared.requests.combined.scan_info.pojo.ReasonRejectionInfo
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.map
+import com.lenta.shared.utilities.extentions.toStringFormatted
 import com.lenta.shared.view.OnPositionClickListener
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -66,6 +67,14 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
         }
     }
 
+    val acceptTotalCountWithUom: MutableLiveData<String> = acceptTotalCount.map {
+        if (it != 0.0) {
+            "+ " + it.toStringFormatted() + " " + productInfo.value?.uom?.name
+        } else {
+            "0 " + productInfo.value?.uom?.name
+        }
+    }
+
     val refusalTotalCount: MutableLiveData<Double> by lazy {
         countValue.combineLatest(spinReasonRejectionSelectedPosition).combineLatest(spinQualitySelectedPosition).map {
             if (qualityInfo.value?.get(it?.second ?: 0)?.code != "1") {
@@ -75,6 +84,14 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
             } else {
                 0.0
             }
+        }
+    }
+
+    val refusalTotalCountWithUom: MutableLiveData<String> = refusalTotalCount.map {
+        if (it != 0.0) {
+            "- " + it.toStringFormatted() + " " + productInfo.value?.uom?.name
+        } else {
+            "0 " + productInfo.value?.uom?.name
         }
     }
 

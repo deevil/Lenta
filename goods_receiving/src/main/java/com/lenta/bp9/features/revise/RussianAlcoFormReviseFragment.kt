@@ -26,7 +26,7 @@ class RussianAlcoFormReviseFragment : CoreFragment<FragmentRussianAlcoFormRevise
 
     override fun getLayoutId(): Int = R.layout.fragment_russian_alco_form_revise
 
-    override fun getPageNumber() = generateScreenNumber()
+    override fun getPageNumber() = "09/12"
 
     override fun getViewModel(): RussianAlcoFormReviseViewModel {
         provideViewModel(RussianAlcoFormReviseViewModel::class.java).let {

@@ -26,7 +26,7 @@ class FormedDocsFragment : CoreFragment<FragmentFormedDocsBinding, FormedDocsVie
 
     override fun getLayoutId(): Int = R.layout.fragment_formed_docs
 
-    override fun getPageNumber(): String = "9/23"
+    override fun getPageNumber(): String = "09/23"
 
     override fun getViewModel(): FormedDocsViewModel {
         provideViewModel(FormedDocsViewModel::class.java).let {vm ->

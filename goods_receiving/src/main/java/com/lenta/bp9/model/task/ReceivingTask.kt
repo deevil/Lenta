@@ -46,9 +46,21 @@ class ReceivingTask(val taskHeader: TaskInfo,
         taskRepository.getProductsDiscrepancies().updateProductsDiscrepancy(productsDiscrepancies)
     }
 
+    private fun updateBatches(batches: List<TaskBatchInfo>) {
+        taskRepository.getBatches().clear()
+        taskRepository.getBatches().updateBatches(batches)
+    }
+
+    private fun updateBatchesDiscrepancies(batchesDiscrepancies: List<TaskBatchesDiscrepancies>) {
+        taskRepository.getBatchesDiscrepancies().clear()
+        taskRepository.getBatchesDiscrepancies().updateBatchesDiscrepancy(batchesDiscrepancies)
+    }
+
     fun updateTaskWithContents(taskContentsInfo: TaskContentsInfo) {
         updateProducts(taskContentsInfo.products)
         updateProductsDiscrepancies(taskContentsInfo.productsDiscrepancies)
+        updateBatches(taskContentsInfo.taskBatches)
+        updateBatchesDiscrepancies(taskContentsInfo.taskBatchesDiscrepancies)
     }
 }
 

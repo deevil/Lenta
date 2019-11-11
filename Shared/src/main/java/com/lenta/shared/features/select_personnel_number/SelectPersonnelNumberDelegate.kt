@@ -31,6 +31,8 @@ class SelectPersonnelNumberDelegate @Inject constructor(
 
     var codeConfirm: Int? = null
 
+    val isAppGoodsReceiving: MutableLiveData<Boolean> = MutableLiveData(false)
+
 
     fun init(
             viewModelScope: () -> CoroutineScope,
@@ -85,7 +87,13 @@ class SelectPersonnelNumberDelegate @Inject constructor(
     }
 
     fun handleFailure(failure: Failure) {
-        coreNavigator.openAlertScreen(failure)
+        if (isAppGoodsReceiving.value!!) {
+            fullName.value = ""
+            employeesPosition.value = ""
+            coreNavigator.openAlertScreen(failure, timeAutoExitInMillis = 3000)
+        } else {
+            coreNavigator.openAlertScreen(failure)
+        }
     }
 
     fun onOkInSoftKeyboard(): Boolean {

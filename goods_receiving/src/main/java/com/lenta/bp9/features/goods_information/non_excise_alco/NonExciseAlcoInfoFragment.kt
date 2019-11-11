@@ -34,7 +34,7 @@ class NonExciseAlcoInfoFragment : CoreFragment<FragmentNonExciseAlcoInfoBinding,
 
     override fun getLayoutId(): Int = R.layout.fragment_non_excise_alco_info
 
-    override fun getPageNumber(): String = "9/19"
+    override fun getPageNumber(): String = "09/19"
 
     override fun getViewModel(): NonExciseAlcoInfoViewModel {
         provideViewModel(NonExciseAlcoInfoViewModel::class.java).let {vm ->
