@@ -39,6 +39,12 @@ class MemoryTaskBatchesDiscrepanciesRepository : ITaskBatchesDiscrepanciesReposi
         return false
     }
 
+    override fun updateBatchesDiscrepancy(newBatchesDiscrepancies: List<TaskBatchesDiscrepancies>) {
+        for (batchesDiscrepancies in newBatchesDiscrepancies) {
+            addBatchDiscrepancies(batchesDiscrepancies)
+        }
+    }
+
     override fun changeBatchDiscrepancy(discrepancy: TaskBatchesDiscrepancies): Boolean {
         deleteBatchDiscrepancies(discrepancy)
         return addBatchDiscrepancies(discrepancy)

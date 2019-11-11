@@ -35,6 +35,8 @@ import com.lenta.bp9.model.task.revise.ProductDocumentType
 import com.lenta.bp9.model.task.TaskBatchInfo
 import com.lenta.bp9.model.task.TaskSectionInfo
 import com.lenta.shared.account.IAuthenticator
+import com.lenta.shared.exception.Failure
+import com.lenta.shared.exception.IFailureInterpreter
 import com.lenta.shared.features.alert.AlertFragment
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
 import com.lenta.shared.platform.navigation.CustomAnimation
@@ -49,7 +51,7 @@ class ScreenNavigator(
         private val foregroundActivityProvider: ForegroundActivityProvider,
         private val authenticator: IAuthenticator,
         private val progressUseCaseInformator: IProgressUseCaseInformator
-) : IScreenNavigator, ICoreNavigator by coreNavigator {
+        ) : IScreenNavigator, ICoreNavigator by coreNavigator {
 
     override fun openFirstScreen() {
         if (authenticator.isAuthorized()) {
@@ -511,6 +513,25 @@ class ScreenNavigator(
         }
     }
 
+    override fun openAlertNotFoundTaskScreen(failure: Failure) {
+        runOrPostpone {
+            getFragmentStack()?.pop()
+            openAlertScreen(failure)
+        }
+    }
+
+    override fun openUnsavedDataDialog(yesCallbackFunc: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.unsaved_data_will_lost),
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(yesCallbackFunc),
+                    iconRes = R.drawable.ic_delete_red_80dp,
+                    pageNumber = "80",
+                    leftButtonDecorationInfo = ButtonDecorationInfo.no,
+                    rightButtonDecorationInfo = ButtonDecorationInfo.yes))
+        }
+    }
+
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 }
 
@@ -576,4 +597,6 @@ interface IScreenNavigator : ICoreNavigator {
     fun openRecountStartLoadingScreen()
     fun openSubmittedLoadingScreen()
     fun openTransmittedLoadingScreen()
+    fun openAlertNotFoundTaskScreen(failure: Failure)
+    fun openUnsavedDataDialog(yesCallbackFunc: () -> Unit)
 }

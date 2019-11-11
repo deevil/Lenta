@@ -34,7 +34,7 @@ class TaskListFragment : CoreFragment<FragmentTaskListBinding, TaskListViewModel
 
     override fun getLayoutId(): Int = R.layout.fragment_task_list
 
-    override fun getPageNumber() = generateScreenNumber()
+    override fun getPageNumber() = "09/05"
 
     override fun getViewModel(): TaskListViewModel {
         provideViewModel(TaskListViewModel::class.java).let {

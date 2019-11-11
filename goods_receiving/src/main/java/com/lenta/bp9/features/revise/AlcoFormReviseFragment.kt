@@ -26,7 +26,7 @@ class AlcoFormReviseFragment : CoreFragment<FragmentAlcoFormReviseBinding, AlcoF
 
     override fun getLayoutId(): Int = R.layout.fragment_alco_form_revise
 
-    override fun getPageNumber() = generateScreenNumber()
+    override fun getPageNumber() = "09/13"
 
     override fun getViewModel(): AlcoFormReviseViewModel {
         provideViewModel(AlcoFormReviseViewModel::class.java).let {

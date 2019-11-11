@@ -4,7 +4,9 @@ import android.content.Context
 import android.util.Log
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import com.lenta.bp9.model.task.IReceivingTaskManager
+import com.lenta.bp9.model.task.revise.DocumentType
 import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.platform.constants.Constants
@@ -14,6 +16,7 @@ import com.lenta.shared.utilities.date_time.DateTimeUtil
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.toStringFormatted
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class InvoiceReviseViewModel : CoreViewModel(), PageSelectionListener {
@@ -69,10 +72,6 @@ class InvoiceReviseViewModel : CoreViewModel(), PageSelectionListener {
         taskManager.getReceivingTask()?.taskRepository?.getReviseDocuments()?.getInvoiceInfo()?.quantityAll.toStringFormatted()
     }
 
-    val editingAvailable: Boolean by lazy {
-        taskManager.getReceivingTask()?.taskDescription?.isAlco != true
-    }
-
     val notes: MutableLiveData<List<InvoiceNoteVM>> = MutableLiveData()
 
     val numberTTN: MutableLiveData<String> = MutableLiveData("")
@@ -80,11 +79,36 @@ class InvoiceReviseViewModel : CoreViewModel(), PageSelectionListener {
     val months: MutableLiveData<String> = MutableLiveData("")
     val years: MutableLiveData<String> = MutableLiveData("")
 
+    val isNumInvEmty: MutableLiveData<Boolean> = numberTTN.map {
+        it.isNullOrEmpty()
+    }
+
     val headerCheck: MutableLiveData<Boolean> = MutableLiveData(false)
     val supplierCheck: MutableLiveData<Boolean> = MutableLiveData(false)
     val detailsCheck: MutableLiveData<Boolean> = MutableLiveData(false)
     val nextPossible: MutableLiveData<Boolean> = combineLatest(headerCheck, supplierCheck, detailsCheck).map {
         it?.first == true && it?.second == true && it?.third == true
+    }
+
+    val editingAvailable: MutableLiveData<Boolean> = headerCheck.map {
+        if (taskManager.getReceivingTask()?.taskDescription?.isAlco == true) {
+            false
+        } else {
+            !it!!
+        }
+    }
+
+    init {
+        viewModelScope.launch {
+            val document = taskManager.getReceivingTask()?.taskRepository?.getReviseDocuments()?.getDeliveryDocuments()?.findLast {
+                it.documentType == DocumentType.Invoice
+            }
+            if (document?.isCheck == true) {
+                headerCheck.value = true
+                supplierCheck.value = true
+                detailsCheck.value = true
+            }
+        }
     }
 
     override fun onPageSelected(position: Int) {
@@ -114,7 +138,7 @@ class InvoiceReviseViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     fun onClickNext() {
-        taskManager.getReceivingTask()?.taskRepository?.getReviseDocuments()?.changeInvoiceStatus()
+        taskManager.getReceivingTask()?.taskRepository?.getReviseDocuments()?.changeInvoiceStatus(true)
         screenNavigator.goBack()
     }
 
@@ -135,7 +159,6 @@ class InvoiceReviseViewModel : CoreViewModel(), PageSelectionListener {
         }
     }
 
-    // TODO: Implement the ViewModel
 }
 
 data class InvoiceNoteVM(

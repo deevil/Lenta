@@ -8,6 +8,7 @@ import com.lenta.shared.exception.Failure
 import com.lenta.shared.features.select_personnel_number.SelectPersonnelNumberDelegate
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.settings.IAppSettings
+import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.extentions.map
 import kotlinx.coroutines.launch
@@ -25,7 +26,7 @@ class SelectPersonnelNumberViewModel : CoreViewModel(), OnOkInSoftKeyboardListen
     lateinit var selectPersonnelNumberDelegate: SelectPersonnelNumberDelegate
 
     val editTextFocus = MutableLiveData<Boolean>()
-    val nextButtonFocus = MutableLiveData<Boolean>()
+    private val nextButtonFocus = MutableLiveData<Boolean>()
 
     val personnelNumber = MutableLiveData("")
     val fullName = MutableLiveData("")
@@ -34,6 +35,7 @@ class SelectPersonnelNumberViewModel : CoreViewModel(), OnOkInSoftKeyboardListen
 
     init {
         viewModelScope.launch {
+            selectPersonnelNumberDelegate.isAppGoodsReceiving.value = true
             selectPersonnelNumberDelegate.personnelNumber = personnelNumber
             selectPersonnelNumberDelegate.fullName = fullName
             selectPersonnelNumberDelegate.employeesPosition = employeesPosition
@@ -54,11 +56,6 @@ class SelectPersonnelNumberViewModel : CoreViewModel(), OnOkInSoftKeyboardListen
                     }
             )
         }
-    }
-
-    override fun handleFailure(failure: Failure) {
-        super.handleFailure(failure)
-        selectPersonnelNumberDelegate.handleFailure(failure)
     }
 
     override fun onOkInSoftKeyboard(): Boolean {

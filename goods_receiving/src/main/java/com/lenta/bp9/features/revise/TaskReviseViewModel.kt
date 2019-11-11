@@ -121,11 +121,11 @@ class TaskReviseViewModel : CoreViewModel(), PageSelectionListener {
         updateDocumentVMs()
     }
 
-    fun onClickReject() {
+    fun onClickRefusal() {
         screenNavigator.openRejectScreen()
     }
 
-    fun onClickNext() {
+    fun onClickSave() {
         if (taskManager.getReceivingTask()?.taskRepository?.getReviseDocuments()?.getProductDocuments()?.isNotEmpty() == true) {
             screenNavigator.openProductDocumentsReviseScreen()
         } else {

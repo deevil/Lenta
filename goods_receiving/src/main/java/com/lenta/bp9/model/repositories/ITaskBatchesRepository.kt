@@ -8,6 +8,7 @@ interface ITaskBatchesRepository {
     fun findBatch(batch: TaskBatchInfo): TaskBatchInfo?
     fun findBatchOfProduct(productInfo: TaskProductInfo): TaskBatchInfo?
     fun addBatch(batch: TaskBatchInfo): Boolean
+    fun updateBatches(newBatches: List<TaskBatchInfo>)
     fun changeBatch(batch: TaskBatchInfo): Boolean
     fun deleteBatch(batch: TaskBatchInfo): Boolean
     fun clear()

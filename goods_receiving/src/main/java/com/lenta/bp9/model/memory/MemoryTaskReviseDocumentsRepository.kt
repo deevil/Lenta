@@ -91,9 +91,9 @@ class MemoryTaskReviseDocumentsRepository : ITaskReviseDocumentsRepository {
         document?.let { it.isCheck = !it.isCheck }
     }
 
-    override fun changeInvoiceStatus() {
+    override fun changeInvoiceStatus(checked: Boolean) {
         val document = deliveryDocuments.findLast { it.documentType == DocumentType.Invoice }
-        document?.let { it.isCheck = !it.isCheck }
+        document?.let { it.isCheck = checked }
     }
 
     override fun changeProductDocumentStatus(documentID: String, matnr: String) {

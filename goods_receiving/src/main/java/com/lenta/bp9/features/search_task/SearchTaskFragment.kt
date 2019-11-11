@@ -18,7 +18,7 @@ class SearchTaskFragment: CoreFragment<FragmentSearchTaskBinding, SearchTaskView
 
     override fun getLayoutId(): Int = R.layout.fragment_search_task
 
-    override fun getPageNumber(): String = generateScreenNumber()
+    override fun getPageNumber(): String = "09/34"
 
     override fun getViewModel(): SearchTaskViewModel {
         provideViewModel(SearchTaskViewModel::class.java).let {

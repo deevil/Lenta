@@ -124,11 +124,12 @@ class CoreNavigator @Inject constructor(
         }
     }
 
-    override fun openAlertScreen(failure: Failure, pageNumber: String) {
+    override fun openAlertScreen(failure: Failure, pageNumber: String, timeAutoExitInMillis: Int?) {
         openAlertScreen(
                 message = failureInterpreter.getFailureDescription(failure).message,
                 iconRes = failureInterpreter.getFailureDescription(failure).iconRes,
                 textColor = failureInterpreter.getFailureDescription(failure).textColor,
+                timeAutoExitInMillis = timeAutoExitInMillis,
                 pageNumber = pageNumber)
     }
 
@@ -411,7 +412,7 @@ interface ICoreNavigator {
                         timeAutoExitInMillis: Int? = null,
                         onlyIfFirstAlert: Boolean = false)
 
-    fun openAlertScreen(failure: Failure, pageNumber: String = "96")
+    fun openAlertScreen(failure: Failure, pageNumber: String = "96", timeAutoExitInMillis: Int? = null)
     fun openSupportScreen()
     fun <Params> showProgress(useCase: UseCase<Any, Params>)
     fun showProgress(title: String)

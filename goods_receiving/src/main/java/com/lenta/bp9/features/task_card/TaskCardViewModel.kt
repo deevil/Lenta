@@ -4,6 +4,7 @@ import android.content.Context
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.lenta.bp9.R
 import com.lenta.bp9.features.change_datetime.ChangeDateTimeMode
 import com.lenta.bp9.features.loading.tasks.TaskCardMode
 import com.lenta.bp9.model.task.*
@@ -165,6 +166,10 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
         screenNavigator.openChangeDateTimeScreen(ChangeDateTimeMode.NextStatus)
     }
 
+    fun onClickSupply() {
+        screenNavigator.openFormedDocsScreen()
+    }
+
     fun onClickNext() {
         when (taskManager.getReceivingTask()?.taskDescription?.currentStatus) {
             TaskStatus.Ordered, TaskStatus.Traveling -> {
@@ -181,6 +186,9 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
             }
             TaskStatus.Recounted -> {
                 screenNavigator.openTransmittedLoadingScreen()
+            }
+            TaskStatus.Booked -> {
+                screenNavigator.openTransferGoodsSectionScreen()
             }
             TaskStatus.Completed -> {
                 screenNavigator.openFormedDocsScreen()

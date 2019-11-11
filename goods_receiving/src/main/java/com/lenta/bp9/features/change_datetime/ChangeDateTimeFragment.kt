@@ -19,7 +19,7 @@ class ChangeDateTimeFragment : CoreFragment<FragmentChangeDateTimeBinding, Chang
 
     override fun getLayoutId(): Int = R.layout.fragment_change_date_time
 
-    override fun getPageNumber() = generateScreenNumber()
+    override fun getPageNumber() = "09/99"
 
     override fun getViewModel(): ChangeDateTimeViewModel {
         provideViewModel(ChangeDateTimeViewModel::class.java).let {vm ->

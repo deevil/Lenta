@@ -29,7 +29,7 @@ class AlcoholBatchSelectFragment : CoreFragment<FragmentAlcoholBatchSelectBindin
 
     override fun getLayoutId(): Int = R.layout.fragment_alcohol_batch_select
 
-    override fun getPageNumber() = generateScreenNumber()
+    override fun getPageNumber() = "09/11"
 
     override fun getViewModel(): AlcoholBatchSelectViewModel {
         provideViewModel(AlcoholBatchSelectViewModel::class.java).let {

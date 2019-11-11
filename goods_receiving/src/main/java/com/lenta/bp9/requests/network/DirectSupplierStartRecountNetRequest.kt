@@ -41,6 +41,10 @@ data class DirectSupplierStartRecountRestInfo(
         val taskComposition: List<TaskComposition>,
         @SerializedName("ET_TASK_DIFF") //Таблица расхождений по товару	ZTT_GRZ_TASK_DIF_EXCH
         val taskProductDiscrepancies: List<TaskProductDiscrepancies>,
+        @SerializedName("ET_TASK_PARTS") //Таблица партий задания
+        val taskBatches: List<TaskBatchInfo>,
+        @SerializedName("ET_PARTS_DIFF") //Таблица расхождений по партиям
+        val taskBatchesDiscrepancies: List<TaskBatchesDiscrepancies>,
         @SerializedName("EV_RETCODE")
         val retcode: String,
         @SerializedName("EV_ERROR_TEXT")

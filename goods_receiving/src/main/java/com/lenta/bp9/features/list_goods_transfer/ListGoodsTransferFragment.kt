@@ -34,7 +34,7 @@ class ListGoodsTransferFragment : CoreFragment<FragmentListGoodsTransferBinding,
 
     override fun getLayoutId(): Int = R.layout.fragment_list_goods_transfer
 
-    override fun getPageNumber(): String = "9/73"
+    override fun getPageNumber(): String = "09/73"
 
     override fun getViewModel(): ListGoodsTransferViewModel {
         provideViewModel(ListGoodsTransferViewModel::class.java).let {vm ->
