@@ -1,6 +1,5 @@
 package com.lenta.bp14.features.list_of_differences
 
-import androidx.lifecycle.MutableLiveData
 import com.lenta.bp14.features.common_ui_model.SimpleProductUi
 import com.lenta.bp14.models.IGeneralTaskManager
 import com.lenta.bp14.models.getTaskName
@@ -19,10 +18,10 @@ class ListOfDifferencesViewModel : CoreViewModel() {
     @Inject
     lateinit var generalTaskManager: IGeneralTaskManager
 
+
     private val task by lazy {
         generalTaskManager.getProcessedTask()!!
     }
-
 
     val selectionsHelper = SelectionItemsHelper()
 
@@ -42,15 +41,19 @@ class ListOfDifferencesViewModel : CoreViewModel() {
         }
     }
 
-    val missingButtonEnabled: MutableLiveData<Boolean> = selectionsHelper.selectedPositions.map { it?.isNotEmpty() }
-
+    val missingButtonEnabled by lazy {
+        goods.map { it?.isNotEmpty() }
+    }
 
     fun onClickMissing() {
-        task.setMissing(
-                selectionsHelper.selectedPositions.value!!.map {
-                    goods.value!![it].matNr
-                }
-        )
+        selectionsHelper.selectedPositions.value.let { positions ->
+            if (positions!!.isEmpty()) {
+                selectionsHelper.addAll(goods.value!!)
+            }
+
+            task.setMissing(positions.map { goods.value!![it].matNr })
+        }
+
         selectionsHelper.clearPositions()
     }
 
