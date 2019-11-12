@@ -257,14 +257,16 @@ class CheckPriceTask @Inject constructor(
                                     ),
                                     actualPriceInfo = actualPriceInfo,
                                     userPriceInfo = UserPriceInfo(isValidPrice = isValid),
-                                    isPrinted = false
+                                    isPrinted = false,
+                                    isMissing = isValid == null
                             )
                     )
                 }
             } else {
                 readyResultsRepo.addCheckPriceResult(
                         checkPriceResult = (this).copy(
-                                userPriceInfo = UserPriceInfo(isValidPrice = isValid)
+                                userPriceInfo = UserPriceInfo(isValidPrice = isValid),
+                                isMissing = isValid == null
                         )
                 )
             }
@@ -342,10 +344,31 @@ class CheckPriceTask @Inject constructor(
 
     override fun setMissing(matNrList: List<String>) {
         matNrList.forEach { material ->
-            readyResultsRepo.getCheckPriceResult(matNr = material).apply {
-                readyResultsRepo.addCheckPriceResult(
-                        checkPriceResult = (this)!!.copy(isMissing = true)
-                )
+            readyResultsRepo.getCheckPriceResult(material).apply {
+                if (this == null) {
+                    actualPricesRepo.getActualPriceInfoByMatNumber(material)?.let { actualPriceInfo ->
+                        readyResultsRepo.addCheckPriceResult(
+                                CheckPriceResult(
+                                        ean = actualPriceInfo.matNumber,
+                                        matNr = actualPriceInfo.matNumber,
+                                        name = actualPriceInfo.productName,
+                                        scannedPriceInfo = ScanPriceInfo(
+                                                eanCode = actualPriceInfo.matNumber,
+                                                price = null,
+                                                discountCardPrice = null
+                                        ),
+                                        actualPriceInfo = actualPriceInfo,
+                                        userPriceInfo = null,
+                                        isPrinted = false,
+                                        isMissing = true
+                                )
+                        )
+                    }
+                } else {
+                    readyResultsRepo.addCheckPriceResult(
+                            checkPriceResult = (this).copy(isMissing = true)
+                    )
+                }
             }
         }
     }

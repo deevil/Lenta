@@ -27,7 +27,7 @@ class CheckPriceReportNetRequest
                         isNotFinished = params.isNotFinish.toSapBooleanString(),
                         taskNumber = params.description.taskNumber,
                         tkNumber = params.description.tkNumber,
-                        checksResult = params.checksResults.filter { !it.isMissing } .map {
+                        checksResult = params.checksResults.filter { !it.isMissing }.map {
                             CheckResult(
                                     matNr = it.matNr!!,
                                     statCheck = when (it.isAllValid()) {
@@ -40,23 +40,19 @@ class CheckPriceReportNetRequest
                         },
                         positions = mutableListOf<Position>().apply {
                             params.checksResults.forEach {
-                                add(
-                                        Position(
-                                                matNr = it.matNr!!,
-                                                isProcessed = true.toSapBooleanString(),
-                                                quantity = 0.0
-                                        )
-                                )
+                                add(Position(
+                                        matNr = it.matNr!!,
+                                        isProcessed = true.toSapBooleanString(),
+                                        quantity = 0.0
+                                ))
                             }
 
                             params.notProcessedResults.forEach {
-                                add(
-                                        Position(
-                                                matNr = it.matNr!!,
-                                                isProcessed = false.toSapBooleanString(),
-                                                quantity = 0.0
-                                        )
-                                )
+                                add(Position(
+                                        matNr = it.matNr!!,
+                                        isProcessed = false.toSapBooleanString(),
+                                        quantity = 0.0
+                                ))
                             }
                         }
                 )
@@ -82,7 +78,6 @@ data class CheckPriceReport(
         val isNotFinish: Boolean,
         val checksResults: List<CheckPriceResult>,
         val notProcessedResults: List<CheckPriceResult>
-
 )
 
 data class FmpReport(
