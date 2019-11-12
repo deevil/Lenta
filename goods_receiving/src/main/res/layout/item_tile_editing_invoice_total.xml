@@ -119,7 +119,6 @@
             app:layout_constraintStart_toEndOf="@+id/div_vert2"
             app:layout_constraintTop_toTopOf="@+id/tv_counter"
             app:maxLengthForScanProtect="@{6}"
-            app:requestFocus="@{true}"
             app:suffix="@{vm.uom.name}"
             tools:text="1 шт" />
 

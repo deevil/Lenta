@@ -59,6 +59,10 @@ data class InvoiceContentEntry(
         else
             materialNumber
     }
+
+    fun matchesFilter(filter: String): Boolean {
+        return materialNumber.contains(filter, true)
+    }
 }
 
 data class InvoiceContentEntryRestData(

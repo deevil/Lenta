@@ -11,21 +11,29 @@ import android.view.LayoutInflater
 import com.lenta.shared.utilities.databinding.ViewPagerSettings
 import android.view.ViewGroup
 import android.view.View
+import android.widget.AdapterView
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import com.lenta.bp9.BR
 import com.lenta.bp9.databinding.*
+import com.lenta.shared.keys.KeyCode
+import com.lenta.shared.keys.OnKeyDownListener
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.utilities.databinding.DataBindingAdapter
 import com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig
 import com.lenta.shared.utilities.databinding.RecyclerViewKeyHandler
+import com.lenta.shared.utilities.extentions.connectLiveData
 
 class EditingInvoiceFragment : CoreFragment<FragmentEditingInvoiceBinding, EditingInvoiceViewModel>(),
         ViewPagerSettings,
-        ToolbarButtonsClickListener {
+        ToolbarButtonsClickListener,
+        OnKeyDownListener {
 
-    private var recyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
+    private var totalRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
+    private var delRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
+    private var addRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
+    private var notesRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
 
     override fun getLayoutId(): Int = R.layout.fragment_editing_invoice
 
@@ -48,10 +56,11 @@ class EditingInvoiceFragment : CoreFragment<FragmentEditingInvoiceBinding, Editi
         bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.refusal)
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.save)
         viewLifecycleOwner.apply {
+            connectLiveData(vm.visibilityDelBtn, bottomToolbarUiModel.uiModelButton3.enabled)
             vm.selectedPage.observe(this, Observer {
                 if (it == 1) {
                     bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.restore)
-                    //connectLiveData(vm.enabledDelBtn, bottomToolbarUiModel.uiModelButton3.enabled)
+
                 } else {
                     bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.delete)
                     //connectLiveData(vm.enabledDelBtn, bottomToolbarUiModel.uiModelButton3.enabled)
@@ -95,21 +104,26 @@ class EditingInvoiceFragment : CoreFragment<FragmentEditingInvoiceBinding, Editi
                                             binding.tvCounter.tag = position
                                             binding.tvCounter.setOnClickListener(onClickSelectionListener)
                                             binding.selectedForDelete = vm.totalSelectionsHelper.isSelected(position)
-                                            recyclerViewKeyHandler?.let {
+                                            totalRecyclerViewKeyHandler?.let {
                                                 binding.root.isSelected = it.isSelected(position)
                                             }
                                         }
 
+                                    },
+                                    onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
+                                        totalRecyclerViewKeyHandler?.let {
+                                            it.selectPosition(position)
+                                        }
                                     }
                             )
 
                             layoutBinding.vm = vm
                             layoutBinding.lifecycleOwner = viewLifecycleOwner
-                            recyclerViewKeyHandler = RecyclerViewKeyHandler(
+                            totalRecyclerViewKeyHandler = RecyclerViewKeyHandler(
                                     rv = layoutBinding.rv,
                                     items = vm.listTotal,
                                     lifecycleOwner = layoutBinding.lifecycleOwner!!,
-                                    initPosInfo = recyclerViewKeyHandler?.posInfo?.value
+                                    initPosInfo = totalRecyclerViewKeyHandler?.posInfo?.value
                             )
                             return layoutBinding.root
                         }
@@ -139,21 +153,26 @@ class EditingInvoiceFragment : CoreFragment<FragmentEditingInvoiceBinding, Editi
                                             binding.tvCounter.tag = position
                                             binding.tvCounter.setOnClickListener(onClickSelectionListener)
                                             binding.selectedForDelete = vm.delSelectionsHelper.isSelected(position)
-                                            recyclerViewKeyHandler?.let {
+                                            delRecyclerViewKeyHandler?.let {
                                                 binding.root.isSelected = it.isSelected(position)
                                             }
                                         }
 
+                                    },
+                                    onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
+                                        delRecyclerViewKeyHandler?.let {
+                                            it.selectPosition(position)
+                                        }
                                     }
                             )
 
                             layoutBinding.vm = vm
                             layoutBinding.lifecycleOwner = viewLifecycleOwner
-                            recyclerViewKeyHandler = RecyclerViewKeyHandler(
+                            delRecyclerViewKeyHandler = RecyclerViewKeyHandler(
                                     rv = layoutBinding.rv,
                                     items = vm.listDelItem,
                                     lifecycleOwner = layoutBinding.lifecycleOwner!!,
-                                    initPosInfo = recyclerViewKeyHandler?.posInfo?.value
+                                    initPosInfo = delRecyclerViewKeyHandler?.posInfo?.value
                             )
                             return layoutBinding.root
                         }
@@ -183,21 +202,26 @@ class EditingInvoiceFragment : CoreFragment<FragmentEditingInvoiceBinding, Editi
                                             binding.tvCounter.tag = position
                                             binding.tvCounter.setOnClickListener(onClickSelectionListener)
                                             binding.selectedForDelete = vm.addSelectionsHelper.isSelected(position)
-                                            recyclerViewKeyHandler?.let {
+                                            addRecyclerViewKeyHandler?.let {
                                                 binding.root.isSelected = it.isSelected(position)
                                             }
                                         }
 
+                                    },
+                                    onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
+                                        addRecyclerViewKeyHandler?.let {
+                                            it.selectPosition(position)
+                                        }
                                     }
                             )
 
                             layoutBinding.vm = vm
                             layoutBinding.lifecycleOwner = viewLifecycleOwner
-                            recyclerViewKeyHandler = RecyclerViewKeyHandler(
+                            addRecyclerViewKeyHandler = RecyclerViewKeyHandler(
                                     rv = layoutBinding.rv,
                                     items = vm.listAddItem,
                                     lifecycleOwner = layoutBinding.lifecycleOwner!!,
-                                    initPosInfo = recyclerViewKeyHandler?.posInfo?.value
+                                    initPosInfo = addRecyclerViewKeyHandler?.posInfo?.value
                             )
                             return layoutBinding.root
                         }
@@ -227,21 +251,26 @@ class EditingInvoiceFragment : CoreFragment<FragmentEditingInvoiceBinding, Editi
                                             binding.tvCounter.tag = position
                                             binding.tvCounter.setOnClickListener(onClickSelectionListener)
                                             binding.selectedForDelete = vm.notesSelectionsHelper.isSelected(position)
-                                            recyclerViewKeyHandler?.let {
+                                            notesRecyclerViewKeyHandler?.let {
                                                 binding.root.isSelected = it.isSelected(position)
                                             }
                                         }
 
+                                    },
+                                    onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
+                                        notesRecyclerViewKeyHandler?.let {
+                                            it.selectPosition(position)
+                                        }
                                     }
                             )
 
                             layoutBinding.vm = vm
                             layoutBinding.lifecycleOwner = viewLifecycleOwner
-                            recyclerViewKeyHandler = RecyclerViewKeyHandler(
+                            notesRecyclerViewKeyHandler = RecyclerViewKeyHandler(
                                     rv = layoutBinding.rv,
                                     items = vm.listNotes,
                                     lifecycleOwner = layoutBinding.lifecycleOwner!!,
-                                    initPosInfo = recyclerViewKeyHandler?.posInfo?.value
+                                    initPosInfo = notesRecyclerViewKeyHandler?.posInfo?.value
                             )
                             return layoutBinding.root
                         }
@@ -266,6 +295,13 @@ class EditingInvoiceFragment : CoreFragment<FragmentEditingInvoiceBinding, Editi
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding?.viewPagerSettings = this
+    }
+
+    override fun onKeyDown(keyCode: KeyCode): Boolean {
+        keyCode.digit?.let { digit ->
+            vm.onDigitPressed(digit)
+        }
+        return true
     }
 
 
