@@ -112,7 +112,6 @@ class CheckPriceTask @Inject constructor(
     override var processingMatNumber: String? = null
 
     override fun checkProductFromVideoScan(rawCode: String?): CheckPriceResult? {
-
         //Logg.d { "checkProductFromVideoScan: $rawCode" }
 
         val scannedPriceInfo = priceInfoParser.getPriceInfoFromRawCode(rawCode) ?: return null
@@ -120,8 +119,7 @@ class CheckPriceTask @Inject constructor(
         val actualPriceInfo = actualPricesRepo.getActualPriceInfoFromCache(
                 tkNumber = taskDescription.tkNumber,
                 eanCode = scannedPriceInfo.eanCode
-        )
-                ?: return null
+        ) ?: return null
 
         return CheckPriceResult(
                 ean = scannedPriceInfo.eanCode,
@@ -143,7 +141,6 @@ class CheckPriceTask @Inject constructor(
                 }
             }
         }
-
     }
 
     override suspend fun checkPriceByQrCode(qrCode: String): Either<Failure, CheckPriceResult> {
@@ -168,10 +165,7 @@ class CheckPriceTask @Inject constructor(
                 readyResultsRepo.addCheckPriceResult(this)
             }
         }
-
-
     }
-
 
     override fun removeCheckResultsByMatNumbers(matNumbers: Set<String>) {
         readyResultsRepo.removePriceCheckResults(matNumbers)
@@ -208,6 +202,7 @@ class CheckPriceTask @Inject constructor(
                 price = null,
                 discountCardPrice = null
         )
+
         return CheckPriceResult(
                 ean = "",
                 matNr = matNr,
@@ -244,12 +239,10 @@ class CheckPriceTask @Inject constructor(
 
     override fun setCheckPriceStatus(isValid: Boolean?) {
         setCheckPriceStatus(isValid, processingMatNumber ?: "")
-
     }
 
     private fun setCheckPriceStatus(isValid: Boolean?, matNr: String) {
         readyResultsRepo.getCheckPriceResult(matNr = matNr).apply {
-
             if (this == null) {
                 actualPricesRepo.getActualPriceInfoByMatNumber(matNr)?.let { actualPriceInfo ->
                     readyResultsRepo.addCheckPriceResult(
@@ -265,12 +258,9 @@ class CheckPriceTask @Inject constructor(
                                     actualPriceInfo = actualPriceInfo,
                                     userPriceInfo = UserPriceInfo(isValidPrice = isValid),
                                     isPrinted = false
-
                             )
-
                     )
                 }
-
             } else {
                 readyResultsRepo.addCheckPriceResult(
                         checkPriceResult = (this).copy(
@@ -278,8 +268,6 @@ class CheckPriceTask @Inject constructor(
                         )
                 )
             }
-
-
         }
     }
 
@@ -295,9 +283,7 @@ class CheckPriceTask @Inject constructor(
                 checkPriceResult.isForPriceTag(priceTagTypeValue)
             }
         }
-
     }
-
 
     private val checksForAddFunc = { iActualPriceInfo: ActualPriceInfo ->
         if (!isAllowedProductForTask(iActualPriceInfo.matNumber)) {
@@ -335,7 +321,6 @@ class CheckPriceTask @Inject constructor(
         )
     }
 
-
     override fun isEmpty(): Boolean {
         return readyResultsRepo.getCheckPriceResults().value.isNullOrEmpty()
     }
@@ -356,8 +341,12 @@ class CheckPriceTask @Inject constructor(
     }
 
     override fun setMissing(matNrList: List<String>) {
-        matNrList.forEach {
-            setCheckPriceStatus(null, matNr = it)
+        matNrList.forEach { material ->
+            readyResultsRepo.getCheckPriceResult(matNr = material).apply {
+                readyResultsRepo.addCheckPriceResult(
+                        checkPriceResult = (this)!!.copy(isMissing = true)
+                )
+            }
         }
     }
 
@@ -395,7 +384,6 @@ class CheckPriceTask @Inject constructor(
         }
     }
 
-
 }
 
 private fun CheckPriceResult.isForPriceTag(priceTagType: PriceTagType?): Boolean {
@@ -428,7 +416,6 @@ interface ICheckPriceTask : ITask {
     fun markPrinted(listOfMatNrs: List<String>)
 
     var processingMatNumber: String?
-
 }
 
 data class CheckPriceResult(
@@ -438,7 +425,8 @@ data class CheckPriceResult(
         val scannedPriceInfo: ScanPriceInfo,
         val actualPriceInfo: ActualPriceInfo,
         val userPriceInfo: UserPriceInfo?,
-        val isPrinted: Boolean
+        val isPrinted: Boolean,
+        val isMissing: Boolean = false
 ) {
 
     fun isPriceValid(): Boolean? {
@@ -465,7 +453,6 @@ data class CheckPriceResult(
         return isPriceValid && isDiscountPriceValid
     }
 
-
 }
 
 data class ScanPriceInfo(
@@ -483,6 +470,7 @@ data class ActualPriceInfo(
         val price4: Double?,
         val options: GoodOptions
 ) {
+
     fun getPrice(): Double? {
         return price1
     }
@@ -497,9 +485,10 @@ data class ActualPriceInfo(
         }
     }
 
-    fun isRegular() : Boolean {
+    fun isRegular(): Boolean {
         return price3.toNullIfEmpty() == null && price4.toNullIfEmpty() == null
     }
+
 }
 
 data class GoodOptions(
@@ -510,9 +499,7 @@ data class GoodOptions(
         val novelty: Boolean = false
 )
 
-
 data class UserPriceInfo(override val isValidPrice: Boolean?) : IUserPriceInfo
-
 
 interface IUserPriceInfo {
     /**

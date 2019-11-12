@@ -27,7 +27,7 @@ class CheckPriceReportNetRequest
                         isNotFinished = params.isNotFinish.toSapBooleanString(),
                         taskNumber = params.description.taskNumber,
                         tkNumber = params.description.tkNumber,
-                        checksResult = params.checksResults.map {
+                        checksResult = params.checksResults.filter { !it.isMissing } .map {
                             CheckResult(
                                     matNr = it.matNr!!,
                                     statCheck = when (it.isAllValid()) {
@@ -85,42 +85,38 @@ data class CheckPriceReport(
 
 )
 
-
 data class FmpReport(
+        /** Название задания */
         @SerializedName("IV_DESCR")
         val description: String,
-
+        /** IP адрес ТСД */
         @SerializedName("IV_IP")
         val ip: String,
-
+        /** Обработка задания не закончена */
         @SerializedName("IV_NOT_FINISH")
         val isNotFinished: String,
-
+        /** Номер задания */
         @SerializedName("IV_TASK_NUM")
         val taskNumber: String,
-
+        /** Номер ТК */
         @SerializedName("IV_WERKS")
         val tkNumber: String,
-
+        /** Таблица сверки цен */
         @SerializedName("IT_CHECK_PRICE")
         val checksResult: List<CheckResult>,
-
+        /** Таблица состава задания */
         @SerializedName("IT_TASK_POS")
         val positions: List<Position>
-
 )
 
-
 data class CheckResult(
+        /** SAP-код товара */
         @SerializedName("MATNR")
         val matNr: String,
-        /**
-         * верно - 1, ошибка - 2, ценник отсутствует - 3
-         */
+        /** Статус проверки: 1 - верно, 2 - ошибка, 3 - ценник отсутствует */
         @SerializedName("STAT_CHECK")
         val statCheck: String,
+        /** Признак – печать выполнена */
         @SerializedName("IS_PRINT")
         val isPrinted: String
 )
-
-
