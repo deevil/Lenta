@@ -56,15 +56,13 @@ class EditingInvoiceFragment : CoreFragment<FragmentEditingInvoiceBinding, Editi
         bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.refusal)
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.save)
         viewLifecycleOwner.apply {
-            connectLiveData(vm.visibilityDelBtn, bottomToolbarUiModel.uiModelButton3.enabled)
             vm.selectedPage.observe(this, Observer {
                 if (it == 1) {
                     bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.restore)
-
                 } else {
                     bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.delete)
-                    //connectLiveData(vm.enabledDelBtn, bottomToolbarUiModel.uiModelButton3.enabled)
                 }
+                connectLiveData(vm.enabledRestoreDelBtn, bottomToolbarUiModel.uiModelButton3.enabled)
             })
         }
     }

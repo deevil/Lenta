@@ -95,30 +95,29 @@ class EditingInvoiceViewModel : CoreViewModel(), PageSelectionListener, OnOkInSo
         }
     }
 
-    val visibilityDelBtn: MutableLiveData<Boolean> = selectedPage.map {
-        when (it) {
-            0 -> {
-                false //totalSelectionsHelper.selectedPositions.value.isNullOrEmpty()
-            }
-            1 -> {
-                delSelectionsHelper.selectedPositions.value.isNullOrEmpty()
-            }
-            2 -> {
-                addSelectionsHelper.selectedPositions.value.isNullOrEmpty()
-            }
-            else -> notesSelectionsHelper.selectedPositions.value.isNullOrEmpty()
-        }
-    }
-
-    val enabledDelBtn: MutableLiveData<Boolean> = totalSelectionsHelper.selectedPositions.
-            combineLatest(delSelectionsHelper.selectedPositions).
-            combineLatest(addSelectionsHelper.selectedPositions).
-            combineLatest(notesSelectionsHelper.selectedPositions).map {
-        val totalSelected = it?.first
-        val delSelected = it?.first?.first
-        val addSelected = it?.first?.first?.first
-        val notesSelected = it?.first?.first?.first
-        true
+    val enabledRestoreDelBtn: MutableLiveData<Boolean> = selectedPage
+            .combineLatest(totalSelectionsHelper.selectedPositions)
+            .combineLatest(delSelectionsHelper.selectedPositions)
+            .combineLatest(addSelectionsHelper.selectedPositions)
+            .combineLatest(notesSelectionsHelper.selectedPositions)
+            .map {
+                val selectedTabPos = it?.first?.first?.first?.first ?: 0
+                val totalSelected = it?.first?.first?.first?.second
+                val delSelected = it?.first?.first?.second
+                val addSelected = it?.first?.second
+                val notesSelected = it?.second
+                when (selectedTabPos) {
+                    0 -> {
+                        totalSelected?.isNotEmpty() ?: false
+                    }
+                    1 -> {
+                        delSelected?.isNotEmpty() ?: false
+                    }
+                    2 -> {
+                        addSelected?.isNotEmpty() ?: false
+                    }
+                    else -> notesSelected?.isNotEmpty() ?: false
+                }
     }
 
     val enabledRestoreBtn: MutableLiveData<Boolean> = totalSelectionsHelper.selectedPositions.map {
