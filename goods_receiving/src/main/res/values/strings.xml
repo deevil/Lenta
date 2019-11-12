@@ -145,4 +145,10 @@
     <string name="the_shelf_life_has_expired">Срок годности истек. Пометить как брак?</string>
     <string name="section">Секция</string>
     <string name="unsaved_data_will_lost">Не сохранённые данные будут утеряны. Всё равно выйти?</string>
+    <string name="delivery_note_correction">Исправление поставки по накладной</string>
+    <string name="in_total">Итог</string>
+    <string name="removed">Удалённые</string>
+    <string name="added">Добавленные</string>
+    <string name="note">Примечание</string>
+    <string name="enter_item_note">Введите примечание</string>
 </resources>

@@ -77,7 +77,7 @@
             app:layout_constraintStart_toEndOf="@+id/div_vert"
             app:layout_constraintTop_toTopOf="@+id/div_vert"
             app:suffix="@{vm.suffix}"
-            tools:text="1" />
+            tools:text="1 шт" />
 
         <View
             android:id="@+id/div_hor2"

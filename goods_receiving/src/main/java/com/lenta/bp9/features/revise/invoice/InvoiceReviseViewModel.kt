@@ -134,7 +134,7 @@ class InvoiceReviseViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     fun onClickEdit() {
-        Logg.d { "Invoice details edit screen" }
+        screenNavigator.openEditingInvoiceScreen()
     }
 
     fun onClickNext() {
