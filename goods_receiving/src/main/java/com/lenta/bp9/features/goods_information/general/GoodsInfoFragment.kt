@@ -42,7 +42,6 @@ class GoodsInfoFragment : CoreFragment<FragmentGoodsInfoBinding, GoodsInfoViewMo
         provideViewModel(GoodsInfoViewModel::class.java).let {vm ->
             getAppComponent()?.inject(vm)
             vm.productInfo.value = this.productInfo
-            vm.titleProgressScreen.value = getString(R.string.data_loading)
             return vm
         }
     }
@@ -72,7 +71,6 @@ class GoodsInfoFragment : CoreFragment<FragmentGoodsInfoBinding, GoodsInfoViewMo
 
         connectLiveData(vm.enabledApplyButton, bottomToolbarUiModel.uiModelButton4.enabled)
         connectLiveData(vm.enabledApplyButton, bottomToolbarUiModel.uiModelButton5.enabled)
-        //connectLiveData(vm.spinSelectedPosition, bottomToolbarUiModel.uiModelButton4.requestFocus)
 
     }
 

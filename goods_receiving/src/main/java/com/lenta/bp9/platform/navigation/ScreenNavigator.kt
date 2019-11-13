@@ -539,6 +539,13 @@ class ScreenNavigator(
         }
     }
 
+    override fun openInfoDocsSentPScreenrint() {
+        openAlertScreen(message = context.getString(R.string.documents_sent_print),
+                iconRes = R.drawable.is_warning_yellow_80dp,
+                pageNumber = "96"
+        )
+    }
+
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 }
 
@@ -607,4 +614,5 @@ interface IScreenNavigator : ICoreNavigator {
     fun openAlertNotFoundTaskScreen(failure: Failure)
     fun openUnsavedDataDialog(yesCallbackFunc: () -> Unit)
     fun openEditingInvoiceScreen()
+    fun openInfoDocsSentPScreenrint()
 }

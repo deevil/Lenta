@@ -150,4 +150,5 @@
     <string name="added">Добавленные</string>
     <string name="note">Примечание</string>
     <string name="enter_item_note">Введите примечание</string>
+    <string name="documents_sent_print">Документы отправлены в очередь на печать</string>
 </resources>
