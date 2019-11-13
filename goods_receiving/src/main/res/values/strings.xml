@@ -70,9 +70,8 @@
     <string name="inn">ИНН</string>
     <string name="supplier_address">Местонахождение поставщика</string>
     <string name="strings_goods">Строк (товаров)</string>
-    <string name="quantity_st">Количество, шт</string>
-    <string name="quantity_kg">Количество, кг</string>
-    <string name="quantity_total">Общее количество, всего</string>
+    <string name="quantity_eiz">Количество, ЕИЗ</string>
+    <string name="quantity_total">Итого, единиц</string>
     <string name="select_reason">Введите или выберите\n причину отказа</string>
     <string name="enter_comment">Ввод комментария</string>
     <string name="reject_recieving">Отказ в приёмке</string>
