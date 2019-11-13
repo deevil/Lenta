@@ -82,7 +82,7 @@ class EditingInvoiceViewModel : CoreViewModel(), PageSelectionListener, OnOkInSo
 
     val listAddItem by lazy {
         repoInMemoryHolder.invoiceContents.combineLatest(filterAdd).map { pair ->
-            pair!!.first.filter { it.isAdded && it.matchesFilter(pair.second) }.mapIndexed { index, invoice ->
+            pair!!.first.filter { it.isAdded && !it.isDeleted && it.matchesFilter(pair.second) }.mapIndexed { index, invoice ->
                 EditingInvoiceItem(
                         number = index + 1,
                         name = "${invoice.getMaterialLastSix()} ${invoice.description}",
@@ -118,12 +118,7 @@ class EditingInvoiceViewModel : CoreViewModel(), PageSelectionListener, OnOkInSo
                     }
                     else -> notesSelected?.isNotEmpty() ?: false
                 }
-    }
-
-    val enabledRestoreBtn: MutableLiveData<Boolean> = totalSelectionsHelper.selectedPositions.map {
-        val selectedComponentsPositions = totalSelectionsHelper.selectedPositions.value
-        !selectedComponentsPositions.isNullOrEmpty()
-    }
+            }
 
     init {
         viewModelScope.launch {
@@ -147,15 +142,15 @@ class EditingInvoiceViewModel : CoreViewModel(), PageSelectionListener, OnOkInSo
         Logg.d { "testddi invoiceContents ${result.invoiceContents}" }
         Logg.d { "testddi notes ${result.notes}" }
         viewModelScope.launch {
-            repoInMemoryHolder.invoiceContents.value = result.invoiceContents.map {InvoiceContentEntry.from(hyperHive,it)}
-            invoiceNotes.value =result.notes.map { CommentToVP.from(it) }
+            repoInMemoryHolder.invoiceContents.value = result.invoiceContents.map { InvoiceContentEntry.from(hyperHive, it) }
+            invoiceNotes.value = result.notes.map { CommentToVP.from(it) }
             updateData()
             screenNavigator.hideProgress()
         }
     }
 
     private fun updateData() {
-        repoInMemoryHolder.invoiceContents.value = repoInMemoryHolder.invoiceContents.value //invoiceContents.value
+        repoInMemoryHolder.invoiceContents.value = repoInMemoryHolder.invoiceContents.value
 
         listNotes.postValue(
                 invoiceNotes.value?.mapIndexed { index, commentToVP ->
@@ -192,6 +187,15 @@ class EditingInvoiceViewModel : CoreViewModel(), PageSelectionListener, OnOkInSo
                     }
                 }
             }
+            2 -> {
+                addSelectionsHelper.selectedPositions.value?.map { position ->
+                    repoInMemoryHolder.invoiceContents.value!!.findLast {
+                        it.materialNumber == listAddItem.value!![position].invoiceContent.materialNumber
+                    }.let {
+                        it!!.isDeleted = true
+                    }
+                }
+            }
         }
         updateData()
     }
@@ -209,10 +213,27 @@ class EditingInvoiceViewModel : CoreViewModel(), PageSelectionListener, OnOkInSo
 
     fun onClickSave() {
         //todo
-        return
+        repoInMemoryHolder.invoiceContents.value!!.findLast {
+            it.getMaterialLastSix() == "378646"
+        }?.let {
+            Logg.d { "testddi save ${it.originalQuantity}" }
+        }
     }
 
     override fun onOkInSoftKeyboard(): Boolean {
+        var matnr = ""
+        when (selectedPage.value) {
+            0 -> matnr = filterTotal.value ?: ""
+            1 -> matnr = filterDel.value ?: ""
+            2 -> matnr = filterAdd.value ?: ""
+        }
+        repoInMemoryHolder.invoiceContents.value!!.findLast {
+            it.getMaterialLastSix() == if (matnr.length > 6) matnr.substring(matnr.length - 6) else matnr
+        }?.let {
+            it.isAdded = true
+            it.originalQuantity = it.registeredQuantity
+            updateData()
+        }
         return true
     }
 

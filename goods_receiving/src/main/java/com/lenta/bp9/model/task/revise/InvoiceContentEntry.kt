@@ -19,7 +19,7 @@ data class InvoiceContentEntry(
         val supplyPositionNumber: String,  // Номер позиции поставки
         var quantityInOrder: Double,   // Количество в заказе
         val registeredQuantity: Double, // Количество, которое біло оприходовано по этому заказу и этому товару
-        val originalQuantity: Double, // Исходное количество позиции поставки
+        var originalQuantity: Double, // Исходное количество позиции поставки
         val uom: Uom, // Единицы измерения
         var isAdded: Boolean,
         var isDeleted: Boolean

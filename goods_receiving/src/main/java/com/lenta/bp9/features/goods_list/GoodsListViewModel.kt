@@ -25,6 +25,7 @@ import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.extentions.getDeviceIp
 import com.lenta.shared.utilities.extentions.map
+import com.lenta.shared.utilities.extentions.toStringFormatted
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -83,14 +84,27 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
                         task.getProcessedProducts()
                                 .filter {
                                     task.taskRepository.getProductsDiscrepancies().getCountAcceptOfProduct(it) > 0.0
-                                            && task.taskRepository.getProductsDiscrepancies().getCountRefusalOfProduct(it) > 0.0
+                                            || task.taskRepository.getProductsDiscrepancies().getCountRefusalOfProduct(it) > 0.0
                                 }
                                 .mapIndexed { index, productInfo ->
+                                    val acceptTotalCount = task.taskRepository.getProductsDiscrepancies().getCountAcceptOfProduct(productInfo)
+                                    val acceptTotalCountWithUom = if (acceptTotalCount != 0.0) {
+                                        "+ " + acceptTotalCount.toStringFormatted() + " " + productInfo.uom.name
+                                    } else {
+                                        "0 " + productInfo.uom.name
+                                    }
+                                    val refusalTotalCount = task.taskRepository.getProductsDiscrepancies().getCountRefusalOfProduct(productInfo)
+                                    val refusalTotalCountWithUom = if (refusalTotalCount != 0.0) {
+                                        "- " + refusalTotalCount.toStringFormatted() + " " + productInfo.uom.name
+                                    } else {
+                                        "0 " + productInfo.uom.name
+                                    }
+
                                     ListCountedItem(
                                             number = index + 1,
                                             name = "${productInfo.getMaterialLastSix()} ${productInfo.description}",
-                                            countAccept = task.taskRepository.getProductsDiscrepancies().getCountAcceptOfProduct(productInfo),
-                                            countRefusal = task.taskRepository.getProductsDiscrepancies().getCountRefusalOfProduct(productInfo),
+                                            countAcceptWithUom = acceptTotalCountWithUom,
+                                            countRefusalWithUom = refusalTotalCountWithUom,
                                             uomName = productInfo.uom.name,
                                             productInfo = productInfo,
                                             batchInfo = null,
@@ -104,11 +118,23 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
                                     !it.isNoEAN
                                 }
                                 .mapIndexed { index, batchInfo ->
+                                    val acceptTotalCount = task.taskRepository.getBatchesDiscrepancies().getCountAcceptOfBatch(batchInfo)
+                                    val acceptTotalCountWithUom = if (acceptTotalCount != 0.0) {
+                                        "+ " + acceptTotalCount.toStringFormatted() + " " + batchInfo.uom.name
+                                    } else {
+                                        "0 " + batchInfo.uom.name
+                                    }
+                                    val refusalTotalCount = task.taskRepository.getBatchesDiscrepancies().getCountRefusalOfBatch(batchInfo)
+                                    val refusalTotalCountWithUom = if (refusalTotalCount != 0.0) {
+                                        "- " + refusalTotalCount.toStringFormatted() + " " + batchInfo.uom.name
+                                    } else {
+                                        "0 " + batchInfo.uom.name
+                                    }
                                     ListCountedItem(
                                             number = index + 1,
                                             name = "${batchInfo.getMaterialLastSix()} ${batchInfo.description} \nДР-${batchInfo.bottlingDate} // ${batchInfo.manufacturer}",
-                                            countAccept = task.taskRepository.getBatchesDiscrepancies().getCountAcceptOfBatch(batchInfo),
-                                            countRefusal = task.taskRepository.getBatchesDiscrepancies().getCountRefusalOfBatch(batchInfo),
+                                            countAcceptWithUom = acceptTotalCountWithUom,
+                                            countRefusalWithUom = refusalTotalCountWithUom,
                                             uomName = batchInfo.uom.name,
                                             productInfo = null,
                                             batchInfo = batchInfo,
