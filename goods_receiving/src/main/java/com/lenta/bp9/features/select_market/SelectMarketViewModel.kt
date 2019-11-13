@@ -43,12 +43,11 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
         }
     }
     private val marketOverIP: MutableLiveData<String> = MutableLiveData()
-    val titleProgressScreen: MutableLiveData<String> = MutableLiveData()
     val deviceIp: MutableLiveData<String> = MutableLiveData()
 
     init {
         viewModelScope.launch {
-            screenNavigator.showProgress(titleProgressScreen.value!!)
+            screenNavigator.showProgressLoadingData()
 
             repoInMemoryHolder.permissions?.markets?.let { list ->
 
@@ -82,7 +81,7 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
 
     fun onClickNext() {
         viewModelScope.launch {
-            screenNavigator.showProgress(titleProgressScreen.value!!)
+            screenNavigator.showProgressLoadingData()
             markets.value?.getOrNull(selectedPosition.value ?: -1)?.number?.let { tkNumber ->
                 if (appSettings.lastTK != tkNumber) {
                     printerManager.setDefaultPrinterForTk(tkNumber)

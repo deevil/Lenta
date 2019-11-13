@@ -3,7 +3,9 @@ package com.lenta.bp9.features.discrepancy_list
 import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.lenta.bp9.features.loading.tasks.TaskCardMode
 import com.lenta.bp9.model.task.IReceivingTaskManager
+import com.lenta.bp9.model.task.TaskDescription
 import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.bp9.requests.network.EndRecountDDParameters
 import com.lenta.bp9.requests.network.EndRecountDDResult
@@ -31,7 +33,6 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
     @Inject
     lateinit var sessionInfo: ISessionInfo
 
-    val titleProgressScreen: MutableLiveData<String> = MutableLiveData()
     val selectedPage = MutableLiveData(0)
     val processedSelectionsHelper = SelectionItemsHelper()
     val countNotProcessed: MutableLiveData<List<GoodsDiscrepancyItem>> = MutableLiveData()
@@ -48,6 +49,10 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
         !selectedComponentsPositions.isNullOrEmpty()
     }
 
+    val enabledSaveButton: MutableLiveData<Boolean> = countProcessed.map {
+        taskManager.getReceivingTask()!!.taskRepository.getProducts().getProducts().size <= (it?.size ?: 0)
+    }
+
     val visibilityBatchesButton: MutableLiveData<Boolean> = MutableLiveData()
 
     fun onResume() {
@@ -62,7 +67,8 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
                 countNotProcessed.postValue(
                         task.getProcessedProducts()
                                 .filter {
-                                    it.isNoEAN
+                                    (task.taskRepository.getProductsDiscrepancies().getCountAcceptOfProduct(it) +
+                                            task.taskRepository.getProductsDiscrepancies().getCountRefusalOfProduct(it)) == 0.0
                                 }
                                 .mapIndexed { index, productInfo ->
                                     GoodsDiscrepancyItem(
@@ -80,7 +86,8 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
                 countNotProcessed.postValue(
                         task.getProcessedBatches()
                                 .filter {
-                                    it.isNoEAN
+                                    (task.taskRepository.getBatchesDiscrepancies().getCountAcceptOfBatch(it) +
+                                            task.taskRepository.getBatchesDiscrepancies().getCountAcceptOfBatch(it)) == 0.0
                                 }
                                 .mapIndexed { index, batchInfo ->
                                     GoodsDiscrepancyItem(
@@ -105,7 +112,8 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
                 countProcessed.postValue(
                         task.getProcessedProducts()
                                 .filter {
-                                    !it.isNoEAN
+                                    task.taskRepository.getProductsDiscrepancies().getCountAcceptOfProduct(it) > 0.0
+                                            || task.taskRepository.getProductsDiscrepancies().getCountRefusalOfProduct(it) > 0.0
                                 }.mapIndexed { index, productInfo ->
                                     GoodsDiscrepancyItem(
                                             number = index + 1,
@@ -121,7 +129,8 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
                 countProcessed.postValue(
                         task.getProcessedBatches()
                                 .filter {
-                                    !it.isNoEAN
+                                    task.taskRepository.getBatchesDiscrepancies().getCountAcceptOfBatch(it) > 0.0
+                                            || task.taskRepository.getBatchesDiscrepancies().getCountAcceptOfBatch(it) > 0.0
                                 }.mapIndexed { index, batchInfo ->
                                     GoodsDiscrepancyItem(
                                             number = index + 1,
@@ -193,28 +202,21 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
 
     fun onClickSave() {
         viewModelScope.launch {
-            screenNavigator.showProgress(titleProgressScreen.value!!)
-            if (taskManager.getReceivingTask()!!.getProcessedProducts().any { it.isNoEAN }) {
-                screenNavigator.openDiscrepancyListScreen()
-            } else {
-                endRecountDirectDeliveries(EndRecountDDParameters(
-                        taskNumber = taskManager.getReceivingTask()!!.taskHeader.taskNumber,
-                        deviceIP = context.getDeviceIp(),
-                        personalNumber = sessionInfo.personnelNumber ?: "",
-                        discrepanciesProduct = taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().getProductsDiscrepancies(),
-                        discrepanciesBatches = taskManager.getReceivingTask()!!.taskRepository.getBatchesDiscrepancies().getBatchesDiscrepancies()
-                )).either(::handleFailure, ::handleSucess)
-            }
+            screenNavigator.showProgressLoadingData()
+            endRecountDirectDeliveries(EndRecountDDParameters(
+                    taskNumber = taskManager.getReceivingTask()!!.taskHeader.taskNumber,
+                    deviceIP = context.getDeviceIp(),
+                    personalNumber = sessionInfo.personnelNumber ?: "",
+                    discrepanciesProduct = taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().getProductsDiscrepancies(),
+                    discrepanciesBatches = taskManager.getReceivingTask()!!.taskRepository.getBatchesDiscrepancies().getBatchesDiscrepancies()
+            )).either(::handleFailure, ::handleSuccess)
             screenNavigator.hideProgress()
         }
     }
 
-    private fun handleSucess(endRecountDDResult: EndRecountDDResult) {
-        screenNavigator.goBack()
+    private fun handleSuccess(result: EndRecountDDResult) {
+        taskManager.updateTaskDescription(TaskDescription.from(result.taskDescription))
+        screenNavigator.openTaskCardScreen(TaskCardMode.Full)
     }
 
-    override fun handleFailure(failure: Failure) {
-        super.handleFailure(failure)
-        screenNavigator.openAlertScreen(failure, pageNumber = "97")
-    }
 }
