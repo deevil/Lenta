@@ -19,7 +19,8 @@ val even: Boolean
 data class NotesInvoiceItem(
         val number: Int,
         val lineNumber: String,
-        var lineText: String,
+        val lineText: String,
+        var isDel: Boolean,
         val even: Boolean
 ) : Evenable {
     override fun isEven() = even

@@ -45,7 +45,7 @@ class EditingInvoiceViewModel : CoreViewModel(), PageSelectionListener, OnOkInSo
     val notesSelectionsHelper = SelectionItemsHelper()
     val listNotes: MutableLiveData<List<NotesInvoiceItem>> = MutableLiveData()
     private val invoiceNotes: MutableLiveData<List<CommentToVP>> = MutableLiveData()
-    val notes: MutableLiveData<String> = MutableLiveData()
+    val notes: MutableLiveData<String> = MutableLiveData("")
     val filterTotal = MutableLiveData("")
     val filterDel = MutableLiveData("")
     val filterAdd = MutableLiveData("")
@@ -143,7 +143,17 @@ class EditingInvoiceViewModel : CoreViewModel(), PageSelectionListener, OnOkInSo
         Logg.d { "testddi notes ${result.notes}" }
         viewModelScope.launch {
             repoInMemoryHolder.invoiceContents.value = result.invoiceContents.map { InvoiceContentEntry.from(hyperHive, it) }
-            invoiceNotes.value = result.notes.map { CommentToVP.from(it) }
+            listNotes.postValue(
+                    result.notes.mapIndexed { index, commentToVPRestData ->
+                        NotesInvoiceItem(
+                                number = index + 1,
+                                lineNumber = commentToVPRestData.lineNumber,
+                                lineText = commentToVPRestData.lineText,
+                                isDel = false,
+                                even = index % 2 == 0
+                        )
+                    }.reversed()
+            )
             updateData()
             screenNavigator.hideProgress()
         }
@@ -152,16 +162,35 @@ class EditingInvoiceViewModel : CoreViewModel(), PageSelectionListener, OnOkInSo
     private fun updateData() {
         repoInMemoryHolder.invoiceContents.value = repoInMemoryHolder.invoiceContents.value
 
-        listNotes.postValue(
-                invoiceNotes.value?.mapIndexed { index, commentToVP ->
+        val invoiceNotesSize = (listNotes.value?.size ?: 0) + 1
+        val newListNotes: ArrayList<NotesInvoiceItem> = ArrayList()
+        if (notes.value!!.isNotEmpty()) {
+            newListNotes.add(
                     NotesInvoiceItem(
-                            number = index + 1,
-                            lineNumber = "${commentToVP.lineNumber}",
-                            lineText = commentToVP.lineText,
-                            even = index % 2 == 0
+                            number = invoiceNotesSize,
+                            lineNumber = "",
+                            lineText = notes.value!!,
+                            isDel = false,
+                            even = invoiceNotesSize % 2 == 0
                     )
-                }?.reversed()
-        )
+            )
+        }
+        listNotes.value?.filter {
+            !it.isDel
+        }?.mapIndexed { index, notesInvoiceItem ->
+            NotesInvoiceItem(
+                    number = index + 1,
+                    lineNumber = notesInvoiceItem.lineNumber,
+                    lineText = notesInvoiceItem.lineText,
+                    isDel = false,
+                    even = index % 2 == 0
+            )
+        }?.reversed()?.let {
+            newListNotes.addAll(it)
+        }
+        listNotes.value = newListNotes
+        notes.value = ""
+
         totalSelectionsHelper.clearPositions()
         delSelectionsHelper.clearPositions()
         addSelectionsHelper.clearPositions()
@@ -196,6 +225,11 @@ class EditingInvoiceViewModel : CoreViewModel(), PageSelectionListener, OnOkInSo
                     }
                 }
             }
+            3 -> {
+                notesSelectionsHelper.selectedPositions.value?.map { position ->
+                    listNotes.value!![position].isDel = true
+                }
+            }
         }
         updateData()
     }
@@ -213,27 +247,36 @@ class EditingInvoiceViewModel : CoreViewModel(), PageSelectionListener, OnOkInSo
 
     fun onClickSave() {
         //todo
-        repoInMemoryHolder.invoiceContents.value!!.findLast {
-            it.getMaterialLastSix() == "378646"
-        }?.let {
-            Logg.d { "testddi save ${it.originalQuantity}" }
+        repoInMemoryHolder.invoiceContents.value!!.map {invoice ->
+            listTotal.value?.findLast {item ->
+                item.invoiceContent.materialNumber == invoice.materialNumber
+            }?.let {
+                invoice.originalQuantity = it.quantity.toDouble()
+            }
         }
     }
 
     override fun onOkInSoftKeyboard(): Boolean {
         var matnr = ""
+
         when (selectedPage.value) {
             0 -> matnr = filterTotal.value ?: ""
             1 -> matnr = filterDel.value ?: ""
             2 -> matnr = filterAdd.value ?: ""
         }
-        repoInMemoryHolder.invoiceContents.value!!.findLast {
-            it.getMaterialLastSix() == if (matnr.length > 6) matnr.substring(matnr.length - 6) else matnr
-        }?.let {
-            it.isAdded = true
-            it.originalQuantity = it.registeredQuantity
+
+        if (selectedPage.value == 3) {
             updateData()
+        } else {
+            repoInMemoryHolder.invoiceContents.value!!.findLast {
+                it.getMaterialLastSix() == if (matnr.length > 6) matnr.substring(matnr.length - 6) else matnr
+            }?.let {
+                it.isAdded = true
+                it.originalQuantity = it.registeredQuantity
+                updateData()
+            }
         }
+
         return true
     }
 
