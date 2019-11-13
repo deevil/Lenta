@@ -225,9 +225,13 @@ class WorkListTask @Inject constructor(
     override fun getSearchList(): LiveData<List<Good>> {
         return goods.combineLatest(filterableDelegate.onFiltersChangesLiveData).map {
             requireNotNull(it)
-            val goodsList = it.first
-            goodsList.filter { good ->
-                filter(good)
+            if (filterableDelegate.filtersMap.isNotEmpty()) {
+                val goodsList = it.first
+                goodsList.filter { good ->
+                    filter(good)
+                }
+            } else {
+                emptyList()
             }
         }
     }
@@ -247,21 +251,12 @@ class WorkListTask @Inject constructor(
                     }
                 }
                 FilterFieldType.PLACE_STORAGE -> {
-                    val storagePlaces = good.additional?.storagePlaces ?: ""
-                    if (!storagePlaces.contains(it.value.value)) {
+                    if (good.additional?.storagePlaces?.contains(it.value.value) != true) {
                         return false
                     }
                 }
                 FilterFieldType.COMMENT -> {
-                    var existComment = false
-                    good.comments.map { comment ->
-                        if (comment.description == it.value.value) {
-                            existComment = true
-                            return@map
-                        }
-                    }
-
-                    if (!existComment) {
+                    if (good.scanResults.find { result -> result.comment.contains(it.value.value) } == null) {
                         return false
                     }
                 }
