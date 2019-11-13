@@ -5,13 +5,12 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp9.model.task.IReceivingTaskManager
 import com.lenta.bp9.model.task.revise.CommentToVP
+import com.lenta.bp9.model.task.revise.CommentToVPRestData
 import com.lenta.bp9.model.task.revise.InvoiceContentEntry
 import com.lenta.bp9.model.task.revise.InvoiceContentEntryRestData
 import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.bp9.repos.IRepoInMemoryHolder
-import com.lenta.bp9.requests.network.InvoiceContentNetRequest
-import com.lenta.bp9.requests.network.InvoiceContentRequestParameters
-import com.lenta.bp9.requests.network.InvoiceContentRequestResult
+import com.lenta.bp9.requests.network.*
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.SelectionItemsHelper
@@ -34,6 +33,8 @@ class EditingInvoiceViewModel : CoreViewModel(), PageSelectionListener, OnOkInSo
     @Inject
     lateinit var invoiceContentNetRequest: InvoiceContentNetRequest
     @Inject
+    lateinit var invoiceContentSaveNetRequest: InvoiceContentSaveNetRequest
+    @Inject
     lateinit var hyperHive: HyperHive
     @Inject
     lateinit var repoInMemoryHolder: IRepoInMemoryHolder
@@ -44,7 +45,6 @@ class EditingInvoiceViewModel : CoreViewModel(), PageSelectionListener, OnOkInSo
     val addSelectionsHelper = SelectionItemsHelper()
     val notesSelectionsHelper = SelectionItemsHelper()
     val listNotes: MutableLiveData<List<NotesInvoiceItem>> = MutableLiveData()
-    private val invoiceNotes: MutableLiveData<List<CommentToVP>> = MutableLiveData()
     val notes: MutableLiveData<String> = MutableLiveData("")
     val filterTotal = MutableLiveData("")
     val filterDel = MutableLiveData("")
@@ -139,8 +139,8 @@ class EditingInvoiceViewModel : CoreViewModel(), PageSelectionListener, OnOkInSo
     }
 
     private fun handleSuccess(result: InvoiceContentRequestResult) {
-        Logg.d { "testddi invoiceContents ${result.invoiceContents}" }
-        Logg.d { "testddi notes ${result.notes}" }
+        Logg.d { "invoiceContents server ${result.invoiceContents}" }
+        Logg.d { "notes server ${result.notes}" }
         viewModelScope.launch {
             repoInMemoryHolder.invoiceContents.value = result.invoiceContents.map { InvoiceContentEntry.from(hyperHive, it) }
             listNotes.postValue(
@@ -246,14 +246,50 @@ class EditingInvoiceViewModel : CoreViewModel(), PageSelectionListener, OnOkInSo
     }
 
     fun onClickSave() {
-        //todo
-        repoInMemoryHolder.invoiceContents.value!!.map {invoice ->
-            listTotal.value?.findLast {item ->
-                item.invoiceContent.materialNumber == invoice.materialNumber
-            }?.let {
-                invoice.originalQuantity = it.quantity.toDouble()
+        viewModelScope.launch {
+            screenNavigator.showProgressLoadingData()
+
+            repoInMemoryHolder.invoiceContents.value!!.map {invoice ->
+                listTotal.value?.findLast {item ->
+                    item.invoiceContent.materialNumber == invoice.materialNumber
+                }?.let {
+                    invoice.originalQuantity = it.quantity.toDouble()
+                }
             }
+
+            val invoiceNotes: ArrayList<CommentToVP> = ArrayList()
+            listNotes.value?.filter {notes ->
+                !notes.isDel
+            }?.map {
+                invoiceNotes.add(
+                        CommentToVP(
+                                lineNumber = null,
+                                lineText = it.lineText
+                        )
+                )
+            }
+
+            taskManager.getReceivingTask()?.let { task ->
+                val params = InvoiceContentSaveRequestParameters(
+                        taskNumber = task.taskHeader.taskNumber,
+                        invoiceNumber = task.taskRepository.getReviseDocuments().getInvoiceInfo()?.numberTTN ?: "",
+                        invoiceDate = task.taskRepository.getReviseDocuments().getInvoiceInfo()?.dateTTN ?: "",
+                        invoiceContents = repoInMemoryHolder.invoiceContents.value?.map { InvoiceContentEntryRestData.from(it) },
+                        notes = invoiceNotes.map { CommentToVPRestData.from(it) }
+                )
+                invoiceContentSaveNetRequest(params).either(::handleFailureSave, ::handleSuccessSave)
+            }
+            screenNavigator.hideProgress()
         }
+    }
+
+    private fun handleFailureSave(failure: Failure) {
+        screenNavigator.openAlertScreen(failure)
+    }
+
+    private fun handleSuccessSave(result: InvoiceContentSaveRequestResult) {
+        Logg.d { "InvoiceContents save  ${result}" }
+        screenNavigator.goBack()
     }
 
     override fun onOkInSoftKeyboard(): Boolean {
