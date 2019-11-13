@@ -115,13 +115,31 @@ class CheckListTask @Inject constructor(
     override fun getStateAsString(): String {
         return gson.toJson(CheckListData(
                 taskDescription = taskDescription,
-                goods = goods.value ?: emptyList()
+                goods = goods.value?.map { good ->
+                    GoodJson(
+                            ean = good.ean,
+                            material = good.material,
+                            name = good.name,
+                            defaultUnits = good.defaultUnits,
+                            units = good.units,
+                            quantity = good.quantity.value
+                    )
+                } ?: emptyList()
         ))
     }
 
     override fun loadStateFromString(state: String) {
         val data = gson.fromJson(state, CheckListData::class.java)
-        goods.value = data.goods
+        goods.value = data.goods.map { goodSimple ->
+            Good(
+                    ean = goodSimple.ean,
+                    material = goodSimple.material,
+                    name = goodSimple.name,
+                    defaultUnits = goodSimple.defaultUnits,
+                    units = goodSimple.units,
+                    quantity = MutableLiveData(goodSimple.quantity ?: "0")
+            )
+        }
     }
 
     override fun getMaxTaskPositions(): Double {
@@ -172,12 +190,21 @@ data class Good(
 
 }
 
+data class GoodJson(
+        val ean: String?,
+        val material: String,
+        val name: String,
+        val defaultUnits: Uom,
+        val units: Uom,
+        val quantity: String?
+)
+
 data class GoodRequestResult(
         val good: Good?
 )
 
 data class CheckListData(
         val taskDescription: CheckListTaskDescription,
-        val goods: List<Good>
+        val goods: List<GoodJson>
 )
 
