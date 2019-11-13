@@ -47,7 +47,7 @@ class GoodsDetailsViewModel : CoreViewModel() {
                     GoodsDetailsCategoriesItem(
                             number = index + 1,
                             name = "${reasonRejectionInfo.value?.firstOrNull {it.code == discrepancy.typeDiscrepancies}?.name}",
-                            quantityWithUom = discrepancy.numberDiscrepancies.toDouble().toStringFormatted() + " " + discrepancy.uom.name,
+                            quantityWithUom = "${discrepancy.numberDiscrepancies.toDouble().toStringFormatted()} ${discrepancy.uom.name}",
                             typeDiscrepancies = discrepancy.typeDiscrepancies,
                             even = index % 2 == 0
                     )
@@ -61,7 +61,7 @@ class GoodsDetailsViewModel : CoreViewModel() {
                     GoodsDetailsCategoriesItem(
                             number = index + 1,
                             name = "${reasonRejectionInfo.value?.firstOrNull {it.code == discrepancy.typeDiscrepancies}?.name}",
-                            quantityWithUom = discrepancy.numberDiscrepancies.toDouble().toStringFormatted() + " " + discrepancy.uom.name,
+                            quantityWithUom = "${discrepancy.numberDiscrepancies.toDouble().toStringFormatted()} ${discrepancy.uom.name}",
                             typeDiscrepancies = discrepancy.typeDiscrepancies.toDouble().toStringFormatted(),
                             even = index % 2 == 0
                     )
