@@ -11,8 +11,10 @@ import com.lenta.bp9.requests.network.EndRecountDDParameters
 import com.lenta.bp9.requests.network.EndRecountDDResult
 import com.lenta.bp9.requests.network.EndRecountDirectDeliveriesNetRequest
 import com.lenta.shared.account.ISessionInfo
+import com.lenta.shared.exception.Failure
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
+import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.databinding.PageSelectionListener
@@ -257,25 +259,28 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
                 screenNavigator.openDiscrepancyListScreen()
             } else {
                 screenNavigator.showProgressLoadingData()
-                if (taskManager.getReceivingTask()!!.getProcessedProducts().any { it.isNoEAN }) {
-                    screenNavigator.openDiscrepancyListScreen()
-                } else {
-                    endRecountDirectDeliveries(EndRecountDDParameters(
-                            taskNumber = taskManager.getReceivingTask()!!.taskHeader.taskNumber,
-                            deviceIP = context.getDeviceIp(),
-                            personalNumber = sessionInfo.personnelNumber ?: "",
-                            discrepanciesProduct = taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().getProductsDiscrepancies(),
-                            discrepanciesBatches = taskManager.getReceivingTask()!!.taskRepository.getBatchesDiscrepancies().getBatchesDiscrepancies()
-                    )).either(::handleFailure, ::handleSuccess)
-                }
+                endRecountDirectDeliveries(EndRecountDDParameters(
+                        taskNumber = taskManager.getReceivingTask()!!.taskHeader.taskNumber,
+                        deviceIP = context.getDeviceIp(),
+                        personalNumber = sessionInfo.personnelNumber ?: "",
+                        discrepanciesProduct = taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().getProductsDiscrepancies(),
+                        discrepanciesBatches = taskManager.getReceivingTask()!!.taskRepository.getBatchesDiscrepancies().getBatchesDiscrepancies()
+                )).either(::handleFailure, ::handleSuccess)
                 screenNavigator.hideProgress()
             }
         }
     }
 
     private fun handleSuccess(result: EndRecountDDResult) {
+        Logg.d { "testddi ${result}" }
         taskManager.updateTaskDescription(TaskDescription.from(result.taskDescription))
         screenNavigator.openTaskCardScreen(TaskCardMode.Full)
+    }
+
+    override fun handleFailure(failure: Failure) {
+        Logg.d { "testddi_handleFailure $failure" }
+        super.handleFailure(failure)
+        screenNavigator.openAlertScreen(failure, pageNumber = "97")
     }
 
     fun onBackPressed() {

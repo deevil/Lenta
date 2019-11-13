@@ -13,10 +13,12 @@ import com.lenta.bp9.requests.network.EndRecountDirectDeliveriesNetRequest
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.platform.viewmodel.CoreViewModel
+import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.extentions.getDeviceIp
 import com.lenta.shared.utilities.extentions.map
+import com.lenta.shared.utilities.extentions.toStringFormatted
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -74,9 +76,8 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
                                     GoodsDiscrepancyItem(
                                             number = index + 1,
                                             name = "${productInfo.getMaterialLastSix()} ${productInfo.description}",
-                                            countAccept = 0.0,
-                                            countRefusal = 0.0,
-                                            uomName = productInfo.uom.name,
+                                            countAcceptWithUom = "",
+                                            countRefusalWithUom = "",
                                             productInfo = productInfo,
                                             batchInfo = null,
                                             even = index % 2 == 0)
@@ -93,9 +94,8 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
                                     GoodsDiscrepancyItem(
                                             number = index + 1,
                                             name = "${batchInfo.getMaterialLastSix()} ${batchInfo.description} \nДР-${batchInfo.bottlingDate} // ${batchInfo.manufacturer}",
-                                            countAccept = 0.0,
-                                            countRefusal = 0.0,
-                                            uomName = batchInfo.uom.name,
+                                            countAcceptWithUom = "",
+                                            countRefusalWithUom = "",
                                             productInfo = null,
                                             batchInfo = batchInfo,
                                             even = index % 2 == 0)
@@ -115,11 +115,23 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
                                     task.taskRepository.getProductsDiscrepancies().getCountAcceptOfProduct(it) > 0.0
                                             || task.taskRepository.getProductsDiscrepancies().getCountRefusalOfProduct(it) > 0.0
                                 }.mapIndexed { index, productInfo ->
+                                    val acceptTotalCount = task.taskRepository.getProductsDiscrepancies().getCountAcceptOfProduct(productInfo)
+                                    val acceptTotalCountWithUom = if (acceptTotalCount != 0.0) {
+                                        "+ " + acceptTotalCount.toStringFormatted() + " " + productInfo.uom.name
+                                    } else {
+                                        "0 " + productInfo.uom.name
+                                    }
+                                    val refusalTotalCount = task.taskRepository.getProductsDiscrepancies().getCountRefusalOfProduct(productInfo)
+                                    val refusalTotalCountWithUom = if (refusalTotalCount != 0.0) {
+                                        "- " + refusalTotalCount.toStringFormatted() + " " + productInfo.uom.name
+                                    } else {
+                                        "0 " + productInfo.uom.name
+                                    }
                                     GoodsDiscrepancyItem(
                                             number = index + 1,
                                             name = "${productInfo.getMaterialLastSix()} ${productInfo.description}",
-                                            countAccept = task.taskRepository.getProductsDiscrepancies().getCountAcceptOfProduct(productInfo),
-                                            countRefusal = task.taskRepository.getProductsDiscrepancies().getCountRefusalOfProduct(productInfo),uomName = productInfo.uom.name,
+                                            countAcceptWithUom = acceptTotalCountWithUom,
+                                            countRefusalWithUom = refusalTotalCountWithUom,
                                             productInfo = productInfo,
                                             batchInfo = null,
                                             even = index % 2 == 0)
@@ -132,12 +144,23 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
                                     task.taskRepository.getBatchesDiscrepancies().getCountAcceptOfBatch(it) > 0.0
                                             || task.taskRepository.getBatchesDiscrepancies().getCountAcceptOfBatch(it) > 0.0
                                 }.mapIndexed { index, batchInfo ->
+                                    val acceptTotalCount = task.taskRepository.getBatchesDiscrepancies().getCountAcceptOfBatch(batchInfo)
+                                    val acceptTotalCountWithUom = if (acceptTotalCount != 0.0) {
+                                        "+ " + acceptTotalCount.toStringFormatted() + " " + batchInfo.uom.name
+                                    } else {
+                                        "0 " + batchInfo.uom.name
+                                    }
+                                    val refusalTotalCount = task.taskRepository.getBatchesDiscrepancies().getCountRefusalOfBatch(batchInfo)
+                                    val refusalTotalCountWithUom = if (refusalTotalCount != 0.0) {
+                                        "- " + refusalTotalCount.toStringFormatted() + " " + batchInfo.uom.name
+                                    } else {
+                                        "0 " + batchInfo.uom.name
+                                    }
                                     GoodsDiscrepancyItem(
                                             number = index + 1,
                                             name = "${batchInfo.getMaterialLastSix()} ${batchInfo.description} \nДР-${batchInfo.bottlingDate} // ${batchInfo.manufacturer}",
-                                            countAccept = task.taskRepository.getBatchesDiscrepancies().getCountAcceptOfBatch(batchInfo),
-                                            countRefusal = task.taskRepository.getBatchesDiscrepancies().getCountRefusalOfBatch(batchInfo),
-                                            uomName = batchInfo.uom.name,
+                                            countAcceptWithUom = acceptTotalCountWithUom,
+                                            countRefusalWithUom = refusalTotalCountWithUom,
                                             productInfo = null,
                                             batchInfo = batchInfo,
                                             even = index % 2 == 0)
@@ -217,6 +240,11 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
     private fun handleSuccess(result: EndRecountDDResult) {
         taskManager.updateTaskDescription(TaskDescription.from(result.taskDescription))
         screenNavigator.openTaskCardScreen(TaskCardMode.Full)
+    }
+
+    override fun handleFailure(failure: Failure) {
+        super.handleFailure(failure)
+        screenNavigator.openAlertScreen(failure, pageNumber = "97")
     }
 
 }

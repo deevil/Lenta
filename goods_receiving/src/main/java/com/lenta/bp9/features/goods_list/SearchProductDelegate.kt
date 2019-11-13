@@ -108,7 +108,7 @@ class SearchProductDelegate @Inject constructor(
     }
 
     private fun searchProduct() {
-        Logg.d { "testddi ${scanInfoResult?.productInfo?.materialNumber}" }
+        Logg.d { "searchProduct ${scanInfoResult?.productInfo?.materialNumber}" }
         scanInfoResult?.let { infoResult ->
             val taskProductInfo = taskManager.getReceivingTask()!!.taskRepository.getProducts().findProduct(infoResult.productInfo.materialNumber)
             if (taskProductInfo == null) {
