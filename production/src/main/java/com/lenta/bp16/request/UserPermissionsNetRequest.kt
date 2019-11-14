@@ -14,7 +14,7 @@ class UserPermissionsNetRequest
 @Inject constructor(private val fmpRequestsHelper: FmpRequestsHelper) : UseCase<PermissionsRequestResult, PermissionsRequestParams> {
     override suspend fun run(params: PermissionsRequestParams): Either<Failure, PermissionsRequestResult> {
         return fmpRequestsHelper.restRequest(
-                "ZMP_UTZ_WKL_01_V001",
+                "ZMP_UTZ_PRO_01_V001",
                 params,
                 PermissionsRequestStatus::class.java)
                 .rightToLeft { sentResult ->

@@ -3,6 +3,8 @@
           xmlns:tools="http://schemas.android.com/tools"
           package="com.lenta.bp16">
 
+    <uses-permission android:name="android.permission.CAMERA" />
+
     <application
         android:name=".AndroidApplication"
         android:allowBackup="false"
