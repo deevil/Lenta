@@ -26,8 +26,8 @@ class PriceInfoParserTest {
         rawCode = "(01)4015000993678(390y)203,69(392y)193,49"
 
         val expectedEan = "4015000993678"
-        val expectedPrice = 203.69F
-        val expectedDiscountCardPrice = 193.49F
+        val expectedPrice = 203.69
+        val expectedDiscountCardPrice = 193.49
 
         val priceInfo = priceInfoParser.getPriceInfoFromRawCode(rawCode)
 
