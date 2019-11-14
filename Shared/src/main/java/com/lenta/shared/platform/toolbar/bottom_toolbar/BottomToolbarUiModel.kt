@@ -278,6 +278,10 @@ data class ButtonDecorationInfo(
             ButtonDecorationInfo(R.drawable.ic_restore, R.string.restore)
         }
 
+        val verify: ButtonDecorationInfo by lazy {
+            ButtonDecorationInfo(R.drawable.ic_arrow_verify_white_24dp, R.string.verify)
+        }
+
     }
 }
 

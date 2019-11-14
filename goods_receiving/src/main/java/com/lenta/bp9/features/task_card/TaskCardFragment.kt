@@ -52,6 +52,7 @@ class TaskCardFragment : CoreFragment<FragmentTaskCardBinding, TaskCardViewModel
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
         if (vm.mode == TaskCardMode.Full) {
+            bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.verify)
             bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.docs)
             bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.nextAlternate)
             connectLiveData(source = vm.redIndicatorAbsent, target = bottomToolbarUiModel.uiModelButton5.enabled)
@@ -69,6 +70,7 @@ class TaskCardFragment : CoreFragment<FragmentTaskCardBinding, TaskCardViewModel
 
     override fun onToolbarButtonClick(view: View) {
         when (view.id) {
+            R.id.b_2 -> vm.onClickVerify()
             R.id.b_4 -> vm.onClickSupply()
             R.id.b_5 -> vm.onClickNext()
         }

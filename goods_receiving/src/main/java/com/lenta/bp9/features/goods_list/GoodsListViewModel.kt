@@ -272,13 +272,11 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
     }
 
     private fun handleSuccess(result: EndRecountDDResult) {
-        Logg.d { "testddi ${result}" }
         taskManager.updateTaskDescription(TaskDescription.from(result.taskDescription))
         screenNavigator.openTaskCardScreen(TaskCardMode.Full)
     }
 
     override fun handleFailure(failure: Failure) {
-        Logg.d { "testddi_handleFailure $failure" }
         super.handleFailure(failure)
         screenNavigator.openAlertScreen(failure, pageNumber = "97")
     }

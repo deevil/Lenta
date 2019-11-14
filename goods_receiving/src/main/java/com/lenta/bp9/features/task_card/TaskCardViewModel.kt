@@ -166,6 +166,16 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
         screenNavigator.openChangeDateTimeScreen(ChangeDateTimeMode.NextStatus)
     }
 
+    fun onClickVerify() {
+        when {
+            taskManager.getReceivingTask()?.taskRepository?.getReviseDocuments()?.getDeliveryDocuments()?.isNotEmpty() == true -> screenNavigator.openTaskReviseScreen()
+            taskManager.getReceivingTask()?.taskRepository?.getReviseDocuments()?.getProductDocuments()?.isNotEmpty() == true -> screenNavigator.openProductDocumentsReviseScreen()
+            else -> screenNavigator.openCheckingNotNeededAlert(context.getString(R.string.revise_not_needed_checking)) {
+                screenNavigator.openFinishReviseLoadingScreen()
+            }
+        }
+    }
+
     fun onClickSupply() {
         screenNavigator.openFormedDocsScreen()
     }
