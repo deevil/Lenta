@@ -2,6 +2,7 @@ package com.lenta.bp9.requests.network
 
 import com.google.gson.annotations.SerializedName
 import com.lenta.bp9.model.task.revise.CommentToVP
+import com.lenta.bp9.model.task.revise.CommentToVPRestData
 import com.lenta.bp9.model.task.revise.InvoiceContentEntryRestData
 import com.lenta.bp9.model.task.revise.InvoiceReviseRestData
 import com.lenta.shared.exception.Failure
@@ -19,20 +20,6 @@ class InvoiceContentSaveNetRequest
     }
 }
 
-class InvoiceContentSaveRequestStatus : ObjectRawStatus<InvoiceContentSaveRequestResult>()
-
-
-data class InvoiceContentSaveRequestResult(
-        @SerializedName("ES_TTN_CHK")
-        val invoiceData: InvoiceReviseRestData,
-        @SerializedName("ET_VBELN_COM")
-        val notes: List<CommentToVP>,
-        @SerializedName("EV_RETCODE")
-        override val retCode: Int,
-        @SerializedName("EV_ERROR_TEXT")
-        override val errorText: String
-) : SapResponse
-
 data class InvoiceContentSaveRequestParameters(
         @SerializedName("IV_TASK_NUM")
         val taskNumber: String,
@@ -41,7 +28,21 @@ data class InvoiceContentSaveRequestParameters(
         @SerializedName("IV_TTN_DATE")
         val invoiceDate: String,
         @SerializedName("IT_VBELN_POS")
-        val invoiceContents: List<InvoiceContentEntryRestData>,
+        val invoiceContents: List<InvoiceContentEntryRestData>?,
         @SerializedName("IT_VBELN_COM")
-        val notes: List<CommentToVP>
+        val notes: List<CommentToVPRestData>?
 )
+
+class InvoiceContentSaveRequestStatus : ObjectRawStatus<InvoiceContentSaveRequestResult>()
+
+
+data class InvoiceContentSaveRequestResult(
+        @SerializedName("ES_TTN_CHK")
+        val invoiceData: InvoiceReviseRestData,
+        @SerializedName("ET_VBELN_COM")
+        val notes: List<CommentToVPRestData>,
+        @SerializedName("EV_RETCODE")
+        override val retCode: Int,
+        @SerializedName("EV_ERROR_TEXT")
+        override val errorText: String
+) : SapResponse

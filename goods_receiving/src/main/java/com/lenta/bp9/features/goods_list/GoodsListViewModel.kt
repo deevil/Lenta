@@ -6,25 +6,21 @@ import androidx.lifecycle.viewModelScope
 import com.lenta.bp9.features.loading.tasks.TaskCardMode
 import com.lenta.bp9.model.task.IReceivingTaskManager
 import com.lenta.bp9.model.task.TaskDescription
-import com.lenta.bp9.model.task.TaskProductInfo
 import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.bp9.requests.network.EndRecountDDParameters
 import com.lenta.bp9.requests.network.EndRecountDDResult
 import com.lenta.bp9.requests.network.EndRecountDirectDeliveriesNetRequest
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
-import com.lenta.shared.models.core.MatrixType
-import com.lenta.shared.models.core.ProductType
-import com.lenta.shared.models.core.Uom
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
-import com.lenta.shared.requests.network.AuthParams
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.extentions.getDeviceIp
 import com.lenta.shared.utilities.extentions.map
+import com.lenta.shared.utilities.extentions.toStringFormatted
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -43,7 +39,6 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
     @Inject
     lateinit var searchProductDelegate: SearchProductDelegate
 
-    val titleProgressScreen: MutableLiveData<String> = MutableLiveData()
     val selectedPage = MutableLiveData(0)
     val countedSelectionsHelper = SelectionItemsHelper()
     val listCounted: MutableLiveData<List<ListCountedItem>> = MutableLiveData()
@@ -83,15 +78,27 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
                         task.getProcessedProducts()
                                 .filter {
                                     task.taskRepository.getProductsDiscrepancies().getCountAcceptOfProduct(it) > 0.0
-                                            && task.taskRepository.getProductsDiscrepancies().getCountRefusalOfProduct(it) > 0.0
+                                            || task.taskRepository.getProductsDiscrepancies().getCountRefusalOfProduct(it) > 0.0
                                 }
                                 .mapIndexed { index, productInfo ->
+                                    val acceptTotalCount = task.taskRepository.getProductsDiscrepancies().getCountAcceptOfProduct(productInfo)
+                                    val acceptTotalCountWithUom = if (acceptTotalCount != 0.0) {
+                                        "+ " + acceptTotalCount.toStringFormatted() + " " + productInfo.uom.name
+                                    } else {
+                                        "0 " + productInfo.uom.name
+                                    }
+                                    val refusalTotalCount = task.taskRepository.getProductsDiscrepancies().getCountRefusalOfProduct(productInfo)
+                                    val refusalTotalCountWithUom = if (refusalTotalCount != 0.0) {
+                                        "- " + refusalTotalCount.toStringFormatted() + " " + productInfo.uom.name
+                                    } else {
+                                        "0 " + productInfo.uom.name
+                                    }
+
                                     ListCountedItem(
                                             number = index + 1,
                                             name = "${productInfo.getMaterialLastSix()} ${productInfo.description}",
-                                            countAccept = task.taskRepository.getProductsDiscrepancies().getCountAcceptOfProduct(productInfo),
-                                            countRefusal = task.taskRepository.getProductsDiscrepancies().getCountRefusalOfProduct(productInfo),
-                                            uomName = productInfo.uom.name,
+                                            countAcceptWithUom = acceptTotalCountWithUom,
+                                            countRefusalWithUom = refusalTotalCountWithUom,
                                             productInfo = productInfo,
                                             batchInfo = null,
                                             even = index % 2 == 0)
@@ -101,15 +108,27 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
                 listCounted.postValue(
                         task.getProcessedBatches()
                                 .filter {
-                                    !it.isNoEAN
+                                    task.taskRepository.getBatchesDiscrepancies().getCountAcceptOfBatch(it) > 0.0
+                                            || task.taskRepository.getBatchesDiscrepancies().getCountAcceptOfBatch(it) > 0.0
                                 }
                                 .mapIndexed { index, batchInfo ->
+                                    val acceptTotalCount = task.taskRepository.getBatchesDiscrepancies().getCountAcceptOfBatch(batchInfo)
+                                    val acceptTotalCountWithUom = if (acceptTotalCount != 0.0) {
+                                        "+ " + acceptTotalCount.toStringFormatted() + " " + batchInfo.uom.name
+                                    } else {
+                                        "0 " + batchInfo.uom.name
+                                    }
+                                    val refusalTotalCount = task.taskRepository.getBatchesDiscrepancies().getCountRefusalOfBatch(batchInfo)
+                                    val refusalTotalCountWithUom = if (refusalTotalCount != 0.0) {
+                                        "- " + refusalTotalCount.toStringFormatted() + " " + batchInfo.uom.name
+                                    } else {
+                                        "0 " + batchInfo.uom.name
+                                    }
                                     ListCountedItem(
                                             number = index + 1,
                                             name = "${batchInfo.getMaterialLastSix()} ${batchInfo.description} \nДР-${batchInfo.bottlingDate} // ${batchInfo.manufacturer}",
-                                            countAccept = task.taskRepository.getBatchesDiscrepancies().getCountAcceptOfBatch(batchInfo),
-                                            countRefusal = task.taskRepository.getBatchesDiscrepancies().getCountRefusalOfBatch(batchInfo),
-                                            uomName = batchInfo.uom.name,
+                                            countAcceptWithUom = acceptTotalCountWithUom,
+                                            countRefusalWithUom = refusalTotalCountWithUom,
                                             productInfo = null,
                                             batchInfo = batchInfo,
                                             even = index % 2 == 0)
@@ -236,28 +255,30 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
 
     fun onClickSave() {
         viewModelScope.launch {
-            screenNavigator.showProgress(titleProgressScreen.value!!)
-            if (taskManager.getReceivingTask()!!.getProcessedProducts().any { it.isNoEAN }) {
+            if (taskManager.getReceivingTask()!!.taskRepository.getProducts().getProducts().size > (listCounted.value?.size ?: 0)) {
                 screenNavigator.openDiscrepancyListScreen()
             } else {
+                screenNavigator.showProgressLoadingData()
                 endRecountDirectDeliveries(EndRecountDDParameters(
                         taskNumber = taskManager.getReceivingTask()!!.taskHeader.taskNumber,
                         deviceIP = context.getDeviceIp(),
                         personalNumber = sessionInfo.personnelNumber ?: "",
                         discrepanciesProduct = taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().getProductsDiscrepancies(),
                         discrepanciesBatches = taskManager.getReceivingTask()!!.taskRepository.getBatchesDiscrepancies().getBatchesDiscrepancies()
-                )).either(::handleFailure, ::handleSucess)
+                )).either(::handleFailure, ::handleSuccess)
+                screenNavigator.hideProgress()
             }
-            screenNavigator.hideProgress()
         }
     }
 
-    private fun handleSucess(result: EndRecountDDResult) {
+    private fun handleSuccess(result: EndRecountDDResult) {
+        Logg.d { "testddi ${result}" }
         taskManager.updateTaskDescription(TaskDescription.from(result.taskDescription))
         screenNavigator.openTaskCardScreen(TaskCardMode.Full)
     }
 
     override fun handleFailure(failure: Failure) {
+        Logg.d { "testddi_handleFailure $failure" }
         super.handleFailure(failure)
         screenNavigator.openAlertScreen(failure, pageNumber = "97")
     }

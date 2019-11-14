@@ -17,6 +17,7 @@ import com.lenta.bp9.R
 import com.lenta.bp9.features.change_datetime.ChangeDateTimeFragment
 import com.lenta.bp9.features.change_datetime.ChangeDateTimeMode
 import com.lenta.bp9.features.discrepancy_list.DiscrepancyListFragment
+import com.lenta.bp9.features.editing_invoice.EditingInvoiceFragment
 import com.lenta.bp9.features.formed_docs.FormedDocsFragment
 import com.lenta.bp9.features.goods_details.GoodsDetailsFragment
 import com.lenta.bp9.features.goods_information.excise_alco.ExciseAlcoInfoFragment
@@ -532,6 +533,19 @@ class ScreenNavigator(
         }
     }
 
+    override fun openEditingInvoiceScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(EditingInvoiceFragment())
+        }
+    }
+
+    override fun openInfoDocsSentPScreenrint() {
+        openAlertScreen(message = context.getString(R.string.documents_sent_print),
+                iconRes = R.drawable.is_warning_yellow_80dp,
+                pageNumber = "96"
+        )
+    }
+
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 }
 
@@ -599,4 +613,6 @@ interface IScreenNavigator : ICoreNavigator {
     fun openTransmittedLoadingScreen()
     fun openAlertNotFoundTaskScreen(failure: Failure)
     fun openUnsavedDataDialog(yesCallbackFunc: () -> Unit)
+    fun openEditingInvoiceScreen()
+    fun openInfoDocsSentPScreenrint()
 }

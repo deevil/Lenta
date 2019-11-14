@@ -70,9 +70,8 @@
     <string name="inn">ИНН</string>
     <string name="supplier_address">Местонахождение поставщика</string>
     <string name="strings_goods">Строк (товаров)</string>
-    <string name="quantity_st">Количество, шт</string>
-    <string name="quantity_kg">Количество, кг</string>
-    <string name="quantity_total">Общее количество, всего</string>
+    <string name="quantity_eiz">Количество, ЕИЗ</string>
+    <string name="quantity_total">Итого, единиц</string>
     <string name="select_reason">Введите или выберите\n причину отказа</string>
     <string name="enter_comment">Ввод комментария</string>
     <string name="reject_recieving">Отказ в приёмке</string>
@@ -145,4 +144,11 @@
     <string name="the_shelf_life_has_expired">Срок годности истек. Пометить как брак?</string>
     <string name="section">Секция</string>
     <string name="unsaved_data_will_lost">Не сохранённые данные будут утеряны. Всё равно выйти?</string>
+    <string name="delivery_note_correction">Исправление поставки по накладной</string>
+    <string name="in_total">Итог</string>
+    <string name="removed">Удалённые</string>
+    <string name="added">Добавленные</string>
+    <string name="note">Примечание</string>
+    <string name="enter_item_note">Введите примечание</string>
+    <string name="documents_sent_print">Документы отправлены в очередь на печать</string>
 </resources>

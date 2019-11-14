@@ -125,7 +125,7 @@
             android:ellipsize="end"
             android:gravity="start|center_vertical"
             android:maxLines="1"
-            android:text='@{vm.countAccept != 0.0 ? "+ " + vm.countAccept + " " + vm.uomName : "0 " + vm.uomName }'
+            android:text='@{vm.countAcceptWithUom }'
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/div_vert2"
             app:layout_constraintTop_toTopOf="parent"
@@ -139,7 +139,7 @@
             android:ellipsize="end"
             android:gravity="start|center_vertical"
             android:maxLines="1"
-            android:text='@{vm.countRefusal != 0.0 ? "- " + vm.countRefusal + " " + vm.uomName : "0 " + vm.uomName }'
+            android:text='@{vm.countRefusalWithUom }'
             android:textColor="@color/color_pressed_red"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"

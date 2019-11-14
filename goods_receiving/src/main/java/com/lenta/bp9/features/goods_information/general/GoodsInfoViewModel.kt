@@ -36,7 +36,6 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
     lateinit var searchProductDelegate: SearchProductDelegate
 
     val productInfo: MutableLiveData<TaskProductInfo> = MutableLiveData()
-    val titleProgressScreen: MutableLiveData<String> = MutableLiveData()
     val spinQuality: MutableLiveData<List<String>> = MutableLiveData()
     val spinQualitySelectedPosition: MutableLiveData<Int> = MutableLiveData(0)
     val spinReasonRejection: MutableLiveData<List<String>> = MutableLiveData()
@@ -139,7 +138,7 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
 
     private suspend fun updateDataSpinReasonRejection(selectedQuality: String) {
         viewModelScope.launch {
-            screenNavigator.showProgress(titleProgressScreen.value!!)
+            screenNavigator.showProgressLoadingData()
             spinReasonRejectionSelectedPosition.value = 0
             reasonRejectionInfo.value = dataBase.getReasonRejectionInfoOfQuality(selectedQuality)
             spinReasonRejection.value = reasonRejectionInfo.value?.map {

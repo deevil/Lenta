@@ -7,9 +7,8 @@ import com.lenta.shared.utilities.databinding.Evenable
 data class ListCountedItem(
         val number: Int,
         val name: String,
-        val uomName: String,
-        val countAccept: Double,
-        val countRefusal: Double,
+        val countAcceptWithUom: String,
+        val countRefusalWithUom: String,
         val productInfo: TaskProductInfo?,
         val batchInfo: TaskBatchInfo?,
         val even: Boolean
