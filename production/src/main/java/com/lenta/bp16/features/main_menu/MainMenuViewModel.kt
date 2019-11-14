@@ -21,24 +21,7 @@ class MainMenuViewModel : CoreViewModel() {
     val authorizationButtonVisibility by lazy { authorizationSkipped.map { it } }
 
 
-    val createTaskButtonVisibility by lazy { authorizationSkipped.map { it == false } }
-    val workWithTaskButtonVisibility by lazy { authorizationSkipped.map { it == false } }
-    val checkListButtonVisibility by lazy { authorizationSkipped.map { it == true } }
-
-
-    fun onClickPrint() {
-
-    }
-
-    fun onClickCreateTask() {
-
-    }
-
-    fun onClickWorkWithTask() {
-
-    }
-
-    fun onClickCheckList() {
+    fun onClickProcessing() {
 
     }
 
