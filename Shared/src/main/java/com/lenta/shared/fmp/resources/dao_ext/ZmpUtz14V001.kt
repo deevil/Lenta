@@ -15,6 +15,10 @@ fun ZmpUtz14V001.getAllowedWklAppVersion(): String? {
     return getParams("WKL_ALLOWED_VRSN_A").firstOrNull()
 }
 
+fun ZmpUtz14V001.getAllowedProAppVersion(): String? {
+    return getParams("PRO_ALLOWED_VRSN_A").firstOrNull()
+}
+
 fun ZmpUtz14V001.getSelfControlPinCode(): String? {
     return getParams("PLE_INTERNAL_PINCODE").firstOrNull()
 }
