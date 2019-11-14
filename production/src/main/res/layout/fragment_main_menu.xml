@@ -45,7 +45,7 @@
                 android:id="@+id/b_print"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:onClick="@{(view) -> vm.onClickProcessing()}"
+                android:onClick="@{(view) -> vm.openTaskList()}"
                 android:text="@string/processing_eo"
                 android:textAllCaps="false"
                 app:icon="@drawable/ic_print_price_tag_48dp"

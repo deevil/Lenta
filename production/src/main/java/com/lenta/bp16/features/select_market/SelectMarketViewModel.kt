@@ -41,10 +41,13 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
 
 
     private val markets: MutableLiveData<List<MarketUi>> = MutableLiveData()
+
     val marketsNames: MutableLiveData<List<String>> = markets.map { markets ->
         markets?.map { it.number }
     }
+
     val selectedPosition: MutableLiveData<Int> = MutableLiveData()
+
     val selectedAddress: MutableLiveData<String> = selectedPosition.map {
         it?.let { position ->
             markets.value?.getOrNull(position)?.address
@@ -54,7 +57,9 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
     init {
         viewModelScope.launch {
             repoInMemoryHolder.storesRequestResult?.markets?.let { list ->
-                markets.value = list.map { MarketUi(number = it.tkNumber, address = it.address) }
+                markets.value = list.map {
+                    MarketUi(number = it.tkNumber, address = it.address)
+                }
 
                 if (selectedPosition.value == null) {
                     if (appSettings.lastTK != null) {

@@ -14,24 +14,13 @@ class MainMenuViewModel : CoreViewModel() {
     lateinit var sessionInfo: ISessionInfo
 
 
-    private val authorizationSkipped by lazy {
-        sessionInfo.isAuthSkipped.map { it == true }
-    }
-
-    val authorizationButtonVisibility by lazy { authorizationSkipped.map { it } }
-
-
-    fun onClickProcessing() {
-
-    }
-
     fun onClickAuxiliaryMenu() {
         navigator.openAuxiliaryMenuScreen()
     }
 
-    fun onClickAuthorization() {
-        navigator.closeAllScreen()
-        navigator.openLoginScreen()
+    fun openTaskList() {
+        // Переход к экрану списка заданий
+
     }
 
 }

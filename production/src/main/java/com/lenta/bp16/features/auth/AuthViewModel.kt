@@ -46,8 +46,6 @@ class AuthViewModel : CoreAuthViewModel() {
                 .combineLatest(progress).map { isEnterEnabled(isFieldsValid = it?.first, inProgress = it?.second) }
     }
 
-    val skipButtonEnabled = progress.map { it != true }
-
     init {
         viewModelScope.launch {
             sessionInfo.isAuthSkipped.value = false
@@ -75,7 +73,6 @@ class AuthViewModel : CoreAuthViewModel() {
                     onAuthSuccess(login)
                 }
             }
-
         }
     }
 
@@ -119,14 +116,6 @@ class AuthViewModel : CoreAuthViewModel() {
 
             }
         }
-    }
-
-    fun onClickSkip() {
-        login.value = appSettings.techLogin
-        password.value = appSettings.techPassword
-        sessionInfo.isAuthSkipped.value = true
-
-        onClickEnter()
     }
 
 }

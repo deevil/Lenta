@@ -6,25 +6,20 @@ import com.lenta.bp16.platform.extention.getAppComponent
 import com.lenta.shared.R
 import com.lenta.shared.features.login.CoreAuthViewModel
 import com.lenta.shared.features.login.CoreLoginFragment
-import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
-import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.top_toolbar.ImageButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
-import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
 import com.lenta.shared.utilities.extentions.getAppInfo
 import com.lenta.shared.utilities.extentions.provideViewModel
 
 class AuthFragment : CoreLoginFragment() {
 
-    override fun getPageNumber(): String? = generateScreenNumberFromPostfix("01")
+    override fun getPageNumber(): String? = generateScreenNumberFromPostfix("1")
 
     override fun getViewModel(): CoreAuthViewModel {
         provideViewModel(AuthViewModel::class.java).let {
             getAppComponent()?.inject(it)
-
             it.packageName.value = context!!.packageName
-
             return it
         }
     }
@@ -40,17 +35,9 @@ class AuthFragment : CoreLoginFragment() {
         vm.appTitle.value = context?.getAppInfo(withHash = false)
     }
 
-    override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
-        super.setupBottomToolBar(bottomToolbarUiModel)
-        bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.skip)
-
-        connectLiveData((vm as AuthViewModel).skipButtonEnabled, bottomToolbarUiModel.uiModelButton4.enabled)
-    }
-
     override fun onToolbarButtonClick(view: View) {
         when (view.id) {
             R.id.b_5 -> vm.onClickEnter()
-            R.id.b_4 -> (vm as AuthViewModel).onClickSkip()
             R.id.b_topbar_1 -> vm.onClickAuxiliaryMenu()
         }
     }

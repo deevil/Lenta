@@ -18,7 +18,7 @@ class MainMenuFragment : CoreFragment<FragmentMainMenuBinding, MainMenuViewModel
 
     override fun getLayoutId(): Int = R.layout.fragment_main_menu
 
-    override fun getPageNumber(): String? = generateScreenNumberFromPostfix("04")
+    override fun getPageNumber(): String? = generateScreenNumberFromPostfix("4")
 
     override fun getViewModel(): MainMenuViewModel {
         provideViewModel(MainMenuViewModel::class.java).let {
@@ -33,9 +33,6 @@ class MainMenuFragment : CoreFragment<FragmentMainMenuBinding, MainMenuViewModel
 
         topToolbarUiModel.uiModelButton1.show(ImageButtonDecorationInfo.settings)
         topToolbarUiModel.uiModelButton2.show(ImageButtonDecorationInfo.exitFromApp)
-        topToolbarUiModel.uiModelButton3.show(ImageButtonDecorationInfo.authorization)
-
-        connectLiveData(vm.authorizationButtonVisibility, topToolbarUiModel.uiModelButton3.visibility)
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
@@ -45,7 +42,7 @@ class MainMenuFragment : CoreFragment<FragmentMainMenuBinding, MainMenuViewModel
     override fun onToolbarButtonClick(view: View) {
         when (view.id) {
             R.id.b_topbar_1 -> vm.onClickAuxiliaryMenu()
-            R.id.b_topbar_3 -> vm.onClickAuthorization()
         }
     }
+
 }
