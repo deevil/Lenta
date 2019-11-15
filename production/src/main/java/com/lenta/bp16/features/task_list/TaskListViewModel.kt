@@ -1,12 +1,14 @@
 package com.lenta.bp16.features.task_list
 
-import com.lenta.shared.platform.viewmodel.CoreViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp16.model.TaskType
+import com.lenta.bp16.model.pojo.Task
 import com.lenta.bp16.platform.navigation.IScreenNavigator
 import com.lenta.shared.account.ISessionInfo
+import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.databinding.PageSelectionListener
+import com.lenta.shared.utilities.extentions.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -24,7 +26,30 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener {
 
     val selectedPage = MutableLiveData(0)
 
-    val tasks = MutableLiveData<List<String>>(emptyList())
+    val tasks = MutableLiveData<List<Task>>(emptyList())
+
+    val numberField: MutableLiveData<String> = MutableLiveData("")
+
+    val requestFocusToNumberField = MutableLiveData(true)
+
+    private val toUiFunc = { products: List<Task>? ->
+        products?.mapIndexed { index, task ->
+            ItemTaskListUi(
+                    position = (index + 1).toString(),
+                    puNumber = task.puNumber,
+                    taskType = TaskType.DEFROZE,
+                    sku = "0"
+            )
+        }
+    }
+
+    val processing by lazy {
+        tasks.map { it?.filter { task -> !task.isProcessed } }.map(toUiFunc)
+    }
+
+    val processed by lazy {
+        tasks.map { it?.filter { task -> task.isProcessed } }.map(toUiFunc)
+    }
 
     // -----------------------------
 
@@ -46,6 +71,11 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener {
 
     fun onClickRefresh() {
         // Обновить список заданий
+
+    }
+
+    fun onClickItemPosition(position: Int) {
+        // Открытие нужного списка товаров
 
     }
 
