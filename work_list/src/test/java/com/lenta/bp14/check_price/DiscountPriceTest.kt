@@ -1,6 +1,9 @@
 package com.lenta.bp14.check_price
 
 import com.lenta.bp14.models.check_price.ActualPriceInfo
+import com.lenta.bp14.models.check_price.GoodOptions
+import com.lenta.bp14.models.data.GoodType
+import com.lenta.shared.models.core.MatrixType
 import org.hamcrest.core.IsEqual
 import org.hamcrest.core.IsNull
 import org.junit.Assert
@@ -17,6 +20,12 @@ class DiscountPriceTest {
     val PRICE_4 = 10.0
     val MIN_PRICE = 10.0
 
+    private val defaultGoodOptions = GoodOptions(
+            matrixType = MatrixType.Active,
+            section = "01",
+            goodType = GoodType.COMMON
+    )
+
     @Test
     fun `Нет ни одной цены`() {
 
@@ -26,7 +35,8 @@ class DiscountPriceTest {
                 price1 = PRICE_1,
                 price2 = null,
                 price3 = null,
-                price4 = null
+                price4 = null,
+                options = defaultGoodOptions
         )
 
         Assert.assertThat(actualPriceInfo.getDiscountCardPrice(), IsNull())
@@ -43,7 +53,8 @@ class DiscountPriceTest {
                 price1 = PRICE_1,
                 price2 = PRICE_2,
                 price3 = null,
-                price4 = null
+                price4 = null,
+                options = defaultGoodOptions
         )
 
         Assert.assertThat(actualPriceInfo.getDiscountCardPrice(), IsEqual.equalTo(PRICE_2))
@@ -59,7 +70,8 @@ class DiscountPriceTest {
                 price1 = PRICE_1,
                 price2 = null,
                 price3 = PRICE_3,
-                price4 = null
+                price4 = null,
+                options = defaultGoodOptions
         )
 
         Assert.assertThat(actualPriceInfo.getDiscountCardPrice(), IsNull())
@@ -75,7 +87,8 @@ class DiscountPriceTest {
                 price1 = PRICE_1,
                 price2 = null,
                 price3 = null,
-                price4 = PRICE_4
+                price4 = PRICE_4,
+                options = defaultGoodOptions
         )
 
         Assert.assertThat(actualPriceInfo.getDiscountCardPrice(), IsNull())
@@ -91,7 +104,8 @@ class DiscountPriceTest {
                 price1 = PRICE_1,
                 price2 = PRICE_2,
                 price3 = PRICE_3,
-                price4 = null
+                price4 = null,
+                options = defaultGoodOptions
         )
 
         Assert.assertThat(actualPriceInfo.getDiscountCardPrice(), IsEqual(PRICE_3))
@@ -107,7 +121,8 @@ class DiscountPriceTest {
                 price1 = PRICE_1,
                 price2 = PRICE_2,
                 price3 = null,
-                price4 = PRICE_4
+                price4 = PRICE_4,
+                options = defaultGoodOptions
         )
 
         Assert.assertThat(actualPriceInfo.getDiscountCardPrice(), IsEqual(PRICE_4))
@@ -123,7 +138,8 @@ class DiscountPriceTest {
                 price1 = PRICE_1,
                 price2 = null,
                 price3 = PRICE_3,
-                price4 = PRICE_4
+                price4 = PRICE_4,
+                options = defaultGoodOptions
         )
 
         Assert.assertThat(actualPriceInfo.getDiscountCardPrice(), IsNull())
@@ -139,7 +155,8 @@ class DiscountPriceTest {
                 price1 = PRICE_1,
                 price2 = PRICE_2,
                 price3 = PRICE_3,
-                price4 = PRICE_4
+                price4 = PRICE_4,
+                options = defaultGoodOptions
         )
 
         Assert.assertThat(actualPriceInfo.getDiscountCardPrice(), IsEqual(MIN_PRICE))
@@ -150,7 +167,8 @@ class DiscountPriceTest {
                 price1 = PRICE_1,
                 price2 = PRICE_3,
                 price3 = PRICE_2,
-                price4 = PRICE_4
+                price4 = PRICE_4,
+                options = defaultGoodOptions
         )
 
         Assert.assertThat(actualPriceInfo.getDiscountCardPrice(), IsEqual(MIN_PRICE))
@@ -161,7 +179,8 @@ class DiscountPriceTest {
                 price1 = PRICE_1,
                 price2 = PRICE_2,
                 price3 = PRICE_4,
-                price4 = PRICE_3
+                price4 = PRICE_3,
+                options = defaultGoodOptions
         )
 
         Assert.assertThat(actualPriceInfo.getDiscountCardPrice(), IsEqual(MIN_PRICE))
@@ -172,7 +191,8 @@ class DiscountPriceTest {
                 price1 = PRICE_1,
                 price2 = PRICE_4,
                 price3 = PRICE_3,
-                price4 = PRICE_2
+                price4 = PRICE_2,
+                options = defaultGoodOptions
         )
 
         Assert.assertThat(actualPriceInfo.getDiscountCardPrice(), IsEqual(MIN_PRICE))
