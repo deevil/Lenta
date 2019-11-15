@@ -46,7 +46,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:onClick="@{(view) -> vm.openTaskList()}"
-                android:text="@string/processing_eo"
+                android:text="@string/processing_pu"
                 android:textAllCaps="false"
                 app:icon="@drawable/ic_print_price_tag_48dp"
                 app:iconGravity="end" />

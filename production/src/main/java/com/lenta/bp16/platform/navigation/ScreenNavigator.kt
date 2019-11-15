@@ -113,7 +113,7 @@ class ScreenNavigator @Inject constructor(
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
                     pageNumber = "23",
-                    message = context.getString(R.string.confirm_that_there_is_no_such_item_left_in_eo),
+                    message = context.getString(R.string.confirm_that_there_is_no_such_item_left_in_pu),
                     iconRes = R.drawable.is_warning_yellow_80dp,
                     codeConfirmForRight = backFragmentResultHelper.setFuncForResult(confirmCallback),
                     rightButtonDecorationInfo = ButtonDecorationInfo.confirm

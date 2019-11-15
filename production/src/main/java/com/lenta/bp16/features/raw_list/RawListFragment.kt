@@ -23,7 +23,8 @@ class RawListFragment : CoreFragment<FragmentRawListBinding, RawListViewModel>()
     }
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        topToolbarUiModel.description.value = getString(R.string.pu_number, vm.puNumber)
+        topToolbarUiModel.title.value = vm.title
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {

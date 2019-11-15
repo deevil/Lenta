@@ -1,8 +1,21 @@
 package com.lenta.bp16.features.raw_list
 
+import com.lenta.bp16.platform.navigation.IScreenNavigator
 import com.lenta.shared.platform.viewmodel.CoreViewModel
+import javax.inject.Inject
 
 class RawListViewModel : CoreViewModel() {
 
-    // TODO: Implement the ViewModel
+    @Inject
+    lateinit var navigator: IScreenNavigator
+
+
+    val title by lazy {
+        "000021 - Форель заморож."
+    }
+
+    val puNumber by lazy {
+        "31354361354313546543131"
+    }
+
 }

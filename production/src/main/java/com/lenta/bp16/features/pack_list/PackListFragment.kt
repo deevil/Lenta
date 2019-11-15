@@ -23,7 +23,8 @@ class PackListFragment : CoreFragment<FragmentPackListBinding, PackListViewModel
     }
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        topToolbarUiModel.description.value = getString(R.string.pack_list)
+        topToolbarUiModel.title.value = vm.title
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {

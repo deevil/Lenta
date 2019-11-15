@@ -27,7 +27,8 @@ class TaskListFragment : CoreFragment<FragmentTaskListBinding, TaskListViewModel
     }
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        topToolbarUiModel.description.value = getString(R.string.work_with_pu_quantity, vm.tasks.value?.size ?: 0)
+        topToolbarUiModel.title.value = vm.title
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
@@ -50,6 +51,5 @@ class TaskListFragment : CoreFragment<FragmentTaskListBinding, TaskListViewModel
         super.onViewCreated(view, savedInstanceState)
         binding?.viewPagerSettings = this
     }
-
 
 }
