@@ -8,12 +8,15 @@ import com.lenta.bp16.databinding.FragmentTaskListBinding
 import com.lenta.bp16.platform.extention.getAppComponent
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
+import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
+import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.utilities.databinding.ViewPagerSettings
 import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
 import com.lenta.shared.utilities.extentions.provideViewModel
 
-class TaskListFragment : CoreFragment<FragmentTaskListBinding, TaskListViewModel>(), ViewPagerSettings {
+class TaskListFragment : CoreFragment<FragmentTaskListBinding, TaskListViewModel>(),
+        ViewPagerSettings, ToolbarButtonsClickListener {
 
     override fun getLayoutId(): Int = R.layout.fragment_task_list
 
@@ -32,7 +35,15 @@ class TaskListFragment : CoreFragment<FragmentTaskListBinding, TaskListViewModel
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
+        bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.update)
+    }
+
+    override fun onToolbarButtonClick(view: View) {
+        when (view.id) {
+            R.id.b_1 -> vm.onClickMenu()
+            R.id.b_5 -> vm.onClickRefresh()
+        }
     }
 
     override fun getPagerItemView(container: ViewGroup, position: Int): View {

@@ -1,15 +1,20 @@
 package com.lenta.bp16.features.raw_list
 
+import android.view.View
 import com.lenta.bp16.R
 import com.lenta.bp16.databinding.FragmentRawListBinding
 import com.lenta.bp16.platform.extention.getAppComponent
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
+import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
+import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
+import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
 import com.lenta.shared.utilities.extentions.provideViewModel
 
-class RawListFragment : CoreFragment<FragmentRawListBinding, RawListViewModel>() {
+class RawListFragment : CoreFragment<FragmentRawListBinding, RawListViewModel>(),
+        ToolbarButtonsClickListener {
 
     override fun getLayoutId(): Int = R.layout.fragment_raw_list
 
@@ -28,8 +33,16 @@ class RawListFragment : CoreFragment<FragmentRawListBinding, RawListViewModel>()
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
+        bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.complete)
+
+        connectLiveData(vm.completeEnabled, getBottomToolBarUIModel()!!.uiModelButton5.enabled)
     }
 
+    override fun onToolbarButtonClick(view: View) {
+        when (view.id) {
+            R.id.b_5 -> vm.onClickComplete()
+        }
+    }
 
 }

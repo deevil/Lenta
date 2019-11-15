@@ -278,6 +278,10 @@ data class ButtonDecorationInfo(
             ButtonDecorationInfo(R.drawable.ic_restore, R.string.restore)
         }
 
+        val getWeight: ButtonDecorationInfo by lazy {
+            ButtonDecorationInfo(R.drawable.ic_deliveries_24dp, R.string.get_weight)
+        }
+
     }
 }
 

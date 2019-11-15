@@ -39,5 +39,13 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener {
         //selectedPage.value = position
     }
 
-    // TODO: Implement the ViewModel
+    fun onClickMenu() {
+        navigator.goBack()
+    }
+
+    fun onClickRefresh() {
+        // Обновить список заданий
+
+    }
+
 }
