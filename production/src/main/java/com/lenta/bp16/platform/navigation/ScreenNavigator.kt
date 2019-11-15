@@ -3,9 +3,14 @@ package com.lenta.bp16.platform.navigation
 import android.content.Context
 import com.lenta.bp16.R
 import com.lenta.bp16.features.auth.AuthFragment
+import com.lenta.bp16.features.good_card.GoodCardFragment
+import com.lenta.bp16.features.good_list.GoodListFragment
 import com.lenta.bp16.features.loading.fast.FastDataLoadingFragment
 import com.lenta.bp16.features.main_menu.MainMenuFragment
+import com.lenta.bp16.features.pack_list.PackListFragment
+import com.lenta.bp16.features.raw_list.RawListFragment
 import com.lenta.bp16.features.select_market.SelectMarketFragment
+import com.lenta.bp16.features.task_list.TaskListFragment
 import com.lenta.shared.account.IAuthenticator
 import com.lenta.shared.features.alert.AlertFragment
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
@@ -59,6 +64,36 @@ class ScreenNavigator @Inject constructor(
         }
     }
 
+    override fun openTaskListScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(TaskListFragment())
+        }
+    }
+
+    override fun openGoodListScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(GoodListFragment())
+        }
+    }
+
+    override fun openRawListScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(RawListFragment())
+        }
+    }
+
+    override fun openGoodCardScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(GoodCardFragment())
+        }
+    }
+
+    override fun openPackListScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(PackListFragment())
+        }
+    }
+
 
     // Информационные экраны
     override fun showDefrostingPhaseIsCompleted(nextCallback: () -> Unit) {
@@ -104,10 +139,15 @@ class ScreenNavigator @Inject constructor(
 interface IScreenNavigator : ICoreNavigator {
 
     fun openFirstScreen()
-    fun openSelectMarketScreen()
-    fun openMainMenuScreen()
     fun openLoginScreen()
     fun openFastDataLoadingScreen()
+    fun openSelectMarketScreen()
+    fun openMainMenuScreen()
+    fun openTaskListScreen()
+    fun openGoodListScreen()
+    fun openRawListScreen()
+    fun openGoodCardScreen()
+    fun openPackListScreen()
 
     fun showDefrostingPhaseIsCompleted(nextCallback: () -> Unit)
     fun showConfirmNoSuchItemLeft(confirmCallback: () -> Unit)
