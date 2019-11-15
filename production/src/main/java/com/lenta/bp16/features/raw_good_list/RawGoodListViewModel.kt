@@ -15,3 +15,10 @@ class RawGoodListViewModel : CoreViewModel() {
     }
 
 }
+
+data class ItemRawGoodListUi(
+        val position: String,
+        val sku: String,
+        val arrived: String,
+        val remain: String
+)

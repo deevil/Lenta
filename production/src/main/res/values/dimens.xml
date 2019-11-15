@@ -1,10 +1,10 @@
 <resources>
 
     <!-- Список заданий - № / ЕО / Признак / SKU -->
-    <integer name="pu_sign__column_1">10</integer>
-    <integer name="pu_sign__column_2">50</integer>
-    <integer name="pu_sign__column_3">20</integer>
-    <integer name="pu_sign__column_4">20</integer>
+    <integer name="pu_type_column_1">10</integer>
+    <integer name="pu_type_column_2">50</integer>
+    <integer name="pu_type_column_3">20</integer>
+    <integer name="pu_type_column_4">20</integer>
 
     <!-- Список товаров - № / SKU / Прибыло / Остаток -->
     <integer name="sku_arrived_remain_column_1">10</integer>
@@ -19,7 +19,7 @@
 
     <!-- Список тар - № / Номер тары / Общий вес -->
     <integer name="pack_number_total_weight_column_1">10</integer>
-    <integer name="pack_number_total_weight_column_32">60</integer>
+    <integer name="pack_number_total_weight_column_2">60</integer>
     <integer name="pack_number_total_weight_column_3">30</integer>
 
     <!-- Список товаров на упаковку - № / SKU / План кол-во -->

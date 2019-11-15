@@ -11,7 +11,13 @@ class PackGoodListViewModel : CoreViewModel() {
 
 
     val title by lazy {
-        "ЕО - 31354361354313546543131"
+        "ЕО - 236589267462146198"
     }
 
 }
+
+data class ItemPackGoodListUi(
+        val position: String,
+        val name: String,
+        val planWeight: String
+)

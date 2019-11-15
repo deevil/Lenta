@@ -15,3 +15,10 @@ class PackListViewModel : CoreViewModel() {
     }
 
 }
+
+data class ItemPackListUi(
+        val position: String,
+        val packNumber: String,
+        val rawName: String,
+        val totalWeight: String
+)

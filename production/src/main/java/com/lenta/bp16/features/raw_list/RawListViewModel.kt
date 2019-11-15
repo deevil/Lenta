@@ -29,3 +29,9 @@ class RawListViewModel : CoreViewModel() {
     }
 
 }
+
+data class ItemRawListUi(
+        val position: String,
+        val name: String,
+        val processed: String
+)

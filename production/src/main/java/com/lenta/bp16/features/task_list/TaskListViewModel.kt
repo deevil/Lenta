@@ -3,6 +3,7 @@ package com.lenta.bp16.features.task_list
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.lenta.bp16.model.TaskType
 import com.lenta.bp16.platform.navigation.IScreenNavigator
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.utilities.databinding.PageSelectionListener
@@ -49,3 +50,10 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener {
     }
 
 }
+
+data class ItemTaskListUi(
+        val position: String,
+        val puNumber: String,
+        val taskType: TaskType,
+        val sku: String
+)
