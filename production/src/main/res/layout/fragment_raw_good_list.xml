@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        tools:context=".features.raw_good_list.RawGoodListFragment">
+
+    <data>
+
+        <variable
+            name="vm"
+            type="com.lenta.bp16.features.raw_good_list.RawGoodListViewModel" />
+
+        <variable
+            name="rvConfig"
+            type="com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig" />
+
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+
+        <!-- Наименования колонок -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp">
+
+                <LinearLayout
+                    style="@style/LinearCellStyle"
+                    android:layout_weight="@integer/sku_arrived_remain_column_1">
+
+                    <TextView
+                        style="@style/ColumnTitleStyle"
+                        android:layout_width="wrap_content"
+                        android:layout_marginStart="0dp"
+                        android:text="@string/number" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    style="@style/LinearCellStyle"
+                    android:layout_weight="@integer/sku_arrived_remain_column_2">
+
+                    <TextView
+                        style="@style/ColumnTitleStyle"
+                        android:text="@string/sku" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    style="@style/LinearCellStyle"
+                    android:layout_weight="@integer/sku_arrived_remain_column_3">
+
+                    <TextView
+                        style="@style/ColumnTitleStyle"
+                        android:text="@string/arrived" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    style="@style/LinearCellStyle"
+                    android:layout_weight="@integer/sku_arrived_remain_column_4">
+
+                    <TextView
+                        style="@style/ColumnTitleStyle"
+                        android:text="@string/remain" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <View style="@style/HorizontalDivider" />
+
+        </LinearLayout>
+
+
+        <!-- Список товаров -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginBottom="8dp"
+            android:layout_weight="1"
+            app:items="@{vm.processing}"
+            app:rv_config="@{rvConfig}"
+            tools:listitem="@layout/item_raw_good_list" />
+
+    </LinearLayout>
+
+</layout>

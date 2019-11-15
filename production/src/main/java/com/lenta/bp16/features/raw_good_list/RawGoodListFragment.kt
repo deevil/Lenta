@@ -1,7 +1,7 @@
 package com.lenta.bp16.features.raw_good_list
 
 import com.lenta.bp16.R
-import com.lenta.bp16.databinding.FragmentGoodListBinding
+import com.lenta.bp16.databinding.FragmentRawGoodListBinding
 import com.lenta.bp16.platform.extention.getAppComponent
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
@@ -10,9 +10,9 @@ import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
 import com.lenta.shared.utilities.extentions.provideViewModel
 
-class RawGoodListFragment : CoreFragment<FragmentGoodListBinding, RawGoodListViewModel>() {
+class RawGoodListFragment : CoreFragment<FragmentRawGoodListBinding, RawGoodListViewModel>() {
 
-    override fun getLayoutId(): Int = R.layout.fragment_good_list
+    override fun getLayoutId(): Int = R.layout.fragment_raw_good_list
 
     override fun getPageNumber(): String? = generateScreenNumberFromPostfix("6")
 

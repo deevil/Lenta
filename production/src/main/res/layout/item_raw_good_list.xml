@@ -39,13 +39,24 @@
 
             <LinearLayout
                 style="@style/LinearCellStyle"
-                android:layout_weight="@integer/sku_arrived_remain_column_2">
+                android:layout_weight="@integer/sku_arrived_remain_column_2"
+                android:orientation="horizontal">
 
                 <TextView
                     style="@style/CellTextStyle"
+                    android:layout_width="0dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_weight="1"
                     android:maxLines="2"
                     android:text="@{item.sku}"
                     tools:text="000001 Форель замороженная" />
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="5dp"
+                    android:src="@drawable/ic_keyboard_arrow_right_white_24dp"
+                    tools:ignore="ContentDescription" />
 
             </LinearLayout>
 

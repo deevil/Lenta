@@ -25,5 +25,7 @@
     <string name="sku">SKU</string>
     <string name="sign">Признак</string>
     <string name="pu">ЕО</string>
+    <string name="remain">Остаток</string>
+    <string name="arrived">Прибыло</string>
 
 </resources>
