@@ -2,13 +2,13 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
-        tools:context=".features.raw_good_list.RawGoodListFragment">
+        tools:context=".features.pack_good_list.PackGoodListFragment">
 
     <data>
 
         <variable
             name="vm"
-            type="com.lenta.bp16.features.raw_good_list.RawGoodListViewModel" />
+            type="com.lenta.bp16.features.pack_good_list.PackGoodListViewModel" />
 
 
     </data>

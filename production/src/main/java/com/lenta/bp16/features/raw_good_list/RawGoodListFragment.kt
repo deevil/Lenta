@@ -1,4 +1,4 @@
-package com.lenta.bp16.features.good_list
+package com.lenta.bp16.features.raw_good_list
 
 import com.lenta.bp16.R
 import com.lenta.bp16.databinding.FragmentGoodListBinding
@@ -10,14 +10,14 @@ import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
 import com.lenta.shared.utilities.extentions.provideViewModel
 
-class GoodListFragment : CoreFragment<FragmentGoodListBinding, GoodListViewModel>() {
+class RawGoodListFragment : CoreFragment<FragmentGoodListBinding, RawGoodListViewModel>() {
 
     override fun getLayoutId(): Int = R.layout.fragment_good_list
 
     override fun getPageNumber(): String? = generateScreenNumberFromPostfix("6")
 
-    override fun getViewModel(): GoodListViewModel {
-        provideViewModel(GoodListViewModel::class.java).let {
+    override fun getViewModel(): RawGoodListViewModel {
+        provideViewModel(RawGoodListViewModel::class.java).let {
             getAppComponent()?.inject(it)
             return it
         }

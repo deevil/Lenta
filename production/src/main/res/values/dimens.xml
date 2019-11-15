@@ -24,7 +24,7 @@
 
     <!-- Список товаров на упаковку - № / SKU / План кол-во -->
     <integer name="sku_plan_quantity_column_1">10</integer>
-    <integer name="sku_plan_quantity_column_2">50</integer>
-    <integer name="sku_plan_quantity_column_3">40</integer>
+    <integer name="sku_plan_quantity_column_2">60</integer>
+    <integer name="sku_plan_quantity_column_3">30</integer>
 
 </resources>

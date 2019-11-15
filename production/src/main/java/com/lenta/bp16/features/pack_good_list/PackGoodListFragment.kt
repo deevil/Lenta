@@ -1,0 +1,35 @@
+package com.lenta.bp16.features.pack_good_list
+
+import com.lenta.bp16.R
+import com.lenta.bp16.databinding.FragmentPackGoodListBinding
+import com.lenta.bp16.platform.extention.getAppComponent
+import com.lenta.shared.platform.fragment.CoreFragment
+import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
+import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
+import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
+import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
+import com.lenta.shared.utilities.extentions.provideViewModel
+
+class PackGoodListFragment : CoreFragment<FragmentPackGoodListBinding, PackGoodListViewModel>() {
+
+    override fun getLayoutId(): Int = R.layout.fragment_pack_good_list
+
+    override fun getPageNumber(): String? = generateScreenNumberFromPostfix("32")
+
+    override fun getViewModel(): PackGoodListViewModel {
+        provideViewModel(PackGoodListViewModel::class.java).let {
+            getAppComponent()?.inject(it)
+            return it
+        }
+    }
+
+    override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
+        topToolbarUiModel.description.value = getString(R.string.good_list)
+        topToolbarUiModel.title.value = vm.title
+    }
+
+    override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
+        bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
+    }
+
+}
