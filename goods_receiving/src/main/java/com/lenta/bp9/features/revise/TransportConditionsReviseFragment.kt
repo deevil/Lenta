@@ -85,6 +85,11 @@ class TransportConditionsReviseFragment : CoreFragment<FragmentTransportConditio
                                         val cb = view as? CheckBox
                                         cb?.let { vm.checkedChanged(position, it.isChecked) }
                                     }
+                                    binding.etEditText.setOnFocusChangeListener { v, hasFocus ->
+                                        if (!hasFocus) {
+                                            vm.finishedInput(position)
+                                        }
+                                    }
                                     binding.etEditText.setOnEditorActionListener { v, actionId, event ->
                                         when(actionId) {
                                             EditorInfo.IME_ACTION_DONE -> {
@@ -94,13 +99,16 @@ class TransportConditionsReviseFragment : CoreFragment<FragmentTransportConditio
                                             else -> return@setOnEditorActionListener false
                                         }
                                     }
-                                    binding.cbChecked.visibility = when (vm.conditionsToCheck.value?.get(position)?.conditionType) {
-                                        ConditionType.Checkbox -> View.VISIBLE
-                                        else -> View.INVISIBLE
-                                    }
-                                    binding.etEditText.visibility = when (vm.conditionsToCheck.value?.get(position)?.conditionType) {
-                                        ConditionType.Input -> View.VISIBLE
-                                        else -> View.INVISIBLE
+                                    val conditionsToCheckSize = vm.conditionsToCheck.value?.size ?: 0
+                                    if (conditionsToCheckSize-1 >= position) {
+                                        binding.cbChecked.visibility = when (vm.conditionsToCheck.value?.get(position)?.conditionType) {
+                                            ConditionType.Checkbox -> View.VISIBLE
+                                            else -> View.INVISIBLE
+                                        }
+                                        binding.etEditText.visibility = when (vm.conditionsToCheck.value?.get(position)?.conditionType) {
+                                            ConditionType.Input -> View.VISIBLE
+                                            else -> View.INVISIBLE
+                                        }
                                     }
                                 }
                             }
@@ -198,8 +206,8 @@ class TransportConditionsReviseFragment : CoreFragment<FragmentTransportConditio
 
     override fun getTextTitle(position: Int): String {
         return when (position) {
-            0 -> getString(R.string.to_check)
-            1 -> getString(R.string.checked)
+            0 -> getString(R.string.verify)
+            1 -> getString(R.string.verified)
             2 -> getString(R.string.information)
             else -> ""
         }
