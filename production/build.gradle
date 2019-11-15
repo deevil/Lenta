@@ -4,6 +4,7 @@ apply plugin: 'kotlin-kapt'
 apply plugin: 'io.fabric'
 apply plugin: 'de.mannodermaus.android-junit5'
 apply from: '../fmp_settings.gradle'
+apply plugin: 'kotlin-android-extensions'
 
 def prefixAppVersion = "16"
 
@@ -77,6 +78,9 @@ dependencies {
     implementation 'com.squareup.okhttp3:okhttp:3.10.0'
 
     // Dagger2
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+    implementation 'androidx.lifecycle:lifecycle-extensions:2.0.0'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.0.0'
     kapt deps.dagger.compiler
 
     testImplementation deps.junit
