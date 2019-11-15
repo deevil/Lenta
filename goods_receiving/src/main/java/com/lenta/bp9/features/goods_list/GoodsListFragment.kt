@@ -40,7 +40,6 @@ class GoodsListFragment : CoreFragment<FragmentGoodsListBinding, GoodsListViewMo
     override fun getViewModel(): GoodsListViewModel {
         provideViewModel(GoodsListViewModel::class.java).let {vm ->
             getAppComponent()?.inject(vm)
-            vm.titleProgressScreen.value = getString(R.string.data_loading)
             return vm
         }
     }

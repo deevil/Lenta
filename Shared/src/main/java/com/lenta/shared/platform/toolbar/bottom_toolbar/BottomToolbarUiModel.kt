@@ -274,6 +274,10 @@ data class ButtonDecorationInfo(
             ButtonDecorationInfo(R.drawable.ic_arrow_forward_white_24dp, R.string.process)
         }
 
+        val restore: ButtonDecorationInfo by lazy {
+            ButtonDecorationInfo(R.drawable.ic_restore, R.string.restore)
+        }
+
     }
 }
 

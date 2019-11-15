@@ -1,7 +1,7 @@
 package com.lenta.bp9.requests.network
 
 import com.google.gson.annotations.SerializedName
-import com.lenta.bp9.model.task.revise.CommentToVP
+import com.lenta.bp9.model.task.revise.CommentToVPRestData
 import com.lenta.bp9.model.task.revise.InvoiceContentEntryRestData
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.fmp.ObjectRawStatus
@@ -18,6 +18,11 @@ class InvoiceContentNetRequest
     }
 }
 
+data class InvoiceContentRequestParameters(
+        @SerializedName("IV_TASK_NUM")
+        val taskNumber: String
+)
+
 class InvoiceContentRequestStatus : ObjectRawStatus<InvoiceContentRequestResult>()
 
 
@@ -25,14 +30,10 @@ data class InvoiceContentRequestResult(
         @SerializedName("ET_VBELN_POS")
         val invoiceContents: List<InvoiceContentEntryRestData>,
         @SerializedName("ET_VBELN_COM")
-        val notes: List<CommentToVP>,
+        val notes: List<CommentToVPRestData>,
         @SerializedName("EV_RETCODE")
         override val retCode: Int,
         @SerializedName("EV_ERROR_TEXT")
         override val errorText: String
 ) : SapResponse
 
-data class InvoiceContentRequestParameters(
-        @SerializedName("IV_TASK_NUM")
-        val taskNumber: String
-)

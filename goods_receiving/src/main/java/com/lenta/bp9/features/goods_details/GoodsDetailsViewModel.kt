@@ -10,6 +10,7 @@ import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.pojo.ReasonRejectionInfo
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.map
+import com.lenta.shared.utilities.extentions.toStringFormatted
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -46,9 +47,8 @@ class GoodsDetailsViewModel : CoreViewModel() {
                     GoodsDetailsCategoriesItem(
                             number = index + 1,
                             name = "${reasonRejectionInfo.value?.firstOrNull {it.code == discrepancy.typeDiscrepancies}?.name}",
-                            quantity = discrepancy.numberDiscrepancies,
+                            quantityWithUom = "${discrepancy.numberDiscrepancies.toDouble().toStringFormatted()} ${discrepancy.uom.name}",
                             typeDiscrepancies = discrepancy.typeDiscrepancies,
-                            uomName = discrepancy.uom.name,
                             even = index % 2 == 0
                     )
                 }?.reversed()
@@ -61,9 +61,8 @@ class GoodsDetailsViewModel : CoreViewModel() {
                     GoodsDetailsCategoriesItem(
                             number = index + 1,
                             name = "${reasonRejectionInfo.value?.firstOrNull {it.code == discrepancy.typeDiscrepancies}?.name}",
-                            quantity = discrepancy.numberDiscrepancies,
-                            typeDiscrepancies = discrepancy.typeDiscrepancies,
-                            uomName = discrepancy.uom.name,
+                            quantityWithUom = "${discrepancy.numberDiscrepancies.toDouble().toStringFormatted()} ${discrepancy.uom.name}",
+                            typeDiscrepancies = discrepancy.typeDiscrepancies.toDouble().toStringFormatted(),
                             even = index % 2 == 0
                     )
                 }?.reversed()

@@ -60,12 +60,8 @@ class InvoiceReviseViewModel : CoreViewModel(), PageSelectionListener {
         (taskManager.getReceivingTask()?.taskRepository?.getReviseDocuments()?.getInvoiceInfo()?.quantityPositions ?: 0).toString()
     }
 
-    val quantityST: String by lazy {
-        (taskManager.getReceivingTask()?.taskRepository?.getReviseDocuments()?.getInvoiceInfo()?.quantityST ?: 0).toString() + " шт."
-    }
-
-    val quantityKG: String by lazy {
-        taskManager.getReceivingTask()?.taskRepository?.getReviseDocuments()?.getInvoiceInfo()?.quantityKG.toStringFormatted() + " кг."
+    val quantityEIZ: String by lazy {
+        taskManager.getReceivingTask()?.taskRepository?.getReviseDocuments()?.getInvoiceInfo()?.quantityString ?: ""
     }
 
     val quantityTotal: String by lazy {
@@ -134,7 +130,7 @@ class InvoiceReviseViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     fun onClickEdit() {
-        Logg.d { "Invoice details edit screen" }
+        screenNavigator.openEditingInvoiceScreen()
     }
 
     fun onClickNext() {

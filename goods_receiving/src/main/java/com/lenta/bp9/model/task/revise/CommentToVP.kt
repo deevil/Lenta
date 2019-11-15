@@ -4,7 +4,7 @@ import com.google.gson.annotations.SerializedName
 
 //ET_VBELN_COM - Таблица примечаний к ВП
 data class CommentToVP(
-        val lineNumber: Int, // ??? - NUMC3 внутр. использование
+        val lineNumber: Int?, // ??? - NUMC3 внутр. использование
         val lineText: String // ??? - TEXT132
 ) {
 

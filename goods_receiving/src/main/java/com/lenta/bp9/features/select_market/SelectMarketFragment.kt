@@ -23,7 +23,6 @@ class SelectMarketFragment : CoreFragment<FragmentSelectMarketBinding, SelectMar
     override fun getViewModel(): SelectMarketViewModel {
         provideViewModel(SelectMarketViewModel::class.java).let {
             getAppComponent()?.inject(it)
-            it.titleProgressScreen.value = getString(R.string.data_loading)
             it.deviceIp.value = context?.getDeviceIp()
             return it
         }

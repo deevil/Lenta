@@ -33,7 +33,6 @@ class DiscrepancyListFragment : CoreFragment<FragmentDiscrepancyListBinding, Dis
     override fun getViewModel(): DiscrepancyListViewModel {
         provideViewModel(DiscrepancyListViewModel::class.java).let {vm ->
             getAppComponent()?.inject(vm)
-            vm.titleProgressScreen.value = getString(R.string.data_loading)
             return vm
         }
     }
@@ -52,6 +51,7 @@ class DiscrepancyListFragment : CoreFragment<FragmentDiscrepancyListBinding, Dis
         connectLiveData(vm.visibilityCleanButton, bottomToolbarUiModel.uiModelButton3.visibility)
         connectLiveData(vm.enabledCleanButton, bottomToolbarUiModel.uiModelButton3.enabled)
         connectLiveData(vm.visibilityBatchesButton, bottomToolbarUiModel.uiModelButton4.visibility)
+        connectLiveData(vm.enabledSaveButton, bottomToolbarUiModel.uiModelButton5.enabled)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
