@@ -87,7 +87,7 @@ class InvoiceReviseViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     val editingAvailable: MutableLiveData<Boolean> = headerCheck.map {
-        if (taskManager.getReceivingTask()?.taskDescription?.isAlco == true) {
+        if (taskManager.getReceivingTask()?.taskDescription?.isAlco == true || taskManager.getReceivingTask()?.taskDescription?.isEDO == true) {
             false
         } else {
             !it!!

@@ -42,11 +42,15 @@ fun setNotificationIndicatorIcon(imageView: ImageView, indicatorType: Notificati
     imageView.setVisibleGone()
 }
 
-@BindingAdapter("documentTypeIcon")
-fun setDocumentTypeIcon(imageView: ImageView, docType: DocumentType?) {
+@BindingAdapter(value = ["documentTypeIcon", "isEDO"], requireAll = false)
+fun setDocumentTypeIcon(imageView: ImageView, docType: DocumentType?, isEDO: Boolean? = false) {
     docType?.getIconRes()?.let {
         imageView.setVisible()
-        imageView.setImageResource(it)
+        if (docType == DocumentType.Invoice && isEDO!!) {
+            imageView.setImageResource(R.drawable.ic_einvoice)
+        } else {
+            imageView.setImageResource(it)
+        }
         return
     }
     imageView.setVisibleGone()
