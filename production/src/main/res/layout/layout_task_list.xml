@@ -21,7 +21,6 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-
         <!-- Наименования колонок -->
         <LinearLayout
             android:layout_width="match_parent"
@@ -84,7 +83,6 @@
 
         </LinearLayout>
 
-
         <!-- Список товаров -->
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv"
@@ -95,7 +93,6 @@
             app:items="@{vm.processing}"
             app:rv_config="@{rvConfig}"
             tools:listitem="@layout/item_task_list" />
-
 
         <!-- Ввод номера товара -->
         <LinearLayout

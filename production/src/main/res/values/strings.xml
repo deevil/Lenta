@@ -27,5 +27,10 @@
     <string name="pu">ЕО</string>
     <string name="remain">Остаток</string>
     <string name="arrived">Прибыло</string>
+    <string name="sf_type">Вид ПФ</string>
+    <string name="total_processed">Обработано</string>
+    <string name="pack_number">Номер тары</string>
+    <string name="total_weight">Общий вес</string>
+    <string name="plan_quantity">Плановое кол-во</string>
 
 </resources>

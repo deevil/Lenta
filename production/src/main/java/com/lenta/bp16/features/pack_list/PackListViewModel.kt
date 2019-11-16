@@ -1,5 +1,7 @@
 package com.lenta.bp16.features.pack_list
 
+import androidx.lifecycle.MutableLiveData
+import com.lenta.bp16.model.pojo.Pack
 import com.lenta.bp16.platform.navigation.IScreenNavigator
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import javax.inject.Inject
@@ -13,6 +15,8 @@ class PackListViewModel : CoreViewModel() {
     val title by lazy {
         "000021 - Форель заморож."
     }
+
+    val packs = MutableLiveData<List<Pack>>(emptyList())
 
 }
 
