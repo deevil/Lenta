@@ -9,6 +9,7 @@ data class GoodsDiscrepancyItem(
         val name: String,
         val countAcceptWithUom: String,
         val countRefusalWithUom: String,
+        val quantityNotProcessedWithUom: String,
         val productInfo: TaskProductInfo?,
         val batchInfo: TaskBatchInfo?,
         val even: Boolean

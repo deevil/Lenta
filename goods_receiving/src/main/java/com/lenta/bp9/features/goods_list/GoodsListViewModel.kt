@@ -83,15 +83,15 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
                                 .mapIndexed { index, productInfo ->
                                     val acceptTotalCount = task.taskRepository.getProductsDiscrepancies().getCountAcceptOfProduct(productInfo)
                                     val acceptTotalCountWithUom = if (acceptTotalCount != 0.0) {
-                                        "+ " + acceptTotalCount.toStringFormatted() + " " + productInfo.uom.name
+                                        "- ${acceptTotalCount.toStringFormatted()} ${productInfo.uom.name}"
                                     } else {
-                                        "0 " + productInfo.uom.name
+                                        "0 ${productInfo.uom.name}"
                                     }
                                     val refusalTotalCount = task.taskRepository.getProductsDiscrepancies().getCountRefusalOfProduct(productInfo)
                                     val refusalTotalCountWithUom = if (refusalTotalCount != 0.0) {
-                                        "- " + refusalTotalCount.toStringFormatted() + " " + productInfo.uom.name
+                                        "- ${refusalTotalCount.toStringFormatted()} ${productInfo.uom.name}"
                                     } else {
-                                        "0 " + productInfo.uom.name
+                                        "0 ${productInfo.uom.name}"
                                     }
 
                                     ListCountedItem(
@@ -114,15 +114,15 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
                                 .mapIndexed { index, batchInfo ->
                                     val acceptTotalCount = task.taskRepository.getBatchesDiscrepancies().getCountAcceptOfBatch(batchInfo)
                                     val acceptTotalCountWithUom = if (acceptTotalCount != 0.0) {
-                                        "+ " + acceptTotalCount.toStringFormatted() + " " + batchInfo.uom.name
+                                        "- ${acceptTotalCount.toStringFormatted()} ${batchInfo.uom.name}"
                                     } else {
-                                        "0 " + batchInfo.uom.name
+                                        "0 ${batchInfo.uom.name}"
                                     }
                                     val refusalTotalCount = task.taskRepository.getBatchesDiscrepancies().getCountRefusalOfBatch(batchInfo)
                                     val refusalTotalCountWithUom = if (refusalTotalCount != 0.0) {
-                                        "- " + refusalTotalCount.toStringFormatted() + " " + batchInfo.uom.name
+                                        "- ${refusalTotalCount.toStringFormatted()} ${batchInfo.uom.name}"
                                     } else {
-                                        "0 " + batchInfo.uom.name
+                                        "0 ${batchInfo.uom.name}"
                                     }
                                     ListCountedItem(
                                             number = index + 1,
@@ -147,7 +147,8 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
                 listWithoutBarcode.postValue(
                         task.getProcessedProducts()
                                 .filter {
-                                    it.isNoEAN
+                                    it.isNoEAN && (task.taskRepository.getProductsDiscrepancies().getCountAcceptOfProduct(it) +
+                                            task.taskRepository.getProductsDiscrepancies().getCountRefusalOfProduct(it) == 0.0)
                                 }.mapIndexed { index, productInfo ->
                                     ListWithoutBarcodeItem(
                                             number = index + 1,
@@ -161,7 +162,8 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
                 listWithoutBarcode.postValue(
                         task.getProcessedBatches()
                                 .filter {
-                                    it.isNoEAN
+                                    it.isNoEAN && (task.taskRepository.getBatchesDiscrepancies().getCountAcceptOfBatch(it) +
+                                            task.taskRepository.getBatchesDiscrepancies().getCountRefusalOfBatch(it) == 0.0)
                                 }.mapIndexed { index, batchInfo ->
                                     ListWithoutBarcodeItem(
                                             number = index + 1,
@@ -230,7 +232,6 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
                         ?.taskRepository
                         ?.getProductsDiscrepancies()
                         ?.deleteProductsDiscrepanciesForProduct(listCounted.value?.get(position)!!.productInfo!!)
-                taskManager.getReceivingTask()?.taskRepository?.getProducts()?.changeProduct(listCounted.value?.get(position)!!.productInfo!!.copy(isNoEAN = true))
             }
         } else {
             countedSelectionsHelper.selectedPositions.value?.map { position ->
@@ -239,7 +240,6 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
                         ?.taskRepository
                         ?.getBatchesDiscrepancies()
                         ?.deleteBatchesDiscrepanciesForBatch(listCounted.value?.get(position)!!.batchInfo!!)
-                taskManager.getReceivingTask()?.taskRepository?.getBatches()?.changeBatch(listCounted.value?.get(position)!!.batchInfo!!.copy(isNoEAN = true))
             }
         }
 

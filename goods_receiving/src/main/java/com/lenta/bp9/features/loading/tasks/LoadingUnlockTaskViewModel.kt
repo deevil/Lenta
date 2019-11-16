@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp9.model.task.IReceivingTaskManager
+import com.lenta.bp9.model.task.TaskType
 import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.bp9.requests.network.*
 import com.lenta.shared.account.ISessionInfo
@@ -50,7 +51,11 @@ class LoadingUnlockTaskViewModel : CoreLoadingViewModel() {
     }
 
     private fun handleSuccess(result: UnlockTaskRequestResult) {
-        screenNavigator.openTaskListScreen()
+        //todo когда будут доработаны другие задания (ПГЕ, Отгрузка) прописать здесь для них условия
+        when (taskManager.getReceivingTask()?.taskHeader?.taskType) {
+            TaskType.DirectSupplier -> screenNavigator.openTaskListLoadingScreen(TaskListLoadingMode.Receiving) //Приемка
+            else -> screenNavigator.openTaskListLoadingScreen(TaskListLoadingMode.None)
+        }
     }
 
     override fun clean() {

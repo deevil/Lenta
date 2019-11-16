@@ -280,15 +280,15 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
     //блок 6.187
     private fun calculationOverdelivery() {
         //блок 6.187
-        countOverdelivery.value = productInfo.value!!.orderQuantity.toDouble() - processGeneralProductService.getQuantityCapitalized() + (productInfo.value!!.overdToleranceLimit.toDouble() / 100) * productInfo.value!!.orderQuantity.toDouble()
+        countOverdelivery.value = productInfo.value!!.orderQuantity.toDouble() /**- processGeneralProductService.getQuantityCapitalized()*/ + (productInfo.value!!.overdToleranceLimit.toDouble() / 100) * productInfo.value!!.orderQuantity.toDouble()
         //блок 6.190
-        if (processGeneralProductService.getQuantityAllCategory() > countOverdelivery.value!!) {//блок 6.190 (да)
+        if (processGeneralProductService.getQuantityAllCategory(countValue.value!!) > countOverdelivery.value!!) {//блок 6.190 (да)
             //блок 6.193
             screenNavigator.openAlertCountLargerOverdelivery()
         } else {//блок 6.190 (нет)
             if (productInfo.value!!.origQuantity.toDouble() > productInfo.value!!.orderQuantity.toDouble()) {
                 val calculationOne = productInfo.value!!.origQuantity.toDouble() - productInfo.value!!.orderQuantity.toDouble()
-                val calculationTwo = productInfo.value!!.origQuantity.toDouble() - processGeneralProductService.getQuantityAllCategory() - countValue.value!!
+                val calculationTwo = productInfo.value!!.origQuantity.toDouble() - processGeneralProductService.getQuantityAllCategory(countValue.value!!)
                 val calculation = if (calculationOne < calculationTwo) calculationOne else calculationTwo
                 if (calculation > 0.0) {
                     processGeneralProductService.add(calculation.toString(), "41")

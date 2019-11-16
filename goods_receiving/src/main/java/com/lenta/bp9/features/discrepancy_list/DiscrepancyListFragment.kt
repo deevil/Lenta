@@ -170,6 +170,4 @@ class DiscrepancyListFragment : CoreFragment<FragmentDiscrepancyListBinding, Dis
         super.onResume()
         vm.onResume()
     }
-
-
 }

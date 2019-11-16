@@ -34,7 +34,7 @@ class ProcessGeneralProductService
     }
 
     fun countLargerOrigQuantity (count: Double) : Boolean {
-        return productInfo.origQuantity.toDouble() > ((taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.getCountAcceptOfProduct(productInfo) ?: 0.0)
+        return productInfo.origQuantity.toDouble() < ((taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.getCountAcceptOfProduct(productInfo) ?: 0.0)
                 + (taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.getCountRefusalOfProduct(productInfo) ?: 0.0) + count)
     }
 
@@ -90,9 +90,9 @@ class ProcessGeneralProductService
         return productInfo.quantityCapitalized.toDouble()
     }
 
-    fun getQuantityAllCategory() : Double {
-        return (taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.getCountAcceptOfProduct(productInfo) ?: 0.0) +
-                (taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.getCountRefusalOfProduct(productInfo) ?: 0.0)
+    fun getQuantityAllCategory(count: Double) : Double {
+        return ((taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.getCountAcceptOfProduct(productInfo) ?: 0.0)
+                + (taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.getCountRefusalOfProduct(productInfo) ?: 0.0) + count)
     }
 
     fun add(count: String, reasonRejectionCode: String){
@@ -129,6 +129,6 @@ class ProcessGeneralProductService
         taskManager.getReceivingTask()?.
                 taskRepository?.
                 getProducts()?.
-                changeProduct(productInfo.copy(isNoEAN = count.toDouble() == 0.0, quantityCapitalized = quantityCapitalized))
+                changeProduct(productInfo.copy(quantityCapitalized = quantityCapitalized))
     }
 }

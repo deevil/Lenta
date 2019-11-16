@@ -1,5 +1,6 @@
 package com.lenta.bp9.features.task_card
 
+import android.content.res.Resources
 import com.lenta.bp9.R
 import com.lenta.bp9.platform.extentions.getAppComponent
 import com.lenta.shared.platform.fragment.CoreFragment
@@ -12,6 +13,9 @@ import com.lenta.shared.utilities.databinding.ViewPagerSettings
 import android.view.ViewGroup
 import android.view.View
 import android.widget.AdapterView
+import android.widget.ImageView
+import android.widget.LinearLayout
+import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
 import androidx.databinding.DataBindingUtil
 import com.lenta.bp9.BR
@@ -20,6 +24,7 @@ import com.lenta.bp9.features.loading.tasks.TaskCardMode
 import com.lenta.shared.platform.activity.OnBackPresserListener
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
+import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.databinding.DataBindingAdapter
 import com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig
 import com.lenta.shared.utilities.databinding.RecyclerViewKeyHandler
@@ -78,6 +83,13 @@ class TaskCardFragment : CoreFragment<FragmentTaskCardBinding, TaskCardViewModel
 
     override fun onResume() {
         super.onResume()
+        val tabItemLayout = (binding?.tabStrip?.getChildAt(0) as LinearLayout).getChildAt(2) as LinearLayout
+        tabItemLayout.orientation = LinearLayout.HORIZONTAL
+        val iconView = tabItemLayout.getChildAt(0) as ImageView
+        val textView = tabItemLayout.getChildAt(1) as TextView
+        tabItemLayout.removeView(iconView)
+        textView.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_indicator_red_tablayout, 0)
+        textView.compoundDrawablePadding = 5
         vm.onResume()
     }
 
@@ -138,6 +150,7 @@ class TaskCardFragment : CoreFragment<FragmentTaskCardBinding, TaskCardViewModel
     }
 
     override fun getTextTitle(position: Int): String {
+        Logg.d { "testddi_1" }
         return when (position) {
             0 -> getString(R.string.status)
             1 -> getString(R.string.delivery)
@@ -153,6 +166,17 @@ class TaskCardFragment : CoreFragment<FragmentTaskCardBinding, TaskCardViewModel
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding?.viewPagerSettings = this
+        /**binding?.let {bind ->
+            Logg.d { "testddi_1" }
+            bind.tabStrip?.let {
+                Logg.d { "testddi_2" }
+                Logg.d { "testddi_3 ${it.tabCount}" }
+                it.getTabAt(1)?.let {tab ->
+                    Logg.d { "testddi_4" }
+                    tab.setIcon(R.drawable.ic_indicator_red)
+                }
+            }
+        }*/
     }
 
     override fun onBackPressed(): Boolean {

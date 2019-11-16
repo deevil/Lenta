@@ -13,6 +13,7 @@ interface ITaskProductsDiscrepanciesRepository {
     fun deleteProductsDiscrepanciesForProduct(product: TaskProductInfo): Boolean
     fun getCountAcceptOfProduct(product: TaskProductInfo): Double
     fun getCountRefusalOfProduct(product: TaskProductInfo): Double
+    fun getCountProductNotProcessedOfProduct(product: TaskProductInfo): Double
     fun getCountRefusalOfProductOfReasonRejection(product: TaskProductInfo, reasonRejectionCode: String?): Double
     fun clear()
 }

@@ -13,7 +13,6 @@ import com.lenta.bp9.requests.network.EndRecountDirectDeliveriesNetRequest
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.platform.viewmodel.CoreViewModel
-import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.extentions.getDeviceIp
@@ -69,8 +68,7 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
                 countNotProcessed.postValue(
                         task.getProcessedProducts()
                                 .filter {
-                                    (task.taskRepository.getProductsDiscrepancies().getCountAcceptOfProduct(it) +
-                                            task.taskRepository.getProductsDiscrepancies().getCountRefusalOfProduct(it)) == 0.0
+                                    task.taskRepository.getProductsDiscrepancies().getCountProductNotProcessedOfProduct(it) > 0.0
                                 }
                                 .mapIndexed { index, productInfo ->
                                     GoodsDiscrepancyItem(
@@ -78,6 +76,7 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
                                             name = "${productInfo.getMaterialLastSix()} ${productInfo.description}",
                                             countAcceptWithUom = "",
                                             countRefusalWithUom = "",
+                                            quantityNotProcessedWithUom = "? ${task.taskRepository.getProductsDiscrepancies().getCountProductNotProcessedOfProduct(productInfo).toStringFormatted()} ${productInfo.uom.name}",
                                             productInfo = productInfo,
                                             batchInfo = null,
                                             even = index % 2 == 0)
@@ -87,8 +86,7 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
                 countNotProcessed.postValue(
                         task.getProcessedBatches()
                                 .filter {
-                                    (task.taskRepository.getBatchesDiscrepancies().getCountAcceptOfBatch(it) +
-                                            task.taskRepository.getBatchesDiscrepancies().getCountAcceptOfBatch(it)) == 0.0
+                                    task.taskRepository.getBatchesDiscrepancies().getCountBatchNotProcessedOfBatch(it) > 0.0
                                 }
                                 .mapIndexed { index, batchInfo ->
                                     GoodsDiscrepancyItem(
@@ -96,6 +94,7 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
                                             name = "${batchInfo.getMaterialLastSix()} ${batchInfo.description} \nДР-${batchInfo.bottlingDate} // ${batchInfo.manufacturer}",
                                             countAcceptWithUom = "",
                                             countRefusalWithUom = "",
+                                            quantityNotProcessedWithUom = "? ${task.taskRepository.getBatchesDiscrepancies().getCountBatchNotProcessedOfBatch(batchInfo).toStringFormatted()} ${batchInfo.uom.name}",
                                             productInfo = null,
                                             batchInfo = batchInfo,
                                             even = index % 2 == 0)
@@ -112,8 +111,8 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
                 countProcessed.postValue(
                         task.getProcessedProducts()
                                 .filter {
-                                    task.taskRepository.getProductsDiscrepancies().getCountAcceptOfProduct(it) > 0.0
-                                            || task.taskRepository.getProductsDiscrepancies().getCountRefusalOfProduct(it) > 0.0
+                                    task.taskRepository.getProductsDiscrepancies().getCountAcceptOfProduct(it) +
+                                            task.taskRepository.getProductsDiscrepancies().getCountRefusalOfProduct(it) > 0.0
                                 }.mapIndexed { index, productInfo ->
                                     val acceptTotalCount = task.taskRepository.getProductsDiscrepancies().getCountAcceptOfProduct(productInfo)
                                     val acceptTotalCountWithUom = if (acceptTotalCount != 0.0) {
@@ -132,6 +131,7 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
                                             name = "${productInfo.getMaterialLastSix()} ${productInfo.description}",
                                             countAcceptWithUom = acceptTotalCountWithUom,
                                             countRefusalWithUom = refusalTotalCountWithUom,
+                                            quantityNotProcessedWithUom = "",
                                             productInfo = productInfo,
                                             batchInfo = null,
                                             even = index % 2 == 0)
@@ -141,8 +141,8 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
                 countProcessed.postValue(
                         task.getProcessedBatches()
                                 .filter {
-                                    task.taskRepository.getBatchesDiscrepancies().getCountAcceptOfBatch(it) > 0.0
-                                            || task.taskRepository.getBatchesDiscrepancies().getCountAcceptOfBatch(it) > 0.0
+                                    task.taskRepository.getBatchesDiscrepancies().getCountAcceptOfBatch(it) +
+                                            task.taskRepository.getBatchesDiscrepancies().getCountRefusalOfBatch(it) > 0.0
                                 }.mapIndexed { index, batchInfo ->
                                     val acceptTotalCount = task.taskRepository.getBatchesDiscrepancies().getCountAcceptOfBatch(batchInfo)
                                     val acceptTotalCountWithUom = if (acceptTotalCount != 0.0) {
@@ -161,6 +161,7 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
                                             name = "${batchInfo.getMaterialLastSix()} ${batchInfo.description} \nДР-${batchInfo.bottlingDate} // ${batchInfo.manufacturer}",
                                             countAcceptWithUom = acceptTotalCountWithUom,
                                             countRefusalWithUom = refusalTotalCountWithUom,
+                                            quantityNotProcessedWithUom = "",
                                             productInfo = null,
                                             batchInfo = batchInfo,
                                             even = index % 2 == 0)
