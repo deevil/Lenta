@@ -9,6 +9,7 @@ import javax.inject.Inject
 @AppScope
 class TaskListFilteredNetRequest
 @Inject constructor(private val taskListNetRequest: TaskListNetRequest) : ITaskListFilteredNetRequest {
+
     override suspend fun run(params: FilteredParams): Either<Failure, TaskListInfo> {
         return taskListNetRequest(
                 TasksListParams(
@@ -19,6 +20,7 @@ class TaskListFilteredNetRequest
                 )
         )
     }
+
 }
 
 interface ITaskListFilteredNetRequest : UseCase<TaskListInfo, FilteredParams>

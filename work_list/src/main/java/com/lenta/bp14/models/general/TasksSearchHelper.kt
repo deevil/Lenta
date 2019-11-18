@@ -35,10 +35,11 @@ class TasksSearchHelper @Inject constructor(
     override val filteredTaskList: MutableLiveData<List<TaskInfo>> = MutableLiveData(emptyList())
 
     override suspend fun updateTaskList(): Either<Failure, Boolean> {
-        return generalRepo.getTaskList(SimpleParams(
-                tkNumber = sessionInfo.market!!,
-                user = processedFilter ?: ""
-        )).map {
+        return generalRepo.getTaskList(
+                SimpleParams(
+                        tkNumber = sessionInfo.market!!,
+                        user = sessionInfo.userName ?: ""
+                )).map {
             taskList.postValue(it)
             true
         }
@@ -48,7 +49,7 @@ class TasksSearchHelper @Inject constructor(
         return generalRepo.getFilteredTaskList(
                 FilteredParams(
                         tkNumber = sessionInfo.market!!,
-                        user = searchFilter ?: "",
+                        user = sessionInfo.userName ?: "",
                         filteredParams = filterParams
                 )
         ).map {

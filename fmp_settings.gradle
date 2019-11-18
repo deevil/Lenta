@@ -14,8 +14,8 @@ ext {
     ]
 
     ext.prodSettings = [
-            [type: "string", name: "ds_serverAddress", value: "http://of-sapmq-fmp.retail.lenta.spb.rus"],
-            [type: "string", name: "ds_environment", value: "Lenta_LRQ"],
+            [type: "string", name: "ds_serverAddress", value: "http://fmpserver.retail.lenta.spb.rus"],
+            [type: "string", name: "ds_environment", value: "Lenta_LRP"],
             [type: "string", name: "ds_project", value: "PR_SHARED"],
             [type: "string", name: "ds_testServerAddress", value: "http://9.6.24.46"],
             [type: "string", name: "ds_testEnvironment", value: "Lenta_LRQ"],
