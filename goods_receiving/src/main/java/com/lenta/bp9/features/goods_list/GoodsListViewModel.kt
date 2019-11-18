@@ -147,7 +147,7 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
                 listWithoutBarcode.postValue(
                         task.getProcessedProducts()
                                 .filter {
-                                    it.isNoEAN && (task.taskRepository.getProductsDiscrepancies().getCountAcceptOfProduct(it) +
+                                    !it.isNoEAN && (task.taskRepository.getProductsDiscrepancies().getCountAcceptOfProduct(it) +
                                             task.taskRepository.getProductsDiscrepancies().getCountRefusalOfProduct(it) == 0.0)
                                 }.mapIndexed { index, productInfo ->
                                     ListWithoutBarcodeItem(
@@ -287,6 +287,11 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
                     screenNavigator.openUnlockTaskLoadingScreen()
                 }
         )
+    }
+
+    fun onDigitPressed(digit: Int) {
+        requestFocusToEan.value = true
+        eanCode.value = eanCode.value ?: "" + digit
     }
 
 }

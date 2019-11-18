@@ -28,6 +28,7 @@ class SearchTaskViewModel: CoreViewModel(), OnOkInSoftKeyboardListener {
     var transportation: MutableLiveData<String> = MutableLiveData("")
     var numberGE: MutableLiveData<String> = MutableLiveData("")
     var numberEO: MutableLiveData<String> = MutableLiveData("")
+    val requestFocusToSupplier: MutableLiveData<Boolean> = MutableLiveData()
 
     val searchEnabled: MutableLiveData<Boolean> = combineLatest(combineLatest(taskNumber, supplier, order), combineLatest(invoice, transportation, numberGE), numberEO).map {
         it?.first?.first?.isNotEmpty() ?: false ||
@@ -58,6 +59,11 @@ class SearchTaskViewModel: CoreViewModel(), OnOkInSoftKeyboardListener {
     override fun onOkInSoftKeyboard(): Boolean {
         onClickFind()
         return true
+    }
+
+    fun onDigitPressed(digit: Int) {
+        requestFocusToSupplier.value = true
+        supplier.value = supplier.value ?: "" + digit
     }
 
 }

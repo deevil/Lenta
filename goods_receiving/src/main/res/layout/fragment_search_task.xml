@@ -55,6 +55,8 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/guideline"
                 app:layout_constraintTop_toTopOf="parent"
+                app:cursorToLastPos="@{true}"
+                app:requestFocus="@{vm.requestFocusToSupplier}"
                 tools:ignore="Autofill" />
 
             <TextView
