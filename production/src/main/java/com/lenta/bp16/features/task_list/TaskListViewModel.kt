@@ -7,12 +7,13 @@ import com.lenta.bp16.model.pojo.Task
 import com.lenta.bp16.platform.navigation.IScreenNavigator
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
+import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.extentions.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class TaskListViewModel : CoreViewModel(), PageSelectionListener {
+class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyboardListener {
 
     @Inject
     lateinit var navigator: IScreenNavigator
@@ -76,6 +77,15 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener {
 
     fun onClickItemPosition(position: Int) {
         // Открытие нужного списка товаров
+
+    }
+
+    override fun onOkInSoftKeyboard(): Boolean {
+        openTaskByNumber(numberField.value ?: "")
+        return true
+    }
+
+    private fun openTaskByNumber(taskNumber: String) {
 
     }
 
