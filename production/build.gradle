@@ -4,6 +4,7 @@ apply plugin: 'kotlin-kapt'
 apply plugin: 'io.fabric'
 apply plugin: 'de.mannodermaus.android-junit5'
 apply from: '../fmp_settings.gradle'
+apply plugin: 'kotlin-android-extensions'
 
 def prefixAppVersion = "16"
 

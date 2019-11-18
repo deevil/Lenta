@@ -70,6 +70,7 @@
     <string name="full">Полный</string>
     <string name="temporary">Временный</string>
     <string name="deliveries">Поставки</string>
+    <string name="get_weight">Получить вес</string>
     <string name="sales">Продажи</string>
     <string name="error">Ошибка</string>
     <string name="to_find">Найти</string>

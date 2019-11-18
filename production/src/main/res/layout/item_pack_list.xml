@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="item"
+            type="com.lenta.bp16.features.pack_list.ItemPackListUi" />
+
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_selectable"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/common_row_height"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                style="@style/LinearCellStyle"
+                android:layout_weight="@integer/pack_number_total_weight_column_1">
+
+                <TextView
+                    android:id="@+id/tv_item_number"
+                    style="@style/CellTextStyle"
+                    android:layout_width="wrap_content"
+                    android:text="@{item.position}"
+                    tools:text="1" />
+
+            </LinearLayout>
+
+            <View style="@style/VerticalDivider" />
+
+            <LinearLayout
+                style="@style/LinearCellStyle"
+                android:layout_weight="@integer/pack_number_total_weight_column_2">
+
+                <TextView
+                    style="@style/CellTextStyle"
+                    android:text="@{item.packNumber}"
+                    tools:text="Тара №1" />
+
+                <TextView
+                    style="@style/CellTextStyle"
+                    android:text="@{item.rawName}"
+                    tools:text="Форель филе" />
+
+            </LinearLayout>
+
+            <View style="@style/VerticalDivider" />
+
+            <LinearLayout
+                style="@style/LinearCellStyle"
+                android:layout_weight="@integer/pack_number_total_weight_column_3"
+                android:orientation="horizontal">
+
+                <TextView
+                    style="@style/CellTextStyle"
+                    android:gravity="center"
+                    android:text="@{item.totalWeight}"
+                    tools:text="25 кг" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <View style="@style/HorizontalDivider" />
+
+    </LinearLayout>
+
+</layout>

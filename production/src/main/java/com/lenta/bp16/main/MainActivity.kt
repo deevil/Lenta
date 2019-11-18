@@ -1,12 +1,11 @@
 package com.lenta.bp16.main
 
-import android.Manifest
 import android.os.Bundle
 import androidx.lifecycle.ViewModelProviders
-import com.lenta.bp16.platform.extention.getAppComponent
-import com.lenta.shared.platform.activity.main_activity.CoreMainActivity
 import com.crashlytics.android.Crashlytics
 import com.lenta.bp16.di.AppComponent
+import com.lenta.bp16.platform.extention.getAppComponent
+import com.lenta.shared.platform.activity.main_activity.CoreMainActivity
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.utilities.runIfRelease
 import io.fabric.sdk.android.Fabric
@@ -56,7 +55,7 @@ class MainActivity : CoreMainActivity() {
     }
 
     override fun getAdditionalListOfRequiredPermissions(): List<String> {
-        return listOf(Manifest.permission.CAMERA)
+        return emptyList()
     }
 
 }
