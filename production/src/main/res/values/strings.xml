@@ -17,10 +17,6 @@
     <string name="confirm_that_there_is_no_such_item_left_in_pu">Подтвердите что в ЕО не осталось данного товара.</string>
     <string name="fixing_beginning_of_packaging_phase_was_successful">Этап дефростирования завершен.\nФиксация начала этапа упаковки прошла успешно.</string>
 
-    // Разные строки
-    <string name="processing_pu">Обработка ЕО</string>
-    <string name="enter_number_pu">Введите номер ЕО</string>
-
     // Заголовки списков
     <string name="sku">SKU</string>
     <string name="sign">Признак</string>
@@ -32,5 +28,13 @@
     <string name="pack_number">Номер тары</string>
     <string name="total_weight">Общий вес</string>
     <string name="plan_quantity">Плановое кол-во</string>
+
+    // Разные строки
+    <string name="processing_pu">Обработка ЕО</string>
+    <string name="enter_number_pu">Введите номер ЕО</string>
+    <string name="fact">Факт</string>
+    <string name="total">Итого</string>
+    <string name="planed_quantity">План на передел</string>
+    <string name="raw_name">Первый передел</string>
 
 </resources>

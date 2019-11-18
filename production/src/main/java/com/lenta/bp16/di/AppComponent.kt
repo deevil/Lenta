@@ -14,7 +14,7 @@ import com.lenta.bp16.features.task_list.TaskListViewModel
 import com.lenta.bp16.main.MainActivity
 import com.lenta.bp16.main.MainViewModel
 import com.lenta.bp16.platform.navigation.IScreenNavigator
-import com.lenta.bp16.repository.IGeneralRepo
+import com.lenta.bp16.repository.IGeneralRepository
 import com.lenta.shared.di.AppScope
 import com.lenta.shared.di.CoreComponent
 import dagger.Component
@@ -24,7 +24,7 @@ import dagger.Component
 interface AppComponent : CoreComponent {
 
     fun getIScreenNavigator(): IScreenNavigator
-    fun getIGeneralRepo(): IGeneralRepo
+    fun getIGeneralRepository(): IGeneralRepository
 
     fun inject(mainActivity: MainActivity)
     fun inject(mainViewModel: MainViewModel)

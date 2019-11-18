@@ -3,7 +3,7 @@ package com.lenta.bp16.features.loading.fast
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp16.platform.navigation.IScreenNavigator
-import com.lenta.bp16.repository.IGeneralRepo
+import com.lenta.bp16.repository.IGeneralRepository
 import com.lenta.bp16.request.FastResourcesMultiRequest
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.exception.IFailureInterpreter
@@ -24,7 +24,7 @@ class FastLoadingViewModel : CoreLoadingViewModel() {
     @Inject
     lateinit var appUpdateChecker: AppUpdateChecker
     @Inject
-    lateinit var generalRepo: IGeneralRepo
+    lateinit var repository: IGeneralRepository
     @Inject
     lateinit var auth: Auth
 
@@ -49,7 +49,7 @@ class FastLoadingViewModel : CoreLoadingViewModel() {
 
     private fun handleSuccess(notUsed: Boolean) {
         viewModelScope.launch {
-            if (appUpdateChecker.isNeedUpdate(generalRepo.getAllowedAppVersion())) {
+            if (appUpdateChecker.isNeedUpdate(repository.getAllowedAppVersion())) {
                 auth.cancelAuthorization()
                 navigator.closeAllScreen()
                 navigator.openLoginScreen()
