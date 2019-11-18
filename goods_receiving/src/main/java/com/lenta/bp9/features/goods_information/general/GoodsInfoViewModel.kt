@@ -45,8 +45,11 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
     private val countWithoutParamGrsGrundNeg: MutableLiveData<Double> = MutableLiveData()
     private val countOverdelivery: MutableLiveData<Double> = MutableLiveData()
     private val isClickApply: MutableLiveData<Boolean> = MutableLiveData(false)
-    val isDefect: MutableLiveData<Boolean> = spinQualitySelectedPosition.map {
-        it != 0
+    val isDiscrepancy: MutableLiveData<Boolean> = MutableLiveData(false)
+    val isDefect: MutableLiveData<Boolean> = spinQualitySelectedPosition.combineLatest(isDiscrepancy).map {
+        if (!it!!.second) {
+            it.first != 0
+        } else true
     }
 
     private val qualityInfo: MutableLiveData<List<QualityInfo>> = MutableLiveData()
@@ -102,6 +105,12 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
         viewModelScope.launch {
             suffix.value = productInfo.value?.uom?.name
             qualityInfo.value = dataBase.getQualityInfo()
+            if (isDiscrepancy.value!!) {
+                qualityInfo.value = dataBase.getQualityInfoForDiscrepancy()
+                spinQualitySelectedPosition.value = 2
+            } else {
+                qualityInfo.value = dataBase.getQualityInfo()
+            }
             spinQuality.value = qualityInfo.value?.map {
                 it.name
             }

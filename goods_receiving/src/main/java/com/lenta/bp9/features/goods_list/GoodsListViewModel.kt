@@ -14,7 +14,6 @@ import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
-import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.databinding.PageSelectionListener
@@ -83,7 +82,7 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
                                 .mapIndexed { index, productInfo ->
                                     val acceptTotalCount = task.taskRepository.getProductsDiscrepancies().getCountAcceptOfProduct(productInfo)
                                     val acceptTotalCountWithUom = if (acceptTotalCount != 0.0) {
-                                        "- ${acceptTotalCount.toStringFormatted()} ${productInfo.uom.name}"
+                                        "+ ${acceptTotalCount.toStringFormatted()} ${productInfo.uom.name}"
                                     } else {
                                         "0 ${productInfo.uom.name}"
                                     }
@@ -114,7 +113,7 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
                                 .mapIndexed { index, batchInfo ->
                                     val acceptTotalCount = task.taskRepository.getBatchesDiscrepancies().getCountAcceptOfBatch(batchInfo)
                                     val acceptTotalCountWithUom = if (acceptTotalCount != 0.0) {
-                                        "- ${acceptTotalCount.toStringFormatted()} ${batchInfo.uom.name}"
+                                        "+ ${acceptTotalCount.toStringFormatted()} ${batchInfo.uom.name}"
                                     } else {
                                         "0 ${batchInfo.uom.name}"
                                     }
@@ -204,7 +203,7 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
         }
         matnr?.let {
             val productInfo = taskManager.getReceivingTask()?.taskRepository?.getProducts()?.findProduct(it)
-            if (productInfo != null) searchProductDelegate.openProductScreen(productInfo)
+            if (productInfo != null) searchProductDelegate.openProductScreen(productInfo, false)
         }
     }
 

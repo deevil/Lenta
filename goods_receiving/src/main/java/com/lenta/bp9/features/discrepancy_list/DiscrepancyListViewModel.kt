@@ -39,6 +39,7 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
     val countNotProcessed: MutableLiveData<List<GoodsDiscrepancyItem>> = MutableLiveData()
     val countProcessed: MutableLiveData<List<GoodsDiscrepancyItem>> = MutableLiveData()
     private val isBatches: MutableLiveData<Boolean> = MutableLiveData(false)
+    val isDiscrepancy: MutableLiveData<Boolean> = MutableLiveData(false)
 
 
     val visibilityCleanButton: MutableLiveData<Boolean> = selectedPage.map {
@@ -189,7 +190,7 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
         }
         matnr?.let {
             val productInfo = taskManager.getReceivingTask()?.taskRepository?.getProducts()?.findProduct(it)
-            if (productInfo != null) screenNavigator.openGoodsInfoScreen(productInfo)
+            if (productInfo != null) screenNavigator.openGoodsInfoScreen(productInfo, true)
         }
     }
 
