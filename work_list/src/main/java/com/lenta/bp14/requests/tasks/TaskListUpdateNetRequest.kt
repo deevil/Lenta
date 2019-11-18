@@ -20,10 +20,10 @@ class TaskListUpdateNetRequest
                 )
         )
     }
+
 }
 
 interface ITaskListUpdateNetRequest : UseCase<TaskListInfo, SimpleParams>
-
 
 data class SimpleParams(
         val tkNumber: String,
