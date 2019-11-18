@@ -147,7 +147,7 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
                 listWithoutBarcode.postValue(
                         task.getProcessedProducts()
                                 .filter {
-                                    !it.isNoEAN && (task.taskRepository.getProductsDiscrepancies().getCountAcceptOfProduct(it) +
+                                    it.isNoEAN && (task.taskRepository.getProductsDiscrepancies().getCountAcceptOfProduct(it) +
                                             task.taskRepository.getProductsDiscrepancies().getCountRefusalOfProduct(it) == 0.0)
                                 }.mapIndexed { index, productInfo ->
                                     ListWithoutBarcodeItem(
