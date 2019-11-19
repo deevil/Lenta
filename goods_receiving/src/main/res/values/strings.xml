@@ -153,4 +153,5 @@
     <string name="documents_sent_print">Документы отправлены в очередь на печать</string>
     <string name="verify">К проверке</string>
     <string name="verified">Проверенные</string>
+    <string name="order_quantity_exceeded">Превышено допустимое количество в заказе, превышенное кол-во будет помечено как \"Не заказ\"</string>
 </resources>
