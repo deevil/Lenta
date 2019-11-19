@@ -13,6 +13,7 @@ import com.lenta.bp16.features.select_market.SelectMarketViewModel
 import com.lenta.bp16.features.task_list.TaskListViewModel
 import com.lenta.bp16.main.MainActivity
 import com.lenta.bp16.main.MainViewModel
+import com.lenta.bp16.model.ITaskManager
 import com.lenta.bp16.platform.navigation.IScreenNavigator
 import com.lenta.bp16.repository.IGeneralRepository
 import com.lenta.shared.di.AppScope
@@ -23,8 +24,9 @@ import dagger.Component
 @AppScope
 interface AppComponent : CoreComponent {
 
-    fun getIScreenNavigator(): IScreenNavigator
-    fun getIGeneralRepository(): IGeneralRepository
+    fun getScreenNavigator(): IScreenNavigator
+    fun getGeneralRepository(): IGeneralRepository
+    fun getTaskManager(): ITaskManager
 
     fun inject(mainActivity: MainActivity)
     fun inject(mainViewModel: MainViewModel)
