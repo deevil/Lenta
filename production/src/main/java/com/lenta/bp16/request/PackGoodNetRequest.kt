@@ -1,9 +1,6 @@
 package com.lenta.bp16.request
 
 import com.google.gson.annotations.SerializedName
-import com.lenta.bp16.request.pojo.GoodInfo
-import com.lenta.bp16.request.pojo.PackInfo
-import com.lenta.bp16.request.pojo.RawInfo
 import com.lenta.bp16.request.pojo.RetCode
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.fmp.ObjectRawStatus
@@ -13,12 +10,12 @@ import com.lenta.shared.interactor.UseCase
 import com.lenta.shared.requests.FmpRequestsHelper
 import javax.inject.Inject
 
-class TaskInfoNetRequest @Inject constructor(
+class PackGoodNetRequest @Inject constructor(
         private val fmpRequestsHelper: FmpRequestsHelper
-) : UseCase<TaskInfoResult, TaskInfoParams> {
+) : UseCase<PackGoodResult, PackGoodParams> {
 
-    override suspend fun run(params: TaskInfoParams): Either<Failure, TaskInfoResult> {
-        return fmpRequestsHelper.restRequest("ZMP_UTZ_PRO_03_V001", params, TaskInfoStatus::class.java)
+    override suspend fun run(params: PackGoodParams): Either<Failure, PackGoodResult> {
+        return fmpRequestsHelper.restRequest("ZMP_UTZ_PRO_07_V001", params, PackGoodStatus::class.java)
                 .rightToLeft(
                         fnRtoL = { result ->
                             result.retCodes.firstOrNull { retCode ->
@@ -32,7 +29,7 @@ class TaskInfoNetRequest @Inject constructor(
 
 }
 
-data class TaskInfoParams(
+data class PackGoodParams(
         /** Код предприятия */
         @SerializedName("IV_WERKS")
         val marketNumber: String,
@@ -42,23 +39,20 @@ data class TaskInfoParams(
         /** IP адрес ТСД */
         @SerializedName("IV_IP")
         val marketIp: String,
-        /** Режим обработки: 1 - блокировка ЕО, 2 - переблокировка ЕО */
-        @SerializedName("IV_MODE")
-        val processingMode: String
+        /** Номер заказа */
+        @SerializedName("AUFNR")
+        val order: String,
+        /** SAP – код товар */
+        @SerializedName("IV_MATNR")
+        val material: String,
+        /** Фактическое количество сырья */
+        @SerializedName("IV_FACT_QNT")
+        val quantity: Double
 )
 
-class TaskInfoStatus : ObjectRawStatus<TaskInfoResult>()
+class PackGoodStatus : ObjectRawStatus<PackGoodResult>()
 
-data class TaskInfoResult(
-        /** Список товаров */
-        @SerializedName("ET_EXIDV_POS")
-        val goods: List<GoodInfo>,
-        /** Список первых переделов */
-        @SerializedName("ET_FIRST_PRO")
-        val raws: List<RawInfo>,
-        /** Список товаров тары */
-        @SerializedName("ET_CONT_POS")
-        val packs: List<PackInfo>,
+data class PackGoodResult(
         /** Таблица возврата */
         @SerializedName("ET_RETCODE")
         val retCodes: List<RetCode>
