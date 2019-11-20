@@ -83,11 +83,15 @@ class InvoiceReviseViewModel : CoreViewModel(), PageSelectionListener {
     val supplierCheck: MutableLiveData<Boolean> = MutableLiveData(false)
     val detailsCheck: MutableLiveData<Boolean> = MutableLiveData(false)
     val nextPossible: MutableLiveData<Boolean> = combineLatest(headerCheck, supplierCheck, detailsCheck).map {
-        it?.first == true && it?.second == true && it?.third == true
+        it?.first == true && it.second == true && it.third == true
+    }
+
+    val isEInvoice: Boolean by lazy {
+        taskManager.getReceivingTask()?.taskDescription?.isEDO ?: false
     }
 
     val editingAvailable: MutableLiveData<Boolean> = headerCheck.map {
-        if (taskManager.getReceivingTask()?.taskDescription?.isAlco == true) {
+        if (taskManager.getReceivingTask()?.taskDescription?.isAlco == true || isEInvoice) {
             false
         } else {
             !it!!

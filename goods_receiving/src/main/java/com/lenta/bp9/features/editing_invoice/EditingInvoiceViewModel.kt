@@ -1,5 +1,6 @@
 package com.lenta.bp9.features.editing_invoice
 
+import androidx.lifecycle.LiveData
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
@@ -49,16 +50,22 @@ class EditingInvoiceViewModel : CoreViewModel(), PageSelectionListener, OnOkInSo
     val filterTotal = MutableLiveData("")
     val filterDel = MutableLiveData("")
     val filterAdd = MutableLiveData("")
+    val requestFocusToNumberField: MutableLiveData<Boolean> = MutableLiveData()
+
+    val editingAvailable: Boolean by lazy {
+        !(taskManager.getReceivingTask()?.taskDescription?.isAlco == true || taskManager.getReceivingTask()?.taskDescription?.isEDO == true)
+    }
 
     val listTotal by lazy {
         repoInMemoryHolder.invoiceContents.combineLatest(filterTotal).map { pair ->
-            pair!!.first.filter { (it.orderPositionNumber.isNotEmpty() || it.isAdded) && !it.isDeleted && it.matchesFilter(pair.second) }.mapIndexed { index, invoice ->
+            pair!!.first.filter { (it.isPresent || it.isAdded) && !it.isDeleted && it.matchesFilter(pair.second) }.mapIndexed { index, invoice ->
                 EditingInvoiceItem(
                         number = index + 1,
                         name = "${invoice.getMaterialLastSix()} ${invoice.description}",
                         quantity = invoice.originalQuantity.toStringFormatted(),
                         uom = invoice.uom,
                         invoiceContent = invoice,
+                        enabled = editingAvailable,
                         even = index % 2 == 0
                 )
             }
@@ -74,6 +81,7 @@ class EditingInvoiceViewModel : CoreViewModel(), PageSelectionListener, OnOkInSo
                         quantity = invoice.originalQuantity.toStringFormatted(),
                         uom = invoice.uom,
                         invoiceContent = invoice,
+                        enabled = editingAvailable,
                         even = index % 2 == 0
                 )
             }
@@ -89,6 +97,7 @@ class EditingInvoiceViewModel : CoreViewModel(), PageSelectionListener, OnOkInSo
                         quantity = invoice.originalQuantity.toStringFormatted(),
                         uom = invoice.uom,
                         invoiceContent = invoice,
+                        enabled = editingAvailable,
                         even = index % 2 == 0
                 )
             }
@@ -307,10 +316,14 @@ class EditingInvoiceViewModel : CoreViewModel(), PageSelectionListener, OnOkInSo
             repoInMemoryHolder.invoiceContents.value!!.findLast {
                 it.getMaterialLastSix() == if (matnr.length > 6) matnr.substring(matnr.length - 6) else matnr
             }?.let {
-                it.isAdded = true
-                it.originalQuantity = it.registeredQuantity
-                updateData()
+                if (!it.isPresent) {
+                    it.isAdded = true
+                    it.originalQuantity = it.registeredQuantity
+                    updateData()
+                }
+                return true
             }
+            screenNavigator.openAlertGoodsNotInInvoiceScreen()
         }
 
         return true
@@ -326,6 +339,33 @@ class EditingInvoiceViewModel : CoreViewModel(), PageSelectionListener, OnOkInSo
             1 -> filterDel.value ?: "" + digit
             2 -> filterAdd.value ?: "" + digit
         }
+        requestFocusToNumberField.value = true
+    }
+
+    fun finishedInput(position: Int) {
+        viewModelScope.launch {
+            val editInvoice = repoInMemoryHolder.invoiceContents.value!!.findLast {
+                it.materialNumber == listTotal.value!![position].invoiceContent.materialNumber
+            }
+            if (listTotal.value!![position].quantity.toDouble() > (editInvoice!!.registeredQuantity - editInvoice!!.quantityInOrder)) {
+                screenNavigator.openOrderQuantityEexceededDialog(
+                        noCallbackFunc = {
+                            onNoClick(position, editInvoice.originalQuantity.toStringFormatted())
+                        },
+                        yesCallbackFunc = {
+                            onYesClick(position, listTotal.value!![position].quantity.toDouble().toStringFormatted())
+                        }
+                )
+            }
+        }
+    }
+
+    private fun onNoClick(position: Int, origQuantity: String) {
+        listTotal.value!![position].quantity = origQuantity
+    }
+
+    private fun onYesClick(position: Int, newQuantity: String) {
+        listTotal.value!![position].quantity = newQuantity
     }
 
 }

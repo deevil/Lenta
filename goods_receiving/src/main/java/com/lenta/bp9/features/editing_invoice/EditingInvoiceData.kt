@@ -10,6 +10,7 @@ val name: String,
 var quantity: String,
 val uom: Uom,
 val invoiceContent: InvoiceContentEntry,
+val enabled: Boolean,
 val even: Boolean
 ) : Evenable {
     override fun isEven() = even

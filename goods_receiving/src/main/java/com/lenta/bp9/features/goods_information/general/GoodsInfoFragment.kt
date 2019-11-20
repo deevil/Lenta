@@ -24,14 +24,16 @@ class GoodsInfoFragment : CoreFragment<FragmentGoodsInfoBinding, GoodsInfoViewMo
         OnScanResultListener {
 
     companion object {
-        fun create(productInfo: TaskProductInfo): GoodsInfoFragment {
+        fun create(productInfo: TaskProductInfo, isDiscrepancy: Boolean): GoodsInfoFragment {
             GoodsInfoFragment().let {
                 it.productInfo = productInfo
+                it.isDiscrepancy = isDiscrepancy
                 return it
             }
         }
     }
 
+    private var isDiscrepancy by state<Boolean?>(null)
     private var productInfo by state<TaskProductInfo?>(null)
 
     override fun getLayoutId(): Int = R.layout.fragment_goods_info
@@ -42,6 +44,7 @@ class GoodsInfoFragment : CoreFragment<FragmentGoodsInfoBinding, GoodsInfoViewMo
         provideViewModel(GoodsInfoViewModel::class.java).let {vm ->
             getAppComponent()?.inject(vm)
             vm.productInfo.value = this.productInfo
+            vm.isDiscrepancy.value = this.isDiscrepancy
             return vm
         }
     }

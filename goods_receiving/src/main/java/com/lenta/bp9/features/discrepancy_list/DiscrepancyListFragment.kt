@@ -10,6 +10,8 @@ import com.lenta.bp9.BR
 import com.lenta.bp9.R
 import com.lenta.bp9.databinding.*
 import com.lenta.bp9.platform.extentions.getAppComponent
+import com.lenta.shared.keys.KeyCode
+import com.lenta.shared.keys.OnKeyDownListener
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
@@ -18,13 +20,16 @@ import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.utilities.databinding.*
 import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.provideViewModel
+import com.lenta.shared.utilities.state.state
 
 class DiscrepancyListFragment : CoreFragment<FragmentDiscrepancyListBinding, DiscrepancyListViewModel>(),
         ViewPagerSettings,
         PageSelectionListener,
-        ToolbarButtonsClickListener {
+        ToolbarButtonsClickListener,
+        OnKeyDownListener {
 
     private var processedRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
+    private var notProcessedRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
 
     override fun getLayoutId(): Int = R.layout.fragment_discrepancy_list
 
@@ -75,12 +80,6 @@ class DiscrepancyListFragment : CoreFragment<FragmentDiscrepancyListBinding, Dis
                             container,
                             false).let { layoutBinding ->
 
-                        val onClickGoodsTitle = View.OnClickListener {
-                            (it!!.tag as Int).let { position ->
-                                vm.onClickItemPosition(position)
-                            }
-                        }
-
                         layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
                                 layoutId = R.layout.item_tile_discrepancy_list_not_processed,
                                 itemId = BR.vm,
@@ -89,10 +88,19 @@ class DiscrepancyListFragment : CoreFragment<FragmentDiscrepancyListBinding, Dis
                                     }
 
                                     override fun onBind(binding: ItemTileDiscrepancyListNotProcessedBinding, position: Int) {
-                                        binding.tvCounter.tag = position
-                                        binding.tvCounter.setOnClickListener(onClickGoodsTitle)
-                                        binding.tvGoodsTitle.tag = position
-                                        binding.tvGoodsTitle.setOnClickListener(onClickGoodsTitle)
+                                        notProcessedRecyclerViewKeyHandler?.let {
+                                            binding.root.isSelected = it.isSelected(position)
+                                        }
+                                    }
+
+                                },
+                                onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
+                                    notProcessedRecyclerViewKeyHandler?.let {
+                                        if (it.isSelected(position)) {
+                                            vm.onClickItemPosition(position)
+                                        } else {
+                                            it.selectPosition(position)
+                                        }
                                     }
 
                                 }
@@ -100,6 +108,12 @@ class DiscrepancyListFragment : CoreFragment<FragmentDiscrepancyListBinding, Dis
 
                         layoutBinding.vm = vm
                         layoutBinding.lifecycleOwner = viewLifecycleOwner
+                        notProcessedRecyclerViewKeyHandler = RecyclerViewKeyHandler(
+                                rv = layoutBinding.rv,
+                                items = vm.countNotProcessed,
+                                lifecycleOwner = layoutBinding.lifecycleOwner!!,
+                                initPosInfo = notProcessedRecyclerViewKeyHandler?.posInfo?.value
+                        )
                         return layoutBinding.root
                     }
         }
@@ -171,5 +185,20 @@ class DiscrepancyListFragment : CoreFragment<FragmentDiscrepancyListBinding, Dis
         vm.onResume()
     }
 
-
+    override fun onKeyDown(keyCode: KeyCode): Boolean {
+        when (vm.selectedPage.value) {
+            0 -> notProcessedRecyclerViewKeyHandler
+            1 -> processedRecyclerViewKeyHandler
+            else -> null
+        }?.let {
+            if (!it.onKeyDown(keyCode)) {
+                keyCode.digit?.let { digit ->
+                    return true
+                }
+                return false
+            }
+            return true
+        }
+        return false
+    }
 }

@@ -13,5 +13,6 @@ interface ITaskBatchesDiscrepanciesRepository {
     fun deleteBatchesDiscrepanciesForBatch(batch: TaskBatchInfo): Boolean
     fun getCountAcceptOfBatch(batch: TaskBatchInfo): Double
     fun getCountRefusalOfBatch(batch: TaskBatchInfo): Double
+    fun getCountBatchNotProcessedOfBatch(batch: TaskBatchInfo): Double
     fun clear()
 }

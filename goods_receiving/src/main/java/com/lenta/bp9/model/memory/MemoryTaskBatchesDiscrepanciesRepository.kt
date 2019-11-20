@@ -104,6 +104,10 @@ class MemoryTaskBatchesDiscrepanciesRepository : ITaskBatchesDiscrepanciesReposi
         return countRefusal
     }
 
+    override fun getCountBatchNotProcessedOfBatch(batch: TaskBatchInfo): Double {
+        return batch.planQuantityBatch.toDouble() - getCountAcceptOfBatch(batch) - getCountRefusalOfBatch(batch)
+    }
+
     override fun clear() {
         batchesDiscrepancies.clear()
     }

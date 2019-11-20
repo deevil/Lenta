@@ -113,6 +113,7 @@
             android:inputType="numberDecimal"
             android:maxLength="6"
             android:maxLines="1"
+            android:enabled="@{vm.enabled}"
             android:text="@={vm.quantity}"
             app:digitsForUom="@{vm.uom}"
             app:layout_constraintEnd_toEndOf="parent"

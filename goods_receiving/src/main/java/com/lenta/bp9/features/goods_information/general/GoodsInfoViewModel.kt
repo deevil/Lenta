@@ -45,8 +45,11 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
     private val countWithoutParamGrsGrundNeg: MutableLiveData<Double> = MutableLiveData()
     private val countOverdelivery: MutableLiveData<Double> = MutableLiveData()
     private val isClickApply: MutableLiveData<Boolean> = MutableLiveData(false)
-    val isDefect: MutableLiveData<Boolean> = spinQualitySelectedPosition.map {
-        it != 0
+    val isDiscrepancy: MutableLiveData<Boolean> = MutableLiveData(false)
+    val isDefect: MutableLiveData<Boolean> = spinQualitySelectedPosition.combineLatest(isDiscrepancy).map {
+        if (!it!!.second) {
+            it.first != 0
+        } else true
     }
 
     private val qualityInfo: MutableLiveData<List<QualityInfo>> = MutableLiveData()
@@ -100,8 +103,15 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
 
     init {
         viewModelScope.launch {
+            count.value = taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.getCountProductNotProcessedOfProduct(productInfo.value!!).toStringFormatted()
             suffix.value = productInfo.value?.uom?.name
             qualityInfo.value = dataBase.getQualityInfo()
+            if (isDiscrepancy.value!!) {
+                qualityInfo.value = dataBase.getQualityInfoForDiscrepancy()
+                spinQualitySelectedPosition.value = 2
+            } else {
+                qualityInfo.value = dataBase.getQualityInfo()
+            }
             spinQuality.value = qualityInfo.value?.map {
                 it.name
             }
@@ -280,15 +290,15 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
     //блок 6.187
     private fun calculationOverdelivery() {
         //блок 6.187
-        countOverdelivery.value = productInfo.value!!.orderQuantity.toDouble() - processGeneralProductService.getQuantityCapitalized() + (productInfo.value!!.overdToleranceLimit.toDouble() / 100) * productInfo.value!!.orderQuantity.toDouble()
+        countOverdelivery.value = productInfo.value!!.orderQuantity.toDouble() /**- processGeneralProductService.getQuantityCapitalized()*/ + (productInfo.value!!.overdToleranceLimit.toDouble() / 100) * productInfo.value!!.orderQuantity.toDouble()
         //блок 6.190
-        if (processGeneralProductService.getQuantityAllCategory() > countOverdelivery.value!!) {//блок 6.190 (да)
+        if (processGeneralProductService.getQuantityAllCategory(countValue.value!!) > countOverdelivery.value!!) {//блок 6.190 (да)
             //блок 6.193
             screenNavigator.openAlertCountLargerOverdelivery()
         } else {//блок 6.190 (нет)
             if (productInfo.value!!.origQuantity.toDouble() > productInfo.value!!.orderQuantity.toDouble()) {
                 val calculationOne = productInfo.value!!.origQuantity.toDouble() - productInfo.value!!.orderQuantity.toDouble()
-                val calculationTwo = productInfo.value!!.origQuantity.toDouble() - processGeneralProductService.getQuantityAllCategory() - countValue.value!!
+                val calculationTwo = productInfo.value!!.origQuantity.toDouble() - processGeneralProductService.getQuantityAllCategory(countValue.value!!)
                 val calculation = if (calculationOne < calculationTwo) calculationOne else calculationTwo
                 if (calculation > 0.0) {
                     processGeneralProductService.add(calculation.toString(), "41")

@@ -11,18 +11,19 @@ import com.mobrun.plugin.api.HyperHive
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-//ET_DOC_CHK - Таблица сверки документов по поставке
+//ET_VBELN_POS - Таблица состава заказа\ВП
 data class InvoiceContentEntry(
         val materialNumber: String, //Номер товара
         val description: String,
         val orderPositionNumber: String, //Номер позиции заказа (пустой, если товара нет в текущей поставке)
         val supplyPositionNumber: String,  // Номер позиции поставки
         var quantityInOrder: Double,   // Количество в заказе
-        val registeredQuantity: Double, // Количество, которое біло оприходовано по этому заказу и этому товару
+        val registeredQuantity: Double, // Количество, которое было оприходовано по этому заказу и этому товару
         var originalQuantity: Double, // Исходное количество позиции поставки
         val uom: Uom, // Единицы измерения
-        var isAdded: Boolean,
-        var isDeleted: Boolean
+        var isAdded: Boolean, //флаг, который устанавливается для позиций, которые были добавлены
+        var isDeleted: Boolean, //флаг, который устанавливается для позиций, которые были удалены
+        var isPresent: Boolean //флаг, который устанавливается для позиций, которые есть в ВП
 ) {
 
     companion object {
@@ -46,7 +47,8 @@ data class InvoiceContentEntry(
                         originalQuantity = restData.originalQuantity.toDouble(),
                         uom = Uom(code = uomInfo?.uom ?: "", name = uomInfo?.name ?: ""),
                         isAdded = restData.isAdded.isNotEmpty(),
-                        isDeleted = restData.isDeleted.isNotEmpty()
+                        isDeleted = restData.isDeleted.isNotEmpty(),
+                        isPresent = restData.isPresent.isNotEmpty()
                 )
             }
 
@@ -83,7 +85,9 @@ data class InvoiceContentEntryRestData(
         @SerializedName("FLG_ADD")
         var isAdded: String,
         @SerializedName("FLG_DEL")
-        var isDeleted: String) {
+        var isDeleted: String,
+        @SerializedName("FLG_IN_VBELN")
+        var isPresent: String){
 
     companion object {
         fun from(data: InvoiceContentEntry): InvoiceContentEntryRestData {
@@ -96,7 +100,8 @@ data class InvoiceContentEntryRestData(
                     originalQuantity = data.originalQuantity.toStringFormatted(),
                     units = data.uom.code,
                     isAdded = if (data.isAdded) "X" else "",
-                    isDeleted = if (data.isDeleted) "X" else ""
+                    isDeleted = if (data.isDeleted) "X" else "",
+                    isPresent = if (data.isPresent) "X" else ""
             )
         }
     }
