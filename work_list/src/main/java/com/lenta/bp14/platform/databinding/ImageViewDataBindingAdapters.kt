@@ -32,7 +32,7 @@ fun setPriceTagStatusIcon(imageView: ImageView, isValid: Boolean?) {
 }
 
 @BindingAdapter("isValidPrice")
-fun setValiPriceStausIcon(imageView: ImageView, isValidPrice: Boolean?) {
+fun setValidPriceStatusIcon(imageView: ImageView, isValidPrice: Boolean?) {
     when (isValidPrice) {
         true -> imageView.setImageResource(R.drawable.ic_done_white_24dp)
         false -> imageView.setImageResource(R.drawable.ic_close_white_24dp)
