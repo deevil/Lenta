@@ -16,6 +16,7 @@ import com.lenta.shared.exception.Failure
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.databinding.PageSelectionListener
+import com.lenta.shared.utilities.extentions.isSapTrue
 import com.lenta.shared.utilities.extentions.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -141,10 +142,25 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
                         navigator.hideProgress()
                     }.either(::handleFailure) { taskInfoResult ->
                         taskManager.addTaskInfoToCurrentTask(taskInfoResult)
-                        navigator.openRawGoodListScreen()
+
+                        task.processingUnit.apply {
+                            when (blockType) {
+                                2 -> navigator.showAlertBlockedTaskAnotherUser(lockUser)
+                                1 -> navigator.showAlertBlockedTaskByMe(lockUser) { openTaskByType(task) }
+                                else -> openTaskByType(task)
+                            }
+                        }
                     }
                 }
             }
+        }
+    }
+
+    private fun openTaskByType(task: Task) {
+        if (task.processingUnit.isPack.isSapTrue()) {
+            navigator.openPackListScreen()
+        } else {
+            navigator.openRawGoodListScreen()
         }
     }
 

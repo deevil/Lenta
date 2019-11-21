@@ -169,4 +169,7 @@
     <string name="file_reding_error">Ошибка чтения файла</string>
     <string name="connection_setup">Установка соединения</string>
     <string name="restore">Восстановить</string>
+    <string name="another_user_block_task">Задание заблокировано логином \"%1$s\".</string>
+    <string name="user_self_block_task">Обработка задания начата исполнителем с логином \"%1$s\". Все равно продолжить?</string>
+
 </resources>
