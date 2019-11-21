@@ -9,6 +9,7 @@ import com.lenta.shared.features.loading.CoreLoadingViewModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
+import com.lenta.shared.utilities.extentions.getFragmentResultCode
 import com.lenta.shared.utilities.extentions.provideViewModel
 
 class LoadingStartReviseFragment : CoreLoadingFragment() {
@@ -26,7 +27,7 @@ class LoadingStartReviseFragment : CoreLoadingFragment() {
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
         (vm as? LoadingStartReviseViewModel)?.let {
-            topToolbarUiModel.description.value = it.taskDescription
+            topToolbarUiModel.description.value = it.toolbarDescription
         }
     }
 
@@ -46,4 +47,5 @@ class LoadingStartReviseFragment : CoreLoadingFragment() {
         super.onViewCreated(view, savedInstanceState)
         vm.title.value = getString(R.string.status_change)
     }
+
 }

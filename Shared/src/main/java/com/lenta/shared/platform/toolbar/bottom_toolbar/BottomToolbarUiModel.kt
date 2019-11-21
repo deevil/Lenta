@@ -283,11 +283,15 @@ data class ButtonDecorationInfo(
         }
 
         val verify: ButtonDecorationInfo by lazy {
-            ButtonDecorationInfo(R.drawable.ic_arrow_verify_white_24dp, R.string.verify)
+            ButtonDecorationInfo(R.drawable.ic_arrow_verify_white_24dp, R.string.to_verify)
         }
 
         val browsing: ButtonDecorationInfo by lazy {
             ButtonDecorationInfo(R.drawable.ic_browsing_white_24dp, R.string.review)
+        }
+
+        val recount: ButtonDecorationInfo by lazy {
+            ButtonDecorationInfo(R.drawable.ic_arrow_verify_white_24dp, R.string.to_recount)
         }
 
     }

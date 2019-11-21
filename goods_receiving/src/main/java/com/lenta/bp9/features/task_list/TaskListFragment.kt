@@ -65,11 +65,6 @@ class TaskListFragment : CoreFragment<FragmentTaskListBinding, TaskListViewModel
         }
     }
 
-    override fun onResume() {
-        super.onResume()
-        vm.onResume()
-    }
-
     override fun onToolbarButtonClick(view: View) {
         when (view.id) {
             R.id.b_1 -> vm.onClickMenu()

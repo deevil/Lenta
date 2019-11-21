@@ -140,6 +140,7 @@ class LoadingTaskCardViewModel : CoreLoadingViewModel() {
                     } else if (task.taskRepository.getReviseDocuments().getProductDocuments().isNotEmpty()) {
                         screenNavigator.openProductDocumentsReviseScreen()
                     } else {
+                        screenNavigator.openTaskListScreen()
                         screenNavigator.openCheckingNotNeededAlert(context.getString(R.string.revise_not_needed_checking)) {
                             screenNavigator.openFinishReviseLoadingScreen()
                         }
@@ -149,6 +150,7 @@ class LoadingTaskCardViewModel : CoreLoadingViewModel() {
                     if (task.taskRepository.getReviseDocuments().getTransportConditions().isNotEmpty()) {
                         screenNavigator.openTransportConditionsScreen()
                     } else {
+                        screenNavigator.openTaskListScreen()
                         screenNavigator.openCheckingNotNeededAlert(context.getString(R.string.revise_not_needed_unloading)) {
                             screenNavigator.openFinishConditionsReviseLoadingScreen()
                         }

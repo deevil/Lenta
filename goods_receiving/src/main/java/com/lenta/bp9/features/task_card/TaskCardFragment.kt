@@ -21,6 +21,7 @@ import androidx.databinding.DataBindingUtil
 import com.lenta.bp9.BR
 import com.lenta.bp9.databinding.*
 import com.lenta.bp9.features.loading.tasks.TaskCardMode
+import com.lenta.bp9.model.task.TaskStatus
 import com.lenta.shared.platform.activity.OnBackPresserListener
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
@@ -57,9 +58,13 @@ class TaskCardFragment : CoreFragment<FragmentTaskCardBinding, TaskCardViewModel
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
         if (vm.mode == TaskCardMode.Full) {
-            bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.verify)
+            when (vm.currentStatus.value) {
+                TaskStatus.Checked -> bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.verify)
+                TaskStatus.Recounted -> bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.recount)
+            }
             bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.docs)
             bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.nextAlternate)
+            connectLiveData(vm.thirdButtonVisibility, bottomToolbarUiModel.uiModelButton2.visibility)
             connectLiveData(source = vm.redIndicatorAbsent, target = bottomToolbarUiModel.uiModelButton5.enabled)
         }
     }
@@ -150,7 +155,6 @@ class TaskCardFragment : CoreFragment<FragmentTaskCardBinding, TaskCardViewModel
     }
 
     override fun getTextTitle(position: Int): String {
-        Logg.d { "testddi_1" }
         return when (position) {
             0 -> getString(R.string.status)
             1 -> getString(R.string.delivery)
@@ -166,17 +170,6 @@ class TaskCardFragment : CoreFragment<FragmentTaskCardBinding, TaskCardViewModel
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding?.viewPagerSettings = this
-        /**binding?.let {bind ->
-            Logg.d { "testddi_1" }
-            bind.tabStrip?.let {
-                Logg.d { "testddi_2" }
-                Logg.d { "testddi_3 ${it.tabCount}" }
-                it.getTabAt(1)?.let {tab ->
-                    Logg.d { "testddi_4" }
-                    tab.setIcon(R.drawable.ic_indicator_red)
-                }
-            }
-        }*/
     }
 
     override fun onBackPressed(): Boolean {

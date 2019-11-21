@@ -35,6 +35,14 @@ class LoadingRecountStartViewModel : CoreLoadingViewModel() {
     override val speedKbInSec: MutableLiveData<Int> = MutableLiveData()
     override val sizeInMb: MutableLiveData<Float> = MutableLiveData()
 
+    val toolbarDescription: String by lazy {
+        if (taskManager.getReceivingTask()?.taskDescription?.currentStatus == TaskStatus.Recounted) {
+            "\"" + TaskStatus.Recounted.stringValue() + "\" -> \"" + TaskStatus.Recounting.stringValue() + "\""
+        } else {
+            "\"" + (taskManager.getReceivingTask()?.taskDescription?.currentStatus?.stringValue() ?: "") + "\" -> \"" + TaskStatus.Recounting.stringValue() + "\""
+        }
+    }
+
     init {
         viewModelScope.launch {
             progress.value = true

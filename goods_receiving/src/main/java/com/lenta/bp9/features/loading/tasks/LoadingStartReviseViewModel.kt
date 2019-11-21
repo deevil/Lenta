@@ -37,8 +37,12 @@ class LoadingStartReviseViewModel : CoreLoadingViewModel() {
     override val speedKbInSec: MutableLiveData<Int> = MutableLiveData()
     override val sizeInMb: MutableLiveData<Float> = MutableLiveData()
 
-    val taskDescription: String by lazy {
-        "\"" + (taskManager.getReceivingTask()?.taskDescription?.currentStatus?.stringValue() ?: "") + "\" -> \"" + TaskStatus.Checking.stringValue() + "\""
+    val toolbarDescription: String by lazy {
+        if (taskManager.getReceivingTask()?.taskDescription?.currentStatus == TaskStatus.Checked) {
+            "\"" + TaskStatus.Checked.stringValue() + "\" -> \"" + TaskStatus.Checking.stringValue() + "\""
+        } else {
+            "\"" + (taskManager.getReceivingTask()?.taskDescription?.currentStatus?.stringValue() ?: "") + "\" -> \"" + TaskStatus.Checking.stringValue() + "\""
+        }
     }
 
     init {
@@ -96,6 +100,7 @@ class LoadingStartReviseViewModel : CoreLoadingViewModel() {
             } else if (task.taskRepository.getReviseDocuments().getProductDocuments().isNotEmpty()) {
                 screenNavigator.openProductDocumentsReviseScreen()
             } else {
+                screenNavigator.openTaskListScreen()
                 screenNavigator.openCheckingNotNeededAlert(context.getString(R.string.revise_not_needed_checking)) {
                     screenNavigator.openFinishReviseLoadingScreen()
                 }

@@ -25,7 +25,9 @@ class LoadingRecountStartFragment : CoreLoadingFragment() {
     }
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
-        topToolbarUiModel.description.value = getString(R.string.unloaded_to_recounting)
+        (vm as? LoadingRecountStartViewModel)?.let {
+            topToolbarUiModel.description.value = it.toolbarDescription
+        }
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {

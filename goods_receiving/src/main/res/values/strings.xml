@@ -110,7 +110,6 @@
     <string name="revise_not_needed_unloading">Контроль условий не требуется, задание будет переключено в \"Разгружено\"</string>
     <string name="checking_to_checked">\"Сверяется\" -> \"Сверено\"</string>
     <string name="unloading_to_unloaded">\"Разгружается\" -> \"Разгружено\"</string>
-    <string name="unloaded_to_recounting">\"Разгружено\" -> \"Пересчитывается\"</string>
     <string name="transmitted_to_transferred">\"Передается\" -> \"Передано\"</string>
     <string name="recounted_to_booked">\"Пересчитано\" -> \"Проведено\"</string>
     <string name="status_change">Смена статуса</string>

@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.lenta.bp9.R
 import com.lenta.bp9.features.loading.tasks.TaskCardMode
 import com.lenta.bp9.features.loading.tasks.TaskListLoadingMode
 import com.lenta.bp9.model.task.TaskInfo
@@ -167,10 +168,6 @@ class TaskListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
                 TaskLockStatus.None -> screenNavigator.openTaskCardLoadingScreen(TaskCardMode.Full, it.taskNumber, loadFullData)
             }
         }
-    }
-
-    fun onResume() {
-
     }
 
     fun getTasksForPage(page: Int) : LiveData<List<TaskItemVm>> {
