@@ -3,10 +3,12 @@ package com.lenta.bp16.features.task_list
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp16.model.ITaskManager
+import com.lenta.bp16.model.Tabs
 import com.lenta.bp16.model.TaskType
 import com.lenta.bp16.model.pojo.Task
 import com.lenta.bp16.platform.navigation.IScreenNavigator
 import com.lenta.bp16.request.TaskInfoNetRequest
+import com.lenta.bp16.request.TaskInfoParams
 import com.lenta.bp16.request.TaskListNetRequest
 import com.lenta.bp16.request.TaskListParams
 import com.lenta.shared.account.ISessionInfo
@@ -36,6 +38,8 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
         "ТК - ${sessionInfo.market}"
     }
 
+    val marketIp: MutableLiveData<String> = MutableLiveData("")
+
     val selectedPage = MutableLiveData(0)
 
     val numberField: MutableLiveData<String> = MutableLiveData("")
@@ -47,10 +51,10 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
     private val toUiFunc = { products: List<Task>? ->
         products?.mapIndexed { index, task ->
             ItemTaskListUi(
-                    position = (index + 1).toString(),
-                    puNumber = "",
-                    taskType = TaskType.COMMON,
-                    sku = "0"
+                    position = (products.size - index).toString(),
+                    puNumber = task.processingUnit.number,
+                    taskType = task.type,
+                    sku = task.processingUnit.quantity.toString()
             )
         }
     }
@@ -70,7 +74,7 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
     // -----------------------------
 
     override fun onPageSelected(position: Int) {
-        //selectedPage.value = position
+        selectedPage.value = position
     }
 
     private fun loadTaskList() {
@@ -103,8 +107,13 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
     }
 
     fun onClickItemPosition(position: Int) {
-        // Открытие нужного списка товаров
-
+        when (position) {
+            Tabs.PROCESSING.page -> processing
+            Tabs.PROCESSED.page -> processed
+            else -> throw IllegalArgumentException("Wrong pager position!")
+        }.let {
+            openTaskByNumber(it.value!![position].puNumber)
+        }
     }
 
     override fun onOkInSoftKeyboard(): Boolean {
@@ -112,8 +121,31 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
         return true
     }
 
-    private fun openTaskByNumber(taskNumber: String) {
+    private fun openTaskByNumber(puNumber: String) {
+        taskManager.tasks.value?.find { it.processingUnit.number == puNumber }?.let { task ->
+            taskManager.currentTask = task
 
+            if (task.isProcessed) {
+                navigator.openRawListScreen()
+            } else {
+                viewModelScope.launch {
+                    navigator.showProgressLoadingData()
+                    taskInfoNetRequest(
+                            TaskInfoParams(
+                                    marketNumber = sessionInfo.market ?: "Not found!",
+                                    marketIp = marketIp.value ?: "Not found!",
+                                    puNumber = puNumber,
+                                    processingMode = "1"
+                            )
+                    ).also {
+                        navigator.hideProgress()
+                    }.either(::handleFailure) { taskInfoResult ->
+                        taskManager.addTaskInfoToCurrentTask(taskInfoResult)
+                        navigator.openRawGoodListScreen()
+                    }
+                }
+            }
+        }
     }
 
 }

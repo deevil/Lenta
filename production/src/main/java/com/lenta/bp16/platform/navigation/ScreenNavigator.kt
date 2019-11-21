@@ -71,7 +71,7 @@ class ScreenNavigator @Inject constructor(
         }
     }
 
-    override fun openGoodListScreen() {
+    override fun openRawGoodListScreen() {
         runOrPostpone {
             getFragmentStack()?.push(RawGoodListFragment())
         }
@@ -151,7 +151,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openSelectMarketScreen()
     fun openMainMenuScreen()
     fun openTaskListScreen()
-    fun openGoodListScreen()
+    fun openRawGoodListScreen()
     fun openRawListScreen()
     fun openGoodCardScreen()
     fun openPackListScreen()

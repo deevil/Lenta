@@ -7,3 +7,8 @@ enum class TaskType {
     SELF_LOCK,
     LOCK
 }
+
+enum class Tabs(val page: Int) {
+    PROCESSING(0),
+    PROCESSED(1)
+}
