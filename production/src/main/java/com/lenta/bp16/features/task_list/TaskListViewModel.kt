@@ -141,13 +141,15 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
                     ).also {
                         navigator.hideProgress()
                     }.either(::handleFailure) { taskInfoResult ->
-                        taskManager.addTaskInfoToCurrentTask(taskInfoResult)
+                        viewModelScope.launch {
+                            taskManager.addTaskInfoToCurrentTask(taskInfoResult)
 
-                        task.processingUnit.apply {
-                            when (blockType) {
-                                2 -> navigator.showAlertBlockedTaskAnotherUser(lockUser)
-                                1 -> navigator.showAlertBlockedTaskByMe(lockUser) { openTaskByType(task) }
-                                else -> openTaskByType(task)
+                            task.processingUnit.apply {
+                                when (blockType) {
+                                    2 -> navigator.showAlertBlockedTaskAnotherUser(lockUser)
+                                    1 -> navigator.showAlertBlockedTaskByMe(lockUser) { openTaskByType(task) }
+                                    else -> openTaskByType(task)
+                                }
                             }
                         }
                     }

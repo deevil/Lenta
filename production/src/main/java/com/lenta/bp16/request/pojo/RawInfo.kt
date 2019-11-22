@@ -14,5 +14,5 @@ data class RawInfo(
         val name: String,
         /** Плановое количество сырья */
         @SerializedName("PLAN_QNT")
-        val quantity: Double
+        val planned: Double
 )

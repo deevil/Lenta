@@ -48,7 +48,7 @@
                     android:layout_marginStart="8dp"
                     android:layout_weight="1"
                     android:maxLines="2"
-                    android:text="@{item.sku}"
+                    android:text="@{item.name}"
                     tools:text="000001 Форель замороженная" />
 
                 <ImageView
