@@ -153,4 +153,12 @@
     <string name="verify">К проверке</string>
     <string name="verified">Проверенные</string>
     <string name="order_quantity_exceeded">Превышено допустимое количество в заказе, превышенное кол-во будет помечено как \"Не заказ\"</string>
+    <string name="certificate">Сертификат</string>
+    <string name="tied">Привязанные</string>
+    <string name="untied">Отвязанные</string>
+    <string name="mercury_list">Список ВСД</string>
+    <string name="reconciliation_mercury">Сверка ВСД</string>
+    <string name="sap_name_goods">SAP-название товара</string>
+    <string name="mercury_name_goods">ВСД-название товара</string>
+    <string name="ligament_type">Тип связки</string>
 </resources>

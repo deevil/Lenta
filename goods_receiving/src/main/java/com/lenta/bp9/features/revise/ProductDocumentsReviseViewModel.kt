@@ -77,7 +77,7 @@ class ProductDocumentsReviseViewModel : CoreViewModel(), PageSelectionListener {
                         type = document.documentType,
                         isObligatory = document.isObligatory,
                         isCheck = true,
-                        isABForm = document.documentType == ProductDocumentType.AlcoImport || document.documentType == ProductDocumentType.AlcoRus,
+                        isVisibileArrow = document.documentType == ProductDocumentType.AlcoImport || document.documentType == ProductDocumentType.AlcoRus || document.documentType == ProductDocumentType.Mercury,
                         id = document.documentID,
                         matnr = document.productNumber,
                         isSet = document.isSet)
@@ -92,7 +92,7 @@ class ProductDocumentsReviseViewModel : CoreViewModel(), PageSelectionListener {
                         type = document.documentType,
                         isObligatory = document.isObligatory,
                         isCheck = false,
-                        isABForm = document.documentType == ProductDocumentType.AlcoImport || document.documentType == ProductDocumentType.AlcoRus,
+                        isVisibileArrow = document.documentType == ProductDocumentType.AlcoImport || document.documentType == ProductDocumentType.AlcoRus || document.documentType == ProductDocumentType.Mercury,
                         id = document.documentID,
                         matnr = document.productNumber,
                         isSet = document.isSet)
@@ -133,7 +133,7 @@ class ProductDocumentsReviseViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     private fun onClickOnDocument(document: ProductDocumentVM) {
-        if (document.isABForm) {
+        if (document.isVisibileArrow) {
             val batches = taskManager.getReceivingTask()?.taskRepository?.getReviseDocuments()?.getProductBatches()?.filter { it.productNumber == document.matnr }
             if (!batches.isNullOrEmpty()) {
                 if (batches.size > 1) {
@@ -146,6 +146,13 @@ class ProductDocumentsReviseViewModel : CoreViewModel(), PageSelectionListener {
                         ProductDocumentType.AlcoRus -> {
                             screenNavigator.openRussianAlcoFormReviseScreen(batches.first().productNumber, batches.first().batchNumber)
                         }
+                    }
+                }
+            } else {
+                when (document.type) {
+                    ProductDocumentType.Mercury -> {
+                        //screenNavigator.openMercuryListScreen()
+                        screenNavigator.openReconciliationMercuryScreen()
                     }
                 }
             }
@@ -188,7 +195,7 @@ data class ProductDocumentVM(
         val isObligatory: Boolean,
         val isCheck: Boolean,
         val isSet: Boolean,
-        val isABForm: Boolean,
+        val isVisibileArrow: Boolean,
         val id: String,
         val matnr: String
 )

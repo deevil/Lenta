@@ -26,6 +26,8 @@ import com.lenta.bp9.features.goods_information.non_excise_alco.NonExciseAlcoInf
 import com.lenta.bp9.features.goods_information.perishables.PerishablesInfoFragment
 import com.lenta.bp9.features.list_goods_transfer.ListGoodsTransferFragment
 import com.lenta.bp9.features.loading.tasks.*
+import com.lenta.bp9.features.mercury_list.MercuryListFragment
+import com.lenta.bp9.features.reconciliation_mercury.ReconciliationMercuryFragment
 import com.lenta.bp9.features.reject.RejectFragment
 import com.lenta.bp9.features.repres_person_num_entry.RepresPersonNumEntryFragment
 import com.lenta.bp9.features.revise.*
@@ -564,6 +566,18 @@ class ScreenNavigator(
         }
     }
 
+    override fun openMercuryListScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(MercuryListFragment())
+        }
+    }
+
+    override fun openReconciliationMercuryScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(ReconciliationMercuryFragment())
+        }
+    }
+
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 }
 
@@ -634,4 +648,6 @@ interface IScreenNavigator : ICoreNavigator {
     fun openInfoDocsSentPScreenrint()
     fun openAlertGoodsNotInInvoiceScreen()
     fun openOrderQuantityEexceededDialog(noCallbackFunc: () -> Unit, yesCallbackFunc: () -> Unit)
+    fun openMercuryListScreen()
+    fun openReconciliationMercuryScreen()
 }

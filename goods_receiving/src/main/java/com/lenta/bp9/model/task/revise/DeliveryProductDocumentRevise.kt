@@ -73,7 +73,8 @@ enum class ProductDocumentType(val documentTypeString: String) {
     None(""),
     Simple("0"),
     AlcoRus("3"),
-    AlcoImport("4");
+    AlcoImport("4"),
+    Mercury("5");
 
     companion object {
         fun from(documentTypeString: String): ProductDocumentType {
@@ -81,6 +82,7 @@ enum class ProductDocumentType(val documentTypeString: String) {
                 "0" -> Simple
                 "3" -> AlcoRus
                 "4" -> AlcoImport
+                "5" -> Mercury
                 else -> None
             }
         }

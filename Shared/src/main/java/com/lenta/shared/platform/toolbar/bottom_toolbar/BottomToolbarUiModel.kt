@@ -294,6 +294,14 @@ data class ButtonDecorationInfo(
             ButtonDecorationInfo(R.drawable.ic_arrow_verify_white_24dp, R.string.to_recount)
         }
 
+        val tied: ButtonDecorationInfo by lazy {
+            ButtonDecorationInfo(R.drawable.ic_browsing_white_24dp, R.string.to_tie)
+        }
+
+        val untied: ButtonDecorationInfo by lazy {
+            ButtonDecorationInfo(R.drawable.ic_arrow_verify_white_24dp, R.string.un_tie)
+        }
+
     }
 }
 
