@@ -2,19 +2,21 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".features.goods_details.GoodsDetailsFragment">
+    tools:context=".features.mercury_list_irrelevant.MercuryListIrrelevantFragment">
 
     <data>
 
         <variable
             name="vm"
-            type="com.lenta.bp9.features.goods_details.GoodsDetailsViewModel" />
+            type="com.lenta.bp9.features.mercury_list_irrelevant.MercuryListIrrelevantViewModel" />
 
         <variable
             name="rvConfig"
             type="com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig" />
 
+
     </data>
+
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -23,7 +25,7 @@
 
         <include
             android:id="@+id/layout_titles"
-            layout="@layout/item_title_goods_details"
+            layout="@layout/item_title_mercury_list_irrelevant"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:layout_constraintEnd_toEndOf="parent"
@@ -34,15 +36,16 @@
             android:id="@+id/rv"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:items="@{vm.goodsDetails}"
+            app:items="@{vm.listIrrelevantMercury}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/layout_titles"
             app:rv_config="@{rvConfig}"
-            tools:listitem="@layout/item_tile_goods_details" />
+            tools:listitem="@layout/item_tile_mercury_list_irrelevant" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>
+
 
 </layout>

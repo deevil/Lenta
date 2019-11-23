@@ -71,6 +71,7 @@
     <string name="supplier_address">Местонахождение поставщика</string>
     <string name="strings_goods">Строк (товаров)</string>
     <string name="quantity_eiz">Количество, ЕИЗ</string>
+    <string name="quantity_eiz_title">Кол-во (ЕИЗ)</string>
     <string name="quantity_total">Итого, единиц</string>
     <string name="select_reason">Введите или выберите\n причину отказа</string>
     <string name="enter_comment">Ввод комментария</string>
@@ -157,6 +158,7 @@
     <string name="tied">Привязанные</string>
     <string name="untied">Отвязанные</string>
     <string name="mercury_list">Список ВСД</string>
+    <string name="mercury_list_irrelevant">Список неактуальных ВСД</string>
     <string name="reconciliation_mercury">Сверка ВСД</string>
     <string name="sap_name_goods">SAP-название товара</string>
     <string name="mercury_name_goods">ВСД-название товара</string>

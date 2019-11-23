@@ -27,6 +27,7 @@ import com.lenta.bp9.features.goods_information.perishables.PerishablesInfoFragm
 import com.lenta.bp9.features.list_goods_transfer.ListGoodsTransferFragment
 import com.lenta.bp9.features.loading.tasks.*
 import com.lenta.bp9.features.mercury_list.MercuryListFragment
+import com.lenta.bp9.features.mercury_list_irrelevant.MercuryListIrrelevantFragment
 import com.lenta.bp9.features.reconciliation_mercury.ReconciliationMercuryFragment
 import com.lenta.bp9.features.reject.RejectFragment
 import com.lenta.bp9.features.repres_person_num_entry.RepresPersonNumEntryFragment
@@ -572,6 +573,12 @@ class ScreenNavigator(
         }
     }
 
+    override fun openMercuryListIrrelevantScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(MercuryListIrrelevantFragment())
+        }
+    }
+
     override fun openReconciliationMercuryScreen() {
         runOrPostpone {
             getFragmentStack()?.push(ReconciliationMercuryFragment())
@@ -649,5 +656,6 @@ interface IScreenNavigator : ICoreNavigator {
     fun openAlertGoodsNotInInvoiceScreen()
     fun openOrderQuantityEexceededDialog(noCallbackFunc: () -> Unit, yesCallbackFunc: () -> Unit)
     fun openMercuryListScreen()
+    fun openMercuryListIrrelevantScreen()
     fun openReconciliationMercuryScreen()
 }

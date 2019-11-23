@@ -18,6 +18,7 @@ import com.lenta.bp9.features.loading.fast.FastDataLoadingViewModel
 import com.lenta.bp9.features.loading.tasks.*
 import com.lenta.bp9.features.main_menu.MainMenuViewModel
 import com.lenta.bp9.features.mercury_list.MercuryListViewModel
+import com.lenta.bp9.features.mercury_list_irrelevant.MercuryListIrrelevantViewModel
 import com.lenta.bp9.features.reconciliation_mercury.ReconciliationMercuryViewModel
 import com.lenta.bp9.features.reject.RejectViewModel
 import com.lenta.bp9.features.repres_person_num_entry.RepresPersonNumEntryViewModel
@@ -81,5 +82,6 @@ interface AppComponent {
     fun inject(it: LoadingTransmittedViewModel)
     fun inject(it: EditingInvoiceViewModel)
     fun inject(it: MercuryListViewModel)
+    fun inject(it: MercuryListIrrelevantViewModel)
     fun inject(it: ReconciliationMercuryViewModel)
 }
