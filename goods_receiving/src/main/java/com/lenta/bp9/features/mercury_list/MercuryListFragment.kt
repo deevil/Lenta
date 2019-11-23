@@ -34,9 +34,9 @@ class MercuryListFragment : CoreFragment<FragmentMercuryListBinding, MercuryList
     override fun getPageNumber(): String = "09/100"
 
     override fun getViewModel(): MercuryListViewModel {
-        provideViewModel(MercuryListViewModel::class.java).let {
-            getAppComponent()?.inject(it)
-            return it
+        provideViewModel(MercuryListViewModel::class.java).let {vm ->
+            getAppComponent()?.inject(vm)
+            return vm
         }
     }
 

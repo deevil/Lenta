@@ -16,9 +16,9 @@ class ReconciliationMercuryFragment : CoreFragment<FragmentReconciliationMercury
     override fun getPageNumber(): String = "09/101"
 
     override fun getViewModel(): ReconciliationMercuryViewModel {
-        provideViewModel(ReconciliationMercuryViewModel::class.java).let {
-            getAppComponent()?.inject(it)
-            return it
+        provideViewModel(ReconciliationMercuryViewModel::class.java).let {vm ->
+            getAppComponent()?.inject(vm)
+            return vm
         }
     }
 

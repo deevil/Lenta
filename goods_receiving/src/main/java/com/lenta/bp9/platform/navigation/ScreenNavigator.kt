@@ -22,6 +22,7 @@ import com.lenta.bp9.features.formed_docs.FormedDocsFragment
 import com.lenta.bp9.features.goods_details.GoodsDetailsFragment
 import com.lenta.bp9.features.goods_information.excise_alco.ExciseAlcoInfoFragment
 import com.lenta.bp9.features.goods_information.general.GoodsInfoFragment
+import com.lenta.bp9.features.goods_information.mercury.GoodsMercuryInfoFragment
 import com.lenta.bp9.features.goods_information.non_excise_alco.NonExciseAlcoInfoFragment
 import com.lenta.bp9.features.goods_information.perishables.PerishablesInfoFragment
 import com.lenta.bp9.features.list_goods_transfer.ListGoodsTransferFragment
@@ -592,6 +593,12 @@ class ScreenNavigator(
         }
     }
 
+    override fun openGoodsMercuryInfoScreen(productInfo: TaskProductInfo) {
+        runOrPostpone {
+            getFragmentStack()?.push(GoodsMercuryInfoFragment.create(productInfo))
+        }
+    }
+
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 }
 
@@ -666,4 +673,5 @@ interface IScreenNavigator : ICoreNavigator {
     fun openMercuryListIrrelevantScreen()
     fun openMercuryExceptionIntegrationScreen()
     fun openReconciliationMercuryScreen()
+    fun openGoodsMercuryInfoScreen(productInfo: TaskProductInfo)
 }

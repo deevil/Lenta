@@ -23,9 +23,9 @@ class MercuryListIrrelevantFragment : CoreFragment<FragmentMercuryListIrrelevant
     override fun getPageNumber(): String = "09/106"
 
     override fun getViewModel(): MercuryListIrrelevantViewModel {
-        provideViewModel(MercuryListIrrelevantViewModel::class.java).let {
-            getAppComponent()?.inject(it)
-            return it
+        provideViewModel(MercuryListIrrelevantViewModel::class.java).let {vm ->
+            getAppComponent()?.inject(vm)
+            return vm
         }
     }
 

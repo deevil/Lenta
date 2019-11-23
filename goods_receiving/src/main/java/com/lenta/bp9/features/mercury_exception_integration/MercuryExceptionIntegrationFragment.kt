@@ -18,9 +18,9 @@ class MercuryExceptionIntegrationFragment : CoreFragment<FragmentMercuryExceptio
     override fun getPageNumber(): String = "09/104"
 
     override fun getViewModel(): MercuryExceptionIntegrationViewModel {
-        provideViewModel(MercuryExceptionIntegrationViewModel::class.java).let {
-            getAppComponent()?.inject(it)
-            return it
+        provideViewModel(MercuryExceptionIntegrationViewModel::class.java).let {vm ->
+            getAppComponent()?.inject(vm)
+            return vm
         }
     }
 

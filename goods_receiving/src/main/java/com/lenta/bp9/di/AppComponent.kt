@@ -9,6 +9,7 @@ import com.lenta.bp9.features.formed_docs.FormedDocsViewModel
 import com.lenta.bp9.features.goods_details.GoodsDetailsViewModel
 import com.lenta.bp9.features.goods_information.excise_alco.ExciseAlcoInfoViewModel
 import com.lenta.bp9.features.goods_information.general.GoodsInfoViewModel
+import com.lenta.bp9.features.goods_information.mercury.GoodsMercuryInfoViewModel
 import com.lenta.bp9.features.goods_information.non_excise_alco.NonExciseAlcoInfoViewModel
 import com.lenta.bp9.features.goods_information.perishables.PerishablesInfoViewModel
 import com.lenta.bp9.features.goods_list.GoodsListViewModel
@@ -86,4 +87,5 @@ interface AppComponent {
     fun inject(it: MercuryListIrrelevantViewModel)
     fun inject(it: ReconciliationMercuryViewModel)
     fun inject(it: MercuryExceptionIntegrationViewModel)
+    fun inject(it: GoodsMercuryInfoViewModel)
 }
