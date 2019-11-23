@@ -38,114 +38,20 @@ class MercuryListIrrelevantViewModel : CoreViewModel() {
                             even = true)
                     ,
                     MercuryListIrrelevantItem(
-                            number = 2,
-                            name = "test2",
-                            quantityWithUom = "20 kg",
-                            even = true)
-                    ,
-                    MercuryListIrrelevantItem(
-                            number = 2,
-                            name = "test2",
-                            quantityWithUom = "20 kg",
-                            even = true)
-                    ,
-                    MercuryListIrrelevantItem(
-                            number = 2,
-                            name = "test2",
-                            quantityWithUom = "20 kg",
-                            even = true)
-                    ,
-                    MercuryListIrrelevantItem(
-                            number = 2,
-                            name = "test2",
-                            quantityWithUom = "20 kg",
-                            even = true)
-                    ,
-                    MercuryListIrrelevantItem(
-                            number = 2,
-                            name = "test2",
-                            quantityWithUom = "20 kg",
-                            even = true)
-                    ,
-                    MercuryListIrrelevantItem(
-                            number = 2,
-                            name = "test2",
-                            quantityWithUom = "20 kg",
-                            even = true)
-                    ,
-                    MercuryListIrrelevantItem(
-                            number = 2,
-                            name = "test2",
-                            quantityWithUom = "20 kg",
-                            even = true)
-                    ,
-                    MercuryListIrrelevantItem(
-                            number = 2,
-                            name = "test2",
-                            quantityWithUom = "20 kg",
-                            even = true)
-                    ,
-                    MercuryListIrrelevantItem(
-                            number = 2,
-                            name = "test2",
-                            quantityWithUom = "20 kg",
-                            even = true)
-                    ,
-                    MercuryListIrrelevantItem(
-                            number = 2,
-                            name = "test2",
-                            quantityWithUom = "20 kg",
-                            even = true)
-                    ,
-                    MercuryListIrrelevantItem(
-                            number = 2,
-                            name = "test2",
-                            quantityWithUom = "20 kg",
-                            even = true)
-                    ,
-                    MercuryListIrrelevantItem(
-                            number = 2,
-                            name = "test2",
-                            quantityWithUom = "20 kg",
-                            even = true)
-                    ,
-                    MercuryListIrrelevantItem(
-                            number = 2,
-                            name = "test2",
-                            quantityWithUom = "20 kg",
-                            even = true)
-                    ,
-                    MercuryListIrrelevantItem(
-                            number = 2,
-                            name = "test2",
-                            quantityWithUom = "20 kg",
-                            even = true)
-                    ,
-                    MercuryListIrrelevantItem(
-                            number = 2,
-                            name = "test2",
-                            quantityWithUom = "20 kg",
-                            even = true)
-                    ,
-                    MercuryListIrrelevantItem(
-                            number = 2,
-                            name = "test2",
-                            quantityWithUom = "20 kg",
-                            even = true)
-                    ,
-                    MercuryListIrrelevantItem(
-                            number = 2,
-                            name = "test2",
-                            quantityWithUom = "20 kg",
-                            even = true)
-                    ,
-                    MercuryListIrrelevantItem(
                             number = 3,
                             name = "test2",
-                            quantityWithUom = "3330 kg",
+                            quantityWithUom = "30 kg",
                             even = true)
             )
             )
         }
+    }
+
+    fun onClickUntied() {
+        return
+    }
+
+    fun onClickTemporary() {
+        return
     }
 }

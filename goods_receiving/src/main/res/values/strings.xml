@@ -163,4 +163,6 @@
     <string name="sap_name_goods">SAP-название товара</string>
     <string name="mercury_name_goods">ВСД-название товара</string>
     <string name="ligament_type">Тип связки</string>
+    <string name="mercury_exception_integration_des">Исключение ВП из интеграции</string>
+    <string name="mercury_exception_integration_header">Укажите причину исключения поставки из автоматической интеграции с ГИС \"Меркурий\"</string>
 </resources>

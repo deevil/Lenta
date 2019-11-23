@@ -10,12 +10,13 @@ import com.lenta.bp9.platform.extentions.getAppComponent
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
+import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.utilities.databinding.DataBindingAdapter
 import com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig
 import com.lenta.shared.utilities.extentions.provideViewModel
 
-class MercuryListIrrelevantFragment : CoreFragment<FragmentMercuryListIrrelevantBinding, MercuryListIrrelevantViewModel>() {
+class MercuryListIrrelevantFragment : CoreFragment<FragmentMercuryListIrrelevantBinding, MercuryListIrrelevantViewModel>(), ToolbarButtonsClickListener {
 
     override fun getLayoutId(): Int = R.layout.fragment_mercury_list_irrelevant
 
@@ -68,5 +69,11 @@ class MercuryListIrrelevantFragment : CoreFragment<FragmentMercuryListIrrelevant
         }
     }
 
+    override fun onToolbarButtonClick(view: View) {
+        when (view.id) {
+            R.id.b_2 -> vm.onClickUntied()
+            R.id.b_5 -> vm.onClickTemporary()
+        }
+    }
 
 }

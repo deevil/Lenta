@@ -17,6 +17,7 @@ import com.lenta.bp9.features.task_list.TaskListViewModel
 import com.lenta.bp9.features.loading.fast.FastDataLoadingViewModel
 import com.lenta.bp9.features.loading.tasks.*
 import com.lenta.bp9.features.main_menu.MainMenuViewModel
+import com.lenta.bp9.features.mercury_exception_integration.MercuryExceptionIntegrationViewModel
 import com.lenta.bp9.features.mercury_list.MercuryListViewModel
 import com.lenta.bp9.features.mercury_list_irrelevant.MercuryListIrrelevantViewModel
 import com.lenta.bp9.features.reconciliation_mercury.ReconciliationMercuryViewModel
@@ -84,4 +85,5 @@ interface AppComponent {
     fun inject(it: MercuryListViewModel)
     fun inject(it: MercuryListIrrelevantViewModel)
     fun inject(it: ReconciliationMercuryViewModel)
+    fun inject(it: MercuryExceptionIntegrationViewModel)
 }

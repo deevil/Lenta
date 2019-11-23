@@ -152,7 +152,7 @@ class ProductDocumentsReviseViewModel : CoreViewModel(), PageSelectionListener {
                 when (document.type) {
                     ProductDocumentType.Mercury -> {
                         //screenNavigator.openMercuryListScreen()
-                        screenNavigator.openMercuryListIrrelevantScreen()
+                        screenNavigator.openMercuryExceptionIntegrationScreen()
                     }
                 }
             }
