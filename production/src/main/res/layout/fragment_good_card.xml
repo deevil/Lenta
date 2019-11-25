@@ -78,7 +78,7 @@
 
                 <TextView
                     style="@style/CellTextStyle"
-                    android:text="@{vm.totalWeight}"
+                    android:text="@{vm.totalWeightWithUnits}"
                     tools:text="12 кг" />
 
             </LinearLayout>

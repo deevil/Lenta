@@ -5,6 +5,6 @@ data class Raw(
         val materialOsn: String,
         val name: String,
         val planned: Double,
-        var quantity: Double = 0.0
+        var totalQuantity: Double = 0.0
 ) {
 }

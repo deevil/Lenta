@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName
 data class GoodInfo(
         /** Номер заказа */
         @SerializedName("AUFNR")
-        val number: String,
+        val orderNumber: String,
         /** SAP – код товара */
         @SerializedName("MATNR")
         val material: String,

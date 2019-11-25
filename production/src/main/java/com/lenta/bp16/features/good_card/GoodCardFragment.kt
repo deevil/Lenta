@@ -11,6 +11,7 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListe
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
+import com.lenta.shared.utilities.extentions.getDeviceIp
 import com.lenta.shared.utilities.extentions.provideViewModel
 
 class GoodCardFragment : CoreFragment<FragmentGoodCardBinding, GoodCardViewModel>(),
@@ -23,6 +24,9 @@ class GoodCardFragment : CoreFragment<FragmentGoodCardBinding, GoodCardViewModel
     override fun getViewModel(): GoodCardViewModel {
         provideViewModel(GoodCardViewModel::class.java).let {
             getAppComponent()?.inject(it)
+
+            it.marketIp.value = context!!.getDeviceIp()
+
             return it
         }
     }
@@ -35,8 +39,8 @@ class GoodCardFragment : CoreFragment<FragmentGoodCardBinding, GoodCardViewModel
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
         bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.getWeight)
-        bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.add)
-        bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.complete)
+        bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.add, enabled = false)
+        bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.complete, enabled = false)
 
         connectLiveData(vm.completeEnabled, getBottomToolBarUIModel()!!.uiModelButton5.enabled)
 

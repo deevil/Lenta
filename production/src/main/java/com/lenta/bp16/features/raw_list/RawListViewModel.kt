@@ -32,7 +32,7 @@ class RawListViewModel : CoreViewModel() {
                     position = (index + 1).toString(),
                     materialOsn = raw.materialOsn,
                     name = raw.name,
-                    processed = "${raw.quantity} ${good.units.name} из ${raw.planned} ${good.units.name}",
+                    processed = "${raw.totalQuantity} ${good.units.name} из ${raw.planned} ${good.units.name}",
                     arrowVisibility = !taskManager.currentTask.isProcessed
             )
         })
