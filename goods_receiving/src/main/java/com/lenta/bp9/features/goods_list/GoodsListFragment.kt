@@ -29,9 +29,11 @@ class GoodsListFragment : CoreFragment<FragmentGoodsListBinding, GoodsListViewMo
         OnScanResultListener,
         PageSelectionListener,
         ToolbarButtonsClickListener,
-        OnBackPresserListener {
+        OnBackPresserListener,
+        OnKeyDownListener {
 
     private var countedRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
+    private var withoutBarcodeRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
 
     override fun getLayoutId(): Int = R.layout.fragment_goods_list
 
@@ -137,12 +139,6 @@ class GoodsListFragment : CoreFragment<FragmentGoodsListBinding, GoodsListViewMo
                         container,
                         false).let { layoutBinding ->
 
-                    val onClickGoodsTitle = View.OnClickListener {
-                        (it!!.tag as Int).let { position ->
-                            vm.onClickItemPosition(position)
-                        }
-                    }
-
                     layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
                             layoutId = R.layout.item_tile_goods_list_without_barcode,
                             itemId = BR.vm,
@@ -151,10 +147,19 @@ class GoodsListFragment : CoreFragment<FragmentGoodsListBinding, GoodsListViewMo
                                 }
 
                                 override fun onBind(binding: ItemTileGoodsListWithoutBarcodeBinding, position: Int) {
-                                    binding.tvCounter.tag = position
-                                    binding.tvCounter.setOnClickListener(onClickGoodsTitle)
-                                    binding.tvGoodsTitle.tag = position
-                                    binding.tvGoodsTitle.setOnClickListener(onClickGoodsTitle)
+                                    withoutBarcodeRecyclerViewKeyHandler?.let {
+                                        binding.root.isSelected = it.isSelected(position)
+                                    }
+                                }
+
+                            },
+                            onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
+                                withoutBarcodeRecyclerViewKeyHandler?.let {
+                                    if (it.isSelected(position)) {
+                                        vm.onClickItemPosition(position)
+                                    } else {
+                                        it.selectPosition(position)
+                                    }
                                 }
 
                             }
@@ -162,6 +167,12 @@ class GoodsListFragment : CoreFragment<FragmentGoodsListBinding, GoodsListViewMo
 
                     layoutBinding.vm = vm
                     layoutBinding.lifecycleOwner = viewLifecycleOwner
+                    withoutBarcodeRecyclerViewKeyHandler = RecyclerViewKeyHandler(
+                            rv = layoutBinding.rv,
+                            items = vm.listWithoutBarcode,
+                            lifecycleOwner = layoutBinding.lifecycleOwner!!,
+                            initPosInfo = withoutBarcodeRecyclerViewKeyHandler?.posInfo?.value
+                    )
                     return layoutBinding.root
                 }
     }
@@ -192,6 +203,24 @@ class GoodsListFragment : CoreFragment<FragmentGoodsListBinding, GoodsListViewMo
 
     override fun onBackPressed(): Boolean {
         vm.onBackPressed()
+        return false
+    }
+
+    override fun onKeyDown(keyCode: KeyCode): Boolean {
+        when (vm.selectedPage.value) {
+            0 -> countedRecyclerViewKeyHandler
+            1 -> withoutBarcodeRecyclerViewKeyHandler
+            else -> null
+        }?.let {
+            if (!it.onKeyDown(keyCode)) {
+                keyCode.digit?.let { digit ->
+                    vm.onDigitPressed(digit)
+                    return true
+                }
+                return false
+            }
+            return true
+        }
         return false
     }
 

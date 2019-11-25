@@ -8,6 +8,7 @@ import com.lenta.bp9.model.task.TaskDocumentsPrinting
 import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.bp9.requests.network.*
 import com.lenta.shared.account.ISessionInfo
+import com.lenta.shared.exception.Failure
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.SelectionItemsHelper
@@ -86,5 +87,10 @@ class FormedDocsViewModel : CoreViewModel() {
             }
             screenNavigator.hideProgress()
         }
+    }
+
+    override fun handleFailure(failure: Failure) {
+        super.handleFailure(failure)
+        screenNavigator.openAlertScreen(failure)
     }
 }

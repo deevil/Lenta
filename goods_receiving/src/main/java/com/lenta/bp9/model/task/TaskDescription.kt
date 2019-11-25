@@ -31,8 +31,9 @@ data class TaskDescription(val currentStatus: TaskStatus,   //Код текущ�
                       val isNotEDI: Boolean,           //Индикатор: EDI исключение (IS_NOT_EDI)
                       val isPromo: Boolean,            //Индикатор: Промо (IS_ADV)
                       val isRecount: Boolean,          //Индикатор: Пересчетная ГЕ (IS_COUNT)
-                      val isOwnTransport: Boolean     //Индикатор: Собственный транспорт (IS_OWN)
-                     ) {
+                      val isOwnTransport: Boolean,     //Индикатор: Собственный транспорт (IS_OWN)
+                      val isEDO: Boolean               //Индикатор ЭДО
+) {
 
     companion object {
         fun from(restData: TaskDescriptionRestInfo): TaskDescription {
@@ -59,6 +60,7 @@ data class TaskDescription(val currentStatus: TaskStatus,   //Код текущ�
                     isPromo = restData.isPromo.isNotEmpty(),
                     isRecount = restData.isRecount.isNotEmpty(),
                     isOwnTransport = restData.isOwnTransport.isNotEmpty(),
+                    isEDO = restData.isEDO.isNotEmpty(),
                     nextStatusDate = "",
                     nextStatusTime = ""
             )
@@ -112,7 +114,9 @@ data class TaskDescriptionRestInfo(
         @SerializedName("IS_COUNT")
         val isRecount: String,
         @SerializedName("IS_OWN")
-        val isOwnTransport: String
+        val isOwnTransport: String,
+        @SerializedName("IS_EDO")
+        val isEDO: String
 ) {
 }
 

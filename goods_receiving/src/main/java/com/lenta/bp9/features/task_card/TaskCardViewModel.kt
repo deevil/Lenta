@@ -17,6 +17,7 @@ import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.platform.time.ITimeMonitor
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.databinding.PageSelectionListener
+import com.lenta.shared.utilities.databinding.dataBindingHelpHolder
 import com.lenta.shared.utilities.date_time.DateTimeUtil
 import com.lenta.shared.utilities.extentions.map
 import io.fabric.sdk.android.services.concurrency.Task
@@ -164,6 +165,16 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
 
     fun changeNextDatetimeTapped() {
         screenNavigator.openChangeDateTimeScreen(ChangeDateTimeMode.NextStatus)
+    }
+
+    fun onClickVerify() {
+        when {
+            taskManager.getReceivingTask()?.taskRepository?.getReviseDocuments()?.getDeliveryDocuments()?.isNotEmpty() == true -> screenNavigator.openTaskReviseScreen()
+            taskManager.getReceivingTask()?.taskRepository?.getReviseDocuments()?.getProductDocuments()?.isNotEmpty() == true -> screenNavigator.openProductDocumentsReviseScreen()
+            else -> screenNavigator.openCheckingNotNeededAlert(context.getString(R.string.revise_not_needed_checking)) {
+                screenNavigator.openFinishReviseLoadingScreen()
+            }
+        }
     }
 
     fun onClickSupply() {

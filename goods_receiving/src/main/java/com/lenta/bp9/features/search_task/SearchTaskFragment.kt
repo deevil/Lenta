@@ -4,6 +4,8 @@ import android.view.View
 import com.lenta.bp9.R
 import com.lenta.bp9.databinding.FragmentSearchTaskBinding
 import com.lenta.bp9.platform.extentions.getAppComponent
+import com.lenta.shared.keys.KeyCode
+import com.lenta.shared.keys.OnKeyDownListener
 import com.lenta.shared.platform.activity.OnBackPresserListener
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
@@ -14,7 +16,8 @@ import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.generateScreenNumber
 import com.lenta.shared.utilities.extentions.provideViewModel
 
-class SearchTaskFragment: CoreFragment<FragmentSearchTaskBinding, SearchTaskViewModel>(), ToolbarButtonsClickListener {
+class SearchTaskFragment: CoreFragment<FragmentSearchTaskBinding, SearchTaskViewModel>(), ToolbarButtonsClickListener,
+        OnKeyDownListener {
 
     override fun getLayoutId(): Int = R.layout.fragment_search_task
 
@@ -42,5 +45,12 @@ class SearchTaskFragment: CoreFragment<FragmentSearchTaskBinding, SearchTaskView
         when (view.id) {
             R.id.b_5 -> vm.onClickFind()
         }
+    }
+
+    override fun onKeyDown(keyCode: KeyCode): Boolean {
+        keyCode.digit?.let { digit ->
+            vm.onDigitPressed(digit)
+        }
+        return true
     }
 }

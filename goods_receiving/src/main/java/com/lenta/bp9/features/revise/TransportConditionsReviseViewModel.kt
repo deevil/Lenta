@@ -110,10 +110,15 @@ class TransportConditionsReviseViewModel : CoreViewModel(), PageSelectionListene
     }
 
     fun finishedInput(position: Int) {
-        val condition = conditionsToCheck.value?.get(position)
-        condition?.let {
-            taskManager.getReceivingTask()?.taskRepository?.getReviseDocuments()?.changeTransportConditionValue(it.id, it.value.value ?: "")
-            updateVMs()
+        val conditionsToCheckSize = conditionsToCheck.value?.size ?: 0
+        if (conditionsToCheckSize-1 >= position) {
+            val condition = conditionsToCheck.value?.get(position)
+            condition?.let {
+                if (it.value.value?.isNotEmpty()!!) {
+                    taskManager.getReceivingTask()?.taskRepository?.getReviseDocuments()?.changeTransportConditionValue(it.id, it.value.value ?: "")
+                    updateVMs()
+                }
+            }
         }
     }
 

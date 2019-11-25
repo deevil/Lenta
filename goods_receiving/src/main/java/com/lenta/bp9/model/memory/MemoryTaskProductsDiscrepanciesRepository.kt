@@ -99,6 +99,10 @@ class MemoryTaskProductsDiscrepanciesRepository : ITaskProductsDiscrepanciesRepo
         return countRefusal
     }
 
+    override fun getCountProductNotProcessedOfProduct(product: TaskProductInfo): Double {
+        return product.origQuantity.toDouble() - getCountAcceptOfProduct(product) - getCountRefusalOfProduct(product)
+    }
+
     override fun getCountRefusalOfProductOfReasonRejection(product: TaskProductInfo, reasonRejectionCode: String?): Double {
         var countRefusal = 0.0
         reasonRejectionCode?.let {

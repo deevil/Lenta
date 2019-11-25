@@ -206,9 +206,9 @@ class ScreenNavigator(
         }
     }
 
-    override fun openGoodsInfoScreen(productInfo: TaskProductInfo) {
+    override fun openGoodsInfoScreen(productInfo: TaskProductInfo, isDiscrepancy: Boolean) {
         runOrPostpone {
-            getFragmentStack()?.push(GoodsInfoFragment.create(productInfo))
+            getFragmentStack()?.push(GoodsInfoFragment.create(productInfo, isDiscrepancy))
         }
     }
 
@@ -546,6 +546,30 @@ class ScreenNavigator(
         )
     }
 
+    override fun openAlertGoodsNotInInvoiceScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.goods_not_in_order),
+                    iconRes = R.drawable.is_warning_yellow_80dp,
+                    pageNumber = "96",
+                    timeAutoExitInMillis = 3000)
+            )
+        }
+    }
+
+    override fun openOrderQuantityEexceededDialog(noCallbackFunc: () -> Unit, yesCallbackFunc: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.order_quantity_exceeded),
+                    codeConfirmForLeft = backFragmentResultHelper.setFuncForResult(noCallbackFunc),
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(yesCallbackFunc),
+                    iconRes = R.drawable.ic_question_80dp,
+                    pageNumber = "94",
+                    leftButtonDecorationInfo = ButtonDecorationInfo.no,
+                    rightButtonDecorationInfo = ButtonDecorationInfo.yes))
+        }
+    }
+
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 }
 
@@ -573,7 +597,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openLoadingRegisterArrivalScreen()
     fun openLoadingStartReviseScreen()
     fun openTaskReviseScreen()
-    fun openGoodsInfoScreen(productInfo: TaskProductInfo)
+    fun openGoodsInfoScreen(productInfo: TaskProductInfo, isDiscrepancy: Boolean)
     fun openAlertWrongProductType()
     fun openGoodsDetailsScreen(productInfo: TaskProductInfo? = null, batch: TaskBatchInfo? =null)
     fun openInvoiceReviseScreen()
@@ -615,4 +639,6 @@ interface IScreenNavigator : ICoreNavigator {
     fun openUnsavedDataDialog(yesCallbackFunc: () -> Unit)
     fun openEditingInvoiceScreen()
     fun openInfoDocsSentPScreenrint()
+    fun openAlertGoodsNotInInvoiceScreen()
+    fun openOrderQuantityEexceededDialog(noCallbackFunc: () -> Unit, yesCallbackFunc: () -> Unit)
 }

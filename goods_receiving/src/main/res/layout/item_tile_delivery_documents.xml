@@ -97,7 +97,7 @@
             android:layout_marginEnd="8dp"
             android:ellipsize="end"
             android:gravity="start|center_vertical"
-            android:maxLines="1"
+            android:maxLines="2"
             android:text="@{vm.name}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/imageView2"
@@ -142,6 +142,7 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_goneMarginStart="8dp"
             app:documentTypeIcon='@{vm.type}'
+            app:isEDO='@{vm.isEDO}'
             tools:src="@drawable/ic_simple_delivery_doc" />
 
         <ImageView

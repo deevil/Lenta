@@ -62,7 +62,8 @@ class TaskReviseViewModel : CoreViewModel(), PageSelectionListener {
                         isObligatory = document.isObligatory,
                         isCheck = true,
                         isInvoice = document.documentType == DocumentType.Invoice,
-                        id = document.documentID)
+                        id = document.documentID,
+                        isEDO = taskManager.getReceivingTask()?.taskDescription?.isEDO!!)
             }
         }
 
@@ -74,7 +75,8 @@ class TaskReviseViewModel : CoreViewModel(), PageSelectionListener {
                         isObligatory = document.isObligatory,
                         isCheck = false,
                         isInvoice = document.documentType == DocumentType.Invoice,
-                        id = document.documentID)
+                        id = document.documentID,
+                        isEDO = taskManager.getReceivingTask()?.taskDescription?.isEDO!!)
             }
         }
 
@@ -145,5 +147,6 @@ data class DeliveryDocumentVM(
         val isObligatory: Boolean,
         val isCheck: Boolean,
         val isInvoice: Boolean,
-        val id: String
+        val id: String,
+        val isEDO: Boolean
 )

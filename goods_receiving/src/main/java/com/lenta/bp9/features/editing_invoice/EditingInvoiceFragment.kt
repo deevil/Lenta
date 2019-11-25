@@ -11,6 +11,7 @@ import android.view.LayoutInflater
 import com.lenta.shared.utilities.databinding.ViewPagerSettings
 import android.view.ViewGroup
 import android.view.View
+import android.view.inputmethod.EditorInfo
 import android.widget.AdapterView
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
@@ -54,15 +55,17 @@ class EditingInvoiceFragment : CoreFragment<FragmentEditingInvoiceBinding, Editi
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
         bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.refusal)
-        bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.save)
         viewLifecycleOwner.apply {
             vm.selectedPage.observe(this, Observer {
-                if (it == 1) {
-                    bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.restore)
-                } else {
-                    bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.delete)
+                if (vm.editingAvailable) {
+                    bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.save)
+                    if (it == 1) {
+                        bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.restore)
+                    } else {
+                        bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.delete)
+                    }
+                    connectLiveData(vm.enabledRestoreDelBtn, bottomToolbarUiModel.uiModelButton3.enabled)
                 }
-                connectLiveData(vm.enabledRestoreDelBtn, bottomToolbarUiModel.uiModelButton3.enabled)
             })
         }
     }
@@ -101,6 +104,15 @@ class EditingInvoiceFragment : CoreFragment<FragmentEditingInvoiceBinding, Editi
                                         override fun onBind(binding: ItemTileEditingInvoiceTotalBinding, position: Int) {
                                             binding.tvCounter.tag = position
                                             binding.tvCounter.setOnClickListener(onClickSelectionListener)
+                                            binding.etQuantity.setOnEditorActionListener { v, actionId, event ->
+                                                when(actionId) {
+                                                    EditorInfo.IME_ACTION_NEXT -> {
+                                                        vm.finishedInput(position)
+                                                        return@setOnEditorActionListener false
+                                                    }
+                                                    else -> return@setOnEditorActionListener false
+                                                }
+                                            }
                                             binding.selectedForDelete = vm.totalSelectionsHelper.isSelected(position)
                                             totalRecyclerViewKeyHandler?.let {
                                                 binding.root.isSelected = it.isSelected(position)
@@ -296,11 +308,23 @@ class EditingInvoiceFragment : CoreFragment<FragmentEditingInvoiceBinding, Editi
     }
 
     override fun onKeyDown(keyCode: KeyCode): Boolean {
-        keyCode.digit?.let { digit ->
-            vm.onDigitPressed(digit)
+        when (vm.selectedPage.value) {
+            0 -> totalRecyclerViewKeyHandler
+            1 -> delRecyclerViewKeyHandler
+            2 -> addRecyclerViewKeyHandler
+            3 -> notesRecyclerViewKeyHandler
+            else -> null
+        }?.let {
+            if (!it.onKeyDown(keyCode)) {
+                keyCode.digit?.let { digit ->
+                    vm.onDigitPressed(digit)
+                    return true
+                }
+                return false
+            }
+            return true
         }
-        return true
+        return false
     }
-
 
 }

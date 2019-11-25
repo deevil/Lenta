@@ -52,7 +52,11 @@ class InvoiceReviseFragment : CoreFragment<FragmentInvoiceReviseBinding, Invoice
         viewLifecycleOwner.apply {
             vm.selectedPage.observe(this, Observer {
                 if (it == 2) {
-                    bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.fix)
+                    if (vm.isEInvoice) {
+                        bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.browsing)
+                    } else {
+                        bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.fix)
+                    }
                 } else {
                     bottomToolbarUiModel.uiModelButton3.clean()
                 }

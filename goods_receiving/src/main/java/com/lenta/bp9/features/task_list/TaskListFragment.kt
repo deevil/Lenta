@@ -80,10 +80,22 @@ class TaskListFragment : CoreFragment<FragmentTaskListBinding, TaskListViewModel
     }
 
     override fun onKeyDown(keyCode: KeyCode): Boolean {
-        keyCode.digit?.let { digit ->
-            vm.onDigitPressed(digit)
+        when (vm.selectedPage.value) {
+            0 -> toProcessRecyclerViewKeyHandler
+            1 -> searchRecyclerViewKeyHandler
+            2 -> postponedRecyclerViewKeyHandler
+            else -> null
+        }?.let {
+            if (!it.onKeyDown(keyCode)) {
+                keyCode.digit?.let { digit ->
+                    vm.onDigitPressed(digit)
+                    return true
+                }
+                return false
+            }
+            return true
         }
-        return true
+        return false
     }
 
 

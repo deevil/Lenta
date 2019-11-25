@@ -33,6 +33,8 @@ class SearchProductDelegate @Inject constructor(
 
     private var searchFromScan: Boolean = false
 
+    private var isDiscrepancy: Boolean = false
+
     private lateinit var viewModelScope: () -> CoroutineScope
 
     private var scanResultHandler: ((ScanInfoResult?) -> Boolean)? = null
@@ -57,8 +59,9 @@ class SearchProductDelegate @Inject constructor(
         this.scanResultHandler = scanResultHandler
     }
 
-    fun searchCode(code: String, fromScan: Boolean, isBarCode: Boolean? = null) {
+    fun searchCode(code: String, fromScan: Boolean, isBarCode: Boolean? = null, isDiscrepancy:  Boolean? = false) {
         searchFromScan = fromScan
+        this.isDiscrepancy = isDiscrepancy!!
         if (isBarCode == null && code.length == 12) {
             codeWith12Digits = code
             screenNavigator.openSelectTypeCodeScreen(requestCodeTypeSap, requestCodeTypeBarCode)
@@ -90,15 +93,15 @@ class SearchProductDelegate @Inject constructor(
         screenNavigator.openAlertScreen(failure, "97")
     }
 
-    fun handleResultCode(code: Int?): Boolean {
+    fun handleResultCode(code: Int?, isDiscrepancy: Boolean? = false): Boolean {
         return when (code) {
             requestCodeTypeSap -> {
-                searchCode("000000000000${codeWith12Digits?.takeLast(6)}", fromScan = false, isBarCode = false)
+                searchCode("000000000000${codeWith12Digits?.takeLast(6)}", fromScan = false, isBarCode = false, isDiscrepancy = isDiscrepancy!!)
                 codeWith12Digits = null
                 true
             }
             requestCodeTypeBarCode -> {
-                searchCode(code = codeWith12Digits ?: "", fromScan = false, isBarCode = true)
+                searchCode(code = codeWith12Digits ?: "", fromScan = false, isBarCode = true, isDiscrepancy = isDiscrepancy!!)
                 codeWith12Digits = null
                 true
             }
@@ -120,13 +123,13 @@ class SearchProductDelegate @Inject constructor(
                     return
                 }
             }
-            openProductScreen(taskProductInfo)
+            openProductScreen(taskProductInfo, isDiscrepancy)
         }
     }
 
-    fun openProductScreen(taskProductInfo: TaskProductInfo) {
+    fun openProductScreen(taskProductInfo: TaskProductInfo, isDiscrepancy: Boolean? = false) {
         when (taskProductInfo.type) {
-            ProductType.General -> screenNavigator.openGoodsInfoScreen(taskProductInfo)
+            ProductType.General -> screenNavigator.openGoodsInfoScreen(taskProductInfo, isDiscrepancy!!)
             ProductType.ExciseAlcohol -> {
                 if (taskProductInfo.isSet) {
                     screenNavigator.openNotImplementedScreenAlert("Информация о наборе")
@@ -135,7 +138,7 @@ class SearchProductDelegate @Inject constructor(
                 } else
                 screenNavigator.openExciseAlcoInfoScreen(taskProductInfo)
             }
-            else -> screenNavigator.openGoodsInfoScreen(taskProductInfo)
+            else -> screenNavigator.openGoodsInfoScreen(taskProductInfo, isDiscrepancy!!)
         }
     }
 }

@@ -102,7 +102,7 @@
     <string name="number_TTN">Номер ТТН</string>
     <string name="shipment_date">Дата отгрузки</string>
     <string name="processed">Обработанные</string>
-    <string name="not_processed">К обработке</string>
+    <string name="not_processed">Не обработанные</string>
     <string name="discrepancies_found">Обнаружены расхождения</string>
     <string name="select_type_code_description">Введено 12 знаков. Какой код вы ввели?</string>
     <string name="goods_not_in_order">Товара нет в заказе</string>
@@ -151,4 +151,7 @@
     <string name="note">Примечание</string>
     <string name="enter_item_note">Введите примечание</string>
     <string name="documents_sent_print">Документы отправлены в очередь на печать</string>
+    <string name="verify">К проверке</string>
+    <string name="verified">Проверенные</string>
+    <string name="order_quantity_exceeded">Превышено допустимое количество в заказе, превышенное кол-во будет помечено как \"Не заказ\"</string>
 </resources>
