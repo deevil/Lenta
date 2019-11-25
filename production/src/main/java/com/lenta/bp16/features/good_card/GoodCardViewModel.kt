@@ -23,7 +23,9 @@ class GoodCardViewModel : CoreViewModel() {
         "000021 - Форель заморож."
     }
 
-    val good: MutableLiveData<Good> by lazy { taskManager.getCurrentGood() }
+    val good: MutableLiveData<Good> by lazy {
+        MutableLiveData(taskManager.currentGood)
+    }
 
     val weight = MutableLiveData("")
 
