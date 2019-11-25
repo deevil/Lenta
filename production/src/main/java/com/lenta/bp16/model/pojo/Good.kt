@@ -3,6 +3,7 @@ package com.lenta.bp16.model.pojo
 import com.lenta.shared.models.core.Uom
 
 data class Good(
+        var isProcessed: Boolean = false,
         val material: String,
         val name: String,
         val units: Uom,

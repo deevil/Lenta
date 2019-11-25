@@ -30,6 +30,7 @@ class RawListViewModel : CoreViewModel() {
         MutableLiveData(good.raws!!.mapIndexed { index, raw ->
             ItemRawListUi(
                     position = (index + 1).toString(),
+                    materialOsn = raw.materialOsn,
                     name = raw.name,
                     processed = "${raw.quantity} ${good.units.name} из ${raw.planned} ${good.units.name}",
                     arrowVisibility = !taskManager.currentTask.isProcessed
@@ -42,19 +43,23 @@ class RawListViewModel : CoreViewModel() {
     // -----------------------------
 
     fun onClickComplete() {
-        // Непонятно, что делает кнопка...
-
+        good.isProcessed = true
+        navigator.goBack()
     }
 
     fun onClickItemPosition(position: Int) {
-        // Переход к карточке товара для взвешивания
-
+        val materialOsn = raws.value!![position].materialOsn
+        good.raws?.find { it.materialOsn == materialOsn }?.let { raw ->
+            taskManager.currentRaw = raw
+            navigator.openGoodCardScreen()
+        }
     }
 
 }
 
 data class ItemRawListUi(
         val position: String,
+        val materialOsn: String,
         val name: String,
         val processed: String,
         val arrowVisibility: Boolean

@@ -21,6 +21,8 @@ class TaskManager @Inject constructor(
 
     override lateinit var currentGood: Good
 
+    override lateinit var currentRaw: Raw
+
     override fun addTasks(taskListResult: TaskListResult) {
         val taskList = tasks.value!!.filter { it.isProcessed }.toMutableList()
         taskListResult.processingUnits.forEach { processingUnit ->
@@ -46,6 +48,7 @@ class TaskManager @Inject constructor(
                         planned = goodInfo.quantity,
                         raws = taskInfoResult.raws.filter { it.material == goodInfo.material }.map { rawInfo ->
                             Raw(
+                                    materialOsn = rawInfo.materialOsn,
                                     name = rawInfo.name,
                                     planned = rawInfo.planned
                             )
@@ -68,6 +71,7 @@ interface ITaskManager {
     val tasks: MutableLiveData<List<Task>>
     var currentTask: Task
     var currentGood: Good
+    var currentRaw: Raw
 
     fun addTasks(taskListResult: TaskListResult)
     suspend fun addTaskInfoToCurrentTask(taskInfoResult: TaskInfoResult)
