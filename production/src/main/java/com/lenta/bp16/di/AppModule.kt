@@ -1,5 +1,7 @@
 package com.lenta.bp16.di
 
+import com.lenta.bp16.model.ITaskManager
+import com.lenta.bp16.model.TaskManager
 import com.lenta.bp16.platform.navigation.IScreenNavigator
 import com.lenta.bp16.platform.navigation.ScreenNavigator
 import com.lenta.bp16.repository.GeneralRepository
@@ -27,6 +29,10 @@ class AppModule {
         @Binds
         @AppScope
         fun bindGeneralRepository(realisation: GeneralRepository): IGeneralRepository
+
+        @Binds
+        @AppScope
+        fun bindTaskManager(realisation: TaskManager): ITaskManager
 
     }
 

@@ -1,9 +1,9 @@
 package com.lenta.bp16.features.good_card
 
 import androidx.lifecycle.MutableLiveData
+import com.lenta.bp16.model.ITaskManager
 import com.lenta.bp16.model.pojo.Good
 import com.lenta.bp16.platform.navigation.IScreenNavigator
-import com.lenta.bp16.repository.IGeneralRepository
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.dropZeros
@@ -16,14 +16,16 @@ class GoodCardViewModel : CoreViewModel() {
     @Inject
     lateinit var navigator: IScreenNavigator
     @Inject
-    lateinit var repository: IGeneralRepository
+    lateinit var taskManager: ITaskManager
 
 
     val title by lazy {
         "000021 - Форель заморож."
     }
 
-    val good: MutableLiveData<Good> by lazy { repository.getCurrentGood() }
+    val good: MutableLiveData<Good> by lazy {
+        MutableLiveData(taskManager.currentGood)
+    }
 
     val weight = MutableLiveData("")
 

@@ -374,32 +374,6 @@ class ScreenNavigator @Inject constructor(
         }
     }
 
-    override fun showAlertBlockedTaskAnotherUser(userName: String) {
-        runOrPostpone {
-            getFragmentStack()?.push(AlertFragment.create(
-                    message = context.getString(R.string.another_user_block_task, userName),
-                    iconRes = R.drawable.ic_info_pink,
-                    pageNumber = "94",
-                    leftButtonDecorationInfo = ButtonDecorationInfo.back
-            )
-            )
-        }
-    }
-
-    override fun showAlertBlockedTaskByMe(blockingUser: String, yesCallback: () -> Unit) {
-        runOrPostpone {
-            getFragmentStack()?.push(AlertFragment.create(
-                    message = context.getString(R.string.user_self_block_task, blockingUser),
-                    iconRes = R.drawable.ic_question_80dp,
-                    pageNumber = "94",
-                    leftButtonDecorationInfo = ButtonDecorationInfo.back,
-                    rightButtonDecorationInfo = ButtonDecorationInfo.next,
-                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(yesCallback)
-            )
-            )
-        }
-    }
-
     override fun showGoodNotFound() {
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.good_not_found_in_database),
@@ -561,8 +535,6 @@ interface IScreenNavigator : ICoreNavigator {
     fun showGoodNotFound()
     fun showWrongBarcodeFormat()
     fun showTwelveCharactersEntered(sapCallback: () -> Unit, barCallback: () -> Unit)
-    fun showAlertBlockedTaskAnotherUser(userName: String)
-    fun showAlertBlockedTaskByMe(blockingUser: String, yesCallback: () -> Unit)
     fun showDeviceNotSupportVideoScan()
     fun openAddMarkToList(nextCallback: () -> Unit, message: String)
     fun showIncorrectProductionDate(backCallback: () -> Unit)

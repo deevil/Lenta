@@ -56,6 +56,8 @@ class CoreNavigator @Inject constructor(
         FunctionsCollector(foregroundActivityProvider.onPauseStateLiveData)
     }
 
+    private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
+
     override fun goBackWithArgs(args: Bundle) {
         runOrPostpone {
             getFragmentStack()?.popReturnArgs(args = args)
@@ -388,9 +390,31 @@ class CoreNavigator @Inject constructor(
         }
     }
 
+    override fun showAlertBlockedTaskAnotherUser(userName: String) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.another_user_block_task, userName),
+                    iconRes = R.drawable.ic_info_pink,
+                    pageNumber = "94",
+                    leftButtonDecorationInfo = ButtonDecorationInfo.back
+            )
+            )
+        }
+    }
 
-    private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
-
+    override fun showAlertBlockedTaskByMe(userName: String, yesCallback: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.user_self_block_task, userName),
+                    iconRes = R.drawable.ic_question_80dp,
+                    pageNumber = "94",
+                    leftButtonDecorationInfo = ButtonDecorationInfo.back,
+                    rightButtonDecorationInfo = ButtonDecorationInfo.next,
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(yesCallback)
+            )
+            )
+        }
+    }
 
 }
 
@@ -446,6 +470,8 @@ interface ICoreNavigator {
     fun openDetectedSavedDataScreen(deleteCallback: () -> Unit, confirmCallback: () -> Unit)
     fun openChangedDefaultSettingsAlert(noCallback: () -> Unit, yesCallback: () -> Unit)
     fun showProgressConnection()
+    fun showAlertBlockedTaskAnotherUser(userName: String)
+    fun showAlertBlockedTaskByMe(userName: String, yesCallback: () -> Unit)
 }
 
 class FunctionsCollector(private val needCollectLiveData: LiveData<Boolean>) {
