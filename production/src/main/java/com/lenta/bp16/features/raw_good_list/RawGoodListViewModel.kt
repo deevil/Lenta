@@ -4,8 +4,11 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp16.model.ITaskManager
 import com.lenta.bp16.platform.navigation.IScreenNavigator
+import com.lenta.bp16.request.EndProcessingNetRequest
+import com.lenta.bp16.request.EndProcessingParams
 import com.lenta.bp16.request.UnblockTaskNetRequest
 import com.lenta.bp16.request.UnblockTaskParams
+import com.lenta.shared.exception.Failure
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.extentions.dropZeros
 import kotlinx.coroutines.launch
@@ -19,6 +22,8 @@ class RawGoodListViewModel : CoreViewModel() {
     lateinit var taskManager: ITaskManager
     @Inject
     lateinit var unblockTaskNetRequest: UnblockTaskNetRequest
+    @Inject
+    lateinit var endProcessingNetRequest: EndProcessingNetRequest
 
 
     val task by lazy {
@@ -41,6 +46,8 @@ class RawGoodListViewModel : CoreViewModel() {
         })
     }
 
+    val completeEnabled = MutableLiveData(true)
+
     // -----------------------------
 
     fun onClickItemPosition(position: Int) {
@@ -54,13 +61,35 @@ class RawGoodListViewModel : CoreViewModel() {
     fun onBackPressed() {
         viewModelScope.launch {
             unblockTaskNetRequest(
-                    UnblockTaskParams(
-                            puNumber = task.processingUnit.number
-                    )
+                    UnblockTaskParams(puNumber = task.processingUnit.number)
             )
 
             navigator.goBack()
         }
+    }
+
+    fun onClickComplete() {
+        viewModelScope.launch {
+            navigator.showProgressLoadingData()
+
+            endProcessingNetRequest(
+                    EndProcessingParams(puNumber = task.processingUnit.number)
+            ).also {
+                navigator.hideProgress()
+            }.either(::handleFailure) {
+                completeTask()
+            }
+        }
+    }
+
+    override fun handleFailure(failure: Failure) {
+        super.handleFailure(failure)
+        navigator.openAlertScreen(failure)
+    }
+
+    private fun completeTask() {
+        task.isProcessed = true
+        navigator.goBack()
     }
 
 }
