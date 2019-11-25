@@ -16,4 +16,8 @@ data class Good(
         return raws?.map { it.quantity }?.sum() ?: 0.0
     }
 
+    fun getNameWithMaterial(): String {
+        return "${material.takeLast(6)} $name"
+    }
+
 }
