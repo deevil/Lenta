@@ -1,16 +1,19 @@
 package com.lenta.bp16.features.pack_list
 
+import android.view.View
 import com.lenta.bp16.R
 import com.lenta.bp16.databinding.FragmentPackListBinding
 import com.lenta.bp16.platform.extention.getAppComponent
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
+import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
 import com.lenta.shared.utilities.extentions.provideViewModel
 
-class PackListFragment : CoreFragment<FragmentPackListBinding, PackListViewModel>() {
+class PackListFragment : CoreFragment<FragmentPackListBinding, PackListViewModel>(),
+        ToolbarButtonsClickListener {
 
     override fun getLayoutId(): Int = R.layout.fragment_pack_list
 
@@ -31,6 +34,13 @@ class PackListFragment : CoreFragment<FragmentPackListBinding, PackListViewModel
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
         bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.add)
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.complete)
+    }
+
+    override fun onToolbarButtonClick(view: View) {
+        when (view.id) {
+            R.id.b_3 -> vm.onClickAdd()
+            R.id.b_5 -> vm.onClickComplete()
+        }
     }
 
 }
