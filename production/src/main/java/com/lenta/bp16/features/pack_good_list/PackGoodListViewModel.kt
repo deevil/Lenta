@@ -26,6 +26,7 @@ class PackGoodListViewModel : CoreViewModel() {
         MutableLiveData(task.goods!!.mapIndexed { index, good ->
             ItemPackGoodListUi(
                     position = (index + 1).toString(),
+                    material = good.material,
                     name = good.name,
                     planWeight = "${good.planned} ${good.units.name}",
                     arrowVisibility = !taskManager.currentTask.isProcessed
@@ -36,14 +37,18 @@ class PackGoodListViewModel : CoreViewModel() {
     // -----------------------------
 
     fun onClickItemPosition(position: Int) {
-        // Переход к карточке товара
-
+        val material = packGoods.value!![position].material
+        task.goods?.find { it.material == material }?.let { good ->
+            taskManager.currentGood = good
+            navigator.openGoodPackagingScreen()
+        }
     }
 
 }
 
 data class ItemPackGoodListUi(
         val position: String,
+        val material: String,
         val name: String,
         val planWeight: String,
         val arrowVisibility: Boolean
