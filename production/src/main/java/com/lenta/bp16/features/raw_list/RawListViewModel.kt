@@ -27,7 +27,7 @@ class RawListViewModel : CoreViewModel() {
     }
 
     val raws: MutableLiveData<List<ItemRawListUi>> by lazy {
-        MutableLiveData(good.raws!!.mapIndexed { index, raw ->
+        MutableLiveData(good.raws.mapIndexed { index, raw ->
             ItemRawListUi(
                     position = (index + 1).toString(),
                     materialOsn = raw.materialOsn,
@@ -49,7 +49,7 @@ class RawListViewModel : CoreViewModel() {
 
     fun onClickItemPosition(position: Int) {
         val materialOsn = raws.value!![position].materialOsn
-        good.raws?.find { it.materialOsn == materialOsn }?.let { raw ->
+        good.raws.find { it.materialOsn == materialOsn }?.let { raw ->
             taskManager.currentRaw = raw
             navigator.openGoodCardScreen()
         }
