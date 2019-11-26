@@ -2,7 +2,8 @@ package com.lenta.bp16.di
 
 import com.lenta.bp16.ExceptionHandler
 import com.lenta.bp16.features.auth.AuthViewModel
-import com.lenta.bp16.features.good_card.GoodCardViewModel
+import com.lenta.bp16.features.good_packaging.GoodPackagingViewModel
+import com.lenta.bp16.features.good_weighing.GoodWeighingViewModel
 import com.lenta.bp16.features.raw_good_list.RawGoodListViewModel
 import com.lenta.bp16.features.loading.fast.FastLoadingViewModel
 import com.lenta.bp16.features.main_menu.MainMenuViewModel
@@ -39,7 +40,8 @@ interface AppComponent : CoreComponent {
     fun inject(it: TaskListViewModel)
     fun inject(it: RawGoodListViewModel)
     fun inject(it: RawListViewModel)
-    fun inject(it: GoodCardViewModel)
+    fun inject(it: GoodWeighingViewModel)
+    fun inject(it: GoodPackagingViewModel)
     fun inject(it: PackListViewModel)
     fun inject(it: PackGoodListViewModel)
 

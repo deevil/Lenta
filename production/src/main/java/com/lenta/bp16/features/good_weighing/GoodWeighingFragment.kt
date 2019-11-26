@@ -1,8 +1,8 @@
-package com.lenta.bp16.features.good_card
+package com.lenta.bp16.features.good_weighing
 
 import android.view.View
 import com.lenta.bp16.R
-import com.lenta.bp16.databinding.FragmentGoodCardBinding
+import com.lenta.bp16.databinding.FragmentGoodWeighingBinding
 import com.lenta.bp16.platform.extention.getAppComponent
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
@@ -14,15 +14,15 @@ import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
 import com.lenta.shared.utilities.extentions.getDeviceIp
 import com.lenta.shared.utilities.extentions.provideViewModel
 
-class GoodCardFragment : CoreFragment<FragmentGoodCardBinding, GoodCardViewModel>(),
+class GoodWeighingFragment : CoreFragment<FragmentGoodWeighingBinding, GoodWeighingViewModel>(),
         ToolbarButtonsClickListener {
 
-    override fun getLayoutId(): Int = R.layout.fragment_good_card
+    override fun getLayoutId(): Int = R.layout.fragment_good_weighing
 
     override fun getPageNumber(): String? = generateScreenNumberFromPostfix("9")
 
-    override fun getViewModel(): GoodCardViewModel {
-        provideViewModel(GoodCardViewModel::class.java).let {
+    override fun getViewModel(): GoodWeighingViewModel {
+        provideViewModel(GoodWeighingViewModel::class.java).let {
             getAppComponent()?.inject(it)
 
             it.marketIp.value = context!!.getDeviceIp()
@@ -43,11 +43,7 @@ class GoodCardFragment : CoreFragment<FragmentGoodCardBinding, GoodCardViewModel
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.complete, enabled = false)
 
         connectLiveData(vm.completeEnabled, getBottomToolBarUIModel()!!.uiModelButton5.enabled)
-
         connectLiveData(vm.addEnabled, getBottomToolBarUIModel()!!.uiModelButton4.enabled)
-        connectLiveData(vm.addVisibility, getBottomToolBarUIModel()!!.uiModelButton4.visibility)
-
-        connectLiveData(vm.getWeightVisibility, getBottomToolBarUIModel()!!.uiModelButton3.visibility)
     }
 
     override fun onToolbarButtonClick(view: View) {

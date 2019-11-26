@@ -2,13 +2,13 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
-        tools:context=".features.good_card.GoodCardFragment">
+        tools:context=".features.good_weighing.GoodWeighingFragment">
 
     <data>
 
         <variable
             name="vm"
-            type="com.lenta.bp16.features.good_card.GoodCardViewModel" />
+            type="com.lenta.bp16.features.good_weighing.GoodWeighingViewModel" />
 
     </data>
 

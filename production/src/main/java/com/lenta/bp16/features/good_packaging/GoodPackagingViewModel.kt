@@ -1,4 +1,4 @@
-package com.lenta.bp16.features.good_card
+package com.lenta.bp16.features.good_packaging
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
@@ -16,7 +16,7 @@ import com.lenta.shared.utilities.extentions.sumWith
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class GoodCardViewModel : CoreViewModel() {
+class GoodPackagingViewModel : CoreViewModel() {
 
     @Inject
     lateinit var navigator: IScreenNavigator
@@ -64,30 +64,14 @@ class GoodCardViewModel : CoreViewModel() {
         it?.toDoubleOrNull() ?: 0.0 != 0.0
     }
 
-    val addEnabled: MutableLiveData<Boolean> = weight.map {
-        it?.toDoubleOrNull() ?: 0.0 != 0.0
-    }
-
-    val addVisibility = MutableLiveData(true)
-
-    val getWeightVisibility = MutableLiveData(true)
-
     // -----------------------------
 
-    fun onClickGetWeight() {
-        // todo Реализовать получения веса с весов
-        weight.value = "2.5"
-    }
-
-    fun onClickAdd() {
-        createPack()
-    }
-
     fun onClickComplete() {
-        createPack()
+        navigator.showFixingPackagingPhaseSuccessful {
+            // todo Что здесь нужно сделать? Нужно ли получать код упаковки?
 
-        if (weight.value!!.isEmpty()) {
-            navigator.openPackListScreen()
+            navigator.closeAllScreen()
+            navigator.openTaskListScreen()
         }
     }
 
@@ -118,7 +102,6 @@ class GoodCardViewModel : CoreViewModel() {
                         )
                 )
 
-                prepareToNext()
                 printTag()
             }
         }
@@ -127,11 +110,6 @@ class GoodCardViewModel : CoreViewModel() {
     override fun handleFailure(failure: Failure) {
         super.handleFailure(failure)
         navigator.openAlertScreen(failure)
-    }
-
-    private fun prepareToNext() {
-        raw.totalQuantity = totalWeight.value ?: 0.0
-        weight.value = ""
     }
 
     private fun printTag() {

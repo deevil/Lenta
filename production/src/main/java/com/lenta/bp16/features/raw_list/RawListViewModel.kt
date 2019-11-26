@@ -51,7 +51,7 @@ class RawListViewModel : CoreViewModel() {
         val materialOsn = raws.value!![position].materialOsn
         good.raws.find { it.materialOsn == materialOsn }?.let { raw ->
             taskManager.currentRaw = raw
-            navigator.openGoodCardScreen()
+            navigator.openGoodWeighingScreen()
         }
     }
 
