@@ -4,7 +4,6 @@ import com.lenta.shared.models.core.Uom
 
 data class Good(
         var isProcessed: Boolean = false,
-        val orderNumber: String,
         val material: String,
         val name: String,
         val units: Uom,

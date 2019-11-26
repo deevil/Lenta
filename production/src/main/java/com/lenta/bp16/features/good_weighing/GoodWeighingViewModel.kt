@@ -98,7 +98,7 @@ class GoodWeighingViewModel : CoreViewModel() {
                             parent = taskManager.currentTask.processingUnit.number,
                             marketIp = marketIp.value ?: "Not found!",
                             material = good.material,
-                            orderNumber = good.orderNumber,
+                            orderNumber = raw.orderNumber,
                             quantity = raw.totalQuantity
                     )
             ).also {

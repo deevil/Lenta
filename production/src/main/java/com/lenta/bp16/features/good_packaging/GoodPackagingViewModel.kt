@@ -3,10 +3,9 @@ package com.lenta.bp16.features.good_packaging
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp16.model.ITaskManager
-import com.lenta.bp16.model.pojo.Pack
 import com.lenta.bp16.platform.navigation.IScreenNavigator
-import com.lenta.bp16.request.PackCodeNetRequest
-import com.lenta.bp16.request.PackCodeParams
+import com.lenta.bp16.request.PackGoodNetRequest
+import com.lenta.bp16.request.PackGoodParams
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.platform.viewmodel.CoreViewModel
@@ -25,7 +24,7 @@ class GoodPackagingViewModel : CoreViewModel() {
     @Inject
     lateinit var taskManager: ITaskManager
     @Inject
-    lateinit var packCodeNetRequest: PackCodeNetRequest
+    lateinit var packGoodNetRequest: PackGoodNetRequest
 
 
     val title by lazy {
@@ -68,41 +67,26 @@ class GoodPackagingViewModel : CoreViewModel() {
 
     fun onClickComplete() {
         navigator.showFixingPackagingPhaseSuccessful {
-            // todo Что здесь нужно сделать? Нужно ли получать код упаковки?
+            viewModelScope.launch {
+                navigator.showProgressLoadingData()
 
-            navigator.closeAllScreen()
-            navigator.openTaskListScreen()
-        }
-    }
-
-    private fun createPack() {
-        viewModelScope.launch {
-            navigator.showProgressLoadingData()
-
-            packCodeNetRequest(
-                    PackCodeParams(
-                            marketNumber = sessionInfo.market ?: "Not found!",
-                            parentType = 1,
-                            parent = taskManager.currentTask.processingUnit.number,
-                            marketIp = marketIp.value ?: "Not found!",
-                            material = good.material,
-                            orderNumber = good.orderNumber,
-                            quantity = raw.totalQuantity
-                    )
-            ).also {
-                navigator.hideProgress()
-            }.either(::handleFailure) { packCodeResult ->
-                good.packs.add(
-                        Pack(
+                packGoodNetRequest(
+                        PackGoodParams(
+                                marketNumber = sessionInfo.market ?: "Not found!",
+                                marketIp = marketIp.value ?: "Not found!",
                                 material = good.material,
-                                materialOsn = raw.materialOsn,
-                                code = packCodeResult.packCode,
-                                name = raw.name,
-                                quantity = enteredWeight.value ?: 0.0
+                                orderNumber = raw.orderNumber,
+                                quantity = raw.totalQuantity,
+                                puNumber = taskManager.currentTask.processingUnit.number
                         )
-                )
+                ).also {
+                    navigator.hideProgress()
+                }.either(::handleFailure) {
+                    taskManager.currentTask.isProcessed = true
 
-                printTag()
+                    navigator.closeAllScreen()
+                    navigator.openTaskListScreen()
+                }
             }
         }
     }
@@ -110,11 +94,6 @@ class GoodPackagingViewModel : CoreViewModel() {
     override fun handleFailure(failure: Failure) {
         super.handleFailure(failure)
         navigator.openAlertScreen(failure)
-    }
-
-    private fun printTag() {
-        // todo Реализовать печать штрих-кода тары
-
     }
 
 }
