@@ -12,6 +12,7 @@ class MemoryTaskReviseDocumentsRepository : ITaskReviseDocumentsRepository {
     private val productBatches: ArrayList<ProductBatchRevise> = ArrayList()
     private val setComponents: ArrayList<SetComponentRevise> = ArrayList()
     private val transportConditions: ArrayList<TransportCondition> = ArrayList()
+    private val productVetDocuments: ArrayList<ProductVetDocumentRevise> = ArrayList()
 
     private var invoiceInfo: InvoiceRevise? = null
 
@@ -86,6 +87,45 @@ class MemoryTaskReviseDocumentsRepository : ITaskReviseDocumentsRepository {
         transportConditions.addAll(conditions)
     }
 
+    override fun getProductVetDocuments(): List<ProductVetDocumentRevise> {
+        return productVetDocuments.toList()
+    }
+
+    override fun updateProductVetDocuments(vetDocuments: List<ProductVetDocumentRevise>) {
+        productVetDocuments.clear()
+        productVetDocuments.addAll(vetDocuments)
+    }
+
+    override fun presenceUncoveredVadAllGoods() : Boolean {
+        val presenceUncoveredVad = productDocuments.map {productDoc ->
+            val vadVolume = productVetDocuments.filter {productVetDoc ->
+                productVetDoc.productNumber == productDoc.productNumber
+            }.sumByDouble {
+                it.volume
+            }
+            vadVolume < productDoc.initialCount
+        }.map {
+            it
+        }
+
+        return presenceUncoveredVad.size == productDocuments.size
+    }
+
+    override fun presenceUncoveredVadSomeGoods(): Boolean {
+        val presenceUncoveredVad = productDocuments.map {productDoc ->
+            val vadVolume = productVetDocuments.filter {productVetDoc ->
+                productVetDoc.productNumber == productDoc.productNumber
+            }.sumByDouble {
+                it.volume
+            }
+            vadVolume < productDoc.initialCount
+        }.map {
+            it
+        }
+
+        return presenceUncoveredVad.size < productDocuments.size
+    }
+
     override fun changeDeliveryDocumentStatus(documentID: String) {
         val document = deliveryDocuments.findLast { it.documentID == documentID }
         document?.let { it.isCheck = !it.isCheck }
@@ -151,6 +191,8 @@ class MemoryTaskReviseDocumentsRepository : ITaskReviseDocumentsRepository {
         russianABForms.clear()
         productBatches.clear()
         setComponents.clear()
+        transportConditions.clear()
+        productVetDocuments.clear()
         invoiceInfo = null
     }
 }

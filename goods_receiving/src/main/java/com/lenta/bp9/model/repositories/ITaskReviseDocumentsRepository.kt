@@ -28,6 +28,11 @@ interface ITaskReviseDocumentsRepository {
     fun getTransportConditions(): List<TransportCondition>
     fun updateTransportCondition(conditions: List<TransportCondition>)
 
+    fun getProductVetDocuments(): List<ProductVetDocumentRevise>
+    fun updateProductVetDocuments(conditions: List<ProductVetDocumentRevise>)
+    fun presenceUncoveredVadAllGoods() : Boolean
+    fun presenceUncoveredVadSomeGoods(): Boolean
+
     fun clear()
 
     fun changeDeliveryDocumentStatus(documentID: String)

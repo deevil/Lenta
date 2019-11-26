@@ -49,8 +49,9 @@ class LoadingFinishReviseViewModel : CoreLoadingViewModel() {
                         productBatches = task.taskRepository.getReviseDocuments().getProductBatches().map { ProductBatchReviseRestData.from(it) },
                         russianABForms = task.taskRepository.getReviseDocuments().getRussianABForms().map { FormABRussianReviseRestData.from(it) },
                         importABForms = task.taskRepository.getReviseDocuments().getImportABForms().map { FormABImportReviseRestData.from(it) },
+                        invoiceData = InvoiceReviseRestData.from(task.taskRepository.getReviseDocuments().getInvoiceInfo()),
                         commentsToVP = task.taskRepository.getNotifications().getInvoiceNotes().map { CommentToVPRestData.from(it) },
-                        invoiceData = InvoiceReviseRestData.from(task.taskRepository.getReviseDocuments().getInvoiceInfo())
+                        productVetDocument = task.taskRepository.getReviseDocuments().getProductVetDocuments().map { ProductVetDocumentReviseRestData.from(it) }
                 )
                 finishReviseRequest(params).either(::handleFailure, ::handleSuccess)
             }

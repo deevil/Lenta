@@ -36,7 +36,7 @@ class MercuryListIrrelevantFragment : CoreFragment<FragmentMercuryListIrrelevant
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
-        bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.untied)
+        bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.untie)
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.temporary)
     }
 

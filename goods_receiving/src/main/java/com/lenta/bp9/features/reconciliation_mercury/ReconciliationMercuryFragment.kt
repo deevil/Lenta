@@ -29,7 +29,7 @@ class ReconciliationMercuryFragment : CoreFragment<FragmentReconciliationMercury
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
-        bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.untied)
+        bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.untie)
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.next)
     }
 

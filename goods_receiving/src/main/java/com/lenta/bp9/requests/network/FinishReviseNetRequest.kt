@@ -55,5 +55,7 @@ data class FinishReviseRequestParameters(
         @SerializedName("ES_TTN_CHK")
         val invoiceData: InvoiceReviseRestData?,
         @SerializedName("ET_VBELN_COM")
-        val commentsToVP: List<CommentToVPRestData>
+        val commentsToVP: List<CommentToVPRestData>,
+        @SerializedName("IT_VET_CHK")
+        val productVetDocument: List<ProductVetDocumentReviseRestData>
 )

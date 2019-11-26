@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.lenta.bp9.features.task_card.TaskCardViewModel
 import com.lenta.bp9.model.task.IReceivingTaskManager
 import com.lenta.bp9.model.task.TaskProductInfo
+import com.lenta.bp9.model.task.revise.DeliveryProductDocumentRevise
 import com.lenta.bp9.model.task.revise.ProductDocumentType
 import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.shared.account.ISessionInfo
@@ -47,7 +48,8 @@ class ProductDocumentsReviseViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     val notifications by lazy {
-        MutableLiveData((taskManager.getReceivingTask()?.taskRepository?.getNotifications()?.getReviseProductNotifications() ?: emptyList()).mapIndexed { index, notification ->
+        MutableLiveData((taskManager.getReceivingTask()?.taskRepository?.getNotifications()?.getReviseProductNotifications()
+                ?: emptyList()).mapIndexed { index, notification ->
             TaskCardViewModel.NotificationVM(number = (index + 1).toString(),
                     text = notification.text,
                     indicator = notification.indicator)
@@ -77,7 +79,8 @@ class ProductDocumentsReviseViewModel : CoreViewModel(), PageSelectionListener {
             checkedDocs.value = checkedList.sortedBy { if (currentSortMode == SortMode.DocumentName) it.documentName else it.productNumber }.mapIndexed { index, document ->
                 ProductDocumentVM(position = checkedList.size - index,
                         name = document.documentName,
-                        productName = document.productNumber.takeLast(6) + " " + (ZfmpUtz48V001.getProductInfoByMaterial(document.productNumber)?.name ?: ""),
+                        productName = document.productNumber.takeLast(6) + " " + (ZfmpUtz48V001.getProductInfoByMaterial(document.productNumber)?.name
+                                ?: ""),
                         type = document.documentType,
                         isObligatory = document.isObligatory,
                         isCheck = true,
@@ -92,7 +95,8 @@ class ProductDocumentsReviseViewModel : CoreViewModel(), PageSelectionListener {
             docsToCheck.value = uncheckedList.sortedBy { if (currentSortMode == SortMode.DocumentName) it.documentName else it.productNumber }.mapIndexed { index, document ->
                 ProductDocumentVM(position = uncheckedList.size - index,
                         name = document.documentName,
-                        productName = document.productNumber.takeLast(6) + " " + (ZfmpUtz48V001.getProductInfoByMaterial(document.productNumber)?.name ?: ""),
+                        productName = document.productNumber.takeLast(6) + " " + (ZfmpUtz48V001.getProductInfoByMaterial(document.productNumber)?.name
+                                ?: ""),
                         type = document.documentType,
                         isObligatory = document.isObligatory,
                         isCheck = false,
@@ -155,7 +159,15 @@ class ProductDocumentsReviseViewModel : CoreViewModel(), PageSelectionListener {
             } else {
                 when (document.type) {
                     ProductDocumentType.Mercury -> {
-                        screenNavigator.openMercuryListScreen()
+                        taskManager.getReceivingTask()?.taskRepository?.getReviseDocuments()?.getProductVetDocuments()?.filter {
+                            it.productNumber == document.matnr
+                        }.let {
+                            if (it.isNullOrEmpty()) {
+                                screenNavigator.openAlertVADProductNotMatchedScreen(document.productName)
+                            } else {
+                                screenNavigator.openMercuryListScreen()
+                            }
+                        }
                     }
                 }
             }
@@ -186,6 +198,26 @@ class ProductDocumentsReviseViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     private fun saveData() {
+        val presenceMercury = taskManager.getReceivingTask()?.taskRepository?.getReviseDocuments()?.getProductDocuments()?.any {
+            it.documentType == ProductDocumentType.Mercury
+        }
+
+        if (presenceMercury == true) {
+            if (taskManager.getReceivingTask()?.taskRepository?.getReviseDocuments()?.presenceUncoveredVadSomeGoods() == true) {
+                screenNavigator.openDiscrepanciesInconsistencyVetDocsDialog{
+                    screenNavigator.openFinishReviseLoadingScreen()
+                }
+                return
+            }
+            if (taskManager.getReceivingTask()?.taskRepository?.getReviseDocuments()?.presenceUncoveredVadAllGoods() == true) {
+                screenNavigator.openDiscrepanciesNoVerifiedVadDialog(
+                        {screenNavigator.openMercuryExceptionIntegrationScreen()},
+                        {screenNavigator.openFinishReviseLoadingScreen()}
+                )
+                return
+            }
+        }
+
         screenNavigator.openFinishReviseLoadingScreen()
     }
 }
@@ -203,7 +235,7 @@ data class ProductDocumentVM(
         val matnr: String
 )
 
-enum class SortMode{
+enum class SortMode {
     DocumentName,
     ProductNumber
 }

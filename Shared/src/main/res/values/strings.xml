@@ -172,5 +172,6 @@
     <string name="to_verify">К сверке</string>
     <string name="to_recount">К пересчёту</string>
     <string name="to_tie">Привязать</string>
-    <string name="un_tie">Отвязать</string>
+    <string name="mark">Пометить</string>
+    <string name="exclude">Исключить</string>
 </resources>

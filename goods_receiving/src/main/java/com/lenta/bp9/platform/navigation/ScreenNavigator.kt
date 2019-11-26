@@ -599,6 +599,35 @@ class ScreenNavigator(
         }
     }
 
+    override fun openAlertVADProductNotMatchedScreen(productName: String) {
+        openInfoScreen(context.getString(R.string.alert_vad_product_not_matched, productName))
+    }
+
+    override fun openDiscrepanciesInconsistencyVetDocsDialog(markCallbackFunc: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.discrepancies_inconsistency_vet_docs_dialog),
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(markCallbackFunc),
+                    iconRes = R.drawable.ic_question_80dp,
+                    pageNumber = "79",
+                    rightButtonDecorationInfo = ButtonDecorationInfo.mark))
+        }
+    }
+
+    override fun openDiscrepanciesNoVerifiedVadDialog(excludeCallbackFunc: () -> Unit, markCallbackFunc: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.discrepancies_no_vad_dialog),
+                    codeConfirmForButton3 = backFragmentResultHelper.setFuncForResult(excludeCallbackFunc),
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(markCallbackFunc),
+                    iconRes = R.drawable.ic_question_80dp,
+                    pageNumber = "103",
+                    buttonDecorationInfo3 = ButtonDecorationInfo.exclude,
+                    rightButtonDecorationInfo = ButtonDecorationInfo.mark))
+        }
+    }
+
+
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 }
 
@@ -674,4 +703,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openMercuryExceptionIntegrationScreen()
     fun openReconciliationMercuryScreen()
     fun openGoodsMercuryInfoScreen(productInfo: TaskProductInfo)
+    fun openAlertVADProductNotMatchedScreen(productName: String)
+    fun openDiscrepanciesInconsistencyVetDocsDialog(markCallbackFunc: () -> Unit)
+    fun openDiscrepanciesNoVerifiedVadDialog(excludeCallbackFunc: () -> Unit, markCallbackFunc: () -> Unit)
 }

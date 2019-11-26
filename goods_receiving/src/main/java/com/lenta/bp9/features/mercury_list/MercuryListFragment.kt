@@ -52,7 +52,7 @@ class MercuryListFragment : CoreFragment<FragmentMercuryListBinding, MercuryList
         viewLifecycleOwner.apply {
             vm.selectedPage.observe(this, Observer {
                 if (it == 0) {
-                    bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.untied)
+                    bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.untie)
                     connectLiveData(vm.untiedEnabled, bottomToolbarUiModel.uiModelButton2.enabled)
                 } else {
                     bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.tied)

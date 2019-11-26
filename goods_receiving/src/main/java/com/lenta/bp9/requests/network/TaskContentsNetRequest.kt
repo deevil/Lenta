@@ -51,7 +51,7 @@ data class TaskContentsRequestResult(
         @SerializedName("ET_FORMA_IMP")
         val formsABImportRevise: List<FormABImportReviseRestData>,
         @SerializedName("ET_COMP_CHK")
-        val setComponenttsRevise: List<SetComponentReviseRestData>,
+        val setComponentsRevise: List<SetComponentReviseRestData>,
         @SerializedName("ES_TTN_CHK")
         val invoiceRevise: InvoiceReviseRestData,
         @SerializedName("ET_VBELN_COM")

@@ -166,4 +166,7 @@
     <string name="mercury_exception_integration_des">Исключение ВП из интеграции</string>
     <string name="mercury_exception_integration_header">Укажите причину исключения поставки из автоматической интеграции с ГИС \"Меркурий\"</string>
     <string name="batch_with_production_date">Партия с датой производства</string>
+    <string name="alert_vad_product_not_matched">По товару %1$s не были подобраны ВСД</string>
+    <string name="discrepancies_inconsistency_vet_docs_dialog">Остались неподтверждёнными обязательные документы по товарам. Пометить все эти товары как расхождения - \"Несоответствие документов\"?</string>
+    <string name="discrepancies_no_vad_dialog">По всем вет.товарам нет сверенных сертификатов. Исключить поставку из автоматической интеграции или пометить эти товары как расхождение - \"Нет ВСД/недогруз\"</string>
 </resources>
