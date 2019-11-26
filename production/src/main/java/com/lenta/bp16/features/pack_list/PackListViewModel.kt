@@ -38,6 +38,8 @@ class PackListViewModel : CoreViewModel() {
 
     fun onClickComplete() {
         navigator.showDefrostingPhaseIsCompleted {
+            taskManager.currentGood.isProcessed = true
+
             navigator.closeAllScreen()
             navigator.openRawGoodListScreen()
         }
