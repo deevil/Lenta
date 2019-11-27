@@ -90,7 +90,7 @@ class RawGoodListFragment : CoreFragment<FragmentRawGoodListBinding, RawGoodList
             layoutBinding.lifecycleOwner = viewLifecycleOwner
             recyclerViewKeyHandler = RecyclerViewKeyHandler(
                     rv = layoutBinding.rv,
-                    items = vm.goods,
+                    items = vm.rawGoods,
                     lifecycleOwner = layoutBinding.lifecycleOwner!!,
                     initPosInfo = recyclerViewKeyHandler?.posInfo?.value
             )

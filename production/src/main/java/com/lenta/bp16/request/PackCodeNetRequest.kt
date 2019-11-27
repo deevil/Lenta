@@ -34,15 +34,18 @@ data class PackCodeParams(
         /** Код предприятия */
         @SerializedName("IV_WERKS")
         val marketNumber: String,
-        /** Номер ЕО */
-        @SerializedName("IV_EXIDV")
-        val puNumber: String,
+        /** Тип родительской связи для создания тары: 1 - ЕО, 2 - ВП, 3 - тара */
+        @SerializedName("IV_MODE")
+        val parentType: Int,
+        /** Номер родительской связи */
+        @SerializedName("IV_PARENT")
+        val parent: String,
         /** IP адрес ТСД */
         @SerializedName("IV_IP")
         val marketIp: String,
-        /** Номер заказа */
+        /** Номер технологического заказа */
         @SerializedName("AUFNR")
-        val order: String,
+        val orderNumber: String,
         /** SAP – код товар */
         @SerializedName("IV_MATNR")
         val material: String,
@@ -56,7 +59,7 @@ class PackCodeStatus : ObjectRawStatus<PackCodeResult>()
 data class PackCodeResult(
         /** Код тары */
         @SerializedName("EV_CODE_CONT")
-        val packCode: List<GoodInfo>,
+        val packCode: String,
         /** Таблица возврата */
         @SerializedName("ET_RETCODE")
         val retCodes: List<RetCode>

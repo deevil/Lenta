@@ -1,44 +1,50 @@
-package com.lenta.bp16.features.pack_list
+package com.lenta.bp16.features.good_packaging
 
 import android.view.View
 import com.lenta.bp16.R
-import com.lenta.bp16.databinding.FragmentPackListBinding
+import com.lenta.bp16.databinding.FragmentGoodWeighingBinding
 import com.lenta.bp16.platform.extention.getAppComponent
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
+import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
+import com.lenta.shared.utilities.extentions.getDeviceIp
 import com.lenta.shared.utilities.extentions.provideViewModel
 
-class PackListFragment : CoreFragment<FragmentPackListBinding, PackListViewModel>(),
+class GoodPackagingFragment : CoreFragment<FragmentGoodWeighingBinding, GoodPackagingViewModel>(),
         ToolbarButtonsClickListener {
 
-    override fun getLayoutId(): Int = R.layout.fragment_pack_list
+    override fun getLayoutId(): Int = R.layout.fragment_good_packaging
 
-    override fun getPageNumber(): String? = generateScreenNumberFromPostfix("11")
+    override fun getPageNumber(): String? = generateScreenNumberFromPostfix("33")
 
-    override fun getViewModel(): PackListViewModel {
-        provideViewModel(PackListViewModel::class.java).let {
+    override fun getViewModel(): GoodPackagingViewModel {
+        provideViewModel(GoodPackagingViewModel::class.java).let {
             getAppComponent()?.inject(it)
+
+            it.marketIp.value = context!!.getDeviceIp()
+
             return it
         }
     }
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
-        topToolbarUiModel.description.value = getString(R.string.pack_list)
+        topToolbarUiModel.description.value = getString(R.string.good_card)
         topToolbarUiModel.title.value = vm.title
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
-        bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.add)
-        bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.complete)
+        bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
+        bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.complete, enabled = false)
+
+        connectLiveData(vm.completeEnabled, getBottomToolBarUIModel()!!.uiModelButton5.enabled)
     }
 
     override fun onToolbarButtonClick(view: View) {
         when (view.id) {
-            R.id.b_3 -> vm.onClickAdd()
             R.id.b_5 -> vm.onClickComplete()
         }
     }

@@ -48,18 +48,21 @@ class TaskManager @Inject constructor(
                         planned = goodInfo.quantity,
                         raws = taskInfoResult.raws.filter { it.material == goodInfo.material }.map { rawInfo ->
                             Raw(
+                                    orderNumber = rawInfo.orderNumber,
                                     materialOsn = rawInfo.materialOsn,
                                     name = rawInfo.name,
                                     planned = rawInfo.planned
                             )
-                        },
+                        }.toMutableList(),
                         packs = taskInfoResult.packs.filter { it.material == goodInfo.material }.map { packInfo ->
                             Pack(
+                                    material = packInfo.material,
+                                    materialOsn = packInfo.materialOsn,
                                     code = packInfo.code,
                                     name = packInfo.name,
                                     quantity = packInfo.quantity
                             )
-                        }
+                        }.toMutableList()
                 )
             }
         }
