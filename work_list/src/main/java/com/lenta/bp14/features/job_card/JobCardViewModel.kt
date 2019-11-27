@@ -110,6 +110,13 @@ class JobCardViewModel : CoreViewModel() {
             taskTypesInfo.value = generalRepo.getTasksTypes()
             isStrictList.value = isStrictList()
             updateProcessedTask()
+
+            generalTaskManager.apply {
+                if (isRestoredData) {
+                    isRestoredData = false
+                    onClickNext()
+                }
+            }
         }
     }
 
