@@ -14,13 +14,16 @@ import com.lenta.bp14.models.work_list.WorkListTaskDescription
 import com.lenta.bp14.models.work_list.WorkListTaskManager
 import com.lenta.bp14.platform.navigation.IScreenNavigator
 import com.lenta.bp14.requests.check_price.CheckPriceTaskInfoParams
+import com.lenta.bp14.requests.check_price.CheckPriceTaskInfoResult
 import com.lenta.bp14.requests.check_price.ICheckPriceTaskInfoNetRequest
 import com.lenta.bp14.requests.not_exposed_product.NotExposedTaskInfoNetRequest
 import com.lenta.bp14.requests.not_exposed_product.NotExposedTaskInfoParams
+import com.lenta.bp14.requests.not_exposed_product.NotExposedTaskInfoResult
 import com.lenta.bp14.requests.pojo.TaskInfoParams
 import com.lenta.bp14.requests.tasks.UnlockTaskNetRequest
 import com.lenta.bp14.requests.tasks.UnlockTaskParams
 import com.lenta.bp14.requests.work_list.IWorkListTaskInfoNetRequest
+import com.lenta.bp14.requests.work_list.WorkListTaskInfoResult
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.functional.Either
@@ -136,11 +139,9 @@ class JobCardViewModel : CoreViewModel() {
             taskFromTaskList?.isMyBlock == false -> {
                 screenNavigator.showAlertBlockedTaskAnotherUser(taskFromTaskList!!.blockingUser)
             }
+
             else -> openTask()
-
         }
-
-
     }
 
     private fun openTask() {
@@ -159,29 +160,43 @@ class JobCardViewModel : CoreViewModel() {
                         )
                     } else {
                         Either.Right(null)
-                    }.let {
-                        it.either({ failure ->
+                    }.let { requestResult ->
+                        requestResult.either({ failure ->
                             screenNavigator.openAlertScreen(failure)
-                        }) { checkPriceTaskInfoResult ->
-                            newTask(
-                                    taskManager = checkPriceTaskManager,
-                                    taskDescription = CheckPriceTaskDescription(
-                                            tkNumber = sessionInfo.market!!,
-                                            taskNumber = taskFromTaskList?.taskId
-                                                    ?: "",
-                                            taskName = taskName.value ?: "",
-                                            comment = comment.value ?: "",
-                                            description = description.value ?: "",
-                                            isStrictList = taskFromTaskList?.isStrict ?: false,
-                                            additionalTaskInfo = checkPriceTaskInfoResult
+                        }) { result ->
+                            viewModelScope.launch {
+                                val missing = result!!.positions.filter {
+                                    !generalRepo.isExistMaterial(it.matNr)
+                                }.map { it.matNr }.toSet()
+
+                                val correctedResult: CheckPriceTaskInfoResult = if (missing.isNotEmpty()) {
+                                    result.copy(
+                                            positions = result.positions.filter { !missing.contains(it.matNr) },
+                                            checkPrices = result.checkPrices.filter { !missing.contains(it.matNr) },
+                                            productsInfo = result.productsInfo.filter { !missing.contains(it.matNr) },
+                                            prices = result.prices.filter { !missing.contains(it.matnr) }
                                     )
-                            )
-                            screenNavigator.openGoodsListPcScreen()
+                                } else result
+
+                                newTask(
+                                        taskManager = checkPriceTaskManager,
+                                        taskDescription = CheckPriceTaskDescription(
+                                                tkNumber = sessionInfo.market!!,
+                                                taskNumber = taskFromTaskList?.taskId
+                                                        ?: "",
+                                                taskName = taskName.value ?: "",
+                                                comment = comment.value ?: "",
+                                                description = description.value ?: "",
+                                                isStrictList = taskFromTaskList?.isStrict ?: false,
+                                                additionalTaskInfo = correctedResult
+                                        )
+                                )
+                                screenNavigator.openGoodsListPcScreen()
+                            }
                         }
-
                     }
-
                 }
+
                 AppTaskTypes.CheckList.taskType -> {
                     newTask(
                             taskManager = checkListTaskManager,
@@ -197,6 +212,7 @@ class JobCardViewModel : CoreViewModel() {
                     )
                     screenNavigator.openGoodsListClScreen()
                 }
+
                 AppTaskTypes.WorkList.taskType -> {
                     if (taskFromTaskList != null) {
                         workListTaskInfoNetRequest(
@@ -209,26 +225,46 @@ class JobCardViewModel : CoreViewModel() {
                         )
                     } else {
                         Either.Right(null)
-                    }.let {
-                        it.either({ failure ->
+                    }.let { requestResult ->
+                        requestResult.either({ failure ->
                             screenNavigator.openAlertScreen(failure)
                         }) { result ->
-                            newTask(
-                                    taskManager = workListTaskManager,
-                                    taskDescription = WorkListTaskDescription(
-                                            tkNumber = sessionInfo.market!!,
-                                            taskNumber = taskFromTaskList?.taskId ?: "",
-                                            taskName = taskName.value ?: "",
-                                            comment = comment.value ?: "",
-                                            description = description.value ?: "",
-                                            isStrictList = taskFromTaskList?.isStrict ?: false,
-                                            taskInfoResult = result
+                            viewModelScope.launch {
+                                val missing = result!!.positions.filter {
+                                    !generalRepo.isExistMaterial(it.matNr)
+                                }.map { it.matNr }.toSet()
+
+                                val correctedResult: WorkListTaskInfoResult = if (missing.isNotEmpty()) {
+                                    result.copy(
+                                            positions = result.positions.filter { !missing.contains(it.matNr) },
+                                            additionalInfoList = result.additionalInfoList.filter { !missing.contains(it.matnr) },
+                                            places = result.places.filter { !missing.contains(it.matnr) },
+                                            suppliers = result.suppliers.filter { !missing.contains(it.matnr) },
+                                            stocks = result.stocks.filter { !missing.contains(it.matnr) },
+                                            checkResults = result.checkResults.filter { !missing.contains(it.matNr) },
+                                            productsInfo = result.productsInfo.filter { !missing.contains(it.matNr) },
+                                            marks = result.marks.filter { !missing.contains(it.matNr) }
                                     )
-                            )
-                            screenNavigator.openGoodsListWlScreen()
+                                } else result
+
+                                newTask(
+                                        taskManager = workListTaskManager,
+                                        taskDescription = WorkListTaskDescription(
+                                                tkNumber = sessionInfo.market!!,
+                                                taskNumber = taskFromTaskList?.taskId ?: "",
+                                                taskName = taskName.value ?: "",
+                                                comment = comment.value ?: "",
+                                                description = description.value ?: "",
+                                                isStrictList = taskFromTaskList?.isStrict ?: false,
+                                                taskInfoResult = correctedResult
+                                        )
+                                )
+                                screenNavigator.openGoodsListWlScreen()
+                            }
                         }
                     }
                 }
+
                 AppTaskTypes.NotExposedProducts.taskType -> {
                     if (taskFromTaskList != null) {
                         notExposedTaskInfoNetRequest(
@@ -241,27 +277,43 @@ class JobCardViewModel : CoreViewModel() {
                         )
                     } else {
                         Either.Right(null)
-                    }.let {
-                        it.either({ failure ->
+                    }.let { requestResult ->
+                        requestResult.either({ failure ->
                             screenNavigator.openAlertScreen(failure)
                         }) { result ->
-                            newTask(
-                                    taskManager = notExposedTaskManager,
-                                    taskDescription = NotExposedTaskDescription(
-                                            tkNumber = sessionInfo.market!!,
-                                            taskNumber = taskFromTaskList?.taskId
-                                                    ?: "",
-                                            taskName = taskName.value ?: "",
-                                            comment = comment.value ?: "",
-                                            description = description.value ?: "",
-                                            isStrictList = taskFromTaskList?.isStrict ?: false,
-                                            additionalTaskInfo = result
+                            viewModelScope.launch {
+                                val missing = result!!.positions.filter {
+                                    !generalRepo.isExistMaterial(it.matNr)
+                                }.map { it.matNr }.toSet()
+
+                                val correctedResult: NotExposedTaskInfoResult = if (missing.isNotEmpty()) {
+                                    result.copy(
+                                            positions = result.positions.filter { !missing.contains(it.matNr) },
+                                            stocks = result.stocks.filter { !missing.contains(it.matnr) },
+                                            productsInfo = result.productsInfo.filter { !missing.contains(it.matNr) },
+                                            checkPlaces = result.checkPlaces.filter { !missing.contains(it.matNr) }
                                     )
-                            )
-                            screenNavigator.openGoodsListNeScreen()
+                                } else result
+
+                                newTask(
+                                        taskManager = notExposedTaskManager,
+                                        taskDescription = NotExposedTaskDescription(
+                                                tkNumber = sessionInfo.market!!,
+                                                taskNumber = taskFromTaskList?.taskId
+                                                        ?: "",
+                                                taskName = taskName.value ?: "",
+                                                comment = comment.value ?: "",
+                                                description = description.value ?: "",
+                                                isStrictList = taskFromTaskList?.isStrict ?: false,
+                                                additionalTaskInfo = correctedResult
+                                        )
+                                )
+                                screenNavigator.openGoodsListNeScreen()
+                            }
                         }
                     }
                 }
+
                 else -> screenNavigator.openNotImplementedScreenAlert("")
             }
 
