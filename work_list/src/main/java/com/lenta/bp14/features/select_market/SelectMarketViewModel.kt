@@ -202,6 +202,11 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
         generalTaskManager.restoreSavedData()
 
         navigator.openMainMenuScreen()
+
+        if (taskManager.getTask()?.isFreeMode() == false) {
+            navigator.openTaskListScreen()
+        }
+
         navigator.openJobCardScreen()
     }
 
