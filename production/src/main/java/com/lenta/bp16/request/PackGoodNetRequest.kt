@@ -41,7 +41,7 @@ data class PackGoodParams(
         val marketIp: String,
         /** Номер заказа */
         @SerializedName("AUFNR")
-        val order: String,
+        val orderNumber: String,
         /** SAP – код товар */
         @SerializedName("IV_MATNR")
         val material: String,

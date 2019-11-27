@@ -3,7 +3,8 @@ package com.lenta.bp16.platform.navigation
 import android.content.Context
 import com.lenta.bp16.R
 import com.lenta.bp16.features.auth.AuthFragment
-import com.lenta.bp16.features.good_card.GoodCardFragment
+import com.lenta.bp16.features.good_packaging.GoodPackagingFragment
+import com.lenta.bp16.features.good_weighing.GoodWeighingFragment
 import com.lenta.bp16.features.raw_good_list.RawGoodListFragment
 import com.lenta.bp16.features.loading.fast.FastDataLoadingFragment
 import com.lenta.bp16.features.main_menu.MainMenuFragment
@@ -83,9 +84,15 @@ class ScreenNavigator @Inject constructor(
         }
     }
 
-    override fun openGoodCardScreen() {
+    override fun openGoodWeighingScreen() {
         runOrPostpone {
-            getFragmentStack()?.push(GoodCardFragment())
+            getFragmentStack()?.push(GoodWeighingFragment())
+        }
+    }
+
+    override fun openGoodPackagingScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(GoodPackagingFragment())
         }
     }
 
@@ -144,7 +151,6 @@ class ScreenNavigator @Inject constructor(
 }
 
 interface IScreenNavigator : ICoreNavigator {
-
     fun openFirstScreen()
     fun openLoginScreen()
     fun openFastDataLoadingScreen()
@@ -153,12 +159,12 @@ interface IScreenNavigator : ICoreNavigator {
     fun openTaskListScreen()
     fun openRawGoodListScreen()
     fun openRawListScreen()
-    fun openGoodCardScreen()
+    fun openGoodWeighingScreen()
+    fun openGoodPackagingScreen()
     fun openPackListScreen()
     fun openPackGoodListScreen()
 
     fun showDefrostingPhaseIsCompleted(nextCallback: () -> Unit)
     fun showConfirmNoSuchItemLeft(confirmCallback: () -> Unit)
     fun showFixingPackagingPhaseSuccessful(nextCallback: () -> Unit)
-
 }

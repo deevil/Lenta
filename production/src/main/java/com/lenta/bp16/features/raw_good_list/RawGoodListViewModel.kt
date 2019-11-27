@@ -34,7 +34,7 @@ class RawGoodListViewModel : CoreViewModel() {
         "ЕО - ${task.processingUnit.number}"
     }
 
-    val goods: MutableLiveData<List<ItemRawGoodListUi>> by lazy {
+    val rawGoods: MutableLiveData<List<ItemRawGoodListUi>> by lazy {
         MutableLiveData(task.goods!!.mapIndexed { index, good ->
             ItemRawGoodListUi(
                     position = (index + 1).toString(),
@@ -51,7 +51,7 @@ class RawGoodListViewModel : CoreViewModel() {
     // -----------------------------
 
     fun onClickItemPosition(position: Int) {
-        val material = goods.value!![position].material
+        val material = rawGoods.value!![position].material
         task.goods?.first { it.material == material }?.let { good ->
             taskManager.currentGood = good
             navigator.openRawListScreen()
