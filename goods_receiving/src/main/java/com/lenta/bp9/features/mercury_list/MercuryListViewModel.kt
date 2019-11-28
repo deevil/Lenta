@@ -125,6 +125,9 @@ class MercuryListViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     fun onClickNext() {
+        if (!productDoc.value!!.isCheck && listTied.value?.size != 0) {
+            taskManager.getReceivingTask()?.taskRepository?.getReviseDocuments()?.changeProductDocumentStatus(productDoc.value!!.documentID, productDoc.value!!.productNumber)
+        }
         screenNavigator.goBack()
     }
 
