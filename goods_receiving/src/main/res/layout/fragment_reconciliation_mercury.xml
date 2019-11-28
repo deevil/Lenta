@@ -89,14 +89,14 @@
             android:id="@+id/tv_sap_name_goods_val"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="22dp"
+            android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp"
-            android:gravity="center_vertical"
+            android:maxLines="3"
             android:text='@{vm.sapNameGoods}'
+            app:layout_constraintBottom_toTopOf="@id/div_hor_2"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/guideline"
-            app:layout_constraintTop_toBottomOf="@id/div_hor_1"
-            app:layout_constraintBottom_toTopOf="@id/div_hor_2" />
+            app:layout_constraintTop_toBottomOf="@id/div_hor_1" />
 
         <TextView
             android:id="@+id/tv_mercury_name_goods"
@@ -115,13 +115,14 @@
             android:id="@+id/tv_mercury_name_goods_val"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="22dp"
+            android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp"
+            android:maxLines="3"
             android:text='@{vm.mercuryNameGoods}'
+            app:layout_constraintBottom_toTopOf="@id/div_hor_3"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/guideline"
-            app:layout_constraintTop_toBottomOf="@id/div_hor_2"
-            app:layout_constraintBottom_toTopOf="@id/div_hor_3" />
+            app:layout_constraintTop_toBottomOf="@id/div_hor_2" />
 
         <TextView
             android:id="@+id/tv_ligament_type"
@@ -140,13 +141,14 @@
             android:id="@+id/tv_ligament_type_val"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="22dp"
+            android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp"
+            android:maxLines="3"
             android:text='@{vm.ligamentType}'
+            app:layout_constraintBottom_toTopOf="@id/div_hor_4"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/guideline"
-            app:layout_constraintTop_toBottomOf="@id/div_hor_3"
-            app:layout_constraintBottom_toTopOf="@id/div_hor_4" />
+            app:layout_constraintTop_toBottomOf="@id/div_hor_3" />
 
         <CheckBox
             android:id="@+id/cb_checked"
@@ -155,6 +157,7 @@
             android:layout_marginTop="16dp"
             android:layout_marginEnd="32dp"
             android:layout_marginBottom="16dp"
+            android:enabled="@{vm.enabledReconciliationCheck}"
             android:checked="@={vm.reconciliationCheck}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

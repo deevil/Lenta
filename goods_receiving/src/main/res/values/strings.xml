@@ -157,7 +157,7 @@
     <string name="certificate">Сертификат</string>
     <string name="tied">Привязанные</string>
     <string name="untied">Отвязанные</string>
-    <string name="mercury_list">Список ВСД</string>
+    <string name="mercury_list_head">Список ВСД. Поставка =</string>
     <string name="mercury_list_irrelevant">Список неактуальных ВСД</string>
     <string name="reconciliation_mercury">Сверка ВСД</string>
     <string name="sap_name_goods">SAP-название товара</string>

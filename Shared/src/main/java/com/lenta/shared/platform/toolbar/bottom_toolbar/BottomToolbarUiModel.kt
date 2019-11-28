@@ -199,7 +199,7 @@ data class ButtonDecorationInfo(
         }
 
         val untie: ButtonDecorationInfo by lazy {
-            ButtonDecorationInfo(R.drawable.ic_rollback_white_24dp, R.string.untie) //TODO: proper image
+            ButtonDecorationInfo(R.drawable.ic_untie_white_24dp, R.string.untie)
         }
 
         val published: ButtonDecorationInfo by lazy {
@@ -295,7 +295,7 @@ data class ButtonDecorationInfo(
         }
 
         val tied: ButtonDecorationInfo by lazy {
-            ButtonDecorationInfo(R.drawable.ic_browsing_white_24dp, R.string.to_tie) //TODO: proper image
+            ButtonDecorationInfo(R.drawable.ic_tied_white_24dp, R.string.to_tie)
         }
 
         val mark: ButtonDecorationInfo by lazy {
@@ -303,7 +303,7 @@ data class ButtonDecorationInfo(
         }
 
         val exclude: ButtonDecorationInfo by lazy {
-            ButtonDecorationInfo(R.drawable.ic_restore, R.string.exclude) //TODO: proper image
+            ButtonDecorationInfo(R.drawable.ic_exclude_white_24dp, R.string.exclude)
         }
 
     }

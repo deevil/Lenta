@@ -15,16 +15,33 @@ import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import com.lenta.bp9.BR
 import com.lenta.bp9.databinding.*
+import com.lenta.bp9.model.task.revise.DeliveryProductDocumentRevise
+import com.lenta.bp9.model.task.revise.ProductVetDocumentRevise
+import com.lenta.shared.platform.activity.OnBackPresserListener
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
+import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.databinding.*
 import com.lenta.shared.utilities.extentions.connectLiveData
+import com.lenta.shared.utilities.extentions.toStringFormatted
+import com.lenta.shared.utilities.state.state
 
 class MercuryListFragment : CoreFragment<FragmentMercuryListBinding, MercuryListViewModel>(),
         ViewPagerSettings,
         PageSelectionListener,
-        ToolbarButtonsClickListener {
+        ToolbarButtonsClickListener,
+        OnBackPresserListener {
 
+    companion object {
+        fun create(productDoc: DeliveryProductDocumentRevise): MercuryListFragment {
+            MercuryListFragment().let {
+                it.productDoc = productDoc
+                return it
+            }
+        }
+    }
+
+    private var productDoc by state<DeliveryProductDocumentRevise?>(null)
 
     private var tiedRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
     private var untiedRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
@@ -36,19 +53,19 @@ class MercuryListFragment : CoreFragment<FragmentMercuryListBinding, MercuryList
     override fun getViewModel(): MercuryListViewModel {
         provideViewModel(MercuryListViewModel::class.java).let {vm ->
             getAppComponent()?.inject(vm)
+            vm.productDoc.value = this.productDoc
             return vm
         }
     }
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
         topToolbarUiModel.title.value = vm.getTitle()
-        topToolbarUiModel.description.value = getString(R.string.mercury_list)
+        topToolbarUiModel.description.value = getString(R.string.mercury_list_head) + " " + vm.productDoc.value?.initialCount.toStringFormatted() + " " + vm.productDoc.value?.measureUnits?.name
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.next)
-        connectLiveData(vm.nextEnabled, bottomToolbarUiModel.uiModelButton5.enabled)
         viewLifecycleOwner.apply {
             vm.selectedPage.observe(this, Observer {
                 if (it == 0) {
@@ -197,6 +214,11 @@ class MercuryListFragment : CoreFragment<FragmentMercuryListBinding, MercuryList
     override fun onResume() {
         super.onResume()
         vm.onResume()
+    }
+
+    override fun onBackPressed(): Boolean {
+        vm.onBackPressed()
+        return false
     }
 
 }

@@ -40,6 +40,8 @@ import com.lenta.bp9.features.transfer_goods_section.TransferGoodsSectionFragmen
 import com.lenta.bp9.model.task.revise.ProductDocumentType
 import com.lenta.bp9.model.task.TaskBatchInfo
 import com.lenta.bp9.model.task.TaskSectionInfo
+import com.lenta.bp9.model.task.revise.DeliveryProductDocumentRevise
+import com.lenta.bp9.model.task.revise.ProductVetDocumentRevise
 import com.lenta.shared.account.IAuthenticator
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.exception.IFailureInterpreter
@@ -569,9 +571,9 @@ class ScreenNavigator(
         }
     }
 
-    override fun openMercuryListScreen() {
+    override fun openMercuryListScreen(productDoc: DeliveryProductDocumentRevise) {
         runOrPostpone {
-            getFragmentStack()?.push(MercuryListFragment())
+            getFragmentStack()?.push(MercuryListFragment.create(productDoc))
         }
     }
 
@@ -587,9 +589,9 @@ class ScreenNavigator(
         }
     }
 
-    override fun openReconciliationMercuryScreen() {
+    override fun openReconciliationMercuryScreen(productVetDoc: ProductVetDocumentRevise) {
         runOrPostpone {
-            getFragmentStack()?.push(ReconciliationMercuryFragment())
+            getFragmentStack()?.push(ReconciliationMercuryFragment.create(productVetDoc))
         }
     }
 
@@ -698,10 +700,10 @@ interface IScreenNavigator : ICoreNavigator {
     fun openInfoDocsSentPScreenrint()
     fun openAlertGoodsNotInInvoiceScreen()
     fun openOrderQuantityEexceededDialog(noCallbackFunc: () -> Unit, yesCallbackFunc: () -> Unit)
-    fun openMercuryListScreen()
+    fun openMercuryListScreen(productDoc: DeliveryProductDocumentRevise)
     fun openMercuryListIrrelevantScreen()
     fun openMercuryExceptionIntegrationScreen()
-    fun openReconciliationMercuryScreen()
+    fun openReconciliationMercuryScreen(productVetDoc: ProductVetDocumentRevise)
     fun openGoodsMercuryInfoScreen(productInfo: TaskProductInfo)
     fun openAlertVADProductNotMatchedScreen(productName: String)
     fun openDiscrepanciesInconsistencyVetDocsDialog(markCallbackFunc: () -> Unit)

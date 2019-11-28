@@ -17,6 +17,7 @@ import com.lenta.shared.exception.Failure
 import com.lenta.shared.features.loading.CoreLoadingViewModel
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.getDeviceIp
+import com.mobrun.plugin.api.HyperHive
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -31,6 +32,8 @@ class LoadingStartReviseViewModel : CoreLoadingViewModel() {
     lateinit var context: Context
     @Inject
     lateinit var taskManager: IReceivingTaskManager
+    @Inject
+    lateinit var hyperHive: HyperHive
 
     override val title: MutableLiveData<String> = MutableLiveData()
     override val progress: MutableLiveData<Boolean> = MutableLiveData(true)
@@ -69,43 +72,46 @@ class LoadingStartReviseViewModel : CoreLoadingViewModel() {
 
     private fun handleSuccess(result: StartReviseRequestResult) {
         Logg.d { "Register arrival request result $result" }
-        screenNavigator.goBack()
-        screenNavigator.goBack()
+        viewModelScope.launch {
+            //screenNavigator.goBack()
+            //screenNavigator.goBack()
 
-        val documentNotifications = result.documentNotifications.map { TaskNotification.from(it) }
-        val productNotifications = result.productNotifications.map { TaskNotification.from(it) }
-        val commentsToVP = result.commentsToVP.map { CommentToVP.from(it) }
-        taskManager.getReceivingTask()?.taskRepository?.getNotifications()?.updateWithNotifications(null, documentNotifications, productNotifications, null)
-        taskManager.getReceivingTask()?.taskRepository?.getNotifications()?.updateWithInvoiceNotes(commentsToVP)
+            val documentNotifications = result.documentNotifications.map { TaskNotification.from(it) }
+            val productNotifications = result.productNotifications.map { TaskNotification.from(it) }
+            val commentsToVP = result.commentsToVP.map { CommentToVP.from(it) }
+            taskManager.getReceivingTask()?.taskRepository?.getNotifications()?.updateWithNotifications(null, documentNotifications, productNotifications, null)
+            taskManager.getReceivingTask()?.taskRepository?.getNotifications()?.updateWithInvoiceNotes(commentsToVP)
 
-        val deliveryDocumentsRevise = result.deliveryReviseDocuments.map { DeliveryDocumentRevise.from(it) }
-        val deliveryProductDocumentsRevise = result.productReviseDocuments.map { DeliveryProductDocumentRevise.from(it) }
-        val productBatchesRevise = result.productBatches.map { ProductBatchRevise.from(it) }
-        val formsABRussianRevise = result.russianABForms.map { FormABRussianRevise.from(it) }
-        val formsABImportRevise = result.importABForms.map { FormABImportRevise.from(it) }
-        val setComponenttsRevise = result.setComponents.map { SetComponentRevise.from(it) }
-        val invoiceRevise = InvoiceRevise.from(result.invoiceData)
-        taskManager.getReceivingTask()?.taskRepository?.getReviseDocuments()?.apply {
-            this.updateDeliveryDocuments(deliveryDocumentsRevise)
-            this.updateProductDocuments(deliveryProductDocumentsRevise)
-            this.updateImportABForms(formsABImportRevise)
-            this.updateRussianABForms(formsABRussianRevise)
-            this.updateProductBatches(productBatchesRevise)
-            this.updateSetComponents(setComponenttsRevise)
-            this.updateInvoiceInfo(invoiceRevise)
-        }
-        taskManager.getReceivingTask()?.let { task ->
-            if (task.taskRepository.getReviseDocuments().getDeliveryDocuments().isNotEmpty()) {
-                screenNavigator.openTaskReviseScreen()
-            } else if (task.taskRepository.getReviseDocuments().getProductDocuments().isNotEmpty()) {
-                screenNavigator.openProductDocumentsReviseScreen()
-            } else {
-                screenNavigator.openTaskListScreen()
-                screenNavigator.openCheckingNotNeededAlert(context.getString(R.string.revise_not_needed_checking)) {
-                    screenNavigator.openFinishReviseLoadingScreen()
+            val deliveryDocumentsRevise = result.deliveryReviseDocuments.map { DeliveryDocumentRevise.from(it) }
+            val deliveryProductDocumentsRevise = result.productReviseDocuments.map { DeliveryProductDocumentRevise.from(hyperHive, it) }
+            val productBatchesRevise = result.productBatches.map { ProductBatchRevise.from(it) }
+            val formsABRussianRevise = result.russianABForms.map { FormABRussianRevise.from(it) }
+            val formsABImportRevise = result.importABForms.map { FormABImportRevise.from(it) }
+            val setComponenttsRevise = result.setComponents.map { SetComponentRevise.from(it) }
+            val invoiceRevise = InvoiceRevise.from(result.invoiceData)
+            taskManager.getReceivingTask()?.taskRepository?.getReviseDocuments()?.apply {
+                this.updateDeliveryDocuments(deliveryDocumentsRevise)
+                this.updateProductDocuments(deliveryProductDocumentsRevise)
+                this.updateImportABForms(formsABImportRevise)
+                this.updateRussianABForms(formsABRussianRevise)
+                this.updateProductBatches(productBatchesRevise)
+                this.updateSetComponents(setComponenttsRevise)
+                this.updateInvoiceInfo(invoiceRevise)
+            }
+            taskManager.getReceivingTask()?.let { task ->
+                if (task.taskRepository.getReviseDocuments().getDeliveryDocuments().isNotEmpty()) {
+                    screenNavigator.openTaskReviseScreen()
+                } else if (task.taskRepository.getReviseDocuments().getProductDocuments().isNotEmpty()) {
+                    screenNavigator.openProductDocumentsReviseScreen()
+                } else {
+                    screenNavigator.openTaskListScreen()
+                    screenNavigator.openCheckingNotNeededAlert(context.getString(R.string.revise_not_needed_checking)) {
+                        screenNavigator.openFinishReviseLoadingScreen()
+                    }
                 }
             }
         }
+
     }
 
     override fun clean() {

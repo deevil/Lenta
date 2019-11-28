@@ -96,6 +96,21 @@ class MemoryTaskReviseDocumentsRepository : ITaskReviseDocumentsRepository {
         productVetDocuments.addAll(vetDocuments)
     }
 
+    override fun changeProductVetDocumentStatus(vetDocument: ProductVetDocumentRevise, status: Boolean) {
+        val document = productVetDocuments.findLast { it.vetDocumentID == vetDocument.vetDocumentID && it.productNumber == vetDocument.productNumber }
+        document?.let {
+            it.isCheck = status
+            it.isAttached = status
+        }
+    }
+
+    override fun changeProductVetDocumentReconciliation(vetDocument: ProductVetDocumentRevise, reconciliationCheck: Boolean) {
+        val document = productVetDocuments.findLast { it.vetDocumentID == vetDocument.vetDocumentID && it.productNumber == vetDocument.productNumber }
+        document?.let {
+            it.isCheck = reconciliationCheck
+        }
+    }
+
     override fun presenceUncoveredVadAllGoods() : Boolean {
         val presenceUncoveredVad = productDocuments.map {productDoc ->
             val vadVolume = productVetDocuments.filter {productVetDoc ->

@@ -1,23 +1,17 @@
 package com.lenta.bp9.features.revise
 
 import android.content.Context
-import com.lenta.shared.platform.viewmodel.CoreViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp9.features.task_card.TaskCardViewModel
 import com.lenta.bp9.model.task.IReceivingTaskManager
-import com.lenta.bp9.model.task.TaskProductInfo
-import com.lenta.bp9.model.task.revise.DeliveryProductDocumentRevise
 import com.lenta.bp9.model.task.revise.ProductDocumentType
+import com.lenta.bp9.model.task.revise.ProductVetDocumentRevise
 import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.shared.account.ISessionInfo
-import com.lenta.shared.fmp.resources.dao_ext.getProductInfoByMatcode
 import com.lenta.shared.fmp.resources.dao_ext.getProductInfoByMaterial
 import com.lenta.shared.fmp.resources.slow.ZfmpUtz48V001
-import com.lenta.shared.models.core.MatrixType
-import com.lenta.shared.models.core.ProductType
-import com.lenta.shared.models.core.Uom
-import com.lenta.shared.utilities.Logg
+import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.extentions.map
 import com.mobrun.plugin.api.HyperHive
@@ -165,7 +159,10 @@ class ProductDocumentsReviseViewModel : CoreViewModel(), PageSelectionListener {
                             if (it.isNullOrEmpty()) {
                                 screenNavigator.openAlertVADProductNotMatchedScreen(document.productName)
                             } else {
-                                screenNavigator.openMercuryListScreen()
+                                val productDoc = taskManager.getReceivingTask()?.taskRepository?.getReviseDocuments()?.getProductDocuments()?.findLast {dpdr ->
+                                    dpdr.documentID == document.id
+                                }!!
+                                screenNavigator.openMercuryListScreen(productDoc)
                             }
                         }
                     }
@@ -179,10 +176,10 @@ class ProductDocumentsReviseViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     fun onClickSort() {
-        if (currentSortMode == SortMode.DocumentName) {
-            currentSortMode = SortMode.ProductNumber
+        currentSortMode = if (currentSortMode == SortMode.DocumentName) {
+            SortMode.ProductNumber
         } else {
-            currentSortMode = SortMode.DocumentName
+            SortMode.DocumentName
         }
         updateDocumentVMs()
     }

@@ -29,7 +29,9 @@ interface ITaskReviseDocumentsRepository {
     fun updateTransportCondition(conditions: List<TransportCondition>)
 
     fun getProductVetDocuments(): List<ProductVetDocumentRevise>
-    fun updateProductVetDocuments(conditions: List<ProductVetDocumentRevise>)
+    fun updateProductVetDocuments(vetDocuments: List<ProductVetDocumentRevise>)
+    fun changeProductVetDocumentStatus(vetDocument: ProductVetDocumentRevise, status: Boolean)
+    fun changeProductVetDocumentReconciliation(vetDocument: ProductVetDocumentRevise, reconciliationCheck: Boolean)
     fun presenceUncoveredVadAllGoods() : Boolean
     fun presenceUncoveredVadSomeGoods(): Boolean
 
