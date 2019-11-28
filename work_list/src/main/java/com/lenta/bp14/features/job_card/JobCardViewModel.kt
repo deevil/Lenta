@@ -165,11 +165,11 @@ class JobCardViewModel : CoreViewModel() {
                             screenNavigator.openAlertScreen(failure)
                         }) { result ->
                             viewModelScope.launch {
-                                val missing = result!!.positions.filter {
+                                val missing = result?.positions?.filter {
                                     !generalRepo.isExistMaterial(it.matNr)
-                                }.map { it.matNr }.toSet()
+                                }?.map { it.matNr }?.toSet()
 
-                                val correctedResult: CheckPriceTaskInfoResult = if (missing.isNotEmpty()) {
+                                val correctedResult = if (missing?.isNotEmpty() == true) {
                                     result.copy(
                                             positions = result.positions.filter { !missing.contains(it.matNr) },
                                             checkPrices = result.checkPrices.filter { !missing.contains(it.matNr) },
@@ -230,11 +230,11 @@ class JobCardViewModel : CoreViewModel() {
                             screenNavigator.openAlertScreen(failure)
                         }) { result ->
                             viewModelScope.launch {
-                                val missing = result!!.positions.filter {
+                                val missing = result?.positions?.filter {
                                     !generalRepo.isExistMaterial(it.matNr)
-                                }.map { it.matNr }.toSet()
+                                }?.map { it.matNr }?.toSet()
 
-                                val correctedResult: WorkListTaskInfoResult = if (missing.isNotEmpty()) {
+                                val correctedResult = if (missing?.isNotEmpty() == true) {
                                     result.copy(
                                             positions = result.positions.filter { !missing.contains(it.matNr) },
                                             additionalInfoList = result.additionalInfoList.filter { !missing.contains(it.matnr) },
@@ -282,11 +282,11 @@ class JobCardViewModel : CoreViewModel() {
                             screenNavigator.openAlertScreen(failure)
                         }) { result ->
                             viewModelScope.launch {
-                                val missing = result!!.positions.filter {
+                                val missing = result?.positions?.filter {
                                     !generalRepo.isExistMaterial(it.matNr)
-                                }.map { it.matNr }.toSet()
+                                }?.map { it.matNr }?.toSet()
 
-                                val correctedResult: NotExposedTaskInfoResult = if (missing.isNotEmpty()) {
+                                val correctedResult = if (missing?.isNotEmpty() == true) {
                                     result.copy(
                                             positions = result.positions.filter { !missing.contains(it.matNr) },
                                             stocks = result.stocks.filter { !missing.contains(it.matnr) },
