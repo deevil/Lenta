@@ -13,6 +13,7 @@ import com.lenta.bp14.models.data.GoodsListTab
 import com.lenta.bp14.models.getTaskName
 import com.lenta.bp14.models.not_exposed.INotExposedTask
 import com.lenta.bp14.models.not_exposed.repo.NotExposedProductInfo
+import com.lenta.bp14.platform.extentions.getQuantity
 import com.lenta.bp14.platform.navigation.IScreenNavigator
 import com.lenta.bp14.requests.not_exposed_product.NotExposedSendReportNetRequest
 import com.lenta.shared.account.ISessionInfo
