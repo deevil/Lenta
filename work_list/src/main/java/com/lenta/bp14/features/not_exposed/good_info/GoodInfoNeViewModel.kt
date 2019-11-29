@@ -1,6 +1,5 @@
 package com.lenta.bp14.features.not_exposed.good_info
 
-import com.lenta.shared.platform.viewmodel.CoreViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp14.features.work_list.good_info.ItemStockUi
@@ -8,12 +7,15 @@ import com.lenta.bp14.models.check_price.IPriceInfoParser
 import com.lenta.bp14.models.data.GoodType
 import com.lenta.bp14.models.data.getGoodType
 import com.lenta.bp14.models.not_exposed.INotExposedTask
+import com.lenta.bp14.platform.extentions.getQuantity
 import com.lenta.bp14.platform.navigation.IScreenNavigator
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.fmp.resources.dao_ext.getMaxPositionsProdWkl
 import com.lenta.shared.fmp.resources.fast.ZmpUtz14V001
 import com.lenta.shared.models.core.MatrixType
 import com.lenta.shared.models.core.getMatrixType
+import com.lenta.shared.platform.viewmodel.CoreViewModel
+import com.lenta.shared.requests.combined.scan_info.ScanCodeInfo
 import com.lenta.shared.requests.combined.scan_info.ScanInfoRequest
 import com.lenta.shared.requests.combined.scan_info.ScanInfoRequestParams
 import com.lenta.shared.requests.combined.scan_info.analyseCode
@@ -214,11 +216,12 @@ class GoodInfoNeViewModel : CoreViewModel(), PageSelectionListener {
                             fromScan = true,
                             isBarCode = true
                     )
-            ).either(::handleFailure) { scanInfoResult ->
+            ).also {
+                navigator.hideProgress()
+            }.either(::handleFailure) { scanInfoResult ->
                 if (scanInfoResult.productInfo.materialNumber == goodInfo.productInfo.matNr) {
                     if (isEmptyPlaceMarked.value == null) {
-                        val newQuantity = ((quantityValue.value
-                                ?: 0.0) + scanInfoResult.quantity)
+                        val newQuantity = ((quantityValue.value ?: 0.0) + scanInfoResult.quantity)
                         //TODO maxQuantity - это максимальное количество позиций в задании. Нужно переделать
                         /*if (maxQuantity != null && newQuantity > maxQuantity!!) {
                             navigator.showMaxCountProductAlert()
@@ -236,11 +239,16 @@ class GoodInfoNeViewModel : CoreViewModel(), PageSelectionListener {
                                         quantity = quantityField.value?.toDoubleOrNull() ?: 0.0,
                                         isEmptyPlaceMarked = null
                                 )
+
+                                val scanCodeInfo = ScanCodeInfo(code)
+                                val quantity = scanCodeInfo.getQuantity(defaultUnits = scanInfoResult.productInfo.uom)
+
                                 task.getProductInfoAndSetProcessed(
                                         matNr = scanInfoResult.productInfo.materialNumber,
-                                        quantity = scanInfoResult.quantity,
-                                        ean = null
-                                ).either(
+                                        quantity = quantity
+                                ).also {
+                                    navigator.hideProgress()
+                                }.either(
                                         {
                                             navigator.openAlertScreen(failure = it)
                                         }
@@ -248,8 +256,6 @@ class GoodInfoNeViewModel : CoreViewModel(), PageSelectionListener {
                                     navigator.goBack()
                                     navigator.openGoodInfoNeScreen()
                                 }
-
-                                navigator.hideProgress()
                             } else {
                                 navigator.showGoodIsNotPartOfTask()
                             }
@@ -257,8 +263,6 @@ class GoodInfoNeViewModel : CoreViewModel(), PageSelectionListener {
                     }
                 }
             }
-
-            navigator.hideProgress()
         }
     }
 

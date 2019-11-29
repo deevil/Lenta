@@ -33,10 +33,6 @@ fun ZfmpUtz48V001.ItemLocal_ET_MATNR_LIST.getMatrixType(): MatrixType {
     return com.lenta.shared.models.core.getMatrixType(matrType)
 }
 
-fun ZfmpUtz48V001.ItemLocal_ET_MATNR_LIST.getSectionNumber(): Int {
-    return abtnr.toIntOrNull() ?: 0
-}
-
 fun ZfmpUtz48V001.ItemLocal_ET_MATNR_LIST.getProductType(): ProductType {
     return com.lenta.shared.models.core.getProductType(isAlco.isNotEmpty(), isExc.isNotEmpty())
 }

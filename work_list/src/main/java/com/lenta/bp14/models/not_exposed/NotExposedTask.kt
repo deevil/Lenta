@@ -163,7 +163,6 @@ class NotExposedTask @Inject constructor(
             @Suppress("NON_EXHAUSTIVE_WHEN")
             when (it.key) {
                 FilterFieldType.NUMBER -> {
-
                     if (!filterableDelegate.isHaveAnotherActiveFilter(FilterFieldType.NUMBER) && it.value.value.isBlank()) {
                         return false
                     }
@@ -193,14 +192,13 @@ class NotExposedTask @Inject constructor(
         return getProducts().value?.firstOrNull { it.matNr == processedGoodInfo?.goodInfo?.productInfo?.matNr }
     }
 
-    override suspend fun getProductInfoAndSetProcessed(ean: String?, matNr: String?, quantity: Double): Either<Failure, GoodInfo> {
+    override suspend fun getProductInfoAndSetProcessed(matNr: String?, quantity: Double): Either<Failure, GoodInfo> {
         return productInfoNotExposedInfoRequest(
                 NotExposedInfoRequestParams(
-                        ean = ean,
+                        ean = null,
                         matNr = matNr,
                         tkNumber = taskDescription.tkNumber
                 )
-
         ).rightToLeft { goodInfo ->
             if (!isAllowedProduct(goodInfo.productInfo.matNr)) {
                 Failure.InvalidProductForTask
@@ -304,7 +302,7 @@ interface INotExposedTask : ITask, IFilterable {
 
     fun getProcessedCheckInfo(): NotExposedProductInfo?
 
-    suspend fun getProductInfoAndSetProcessed(ean: String?, matNr: String?, quantity: Double): Either<Failure, GoodInfo>
+    suspend fun getProductInfoAndSetProcessed(matNr: String?, quantity: Double): Either<Failure, GoodInfo>
 
     fun getReportData(ip: String): NotExposedReport
 

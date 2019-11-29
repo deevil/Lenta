@@ -23,7 +23,7 @@ class ScanCodeInfo(
         withWeight && prefix == "27"
     }
 
-    private val quantity: Double by lazy {
+    val quantity: Double by lazy {
         if (withWeight) {
             originalNumber.takeLast(6).dropLast(1).toDoubleOrNull() ?: 0.0.let { weight ->
                 if (withWeightInTens) weight * 10 else weight
@@ -76,10 +76,6 @@ class ScanCodeInfo(
             quantity = quantity * it.umrez / it.umren
         }
         return quantity
-    }
-
-    fun getQuantity(defaultUnits: Uom): Double {
-        return if (defaultUnits == Uom.G) quantity / 1000 else quantity
     }
 
     private fun isEAN128Valid(code: String): Boolean {

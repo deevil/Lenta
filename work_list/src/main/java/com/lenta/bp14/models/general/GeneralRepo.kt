@@ -8,7 +8,9 @@ import com.lenta.bp14.requests.tasks.TaskListUpdateNetRequest
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.fmp.resources.dao_ext.getAllowedWklAppVersion
 import com.lenta.shared.fmp.resources.dao_ext.getMaxPositionsProdWkl
+import com.lenta.shared.fmp.resources.dao_ext.getProductInfoByMaterial
 import com.lenta.shared.fmp.resources.fast.ZmpUtz14V001
+import com.lenta.shared.fmp.resources.slow.ZfmpUtz48V001
 import com.lenta.shared.functional.Either
 import com.lenta.shared.functional.map
 import com.lenta.shared.utilities.extentions.isSapTrue
@@ -25,7 +27,8 @@ class GeneralRepo @Inject constructor(
 ) : IGeneralRepo {
 
     private val taskTypes by lazy { ZfmpUtz49V001(hyperHive) } // Типы заданий
-    private val settings: ZmpUtz14V001 by lazy { ZmpUtz14V001(hyperHive) } // Настройки
+    private val settings by lazy { ZmpUtz14V001(hyperHive) } // Настройки
+    private val productInfo by lazy { ZfmpUtz48V001(hyperHive) } // Информация о товаре
 
     private val emptyTaskTypeInfo = TaskTypeInfo(
             taskType = "",
@@ -108,6 +111,12 @@ class GeneralRepo @Inject constructor(
         }
     }
 
+    override suspend fun isExistMaterial(material: String): Boolean {
+        return withContext(Dispatchers.IO) {
+            return@withContext productInfo.getProductInfoByMaterial(material) != null
+        }
+    }
+
 }
 
 
@@ -119,6 +128,7 @@ interface IGeneralRepo {
     suspend fun onDbReady()
     suspend fun getAllowedAppVersion(): String?
     suspend fun getMaxTaskPositions(): Double?
+    suspend fun isExistMaterial(material: String): Boolean
 }
 
 data class TaskInfo(
