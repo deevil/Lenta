@@ -245,7 +245,9 @@ class GoodInfoNeViewModel : CoreViewModel(), PageSelectionListener {
                                 task.getProductInfoAndSetProcessed(
                                         matNr = scanInfoResult.productInfo.materialNumber,
                                         quantity = quantity
-                                ).either(
+                                ).also {
+                                    navigator.hideProgress()
+                                }.either(
                                         {
                                             navigator.openAlertScreen(failure = it)
                                         }
@@ -253,8 +255,6 @@ class GoodInfoNeViewModel : CoreViewModel(), PageSelectionListener {
                                     navigator.goBack()
                                     navigator.openGoodInfoNeScreen()
                                 }
-
-                                navigator.hideProgress()
                             } else {
                                 navigator.showGoodIsNotPartOfTask()
                             }
