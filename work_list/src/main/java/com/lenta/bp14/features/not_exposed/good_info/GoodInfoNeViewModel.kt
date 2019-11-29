@@ -240,10 +240,11 @@ class GoodInfoNeViewModel : CoreViewModel(), PageSelectionListener {
                                 )
 
                                 val scanCodeInfo = ScanCodeInfo(code)
+                                val quantity = scanCodeInfo.getQuantity(defaultUnits = scanInfoResult.productInfo.uom)
 
                                 task.getProductInfoAndSetProcessed(
                                         matNr = scanInfoResult.productInfo.materialNumber,
-                                        quantity = scanCodeInfo.getQuantity(defaultUnits = scanInfoResult.productInfo.uom)
+                                        quantity = quantity
                                 ).either(
                                         {
                                             navigator.openAlertScreen(failure = it)

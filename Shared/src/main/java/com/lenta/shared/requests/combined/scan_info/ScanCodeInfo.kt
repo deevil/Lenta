@@ -79,7 +79,7 @@ class ScanCodeInfo(
     }
 
     fun getQuantity(defaultUnits: Uom): Double {
-        return if (defaultUnits == Uom.G) quantity / 1000 else quantity
+        return if (defaultUnits.code == Uom.G.code) quantity / 1000 else quantity
     }
 
     private fun isEAN128Valid(code: String): Boolean {

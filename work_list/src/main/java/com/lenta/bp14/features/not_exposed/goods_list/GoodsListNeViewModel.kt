@@ -169,9 +169,11 @@ class GoodsListNeViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
             navigator.showProgressLoadingData()
 
             var scanInfoResult: ScanInfoResult? = null
+            var quantity = 0.0
 
             if (eanCode != null) {
                 var failureScanInfoRequest: Failure? = null
+                val  scanCodeInfo = ScanCodeInfo(eanCode)
 
                 scanInfoRequest(
                         ScanInfoRequestParams(
@@ -189,6 +191,7 @@ class GoodsListNeViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
                         }
                 ) {
                     scanInfoResult = it
+                    quantity = scanCodeInfo.getQuantity(defaultUnits = scanInfoResult!!.productInfo.uom)
                     true
                 }
 
@@ -198,14 +201,13 @@ class GoodsListNeViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
                 }
             }
 
-            var scanCodeInfo: ScanCodeInfo? = null
-            eanCode?.let { scanCodeInfo = ScanCodeInfo(eanCode) }
-
             task.getProductInfoAndSetProcessed(
                     matNr = scanInfoResult?.productInfo?.materialNumber
                             ?: matNr,
-                    quantity = scanCodeInfo?.getQuantity(defaultUnits = scanInfoResult!!.productInfo.uom) ?: 0.0
-            ).either(
+                    quantity = quantity
+            ).also {
+                navigator.hideProgress()
+            }.either(
                     {
                         navigator.openAlertScreen(failure = it)
                     }
