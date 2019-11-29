@@ -93,6 +93,13 @@ class WorkListTask @Inject constructor(
         currentGood.value = good
     }
 
+    override fun removeCurrentGood() {
+        goods.value?.let {
+            it.remove(currentGood.value!!)
+            goods.value = it
+        }
+    }
+
     override suspend fun getGoodByMaterial(material: String): Good? {
         return workListRepo.getGoodByMaterial(material)
     }
@@ -348,6 +355,7 @@ interface IWorkListTask : ITask, IFilterable {
     fun getMaxTaskPositions(): Double
     fun isReachLimitPositions(): Boolean
     fun updateGoodList()
+    fun removeCurrentGood()
 }
 
 // -----------------------------
