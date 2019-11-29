@@ -59,7 +59,6 @@ data class GoodInfoWithQuantity(
         val quantity: Double
 )
 
-
 data class GoodInfo(
         val productInfo: ProductInfo,
         val stocks: List<Stock>,
@@ -72,4 +71,3 @@ data class NotExposedInfoRequestParams(
         val ean: String?,
         val matNr: String?
 )
-

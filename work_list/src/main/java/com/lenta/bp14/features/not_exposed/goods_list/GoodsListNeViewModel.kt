@@ -18,10 +18,7 @@ import com.lenta.bp14.requests.not_exposed_product.NotExposedSendReportNetReques
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.platform.device_info.DeviceInfo
-import com.lenta.shared.requests.combined.scan_info.ScanInfoRequest
-import com.lenta.shared.requests.combined.scan_info.ScanInfoRequestParams
-import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
-import com.lenta.shared.requests.combined.scan_info.analyseCode
+import com.lenta.shared.requests.combined.scan_info.*
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
@@ -174,7 +171,6 @@ class GoodsListNeViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
             var scanInfoResult: ScanInfoResult? = null
 
             if (eanCode != null) {
-
                 var failureScanInfoRequest: Failure? = null
 
                 scanInfoRequest(
@@ -184,7 +180,9 @@ class GoodsListNeViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
                                 isBarCode = true,
                                 tkNumber = sessionInfo.market!!
                         )
-                ).either(
+                ).also {
+                    navigator.hideProgress()
+                }.either(
                         fnL = {
                             failureScanInfoRequest = it
                             true
@@ -198,16 +196,15 @@ class GoodsListNeViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
                     navigator.openAlertScreen(it)
                     return@launch
                 }
-
             }
 
-
+            var scanCodeInfo: ScanCodeInfo? = null
+            eanCode?.let { scanCodeInfo = ScanCodeInfo(eanCode) }
 
             task.getProductInfoAndSetProcessed(
                     matNr = scanInfoResult?.productInfo?.materialNumber
                             ?: matNr,
-                    quantity = scanInfoResult?.quantity ?: 0.0,
-                    ean = null
+                    quantity = scanCodeInfo?.getQuantity(defaultUnits = scanInfoResult!!.productInfo.uom) ?: 0.0
             ).either(
                     {
                         navigator.openAlertScreen(failure = it)
@@ -215,13 +212,8 @@ class GoodsListNeViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
             ) {
                 navigator.openGoodInfoNeScreen()
             }
-
-            navigator.hideProgress()
         }
-
-
     }
-
 
     fun onClickSave() {
         if (task.isHaveDiscrepancies()) {
@@ -251,7 +243,6 @@ class GoodsListNeViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
                 navigator.hideProgress()
             }
         }
-
     }
 
     private fun onClickDelete() {
@@ -272,8 +263,7 @@ class GoodsListNeViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     }
 
     fun onClickItemPosition(position: Int) {
-        val correctedPage = correctedSelectedPage.value
-        when (correctedPage) {
+        when (correctedSelectedPage.value) {
             0 -> {
                 processingGoods.value?.getOrNull(position)?.let {
                     checkCode(it.matNr)
@@ -283,13 +273,11 @@ class GoodsListNeViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
                 (processedGoods.value)?.getOrNull(position)?.let {
                     checkCode(it.matNr)
                 }
-
             }
             2 -> {
                 (searchGoods.value)?.getOrNull(position)?.let {
                     checkCode(it.matNr)
                 }
-
             }
         }
     }
