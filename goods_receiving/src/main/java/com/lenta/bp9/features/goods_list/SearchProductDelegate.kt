@@ -138,7 +138,13 @@ class SearchProductDelegate @Inject constructor(
                 } else
                 screenNavigator.openExciseAlcoInfoScreen(taskProductInfo)
             }
-            else -> screenNavigator.openGoodsInfoScreen(taskProductInfo, isDiscrepancy!!)
+            else -> {
+                if (taskProductInfo.isVet) {
+                    screenNavigator.openGoodsMercuryInfoScreen(taskProductInfo, isDiscrepancy!!)
+                } else {
+                    screenNavigator.openAlertGoodsNotInOrderScreen() //todo сообщение об неизвестном типе товара?
+                }
+            }
         }
     }
 }

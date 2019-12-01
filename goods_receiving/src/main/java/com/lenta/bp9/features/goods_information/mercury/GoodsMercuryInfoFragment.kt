@@ -23,14 +23,16 @@ class GoodsMercuryInfoFragment : CoreFragment<FragmentGoodsMercuryInfoBinding, G
         OnScanResultListener {
 
     companion object {
-        fun create(productInfo: TaskProductInfo): GoodsMercuryInfoFragment {
+        fun create(productInfo: TaskProductInfo, isDiscrepancy: Boolean): GoodsMercuryInfoFragment {
             GoodsMercuryInfoFragment().let {
                 it.productInfo = productInfo
+                it.isDiscrepancy = isDiscrepancy
                 return it
             }
         }
     }
 
+    private var isDiscrepancy by state<Boolean?>(null)
     private var productInfo by state<TaskProductInfo?>(null)
 
     override fun getLayoutId(): Int = R.layout.fragment_goods_mercury_info
@@ -41,6 +43,7 @@ class GoodsMercuryInfoFragment : CoreFragment<FragmentGoodsMercuryInfoBinding, G
         provideViewModel(GoodsMercuryInfoViewModel::class.java).let {vm->
             getAppComponent()?.inject(vm)
             vm.productInfo.value = this.productInfo
+            vm.isDiscrepancy.value = this.isDiscrepancy
             return vm
         }
     }
@@ -89,6 +92,7 @@ class GoodsMercuryInfoFragment : CoreFragment<FragmentGoodsMercuryInfoBinding, G
             }
         }
 
+        binding?.tvProductionDate?.text = getString(R.string.vet_with_production_date, vm.tvProductionDate)
     }
 
     override fun onToolbarButtonClick(view: View) {

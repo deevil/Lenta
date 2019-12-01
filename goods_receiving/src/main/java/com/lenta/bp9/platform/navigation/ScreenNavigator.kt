@@ -595,9 +595,9 @@ class ScreenNavigator(
         }
     }
 
-    override fun openGoodsMercuryInfoScreen(productInfo: TaskProductInfo) {
+    override fun openGoodsMercuryInfoScreen(productInfo: TaskProductInfo, isDiscrepancy: Boolean) {
         runOrPostpone {
-            getFragmentStack()?.push(GoodsMercuryInfoFragment.create(productInfo))
+            getFragmentStack()?.push(GoodsMercuryInfoFragment.create(productInfo, isDiscrepancy))
         }
     }
 
@@ -629,6 +629,30 @@ class ScreenNavigator(
         }
     }
 
+    override fun openAlertQuantGreatInInvoiceScreen() {
+        openInfoScreen(context.getString(R.string.processing_mercury_quant_great_in_invoice))
+    }
+
+    override fun openAlertQuantGreatInOrderScreen() {
+        openInfoScreen(context.getString(R.string.processing_mercury_quant_great_in_order))
+    }
+
+    override fun openAlertQuantLessThanInVadScreen(noCallbackFunc: () -> Unit, yesCallbackFunc: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.processing_mercury_quant_less_than_in_vad),
+                    codeConfirmForLeft = backFragmentResultHelper.setFuncForResult(noCallbackFunc),
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(yesCallbackFunc),
+                    iconRes = R.drawable.ic_question_80dp,
+                    pageNumber = "97",
+                    leftButtonDecorationInfo = ButtonDecorationInfo.no,
+                    rightButtonDecorationInfo = ButtonDecorationInfo.yes))
+        }
+    }
+
+    override fun openAlertQuantMoreThanInVadScreen() {
+        openInfoScreen(context.getString(R.string.processing_mercury_quant_more_than_in_vad))
+    }
 
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 }
@@ -704,8 +728,12 @@ interface IScreenNavigator : ICoreNavigator {
     fun openMercuryListIrrelevantScreen()
     fun openMercuryExceptionIntegrationScreen()
     fun openReconciliationMercuryScreen(productVetDoc: ProductVetDocumentRevise)
-    fun openGoodsMercuryInfoScreen(productInfo: TaskProductInfo)
+    fun openGoodsMercuryInfoScreen(productInfo: TaskProductInfo, isDiscrepancy: Boolean)
     fun openAlertVADProductNotMatchedScreen(productName: String)
     fun openDiscrepanciesInconsistencyVetDocsDialog(markCallbackFunc: () -> Unit)
     fun openDiscrepanciesNoVerifiedVadDialog(excludeCallbackFunc: () -> Unit, markCallbackFunc: () -> Unit)
+    fun openAlertQuantGreatInInvoiceScreen()
+    fun openAlertQuantGreatInOrderScreen()
+    fun openAlertQuantLessThanInVadScreen(noCallbackFunc: () -> Unit, yesCallbackFunc: () -> Unit)
+    fun openAlertQuantMoreThanInVadScreen()
 }

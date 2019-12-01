@@ -45,6 +45,10 @@ data class DirectSupplierStartRecountRestInfo(
         val taskBatches: List<TaskBatchInfo>,
         @SerializedName("ET_PARTS_DIFF") //Таблица расхождений по партиям
         val taskBatchesDiscrepancies: List<TaskBatchesDiscrepancies>,
+        @SerializedName("ET_VET_DIFF") //Таблица расхождений по вет.товарам
+        val taskMercuryInfoRestData: List<TaskMercuryInfoRestData>,
+        @SerializedName("ET_VET_NOT_ACTUAL") //Список не актуальных ВСД
+        val taskMercuryNotActualRestData: List<TaskMercuryNotActualRestData>,
         @SerializedName("EV_RETCODE")
         val retcode: String,
         @SerializedName("EV_ERROR_TEXT")

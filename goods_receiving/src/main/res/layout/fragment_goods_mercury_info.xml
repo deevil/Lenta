@@ -117,7 +117,7 @@
             android:ellipsize="end"
             android:maxLines="1"
             android:gravity="start|center_vertical"
-            android:text='@{vm.acceptTotalCount != 0.0 ? "+ " + vm.acceptTotalCount + " " + vm.productInfo.uom.name : "0 " + vm.productInfo.uom.name }'
+            android:text='@{vm.acceptTotalCountWithUom}'
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@+id/guideline"
             app:layout_constraintTop_toBottomOf="@+id/div_hor2"
@@ -155,7 +155,7 @@
             android:maxLines="1"
             android:gravity="start|center_vertical"
             android:textColor="@color/color_pressed_red"
-            android:text='@{vm.refusalTotalCount != 0.0 ? "- " + vm.refusalTotalCount + " " + vm.productInfo.uom.name : "0 " + vm.productInfo.uom.name }'
+            android:text='@{vm.refusalTotalCountWithUom}'
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@+id/guideline"
             app:layout_constraintTop_toBottomOf="@+id/tv_accept_val"
@@ -212,11 +212,11 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginEnd="8dp"
                 android:ellipsize="end"
-                android:text="@string/batch_with_production_date"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/div_vert2"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text = "@string/vet_with_production_date"/>
 
             <View
                 android:id="@+id/div_hor5"
@@ -293,7 +293,7 @@
             android:id="@+id/ConstraintShelfLife"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:visibility="@{vm.isDefect}"
+            android:visibility="@{vm.visibleShelfLife}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/ConstraintDefect">
@@ -396,28 +396,27 @@
                 tools:text="02" />
 
         <ImageView
-            android:id="@+id/iv_alco_icon"
-            android:layout_width="36sp"
-            android:layout_height="36sp"
+            android:id="@+id/iv_vet_icon"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
             android:layout_marginStart="16dp"
-            android:src="@drawable/ic_mercury"
+            android:src="@drawable/ic_mercury_white"
             app:layout_constraintBottom_toBottomOf="@+id/tv_section"
             app:layout_constraintStart_toEndOf="@+id/tv_section"
             app:layout_constraintTop_toTopOf="@+id/tv_section" />
 
-        <ImageButton
-            android:id="@+id/b_scan_es"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:background="?selectableItemBackground"
-            android:onClick="@{(v) -> vm.screenNavigator.openESInfoScreen()}"
-            android:padding="8dp"
-            android:src="@drawable/is_scan_barcode_es"
-            app:layout_constraintBottom_toBottomOf="@+id/b_scan"
-            app:layout_constraintEnd_toStartOf="@+id/b_scan"
-            app:layout_constraintTop_toTopOf="@+id/b_scan"
-            tools:visibility="visible" />
+            <ImageButton
+                android:id="@+id/b_scan_es"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="?selectableItemBackground"
+                android:onClick="@{(v) -> vm.screenNavigator.openESInfoScreen()}"
+                android:padding="8dp"
+                android:src="@drawable/ic_scan_barcode_vet_48dp"
+                app:layout_constraintBottom_toBottomOf="@+id/b_scan"
+                app:layout_constraintEnd_toStartOf="@+id/b_scan"
+                app:layout_constraintTop_toTopOf="@+id/b_scan"
+                tools:visibility="visible" />
 
         <ImageButton
             android:id="@+id/b_scan"

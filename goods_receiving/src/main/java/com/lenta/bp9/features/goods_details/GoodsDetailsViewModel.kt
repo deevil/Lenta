@@ -42,17 +42,31 @@ class GoodsDetailsViewModel : CoreViewModel() {
     }
 
     private fun updateProduct() {
-        goodsDetails.postValue(
-                taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.findProductDiscrepanciesOfProduct(productInfo.value!!)?.mapIndexed { index, discrepancy ->
-                    GoodsDetailsCategoriesItem(
-                            number = index + 1,
-                            name = "${reasonRejectionInfo.value?.firstOrNull {it.code == discrepancy.typeDiscrepancies}?.name}",
-                            quantityWithUom = "${discrepancy.numberDiscrepancies.toDouble().toStringFormatted()} ${discrepancy.uom.name}",
-                            typeDiscrepancies = discrepancy.typeDiscrepancies,
-                            even = index % 2 == 0
-                    )
-                }?.reversed()
-        )
+        if (productInfo.value!!.isVet) {
+            goodsDetails.postValue(
+                    taskManager.getReceivingTask()?.taskRepository?.getMercuryDiscrepancies()?.findMercuryDiscrepanciesOfProduct(productInfo.value!!)?.mapIndexed { index, discrepancy ->
+                        GoodsDetailsCategoriesItem(
+                                number = index + 1,
+                                name = "${reasonRejectionInfo.value?.firstOrNull {it.code == discrepancy.typeDiscrepancies}?.name}",
+                                quantityWithUom = "${discrepancy.numberDiscrepancies.toStringFormatted()} ${discrepancy.uom.name}",
+                                typeDiscrepancies = discrepancy.typeDiscrepancies,
+                                even = index % 2 == 0
+                        )
+                    }?.reversed()
+            )
+        } else {
+            goodsDetails.postValue(
+                    taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.findProductDiscrepanciesOfProduct(productInfo.value!!)?.mapIndexed { index, discrepancy ->
+                        GoodsDetailsCategoriesItem(
+                                number = index + 1,
+                                name = "${reasonRejectionInfo.value?.firstOrNull {it.code == discrepancy.typeDiscrepancies}?.name}",
+                                quantityWithUom = "${discrepancy.numberDiscrepancies.toDouble().toStringFormatted()} ${discrepancy.uom.name}",
+                                typeDiscrepancies = discrepancy.typeDiscrepancies,
+                                even = index % 2 == 0
+                        )
+                    }?.reversed()
+            )
+        }
     }
 
     private fun updateBatch() {

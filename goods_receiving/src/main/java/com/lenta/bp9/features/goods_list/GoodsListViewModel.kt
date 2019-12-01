@@ -12,6 +12,7 @@ import com.lenta.bp9.requests.network.EndRecountDDResult
 import com.lenta.bp9.requests.network.EndRecountDirectDeliveriesNetRequest
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
+import com.lenta.shared.models.core.ProductType
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
 import com.lenta.shared.utilities.SelectionItemsHelper
@@ -203,7 +204,17 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
         }
         matnr?.let {
             val productInfo = taskManager.getReceivingTask()?.taskRepository?.getProducts()?.findProduct(it)
-            if (productInfo != null) searchProductDelegate.openProductScreen(productInfo, false)
+            if (productInfo != null) {
+                if (productInfo.isVet) {
+                    screenNavigator.openGoodsMercuryInfoScreen(productInfo, false)
+                } else {
+                    when (productInfo.type) {
+                        ProductType.General -> screenNavigator.openGoodsInfoScreen(productInfo, false)
+                        ProductType.ExciseAlcohol -> screenNavigator.openExciseAlcoInfoScreen(productInfo)
+                        ProductType.NonExciseAlcohol -> screenNavigator.openNonExciseAlcoInfoScreen(productInfo)
+                    }
+                }
+            }
         }
     }
 

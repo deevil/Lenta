@@ -26,11 +26,25 @@ class TaskContents
     }
 
     fun getTaskContentsInfo(startRecountRestInfo: DirectSupplierStartRecountRestInfo) : TaskContentsInfo {
-        return TaskContentsInfo(conversionToProductInfo(startRecountRestInfo.taskComposition), startRecountRestInfo.taskProductDiscrepancies, startRecountRestInfo.taskBatches, startRecountRestInfo.taskBatchesDiscrepancies)
+        return TaskContentsInfo(
+                conversionToProductInfo(startRecountRestInfo.taskComposition),
+                startRecountRestInfo.taskProductDiscrepancies,
+                startRecountRestInfo.taskBatches,
+                startRecountRestInfo.taskBatchesDiscrepancies,
+                conversionToMercuryInfo(startRecountRestInfo.taskMercuryInfoRestData),
+                conversionToMercuryNotActual(startRecountRestInfo.taskMercuryNotActualRestData)
+        )
     }
 
     fun getTaskContentsInfo(startRecountRestInfo: TaskContentsRequestResult) : TaskContentsInfo {
-        return TaskContentsInfo(conversionToProductInfo(startRecountRestInfo.taskComposition), startRecountRestInfo.taskProductDiscrepancies, startRecountRestInfo.taskBatches, startRecountRestInfo.taskBatchesDiscrepancies)
+        return TaskContentsInfo(
+                conversionToProductInfo(startRecountRestInfo.taskComposition),
+                startRecountRestInfo.taskProductDiscrepancies,
+                startRecountRestInfo.taskBatches,
+                startRecountRestInfo.taskBatchesDiscrepancies,
+                conversionToMercuryInfo(startRecountRestInfo.taskMercuryInfoRestData),
+                conversionToMercuryNotActual(startRecountRestInfo.taskMercuryNotActualRestData)
+        )
     }
 
     private fun conversionToProductInfo(taskComposition: List<TaskComposition>) : List<TaskProductInfo> {
@@ -70,11 +84,46 @@ class TaskContents
             )
         }
     }
+
+    private fun conversionToMercuryInfo(taskMercuryInfoRestData: List<TaskMercuryInfoRestData>) : List<TaskMercuryInfo> {
+        return taskMercuryInfoRestData.map {
+            val uomInfo = zmpUtz07V001.getUomInfo(it.unit)
+            TaskMercuryInfo(
+                    materialNumber= it.materialNumber,
+                    vetDocumentID = it.vetDocumentID,
+                    volume = it.volume.toDouble(),
+                    uom = Uom(code = uomInfo?.uom ?: "", name = uomInfo?.name ?: ""),
+                    typeDiscrepancies = it.typeDiscrepancies,
+                    numberDiscrepancies = it.numberDiscrepancies.toDouble(),
+                    productionDates = it.productionDates,
+                    manufacturers = it.manufacturers,
+                    productionDateTo = it.productionDateTo
+            )
+        }
+    }
+
+    private fun conversionToMercuryNotActual(taskMercuryNotActualRestData: List<TaskMercuryNotActualRestData>) : List<TaskMercuryNotActual> {
+        return taskMercuryNotActualRestData.map {
+            val uomInfo = zmpUtz07V001.getUomInfo(it.unit)
+            TaskMercuryNotActual(
+                    materialNumber= it.materialNumber,
+                    vetDocumentID = it.vetDocumentID,
+                    volume = it.volume.toDouble(),
+                    productName = it.productName,
+                    uom = Uom(code = uomInfo?.uom ?: "", name = uomInfo?.name ?: ""),
+                    productionDate = it.productionDate,
+                    manufacturer = it.manufacturer,
+                    productionDateTo = it.productionDateTo
+            )
+        }
+    }
 }
 
 data class TaskContentsInfo(
         val products: List<TaskProductInfo>,
         val productsDiscrepancies: List<TaskProductDiscrepancies>,
         val taskBatches: List<TaskBatchInfo>,
-        val taskBatchesDiscrepancies: List<TaskBatchesDiscrepancies>
+        val taskBatchesDiscrepancies: List<TaskBatchesDiscrepancies>,
+        val taskMercuryInfo: List<TaskMercuryInfo>,
+        val taskMercuryNotActual: List<TaskMercuryNotActual>
 )

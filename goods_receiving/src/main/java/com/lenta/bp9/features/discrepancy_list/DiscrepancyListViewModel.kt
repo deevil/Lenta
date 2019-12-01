@@ -12,6 +12,7 @@ import com.lenta.bp9.requests.network.EndRecountDDResult
 import com.lenta.bp9.requests.network.EndRecountDirectDeliveriesNetRequest
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
+import com.lenta.shared.models.core.ProductType
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.PageSelectionListener
@@ -39,8 +40,6 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
     val countNotProcessed: MutableLiveData<List<GoodsDiscrepancyItem>> = MutableLiveData()
     val countProcessed: MutableLiveData<List<GoodsDiscrepancyItem>> = MutableLiveData()
     private val isBatches: MutableLiveData<Boolean> = MutableLiveData(false)
-    val isDiscrepancy: MutableLiveData<Boolean> = MutableLiveData(false)
-
 
     val visibilityCleanButton: MutableLiveData<Boolean> = selectedPage.map {
         it == 1
@@ -190,7 +189,17 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
         }
         matnr?.let {
             val productInfo = taskManager.getReceivingTask()?.taskRepository?.getProducts()?.findProduct(it)
-            if (productInfo != null) screenNavigator.openGoodsInfoScreen(productInfo, true)
+            if (productInfo != null) {
+                if (productInfo.isVet) {
+                    screenNavigator.openGoodsMercuryInfoScreen(productInfo, true)
+                } else {
+                    when (productInfo.type) {
+                        ProductType.General -> screenNavigator.openGoodsInfoScreen(productInfo, true)
+                        ProductType.ExciseAlcohol -> screenNavigator.openExciseAlcoInfoScreen(productInfo)
+                        ProductType.NonExciseAlcohol -> screenNavigator.openNonExciseAlcoInfoScreen(productInfo)
+                    }
+                }
+            }
         }
     }
 
