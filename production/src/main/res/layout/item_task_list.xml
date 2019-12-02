@@ -43,14 +43,25 @@
                 android:layout_weight="@integer/pu_type_column_2"
                 android:orientation="horizontal">
 
-                <TextView
-                    style="@style/CellTextStyle"
+                <LinearLayout
                     android:layout_width="0dp"
-                    android:layout_marginStart="8dp"
+                    android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:maxLines="2"
-                    android:text="@{item.puNumber}"
-                    tools:text="236589267462146198" />
+                    android:orientation="vertical">
+
+                    <TextView
+                        style="@style/CellTextStyle"
+                        android:layout_width="wrap_content"
+                        android:text="@{item.text1}"
+                        tools:text="3682194862 / 10.09.19" />
+
+                    <TextView
+                        style="@style/CellTextStyle"
+                        android:layout_width="wrap_content"
+                        android:text="@{item.text2}"
+                        tools:text="ООО Минторг" />
+
+                </LinearLayout>
 
                 <ImageView
                     android:layout_width="wrap_content"
@@ -85,7 +96,7 @@
                 <TextView
                     style="@style/CellTextStyle"
                     android:gravity="center"
-                    android:text="@{item.sku}"
+                    android:text="@{item.quantity}"
                     tools:text="1" />
 
             </LinearLayout>

@@ -54,9 +54,10 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
         products?.mapIndexed { index, task ->
             ItemTaskListUi(
                     position = (products.size - index).toString(),
-                    puNumber = task.taskInfo.number,
+                    text1 = task.taskInfo.text1,
+                    text2 = task.taskInfo.text2,
                     taskStatus = task.status,
-                    sku = task.taskInfo.quantity.toString()
+                    quantity = task.taskInfo.quantity.toString()
             )
         }
     }
@@ -116,7 +117,7 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
             Tabs.PROCESSED.page -> processed
             else -> throw IllegalArgumentException("Wrong pager position!")
         }.let {
-            openTaskByNumber(it.value!![position].puNumber)
+            openTaskByNumber(it.value!![position].text1)
         }
     }
 
@@ -173,7 +174,8 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
 
 data class ItemTaskListUi(
         val position: String,
-        val puNumber: String,
+        val text1: String,
+        val text2: String,
         val taskStatus: TaskStatus,
-        val sku: String
+        val quantity: String
 )
