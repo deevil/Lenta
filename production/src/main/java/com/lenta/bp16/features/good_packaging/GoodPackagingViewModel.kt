@@ -77,7 +77,7 @@ class GoodPackagingViewModel : CoreViewModel() {
                                 material = good.material,
                                 orderNumber = raw.orderNumber,
                                 quantity = raw.totalQuantity,
-                                taskNumber = taskManager.currentTask.task.number
+                                taskNumber = taskManager.currentTask.taskInfo.number
                         )
                 ).also {
                     navigator.hideProgress()

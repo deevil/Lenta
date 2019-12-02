@@ -1,7 +1,7 @@
 package com.lenta.bp16.request
 
 import com.google.gson.annotations.SerializedName
-import com.lenta.bp16.request.pojo.Task
+import com.lenta.bp16.request.pojo.TaskInfo
 import com.lenta.bp16.request.pojo.RetCode
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.fmp.ObjectRawStatus
@@ -47,7 +47,7 @@ class TaskListStatus : ObjectRawStatus<TaskListResult>()
 data class TaskListResult(
         /** Список объектов */
         @SerializedName("ET_OBJ_LIST")
-        val tasks: List<Task>,
+        val tasks: List<TaskInfo>,
         /** Таблица возврата */
         @SerializedName("ET_RETCODE")
         val retCodes: List<RetCode>

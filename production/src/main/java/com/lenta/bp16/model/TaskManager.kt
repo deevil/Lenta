@@ -5,7 +5,7 @@ import com.lenta.bp16.model.pojo.Good
 import com.lenta.bp16.model.pojo.Pack
 import com.lenta.bp16.model.pojo.Raw
 import com.lenta.bp16.model.pojo.Task
-import com.lenta.bp16.platform.extention.getTaskType
+import com.lenta.bp16.platform.extention.getTaskStatus
 import com.lenta.bp16.repository.IGeneralRepository
 import com.lenta.bp16.request.TaskInfoResult
 import com.lenta.bp16.request.TaskListResult
@@ -14,6 +14,8 @@ import javax.inject.Inject
 class TaskManager @Inject constructor(
         private val repository: IGeneralRepository
 ) : ITaskManager {
+
+    override lateinit var taskType: TaskType
 
     override val tasks = MutableLiveData<List<Task>>(emptyList())
 
@@ -26,11 +28,12 @@ class TaskManager @Inject constructor(
     override fun addTasks(taskListResult: TaskListResult) {
         val taskList = tasks.value!!.filter { it.isProcessed }.toMutableList()
         taskListResult.tasks.forEach { processingUnit ->
-            val existTask = taskList.find { it.task.number == processingUnit.number }
+            val existTask = taskList.find { it.taskInfo.number == processingUnit.number }
             if (existTask == null) {
                 taskList.add(Task(
-                        type = processingUnit.getTaskType(),
-                        task = processingUnit
+                        status = processingUnit.getTaskStatus(),
+                        taskInfo = processingUnit,
+                        type = taskType
                 ))
             }
         }
@@ -59,7 +62,6 @@ class TaskManager @Inject constructor(
                                     material = packInfo.material,
                                     materialOsn = packInfo.materialOsn,
                                     code = packInfo.code,
-                                    name = packInfo.name,
                                     quantity = packInfo.quantity
                             )
                         }.toMutableList()
@@ -71,6 +73,7 @@ class TaskManager @Inject constructor(
 }
 
 interface ITaskManager {
+    var taskType: TaskType
     val tasks: MutableLiveData<List<Task>>
     var currentTask: Task
     var currentGood: Good

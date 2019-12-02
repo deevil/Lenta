@@ -95,7 +95,7 @@ class GoodWeighingViewModel : CoreViewModel() {
                     PackCodeParams(
                             marketNumber = sessionInfo.market ?: "Not found!",
                             parentType = 1,
-                            parent = taskManager.currentTask.task.number,
+                            parent = taskManager.currentTask.taskInfo.number,
                             deviceIp = deviceIp.value ?: "Not found!",
                             material = good.material,
                             orderNumber = raw.orderNumber,

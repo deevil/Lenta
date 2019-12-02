@@ -23,7 +23,7 @@ class RawListViewModel : CoreViewModel() {
     }
 
     val description by lazy {
-        "ЕО - ${taskManager.currentTask.task.number}"
+        "ЕО - ${taskManager.currentTask.taskInfo.number}"
     }
 
     val raws: MutableLiveData<List<ItemRawListUi>> by lazy {

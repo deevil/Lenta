@@ -4,8 +4,9 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp16.model.ITaskManager
 import com.lenta.bp16.model.Tabs
-import com.lenta.bp16.model.TaskType
+import com.lenta.bp16.model.TaskStatus
 import com.lenta.bp16.model.pojo.Task
+import com.lenta.bp16.platform.extention.getTaskType
 import com.lenta.bp16.platform.navigation.IScreenNavigator
 import com.lenta.bp16.request.TaskInfoNetRequest
 import com.lenta.bp16.request.TaskInfoParams
@@ -53,9 +54,9 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
         products?.mapIndexed { index, task ->
             ItemTaskListUi(
                     position = (products.size - index).toString(),
-                    puNumber = task.task.number,
-                    taskType = task.type,
-                    sku = task.task.quantity.toString()
+                    puNumber = task.taskInfo.number,
+                    taskStatus = task.status,
+                    sku = task.taskInfo.quantity.toString()
             )
         }
     }
@@ -84,7 +85,9 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
 
             taskListNetRequest(
                     TaskListParams(
-                            tkNumber = sessionInfo.market ?: ""
+                            tkNumber = sessionInfo.market ?: "",
+                            taskType = taskManager.taskType.getTaskType(),
+                            deviceIp = deviceIp.value ?: "Not found!"
                     )
             ).also {
                 navigator.hideProgress()
@@ -123,7 +126,7 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
     }
 
     private fun openTaskByNumber(puNumber: String) {
-        taskManager.tasks.value?.find { it.task.number == puNumber }?.let { task ->
+        taskManager.tasks.value?.find { it.taskInfo.number == puNumber }?.let { task ->
             taskManager.currentTask = task
 
             if (task.isProcessed) {
@@ -144,7 +147,7 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
                         viewModelScope.launch {
                             taskManager.addTaskInfoToCurrentTask(taskInfoResult)
 
-                            task.task.apply {
+                            task.taskInfo.apply {
                                 when (blockType) {
                                     2 -> navigator.showAlertBlockedTaskAnotherUser(lockUser)
                                     1 -> navigator.showAlertBlockedTaskByMe(lockUser) { openTaskByType(task) }
@@ -159,7 +162,7 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
     }
 
     private fun openTaskByType(task: Task) {
-        if (task.task.isPack.isSapTrue()) {
+        if (task.taskInfo.isPack.isSapTrue()) {
             navigator.openPackGoodListScreen()
         } else {
             navigator.openRawGoodListScreen()
@@ -171,6 +174,6 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
 data class ItemTaskListUi(
         val position: String,
         val puNumber: String,
-        val taskType: TaskType,
+        val taskStatus: TaskStatus,
         val sku: String
 )
