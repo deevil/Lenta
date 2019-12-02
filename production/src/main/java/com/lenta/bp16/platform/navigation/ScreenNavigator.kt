@@ -5,7 +5,7 @@ import com.lenta.bp16.R
 import com.lenta.bp16.features.auth.AuthFragment
 import com.lenta.bp16.features.good_packaging.GoodPackagingFragment
 import com.lenta.bp16.features.good_weighing.GoodWeighingFragment
-import com.lenta.bp16.features.raw_good_list.RawGoodListFragment
+import com.lenta.bp16.features.processing_unit_list.ProcessingUnitListFragment
 import com.lenta.bp16.features.loading.fast.FastDataLoadingFragment
 import com.lenta.bp16.features.main_menu.MainMenuFragment
 import com.lenta.bp16.features.pack_good_list.PackGoodListFragment
@@ -72,9 +72,9 @@ class ScreenNavigator @Inject constructor(
         }
     }
 
-    override fun openRawGoodListScreen() {
+    override fun openProcessingUnitListScreen() {
         runOrPostpone {
-            getFragmentStack()?.push(RawGoodListFragment())
+            getFragmentStack()?.push(ProcessingUnitListFragment())
         }
     }
 
@@ -157,7 +157,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openSelectMarketScreen()
     fun openMainMenuScreen()
     fun openTaskListScreen()
-    fun openRawGoodListScreen()
+    fun openProcessingUnitListScreen()
     fun openRawListScreen()
     fun openGoodWeighingScreen()
     fun openGoodPackagingScreen()

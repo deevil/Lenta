@@ -1,4 +1,4 @@
-package com.lenta.bp16.features.raw_good_list
+package com.lenta.bp16.features.processing_unit_list
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
@@ -15,7 +15,7 @@ import com.lenta.shared.utilities.extentions.dropZeros
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class RawGoodListViewModel : CoreViewModel() {
+class ProcessingUnitListViewModel : CoreViewModel() {
 
     @Inject
     lateinit var navigator: IScreenNavigator

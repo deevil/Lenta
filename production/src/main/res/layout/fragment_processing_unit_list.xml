@@ -2,13 +2,13 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
-        tools:context=".features.raw_good_list.RawGoodListFragment">
+        tools:context=".features.processing_unit_list.ProcessingUnitListFragment">
 
     <data>
 
         <variable
             name="vm"
-            type="com.lenta.bp16.features.raw_good_list.RawGoodListViewModel" />
+            type="com.lenta.bp16.features.processing_unit_list.ProcessingUnitListViewModel" />
 
         <variable
             name="rvConfig"
@@ -90,7 +90,7 @@
             android:layout_height="match_parent"
             app:items="@{vm.rawGoods}"
             app:rv_config="@{rvConfig}"
-            tools:listitem="@layout/item_raw_good_list" />
+            tools:listitem="@layout/item_processing_unit" />
 
     </LinearLayout>
 

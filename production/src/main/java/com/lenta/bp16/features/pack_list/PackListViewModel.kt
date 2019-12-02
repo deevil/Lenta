@@ -40,7 +40,7 @@ class PackListViewModel : CoreViewModel() {
             taskManager.currentGood.isProcessed = true
 
             navigator.closeAllScreen()
-            navigator.openRawGoodListScreen()
+            navigator.openProcessingUnitListScreen()
         }
     }
 

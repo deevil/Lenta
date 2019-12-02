@@ -6,7 +6,7 @@
 
         <variable
             name="item"
-            type="com.lenta.bp16.features.raw_good_list.ItemRawGoodListUi" />
+            type="com.lenta.bp16.features.processing_unit_list.ItemRawGoodListUi" />
 
     </data>
 

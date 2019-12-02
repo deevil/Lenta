@@ -166,7 +166,7 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
         if (task.taskInfo.isPack.isSapTrue()) {
             navigator.openPackGoodListScreen()
         } else {
-            navigator.openRawGoodListScreen()
+            navigator.openProcessingUnitListScreen()
         }
     }
 
