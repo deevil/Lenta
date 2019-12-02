@@ -42,10 +42,18 @@
             app:layout_constraintStart_toStartOf="parent">
 
             <Button
-                android:id="@+id/b_print"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:onClick="@{(view) -> vm.openTaskList()}"
+                android:onClick="@{(view) -> vm.onClickExternalSupply()}"
+                android:text="@string/processing_es"
+                android:textAllCaps="false"
+                app:icon="@drawable/ic_check_list_48dp"
+                app:iconGravity="end" />
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:onClick="@{(view) -> vm.onClickProcessingUnit()}"
                 android:text="@string/processing_pu"
                 android:textAllCaps="false"
                 app:icon="@drawable/ic_print_price_tag_48dp"
