@@ -109,7 +109,6 @@ class GoodWeighingViewModel : CoreViewModel() {
                                 material = good.material,
                                 materialOsn = raw.materialOsn,
                                 code = packCodeResult.packCode,
-                                name = raw.name,
                                 quantity = enteredWeight.value ?: 0.0
                         )
                 )

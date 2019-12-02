@@ -3,6 +3,7 @@ package com.lenta.bp16.features.raw_good_list
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp16.model.ITaskManager
+import com.lenta.bp16.platform.extention.getTaskType
 import com.lenta.bp16.platform.navigation.IScreenNavigator
 import com.lenta.bp16.request.EndProcessingNetRequest
 import com.lenta.bp16.request.EndProcessingParams
@@ -31,7 +32,7 @@ class RawGoodListViewModel : CoreViewModel() {
     }
 
     val title by lazy {
-        "ЕО - ${task.taskInfo.number}"
+        task.taskInfo.text3
     }
 
     val rawGoods: MutableLiveData<List<ItemRawGoodListUi>> by lazy {
@@ -76,7 +77,10 @@ class RawGoodListViewModel : CoreViewModel() {
             navigator.showProgressLoadingData()
 
             endProcessingNetRequest(
-                    EndProcessingParams(taskNumber = task.taskInfo.number)
+                    EndProcessingParams(
+                            taskNumber = task.taskInfo.number,
+                            taskType = taskManager.taskType.getTaskType()
+                    )
             ).also {
                 navigator.hideProgress()
             }.either(::handleFailure) {

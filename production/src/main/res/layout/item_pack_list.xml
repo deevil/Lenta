@@ -43,12 +43,12 @@
 
                 <TextView
                     style="@style/CellTextStyle"
-                    android:text="@{item.packNumber}"
+                    android:text="@{item.number}"
                     tools:text="Тара №1" />
 
                 <TextView
                     style="@style/CellTextStyle"
-                    android:text="@{item.rawName}"
+                    android:text="@{item.name}"
                     tools:text="Форель филе" />
 
             </LinearLayout>
@@ -63,7 +63,7 @@
                 <TextView
                     style="@style/CellTextStyle"
                     android:gravity="center"
-                    android:text="@{item.totalWeight}"
+                    android:text="@{item.weight}"
                     tools:text="25 кг" />
 
             </LinearLayout>
