@@ -32,7 +32,7 @@ class GoodWeighingViewModel : CoreViewModel() {
         taskManager.currentGood.getNameWithMaterial(" - ")
     }
 
-    val marketIp: MutableLiveData<String> = MutableLiveData("")
+    val deviceIp: MutableLiveData<String> = MutableLiveData("")
 
     val good by lazy {
         taskManager.currentGood
@@ -95,8 +95,8 @@ class GoodWeighingViewModel : CoreViewModel() {
                     PackCodeParams(
                             marketNumber = sessionInfo.market ?: "Not found!",
                             parentType = 1,
-                            parent = taskManager.currentTask.processingUnit.number,
-                            marketIp = marketIp.value ?: "Not found!",
+                            parent = taskManager.currentTask.task.number,
+                            deviceIp = deviceIp.value ?: "Not found!",
                             material = good.material,
                             orderNumber = raw.orderNumber,
                             quantity = raw.totalQuantity

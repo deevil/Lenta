@@ -31,7 +31,7 @@ class RawGoodListViewModel : CoreViewModel() {
     }
 
     val title by lazy {
-        "ЕО - ${task.processingUnit.number}"
+        "ЕО - ${task.task.number}"
     }
 
     val rawGoods: MutableLiveData<List<ItemRawGoodListUi>> by lazy {
@@ -61,7 +61,7 @@ class RawGoodListViewModel : CoreViewModel() {
     fun onBackPressed() {
         viewModelScope.launch {
             unblockTaskNetRequest(
-                    UnblockTaskParams(puNumber = task.processingUnit.number)
+                    UnblockTaskParams(taskNumber = task.task.number)
             )
 
             navigator.goBack()
@@ -73,7 +73,7 @@ class RawGoodListViewModel : CoreViewModel() {
             navigator.showProgressLoadingData()
 
             endProcessingNetRequest(
-                    EndProcessingParams(puNumber = task.processingUnit.number)
+                    EndProcessingParams(taskNumber = task.task.number)
             ).also {
                 navigator.hideProgress()
             }.either(::handleFailure) {

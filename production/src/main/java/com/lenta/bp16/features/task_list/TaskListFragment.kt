@@ -39,7 +39,7 @@ class TaskListFragment : CoreFragment<FragmentTaskListBinding, TaskListViewModel
         provideViewModel(TaskListViewModel::class.java).let {
             getAppComponent()?.inject(it)
 
-            it.marketIp.value = context!!.getDeviceIp()
+            it.deviceIp.value = context!!.getDeviceIp()
 
             return it
         }

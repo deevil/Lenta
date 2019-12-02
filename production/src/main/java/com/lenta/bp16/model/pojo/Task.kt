@@ -1,12 +1,12 @@
 package com.lenta.bp16.model.pojo
 
 import com.lenta.bp16.model.TaskType
-import com.lenta.bp16.request.pojo.ProcessingUnit
+import com.lenta.bp16.request.pojo.Task
 
 data class Task(
         var isProcessed: Boolean = false,
         val type: TaskType,
-        val processingUnit: ProcessingUnit,
+        val task: Task,
         var goods: List<Good>? = null
 ) {
 }

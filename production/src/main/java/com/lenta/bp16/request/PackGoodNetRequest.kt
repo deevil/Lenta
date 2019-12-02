@@ -33,14 +33,14 @@ data class PackGoodParams(
         /** Код предприятия */
         @SerializedName("IV_WERKS")
         val marketNumber: String,
-        /** Номер ЕО */
-        @SerializedName("IV_EXIDV")
-        val puNumber: String,
+        /** Номер объекта */
+        @SerializedName("IV_OBJ_CODE")
+        val taskNumber: String,
         /** IP адрес ТСД */
         @SerializedName("IV_IP")
-        val marketIp: String,
-        /** Номер заказа */
-        @SerializedName("AUFNR")
+        val deviceIp: String,
+        /** Номер технологического заказа */
+        @SerializedName("IV_AUFNR")
         val orderNumber: String,
         /** SAP – код товар */
         @SerializedName("IV_MATNR")

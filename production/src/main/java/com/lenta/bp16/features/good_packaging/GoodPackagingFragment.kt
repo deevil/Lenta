@@ -25,7 +25,7 @@ class GoodPackagingFragment : CoreFragment<FragmentGoodWeighingBinding, GoodPack
         provideViewModel(GoodPackagingViewModel::class.java).let {
             getAppComponent()?.inject(it)
 
-            it.marketIp.value = context!!.getDeviceIp()
+            it.deviceIp.value = context!!.getDeviceIp()
 
             return it
         }

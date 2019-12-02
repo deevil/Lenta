@@ -39,7 +39,7 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
         "ТК - ${sessionInfo.market}"
     }
 
-    val marketIp: MutableLiveData<String> = MutableLiveData("")
+    val deviceIp: MutableLiveData<String> = MutableLiveData("")
 
     val selectedPage = MutableLiveData(0)
 
@@ -53,9 +53,9 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
         products?.mapIndexed { index, task ->
             ItemTaskListUi(
                     position = (products.size - index).toString(),
-                    puNumber = task.processingUnit.number,
+                    puNumber = task.task.number,
                     taskType = task.type,
-                    sku = task.processingUnit.quantity.toString()
+                    sku = task.task.quantity.toString()
             )
         }
     }
@@ -123,7 +123,7 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
     }
 
     private fun openTaskByNumber(puNumber: String) {
-        taskManager.tasks.value?.find { it.processingUnit.number == puNumber }?.let { task ->
+        taskManager.tasks.value?.find { it.task.number == puNumber }?.let { task ->
             taskManager.currentTask = task
 
             if (task.isProcessed) {
@@ -134,8 +134,8 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
                     taskInfoNetRequest(
                             TaskInfoParams(
                                     marketNumber = sessionInfo.market ?: "Not found!",
-                                    marketIp = marketIp.value ?: "Not found!",
-                                    puNumber = puNumber,
+                                    deviceIp = deviceIp.value ?: "Not found!",
+                                    taskNumber = puNumber,
                                     processingMode = "1"
                             )
                     ).also {
@@ -144,7 +144,7 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
                         viewModelScope.launch {
                             taskManager.addTaskInfoToCurrentTask(taskInfoResult)
 
-                            task.processingUnit.apply {
+                            task.task.apply {
                                 when (blockType) {
                                     2 -> navigator.showAlertBlockedTaskAnotherUser(lockUser)
                                     1 -> navigator.showAlertBlockedTaskByMe(lockUser) { openTaskByType(task) }
@@ -159,7 +159,7 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
     }
 
     private fun openTaskByType(task: Task) {
-        if (task.processingUnit.isPack.isSapTrue()) {
+        if (task.task.isPack.isSapTrue()) {
             navigator.openPackGoodListScreen()
         } else {
             navigator.openRawGoodListScreen()

@@ -33,7 +33,7 @@ class EndDefrostingNetRequest @Inject constructor(
 data class EndDefrostingParams(
         /** IP адрес ТСД */
         @SerializedName("IV_IP")
-        val marketIp: String,
+        val deviceIp: String,
         /** Список тар */
         @SerializedName("IT_CONT_LIST")
         val packCodes: List<PackCode>

@@ -36,13 +36,13 @@ data class TaskInfoParams(
         /** Код предприятия */
         @SerializedName("IV_WERKS")
         val marketNumber: String,
-        /** Номер ЕО */
-        @SerializedName("IV_EXIDV")
-        val puNumber: String,
+        /** Номер объекта */
+        @SerializedName("IV_OBJ_CODE")
+        val taskNumber: String,
         /** IP адрес ТСД */
         @SerializedName("IV_IP")
-        val marketIp: String,
-        /** Режим обработки: 1 - блокировка ЕО, 2 - переблокировка ЕО */
+        val deviceIp: String,
+        /** Режим обработки: 1 - блокировка ЕО, 2 - переблокировка ЕО, 3 - блокировка ВП, 4 - переблокировка ВП */
         @SerializedName("IV_MODE")
         val processingMode: String
 )
@@ -51,7 +51,7 @@ class TaskInfoStatus : ObjectRawStatus<TaskInfoResult>()
 
 data class TaskInfoResult(
         /** Список товаров */
-        @SerializedName("ET_EXIDV_POS")
+        @SerializedName("ET_OBJ_POS")
         val goods: List<GoodInfo>,
         /** Список первых переделов */
         @SerializedName("ET_FIRST_PRO")

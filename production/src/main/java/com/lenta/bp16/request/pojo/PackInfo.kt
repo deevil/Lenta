@@ -12,9 +12,6 @@ data class PackInfo(
         /** SAP – код товара */
         @SerializedName("MATNR_OSN")
         val materialOsn: String,
-        /** Наименование товара ПФ/ГП */
-        @SerializedName("NAME_MATNR_OSN")
-        val name: String,
         /** Фактически вес ПФ/ГП */
         @SerializedName("FACT_QNT")
         val quantity: Double

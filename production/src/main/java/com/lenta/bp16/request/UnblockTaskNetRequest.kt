@@ -30,9 +30,12 @@ class UnblockTaskNetRequest @Inject constructor(
 }
 
 data class UnblockTaskParams(
-        /** Номер ЕО */
-        @SerializedName("EXIDV")
-        val puNumber: String
+        /** Номер объекта */
+        @SerializedName("IV_OBJ_CODE")
+        val taskNumber: String,
+        /** Режим обработки: 1 - разблокировка ЕО, 2 - разблокировка ВП */
+        @SerializedName("IV_MODE")
+        val unblockType: Int
 )
 
 class UnblockTaskStatus : ObjectRawStatus<UnblockTaskResult>()
