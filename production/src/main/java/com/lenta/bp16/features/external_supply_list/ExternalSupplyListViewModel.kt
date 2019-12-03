@@ -3,7 +3,6 @@ package com.lenta.bp16.features.external_supply_list
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp16.model.ITaskManager
-import com.lenta.bp16.platform.extention.getTaskType
 import com.lenta.bp16.platform.navigation.IScreenNavigator
 import com.lenta.bp16.request.EndProcessingNetRequest
 import com.lenta.bp16.request.EndProcessingParams
@@ -62,7 +61,7 @@ class ExternalSupplyListViewModel : CoreViewModel() {
             unblockTaskNetRequest(
                     UnblockTaskParams(
                             taskNumber = task.taskInfo.number,
-                            unblockType = taskManager.taskType.getTaskType()
+                            unblockType = taskManager.getTaskType()
                     )
             )
 
@@ -77,7 +76,7 @@ class ExternalSupplyListViewModel : CoreViewModel() {
             endProcessingNetRequest(
                     EndProcessingParams(
                             taskNumber = task.taskInfo.number,
-                            taskType = taskManager.taskType.getTaskType()
+                            taskType = taskManager.getTaskType()
                     )
             ).also {
                 navigator.hideProgress()

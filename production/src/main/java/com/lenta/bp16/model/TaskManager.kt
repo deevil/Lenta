@@ -70,6 +70,12 @@ class TaskManager @Inject constructor(
         }
     }
 
+    override fun getTaskType(): Int {
+        return when (taskType) {
+            TaskType.PROCESSING_UNIT -> 1
+            TaskType.EXTERNAL_SUPPLY -> 2
+        }
+    }
 }
 
 interface ITaskManager {
@@ -81,4 +87,5 @@ interface ITaskManager {
 
     fun addTasks(taskListResult: TaskListResult)
     suspend fun addTaskInfoToCurrentTask(taskInfoResult: TaskInfoResult)
+    fun getTaskType(): Int
 }

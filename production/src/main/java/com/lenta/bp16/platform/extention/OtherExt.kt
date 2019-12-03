@@ -19,10 +19,3 @@ fun TaskInfo.getTaskStatus(): TaskStatus {
         }
     }
 }
-
-fun TaskType.getTaskType(): Int {
-    return when (this) {
-        TaskType.PROCESSING_UNIT -> 1
-        TaskType.EXTERNAL_SUPPLY -> 2
-    }
-}

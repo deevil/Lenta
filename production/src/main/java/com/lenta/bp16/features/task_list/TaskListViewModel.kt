@@ -6,7 +6,6 @@ import com.lenta.bp16.model.ITaskManager
 import com.lenta.bp16.model.Tabs
 import com.lenta.bp16.model.TaskStatus
 import com.lenta.bp16.model.pojo.Task
-import com.lenta.bp16.platform.extention.getTaskType
 import com.lenta.bp16.platform.navigation.IScreenNavigator
 import com.lenta.bp16.request.TaskInfoNetRequest
 import com.lenta.bp16.request.TaskInfoParams
@@ -87,7 +86,7 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
             taskListNetRequest(
                     TaskListParams(
                             tkNumber = sessionInfo.market ?: "",
-                            taskType = taskManager.taskType.getTaskType(),
+                            taskType = taskManager.getTaskType(),
                             deviceIp = deviceIp.value ?: "Not found!"
                     )
             ).also {
