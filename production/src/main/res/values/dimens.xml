@@ -12,6 +12,11 @@
     <integer name="sku_arrived_remain_column_3">20</integer>
     <integer name="sku_arrived_remain_column_4">30</integer>
 
+    <!-- Список товаров - № / SKU / Прибыло -->
+    <integer name="sku_arrived_column_1">10</integer>
+    <integer name="sku_arrived_column_2">60</integer>
+    <integer name="sku_arrived_column_3">30</integer>
+
     <!-- Список сырья - № / Вид ПФ / Обработано -->
     <integer name="type_sf_processed_column_1">10</integer>
     <integer name="type_sf_processed_column_2">50</integer>

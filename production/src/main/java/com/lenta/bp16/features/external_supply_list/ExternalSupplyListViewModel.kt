@@ -1,4 +1,4 @@
-package com.lenta.bp16.features.processing_unit_list
+package com.lenta.bp16.features.external_supply_list
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
@@ -11,11 +11,10 @@ import com.lenta.bp16.request.UnblockTaskNetRequest
 import com.lenta.bp16.request.UnblockTaskParams
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.platform.viewmodel.CoreViewModel
-import com.lenta.shared.utilities.extentions.dropZeros
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class ProcessingUnitListViewModel : CoreViewModel() {
+class ExternalSupplyListViewModel : CoreViewModel() {
 
     @Inject
     lateinit var navigator: IScreenNavigator
@@ -35,14 +34,13 @@ class ProcessingUnitListViewModel : CoreViewModel() {
         task.taskInfo.text3
     }
 
-    val goods: MutableLiveData<List<ItemProcessingUnitUi>> by lazy {
+    val goods: MutableLiveData<List<ItemExternalSupplyUi>> by lazy {
         MutableLiveData(task.goods!!.mapIndexed { index, good ->
-            ItemProcessingUnitUi(
+            ItemExternalSupplyUi(
                     position = (index + 1).toString(),
                     material = good.material,
                     name = "${good.material.takeLast(6)} ${good.name}",
-                    arrived = "${good.planned} ${good.units.name}",
-                    remain = "${(good.planned - good.getFactRawQuantity()).dropZeros()} ${good.units.name}"
+                    arrived = "${good.planned} ${good.units.name}"
             )
         })
     }
@@ -101,10 +99,9 @@ class ProcessingUnitListViewModel : CoreViewModel() {
 
 }
 
-data class ItemProcessingUnitUi(
+data class ItemExternalSupplyUi(
         val position: String,
         val material: String,
         val name: String,
-        val arrived: String,
-        val remain: String
+        val arrived: String
 )

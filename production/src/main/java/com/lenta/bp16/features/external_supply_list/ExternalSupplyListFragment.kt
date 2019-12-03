@@ -1,13 +1,13 @@
-package com.lenta.bp16.features.processing_unit_list
+package com.lenta.bp16.features.external_supply_list
 
 import android.os.Bundle
 import android.view.View
 import android.widget.AdapterView
-import com.lenta.bp16.R
-import com.lenta.bp16.platform.extention.getAppComponent
 import com.lenta.bp16.BR
-import com.lenta.bp16.databinding.FragmentProcessingUnitListBinding
-import com.lenta.bp16.databinding.ItemProcessingUnitBinding
+import com.lenta.bp16.R
+import com.lenta.bp16.databinding.FragmentExternalSupplyListBinding
+import com.lenta.bp16.databinding.ItemExternalSupplyBinding
+import com.lenta.bp16.platform.extention.getAppComponent
 import com.lenta.shared.platform.activity.OnBackPresserListener
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
@@ -21,17 +21,17 @@ import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
 import com.lenta.shared.utilities.extentions.provideViewModel
 
-class ProcessingUnitListFragment : CoreFragment<FragmentProcessingUnitListBinding, ProcessingUnitListViewModel>(),
+class ExternalSupplyListFragment : CoreFragment<FragmentExternalSupplyListBinding, ExternalSupplyListViewModel>(),
         OnBackPresserListener, ToolbarButtonsClickListener {
 
     private var recyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
 
-    override fun getLayoutId(): Int = R.layout.fragment_processing_unit_list
+    override fun getLayoutId(): Int = R.layout.fragment_external_supply_list
 
-    override fun getPageNumber(): String? = generateScreenNumberFromPostfix("61")
+    override fun getPageNumber(): String? = generateScreenNumberFromPostfix("62")
 
-    override fun getViewModel(): ProcessingUnitListViewModel {
-        provideViewModel(ProcessingUnitListViewModel::class.java).let {
+    override fun getViewModel(): ExternalSupplyListViewModel {
+        provideViewModel(ExternalSupplyListViewModel::class.java).let {
             getAppComponent()?.inject(it)
             return it
         }
@@ -62,13 +62,13 @@ class ProcessingUnitListFragment : CoreFragment<FragmentProcessingUnitListBindin
     private fun initRvConfig() {
         binding?.let { layoutBinding ->
             layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
-                    layoutId = R.layout.item_processing_unit,
+                    layoutId = R.layout.item_external_supply,
                     itemId = BR.item,
-                    realisation = object : DataBindingAdapter<ItemProcessingUnitBinding> {
-                        override fun onCreate(binding: ItemProcessingUnitBinding) {
+                    realisation = object : DataBindingAdapter<ItemExternalSupplyBinding> {
+                        override fun onCreate(binding: ItemExternalSupplyBinding) {
                         }
 
-                        override fun onBind(binding: ItemProcessingUnitBinding, position: Int) {
+                        override fun onBind(binding: ItemExternalSupplyBinding, position: Int) {
                             recyclerViewKeyHandler?.let {
                                 binding.root.isSelected = it.isSelected(position)
                             }
