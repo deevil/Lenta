@@ -8,7 +8,7 @@ data class TaskInfo(
         var number: String,
         /** Тип блокировки: 1 - своя, 2 - чужая */
         @SerializedName("BLOCK_TYPE")
-        var blockType: Int,
+        var blockType: String,
         /** Имя пользователя */
         @SerializedName("LOCK_USER")
         var lockUser: String,
@@ -23,7 +23,7 @@ data class TaskInfo(
         var isPack: String,
         /** Кол-во позиций */
         @SerializedName("QNT_POS")
-        var quantity: Int,
+        var quantity: String,
         /** Текст первой строки */
         @SerializedName("TEXT1")
         var text1: String,

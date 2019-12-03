@@ -28,7 +28,7 @@ class MainMenuViewModel : CoreViewModel() {
         openTaskList()
     }
 
-    fun openTaskList() {
+    private fun openTaskList() {
         navigator.openTaskListScreen()
     }
 

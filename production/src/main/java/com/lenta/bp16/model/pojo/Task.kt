@@ -8,6 +8,7 @@ data class Task(
         var isProcessed: Boolean = false,
         val status: TaskStatus,
         val type: TaskType,
+        val quantity: Int,
         val taskInfo: TaskInfo,
         var goods: List<Good>? = null
 ) {

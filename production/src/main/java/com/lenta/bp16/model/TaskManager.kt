@@ -27,13 +27,14 @@ class TaskManager @Inject constructor(
 
     override fun addTasks(taskListResult: TaskListResult) {
         val taskList = tasks.value!!.filter { it.isProcessed }.toMutableList()
-        taskListResult.tasks.forEach { processingUnit ->
-            val existTask = taskList.find { it.taskInfo.number == processingUnit.number }
+        taskListResult.tasks.forEach { taskInfo ->
+            val existTask = taskList.find { it.taskInfo.number == taskInfo.number }
             if (existTask == null) {
                 taskList.add(Task(
-                        status = processingUnit.getTaskStatus(),
-                        taskInfo = processingUnit,
-                        type = taskType
+                        status = taskInfo.getTaskStatus(),
+                        taskInfo = taskInfo,
+                        type = taskType,
+                        quantity = taskInfo.quantity.toIntOrNull() ?: 0
                 ))
             }
         }

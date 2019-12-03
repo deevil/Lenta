@@ -47,7 +47,9 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
 
     val requestFocusToNumberField = MutableLiveData(true)
 
-    val tasks = taskManager.tasks.map { it }
+    val tasks by lazy {
+        taskManager.tasks
+    }
 
     private val toUiFunc = { products: List<Task>? ->
         products?.mapIndexed { index, task ->
@@ -56,14 +58,18 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
                     text1 = task.taskInfo.text1,
                     text2 = task.taskInfo.text2,
                     taskStatus = task.status,
-                    quantity = task.taskInfo.quantity.toString()
+                    quantity = task.quantity.toString()
             )
         }
     }
 
-    val processing = tasks.map { it?.filter { task -> !task.isProcessed } }.map(toUiFunc)
+    val processing by lazy {
+        tasks.map { it?.filter { task -> !task.isProcessed } }.map(toUiFunc)
+    }
 
-    val processed = tasks.map { it?.filter { task -> task.isProcessed } }.map(toUiFunc)
+    val processed by lazy {
+        tasks.map { it?.filter { task -> task.isProcessed } }.map(toUiFunc)
+    }
 
     // -----------------------------
 
@@ -149,8 +155,8 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
 
                             task.taskInfo.apply {
                                 when (blockType) {
-                                    2 -> navigator.showAlertBlockedTaskAnotherUser(lockUser)
-                                    1 -> navigator.showAlertBlockedTaskByMe(lockUser) { openTaskByType(task) }
+                                    "2" -> navigator.showAlertBlockedTaskAnotherUser(lockUser)
+                                    "1" -> navigator.showAlertBlockedTaskByMe(lockUser) { openTaskByType(task) }
                                     else -> openTaskByType(task)
                                 }
                             }
