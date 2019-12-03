@@ -43,8 +43,10 @@ class RawListViewModel : CoreViewModel() {
     // -----------------------------
 
     fun onClickComplete() {
-        good.isProcessed = true
-        navigator.goBack()
+        navigator.showConfirmNoSuchItemLeft(taskManager.taskType.name) {
+            good.isProcessed = true
+            navigator.goBack()
+        }
     }
 
     fun onClickItemPosition(position: Int) {

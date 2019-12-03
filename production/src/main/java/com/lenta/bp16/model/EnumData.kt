@@ -8,9 +8,9 @@ enum class TaskStatus {
     LOCK
 }
 
-enum class TaskType {
-    PROCESSING_UNIT,
-    EXTERNAL_SUPPLY
+enum class TaskType(name: String) {
+    PROCESSING_UNIT("ЕО"),
+    EXTERNAL_SUPPLY("ВП")
 }
 
 enum class Tabs(val page: Int) {

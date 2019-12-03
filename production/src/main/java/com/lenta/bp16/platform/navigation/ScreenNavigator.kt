@@ -123,11 +123,11 @@ class ScreenNavigator @Inject constructor(
         }
     }
 
-    override fun showConfirmNoSuchItemLeft(confirmCallback: () -> Unit) {
+    override fun showConfirmNoSuchItemLeft(taskType: String, confirmCallback: () -> Unit) {
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
                     pageNumber = "23",
-                    message = context.getString(R.string.confirm_that_there_is_no_such_item_left_in_pu),
+                    message = context.getString(R.string.confirm_that_there_is_no_such_item_left, taskType),
                     iconRes = R.drawable.is_warning_yellow_80dp,
                     codeConfirmForRight = backFragmentResultHelper.setFuncForResult(confirmCallback),
                     rightButtonDecorationInfo = ButtonDecorationInfo.confirm
@@ -165,6 +165,6 @@ interface IScreenNavigator : ICoreNavigator {
     fun openPackGoodListScreen()
 
     fun showDefrostingPhaseIsCompleted(nextCallback: () -> Unit)
-    fun showConfirmNoSuchItemLeft(confirmCallback: () -> Unit)
+    fun showConfirmNoSuchItemLeft(taskType: String, confirmCallback: () -> Unit)
     fun showFixingPackagingPhaseSuccessful(nextCallback: () -> Unit)
 }
