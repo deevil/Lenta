@@ -8,7 +8,7 @@ enum class TaskStatus {
     LOCK
 }
 
-enum class TaskType(name: String) {
+enum class TaskType(val abbreviation: String) {
     PROCESSING_UNIT("ЕО"),
     EXTERNAL_SUPPLY("ВП")
 }
