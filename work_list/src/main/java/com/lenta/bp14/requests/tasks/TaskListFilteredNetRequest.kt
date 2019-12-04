@@ -14,7 +14,7 @@ class TaskListFilteredNetRequest
         return taskListNetRequest(
                 TasksListParams(
                         tkNumber = params.tkNumber,
-                        user = params.user,
+                        user = params.searchQuery,
                         mode = "2",
                         filter = params.filteredParams
                 )
@@ -27,7 +27,7 @@ interface ITaskListFilteredNetRequest : UseCase<TaskListInfo, FilteredParams>
 
 data class FilteredParams(
         val tkNumber: String,
-        val user: String,
+        val searchQuery: String,
         val filteredParams: SearchTaskFilter?
 )
 
