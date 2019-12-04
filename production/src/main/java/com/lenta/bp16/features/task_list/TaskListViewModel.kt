@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.lenta.bp16.model.ITaskManager
 import com.lenta.bp16.model.Tabs
 import com.lenta.bp16.model.TaskStatus
+import com.lenta.bp16.model.TaskType
 import com.lenta.bp16.model.pojo.Task
 import com.lenta.bp16.platform.navigation.IScreenNavigator
 import com.lenta.bp16.request.TaskInfoNetRequest
@@ -70,6 +71,10 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
 
     val processed by lazy {
         tasks.map { it?.filter { task -> task.isProcessed } }.map(toUiFunc)
+    }
+
+    val scanButtonVisibility by lazy {
+        taskManager.taskType == TaskType.PROCESSING_UNIT
     }
 
     // -----------------------------
