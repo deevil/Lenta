@@ -6,7 +6,7 @@ data class RawInfo(
         /** Номер технологического заказа */
         @SerializedName("AUFNR")
         val orderNumber: String,
-        /** SAP – код товара */
+        /** SAP – код товара сырье */
         @SerializedName("MATNR")
         val material: String,
         /** SAP – код товара */

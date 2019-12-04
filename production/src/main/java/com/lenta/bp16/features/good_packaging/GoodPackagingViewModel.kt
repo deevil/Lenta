@@ -31,7 +31,7 @@ class GoodPackagingViewModel : CoreViewModel() {
         taskManager.currentGood.getNameWithMaterial(" - ")
     }
 
-    val marketIp: MutableLiveData<String> = MutableLiveData("")
+    val deviceIp: MutableLiveData<String> = MutableLiveData("")
 
     val good by lazy {
         taskManager.currentGood
@@ -73,11 +73,11 @@ class GoodPackagingViewModel : CoreViewModel() {
                 packGoodNetRequest(
                         PackGoodParams(
                                 marketNumber = sessionInfo.market ?: "Not found!",
-                                marketIp = marketIp.value ?: "Not found!",
+                                deviceIp = deviceIp.value ?: "Not found!",
                                 material = good.material,
                                 orderNumber = raw.orderNumber,
                                 quantity = raw.totalQuantity,
-                                puNumber = taskManager.currentTask.processingUnit.number
+                                taskNumber = taskManager.currentTask.taskInfo.number
                         )
                 ).also {
                     navigator.hideProgress()

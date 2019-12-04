@@ -19,7 +19,7 @@ class PackGoodListViewModel : CoreViewModel() {
     }
 
     val title by lazy {
-        "ЕО - ${task.processingUnit.number}"
+        "ЕО - ${task.taskInfo.number}"
     }
 
     val packGoods: MutableLiveData<List<ItemPackGoodListUi>> by lazy {

@@ -1,13 +1,13 @@
-package com.lenta.bp16.features.raw_good_list
+package com.lenta.bp16.features.processing_unit_list
 
 import android.os.Bundle
 import android.view.View
 import android.widget.AdapterView
 import com.lenta.bp16.R
-import com.lenta.bp16.databinding.FragmentRawGoodListBinding
 import com.lenta.bp16.platform.extention.getAppComponent
 import com.lenta.bp16.BR
-import com.lenta.bp16.databinding.ItemRawGoodListBinding
+import com.lenta.bp16.databinding.FragmentProcessingUnitListBinding
+import com.lenta.bp16.databinding.ItemProcessingUnitBinding
 import com.lenta.shared.platform.activity.OnBackPresserListener
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
@@ -21,17 +21,17 @@ import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
 import com.lenta.shared.utilities.extentions.provideViewModel
 
-class RawGoodListFragment : CoreFragment<FragmentRawGoodListBinding, RawGoodListViewModel>(),
+class ProcessingUnitListFragment : CoreFragment<FragmentProcessingUnitListBinding, ProcessingUnitListViewModel>(),
         OnBackPresserListener, ToolbarButtonsClickListener {
 
     private var recyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
 
-    override fun getLayoutId(): Int = R.layout.fragment_raw_good_list
+    override fun getLayoutId(): Int = R.layout.fragment_processing_unit_list
 
-    override fun getPageNumber(): String? = generateScreenNumberFromPostfix("6")
+    override fun getPageNumber(): String? = generateScreenNumberFromPostfix("61")
 
-    override fun getViewModel(): RawGoodListViewModel {
-        provideViewModel(RawGoodListViewModel::class.java).let {
+    override fun getViewModel(): ProcessingUnitListViewModel {
+        provideViewModel(ProcessingUnitListViewModel::class.java).let {
             getAppComponent()?.inject(it)
             return it
         }
@@ -62,13 +62,13 @@ class RawGoodListFragment : CoreFragment<FragmentRawGoodListBinding, RawGoodList
     private fun initRvConfig() {
         binding?.let { layoutBinding ->
             layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
-                    layoutId = R.layout.item_raw_good_list,
+                    layoutId = R.layout.item_processing_unit,
                     itemId = BR.item,
-                    realisation = object : DataBindingAdapter<ItemRawGoodListBinding> {
-                        override fun onCreate(binding: ItemRawGoodListBinding) {
+                    realisation = object : DataBindingAdapter<ItemProcessingUnitBinding> {
+                        override fun onCreate(binding: ItemProcessingUnitBinding) {
                         }
 
-                        override fun onBind(binding: ItemRawGoodListBinding, position: Int) {
+                        override fun onBind(binding: ItemProcessingUnitBinding, position: Int) {
                             recyclerViewKeyHandler?.let {
                                 binding.root.isSelected = it.isSelected(position)
                             }
@@ -90,7 +90,7 @@ class RawGoodListFragment : CoreFragment<FragmentRawGoodListBinding, RawGoodList
             layoutBinding.lifecycleOwner = viewLifecycleOwner
             recyclerViewKeyHandler = RecyclerViewKeyHandler(
                     rv = layoutBinding.rv,
-                    items = vm.rawGoods,
+                    items = vm.goods,
                     lifecycleOwner = layoutBinding.lifecycleOwner!!,
                     initPosInfo = recyclerViewKeyHandler?.posInfo?.value
             )

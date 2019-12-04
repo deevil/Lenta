@@ -2,13 +2,13 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
-        tools:context="com.lenta.bp14.features.work_list.goods_list.GoodsListWlFragment">
+        tools:context=".features.processing_unit_list.ProcessingUnitListFragment">
 
     <data>
 
         <variable
             name="vm"
-            type="com.lenta.bp16.features.task_list.TaskListViewModel" />
+            type="com.lenta.bp16.features.processing_unit_list.ProcessingUnitListViewModel" />
 
         <variable
             name="rvConfig"
@@ -37,7 +37,7 @@
 
                 <LinearLayout
                     style="@style/LinearCellStyle"
-                    android:layout_weight="@integer/pu_type_column_1">
+                    android:layout_weight="@integer/sku_arrived_remain_column_1">
 
                     <TextView
                         style="@style/ColumnTitleStyle"
@@ -49,31 +49,31 @@
 
                 <LinearLayout
                     style="@style/LinearCellStyle"
-                    android:layout_weight="@integer/pu_type_column_2">
-
-                    <TextView
-                        style="@style/ColumnTitleStyle"
-                        android:text="@string/pu" />
-
-                </LinearLayout>
-
-                <LinearLayout
-                    style="@style/LinearCellStyle"
-                    android:layout_weight="@integer/pu_type_column_3">
-
-                    <TextView
-                        style="@style/ColumnTitleStyle"
-                        android:text="@string/sign" />
-
-                </LinearLayout>
-
-                <LinearLayout
-                    style="@style/LinearCellStyle"
-                    android:layout_weight="@integer/pu_type_column_4">
+                    android:layout_weight="@integer/sku_arrived_remain_column_2">
 
                     <TextView
                         style="@style/ColumnTitleStyle"
                         android:text="@string/sku" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    style="@style/LinearCellStyle"
+                    android:layout_weight="@integer/sku_arrived_remain_column_3">
+
+                    <TextView
+                        style="@style/ColumnTitleStyle"
+                        android:text="@string/arrived" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    style="@style/LinearCellStyle"
+                    android:layout_weight="@integer/sku_arrived_remain_column_4">
+
+                    <TextView
+                        style="@style/ColumnTitleStyle"
+                        android:text="@string/remain" />
 
                 </LinearLayout>
 
@@ -87,46 +87,10 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_marginBottom="8dp"
-            android:layout_weight="1"
-            app:items="@{vm.processing}"
+            android:layout_height="match_parent"
+            app:items="@{vm.goods}"
             app:rv_config="@{rvConfig}"
-            tools:listitem="@layout/item_task" />
-
-        <!-- Ввод номера товара -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:orientation="horizontal">
-
-            <EditText
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_margin="8dp"
-                android:layout_weight="1"
-                android:digits="0123456789"
-                android:ellipsize="end"
-                android:hint="@string/enter_number_pu"
-                android:imeOptions="actionGo"
-                android:inputType="number"
-                android:maxLength="14"
-                android:maxLines="1"
-                android:text="@={vm.numberField}"
-                app:onOkInSoftKeyboard="@{vm}"
-                app:requestFocus="@{vm.requestFocusToNumberField}"
-                tools:ignore="Autofill" />
-
-            <ImageButton
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
-                android:background="?selectableItemBackground"
-                android:onClick="@{(v) -> vm.navigator.openEanInfoScreen()}"
-                android:src="@drawable/ic_scan_barcode_48dp" />
-
-        </LinearLayout>
+            tools:listitem="@layout/item_processing_unit" />
 
     </LinearLayout>
 

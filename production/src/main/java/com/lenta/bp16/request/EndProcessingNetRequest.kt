@@ -30,9 +30,12 @@ class EndProcessingNetRequest @Inject constructor(
 }
 
 data class EndProcessingParams(
-        /** Номер ЕО */
-        @SerializedName("IV_EXIDV")
-        val puNumber: String
+        /** Номер объекта */
+        @SerializedName("IV_OBJ_CODE")
+        val taskNumber: String,
+        /** Режим обработки: 1 - обработка ЕО, 2 - обработка ВП */
+        @SerializedName("IV_MODE")
+        val taskType: Int
 )
 
 class EndProcessingStatus : ObjectRawStatus<EndProcessingResult>()

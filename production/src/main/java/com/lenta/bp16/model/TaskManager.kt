@@ -5,7 +5,7 @@ import com.lenta.bp16.model.pojo.Good
 import com.lenta.bp16.model.pojo.Pack
 import com.lenta.bp16.model.pojo.Raw
 import com.lenta.bp16.model.pojo.Task
-import com.lenta.bp16.platform.extention.getTaskType
+import com.lenta.bp16.platform.extention.getTaskStatus
 import com.lenta.bp16.repository.IGeneralRepository
 import com.lenta.bp16.request.TaskInfoResult
 import com.lenta.bp16.request.TaskListResult
@@ -14,6 +14,8 @@ import javax.inject.Inject
 class TaskManager @Inject constructor(
         private val repository: IGeneralRepository
 ) : ITaskManager {
+
+    override lateinit var taskType: TaskType
 
     override val tasks = MutableLiveData<List<Task>>(emptyList())
 
@@ -25,12 +27,15 @@ class TaskManager @Inject constructor(
 
     override fun addTasks(taskListResult: TaskListResult) {
         val taskList = tasks.value!!.filter { it.isProcessed }.toMutableList()
-        taskListResult.processingUnits.forEach { processingUnit ->
-            val existTask = taskList.find { it.processingUnit.number == processingUnit.number }
+        taskListResult.tasks.forEach { taskInfo ->
+            val existTask = taskList.find { it.taskInfo.number == taskInfo.number }
             if (existTask == null) {
                 taskList.add(Task(
-                        type = processingUnit.getTaskType(),
-                        processingUnit = processingUnit
+                        number = taskInfo.number,
+                        status = taskInfo.getTaskStatus(),
+                        taskInfo = taskInfo,
+                        type = taskType,
+                        quantity = taskInfo.quantity.toIntOrNull() ?: 0
                 ))
             }
         }
@@ -59,7 +64,6 @@ class TaskManager @Inject constructor(
                                     material = packInfo.material,
                                     materialOsn = packInfo.materialOsn,
                                     code = packInfo.code,
-                                    name = packInfo.name,
                                     quantity = packInfo.quantity
                             )
                         }.toMutableList()
@@ -68,9 +72,25 @@ class TaskManager @Inject constructor(
         }
     }
 
+    override fun getTaskType(): Int {
+        return when (taskType) {
+            TaskType.PROCESSING_UNIT -> 1
+            TaskType.EXTERNAL_SUPPLY -> 2
+        }
+    }
+
+    override fun getBlockType(): Int {
+        //todo Добавить варианты с переблокировкой
+
+        return when (taskType) {
+            TaskType.PROCESSING_UNIT -> 1
+            TaskType.EXTERNAL_SUPPLY -> 3
+        }
+    }
 }
 
 interface ITaskManager {
+    var taskType: TaskType
     val tasks: MutableLiveData<List<Task>>
     var currentTask: Task
     var currentGood: Good
@@ -78,4 +98,6 @@ interface ITaskManager {
 
     fun addTasks(taskListResult: TaskListResult)
     suspend fun addTaskInfoToCurrentTask(taskInfoResult: TaskInfoResult)
+    fun getTaskType(): Int
+    fun getBlockType(): Int
 }

@@ -14,7 +14,7 @@
 
     // Информационные сообщения
     <string name="defrosting_phase_is_completed">Этап дефростирования завершен.</string>
-    <string name="confirm_that_there_is_no_such_item_left_in_pu">Подтвердите что в ЕО не осталось данного товара.</string>
+    <string name="confirm_that_there_is_no_such_item_left">Подтвердите что в %1$s не осталось данного товара.</string>
     <string name="fixing_beginning_of_packaging_phase_was_successful">Этап дефростирования завершен.\nФиксация начала этапа упаковки прошла успешно.</string>
 
     // Заголовки списков
@@ -31,6 +31,7 @@
 
     // Разные строки
     <string name="processing_pu">Обработка ЕО</string>
+    <string name="processing_es">Обработка ВП</string>
     <string name="enter_number_pu">Введите номер ЕО</string>
     <string name="fact">Факт</string>
     <string name="total">Итого</string>

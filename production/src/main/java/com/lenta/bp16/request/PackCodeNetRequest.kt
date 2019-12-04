@@ -42,9 +42,9 @@ data class PackCodeParams(
         val parent: String,
         /** IP адрес ТСД */
         @SerializedName("IV_IP")
-        val marketIp: String,
+        val deviceIp: String,
         /** Номер технологического заказа */
-        @SerializedName("AUFNR")
+        @SerializedName("IV_AUFNR")
         val orderNumber: String,
         /** SAP – код товар */
         @SerializedName("IV_MATNR")

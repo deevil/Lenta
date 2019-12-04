@@ -4,7 +4,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp16.model.ITaskManager
 import com.lenta.bp16.model.Tabs
-import com.lenta.bp16.model.TaskType
+import com.lenta.bp16.model.TaskStatus
 import com.lenta.bp16.model.pojo.Task
 import com.lenta.bp16.platform.navigation.IScreenNavigator
 import com.lenta.bp16.request.TaskInfoNetRequest
@@ -39,7 +39,7 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
         "ТК - ${sessionInfo.market}"
     }
 
-    val marketIp: MutableLiveData<String> = MutableLiveData("")
+    val deviceIp: MutableLiveData<String> = MutableLiveData("")
 
     val selectedPage = MutableLiveData(0)
 
@@ -47,22 +47,30 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
 
     val requestFocusToNumberField = MutableLiveData(true)
 
-    val tasks = taskManager.tasks.map { it }
+    val tasks by lazy {
+        taskManager.tasks
+    }
 
     private val toUiFunc = { products: List<Task>? ->
         products?.mapIndexed { index, task ->
             ItemTaskListUi(
                     position = (products.size - index).toString(),
-                    puNumber = task.processingUnit.number,
-                    taskType = task.type,
-                    sku = task.processingUnit.quantity.toString()
+                    number = task.taskInfo.number,
+                    text1 = task.taskInfo.text1,
+                    text2 = task.taskInfo.text2,
+                    taskStatus = task.status,
+                    quantity = task.quantity.toString()
             )
         }
     }
 
-    val processing = tasks.map { it?.filter { task -> !task.isProcessed } }.map(toUiFunc)
+    val processing by lazy {
+        tasks.map { it?.filter { task -> !task.isProcessed } }.map(toUiFunc)
+    }
 
-    val processed = tasks.map { it?.filter { task -> task.isProcessed } }.map(toUiFunc)
+    val processed by lazy {
+        tasks.map { it?.filter { task -> task.isProcessed } }.map(toUiFunc)
+    }
 
     // -----------------------------
 
@@ -84,7 +92,9 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
 
             taskListNetRequest(
                     TaskListParams(
-                            tkNumber = sessionInfo.market ?: ""
+                            tkNumber = sessionInfo.market ?: "",
+                            taskType = taskManager.getTaskType(),
+                            deviceIp = deviceIp.value ?: "Not found!"
                     )
             ).also {
                 navigator.hideProgress()
@@ -108,12 +118,12 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
     }
 
     fun onClickItemPosition(position: Int) {
-        when (position) {
+        when (selectedPage.value) {
             Tabs.PROCESSING.page -> processing
             Tabs.PROCESSED.page -> processed
-            else -> throw IllegalArgumentException("Wrong pager position!")
+            else -> throw IllegalArgumentException("$position: Wrong pager position!")
         }.let {
-            openTaskByNumber(it.value!![position].puNumber)
+            openTaskByNumber(it.value!![position].number)
         }
     }
 
@@ -122,8 +132,8 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
         return true
     }
 
-    private fun openTaskByNumber(puNumber: String) {
-        taskManager.tasks.value?.find { it.processingUnit.number == puNumber }?.let { task ->
+    private fun openTaskByNumber(taskNumber: String) {
+        taskManager.tasks.value?.find { it.number == taskNumber }?.let { task ->
             taskManager.currentTask = task
 
             if (task.isProcessed) {
@@ -134,9 +144,9 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
                     taskInfoNetRequest(
                             TaskInfoParams(
                                     marketNumber = sessionInfo.market ?: "Not found!",
-                                    marketIp = marketIp.value ?: "Not found!",
-                                    puNumber = puNumber,
-                                    processingMode = "1"
+                                    deviceIp = deviceIp.value ?: "Not found!",
+                                    taskNumber = taskNumber,
+                                    blockingType = taskManager.getBlockType()
                             )
                     ).also {
                         navigator.hideProgress()
@@ -144,10 +154,10 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
                         viewModelScope.launch {
                             taskManager.addTaskInfoToCurrentTask(taskInfoResult)
 
-                            task.processingUnit.apply {
+                            task.taskInfo.apply {
                                 when (blockType) {
-                                    2 -> navigator.showAlertBlockedTaskAnotherUser(lockUser)
-                                    1 -> navigator.showAlertBlockedTaskByMe(lockUser) { openTaskByType(task) }
+                                    "2" -> navigator.showAlertBlockedTaskAnotherUser(lockUser)
+                                    "1" -> navigator.showAlertBlockedTaskByMe(lockUser) { openTaskByType(task) }
                                     else -> openTaskByType(task)
                                 }
                             }
@@ -159,10 +169,10 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
     }
 
     private fun openTaskByType(task: Task) {
-        if (task.processingUnit.isPack.isSapTrue()) {
+        if (task.taskInfo.isPack.isSapTrue()) {
             navigator.openPackGoodListScreen()
         } else {
-            navigator.openRawGoodListScreen()
+            navigator.openProcessingUnitListScreen()
         }
     }
 
@@ -170,7 +180,9 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
 
 data class ItemTaskListUi(
         val position: String,
-        val puNumber: String,
-        val taskType: TaskType,
-        val sku: String
+        val number: String,
+        val text1: String,
+        val text2: String,
+        val taskStatus: TaskStatus,
+        val quantity: String
 )

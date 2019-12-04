@@ -5,5 +5,5 @@ import com.google.gson.annotations.SerializedName
 data class PackCode(
         /** Код тары */
         @SerializedName("CODE_CONT")
-        var packCode: String
+        var code: String
 )

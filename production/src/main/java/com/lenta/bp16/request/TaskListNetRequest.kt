@@ -1,7 +1,7 @@
 package com.lenta.bp16.request
 
 import com.google.gson.annotations.SerializedName
-import com.lenta.bp16.request.pojo.ProcessingUnit
+import com.lenta.bp16.request.pojo.TaskInfo
 import com.lenta.bp16.request.pojo.RetCode
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.fmp.ObjectRawStatus
@@ -33,15 +33,21 @@ class TaskListNetRequest @Inject constructor(
 data class TaskListParams(
         /** Номер ТК */
         @SerializedName("IV_WERKS")
-        val tkNumber: String
+        val tkNumber: String,
+        /** Режим обработки: 1 - получение списка ЕО, 2 - получение списка ВП */
+        @SerializedName("IV_MODE")
+        val taskType: Int,
+        /** IP адрес ТСД */
+        @SerializedName("IV_IP")
+        val deviceIp: String
 )
 
 class TaskListStatus : ObjectRawStatus<TaskListResult>()
 
 data class TaskListResult(
-        /** Список ЕО */
-        @SerializedName("ET_EXIDV_LIST")
-        val processingUnits: List<ProcessingUnit>,
+        /** Список объектов */
+        @SerializedName("ET_OBJ_LIST")
+        val tasks: List<TaskInfo>,
         /** Таблица возврата */
         @SerializedName("ET_RETCODE")
         val retCodes: List<RetCode>

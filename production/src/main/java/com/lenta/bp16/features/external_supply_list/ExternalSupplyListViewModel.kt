@@ -1,4 +1,4 @@
-package com.lenta.bp16.features.raw_good_list
+package com.lenta.bp16.features.external_supply_list
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
@@ -14,7 +14,7 @@ import com.lenta.shared.utilities.extentions.dropZeros
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class RawGoodListViewModel : CoreViewModel() {
+class ExternalSupplyListViewModel : CoreViewModel() {
 
     @Inject
     lateinit var navigator: IScreenNavigator
@@ -31,17 +31,16 @@ class RawGoodListViewModel : CoreViewModel() {
     }
 
     val title by lazy {
-        "ЕО - ${task.processingUnit.number}"
+        task.taskInfo.text3
     }
 
-    val rawGoods: MutableLiveData<List<ItemRawGoodListUi>> by lazy {
+    val goods: MutableLiveData<List<ItemExternalSupplyUi>> by lazy {
         MutableLiveData(task.goods!!.mapIndexed { index, good ->
-            ItemRawGoodListUi(
+            ItemExternalSupplyUi(
                     position = (index + 1).toString(),
                     material = good.material,
                     name = "${good.material.takeLast(6)} ${good.name}",
-                    arrived = "${good.planned} ${good.units.name}",
-                    remain = "${(good.planned - good.getFactRawQuantity()).dropZeros()} ${good.units.name}"
+                    arrived = "${good.planned.dropZeros()} ${good.units.name}"
             )
         })
     }
@@ -51,7 +50,7 @@ class RawGoodListViewModel : CoreViewModel() {
     // -----------------------------
 
     fun onClickItemPosition(position: Int) {
-        val material = rawGoods.value!![position].material
+        val material = goods.value!![position].material
         task.goods?.first { it.material == material }?.let { good ->
             taskManager.currentGood = good
             navigator.openRawListScreen()
@@ -61,7 +60,10 @@ class RawGoodListViewModel : CoreViewModel() {
     fun onBackPressed() {
         viewModelScope.launch {
             unblockTaskNetRequest(
-                    UnblockTaskParams(puNumber = task.processingUnit.number)
+                    UnblockTaskParams(
+                            taskNumber = task.taskInfo.number,
+                            unblockType = taskManager.getTaskType()
+                    )
             )
 
             navigator.goBack()
@@ -73,7 +75,10 @@ class RawGoodListViewModel : CoreViewModel() {
             navigator.showProgressLoadingData()
 
             endProcessingNetRequest(
-                    EndProcessingParams(puNumber = task.processingUnit.number)
+                    EndProcessingParams(
+                            taskNumber = task.taskInfo.number,
+                            taskType = taskManager.getTaskType()
+                    )
             ).also {
                 navigator.hideProgress()
             }.either(::handleFailure) {
@@ -94,10 +99,9 @@ class RawGoodListViewModel : CoreViewModel() {
 
 }
 
-data class ItemRawGoodListUi(
+data class ItemExternalSupplyUi(
         val position: String,
         val material: String,
         val name: String,
-        val arrived: String,
-        val remain: String
+        val arrived: String
 )

@@ -23,7 +23,7 @@ class RawListViewModel : CoreViewModel() {
     }
 
     val description by lazy {
-        "ЕО - ${taskManager.currentTask.processingUnit.number}"
+        "ЕО - ${taskManager.currentTask.taskInfo.number}"
     }
 
     val raws: MutableLiveData<List<ItemRawListUi>> by lazy {
@@ -43,8 +43,10 @@ class RawListViewModel : CoreViewModel() {
     // -----------------------------
 
     fun onClickComplete() {
-        good.isProcessed = true
-        navigator.goBack()
+        navigator.showConfirmNoSuchItemLeft(taskManager.taskType.name) {
+            good.isProcessed = true
+            navigator.goBack()
+        }
     }
 
     fun onClickItemPosition(position: Int) {

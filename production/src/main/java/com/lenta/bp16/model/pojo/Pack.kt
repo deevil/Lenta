@@ -5,7 +5,6 @@ data class Pack(
         val material: String,
         val materialOsn: String,
         val code: String,
-        val name: String,
         val quantity: Double
 ) {
 }
