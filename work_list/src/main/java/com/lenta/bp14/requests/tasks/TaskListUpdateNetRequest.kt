@@ -14,7 +14,7 @@ class TaskListUpdateNetRequest
         return taskListNetRequest(
                 TasksListParams(
                         tkNumber = params.tkNumber,
-                        user = params.user,
+                        user = params.searchQuery,
                         mode = "1",
                         filter = null
                 )
@@ -27,7 +27,7 @@ interface ITaskListUpdateNetRequest : UseCase<TaskListInfo, SimpleParams>
 
 data class SimpleParams(
         val tkNumber: String,
-        val user: String
+        val searchQuery: String
 )
 
 
