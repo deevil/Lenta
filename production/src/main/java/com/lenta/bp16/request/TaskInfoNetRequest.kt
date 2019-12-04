@@ -44,7 +44,7 @@ data class TaskInfoParams(
         val deviceIp: String,
         /** Режим обработки: 1 - блокировка ЕО, 2 - переблокировка ЕО, 3 - блокировка ВП, 4 - переблокировка ВП */
         @SerializedName("IV_MODE")
-        val processingMode: String
+        val blockingType: Int
 )
 
 class TaskInfoStatus : ObjectRawStatus<TaskInfoResult>()

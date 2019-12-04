@@ -10,6 +10,7 @@ import com.lenta.bp16.request.UnblockTaskNetRequest
 import com.lenta.bp16.request.UnblockTaskParams
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.platform.viewmodel.CoreViewModel
+import com.lenta.shared.utilities.extentions.dropZeros
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -39,7 +40,7 @@ class ExternalSupplyListViewModel : CoreViewModel() {
                     position = (index + 1).toString(),
                     material = good.material,
                     name = "${good.material.takeLast(6)} ${good.name}",
-                    arrived = "${good.planned} ${good.units.name}"
+                    arrived = "${good.planned.dropZeros()} ${good.units.name}"
             )
         })
     }

@@ -40,7 +40,7 @@ class ProcessingUnitListViewModel : CoreViewModel() {
                     position = (index + 1).toString(),
                     material = good.material,
                     name = "${good.material.takeLast(6)} ${good.name}",
-                    arrived = "${good.planned} ${good.units.name}",
+                    arrived = "${good.planned.dropZeros()} ${good.units.name}",
                     remain = "${(good.planned - good.getFactRawQuantity()).dropZeros()} ${good.units.name}"
             )
         })

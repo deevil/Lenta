@@ -6,6 +6,7 @@ import com.lenta.bp16.request.pojo.TaskInfo
 
 data class Task(
         var isProcessed: Boolean = false,
+        val number: String,
         val status: TaskStatus,
         val type: TaskType,
         val quantity: Int,

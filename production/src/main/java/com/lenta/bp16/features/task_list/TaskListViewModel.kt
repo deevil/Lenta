@@ -55,6 +55,7 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
         products?.mapIndexed { index, task ->
             ItemTaskListUi(
                     position = (products.size - index).toString(),
+                    number = task.taskInfo.number,
                     text1 = task.taskInfo.text1,
                     text2 = task.taskInfo.text2,
                     taskStatus = task.status,
@@ -117,12 +118,12 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
     }
 
     fun onClickItemPosition(position: Int) {
-        when (position) {
+        when (selectedPage.value) {
             Tabs.PROCESSING.page -> processing
             Tabs.PROCESSED.page -> processed
-            else -> throw IllegalArgumentException("Wrong pager position!")
+            else -> throw IllegalArgumentException("$position: Wrong pager position!")
         }.let {
-            openTaskByNumber(it.value!![position].text1)
+            openTaskByNumber(it.value!![position].number)
         }
     }
 
@@ -131,8 +132,8 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
         return true
     }
 
-    private fun openTaskByNumber(puNumber: String) {
-        taskManager.tasks.value?.find { it.taskInfo.number == puNumber }?.let { task ->
+    private fun openTaskByNumber(taskNumber: String) {
+        taskManager.tasks.value?.find { it.number == taskNumber }?.let { task ->
             taskManager.currentTask = task
 
             if (task.isProcessed) {
@@ -144,8 +145,8 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
                             TaskInfoParams(
                                     marketNumber = sessionInfo.market ?: "Not found!",
                                     deviceIp = deviceIp.value ?: "Not found!",
-                                    taskNumber = puNumber,
-                                    processingMode = "1"
+                                    taskNumber = taskNumber,
+                                    blockingType = taskManager.getBlockType()
                             )
                     ).also {
                         navigator.hideProgress()
@@ -179,6 +180,7 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
 
 data class ItemTaskListUi(
         val position: String,
+        val number: String,
         val text1: String,
         val text2: String,
         val taskStatus: TaskStatus,

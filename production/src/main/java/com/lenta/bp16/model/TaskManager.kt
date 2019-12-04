@@ -31,6 +31,7 @@ class TaskManager @Inject constructor(
             val existTask = taskList.find { it.taskInfo.number == taskInfo.number }
             if (existTask == null) {
                 taskList.add(Task(
+                        number = taskInfo.number,
                         status = taskInfo.getTaskStatus(),
                         taskInfo = taskInfo,
                         type = taskType,
@@ -77,6 +78,15 @@ class TaskManager @Inject constructor(
             TaskType.EXTERNAL_SUPPLY -> 2
         }
     }
+
+    override fun getBlockType(): Int {
+        //todo Добавить варианты с переблокировкой
+
+        return when (taskType) {
+            TaskType.PROCESSING_UNIT -> 1
+            TaskType.EXTERNAL_SUPPLY -> 3
+        }
+    }
 }
 
 interface ITaskManager {
@@ -89,4 +99,5 @@ interface ITaskManager {
     fun addTasks(taskListResult: TaskListResult)
     suspend fun addTaskInfoToCurrentTask(taskInfoResult: TaskInfoResult)
     fun getTaskType(): Int
+    fun getBlockType(): Int
 }
