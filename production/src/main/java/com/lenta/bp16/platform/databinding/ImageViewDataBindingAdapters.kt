@@ -13,8 +13,8 @@ fun setTaskTypeIcon(imageView: ImageView, taskStatus: TaskStatus) {
             setInvisible()
         } else {
             setImageResource(when (taskStatus) {
-                TaskStatus.PACKING -> R.drawable.ic_recount_task
-                TaskStatus.LOCK -> R.drawable.ic_lock_dark_24dp
+                TaskStatus.PACKING -> R.drawable.ic_pack_24dp
+                TaskStatus.LOCK -> R.drawable.ic_processed_status_dark_24dp
                 TaskStatus.SELF_LOCK -> R.drawable.ic_lock_open_dark_24dp
                 else -> R.drawable.ic_play_arrow_dark_24dp
             })
