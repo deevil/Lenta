@@ -38,7 +38,7 @@ class TasksSearchHelper @Inject constructor(
         return generalRepo.getTaskList(
                 SimpleParams(
                         tkNumber = sessionInfo.market!!,
-                        user = sessionInfo.userName ?: ""
+                        searchQuery = processedFilter ?: ""
                 )).map {
             taskList.postValue(it)
             true
@@ -49,7 +49,7 @@ class TasksSearchHelper @Inject constructor(
         return generalRepo.getFilteredTaskList(
                 FilteredParams(
                         tkNumber = sessionInfo.market!!,
-                        user = sessionInfo.userName ?: "",
+                        searchQuery = searchFilter ?: "",
                         filteredParams = filterParams
                 )
         ).map {
