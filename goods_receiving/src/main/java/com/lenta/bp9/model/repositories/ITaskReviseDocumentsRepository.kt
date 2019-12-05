@@ -35,6 +35,9 @@ interface ITaskReviseDocumentsRepository {
     fun presenceUncoveredVadAllGoods() : Boolean
     fun presenceUncoveredVadSomeGoods(): Boolean
 
+    fun getComplexDocuments(): List<ComplexDocumentRevise>
+    fun updateComplexDocuments(complexDocuments: List<ComplexDocumentRevise>)
+
     fun clear()
 
     fun changeDeliveryDocumentStatus(documentID: String)

@@ -13,6 +13,7 @@ class MemoryTaskReviseDocumentsRepository : ITaskReviseDocumentsRepository {
     private val setComponents: ArrayList<SetComponentRevise> = ArrayList()
     private val transportConditions: ArrayList<TransportCondition> = ArrayList()
     private val productVetDocuments: ArrayList<ProductVetDocumentRevise> = ArrayList()
+    private val complexDocuments: ArrayList<ComplexDocumentRevise> = ArrayList()
 
     private var invoiceInfo: InvoiceRevise? = null
 
@@ -88,7 +89,7 @@ class MemoryTaskReviseDocumentsRepository : ITaskReviseDocumentsRepository {
     }
 
     override fun getProductVetDocuments(): List<ProductVetDocumentRevise> {
-        return productVetDocuments.toList()
+        return productVetDocuments
     }
 
     override fun updateProductVetDocuments(vetDocuments: List<ProductVetDocumentRevise>) {
@@ -139,6 +140,15 @@ class MemoryTaskReviseDocumentsRepository : ITaskReviseDocumentsRepository {
         }
 
         return presenceUncoveredVad.size < productDocuments.size
+    }
+
+    override fun getComplexDocuments(): List<ComplexDocumentRevise> {
+        return complexDocuments
+    }
+
+    override fun updateComplexDocuments(newComplexDocuments: List<ComplexDocumentRevise>) {
+        complexDocuments.clear()
+        complexDocuments.addAll(newComplexDocuments)
     }
 
     override fun changeDeliveryDocumentStatus(documentID: String) {

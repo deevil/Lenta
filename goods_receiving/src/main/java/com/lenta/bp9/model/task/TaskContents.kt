@@ -28,9 +28,11 @@ class TaskContents
     fun getTaskContentsInfo(startRecountRestInfo: DirectSupplierStartRecountRestInfo) : TaskContentsInfo {
         return TaskContentsInfo(
                 conversionToProductInfo(startRecountRestInfo.taskComposition),
-                startRecountRestInfo.taskProductDiscrepancies,
-                startRecountRestInfo.taskBatches,
-                startRecountRestInfo.taskBatchesDiscrepancies,
+                conversionToProductDiscrepancies(startRecountRestInfo.taskProductDiscrepancies),
+                startRecountRestInfo.taskBatches.map {
+                    TaskBatchInfo.from(it)
+                },
+                conversionToBatchesDiscrepancies(startRecountRestInfo.taskBatchesDiscrepancies),
                 conversionToMercuryInfo(startRecountRestInfo.taskMercuryInfoRestData),
                 conversionToMercuryNotActual(startRecountRestInfo.taskMercuryNotActualRestData)
         )
@@ -39,9 +41,11 @@ class TaskContents
     fun getTaskContentsInfo(startRecountRestInfo: TaskContentsRequestResult) : TaskContentsInfo {
         return TaskContentsInfo(
                 conversionToProductInfo(startRecountRestInfo.taskComposition),
-                startRecountRestInfo.taskProductDiscrepancies,
-                startRecountRestInfo.taskBatches,
-                startRecountRestInfo.taskBatchesDiscrepancies,
+                conversionToProductDiscrepancies(startRecountRestInfo.taskProductDiscrepancies),
+                startRecountRestInfo.taskBatches.map {
+                    TaskBatchInfo.from(it)
+                },
+                conversionToBatchesDiscrepancies(startRecountRestInfo.taskBatchesDiscrepancies),
                 conversionToMercuryInfo(startRecountRestInfo.taskMercuryInfoRestData),
                 conversionToMercuryNotActual(startRecountRestInfo.taskMercuryNotActualRestData)
         )
@@ -85,6 +89,36 @@ class TaskContents
         }
     }
 
+    private fun conversionToProductDiscrepancies(taskProductDiscrepanciesRestData: List<TaskProductDiscrepanciesRestData>) : List<TaskProductDiscrepancies> {
+        return taskProductDiscrepanciesRestData.map {
+            val uomInfo = zmpUtz07V001.getUomInfo(it.unit)
+            TaskProductDiscrepancies(
+                    materialNumber = it.materialNumber,
+                    exidv = it.exidv,
+                    numberDiscrepancies = it.numberDiscrepancies,
+                    uom = Uom(code = uomInfo?.uom ?: "", name = uomInfo?.name ?: ""),
+                    typeDiscrepancies = it.typeDiscrepancies,
+                    isNotEdit = it.isNotEdit.isNotEmpty(),
+                    isNew = it.isNew.isNotEmpty()
+            )
+        }
+    }
+
+    private fun conversionToBatchesDiscrepancies(taskBatchesDiscrepanciesRestData: List<TaskBatchesDiscrepanciesRestData>) : List<TaskBatchesDiscrepancies> {
+        return taskBatchesDiscrepanciesRestData.map {
+            val uomInfo = zmpUtz07V001.getUomInfo(it.unit)
+            TaskBatchesDiscrepancies(
+                    materialNumber = it.materialNumber,
+                    exidv = it.exidv,
+                    numberDiscrepancies = it.numberDiscrepancies,
+                    uom = Uom(code = uomInfo?.uom ?: "", name = uomInfo?.name ?: ""),
+                    typeDiscrepancies = it.typeDiscrepancies,
+                    isNotEdit = it.isNotEdit.isNotEmpty(),
+                    isNew = it.isNew.isNotEmpty()
+            )
+        }
+    }
+
     private fun conversionToMercuryInfo(taskMercuryInfoRestData: List<TaskMercuryInfoRestData>) : List<TaskMercuryInfo> {
         return taskMercuryInfoRestData.map {
             val uomInfo = zmpUtz07V001.getUomInfo(it.unit)
@@ -95,8 +129,8 @@ class TaskContents
                     uom = Uom(code = uomInfo?.uom ?: "", name = uomInfo?.name ?: ""),
                     typeDiscrepancies = it.typeDiscrepancies,
                     numberDiscrepancies = it.numberDiscrepancies.toDouble(),
-                    productionDates = it.productionDates,
-                    manufacturers = it.manufacturers,
+                    productionDate = it.productionDates,
+                    manufacturer = it.manufacturers,
                     productionDateTo = it.productionDateTo
             )
         }

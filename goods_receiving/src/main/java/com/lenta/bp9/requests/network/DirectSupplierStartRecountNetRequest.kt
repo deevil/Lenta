@@ -40,11 +40,11 @@ data class DirectSupplierStartRecountRestInfo(
         @SerializedName("ET_TASK_POS") //Таблица состава задания ППП	ZTT_GRZ_TASK_DS_POS_EXCH
         val taskComposition: List<TaskComposition>,
         @SerializedName("ET_TASK_DIFF") //Таблица расхождений по товару	ZTT_GRZ_TASK_DIF_EXCH
-        val taskProductDiscrepancies: List<TaskProductDiscrepancies>,
+        val taskProductDiscrepancies: List<TaskProductDiscrepanciesRestData>,
         @SerializedName("ET_TASK_PARTS") //Таблица партий задания
-        val taskBatches: List<TaskBatchInfo>,
+        val taskBatches: List<TaskBatchInfoRestData>,
         @SerializedName("ET_PARTS_DIFF") //Таблица расхождений по партиям
-        val taskBatchesDiscrepancies: List<TaskBatchesDiscrepancies>,
+        val taskBatchesDiscrepancies: List<TaskBatchesDiscrepanciesRestData>,
         @SerializedName("ET_VET_DIFF") //Таблица расхождений по вет.товарам
         val taskMercuryInfoRestData: List<TaskMercuryInfoRestData>,
         @SerializedName("ET_VET_NOT_ACTUAL") //Список не актуальных ВСД

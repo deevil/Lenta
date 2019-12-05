@@ -83,7 +83,7 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
                                 }
                                 .reversed())
             } else {
-                countNotProcessed.postValue(
+                /**countNotProcessed.postValue(
                         task.getProcessedBatches()
                                 .filter {
                                     task.taskRepository.getBatchesDiscrepancies().getCountBatchNotProcessedOfBatch(it) > 0.0
@@ -99,7 +99,7 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
                                             batchInfo = batchInfo,
                                             even = index % 2 == 0)
                                 }
-                                .reversed())
+                                .reversed())*/
             }
 
         }
@@ -138,7 +138,7 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
                                 }
                                 .reversed())
             } else {
-                countProcessed.postValue(
+                /**countProcessed.postValue(
                         task.getProcessedBatches()
                                 .filter {
                                     task.taskRepository.getBatchesDiscrepancies().getCountAcceptOfBatch(it) +
@@ -166,7 +166,7 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
                                             batchInfo = batchInfo,
                                             even = index % 2 == 0)
                                 }
-                                .reversed())
+                                .reversed()*/
             }
         }
         processedSelectionsHelper.clearPositions()
@@ -214,14 +214,14 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
                 taskManager.getReceivingTask()?.taskRepository?.getProducts()?.changeProduct(countProcessed.value?.get(position)!!.productInfo!!.copy(isNoEAN = true))
             }
         } else {
-            processedSelectionsHelper.selectedPositions.value?.map { position ->
+            /**processedSelectionsHelper.selectedPositions.value?.map { position ->
                 taskManager
                         .getReceivingTask()
                         ?.taskRepository
                         ?.getBatchesDiscrepancies()
                         ?.deleteBatchesDiscrepanciesForBatch(countProcessed.value?.get(position)!!.batchInfo!!)
                 taskManager.getReceivingTask()?.taskRepository?.getBatches()?.changeBatch(countProcessed.value?.get(position)!!.batchInfo!!.copy(isNoEAN = true))
-            }
+            }*/
         }
 
         updateCountNotProcessed()

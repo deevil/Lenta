@@ -64,10 +64,10 @@ class ProcessExciseAlcoProductService
 
     private fun addBatch(count: String, reasonRejectionCode: String){
         val foundBatchDiscrepancy = taskManager.getReceivingTask()?.taskRepository?.getBatchesDiscrepancies()?.findBatchDiscrepanciesOfBatch(batchInfo)?.findLast {
-            it.materialNumber == batchInfo.materialNumber && it.batchNumber == batchInfo.batchNumber && it.typeDiscrepancies == reasonRejectionCode
+            it.materialNumber == batchInfo.materialNumber /**&& it.batchNumber == batchInfo.batchNumber*/ && it.typeDiscrepancies == reasonRejectionCode
         }
 
-        if (foundBatchDiscrepancy == null) {
+        /**if (foundBatchDiscrepancy == null) {
             taskManager.getReceivingTask()?.
                     taskRepository?.
                     getBatchesDiscrepancies()?.
@@ -91,7 +91,7 @@ class ProcessExciseAlcoProductService
         taskManager.getReceivingTask()?.
                 taskRepository?.
                 getBatches()?.
-                changeBatch(batchInfo.copy(isNoEAN = false))
+                changeBatch(batchInfo.copy(isNoEAN = false))*/
     }
 
     private fun addCuurentProduct(count: String, reasonRejectionCode: String){

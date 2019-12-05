@@ -637,23 +637,6 @@ class ScreenNavigator(
         openInfoScreen(context.getString(R.string.processing_mercury_quant_great_in_order))
     }
 
-    override fun openAlertQuantLessThanInVadScreen(noCallbackFunc: () -> Unit, yesCallbackFunc: () -> Unit) {
-        runOrPostpone {
-            getFragmentStack()?.push(AlertFragment.create(
-                    message = context.getString(R.string.processing_mercury_quant_less_than_in_vad),
-                    codeConfirmForLeft = backFragmentResultHelper.setFuncForResult(noCallbackFunc),
-                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(yesCallbackFunc),
-                    iconRes = R.drawable.ic_question_80dp,
-                    pageNumber = "97",
-                    leftButtonDecorationInfo = ButtonDecorationInfo.no,
-                    rightButtonDecorationInfo = ButtonDecorationInfo.yes))
-        }
-    }
-
-    override fun openAlertQuantMoreThanInVadScreen() {
-        openInfoScreen(context.getString(R.string.processing_mercury_quant_more_than_in_vad))
-    }
-
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 }
 
@@ -734,6 +717,4 @@ interface IScreenNavigator : ICoreNavigator {
     fun openDiscrepanciesNoVerifiedVadDialog(excludeCallbackFunc: () -> Unit, markCallbackFunc: () -> Unit)
     fun openAlertQuantGreatInInvoiceScreen()
     fun openAlertQuantGreatInOrderScreen()
-    fun openAlertQuantLessThanInVadScreen(noCallbackFunc: () -> Unit, yesCallbackFunc: () -> Unit)
-    fun openAlertQuantMoreThanInVadScreen()
 }

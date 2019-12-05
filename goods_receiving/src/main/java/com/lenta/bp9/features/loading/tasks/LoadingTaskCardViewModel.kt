@@ -128,6 +128,7 @@ class LoadingTaskCardViewModel : CoreLoadingViewModel() {
                     this.updateInvoiceInfo(invoiceRevise)
                     this.updateTransportCondition(transportConditions)
                     this.updateProductVetDocuments(productsVetDocumentRevise)
+                    this.updateComplexDocuments(complexDocumentsRevise)
                 }
                 taskManager.getReceivingTask()?.updateTaskWithContents(taskContents.getTaskContentsInfo(result))
                 newTask?.taskRepository?.getSections()?.updateSections(sectionInfo, sectionProducts)

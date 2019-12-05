@@ -7,6 +7,7 @@ import com.lenta.bp9.R
 import com.lenta.bp9.databinding.FragmentGoodsMercuryInfoBinding
 import com.lenta.bp9.model.task.TaskProductInfo
 import com.lenta.bp9.platform.extentions.getAppComponent
+import com.lenta.shared.platform.activity.OnBackPresserListener
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
@@ -20,7 +21,8 @@ import com.lenta.shared.utilities.state.state
 
 class GoodsMercuryInfoFragment : CoreFragment<FragmentGoodsMercuryInfoBinding, GoodsMercuryInfoViewModel>(),
         ToolbarButtonsClickListener,
-        OnScanResultListener {
+        OnScanResultListener,
+        OnBackPresserListener {
 
     companion object {
         fun create(productInfo: TaskProductInfo, isDiscrepancy: Boolean): GoodsMercuryInfoFragment {
@@ -91,8 +93,6 @@ class GoodsMercuryInfoFragment : CoreFragment<FragmentGoodsMercuryInfoBinding, G
             override fun onNothingSelected(adapterView: AdapterView<*>) {
             }
         }
-
-        binding?.tvProductionDate?.text = getString(R.string.vet_with_production_date, vm.tvProductionDate)
     }
 
     override fun onToolbarButtonClick(view: View) {
@@ -105,6 +105,11 @@ class GoodsMercuryInfoFragment : CoreFragment<FragmentGoodsMercuryInfoBinding, G
 
     override fun onScanResult(data: String) {
         vm.onScanResult(data)
+    }
+
+    override fun onBackPressed(): Boolean {
+        vm.onBackPressed()
+        return false
     }
 
 }
