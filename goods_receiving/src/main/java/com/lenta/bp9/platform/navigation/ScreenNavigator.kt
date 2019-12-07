@@ -577,9 +577,9 @@ class ScreenNavigator(
         }
     }
 
-    override fun openMercuryListIrrelevantScreen() {
+    override fun openMercuryListIrrelevantScreen(netRestNumber: Int) {
         runOrPostpone {
-            getFragmentStack()?.push(MercuryListIrrelevantFragment())
+            getFragmentStack()?.push(MercuryListIrrelevantFragment.create(netRestNumber))
         }
     }
 
@@ -647,6 +647,16 @@ class ScreenNavigator(
                     pageNumber = "97",
                     isVisibleLeftButton = false,
                     rightButtonDecorationInfo = ButtonDecorationInfo.next))
+        }
+    }
+
+    override fun openAlertElectronicVadLostRelevance(browsingCallbackFunc: () -> Unit, countVad: String, countGoods: String) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.electronic_vad_have_lost_relevance, countVad, countGoods),
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(browsingCallbackFunc),
+                    pageNumber = "105",
+                    rightButtonDecorationInfo = ButtonDecorationInfo.browsingNext))
         }
     }
 
@@ -721,7 +731,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openAlertGoodsNotInInvoiceScreen()
     fun openOrderQuantityEexceededDialog(noCallbackFunc: () -> Unit, yesCallbackFunc: () -> Unit)
     fun openMercuryListScreen(productDoc: DeliveryProductDocumentRevise)
-    fun openMercuryListIrrelevantScreen()
+    fun openMercuryListIrrelevantScreen(netRestNumber: Int)
     fun openMercuryExceptionIntegrationScreen()
     fun openReconciliationMercuryScreen(productVetDoc: ProductVetDocumentRevise)
     fun openGoodsMercuryInfoScreen(productInfo: TaskProductInfo, isDiscrepancy: Boolean)
@@ -731,4 +741,5 @@ interface IScreenNavigator : ICoreNavigator {
     fun openAlertQuantGreatInInvoiceScreen()
     fun openAlertQuantGreatInOrderScreen()
     fun openAlertCertificatesLostRelevance(nextCallbackFunc: () -> Unit)
+    fun openAlertElectronicVadLostRelevance(browsingCallbackFunc: () -> Unit, countVad: String, countGoods: String)
 }

@@ -2,6 +2,7 @@ package com.lenta.bp9.requests.network
 
 import com.google.gson.annotations.SerializedName
 import com.lenta.bp9.model.task.TaskDescriptionRestInfo
+import com.lenta.bp9.model.task.TaskMercuryNotActualRestData
 import com.lenta.bp9.model.task.TaskNotificationRestInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.fmp.ObjectRawStatus
@@ -23,7 +24,9 @@ data class TransmittedParams(
         @SerializedName("IV_IP")
         val deviceIP: String, //Ip адрес ТСД
         @SerializedName("IV_PERNR")
-        val personnelNumber: String //Табельный номер
+        val personnelNumber: String, //Табельный номер
+        @SerializedName("IV_UNBIND_VSD")
+        val unbindVSD: String //общий флаг
 )
 
 class TransmittedStatus : ObjectRawStatus<TransmittedRestInfo>()
@@ -33,6 +36,8 @@ data class TransmittedRestInfo(
         val taskDescription: TaskDescriptionRestInfo, //Структура карточки задания
         @SerializedName("ET_NOTIFY")
         val notifications: List<TaskNotificationRestInfo>, //Таблица уведомлений
+        @SerializedName("ET_VET_NOT_ACTUAL") //Список не актуальных ВСД
+        val taskMercuryNotActualRestData: List<TaskMercuryNotActualRestData>,
         @SerializedName("EV_RETCODE")
         val retcode: String,
         @SerializedName("EV_ERROR_TEXT")

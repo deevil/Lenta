@@ -174,4 +174,5 @@
     <string name="processing_mercury_quant_less_than_in_vad">Сумма всех заявленных категорий за исключением \"Незаказ\" меньше суммарного кол-ва по ВСД. Пометить как \"Больше чем в ТН\"?</string>
     <string name="processing_mercury_quant_more_than_in_vad">Введённое кол-во превышает кол-во по ВСД, измените кол-во</string>
     <string name="some_certificates_have_lost_relevance">Некоторые сертификаты потеряли актуальность</string>
+    <string name="electronic_vad_have_lost_relevance">Электронные ВСД для %1$s товаров из %2$s потеряли актульность. Необходимо выбрать решение: ОТВЯЗАТЬ -партия товара будет не доступна к приёмке, ВРЕМЕННЫЙ - произойдёт переключение в статус \"Временно отказано\", данные сверки будут утеряны</string>
 </resources>

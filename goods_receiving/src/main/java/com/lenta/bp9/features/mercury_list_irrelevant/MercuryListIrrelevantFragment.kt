@@ -15,8 +15,20 @@ import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.utilities.databinding.DataBindingAdapter
 import com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig
 import com.lenta.shared.utilities.extentions.provideViewModel
+import com.lenta.shared.utilities.state.state
 
 class MercuryListIrrelevantFragment : CoreFragment<FragmentMercuryListIrrelevantBinding, MercuryListIrrelevantViewModel>(), ToolbarButtonsClickListener {
+
+    companion object {
+        fun create(netRestNumber: Int): MercuryListIrrelevantFragment {
+            MercuryListIrrelevantFragment().let {
+                it.netRestNumber = netRestNumber
+                return it
+            }
+        }
+    }
+
+    private var netRestNumber by state<Int?>(null)
 
     override fun getLayoutId(): Int = R.layout.fragment_mercury_list_irrelevant
 
@@ -25,6 +37,7 @@ class MercuryListIrrelevantFragment : CoreFragment<FragmentMercuryListIrrelevant
     override fun getViewModel(): MercuryListIrrelevantViewModel {
         provideViewModel(MercuryListIrrelevantViewModel::class.java).let {vm ->
             getAppComponent()?.inject(vm)
+            vm.netRestNumber.value = this.netRestNumber
             return vm
         }
     }
@@ -71,7 +84,7 @@ class MercuryListIrrelevantFragment : CoreFragment<FragmentMercuryListIrrelevant
 
     override fun onToolbarButtonClick(view: View) {
         when (view.id) {
-            R.id.b_2 -> vm.onClickUntied()
+            R.id.b_3 -> vm.onClickUntied()
             R.id.b_5 -> vm.onClickTemporary()
         }
     }

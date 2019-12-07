@@ -5,7 +5,10 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp9.R
 import com.lenta.bp9.features.goods_list.SearchProductDelegate
-import com.lenta.bp9.model.processing.*
+import com.lenta.bp9.model.processing.PROCESSING_MERCURY_QUANT_GREAT_IN_INVOICE
+import com.lenta.bp9.model.processing.PROCESSING_MERCURY_QUANT_GREAT_IN_ORDER
+import com.lenta.bp9.model.processing.PROCESSING_MERCURY_SAVED
+import com.lenta.bp9.model.processing.ProcessMercuryProductService
 import com.lenta.bp9.model.task.IReceivingTaskManager
 import com.lenta.bp9.model.task.TaskProductInfo
 import com.lenta.bp9.platform.navigation.IScreenNavigator
@@ -13,7 +16,6 @@ import com.lenta.bp9.repos.IDataBaseRepo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.pojo.QualityInfo
 import com.lenta.shared.requests.combined.scan_info.pojo.ReasonRejectionInfo
-import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.toStringFormatted
@@ -65,7 +67,7 @@ class GoodsMercuryInfoViewModel : CoreViewModel(), OnPositionClickListener {
         }
         "${findMercuryInfoOfProduct?.sumByDouble {mercuryInfo ->
             mercuryInfo.volume
-        }.toStringFormatted()} ${findMercuryInfoOfProduct?.get(0)?.uom?.name}"
+        }.toStringFormatted()} ${productInfo.value?.uom?.name}"
     }
     val tvProductionDate = mercuryVolume.map {
         context.getString(R.string.vet_with_production_date, it)
@@ -153,7 +155,7 @@ class GoodsMercuryInfoViewModel : CoreViewModel(), OnPositionClickListener {
                 screenNavigator.goBack()
                 screenNavigator.openAlertWrongProductType()
             }
-            count.value = processMercuryProductService.getCountProductNotProcessed().toStringFormatted()
+            //count.value = processMercuryProductService.getCountProductNotProcessed().toStringFormatted()
         }
     }
 
@@ -219,7 +221,7 @@ class GoodsMercuryInfoViewModel : CoreViewModel(), OnPositionClickListener {
                 screenNavigator.openAlertQuantGreatInOrderScreen()
             }
         }
-        count.value = "0" //processMercuryProductService.getCountProductNotProcessed().toStringFormatted()
+        count.value = "0"
     }
 
     fun onClickApply() {

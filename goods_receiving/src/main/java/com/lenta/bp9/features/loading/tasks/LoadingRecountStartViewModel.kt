@@ -3,9 +3,11 @@ package com.lenta.bp9.features.loading.tasks
 import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.lenta.bp9.features.mercury_list_irrelevant.ZMP_UTZ_GRZ_11_V001
 import com.lenta.bp9.model.task.*
 import com.lenta.bp9.model.task.revise.ProductDocumentType
 import com.lenta.bp9.platform.navigation.IScreenNavigator
+import com.lenta.bp9.repos.IRepoInMemoryHolder
 import com.lenta.bp9.requests.network.*
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
@@ -32,6 +34,8 @@ class LoadingRecountStartViewModel : CoreLoadingViewModel() {
     lateinit var taskContents: TaskContents
     @Inject
     lateinit var hyperHive: HyperHive
+    @Inject
+    lateinit var repoInMemoryHolder: IRepoInMemoryHolder
 
     override val title: MutableLiveData<String> = MutableLiveData()
     override val progress: MutableLiveData<Boolean> = MutableLiveData(true)
@@ -71,17 +75,21 @@ class LoadingRecountStartViewModel : CoreLoadingViewModel() {
 
     private fun handleSuccess(result: DirectSupplierStartRecountRestInfo) {
         viewModelScope.launch {
-            taskManager.updateTaskDescription(TaskDescription.from(result.taskDescription))
-            taskManager.getReceivingTask()?.updateTaskWithContents(taskContents.getTaskContentsInfo(result))
             val mercuryNotActual = result.taskMercuryNotActualRestData.map {TaskMercuryNotActual.from(hyperHive,it)}
-            taskManager.getReceivingTask()?.taskRepository?.getReviseDocuments()?.updateMercuryNotActual(mercuryNotActual)
             if (mercuryNotActual.isNotEmpty()) {
-                screenNavigator.openAlertCertificatesLostRelevance(
-                        nextCallbackFunc = {
-                            screenNavigator.openMercuryListIrrelevantScreen()
-                        }
+                screenNavigator.openMainMenuScreen()
+                screenNavigator.openTaskListScreen()
+                screenNavigator.openAlertElectronicVadLostRelevance(
+                        browsingCallbackFunc = {
+                            taskManager.getReceivingTask()?.taskRepository?.getReviseDocuments()?.updateMercuryNotActual(mercuryNotActual)
+                            screenNavigator.openMercuryListIrrelevantScreen(ZMP_UTZ_GRZ_11_V001)
+                        },
+                        countVad = mercuryNotActual.size.toString(),
+                        countGoods = taskManager.getReceivingTask()?.taskDescription?.quantityPositions.toString()
                 )
             } else {
+                taskManager.updateTaskDescription(TaskDescription.from(result.taskDescription))
+                taskManager.getReceivingTask()?.updateTaskWithContents(taskContents.getTaskContentsInfo(result))
                 screenNavigator.openGoodsListScreen()
             }
         }
