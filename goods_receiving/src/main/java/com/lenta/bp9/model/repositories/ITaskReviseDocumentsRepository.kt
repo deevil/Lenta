@@ -1,5 +1,6 @@
 package com.lenta.bp9.model.repositories
 
+import com.lenta.bp9.model.task.TaskMercuryNotActual
 import com.lenta.bp9.model.task.revise.*
 
 interface ITaskReviseDocumentsRepository {
@@ -37,6 +38,9 @@ interface ITaskReviseDocumentsRepository {
 
     fun getComplexDocuments(): List<ComplexDocumentRevise>
     fun updateComplexDocuments(complexDocuments: List<ComplexDocumentRevise>)
+
+    fun getMercuryNotActual(): List<TaskMercuryNotActual>
+    fun updateMercuryNotActual(newMercuryNotActual: List<TaskMercuryNotActual>)
 
     fun clear()
 

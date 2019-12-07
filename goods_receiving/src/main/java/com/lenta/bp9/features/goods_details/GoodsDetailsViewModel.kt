@@ -44,7 +44,7 @@ class GoodsDetailsViewModel : CoreViewModel() {
     }
 
     private fun updateProduct() {
-        if (productInfo.value!!.isVet) {
+        if (productInfo.value!!.isVet && !productInfo.value!!.isNotEdit) {
             goodsDetails.postValue(
                     processMercuryProductService.getGoodsDetails()?.mapIndexed { index, discrepancy ->
                         GoodsDetailsCategoriesItem(

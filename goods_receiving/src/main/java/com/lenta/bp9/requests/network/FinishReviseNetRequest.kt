@@ -56,7 +56,7 @@ data class FinishReviseRequestResult(
         @SerializedName("ET_NOTIFY")
         val notifications: List<TaskNotificationRestInfo>,
         @SerializedName("ET_VET_NOT_ACTUAL")
-        val taskMercuryNotActual: List<TaskMercuryNotActualRestData>,
+        val taskMercuryNotActualRestData: List<TaskMercuryNotActualRestData>,
         @SerializedName("EV_RETCODE")
         override val retCode: Int,
         @SerializedName("EV_ERROR_TEXT")

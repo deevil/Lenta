@@ -173,4 +173,5 @@
     <string name="processing_mercury_quant_great_in_order">Введённое кол-во превышает заказ, измените количество</string>
     <string name="processing_mercury_quant_less_than_in_vad">Сумма всех заявленных категорий за исключением \"Незаказ\" меньше суммарного кол-ва по ВСД. Пометить как \"Больше чем в ТН\"?</string>
     <string name="processing_mercury_quant_more_than_in_vad">Введённое кол-во превышает кол-во по ВСД, измените кол-во</string>
+    <string name="some_certificates_have_lost_relevance">Некоторые сертификаты потеряли актуальность</string>
 </resources>

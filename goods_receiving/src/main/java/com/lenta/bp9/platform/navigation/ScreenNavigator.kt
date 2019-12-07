@@ -637,6 +637,19 @@ class ScreenNavigator(
         openInfoScreen(context.getString(R.string.processing_mercury_quant_great_in_order))
     }
 
+    override fun openAlertCertificatesLostRelevance(nextCallbackFunc: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.some_certificates_have_lost_relevance),
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(nextCallbackFunc),
+                    iconRes = R.drawable.ic_info_pink,
+                    textColor = ContextCompat.getColor(context, R.color.color_text_dialogWarning),
+                    pageNumber = "97",
+                    isVisibleLeftButton = false,
+                    rightButtonDecorationInfo = ButtonDecorationInfo.next))
+        }
+    }
+
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 }
 
@@ -717,4 +730,5 @@ interface IScreenNavigator : ICoreNavigator {
     fun openDiscrepanciesNoVerifiedVadDialog(excludeCallbackFunc: () -> Unit, markCallbackFunc: () -> Unit)
     fun openAlertQuantGreatInInvoiceScreen()
     fun openAlertQuantGreatInOrderScreen()
+    fun openAlertCertificatesLostRelevance(nextCallbackFunc: () -> Unit)
 }

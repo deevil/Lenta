@@ -4,6 +4,7 @@ import androidx.lifecycle.MutableLiveData
 import com.lenta.bp9.model.task.IReceivingTaskManager
 import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.shared.platform.viewmodel.CoreViewModel
+import com.lenta.shared.utilities.extentions.toStringFormatted
 import javax.inject.Inject
 
 class MercuryListIrrelevantViewModel : CoreViewModel() {
@@ -24,25 +25,15 @@ class MercuryListIrrelevantViewModel : CoreViewModel() {
     }
 
     private fun updateListIrrelevant() {
-        taskManager.getReceivingTask()?.let { task ->
-            listIrrelevantMercury.postValue(listOf(
-                    MercuryListIrrelevantItem(
-                            number = 1,
-                            name = "test1",
-                            quantityWithUom = "10 kg",
-                            even = true),
-                    MercuryListIrrelevantItem(
-                            number = 2,
-                            name = "test2",
-                            quantityWithUom = "20 kg",
-                            even = true)
-                    ,
-                    MercuryListIrrelevantItem(
-                            number = 3,
-                            name = "test2",
-                            quantityWithUom = "30 kg",
-                            even = true)
-            )
+        taskManager.getReceivingTask()?.taskRepository?.getReviseDocuments()?.getMercuryNotActual().let {listMercuryNotActual ->
+            listIrrelevantMercury.postValue(
+                    listMercuryNotActual?.mapIndexed { index, mercuryNotActual ->
+                        MercuryListIrrelevantItem(
+                                number = index + 1,
+                                name = "${mercuryNotActual.getMaterialLastSix()} ${mercuryNotActual.productName}",
+                                quantityWithUom = "- ${mercuryNotActual.volume.toStringFormatted()} ${mercuryNotActual.uom.name}",
+                                even = index % 2 == 0)
+                    }
             )
         }
     }

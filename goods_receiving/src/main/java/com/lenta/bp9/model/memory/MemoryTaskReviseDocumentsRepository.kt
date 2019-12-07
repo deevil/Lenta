@@ -1,6 +1,7 @@
 package com.lenta.bp9.model.memory
 
 import com.lenta.bp9.model.repositories.ITaskReviseDocumentsRepository
+import com.lenta.bp9.model.task.TaskMercuryNotActual
 import com.lenta.bp9.model.task.revise.*
 
 class MemoryTaskReviseDocumentsRepository : ITaskReviseDocumentsRepository {
@@ -14,6 +15,7 @@ class MemoryTaskReviseDocumentsRepository : ITaskReviseDocumentsRepository {
     private val transportConditions: ArrayList<TransportCondition> = ArrayList()
     private val productVetDocuments: ArrayList<ProductVetDocumentRevise> = ArrayList()
     private val complexDocuments: ArrayList<ComplexDocumentRevise> = ArrayList()
+    private val mercuryNotActual: ArrayList<TaskMercuryNotActual> = ArrayList()
 
     private var invoiceInfo: InvoiceRevise? = null
 
@@ -151,6 +153,15 @@ class MemoryTaskReviseDocumentsRepository : ITaskReviseDocumentsRepository {
         complexDocuments.addAll(newComplexDocuments)
     }
 
+    override fun getMercuryNotActual(): List<TaskMercuryNotActual> {
+        return mercuryNotActual
+    }
+
+    override fun updateMercuryNotActual(newMercuryNotActual: List<TaskMercuryNotActual>) {
+        mercuryNotActual.clear()
+        mercuryNotActual.addAll(newMercuryNotActual)
+    }
+
     override fun changeDeliveryDocumentStatus(documentID: String) {
         val document = deliveryDocuments.findLast { it.documentID == documentID }
         document?.let { it.isCheck = !it.isCheck }
@@ -218,6 +229,7 @@ class MemoryTaskReviseDocumentsRepository : ITaskReviseDocumentsRepository {
         setComponents.clear()
         transportConditions.clear()
         productVetDocuments.clear()
+        mercuryNotActual.clear()
         invoiceInfo = null
     }
 }

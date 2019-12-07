@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp9.model.task.*
+import com.lenta.bp9.model.task.revise.ProductDocumentType
 import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.bp9.requests.network.*
 import com.lenta.shared.account.ISessionInfo
@@ -29,6 +30,8 @@ class LoadingRecountStartViewModel : CoreLoadingViewModel() {
     lateinit var taskManager: IReceivingTaskManager
     @Inject
     lateinit var taskContents: TaskContents
+    @Inject
+    lateinit var hyperHive: HyperHive
 
     override val title: MutableLiveData<String> = MutableLiveData()
     override val progress: MutableLiveData<Boolean> = MutableLiveData(true)
@@ -67,9 +70,21 @@ class LoadingRecountStartViewModel : CoreLoadingViewModel() {
     }
 
     private fun handleSuccess(result: DirectSupplierStartRecountRestInfo) {
-        taskManager.updateTaskDescription(TaskDescription.from(result.taskDescription))
-        taskManager.getReceivingTask()?.updateTaskWithContents(taskContents.getTaskContentsInfo(result))
-        screenNavigator.openGoodsListScreen()
+        viewModelScope.launch {
+            taskManager.updateTaskDescription(TaskDescription.from(result.taskDescription))
+            taskManager.getReceivingTask()?.updateTaskWithContents(taskContents.getTaskContentsInfo(result))
+            val mercuryNotActual = result.taskMercuryNotActualRestData.map {TaskMercuryNotActual.from(hyperHive,it)}
+            taskManager.getReceivingTask()?.taskRepository?.getReviseDocuments()?.updateMercuryNotActual(mercuryNotActual)
+            if (mercuryNotActual.isNotEmpty()) {
+                screenNavigator.openAlertCertificatesLostRelevance(
+                        nextCallbackFunc = {
+                            screenNavigator.openMercuryListIrrelevantScreen()
+                        }
+                )
+            } else {
+                screenNavigator.openGoodsListScreen()
+            }
+        }
     }
 
     override fun clean() {

@@ -111,6 +111,7 @@ class LoadingTaskCardViewModel : CoreLoadingViewModel() {
                 val productsVetDocumentRevise = result.productsVetDocumentRevise.map { ProductVetDocumentRevise.from(hyperHive, it) }
                 val complexDocumentsRevise = result.complexDocumentsRevise.map { ComplexDocumentRevise.from(it) }
                 val transportConditions = result.transportConditions.map { TransportCondition.from(it) }
+                val mercuryNotActual = result.taskMercuryNotActualRestData.map { TaskMercuryNotActual.from(hyperHive, it) }
 
                 val sectionInfo = result.sectionsInfo.map { TaskSectionInfo.from(it) }
                 val sectionProducts = result.sectionProducts.map { TaskSectionProducts.from(it) }
@@ -129,6 +130,7 @@ class LoadingTaskCardViewModel : CoreLoadingViewModel() {
                     this.updateTransportCondition(transportConditions)
                     this.updateProductVetDocuments(productsVetDocumentRevise)
                     this.updateComplexDocuments(complexDocumentsRevise)
+                    this.updateMercuryNotActual(mercuryNotActual)
                 }
                 taskManager.getReceivingTask()?.updateTaskWithContents(taskContents.getTaskContentsInfo(result))
                 newTask?.taskRepository?.getSections()?.updateSections(sectionInfo, sectionProducts)
