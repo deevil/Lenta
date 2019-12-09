@@ -104,6 +104,6 @@ class ProcessingUnitListFragment : CoreFragment<FragmentProcessingUnitListBindin
 
     override fun onResume() {
         super.onResume()
-        vm.onResume()
+        vm.updateList()
     }
 }

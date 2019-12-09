@@ -42,13 +42,13 @@ class ExternalSupplyListViewModel : CoreViewModel() {
 
     init {
         viewModelScope.launch {
-            loadGoodsList()
+            updateList()
         }
     }
 
     // -----------------------------
 
-    private fun loadGoodsList() {
+    fun updateList() {
         goods.value = taskManager.currentTask.goods!!.mapIndexed { index, good ->
             ItemExternalSupplyUi(
                     position = (index + 1).toString(),
@@ -105,10 +105,6 @@ class ExternalSupplyListViewModel : CoreViewModel() {
     private fun completeTask() {
         task.isProcessed = true
         navigator.goBack()
-    }
-
-    fun onResume() {
-        loadGoodsList()
     }
 
 }

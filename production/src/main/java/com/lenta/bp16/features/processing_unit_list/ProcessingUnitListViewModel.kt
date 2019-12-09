@@ -42,13 +42,13 @@ class ProcessingUnitListViewModel : CoreViewModel() {
 
     init {
         viewModelScope.launch {
-            loadGoodsList()
+            updateList()
         }
     }
 
     // -----------------------------
 
-    private fun loadGoodsList() {
+    fun updateList() {
         goods.value = taskManager.currentTask.goods!!.mapIndexed { index, good ->
             ItemProcessingUnitUi(
                     position = (index + 1).toString(),
@@ -106,10 +106,6 @@ class ProcessingUnitListViewModel : CoreViewModel() {
     private fun completeTask() {
         task.isProcessed = true
         navigator.goBack()
-    }
-
-    fun onResume() {
-        loadGoodsList()
     }
 
 }

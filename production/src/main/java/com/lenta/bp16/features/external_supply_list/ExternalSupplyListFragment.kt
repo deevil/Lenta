@@ -104,7 +104,7 @@ class ExternalSupplyListFragment : CoreFragment<FragmentExternalSupplyListBindin
 
     override fun onResume() {
         super.onResume()
-        vm.onResume()
+        vm.updateList()
     }
 
 }

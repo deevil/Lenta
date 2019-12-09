@@ -41,7 +41,6 @@ class PackListViewModel : CoreViewModel() {
 
             navigator.goBack()
             navigator.goBack()
-            navigator.goBack()
         }
     }
 
