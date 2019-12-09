@@ -1,8 +1,11 @@
 package com.lenta.bp16.features.pack_list
 
+import android.os.Bundle
 import android.view.View
+import com.lenta.bp16.BR
 import com.lenta.bp16.R
 import com.lenta.bp16.databinding.FragmentPackListBinding
+import com.lenta.bp16.databinding.ItemPackBinding
 import com.lenta.bp16.platform.extention.getAppComponent
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
@@ -11,6 +14,7 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListe
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
 import com.lenta.shared.utilities.extentions.provideViewModel
+import com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig
 
 class PackListFragment : CoreFragment<FragmentPackListBinding, PackListViewModel>(),
         ToolbarButtonsClickListener {
@@ -40,6 +44,22 @@ class PackListFragment : CoreFragment<FragmentPackListBinding, PackListViewModel
         when (view.id) {
             R.id.b_3 -> vm.onClickAdd()
             R.id.b_5 -> vm.onClickComplete()
+        }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        initRvConfig()
+    }
+
+    private fun initRvConfig() {
+        binding?.let { layoutBinding ->
+            layoutBinding.rvConfig = DataBindingRecyclerViewConfig<ItemPackBinding>(
+                    layoutId = R.layout.item_pack,
+                    itemId = BR.item
+            )
+
+            layoutBinding.vm = vm
+            layoutBinding.lifecycleOwner = viewLifecycleOwner
         }
     }
 
