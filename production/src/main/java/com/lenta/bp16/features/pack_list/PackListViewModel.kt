@@ -39,8 +39,9 @@ class PackListViewModel : CoreViewModel() {
         navigator.showDefrostingPhaseIsCompleted {
             taskManager.currentGood.isProcessed = true
 
-            navigator.closeAllScreen()
-            navigator.openProcessingUnitListScreen()
+            navigator.goBack()
+            navigator.goBack()
+            navigator.goBack()
         }
     }
 
