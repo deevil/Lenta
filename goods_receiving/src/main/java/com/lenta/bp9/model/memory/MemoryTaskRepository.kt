@@ -22,6 +22,8 @@ class MemoryTaskRepository : ITaskRepository {
 
     private val taskDocumentsPrintingRepository: ITaskDocumentsPrintingRepository = MemoryTaskDocumentsPrintingRepository()
 
+    private val taskMercuryDiscrepanciesRepository: ITaskMercuryDiscrepanciesRepository = MemoryTaskMercuryDiscrepanciesRepository()
+
     override fun getProducts(): ITaskProductRepository {
         return taskProductRepository
     }
@@ -56,5 +58,9 @@ class MemoryTaskRepository : ITaskRepository {
 
     override fun getDocumentsPrinting(): ITaskDocumentsPrintingRepository {
         return taskDocumentsPrintingRepository
+    }
+
+    override fun getMercuryDiscrepancies(): ITaskMercuryDiscrepanciesRepository {
+        return taskMercuryDiscrepanciesRepository
     }
 }

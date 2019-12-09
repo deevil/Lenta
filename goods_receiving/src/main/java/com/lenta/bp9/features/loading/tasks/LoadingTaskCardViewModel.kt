@@ -14,6 +14,7 @@ import com.lenta.shared.exception.Failure
 import com.lenta.shared.features.loading.CoreLoadingViewModel
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.getDeviceIp
+import com.mobrun.plugin.api.HyperHive
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -34,6 +35,8 @@ class LoadingTaskCardViewModel : CoreLoadingViewModel() {
     lateinit var repoInMemoryHolder: IRepoInMemoryHolder
     @Inject
     lateinit var taskContents: TaskContents
+    @Inject
+    lateinit var hyperHive: HyperHive
 
     override val title: MutableLiveData<String> = MutableLiveData()
     override val progress: MutableLiveData<Boolean> = MutableLiveData(true)
@@ -81,54 +84,61 @@ class LoadingTaskCardViewModel : CoreLoadingViewModel() {
 
     private fun handleFullDataSuccess(result: TaskContentsRequestResult) {
         Logg.d { "Task card request result $result" }
-        screenNavigator.goBack()
-        val taskHeader = repoInMemoryHolder.taskList.value?.tasks?.findLast { it.taskNumber == taskNumber }
-        taskHeader?.let {
-            val notifications = result.notifications.map { TaskNotification.from(it) }
-            val documentNotifications = result.documentNotifications.map { TaskNotification.from(it) }
-            val productNotifications = result.productNotifications.map { TaskNotification.from(it) }
-            val conditionNotifications = result.conditionNotifications.map { TaskNotification.from(it) }
-            val deliveryDocumentsRevise = result.deliveryDocumentsRevise.map { DeliveryDocumentRevise.from(it) }.toMutableList()
+        //screenNavigator.goBack()
+        viewModelScope.launch {
+            val taskHeader = repoInMemoryHolder.taskList.value?.tasks?.findLast { it.taskNumber == taskNumber }
+            taskHeader?.let {
+                val notifications = result.notifications.map { TaskNotification.from(it) }
+                val documentNotifications = result.documentNotifications.map { TaskNotification.from(it) }
+                val productNotifications = result.productNotifications.map { TaskNotification.from(it) }
+                val conditionNotifications = result.conditionNotifications.map { TaskNotification.from(it) }
+                val deliveryDocumentsRevise = result.deliveryDocumentsRevise.map { DeliveryDocumentRevise.from(it) }.toMutableList()
 //            deliveryDocumentsRevise.add(DeliveryDocumentRevise(documentID = "123", documentName = "Простой 1", documentType = DocumentType.Simple, isCheck = false, isObligatory = false))
 //            deliveryDocumentsRevise.add(DeliveryDocumentRevise(documentID = "124", documentName = "Простой 2", documentType = DocumentType.Simple, isCheck = false, isObligatory = true))
 //            deliveryDocumentsRevise.add(DeliveryDocumentRevise(documentID = "125", documentName = "Простой 3", documentType = DocumentType.Simple, isCheck = false, isObligatory = false))
 
-            val deliveryProductDocumentsRevise = result.deliveryProductDocumentsRevise.map { DeliveryProductDocumentRevise.from(it) }.toMutableList()
+                val deliveryProductDocumentsRevise = result.deliveryProductDocumentsRevise.map { DeliveryProductDocumentRevise.from(hyperHive, it) }.toMutableList()
 //            deliveryProductDocumentsRevise.add(DeliveryProductDocumentRevise(documentID = "123", documentName = "Простой 1", documentType = ProductDocumentType.Simple, isCheck = false, isObligatory = false, initialCount = 1.0, isSet = false, productNumber = "000123", measureUnits = "ШТ"))
 //            deliveryProductDocumentsRevise.add(DeliveryProductDocumentRevise(documentID = "124", documentName = "Простой 2", documentType = ProductDocumentType.Simple, isCheck = false, isObligatory = true, initialCount = 1.0, isSet = false, productNumber = "000124", measureUnits = "ШТ"))
 //            deliveryProductDocumentsRevise.add(DeliveryProductDocumentRevise(documentID = "125", documentName = "Простой 3", documentType = ProductDocumentType.Simple, isCheck = false, isObligatory = false, initialCount = 1.0, isSet = false, productNumber = "000125", measureUnits = "ШТ"))
 
-            val productBatchesRevise = result.productBatchesRevise.map { ProductBatchRevise.from(it) }
-            val formsABRussianRevise = result.formsABRussianRevise.map { FormABRussianRevise.from(it) }
-            val formsABImportRevise = result.formsABImportRevise.map { FormABImportRevise.from(it) }
-            val setComponenttsRevise = result.setComponenttsRevise.map { SetComponentRevise.from(it) }
-            val invoiceRevise = InvoiceRevise.from(result.invoiceRevise)
-            val commentsToVP = result.commentsToVP.map { CommentToVP.from(it) }.toMutableList()
-            val productsVetDocumentRevise = result.productsVetDocumentRevise.map { ProductVetDocumentRevise.from(it) }
-            val complexDocumentsRevise = result.complexDocumentsRevise.map { ComplexDocumentRevise.from(it) }
-            val transportConditions = result.transportConditions.map { TransportCondition.from(it) }
+                val productBatchesRevise = result.productBatchesRevise.map { ProductBatchRevise.from(it) }
+                val formsABRussianRevise = result.formsABRussianRevise.map { FormABRussianRevise.from(it) }
+                val formsABImportRevise = result.formsABImportRevise.map { FormABImportRevise.from(it) }
+                val setComponentsRevise = result.setComponentsRevise.map { SetComponentRevise.from(it) }
+                val invoiceRevise = InvoiceRevise.from(result.invoiceRevise)
+                val commentsToVP = result.commentsToVP.map { CommentToVP.from(it) }.toMutableList()
+                val productsVetDocumentRevise = result.productsVetDocumentRevise.map { ProductVetDocumentRevise.from(hyperHive, it) }
+                val complexDocumentsRevise = result.complexDocumentsRevise.map { ComplexDocumentRevise.from(it) }
+                val transportConditions = result.transportConditions.map { TransportCondition.from(it) }
+                val mercuryNotActual = result.taskMercuryNotActualRestData.map { TaskMercuryNotActual.from(hyperHive, it) }
 
-            val sectionInfo = result.sectionsInfo.map { TaskSectionInfo.from(it) }
-            val sectionProducts = result.sectionProducts.map { TaskSectionProducts.from(it) }
+                val sectionInfo = result.sectionsInfo.map { TaskSectionInfo.from(it) }
+                val sectionProducts = result.sectionProducts.map { TaskSectionProducts.from(it) }
 
-            val newTask = taskManager.newReceivingTask(taskHeader, TaskDescription.from(result.taskDescription))
-            newTask?.taskRepository?.getNotifications()?.updateWithNotifications(notifications, documentNotifications, productNotifications, conditionNotifications)
-            newTask?.taskRepository?.getNotifications()?.updateWithInvoiceNotes(commentsToVP)
-            newTask?.taskRepository?.getReviseDocuments()?.apply {
-                this.updateDeliveryDocuments(deliveryDocumentsRevise)
-                this.updateProductDocuments(deliveryProductDocumentsRevise)
-                this.updateImportABForms(formsABImportRevise)
-                this.updateRussianABForms(formsABRussianRevise)
-                this.updateProductBatches(productBatchesRevise)
-                this.updateSetComponents(setComponenttsRevise)
-                this.updateInvoiceInfo(invoiceRevise)
-                this.updateTransportCondition(transportConditions)
+                val newTask = taskManager.newReceivingTask(taskHeader, TaskDescription.from(result.taskDescription))
+                newTask?.taskRepository?.getNotifications()?.updateWithNotifications(notifications, documentNotifications, productNotifications, conditionNotifications)
+                newTask?.taskRepository?.getNotifications()?.updateWithInvoiceNotes(commentsToVP)
+                newTask?.taskRepository?.getReviseDocuments()?.apply {
+                    this.updateDeliveryDocuments(deliveryDocumentsRevise)
+                    this.updateProductDocuments(deliveryProductDocumentsRevise)
+                    this.updateImportABForms(formsABImportRevise)
+                    this.updateRussianABForms(formsABRussianRevise)
+                    this.updateProductBatches(productBatchesRevise)
+                    this.updateSetComponents(setComponentsRevise)
+                    this.updateInvoiceInfo(invoiceRevise)
+                    this.updateTransportCondition(transportConditions)
+                    this.updateProductVetDocuments(productsVetDocumentRevise)
+                    this.updateComplexDocuments(complexDocumentsRevise)
+                    this.updateMercuryNotActual(mercuryNotActual)
+                }
+                taskManager.getReceivingTask()?.updateTaskWithContents(taskContents.getTaskContentsInfo(result))
+                newTask?.taskRepository?.getSections()?.updateSections(sectionInfo, sectionProducts)
+                taskManager.setTask(newTask)
+                transferToNextScreen()
             }
-            taskManager.getReceivingTask()?.updateTaskWithContents(taskContents.getTaskContentsInfo(result))
-            newTask?.taskRepository?.getSections()?.updateSections(sectionInfo, sectionProducts)
-            taskManager.setTask(newTask)
-            transferToNextScreen()
         }
+
     }
 
     private fun transferToNextScreen() {
@@ -140,6 +150,7 @@ class LoadingTaskCardViewModel : CoreLoadingViewModel() {
                     } else if (task.taskRepository.getReviseDocuments().getProductDocuments().isNotEmpty()) {
                         screenNavigator.openProductDocumentsReviseScreen()
                     } else {
+                        screenNavigator.openTaskListScreen()
                         screenNavigator.openCheckingNotNeededAlert(context.getString(R.string.revise_not_needed_checking)) {
                             screenNavigator.openFinishReviseLoadingScreen()
                         }
@@ -149,6 +160,7 @@ class LoadingTaskCardViewModel : CoreLoadingViewModel() {
                     if (task.taskRepository.getReviseDocuments().getTransportConditions().isNotEmpty()) {
                         screenNavigator.openTransportConditionsScreen()
                     } else {
+                        screenNavigator.openTaskListScreen()
                         screenNavigator.openCheckingNotNeededAlert(context.getString(R.string.revise_not_needed_unloading)) {
                             screenNavigator.openFinishConditionsReviseLoadingScreen()
                         }

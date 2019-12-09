@@ -1,5 +1,6 @@
 package com.lenta.bp9.model.repositories
 
+import com.lenta.bp9.model.task.TaskMercuryNotActual
 import com.lenta.bp9.model.task.revise.*
 
 interface ITaskReviseDocumentsRepository {
@@ -27,6 +28,19 @@ interface ITaskReviseDocumentsRepository {
 
     fun getTransportConditions(): List<TransportCondition>
     fun updateTransportCondition(conditions: List<TransportCondition>)
+
+    fun getProductVetDocuments(): List<ProductVetDocumentRevise>
+    fun updateProductVetDocuments(vetDocuments: List<ProductVetDocumentRevise>)
+    fun changeProductVetDocumentStatus(vetDocument: ProductVetDocumentRevise, status: Boolean)
+    fun changeProductVetDocumentReconciliation(vetDocument: ProductVetDocumentRevise, reconciliationCheck: Boolean)
+    fun presenceUncoveredVadAllGoods() : Boolean
+    fun presenceUncoveredVadSomeGoods(): Boolean
+
+    fun getComplexDocuments(): List<ComplexDocumentRevise>
+    fun updateComplexDocuments(complexDocuments: List<ComplexDocumentRevise>)
+
+    fun getMercuryNotActual(): List<TaskMercuryNotActual>
+    fun updateMercuryNotActual(newMercuryNotActual: List<TaskMercuryNotActual>)
 
     fun clear()
 

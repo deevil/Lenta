@@ -26,11 +26,27 @@ class TaskContents
     }
 
     fun getTaskContentsInfo(startRecountRestInfo: DirectSupplierStartRecountRestInfo) : TaskContentsInfo {
-        return TaskContentsInfo(conversionToProductInfo(startRecountRestInfo.taskComposition), startRecountRestInfo.taskProductDiscrepancies, startRecountRestInfo.taskBatches, startRecountRestInfo.taskBatchesDiscrepancies)
+        return TaskContentsInfo(
+                conversionToProductInfo(startRecountRestInfo.taskComposition),
+                conversionToProductDiscrepancies(startRecountRestInfo.taskProductDiscrepancies),
+                startRecountRestInfo.taskBatches.map {
+                    TaskBatchInfo.from(it)
+                },
+                conversionToBatchesDiscrepancies(startRecountRestInfo.taskBatchesDiscrepancies),
+                conversionToMercuryInfo(startRecountRestInfo.taskMercuryInfoRestData)
+        )
     }
 
     fun getTaskContentsInfo(startRecountRestInfo: TaskContentsRequestResult) : TaskContentsInfo {
-        return TaskContentsInfo(conversionToProductInfo(startRecountRestInfo.taskComposition), startRecountRestInfo.taskProductDiscrepancies, startRecountRestInfo.taskBatches, startRecountRestInfo.taskBatchesDiscrepancies)
+        return TaskContentsInfo(
+                conversionToProductInfo(startRecountRestInfo.taskComposition),
+                conversionToProductDiscrepancies(startRecountRestInfo.taskProductDiscrepancies),
+                startRecountRestInfo.taskBatches.map {
+                    TaskBatchInfo.from(it)
+                },
+                conversionToBatchesDiscrepancies(startRecountRestInfo.taskBatchesDiscrepancies),
+                conversionToMercuryInfo(startRecountRestInfo.taskMercuryInfoRestData)
+        )
     }
 
     private fun conversionToProductInfo(taskComposition: List<TaskComposition>) : List<TaskProductInfo> {
@@ -70,11 +86,59 @@ class TaskContents
             )
         }
     }
+
+    private fun conversionToProductDiscrepancies(taskProductDiscrepanciesRestData: List<TaskProductDiscrepanciesRestData>) : List<TaskProductDiscrepancies> {
+        return taskProductDiscrepanciesRestData.map {
+            val uomInfo = zmpUtz07V001.getUomInfo(it.unit)
+            TaskProductDiscrepancies(
+                    materialNumber = it.materialNumber,
+                    exidv = it.exidv,
+                    numberDiscrepancies = it.numberDiscrepancies,
+                    uom = Uom(code = uomInfo?.uom ?: "", name = uomInfo?.name ?: ""),
+                    typeDiscrepancies = it.typeDiscrepancies,
+                    isNotEdit = it.isNotEdit.isNotEmpty(),
+                    isNew = it.isNew.isNotEmpty()
+            )
+        }
+    }
+
+    private fun conversionToBatchesDiscrepancies(taskBatchesDiscrepanciesRestData: List<TaskBatchesDiscrepanciesRestData>) : List<TaskBatchesDiscrepancies> {
+        return taskBatchesDiscrepanciesRestData.map {
+            val uomInfo = zmpUtz07V001.getUomInfo(it.unit)
+            TaskBatchesDiscrepancies(
+                    materialNumber = it.materialNumber,
+                    exidv = it.exidv,
+                    numberDiscrepancies = it.numberDiscrepancies,
+                    uom = Uom(code = uomInfo?.uom ?: "", name = uomInfo?.name ?: ""),
+                    typeDiscrepancies = it.typeDiscrepancies,
+                    isNotEdit = it.isNotEdit.isNotEmpty(),
+                    isNew = it.isNew.isNotEmpty()
+            )
+        }
+    }
+
+    private fun conversionToMercuryInfo(taskMercuryInfoRestData: List<TaskMercuryInfoRestData>) : List<TaskMercuryInfo> {
+        return taskMercuryInfoRestData.map {
+            val uomInfo = zmpUtz07V001.getUomInfo(it.unit)
+            TaskMercuryInfo(
+                    materialNumber= it.materialNumber,
+                    vetDocumentID = it.vetDocumentID,
+                    volume = it.volume.toDouble(),
+                    uom = Uom(code = uomInfo?.uom ?: "", name = uomInfo?.name ?: ""),
+                    typeDiscrepancies = it.typeDiscrepancies,
+                    numberDiscrepancies = it.numberDiscrepancies.toDouble(),
+                    productionDate = it.productionDates,
+                    manufacturer = it.manufacturers,
+                    productionDateTo = it.productionDateTo
+            )
+        }
+    }
 }
 
 data class TaskContentsInfo(
         val products: List<TaskProductInfo>,
         val productsDiscrepancies: List<TaskProductDiscrepancies>,
         val taskBatches: List<TaskBatchInfo>,
-        val taskBatchesDiscrepancies: List<TaskBatchesDiscrepancies>
+        val taskBatchesDiscrepancies: List<TaskBatchesDiscrepancies>,
+        val taskMercuryInfo: List<TaskMercuryInfo>
 )

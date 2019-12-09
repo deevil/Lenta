@@ -134,7 +134,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/vertical_guidline_2"
             app:layout_constraintTop_toTopOf="parent"
-            app:visibleOrGone='@{vm.isABForm}'/>
+            app:visibleOrGone='@{vm.isVisibileArrow}'/>
 
         <View
             android:id="@+id/div_hor_bottom"
@@ -185,7 +185,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginEnd="8dp"
-            android:enabled="@{!vm.isABForm}"
+            android:enabled="@{!vm.isVisibileArrow}"
             android:checked="@{vm.isCheck}"
             app:layout_constraintBottom_toBottomOf="@+id/tv_counter"
             app:layout_constraintEnd_toEndOf="parent"

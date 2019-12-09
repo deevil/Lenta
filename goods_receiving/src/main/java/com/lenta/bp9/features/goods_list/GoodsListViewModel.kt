@@ -12,8 +12,10 @@ import com.lenta.bp9.requests.network.EndRecountDDResult
 import com.lenta.bp9.requests.network.EndRecountDirectDeliveriesNetRequest
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
+import com.lenta.shared.models.core.ProductType
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
+import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.databinding.PageSelectionListener
@@ -76,8 +78,8 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
                 listCounted.postValue(
                         task.getProcessedProducts()
                                 .filter {
-                                    task.taskRepository.getProductsDiscrepancies().getCountAcceptOfProduct(it) > 0.0
-                                            || task.taskRepository.getProductsDiscrepancies().getCountRefusalOfProduct(it) > 0.0
+                                    (task.taskRepository.getProductsDiscrepancies().getCountAcceptOfProduct(it) +
+                                            task.taskRepository.getProductsDiscrepancies().getCountRefusalOfProduct(it)) > 0.0
                                 }
                                 .mapIndexed { index, productInfo ->
                                     val acceptTotalCount = task.taskRepository.getProductsDiscrepancies().getCountAcceptOfProduct(productInfo)
@@ -98,13 +100,15 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
                                             name = "${productInfo.getMaterialLastSix()} ${productInfo.description}",
                                             countAcceptWithUom = acceptTotalCountWithUom,
                                             countRefusalWithUom = refusalTotalCountWithUom,
+                                            isNotEdit = productInfo.isNotEdit,
                                             productInfo = productInfo,
                                             batchInfo = null,
-                                            even = index % 2 == 0)
+                                            even = index % 2 == 0
+                                    )
                                 }
                                 .reversed())
             } else {
-                listCounted.postValue(
+                /**listCounted.postValue(
                         task.getProcessedBatches()
                                 .filter {
                                     task.taskRepository.getBatchesDiscrepancies().getCountAcceptOfBatch(it) > 0.0
@@ -132,7 +136,7 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
                                             batchInfo = batchInfo,
                                             even = index % 2 == 0)
                                 }
-                                .reversed())
+                                .reversed())*/
             }
 
         }
@@ -158,7 +162,7 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
                                 }
                                 .reversed())
             } else {
-                listWithoutBarcode.postValue(
+                /**listWithoutBarcode.postValue(
                         task.getProcessedBatches()
                                 .filter {
                                     it.isNoEAN && (task.taskRepository.getBatchesDiscrepancies().getCountAcceptOfBatch(it) +
@@ -171,7 +175,7 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
                                             batchInfo = batchInfo,
                                             even = index % 2 == 0)
                                 }
-                                .reversed())
+                                .reversed())*/
             }
         }
     }
@@ -203,7 +207,25 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
         }
         matnr?.let {
             val productInfo = taskManager.getReceivingTask()?.taskRepository?.getProducts()?.findProduct(it)
-            if (productInfo != null) searchProductDelegate.openProductScreen(productInfo, false)
+            if (productInfo != null) {
+                if (productInfo.isVet) {
+                    if (productInfo.isNotEdit) {
+                        screenNavigator.openGoodsDetailsScreen(productInfo)
+                    } else {
+                        screenNavigator.openGoodsMercuryInfoScreen(productInfo, false)
+                    }
+                } else {
+                    if (productInfo.isNotEdit) {
+                        screenNavigator.openGoodsDetailsScreen(productInfo)
+                    } else {
+                        when (productInfo.type) {
+                            ProductType.General -> screenNavigator.openGoodsInfoScreen(productInfo, false)
+                            ProductType.ExciseAlcohol -> screenNavigator.openExciseAlcoInfoScreen(productInfo)
+                            ProductType.NonExciseAlcohol -> screenNavigator.openNonExciseAlcoInfoScreen(productInfo)
+                        }
+                    }
+                }
+            }
         }
     }
 

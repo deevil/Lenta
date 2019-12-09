@@ -269,6 +269,14 @@ class CoreNavigator @Inject constructor(
         }
     }
 
+    override fun openGS128InfoScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.gs128_info),
+                    iconRes = R.drawable.ic_scan_barcode_vet_48dp), CustomAnimation.vertical)
+        }
+    }
+
     override fun openBoxInfoScreen() {
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(message = iconDescriptionHelper.getDescription(IconCode.BOX_SCAN)
@@ -472,6 +480,7 @@ interface ICoreNavigator {
     fun showProgressConnection()
     fun showAlertBlockedTaskAnotherUser(userName: String)
     fun showAlertBlockedTaskByMe(userName: String, yesCallback: () -> Unit)
+    fun openGS128InfoScreen()
 }
 
 class FunctionsCollector(private val needCollectLiveData: LiveData<Boolean>) {

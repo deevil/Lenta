@@ -59,10 +59,10 @@ class ProcessNonExciseAlcoProductService
 
     private fun addBatch(count: String, reasonRejectionCode: String){
         val foundBatchDiscrepancy = taskManager.getReceivingTask()?.taskRepository?.getBatchesDiscrepancies()?.findBatchDiscrepanciesOfBatch(batchInfo)?.findLast {
-            it.materialNumber == batchInfo.materialNumber && it.batchNumber == batchInfo.batchNumber && it.typeDiscrepancies == reasonRejectionCode
+            it.materialNumber == batchInfo.materialNumber /**&& it.batchNumber == batchInfo.batchNumber*/ && it.typeDiscrepancies == reasonRejectionCode
         }
 
-        if (foundBatchDiscrepancy == null) {
+        /**if (foundBatchDiscrepancy == null) {
             taskManager.getReceivingTask()?.
                     taskRepository?.
                     getBatchesDiscrepancies()?.
@@ -86,12 +86,12 @@ class ProcessNonExciseAlcoProductService
         taskManager.getReceivingTask()?.
                 taskRepository?.
                 getBatches()?.
-                changeBatch(batchInfo.copy(isNoEAN = false))
+                changeBatch(batchInfo.copy(isNoEAN = false))*/
     }
 
     fun overlimit(count: Double) : Boolean {
-        return batchInfo.planQuantityBatch.toDouble() < ((taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.getCountAcceptOfProduct(productInfo) ?: 0.0)
-                + (taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.getCountRefusalOfProduct(productInfo) ?: 0.0) + count)
+        return false /**batchInfo.planQuantityBatch.toDouble() < ((taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.getCountAcceptOfProduct(productInfo) ?: 0.0)
+                + (taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.getCountRefusalOfProduct(productInfo) ?: 0.0) + count)*/
 
     }
 }

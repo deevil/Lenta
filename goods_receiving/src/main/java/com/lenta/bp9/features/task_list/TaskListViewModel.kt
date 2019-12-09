@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.lenta.bp9.R
 import com.lenta.bp9.features.loading.tasks.TaskCardMode
 import com.lenta.bp9.features.loading.tasks.TaskListLoadingMode
 import com.lenta.bp9.model.task.TaskInfo
@@ -41,16 +42,14 @@ class TaskListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     var requestFocusToFilter: MutableLiveData<Boolean> = MutableLiveData()
 
     var selectedPage = MutableLiveData(0)
-    var filterToProcess = MutableLiveData("")
     var filterSearch = MutableLiveData("")
-    var filterPostponed = MutableLiveData("")
 
     val tkNumber: String by lazy {
         sessionInfo.market ?: ""
     }
 
     val tasksToProcess by lazy {
-        repoInMemoryHolder.taskList.combineLatest(filterToProcess).map { pair ->
+        repoInMemoryHolder.taskList.combineLatest(filterSearch).map { pair ->
             pair!!.first.tasks.filter { !it.isDelayed && it.matchesFilter(pair.second) }.map {
                 TaskItemVm(taskPosition = it.position,
                         taskNumber = it.taskNumber,
@@ -80,8 +79,8 @@ class TaskListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     }
 
     val tasksPostponed by lazy {
-        repoInMemoryHolder.taskList.combineLatest(filterPostponed).map { pair ->
-            pair!!.first.tasks.filter { it.matchesFilter(pair.second) && it.isDelayed}.map {
+        repoInMemoryHolder.taskList.combineLatest(filterSearch).map { pair ->
+            pair!!.first.tasks.filter { it.isDelayed && it.matchesFilter(pair.second) }.map {
                 TaskItemVm(taskPosition = it.position,
                         taskNumber = it.taskNumber,
                         topText = it.topText,
@@ -135,11 +134,7 @@ class TaskListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
     fun onDigitPressed(digit: Int) {
         requestFocusToFilter.value = true
-        when (selectedPage.value) {
-            0 -> filterToProcess.value ?: "" + digit
-            1 -> filterSearch.value ?: "" + digit
-            2 -> filterPostponed.value ?: "" + digit
-        }
+        filterSearch.value ?: "" + digit
     }
 
     override fun onOkInSoftKeyboard(): Boolean {
@@ -173,10 +168,6 @@ class TaskListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
                 TaskLockStatus.None -> screenNavigator.openTaskCardLoadingScreen(TaskCardMode.Full, it.taskNumber, loadFullData)
             }
         }
-    }
-
-    fun onResume() {
-
     }
 
     fun getTasksForPage(page: Int) : LiveData<List<TaskItemVm>> {

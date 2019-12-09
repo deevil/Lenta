@@ -73,6 +73,7 @@ class LoadingStartConditionsReviseViewModel : CoreLoadingViewModel() {
             if (task.taskRepository.getReviseDocuments().getTransportConditions().isNotEmpty()) {
                 screenNavigator.openTransportConditionsScreen()
             } else {
+                screenNavigator.openTaskListScreen()
                 screenNavigator.openCheckingNotNeededAlert(context.getString(R.string.revise_not_needed_unloading)) {
                     screenNavigator.openFinishConditionsReviseLoadingScreen()
                 }

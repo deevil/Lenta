@@ -9,6 +9,7 @@ import com.lenta.bp9.features.formed_docs.FormedDocsViewModel
 import com.lenta.bp9.features.goods_details.GoodsDetailsViewModel
 import com.lenta.bp9.features.goods_information.excise_alco.ExciseAlcoInfoViewModel
 import com.lenta.bp9.features.goods_information.general.GoodsInfoViewModel
+import com.lenta.bp9.features.goods_information.mercury.GoodsMercuryInfoViewModel
 import com.lenta.bp9.features.goods_information.non_excise_alco.NonExciseAlcoInfoViewModel
 import com.lenta.bp9.features.goods_information.perishables.PerishablesInfoViewModel
 import com.lenta.bp9.features.goods_list.GoodsListViewModel
@@ -17,6 +18,10 @@ import com.lenta.bp9.features.task_list.TaskListViewModel
 import com.lenta.bp9.features.loading.fast.FastDataLoadingViewModel
 import com.lenta.bp9.features.loading.tasks.*
 import com.lenta.bp9.features.main_menu.MainMenuViewModel
+import com.lenta.bp9.features.mercury_exception_integration.MercuryExceptionIntegrationViewModel
+import com.lenta.bp9.features.mercury_list.MercuryListViewModel
+import com.lenta.bp9.features.mercury_list_irrelevant.MercuryListIrrelevantViewModel
+import com.lenta.bp9.features.reconciliation_mercury.ReconciliationMercuryViewModel
 import com.lenta.bp9.features.reject.RejectViewModel
 import com.lenta.bp9.features.repres_person_num_entry.RepresPersonNumEntryViewModel
 import com.lenta.bp9.features.revise.*
@@ -78,4 +83,9 @@ interface AppComponent {
     fun inject(it: LoadingSubmittedViewModel)
     fun inject(it: LoadingTransmittedViewModel)
     fun inject(it: EditingInvoiceViewModel)
+    fun inject(it: MercuryListViewModel)
+    fun inject(it: MercuryListIrrelevantViewModel)
+    fun inject(it: ReconciliationMercuryViewModel)
+    fun inject(it: MercuryExceptionIntegrationViewModel)
+    fun inject(it: GoodsMercuryInfoViewModel)
 }
