@@ -262,4 +262,5 @@ class GoodsListWlFragment : CoreFragment<FragmentGoodsListWlBinding, GoodsListWl
         super.onResume()
         vm.updateGoodList()
     }
+
 }

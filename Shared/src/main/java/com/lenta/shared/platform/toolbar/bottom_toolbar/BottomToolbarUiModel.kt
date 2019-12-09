@@ -279,7 +279,7 @@ data class ButtonDecorationInfo(
         }
 
         val getWeight: ButtonDecorationInfo by lazy {
-            ButtonDecorationInfo(R.drawable.ic_deliveries_24dp, R.string.get_weight)
+            ButtonDecorationInfo(R.drawable.ic_weight_kg_24dp, R.string.get_weight)
         }
 
         val verify: ButtonDecorationInfo by lazy {

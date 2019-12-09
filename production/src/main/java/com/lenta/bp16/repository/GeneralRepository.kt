@@ -1,13 +1,14 @@
 package com.lenta.bp16.repository
 
-import androidx.lifecycle.MutableLiveData
-import com.lenta.bp16.model.pojo.Good
 import com.lenta.shared.fmp.resources.dao_ext.getAllowedProAppVersion
+import com.lenta.shared.fmp.resources.dao_ext.getUnitName
+import com.lenta.shared.fmp.resources.fast.ZmpUtz07V001
 import com.lenta.shared.fmp.resources.fast.ZmpUtz14V001
 import com.lenta.shared.models.core.Uom
 import com.mobrun.plugin.api.HyperHive
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import java.util.*
 import javax.inject.Inject
 
 class GeneralRepository @Inject constructor(
@@ -15,6 +16,7 @@ class GeneralRepository @Inject constructor(
 ) : IGeneralRepository {
 
     private val settings: ZmpUtz14V001 by lazy { ZmpUtz14V001(hyperHive) } // Настройки
+    private val units: ZmpUtz07V001 by lazy { ZmpUtz07V001(hyperHive) } // Единицы измерения
 
     override suspend fun getAllowedAppVersion(): String? {
         return withContext(Dispatchers.IO) {
@@ -22,13 +24,12 @@ class GeneralRepository @Inject constructor(
         }
     }
 
-    override fun getCurrentGood(): MutableLiveData<Good> {
-        return MutableLiveData(Good(
-                material = "000000000000002365",
-                name = "Большая рыба",
-                units = Uom.KG,
-                planned = 25.0
-        ))
+    override suspend fun getUnitsByCode(code: String): Uom {
+        return withContext(Dispatchers.IO) {
+            return@withContext units.getUnitName(code)?.toLowerCase(Locale.getDefault())?.let { name ->
+                Uom(code, name)
+            } ?: Uom.KG
+        }
     }
 
 }
@@ -36,7 +37,6 @@ class GeneralRepository @Inject constructor(
 interface IGeneralRepository {
 
     suspend fun getAllowedAppVersion(): String?
-
-    fun getCurrentGood(): MutableLiveData<Good>
+    suspend fun getUnitsByCode(code: String): Uom
 
 }

@@ -92,7 +92,7 @@
             android:layout_weight="1"
             app:items="@{vm.processing}"
             app:rv_config="@{rvConfig}"
-            tools:listitem="@layout/item_task_list" />
+            tools:listitem="@layout/item_task" />
 
         <!-- Ввод номера товара -->
         <LinearLayout
@@ -124,7 +124,8 @@
                 android:layout_marginEnd="8dp"
                 android:background="?selectableItemBackground"
                 android:onClick="@{(v) -> vm.navigator.openEanInfoScreen()}"
-                android:src="@drawable/ic_scan_barcode_48dp" />
+                android:src="@drawable/ic_scan_barcode_48dp"
+                android:visibility="@{vm.scanButtonVisibility}" />
 
         </LinearLayout>
 

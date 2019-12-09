@@ -2,13 +2,13 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
-        tools:context=".features.raw_good_list.RawGoodListFragment">
+        tools:context=".features.external_supply_list.ExternalSupplyListFragment">
 
     <data>
 
         <variable
             name="vm"
-            type="com.lenta.bp16.features.raw_good_list.RawGoodListViewModel" />
+            type="com.lenta.bp16.features.external_supply_list.ExternalSupplyListViewModel" />
 
         <variable
             name="rvConfig"
@@ -67,16 +67,6 @@
 
                 </LinearLayout>
 
-                <LinearLayout
-                    style="@style/LinearCellStyle"
-                    android:layout_weight="@integer/sku_arrived_remain_column_4">
-
-                    <TextView
-                        style="@style/ColumnTitleStyle"
-                        android:text="@string/remain" />
-
-                </LinearLayout>
-
             </LinearLayout>
 
             <View style="@style/HorizontalDivider" />
@@ -90,7 +80,7 @@
             android:layout_height="match_parent"
             app:items="@{vm.goods}"
             app:rv_config="@{rvConfig}"
-            tools:listitem="@layout/item_raw_good_list" />
+            tools:listitem="@layout/item_external_supply" />
 
     </LinearLayout>
 

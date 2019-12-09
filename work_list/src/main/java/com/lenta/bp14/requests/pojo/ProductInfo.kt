@@ -63,5 +63,4 @@ data class ProductInfo(
         /** Знаменатель при пересчете в базисные единицы измерения */
         @SerializedName("EAN_UMREN")
         val eanUmRen: String
-
 )

@@ -9,7 +9,7 @@ import androidx.databinding.DataBindingUtil
 import com.lenta.bp16.BR
 import com.lenta.bp16.R
 import com.lenta.bp16.databinding.FragmentTaskListBinding
-import com.lenta.bp16.databinding.ItemTaskListBinding
+import com.lenta.bp16.databinding.ItemTaskBinding
 import com.lenta.bp16.databinding.LayoutTaskListBinding
 import com.lenta.bp16.platform.extention.getAppComponent
 import com.lenta.shared.platform.fragment.CoreFragment
@@ -22,6 +22,7 @@ import com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig
 import com.lenta.shared.utilities.databinding.RecyclerViewKeyHandler
 import com.lenta.shared.utilities.databinding.ViewPagerSettings
 import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
+import com.lenta.shared.utilities.extentions.getDeviceIp
 import com.lenta.shared.utilities.extentions.provideViewModel
 
 class TaskListFragment : CoreFragment<FragmentTaskListBinding, TaskListViewModel>(),
@@ -37,6 +38,9 @@ class TaskListFragment : CoreFragment<FragmentTaskListBinding, TaskListViewModel
     override fun getViewModel(): TaskListViewModel {
         provideViewModel(TaskListViewModel::class.java).let {
             getAppComponent()?.inject(it)
+
+            it.deviceIp.value = context!!.getDeviceIp()
+
             return it
         }
     }
@@ -66,13 +70,13 @@ class TaskListFragment : CoreFragment<FragmentTaskListBinding, TaskListViewModel
                     false).let { layoutBinding ->
 
                 layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
-                        layoutId = R.layout.item_task_list,
+                        layoutId = R.layout.item_task,
                         itemId = BR.item,
-                        realisation = object : DataBindingAdapter<ItemTaskListBinding> {
-                            override fun onCreate(binding: ItemTaskListBinding) {
+                        realisation = object : DataBindingAdapter<ItemTaskBinding> {
+                            override fun onCreate(binding: ItemTaskBinding) {
                             }
 
-                            override fun onBind(binding: ItemTaskListBinding, position: Int) {
+                            override fun onBind(binding: ItemTaskBinding, position: Int) {
                                 processingRecyclerViewKeyHandler?.let {
                                     binding.root.isSelected = it.isSelected(position)
                                 }
@@ -107,13 +111,13 @@ class TaskListFragment : CoreFragment<FragmentTaskListBinding, TaskListViewModel
                 false).let { layoutBinding ->
 
             layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
-                    layoutId = R.layout.item_task_list,
+                    layoutId = R.layout.item_task,
                     itemId = BR.item,
-                    realisation = object : DataBindingAdapter<ItemTaskListBinding> {
-                        override fun onCreate(binding: ItemTaskListBinding) {
+                    realisation = object : DataBindingAdapter<ItemTaskBinding> {
+                        override fun onCreate(binding: ItemTaskBinding) {
                         }
 
-                        override fun onBind(binding: ItemTaskListBinding, position: Int) {
+                        override fun onBind(binding: ItemTaskBinding, position: Int) {
                             processedRecyclerViewKeyHandler?.let {
                                 binding.root.isSelected = it.isSelected(position)
                             }

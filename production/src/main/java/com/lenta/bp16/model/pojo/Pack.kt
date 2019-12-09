@@ -2,8 +2,19 @@ package com.lenta.bp16.model.pojo
 
 
 data class Pack(
-        val number: Int,
-        val name: String,
-        var weight: Double
+        val material: String,
+        val materialOsn: String,
+        val code: String,
+        val quantity: Double
 ) {
+
+    fun getShortPackNumber(): String {
+        var number = code
+        while (number.isNotEmpty() && number.startsWith("0")) {
+            number = number.substring(1)
+        }
+
+        return number
+    }
+
 }

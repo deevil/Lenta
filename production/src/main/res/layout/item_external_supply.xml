@@ -6,7 +6,7 @@
 
         <variable
             name="item"
-            type="com.lenta.bp16.features.pack_list.ItemPackListUi" />
+            type="com.lenta.bp16.features.external_supply_list.ItemExternalSupplyUi" />
 
     </data>
 
@@ -24,7 +24,7 @@
 
             <LinearLayout
                 style="@style/LinearCellStyle"
-                android:layout_weight="@integer/pack_number_total_weight_column_1">
+                android:layout_weight="@integer/sku_arrived_column_1">
 
                 <TextView
                     android:id="@+id/tv_item_number"
@@ -39,17 +39,24 @@
 
             <LinearLayout
                 style="@style/LinearCellStyle"
-                android:layout_weight="@integer/pack_number_total_weight_column_2">
+                android:layout_weight="@integer/sku_arrived_column_2"
+                android:orientation="horizontal">
 
                 <TextView
                     style="@style/CellTextStyle"
-                    android:text="@{item.packNumber}"
-                    tools:text="Тара №1" />
+                    android:layout_width="0dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_weight="1"
+                    android:maxLines="2"
+                    android:text="@{item.name}"
+                    tools:text="000005 Креветка длиннохвостая" />
 
-                <TextView
-                    style="@style/CellTextStyle"
-                    android:text="@{item.rawName}"
-                    tools:text="Форель филе" />
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="5dp"
+                    android:src="@drawable/ic_keyboard_arrow_right_white_24dp"
+                    tools:ignore="ContentDescription" />
 
             </LinearLayout>
 
@@ -57,14 +64,14 @@
 
             <LinearLayout
                 style="@style/LinearCellStyle"
-                android:layout_weight="@integer/pack_number_total_weight_column_3"
+                android:layout_weight="@integer/sku_arrived_column_3"
                 android:orientation="horizontal">
 
                 <TextView
                     style="@style/CellTextStyle"
                     android:gravity="center"
-                    android:text="@{item.totalWeight}"
-                    tools:text="25 кг" />
+                    android:text="@{item.arrived}"
+                    tools:text="20 кг" />
 
             </LinearLayout>
 

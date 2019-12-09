@@ -27,6 +27,8 @@ class GeneralTaskManager @Inject constructor(
 
     private var savedTaskData: TaskData? = null
 
+    override var isRestoredData = false
+
     private val allManagers = listOf<ITaskManager<*, *>>(checkPriceTaskManager, checkListTaskManager, workListTaskManager, notExposedTaskManager)
 
     init {
@@ -116,6 +118,8 @@ class GeneralTaskManager @Inject constructor(
             }
         }
 
+        isRestoredData = true
+
         clearSavedTaskData()
     }
 
@@ -123,6 +127,8 @@ class GeneralTaskManager @Inject constructor(
 
 
 interface IGeneralTaskManager {
+    var isRestoredData: Boolean
+
     fun getProcessedTask(): ITask?
     fun getProcessedTaskType(): ITaskTypeInfo?
     fun clearCurrentTask(sentReportResult: SentReportResult? = null): Boolean

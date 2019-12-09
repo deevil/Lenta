@@ -120,8 +120,5 @@
     <string name="excise_alcohol">Акцизный алкоголь</string>
     <string name="marked_product">Маркированный товар</string>
     <string name="self_life">Срок годности</string>
-    <string name="another_user_block_task">Задание заблокировано логином \"%1$s\".</string>
-    <string name="user_self_block_task">Обработка задания начата исполнителем с логином \"%1$s\". Все равно продолжить?</string>
-
 
 </resources>

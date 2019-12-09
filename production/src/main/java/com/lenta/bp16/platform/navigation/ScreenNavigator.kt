@@ -3,8 +3,9 @@ package com.lenta.bp16.platform.navigation
 import android.content.Context
 import com.lenta.bp16.R
 import com.lenta.bp16.features.auth.AuthFragment
-import com.lenta.bp16.features.good_card.GoodCardFragment
-import com.lenta.bp16.features.raw_good_list.RawGoodListFragment
+import com.lenta.bp16.features.good_packaging.GoodPackagingFragment
+import com.lenta.bp16.features.good_weighing.GoodWeighingFragment
+import com.lenta.bp16.features.processing_unit_list.ProcessingUnitListFragment
 import com.lenta.bp16.features.loading.fast.FastDataLoadingFragment
 import com.lenta.bp16.features.main_menu.MainMenuFragment
 import com.lenta.bp16.features.pack_good_list.PackGoodListFragment
@@ -71,9 +72,9 @@ class ScreenNavigator @Inject constructor(
         }
     }
 
-    override fun openGoodListScreen() {
+    override fun openProcessingUnitListScreen() {
         runOrPostpone {
-            getFragmentStack()?.push(RawGoodListFragment())
+            getFragmentStack()?.push(ProcessingUnitListFragment())
         }
     }
 
@@ -83,9 +84,15 @@ class ScreenNavigator @Inject constructor(
         }
     }
 
-    override fun openGoodCardScreen() {
+    override fun openGoodWeighingScreen() {
         runOrPostpone {
-            getFragmentStack()?.push(GoodCardFragment())
+            getFragmentStack()?.push(GoodWeighingFragment())
+        }
+    }
+
+    override fun openGoodPackagingScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(GoodPackagingFragment())
         }
     }
 
@@ -116,11 +123,11 @@ class ScreenNavigator @Inject constructor(
         }
     }
 
-    override fun showConfirmNoSuchItemLeft(confirmCallback: () -> Unit) {
+    override fun showConfirmNoSuchItemLeft(taskType: String, confirmCallback: () -> Unit) {
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
                     pageNumber = "23",
-                    message = context.getString(R.string.confirm_that_there_is_no_such_item_left_in_pu),
+                    message = context.getString(R.string.confirm_that_there_is_no_such_item_left, taskType),
                     iconRes = R.drawable.is_warning_yellow_80dp,
                     codeConfirmForRight = backFragmentResultHelper.setFuncForResult(confirmCallback),
                     rightButtonDecorationInfo = ButtonDecorationInfo.confirm
@@ -144,21 +151,20 @@ class ScreenNavigator @Inject constructor(
 }
 
 interface IScreenNavigator : ICoreNavigator {
-
     fun openFirstScreen()
     fun openLoginScreen()
     fun openFastDataLoadingScreen()
     fun openSelectMarketScreen()
     fun openMainMenuScreen()
     fun openTaskListScreen()
-    fun openGoodListScreen()
+    fun openProcessingUnitListScreen()
     fun openRawListScreen()
-    fun openGoodCardScreen()
+    fun openGoodWeighingScreen()
+    fun openGoodPackagingScreen()
     fun openPackListScreen()
     fun openPackGoodListScreen()
 
     fun showDefrostingPhaseIsCompleted(nextCallback: () -> Unit)
-    fun showConfirmNoSuchItemLeft(confirmCallback: () -> Unit)
+    fun showConfirmNoSuchItemLeft(taskType: String, confirmCallback: () -> Unit)
     fun showFixingPackagingPhaseSuccessful(nextCallback: () -> Unit)
-
 }

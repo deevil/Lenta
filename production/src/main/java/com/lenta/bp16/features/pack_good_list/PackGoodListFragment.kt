@@ -6,7 +6,7 @@ import android.widget.AdapterView
 import com.lenta.bp16.BR
 import com.lenta.bp16.R
 import com.lenta.bp16.databinding.FragmentPackGoodListBinding
-import com.lenta.bp16.databinding.ItemRawGoodListBinding
+import com.lenta.bp16.databinding.ItemPackGoodListBinding
 import com.lenta.bp16.platform.extention.getAppComponent
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
@@ -49,13 +49,13 @@ class PackGoodListFragment : CoreFragment<FragmentPackGoodListBinding, PackGoodL
     private fun initRvConfig() {
         binding?.let { layoutBinding ->
             layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
-                    layoutId = R.layout.item_raw_good_list,
+                    layoutId = R.layout.item_pack_good_list,
                     itemId = BR.item,
-                    realisation = object : DataBindingAdapter<ItemRawGoodListBinding> {
-                        override fun onCreate(binding: ItemRawGoodListBinding) {
+                    realisation = object : DataBindingAdapter<ItemPackGoodListBinding> {
+                        override fun onCreate(binding: ItemPackGoodListBinding) {
                         }
 
-                        override fun onBind(binding: ItemRawGoodListBinding, position: Int) {
+                        override fun onBind(binding: ItemPackGoodListBinding, position: Int) {
                             recyclerViewKeyHandler?.let {
                                 binding.root.isSelected = it.isSelected(position)
                             }
@@ -77,7 +77,7 @@ class PackGoodListFragment : CoreFragment<FragmentPackGoodListBinding, PackGoodL
             layoutBinding.lifecycleOwner = viewLifecycleOwner
             recyclerViewKeyHandler = RecyclerViewKeyHandler(
                     rv = layoutBinding.rv,
-                    items = vm.goods,
+                    items = vm.packGoods,
                     lifecycleOwner = layoutBinding.lifecycleOwner!!,
                     initPosInfo = recyclerViewKeyHandler?.posInfo?.value
             )

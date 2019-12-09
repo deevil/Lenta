@@ -1,10 +1,16 @@
 package com.lenta.bp16.model.pojo
 
+import com.lenta.bp16.model.TaskStatus
 import com.lenta.bp16.model.TaskType
+import com.lenta.bp16.request.pojo.TaskInfo
 
 data class Task(
-        val puNumber: String,
-        val taskType: TaskType,
-        var isProcessed: Boolean = false
+        var isProcessed: Boolean = false,
+        val number: String,
+        val status: TaskStatus,
+        val type: TaskType,
+        val quantity: Int,
+        val taskInfo: TaskInfo,
+        var goods: List<Good>? = null
 ) {
 }
