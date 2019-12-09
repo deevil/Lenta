@@ -89,11 +89,15 @@ class RawListFragment : CoreFragment<FragmentRawListBinding, RawListViewModel>()
             layoutBinding.lifecycleOwner = viewLifecycleOwner
             recyclerViewKeyHandler = RecyclerViewKeyHandler(
                     rv = layoutBinding.rv,
-                    items = vm.raws,
+                    items = vm.raw,
                     lifecycleOwner = layoutBinding.lifecycleOwner!!,
                     initPosInfo = recyclerViewKeyHandler?.posInfo?.value
             )
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        vm.updateList()
+    }
 }

@@ -34,20 +34,30 @@ class ExternalSupplyListViewModel : CoreViewModel() {
         task.taskInfo.text3
     }
 
-    val goods: MutableLiveData<List<ItemExternalSupplyUi>> by lazy {
-        MutableLiveData(task.goods!!.mapIndexed { index, good ->
+    val goods = MutableLiveData<List<ItemExternalSupplyUi>>()
+
+    val completeEnabled = MutableLiveData(true)
+
+    // -----------------------------
+
+    init {
+        viewModelScope.launch {
+            updateList()
+        }
+    }
+
+    // -----------------------------
+
+    fun updateList() {
+        goods.value = taskManager.currentTask.goods!!.mapIndexed { index, good ->
             ItemExternalSupplyUi(
                     position = (index + 1).toString(),
                     material = good.material,
                     name = "${good.material.takeLast(6)} ${good.name}",
                     arrived = "${good.planned.dropZeros()} ${good.units.name}"
             )
-        })
+        }
     }
-
-    val completeEnabled = MutableLiveData(true)
-
-    // -----------------------------
 
     fun onClickItemPosition(position: Int) {
         val material = goods.value!![position].material

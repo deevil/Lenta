@@ -48,7 +48,7 @@ class GoodPackagingViewModel : CoreViewModel() {
     }
 
     private val totalWeight = enteredWeight.map {
-        it.sumWith(raw.totalQuantity)
+        it.sumWith(raw.quantity)
     }
 
     val totalWeightWithUnits = totalWeight.map {
@@ -76,7 +76,7 @@ class GoodPackagingViewModel : CoreViewModel() {
                                 deviceIp = deviceIp.value ?: "Not found!",
                                 material = good.material,
                                 orderNumber = raw.orderNumber,
-                                quantity = raw.totalQuantity,
+                                quantity = raw.quantity,
                                 taskNumber = taskManager.currentTask.taskInfo.number
                         )
                 ).also {

@@ -42,14 +42,14 @@ class GoodWeighingViewModel : CoreViewModel() {
         taskManager.currentRaw
     }
 
-    val weight = MutableLiveData("")
+    val weight = MutableLiveData("0")
 
     private val enteredWeight = weight.map {
         it?.toDoubleOrNull() ?: 0.0
     }
 
     private val totalWeight = enteredWeight.map {
-        it.sumWith(raw.totalQuantity)
+        it.sumWith(raw.quantity)
     }
 
     val totalWeightWithUnits = totalWeight.map {
@@ -60,12 +60,14 @@ class GoodWeighingViewModel : CoreViewModel() {
         "${raw.planned} ${good.units.name}"
     }
 
-    val completeEnabled: MutableLiveData<Boolean> = weight.map {
-        it?.toDoubleOrNull() ?: 0.0 != 0.0
+    private var isComplete = false
+
+    val completeEnabled: MutableLiveData<Boolean> = enteredWeight.map {
+        it ?: 0.0 != 0.0
     }
 
-    val addEnabled: MutableLiveData<Boolean> = weight.map {
-        it?.toDoubleOrNull() ?: 0.0 != 0.0
+    val addEnabled: MutableLiveData<Boolean> = enteredWeight.map {
+        it ?: 0.0 != 0.0
     }
 
     // -----------------------------
@@ -80,11 +82,8 @@ class GoodWeighingViewModel : CoreViewModel() {
     }
 
     fun onClickComplete() {
+        isComplete = true
         createPack()
-
-        if (weight.value!!.isEmpty()) {
-            navigator.openPackListScreen()
-        }
     }
 
     private fun createPack() {
@@ -99,7 +98,7 @@ class GoodWeighingViewModel : CoreViewModel() {
                             deviceIp = deviceIp.value ?: "Not found!",
                             material = good.material,
                             orderNumber = raw.orderNumber,
-                            quantity = raw.totalQuantity
+                            quantity = enteredWeight.value ?: 0.0
                     )
             ).also {
                 navigator.hideProgress()
@@ -115,6 +114,11 @@ class GoodWeighingViewModel : CoreViewModel() {
 
                 prepareToNext()
                 printTag()
+
+                if (isComplete) {
+                    isComplete = false
+                    navigator.openPackListScreen()
+                }
             }
         }
     }
@@ -125,8 +129,8 @@ class GoodWeighingViewModel : CoreViewModel() {
     }
 
     private fun prepareToNext() {
-        raw.totalQuantity = totalWeight.value ?: 0.0
-        weight.value = ""
+        raw.quantity = totalWeight.value ?: 0.0
+        weight.value = "0"
     }
 
     private fun printTag() {

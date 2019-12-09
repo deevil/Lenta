@@ -22,7 +22,7 @@ class PackListViewModel : CoreViewModel() {
         MutableLiveData(taskManager.currentGood.packs.mapIndexed { index, pack ->
             ItemPackListUi(
                     position = (index + 1).toString(),
-                    number = "Тара №${pack.code}",
+                    number = "Тара №${pack.getShortPackNumber()}",
                     name = taskManager.currentRaw.name,
                     weight = pack.quantity.toString()
             )
@@ -39,8 +39,8 @@ class PackListViewModel : CoreViewModel() {
         navigator.showDefrostingPhaseIsCompleted {
             taskManager.currentGood.isProcessed = true
 
-            navigator.closeAllScreen()
-            navigator.openProcessingUnitListScreen()
+            navigator.goBack()
+            navigator.goBack()
         }
     }
 

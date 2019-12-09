@@ -34,8 +34,22 @@ class ProcessingUnitListViewModel : CoreViewModel() {
         task.taskInfo.text3
     }
 
-    val goods: MutableLiveData<List<ItemProcessingUnitUi>> by lazy {
-        MutableLiveData(task.goods!!.mapIndexed { index, good ->
+    val goods = MutableLiveData<List<ItemProcessingUnitUi>>()
+
+    val completeEnabled = MutableLiveData(true)
+
+    // -----------------------------
+
+    init {
+        viewModelScope.launch {
+            updateList()
+        }
+    }
+
+    // -----------------------------
+
+    fun updateList() {
+        goods.value = taskManager.currentTask.goods!!.mapIndexed { index, good ->
             ItemProcessingUnitUi(
                     position = (index + 1).toString(),
                     material = good.material,
@@ -43,12 +57,8 @@ class ProcessingUnitListViewModel : CoreViewModel() {
                     arrived = "${good.planned.dropZeros()} ${good.units.name}",
                     remain = "${(good.planned - good.getFactRawQuantity()).dropZeros()} ${good.units.name}"
             )
-        })
+        }
     }
-
-    val completeEnabled = MutableLiveData(true)
-
-    // -----------------------------
 
     fun onClickItemPosition(position: Int) {
         val material = goods.value!![position].material
