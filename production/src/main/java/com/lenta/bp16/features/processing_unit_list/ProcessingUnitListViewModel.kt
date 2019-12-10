@@ -104,7 +104,7 @@ class ProcessingUnitListViewModel : CoreViewModel() {
     }
 
     private fun completeTask() {
-        task.isProcessed = true
+        taskManager.completeCurrentTask()
         navigator.goBack()
     }
 

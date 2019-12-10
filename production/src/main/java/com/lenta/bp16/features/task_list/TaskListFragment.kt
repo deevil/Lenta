@@ -8,9 +8,7 @@ import android.widget.AdapterView
 import androidx.databinding.DataBindingUtil
 import com.lenta.bp16.BR
 import com.lenta.bp16.R
-import com.lenta.bp16.databinding.FragmentTaskListBinding
-import com.lenta.bp16.databinding.ItemTaskBinding
-import com.lenta.bp16.databinding.LayoutTaskListBinding
+import com.lenta.bp16.databinding.*
 import com.lenta.bp16.platform.extention.getAppComponent
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
@@ -64,8 +62,8 @@ class TaskListFragment : CoreFragment<FragmentTaskListBinding, TaskListViewModel
 
     override fun getPagerItemView(container: ViewGroup, position: Int): View {
         if (position == 0) {
-            DataBindingUtil.inflate<LayoutTaskListBinding>(LayoutInflater.from(container.context),
-                    R.layout.layout_task_list,
+            DataBindingUtil.inflate<LayoutProcessingTaskListBinding>(LayoutInflater.from(container.context),
+                    R.layout.layout_processing_task_list,
                     container,
                     false).let { layoutBinding ->
 
@@ -105,8 +103,8 @@ class TaskListFragment : CoreFragment<FragmentTaskListBinding, TaskListViewModel
             }
         }
 
-        DataBindingUtil.inflate<LayoutTaskListBinding>(LayoutInflater.from(container.context),
-                R.layout.layout_task_list,
+        DataBindingUtil.inflate<LayoutProcessedTaskListBinding>(LayoutInflater.from(container.context),
+                R.layout.layout_processed_task_list,
                 container,
                 false).let { layoutBinding ->
 

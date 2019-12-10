@@ -142,7 +142,7 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
             taskManager.currentTask = task
 
             if (task.isProcessed) {
-                navigator.openRawListScreen()
+                openTaskByType(task)
             } else {
                 viewModelScope.launch {
                     navigator.showProgressLoadingData()
@@ -177,7 +177,10 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
         if (task.taskInfo.isPack.isSapTrue()) {
             navigator.openPackGoodListScreen()
         } else {
-            navigator.openProcessingUnitListScreen()
+            when (taskManager.taskType) {
+                TaskType.PROCESSING_UNIT -> navigator.openProcessingUnitListScreen()
+                TaskType.EXTERNAL_SUPPLY -> navigator.openProcessingUnitListScreen()
+            }
         }
     }
 
