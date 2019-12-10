@@ -51,7 +51,7 @@ class TaskListFragment : CoreFragment<FragmentTaskListBinding, TaskListViewModel
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
-        bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
+        bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.menu)
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.update)
     }
 
