@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.lenta.bp16.model.ITaskManager
 import com.lenta.bp16.platform.navigation.IScreenNavigator
 import com.lenta.shared.platform.viewmodel.CoreViewModel
+import com.lenta.shared.utilities.extentions.dropZeros
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -48,7 +49,7 @@ class RawListViewModel : CoreViewModel() {
                     position = (index + 1).toString(),
                     materialOsn = raw.materialOsn,
                     name = raw.name,
-                    processed = "${raw.quantity} ${good.units.name} из ${raw.planned} ${good.units.name}",
+                    processed = "${raw.quantity.dropZeros()} ${good.units.name} из ${raw.planned.dropZeros()} ${good.units.name}",
                     arrowVisibility = !taskManager.currentTask.isProcessed
             )
         }

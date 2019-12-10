@@ -57,7 +57,7 @@ class GoodWeighingViewModel : CoreViewModel() {
     }
 
     val planned by lazy {
-        "${raw.planned} ${good.units.name}"
+        "${raw.planned.dropZeros()} ${good.units.name}"
     }
 
     private var isComplete = false

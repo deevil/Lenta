@@ -4,6 +4,7 @@ import androidx.lifecycle.MutableLiveData
 import com.lenta.bp16.model.ITaskManager
 import com.lenta.bp16.platform.navigation.IScreenNavigator
 import com.lenta.shared.platform.viewmodel.CoreViewModel
+import com.lenta.shared.utilities.extentions.dropZeros
 import javax.inject.Inject
 
 class PackListViewModel : CoreViewModel() {
@@ -24,7 +25,7 @@ class PackListViewModel : CoreViewModel() {
                     position = (index + 1).toString(),
                     number = "Тара №${pack.getShortPackNumber()}",
                     name = taskManager.currentRaw.name,
-                    weight = pack.quantity.toString()
+                    weight = "${pack.quantity.dropZeros()} ${taskManager.currentGood.units.name}"
             )
         })
     }

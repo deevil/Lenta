@@ -80,7 +80,7 @@
             android:layout_height="match_parent"
             app:items="@{vm.raw}"
             app:rv_config="@{rvConfig}"
-            tools:listitem="@layout/item_raw_list" />
+            tools:listitem="@layout/item_raw" />
 
     </LinearLayout>
 
