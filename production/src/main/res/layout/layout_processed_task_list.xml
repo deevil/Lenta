@@ -107,6 +107,7 @@
                 android:layout_margin="8dp"
                 android:layout_weight="1"
                 android:digits="0123456789"
+                android:drawableEnd="@drawable/ic_filter_white_24"
                 android:ellipsize="end"
                 android:hint="@string/enter_number_pu"
                 android:imeOptions="actionGo"

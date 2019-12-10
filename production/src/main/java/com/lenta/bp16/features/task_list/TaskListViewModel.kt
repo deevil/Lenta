@@ -8,6 +8,7 @@ import com.lenta.bp16.model.TaskStatus
 import com.lenta.bp16.model.TaskType
 import com.lenta.bp16.model.pojo.Task
 import com.lenta.bp16.platform.navigation.IScreenNavigator
+import com.lenta.bp16.platform.resource.IResourceManager
 import com.lenta.bp16.request.TaskInfoNetRequest
 import com.lenta.bp16.request.TaskInfoParams
 import com.lenta.bp16.request.TaskListNetRequest
@@ -34,10 +35,18 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
     lateinit var taskListNetRequest: TaskListNetRequest
     @Inject
     lateinit var taskInfoNetRequest: TaskInfoNetRequest
+    @Inject
+    lateinit var resourceManager: IResourceManager
 
 
     val title by lazy {
         "ТК - ${sessionInfo.market}"
+    }
+
+    val description by lazy {
+        tasks.map {
+            resourceManager.workWith(taskManager.taskType.abbreviation, it?.size ?: 0)
+        }
     }
 
     val deviceIp: MutableLiveData<String> = MutableLiveData("")
