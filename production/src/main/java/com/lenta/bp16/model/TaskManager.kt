@@ -28,8 +28,8 @@ class TaskManager @Inject constructor(
     override fun addTasks(taskListResult: TaskListResult) {
         val taskList = tasks.value!!.filter { it.isProcessed }.toMutableList()
         taskListResult.tasks.forEach { taskInfo ->
-            val existTask = taskList.find { it.taskInfo.number == taskInfo.number }
-            if (existTask == null) {
+            val processedTask = taskList.find { it.taskInfo.number == taskInfo.number }
+            if (processedTask == null) {
                 taskList.add(Task(
                         number = taskInfo.number,
                         status = taskInfo.getTaskStatus(),
@@ -72,6 +72,15 @@ class TaskManager @Inject constructor(
         }
     }
 
+    override fun completeCurrentTask() {
+        val taskList = tasks.value!!.toMutableList()
+        taskList.find { it.number == currentTask.number }?.let { currentTask ->
+            currentTask.isProcessed = true
+        }
+
+        tasks.value = taskList
+    }
+
     override fun getTaskType(): Int {
         return when (taskType) {
             TaskType.PROCESSING_UNIT -> 1
@@ -100,4 +109,5 @@ interface ITaskManager {
     suspend fun addTaskInfoToCurrentTask(taskInfoResult: TaskInfoResult)
     fun getTaskType(): Int
     fun getBlockType(): Int
+    fun completeCurrentTask()
 }

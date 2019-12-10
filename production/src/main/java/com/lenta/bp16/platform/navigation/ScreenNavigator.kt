@@ -3,6 +3,7 @@ package com.lenta.bp16.platform.navigation
 import android.content.Context
 import com.lenta.bp16.R
 import com.lenta.bp16.features.auth.AuthFragment
+import com.lenta.bp16.features.external_supply_list.ExternalSupplyListFragment
 import com.lenta.bp16.features.good_packaging.GoodPackagingFragment
 import com.lenta.bp16.features.good_weighing.GoodWeighingFragment
 import com.lenta.bp16.features.processing_unit_list.ProcessingUnitListFragment
@@ -75,6 +76,12 @@ class ScreenNavigator @Inject constructor(
     override fun openProcessingUnitListScreen() {
         runOrPostpone {
             getFragmentStack()?.push(ProcessingUnitListFragment())
+        }
+    }
+
+    override fun openExternalSupplyListScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(ExternalSupplyListFragment())
         }
     }
 
@@ -158,6 +165,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openMainMenuScreen()
     fun openTaskListScreen()
     fun openProcessingUnitListScreen()
+    fun openExternalSupplyListScreen()
     fun openRawListScreen()
     fun openGoodWeighingScreen()
     fun openGoodPackagingScreen()
