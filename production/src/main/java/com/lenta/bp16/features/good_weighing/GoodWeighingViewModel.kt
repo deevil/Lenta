@@ -29,7 +29,7 @@ class GoodWeighingViewModel : CoreViewModel() {
 
 
     val title by lazy {
-        taskManager.currentGood.getNameWithMaterial(" - ")
+        taskManager.currentGood.getNameWithMaterial()
     }
 
     val deviceIp: MutableLiveData<String> = MutableLiveData("")

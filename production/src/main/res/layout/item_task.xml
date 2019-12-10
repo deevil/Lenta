@@ -61,7 +61,7 @@
                         android:layout_width="wrap_content"
                         android:layout_marginEnd="0dp"
                         android:text="@{item.text2}"
-                        app:goneEmptyLine="@{item.text2}"
+                        app:hideEmpty="@{item.text2}"
                         tools:text="ООО Минторг" />
 
                 </LinearLayout>

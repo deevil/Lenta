@@ -5,11 +5,7 @@ import androidx.databinding.BindingAdapter
 import com.lenta.shared.utilities.extentions.setVisible
 import com.lenta.shared.utilities.extentions.setVisibleGone
 
-@BindingAdapter("goneEmptyLine")
-fun setGoneEmptyLine(textView: TextView, text: String?) {
-    if (text.isNullOrEmpty()) {
-        textView.setVisibleGone()
-    } else {
-        textView.setVisible()
-    }
+@BindingAdapter("hideEmpty")
+fun hideEmpty(textView: TextView, text: String?) {
+    textView.setVisible(!text.isNullOrEmpty())
 }

@@ -146,6 +146,7 @@
                     style="@style/CellTextStyle"
                     android:maxLines="2"
                     android:text="@{vm.good.name}"
+                    app:zoom="@{true}"
                     tools:text="Форель филе" />
 
             </LinearLayout>
