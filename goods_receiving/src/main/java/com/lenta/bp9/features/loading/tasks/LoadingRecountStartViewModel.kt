@@ -3,8 +3,11 @@ package com.lenta.bp9.features.loading.tasks
 import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.lenta.bp9.features.mercury_list_irrelevant.ZMP_UTZ_GRZ_11_V001
 import com.lenta.bp9.model.task.*
+import com.lenta.bp9.model.task.revise.ProductDocumentType
 import com.lenta.bp9.platform.navigation.IScreenNavigator
+import com.lenta.bp9.repos.IRepoInMemoryHolder
 import com.lenta.bp9.requests.network.*
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
@@ -29,11 +32,23 @@ class LoadingRecountStartViewModel : CoreLoadingViewModel() {
     lateinit var taskManager: IReceivingTaskManager
     @Inject
     lateinit var taskContents: TaskContents
+    @Inject
+    lateinit var hyperHive: HyperHive
+    @Inject
+    lateinit var repoInMemoryHolder: IRepoInMemoryHolder
 
     override val title: MutableLiveData<String> = MutableLiveData()
     override val progress: MutableLiveData<Boolean> = MutableLiveData(true)
     override val speedKbInSec: MutableLiveData<Int> = MutableLiveData()
     override val sizeInMb: MutableLiveData<Float> = MutableLiveData()
+
+    val toolbarDescription: String by lazy {
+        if (taskManager.getReceivingTask()?.taskDescription?.currentStatus == TaskStatus.Recounted) {
+            "\"" + TaskStatus.Recounted.stringValue() + "\" -> \"" + TaskStatus.Recounting.stringValue() + "\""
+        } else {
+            "\"" + (taskManager.getReceivingTask()?.taskDescription?.currentStatus?.stringValue() ?: "") + "\" -> \"" + TaskStatus.Recounting.stringValue() + "\""
+        }
+    }
 
     init {
         viewModelScope.launch {
@@ -59,9 +74,25 @@ class LoadingRecountStartViewModel : CoreLoadingViewModel() {
     }
 
     private fun handleSuccess(result: DirectSupplierStartRecountRestInfo) {
-        taskManager.updateTaskDescription(TaskDescription.from(result.taskDescription))
-        taskManager.getReceivingTask()?.updateTaskWithContents(taskContents.getTaskContentsInfo(result))
-        screenNavigator.openGoodsListScreen()
+        viewModelScope.launch {
+            val mercuryNotActual = result.taskMercuryNotActualRestData.map {TaskMercuryNotActual.from(hyperHive,it)}
+            if (mercuryNotActual.isNotEmpty()) {
+                screenNavigator.openMainMenuScreen()
+                screenNavigator.openTaskListScreen()
+                screenNavigator.openAlertElectronicVadLostRelevance(
+                        browsingCallbackFunc = {
+                            taskManager.getReceivingTask()?.taskRepository?.getReviseDocuments()?.updateMercuryNotActual(mercuryNotActual)
+                            screenNavigator.openMercuryListIrrelevantScreen(ZMP_UTZ_GRZ_11_V001)
+                        },
+                        countVad = mercuryNotActual.size.toString(),
+                        countGoods = taskManager.getReceivingTask()?.taskDescription?.quantityPositions.toString()
+                )
+            } else {
+                taskManager.updateTaskDescription(TaskDescription.from(result.taskDescription))
+                taskManager.getReceivingTask()?.updateTaskWithContents(taskContents.getTaskContentsInfo(result))
+                screenNavigator.openGoodsListScreen()
+            }
+        }
     }
 
     override fun clean() {

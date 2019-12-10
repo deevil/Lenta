@@ -57,7 +57,7 @@
             android:maxLines="1"
             android:paddingTop="8dp"
             android:paddingBottom="8dp"
-            android:text="@={vm.filterToProcess}"
+            android:text="@={vm.filterSearch}"
             android:hint="@string/filter_hint"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

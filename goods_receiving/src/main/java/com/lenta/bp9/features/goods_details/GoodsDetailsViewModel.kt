@@ -2,6 +2,7 @@ package com.lenta.bp9.features.goods_details
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.lenta.bp9.model.processing.ProcessMercuryProductService
 import com.lenta.bp9.model.task.IReceivingTaskManager
 import com.lenta.bp9.model.task.TaskBatchInfo
 import com.lenta.bp9.model.task.TaskProductInfo
@@ -18,9 +19,10 @@ class GoodsDetailsViewModel : CoreViewModel() {
 
     @Inject
     lateinit var taskManager: IReceivingTaskManager
-
     @Inject
     lateinit var dataBase: IDataBaseRepo
+    @Inject
+    lateinit var processMercuryProductService: ProcessMercuryProductService
 
     val productInfo: MutableLiveData<TaskProductInfo> = MutableLiveData()
     val batchInfo: MutableLiveData<TaskBatchInfo> = MutableLiveData()
@@ -42,17 +44,31 @@ class GoodsDetailsViewModel : CoreViewModel() {
     }
 
     private fun updateProduct() {
-        goodsDetails.postValue(
-                taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.findProductDiscrepanciesOfProduct(productInfo.value!!)?.mapIndexed { index, discrepancy ->
-                    GoodsDetailsCategoriesItem(
-                            number = index + 1,
-                            name = "${reasonRejectionInfo.value?.firstOrNull {it.code == discrepancy.typeDiscrepancies}?.name}",
-                            quantityWithUom = "${discrepancy.numberDiscrepancies.toDouble().toStringFormatted()} ${discrepancy.uom.name}",
-                            typeDiscrepancies = discrepancy.typeDiscrepancies,
-                            even = index % 2 == 0
-                    )
-                }?.reversed()
-        )
+        if (productInfo.value!!.isVet && !productInfo.value!!.isNotEdit) {
+            goodsDetails.postValue(
+                    processMercuryProductService.getGoodsDetails()?.mapIndexed { index, discrepancy ->
+                        GoodsDetailsCategoriesItem(
+                                number = index + 1,
+                                name = "${reasonRejectionInfo.value?.firstOrNull {it.code == discrepancy.typeDiscrepancies}?.name}",
+                                quantityWithUom = "${discrepancy.numberDiscrepancies.toDouble().toStringFormatted()} ${discrepancy.uom.name}",
+                                typeDiscrepancies = discrepancy.typeDiscrepancies,
+                                even = index % 2 == 0
+                        )
+                    }?.reversed()
+            )
+        } else {
+            goodsDetails.postValue(
+                    taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.findProductDiscrepanciesOfProduct(productInfo.value!!)?.mapIndexed { index, discrepancy ->
+                        GoodsDetailsCategoriesItem(
+                                number = index + 1,
+                                name = "${reasonRejectionInfo.value?.firstOrNull {it.code == discrepancy.typeDiscrepancies}?.name}",
+                                quantityWithUom = "${discrepancy.numberDiscrepancies.toDouble().toStringFormatted()} ${discrepancy.uom.name}",
+                                typeDiscrepancies = discrepancy.typeDiscrepancies,
+                                even = index % 2 == 0
+                        )
+                    }?.reversed()
+            )
+        }
     }
 
     private fun updateBatch() {

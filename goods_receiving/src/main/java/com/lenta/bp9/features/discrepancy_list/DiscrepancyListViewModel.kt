@@ -12,6 +12,7 @@ import com.lenta.bp9.requests.network.EndRecountDDResult
 import com.lenta.bp9.requests.network.EndRecountDirectDeliveriesNetRequest
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
+import com.lenta.shared.models.core.ProductType
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.PageSelectionListener
@@ -39,8 +40,6 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
     val countNotProcessed: MutableLiveData<List<GoodsDiscrepancyItem>> = MutableLiveData()
     val countProcessed: MutableLiveData<List<GoodsDiscrepancyItem>> = MutableLiveData()
     private val isBatches: MutableLiveData<Boolean> = MutableLiveData(false)
-    val isDiscrepancy: MutableLiveData<Boolean> = MutableLiveData(false)
-
 
     val visibilityCleanButton: MutableLiveData<Boolean> = selectedPage.map {
         it == 1
@@ -84,7 +83,7 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
                                 }
                                 .reversed())
             } else {
-                countNotProcessed.postValue(
+                /**countNotProcessed.postValue(
                         task.getProcessedBatches()
                                 .filter {
                                     task.taskRepository.getBatchesDiscrepancies().getCountBatchNotProcessedOfBatch(it) > 0.0
@@ -100,7 +99,7 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
                                             batchInfo = batchInfo,
                                             even = index % 2 == 0)
                                 }
-                                .reversed())
+                                .reversed())*/
             }
 
         }
@@ -139,7 +138,7 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
                                 }
                                 .reversed())
             } else {
-                countProcessed.postValue(
+                /**countProcessed.postValue(
                         task.getProcessedBatches()
                                 .filter {
                                     task.taskRepository.getBatchesDiscrepancies().getCountAcceptOfBatch(it) +
@@ -167,7 +166,7 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
                                             batchInfo = batchInfo,
                                             even = index % 2 == 0)
                                 }
-                                .reversed())
+                                .reversed()*/
             }
         }
         processedSelectionsHelper.clearPositions()
@@ -190,7 +189,17 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
         }
         matnr?.let {
             val productInfo = taskManager.getReceivingTask()?.taskRepository?.getProducts()?.findProduct(it)
-            if (productInfo != null) screenNavigator.openGoodsInfoScreen(productInfo, true)
+            if (productInfo != null) {
+                if (productInfo.isVet) {
+                    screenNavigator.openGoodsMercuryInfoScreen(productInfo, true)
+                } else {
+                    when (productInfo.type) {
+                        ProductType.General -> screenNavigator.openGoodsInfoScreen(productInfo, true)
+                        ProductType.ExciseAlcohol -> screenNavigator.openExciseAlcoInfoScreen(productInfo)
+                        ProductType.NonExciseAlcohol -> screenNavigator.openNonExciseAlcoInfoScreen(productInfo)
+                    }
+                }
+            }
         }
     }
 
@@ -205,14 +214,14 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
                 taskManager.getReceivingTask()?.taskRepository?.getProducts()?.changeProduct(countProcessed.value?.get(position)!!.productInfo!!.copy(isNoEAN = true))
             }
         } else {
-            processedSelectionsHelper.selectedPositions.value?.map { position ->
+            /**processedSelectionsHelper.selectedPositions.value?.map { position ->
                 taskManager
                         .getReceivingTask()
                         ?.taskRepository
                         ?.getBatchesDiscrepancies()
                         ?.deleteBatchesDiscrepanciesForBatch(countProcessed.value?.get(position)!!.batchInfo!!)
                 taskManager.getReceivingTask()?.taskRepository?.getBatches()?.changeBatch(countProcessed.value?.get(position)!!.batchInfo!!.copy(isNoEAN = true))
-            }
+            }*/
         }
 
         updateCountNotProcessed()

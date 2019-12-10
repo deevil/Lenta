@@ -15,7 +15,7 @@ class MemoryTaskBatchesDiscrepanciesRepository : ITaskBatchesDiscrepanciesReposi
     override fun findBatchDiscrepanciesOfBatch(batch: TaskBatchInfo): List<TaskBatchesDiscrepancies> {
         val foundDiscrepancies = ArrayList<TaskBatchesDiscrepancies>()
         for (i in batchesDiscrepancies.indices) {
-            if (batch.materialNumber == batchesDiscrepancies[i].materialNumber && batch.batchNumber == batchesDiscrepancies[i].batchNumber) {
+            if (batch.materialNumber == batchesDiscrepancies[i].materialNumber /**&& batch.batchNumber == batchesDiscrepancies[i].batchNumber*/) {
                 foundDiscrepancies.add(batchesDiscrepancies[i])
             }
         }
@@ -26,7 +26,7 @@ class MemoryTaskBatchesDiscrepanciesRepository : ITaskBatchesDiscrepanciesReposi
         var index = -1
         for (i in batchesDiscrepancies.indices) {
             if (discrepancies.materialNumber == batchesDiscrepancies[i].materialNumber &&
-                    discrepancies.batchNumber == batchesDiscrepancies[i].batchNumber &&
+                    /**discrepancies.batchNumber == batchesDiscrepancies[i].batchNumber &&*/
                     discrepancies.typeDiscrepancies == batchesDiscrepancies[i].typeDiscrepancies) {
                 index = i
             }
@@ -54,7 +54,7 @@ class MemoryTaskBatchesDiscrepanciesRepository : ITaskBatchesDiscrepanciesReposi
         var index = -1
         for (i in batchesDiscrepancies.indices) {
             if (discrepancies.materialNumber == batchesDiscrepancies[i].materialNumber &&
-                    discrepancies.batchNumber == batchesDiscrepancies[i].batchNumber &&
+                    /**discrepancies.batchNumber == batchesDiscrepancies[i].batchNumber &&*/
                     discrepancies.typeDiscrepancies == batchesDiscrepancies[i].typeDiscrepancies) {
                 index = i
             }
@@ -70,8 +70,7 @@ class MemoryTaskBatchesDiscrepanciesRepository : ITaskBatchesDiscrepanciesReposi
     override fun deleteBatchesDiscrepanciesForBatch(batch: TaskBatchInfo): Boolean {
         val delDiscrepancies = ArrayList<TaskBatchesDiscrepancies>()
         for (i in batchesDiscrepancies.indices) {
-            if (batch.materialNumber == batchesDiscrepancies[i].materialNumber &&
-                    batch.batchNumber == batchesDiscrepancies[i].batchNumber) {
+            if (batch.materialNumber == batchesDiscrepancies[i].materialNumber /**&& batch.batchNumber == batchesDiscrepancies[i].batchNumber*/) {
                 delDiscrepancies.add(batchesDiscrepancies[i])
             }
         }
@@ -105,7 +104,7 @@ class MemoryTaskBatchesDiscrepanciesRepository : ITaskBatchesDiscrepanciesReposi
     }
 
     override fun getCountBatchNotProcessedOfBatch(batch: TaskBatchInfo): Double {
-        return batch.planQuantityBatch.toDouble() - getCountAcceptOfBatch(batch) - getCountRefusalOfBatch(batch)
+        return 0.0 //batch.planQuantityBatch.toDouble() - getCountAcceptOfBatch(batch) - getCountRefusalOfBatch(batch)
     }
 
     override fun clear() {

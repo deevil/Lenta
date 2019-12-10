@@ -71,6 +71,7 @@
     <string name="supplier_address">Местонахождение поставщика</string>
     <string name="strings_goods">Строк (товаров)</string>
     <string name="quantity_eiz">Количество, ЕИЗ</string>
+    <string name="quantity_eiz_title">Кол-во (ЕИЗ)</string>
     <string name="quantity_total">Итого, единиц</string>
     <string name="select_reason">Введите или выберите\n причину отказа</string>
     <string name="enter_comment">Ввод комментария</string>
@@ -110,7 +111,6 @@
     <string name="revise_not_needed_unloading">Контроль условий не требуется, задание будет переключено в \"Разгружено\"</string>
     <string name="checking_to_checked">\"Сверяется\" -> \"Сверено\"</string>
     <string name="unloading_to_unloaded">\"Разгружается\" -> \"Разгружено\"</string>
-    <string name="unloaded_to_recounting">\"Разгружено\" -> \"Пересчитывается\"</string>
     <string name="transmitted_to_transferred">\"Передается\" -> \"Передано\"</string>
     <string name="recounted_to_booked">\"Пересчитано\" -> \"Проведено\"</string>
     <string name="status_change">Смена статуса</string>
@@ -154,4 +154,25 @@
     <string name="verify">К проверке</string>
     <string name="verified">Проверенные</string>
     <string name="order_quantity_exceeded">Превышено допустимое количество в заказе, превышенное кол-во будет помечено как \"Не заказ\"</string>
+    <string name="certificate">Сертификат</string>
+    <string name="tied">Привязанные</string>
+    <string name="untied">Отвязанные</string>
+    <string name="mercury_list_head">Список ВСД. Поставка =</string>
+    <string name="mercury_list_irrelevant">Список неактуальных ВСД</string>
+    <string name="reconciliation_mercury">Сверка ВСД</string>
+    <string name="sap_name_goods">SAP-название товара</string>
+    <string name="mercury_name_goods">ВСД-название товара</string>
+    <string name="ligament_type">Тип связки</string>
+    <string name="mercury_exception_integration_des">Исключение ВП из интеграции</string>
+    <string name="mercury_exception_integration_header">Укажите причину исключения поставки из автоматической интеграции с ГИС \"Меркурий\"</string>
+    <string name="vet_with_production_date">По ВСД (%1$s) с датой производства</string>
+    <string name="alert_vad_product_not_matched">По товару %1$s не были подобраны ВСД</string>
+    <string name="discrepancies_inconsistency_vet_docs_dialog">Остались неподтверждёнными обязательные документы по товарам. Пометить все эти товары как расхождения - \"Несоответствие документов\"?</string>
+    <string name="discrepancies_no_vad_dialog">По всем вет.товарам нет сверенных сертификатов. Исключить поставку из автоматической интеграции или пометить эти товары как расхождение - \"Нет ВСД/недогруз\"</string>
+    <string name="processing_mercury_quant_great_in_invoice">Введенное кол-во больше чем в ВП, измените кол-во</string>
+    <string name="processing_mercury_quant_great_in_order">Введённое кол-во превышает заказ, измените количество</string>
+    <string name="processing_mercury_quant_less_than_in_vad">Сумма всех заявленных категорий за исключением \"Незаказ\" меньше суммарного кол-ва по ВСД. Пометить как \"Больше чем в ТН\"?</string>
+    <string name="processing_mercury_quant_more_than_in_vad">Введённое кол-во превышает кол-во по ВСД, измените кол-во</string>
+    <string name="some_certificates_have_lost_relevance">Некоторые сертификаты потеряли актуальность</string>
+    <string name="electronic_vad_have_lost_relevance">Электронные ВСД для %1$s товаров из %2$s потеряли актульность. Необходимо выбрать решение: ОТВЯЗАТЬ -партия товара будет не доступна к приёмке, ВРЕМЕННЫЙ - произойдёт переключение в статус \"Временно отказано\", данные сверки будут утеряны</string>
 </resources>

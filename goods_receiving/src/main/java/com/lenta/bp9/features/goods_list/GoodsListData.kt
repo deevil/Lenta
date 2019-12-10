@@ -9,6 +9,7 @@ data class ListCountedItem(
         val name: String,
         val countAcceptWithUom: String,
         val countRefusalWithUom: String,
+        val isNotEdit: Boolean,
         val productInfo: TaskProductInfo?,
         val batchInfo: TaskBatchInfo?,
         val even: Boolean

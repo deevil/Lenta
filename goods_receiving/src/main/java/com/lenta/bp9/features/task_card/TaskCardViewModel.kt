@@ -59,6 +59,16 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
         }
     }
 
+    val thirdButtonVisibility by lazy {
+        MutableLiveData(taskManager.getReceivingTask()?.taskDescription?.currentStatus.let {
+            it == TaskStatus.Checked || it == TaskStatus.Recounted
+        })
+    }
+
+    val currentStatus by lazy {
+        MutableLiveData(taskManager.getReceivingTask()?.taskDescription?.currentStatus)
+    }
+
     val numberTTN by lazy {
         taskManager.getReceivingTask()?.taskDescription?.ttnNumber ?: ""
     }
@@ -82,7 +92,7 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
         taskManager.getReceivingTask()?.taskDescription?.quantityPositions.toString()
     }
 
-    val currentStatus by lazy {
+    val currentStatusText by lazy {
         taskManager.getReceivingTask()?.taskDescription?.currentStatusText ?: ""
     }
 
@@ -168,12 +178,9 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     fun onClickVerify() {
-        when {
-            taskManager.getReceivingTask()?.taskRepository?.getReviseDocuments()?.getDeliveryDocuments()?.isNotEmpty() == true -> screenNavigator.openTaskReviseScreen()
-            taskManager.getReceivingTask()?.taskRepository?.getReviseDocuments()?.getProductDocuments()?.isNotEmpty() == true -> screenNavigator.openProductDocumentsReviseScreen()
-            else -> screenNavigator.openCheckingNotNeededAlert(context.getString(R.string.revise_not_needed_checking)) {
-                screenNavigator.openFinishReviseLoadingScreen()
-            }
+        when (currentStatus.value) {
+            TaskStatus.Checked -> screenNavigator.openStartReviseLoadingScreen()
+            TaskStatus.Recounted -> screenNavigator.openRecountStartLoadingScreen()
         }
     }
 

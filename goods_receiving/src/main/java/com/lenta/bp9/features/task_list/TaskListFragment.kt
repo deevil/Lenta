@@ -6,7 +6,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import androidx.databinding.DataBindingUtil
-import androidx.databinding.ViewDataBinding
 import androidx.lifecycle.Observer
 import com.lenta.bp9.BR
 import com.lenta.bp9.R
@@ -22,7 +21,6 @@ import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.databinding.*
 import com.lenta.shared.utilities.extentions.connectLiveData
-import com.lenta.shared.utilities.extentions.generateScreenNumber
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.provideViewModel
 
@@ -65,11 +63,6 @@ class TaskListFragment : CoreFragment<FragmentTaskListBinding, TaskListViewModel
             it.viewPagerSettings = this
             it.pageSelectionListener = this
         }
-    }
-
-    override fun onResume() {
-        super.onResume()
-        vm.onResume()
     }
 
     override fun onToolbarButtonClick(view: View) {
@@ -139,7 +132,6 @@ class TaskListFragment : CoreFragment<FragmentTaskListBinding, TaskListViewModel
                                 }
 
                                 override fun onBind(binding: ItemTileTasksBinding, position: Int) {
-                                    binding.tvCounter.tag = position
                                     toProcessRecyclerViewKeyHandler?.let {
                                         binding.root.isSelected = it.isSelected(position)
                                     }
@@ -171,8 +163,8 @@ class TaskListFragment : CoreFragment<FragmentTaskListBinding, TaskListViewModel
 
     private fun configureSearchPage(container: ViewGroup): View {
         DataBindingUtil
-                .inflate<LayoutTasksSeachBinding>(LayoutInflater.from(container.context),
-                        R.layout.layout_tasks_seach,
+                .inflate<LayoutTasksSearchBinding>(LayoutInflater.from(container.context),
+                        R.layout.layout_tasks_search,
                         container,
                         false).let { layoutBinding ->
 
@@ -184,7 +176,6 @@ class TaskListFragment : CoreFragment<FragmentTaskListBinding, TaskListViewModel
                                 }
 
                                 override fun onBind(binding: ItemTileTasksBinding, position: Int) {
-                                    binding.tvCounter.tag = position
                                     searchRecyclerViewKeyHandler?.let {
                                         binding.root.isSelected = it.isSelected(position)
                                     }
@@ -229,7 +220,6 @@ class TaskListFragment : CoreFragment<FragmentTaskListBinding, TaskListViewModel
                                 }
 
                                 override fun onBind(binding: ItemTileTasksBinding, position: Int) {
-                                    binding.tvCounter.tag = position
                                     postponedRecyclerViewKeyHandler?.let {
                                         binding.root.isSelected = it.isSelected(position)
                                     }

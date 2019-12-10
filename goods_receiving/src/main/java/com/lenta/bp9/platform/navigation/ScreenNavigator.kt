@@ -22,10 +22,15 @@ import com.lenta.bp9.features.formed_docs.FormedDocsFragment
 import com.lenta.bp9.features.goods_details.GoodsDetailsFragment
 import com.lenta.bp9.features.goods_information.excise_alco.ExciseAlcoInfoFragment
 import com.lenta.bp9.features.goods_information.general.GoodsInfoFragment
+import com.lenta.bp9.features.goods_information.mercury.GoodsMercuryInfoFragment
 import com.lenta.bp9.features.goods_information.non_excise_alco.NonExciseAlcoInfoFragment
 import com.lenta.bp9.features.goods_information.perishables.PerishablesInfoFragment
 import com.lenta.bp9.features.list_goods_transfer.ListGoodsTransferFragment
 import com.lenta.bp9.features.loading.tasks.*
+import com.lenta.bp9.features.mercury_exception_integration.MercuryExceptionIntegrationFragment
+import com.lenta.bp9.features.mercury_list.MercuryListFragment
+import com.lenta.bp9.features.mercury_list_irrelevant.MercuryListIrrelevantFragment
+import com.lenta.bp9.features.reconciliation_mercury.ReconciliationMercuryFragment
 import com.lenta.bp9.features.reject.RejectFragment
 import com.lenta.bp9.features.repres_person_num_entry.RepresPersonNumEntryFragment
 import com.lenta.bp9.features.revise.*
@@ -35,6 +40,8 @@ import com.lenta.bp9.features.transfer_goods_section.TransferGoodsSectionFragmen
 import com.lenta.bp9.model.task.revise.ProductDocumentType
 import com.lenta.bp9.model.task.TaskBatchInfo
 import com.lenta.bp9.model.task.TaskSectionInfo
+import com.lenta.bp9.model.task.revise.DeliveryProductDocumentRevise
+import com.lenta.bp9.model.task.revise.ProductVetDocumentRevise
 import com.lenta.shared.account.IAuthenticator
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.exception.IFailureInterpreter
@@ -191,12 +198,6 @@ class ScreenNavigator(
     override fun openLoadingRegisterArrivalScreen() {
         runOrPostpone {
             getFragmentStack()?.push(LoadingRegisterArrivalFragment())
-        }
-    }
-
-    override fun openLoadingStartReviseScreen() {
-        runOrPostpone {
-            getFragmentStack()?.push(LoadingStartReviseFragment())
         }
     }
 
@@ -570,6 +571,95 @@ class ScreenNavigator(
         }
     }
 
+    override fun openMercuryListScreen(productDoc: DeliveryProductDocumentRevise) {
+        runOrPostpone {
+            getFragmentStack()?.push(MercuryListFragment.create(productDoc))
+        }
+    }
+
+    override fun openMercuryListIrrelevantScreen(netRestNumber: Int) {
+        runOrPostpone {
+            getFragmentStack()?.push(MercuryListIrrelevantFragment.create(netRestNumber))
+        }
+    }
+
+    override fun openMercuryExceptionIntegrationScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(MercuryExceptionIntegrationFragment())
+        }
+    }
+
+    override fun openReconciliationMercuryScreen(productVetDoc: ProductVetDocumentRevise) {
+        runOrPostpone {
+            getFragmentStack()?.push(ReconciliationMercuryFragment.create(productVetDoc))
+        }
+    }
+
+    override fun openGoodsMercuryInfoScreen(productInfo: TaskProductInfo, isDiscrepancy: Boolean) {
+        runOrPostpone {
+            getFragmentStack()?.push(GoodsMercuryInfoFragment.create(productInfo, isDiscrepancy))
+        }
+    }
+
+    override fun openAlertVADProductNotMatchedScreen(productName: String) {
+        openInfoScreen(context.getString(R.string.alert_vad_product_not_matched, productName))
+    }
+
+    override fun openDiscrepanciesInconsistencyVetDocsDialog(markCallbackFunc: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.discrepancies_inconsistency_vet_docs_dialog),
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(markCallbackFunc),
+                    iconRes = R.drawable.ic_question_80dp,
+                    pageNumber = "79",
+                    rightButtonDecorationInfo = ButtonDecorationInfo.mark))
+        }
+    }
+
+    override fun openDiscrepanciesNoVerifiedVadDialog(excludeCallbackFunc: () -> Unit, markCallbackFunc: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.discrepancies_no_vad_dialog),
+                    codeConfirmForButton3 = backFragmentResultHelper.setFuncForResult(excludeCallbackFunc),
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(markCallbackFunc),
+                    iconRes = R.drawable.ic_question_80dp,
+                    pageNumber = "103",
+                    buttonDecorationInfo3 = ButtonDecorationInfo.exclude,
+                    rightButtonDecorationInfo = ButtonDecorationInfo.mark))
+        }
+    }
+
+    override fun openAlertQuantGreatInInvoiceScreen() {
+        openInfoScreen(context.getString(R.string.processing_mercury_quant_great_in_invoice))
+    }
+
+    override fun openAlertQuantGreatInOrderScreen() {
+        openInfoScreen(context.getString(R.string.processing_mercury_quant_great_in_order))
+    }
+
+    override fun openAlertCertificatesLostRelevance(nextCallbackFunc: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.some_certificates_have_lost_relevance),
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(nextCallbackFunc),
+                    iconRes = R.drawable.ic_info_pink,
+                    textColor = ContextCompat.getColor(context, R.color.color_text_dialogWarning),
+                    pageNumber = "97",
+                    isVisibleLeftButton = false,
+                    rightButtonDecorationInfo = ButtonDecorationInfo.next))
+        }
+    }
+
+    override fun openAlertElectronicVadLostRelevance(browsingCallbackFunc: () -> Unit, countVad: String, countGoods: String) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.electronic_vad_have_lost_relevance, countVad, countGoods),
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(browsingCallbackFunc),
+                    pageNumber = "105",
+                    rightButtonDecorationInfo = ButtonDecorationInfo.browsingNext))
+        }
+    }
+
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 }
 
@@ -595,7 +685,6 @@ interface IScreenNavigator : ICoreNavigator {
     fun openAlertWithoutConfirmation(message: String, callbackFunc: () -> Unit)
     fun openChangeDateTimeScreen(mode: ChangeDateTimeMode)
     fun openLoadingRegisterArrivalScreen()
-    fun openLoadingStartReviseScreen()
     fun openTaskReviseScreen()
     fun openGoodsInfoScreen(productInfo: TaskProductInfo, isDiscrepancy: Boolean)
     fun openAlertWrongProductType()
@@ -641,4 +730,16 @@ interface IScreenNavigator : ICoreNavigator {
     fun openInfoDocsSentPScreenrint()
     fun openAlertGoodsNotInInvoiceScreen()
     fun openOrderQuantityEexceededDialog(noCallbackFunc: () -> Unit, yesCallbackFunc: () -> Unit)
+    fun openMercuryListScreen(productDoc: DeliveryProductDocumentRevise)
+    fun openMercuryListIrrelevantScreen(netRestNumber: Int)
+    fun openMercuryExceptionIntegrationScreen()
+    fun openReconciliationMercuryScreen(productVetDoc: ProductVetDocumentRevise)
+    fun openGoodsMercuryInfoScreen(productInfo: TaskProductInfo, isDiscrepancy: Boolean)
+    fun openAlertVADProductNotMatchedScreen(productName: String)
+    fun openDiscrepanciesInconsistencyVetDocsDialog(markCallbackFunc: () -> Unit)
+    fun openDiscrepanciesNoVerifiedVadDialog(excludeCallbackFunc: () -> Unit, markCallbackFunc: () -> Unit)
+    fun openAlertQuantGreatInInvoiceScreen()
+    fun openAlertQuantGreatInOrderScreen()
+    fun openAlertCertificatesLostRelevance(nextCallbackFunc: () -> Unit)
+    fun openAlertElectronicVadLostRelevance(browsingCallbackFunc: () -> Unit, countVad: String, countGoods: String)
 }
