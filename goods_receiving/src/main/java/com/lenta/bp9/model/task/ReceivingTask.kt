@@ -68,6 +68,13 @@ class ReceivingTask(val taskHeader: TaskInfo,
         updateBatchesDiscrepancies(taskContentsInfo.taskBatchesDiscrepancies)
         updateMercuryInfo(taskContentsInfo.taskMercuryInfo)
     }
+
+    fun updateTaskWithContentsRDS(taskContentsRDSInfo: TaskContentsRDSInfo) {
+        updateProducts(taskContentsRDSInfo.products)
+        updateProductsDiscrepancies(taskContentsRDSInfo.productsDiscrepancies)
+        updateBatches(taskContentsRDSInfo.taskBatches)
+        updateBatchesDiscrepancies(taskContentsRDSInfo.taskBatchesDiscrepancies)
+    }
 }
 
 

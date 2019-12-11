@@ -21,6 +21,7 @@ import androidx.databinding.DataBindingUtil
 import com.lenta.bp9.BR
 import com.lenta.bp9.databinding.*
 import com.lenta.bp9.features.loading.tasks.TaskCardMode
+import com.lenta.bp9.model.task.NotificationIndicatorType
 import com.lenta.bp9.model.task.TaskStatus
 import com.lenta.shared.platform.activity.OnBackPresserListener
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
@@ -88,13 +89,19 @@ class TaskCardFragment : CoreFragment<FragmentTaskCardBinding, TaskCardViewModel
 
     override fun onResume() {
         super.onResume()
-        val tabItemLayout = (binding?.tabStrip?.getChildAt(0) as LinearLayout).getChildAt(2) as LinearLayout
-        tabItemLayout.orientation = LinearLayout.HORIZONTAL
-        val iconView = tabItemLayout.getChildAt(0) as ImageView
-        val textView = tabItemLayout.getChildAt(1) as TextView
-        tabItemLayout.removeView(iconView)
-        textView.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_indicator_red_tablayout, 0)
-        textView.compoundDrawablePadding = 5
+        if (vm.bookmarkIndicator != NotificationIndicatorType.None) {
+            val tabItemLayout = (binding?.tabStrip?.getChildAt(0) as LinearLayout).getChildAt(2) as LinearLayout
+            tabItemLayout.orientation = LinearLayout.HORIZONTAL
+            val iconView = tabItemLayout.getChildAt(0) as ImageView
+            val textView = tabItemLayout.getChildAt(1) as TextView
+            tabItemLayout.removeView(iconView)
+            if (vm.bookmarkIndicator == NotificationIndicatorType.Red) {
+                textView.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_indicator_red_tablayout, 0)
+            } else {
+                textView.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_indicator_yellow_tablayout, 0)
+            }
+            textView.compoundDrawablePadding = 5
+        }
         vm.onResume()
     }
 
