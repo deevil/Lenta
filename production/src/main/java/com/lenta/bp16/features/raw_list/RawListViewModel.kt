@@ -38,7 +38,7 @@ class RawListViewModel : CoreViewModel() {
                         materialOsn = raw.materialOsn,
                         name = raw.name,
                         processed = "${raw.quantity.dropZeros()} ${good.units.name} из ${raw.planned.dropZeros()} ${good.units.name}",
-                        arrowVisibility = !taskManager.currentTask.value!!.isProcessed
+                        arrowVisibility = !good.isProcessed
                 )
             }
         }
@@ -46,31 +46,11 @@ class RawListViewModel : CoreViewModel() {
 
     val completeEnabled by lazy {
         good.map { good ->
-            good?.raws?.map { it.quantity }?.find { it == 0.0 }?.let { true } ?: false
+            good?.raws?.map { it.quantity }?.find { it == 0.0 }?.let { false } ?: true
         }
     }
 
     // -----------------------------
-
-    init {
-        viewModelScope.launch {
-            //updateList()
-        }
-    }
-
-    // -----------------------------
-
-    /*fun updateList() {
-        raws.value = taskManager.currentGood.raws.mapIndexed { index, raw ->
-            ItemRawListUi(
-                    position = (index + 1).toString(),
-                    materialOsn = raw.materialOsn,
-                    name = raw.name,
-                    processed = "${raw.quantity.dropZeros()} ${good.units.name} из ${raw.planned.dropZeros()} ${good.units.name}",
-                    arrowVisibility = !taskManager.currentTask.isProcessed
-            )
-        }
-    }*/
 
     fun onClickComplete() {
         navigator.showConfirmNoSuchItemLeft(taskManager.taskType.abbreviation) {

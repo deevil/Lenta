@@ -75,23 +75,22 @@ class TaskManager @Inject constructor(
     }
 
     override fun completeCurrentTask() {
-        /*val taskList = tasks.value!!.toMutableList()
-        taskList.find { it.number == currentTask.value?.number }?.let { currentTask ->
-            currentTask.isProcessed = true
-        }
+        tasks.value?.let {
+            it.find { task -> task.number == currentTask.value?.number }?.let { currentTask ->
+                currentTask.isProcessed = true
+            }
 
-        tasks.value = taskList*/
-
-        currentTask.value?.let { task ->
-            task.isProcessed = true
-            currentTask.value = task
+            tasks.value = it
         }
     }
 
     override fun completeCurrentGood() {
-        currentGood.value?.let { good ->
-            good.isProcessed = true
-            currentGood.value = good
+        currentTask.value?.let { task ->
+            task.goods?.find { it.material == currentGood.value?.material }?.let { good ->
+                good.isProcessed = true
+            }
+
+            currentTask.value = task
         }
     }
 

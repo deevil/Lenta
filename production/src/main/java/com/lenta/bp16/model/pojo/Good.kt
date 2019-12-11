@@ -8,7 +8,6 @@ data class Good(
         val name: String,
         val units: Uom,
         var planned: Double,
-        var total: Double = 0.0,
         var raws: MutableList<Raw> = mutableListOf(),
         var packs: MutableList<Pack> = mutableListOf()
 ) {
