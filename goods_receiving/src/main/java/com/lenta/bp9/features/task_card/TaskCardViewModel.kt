@@ -41,6 +41,22 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
 
     var mode: TaskCardMode = TaskCardMode.None
 
+    val tvDeliveryCaption: String by lazy {
+        when (taskManager.getReceivingTask()?.taskHeader?.taskType) {
+            TaskType.DirectSupplier -> context.getString(R.string.incoming_delivery)
+            TaskType.ReceptionDistributionCenter -> context.getString(R.string.transportation)
+            else -> context.getString(R.string.incoming_delivery)
+        }
+    }
+
+    val tvCountCaption: String by lazy {
+        when (taskManager.getReceivingTask()?.taskHeader?.taskType) {
+            TaskType.DirectSupplier -> context.getString(R.string.count_SKU)
+            TaskType.ReceptionDistributionCenter -> context.getString(R.string.count_GE)
+            else -> context.getString(R.string.count_SKU)
+        }
+    }
+
     val taskCaption: String by lazy {
         taskManager.getReceivingTask()?.taskHeader?.caption ?: ""
     }
@@ -56,6 +72,16 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
     val redIndicatorAbsent by lazy {
         notifications.map { notifications ->
             notifications!!.findLast { it.indicator == NotificationIndicatorType.Red } == null
+        }
+    }
+
+    val bookmarkIndicator by lazy {
+        val redIndicatorAttend = notifications.value?.findLast { it.indicator == NotificationIndicatorType.Red } != null
+        val yellowIndicatorAttend= notifications.value?.findLast { it.indicator == NotificationIndicatorType.Yellow } != null
+        when {
+            redIndicatorAttend -> NotificationIndicatorType.Red
+            yellowIndicatorAttend -> NotificationIndicatorType.Yellow
+            else -> NotificationIndicatorType.None
         }
     }
 

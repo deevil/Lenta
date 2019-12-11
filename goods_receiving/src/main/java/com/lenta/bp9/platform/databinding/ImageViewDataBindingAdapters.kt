@@ -89,6 +89,7 @@ fun TaskPostponedStatus.getIconRes(): Int? {
     return when (this) {
         TaskPostponedStatus.PauseSign -> R.drawable.ic_pause_dark_24dp
         TaskPostponedStatus.PlaySign -> R.drawable.ic_play_arrow_dark_24dp
+        TaskPostponedStatus.Breaking -> R.drawable.ic_breaking_24dp
         else -> null
     }
 }

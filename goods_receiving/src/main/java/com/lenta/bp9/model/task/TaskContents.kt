@@ -2,6 +2,7 @@ package com.lenta.bp9.model.task
 
 import com.lenta.bp9.requests.network.DirectSupplierStartRecountRestInfo
 import com.lenta.bp9.requests.network.TaskComposition
+import com.lenta.bp9.requests.network.TaskContentsReceptionDistrCenterResult
 import com.lenta.bp9.requests.network.TaskContentsRequestResult
 import com.lenta.shared.fmp.resources.dao_ext.getProductInfoByMaterial
 import com.lenta.shared.fmp.resources.dao_ext.getUomInfo
@@ -46,6 +47,17 @@ class TaskContents
                 },
                 conversionToBatchesDiscrepancies(startRecountRestInfo.taskBatchesDiscrepancies),
                 conversionToMercuryInfo(startRecountRestInfo.taskMercuryInfoRestData)
+        )
+    }
+
+    fun getTaskContentsRDSInfo(startRecountRestInfo: TaskContentsReceptionDistrCenterResult) : TaskContentsRDSInfo {
+        return TaskContentsRDSInfo(
+                conversionToProductInfo(startRecountRestInfo.taskComposition),
+                conversionToProductDiscrepancies(startRecountRestInfo.taskProductDiscrepancies),
+                startRecountRestInfo.taskBatches.map {
+                    TaskBatchInfo.from(it)
+                },
+                conversionToBatchesDiscrepancies(startRecountRestInfo.taskBatchesDiscrepancies)
         )
     }
 
@@ -141,4 +153,11 @@ data class TaskContentsInfo(
         val taskBatches: List<TaskBatchInfo>,
         val taskBatchesDiscrepancies: List<TaskBatchesDiscrepancies>,
         val taskMercuryInfo: List<TaskMercuryInfo>
+)
+
+data class TaskContentsRDSInfo(
+        val products: List<TaskProductInfo>,
+        val productsDiscrepancies: List<TaskProductDiscrepancies>,
+        val taskBatches: List<TaskBatchInfo>,
+        val taskBatchesDiscrepancies: List<TaskBatchesDiscrepancies>
 )

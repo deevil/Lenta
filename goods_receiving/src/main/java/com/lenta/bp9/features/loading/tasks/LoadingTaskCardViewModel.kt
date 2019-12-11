@@ -26,6 +26,8 @@ class LoadingTaskCardViewModel : CoreLoadingViewModel() {
     @Inject
     lateinit var taskContentsNetRequest: TaskContentsNetRequest
     @Inject
+    lateinit var taskContentsReceptionDistrCenterNetRequest: TaskContentsReceptionDistrCenterNetRequest
+    @Inject
     lateinit var sessionInfo: ISessionInfo
     @Inject
     lateinit var context: Context
@@ -55,10 +57,26 @@ class LoadingTaskCardViewModel : CoreLoadingViewModel() {
                     personalNumber = sessionInfo.personnelNumber ?: "",
                     taskNumber = taskNumber
             )
-            if (loadFullData) {
-                taskContentsNetRequest(params).either(::handleFailure, ::handleFullDataSuccess)
+            val taskHeader = repoInMemoryHolder.taskList.value?.tasks?.findLast { it.taskNumber == taskNumber }
+            if (taskHeader?.taskType == TaskType.ReceptionDistributionCenter) {
+                if (taskHeader.status == TaskStatus.Traveling) {
+                    taskCardNetRequest(params).either(::handleFailure, ::handleSuccess)
+                } else {
+                    val paramsRDS = TaskContentsReceptionDistrCenterParameters(
+                            mode = mode.TaskCardModeString,
+                            deviceIP = context.getDeviceIp(),
+                            personalNumber = sessionInfo.personnelNumber ?: "",
+                            taskNumber = taskNumber,
+                            taskType = TaskType.ReceptionDistributionCenter.taskTypeString
+                    )
+                    taskContentsReceptionDistrCenterNetRequest(paramsRDS).either(::handleFailure, ::handleSuccessRDS)
+                }
             } else {
-                taskCardNetRequest(params).either(::handleFailure, ::handleSuccess)
+                if (loadFullData) {
+                    taskContentsNetRequest(params).either(::handleFailure, ::handleFullDataSuccess)
+                } else {
+                    taskCardNetRequest(params).either(::handleFailure, ::handleSuccess)
+                }
             }
             progress.value = false
         }
@@ -93,15 +111,7 @@ class LoadingTaskCardViewModel : CoreLoadingViewModel() {
                 val productNotifications = result.productNotifications.map { TaskNotification.from(it) }
                 val conditionNotifications = result.conditionNotifications.map { TaskNotification.from(it) }
                 val deliveryDocumentsRevise = result.deliveryDocumentsRevise.map { DeliveryDocumentRevise.from(it) }.toMutableList()
-//            deliveryDocumentsRevise.add(DeliveryDocumentRevise(documentID = "123", documentName = "Простой 1", documentType = DocumentType.Simple, isCheck = false, isObligatory = false))
-//            deliveryDocumentsRevise.add(DeliveryDocumentRevise(documentID = "124", documentName = "Простой 2", documentType = DocumentType.Simple, isCheck = false, isObligatory = true))
-//            deliveryDocumentsRevise.add(DeliveryDocumentRevise(documentID = "125", documentName = "Простой 3", documentType = DocumentType.Simple, isCheck = false, isObligatory = false))
-
                 val deliveryProductDocumentsRevise = result.deliveryProductDocumentsRevise.map { DeliveryProductDocumentRevise.from(hyperHive, it) }.toMutableList()
-//            deliveryProductDocumentsRevise.add(DeliveryProductDocumentRevise(documentID = "123", documentName = "Простой 1", documentType = ProductDocumentType.Simple, isCheck = false, isObligatory = false, initialCount = 1.0, isSet = false, productNumber = "000123", measureUnits = "ШТ"))
-//            deliveryProductDocumentsRevise.add(DeliveryProductDocumentRevise(documentID = "124", documentName = "Простой 2", documentType = ProductDocumentType.Simple, isCheck = false, isObligatory = true, initialCount = 1.0, isSet = false, productNumber = "000124", measureUnits = "ШТ"))
-//            deliveryProductDocumentsRevise.add(DeliveryProductDocumentRevise(documentID = "125", documentName = "Простой 3", documentType = ProductDocumentType.Simple, isCheck = false, isObligatory = false, initialCount = 1.0, isSet = false, productNumber = "000125", measureUnits = "ШТ"))
-
                 val productBatchesRevise = result.productBatchesRevise.map { ProductBatchRevise.from(it) }
                 val formsABRussianRevise = result.formsABRussianRevise.map { FormABRussianRevise.from(it) }
                 val formsABImportRevise = result.formsABImportRevise.map { FormABImportRevise.from(it) }
@@ -139,6 +149,56 @@ class LoadingTaskCardViewModel : CoreLoadingViewModel() {
             }
         }
 
+    }
+
+    private fun handleSuccessRDS(result: TaskContentsReceptionDistrCenterResult) {
+        Logg.d { "handleSuccessRDS $result" }
+        //screenNavigator.goBack()
+        viewModelScope.launch {
+            val taskHeader = repoInMemoryHolder.taskList.value?.tasks?.findLast { it.taskNumber == taskNumber }
+            taskHeader?.let {
+                val notifications = result.notifications.map { TaskNotification.from(it) }
+                val documentNotifications = result.documentNotifications.map { TaskNotification.from(it) }
+                val productNotifications = result.productNotifications.map { TaskNotification.from(it) }
+                val conditionNotifications = result.conditionNotifications.map { TaskNotification.from(it) }
+                val deliveryDocumentsRevise = result.deliveryDocumentsRevise.map { DeliveryDocumentRevise.from(it) }.toMutableList()
+                val deliveryProductDocumentsRevise = result.deliveryProductDocumentsRevise.map { DeliveryProductDocumentRevise.from(hyperHive, it) }.toMutableList()
+                val productBatchesRevise = result.productBatchesRevise.map { ProductBatchRevise.from(it) }
+                val formsABRussianRevise = result.formsABRussianRevise.map { FormABRussianRevise.from(it) }
+                val formsABImportRevise = result.formsABImportRevise.map { FormABImportRevise.from(it) }
+                val setComponentsRevise = result.setComponentsRevise.map { SetComponentRevise.from(it) }
+                val invoiceRevise = InvoiceRevise.from(result.invoiceRevise)
+                //val commentsToVP = result.commentsToVP.map { CommentToVP.from(it) }.toMutableList()
+                //val productsVetDocumentRevise = result.productsVetDocumentRevise.map { ProductVetDocumentRevise.from(hyperHive, it) }
+                //val complexDocumentsRevise = result.complexDocumentsRevise.map { ComplexDocumentRevise.from(it) }
+                val transportConditions = result.transportConditions.map { TransportCondition.from(it) }
+                //val mercuryNotActual = result.taskMercuryNotActualRestData.map { TaskMercuryNotActual.from(hyperHive, it) }
+
+                val sectionInfo = result.sectionsInfo.map { TaskSectionInfo.from(it) }
+                val sectionProducts = result.sectionProducts.map { TaskSectionProducts.from(it) }
+
+                val newTask = taskManager.newReceivingTask(taskHeader, TaskDescription.from(result.taskDescription))
+                newTask?.taskRepository?.getNotifications()?.updateWithNotifications(notifications, documentNotifications, productNotifications, conditionNotifications)
+                //newTask?.taskRepository?.getNotifications()?.updateWithInvoiceNotes(commentsToVP)
+                newTask?.taskRepository?.getReviseDocuments()?.apply {
+                    this.updateDeliveryDocuments(deliveryDocumentsRevise)
+                    this.updateProductDocuments(deliveryProductDocumentsRevise)
+                    this.updateImportABForms(formsABImportRevise)
+                    this.updateRussianABForms(formsABRussianRevise)
+                    this.updateProductBatches(productBatchesRevise)
+                    this.updateSetComponents(setComponentsRevise)
+                    this.updateInvoiceInfo(invoiceRevise)
+                    this.updateTransportCondition(transportConditions)
+                    //this.updateProductVetDocuments(productsVetDocumentRevise)
+                    //this.updateComplexDocuments(complexDocumentsRevise)
+                    //this.updateMercuryNotActual(mercuryNotActual)
+                }
+                taskManager.getReceivingTask()?.updateTaskWithContentsRDS(taskContents.getTaskContentsRDSInfo(result))
+                newTask?.taskRepository?.getSections()?.updateSections(sectionInfo, sectionProducts)
+                taskManager.setTask(newTask)
+                transferToNextScreen()
+            }
+        }
     }
 
     private fun transferToNextScreen() {
