@@ -148,7 +148,7 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
 
     private fun openTaskByNumber(taskNumber: String) {
         taskManager.tasks.value?.find { it.number == taskNumber }?.let { task ->
-            taskManager.currentTask = task
+            taskManager.currentTask.value = task
 
             if (task.isProcessed) {
                 openTaskByType(task)

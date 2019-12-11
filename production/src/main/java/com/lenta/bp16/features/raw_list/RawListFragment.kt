@@ -37,8 +37,8 @@ class RawListFragment : CoreFragment<FragmentRawListBinding, RawListViewModel>()
     }
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
-        topToolbarUiModel.description.value = vm.description
-        topToolbarUiModel.title.value = vm.title
+        connectLiveData(vm.title, topToolbarUiModel.title)
+        connectLiveData(vm.description, topToolbarUiModel.description)
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
@@ -89,15 +89,15 @@ class RawListFragment : CoreFragment<FragmentRawListBinding, RawListViewModel>()
             layoutBinding.lifecycleOwner = viewLifecycleOwner
             recyclerViewKeyHandler = RecyclerViewKeyHandler(
                     rv = layoutBinding.rv,
-                    items = vm.raw,
+                    items = vm.raws,
                     lifecycleOwner = layoutBinding.lifecycleOwner!!,
                     initPosInfo = recyclerViewKeyHandler?.posInfo?.value
             )
         }
     }
 
-    override fun onResume() {
+    /*override fun onResume() {
         super.onResume()
         vm.updateList()
-    }
+    }*/
 }

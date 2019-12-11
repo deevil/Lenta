@@ -6,6 +6,7 @@ import com.lenta.bp16.model.ITaskManager
 import com.lenta.bp16.platform.navigation.IScreenNavigator
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.extentions.dropZeros
+import com.lenta.shared.utilities.extentions.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -22,29 +23,45 @@ class RawListViewModel : CoreViewModel() {
     }
 
     val title by lazy {
-        good.getNameWithMaterial()
+        good.map { it?.getNameWithMaterial() }
     }
 
     val description by lazy {
-        taskManager.currentTask.taskInfo.text3
+        taskManager.currentTask.map { it?.taskInfo?.text3 }
     }
 
-    val raw = MutableLiveData<List<ItemRawListUi>>()
+    val raws: MutableLiveData<List<ItemRawListUi>> by lazy {
+        good.map { good ->
+            good?.raws?.mapIndexed { index, raw ->
+                ItemRawListUi(
+                        position = (index + 1).toString(),
+                        materialOsn = raw.materialOsn,
+                        name = raw.name,
+                        processed = "${raw.quantity.dropZeros()} ${good.units.name} из ${raw.planned.dropZeros()} ${good.units.name}",
+                        arrowVisibility = !taskManager.currentTask.value!!.isProcessed
+                )
+            }
+        }
+    }
 
-    val completeEnabled = MutableLiveData(true)
-
-    // -----------------------------
-
-    init {
-        viewModelScope.launch {
-            updateList()
+    val completeEnabled by lazy {
+        good.map { good ->
+            good?.raws?.map { it.quantity }?.find { it == 0.0 }?.let { true } ?: false
         }
     }
 
     // -----------------------------
 
-    fun updateList() {
-        raw.value = taskManager.currentGood.raws.mapIndexed { index, raw ->
+    init {
+        viewModelScope.launch {
+            //updateList()
+        }
+    }
+
+    // -----------------------------
+
+    /*fun updateList() {
+        raws.value = taskManager.currentGood.raws.mapIndexed { index, raw ->
             ItemRawListUi(
                     position = (index + 1).toString(),
                     materialOsn = raw.materialOsn,
@@ -53,19 +70,19 @@ class RawListViewModel : CoreViewModel() {
                     arrowVisibility = !taskManager.currentTask.isProcessed
             )
         }
-    }
+    }*/
 
     fun onClickComplete() {
         navigator.showConfirmNoSuchItemLeft(taskManager.taskType.abbreviation) {
-            good.isProcessed = true
+            taskManager.completeCurrentGood()
             navigator.goBack()
         }
     }
 
     fun onClickItemPosition(position: Int) {
-        val materialOsn = raw.value!![position].materialOsn
-        good.raws.find { it.materialOsn == materialOsn }?.let { raw ->
-            taskManager.currentRaw = raw
+        val materialOsn = raws.value!![position].materialOsn
+        good.value?.raws?.find { it.materialOsn == materialOsn }?.let { raw ->
+            taskManager.currentRaw.value = raw
             navigator.openGoodWeighingScreen()
         }
     }

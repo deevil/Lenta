@@ -5,6 +5,7 @@ import com.lenta.bp16.model.ITaskManager
 import com.lenta.bp16.platform.navigation.IScreenNavigator
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.extentions.dropZeros
+import com.lenta.shared.utilities.extentions.map
 import javax.inject.Inject
 
 class PackListViewModel : CoreViewModel() {
@@ -15,21 +16,31 @@ class PackListViewModel : CoreViewModel() {
     lateinit var taskManager: ITaskManager
 
 
+    val good by lazy {
+        taskManager.currentGood
+    }
+
+    val raw by lazy {
+        taskManager.currentRaw
+    }
+
     val title by lazy {
-        taskManager.currentGood.getNameWithMaterial()
+        good.map { it?.getNameWithMaterial() }
     }
 
     val packs: MutableLiveData<List<ItemPackListUi>> by lazy {
-        MutableLiveData(taskManager.currentGood.packs.let { packs ->
-            packs.mapIndexed { index, pack ->
-                ItemPackListUi(
-                        position = (packs.size - index).toString(),
-                        number = "Тара №${pack.getShortPackNumber()}",
-                        name = taskManager.currentRaw.name,
-                        weight = "${pack.quantity.dropZeros()} ${taskManager.currentGood.units.name}"
-                )
+        good.map { good ->
+            good?.packs?.let { packs ->
+                packs.mapIndexed { index, pack ->
+                    ItemPackListUi(
+                            position = (packs.size - index).toString(),
+                            number = "Тара №${pack.getShortPackNumber()}",
+                            name = raw.value!!.name,
+                            weight = "${pack.quantity.dropZeros()} ${good.units.name}"
+                    )
+                }
             }
-        })
+        }
     }
 
     // -----------------------------
@@ -40,7 +51,7 @@ class PackListViewModel : CoreViewModel() {
 
     fun onClickComplete() {
         navigator.showDefrostingPhaseIsCompleted {
-            taskManager.currentGood.isProcessed = true
+            taskManager.completeCurrentGood()
 
             navigator.goBack()
             navigator.goBack()

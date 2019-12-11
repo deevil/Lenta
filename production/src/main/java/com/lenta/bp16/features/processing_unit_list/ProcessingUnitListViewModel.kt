@@ -11,6 +11,7 @@ import com.lenta.bp16.request.UnblockTaskParams
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.extentions.dropZeros
+import com.lenta.shared.utilities.extentions.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -26,15 +27,27 @@ class ProcessingUnitListViewModel : CoreViewModel() {
     lateinit var endProcessingNetRequest: EndProcessingNetRequest
 
 
-    val task by lazy {
+    private val task by lazy {
         taskManager.currentTask
     }
 
     val title by lazy {
-        task.taskInfo.text3
+        task.map { it?.taskInfo?.text3 }
     }
 
-    val goods = MutableLiveData<List<ItemProcessingUnitUi>>()
+    val goods: MutableLiveData<List<ItemProcessingUnitUi>> by lazy {
+        task.map { task ->
+            task?.goods!!.mapIndexed { index, good ->
+                ItemProcessingUnitUi(
+                        position = (index + 1).toString(),
+                        material = good.material,
+                        name = "${good.material.takeLast(6)} ${good.name}",
+                        arrived = "${good.planned.dropZeros()} ${good.units.name}",
+                        remain = "${(good.planned - good.getFactRawQuantity()).dropZeros()} ${good.units.name}"
+                )
+            }
+        }
+    }
 
     val completeEnabled = MutableLiveData(true)
 
@@ -42,13 +55,13 @@ class ProcessingUnitListViewModel : CoreViewModel() {
 
     init {
         viewModelScope.launch {
-            updateList()
+            //updateList()
         }
     }
 
     // -----------------------------
 
-    fun updateList() {
+    /*fun updateList() {
         goods.value = taskManager.currentTask.goods!!.mapIndexed { index, good ->
             ItemProcessingUnitUi(
                     position = (index + 1).toString(),
@@ -58,12 +71,12 @@ class ProcessingUnitListViewModel : CoreViewModel() {
                     remain = "${(good.planned - good.getFactRawQuantity()).dropZeros()} ${good.units.name}"
             )
         }
-    }
+    }*/
 
     fun onClickItemPosition(position: Int) {
         val material = goods.value!![position].material
-        task.goods?.first { it.material == material }?.let { good ->
-            taskManager.currentGood = good
+        task.value?.goods?.first { it.material == material }?.let { good ->
+            taskManager.currentGood.value = good
             navigator.openRawListScreen()
         }
     }
@@ -72,7 +85,7 @@ class ProcessingUnitListViewModel : CoreViewModel() {
         viewModelScope.launch {
             unblockTaskNetRequest(
                     UnblockTaskParams(
-                            taskNumber = task.taskInfo.number,
+                            taskNumber = task.value!!.taskInfo.number,
                             unblockType = taskManager.getTaskType()
                     )
             )
@@ -87,7 +100,7 @@ class ProcessingUnitListViewModel : CoreViewModel() {
 
             endProcessingNetRequest(
                     EndProcessingParams(
-                            taskNumber = task.taskInfo.number,
+                            taskNumber = task.value!!.taskInfo.number,
                             taskType = taskManager.getTaskType()
                     )
             ).also {

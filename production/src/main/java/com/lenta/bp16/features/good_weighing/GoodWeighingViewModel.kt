@@ -28,12 +28,6 @@ class GoodWeighingViewModel : CoreViewModel() {
     lateinit var packCodeNetRequest: PackCodeNetRequest
 
 
-    val title by lazy {
-        taskManager.currentGood.getNameWithMaterial()
-    }
-
-    val deviceIp: MutableLiveData<String> = MutableLiveData("")
-
     val good by lazy {
         taskManager.currentGood
     }
@@ -42,6 +36,12 @@ class GoodWeighingViewModel : CoreViewModel() {
         taskManager.currentRaw
     }
 
+    val title by lazy {
+        good.map { it?.getNameWithMaterial() }
+    }
+
+    val deviceIp = MutableLiveData("")
+
     val weight = MutableLiveData("0")
 
     private val enteredWeight = weight.map {
@@ -49,15 +49,15 @@ class GoodWeighingViewModel : CoreViewModel() {
     }
 
     private val totalWeight = enteredWeight.map {
-        it.sumWith(raw.quantity)
+        it.sumWith(raw.value?.quantity)
     }
 
     val totalWeightWithUnits = totalWeight.map {
-        "${it.dropZeros()} ${good.units.name}"
+        "${it.dropZeros()} ${good.value!!.units.name}"
     }
 
     val planned by lazy {
-        "${raw.planned.dropZeros()} ${good.units.name}"
+        "${raw.value!!.planned.dropZeros()} ${good.value!!.units.name}"
     }
 
     private var isComplete = false
@@ -94,23 +94,27 @@ class GoodWeighingViewModel : CoreViewModel() {
                     PackCodeParams(
                             marketNumber = sessionInfo.market ?: "Not found!",
                             parentType = 1,
-                            parent = taskManager.currentTask.taskInfo.number,
+                            parent = taskManager.currentTask.value!!.taskInfo.number,
                             deviceIp = deviceIp.value ?: "Not found!",
-                            material = good.material,
-                            orderNumber = raw.orderNumber,
+                            material = good.value!!.material,
+                            orderNumber = raw.value!!.orderNumber,
                             quantity = enteredWeight.value ?: 0.0
                     )
             ).also {
                 navigator.hideProgress()
             }.either(::handleFailure) { packCodeResult ->
-                good.packs.add(0,
-                        Pack(
-                                material = good.material,
-                                materialOsn = raw.materialOsn,
-                                code = packCodeResult.packCode,
-                                quantity = enteredWeight.value ?: 0.0
-                        )
-                )
+                good.value?.let {
+                    it.packs.add(0,
+                            Pack(
+                                    material = it.material,
+                                    materialOsn = raw.value!!.materialOsn,
+                                    code = packCodeResult.packCode,
+                                    quantity = enteredWeight.value ?: 0.0
+                            )
+                    )
+
+                    good.value = it
+                }
 
                 prepareToNext()
                 printTag()
@@ -129,7 +133,11 @@ class GoodWeighingViewModel : CoreViewModel() {
     }
 
     private fun prepareToNext() {
-        raw.quantity = totalWeight.value ?: 0.0
+        raw.value?.let {
+            it.quantity = totalWeight.value ?: 0.0
+            raw.value = it
+        }
+
         weight.value = "0"
     }
 
