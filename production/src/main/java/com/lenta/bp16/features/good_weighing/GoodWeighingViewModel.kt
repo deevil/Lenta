@@ -103,7 +103,7 @@ class GoodWeighingViewModel : CoreViewModel() {
             ).also {
                 navigator.hideProgress()
             }.either(::handleFailure) { packCodeResult ->
-                good.packs.add(
+                good.packs.add(0,
                         Pack(
                                 material = good.material,
                                 materialOsn = raw.materialOsn,

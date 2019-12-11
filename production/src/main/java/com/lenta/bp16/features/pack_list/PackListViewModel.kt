@@ -16,17 +16,19 @@ class PackListViewModel : CoreViewModel() {
 
 
     val title by lazy {
-        taskManager.currentGood.getNameWithMaterial(" - ")
+        taskManager.currentGood.getNameWithMaterial()
     }
 
     val packs: MutableLiveData<List<ItemPackListUi>> by lazy {
-        MutableLiveData(taskManager.currentGood.packs.mapIndexed { index, pack ->
-            ItemPackListUi(
-                    position = (index + 1).toString(),
-                    number = "Тара №${pack.getShortPackNumber()}",
-                    name = taskManager.currentRaw.name,
-                    weight = "${pack.quantity.dropZeros()} ${taskManager.currentGood.units.name}"
-            )
+        MutableLiveData(taskManager.currentGood.packs.let { packs ->
+            packs.mapIndexed { index, pack ->
+                ItemPackListUi(
+                        position = (packs.size - index).toString(),
+                        number = "Тара №${pack.getShortPackNumber()}",
+                        name = taskManager.currentRaw.name,
+                        weight = "${pack.quantity.dropZeros()} ${taskManager.currentGood.units.name}"
+                )
+            }
         })
     }
 
