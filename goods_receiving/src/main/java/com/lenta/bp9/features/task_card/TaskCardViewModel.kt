@@ -220,16 +220,27 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
                 screenNavigator.openLoadingRegisterArrivalScreen()
             }
             TaskStatus.Arrived -> {
-                screenNavigator.openStartReviseLoadingScreen()
+                if (taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.ReceptionDistributionCenter) {
+                    screenNavigator.openUnloadingStartRDSLoadingScreen()
+                } else {
+                    screenNavigator.openStartReviseLoadingScreen()
+                }
             }
             TaskStatus.Checked -> {
                 screenNavigator.openStartConditionsReviseLoadingScreen()
             }
             TaskStatus.Unloaded -> {
-                screenNavigator.openRecountStartLoadingScreen()
+                if (taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.ReceptionDistributionCenter) {
+                    screenNavigator.openInputOutgoingFillingsScreen()
+                } else {
+                    screenNavigator.openRecountStartLoadingScreen()
+                }
             }
             TaskStatus.Recounted -> {
                 screenNavigator.openTransmittedLoadingScreen()
+            }
+            TaskStatus.Departure -> {
+                screenNavigator.openStartReviseLoadingScreen()
             }
             TaskStatus.Booked -> {
                 screenNavigator.openTransferGoodsSectionScreen()

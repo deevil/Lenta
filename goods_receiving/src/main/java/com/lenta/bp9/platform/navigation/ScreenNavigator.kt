@@ -25,6 +25,7 @@ import com.lenta.bp9.features.goods_information.general.GoodsInfoFragment
 import com.lenta.bp9.features.goods_information.mercury.GoodsMercuryInfoFragment
 import com.lenta.bp9.features.goods_information.non_excise_alco.NonExciseAlcoInfoFragment
 import com.lenta.bp9.features.goods_information.perishables.PerishablesInfoFragment
+import com.lenta.bp9.features.input_outgoing_fillings.InputOutgoingFillingsFragment
 import com.lenta.bp9.features.list_goods_transfer.ListGoodsTransferFragment
 import com.lenta.bp9.features.loading.tasks.*
 import com.lenta.bp9.features.mercury_exception_integration.MercuryExceptionIntegrationFragment
@@ -660,6 +661,18 @@ class ScreenNavigator(
         }
     }
 
+    override fun openUnloadingStartRDSLoadingScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(LoadingUnloadingStartRDSFragment())
+        }
+    }
+
+    override fun openInputOutgoingFillingsScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(InputOutgoingFillingsFragment())
+        }
+    }
+
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 }
 
@@ -742,4 +755,6 @@ interface IScreenNavigator : ICoreNavigator {
     fun openAlertQuantGreatInOrderScreen()
     fun openAlertCertificatesLostRelevance(nextCallbackFunc: () -> Unit)
     fun openAlertElectronicVadLostRelevance(browsingCallbackFunc: () -> Unit, countVad: String, countGoods: String)
+    fun openUnloadingStartRDSLoadingScreen()
+    fun openInputOutgoingFillingsScreen()
 }

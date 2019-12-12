@@ -82,6 +82,8 @@ data class TaskContentsReceptionDistrCenterResult(
         val sectionsInfo: List<TaskSectionRestData>,
         @SerializedName("ET_MATNR_ABTNR")
         val sectionProducts: List<TaskSectionProductsRestData>,
+        @SerializedName("EV_NUM_SEALS")
+        val quantityOutgoingFillings: String,
         @SerializedName("EV_RETCODE")
         override val retCode: Int,
         @SerializedName("EV_ERROR_TEXT")

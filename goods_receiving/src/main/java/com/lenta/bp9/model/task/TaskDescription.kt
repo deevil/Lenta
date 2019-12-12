@@ -32,7 +32,8 @@ data class TaskDescription(val currentStatus: TaskStatus,   //Код текущ�
                       val isPromo: Boolean,            //Индикатор: Промо (IS_ADV)
                       val isRecount: Boolean,          //Индикатор: Пересчетная ГЕ (IS_COUNT)
                       val isOwnTransport: Boolean,     //Индикатор: Собственный транспорт (IS_OWN)
-                      val isEDO: Boolean               //Индикатор ЭДО
+                      val isEDO: Boolean,               //Индикатор ЭДО
+                      val quantityOutgoingFillings: Int //Количество исходящих пломб (задания ПРЦ, EV_NUM_SEALS из ZMP_UTZ_GRZ_21_V001 и ZMP_UTZ_GRZ_28_V001)
 ) {
 
     companion object {
@@ -62,7 +63,8 @@ data class TaskDescription(val currentStatus: TaskStatus,   //Код текущ�
                     isOwnTransport = restData.isOwnTransport.isNotEmpty(),
                     isEDO = restData.isEDO.isNotEmpty(),
                     nextStatusDate = "",
-                    nextStatusTime = ""
+                    nextStatusTime = "",
+                    quantityOutgoingFillings = 0
             )
         }
     }

@@ -177,7 +177,7 @@ class LoadingTaskCardViewModel : CoreLoadingViewModel() {
                 val sectionInfo = result.sectionsInfo.map { TaskSectionInfo.from(it) }
                 val sectionProducts = result.sectionProducts.map { TaskSectionProducts.from(it) }
 
-                val newTask = taskManager.newReceivingTask(taskHeader, TaskDescription.from(result.taskDescription))
+                val newTask = taskManager.newReceivingTask(taskHeader, TaskDescription.from(result.taskDescription).copy(quantityOutgoingFillings = result.quantityOutgoingFillings.trim().toInt()))
                 newTask?.taskRepository?.getNotifications()?.updateWithNotifications(notifications, documentNotifications, productNotifications, conditionNotifications)
                 //newTask?.taskRepository?.getNotifications()?.updateWithInvoiceNotes(commentsToVP)
                 newTask?.taskRepository?.getReviseDocuments()?.apply {

@@ -13,6 +13,7 @@ import com.lenta.bp9.features.goods_information.mercury.GoodsMercuryInfoViewMode
 import com.lenta.bp9.features.goods_information.non_excise_alco.NonExciseAlcoInfoViewModel
 import com.lenta.bp9.features.goods_information.perishables.PerishablesInfoViewModel
 import com.lenta.bp9.features.goods_list.GoodsListViewModel
+import com.lenta.bp9.features.input_outgoing_fillings.InputOutgoingFillingsViewModel
 import com.lenta.bp9.features.list_goods_transfer.ListGoodsTransferViewModel
 import com.lenta.bp9.features.task_list.TaskListViewModel
 import com.lenta.bp9.features.loading.fast.FastDataLoadingViewModel
@@ -88,4 +89,6 @@ interface AppComponent {
     fun inject(it: ReconciliationMercuryViewModel)
     fun inject(it: MercuryExceptionIntegrationViewModel)
     fun inject(it: GoodsMercuryInfoViewModel)
+    fun inject(it: LoadingUnloadingStartRDSViewModel)
+    fun inject(it: InputOutgoingFillingsViewModel)
 }
