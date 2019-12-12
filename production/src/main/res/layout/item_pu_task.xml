@@ -7,7 +7,7 @@
 
         <variable
             name="item"
-            type="com.lenta.bp16.features.task_list.ItemTaskListUi" />
+            type="com.lenta.bp16.features.processing_unit_task_list.ItemProcessingUnitTaskUi" />
 
     </data>
 
@@ -54,15 +54,7 @@
                         android:layout_width="wrap_content"
                         android:layout_marginEnd="0dp"
                         android:text="@{item.text1}"
-                        tools:text="3682194862 / 10.09.19" />
-
-                    <TextView
-                        style="@style/CellTextStyle"
-                        android:layout_width="wrap_content"
-                        android:layout_marginEnd="0dp"
-                        android:text="@{item.text2}"
-                        app:hideEmpty="@{item.text2}"
-                        tools:text="ООО Минторг" />
+                        tools:text="523168921485236748" />
 
                 </LinearLayout>
 

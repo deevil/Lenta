@@ -1,4 +1,4 @@
-package com.lenta.bp16.features.task_list
+package com.lenta.bp16.features.processing_unit_task_list
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
@@ -23,7 +23,7 @@ import com.lenta.shared.utilities.extentions.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyboardListener {
+class ProcessingUnitTaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyboardListener {
 
     @Inject
     lateinit var navigator: IScreenNavigator
@@ -38,6 +38,12 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
     @Inject
     lateinit var resourceManager: IResourceManager
 
+
+    private val tasks by lazy {
+        taskManager.tasks.map {
+            it?.filter { task -> task.type == TaskType.PROCESSING_UNIT }
+        }
+    }
 
     val title by lazy {
         "ТК - ${sessionInfo.market}"
@@ -57,13 +63,9 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
 
     val requestFocusToNumberField = MutableLiveData(true)
 
-    val tasks by lazy {
-        taskManager.tasks
-    }
-
     private val toUiFunc = { products: List<Task>? ->
         products?.mapIndexed { index, task ->
-            ItemTaskListUi(
+            ItemProcessingUnitTaskUi(
                     position = (products.size - index).toString(),
                     number = task.taskInfo.number,
                     text1 = task.taskInfo.text1,
@@ -80,10 +82,6 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
 
     val processed by lazy {
         tasks.map { it?.filter { task -> task.isProcessed } }.map(toUiFunc)
-    }
-
-    val scanButtonVisibility by lazy {
-        taskManager.taskType == TaskType.PROCESSING_UNIT
     }
 
     // -----------------------------
@@ -107,7 +105,7 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
             taskListNetRequest(
                     TaskListParams(
                             tkNumber = sessionInfo.market ?: "",
-                            taskType = taskManager.getTaskType(),
+                            taskType = taskManager.getTaskTypeCode(),
                             deviceIp = deviceIp.value ?: "Not found!"
                     )
             ).also {
@@ -142,7 +140,12 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
     }
 
     override fun onOkInSoftKeyboard(): Boolean {
-        openTaskByNumber(numberField.value ?: "")
+        var enteredNumber = numberField.value ?: ""
+        while (enteredNumber.length < taskManager.taskType.numberLength) {
+            enteredNumber = "0$enteredNumber"
+        }
+
+        openTaskByNumber(enteredNumber)
         return true
     }
 
@@ -186,16 +189,13 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
         if (task.taskInfo.isPack.isSapTrue()) {
             navigator.openPackGoodListScreen()
         } else {
-            when (taskManager.taskType) {
-                TaskType.PROCESSING_UNIT -> navigator.openProcessingUnitListScreen()
-                TaskType.EXTERNAL_SUPPLY -> navigator.openProcessingUnitListScreen()
-            }
+            navigator.openProcessingUnitListScreen()
         }
     }
 
 }
 
-data class ItemTaskListUi(
+data class ItemProcessingUnitTaskUi(
         val position: String,
         val number: String,
         val text1: String,

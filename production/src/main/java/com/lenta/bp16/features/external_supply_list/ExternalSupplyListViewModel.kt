@@ -48,28 +48,13 @@ class ExternalSupplyListViewModel : CoreViewModel() {
         }
     }
 
-    val completeEnabled = MutableLiveData(true)
-
-    // -----------------------------
-
-    init {
-        viewModelScope.launch {
-            //updateList()
+    val completeEnabled by lazy {
+        task.map { task ->
+            task?.goods?.map { it.getFactRawQuantity() }?.find { it == 0.0 }?.let { false } ?: true
         }
     }
 
     // -----------------------------
-
-    /*fun updateList() {
-        goods.value = taskManager.currentTask.goods!!.mapIndexed { index, good ->
-            ItemExternalSupplyUi(
-                    position = (index + 1).toString(),
-                    material = good.material,
-                    name = "${good.material.takeLast(6)} ${good.name}",
-                    arrived = "${good.planned.dropZeros()} ${good.units.name}"
-            )
-        }
-    }*/
 
     fun onClickItemPosition(position: Int) {
         val material = goods.value!![position].material
@@ -84,7 +69,7 @@ class ExternalSupplyListViewModel : CoreViewModel() {
             unblockTaskNetRequest(
                     UnblockTaskParams(
                             taskNumber = task.value!!.taskInfo.number,
-                            unblockType = taskManager.getTaskType()
+                            unblockType = taskManager.getTaskTypeCode()
                     )
             )
 
@@ -99,7 +84,7 @@ class ExternalSupplyListViewModel : CoreViewModel() {
             endProcessingNetRequest(
                     EndProcessingParams(
                             taskNumber = task.value!!.taskInfo.number,
-                            taskType = taskManager.getTaskType()
+                            taskType = taskManager.getTaskTypeCode()
                     )
             ).also {
                 navigator.hideProgress()

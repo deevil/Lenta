@@ -85,7 +85,7 @@ class GoodPackagingViewModel : CoreViewModel() {
                     taskManager.completeCurrentTask()
 
                     navigator.closeAllScreen()
-                    navigator.openTaskListScreen()
+                    navigator.openProcessingUnitTaskListScreen()
                 }
             }
         }

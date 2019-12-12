@@ -70,7 +70,7 @@ class ProcessingUnitListViewModel : CoreViewModel() {
             unblockTaskNetRequest(
                     UnblockTaskParams(
                             taskNumber = task.value!!.taskInfo.number,
-                            unblockType = taskManager.getTaskType()
+                            unblockType = taskManager.getTaskTypeCode()
                     )
             )
 
@@ -85,7 +85,7 @@ class ProcessingUnitListViewModel : CoreViewModel() {
             endProcessingNetRequest(
                     EndProcessingParams(
                             taskNumber = task.value!!.taskInfo.number,
-                            taskType = taskManager.getTaskType()
+                            taskType = taskManager.getTaskTypeCode()
                     )
             ).also {
                 navigator.hideProgress()

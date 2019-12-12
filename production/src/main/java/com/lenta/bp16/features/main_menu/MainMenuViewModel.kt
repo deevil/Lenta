@@ -20,16 +20,12 @@ class MainMenuViewModel : CoreViewModel() {
 
     fun onClickExternalSupply() {
         taskManager.taskType = TaskType.EXTERNAL_SUPPLY
-        openTaskList()
+        navigator.openExternalSupplyTaskListScreen()
     }
 
     fun onClickProcessingUnit() {
         taskManager.taskType = TaskType.PROCESSING_UNIT
-        openTaskList()
-    }
-
-    private fun openTaskList() {
-        navigator.openTaskListScreen()
+        navigator.openProcessingUnitTaskListScreen()
     }
 
 }

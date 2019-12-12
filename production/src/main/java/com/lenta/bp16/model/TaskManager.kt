@@ -94,7 +94,7 @@ class TaskManager @Inject constructor(
         }
     }
 
-    override fun getTaskType(): Int {
+    override fun getTaskTypeCode(): Int {
         return when (taskType) {
             TaskType.PROCESSING_UNIT -> 1
             TaskType.EXTERNAL_SUPPLY -> 2
@@ -113,6 +113,7 @@ class TaskManager @Inject constructor(
 
 interface ITaskManager {
     var taskType: TaskType
+
     val tasks: MutableLiveData<List<Task>>
     val currentTask: MutableLiveData<Task>
     val currentGood: MutableLiveData<Good>
@@ -120,7 +121,7 @@ interface ITaskManager {
 
     fun addTasks(taskListResult: TaskListResult)
     suspend fun addTaskInfoToCurrentTask(taskInfoResult: TaskInfoResult)
-    fun getTaskType(): Int
+    fun getTaskTypeCode(): Int
     fun getBlockType(): Int
     fun completeCurrentTask()
     fun completeCurrentGood()

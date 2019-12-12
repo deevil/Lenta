@@ -8,7 +8,7 @@
 
         <variable
             name="vm"
-            type="com.lenta.bp16.features.task_list.TaskListViewModel" />
+            type="com.lenta.bp16.features.external_supply_task_list.ExternalSupplyTaskListViewModel" />
 
         <variable
             name="rvConfig"
@@ -92,9 +92,9 @@
             android:layout_weight="1"
             app:items="@{vm.processing}"
             app:rv_config="@{rvConfig}"
-            tools:listitem="@layout/item_task" />
+            tools:listitem="@layout/item_es_task" />
 
-        <!-- Ввод номера товара -->
+        <!-- Ввод номера ЕО -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -109,24 +109,15 @@
                 android:digits="0123456789"
                 android:drawableEnd="@drawable/ic_filter_white_24"
                 android:ellipsize="end"
-                android:hint="@string/enter_number_pu"
+                android:hint="@string/enter_number_es"
                 android:imeOptions="actionGo"
                 android:inputType="number"
-                android:maxLength="14"
+                android:maxLength="10"
                 android:maxLines="1"
                 android:text="@={vm.numberField}"
                 app:onOkInSoftKeyboard="@{vm}"
                 app:requestFocus="@{vm.requestFocusToNumberField}"
                 tools:ignore="Autofill" />
-
-            <ImageButton
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
-                android:background="?selectableItemBackground"
-                android:onClick="@{(v) -> vm.navigator.openEanInfoScreen()}"
-                android:src="@drawable/ic_scan_barcode_48dp"
-                android:visibility="@{vm.scanButtonVisibility}" />
 
         </LinearLayout>
 

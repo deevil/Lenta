@@ -3,6 +3,7 @@ package com.lenta.bp16.di
 import com.lenta.bp16.ExceptionHandler
 import com.lenta.bp16.features.auth.AuthViewModel
 import com.lenta.bp16.features.external_supply_list.ExternalSupplyListViewModel
+import com.lenta.bp16.features.external_supply_task_list.ExternalSupplyTaskListViewModel
 import com.lenta.bp16.features.good_packaging.GoodPackagingViewModel
 import com.lenta.bp16.features.good_weighing.GoodWeighingViewModel
 import com.lenta.bp16.features.processing_unit_list.ProcessingUnitListViewModel
@@ -12,7 +13,7 @@ import com.lenta.bp16.features.pack_good_list.PackGoodListViewModel
 import com.lenta.bp16.features.pack_list.PackListViewModel
 import com.lenta.bp16.features.raw_list.RawListViewModel
 import com.lenta.bp16.features.select_market.SelectMarketViewModel
-import com.lenta.bp16.features.task_list.TaskListViewModel
+import com.lenta.bp16.features.processing_unit_task_list.ProcessingUnitTaskListViewModel
 import com.lenta.bp16.main.MainActivity
 import com.lenta.bp16.main.MainViewModel
 import com.lenta.bp16.model.ITaskManager
@@ -40,7 +41,8 @@ interface AppComponent : CoreComponent {
     fun inject(it: FastLoadingViewModel)
     fun inject(it: SelectMarketViewModel)
     fun inject(it: MainMenuViewModel)
-    fun inject(it: TaskListViewModel)
+    fun inject(it: ProcessingUnitTaskListViewModel)
+    fun inject(it: ExternalSupplyTaskListViewModel)
     fun inject(it: ProcessingUnitListViewModel)
     fun inject(it: ExternalSupplyListViewModel)
     fun inject(it: RawListViewModel)
