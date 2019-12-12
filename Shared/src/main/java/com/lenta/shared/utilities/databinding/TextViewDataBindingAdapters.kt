@@ -152,8 +152,3 @@ fun setTextWithVisibilities(textView: TextView, @Suppress("UNUSED_PARAMETER") sc
     }
     textView.setBackgroundResource(textView.context.selectableItemBackgroundResId())
 }
-
-
-
-
-

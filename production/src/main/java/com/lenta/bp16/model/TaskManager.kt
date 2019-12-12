@@ -19,11 +19,11 @@ class TaskManager @Inject constructor(
 
     override val tasks = MutableLiveData<List<Task>>(emptyList())
 
-    override lateinit var currentTask: Task
+    override val currentTask = MutableLiveData<Task>()
 
-    override lateinit var currentGood: Good
+    override val currentGood = MutableLiveData<Good>()
 
-    override lateinit var currentRaw: Raw
+    override val currentRaw = MutableLiveData<Raw>()
 
     override fun addTasks(taskListResult: TaskListResult) {
         val taskList = tasks.value!!.filter { it.isProcessed }.toMutableList()
@@ -44,8 +44,8 @@ class TaskManager @Inject constructor(
     }
 
     override suspend fun addTaskInfoToCurrentTask(taskInfoResult: TaskInfoResult) {
-        currentTask.apply {
-            goods = taskInfoResult.goods.map { goodInfo ->
+        currentTask.value?.let { task ->
+            task.goods = taskInfoResult.goods.map { goodInfo ->
                 Good(
                         material = goodInfo.material,
                         name = goodInfo.name,
@@ -69,19 +69,32 @@ class TaskManager @Inject constructor(
                         }.toMutableList()
                 )
             }
+
+            currentTask.value = task
         }
     }
 
     override fun completeCurrentTask() {
-        val taskList = tasks.value!!.toMutableList()
-        taskList.find { it.number == currentTask.number }?.let { currentTask ->
-            currentTask.isProcessed = true
-        }
+        tasks.value?.let {
+            it.find { task -> task.number == currentTask.value?.number }?.let { currentTask ->
+                currentTask.isProcessed = true
+            }
 
-        tasks.value = taskList
+            tasks.value = it
+        }
     }
 
-    override fun getTaskType(): Int {
+    override fun completeCurrentGood() {
+        currentTask.value?.let { task ->
+            task.goods?.find { it.material == currentGood.value?.material }?.let { good ->
+                good.isProcessed = true
+            }
+
+            currentTask.value = task
+        }
+    }
+
+    override fun getTaskTypeCode(): Int {
         return when (taskType) {
             TaskType.PROCESSING_UNIT -> 1
             TaskType.EXTERNAL_SUPPLY -> 2
@@ -100,14 +113,16 @@ class TaskManager @Inject constructor(
 
 interface ITaskManager {
     var taskType: TaskType
+
     val tasks: MutableLiveData<List<Task>>
-    var currentTask: Task
-    var currentGood: Good
-    var currentRaw: Raw
+    val currentTask: MutableLiveData<Task>
+    val currentGood: MutableLiveData<Good>
+    val currentRaw: MutableLiveData<Raw>
 
     fun addTasks(taskListResult: TaskListResult)
     suspend fun addTaskInfoToCurrentTask(taskInfoResult: TaskInfoResult)
-    fun getTaskType(): Int
+    fun getTaskTypeCode(): Int
     fun getBlockType(): Int
     fun completeCurrentTask()
+    fun completeCurrentGood()
 }

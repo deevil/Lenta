@@ -15,6 +15,7 @@ import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
 import com.lenta.shared.utilities.extentions.provideViewModel
 import com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig
+import com.lenta.shared.utilities.extentions.connectLiveData
 
 class PackListFragment : CoreFragment<FragmentPackListBinding, PackListViewModel>(),
         ToolbarButtonsClickListener {
@@ -32,7 +33,8 @@ class PackListFragment : CoreFragment<FragmentPackListBinding, PackListViewModel
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
         topToolbarUiModel.description.value = getString(R.string.pack_list)
-        topToolbarUiModel.title.value = vm.title
+
+        connectLiveData(vm.title, topToolbarUiModel.title)
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {

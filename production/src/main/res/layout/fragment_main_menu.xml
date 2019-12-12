@@ -47,7 +47,7 @@
                 android:onClick="@{(view) -> vm.onClickExternalSupply()}"
                 android:text="@string/processing_es"
                 android:textAllCaps="false"
-                app:icon="@drawable/ic_processing_unit_48dp"
+                app:icon="@drawable/ic_document_page_48dp"
                 app:iconGravity="end" />
 
             <Button
