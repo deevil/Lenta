@@ -60,7 +60,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
 
-        <EditText
+        <com.lenta.shared.view.EditTextWithSuffix
             android:id="@+id/et_outgoingFillingNumber"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -71,6 +71,7 @@
             android:ellipsize="end"
             android:inputType="textNoSuggestions|numberDecimal"
             android:maxLines="1"
+            app:maxLengthForScanProtect="@{11}"
             android:text="@={vm.outgoingFillingNumber}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
