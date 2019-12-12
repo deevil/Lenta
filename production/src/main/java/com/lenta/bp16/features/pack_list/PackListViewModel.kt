@@ -51,8 +51,6 @@ class PackListViewModel : CoreViewModel() {
 
     fun onClickComplete() {
         navigator.showDefrostingPhaseIsCompleted {
-            taskManager.completeCurrentGood()
-
             navigator.goBack()
             navigator.goBack()
         }

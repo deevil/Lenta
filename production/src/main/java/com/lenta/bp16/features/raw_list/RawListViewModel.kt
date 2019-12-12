@@ -1,13 +1,11 @@
 package com.lenta.bp16.features.raw_list
 
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import com.lenta.bp16.model.ITaskManager
 import com.lenta.bp16.platform.navigation.IScreenNavigator
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.extentions.dropZeros
 import com.lenta.shared.utilities.extentions.map
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class RawListViewModel : CoreViewModel() {
@@ -46,7 +44,7 @@ class RawListViewModel : CoreViewModel() {
 
     val completeEnabled by lazy {
         good.map { good ->
-            good?.raws?.map { it.quantity }?.find { it == 0.0 }?.let { false } ?: true
+            good?.isProcessed == false && good.raws.map { it.quantity }.find { it == 0.0 }?.let { false } ?: true
         }
     }
 

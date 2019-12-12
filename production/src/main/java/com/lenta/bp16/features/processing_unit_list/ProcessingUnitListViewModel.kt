@@ -51,7 +51,7 @@ class ProcessingUnitListViewModel : CoreViewModel() {
 
     val completeEnabled by lazy {
         task.map { task ->
-            task?.goods?.map { it.getFactRawQuantity() }?.find { it == 0.0 }?.let { false } ?: true
+            task?.isProcessed == false && task.goods?.map { it.getFactRawQuantity() }?.find { it == 0.0 }?.let { false } ?: true
         }
     }
 
