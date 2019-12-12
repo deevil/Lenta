@@ -8,6 +8,10 @@
         <variable
             name="vm"
             type="com.lenta.bp9.features.task_card.TaskCardViewModel" />
+
+        <variable
+            name="tt"
+            type="com.lenta.bp9.model.task.TaskType" />
     </data>
 
 
@@ -148,7 +152,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="22dp"
             android:layout_marginEnd="8dp"
-            android:text="@string/incoming_delivery"
+            android:text='@{vm.tvDeliveryCaption}'
             app:layout_constraintEnd_toStartOf="@+id/guideline"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/div_hor_3"
@@ -190,24 +194,24 @@
             android:maxLines="2"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/guideline"
-            app:layout_constraintBaseline_toBaselineOf="@+id/tv_arrival_caption"
-            tools:text="План поставки\nФакт прибытия"/>
+            app:layout_constraintBaseline_toBaselineOf="@+id/tv_arrival_caption"/>
 
         <TextView
-            android:id="@+id/tv_count_SKU_caption"
+            android:id="@+id/tv_count_caption"
             style="@style/TextTitle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="22dp"
             android:layout_marginEnd="8dp"
-            android:text="@string/count_SKU"
+            android:text='@{vm.tvCountCaption}'
             app:layout_constraintEnd_toStartOf="@+id/guideline"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/div_hor_6"
-            app:layout_constraintBottom_toTopOf="@id/div_hor_5" />
+            app:layout_constraintBottom_toTopOf="@id/div_hor_5"
+            tools:text="Количество SKU"/>
 
         <TextView
-            android:id="@+id/tv_count_SKU"
+            android:id="@+id/tv_count_value"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="22dp"
@@ -215,7 +219,7 @@
             android:text='@{vm.countSKU}'
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/guideline"
-            app:layout_constraintBaseline_toBaselineOf="@+id/tv_count_SKU_caption" />
+            app:layout_constraintBaseline_toBaselineOf="@+id/tv_count_caption"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -41,6 +41,7 @@
     <string name="arrival_fact">Факт прибытия</string>
     <string name="incoming_delivery">Входящая поставка</string>
     <string name="count_SKU">Количество SKU</string>
+    <string name="count_GE">Количество ГЕ</string>
     <string name="current_status">Текущий статус</string>
     <string name="new_status">Новый статус</string>
     <string name="current_status_datetime">Дата и время\nТекущего статуса</string>

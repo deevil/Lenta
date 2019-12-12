@@ -194,16 +194,20 @@ data class TaskItemVm(
 enum class TaskPostponedStatus {
     None,
     PauseSign,
-    PlaySign;
+    PlaySign,
+    Breaking;
 
     companion object {
         fun postponedStatusOfTask(task: TaskInfo): TaskPostponedStatus {
-            if (task.isStarted) {
-                return PlaySign
+            //последовательность if не менять!!!!
+            return if (task.isCracked) {
+                Breaking
             } else if (task.isDelayed || task.isPaused) {
-                return  PauseSign
+                PauseSign
+            } else if (task.isStarted) {
+                PlaySign
             } else {
-                return None
+                None
             }
         }
     }
