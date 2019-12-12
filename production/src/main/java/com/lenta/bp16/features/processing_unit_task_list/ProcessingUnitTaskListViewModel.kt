@@ -140,13 +140,21 @@ class ProcessingUnitTaskListViewModel : CoreViewModel(), PageSelectionListener, 
     }
 
     override fun onOkInSoftKeyboard(): Boolean {
-        var enteredNumber = numberField.value ?: ""
-        while (enteredNumber.length < taskManager.taskType.numberLength) {
-            enteredNumber = "0$enteredNumber"
+        openTaskByNumber(formatNumberForSearch(numberField.value ?: ""))
+        return true
+    }
+
+    fun onScanResult(data: String) {
+        openTaskByNumber(formatNumberForSearch(data))
+    }
+
+    private fun formatNumberForSearch(number: String): String {
+        var formattedNumber = number
+        while (formattedNumber.length < taskManager.taskType.numberLength) {
+            formattedNumber = "0$formattedNumber"
         }
 
-        openTaskByNumber(enteredNumber)
-        return true
+        return formattedNumber
     }
 
     private fun openTaskByNumber(taskNumber: String) {
