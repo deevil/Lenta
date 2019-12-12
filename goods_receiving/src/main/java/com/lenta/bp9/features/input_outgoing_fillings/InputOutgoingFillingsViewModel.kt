@@ -1,6 +1,7 @@
 package com.lenta.bp9.features.input_outgoing_fillings
 
 import android.content.Context
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp9.features.loading.tasks.TaskCardMode
 import com.lenta.bp9.model.task.IReceivingTaskManager
@@ -52,8 +53,7 @@ class InputOutgoingFillingsViewModel : CoreViewModel() {
             listInputOutgoingFillings.add(
                     InputOutgoingFillingsItem(
                             number = i+1,
-                            outgoingFillingNumber = "",
-                            even = i+1 % 2 == 0
+                            outgoingFillingNumber = MutableLiveData("")
                     )
             )
         }
@@ -66,7 +66,7 @@ class InputOutgoingFillingsViewModel : CoreViewModel() {
                     taskNumber = taskManager.getReceivingTask()?.taskHeader?.taskNumber ?: "",
                     deviceIP = context.getDeviceIp(),
                     personalNumber = sessionInfo.personnelNumber ?: "",
-                    fillings = listInputOutgoingFillings.map {it.outgoingFillingNumber}
+                    fillings = listInputOutgoingFillings.map {it.outgoingFillingNumber.value.toString()}
             )
             fixationDepartureReceptionDistrCenterNetRequest(params).either(::handleFailure, ::handleSuccess)
             screenNavigator.hideProgress()
@@ -89,9 +89,5 @@ class InputOutgoingFillingsViewModel : CoreViewModel() {
 
 data class InputOutgoingFillingsItem(
         val number: Int,
-        val outgoingFillingNumber: String,
-        val even: Boolean
-) : Evenable {
-    override fun isEven() = even
-
-}
+        val outgoingFillingNumber: MutableLiveData<String>
+)
