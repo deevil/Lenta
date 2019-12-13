@@ -66,6 +66,10 @@ class RawListViewModel : CoreViewModel() {
     }
 
     fun onClickItemPosition(position: Int) {
+        if (good.value?.isProcessed == true) {
+            return
+        }
+
         val materialOsn = raws.value!![position].materialOsn
         good.value?.raws?.find { it.materialOsn == materialOsn }?.let { raw ->
             taskManager.currentRaw.value = raw
