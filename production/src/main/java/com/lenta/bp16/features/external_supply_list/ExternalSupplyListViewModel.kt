@@ -78,18 +78,20 @@ class ExternalSupplyListViewModel : CoreViewModel() {
     }
 
     fun onClickComplete() {
-        viewModelScope.launch {
-            navigator.showProgressLoadingData()
+        navigator.showConfirmNoRawItem(taskManager.taskType.abbreviation) {
+            viewModelScope.launch {
+                navigator.showProgressLoadingData()
 
-            endProcessingNetRequest(
-                    EndProcessingParams(
-                            taskNumber = task.value!!.taskInfo.number,
-                            taskType = taskManager.getTaskTypeCode()
-                    )
-            ).also {
-                navigator.hideProgress()
-            }.either(::handleFailure) {
-                completeTask()
+                endProcessingNetRequest(
+                        EndProcessingParams(
+                                taskNumber = task.value!!.taskInfo.number,
+                                taskType = taskManager.getTaskTypeCode()
+                        )
+                ).also {
+                    navigator.hideProgress()
+                }.either(::handleFailure) {
+                    completeTask()
+                }
             }
         }
     }

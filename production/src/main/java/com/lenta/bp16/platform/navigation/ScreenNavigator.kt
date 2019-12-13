@@ -149,6 +149,18 @@ class ScreenNavigator @Inject constructor(
         }
     }
 
+    override fun showConfirmNoRawItem(taskType: String, confirmCallback: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    pageNumber = "24",
+                    message = context.getString(R.string.confirm_no_raw_items, taskType),
+                    iconRes = R.drawable.is_warning_red_80dp,
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(confirmCallback),
+                    rightButtonDecorationInfo = ButtonDecorationInfo.confirm
+            ))
+        }
+    }
+
     override fun showFixingPackagingPhaseSuccessful(nextCallback: () -> Unit) {
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
@@ -182,5 +194,6 @@ interface IScreenNavigator : ICoreNavigator {
 
     fun showDefrostingPhaseIsCompleted(nextCallback: () -> Unit)
     fun showConfirmNoSuchItemLeft(taskType: String, confirmCallback: () -> Unit)
+    fun showConfirmNoRawItem(taskType: String, confirmCallback: () -> Unit)
     fun showFixingPackagingPhaseSuccessful(nextCallback: () -> Unit)
 }
