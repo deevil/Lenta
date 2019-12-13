@@ -156,7 +156,8 @@
             app:layout_constraintEnd_toStartOf="@+id/guideline"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/div_hor_3"
-            app:layout_constraintBottom_toTopOf="@id/div_hor_4" />
+            app:layout_constraintBottom_toTopOf="@id/div_hor_4"
+            tools:text="Входящая поставка"/>
 
         <TextView
             android:id="@+id/tv_delivery"

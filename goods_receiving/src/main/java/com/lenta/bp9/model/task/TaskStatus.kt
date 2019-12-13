@@ -16,6 +16,7 @@ enum class TaskStatus(val taskStatusString: String) {
     TransferredToSection("13"), //Передано (в секцию)
     SentToGIS("15"), //Отправлено в ГИС
     RejectedByGIS("16"), //Отклонено ГИС
+    Departure("19"), //Убытие
     Breaking("26"), //Взлом
     AllowedByGIS("37"), //Разрешено ГИС
     Completed("90"), //Выполнено
@@ -39,6 +40,7 @@ enum class TaskStatus(val taskStatusString: String) {
             SentToGIS -> "Отправалено в ГИС"
             RejectedByGIS -> "Отклонено ГИС"
             AllowedByGIS -> "Разрешено ГИС"
+            Departure -> "Убытие"
             Breaking -> "Взлом"
             Completed -> "Выполнено"
             TemporaryRejected -> "Временно отказано"
@@ -62,6 +64,7 @@ enum class TaskStatus(val taskStatusString: String) {
                 "13" -> TransferredToSection
                 "15" -> SentToGIS
                 "16" -> RejectedByGIS
+                "19" -> Departure
                 "26" -> Breaking
                 "37" -> AllowedByGIS
                 "90" -> Completed
