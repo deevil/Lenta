@@ -55,11 +55,11 @@ class ProcessingUnitTaskListViewModel : CoreViewModel(), PageSelectionListener, 
         }
     }
 
-    val deviceIp: MutableLiveData<String> = MutableLiveData("")
+    val deviceIp = MutableLiveData("")
 
     val selectedPage = MutableLiveData(0)
 
-    val numberField: MutableLiveData<String> = MutableLiveData("")
+    val numberField = MutableLiveData("")
 
     val requestFocusToNumberField = MutableLiveData(true)
 
@@ -160,6 +160,7 @@ class ProcessingUnitTaskListViewModel : CoreViewModel(), PageSelectionListener, 
     private fun openTaskByNumber(taskNumber: String) {
         taskManager.tasks.value?.find { it.number == taskNumber }?.let { task ->
             taskManager.currentTask.value = task
+            numberField.value = ""
 
             if (task.isProcessed) {
                 openTaskByType(task)

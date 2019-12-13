@@ -53,8 +53,9 @@ class TaskManager @Inject constructor(
                         planned = goodInfo.quantity,
                         raws = taskInfoResult.raws.filter { it.material == goodInfo.material }.map { rawInfo ->
                             Raw(
-                                    orderNumber = rawInfo.orderNumber,
+                                    material = rawInfo.material,
                                     materialOsn = rawInfo.materialOsn,
+                                    orderNumber = rawInfo.orderNumber,
                                     name = rawInfo.name,
                                     planned = rawInfo.planned
                             )

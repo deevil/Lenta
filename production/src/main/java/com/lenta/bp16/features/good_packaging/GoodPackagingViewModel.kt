@@ -41,17 +41,13 @@ class GoodPackagingViewModel : CoreViewModel() {
 
     val deviceIp = MutableLiveData("")
 
-    val weight = MutableLiveData("")
+    val weightField = MutableLiveData("")
 
-    private val enteredWeight = weight.map {
+    private val entered = weightField.map {
         it?.toDoubleOrNull() ?: 0.0
     }
 
-    private val totalWeight = enteredWeight.map {
-        it.sumWith(raw.value!!.quantity)
-    }
-
-    val totalWeightWithUnits = totalWeight.map {
+    val enteredWithUnits = entered.map {
         "${it.dropZeros()} ${good.value!!.units.name}"
     }
 
@@ -59,8 +55,8 @@ class GoodPackagingViewModel : CoreViewModel() {
         "${raw.value!!.planned} ${good.value!!.units.name}"
     }
 
-    val completeEnabled: MutableLiveData<Boolean> = weight.map {
-        it?.toDoubleOrNull() ?: 0.0 != 0.0
+    val completeEnabled = entered.map {
+        it ?: 0.0 != 0.0
     }
 
     // -----------------------------
@@ -76,7 +72,7 @@ class GoodPackagingViewModel : CoreViewModel() {
                                 deviceIp = deviceIp.value ?: "Not found!",
                                 material = good.value!!.material,
                                 orderNumber = raw.value!!.orderNumber,
-                                quantity = raw.value!!.quantity,
+                                quantity = entered.value!!,
                                 taskNumber = taskManager.currentTask.value!!.taskInfo.number
                         )
                 ).also {

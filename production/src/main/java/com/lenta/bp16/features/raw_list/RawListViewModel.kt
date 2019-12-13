@@ -31,11 +31,15 @@ class RawListViewModel : CoreViewModel() {
     val raws: MutableLiveData<List<ItemRawListUi>> by lazy {
         good.map { good ->
             good?.raws?.mapIndexed { index, raw ->
+                val quantity = good.packs.filter {
+                    it.materialOsn == raw.materialOsn
+                }.map { it.quantity }.sum()
+
                 ItemRawListUi(
                         position = (index + 1).toString(),
                         materialOsn = raw.materialOsn,
                         name = raw.name,
-                        processed = "${raw.quantity.dropZeros()} ${good.units.name} из ${raw.planned.dropZeros()} ${good.units.name}",
+                        processed = "${quantity.dropZeros()} ${good.units.name} из ${raw.planned.dropZeros()} ${good.units.name}",
                         arrowVisibility = !good.isProcessed
                 )
             }
@@ -44,7 +48,11 @@ class RawListViewModel : CoreViewModel() {
 
     val completeEnabled by lazy {
         good.map { good ->
-            good?.isProcessed == false && good.raws.map { it.quantity }.find { it == 0.0 }?.let { false } ?: true
+            val isAllWeighted = good?.raws?.map { raw -> good.packs.filter {
+                    it.materialOsn == raw.materialOsn
+                }.map { it.quantity }.sum() }?.find { it == 0.0 }?.let { false } ?: true
+
+            good?.isProcessed == false && isAllWeighted
         }
     }
 
@@ -58,6 +66,10 @@ class RawListViewModel : CoreViewModel() {
     }
 
     fun onClickItemPosition(position: Int) {
+        if (good.value?.isProcessed == true) {
+            return
+        }
+
         val materialOsn = raws.value!![position].materialOsn
         good.value?.raws?.find { it.materialOsn == materialOsn }?.let { raw ->
             taskManager.currentRaw.value = raw

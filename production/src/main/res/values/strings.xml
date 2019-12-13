@@ -15,6 +15,7 @@
     // Информационные сообщения
     <string name="defrosting_phase_is_completed">Этап дефростирования завершен</string>
     <string name="confirm_that_there_is_no_such_item_left">Подтвердите, что в %1$s не осталось данного товара</string>
+    <string name="confirm_no_raw_items">Подтвердите отсутствие необработанных товаров в %1$s</string>
     <string name="fixing_beginning_of_packaging_phase_was_successful">Этап дефростирования завершен.\nФиксация начала этапа упаковки прошла успешно.</string>
 
     // Заголовки списков

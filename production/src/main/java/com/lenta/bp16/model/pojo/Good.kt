@@ -13,7 +13,9 @@ data class Good(
 ) {
 
     fun getFactRawQuantity(): Double {
-        return raws.map { it.quantity }.sum()
+        return raws.map { raw ->
+            packs.filter { it.materialOsn == raw.materialOsn }.map { it.quantity }.sum()
+        }.sum()
     }
 
     fun getNameWithMaterial(delimiter: String = " "): String {
