@@ -79,7 +79,7 @@ class GoodWeighingViewModel : CoreViewModel() {
             packCodeNetRequest(
                     PackCodeParams(
                             marketNumber = sessionInfo.market ?: "Not found!",
-                            parentType = 1,
+                            taskType = taskManager.getTaskTypeCode(),
                             parent = taskManager.currentTask.value!!.taskInfo.number,
                             deviceIp = deviceIp.value ?: "Not found!",
                             material = good.value!!.material,
