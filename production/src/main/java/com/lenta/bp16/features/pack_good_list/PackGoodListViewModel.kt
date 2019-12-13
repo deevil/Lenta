@@ -4,6 +4,7 @@ import androidx.lifecycle.MutableLiveData
 import com.lenta.bp16.model.ITaskManager
 import com.lenta.bp16.platform.navigation.IScreenNavigator
 import com.lenta.shared.platform.viewmodel.CoreViewModel
+import com.lenta.shared.utilities.extentions.map
 import javax.inject.Inject
 
 class PackGoodListViewModel : CoreViewModel() {
@@ -19,27 +20,29 @@ class PackGoodListViewModel : CoreViewModel() {
     }
 
     val title by lazy {
-        "ЕО - ${task.taskInfo.number}"
+        task.map { it?.taskInfo?.text3 }
     }
 
     val packGoods: MutableLiveData<List<ItemPackGoodListUi>> by lazy {
-        MutableLiveData(task.goods!!.mapIndexed { index, good ->
-            ItemPackGoodListUi(
-                    position = (index + 1).toString(),
-                    material = good.material,
-                    name = good.name,
-                    planWeight = "${good.planned} ${good.units.name}",
-                    arrowVisibility = !taskManager.currentTask.isProcessed
-            )
-        })
+        task.map { task ->
+            task?.goods?.mapIndexed { index, good ->
+                ItemPackGoodListUi(
+                        position = (index + 1).toString(),
+                        material = good.material,
+                        name = good.name,
+                        planWeight = "${good.planned} ${good.units.name}",
+                        arrowVisibility = !task.isProcessed
+                )
+            }
+        }
     }
 
     // -----------------------------
 
     fun onClickItemPosition(position: Int) {
         val material = packGoods.value!![position].material
-        task.goods?.find { it.material == material }?.let { good ->
-            taskManager.currentGood = good
+        task.value?.goods?.find { it.material == material }?.let { good ->
+            taskManager.currentGood.value = good
             navigator.openGoodPackagingScreen()
         }
     }

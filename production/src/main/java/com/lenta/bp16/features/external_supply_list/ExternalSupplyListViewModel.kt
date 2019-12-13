@@ -11,6 +11,7 @@ import com.lenta.bp16.request.UnblockTaskParams
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.extentions.dropZeros
+import com.lenta.shared.utilities.extentions.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -26,43 +27,39 @@ class ExternalSupplyListViewModel : CoreViewModel() {
     lateinit var endProcessingNetRequest: EndProcessingNetRequest
 
 
-    val task by lazy {
+    private val task by lazy {
         taskManager.currentTask
     }
 
     val title by lazy {
-        task.taskInfo.text3
+        task.map { it?.taskInfo?.text3 }
     }
 
-    val goods = MutableLiveData<List<ItemExternalSupplyUi>>()
+    val goods: MutableLiveData<List<ItemExternalSupplyUi>> by lazy {
+        task.map { task ->
+            task?.goods!!.mapIndexed { index, good ->
+                ItemExternalSupplyUi(
+                        position = (index + 1).toString(),
+                        material = good.material,
+                        name = "${good.material.takeLast(6)} ${good.name}",
+                        arrived = "${good.planned.dropZeros()} ${good.units.name}"
+                )
+            }
+        }
+    }
 
-    val completeEnabled = MutableLiveData(true)
-
-    // -----------------------------
-
-    init {
-        viewModelScope.launch {
-            updateList()
+    val completeEnabled by lazy {
+        task.map { task ->
+            task?.isProcessed == false && task.goods?.map { it.getFactRawQuantity() }?.find { it == 0.0 }?.let { false } ?: true
         }
     }
 
     // -----------------------------
-
-    fun updateList() {
-        goods.value = taskManager.currentTask.goods!!.mapIndexed { index, good ->
-            ItemExternalSupplyUi(
-                    position = (index + 1).toString(),
-                    material = good.material,
-                    name = "${good.material.takeLast(6)} ${good.name}",
-                    arrived = "${good.planned.dropZeros()} ${good.units.name}"
-            )
-        }
-    }
 
     fun onClickItemPosition(position: Int) {
         val material = goods.value!![position].material
-        task.goods?.first { it.material == material }?.let { good ->
-            taskManager.currentGood = good
+        task.value?.goods?.first { it.material == material }?.let { good ->
+            taskManager.currentGood.value = good
             navigator.openRawListScreen()
         }
     }
@@ -71,8 +68,8 @@ class ExternalSupplyListViewModel : CoreViewModel() {
         viewModelScope.launch {
             unblockTaskNetRequest(
                     UnblockTaskParams(
-                            taskNumber = task.taskInfo.number,
-                            unblockType = taskManager.getTaskType()
+                            taskNumber = task.value!!.taskInfo.number,
+                            unblockType = taskManager.getTaskTypeCode()
                     )
             )
 
@@ -81,18 +78,20 @@ class ExternalSupplyListViewModel : CoreViewModel() {
     }
 
     fun onClickComplete() {
-        viewModelScope.launch {
-            navigator.showProgressLoadingData()
+        navigator.showConfirmNoRawItem(taskManager.taskType.abbreviation) {
+            viewModelScope.launch {
+                navigator.showProgressLoadingData()
 
-            endProcessingNetRequest(
-                    EndProcessingParams(
-                            taskNumber = task.taskInfo.number,
-                            taskType = taskManager.getTaskType()
-                    )
-            ).also {
-                navigator.hideProgress()
-            }.either(::handleFailure) {
-                completeTask()
+                endProcessingNetRequest(
+                        EndProcessingParams(
+                                taskNumber = task.value!!.taskInfo.number,
+                                taskType = taskManager.getTaskTypeCode()
+                        )
+                ).also {
+                    navigator.hideProgress()
+                }.either(::handleFailure) {
+                    completeTask()
+                }
             }
         }
     }
@@ -103,7 +102,7 @@ class ExternalSupplyListViewModel : CoreViewModel() {
     }
 
     private fun completeTask() {
-        task.isProcessed = true
+        taskManager.completeCurrentTask()
         navigator.goBack()
     }
 

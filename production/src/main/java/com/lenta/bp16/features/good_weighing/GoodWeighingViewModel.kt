@@ -28,12 +28,6 @@ class GoodWeighingViewModel : CoreViewModel() {
     lateinit var packCodeNetRequest: PackCodeNetRequest
 
 
-    val title by lazy {
-        taskManager.currentGood.getNameWithMaterial(" - ")
-    }
-
-    val deviceIp: MutableLiveData<String> = MutableLiveData("")
-
     val good by lazy {
         taskManager.currentGood
     }
@@ -42,83 +36,78 @@ class GoodWeighingViewModel : CoreViewModel() {
         taskManager.currentRaw
     }
 
-    val weight = MutableLiveData("0")
+    val title by lazy {
+        good.map { it?.getNameWithMaterial() }
+    }
 
-    private val enteredWeight = weight.map {
+    val deviceIp = MutableLiveData("")
+
+    val weightField = MutableLiveData("0")
+
+    private val entered = weightField.map {
         it?.toDoubleOrNull() ?: 0.0
     }
 
-    private val totalWeight = enteredWeight.map {
-        it.sumWith(raw.quantity)
+    private val weighted = MutableLiveData<Double>(0.0)
+
+    private val total = entered.map {
+        it.sumWith(weighted.value ?: 0.0)
     }
 
-    val totalWeightWithUnits = totalWeight.map {
-        "${it.dropZeros()} ${good.units.name}"
+    val totalWithUnits = total.map {
+        "${it.dropZeros()} ${good.value!!.units.name}"
     }
 
     val planned by lazy {
-        "${raw.planned} ${good.units.name}"
+        "${raw.value!!.planned.dropZeros()} ${good.value!!.units.name}"
     }
 
-    private var isComplete = false
-
-    val completeEnabled: MutableLiveData<Boolean> = enteredWeight.map {
+    val completeEnabled: MutableLiveData<Boolean> = total.map {
         it ?: 0.0 != 0.0
     }
 
-    val addEnabled: MutableLiveData<Boolean> = enteredWeight.map {
+    val addEnabled: MutableLiveData<Boolean> = entered.map {
         it ?: 0.0 != 0.0
     }
 
     // -----------------------------
 
-    fun onClickGetWeight() {
-        // todo Реализовать получения веса с весов
-        weight.value = "2.5"
-    }
-
-    fun onClickAdd() {
-        createPack()
-    }
-
     fun onClickComplete() {
-        isComplete = true
-        createPack()
-    }
-
-    private fun createPack() {
         viewModelScope.launch {
             navigator.showProgressLoadingData()
 
             packCodeNetRequest(
                     PackCodeParams(
                             marketNumber = sessionInfo.market ?: "Not found!",
-                            parentType = 1,
-                            parent = taskManager.currentTask.taskInfo.number,
+                            taskType = taskManager.getTaskTypeCode(),
+                            parent = taskManager.currentTask.value!!.taskInfo.number,
                             deviceIp = deviceIp.value ?: "Not found!",
-                            material = good.material,
-                            orderNumber = raw.orderNumber,
-                            quantity = enteredWeight.value ?: 0.0
+                            material = good.value!!.material,
+                            orderNumber = raw.value!!.orderNumber,
+                            quantity = total.value!!
                     )
             ).also {
                 navigator.hideProgress()
             }.either(::handleFailure) { packCodeResult ->
-                good.packs.add(
-                        Pack(
-                                material = good.material,
-                                materialOsn = raw.materialOsn,
-                                code = packCodeResult.packCode,
-                                quantity = enteredWeight.value ?: 0.0
-                        )
-                )
+                good.value?.let {
+                    it.packs.add(0,
+                            Pack(
+                                    material = it.material,
+                                    materialOsn = raw.value!!.materialOsn,
+                                    code = packCodeResult.packCode,
+                                    quantity = total.value!!
+                            )
+                    )
 
-                prepareToNext()
+                    good.value = it
+                }
+
                 printTag()
 
-                if (isComplete) {
-                    isComplete = false
-                    navigator.openPackListScreen()
-                }
+                total.value = 0.0
+                weightField.value = "0"
+
+                navigator.openPackListScreen()
             }
         }
     }
@@ -128,9 +117,14 @@ class GoodWeighingViewModel : CoreViewModel() {
         navigator.openAlertScreen(failure)
     }
 
-    private fun prepareToNext() {
-        raw.quantity = totalWeight.value ?: 0.0
-        weight.value = "0"
+    fun onClickAdd() {
+        weighted.value = total.value!!
+        weightField.value = ""
+    }
+
+    fun onClickGetWeight() {
+        // todo Реализовать получения веса с весов
+        weightField.value = "2.5"
     }
 
     private fun printTag() {

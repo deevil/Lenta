@@ -6,7 +6,7 @@ import android.widget.AdapterView
 import com.lenta.bp16.BR
 import com.lenta.bp16.R
 import com.lenta.bp16.databinding.FragmentRawListBinding
-import com.lenta.bp16.databinding.ItemRawListBinding
+import com.lenta.bp16.databinding.ItemRawBinding
 import com.lenta.bp16.platform.extention.getAppComponent
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
@@ -37,8 +37,8 @@ class RawListFragment : CoreFragment<FragmentRawListBinding, RawListViewModel>()
     }
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
-        topToolbarUiModel.description.value = getString(R.string.pu_number, vm.description)
-        topToolbarUiModel.title.value = vm.title
+        connectLiveData(vm.title, topToolbarUiModel.title)
+        connectLiveData(vm.description, topToolbarUiModel.description)
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
@@ -61,13 +61,13 @@ class RawListFragment : CoreFragment<FragmentRawListBinding, RawListViewModel>()
     private fun initRvConfig() {
         binding?.let { layoutBinding ->
             layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
-                    layoutId = R.layout.item_raw_list,
+                    layoutId = R.layout.item_raw,
                     itemId = BR.item,
-                    realisation = object : DataBindingAdapter<ItemRawListBinding> {
-                        override fun onCreate(binding: ItemRawListBinding) {
+                    realisation = object : DataBindingAdapter<ItemRawBinding> {
+                        override fun onCreate(binding: ItemRawBinding) {
                         }
 
-                        override fun onBind(binding: ItemRawListBinding, position: Int) {
+                        override fun onBind(binding: ItemRawBinding, position: Int) {
                             recyclerViewKeyHandler?.let {
                                 binding.root.isSelected = it.isSelected(position)
                             }
@@ -89,15 +89,15 @@ class RawListFragment : CoreFragment<FragmentRawListBinding, RawListViewModel>()
             layoutBinding.lifecycleOwner = viewLifecycleOwner
             recyclerViewKeyHandler = RecyclerViewKeyHandler(
                     rv = layoutBinding.rv,
-                    items = vm.raw,
+                    items = vm.raws,
                     lifecycleOwner = layoutBinding.lifecycleOwner!!,
                     initPosInfo = recyclerViewKeyHandler?.posInfo?.value
             )
         }
     }
 
-    override fun onResume() {
+    /*override fun onResume() {
         super.onResume()
         vm.updateList()
-    }
+    }*/
 }

@@ -33,6 +33,7 @@ class MainMenuViewModel : CoreViewModel() {
     }
 
     fun onClickRecountTask() {
+        //todo Переход к списку заданий на приемку
 
     }
 

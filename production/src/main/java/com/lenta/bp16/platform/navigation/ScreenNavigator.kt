@@ -3,6 +3,8 @@ package com.lenta.bp16.platform.navigation
 import android.content.Context
 import com.lenta.bp16.R
 import com.lenta.bp16.features.auth.AuthFragment
+import com.lenta.bp16.features.external_supply_list.ExternalSupplyListFragment
+import com.lenta.bp16.features.external_supply_task_list.ExternalSupplyTaskListFragment
 import com.lenta.bp16.features.good_packaging.GoodPackagingFragment
 import com.lenta.bp16.features.good_weighing.GoodWeighingFragment
 import com.lenta.bp16.features.processing_unit_list.ProcessingUnitListFragment
@@ -12,7 +14,7 @@ import com.lenta.bp16.features.pack_good_list.PackGoodListFragment
 import com.lenta.bp16.features.pack_list.PackListFragment
 import com.lenta.bp16.features.raw_list.RawListFragment
 import com.lenta.bp16.features.select_market.SelectMarketFragment
-import com.lenta.bp16.features.task_list.TaskListFragment
+import com.lenta.bp16.features.processing_unit_task_list.ProcessingUnitTaskListFragment
 import com.lenta.shared.account.IAuthenticator
 import com.lenta.shared.features.alert.AlertFragment
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
@@ -66,15 +68,27 @@ class ScreenNavigator @Inject constructor(
         }
     }
 
-    override fun openTaskListScreen() {
+    override fun openProcessingUnitTaskListScreen() {
         runOrPostpone {
-            getFragmentStack()?.push(TaskListFragment())
+            getFragmentStack()?.push(ProcessingUnitTaskListFragment())
+        }
+    }
+
+    override fun openExternalSupplyTaskListScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(ExternalSupplyTaskListFragment())
         }
     }
 
     override fun openProcessingUnitListScreen() {
         runOrPostpone {
             getFragmentStack()?.push(ProcessingUnitListFragment())
+        }
+    }
+
+    override fun openExternalSupplyListScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(ExternalSupplyListFragment())
         }
     }
 
@@ -128,7 +142,19 @@ class ScreenNavigator @Inject constructor(
             getFragmentStack()?.push(AlertFragment.create(
                     pageNumber = "23",
                     message = context.getString(R.string.confirm_that_there_is_no_such_item_left, taskType),
-                    iconRes = R.drawable.is_warning_yellow_80dp,
+                    iconRes = R.drawable.is_warning_red_80dp,
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(confirmCallback),
+                    rightButtonDecorationInfo = ButtonDecorationInfo.confirm
+            ))
+        }
+    }
+
+    override fun showConfirmNoRawItem(taskType: String, confirmCallback: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    pageNumber = "24",
+                    message = context.getString(R.string.confirm_no_raw_items, taskType),
+                    iconRes = R.drawable.is_warning_red_80dp,
                     codeConfirmForRight = backFragmentResultHelper.setFuncForResult(confirmCallback),
                     rightButtonDecorationInfo = ButtonDecorationInfo.confirm
             ))
@@ -140,7 +166,7 @@ class ScreenNavigator @Inject constructor(
             getFragmentStack()?.push(AlertFragment.create(
                     pageNumber = "35",
                     message = context.getString(R.string.fixing_beginning_of_packaging_phase_was_successful),
-                    iconRes = R.drawable.is_warning_yellow_80dp,
+                    iconRes = R.drawable.is_warning_red_80dp,
                     isVisibleLeftButton = false,
                     codeConfirmForRight = backFragmentResultHelper.setFuncForResult(nextCallback),
                     rightButtonDecorationInfo = ButtonDecorationInfo.next
@@ -156,8 +182,10 @@ interface IScreenNavigator : ICoreNavigator {
     fun openFastDataLoadingScreen()
     fun openSelectMarketScreen()
     fun openMainMenuScreen()
-    fun openTaskListScreen()
+    fun openProcessingUnitTaskListScreen()
+    fun openExternalSupplyTaskListScreen()
     fun openProcessingUnitListScreen()
+    fun openExternalSupplyListScreen()
     fun openRawListScreen()
     fun openGoodWeighingScreen()
     fun openGoodPackagingScreen()
@@ -166,5 +194,6 @@ interface IScreenNavigator : ICoreNavigator {
 
     fun showDefrostingPhaseIsCompleted(nextCallback: () -> Unit)
     fun showConfirmNoSuchItemLeft(taskType: String, confirmCallback: () -> Unit)
+    fun showConfirmNoRawItem(taskType: String, confirmCallback: () -> Unit)
     fun showFixingPackagingPhaseSuccessful(nextCallback: () -> Unit)
 }

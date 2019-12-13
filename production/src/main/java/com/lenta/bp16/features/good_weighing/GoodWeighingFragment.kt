@@ -33,7 +33,8 @@ class GoodWeighingFragment : CoreFragment<FragmentGoodWeighingBinding, GoodWeigh
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
         topToolbarUiModel.description.value = getString(R.string.good_card)
-        topToolbarUiModel.title.value = vm.title
+
+        connectLiveData(vm.title, topToolbarUiModel.title)
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {

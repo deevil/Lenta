@@ -1,4 +1,4 @@
-package com.lenta.bp16.features.task_list
+package com.lenta.bp16.features.processing_unit_task_list
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
@@ -8,6 +8,7 @@ import com.lenta.bp16.model.TaskStatus
 import com.lenta.bp16.model.TaskType
 import com.lenta.bp16.model.pojo.Task
 import com.lenta.bp16.platform.navigation.IScreenNavigator
+import com.lenta.bp16.platform.resource.IResourceManager
 import com.lenta.bp16.request.TaskInfoNetRequest
 import com.lenta.bp16.request.TaskInfoParams
 import com.lenta.bp16.request.TaskListNetRequest
@@ -22,7 +23,7 @@ import com.lenta.shared.utilities.extentions.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyboardListener {
+class ProcessingUnitTaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyboardListener {
 
     @Inject
     lateinit var navigator: IScreenNavigator
@@ -34,27 +35,37 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
     lateinit var taskListNetRequest: TaskListNetRequest
     @Inject
     lateinit var taskInfoNetRequest: TaskInfoNetRequest
+    @Inject
+    lateinit var resourceManager: IResourceManager
 
+
+    private val tasks by lazy {
+        taskManager.tasks.map {
+            it?.filter { task -> task.type == TaskType.PROCESSING_UNIT }
+        }
+    }
 
     val title by lazy {
         "ТК - ${sessionInfo.market}"
     }
 
-    val deviceIp: MutableLiveData<String> = MutableLiveData("")
+    val description by lazy {
+        tasks.map {
+            resourceManager.workWith(taskManager.taskType.abbreviation, it?.size ?: 0)
+        }
+    }
+
+    val deviceIp = MutableLiveData("")
 
     val selectedPage = MutableLiveData(0)
 
-    val numberField: MutableLiveData<String> = MutableLiveData("")
+    val numberField = MutableLiveData("")
 
     val requestFocusToNumberField = MutableLiveData(true)
 
-    val tasks by lazy {
-        taskManager.tasks
-    }
-
     private val toUiFunc = { products: List<Task>? ->
         products?.mapIndexed { index, task ->
-            ItemTaskListUi(
+            ItemProcessingUnitTaskUi(
                     position = (products.size - index).toString(),
                     number = task.taskInfo.number,
                     text1 = task.taskInfo.text1,
@@ -71,10 +82,6 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
 
     val processed by lazy {
         tasks.map { it?.filter { task -> task.isProcessed } }.map(toUiFunc)
-    }
-
-    val scanButtonVisibility by lazy {
-        taskManager.taskType == TaskType.PROCESSING_UNIT
     }
 
     // -----------------------------
@@ -98,7 +105,7 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
             taskListNetRequest(
                     TaskListParams(
                             tkNumber = sessionInfo.market ?: "",
-                            taskType = taskManager.getTaskType(),
+                            taskType = taskManager.getTaskTypeCode(),
                             deviceIp = deviceIp.value ?: "Not found!"
                     )
             ).also {
@@ -133,16 +140,30 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
     }
 
     override fun onOkInSoftKeyboard(): Boolean {
-        openTaskByNumber(numberField.value ?: "")
+        openTaskByNumber(formatNumberForSearch(numberField.value ?: ""))
         return true
+    }
+
+    fun onScanResult(data: String) {
+        openTaskByNumber(formatNumberForSearch(data))
+    }
+
+    private fun formatNumberForSearch(number: String): String {
+        var formattedNumber = number
+        while (formattedNumber.length < taskManager.taskType.numberLength) {
+            formattedNumber = "0$formattedNumber"
+        }
+
+        return formattedNumber
     }
 
     private fun openTaskByNumber(taskNumber: String) {
         taskManager.tasks.value?.find { it.number == taskNumber }?.let { task ->
-            taskManager.currentTask = task
+            taskManager.currentTask.value = task
+            numberField.value = ""
 
             if (task.isProcessed) {
-                navigator.openRawListScreen()
+                openTaskByType(task)
             } else {
                 viewModelScope.launch {
                     navigator.showProgressLoadingData()
@@ -183,7 +204,7 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
 
 }
 
-data class ItemTaskListUi(
+data class ItemProcessingUnitTaskUi(
         val position: String,
         val number: String,
         val text1: String,

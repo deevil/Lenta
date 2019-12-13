@@ -6,15 +6,16 @@
     <string name="processed">Обработанные</string>
 
     // Подзаголовки экранов
-    <string name="work_with_pu_quantity">Работа с ЕО (%1$d)</string>
+    <string name="work_with_pu_es_quantity">Работа с %1$s (%2$d)</string>
     <string name="good_list">Список товаров</string>
     <string name="pu_number">ЕО %1$s</string>
     <string name="good_card">Карточка товара</string>
     <string name="pack_list">Список тар</string>
 
     // Информационные сообщения
-    <string name="defrosting_phase_is_completed">Этап дефростирования завершен.</string>
-    <string name="confirm_that_there_is_no_such_item_left">Подтвердите что в %1$s не осталось данного товара.</string>
+    <string name="defrosting_phase_is_completed">Этап дефростирования завершен</string>
+    <string name="confirm_that_there_is_no_such_item_left">Подтвердите, что в %1$s не осталось данного товара</string>
+    <string name="confirm_no_raw_items">Подтвердите отсутствие необработанных товаров в %1$s</string>
     <string name="fixing_beginning_of_packaging_phase_was_successful">Этап дефростирования завершен.\nФиксация начала этапа упаковки прошла успешно.</string>
 
     // Заголовки списков
@@ -32,6 +33,7 @@
     // Разные строки
     <string name="processing_pu">Обработка ЕО</string>
     <string name="processing_es">Обработка ВП</string>
+    <string name="enter_number_es">Введите номер ВП</string>
     <string name="enter_number_pu">Введите номер ЕО</string>
     <string name="fact">Факт</string>
     <string name="total">Итого</string>

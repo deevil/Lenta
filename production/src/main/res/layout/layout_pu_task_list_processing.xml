@@ -8,7 +8,7 @@
 
         <variable
             name="vm"
-            type="com.lenta.bp16.features.task_list.TaskListViewModel" />
+            type="com.lenta.bp16.features.processing_unit_task_list.ProcessingUnitTaskListViewModel" />
 
         <variable
             name="rvConfig"
@@ -92,7 +92,7 @@
             android:layout_weight="1"
             app:items="@{vm.processing}"
             app:rv_config="@{rvConfig}"
-            tools:listitem="@layout/item_task" />
+            tools:listitem="@layout/item_pu_task" />
 
         <!-- Ввод номера товара -->
         <LinearLayout
@@ -107,11 +107,12 @@
                 android:layout_margin="8dp"
                 android:layout_weight="1"
                 android:digits="0123456789"
+                android:drawableEnd="@drawable/ic_filter_white_24"
                 android:ellipsize="end"
                 android:hint="@string/enter_number_pu"
                 android:imeOptions="actionGo"
                 android:inputType="number"
-                android:maxLength="14"
+                android:maxLength="20"
                 android:maxLines="1"
                 android:text="@={vm.numberField}"
                 app:onOkInSoftKeyboard="@{vm}"
@@ -124,8 +125,7 @@
                 android:layout_marginEnd="8dp"
                 android:background="?selectableItemBackground"
                 android:onClick="@{(v) -> vm.navigator.openEanInfoScreen()}"
-                android:src="@drawable/ic_scan_barcode_48dp"
-                android:visibility="@{vm.scanButtonVisibility}" />
+                android:src="@drawable/ic_scan_barcode_48dp" />
 
         </LinearLayout>
 

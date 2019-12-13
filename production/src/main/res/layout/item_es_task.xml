@@ -7,7 +7,7 @@
 
         <variable
             name="item"
-            type="com.lenta.bp16.features.task_list.ItemTaskListUi" />
+            type="com.lenta.bp16.features.external_supply_task_list.ItemExternalSupplyTaskUi" />
 
     </data>
 

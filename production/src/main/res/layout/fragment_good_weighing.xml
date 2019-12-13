@@ -42,7 +42,7 @@
                     style="@style/CellEditTextStyle"
                     android:inputType="numberDecimal"
                     android:maxLines="1"
-                    android:text="@={vm.weight}"
+                    android:text="@={vm.weightField}"
                     app:digitsForUom="@{vm.good.units}"
                     app:maxLengthForScanProtect="@{6}"
                     app:suffix="@{vm.good.units.name}"
@@ -78,7 +78,7 @@
 
                 <TextView
                     style="@style/CellTextStyle"
-                    android:text="@{vm.totalWeightWithUnits}"
+                    android:text="@{vm.totalWithUnits}"
                     tools:text="12 кг" />
 
             </LinearLayout>
@@ -146,6 +146,7 @@
                     style="@style/CellTextStyle"
                     android:maxLines="2"
                     android:text="@{vm.good.name}"
+                    app:zoom="@{true}"
                     tools:text="Форель филе" />
 
             </LinearLayout>

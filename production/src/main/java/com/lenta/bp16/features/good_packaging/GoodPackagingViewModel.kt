@@ -27,12 +27,6 @@ class GoodPackagingViewModel : CoreViewModel() {
     lateinit var packGoodNetRequest: PackGoodNetRequest
 
 
-    val title by lazy {
-        taskManager.currentGood.getNameWithMaterial(" - ")
-    }
-
-    val deviceIp: MutableLiveData<String> = MutableLiveData("")
-
     val good by lazy {
         taskManager.currentGood
     }
@@ -41,26 +35,28 @@ class GoodPackagingViewModel : CoreViewModel() {
         taskManager.currentRaw
     }
 
-    val weight = MutableLiveData("")
+    val title by lazy {
+        good.map { it?.getNameWithMaterial() }
+    }
 
-    private val enteredWeight = weight.map {
+    val deviceIp = MutableLiveData("")
+
+    val weightField = MutableLiveData("")
+
+    private val entered = weightField.map {
         it?.toDoubleOrNull() ?: 0.0
     }
 
-    private val totalWeight = enteredWeight.map {
-        it.sumWith(raw.quantity)
-    }
-
-    val totalWeightWithUnits = totalWeight.map {
-        "${it.dropZeros()} ${good.units.name}"
+    val enteredWithUnits = entered.map {
+        "${it.dropZeros()} ${good.value!!.units.name}"
     }
 
     val planned by lazy {
-        "${raw.planned} ${good.units.name}"
+        "${raw.value!!.planned} ${good.value!!.units.name}"
     }
 
-    val completeEnabled: MutableLiveData<Boolean> = weight.map {
-        it?.toDoubleOrNull() ?: 0.0 != 0.0
+    val completeEnabled = entered.map {
+        it ?: 0.0 != 0.0
     }
 
     // -----------------------------
@@ -74,18 +70,18 @@ class GoodPackagingViewModel : CoreViewModel() {
                         PackGoodParams(
                                 marketNumber = sessionInfo.market ?: "Not found!",
                                 deviceIp = deviceIp.value ?: "Not found!",
-                                material = good.material,
-                                orderNumber = raw.orderNumber,
-                                quantity = raw.quantity,
-                                taskNumber = taskManager.currentTask.taskInfo.number
+                                material = good.value!!.material,
+                                orderNumber = raw.value!!.orderNumber,
+                                quantity = entered.value!!,
+                                taskNumber = taskManager.currentTask.value!!.taskInfo.number
                         )
                 ).also {
                     navigator.hideProgress()
                 }.either(::handleFailure) {
-                    taskManager.currentTask.isProcessed = true
+                    taskManager.completeCurrentTask()
 
                     navigator.closeAllScreen()
-                    navigator.openTaskListScreen()
+                    navigator.openProcessingUnitTaskListScreen()
                 }
             }
         }

@@ -39,7 +39,8 @@ class ProcessingUnitListFragment : CoreFragment<FragmentProcessingUnitListBindin
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
         topToolbarUiModel.description.value = getString(R.string.good_list)
-        topToolbarUiModel.title.value = vm.title
+
+        connectLiveData(vm.title, topToolbarUiModel.title)
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
@@ -102,8 +103,8 @@ class ProcessingUnitListFragment : CoreFragment<FragmentProcessingUnitListBindin
         return false
     }
 
-    override fun onResume() {
+    /*override fun onResume() {
         super.onResume()
         vm.updateList()
-    }
+    }*/
 }
