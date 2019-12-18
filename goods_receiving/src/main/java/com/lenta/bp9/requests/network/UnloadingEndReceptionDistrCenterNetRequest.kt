@@ -28,7 +28,7 @@ data class UnloadingEndReceptionDistrCenterParameters(
         @SerializedName("IT_COND_CHECK")
         val transportConditions: List<TransportConditionRestData>,
         @SerializedName("IT_EXIDV_TOP")
-        val cargoUnit: List<TaskCargoUnitInfo>
+        val cargoUnits: List<TaskCargoUnitInfoRestData>
 )
 
 class UnloadingEndReceptionDistrCenterStatus : ObjectRawStatus<UnloadingEndReceptionDistrCenterResult>()

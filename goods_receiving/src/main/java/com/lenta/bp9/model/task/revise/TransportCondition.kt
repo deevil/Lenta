@@ -2,7 +2,7 @@ package com.lenta.bp9.model.task.revise
 
 import com.google.gson.annotations.SerializedName
 
-//Таблица контроля условий перевозки
+//ET_COND_CHECK Таблица контроля условий перевозки
 data class TransportCondition(
         val conditionID: String, //ID Условия
         val conditionName: String, //Название условия

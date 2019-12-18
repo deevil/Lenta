@@ -173,10 +173,10 @@
     <string name="verify">К сверке</string>
     <string name="another_user_block_task">Задание заблокировано логином \"%1$s\".</string>
     <string name="user_self_block_task">Обработка задания начата исполнителем с логином \"%1$s\". Все равно продолжить?</string>
-
     <string name="to_verify">К сверке</string>
     <string name="to_recount">К пересчёту</string>
     <string name="to_tie">Привязать</string>
     <string name="mark">Пометить</string>
     <string name="exclude">Исключить</string>
+    <string name="breaking">Взлом</string>
 </resources>

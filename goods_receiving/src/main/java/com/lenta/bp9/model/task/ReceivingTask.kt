@@ -36,44 +36,23 @@ class ReceivingTask(val taskHeader: TaskInfo,
         return taskRepository.getSections().getSections()
     }
 
-    private fun updateProducts(products: List<TaskProductInfo>) {
-        taskRepository.getProducts().clear()
-        taskRepository.getProducts().updateProducts(products)
-    }
-
-    private fun updateProductsDiscrepancies(productsDiscrepancies: List<TaskProductDiscrepancies>) {
-        taskRepository.getProductsDiscrepancies().clear()
-        taskRepository.getProductsDiscrepancies().updateProductsDiscrepancy(productsDiscrepancies)
-    }
-
-    private fun updateBatches(batches: List<TaskBatchInfo>) {
-        taskRepository.getBatches().clear()
-        taskRepository.getBatches().updateBatches(batches)
-    }
-
-    private fun updateBatchesDiscrepancies(batchesDiscrepancies: List<TaskBatchesDiscrepancies>) {
-        taskRepository.getBatchesDiscrepancies().clear()
-        taskRepository.getBatchesDiscrepancies().updateBatchesDiscrepancy(batchesDiscrepancies)
-    }
-
-    private fun updateMercuryInfo(mercuryInfo: List<TaskMercuryInfo>) {
-        taskRepository.getMercuryDiscrepancies().clear()
-        taskRepository.getMercuryDiscrepancies().updateMercuryInfo(mercuryInfo)
+    fun getCargoUnits(): List<TaskCargoUnitInfo> {
+        return taskRepository.getCargoUnits().getCargoUnits()
     }
 
     fun updateTaskWithContents(taskContentsInfo: TaskContentsInfo) {
-        updateProducts(taskContentsInfo.products)
-        updateProductsDiscrepancies(taskContentsInfo.productsDiscrepancies)
-        updateBatches(taskContentsInfo.taskBatches)
-        updateBatchesDiscrepancies(taskContentsInfo.taskBatchesDiscrepancies)
-        updateMercuryInfo(taskContentsInfo.taskMercuryInfo)
+        taskRepository.getProducts().updateProducts(taskContentsInfo.products)
+        taskRepository.getProductsDiscrepancies().updateProductsDiscrepancy(taskContentsInfo.productsDiscrepancies)
+        taskRepository.getBatches().updateBatches(taskContentsInfo.taskBatches)
+        taskRepository.getBatchesDiscrepancies().updateBatchesDiscrepancy(taskContentsInfo.taskBatchesDiscrepancies)
+        taskRepository.getMercuryDiscrepancies().updateMercuryInfo(taskContentsInfo.taskMercuryInfo)
     }
 
     fun updateTaskWithContentsRDS(taskContentsRDSInfo: TaskContentsRDSInfo) {
-        updateProducts(taskContentsRDSInfo.products)
-        updateProductsDiscrepancies(taskContentsRDSInfo.productsDiscrepancies)
-        updateBatches(taskContentsRDSInfo.taskBatches)
-        updateBatchesDiscrepancies(taskContentsRDSInfo.taskBatchesDiscrepancies)
+        taskRepository.getProducts().updateProducts(taskContentsRDSInfo.products)
+        taskRepository.getProductsDiscrepancies().updateProductsDiscrepancy(taskContentsRDSInfo.productsDiscrepancies)
+        taskRepository.getBatches().updateBatches(taskContentsRDSInfo.taskBatches)
+        taskRepository.getBatchesDiscrepancies().updateBatchesDiscrepancy(taskContentsRDSInfo.taskBatchesDiscrepancies)
     }
 }
 

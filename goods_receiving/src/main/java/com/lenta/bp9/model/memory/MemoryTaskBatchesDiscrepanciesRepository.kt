@@ -40,8 +40,9 @@ class MemoryTaskBatchesDiscrepanciesRepository : ITaskBatchesDiscrepanciesReposi
     }
 
     override fun updateBatchesDiscrepancy(newBatchesDiscrepancies: List<TaskBatchesDiscrepancies>) {
-        for (batchesDiscrepancies in newBatchesDiscrepancies) {
-            addBatchDiscrepancies(batchesDiscrepancies)
+        batchesDiscrepancies.clear()
+        newBatchesDiscrepancies.map {
+            addBatchDiscrepancies(it)
         }
     }
 

@@ -129,7 +129,13 @@ class SearchProductDelegate @Inject constructor(
 
     fun openProductScreen(taskProductInfo: TaskProductInfo, isDiscrepancy: Boolean? = false) {
         when (taskProductInfo.type) {
-            ProductType.General -> screenNavigator.openGoodsInfoScreen(taskProductInfo, isDiscrepancy!!)
+            ProductType.General -> {
+                if (taskProductInfo.isVet) {
+                    screenNavigator.openGoodsMercuryInfoScreen(taskProductInfo, isDiscrepancy!!)
+                } else {
+                    screenNavigator.openGoodsInfoScreen(taskProductInfo, isDiscrepancy!!)
+                }
+            }
             ProductType.ExciseAlcohol -> {
                 if (taskProductInfo.isSet) {
                     screenNavigator.openNotImplementedScreenAlert("Информация о наборе")
@@ -139,11 +145,7 @@ class SearchProductDelegate @Inject constructor(
                 screenNavigator.openExciseAlcoInfoScreen(taskProductInfo)
             }
             else -> {
-                if (taskProductInfo.isVet) {
-                    screenNavigator.openGoodsMercuryInfoScreen(taskProductInfo, isDiscrepancy!!)
-                } else {
-                    screenNavigator.openAlertGoodsNotInOrderScreen() //todo сообщение об неизвестном типе товара?
-                }
+                screenNavigator.openAlertGoodsNotInOrderScreen() //todo сообщение об неизвестном типе товара?
             }
         }
     }

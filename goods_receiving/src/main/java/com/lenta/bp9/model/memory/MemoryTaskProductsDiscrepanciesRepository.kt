@@ -38,8 +38,9 @@ class MemoryTaskProductsDiscrepanciesRepository : ITaskProductsDiscrepanciesRepo
     }
 
     override fun updateProductsDiscrepancy(newProductsDiscrepancies: List<TaskProductDiscrepancies>) {
-        for (productsDiscrepancies in newProductsDiscrepancies) {
-            addProductDiscrepancy(productsDiscrepancies)
+        productsDiscrepancies.clear()
+        newProductsDiscrepancies.map {
+            addProductDiscrepancy(it)
         }
     }
 

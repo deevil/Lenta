@@ -62,8 +62,9 @@ class MemoryTaskMercuryDiscrepanciesRepository : ITaskMercuryDiscrepanciesReposi
     }
 
     override fun updateMercuryInfo(newMercuryInfo: List<TaskMercuryInfo>) {
-        for (mercuryInfo in newMercuryInfo) {
-            addMercuryInfo(mercuryInfo)
+        mercuryInfo.clear()
+        newMercuryInfo.map {
+            addMercuryInfo(it)
         }
     }
 

@@ -2,7 +2,9 @@ package com.lenta.bp9.di
 
 import com.lenta.bp9.ExceptionHandler
 import com.lenta.bp9.features.auth.AuthViewModel
+import com.lenta.bp9.features.cargo_unit_card.CargoUnitCardViewModel
 import com.lenta.bp9.features.change_datetime.ChangeDateTimeViewModel
+import com.lenta.bp9.features.control_delivery_cargo_units.ControlDeliveryCargoUnitsViewModel
 import com.lenta.bp9.features.discrepancy_list.DiscrepancyListViewModel
 import com.lenta.bp9.features.editing_invoice.EditingInvoiceViewModel
 import com.lenta.bp9.features.formed_docs.FormedDocsViewModel
@@ -91,4 +93,6 @@ interface AppComponent {
     fun inject(it: GoodsMercuryInfoViewModel)
     fun inject(it: LoadingUnloadingStartRDSViewModel)
     fun inject(it: InputOutgoingFillingsViewModel)
+    fun inject(it: ControlDeliveryCargoUnitsViewModel)
+    fun inject(it: CargoUnitCardViewModel)
 }

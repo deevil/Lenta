@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp9.R
 import com.lenta.bp9.model.task.IReceivingTaskManager
+import com.lenta.bp9.model.task.TaskCargoUnitInfo
 import com.lenta.bp9.model.task.TaskNotification
 import com.lenta.bp9.model.task.TaskStatus
 import com.lenta.bp9.model.task.revise.TransportCondition
@@ -36,7 +37,7 @@ class LoadingUnloadingStartRDSViewModel : CoreLoadingViewModel() {
     override val sizeInMb: MutableLiveData<Float> = MutableLiveData()
 
     val taskDescription: String by lazy {
-        "\"" + (taskManager.getReceivingTask()?.taskDescription?.currentStatus?.stringValue() ?: "") + "\" -> \"" + TaskStatus.Unloading.stringValue() + "\""
+        "\"" + (taskManager.getReceivingTask()?.taskDescription?.currentStatus?.stringValue() ?: "") + "\" -> \"" + taskManager.getReceivingTask()?.taskDescription?.nextStatusText + "\""
     }
 
     init {
@@ -67,6 +68,9 @@ class LoadingUnloadingStartRDSViewModel : CoreLoadingViewModel() {
 
         val conditionNotifications = result.conditionNotifications.map { TaskNotification.from(it) }
         taskManager.getReceivingTask()?.taskRepository?.getNotifications()?.updateWithNotifications(null, null, null, conditionNotifications)
+
+        val cargoUnits = result.cargoUnits.map { TaskCargoUnitInfo.from(it) }
+        taskManager.getReceivingTask()?.taskRepository?.getCargoUnits()?.updateCargoUnits(cargoUnits)
 
         val transportConditions = result.transportConditions.map { TransportCondition.from(it) }
         taskManager.getReceivingTask()?.taskRepository?.getReviseDocuments()?.updateTransportCondition(transportConditions)

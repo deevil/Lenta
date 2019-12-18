@@ -39,7 +39,7 @@ data class UnloadingStartReceptionDistrCenterResult(
         @SerializedName("ET_COND_CHECK")
         val transportConditions: List<TransportConditionRestData>,
         @SerializedName("ET_EXIDV_TOP")
-        val cargoUnit: List<TaskCargoUnitInfo>,
+        val cargoUnits: List<TaskCargoUnitInfoRestData>,
         @SerializedName("ET_COND_NOTIFY")
         val conditionNotifications: List<TaskNotificationRestInfo>,
         @SerializedName("EV_RETCODE")
