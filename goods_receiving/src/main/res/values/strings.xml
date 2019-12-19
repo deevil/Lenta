@@ -179,11 +179,12 @@
     <string name="header_input_outgoing_fillings">Введите или отсканируйте номера исходящих пломб</string>
     <string name="outgoing_filling">Исходящая пломба</string>
     <string name="seal_damage">Повреждение пломбы</string>
-    <string name="dialog_seal_damage">Подтвердите повреждение пломбы. Статус задания будет изменеен на \"Взлом\". Для всех ГЕ потребуется пересчёт</string>
+    <string name="dialog_seal_damage">Подтвердите повреждение пломбы. Статус задания будет изменен на \"Взлом\". Для всех ГЕ потребуется пересчёт</string>
     <string name="control_delivery_cargo_units">Контроль доставки ГЕ</string>
     <string name="number_cargo_units">Номер ГЕ</string>
     <string name="enter_cargo_unit">Введите ГЕ/ЕО</string>
     <string name="recount">Пересчёт</string>
     <string name="type_pallet">Вид поддона</string>
     <string name="reduction_cargo_unit">ГЕ</string>
+    <string name="alert_seal_damage">Завершите пересчёт всех ГЕ из вскрытой транспортировки. Все расхождения будут рассматриваться как транспортный брак. Водитель ТЭК должен подтвердить расхождения.</string>
 </resources>

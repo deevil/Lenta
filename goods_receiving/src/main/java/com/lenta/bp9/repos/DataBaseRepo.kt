@@ -59,6 +59,18 @@ class DataBaseRepo(
             it.id == "016"
         }
     }
+
+    override suspend fun getStatusInfoForPRC(): List<QualityInfo>? = withContext(Dispatchers.IO) {
+        zmpUtz17V001.getAllQuality()?.toQualityInfoList()?.filter {
+            it.id == "010" && it.code != "3"
+        }
+    }
+
+    override suspend fun getTypePalletInfo(): List<QualityInfo>? = withContext(Dispatchers.IO) {
+        zmpUtz17V001.getAllQuality()?.toQualityInfoList()?.filter {
+            it.id == "014"
+        }
+    }
 }
 
 interface IDataBaseRepo {
@@ -70,4 +82,6 @@ interface IDataBaseRepo {
     suspend fun getParamGrsGrundPos(): String?
     suspend fun getParamGrsGrundNeg(): String?
     suspend fun getExclusionFromIntegration(): List<QualityInfo>?
+    suspend fun getStatusInfoForPRC(): List<QualityInfo>?
+    suspend fun getTypePalletInfo(): List<QualityInfo>?
 }

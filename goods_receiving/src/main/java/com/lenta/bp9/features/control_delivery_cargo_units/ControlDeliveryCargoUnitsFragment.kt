@@ -19,6 +19,7 @@ import com.lenta.shared.keys.KeyCode
 import com.lenta.shared.keys.OnKeyDownListener
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
+import com.lenta.shared.scan.OnScanResultListener
 import com.lenta.shared.utilities.databinding.DataBindingAdapter
 import com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig
 import com.lenta.shared.utilities.databinding.RecyclerViewKeyHandler
@@ -27,7 +28,8 @@ import com.lenta.shared.utilities.extentions.connectLiveData
 class ControlDeliveryCargoUnitsFragment : CoreFragment<FragmentControlDeliveryCargoUnitsBinding, ControlDeliveryCargoUnitsViewModel>(),
         ViewPagerSettings,
         ToolbarButtonsClickListener,
-        OnKeyDownListener {
+        OnKeyDownListener,
+        OnScanResultListener {
 
     private var notProcessedRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
     private var processedRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
@@ -183,6 +185,15 @@ class ControlDeliveryCargoUnitsFragment : CoreFragment<FragmentControlDeliveryCa
             return true
         }
         return false
+    }
+
+    override fun onResume() {
+        super.onResume()
+        vm.onResume()
+    }
+
+    override fun onScanResult(data: String) {
+        vm.onScanResult(data)
     }
 
 }

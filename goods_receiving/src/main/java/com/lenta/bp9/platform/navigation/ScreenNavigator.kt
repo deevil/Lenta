@@ -687,6 +687,18 @@ class ScreenNavigator(
         }
     }
 
+    override fun openAlertSealDamageScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.alert_seal_damage),
+                    iconRes = R.drawable.is_warning_yellow_80dp,
+                    description = context.getString(R.string.seal_damage),
+                    pageNumber = "96",
+                    timeAutoExitInMillis = 3000)
+            )
+        }
+    }
+
     override fun openCargoUnitCardScreen(cargoUnitInfo: TaskCargoUnitInfo) {
         runOrPostpone {
             getFragmentStack()?.push(CargoUnitCardFragment.create(cargoUnitInfo))
@@ -784,6 +796,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openUnloadingStartRDSLoadingScreen()
     fun openInputOutgoingFillingsScreen()
     fun openSealDamageDialog(nextCallbackFunc: () -> Unit)
+    fun openAlertSealDamageScreen()
     fun openControlDeliveryCargoUnitsScreen()
     fun openCargoUnitCardScreen(cargoUnitInfo: TaskCargoUnitInfo)
 }
