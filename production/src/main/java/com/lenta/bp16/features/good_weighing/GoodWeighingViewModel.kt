@@ -119,7 +119,7 @@ class GoodWeighingViewModel : CoreViewModel() {
 
     fun onClickAdd() {
         weighted.value = total.value!!
-        weightField.value = ""
+        weightField.value = "0"
     }
 
     fun onClickGetWeight() {
