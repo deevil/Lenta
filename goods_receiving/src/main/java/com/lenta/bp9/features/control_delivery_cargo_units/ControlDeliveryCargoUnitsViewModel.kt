@@ -9,13 +9,12 @@ import com.lenta.bp9.features.task_list.TaskItemVm
 import com.lenta.bp9.features.task_list.TaskPostponedStatus
 import com.lenta.bp9.model.processing.ProcessCargoUnitsService
 import com.lenta.bp9.model.task.IReceivingTaskManager
+import com.lenta.bp9.model.task.TaskCargoUnitInfo
 import com.lenta.bp9.model.task.TaskCargoUnitInfoRestData
 import com.lenta.bp9.model.task.revise.ConditionViewType
 import com.lenta.bp9.model.task.revise.TransportConditionRestData
 import com.lenta.bp9.platform.navigation.IScreenNavigator
-import com.lenta.bp9.requests.network.UnloadingEndReceptionDistrCenterNetRequest
-import com.lenta.bp9.requests.network.UnloadingEndReceptionDistrCenterParameters
-import com.lenta.bp9.requests.network.UnloadingEndReceptionDistrCenterResult
+import com.lenta.bp9.requests.network.*
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.platform.viewmodel.CoreViewModel
@@ -41,6 +40,8 @@ class ControlDeliveryCargoUnitsViewModel : CoreViewModel(), PageSelectionListene
     @Inject
     lateinit var unloadingEndReceptionDistrCenter: UnloadingEndReceptionDistrCenterNetRequest
     @Inject
+    lateinit var gettingDataNewCargoUnit: GettingDataNewCargoUnitNetRequest
+    @Inject
     lateinit var context: Context
     @Inject
     lateinit var sessionInfo: ISessionInfo
@@ -50,6 +51,7 @@ class ControlDeliveryCargoUnitsViewModel : CoreViewModel(), PageSelectionListene
     private val listNotProcessedHolder: MutableLiveData<List<ControlDeliveryCargoUnitItem>> = MutableLiveData()
     val cargoUnitNumber: MutableLiveData<String> = MutableLiveData("")
     val requestFocusToCargoUnit: MutableLiveData<Boolean> = MutableLiveData()
+    private val searchCargoUnitNumber: MutableLiveData<String> = MutableLiveData("")
 
     val listProcessed by lazy {
         listProcessedHolder.combineLatest(cargoUnitNumber).map { pair ->
@@ -193,11 +195,32 @@ class ControlDeliveryCargoUnitsViewModel : CoreViewModel(), PageSelectionListene
     }
 
     private fun searchCargoUnit(data: String) {
-        val findCargoUnit = processCargoUnitsService.findCargoUnit(data)
-        if (findCargoUnit == null) {
-            //screenNavigator.openCargoUnitCardScreen(it)
-        } else {
-            screenNavigator.openCargoUnitCardScreen(findCargoUnit)
+        viewModelScope.launch {
+            searchCargoUnitNumber.value = data
+            val findCargoUnit = processCargoUnitsService.findCargoUnit(data)
+            if (findCargoUnit == null) {
+                screenNavigator.showProgressLoadingData()
+                val params = GettingDataNewCargoUnitParameters(
+                        taskNumber = taskManager.getReceivingTask()?.taskHeader?.taskNumber ?: "",
+                        cargoUnitNumber = data
+                )
+                gettingDataNewCargoUnit(params).either(::handleFailure, ::handleSuccessNewCargoUnit)
+                screenNavigator.hideProgress()
+            } else {
+                screenNavigator.openCargoUnitCardScreen(findCargoUnit)
+            }
+        }
+    }
+
+    private fun handleSuccessNewCargoUnit(result: GettingDataNewCargoUnitResult) {
+        when (result.cargoUnitType.toInt()) {
+            0 -> screenNavigator.openNewCargoUnitAnotherTransportationDialog(searchCargoUnitNumber.value ?: "", nextCallbackFunc = {
+                screenNavigator.openCargoUnitCardScreen(TaskNewCargoUnitInfoRestData.inCargoUnitInfo(result.cargoUnitStructure, searchCargoUnitNumber.value ?: ""), true)
+            })
+            1 -> screenNavigator.openAlertNewCargoUnitScreen(searchCargoUnitNumber.value ?: "")
+            2 -> screenNavigator.openNewCargoUnitCurrentTransportationDialog(searchCargoUnitNumber.value ?: "", nextCallbackFunc = {
+                screenNavigator.openCargoUnitCardScreen(TaskNewCargoUnitInfoRestData.inCargoUnitInfo(result.cargoUnitStructure, searchCargoUnitNumber.value ?: ""), true)
+            })
         }
     }
 }

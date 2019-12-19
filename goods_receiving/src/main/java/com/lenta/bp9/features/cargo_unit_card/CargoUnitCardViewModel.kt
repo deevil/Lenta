@@ -9,6 +9,7 @@ import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.bp9.repos.IDataBaseRepo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.pojo.QualityInfo
+import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.view.OnPositionClickListener
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -29,8 +30,12 @@ class CargoUnitCardViewModel : CoreViewModel(), OnPositionClickListener {
     val spinStatusSelectedPosition: MutableLiveData<Int> = MutableLiveData(0)
     val spinTypePallet: MutableLiveData<List<String>> = MutableLiveData()
     val spinTypePalletSelectedPosition: MutableLiveData<Int> = MutableLiveData(0)
+    val isSurplus: MutableLiveData<Boolean> = MutableLiveData()
     private val statusInfo: MutableLiveData<List<QualityInfo>> = MutableLiveData()
     private val typePalletInfo: MutableLiveData<List<QualityInfo>> = MutableLiveData()
+    val deleteVisibility by lazy {
+        MutableLiveData(cargoUnitInfo.value?.cargoUnitStatus == "3")
+    }
     val recountValue by lazy {
         if (cargoUnitInfo.value?.isCount == true) {
             "Да"
@@ -45,7 +50,11 @@ class CargoUnitCardViewModel : CoreViewModel(), OnPositionClickListener {
 
     init {
         viewModelScope.launch {
-            statusInfo.value = dataBase.getStatusInfoForPRC()
+            if (isSurplus.value!!) {
+                statusInfo.value = dataBase.getSurplusInfoForPRC()
+            } else {
+                statusInfo.value = dataBase.getStatusInfoForPRC()
+            }
             spinStatus.value = statusInfo.value?.map {
                 it.name
             }
@@ -65,7 +74,9 @@ class CargoUnitCardViewModel : CoreViewModel(), OnPositionClickListener {
 
     private suspend fun updateDataSpinTypePallet(selectedStatus: String) {
         viewModelScope.launch {
-            if (selectedStatus == "1") {
+            if (selectedStatus == "2") {
+                spinTypePallet.value = null
+            } else {
                 screenNavigator.showProgressLoadingData()
                 spinTypePalletSelectedPosition.value = 0
                 typePalletInfo.value = dataBase.getTypePalletInfo()
@@ -73,19 +84,21 @@ class CargoUnitCardViewModel : CoreViewModel(), OnPositionClickListener {
                     it.name
                 }
                 screenNavigator.hideProgress()
-            } else {
-                spinTypePallet.value = null
             }
 
         }
     }
 
     fun onClickApply() {
-        processCargoUnitsService.change(
-                cargoUnitInfo.value?.cargoUnitNumber ?: "",
+        processCargoUnitsService.apply(
+                cargoUnitInfo.value!!,
                 spinStatus.value?.get(spinStatusSelectedPosition.value!!) ?: "",
                 spinTypePallet.value?.get(spinTypePalletSelectedPosition.value!!) ?: ""
         )
         screenNavigator.goBack()
+    }
+
+    fun onClickDelete() {
+        processCargoUnitsService.delete(cargoUnitInfo.value!!)
     }
 }

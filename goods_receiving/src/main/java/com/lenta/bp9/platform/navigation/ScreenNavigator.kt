@@ -699,15 +699,46 @@ class ScreenNavigator(
         }
     }
 
-    override fun openCargoUnitCardScreen(cargoUnitInfo: TaskCargoUnitInfo) {
+    override fun openCargoUnitCardScreen(cargoUnitInfo: TaskCargoUnitInfo, isSurplus: Boolean?) {
         runOrPostpone {
-            getFragmentStack()?.push(CargoUnitCardFragment.create(cargoUnitInfo))
+            getFragmentStack()?.push(CargoUnitCardFragment.create(cargoUnitInfo, isSurplus))
         }
     }
 
     override fun openControlDeliveryCargoUnitsScreen() {
         runOrPostpone {
             getFragmentStack()?.push(ControlDeliveryCargoUnitsFragment())
+        }
+    }
+
+    override fun openNewCargoUnitAnotherTransportationDialog(cargoUnitNumber: String, nextCallbackFunc: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.dialog_new_cargo_unit_another_transportation, cargoUnitNumber),
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(nextCallbackFunc),
+                    pageNumber = "95",
+                    rightButtonDecorationInfo = ButtonDecorationInfo.nextAlternate))
+        }
+    }
+
+    override fun openNewCargoUnitCurrentTransportationDialog(cargoUnitNumber: String, nextCallbackFunc: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.dialog_new_cargo_unit_current_transportation, cargoUnitNumber),
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(nextCallbackFunc),
+                    pageNumber = "95",
+                    rightButtonDecorationInfo = ButtonDecorationInfo.nextAlternate))
+        }
+    }
+
+    override fun openAlertNewCargoUnitScreen(cargoUnitNumber: String) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.alert_new_cargo_unit, cargoUnitNumber),
+                    iconRes = R.drawable.ic_info_pink,
+                    textColor = ContextCompat.getColor(context, R.color.color_text_dialogWarning),
+                    pageNumber = "97")
+            )
         }
     }
 
@@ -797,6 +828,9 @@ interface IScreenNavigator : ICoreNavigator {
     fun openInputOutgoingFillingsScreen()
     fun openSealDamageDialog(nextCallbackFunc: () -> Unit)
     fun openAlertSealDamageScreen()
+    fun openCargoUnitCardScreen(cargoUnitInfo: TaskCargoUnitInfo, isSurplus: Boolean? = false)
     fun openControlDeliveryCargoUnitsScreen()
-    fun openCargoUnitCardScreen(cargoUnitInfo: TaskCargoUnitInfo)
+    fun openNewCargoUnitAnotherTransportationDialog(cargoUnitNumber: String, nextCallbackFunc: () -> Unit)
+    fun openNewCargoUnitCurrentTransportationDialog(cargoUnitNumber: String, nextCallbackFunc: () -> Unit)
+    fun openAlertNewCargoUnitScreen(cargoUnitNumber: String)
 }

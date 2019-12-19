@@ -32,23 +32,35 @@ class ProcessCargoUnitsService
         }
     }
 
-    fun add(cargoUnitInfo: TaskCargoUnitInfo) {
-
-    }
-
-    fun change(cargoUnitNumber: String, cargoUnitStatus: String, palletType: String) {
+    fun apply(newCargoUnitInfo: TaskCargoUnitInfo, cargoUnitStatus: String, palletType: String) {
         var index = -1
         for (i in cargoUnitsInfo.indices) {
-            if (cargoUnitNumber == cargoUnitsInfo[i].cargoUnitNumber) {
+            if (newCargoUnitInfo.cargoUnitNumber == cargoUnitsInfo[i].cargoUnitNumber) {
+                index = i
+            }
+        }
+
+        if (index == -1) {
+            cargoUnitsInfo.add(newCargoUnitInfo.copy(cargoUnitStatus = cargoUnitStatus, palletType = palletType))
+        } else {
+            val updatedCargoUnit = cargoUnitsInfo[index].copy(cargoUnitStatus = cargoUnitStatus, palletType = palletType)
+            cargoUnitsInfo.removeAt(index)
+            cargoUnitsInfo.add(updatedCargoUnit)
+        }
+    }
+
+    fun delete(newCargoUnitInfo: TaskCargoUnitInfo) {
+        var index = -1
+        for (i in cargoUnitsInfo.indices) {
+            if (newCargoUnitInfo.cargoUnitNumber == cargoUnitsInfo[i].cargoUnitNumber) {
                 index = i
             }
         }
 
         if (index != -1) {
-            val updatedCargoUnit = cargoUnitsInfo[index].copy(cargoUnitStatus = cargoUnitStatus, palletType = palletType)
             cargoUnitsInfo.removeAt(index)
-            cargoUnitsInfo.add(updatedCargoUnit)
         }
+
     }
 
     fun save() {

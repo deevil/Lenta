@@ -79,7 +79,6 @@ data class TaskCargoUnitInfoRestData(
                     cargoUnitStatus = data.cargoUnitStatus,
                     palletType = data.palletType,
                     isCount = if (data.isCount) "X" else "",
-                    //ProductSettlementIndicators = data.ProductSettlementIndicators,
                     isADV = if (data.isADV) "X" else "",
                     isAlco = if (data.isAlco) "X" else "",
                     isExc = if (data.isExc) "X" else "",

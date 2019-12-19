@@ -19,15 +19,17 @@ import com.lenta.shared.utilities.state.state
 class CargoUnitCardFragment : CoreFragment<FragmentCargoUnitCardBinding, CargoUnitCardViewModel>(), ToolbarButtonsClickListener {
 
     companion object {
-        fun create(cargoUnitInfo: TaskCargoUnitInfo): CargoUnitCardFragment {
+        fun create(cargoUnitInfo: TaskCargoUnitInfo, isSurplus: Boolean?): CargoUnitCardFragment {
             CargoUnitCardFragment().let {
                 it.cargoUnitInfo = cargoUnitInfo
+                it.isSurplus= isSurplus
                 return it
             }
         }
     }
 
     private var cargoUnitInfo by state<TaskCargoUnitInfo?>(null)
+    private var isSurplus by state<Boolean?>(null)
 
     override fun getLayoutId(): Int = R.layout.fragment_cargo_unit_card
 
@@ -37,6 +39,7 @@ class CargoUnitCardFragment : CoreFragment<FragmentCargoUnitCardBinding, CargoUn
         provideViewModel(CargoUnitCardViewModel::class.java).let {vm ->
             getAppComponent()?.inject(vm)
             vm.cargoUnitInfo.value = this.cargoUnitInfo
+            vm.isSurplus.value = this.isSurplus
             return vm
         }
     }
@@ -48,6 +51,10 @@ class CargoUnitCardFragment : CoreFragment<FragmentCargoUnitCardBinding, CargoUn
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
+        if (vm.isSurplus.value == true) {
+            bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.delete)
+            connectLiveData(vm.deleteVisibility, bottomToolbarUiModel.uiModelButton3.visibility)
+        }
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.apply)
     }
 
@@ -65,6 +72,7 @@ class CargoUnitCardFragment : CoreFragment<FragmentCargoUnitCardBinding, CargoUn
 
     override fun onToolbarButtonClick(view: View) {
         when (view.id) {
+            R.id.b_3 -> vm.onClickDelete()
             R.id.b_5 -> vm.onClickApply()
         }
     }

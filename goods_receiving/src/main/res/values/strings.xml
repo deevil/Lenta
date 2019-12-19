@@ -187,4 +187,7 @@
     <string name="type_pallet">Вид поддона</string>
     <string name="reduction_cargo_unit">ГЕ</string>
     <string name="alert_seal_damage">Завершите пересчёт всех ГЕ из вскрытой транспортировки. Все расхождения будут рассматриваться как транспортный брак. Водитель ТЭК должен подтвердить расхождения.</string>
+    <string name="dialog_new_cargo_unit_another_transportation">ГЕ-%1$s предназначена для ТК и в данной транспортировке не числится. Добавить внеплановую ГЕ как излишек?</string>
+    <string name="dialog_new_cargo_unit_current_transportation">ГЕ-%1$s предназначена для ТК, находящийся далее по маршруту следования машины. Добавить внеплановую ГЕ как излишек?</string>
+    <string name="alert_new_cargo_unit">ГЕ-%1$s предназначена для ТК, находящийся далее по маршруту</string>
 </resources>
