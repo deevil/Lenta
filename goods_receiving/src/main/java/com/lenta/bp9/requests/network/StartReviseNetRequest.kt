@@ -36,14 +36,14 @@ data class StartReviseRequestResult(
         val setComponents: List<SetComponentReviseRestData>,
         @SerializedName("ES_TTN_CHK")
         val invoiceData: InvoiceReviseRestData,
-
         @SerializedName("ET_VBELN_COM")
         val commentsToVP: List<CommentToVPRestData>,
         @SerializedName("ET_DOC_NOTIFY")
         val documentNotifications: List<TaskNotificationRestInfo>,
         @SerializedName("ET_MATNR_NOTIFY")
         val productNotifications: List<TaskNotificationRestInfo>,
-
+        @SerializedName("ET_VET_CHK")
+        val productsVetDocumentRevise: List<ProductVetDocumentReviseRestData>,
         @SerializedName("EV_RETCODE")
         override val retCode: Int,
         @SerializedName("EV_ERROR_TEXT")

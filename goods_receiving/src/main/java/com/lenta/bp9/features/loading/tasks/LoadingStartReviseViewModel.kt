@@ -84,6 +84,7 @@ class LoadingStartReviseViewModel : CoreLoadingViewModel() {
 
             val deliveryDocumentsRevise = result.deliveryReviseDocuments.map { DeliveryDocumentRevise.from(it) }
             val deliveryProductDocumentsRevise = result.productReviseDocuments.map { DeliveryProductDocumentRevise.from(hyperHive, it) }
+            val productsVetDocumentRevise = result.productsVetDocumentRevise.map { ProductVetDocumentRevise.from(hyperHive, it) }
             val productBatchesRevise = result.productBatches.map { ProductBatchRevise.from(it) }
             val formsABRussianRevise = result.russianABForms.map { FormABRussianRevise.from(it) }
             val formsABImportRevise = result.importABForms.map { FormABImportRevise.from(it) }
@@ -92,6 +93,7 @@ class LoadingStartReviseViewModel : CoreLoadingViewModel() {
             taskManager.getReceivingTask()?.taskRepository?.getReviseDocuments()?.apply {
                 this.updateDeliveryDocuments(deliveryDocumentsRevise)
                 this.updateProductDocuments(deliveryProductDocumentsRevise)
+                this.updateProductVetDocuments(productsVetDocumentRevise)
                 this.updateImportABForms(formsABImportRevise)
                 this.updateRussianABForms(formsABRussianRevise)
                 this.updateProductBatches(productBatchesRevise)
