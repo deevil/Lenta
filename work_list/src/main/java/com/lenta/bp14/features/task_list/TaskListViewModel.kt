@@ -26,7 +26,9 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
 
     val selectedPage = MutableLiveData(0)
 
-    val searchFieldProcessing: MutableLiveData<String> = MutableLiveData("")
+    val searchFieldProcessing by lazy {
+        MutableLiveData(sessionInfo.userName ?: "")
+    }
 
     val searchFieldFiltered: MutableLiveData<String> = MutableLiveData("")
 
@@ -59,14 +61,16 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
 
     val thirdButtonVisibility = selectedPage.map { it == TaskListTab.PROCESSING.position }
 
+    // -----------------------------
+
     init {
         viewModelScope.launch {
-            searchFieldProcessing.value = tasksSearchHelper.processedFilter ?: ""
             searchFieldFiltered.value = tasksSearchHelper.searchFilter ?: ""
             updateProcessing()
         }
-
     }
+
+    // -----------------------------
 
     override fun onOkInSoftKeyboard(): Boolean {
         if (selectedPage.value == 0) {
