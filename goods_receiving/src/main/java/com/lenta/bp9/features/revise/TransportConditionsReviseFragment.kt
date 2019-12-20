@@ -17,6 +17,7 @@ import android.widget.CheckBox
 import androidx.databinding.DataBindingUtil
 import com.lenta.bp9.BR
 import com.lenta.bp9.databinding.*
+import com.lenta.bp9.model.task.TaskType
 import com.lenta.bp9.model.task.revise.ConditionType
 import com.lenta.shared.platform.activity.OnBackPresserListener
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
@@ -27,7 +28,10 @@ import com.lenta.shared.utilities.databinding.RecyclerViewKeyHandler
 import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.generateScreenNumber
 
-class TransportConditionsReviseFragment : CoreFragment<FragmentTransportConditionsReviseBinding, TransportConditionsReviseViewModel>(), ViewPagerSettings, ToolbarButtonsClickListener, OnBackPresserListener {
+class TransportConditionsReviseFragment : CoreFragment<FragmentTransportConditionsReviseBinding, TransportConditionsReviseViewModel>(),
+        ViewPagerSettings,
+        ToolbarButtonsClickListener,
+        OnBackPresserListener {
 
     var notificationsRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
     var toCheckRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
@@ -51,7 +55,11 @@ class TransportConditionsReviseFragment : CoreFragment<FragmentTransportConditio
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
-        bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.refusal)
+        if (vm.typeTask == TaskType.ReceptionDistributionCenter) {
+            bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.breaking)
+        } else {
+            bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.refusal)
+        }
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.save)
         connectLiveData(vm.saveEnabled, bottomToolbarUiModel.uiModelButton5.enabled)
     }
@@ -229,7 +237,7 @@ class TransportConditionsReviseFragment : CoreFragment<FragmentTransportConditio
 
     override fun onToolbarButtonClick(view: View) {
         when (view.id) {
-            R.id.b_2 -> vm.onClickReject()
+            R.id.b_2 -> if (vm.typeTask == TaskType.ReceptionDistributionCenter) vm.onClickBreaking() else vm.onClickReject()
             R.id.b_5 -> vm.onClickNext()
         }
     }

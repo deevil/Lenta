@@ -14,8 +14,10 @@ import com.lenta.bp9.features.select_market.SelectMarketFragment
 import com.lenta.bp9.features.select_personnel_number.SelectPersonnelNumberFragment
 import com.lenta.bp9.features.task_card.TaskCardFragment
 import com.lenta.bp9.R
+import com.lenta.bp9.features.cargo_unit_card.CargoUnitCardFragment
 import com.lenta.bp9.features.change_datetime.ChangeDateTimeFragment
 import com.lenta.bp9.features.change_datetime.ChangeDateTimeMode
+import com.lenta.bp9.features.control_delivery_cargo_units.ControlDeliveryCargoUnitsFragment
 import com.lenta.bp9.features.discrepancy_list.DiscrepancyListFragment
 import com.lenta.bp9.features.editing_invoice.EditingInvoiceFragment
 import com.lenta.bp9.features.formed_docs.FormedDocsFragment
@@ -40,6 +42,7 @@ import com.lenta.bp9.features.revise.invoice.InvoiceReviseFragment
 import com.lenta.bp9.features.transfer_goods_section.TransferGoodsSectionFragment
 import com.lenta.bp9.model.task.revise.ProductDocumentType
 import com.lenta.bp9.model.task.TaskBatchInfo
+import com.lenta.bp9.model.task.TaskCargoUnitInfo
 import com.lenta.bp9.model.task.TaskSectionInfo
 import com.lenta.bp9.model.task.revise.DeliveryProductDocumentRevise
 import com.lenta.bp9.model.task.revise.ProductVetDocumentRevise
@@ -673,6 +676,72 @@ class ScreenNavigator(
         }
     }
 
+    override fun openSealDamageDialog(nextCallbackFunc: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.dialog_seal_damage),
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(nextCallbackFunc),
+                    description = context.getString(R.string.seal_damage),
+                    pageNumber = "95",
+                    rightButtonDecorationInfo = ButtonDecorationInfo.nextAlternate))
+        }
+    }
+
+    override fun openAlertSealDamageScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.alert_seal_damage),
+                    iconRes = R.drawable.is_warning_yellow_80dp,
+                    description = context.getString(R.string.seal_damage),
+                    pageNumber = "96",
+                    timeAutoExitInMillis = 3000)
+            )
+        }
+    }
+
+    override fun openCargoUnitCardScreen(cargoUnitInfo: TaskCargoUnitInfo, isSurplus: Boolean?) {
+        runOrPostpone {
+            getFragmentStack()?.push(CargoUnitCardFragment.create(cargoUnitInfo, isSurplus))
+        }
+    }
+
+    override fun openControlDeliveryCargoUnitsScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(ControlDeliveryCargoUnitsFragment())
+        }
+    }
+
+    override fun openNewCargoUnitAnotherTransportationDialog(cargoUnitNumber: String, nextCallbackFunc: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.dialog_new_cargo_unit_another_transportation, cargoUnitNumber),
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(nextCallbackFunc),
+                    pageNumber = "95",
+                    rightButtonDecorationInfo = ButtonDecorationInfo.nextAlternate))
+        }
+    }
+
+    override fun openNewCargoUnitCurrentTransportationDialog(cargoUnitNumber: String, nextCallbackFunc: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.dialog_new_cargo_unit_current_transportation, cargoUnitNumber),
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(nextCallbackFunc),
+                    pageNumber = "95",
+                    rightButtonDecorationInfo = ButtonDecorationInfo.nextAlternate))
+        }
+    }
+
+    override fun openAlertNewCargoUnitScreen(cargoUnitNumber: String) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.alert_new_cargo_unit, cargoUnitNumber),
+                    iconRes = R.drawable.ic_info_pink,
+                    textColor = ContextCompat.getColor(context, R.color.color_text_dialogWarning),
+                    pageNumber = "97")
+            )
+        }
+    }
+
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 }
 
@@ -757,4 +826,11 @@ interface IScreenNavigator : ICoreNavigator {
     fun openAlertElectronicVadLostRelevance(browsingCallbackFunc: () -> Unit, countVad: String, countGoods: String)
     fun openUnloadingStartRDSLoadingScreen()
     fun openInputOutgoingFillingsScreen()
+    fun openSealDamageDialog(nextCallbackFunc: () -> Unit)
+    fun openAlertSealDamageScreen()
+    fun openCargoUnitCardScreen(cargoUnitInfo: TaskCargoUnitInfo, isSurplus: Boolean? = false)
+    fun openControlDeliveryCargoUnitsScreen()
+    fun openNewCargoUnitAnotherTransportationDialog(cargoUnitNumber: String, nextCallbackFunc: () -> Unit)
+    fun openNewCargoUnitCurrentTransportationDialog(cargoUnitNumber: String, nextCallbackFunc: () -> Unit)
+    fun openAlertNewCargoUnitScreen(cargoUnitNumber: String)
 }

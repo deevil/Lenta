@@ -310,6 +310,10 @@ data class ButtonDecorationInfo(
             ButtonDecorationInfo(R.drawable.ic_arrow_forward_white_24dp, R.string.review)
         }
 
+        val breaking: ButtonDecorationInfo by lazy {
+            ButtonDecorationInfo(R.drawable.ic_seal_24dp, R.string.breaking)
+        }
+
     }
 }
 

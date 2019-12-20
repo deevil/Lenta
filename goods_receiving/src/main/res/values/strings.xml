@@ -178,4 +178,16 @@
     <string name="electronic_vad_have_lost_relevance">Электронные ВСД для %1$s товаров из %2$s потеряли актульность. Необходимо выбрать решение: ОТВЯЗАТЬ -партия товара будет не доступна к приёмке, ВРЕМЕННЫЙ - произойдёт переключение в статус \"Временно отказано\", данные сверки будут утеряны</string>
     <string name="header_input_outgoing_fillings">Введите или отсканируйте номера исходящих пломб</string>
     <string name="outgoing_filling">Исходящая пломба</string>
+    <string name="seal_damage">Повреждение пломбы</string>
+    <string name="dialog_seal_damage">Подтвердите повреждение пломбы. Статус задания будет изменен на \"Взлом\". Для всех ГЕ потребуется пересчёт</string>
+    <string name="control_delivery_cargo_units">Контроль доставки ГЕ</string>
+    <string name="number_cargo_units">Номер ГЕ</string>
+    <string name="enter_cargo_unit">Введите ГЕ/ЕО</string>
+    <string name="recount">Пересчёт</string>
+    <string name="type_pallet">Вид поддона</string>
+    <string name="reduction_cargo_unit">ГЕ</string>
+    <string name="alert_seal_damage">Завершите пересчёт всех ГЕ из вскрытой транспортировки. Все расхождения будут рассматриваться как транспортный брак. Водитель ТЭК должен подтвердить расхождения.</string>
+    <string name="dialog_new_cargo_unit_another_transportation">ГЕ-%1$s предназначена для ТК и в данной транспортировке не числится. Добавить внеплановую ГЕ как излишек?</string>
+    <string name="dialog_new_cargo_unit_current_transportation">ГЕ-%1$s предназначена для ТК, находящийся далее по маршруту следования машины. Добавить внеплановую ГЕ как излишек?</string>
+    <string name="alert_new_cargo_unit">ГЕ-%1$s предназначена для ТК, находящийся далее по маршруту</string>
 </resources>

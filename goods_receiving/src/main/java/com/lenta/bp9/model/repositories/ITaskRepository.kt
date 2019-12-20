@@ -11,4 +11,5 @@ interface ITaskRepository {
     fun getMercuryDiscrepancies(): ITaskMercuryDiscrepanciesRepository
     fun getSections():ITaskSectionRepository
     fun getDocumentsPrinting():ITaskDocumentsPrintingRepository
+    fun getCargoUnits():ITaskCargoUnitsRepository
 }

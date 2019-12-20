@@ -5,11 +5,9 @@ import com.google.gson.annotations.SerializedName
 //ET_EXIDV_TOP Таблица ГЕ (грузовая единица)
 data class TaskCargoUnitInfo(
         val cargoUnitNumber: String,
-        val cargoUnitCard: String,
         val cargoUnitStatus: String,
         val palletType: String,
         val isCount: Boolean,
-        //val ProductSettlementIndicators: String,
         val isADV: Boolean,
         val isAlco: Boolean,
         val isExc: Boolean,
@@ -18,17 +16,16 @@ data class TaskCargoUnitInfo(
         val isSpecialControlGoods: Boolean,
         val isVet: Boolean,
         val isNoGisControl: Boolean,
+        val isStamp: Boolean,
         val quantityPositions: Int
 ) {
     companion object {
         fun from(restData: TaskCargoUnitInfoRestData): TaskCargoUnitInfo {
             return TaskCargoUnitInfo(
                     cargoUnitNumber = restData.cargoUnitNumber,
-                    cargoUnitCard = restData.cargoUnitCard,
                     cargoUnitStatus = restData.cargoUnitStatus,
                     palletType = restData.palletType,
                     isCount = restData.isCount.isNotEmpty(),
-                    //ProductSettlementIndicators = restData.ProductSettlementIndicators,
                     isADV = restData.isADV.isNotEmpty(),
                     isAlco = restData.isAlco.isNotEmpty(),
                     isExc = restData.isExc.isNotEmpty(),
@@ -37,6 +34,7 @@ data class TaskCargoUnitInfo(
                     isSpecialControlGoods = restData.isSpecialControlGoods.isNotEmpty(),
                     isVet = restData.isVet.isNotEmpty(),
                     isNoGisControl = restData.isNoGisControl.isNotEmpty(),
+                    isStamp = restData.isStamp.isNotEmpty(),
                     quantityPositions = restData.quantityPositions.toInt()
             )
         }
@@ -46,16 +44,12 @@ data class TaskCargoUnitInfo(
 data class TaskCargoUnitInfoRestData(
         @SerializedName("EXIDV_TOP") //Номер ГЕ
         val cargoUnitNumber: String,
-        @SerializedName(".INCLUDE") //Структура карточки ГЕ
-        val cargoUnitCard: String,
         @SerializedName("STAT_EXIDV") //Статус ГЕ
         val cargoUnitStatus: String,
-        @SerializedName("STAT_EXIDV") //Тип поддона
+        @SerializedName("TYPE_PALLET") //Тип поддона
         val palletType: String,
         @SerializedName("IS_COUNT") //Индикатор: Пересчетная ГЕ
         val isCount: String,
-        /**@SerializedName(".INCLUDE") //Рачетные индикаторы для товара
-        val ProductSettlementIndicators: String,*/
         @SerializedName("IS_ADV") //Индикатор: Промо
         val isADV: String,
         @SerializedName("IS_ALCO") //Индикатор: Алкоголь
@@ -72,6 +66,8 @@ data class TaskCargoUnitInfoRestData(
         val isVet: String,
         @SerializedName("IS_GIS_NO") //Индикатор: Без ГИС-контроля
         val isNoGisControl: String,
+        @SerializedName("IS_MARK") //Индикатор: марки
+        val isStamp: String,
         @SerializedName("QNT_POS") //Количество позиций (QNT_POS)
         val quantityPositions: String
 ) {
@@ -80,11 +76,9 @@ data class TaskCargoUnitInfoRestData(
         fun from(data: TaskCargoUnitInfo): TaskCargoUnitInfoRestData {
             return TaskCargoUnitInfoRestData(
                     cargoUnitNumber = data.cargoUnitNumber,
-                    cargoUnitCard = data.cargoUnitCard,
                     cargoUnitStatus = data.cargoUnitStatus,
                     palletType = data.palletType,
                     isCount = if (data.isCount) "X" else "",
-                    //ProductSettlementIndicators = data.ProductSettlementIndicators,
                     isADV = if (data.isADV) "X" else "",
                     isAlco = if (data.isAlco) "X" else "",
                     isExc = if (data.isExc) "X" else "",
@@ -93,6 +87,7 @@ data class TaskCargoUnitInfoRestData(
                     isSpecialControlGoods = if (data.isSpecialControlGoods) "X" else "",
                     isVet = if (data.isVet) "X" else "",
                     isNoGisControl = if (data.isNoGisControl) "X" else "",
+                    isStamp = if (data.isStamp) "X" else "",
                     quantityPositions = data.quantityPositions.toString()
             )
         }

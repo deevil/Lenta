@@ -41,8 +41,9 @@ class MemoryTaskProductRepository : ITaskProductRepository {
     }
 
     override fun updateProducts(newProducts: List<TaskProductInfo>) {
-        for (productInfo in newProducts) {
-            addProduct(productInfo)
+        productInfo.clear()
+        newProducts.map {
+            addProduct(it)
         }
     }
 

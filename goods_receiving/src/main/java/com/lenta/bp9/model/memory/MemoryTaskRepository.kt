@@ -24,6 +24,8 @@ class MemoryTaskRepository : ITaskRepository {
 
     private val taskMercuryDiscrepanciesRepository: ITaskMercuryDiscrepanciesRepository = MemoryTaskMercuryDiscrepanciesRepository()
 
+    private val taskCargoUnitsRepository: ITaskCargoUnitsRepository = MemoryTaskCargoUnitsRepository()
+
     override fun getProducts(): ITaskProductRepository {
         return taskProductRepository
     }
@@ -62,5 +64,9 @@ class MemoryTaskRepository : ITaskRepository {
 
     override fun getMercuryDiscrepancies(): ITaskMercuryDiscrepanciesRepository {
         return taskMercuryDiscrepanciesRepository
+    }
+
+    override fun getCargoUnits(): ITaskCargoUnitsRepository {
+        return taskCargoUnitsRepository
     }
 }

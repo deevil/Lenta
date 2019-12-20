@@ -142,7 +142,7 @@ class LoadingTaskCardViewModel : CoreLoadingViewModel() {
                     this.updateComplexDocuments(complexDocumentsRevise)
                     this.updateMercuryNotActual(mercuryNotActual)
                 }
-                taskManager.getReceivingTask()?.updateTaskWithContents(taskContents.getTaskContentsInfo(result))
+                newTask?.updateTaskWithContents(taskContents.getTaskContentsInfo(result))
                 newTask?.taskRepository?.getSections()?.updateSections(sectionInfo, sectionProducts)
                 taskManager.setTask(newTask)
                 transferToNextScreen()
@@ -177,6 +177,8 @@ class LoadingTaskCardViewModel : CoreLoadingViewModel() {
                 val sectionInfo = result.sectionsInfo.map { TaskSectionInfo.from(it) }
                 val sectionProducts = result.sectionProducts.map { TaskSectionProducts.from(it) }
 
+                val cargoUnits = result.cargoUnits.map { TaskCargoUnitInfo.from(it) }
+
                 val newTask = taskManager.newReceivingTask(taskHeader, TaskDescription.from(result.taskDescription).copy(quantityOutgoingFillings = result.quantityOutgoingFillings.trim().toInt()))
                 newTask?.taskRepository?.getNotifications()?.updateWithNotifications(notifications, documentNotifications, productNotifications, conditionNotifications)
                 //newTask?.taskRepository?.getNotifications()?.updateWithInvoiceNotes(commentsToVP)
@@ -193,7 +195,8 @@ class LoadingTaskCardViewModel : CoreLoadingViewModel() {
                     //this.updateComplexDocuments(complexDocumentsRevise)
                     //this.updateMercuryNotActual(mercuryNotActual)
                 }
-                taskManager.getReceivingTask()?.updateTaskWithContentsRDS(taskContents.getTaskContentsRDSInfo(result))
+                newTask?.taskRepository?.getCargoUnits()?.updateCargoUnits(cargoUnits)
+                newTask?.updateTaskWithContentsRDS(taskContents.getTaskContentsRDSInfo(result))
                 newTask?.taskRepository?.getSections()?.updateSections(sectionInfo, sectionProducts)
                 taskManager.setTask(newTask)
                 transferToNextScreen()

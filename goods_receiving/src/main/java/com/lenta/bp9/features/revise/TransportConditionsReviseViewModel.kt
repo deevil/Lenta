@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.lenta.shared.R
 import com.lenta.bp9.features.task_card.TaskCardViewModel
 import com.lenta.bp9.model.task.IReceivingTaskManager
+import com.lenta.bp9.model.task.TaskType
 import com.lenta.bp9.model.task.revise.ConditionType
 import com.lenta.bp9.model.task.revise.ConditionViewType
 import com.lenta.bp9.model.task.revise.TransportCondition
@@ -36,6 +37,10 @@ class TransportConditionsReviseViewModel : CoreViewModel(), PageSelectionListene
         taskManager.getReceivingTask()?.taskHeader?.caption ?: ""
     }
 
+    val typeTask: TaskType by lazy {
+        taskManager.getReceivingTask()?.taskHeader?.taskType ?: TaskType.None
+    }
+
     val notifications by lazy {
         val notificationsData = taskManager.getReceivingTask()?.taskRepository?.getNotifications()?.getReviseConditionsNotifications() ?: emptyList()
         MutableLiveData(notificationsData.mapIndexed { index, notification ->
@@ -55,6 +60,19 @@ class TransportConditionsReviseViewModel : CoreViewModel(), PageSelectionListene
 
     fun onClickReject() {
         screenNavigator.openRejectScreen()
+    }
+
+    fun onClickBreaking() {
+        screenNavigator.openSealDamageDialog(
+                nextCallbackFunc = {
+                    checkedConditions.value?.map {
+                        if (it.conditionViewType == ConditionViewType.Seal) {
+                            taskManager.getReceivingTask()?.taskRepository?.getReviseDocuments()?.changeTransportConditionStatus(it.id)
+                        }
+                    }
+                    screenNavigator.openControlDeliveryCargoUnitsScreen()
+                }
+        )
     }
 
     fun onClickNext() {
@@ -123,7 +141,11 @@ class TransportConditionsReviseViewModel : CoreViewModel(), PageSelectionListene
     }
 
     fun onBackPressed() {
-        screenNavigator.openUnlockTaskLoadingScreen()
+        screenNavigator.openUnsavedDataDialog(
+                yesCallbackFunc = {
+                    screenNavigator.openUnlockTaskLoadingScreen()
+                }
+        )
     }
 }
 

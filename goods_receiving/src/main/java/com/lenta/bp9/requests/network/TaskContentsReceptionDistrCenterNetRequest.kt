@@ -44,10 +44,6 @@ data class TaskContentsReceptionDistrCenterResult(
         val taskBatches: List<TaskBatchInfoRestData>,
         @SerializedName("ET_PARTS_DIFF") //Таблица расхождений по партиям
         val taskBatchesDiscrepancies: List<TaskBatchesDiscrepanciesRestData>,
-        /**@SerializedName("ET_VET_DIFF") //Таблица расхождений по вет.товарам
-        val taskMercuryInfoRestData: List<TaskMercuryInfoRestData>,
-        @SerializedName("ET_VET_NOT_ACTUAL") //Список не актуальных ВСД
-        val taskMercuryNotActualRestData: List<TaskMercuryNotActualRestData>,*/
         @SerializedName("ET_NOTIFY")
         val notifications: List<TaskNotificationRestInfo>,
         @SerializedName("ET_DOC_NOTIFY")
@@ -70,14 +66,10 @@ data class TaskContentsReceptionDistrCenterResult(
         val setComponentsRevise: List<SetComponentReviseRestData>,
         @SerializedName("ES_TTN_CHK")
         val invoiceRevise: InvoiceReviseRestData,
-        /**@SerializedName("ET_VBELN_COM")
-        val commentsToVP: List<CommentToVPRestData>,
-        @SerializedName("ET_VET_CHK")
-        val productsVetDocumentRevise: List<ProductVetDocumentReviseRestData>,
-        @SerializedName("ET_CMPLX_DOC")
-        val complexDocumentsRevise: List<ComplexDocumentReviseRestData>,*/
         @SerializedName("ET_COND_CHECK")
         val transportConditions: List<TransportConditionRestData>,
+        @SerializedName("ET_EXIDV_TOP")
+        val cargoUnits: List<TaskCargoUnitInfoRestData>,
         @SerializedName("ET_TASK_PERNR")
         val sectionsInfo: List<TaskSectionRestData>,
         @SerializedName("ET_MATNR_ABTNR")
