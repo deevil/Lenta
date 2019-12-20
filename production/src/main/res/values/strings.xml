@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Собственное производство</string>
+    <string name="app_name">Производство</string>
 
     // Названия вкладок
     <string name="processing">К обработке</string>
@@ -23,6 +23,7 @@
     <string name="sku">SKU</string>
     <string name="sign">Признак</string>
     <string name="pu">ЕО</string>
+    <string name="es">ВП</string>
     <string name="remain">Остаток</string>
     <string name="arrived">Прибыло</string>
     <string name="sf_type">Вид ПФ</string>
