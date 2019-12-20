@@ -26,6 +26,7 @@ class AuthFragment : CoreLoginFragment() {
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
         topToolbarUiModel.title.value = context?.getAppInfo()
+        topToolbarUiModel.description.value = getString(R.string.authorization)
         topToolbarUiModel.uiModelButton1.show(ImageButtonDecorationInfo.settings)
         topToolbarUiModel.uiModelButton2.show(ImageButtonDecorationInfo.exitFromApp)
     }
