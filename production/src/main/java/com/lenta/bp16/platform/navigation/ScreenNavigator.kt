@@ -174,6 +174,17 @@ class ScreenNavigator @Inject constructor(
         }
     }
 
+    override fun showNotSavedDataWillBeLost(yesCallback: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    pageNumber = "36",
+                    message = context.getString(R.string.not_saved_data_will_be_lost),
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(yesCallback),
+                    leftButtonDecorationInfo = ButtonDecorationInfo.no,
+                    rightButtonDecorationInfo = ButtonDecorationInfo.yes
+            ))
+        }
+    }
 }
 
 interface IScreenNavigator : ICoreNavigator {
@@ -196,4 +207,5 @@ interface IScreenNavigator : ICoreNavigator {
     fun showConfirmNoSuchItemLeft(taskType: String, confirmCallback: () -> Unit)
     fun showConfirmNoRawItem(taskType: String, confirmCallback: () -> Unit)
     fun showFixingPackagingPhaseSuccessful(nextCallback: () -> Unit)
+    fun showNotSavedDataWillBeLost(yesCallback: () -> Unit)
 }

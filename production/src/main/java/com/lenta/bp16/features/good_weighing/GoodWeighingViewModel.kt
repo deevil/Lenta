@@ -132,4 +132,14 @@ class GoodWeighingViewModel : CoreViewModel() {
 
     }
 
+    fun onBackPressed() {
+        if (weighted.value ?: 0.0 != 0.0) {
+            navigator.showNotSavedDataWillBeLost {
+                navigator.goBack()
+            }
+        } else {
+            navigator.goBack()
+        }
+    }
+
 }

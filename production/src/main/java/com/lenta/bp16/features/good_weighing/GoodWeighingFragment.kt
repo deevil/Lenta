@@ -4,6 +4,7 @@ import android.view.View
 import com.lenta.bp16.R
 import com.lenta.bp16.databinding.FragmentGoodWeighingBinding
 import com.lenta.bp16.platform.extention.getAppComponent
+import com.lenta.shared.platform.activity.OnBackPresserListener
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
@@ -15,7 +16,7 @@ import com.lenta.shared.utilities.extentions.getDeviceIp
 import com.lenta.shared.utilities.extentions.provideViewModel
 
 class GoodWeighingFragment : CoreFragment<FragmentGoodWeighingBinding, GoodWeighingViewModel>(),
-        ToolbarButtonsClickListener {
+        ToolbarButtonsClickListener, OnBackPresserListener {
 
     override fun getLayoutId(): Int = R.layout.fragment_good_weighing
 
@@ -53,6 +54,11 @@ class GoodWeighingFragment : CoreFragment<FragmentGoodWeighingBinding, GoodWeigh
             R.id.b_4 -> vm.onClickAdd()
             R.id.b_5 -> vm.onClickComplete()
         }
+    }
+
+    override fun onBackPressed(): Boolean {
+        vm.onBackPressed()
+        return false
     }
 
 }
