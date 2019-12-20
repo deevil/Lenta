@@ -119,7 +119,7 @@ class GoodWeighingViewModel : CoreViewModel() {
 
     fun onClickAdd() {
         weighted.value = total.value!!
-        weightField.value = ""
+        weightField.value = "0"
     }
 
     fun onClickGetWeight() {
@@ -130,6 +130,16 @@ class GoodWeighingViewModel : CoreViewModel() {
     private fun printTag() {
         // todo Реализовать печать штрих-кода тары
 
+    }
+
+    fun onBackPressed() {
+        if (entered.value ?: 0.0 != 0.0 || weighted.value ?: 0.0 != 0.0) {
+            navigator.showNotSavedDataWillBeLost {
+                navigator.goBack()
+            }
+        } else {
+            navigator.goBack()
+        }
     }
 
 }

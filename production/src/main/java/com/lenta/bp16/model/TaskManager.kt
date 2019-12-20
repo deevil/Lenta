@@ -79,6 +79,10 @@ class TaskManager @Inject constructor(
         tasks.value?.let {
             it.find { task -> task.number == currentTask.value?.number }?.let { currentTask ->
                 currentTask.isProcessed = true
+
+                if (currentTask.status != TaskStatus.PACKING) {
+                    currentTask.status = TaskStatus.COMMON
+                }
             }
 
             tasks.value = it
