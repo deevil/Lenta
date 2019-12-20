@@ -3,6 +3,7 @@ package com.lenta.bp9.model.memory
 import com.lenta.bp9.model.repositories.ITaskReviseDocumentsRepository
 import com.lenta.bp9.model.task.TaskMercuryNotActual
 import com.lenta.bp9.model.task.revise.*
+import com.lenta.shared.utilities.Logg
 
 class MemoryTaskReviseDocumentsRepository : ITaskReviseDocumentsRepository {
 
@@ -122,7 +123,7 @@ class MemoryTaskReviseDocumentsRepository : ITaskReviseDocumentsRepository {
                 it.volume
             }
             vadVolume < productDoc.initialCount
-        }.map {
+        }.filter {
             it
         }
 
@@ -137,11 +138,11 @@ class MemoryTaskReviseDocumentsRepository : ITaskReviseDocumentsRepository {
                 it.volume
             }
             vadVolume < productDoc.initialCount
-        }.map {
+        }.filter {
             it
         }
 
-        return presenceUncoveredVad.size < productDocuments.size
+        return presenceUncoveredVad.size < productDocuments.size && presenceUncoveredVad.isNotEmpty()
     }
 
     override fun getComplexDocuments(): List<ComplexDocumentRevise> {

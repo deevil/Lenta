@@ -66,10 +66,12 @@
                 android:layout_width="1dp"
                 android:layout_height="0dp"
                 android:background="@color/color_divider"
+                app:layout_constraintBottom_toBottomOf="@+id/div_hor_4"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="@+id/guideline"
-                app:layout_constraintTop_toBottomOf="@id/div_hor_1" />
+                app:layout_constraintTop_toBottomOf="@id/div_hor_1"
+                app:layout_constraintVertical_bias="0.0" />
 
             <TextView
                 android:id="@+id/tv_products_caption"
