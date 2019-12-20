@@ -216,9 +216,7 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
 
     fun onClickNext() {
         when (taskManager.getReceivingTask()?.taskDescription?.currentStatus) {
-            TaskStatus.Ordered, TaskStatus.Traveling -> {
-                screenNavigator.openLoadingRegisterArrivalScreen()
-            }
+            TaskStatus.Ordered, TaskStatus.Traveling, TaskStatus.TemporaryRejected -> screenNavigator.openRegisterArrivalLoadingScreen()
             TaskStatus.Arrived -> {
                 if (taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.ReceptionDistributionCenter) {
                     screenNavigator.openUnloadingStartRDSLoadingScreen()
@@ -226,9 +224,7 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
                     screenNavigator.openStartReviseLoadingScreen()
                 }
             }
-            TaskStatus.Checked -> {
-                screenNavigator.openStartConditionsReviseLoadingScreen()
-            }
+            TaskStatus.Checked -> screenNavigator.openStartConditionsReviseLoadingScreen()
             TaskStatus.Unloaded -> {
                 if (taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.ReceptionDistributionCenter) {
                     screenNavigator.openInputOutgoingFillingsScreen()
@@ -236,18 +232,10 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
                     screenNavigator.openRecountStartLoadingScreen()
                 }
             }
-            TaskStatus.Recounted -> {
-                screenNavigator.openTransmittedLoadingScreen()
-            }
-            TaskStatus.Departure -> {
-                screenNavigator.openStartReviseLoadingScreen()
-            }
-            TaskStatus.Booked -> {
-                screenNavigator.openTransferGoodsSectionScreen()
-            }
-            TaskStatus.Completed -> {
-                screenNavigator.openFormedDocsScreen()
-            }
+            TaskStatus.Recounted -> screenNavigator.openTransmittedLoadingScreen()
+            TaskStatus.Departure -> screenNavigator.openStartReviseLoadingScreen()
+            TaskStatus.Booked -> screenNavigator.openTransferGoodsSectionScreen()
+            TaskStatus.Completed -> screenNavigator.openFormedDocsScreen()
         }
     }
 

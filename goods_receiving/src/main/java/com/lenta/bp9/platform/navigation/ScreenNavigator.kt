@@ -199,12 +199,6 @@ class ScreenNavigator(
         }
     }
 
-    override fun openLoadingRegisterArrivalScreen() {
-        runOrPostpone {
-            getFragmentStack()?.push(LoadingRegisterArrivalFragment())
-        }
-    }
-
     override fun openTaskReviseScreen() {
         runOrPostpone {
             getFragmentStack()?.push(TaskReviseFragment())
@@ -766,7 +760,6 @@ interface IScreenNavigator : ICoreNavigator {
     fun openCheckingNotNeededAlert(message: String, callbackFunc: () -> Unit)
     fun openAlertWithoutConfirmation(message: String, callbackFunc: () -> Unit)
     fun openChangeDateTimeScreen(mode: ChangeDateTimeMode)
-    fun openLoadingRegisterArrivalScreen()
     fun openTaskReviseScreen()
     fun openGoodsInfoScreen(productInfo: TaskProductInfo, isDiscrepancy: Boolean)
     fun openAlertWrongProductType()
