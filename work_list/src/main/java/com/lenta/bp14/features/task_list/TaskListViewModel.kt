@@ -11,6 +11,7 @@ import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.databinding.PageSelectionListener
+import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -30,7 +31,7 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
         MutableLiveData(sessionInfo.userName ?: "")
     }
 
-    val searchFieldFiltered: MutableLiveData<String> = MutableLiveData("")
+    val searchFieldFiltered = MutableLiveData("")
 
     val requestFocusToNumberField: MutableLiveData<Boolean> = MutableLiveData()
 
@@ -56,7 +57,10 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
         tasksSearchHelper.taskList.map(funcTaskAdapter)
     }
     val searchTasks by lazy {
-        tasksSearchHelper.filteredTaskList.map(funcTaskAdapter)
+        tasksSearchHelper.filteredTaskList.combineLatest(searchFieldFiltered).map { pair ->
+            val pattern = pair?.second ?: ""
+            pair?.first?.filter { it.taskNumber.contains(pattern, true) }
+        }.map(funcTaskAdapter)
     }
 
     val thirdButtonVisibility = selectedPage.map { it == TaskListTab.PROCESSING.position }
@@ -65,7 +69,6 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
 
     init {
         viewModelScope.launch {
-            searchFieldFiltered.value = tasksSearchHelper.searchFilter ?: ""
             updateProcessing()
         }
     }
@@ -75,9 +78,8 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
     override fun onOkInSoftKeyboard(): Boolean {
         if (selectedPage.value == 0) {
             updateProcessing()
-        } else {
-            updateFiltered()
         }
+
         return true
     }
 
@@ -98,20 +100,7 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
             tasksSearchHelper.updateTaskList().either({
                 navigator.openAlertScreen(it)
             }) {
-                // not used
-            }
-            navigator.hideProgress()
-        }
-    }
-
-    private fun updateFiltered() {
-        viewModelScope.launch {
-            navigator.showProgressLoadingData()
-            tasksSearchHelper.searchFilter = searchFieldFiltered.value
-            tasksSearchHelper.updateFilteredTaskList().either({
-                navigator.openAlertScreen(it)
-            }) {
-                // not used
+                tasksSearchHelper.clearFilteredList()
             }
             navigator.hideProgress()
         }
