@@ -20,8 +20,6 @@ class TasksSearchHelper @Inject constructor(
 
     override var processedFilter: String? = ""
 
-    override var searchFilter: String? = ""
-
     override var filterParams: SearchTaskFilter? = null
 
     override var isNewSearchData: Boolean = false
@@ -46,10 +44,14 @@ class TasksSearchHelper @Inject constructor(
     }
 
     override suspend fun updateFilteredTaskList(): Either<Failure, Boolean> {
+        val userName = processedFilter?.let {
+            if (it.isNotEmpty() && it.toIntOrNull() == null) it else sessionInfo.userName
+        } ?: sessionInfo.userName ?: ""
+
         return generalRepo.getFilteredTaskList(
                 FilteredParams(
                         tkNumber = sessionInfo.market!!,
-                        searchQuery = searchFilter ?: "",
+                        searchQuery = userName,
                         filteredParams = filterParams
                 )
         ).map {
@@ -68,12 +70,15 @@ class TasksSearchHelper @Inject constructor(
             }
         }
     }
+
+    override fun clearFilteredList() {
+        filteredTaskList.value = emptyList()
+    }
 }
 
 interface ITasksSearchHelper {
     var processedFilter: String?
     var processedTaskInfo: TaskInfo?
-    var searchFilter: String?
     var filterParams: SearchTaskFilter?
     var isNewSearchData: Boolean
     var isDataChanged: Boolean
@@ -84,4 +89,5 @@ interface ITasksSearchHelper {
     suspend fun updateTaskList(): Either<Failure, Boolean>
     suspend fun updateFilteredTaskList(): Either<Failure, Boolean>
     fun setProcessedTask(taskId: String)
+    fun clearFilteredList()
 }

@@ -108,7 +108,7 @@
                 android:layout_weight="1"
                 android:drawableEnd="@drawable/ic_filter_white_24"
                 android:ellipsize="end"
-                android:hint="@string/enter_task_number_sap_login"
+                android:hint="@string/enter_task_number"
                 android:imeOptions="actionGo"
                 android:inputType="textNoSuggestions|textVisiblePassword"
                 android:maxLength="14"
