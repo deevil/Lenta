@@ -11,15 +11,24 @@ import javax.inject.Inject
 
 //ET_DOC_MATNR_CHK - Таблица для сверки документов поставки
 data class DeliveryProductDocumentRevise(
-        val productNumber: String, // Номер товара
-        val documentID: String, // ID Документа
-        val documentName: String, // Название документа
-        val isObligatory: Boolean,  // ??? - Общий флаг
-        var isCheck: Boolean,   // ??? - Общий флаг
-        val documentType: ProductDocumentType, // Тип документа
-        val isSet: Boolean, // УТЗ ТСД: Индикатор: Признак набора
-        val initialCount: Double, // Исходное количество позиции поставки
-        val measureUnits: Uom // Продажная ЕИ
+        /** Номер товара (MATNR)*/
+        val productNumber: String,
+        /** ID Документа (DOC_ID)*/
+        val documentID: String,
+        /** Название документа (DOC_NAME)*/
+        val documentName: String,
+        /** (OBLIGATORY)*/
+        val isObligatory: Boolean,
+        /** (FLG_CHECK)*/
+        var isCheck: Boolean,
+        /** Тип документа (DOC_TYPE)*/
+        val documentType: ProductDocumentType,
+        /** УТЗ ТСД: Индикатор: Признак набора (IS_SET)*/
+        val isSet: Boolean,
+        /** Исходное количество позиции поставки (ORMNG)*/
+        val initialCount: Double,
+        /** Продажная ЕИ (VRKME)*/
+        val measureUnits: Uom
 ) {
     companion object {
         suspend fun from(hyperHive: HyperHive, restData: DeliveryProductDocumentReviseRestData): DeliveryProductDocumentRevise {
