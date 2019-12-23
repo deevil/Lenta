@@ -20,8 +20,6 @@ class TasksSearchHelper @Inject constructor(
 
     override var processedFilter: String? = ""
 
-    //override var searchFilter: String? = ""
-
     override var filterParams: SearchTaskFilter? = null
 
     override var isNewSearchData: Boolean = false
@@ -81,7 +79,6 @@ class TasksSearchHelper @Inject constructor(
 interface ITasksSearchHelper {
     var processedFilter: String?
     var processedTaskInfo: TaskInfo?
-    //var searchFilter: String?
     var filterParams: SearchTaskFilter?
     var isNewSearchData: Boolean
     var isDataChanged: Boolean
