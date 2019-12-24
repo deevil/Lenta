@@ -5,10 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp9.R
 import com.lenta.bp9.features.goods_list.SearchProductDelegate
-import com.lenta.bp9.model.processing.PROCESSING_MERCURY_QUANT_GREAT_IN_INVOICE
-import com.lenta.bp9.model.processing.PROCESSING_MERCURY_QUANT_GREAT_IN_ORDER
-import com.lenta.bp9.model.processing.PROCESSING_MERCURY_SAVED
-import com.lenta.bp9.model.processing.ProcessMercuryProductService
+import com.lenta.bp9.model.processing.*
 import com.lenta.bp9.model.task.IReceivingTaskManager
 import com.lenta.bp9.model.task.TaskProductInfo
 import com.lenta.bp9.platform.navigation.IScreenNavigator
@@ -204,15 +201,18 @@ class GoodsMercuryInfoViewModel : CoreViewModel(), OnPositionClickListener {
         when (processMercuryProductService.checkConditionsOfPreservation(count.value ?: "0", reasonRejectionCode, spinManufacturers!![spinManufacturersSelectedPosition.value!!], spinProductionDate.value!![spinProductionDateSelectedPosition.value!!])) {
             PROCESSING_MERCURY_SAVED -> {
                 if (qualityInfo.value?.get(spinQualitySelectedPosition.value ?: 0)?.code == "1") {
-                    processMercuryProductService.add(acceptTotalCount.value!!.toString(), "1", spinManufacturers!![spinManufacturersSelectedPosition.value!!], spinProductionDate.value!![spinProductionDateSelectedPosition.value!!])
+                    processMercuryProductService.add(acceptTotalCount.value!!.toString(), count.value ?: "0",  "1", spinManufacturers!![spinManufacturersSelectedPosition.value!!], spinProductionDate.value!![spinProductionDateSelectedPosition.value!!])
                 } else {
-                    processMercuryProductService.add(refusalTotalCount.value!!.toString(), reasonRejectionInfo.value!![spinReasonRejectionSelectedPosition.value!!].code, spinManufacturers!![spinManufacturersSelectedPosition.value!!], spinProductionDate.value!![spinProductionDateSelectedPosition.value!!])
+                    processMercuryProductService.add(refusalTotalCount.value!!.toString(), count.value ?: "0", reasonRejectionInfo.value!![spinReasonRejectionSelectedPosition.value!!].code, spinManufacturers!![spinManufacturersSelectedPosition.value!!], spinProductionDate.value!![spinProductionDateSelectedPosition.value!!])
                 }
                 count.value = "0"
                 if (isClickApply.value!!) {
                     processMercuryProductService.save()
                     screenNavigator.goBack()
                 }
+            }
+            PROCESSING_MERCURY_QUANT_GREAT_IN_VET_DOC -> {
+                screenNavigator.openAlertQuantGreatInVetDocScreen()
             }
             PROCESSING_MERCURY_QUANT_GREAT_IN_INVOICE -> {
                 screenNavigator.openAlertQuantGreatInInvoiceScreen()

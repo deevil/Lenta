@@ -627,6 +627,10 @@ class ScreenNavigator(
         }
     }
 
+    override fun openAlertQuantGreatInVetDocScreen() {
+        openInfoScreen(context.getString(R.string.processing_mercury_quant_great_in_vet_doc))
+    }
+
     override fun openAlertQuantGreatInInvoiceScreen() {
         openInfoScreen(context.getString(R.string.processing_mercury_quant_great_in_invoice))
     }
@@ -813,6 +817,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openAlertVADProductNotMatchedScreen(productName: String)
     fun openDiscrepanciesInconsistencyVetDocsDialog(markCallbackFunc: () -> Unit)
     fun openDiscrepanciesNoVerifiedVadDialog(excludeCallbackFunc: () -> Unit, markCallbackFunc: () -> Unit)
+    fun openAlertQuantGreatInVetDocScreen()
     fun openAlertQuantGreatInInvoiceScreen()
     fun openAlertQuantGreatInOrderScreen()
     fun openAlertCertificatesLostRelevance(nextCallbackFunc: () -> Unit)
