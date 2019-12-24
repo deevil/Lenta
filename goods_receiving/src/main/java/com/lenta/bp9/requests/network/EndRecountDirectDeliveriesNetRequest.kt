@@ -25,9 +25,11 @@ data class EndRecountDDParameters(
         @SerializedName("IV_PERNR")
         val personalNumber: String,
         @SerializedName("IT_TASK_DIFF")
-        val discrepanciesProduct: List<TaskProductDiscrepancies>,
+        val discrepanciesProduct: List<TaskProductDiscrepanciesRestData>,
         @SerializedName("IT_PARTS_DIFF")
-        val discrepanciesBatches: List<TaskBatchesDiscrepancies>
+        val discrepanciesBatches: List<TaskBatchesDiscrepanciesRestData>,
+        @SerializedName("IT_VET_DIFF")
+        val discrepanciesMercury: List<TaskMercuryDiscrepanciesRestData?>
 )
 
 class EndRecountDDStatus : ObjectRawStatus<EndRecountDDResult>()

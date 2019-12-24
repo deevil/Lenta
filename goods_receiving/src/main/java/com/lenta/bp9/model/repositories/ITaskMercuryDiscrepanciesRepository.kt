@@ -2,7 +2,6 @@ package com.lenta.bp9.model.repositories
 
 import com.lenta.bp9.model.task.TaskMercuryDiscrepancies
 import com.lenta.bp9.model.task.TaskMercuryInfo
-import com.lenta.bp9.model.task.TaskProductDiscrepancies
 import com.lenta.bp9.model.task.TaskProductInfo
 
 interface ITaskMercuryDiscrepanciesRepository {

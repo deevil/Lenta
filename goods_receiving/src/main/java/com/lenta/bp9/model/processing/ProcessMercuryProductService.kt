@@ -31,6 +31,9 @@ class ProcessMercuryProductService
         return if (productInfo.isVet){
             this.productInfo = productInfo.copy()
             newProductDiscrepancies.clear()
+            taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.findProductDiscrepanciesOfProduct(productInfo)?.map {
+                newProductDiscrepancies.add(it.copy())
+            }
             newVetProductDiscrepancies.clear()
             this
         }
@@ -38,7 +41,7 @@ class ProcessMercuryProductService
     }
 
     fun add(count: String, reasonRejectionCode: String, manufacturer: String, productionDate: String){
-        var foundDiscrepancy = taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.findProductDiscrepanciesOfProduct(productInfo)?.findLast {
+        var foundDiscrepancy = newProductDiscrepancies.findLast {
             it.typeDiscrepancies == reasonRejectionCode
         }
 
@@ -56,15 +59,50 @@ class ProcessMercuryProductService
         changeNewProductDiscrepancy(foundDiscrepancy)
 
         var countAll = count.toDouble()
+        val vetDocumentIDVolume = taskManager.getReceivingTask()?.taskRepository?.getMercuryDiscrepancies()?.findMercuryInfoOfProduct(productInfo)?.filter {
+            it.manufacturer == manufacturer &&
+                    it.productionDate == productionDate
+        }?.sumByDouble {
+            it.volume
+        } ?: 0.0
+
         val foundVetDiscrepancy = taskManager.getReceivingTask()?.taskRepository?.getMercuryDiscrepancies()?.findMercuryInfoOfProduct(productInfo)?.filter {
+            it.manufacturer == manufacturer &&
+                    it.productionDate == productionDate
+        }?.map {
+            val addCount: Double
+            if (vetDocumentIDVolume <= countAll && countAll > 0.0) {
+                addCount = vetDocumentIDVolume
+                countAll -= vetDocumentIDVolume
+            } else {
+                addCount = countAll
+                countAll = 0.0
+            }
+
+            Logg.d { "testddi addCount $addCount" }
+            Logg.d { "testddi countAll $countAll" }
+            TaskMercuryDiscrepancies(
+                    materialNumber = it.materialNumber,
+                    vetDocumentID = it.vetDocumentID,
+                    volume = it.volume,
+                    uom = productInfo.uom,
+                    typeDiscrepancies = reasonRejectionCode,
+                    numberDiscrepancies = addCount,
+                    productionDate = it.productionDate,
+                    manufacturer = it.manufacturer,
+                    productionDateTo = it.productionDateTo
+            )
+        }
+
+        /**var foundVetDiscrepancy = newVetProductDiscrepancies.filter {
             it.manufacturer == manufacturer &&
                     it.productionDate == productionDate &&
                     it.typeDiscrepancies == reasonRejectionCode
-        }?.map {
+        }.map {
             val addCount: Double
-            if (it.volume <= countAll && countAll > 0.0) {
-                addCount = it.volume
-                countAll -= it.volume
+            if (vetDocumentIDVolume <= countAll && countAll > 0.0) {
+                addCount = vetDocumentIDVolume
+                countAll -= vetDocumentIDVolume
             } else {
                 addCount = countAll
                 countAll = 0.0
@@ -81,11 +119,12 @@ class ProcessMercuryProductService
                     manufacturer = it.manufacturer,
                     productionDateTo = it.productionDateTo
             )
-        }
+        }*/
 
         foundVetDiscrepancy?.map {
             changeNewVetProductDiscrepancy(it)
         }
+        Logg.d { "testddi foundVetDiscrepancy $foundVetDiscrepancy" }
     }
 
     fun save(){
@@ -147,7 +186,7 @@ class ProcessMercuryProductService
             }
         }
 
-        if (index == -1) {
+        if (index != -1) {
             newVetProductDiscrepancies.removeAt(index)
         }
 
@@ -163,6 +202,10 @@ class ProcessMercuryProductService
             it.volume
         } ?: 0.0
 
+        Logg.d { "testddi getQuantityAllCategoryExceptNonOrderOfVetDoc ${getQuantityAllCategoryExceptNonOrderOfVetDoc(if (reasonRejectionCode != "41") count.toDouble() else 0.0, manufacturer, productionDate)}" }
+        Logg.d { "testddi vetDocumentIDVolume $vetDocumentIDVolume" }
+        Logg.d { "testddi getQuantityAllCategoryExceptNonOrderOfProduct ${getQuantityAllCategoryExceptNonOrderOfProduct(if (reasonRejectionCode != "41") count.toDouble() else 0.0)}" }
+        Logg.d { "testddi count $count" }
         if ( getQuantityAllCategoryExceptNonOrderOfVetDoc(if (reasonRejectionCode != "41") count.toDouble() else 0.0, manufacturer, productionDate) <= vetDocumentIDVolume ) {
             return PROCESSING_MERCURY_SAVED
         }
@@ -179,23 +222,31 @@ class ProcessMercuryProductService
     }
 
     private fun getQuantityAllCategoryExceptNonOrderOfVetDoc(count: Double, manufacturer: String, productionDate: String) : Double {
-        return (taskManager.getReceivingTask()?.taskRepository?.getMercuryDiscrepancies()?.findMercuryDiscrepanciesOfProduct(productInfo)?.filter {mercuryDiscrepancies ->
+        /**return (taskManager.getReceivingTask()?.taskRepository?.getMercuryDiscrepancies()?.findMercuryDiscrepanciesOfProduct(productInfo)?.filter {mercuryDiscrepancies ->
             mercuryDiscrepancies.typeDiscrepancies != "41" && mercuryDiscrepancies.manufacturer == manufacturer && mercuryDiscrepancies.productionDate == productionDate
         }?.plus(newVetProductDiscrepancies.filter {newMercuryDiscrepancies ->
             newMercuryDiscrepancies.typeDiscrepancies != "41" && newMercuryDiscrepancies.manufacturer == manufacturer && newMercuryDiscrepancies.productionDate == productionDate
         })?.sumByDouble {
             it.numberDiscrepancies
-        } ?: 0.0) + count
+        } ?: 0.0) + count*/
+        newVetProductDiscrepancies.filter {newMercuryDiscrepancies ->
+            newMercuryDiscrepancies.typeDiscrepancies != "41" && newMercuryDiscrepancies.manufacturer == manufacturer && newMercuryDiscrepancies.productionDate == productionDate
+        }.map {
+            Logg.d { "testddi $it"}
+        }
+        return (newVetProductDiscrepancies.filter {newMercuryDiscrepancies ->
+            newMercuryDiscrepancies.typeDiscrepancies != "41" && newMercuryDiscrepancies.manufacturer == manufacturer && newMercuryDiscrepancies.productionDate == productionDate
+        }.sumByDouble {
+            it.numberDiscrepancies
+        }) + count
     }
 
     private fun getQuantityAllCategoryExceptNonOrderOfProduct(count: Double) : Double {
-        return (taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.findProductDiscrepanciesOfProduct(productInfo)?.filter {discrepancies ->
-            discrepancies.typeDiscrepancies != "41"
-        }?.plus(newProductDiscrepancies.filter {newDiscrepancies ->
+        return (newProductDiscrepancies.filter {newDiscrepancies ->
             newDiscrepancies.typeDiscrepancies != "41"
-        })?.sumByDouble {
+        }.sumByDouble {
             it.numberDiscrepancies.toDouble()
-        } ?: 0.0) + count
+        } ) + count
     }
 
     fun getGoodsDetails() : List<TaskProductDiscrepancies>? {

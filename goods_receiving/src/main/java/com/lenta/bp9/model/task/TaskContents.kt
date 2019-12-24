@@ -139,8 +139,8 @@ class TaskContents
                     uom = Uom(code = uomInfo?.uom ?: "", name = uomInfo?.name ?: ""),
                     typeDiscrepancies = it.typeDiscrepancies,
                     numberDiscrepancies = it.numberDiscrepancies.toDouble(),
-                    productionDate = it.productionDates,
-                    manufacturer = it.manufacturers,
+                    productionDate = it.productionDate,
+                    manufacturer = it.manufacturer,
                     productionDateTo = it.productionDateTo
             )
         }
