@@ -1,37 +1,32 @@
 package com.lenta.bp9.features.task_card
 
-import android.content.res.Resources
-import com.lenta.bp9.R
-import com.lenta.bp9.platform.extentions.getAppComponent
-import com.lenta.shared.platform.fragment.CoreFragment
-import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
-import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
-import com.lenta.shared.utilities.extentions.provideViewModel
 import android.os.Bundle
 import android.view.LayoutInflater
-import com.lenta.shared.utilities.databinding.ViewPagerSettings
-import android.view.ViewGroup
 import android.view.View
-import android.widget.AdapterView
+import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
-import androidx.activity.OnBackPressedCallback
 import androidx.databinding.DataBindingUtil
 import com.lenta.bp9.BR
+import com.lenta.bp9.R
 import com.lenta.bp9.databinding.*
 import com.lenta.bp9.features.loading.tasks.TaskCardMode
 import com.lenta.bp9.model.task.NotificationIndicatorType
 import com.lenta.bp9.model.task.TaskStatus
+import com.lenta.bp9.platform.extentions.getAppComponent
 import com.lenta.shared.platform.activity.OnBackPresserListener
+import com.lenta.shared.platform.fragment.CoreFragment
+import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
-import com.lenta.shared.utilities.Logg
+import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.utilities.databinding.DataBindingAdapter
 import com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig
 import com.lenta.shared.utilities.databinding.RecyclerViewKeyHandler
+import com.lenta.shared.utilities.databinding.ViewPagerSettings
 import com.lenta.shared.utilities.extentions.connectLiveData
-import com.lenta.shared.utilities.extentions.generateScreenNumber
+import com.lenta.shared.utilities.extentions.provideViewModel
 
 class TaskCardFragment : CoreFragment<FragmentTaskCardBinding, TaskCardViewModel>(), ViewPagerSettings, ToolbarButtonsClickListener, OnBackPresserListener {
 
@@ -65,8 +60,18 @@ class TaskCardFragment : CoreFragment<FragmentTaskCardBinding, TaskCardViewModel
             }
             bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.docs)
             bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.nextAlternate)
-            connectLiveData(vm.thirdButtonVisibility, bottomToolbarUiModel.uiModelButton2.visibility)
-            connectLiveData(source = vm.redIndicatorAbsent, target = bottomToolbarUiModel.uiModelButton5.enabled)
+            connectLiveData(vm.visibilityBtn, bottomToolbarUiModel.uiModelButton2.visibility)
+            connectLiveData(vm.enabledBtn, bottomToolbarUiModel.uiModelButton2.enabled)
+            connectLiveData(vm.enabledBtn, bottomToolbarUiModel.uiModelButton5.enabled)
+        }
+        if (vm.mode == TaskCardMode.ReadOnly) {
+            when (vm.currentStatus.value) {
+                TaskStatus.Checked -> bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.verify, enabled = false)
+                TaskStatus.Recounted -> bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.recount, enabled = false)
+            }
+            bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.docs)
+            bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.nextAlternate, enabled = false)
+            connectLiveData(vm.visibilityBtn, bottomToolbarUiModel.uiModelButton2.visibility)
         }
     }
 

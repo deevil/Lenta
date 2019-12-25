@@ -1,26 +1,23 @@
 package com.lenta.bp9.features.task_card
 
 import android.content.Context
-import com.lenta.shared.platform.viewmodel.CoreViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp9.R
 import com.lenta.bp9.features.change_datetime.ChangeDateTimeMode
 import com.lenta.bp9.features.loading.tasks.TaskCardMode
-import com.lenta.bp9.model.task.*
+import com.lenta.bp9.model.task.IReceivingTaskManager
+import com.lenta.bp9.model.task.NotificationIndicatorType
+import com.lenta.bp9.model.task.TaskStatus
+import com.lenta.bp9.model.task.TaskType
 import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.shared.account.ISessionInfo
-import com.lenta.shared.models.core.MatrixType
-import com.lenta.shared.models.core.ProductType
-import com.lenta.shared.models.core.Uom
 import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.platform.time.ITimeMonitor
-import com.lenta.shared.utilities.Logg
+import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.databinding.PageSelectionListener
-import com.lenta.shared.utilities.databinding.dataBindingHelpHolder
 import com.lenta.shared.utilities.date_time.DateTimeUtil
 import com.lenta.shared.utilities.extentions.map
-import io.fabric.sdk.android.services.concurrency.Task
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -69,7 +66,7 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
         })
     }
 
-    val redIndicatorAbsent by lazy {
+    val enabledBtn by lazy {
         notifications.map { notifications ->
             notifications!!.findLast { it.indicator == NotificationIndicatorType.Red } == null
         }
@@ -85,7 +82,7 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
         }
     }
 
-    val thirdButtonVisibility by lazy {
+    val visibilityBtn by lazy {
         MutableLiveData(taskManager.getReceivingTask()?.taskDescription?.currentStatus.let {
             it == TaskStatus.Checked || it == TaskStatus.Recounted
         })
@@ -240,7 +237,12 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     fun onBackPressed() {
-        screenNavigator.openUnlockTaskLoadingScreen()
+        if (mode == TaskCardMode.Full) {
+            screenNavigator.openUnlockTaskLoadingScreen()
+        } else {
+            screenNavigator.goBack()
+        }
+
     }
 
     data class NotificationVM(

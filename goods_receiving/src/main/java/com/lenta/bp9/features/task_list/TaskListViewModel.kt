@@ -162,7 +162,7 @@ class TaskListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
                 }
                 TaskLockStatus.LockedByOthers -> {
                     screenNavigator.openConfirmationView {
-                        screenNavigator.openTaskCardLoadingScreen(TaskCardMode.Full, it.taskNumber, loadFullData = false)
+                        screenNavigator.openTaskCardLoadingScreen(TaskCardMode.ReadOnly, it.taskNumber, loadFullData = false)
                     }
                 }
                 TaskLockStatus.None -> screenNavigator.openTaskCardLoadingScreen(TaskCardMode.Full, it.taskNumber, loadFullData)
