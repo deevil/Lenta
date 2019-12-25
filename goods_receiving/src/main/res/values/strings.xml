@@ -172,7 +172,6 @@
     <string name="discrepancies_no_vad_dialog">По всем вет.товарам нет сверенных сертификатов. Исключить поставку из автоматической интеграции или пометить эти товары как расхождение - \"Нет ВСД/недогруз\"</string>
     <string name="processing_mercury_quant_great_in_vet_doc">Введенное кол-во больше чем в ВСД, измените кол-во</string>
     <string name="processing_mercury_quant_great_in_invoice">Введенное кол-во больше чем в ВП, измените кол-во</string>
-    <string name="processing_mercury_quant_great_in_order">Введённое кол-во превышает заказ, измените количество</string>
     <string name="some_certificates_have_lost_relevance">Некоторые сертификаты потеряли актуальность</string>
     <string name="electronic_vad_have_lost_relevance">Электронные ВСД для %1$s товаров из %2$s потеряли актульность. Необходимо выбрать решение: ОТВЯЗАТЬ -партия товара будет не доступна к приёмке, ВРЕМЕННЫЙ - произойдёт переключение в статус \"Временно отказано\", данные сверки будут утеряны</string>
     <string name="header_input_outgoing_fillings">Введите или отсканируйте номера исходящих пломб</string>

@@ -13,7 +13,6 @@ import javax.inject.Inject
 const val PROCESSING_MERCURY_SAVED = 1
 const val PROCESSING_MERCURY_QUANT_GREAT_IN_VET_DOC = 2
 const val PROCESSING_MERCURY_QUANT_GREAT_IN_INVOICE = 3
-const val PROCESSING_MERCURY_QUANT_GREAT_IN_ORDER = 4
 
 @AppScope
 class ProcessMercuryProductService
@@ -184,18 +183,18 @@ class ProcessMercuryProductService
             return PROCESSING_MERCURY_QUANT_GREAT_IN_VET_DOC
         }
 
-        if ( getQuantityAllCategoryExceptNonOrderOfVetDoc(if (reasonRejectionCode != "41") count.toDouble() else 0.0, manufacturer, productionDate) > productInfo.orderQuantity.toDouble() ) {
-            return PROCESSING_MERCURY_QUANT_GREAT_IN_INVOICE
-        }
-
-        if (productInfo.uom.name == "ШТ") {
-            return PROCESSING_MERCURY_QUANT_GREAT_IN_INVOICE
+        if ( getQuantityAllCategoryExceptNonOrderOfVetDoc(if (reasonRejectionCode != "41") count.toDouble() else 0.0, manufacturer, productionDate) <= productInfo.orderQuantity.toDouble() ) {
+            return PROCESSING_MERCURY_SAVED
+        } else {
+            if (productInfo.uom.name == "ШТ") {
+                return PROCESSING_MERCURY_QUANT_GREAT_IN_INVOICE
+            }
         }
 
         return if (getQuantityAllCategoryExceptNonOrderOfProduct(if (reasonRejectionCode != "41") count.toDouble() else 0.0) <= (productInfo.origQuantity.toDouble() + productInfo.overdToleranceLimit.toDouble())) {
             PROCESSING_MERCURY_SAVED
         } else {
-            PROCESSING_MERCURY_QUANT_GREAT_IN_ORDER
+            PROCESSING_MERCURY_QUANT_GREAT_IN_INVOICE
         }
     }
 

@@ -217,9 +217,6 @@ class GoodsMercuryInfoViewModel : CoreViewModel(), OnPositionClickListener {
             PROCESSING_MERCURY_QUANT_GREAT_IN_INVOICE -> {
                 screenNavigator.openAlertQuantGreatInInvoiceScreen()
             }
-            PROCESSING_MERCURY_QUANT_GREAT_IN_ORDER -> {
-                screenNavigator.openAlertQuantGreatInOrderScreen()
-            }
         }
         count.value = "0"
     }

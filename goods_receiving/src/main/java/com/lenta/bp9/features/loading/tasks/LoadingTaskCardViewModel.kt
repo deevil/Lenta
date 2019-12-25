@@ -90,7 +90,7 @@ class LoadingTaskCardViewModel : CoreLoadingViewModel() {
     private fun handleSuccess(result: TaskCardRequestResult) {
         Logg.d { "Task card request result $result" }
         screenNavigator.goBack()
-        val taskHeader = repoInMemoryHolder.taskList.value?.tasks?.findLast { it.taskNumber == taskNumber }
+        val taskHeader = repoInMemoryHolder.taskList.value?.tasks?.findLast { it.taskNumber == taskNumber } ?: repoInMemoryHolder.lastSearchResult.value?.tasks?.findLast { it.taskNumber == taskNumber }
         taskHeader?.let {
             val notifications = result.notifications.map { TaskNotification.from(it) }
             val newTask = taskManager.newReceivingTask(taskHeader, TaskDescription.from(result.taskDescription))
