@@ -11,6 +11,7 @@ import com.lenta.bp9.repos.IDataBaseRepo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.pojo.QualityInfo
 import com.lenta.shared.requests.combined.scan_info.pojo.ReasonRejectionInfo
+import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.toStringFormatted
@@ -64,7 +65,7 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
                 (it?.first
                         ?: 0.0) + taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().getCountAcceptOfProduct(productInfo.value!!)
             } else {
-                0.0
+                taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().getCountAcceptOfProduct(productInfo.value!!)
             }
         }
     }
@@ -77,14 +78,23 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
         }
     }
 
-    val refusalTotalCount: MutableLiveData<Double> by lazy {
-        countValue.combineLatest(spinReasonRejectionSelectedPosition).combineLatest(spinQualitySelectedPosition).map {
+    val refusalTotalCountForSave: MutableLiveData<Double> = MutableLiveData()
+    private val test: MutableLiveData<Double> by lazy {
+        countValue.combineLatest(spinQualitySelectedPosition).map {
             if (qualityInfo.value?.get(it?.second ?: 0)?.code != "1") {
-                (it?.first?.first
-                        ?: 0.0) + taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().getCountRefusalOfProductOfReasonRejection(productInfo.value!!, reasonRejectionInfo.value?.get(it?.first?.second
-                        ?: 0)?.code)
+                (it?.first ?: 0.0) + taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().getCountRefusalOfProduct(productInfo.value!!)
             } else {
-                0.0
+                taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().getCountRefusalOfProduct(productInfo.value!!)
+            }
+        }
+    }
+
+    val refusalTotalCount: MutableLiveData<Double> by lazy {
+        countValue.combineLatest(spinQualitySelectedPosition).map {
+            if (qualityInfo.value?.get(it?.second ?: 0)?.code != "1") {
+                (it?.first ?: 0.0) + taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().getCountRefusalOfProduct(productInfo.value!!)
+            } else {
+                taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().getCountRefusalOfProduct(productInfo.value!!)
             }
         }
     }
@@ -103,8 +113,7 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
 
     init {
         viewModelScope.launch {
-            if (!productInfo.value!!.isNoEAN || isDiscrepancy.value!! || (taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().getCountAcceptOfProduct(productInfo.value!!) +
-                            taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().getCountRefusalOfProduct(productInfo.value!!) > 0.0)) {
+            if (isDiscrepancy.value!!) {
                 count.value = taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.getCountProductNotProcessedOfProduct(productInfo.value!!).toStringFormatted()
             }
             suffix.value = productInfo.value?.uom?.name
@@ -222,6 +231,8 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
                     if (countWithoutParamGrsGrundNeg.value!! > 0.0) {//блок 6.147 (да)
                         //блок 6.145
                         processGeneralProductService.addWithoutUnderload(paramGrsGrundNeg, countWithoutParamGrsGrundNeg.value.toString())
+                        //блок 6.176
+                        clickBtnApply()
                     } else {//блок 6.147 (нет)
                         //блок 6.155
                         processGeneralProductService.delCategoryParamGrsGrundNeg(paramGrsGrundNeg)
@@ -271,7 +282,7 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
         if (qualityInfo.value?.get(spinQualitySelectedPosition.value ?: 0)?.code == "1") {
             processGeneralProductService.add(acceptTotalCount.value!!.toString(), "1")
         } else {
-            processGeneralProductService.add(refusalTotalCount.value!!.toString(), reasonRejectionInfo.value!![spinReasonRejectionSelectedPosition.value!!].code)
+            processGeneralProductService.add(count.value!!, reasonRejectionInfo.value!![spinReasonRejectionSelectedPosition.value!!].code)
         }
 
         //блок 6.176

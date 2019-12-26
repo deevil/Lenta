@@ -230,6 +230,12 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
                         ?.taskRepository
                         ?.getProductsDiscrepancies()
                         ?.deleteProductsDiscrepanciesForProduct(listCounted.value?.get(position)!!.productInfo!!)
+
+                taskManager
+                        .getReceivingTask()
+                        ?.taskRepository
+                        ?.getMercuryDiscrepancies()
+                        ?.deleteMercuryDiscrepanciesForProduct(listCounted.value?.get(position)!!.productInfo!!)
             }
         } else {
             countedSelectionsHelper.selectedPositions.value?.map { position ->

@@ -26,6 +26,7 @@ class ProcessMercuryProductService
     private lateinit var productInfo: TaskProductInfo
     private val newProductDiscrepancies: ArrayList<TaskProductDiscrepancies> = ArrayList()
     private val newVetProductDiscrepancies: ArrayList<TaskMercuryDiscrepancies> = ArrayList()
+    private var isNewData: Boolean = false
 
     fun newProcessMercuryProductService(productInfo: TaskProductInfo) : ProcessMercuryProductService? {
         return if (productInfo.isVet){
@@ -35,12 +36,17 @@ class ProcessMercuryProductService
                 newProductDiscrepancies.add(it.copy())
             }
             newVetProductDiscrepancies.clear()
+            taskManager.getReceivingTask()?.taskRepository?.getMercuryDiscrepancies()?.findMercuryDiscrepanciesOfProduct(productInfo)?.map {
+                newVetProductDiscrepancies.add(it)
+            }
+            isNewData = false
             this
         }
         else null
     }
 
     fun add(countForProduct: String, countForVetDoc: String, reasonRejectionCode: String, manufacturer: String, productionDate: String){
+        isNewData = true
         var foundDiscrepancy = newProductDiscrepancies.findLast {
             it.typeDiscrepancies == reasonRejectionCode
         }
@@ -179,6 +185,8 @@ class ProcessMercuryProductService
             it.volume
         } ?: 0.0
 
+        Logg.d { "testddi getQuantityAll ${getQuantityAllCategoryExceptNonOrderOfVetDoc(if (reasonRejectionCode != "41") count.toDouble() else 0.0, manufacturer, productionDate)}"}
+        Logg.d { "testddi vetDocumentIDVolume ${vetDocumentIDVolume}"}
         if ( getQuantityAllCategoryExceptNonOrderOfVetDoc(if (reasonRejectionCode != "41") count.toDouble() else 0.0, manufacturer, productionDate) > vetDocumentIDVolume ) {
             return PROCESSING_MERCURY_QUANT_GREAT_IN_VET_DOC
         }
@@ -215,7 +223,7 @@ class ProcessMercuryProductService
     }
 
     fun getGoodsDetails() : List<TaskProductDiscrepancies>? {
-        return taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.findProductDiscrepanciesOfProduct(productInfo)?.plus(newProductDiscrepancies)
+        return newProductDiscrepancies
     }
 
     fun getNewCountAccept() : Double {
@@ -234,20 +242,8 @@ class ProcessMercuryProductService
         }
     }
 
-    fun getNewCountRefusalOfReasonRejection(reasonRejectionCode: String?) : Double {
-        var countRefusal = 0.0
-        reasonRejectionCode?.let {
-            newProductDiscrepancies.filter {
-                it.typeDiscrepancies == reasonRejectionCode
-            }.map {discrepancies ->
-                countRefusal += discrepancies.numberDiscrepancies.toDouble()
-            }
-        }
-        return countRefusal
-    }
-
-    fun getCountProductNotProcessed() : Double {
-        return (taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.getCountProductNotProcessedOfProduct(productInfo) ?: 0.0) - getNewCountAccept() - getNewCountRefusal()
+    fun modifications() : Boolean {
+        return isNewData
     }
 
 }

@@ -123,11 +123,11 @@ class SearchProductDelegate @Inject constructor(
                     return
                 }
             }
-            openProductScreen(taskProductInfo)
+            openProductScreen(taskProductInfo, infoResult.quantity)
         }
     }
 
-    private fun openProductScreen(taskProductInfo: TaskProductInfo) {
+    private fun openProductScreen(taskProductInfo: TaskProductInfo, initialCount: Double = 0.0) {
         if (taskProductInfo.isNotEdit) {
             screenNavigator.openGoodsDetailsScreen(taskProductInfo)
             return
@@ -138,7 +138,7 @@ class SearchProductDelegate @Inject constructor(
                 if (taskProductInfo.isVet) {
                     screenNavigator.openGoodsMercuryInfoScreen(taskProductInfo, isDiscrepancy)
                 } else {
-                    screenNavigator.openGoodsInfoScreen(taskProductInfo, isDiscrepancy)
+                    screenNavigator.openGoodsInfoScreen(taskProductInfo, isDiscrepancy, initialCount)
                 }
             }
             ProductType.ExciseAlcohol -> {

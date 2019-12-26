@@ -24,7 +24,12 @@ class ProcessNonExciseAlcoProductService
         else null
     }
 
+    private fun getCountRefusalOfReasonRejection(reasonRejectionCode: String) : Double {
+        return taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().getCountRefusalOfProductOfReasonRejection(productInfo, reasonRejectionCode)
+    }
+
     fun add(count: String, reasonRejectionCode: String){
+        val countAdd = if (reasonRejectionCode == "1") count.toDouble() else getCountRefusalOfReasonRejection(reasonRejectionCode) + count.toDouble()
         val foundDiscrepancy = taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.findProductDiscrepanciesOfProduct(productInfo)?.findLast {
             it.materialNumber == productInfo.materialNumber && it.typeDiscrepancies == reasonRejectionCode
         }
@@ -36,7 +41,7 @@ class ProcessNonExciseAlcoProductService
                     changeProductDiscrepancy(TaskProductDiscrepancies(
                             materialNumber = productInfo.materialNumber,
                             exidv = "",
-                            numberDiscrepancies = count,
+                            numberDiscrepancies = countAdd.toString(),
                             uom = productInfo.uom,
                             typeDiscrepancies = reasonRejectionCode,
                             isNotEdit = false,
@@ -46,7 +51,7 @@ class ProcessNonExciseAlcoProductService
             taskManager.getReceivingTask()?.
                     taskRepository?.
                     getProductsDiscrepancies()?.
-                    changeProductDiscrepancy(foundDiscrepancy.copy(numberDiscrepancies = count))
+                    changeProductDiscrepancy(foundDiscrepancy.copy(numberDiscrepancies = countAdd.toString()))
         }
 
         taskManager.getReceivingTask()?.
@@ -54,7 +59,7 @@ class ProcessNonExciseAlcoProductService
                 getProducts()?.
                 changeProduct(productInfo.copy(isNoEAN = false))
 
-        addBatch(count, reasonRejectionCode)
+        addBatch(countAdd.toString(), reasonRejectionCode)
     }
 
     private fun addBatch(count: String, reasonRejectionCode: String){

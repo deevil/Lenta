@@ -85,24 +85,19 @@ class PerishablesInfoViewModel : CoreViewModel(), OnPositionClickListener {
             if (qualityInfo.value?.get(it!!.second)?.code == "1") {
                 (it?.first ?: 0.0) + taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().getCountAcceptOfProduct(productInfo.value!!)
             } else {
-                0.0
+                taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().getCountAcceptOfProduct(productInfo.value!!)
             }
         }
     }
 
     val refusalTotalCount: MutableLiveData<Double> by lazy  {
         countValue.
-                combineLatest(spinReasonRejectionSelectedPosition).
                 combineLatest(spinQualitySelectedPosition).
                 map{
                     if (qualityInfo.value?.get(it?.second ?: 0)?.code != "1") {
-                        (it?.first?.first ?: 0.0) + taskManager.
-                                getReceivingTask()!!.
-                                taskRepository.
-                                getProductsDiscrepancies().
-                                getCountRefusalOfProductOfReasonRejection(productInfo.value!!, reasonRejectionInfo.value?.get(it?.first?.second ?: 0) ?.code)
+                        (it?.first ?: 0.0) + taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().getCountRefusalOfProduct(productInfo.value!!)
                     } else {
-                        0.0
+                        taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().getCountRefusalOfProduct(productInfo.value!!)
                     }
                 }
     }
@@ -306,6 +301,8 @@ class PerishablesInfoViewModel : CoreViewModel(), OnPositionClickListener {
                     if (countWithoutParamGrsGrundNeg.value!! > 0.0) {//блок 6.147 (да)
                         //блок 6.145
                         processGeneralProductService.addWithoutUnderload(paramGrsGrundNeg, countWithoutParamGrsGrundNeg.value.toString())
+                        //блок 6.176
+                        clickBtnApply()
                     } else {//блок 6.147 (нет)
                         //блок 6.155
                         processGeneralProductService.delCategoryParamGrsGrundNeg(paramGrsGrundNeg)
@@ -355,7 +352,7 @@ class PerishablesInfoViewModel : CoreViewModel(), OnPositionClickListener {
         if (qualityInfo.value?.get(spinQualitySelectedPosition.value ?: 0)?.code == "1") {
             processGeneralProductService.add(acceptTotalCount.value!!.toString(), "1")
         } else {
-            processGeneralProductService.add(refusalTotalCount.value!!.toString(), reasonRejectionInfo.value!![spinReasonRejectionSelectedPosition.value!!].code)
+            processGeneralProductService.add(count.value!!, reasonRejectionInfo.value!![spinReasonRejectionSelectedPosition.value!!].code)
         }
 
         //блок 6.176

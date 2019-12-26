@@ -87,11 +87,9 @@ class GoodsMercuryInfoViewModel : CoreViewModel(), OnPositionClickListener {
     val acceptTotalCount by lazy  {
         countValue.combineLatest(spinQualitySelectedPosition).map{
             if (qualityInfo.value?.get(it!!.second)?.code == "1") {
-                (it?.first ?: 0.0) +
-                        taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().getCountAcceptOfProduct(productInfo.value!!) +
-                        processMercuryProductService.getNewCountAccept()
+                (it?.first ?: 0.0) + processMercuryProductService.getNewCountAccept()
             } else {
-                0.0
+                processMercuryProductService.getNewCountAccept()
             }
         }
     }
@@ -106,18 +104,12 @@ class GoodsMercuryInfoViewModel : CoreViewModel(), OnPositionClickListener {
 
     val refusalTotalCount by lazy  {
         countValue.
-                combineLatest(spinReasonRejectionSelectedPosition).
                 combineLatest(spinQualitySelectedPosition).
                 map{
                     if (qualityInfo.value?.get(it?.second ?: 0)?.code != "1") {
-                        (it?.first?.first ?: 0.0) + taskManager.
-                                getReceivingTask()!!.
-                                taskRepository.
-                                getProductsDiscrepancies().
-                                getCountRefusalOfProductOfReasonRejection(productInfo.value!!, reasonRejectionInfo.value?.get(it?.first?.second ?: 0)?.code) +
-                                processMercuryProductService.getNewCountRefusalOfReasonRejection(reasonRejectionInfo.value?.get(it?.first?.second ?: 0)?.code)
+                        (it?.first ?: 0.0) + processMercuryProductService.getNewCountRefusal()
                     } else {
-                        0.0
+                        processMercuryProductService.getNewCountRefusal()
                     }
                 }
     }
@@ -230,7 +222,7 @@ class GoodsMercuryInfoViewModel : CoreViewModel(), OnPositionClickListener {
     }
 
     fun onBackPressed() {
-        if ((processMercuryProductService.getNewCountAccept() + processMercuryProductService.getNewCountRefusal()) > 0.0) {
+        if (processMercuryProductService.modifications()) {
             screenNavigator.openUnsavedDataDialog(
                     yesCallbackFunc = {
                         screenNavigator.goBack()

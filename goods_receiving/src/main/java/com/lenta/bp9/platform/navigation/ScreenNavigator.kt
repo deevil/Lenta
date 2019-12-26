@@ -205,9 +205,9 @@ class ScreenNavigator(
         }
     }
 
-    override fun openGoodsInfoScreen(productInfo: TaskProductInfo, isDiscrepancy: Boolean) {
+    override fun openGoodsInfoScreen(productInfo: TaskProductInfo, isDiscrepancy: Boolean, initialCount: Double) {
         runOrPostpone {
-            getFragmentStack()?.push(GoodsInfoFragment.create(productInfo, isDiscrepancy))
+            getFragmentStack()?.push(GoodsInfoFragment.create(productInfo, isDiscrepancy, initialCount))
         }
     }
 
@@ -761,7 +761,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openAlertWithoutConfirmation(message: String, callbackFunc: () -> Unit)
     fun openChangeDateTimeScreen(mode: ChangeDateTimeMode)
     fun openTaskReviseScreen()
-    fun openGoodsInfoScreen(productInfo: TaskProductInfo, isDiscrepancy: Boolean)
+    fun openGoodsInfoScreen(productInfo: TaskProductInfo, isDiscrepancy: Boolean, initialCount: Double = 0.0)
     fun openAlertWrongProductType()
     fun openGoodsDetailsScreen(productInfo: TaskProductInfo? = null, batch: TaskBatchInfo? =null)
     fun openInvoiceReviseScreen()

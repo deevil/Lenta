@@ -64,24 +64,19 @@ class NonExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
             if (qualityInfo.value?.get(it!!.second)?.code == "1") {
                 (it?.first ?: 0.0) + taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().getCountAcceptOfProduct(productInfo.value!!)
             } else {
-                0.0
+                taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().getCountAcceptOfProduct(productInfo.value!!)
             }
         }
     }
 
     val refusalTotalCount: MutableLiveData<Double> by lazy  {
         countValue.
-                combineLatest(spinReasonRejectionSelectedPosition).
                 combineLatest(spinQualitySelectedPosition).
                 map{
                     if (qualityInfo.value?.get(it?.second ?: 0)?.code != "1") {
-                        (it?.first?.first ?: 0.0) + taskManager.
-                                getReceivingTask()!!.
-                                taskRepository.
-                                getProductsDiscrepancies().
-                                getCountRefusalOfProductOfReasonRejection(productInfo.value!!, reasonRejectionInfo.value?.get(it?.first?.second ?: 0) ?.code)
+                        (it?.first ?: 0.0) + taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().getCountRefusalOfProduct(productInfo.value!!)
                     } else {
-                        0.0
+                        taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().getCountRefusalOfProduct(productInfo.value!!)
                     }
                 }
     }
@@ -120,7 +115,7 @@ class NonExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
             if (qualityInfo.value?.get(spinQualitySelectedPosition.value ?: 0)?.code == "1") {
                 processNonExciseAlcoProductService.add(acceptTotalCount.value!!.toString(), "1")
             } else {
-                processNonExciseAlcoProductService.add(refusalTotalCount.value!!.toString(), reasonRejectionInfo.value!![spinReasonRejectionSelectedPosition.value!!].code)
+                processNonExciseAlcoProductService.add(count.value!!, reasonRejectionInfo.value!![spinReasonRejectionSelectedPosition.value!!].code)
             }
         }
 
