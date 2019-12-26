@@ -152,7 +152,6 @@ class GoodsMercuryInfoViewModel : CoreViewModel(), OnPositionClickListener {
                 screenNavigator.goBack()
                 screenNavigator.openAlertWrongProductType()
             }
-            //count.value = processMercuryProductService.getCountProductNotProcessed().toStringFormatted()
         }
     }
 

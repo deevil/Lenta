@@ -3,6 +3,7 @@ package com.lenta.bp9.features.discrepancy_list
 import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.lenta.bp9.features.goods_list.SearchProductDelegate
 import com.lenta.bp9.features.loading.tasks.TaskCardMode
 import com.lenta.bp9.model.task.*
 import com.lenta.bp9.platform.navigation.IScreenNavigator
@@ -13,6 +14,7 @@ import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.models.core.ProductType
 import com.lenta.shared.platform.viewmodel.CoreViewModel
+import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.extentions.getDeviceIp
@@ -33,6 +35,8 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
     lateinit var context: Context
     @Inject
     lateinit var sessionInfo: ISessionInfo
+    @Inject
+    lateinit var searchProductDelegate: SearchProductDelegate
 
     val selectedPage = MutableLiveData(0)
     val processedSelectionsHelper = SelectionItemsHelper()
@@ -54,6 +58,17 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     val visibilityBatchesButton: MutableLiveData<Boolean> = MutableLiveData()
+
+    init {
+        viewModelScope.launch {
+            searchProductDelegate.init(viewModelScope = this@DiscrepancyListViewModel::viewModelScope,
+                    scanResultHandler = this@DiscrepancyListViewModel::handleProductSearchResult)
+        }
+    }
+
+    private fun handleProductSearchResult(@Suppress("UNUSED_PARAMETER") scanInfoResult: ScanInfoResult?): Boolean {
+        return false
+    }
 
     fun onResume() {
         visibilityBatchesButton.value = taskManager.getReceivingTask()?.taskDescription?.isAlco
@@ -180,26 +195,12 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     fun onClickItemPosition(position: Int) {
-        val matnr: String?
-        if (selectedPage.value == 0) {
-            matnr = countNotProcessed.value?.get(position)?.productInfo?.materialNumber
+        val matnr: String? = if (selectedPage.value == 0) {
+            countNotProcessed.value?.get(position)?.productInfo?.materialNumber
         } else {
-            matnr = countProcessed.value?.get(position)?.productInfo?.materialNumber
+            countProcessed.value?.get(position)?.productInfo?.materialNumber
         }
-        matnr?.let {
-            val productInfo = taskManager.getReceivingTask()?.taskRepository?.getProducts()?.findProduct(it)
-            if (productInfo != null) {
-                if (productInfo.isVet) {
-                    screenNavigator.openGoodsMercuryInfoScreen(productInfo, true)
-                } else {
-                    when (productInfo.type) {
-                        ProductType.General -> screenNavigator.openGoodsInfoScreen(productInfo, true)
-                        ProductType.ExciseAlcohol -> screenNavigator.openExciseAlcoInfoScreen(productInfo)
-                        ProductType.NonExciseAlcohol -> screenNavigator.openNonExciseAlcoInfoScreen(productInfo)
-                    }
-                }
-            }
-        }
+        searchProductDelegate.searchCode(code = matnr ?: "", fromScan = false, isDiscrepancy = true)
     }
 
     fun onClickClean() {

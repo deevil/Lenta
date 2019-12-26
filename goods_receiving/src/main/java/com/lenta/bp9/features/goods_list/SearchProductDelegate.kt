@@ -123,27 +123,32 @@ class SearchProductDelegate @Inject constructor(
                     return
                 }
             }
-            openProductScreen(taskProductInfo, isDiscrepancy)
+            openProductScreen(taskProductInfo)
         }
     }
 
-    fun openProductScreen(taskProductInfo: TaskProductInfo, isDiscrepancy: Boolean? = false) {
+    private fun openProductScreen(taskProductInfo: TaskProductInfo) {
+        if (taskProductInfo.isNotEdit) {
+            screenNavigator.openGoodsDetailsScreen(taskProductInfo)
+            return
+        }
+
         when (taskProductInfo.type) {
             ProductType.General -> {
                 if (taskProductInfo.isVet) {
-                    screenNavigator.openGoodsMercuryInfoScreen(taskProductInfo, isDiscrepancy!!)
+                    screenNavigator.openGoodsMercuryInfoScreen(taskProductInfo, isDiscrepancy)
                 } else {
-                    screenNavigator.openGoodsInfoScreen(taskProductInfo, isDiscrepancy!!)
+                    screenNavigator.openGoodsInfoScreen(taskProductInfo, isDiscrepancy)
                 }
             }
             ProductType.ExciseAlcohol -> {
                 if (taskProductInfo.isSet) {
                     screenNavigator.openNotImplementedScreenAlert("Информация о наборе")
                     //screenNavigator.openSetsInfoScreen(taskProductInfo)
-                    return
                 } else
-                screenNavigator.openExciseAlcoInfoScreen(taskProductInfo)
+                    screenNavigator.openExciseAlcoInfoScreen(taskProductInfo)
             }
+            ProductType.NonExciseAlcohol -> screenNavigator.openNonExciseAlcoInfoScreen(taskProductInfo)
             else -> {
                 screenNavigator.openAlertGoodsNotInOrderScreen() //todo сообщение об неизвестном типе товара?
             }

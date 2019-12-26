@@ -198,34 +198,12 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
     }
 
     fun onClickItemPosition(position: Int) {
-        val matnr: String?
-        if (selectedPage.value == 0) {
-            matnr = listCounted.value?.get(position)?.productInfo?.materialNumber
+        val matnr: String? = if (selectedPage.value == 0) {
+            listCounted.value?.get(position)?.productInfo?.materialNumber
         } else {
-            matnr = listWithoutBarcode.value?.get(position)?.productInfo?.materialNumber
+            listWithoutBarcode.value?.get(position)?.productInfo?.materialNumber
         }
-        matnr?.let {
-            val productInfo = taskManager.getReceivingTask()?.taskRepository?.getProducts()?.findProduct(it)
-            if (productInfo != null) {
-                if (productInfo.isVet) {
-                    if (productInfo.isNotEdit) {
-                        screenNavigator.openGoodsDetailsScreen(productInfo)
-                    } else {
-                        screenNavigator.openGoodsMercuryInfoScreen(productInfo, false)
-                    }
-                } else {
-                    if (productInfo.isNotEdit) {
-                        screenNavigator.openGoodsDetailsScreen(productInfo)
-                    } else {
-                        when (productInfo.type) {
-                            ProductType.General -> screenNavigator.openGoodsInfoScreen(productInfo, false)
-                            ProductType.ExciseAlcohol -> screenNavigator.openExciseAlcoInfoScreen(productInfo)
-                            ProductType.NonExciseAlcohol -> screenNavigator.openNonExciseAlcoInfoScreen(productInfo)
-                        }
-                    }
-                }
-            }
-        }
+        searchProductDelegate.searchCode(code = matnr ?: "", fromScan = false)
     }
 
     private fun handleProductSearchResult(@Suppress("UNUSED_PARAMETER") scanInfoResult: ScanInfoResult?): Boolean {
