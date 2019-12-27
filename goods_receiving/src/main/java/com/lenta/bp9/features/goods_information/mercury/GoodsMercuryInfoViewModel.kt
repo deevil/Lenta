@@ -124,7 +124,7 @@ class GoodsMercuryInfoViewModel : CoreViewModel(), OnPositionClickListener {
     }
 
     val enabledApplyButton: MutableLiveData<Boolean> = countValue.map {
-                it!! != 0.0
+                it!! != 0.0 && !spinManufacturers.isNullOrEmpty() && !spinProductionDate.value.isNullOrEmpty()
     }
 
     init {
