@@ -206,12 +206,21 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
     fun onClickClean() {
         if (!isBatches.value!!) {
             processedSelectionsHelper.selectedPositions.value?.map { position ->
-                taskManager
-                        .getReceivingTask()
-                        ?.taskRepository
-                        ?.getProductsDiscrepancies()
-                        ?.deleteProductsDiscrepanciesForProduct(countProcessed.value?.get(position)!!.productInfo!!)
-                taskManager.getReceivingTask()?.taskRepository?.getProducts()?.changeProduct(countProcessed.value?.get(position)!!.productInfo!!.copy(isNoEAN = true))
+                if (!countProcessed.value?.get(position)!!.productInfo!!.isNotEdit) {
+                    taskManager
+                            .getReceivingTask()
+                            ?.taskRepository
+                            ?.getProductsDiscrepancies()
+                            ?.deleteProductsDiscrepanciesForProduct(countProcessed.value?.get(position)!!.productInfo!!)
+
+
+                    taskManager
+                            .getReceivingTask()
+                            ?.taskRepository
+                            ?.getMercuryDiscrepancies()
+                            ?.deleteMercuryDiscrepanciesForProduct(countProcessed.value?.get(position)!!.productInfo!!)
+                }
+
             }
         } else {
             /**processedSelectionsHelper.selectedPositions.value?.map { position ->
