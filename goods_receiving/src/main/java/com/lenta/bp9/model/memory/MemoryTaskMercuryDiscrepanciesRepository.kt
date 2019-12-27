@@ -29,7 +29,7 @@ class MemoryTaskMercuryDiscrepanciesRepository : ITaskMercuryDiscrepanciesReposi
 
     override fun addMercuryInfo(newMercuryInfo: TaskMercuryInfo): Boolean {
         var index = -1
-        for (i in mercuryInfo.indices) {
+        for (i in mercuryDiscrepancies.indices) {
             if (newMercuryInfo.materialNumber == mercuryInfo[i].materialNumber) {
                 index = i
             }
