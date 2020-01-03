@@ -199,17 +199,17 @@ class ProductDocumentsReviseViewModel : CoreViewModel(), PageSelectionListener {
         }
 
         if (presenceMercury == true) {
-            if (taskManager.getReceivingTask()?.taskRepository?.getReviseDocuments()?.presenceUncoveredVadSomeGoods() == true) {
-                screenNavigator.openDiscrepanciesInconsistencyVetDocsDialog{
-                    screenNavigator.openFinishReviseLoadingScreen()
-                }
-                return
-            }
             if (taskManager.getReceivingTask()?.taskRepository?.getReviseDocuments()?.presenceUncoveredVadAllGoods() == true) {
                 screenNavigator.openDiscrepanciesNoVerifiedVadDialog(
                         {screenNavigator.openMercuryExceptionIntegrationScreen()},
                         {screenNavigator.openFinishReviseLoadingScreen()}
                 )
+                return
+            }
+            if (taskManager.getReceivingTask()?.taskRepository?.getReviseDocuments()?.presenceUncoveredVadSomeGoods() == true) {
+                screenNavigator.openDiscrepanciesInconsistencyVetDocsDialog{
+                    screenNavigator.openFinishReviseLoadingScreen()
+                }
                 return
             }
         }

@@ -118,16 +118,14 @@ class MemoryTaskReviseDocumentsRepository : ITaskReviseDocumentsRepository {
     override fun presenceUncoveredVadAllGoods() : Boolean {
         val presenceUncoveredVad = productDocuments.map {productDoc ->
             val vadVolume = productVetDocuments.filter {productVetDoc ->
-                productVetDoc.productNumber == productDoc.productNumber
-            }.sumByDouble {
-                it.volume
+                productVetDoc.productNumber == productDoc.productNumber && productVetDoc.isCheck
             }
-            vadVolume < productDoc.initialCount
+            vadVolume.isNotEmpty()
         }.filter {
             it
         }
 
-        return presenceUncoveredVad.size == productDocuments.size
+        return presenceUncoveredVad.isNullOrEmpty()
     }
 
     override fun presenceUncoveredVadSomeGoods(): Boolean {
@@ -142,7 +140,7 @@ class MemoryTaskReviseDocumentsRepository : ITaskReviseDocumentsRepository {
             it
         }
 
-        return presenceUncoveredVad.size < productDocuments.size && presenceUncoveredVad.isNotEmpty()
+        return presenceUncoveredVad.size <= productDocuments.filter { it.documentType == ProductDocumentType.Mercury }.size && presenceUncoveredVad.isNotEmpty()
     }
 
     override fun getComplexDocuments(): List<ComplexDocumentRevise> {
