@@ -6,6 +6,7 @@ import com.lenta.bp9.model.processing.ProcessMercuryProductService
 import com.lenta.bp9.model.task.IReceivingTaskManager
 import com.lenta.bp9.model.task.TaskBatchInfo
 import com.lenta.bp9.model.task.TaskProductInfo
+import com.lenta.bp9.model.task.TaskType
 import com.lenta.bp9.repos.IDataBaseRepo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.pojo.ReasonRejectionInfo
@@ -44,13 +45,18 @@ class GoodsDetailsViewModel : CoreViewModel() {
     }
 
     private fun updateProduct() {
+        val uom = if (taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.DirectSupplier) {
+            productInfo.value?.purchaseOrderUnits
+        } else {
+            productInfo.value?.uom
+        }
         if (productInfo.value!!.isVet && !productInfo.value!!.isNotEdit) {
             goodsDetails.postValue(
                     processMercuryProductService.getGoodsDetails()?.mapIndexed { index, discrepancy ->
                         GoodsDetailsCategoriesItem(
                                 number = index + 1,
                                 name = "${reasonRejectionInfo.value?.firstOrNull {it.code == discrepancy.typeDiscrepancies}?.name}",
-                                quantityWithUom = "${discrepancy.numberDiscrepancies.toDouble().toStringFormatted()} ${discrepancy.uom.name}",
+                                quantityWithUom = "${discrepancy.numberDiscrepancies.toDouble().toStringFormatted()} ${uom?.name}",
                                 typeDiscrepancies = discrepancy.typeDiscrepancies,
                                 even = index % 2 == 0
                         )
@@ -62,7 +68,7 @@ class GoodsDetailsViewModel : CoreViewModel() {
                         GoodsDetailsCategoriesItem(
                                 number = index + 1,
                                 name = "${reasonRejectionInfo.value?.firstOrNull {it.code == discrepancy.typeDiscrepancies}?.name}",
-                                quantityWithUom = "${discrepancy.numberDiscrepancies.toDouble().toStringFormatted()} ${discrepancy.uom.name}",
+                                quantityWithUom = "${discrepancy.numberDiscrepancies.toDouble().toStringFormatted()} ${uom?.name}",
                                 typeDiscrepancies = discrepancy.typeDiscrepancies,
                                 even = index % 2 == 0
                         )

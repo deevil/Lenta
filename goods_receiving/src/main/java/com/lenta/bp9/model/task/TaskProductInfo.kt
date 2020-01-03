@@ -17,6 +17,7 @@ class TaskProductInfo(materialNumber: String,
                       val origQuantity: String, //Исходное количество позиции поставки
                       val orderQuantity: String, //Кол-во в заказе
                       val quantityCapitalized: String, //Кол-во, которое было оприходовано по этому заказу и этому товару
+                      val purchaseOrderUnits: Uom, //ЕИ заказа на поставку
                       val overdToleranceLimit: String, //Граница допуска для сверхпоставки
                       val underdToleranceLimit: String, //Граница допуска при недопоставке
                       val upLimitCondAmount: String, //Верхняя граница суммы условия (МРЦ)
@@ -48,6 +49,7 @@ class TaskProductInfo(materialNumber: String,
              origQuantity: String = this.origQuantity,
              orderQuantity: String = this.orderQuantity,
              quantityCapitalized: String = this.quantityCapitalized,
+             purchaseOrderUnits: Uom = this.purchaseOrderUnits,
              overdToleranceLimit: String = this.overdToleranceLimit,
              underdToleranceLimit: String = this.underdToleranceLimit,
              upLimitCondAmount: String = this.upLimitCondAmount,
@@ -78,6 +80,7 @@ class TaskProductInfo(materialNumber: String,
                 origQuantity = origQuantity,
                 orderQuantity = orderQuantity,
                 quantityCapitalized = quantityCapitalized,
+                purchaseOrderUnits = purchaseOrderUnits,
                 overdToleranceLimit = overdToleranceLimit,
                 underdToleranceLimit = underdToleranceLimit,
                 upLimitCondAmount = upLimitCondAmount,

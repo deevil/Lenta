@@ -58,26 +58,44 @@ class LoadingTaskCardViewModel : CoreLoadingViewModel() {
                     taskNumber = taskNumber
             )
             val taskHeader = repoInMemoryHolder.taskList.value?.tasks?.findLast { it.taskNumber == taskNumber }
-            if (taskHeader?.taskType == TaskType.ReceptionDistributionCenter) {
-                if (taskHeader.status == TaskStatus.Traveling) {
-                    taskCardNetRequest(params).either(::handleFailure, ::handleSuccess)
-                } else {
-                    val paramsRDS = TaskContentsReceptionDistrCenterParameters(
-                            mode = mode.TaskCardModeString,
-                            deviceIP = context.getDeviceIp(),
-                            personalNumber = sessionInfo.personnelNumber ?: "",
-                            taskNumber = taskNumber,
-                            taskType = TaskType.ReceptionDistributionCenter.taskTypeString
-                    )
-                    taskContentsReceptionDistrCenterNetRequest(paramsRDS).either(::handleFailure, ::handleSuccessRDS)
+            when (taskHeader?.taskType) {
+                TaskType.ReceptionDistributionCenter -> {
+                    if (taskHeader.status == TaskStatus.Traveling) {
+                        taskCardNetRequest(params).either(::handleFailure, ::handleSuccess)
+                    } else {
+                        val paramsRDS = TaskContentsReceptionDistrCenterParameters(
+                                mode = mode.TaskCardModeString,
+                                deviceIP = context.getDeviceIp(),
+                                personalNumber = sessionInfo.personnelNumber ?: "",
+                                taskNumber = taskNumber,
+                                taskType = TaskType.ReceptionDistributionCenter.taskTypeString
+                        )
+                        taskContentsReceptionDistrCenterNetRequest(paramsRDS).either(::handleFailure, ::handleSuccessRDS)
+                    }
                 }
-            } else {
-                if (loadFullData) {
-                    taskContentsNetRequest(params).either(::handleFailure, ::handleFullDataSuccess)
-                } else {
-                    taskCardNetRequest(params).either(::handleFailure, ::handleSuccess)
+                TaskType.RecalculationCargoUnit -> {
+                    if (taskHeader.status == TaskStatus.Unloaded) {
+                        taskCardNetRequest(params).either(::handleFailure, ::handleSuccess)
+                    } else {
+                        val params = TaskContentsReceptionDistrCenterParameters(
+                                mode = mode.TaskCardModeString,
+                                deviceIP = context.getDeviceIp(),
+                                personalNumber = sessionInfo.personnelNumber ?: "",
+                                taskNumber = taskNumber,
+                                taskType = TaskType.RecalculationCargoUnit.taskTypeString
+                        )
+                        taskContentsReceptionDistrCenterNetRequest(params).either(::handleFailure, ::handleSuccessRDS)
+                    }
+                }
+                else -> {
+                    if (loadFullData) {
+                        taskContentsNetRequest(params).either(::handleFailure, ::handleFullDataSuccess)
+                    } else {
+                        taskCardNetRequest(params).either(::handleFailure, ::handleSuccess)
+                    }
                 }
             }
+
             progress.value = false
         }
     }

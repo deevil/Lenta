@@ -85,12 +85,17 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
                                     task.taskRepository.getProductsDiscrepancies().getCountProductNotProcessedOfProduct(it) > 0.0
                                 }
                                 .mapIndexed { index, productInfo ->
+                                    val uom = if (task.taskHeader.taskType == TaskType.DirectSupplier) {
+                                        productInfo.purchaseOrderUnits
+                                    } else {
+                                        productInfo.uom
+                                    }
                                     GoodsDiscrepancyItem(
                                             number = index + 1,
                                             name = "${productInfo.getMaterialLastSix()} ${productInfo.description}",
                                             countAcceptWithUom = "",
                                             countRefusalWithUom = "",
-                                            quantityNotProcessedWithUom = "? ${task.taskRepository.getProductsDiscrepancies().getCountProductNotProcessedOfProduct(productInfo).toStringFormatted()} ${productInfo.uom.name}",
+                                            quantityNotProcessedWithUom = "? ${task.taskRepository.getProductsDiscrepancies().getCountProductNotProcessedOfProduct(productInfo).toStringFormatted()} ${uom.name}",
                                             productInfo = productInfo,
                                             batchInfo = null,
                                             even = index % 2 == 0)
@@ -128,17 +133,22 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
                                     task.taskRepository.getProductsDiscrepancies().getCountAcceptOfProduct(it) +
                                             task.taskRepository.getProductsDiscrepancies().getCountRefusalOfProduct(it) > 0.0
                                 }.mapIndexed { index, productInfo ->
+                                    val uom = if (task.taskHeader.taskType == TaskType.DirectSupplier) {
+                                        productInfo.purchaseOrderUnits
+                                    } else {
+                                        productInfo.uom
+                                    }
                                     val acceptTotalCount = task.taskRepository.getProductsDiscrepancies().getCountAcceptOfProduct(productInfo)
                                     val acceptTotalCountWithUom = if (acceptTotalCount != 0.0) {
-                                        "+ " + acceptTotalCount.toStringFormatted() + " " + productInfo.uom.name
+                                        "+ " + acceptTotalCount.toStringFormatted() + " " + uom.name
                                     } else {
-                                        "0 " + productInfo.uom.name
+                                        "0 " + uom.name
                                     }
                                     val refusalTotalCount = task.taskRepository.getProductsDiscrepancies().getCountRefusalOfProduct(productInfo)
                                     val refusalTotalCountWithUom = if (refusalTotalCount != 0.0) {
-                                        "- " + refusalTotalCount.toStringFormatted() + " " + productInfo.uom.name
+                                        "- " + refusalTotalCount.toStringFormatted() + " " + uom.name
                                     } else {
-                                        "0 " + productInfo.uom.name
+                                        "0 " + uom.name
                                     }
                                     GoodsDiscrepancyItem(
                                             number = index + 1,

@@ -65,6 +65,7 @@ class TaskContents
         return taskComposition.map {
             val materialInfo = zfmpUtz48V001.getProductInfoByMaterial(it.materialNumber)
             val uomInfo = zmpUtz07V001.getUomInfo(it.uom)
+            val purchaseOrderUnitUomInfo = zmpUtz07V001.getUomInfo(it.purchaseOrderUnits)
             TaskProductInfo(
                     materialNumber = materialInfo?.material ?: "",
                     description = materialInfo?.name ?: "",
@@ -77,6 +78,7 @@ class TaskContents
                     origQuantity = it.origDeliveryQuantity,
                     orderQuantity = it.menge,
                     quantityCapitalized = it.volumeGoodsReceived,
+                    purchaseOrderUnits = Uom(code = purchaseOrderUnitUomInfo?.uom ?: "", name = purchaseOrderUnitUomInfo?.name ?: ""),
                     overdToleranceLimit = it.overDeliveryToleranceLimit,
                     underdToleranceLimit = it.shortDeliveryToleranceLimit,
                     upLimitCondAmount = it.upperLimitConditionAmount,

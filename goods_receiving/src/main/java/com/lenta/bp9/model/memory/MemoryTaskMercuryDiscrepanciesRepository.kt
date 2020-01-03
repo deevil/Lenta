@@ -149,6 +149,7 @@ class MemoryTaskMercuryDiscrepanciesRepository : ITaskMercuryDiscrepanciesReposi
     }
 
     override fun clear() {
+        mercuryInfo.clear()
         mercuryDiscrepancies.clear()
     }
 }

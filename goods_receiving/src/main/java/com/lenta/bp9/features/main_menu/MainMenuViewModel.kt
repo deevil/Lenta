@@ -33,8 +33,7 @@ class MainMenuViewModel : CoreViewModel() {
     }
 
     fun onClickRecountTask() {
-        //todo Переход к списку заданий на приемку
-
+        screenNavigator.openTaskListLoadingScreen(TaskListLoadingMode.PGE)
     }
 
     fun onClickUser() {

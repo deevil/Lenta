@@ -41,14 +41,14 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
     val tvDeliveryCaption: String by lazy {
         when (taskManager.getReceivingTask()?.taskHeader?.taskType) {
             TaskType.DirectSupplier -> context.getString(R.string.incoming_delivery)
-            TaskType.ReceptionDistributionCenter -> context.getString(R.string.transportation)
+            TaskType.ReceptionDistributionCenter, TaskType.RecalculationCargoUnit -> context.getString(R.string.transportation)
             else -> context.getString(R.string.incoming_delivery)
         }
     }
 
     val tvCountCaption: String by lazy {
         when (taskManager.getReceivingTask()?.taskHeader?.taskType) {
-            TaskType.DirectSupplier -> context.getString(R.string.count_SKU)
+            TaskType.DirectSupplier, TaskType.RecalculationCargoUnit -> context.getString(R.string.count_SKU)
             TaskType.ReceptionDistributionCenter -> context.getString(R.string.count_GE)
             else -> context.getString(R.string.count_SKU)
         }

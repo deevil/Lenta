@@ -6,7 +6,6 @@ import androidx.lifecycle.viewModelScope
 import com.lenta.bp9.features.task_card.TaskCardViewModel
 import com.lenta.bp9.model.task.IReceivingTaskManager
 import com.lenta.bp9.model.task.revise.ProductDocumentType
-import com.lenta.bp9.model.task.revise.ProductVetDocumentRevise
 import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.fmp.resources.dao_ext.getProductInfoByMaterial

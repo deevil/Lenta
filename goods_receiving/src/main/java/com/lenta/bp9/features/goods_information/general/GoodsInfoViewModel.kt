@@ -6,6 +6,7 @@ import com.lenta.bp9.features.goods_list.SearchProductDelegate
 import com.lenta.bp9.model.processing.ProcessGeneralProductService
 import com.lenta.bp9.model.task.IReceivingTaskManager
 import com.lenta.bp9.model.task.TaskProductInfo
+import com.lenta.bp9.model.task.TaskType
 import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.bp9.repos.IDataBaseRepo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
@@ -37,6 +38,13 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
     lateinit var searchProductDelegate: SearchProductDelegate
 
     val productInfo: MutableLiveData<TaskProductInfo> = MutableLiveData()
+    val uom by lazy {
+        if (taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.DirectSupplier) {
+            productInfo.value?.purchaseOrderUnits
+        } else {
+            productInfo.value?.uom
+        }
+    }
     val spinQuality: MutableLiveData<List<String>> = MutableLiveData()
     val spinQualitySelectedPosition: MutableLiveData<Int> = MutableLiveData(0)
     val spinReasonRejection: MutableLiveData<List<String>> = MutableLiveData()
@@ -72,9 +80,9 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
 
     val acceptTotalCountWithUom: MutableLiveData<String> = acceptTotalCount.map {
         if (it != 0.0) {
-            "+ " + it.toStringFormatted() + " " + productInfo.value?.uom?.name
+            "+ " + it.toStringFormatted() + " " + uom?.name
         } else {
-            "0 " + productInfo.value?.uom?.name
+            "0 " + uom?.name
         }
     }
 
@@ -101,9 +109,9 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
 
     val refusalTotalCountWithUom: MutableLiveData<String> = refusalTotalCount.map {
         if (it != 0.0) {
-            "- " + it.toStringFormatted() + " " + productInfo.value?.uom?.name
+            "- " + it.toStringFormatted() + " " + uom?.name
         } else {
-            "0 " + productInfo.value?.uom?.name
+            "0 " + uom?.name
         }
     }
 
@@ -116,7 +124,7 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
             if (isDiscrepancy.value!!) {
                 count.value = taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.getCountProductNotProcessedOfProduct(productInfo.value!!).toStringFormatted()
             }
-            suffix.value = productInfo.value?.uom?.name
+            suffix.value = uom?.name
             if (isDiscrepancy.value!!) {
                 qualityInfo.value = dataBase.getQualityInfoForDiscrepancy()
                 spinQualitySelectedPosition.value = 2

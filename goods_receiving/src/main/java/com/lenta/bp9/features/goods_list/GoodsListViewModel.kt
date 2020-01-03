@@ -81,17 +81,22 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
                                             task.taskRepository.getProductsDiscrepancies().getCountRefusalOfProduct(it)) > 0.0
                                 }
                                 .mapIndexed { index, productInfo ->
+                                    val uom = if (task.taskHeader.taskType == TaskType.DirectSupplier) {
+                                        productInfo.purchaseOrderUnits
+                                    } else {
+                                        productInfo.uom
+                                    }
                                     val acceptTotalCount = task.taskRepository.getProductsDiscrepancies().getCountAcceptOfProduct(productInfo)
                                     val acceptTotalCountWithUom = if (acceptTotalCount != 0.0) {
-                                        "+ ${acceptTotalCount.toStringFormatted()} ${productInfo.uom.name}"
+                                        "+ ${acceptTotalCount.toStringFormatted()} ${uom.name}"
                                     } else {
-                                        "0 ${productInfo.uom.name}"
+                                        "0 ${uom.name}"
                                     }
                                     val refusalTotalCount = task.taskRepository.getProductsDiscrepancies().getCountRefusalOfProduct(productInfo)
                                     val refusalTotalCountWithUom = if (refusalTotalCount != 0.0) {
-                                        "- ${refusalTotalCount.toStringFormatted()} ${productInfo.uom.name}"
+                                        "- ${refusalTotalCount.toStringFormatted()} ${uom.name}"
                                     } else {
-                                        "0 ${productInfo.uom.name}"
+                                        "0 ${uom.name}"
                                     }
 
                                     ListCountedItem(

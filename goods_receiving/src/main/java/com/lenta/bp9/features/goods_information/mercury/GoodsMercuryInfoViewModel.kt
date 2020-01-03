@@ -8,8 +8,10 @@ import com.lenta.bp9.features.goods_list.SearchProductDelegate
 import com.lenta.bp9.model.processing.*
 import com.lenta.bp9.model.task.IReceivingTaskManager
 import com.lenta.bp9.model.task.TaskProductInfo
+import com.lenta.bp9.model.task.TaskType
 import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.bp9.repos.IDataBaseRepo
+import com.lenta.bp9.repos.IRepoInMemoryHolder
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.pojo.QualityInfo
 import com.lenta.shared.requests.combined.scan_info.pojo.ReasonRejectionInfo
@@ -37,6 +39,13 @@ class GoodsMercuryInfoViewModel : CoreViewModel(), OnPositionClickListener {
     lateinit var searchProductDelegate: SearchProductDelegate
 
     val productInfo: MutableLiveData<TaskProductInfo> = MutableLiveData()
+    val uom by lazy {
+        if (taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.DirectSupplier) {
+            productInfo.value?.purchaseOrderUnits
+        } else {
+            productInfo.value?.uom
+        }
+    }
     val spinQuality: MutableLiveData<List<String>> = MutableLiveData()
     val spinQualitySelectedPosition: MutableLiveData<Int> = MutableLiveData(0)
     val spinManufacturers by lazy {
@@ -65,7 +74,7 @@ class GoodsMercuryInfoViewModel : CoreViewModel(), OnPositionClickListener {
         }
         "${findMercuryInfoOfProduct?.sumByDouble {mercuryInfo ->
             mercuryInfo.volume
-        }.toStringFormatted()} ${productInfo.value?.uom?.name}"
+        }.toStringFormatted()} ${uom?.name}"
     }
     val tvProductionDate = mercuryVolume.map {
         context.getString(R.string.vet_with_production_date, it)
@@ -97,9 +106,9 @@ class GoodsMercuryInfoViewModel : CoreViewModel(), OnPositionClickListener {
 
     val acceptTotalCountWithUom: MutableLiveData<String> = acceptTotalCount.map {
         if (it != 0.0) {
-            "+ " + it.toStringFormatted() + " " + productInfo.value?.uom?.name
+            "+ " + it.toStringFormatted() + " " + uom?.name
         } else {
-            "0 " + productInfo.value?.uom?.name
+            "0 " + uom?.name
         }
     }
 
@@ -117,9 +126,9 @@ class GoodsMercuryInfoViewModel : CoreViewModel(), OnPositionClickListener {
 
     val refusalTotalCountWithUom: MutableLiveData<String> = refusalTotalCount.map {
         if (it != 0.0) {
-            "- " + it.toStringFormatted() + " " + productInfo.value?.uom?.name
+            "- " + it.toStringFormatted() + " " + uom?.name
         } else {
-            "0 " + productInfo.value?.uom?.name
+            "0 " + uom?.name
         }
     }
 
@@ -129,7 +138,7 @@ class GoodsMercuryInfoViewModel : CoreViewModel(), OnPositionClickListener {
 
     init {
         viewModelScope.launch {
-            suffix.value = productInfo.value?.uom?.name
+            suffix.value = uom?.name
             generalShelfLife.value = productInfo.value?.generalShelfLife
             remainingShelfLife.value = productInfo.value?.remainingShelfLife
             if (isDiscrepancy.value!!) {
