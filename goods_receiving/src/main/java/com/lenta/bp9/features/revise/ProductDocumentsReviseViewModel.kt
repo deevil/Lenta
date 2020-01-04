@@ -65,6 +65,9 @@ class ProductDocumentsReviseViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     private fun updateDocumentVMs() {
+        //Устанавливаем чек-бокс "Сверено" по веттоварам, если все количество товара покрыто количеством из ВСД
+        taskManager.getReceivingTask()?.taskRepository?.getReviseDocuments()?.quantityGoodsCoveredAmountOfVetDocs()
+
         val checked = taskManager.getReceivingTask()?.getCheckedProductDocuments()
         val unchecked = taskManager.getReceivingTask()?.getUncheckedProductDocuments()
 

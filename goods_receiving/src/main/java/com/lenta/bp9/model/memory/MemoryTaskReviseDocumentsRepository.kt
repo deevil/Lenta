@@ -143,6 +143,26 @@ class MemoryTaskReviseDocumentsRepository : ITaskReviseDocumentsRepository {
         return presenceUncoveredVad.size <= productDocuments.filter { it.documentType == ProductDocumentType.Mercury }.size && presenceUncoveredVad.isNotEmpty()
     }
 
+    /**Устанавливать чек-бокс "Сверено" по товару, если все количество товара покрыто количеством из ВСД.
+    сумм(VSDVOLUME) >= ORMNG,
+    где сумм(VSDVOLUME) - это сумма привязанных к товару ВСД, значение VSDVOLUME для каждого ВСД - в таблице ET_VET_CHK.
+    ORMNG - кол-во товара в поставке из таблицы ET_DOC_MATNR_CHK.*/
+    override fun quantityGoodsCoveredAmountOfVetDocs() {
+        productDocuments.map {productDoc ->
+            val vadVolume = productVetDocuments.filter {productVetDoc ->
+                productVetDoc.productNumber == productDoc.productNumber
+            }.sumByDouble {
+                it.volume
+            }
+            val document = productDocuments.findLast { it.documentID == productDoc.documentID && it.productNumber == productDoc.productNumber }
+            if (vadVolume >= productDoc.initialCount) {
+                document?.let { it.isCheck = true }
+            } else {
+                document?.let { it.isCheck = false }
+            }
+        }
+    }
+
     override fun getComplexDocuments(): List<ComplexDocumentRevise> {
         return complexDocuments
     }
