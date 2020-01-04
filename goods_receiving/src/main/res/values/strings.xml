@@ -188,4 +188,9 @@
     <string name="dialog_new_cargo_unit_another_transportation">ГЕ-%1$s предназначена для ТК и в данной транспортировке не числится. Добавить внеплановую ГЕ как излишек?</string>
     <string name="dialog_new_cargo_unit_current_transportation">ГЕ-%1$s предназначена для ТК, находящийся далее по маршруту следования машины. Добавить внеплановую ГЕ как излишек?</string>
     <string name="alert_new_cargo_unit">ГЕ-%1$s предназначена для ТК, находящийся далее по маршруту</string>
+    <string name="skip_recount_header">Укажите причину и подтвердите пропуск пересчёта данной ГЕ"</string>
+    <string name="skip_recount">Пропустить пересчёт</string>
+    <string name="skipping_recount">Пропуск пересчёта</string>
+    <string name="in_task_special_goods">В задании присутствуют товары особого контроля. Необходимо указать представителей от секции получивших товар</string>
+    <string name="in_task_no_special_goods">В задании отсутствуют товары особого контроля. Товары будут автоматически переданы в секцию</string>
 </resources>

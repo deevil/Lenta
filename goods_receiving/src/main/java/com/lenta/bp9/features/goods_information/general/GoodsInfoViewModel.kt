@@ -86,17 +86,6 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
         }
     }
 
-    val refusalTotalCountForSave: MutableLiveData<Double> = MutableLiveData()
-    private val test: MutableLiveData<Double> by lazy {
-        countValue.combineLatest(spinQualitySelectedPosition).map {
-            if (qualityInfo.value?.get(it?.second ?: 0)?.code != "1") {
-                (it?.first ?: 0.0) + taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().getCountRefusalOfProduct(productInfo.value!!)
-            } else {
-                taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().getCountRefusalOfProduct(productInfo.value!!)
-            }
-        }
-    }
-
     val refusalTotalCount: MutableLiveData<Double> by lazy {
         countValue.combineLatest(spinQualitySelectedPosition).map {
             if (qualityInfo.value?.get(it?.second ?: 0)?.code != "1") {

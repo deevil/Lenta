@@ -198,6 +198,10 @@ data class ButtonDecorationInfo(
             ButtonDecorationInfo(R.drawable.ic_send_white_24dp, R.string.skip)
         }
 
+        val skipAlternate: ButtonDecorationInfo by lazy {
+            ButtonDecorationInfo(R.drawable.ic_arrow_skip_white_24dp, R.string.skip)
+        }
+
         val untie: ButtonDecorationInfo by lazy {
             ButtonDecorationInfo(R.drawable.ic_untie_white_24dp, R.string.untie)
         }

@@ -14,6 +14,7 @@ import com.lenta.bp9.databinding.*
 import com.lenta.bp9.features.loading.tasks.TaskCardMode
 import com.lenta.bp9.model.task.NotificationIndicatorType
 import com.lenta.bp9.model.task.TaskStatus
+import com.lenta.bp9.model.task.TaskType
 import com.lenta.bp9.platform.extentions.getAppComponent
 import com.lenta.shared.platform.activity.OnBackPresserListener
 import com.lenta.shared.platform.fragment.CoreFragment
@@ -54,10 +55,17 @@ class TaskCardFragment : CoreFragment<FragmentTaskCardBinding, TaskCardViewModel
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
         if (vm.mode == TaskCardMode.Full) {
-            when (vm.currentStatus.value) {
-                TaskStatus.Checked -> bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.verify)
-                TaskStatus.Recounted -> bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.recount)
+            if (vm.taskType == TaskType.RecalculationCargoUnit) {
+                if (vm.currentStatus.value == TaskStatus.Unloaded) {
+                    bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.skipAlternate)
+                }
+            } else {
+                when (vm.currentStatus.value) {
+                    TaskStatus.Checked -> bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.verify)
+                    TaskStatus.Recounted -> bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.recount)
+                }
             }
+
             bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.docs)
             bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.nextAlternate)
             connectLiveData(vm.visibilityBtn, bottomToolbarUiModel.uiModelButton2.visibility)
@@ -65,9 +73,15 @@ class TaskCardFragment : CoreFragment<FragmentTaskCardBinding, TaskCardViewModel
             connectLiveData(vm.enabledBtn, bottomToolbarUiModel.uiModelButton5.enabled)
         }
         if (vm.mode == TaskCardMode.ReadOnly) {
-            when (vm.currentStatus.value) {
-                TaskStatus.Checked -> bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.verify, enabled = false)
-                TaskStatus.Recounted -> bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.recount, enabled = false)
+            if (vm.taskType == TaskType.RecalculationCargoUnit) {
+                if (vm.currentStatus.value == TaskStatus.Unloaded) {
+                    bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.skipAlternate, enabled = false)
+                }
+            } else {
+                when (vm.currentStatus.value) {
+                    TaskStatus.Checked -> bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.verify, enabled = false)
+                    TaskStatus.Recounted -> bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.recount, enabled = false)
+                }
             }
             bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.docs)
             bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.nextAlternate, enabled = false)
@@ -86,7 +100,7 @@ class TaskCardFragment : CoreFragment<FragmentTaskCardBinding, TaskCardViewModel
 
     override fun onToolbarButtonClick(view: View) {
         when (view.id) {
-            R.id.b_2 -> vm.onClickVerify()
+            R.id.b_2 -> vm.onClickSecondButton()
             R.id.b_4 -> vm.onClickSupply()
             R.id.b_5 -> vm.onClickNext()
         }

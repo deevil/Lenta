@@ -119,7 +119,7 @@ class LoadingTaskCardViewModel : CoreLoadingViewModel() {
     }
 
     private fun handleFullDataSuccess(result: TaskContentsRequestResult) {
-        Logg.d { "Task card request result $result" }
+        Logg.d { "Task card request result ${result}" }
         //screenNavigator.goBack()
         viewModelScope.launch {
             val taskHeader = repoInMemoryHolder.taskList.value?.tasks?.findLast { it.taskNumber == taskNumber }

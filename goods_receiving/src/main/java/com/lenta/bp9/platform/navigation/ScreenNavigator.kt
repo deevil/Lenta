@@ -39,6 +39,7 @@ import com.lenta.bp9.features.repres_person_num_entry.RepresPersonNumEntryFragme
 import com.lenta.bp9.features.revise.*
 import com.lenta.bp9.model.task.TaskProductInfo
 import com.lenta.bp9.features.revise.invoice.InvoiceReviseFragment
+import com.lenta.bp9.features.skip_recount.SkipRecountFragment
 import com.lenta.bp9.features.transfer_goods_section.TransferGoodsSectionFragment
 import com.lenta.bp9.model.task.revise.ProductDocumentType
 import com.lenta.bp9.model.task.TaskBatchInfo
@@ -736,6 +737,36 @@ class ScreenNavigator(
         }
     }
 
+    override fun openSkipRecountScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(SkipRecountFragment())
+        }
+    }
+
+    override fun openAlertHaveIsSpecialGoodsScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.in_task_special_goods),
+                    iconRes = R.drawable.is_warning_yellow_80dp,
+                    description = context.getString(R.string.skip_recount),
+                    pageNumber = "96",
+                    timeAutoExitInMillis = 3000)
+            )
+        }
+    }
+
+    override fun openAlertNoIsSpecialGoodsScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.in_task_no_special_goods),
+                    iconRes = R.drawable.is_warning_yellow_80dp,
+                    description = context.getString(R.string.skip_recount),
+                    pageNumber = "96",
+                    timeAutoExitInMillis = 3000)
+            )
+        }
+    }
+
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 }
 
@@ -826,4 +857,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openNewCargoUnitAnotherTransportationDialog(cargoUnitNumber: String, nextCallbackFunc: () -> Unit)
     fun openNewCargoUnitCurrentTransportationDialog(cargoUnitNumber: String, nextCallbackFunc: () -> Unit)
     fun openAlertNewCargoUnitScreen(cargoUnitNumber: String)
+    fun openSkipRecountScreen()
+    fun openAlertHaveIsSpecialGoodsScreen()
+    fun openAlertNoIsSpecialGoodsScreen()
 }

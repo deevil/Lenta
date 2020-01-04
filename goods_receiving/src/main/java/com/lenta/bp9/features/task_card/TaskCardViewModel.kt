@@ -38,6 +38,10 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
 
     var mode: TaskCardMode = TaskCardMode.None
 
+    val taskType: TaskType by lazy {
+        taskManager.getReceivingTask()?.taskHeader?.taskType ?: TaskType.None
+    }
+
     val tvDeliveryCaption: String by lazy {
         when (taskManager.getReceivingTask()?.taskHeader?.taskType) {
             TaskType.DirectSupplier -> context.getString(R.string.incoming_delivery)
@@ -84,7 +88,7 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
 
     val visibilityBtn by lazy {
         MutableLiveData(taskManager.getReceivingTask()?.taskDescription?.currentStatus.let {
-            it == TaskStatus.Checked || it == TaskStatus.Recounted
+            it == TaskStatus.Checked || it == TaskStatus.Recounted || (it == TaskStatus.Unloaded && taskType == TaskType.RecalculationCargoUnit)
         })
     }
 
@@ -200,10 +204,14 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
         screenNavigator.openChangeDateTimeScreen(ChangeDateTimeMode.NextStatus)
     }
 
-    fun onClickVerify() {
-        when (currentStatus.value) {
-            TaskStatus.Checked -> screenNavigator.openStartReviseLoadingScreen()
-            TaskStatus.Recounted -> screenNavigator.openRecountStartLoadingScreen()
+    fun onClickSecondButton() {
+        if (taskType == TaskType.RecalculationCargoUnit) {
+            screenNavigator.openSkipRecountScreen()
+        } else {
+            when (currentStatus.value) {
+                TaskStatus.Checked -> screenNavigator.openStartReviseLoadingScreen()
+                TaskStatus.Recounted -> screenNavigator.openRecountStartLoadingScreen()
+            }
         }
     }
 
