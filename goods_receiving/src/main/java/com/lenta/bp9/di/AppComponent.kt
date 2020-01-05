@@ -97,4 +97,5 @@ interface AppComponent {
     fun inject(it: ControlDeliveryCargoUnitsViewModel)
     fun inject(it: CargoUnitCardViewModel)
     fun inject(it: SkipRecountViewModel)
+    fun inject(it: LoadingRecountStartPGEViewModel)
 }

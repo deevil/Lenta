@@ -220,6 +220,26 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     fun onClickNext() {
+        if (taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.RecalculationCargoUnit) {
+            if (taskManager.getReceivingTask()?.taskHeader?.isCracked == false &&  taskManager.getReceivingTask()?.taskDescription?.isRecount == false) {
+                //todo аналитик должен дописать алгоритм, карточка 2680
+                return
+            }
+
+            if (taskManager.getReceivingTask()?.taskHeader?.isCracked == true &&  taskManager.getReceivingTask()?.taskDescription?.isRecount == false) {
+                //todo Не пересчётная ГЕ с признаком "взлом", узнать у аналитика как сменить статус на "Взлом", карточка 2680
+                return
+            }
+
+            if ( (taskManager.getReceivingTask()?.taskHeader?.isCracked == true &&  taskManager.getReceivingTask()?.taskDescription?.isRecount == true) ||
+                    (taskManager.getReceivingTask()?.taskHeader?.isCracked == false &&  taskManager.getReceivingTask()?.taskDescription?.isRecount == true) ) {
+                screenNavigator.openRecountStartPGELoadingScreen()
+                return
+            }
+
+            return
+        }
+
         when (taskManager.getReceivingTask()?.taskDescription?.currentStatus) {
             TaskStatus.Ordered, TaskStatus.Traveling, TaskStatus.TemporaryRejected -> screenNavigator.openRegisterArrivalLoadingScreen()
             TaskStatus.Arrived -> {

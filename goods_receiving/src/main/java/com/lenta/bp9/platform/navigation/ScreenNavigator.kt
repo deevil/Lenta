@@ -767,6 +767,12 @@ class ScreenNavigator(
         }
     }
 
+    override fun openRecountStartPGELoadingScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(LoadingRecountStartPGEFragment())
+        }
+    }
+
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 }
 
@@ -860,4 +866,5 @@ interface IScreenNavigator : ICoreNavigator {
     fun openSkipRecountScreen()
     fun openAlertHaveIsSpecialGoodsScreen()
     fun openAlertNoIsSpecialGoodsScreen()
+    fun openRecountStartPGELoadingScreen()
 }

@@ -54,6 +54,13 @@ class ReceivingTask(val taskHeader: TaskInfo,
         taskRepository.getBatches().updateBatches(taskContentsRDSInfo.taskBatches)
         taskRepository.getBatchesDiscrepancies().updateBatchesDiscrepancy(taskContentsRDSInfo.taskBatchesDiscrepancies)
     }
+
+    fun updateTaskWithContentsPGE(taskContentsPGEInfo: TaskContentsPGEInfo) {
+        taskRepository.getProducts().updateProducts(taskContentsPGEInfo.products)
+        taskRepository.getProductsDiscrepancies().updateProductsDiscrepancy(taskContentsPGEInfo.productsDiscrepancies)
+        taskRepository.getBatches().updateBatches(taskContentsPGEInfo.taskBatches)
+        taskRepository.getBatchesDiscrepancies().updateBatchesDiscrepancy(taskContentsPGEInfo.taskBatchesDiscrepancies)
+    }
 }
 
 

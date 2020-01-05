@@ -6,7 +6,6 @@ import androidx.lifecycle.viewModelScope
 import com.lenta.bp9.features.mercury_list_irrelevant.ZMP_UTZ_GRZ_11_V001
 import com.lenta.bp9.model.task.*
 import com.lenta.bp9.platform.navigation.IScreenNavigator
-import com.lenta.bp9.repos.IRepoInMemoryHolder
 import com.lenta.bp9.requests.network.DirectSupplierStartRecountNetRequest
 import com.lenta.bp9.requests.network.DirectSupplierStartRecountParams
 import com.lenta.bp9.requests.network.DirectSupplierStartRecountRestInfo
@@ -34,8 +33,6 @@ class LoadingRecountStartViewModel : CoreLoadingViewModel() {
     lateinit var taskContents: TaskContents
     @Inject
     lateinit var hyperHive: HyperHive
-    @Inject
-    lateinit var repoInMemoryHolder: IRepoInMemoryHolder
 
     override val title: MutableLiveData<String> = MutableLiveData()
     override val progress: MutableLiveData<Boolean> = MutableLiveData(true)
