@@ -110,11 +110,9 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
 
     init {
         viewModelScope.launch {
-            if (isDiscrepancy.value!!) {
-                count.value = taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.getCountProductNotProcessedOfProduct(productInfo.value!!).toStringFormatted()
-            }
             suffix.value = uom?.name
             if (isDiscrepancy.value!!) {
+                count.value = taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.getCountProductNotProcessedOfProduct(productInfo.value!!).toStringFormatted()
                 qualityInfo.value = dataBase.getQualityInfoForDiscrepancy()
                 spinQualitySelectedPosition.value = 2
             } else {
