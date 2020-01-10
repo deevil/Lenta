@@ -17,7 +17,7 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="48dp"
         android:background="@color/colorTopPanelBackground"
         android:orientation="vertical"
         android:visibility="@{vm.visibility}">
@@ -33,11 +33,12 @@
 
             <ImageButton
                 android:id="@+id/b_topbar_3"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
                 android:background="?selectableItemBackground"
                 android:onClick="@{(v) -> toolbarButtonsClickListener.onToolbarButtonClick(v)}"
                 android:padding="16dp"
+                android:layout_marginEnd="16dp"
                 android:src="@{vm.uiModelButton3.buttonDecorationInfo.iconRes}"
                 app:focusable="@{false}"
                 app:isGone="@{!vm.uiModelButton3.visibility}"
@@ -45,8 +46,9 @@
 
             <ImageButton
                 android:id="@+id/b_topbar_1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_marginEnd="16dp"
                 android:background="?selectableItemBackground"
                 android:onClick="@{(v) -> toolbarButtonsClickListener.onToolbarButtonClick(v)}"
                 android:padding="16dp"
@@ -57,8 +59,9 @@
 
             <ImageButton
                 android:id="@+id/b_topbar_2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_marginEnd="6.7dp"
                 android:background="?selectableItemBackground"
                 android:focusable="@{false}"
                 android:onClick="@{(v) -> toolbarButtonsClickListener.onToolbarButtonClick(v)}"
@@ -79,11 +82,11 @@
             android:ellipsize="end"
             android:focusable="false"
             android:fontFamily="@font/tahoma_bold"
-            android:lineSpacingExtra="11sp"
+            android:lineSpacingExtra="7.3sp"
             android:maxLines="1"
             android:text="@{vm.title}"
             android:textAllCaps="true"
-            android:textSize="16sp"
+            android:textSize="14sp"
             android:textStyle="bold"
             app:layout_constraintBottom_toTopOf="@+id/tv_description"
             app:layout_constraintEnd_toStartOf="@+id/button_container"
@@ -91,7 +94,7 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_chainStyle="packed"
             app:zoom="@{true}"
-            tools:text="Списание товаров V1.0" />
+            tools:text="Производство V1.0" />
 
         <TextView
             android:id="@+id/tv_description"
@@ -104,12 +107,12 @@
             android:focusable="false"
             android:maxLines="1"
             android:text="@{vm.description}"
-            android:textSize="16sp"
+            android:textSize="14sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/button_container"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tv_title"
-            tools:text="Авторизация" />
+            tools:text="Выбор режима работы" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
