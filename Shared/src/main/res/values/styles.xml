@@ -6,6 +6,7 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/color_white</item>
+        <item name= "android:textViewStyle" > @style/text_style </item>
         <item name="android:colorBackground">@color/background_material_dark</item>
         <item name="android:textColorPrimary">@color/color_white</item>
         <item name="editTextStyle">@style/edit_text_style</item>
@@ -63,10 +64,14 @@
 
     <style name="edit_text_style" parent="Widget.AppCompat.EditText">
         <item name="android:background">@drawable/bg_border_rectangle</item>
-        <item name="android:textSize">15sp</item>
+        <item name="android:textSize">12sp</item>
         <item name="android:padding">8dp</item>
         <item name="android:textColor">@color/edittext_text_color</item>
         <item name="android:selectAllOnFocus">true</item>
+    </style>
+
+    <style name="text_style" parent="Widget.AppCompat.TextView">
+        <item name="android:textSize">12sp</item>
     </style>
 
     <style name="recycler_view_style">
