@@ -25,7 +25,7 @@
         <TextView
             android:id="@+id/b_1"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="64dp"
             android:background="?selectableItemBackground"
             android:clickable="@{vm.uiModelButton1.enabled}"
             android:focusable="@{vm.uiModelButton1.enabled}"
@@ -34,7 +34,7 @@
             android:onClick="@{(v) -> toolbarButtonsClickListener.onToolbarButtonClick(v)}"
             android:paddingTop="8dp"
             android:paddingBottom="8dp"
-            android:textSize="12sp"
+            android:textSize="11sp"
             app:buttonDecorationInfo='@{vm.uiModelButton1.buttonDecorationInfo}'
             app:enabled="@{vm.uiModelButton1.enabled}"
             app:invisible="@{!vm.uiModelButton1.visibility}"
@@ -51,7 +51,7 @@
         <TextView
             android:id="@+id/b_2"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="64dp"
             android:background="?selectableItemBackground"
             android:clickable="@{vm.uiModelButton2.enabled}"
             android:focusable="@{vm.uiModelButton2.enabled}"
@@ -60,7 +60,7 @@
             android:onClick="@{(v) -> toolbarButtonsClickListener.onToolbarButtonClick(v)}"
             android:paddingTop="8dp"
             android:paddingBottom="8dp"
-            android:textSize="12sp"
+            android:textSize="11sp"
             app:buttonDecorationInfo='@{vm.uiModelButton2.buttonDecorationInfo}'
             app:enabled="@{vm.uiModelButton2.enabled}"
             app:invisible="@{!vm.uiModelButton2.visibility}"
@@ -76,7 +76,7 @@
         <TextView
             android:id="@+id/b_3"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="64dp"
             android:background="?selectableItemBackground"
             android:clickable="@{vm.uiModelButton3.enabled}"
             android:focusable="@{vm.uiModelButton3.enabled}"
@@ -85,7 +85,7 @@
             android:onClick="@{(v) -> toolbarButtonsClickListener.onToolbarButtonClick(v)}"
             android:paddingTop="8dp"
             android:paddingBottom="8dp"
-            android:textSize="12sp"
+            android:textSize="11sp"
             app:buttonDecorationInfo='@{vm.uiModelButton3.buttonDecorationInfo}'
             app:enabled="@{vm.uiModelButton3.enabled}"
             app:invisible="@{!vm.uiModelButton3.visibility}"
@@ -101,7 +101,7 @@
         <TextView
             android:id="@+id/b_4"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="64dp"
             android:background="?selectableItemBackground"
             android:clickable="@{vm.uiModelButton4.enabled}"
             android:focusable="@{vm.uiModelButton4.enabled}"
@@ -110,7 +110,7 @@
             android:onClick="@{(v) -> toolbarButtonsClickListener.onToolbarButtonClick(v)}"
             android:paddingTop="8dp"
             android:paddingBottom="8dp"
-            android:textSize="12sp"
+            android:textSize="11sp"
             app:buttonDecorationInfo='@{vm.uiModelButton4.buttonDecorationInfo}'
             app:enabled="@{vm.uiModelButton4.enabled}"
             app:invisible="@{!vm.uiModelButton4.visibility}"
@@ -126,7 +126,7 @@
         <TextView
             android:id="@+id/b_5"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="64dp"
             android:background="?selectableItemBackground"
             android:clickable="@{vm.uiModelButton5.enabled}"
             android:focusable="@{vm.uiModelButton5.enabled}"
@@ -136,7 +136,7 @@
             android:paddingTop="8dp"
             android:paddingEnd="4dp"
             android:paddingBottom="8dp"
-            android:textSize="12sp"
+            android:textSize="11sp"
             app:buttonDecorationInfo='@{vm.uiModelButton5.buttonDecorationInfo}'
             app:enabled="@{vm.uiModelButton5.enabled}"
             app:invisible="@{!vm.uiModelButton5.visibility}"
