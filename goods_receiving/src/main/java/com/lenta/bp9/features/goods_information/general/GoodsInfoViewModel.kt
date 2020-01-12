@@ -9,6 +9,7 @@ import com.lenta.bp9.model.task.TaskProductInfo
 import com.lenta.bp9.model.task.TaskType
 import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.bp9.repos.IDataBaseRepo
+import com.lenta.shared.models.core.Uom
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.pojo.QualityInfo
 import com.lenta.shared.requests.combined.scan_info.pojo.ReasonRejectionInfo
@@ -38,11 +39,11 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
     lateinit var searchProductDelegate: SearchProductDelegate
 
     val productInfo: MutableLiveData<TaskProductInfo> = MutableLiveData()
-    val uom by lazy {
-        if (taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.DirectSupplier) {
-            productInfo.value?.purchaseOrderUnits
+    val uom: MutableLiveData<Uom?> by lazy {
+        if (taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.DirectSupplier || taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.RecalculationCargoUnit) {
+            MutableLiveData(productInfo.value?.purchaseOrderUnits)
         } else {
-            productInfo.value?.uom
+            MutableLiveData(productInfo.value?.uom)
         }
     }
     val spinQuality: MutableLiveData<List<String>> = MutableLiveData()
@@ -56,51 +57,87 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
     private val isClickApply: MutableLiveData<Boolean> = MutableLiveData(false)
     val isDiscrepancy: MutableLiveData<Boolean> = MutableLiveData(false)
     val isDefect: MutableLiveData<Boolean> = spinQualitySelectedPosition.combineLatest(isDiscrepancy).map {
-        if (!it!!.second) {
-            it.first != 0
-        } else true
+        if (taskManager.getReceivingTask()!!.taskHeader.taskType != TaskType.RecalculationCargoUnit) {
+            if (!it!!.second) {
+                it.first != 0
+            } else true
+        } else {
+           false
+        }
     }
 
     private val qualityInfo: MutableLiveData<List<QualityInfo>> = MutableLiveData()
     private val reasonRejectionInfo: MutableLiveData<List<ReasonRejectionInfo>> = MutableLiveData()
+
+    val isTaskPGE: MutableLiveData<Boolean> by lazy {
+        if (taskManager.getReceivingTask()!!.taskHeader.taskType == TaskType.RecalculationCargoUnit) MutableLiveData(true) else MutableLiveData(false)
+    }
+    val isEizUnit: MutableLiveData<Boolean> = MutableLiveData(true)
 
     val count: MutableLiveData<String> = MutableLiveData("0")
     private val countValue: MutableLiveData<Double> = count.map { it?.toDoubleOrNull() ?: 0.0 }
 
     val acceptTotalCount: MutableLiveData<Double> by lazy {
         countValue.combineLatest(spinQualitySelectedPosition).map {
-            if (qualityInfo.value?.get(it!!.second)?.code == "1") {
-                (it?.first
-                        ?: 0.0) + taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().getCountAcceptOfProduct(productInfo.value!!)
+            val countAccept = if (isTaskPGE.value!!) {
+                taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().getCountAcceptOfProductPGE(productInfo.value!!)
             } else {
                 taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().getCountAcceptOfProduct(productInfo.value!!)
+            }
+
+            if (isTaskPGE.value!!) {
+                if (qualityInfo.value?.get(it!!.second)?.code == "1" || qualityInfo.value?.get(it!!.second)?.code == "2") {
+                    (it?.first ?: 0.0) + countAccept
+                } else {
+                    countAccept
+                }
+            } else {
+                if (qualityInfo.value?.get(it!!.second)?.code == "1") {
+                    (it?.first ?: 0.0) + countAccept
+                } else {
+                    countAccept
+                }
             }
         }
     }
 
     val acceptTotalCountWithUom: MutableLiveData<String> = acceptTotalCount.map {
         if (it != 0.0) {
-            "+ " + it.toStringFormatted() + " " + uom?.name
+            "+ " + it.toStringFormatted() + " " + uom.value?.name
         } else {
-            "0 " + uom?.name
+            "0 " + uom.value?.name
         }
     }
 
     val refusalTotalCount: MutableLiveData<Double> by lazy {
         countValue.combineLatest(spinQualitySelectedPosition).map {
-            if (qualityInfo.value?.get(it?.second ?: 0)?.code != "1") {
-                (it?.first ?: 0.0) + taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().getCountRefusalOfProduct(productInfo.value!!)
+            val countRefusal = if (isTaskPGE.value!!) {
+                taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().getCountRefusalOfProductPGE(productInfo.value!!)
             } else {
                 taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().getCountRefusalOfProduct(productInfo.value!!)
+            }
+
+            if (isTaskPGE.value!!) {
+                if (qualityInfo.value?.get(it!!.second)?.code == "3" || qualityInfo.value?.get(it!!.second)?.code == "4" || qualityInfo.value?.get(it!!.second)?.code == "5") {
+                    (it?.first ?: 0.0) + countRefusal
+                } else {
+                    countRefusal
+                }
+            } else {
+                if (qualityInfo.value?.get(it!!.second)?.code != "1") {
+                    (it?.first ?: 0.0) + countRefusal
+                } else {
+                    countRefusal
+                }
             }
         }
     }
 
     val refusalTotalCountWithUom: MutableLiveData<String> = refusalTotalCount.map {
         if (it != 0.0) {
-            "- " + it.toStringFormatted() + " " + uom?.name
+            "- " + it.toStringFormatted() + " " + uom.value?.name
         } else {
-            "0 " + uom?.name
+            "0 " + uom.value?.name
         }
     }
 
@@ -110,14 +147,22 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
 
     init {
         viewModelScope.launch {
-            suffix.value = uom?.name
-            if (isDiscrepancy.value!!) {
-                count.value = taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.getCountProductNotProcessedOfProduct(productInfo.value!!).toStringFormatted()
-                qualityInfo.value = dataBase.getQualityInfoForDiscrepancy()
-                spinQualitySelectedPosition.value = 2
+            if (taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.RecalculationCargoUnit) {
+                if (isDiscrepancy.value!!) {
+                    count.value = taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.getCountProductNotProcessedOfProductPGE(productInfo.value!!).toStringFormatted()
+                }
+                qualityInfo.value = dataBase.getQualityInfoPGE()
             } else {
-                qualityInfo.value = dataBase.getQualityInfo()
+                if (isDiscrepancy.value!!) {
+                    count.value = taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.getCountProductNotProcessedOfProduct(productInfo.value!!).toStringFormatted()
+                    qualityInfo.value = dataBase.getQualityInfoForDiscrepancy()
+                    spinQualitySelectedPosition.value = 2
+                } else {
+                    qualityInfo.value = dataBase.getQualityInfo()
+                }
             }
+
+            suffix.value = uom.value?.name
             spinQuality.value = qualityInfo.value?.map {
                 it.name
             }
@@ -154,19 +199,31 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
 
     private suspend fun updateDataSpinReasonRejection(selectedQuality: String) {
         viewModelScope.launch {
-            screenNavigator.showProgressLoadingData()
-            spinReasonRejectionSelectedPosition.value = 0
-            reasonRejectionInfo.value = dataBase.getReasonRejectionInfoOfQuality(selectedQuality)
-            spinReasonRejection.value = reasonRejectionInfo.value?.map {
-                it.name
+            if (isTaskPGE.value == true) {
+                spinReasonRejectionSelectedPosition.value = 0
+                spinReasonRejection.value = listOf("ЕО - " + productInfo.value!!.processingUnit)
+            } else {
+                screenNavigator.showProgressLoadingData()
+                spinReasonRejectionSelectedPosition.value = 0
+                reasonRejectionInfo.value = dataBase.getReasonRejectionInfoOfQuality(selectedQuality)
+                spinReasonRejection.value = reasonRejectionInfo.value?.map {
+                    it.name
+                }
+                count.value = count.value
+                screenNavigator.hideProgress()
             }
-            count.value = count.value
-            screenNavigator.hideProgress()
         }
     }
 
-    //блок 6.16
     fun onClickAdd() {
+        if (isTaskPGE.value == true) {
+            processGeneralProductService.add(count.value!!, qualityInfo.value!![spinQualitySelectedPosition.value!!].code)
+            clickBtnApply()
+            return
+        }
+
+        //ППП
+        //блок 6.16
         if (processGeneralProductService.countEqualOrigQuantity(countValue.value!!)) {//блок 6.16 (да)
             //блок 6.172
             saveCategory()
@@ -323,6 +380,27 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
                 }
             }
 
+        }
+    }
+
+    fun onClickUnitChange() {
+        isEizUnit.value = !isEizUnit.value!!
+        suffix.value = if (isEizUnit.value!!) {
+            productInfo.value?.purchaseOrderUnits?.name
+        } else {
+            productInfo.value?.uom?.name
+        }
+
+        acceptTotalCountWithUom.value = if (acceptTotalCount.value!! != 0.0) {
+            "+ " + acceptTotalCount.value.toStringFormatted() + " " + suffix.value
+        } else {
+            "0 " + suffix.value
+        }
+
+        refusalTotalCountWithUom.value = if (refusalTotalCount.value!! != 0.0) {
+            "- " + refusalTotalCount.value.toStringFormatted() + " " + suffix.value
+        } else {
+            "0 " + suffix.value
         }
     }
 

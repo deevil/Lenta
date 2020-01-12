@@ -3,6 +3,7 @@ package com.lenta.bp9.model.processing
 import com.lenta.bp9.model.task.IReceivingTaskManager
 import com.lenta.bp9.model.task.TaskProductDiscrepancies
 import com.lenta.bp9.model.task.TaskProductInfo
+import com.lenta.bp9.model.task.TaskType
 import com.lenta.bp9.repos.IDataBaseRepo
 import com.lenta.shared.di.AppScope
 import com.lenta.shared.models.core.ProductType
@@ -100,7 +101,11 @@ class ProcessGeneralProductService
     }
 
     fun add(count: String, reasonRejectionCode: String){
-        val countAdd = if (reasonRejectionCode == "1") count.toDouble() else getCountRefusalOfReasonRejection(reasonRejectionCode) + count.toDouble()
+        val countAdd: Double = if (taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.RecalculationCargoUnit) {
+            getCountRefusalOfReasonRejection(reasonRejectionCode) + count.toDouble()
+        } else {
+            if (reasonRejectionCode == "1") count.toDouble() else getCountRefusalOfReasonRejection(reasonRejectionCode) + count.toDouble()
+        }
         val foundDiscrepancy = taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.findProductDiscrepanciesOfProduct(productInfo)?.findLast {
             it.materialNumber == productInfo.materialNumber && it.typeDiscrepancies == reasonRejectionCode
         }

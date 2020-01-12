@@ -77,8 +77,13 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
                 listCounted.postValue(
                         task.getProcessedProducts()
                                 .filter {
-                                    (task.taskRepository.getProductsDiscrepancies().getCountAcceptOfProduct(it) +
-                                            task.taskRepository.getProductsDiscrepancies().getCountRefusalOfProduct(it)) > 0.0
+                                    if (task.taskHeader.taskType == TaskType.RecalculationCargoUnit) {
+                                        (task.taskRepository.getProductsDiscrepancies().getCountAcceptOfProductPGE(it) +
+                                                task.taskRepository.getProductsDiscrepancies().getCountRefusalOfProductPGE(it)) > 0.0
+                                    } else {
+                                        (task.taskRepository.getProductsDiscrepancies().getCountAcceptOfProduct(it) +
+                                                task.taskRepository.getProductsDiscrepancies().getCountRefusalOfProduct(it)) > 0.0
+                                    }
                                 }
                                 .mapIndexed { index, productInfo ->
                                     val uom = if (task.taskHeader.taskType == TaskType.DirectSupplier) {
@@ -86,13 +91,21 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
                                     } else {
                                         productInfo.uom
                                     }
-                                    val acceptTotalCount = task.taskRepository.getProductsDiscrepancies().getCountAcceptOfProduct(productInfo)
+                                    val acceptTotalCount = if (task.taskHeader.taskType == TaskType.RecalculationCargoUnit) {
+                                        task.taskRepository.getProductsDiscrepancies().getCountAcceptOfProductPGE(productInfo)
+                                    } else {
+                                        task.taskRepository.getProductsDiscrepancies().getCountAcceptOfProduct(productInfo)
+                                    }
                                     val acceptTotalCountWithUom = if (acceptTotalCount != 0.0) {
                                         "+ ${acceptTotalCount.toStringFormatted()} ${uom.name}"
                                     } else {
                                         "0 ${uom.name}"
                                     }
-                                    val refusalTotalCount = task.taskRepository.getProductsDiscrepancies().getCountRefusalOfProduct(productInfo)
+                                    val refusalTotalCount = if (task.taskHeader.taskType == TaskType.RecalculationCargoUnit) {
+                                        task.taskRepository.getProductsDiscrepancies().getCountRefusalOfProductPGE(productInfo)
+                                    } else {
+                                        task.taskRepository.getProductsDiscrepancies().getCountRefusalOfProduct(productInfo)
+                                    }
                                     val refusalTotalCountWithUom = if (refusalTotalCount != 0.0) {
                                         "- ${refusalTotalCount.toStringFormatted()} ${uom.name}"
                                     } else {
@@ -154,8 +167,13 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
                 listWithoutBarcode.postValue(
                         task.getProcessedProducts()
                                 .filter {
-                                    it.isNoEAN && (task.taskRepository.getProductsDiscrepancies().getCountAcceptOfProduct(it) +
-                                            task.taskRepository.getProductsDiscrepancies().getCountRefusalOfProduct(it) == 0.0)
+                                    if (task.taskHeader.taskType == TaskType.RecalculationCargoUnit) {
+                                        it.isNoEAN && (task.taskRepository.getProductsDiscrepancies().getCountAcceptOfProductPGE(it) +
+                                                task.taskRepository.getProductsDiscrepancies().getCountRefusalOfProduct(it) == 0.0)
+                                    } else {
+                                        it.isNoEAN && (task.taskRepository.getProductsDiscrepancies().getCountAcceptOfProductPGE(it) +
+                                                task.taskRepository.getProductsDiscrepancies().getCountRefusalOfProduct(it) == 0.0)
+                                    }
                                 }.mapIndexed { index, productInfo ->
                                     ListWithoutBarcodeItem(
                                             number = index + 1,

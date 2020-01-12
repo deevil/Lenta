@@ -22,7 +22,7 @@ class DataBaseRepo(
             zmpUtz17V001.getAllQuality()?.toQualityInfoList()?.filter {
                 it.id == "005"
             }
-        }
+    }
 
     override suspend fun getQualityInfoForDiscrepancy(): List<QualityInfo>? = withContext(Dispatchers.IO) {
         zmpUtz17V001.getAllQuality()?.toQualityInfoList()?.filter {
@@ -77,6 +77,12 @@ class DataBaseRepo(
             it.id == "014"
         }
     }
+
+    override suspend fun getQualityInfoPGE(): List<QualityInfo>? = withContext(Dispatchers.IO) {
+        zmpUtz17V001.getAllQuality()?.toQualityInfoList()?.filter {
+            it.id == "013"
+        }
+    }
 }
 
 interface IDataBaseRepo {
@@ -91,4 +97,5 @@ interface IDataBaseRepo {
     suspend fun getStatusInfoForPRC(): List<QualityInfo>?
     suspend fun getSurplusInfoForPRC(): List<QualityInfo>?
     suspend fun getTypePalletInfo(): List<QualityInfo>?
+    suspend fun getQualityInfoPGE(): List<QualityInfo>?
 }

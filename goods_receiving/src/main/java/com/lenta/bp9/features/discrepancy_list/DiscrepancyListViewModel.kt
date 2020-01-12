@@ -82,7 +82,11 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
                 countNotProcessed.postValue(
                         task.getProcessedProducts()
                                 .filter {
-                                    task.taskRepository.getProductsDiscrepancies().getCountProductNotProcessedOfProduct(it) > 0.0
+                                    if (task.taskHeader.taskType == TaskType.RecalculationCargoUnit) {
+                                        task.taskRepository.getProductsDiscrepancies().getCountProductNotProcessedOfProductPGE(it) > 0.0
+                                    } else {
+                                        task.taskRepository.getProductsDiscrepancies().getCountProductNotProcessedOfProduct(it) > 0.0
+                                    }
                                 }
                                 .mapIndexed { index, productInfo ->
                                     val uom = if (task.taskHeader.taskType == TaskType.DirectSupplier) {
@@ -90,12 +94,17 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
                                     } else {
                                         productInfo.uom
                                     }
+                                    val quantityNotProcessedProduct = if (task.taskHeader.taskType == TaskType.RecalculationCargoUnit) {
+                                        task.taskRepository.getProductsDiscrepancies().getCountProductNotProcessedOfProductPGE(productInfo).toStringFormatted()
+                                    } else {
+                                        task.taskRepository.getProductsDiscrepancies().getCountProductNotProcessedOfProduct(productInfo).toStringFormatted()
+                                    }
                                     GoodsDiscrepancyItem(
                                             number = index + 1,
                                             name = "${productInfo.getMaterialLastSix()} ${productInfo.description}",
                                             countAcceptWithUom = "",
                                             countRefusalWithUom = "",
-                                            quantityNotProcessedWithUom = "? ${task.taskRepository.getProductsDiscrepancies().getCountProductNotProcessedOfProduct(productInfo).toStringFormatted()} ${uom.name}",
+                                            quantityNotProcessedWithUom = "? $quantityNotProcessedProduct ${uom.name}",
                                             productInfo = productInfo,
                                             batchInfo = null,
                                             even = index % 2 == 0)
@@ -130,21 +139,34 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
                 countProcessed.postValue(
                         task.getProcessedProducts()
                                 .filter {
-                                    task.taskRepository.getProductsDiscrepancies().getCountAcceptOfProduct(it) +
-                                            task.taskRepository.getProductsDiscrepancies().getCountRefusalOfProduct(it) > 0.0
+                                    if (task.taskHeader.taskType == TaskType.RecalculationCargoUnit) {
+                                        (task.taskRepository.getProductsDiscrepancies().getCountAcceptOfProductPGE(it) +
+                                                task.taskRepository.getProductsDiscrepancies().getCountRefusalOfProductPGE(it)) > 0.0
+                                    } else {
+                                        (task.taskRepository.getProductsDiscrepancies().getCountAcceptOfProduct(it) +
+                                                task.taskRepository.getProductsDiscrepancies().getCountRefusalOfProduct(it)) > 0.0
+                                    }
                                 }.mapIndexed { index, productInfo ->
                                     val uom = if (task.taskHeader.taskType == TaskType.DirectSupplier) {
                                         productInfo.purchaseOrderUnits
                                     } else {
                                         productInfo.uom
                                     }
-                                    val acceptTotalCount = task.taskRepository.getProductsDiscrepancies().getCountAcceptOfProduct(productInfo)
+                                    val acceptTotalCount = if (task.taskHeader.taskType == TaskType.RecalculationCargoUnit) {
+                                        task.taskRepository.getProductsDiscrepancies().getCountAcceptOfProductPGE(productInfo)
+                                    } else {
+                                        task.taskRepository.getProductsDiscrepancies().getCountAcceptOfProduct(productInfo)
+                                    }
                                     val acceptTotalCountWithUom = if (acceptTotalCount != 0.0) {
                                         "+ " + acceptTotalCount.toStringFormatted() + " " + uom.name
                                     } else {
                                         "0 " + uom.name
                                     }
-                                    val refusalTotalCount = task.taskRepository.getProductsDiscrepancies().getCountRefusalOfProduct(productInfo)
+                                    val refusalTotalCount = if (task.taskHeader.taskType == TaskType.RecalculationCargoUnit) {
+                                        task.taskRepository.getProductsDiscrepancies().getCountRefusalOfProductPGE(productInfo)
+                                    } else {
+                                        task.taskRepository.getProductsDiscrepancies().getCountRefusalOfProduct(productInfo)
+                                    }
                                     val refusalTotalCountWithUom = if (refusalTotalCount != 0.0) {
                                         "- " + refusalTotalCount.toStringFormatted() + " " + uom.name
                                     } else {

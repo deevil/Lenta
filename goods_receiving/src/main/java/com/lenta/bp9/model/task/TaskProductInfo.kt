@@ -35,7 +35,8 @@ class TaskProductInfo(materialNumber: String,
                       val isMarkFl: Boolean,
                       val isVet: Boolean,
                       val numberBoxesControl: String, //кол-во коробок для контроля
-                      val numberStampsControl: String //кол-во марок для контроля
+                      val numberStampsControl: String, //кол-во марок для контроля
+                      val processingUnit: String
                         ) : ProductInfo(materialNumber, description, uom, type, isSet, sectionId, matrixType, materialType) {
 
     fun copy(materialNumber: String = this.materialNumber,
@@ -67,7 +68,8 @@ class TaskProductInfo(materialNumber: String,
              isMarkFl: Boolean = this.isMarkFl,
              isVet: Boolean = this.isVet,
              numberBoxesControl: String = this.numberBoxesControl,
-             numberStampsControl: String = this.numberStampsControl) : TaskProductInfo {
+             numberStampsControl: String = this.numberStampsControl,
+             processingUnit: String = this.processingUnit) : TaskProductInfo {
         return TaskProductInfo(
                 materialNumber = materialNumber,
                 description = description,
@@ -98,7 +100,8 @@ class TaskProductInfo(materialNumber: String,
                 isMarkFl = isMarkFl,
                 isVet = isVet,
                 numberBoxesControl = numberBoxesControl,
-                numberStampsControl = numberStampsControl
+                numberStampsControl = numberStampsControl,
+                processingUnit = processingUnit
         )
     }
 }

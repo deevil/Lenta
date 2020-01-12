@@ -104,7 +104,8 @@ class TaskContents
                     isMarkFl = it.isStampFl == "X",
                     isVet = it.isVet == "X",
                     numberBoxesControl = it.quantityBoxesControl,
-                    numberStampsControl = it.quantityStampsControl
+                    numberStampsControl = it.quantityStampsControl,
+                    processingUnit = it.processingUnit ?: ""
             )
         }
     }

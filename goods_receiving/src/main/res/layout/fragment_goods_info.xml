@@ -163,7 +163,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="1dp"
-            android:visibility="@{vm.isDefect}"
+            android:visibility="@{vm.isDefect || vm.isTaskPGE}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/div_vert">
@@ -194,6 +194,23 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
+        <TextView
+            android:id="@+id/tv_section"
+            style="@style/NumberSectionTxt"
+            android:layout_width="36sp"
+            android:layout_height="36sp"
+            android:layout_marginStart="8dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?selectableItemBackground"
+            android:gravity="center"
+            android:onClick="@{(v) -> vm.screenNavigator.openSectionInfoScreen(vm.productInfo.sectionId)}"
+            android:text='@{"" + vm.productInfo.sectionId}'
+            app:layout_constraintBottom_toBottomOf="@+id/b_scan"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/b_scan"
+            tools:text="02" />
+
         <ImageButton
             android:id="@+id/b_scan"
             android:layout_width="wrap_content"
@@ -206,6 +223,18 @@
             android:src="@drawable/ic_scan_barcode_48dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
+
+        <ImageView
+            android:id="@+id/imageView6"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:src="@{vm.isEizUnit ? @drawable/ic_eiz_24dp : @drawable/ic_bei_24dp}"
+            android:onClick="@{(v) -> vm.onClickUnitChange()}"
+            app:visibleOrGone='@{vm.isTaskPGE()}'
+            app:layout_constraintBottom_toBottomOf="@+id/et_inventory"
+            app:layout_constraintEnd_toEndOf="@+id/et_inventory"
+            app:layout_constraintTop_toTopOf="@+id/et_inventory" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

@@ -32,7 +32,18 @@ class GoodsDetailsViewModel : CoreViewModel() {
 
     init {
         viewModelScope.launch {
-            reasonRejectionInfo.value = dataBase.getAllReasonRejectionInfo()
+            reasonRejectionInfo.value = if (taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.RecalculationCargoUnit) {
+                dataBase.getQualityInfoPGE()?.map {
+                    ReasonRejectionInfo(
+                            id = it.id,
+                            qualityCode = "",
+                            code = it.code,
+                            name = it.name
+                    )
+                }
+            } else {
+                dataBase.getAllReasonRejectionInfo()
+            }
             if (productInfo.value != null) {
                 updateProduct()
             } else {
