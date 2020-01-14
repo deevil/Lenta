@@ -41,6 +41,7 @@ import com.lenta.bp9.model.task.TaskProductInfo
 import com.lenta.bp9.features.revise.invoice.InvoiceReviseFragment
 import com.lenta.bp9.features.skip_recount.SkipRecountFragment
 import com.lenta.bp9.features.transfer_goods_section.TransferGoodsSectionFragment
+import com.lenta.bp9.features.transport_marriage.TransportMarriageFragment
 import com.lenta.bp9.model.task.revise.ProductDocumentType
 import com.lenta.bp9.model.task.TaskBatchInfo
 import com.lenta.bp9.model.task.TaskCargoUnitInfo
@@ -773,6 +774,12 @@ class ScreenNavigator(
         }
     }
 
+    override fun openTransportMarriageScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(TransportMarriageFragment())
+        }
+    }
+
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 }
 
@@ -867,4 +874,5 @@ interface IScreenNavigator : ICoreNavigator {
     fun openAlertHaveIsSpecialGoodsScreen()
     fun openAlertNoIsSpecialGoodsScreen()
     fun openRecountStartPGELoadingScreen()
+    fun openTransportMarriageScreen()
 }

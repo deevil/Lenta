@@ -8,6 +8,7 @@ import com.lenta.shared.functional.Either
 import com.lenta.shared.interactor.UseCase
 import com.lenta.shared.models.core.Manufacturer
 import com.lenta.shared.requests.FmpRequestsHelper
+import com.lenta.shared.requests.SapResponse
 import javax.inject.Inject
 
 class DirectSupplierStartRecountNetRequest
@@ -50,10 +51,10 @@ data class DirectSupplierStartRecountRestInfo(
         @SerializedName("ET_VET_NOT_ACTUAL") //Список не актуальных ВСД
         val taskMercuryNotActualRestData: List<TaskMercuryNotActualRestData>,
         @SerializedName("EV_RETCODE")
-        val retcode: String,
+        override val retCode: Int,
         @SerializedName("EV_ERROR_TEXT")
-        val errorText: String
-)
+        override val errorText: String
+) : SapResponse
 
 data class TaskComposition(
         @SerializedName("MATNR")

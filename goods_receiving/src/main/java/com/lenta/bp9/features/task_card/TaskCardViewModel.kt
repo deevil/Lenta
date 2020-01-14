@@ -88,7 +88,7 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
 
     val visibilityBtn by lazy {
         MutableLiveData(taskManager.getReceivingTask()?.taskDescription?.currentStatus.let {
-            it == TaskStatus.Checked || it == TaskStatus.Recounted || (it == TaskStatus.Unloaded && taskType == TaskType.RecalculationCargoUnit)
+            it == TaskStatus.Checked || it == TaskStatus.Recounted || (it == TaskStatus.Unloaded && (taskType == TaskType.RecalculationCargoUnit || taskType == TaskType.ReceptionDistributionCenter) )
         })
     }
 
@@ -205,12 +205,14 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     fun onClickSecondButton() {
-        if (taskType == TaskType.RecalculationCargoUnit) {
-            screenNavigator.openSkipRecountScreen()
-        } else {
-            when (currentStatus.value) {
-                TaskStatus.Checked -> screenNavigator.openStartReviseLoadingScreen()
-                TaskStatus.Recounted -> screenNavigator.openRecountStartLoadingScreen()
+        when (taskType) {
+            TaskType.RecalculationCargoUnit -> screenNavigator.openSkipRecountScreen()
+            TaskType.ReceptionDistributionCenter -> screenNavigator.openTransportMarriageScreen()
+            else -> {
+                when (currentStatus.value) {
+                    TaskStatus.Checked -> screenNavigator.openStartReviseLoadingScreen()
+                    TaskStatus.Recounted -> screenNavigator.openRecountStartLoadingScreen()
+                }
             }
         }
     }

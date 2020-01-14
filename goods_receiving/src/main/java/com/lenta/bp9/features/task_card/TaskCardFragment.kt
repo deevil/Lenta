@@ -55,14 +55,22 @@ class TaskCardFragment : CoreFragment<FragmentTaskCardBinding, TaskCardViewModel
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
         if (vm.mode == TaskCardMode.Full) {
-            if (vm.taskType == TaskType.RecalculationCargoUnit) {
-                if (vm.currentStatus.value == TaskStatus.Unloaded) {
-                    bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.skipAlternate)
+            when (vm.taskType) {
+                TaskType.RecalculationCargoUnit -> {
+                    if (vm.currentStatus.value == TaskStatus.Unloaded) {
+                        bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.skipAlternate)
+                    }
                 }
-            } else {
-                when (vm.currentStatus.value) {
-                    TaskStatus.Checked -> bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.verify)
-                    TaskStatus.Recounted -> bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.recount)
+                TaskType.ReceptionDistributionCenter -> {
+                    if (vm.currentStatus.value == TaskStatus.Unloaded) {
+                        bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.transportMarriage)
+                    }
+                }
+                else -> {
+                    when (vm.currentStatus.value) {
+                        TaskStatus.Checked -> bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.verify)
+                        TaskStatus.Recounted -> bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.recount)
+                    }
                 }
             }
 
@@ -73,16 +81,25 @@ class TaskCardFragment : CoreFragment<FragmentTaskCardBinding, TaskCardViewModel
             connectLiveData(vm.enabledBtn, bottomToolbarUiModel.uiModelButton5.enabled)
         }
         if (vm.mode == TaskCardMode.ReadOnly) {
-            if (vm.taskType == TaskType.RecalculationCargoUnit) {
-                if (vm.currentStatus.value == TaskStatus.Unloaded) {
-                    bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.skipAlternate, enabled = false)
+            when (vm.taskType) {
+                TaskType.RecalculationCargoUnit -> {
+                    if (vm.currentStatus.value == TaskStatus.Unloaded) {
+                        bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.skipAlternate, enabled = false)
+                    }
                 }
-            } else {
-                when (vm.currentStatus.value) {
-                    TaskStatus.Checked -> bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.verify, enabled = false)
-                    TaskStatus.Recounted -> bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.recount, enabled = false)
+                TaskType.ReceptionDistributionCenter -> {
+                    if (vm.currentStatus.value == TaskStatus.Unloaded) {
+                        bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.transportMarriage, enabled = false)
+                    }
+                }
+                else -> {
+                    when (vm.currentStatus.value) {
+                        TaskStatus.Checked -> bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.verify, enabled = false)
+                        TaskStatus.Recounted -> bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.recount, enabled = false)
+                    }
                 }
             }
+
             bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.docs)
             bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.nextAlternate, enabled = false)
             connectLiveData(vm.visibilityBtn, bottomToolbarUiModel.uiModelButton2.visibility)

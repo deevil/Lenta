@@ -193,4 +193,7 @@
     <string name="skipping_recount">Пропуск пересчёта</string>
     <string name="in_task_special_goods">В задании присутствуют товары особого контроля. Необходимо указать представителей от секции получивших товар</string>
     <string name="in_task_no_special_goods">В задании отсутствуют товары особого контроля. Товары будут автоматически переданы в секцию</string>
+    <string name="list_cargo_units">Список ГЕ</string>
+    <string name="act">Акт</string>
+    <string name="transport_marriage">Транспортный брак</string>
 </resources>
