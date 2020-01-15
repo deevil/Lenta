@@ -14,7 +14,7 @@ import javax.inject.Inject
 class DeclareTransportDefectNetRequest
 @Inject constructor(private val fmpRequestsHelper: FmpRequestsHelper) : UseCase<DeclareTransportDefectRestInfo, DeclareTransportDefectParams> {
     override suspend fun run(params: DeclareTransportDefectParams): Either<Failure, DeclareTransportDefectRestInfo> {
-        return fmpRequestsHelper.restRequest("ZMP_UTZ_GRZ_11_V001", params, DeclareTransportDefectStatus::class.java)
+        return fmpRequestsHelper.restRequest("ZMP_UTZ_GRZ_24_V001", params, DeclareTransportDefectStatus::class.java)
     }
 }
 

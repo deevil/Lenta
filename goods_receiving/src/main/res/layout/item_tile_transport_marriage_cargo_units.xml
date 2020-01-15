@@ -81,7 +81,7 @@
             android:ellipsize="end"
             android:gravity="start|center_vertical"
             android:maxLines="2"
-            android:text="@{vm.name}"
+            android:text="@{vm.cargoUnitNumber}"
             app:layout_constraintBottom_toBottomOf="@+id/tv_counter"
             app:layout_constraintEnd_toStartOf="@+id/img_arrow"
             app:layout_constraintStart_toEndOf="@+id/div_vert1"
@@ -118,12 +118,12 @@
             android:ellipsize="end"
             android:gravity="start|center_vertical"
             android:maxLines="1"
-            android:text='@{vm.quantityWithUom }'
+            android:text='@{vm.quantityPositions }'
             app:layout_constraintBottom_toBottomOf="@+id/tv_counter"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/div_vert2"
             app:layout_constraintTop_toTopOf="@+id/tv_counter"
-            tools:text="10 шт" />
+            tools:text="10" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

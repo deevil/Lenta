@@ -13,6 +13,7 @@ import android.view.ViewGroup
 import android.view.View
 import android.widget.AdapterView
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.Observer
 import com.lenta.bp9.BR
 import com.lenta.bp9.databinding.*
 import com.lenta.shared.keys.KeyCode
@@ -23,6 +24,7 @@ import com.lenta.shared.scan.OnScanResultListener
 import com.lenta.shared.utilities.databinding.DataBindingAdapter
 import com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig
 import com.lenta.shared.utilities.databinding.RecyclerViewKeyHandler
+import com.lenta.shared.utilities.extentions.connectLiveData
 
 class TransportMarriageFragment : CoreFragment<FragmentTransportMarriageBinding, TransportMarriageViewModel>(),
         ViewPagerSettings,
@@ -52,6 +54,16 @@ class TransportMarriageFragment : CoreFragment<FragmentTransportMarriageBinding,
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.cancellation)
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.processAlternate)
+        viewLifecycleOwner.apply {
+            vm.selectedPage.observe(this, Observer {
+                if (it == 0) {
+                    bottomToolbarUiModel.uiModelButton3.clean()
+                } else {
+                    bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.delete)
+                    connectLiveData(vm.deleteButtonEnabled, bottomToolbarUiModel.uiModelButton3.enabled)
+                }
+            })
+        }
     }
 
     override fun getPagerItemView(container: ViewGroup, position: Int): View {
