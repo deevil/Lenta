@@ -28,12 +28,12 @@ class MainMenuViewModel : CoreViewModel() {
 
     }
 
-    fun onClickReceiptTask() {
-        screenNavigator.openTaskListLoadingScreen(TaskListLoadingMode.Receiving)
-    }
-
     fun onClickRecountTask() {
         screenNavigator.openTaskListLoadingScreen(TaskListLoadingMode.PGE)
+    }
+
+    fun onClickReceiptTask() {
+        screenNavigator.openTaskListLoadingScreen(TaskListLoadingMode.Receiving)
     }
 
     fun onClickUser() {

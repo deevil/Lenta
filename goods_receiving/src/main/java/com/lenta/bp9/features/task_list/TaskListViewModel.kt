@@ -7,10 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.lenta.bp9.R
 import com.lenta.bp9.features.loading.tasks.TaskCardMode
 import com.lenta.bp9.features.loading.tasks.TaskListLoadingMode
-import com.lenta.bp9.model.task.TaskInfo
-import com.lenta.bp9.model.task.TaskList
-import com.lenta.bp9.model.task.TaskLockStatus
-import com.lenta.bp9.model.task.TaskStatus
+import com.lenta.bp9.model.task.*
 import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.bp9.repos.IRepoInMemoryHolder
 import com.lenta.bp9.requests.network.TaskListNetRequest
@@ -109,7 +106,7 @@ class TaskListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
                                 userNumber = sessionInfo.personnelNumber ?: "",
                                 searchParams = null,
                                 ip = context.getDeviceIp(),
-                                type = TaskListLoadingMode.Receiving.taskListLoadingModeString
+                                type = repoInMemoryHolder.taskList.value?.taskListLoadingMode?.taskListLoadingModeString ?: ""
                         )
                 )
                         .either(::handleFailure, ::handleUpdateSuccess)

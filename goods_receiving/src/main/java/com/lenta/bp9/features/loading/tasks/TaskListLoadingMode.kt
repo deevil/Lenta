@@ -4,5 +4,16 @@ enum class TaskListLoadingMode(val taskListLoadingModeString: String) {
     None(""),
     Receiving("1"), //Приемка
     PGE("2"), //ПГЕ
-    Shipment("3") //Отгрузка
+    Shipment("3"); //Отгрузка
+
+    companion object {
+        fun from(taskListLoadingModeString: String): TaskListLoadingMode {
+            return when(taskListLoadingModeString) {
+                "1" -> Receiving
+                "2" -> PGE
+                "3" -> Shipment
+                else -> None
+            }
+        }
+    }
 }
