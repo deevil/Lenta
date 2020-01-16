@@ -59,7 +59,7 @@
     <string name="checked">Сверенные</string>
     <string name="information">Информация</string>
     <string name="delivery_documents">Документы по поставке</string>
-    <string name="accept">Принять</string>
+    <string name="accept">Принять (%1$s)</string>
     <string name="wrong_product_type">Неверный тип продукта</string>
     <string name="categories">Категории</string>
     <string name="details_quantities_entered">Детали по введенным количествам</string>

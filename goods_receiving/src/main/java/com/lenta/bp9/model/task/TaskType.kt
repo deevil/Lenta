@@ -5,7 +5,8 @@ enum class TaskType(val taskTypeString: String) {
     DirectSupplier("ППП"),
     ReceptionDistributionCenter("ПРЦ"),
     RecalculationCargoUnit("ПГЕ"),
-    Shipment("Отгрузка");
+    ShipmentPP("ОПП"),
+    ShipmentRC("ОРЦ"),;
 
     companion object {
         fun from(taskTypeString: String): TaskType {
@@ -13,7 +14,8 @@ enum class TaskType(val taskTypeString: String) {
                 "ППП" -> DirectSupplier
                 "ПРЦ" -> ReceptionDistributionCenter
                 "ПГЕ" -> RecalculationCargoUnit
-                "Отгрузка" -> Shipment
+                "ОПП" -> ShipmentPP
+                "ОРЦ" -> ShipmentRC
                 else -> None
             }
         }

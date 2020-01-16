@@ -5,17 +5,18 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp9.R
 import com.lenta.bp9.features.goods_list.SearchProductDelegate
-import com.lenta.bp9.model.processing.*
+import com.lenta.bp9.model.processing.PROCESSING_MERCURY_QUANT_GREAT_IN_INVOICE
+import com.lenta.bp9.model.processing.PROCESSING_MERCURY_QUANT_GREAT_IN_VET_DOC
+import com.lenta.bp9.model.processing.PROCESSING_MERCURY_SAVED
+import com.lenta.bp9.model.processing.ProcessMercuryProductService
 import com.lenta.bp9.model.task.IReceivingTaskManager
 import com.lenta.bp9.model.task.TaskProductInfo
 import com.lenta.bp9.model.task.TaskType
 import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.bp9.repos.IDataBaseRepo
-import com.lenta.bp9.repos.IRepoInMemoryHolder
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.pojo.QualityInfo
 import com.lenta.shared.requests.combined.scan_info.pojo.ReasonRejectionInfo
-import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.toStringFormatted
@@ -45,6 +46,9 @@ class GoodsMercuryInfoViewModel : CoreViewModel(), OnPositionClickListener {
         } else {
             productInfo.value?.uom
         }
+    }
+    val tvAccept: MutableLiveData<String> by lazy {
+        MutableLiveData(context.getString(R.string.accept, "${productInfo.value?.purchaseOrderUnits?.name}=${productInfo.value?.quantityInvest?.toDouble().toStringFormatted()} ${productInfo.value?.uom?.name}"))
     }
     val spinQuality: MutableLiveData<List<String>> = MutableLiveData()
     val spinQualitySelectedPosition: MutableLiveData<Int> = MutableLiveData(0)

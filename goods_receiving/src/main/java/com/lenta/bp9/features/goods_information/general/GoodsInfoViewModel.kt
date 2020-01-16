@@ -1,7 +1,9 @@
 package com.lenta.bp9.features.goods_information.general
 
+import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.lenta.bp9.R
 import com.lenta.bp9.features.goods_list.SearchProductDelegate
 import com.lenta.bp9.model.processing.ProcessGeneralProductService
 import com.lenta.bp9.model.task.IReceivingTaskManager
@@ -25,26 +27,27 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
 
     @Inject
     lateinit var screenNavigator: IScreenNavigator
-
     @Inject
     lateinit var taskManager: IReceivingTaskManager
-
     @Inject
     lateinit var processGeneralProductService: ProcessGeneralProductService
-
     @Inject
     lateinit var dataBase: IDataBaseRepo
-
     @Inject
     lateinit var searchProductDelegate: SearchProductDelegate
+    @Inject
+    lateinit var context: Context
 
     val productInfo: MutableLiveData<TaskProductInfo> = MutableLiveData()
     val uom: MutableLiveData<Uom?> by lazy {
-        if (taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.DirectSupplier || taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.RecalculationCargoUnit) {
+        if (taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.DirectSupplier) {
             MutableLiveData(productInfo.value?.purchaseOrderUnits)
         } else {
             MutableLiveData(productInfo.value?.uom)
         }
+    }
+    val tvAccept: MutableLiveData<String> by lazy {
+        MutableLiveData(context.getString(R.string.accept, "${productInfo.value?.purchaseOrderUnits?.name}=${productInfo.value?.quantityInvest?.toDouble().toStringFormatted()} ${productInfo.value?.uom?.name}"))
     }
     val spinQuality: MutableLiveData<List<String>> = MutableLiveData()
     val spinQualitySelectedPosition: MutableLiveData<Int> = MutableLiveData(0)
@@ -86,8 +89,12 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
             }
 
             if (isTaskPGE.value!!) {
+                var addNewCount = it?.first ?: 0.0
+                if (isEizUnit.value!!) {
+                    addNewCount *= productInfo.value?.quantityInvest?.toDouble() ?: 1.0
+                }
                 if (qualityInfo.value?.get(it!!.second)?.code == "1" || qualityInfo.value?.get(it!!.second)?.code == "2") {
-                    (it?.first ?: 0.0) + countAccept
+                    addNewCount + countAccept
                 } else {
                     countAccept
                 }
@@ -118,8 +125,12 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
             }
 
             if (isTaskPGE.value!!) {
+                var addNewCount = it?.first ?: 0.0
+                if (isEizUnit.value!!) {
+                    addNewCount *= productInfo.value?.quantityInvest?.toDouble() ?: 1.0
+                }
                 if (qualityInfo.value?.get(it!!.second)?.code == "3" || qualityInfo.value?.get(it!!.second)?.code == "4" || qualityInfo.value?.get(it!!.second)?.code == "5") {
-                    (it?.first ?: 0.0) + countRefusal
+                    addNewCount + countRefusal
                 } else {
                     countRefusal
                 }
@@ -148,11 +159,13 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
     init {
         viewModelScope.launch {
             if (taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.RecalculationCargoUnit) {
+                suffix.value = productInfo.value?.purchaseOrderUnits?.name
                 if (isDiscrepancy.value!!) {
                     count.value = taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.getCountProductNotProcessedOfProductPGE(productInfo.value!!).toStringFormatted()
                 }
                 qualityInfo.value = dataBase.getQualityInfoPGE()
             } else {
+                suffix.value = uom.value?.name
                 if (isDiscrepancy.value!!) {
                     count.value = taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.getCountProductNotProcessedOfProduct(productInfo.value!!).toStringFormatted()
                     qualityInfo.value = dataBase.getQualityInfoForDiscrepancy()
@@ -162,7 +175,6 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
                 }
             }
 
-            suffix.value = uom.value?.name
             spinQuality.value = qualityInfo.value?.map {
                 it.name
             }
@@ -217,7 +229,11 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
 
     fun onClickAdd() {
         if (isTaskPGE.value == true) {
-            processGeneralProductService.add(count.value!!, qualityInfo.value!![spinQualitySelectedPosition.value!!].code)
+            var addNewCount = count.value!!.toDouble()
+            if (isEizUnit.value!!) {
+                addNewCount *= productInfo.value?.quantityInvest?.toDouble() ?: 1.0
+            }
+            processGeneralProductService.add(addNewCount.toString(), qualityInfo.value!![spinQualitySelectedPosition.value!!].code)
             clickBtnApply()
             return
         }
@@ -389,18 +405,6 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
             productInfo.value?.purchaseOrderUnits?.name
         } else {
             productInfo.value?.uom?.name
-        }
-
-        acceptTotalCountWithUom.value = if (acceptTotalCount.value!! != 0.0) {
-            "+ " + acceptTotalCount.value.toStringFormatted() + " " + suffix.value
-        } else {
-            "0 " + suffix.value
-        }
-
-        refusalTotalCountWithUom.value = if (refusalTotalCount.value!! != 0.0) {
-            "- " + refusalTotalCount.value.toStringFormatted() + " " + suffix.value
-        } else {
-            "0 " + suffix.value
         }
     }
 

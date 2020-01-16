@@ -64,6 +64,21 @@ class MemoryTaskProductsDiscrepanciesRepository : ITaskProductsDiscrepanciesRepo
         return true
     }
 
+    override fun deleteProductDiscrepancy(materialNumber: String, typeDiscrepancies: String): Boolean {
+        var index = -1
+        for (i in productsDiscrepancies.indices) {
+            if (materialNumber == productsDiscrepancies[i].materialNumber && typeDiscrepancies == productsDiscrepancies[i].typeDiscrepancies) {
+                index = i
+            }
+        }
+
+        if (index == -1) {
+            return false
+        }
+        productsDiscrepancies.removeAt(index)
+        return true
+    }
+
     override fun deleteProductsDiscrepanciesForProduct(product: TaskProductInfo): Boolean {
         val delDiscrepancies = ArrayList<TaskProductDiscrepancies>()
         for (i in productsDiscrepancies.indices) {

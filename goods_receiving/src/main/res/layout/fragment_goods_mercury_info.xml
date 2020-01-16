@@ -80,7 +80,7 @@
             app:layout_constraintStart_toEndOf="@+id/div_vert"
             app:layout_constraintTop_toTopOf="@+id/div_vert"
             app:suffix="@{vm.suffix}"
-            tools:text="1 шт" />
+            tools:text="1 кор" />
 
         <View
             android:id="@+id/div_hor2"
@@ -101,11 +101,12 @@
             android:layout_marginEnd="8dp"
             android:ellipsize="end"
             android:maxLines="1"
-            android:text="@string/accept"
+            android:text="@{vm.tvAccept}"
             app:layout_constraintBottom_toBottomOf="@+id/tv_accept_val"
             app:layout_constraintEnd_toStartOf="@+id/div_vert"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/tv_accept_val" />
+            app:layout_constraintTop_toTopOf="@+id/tv_accept_val"
+            tools:text="Принять (кор=3 шт)"/>
 
         <TextView
             android:id="@+id/tv_accept_val"
@@ -136,6 +137,7 @@
 
         <TextView
             android:id="@+id/tv_refusal"
+            style="@style/TextTitle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
@@ -343,6 +345,7 @@
 
             <TextView
                 android:id="@+id/tv_remaining_shelf_life"
+                style="@style/TextTitle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
