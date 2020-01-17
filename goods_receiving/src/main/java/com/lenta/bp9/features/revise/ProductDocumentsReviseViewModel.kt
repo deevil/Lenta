@@ -65,8 +65,10 @@ class ProductDocumentsReviseViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     private fun updateDocumentVMs() {
-        //Устанавливаем чек-бокс "Сверено" по веттоварам, если все количество товара покрыто количеством из ВСД
-        taskManager.getReceivingTask()?.taskRepository?.getReviseDocuments()?.quantityGoodsCoveredAmountOfVetDocs()
+        //2.2. Устанавливать чек-бокс "Сверено" по веттовару, если в таблице ET_VET_CHK для текущего товара есть записи и для всех записей установлен признак FLG_CHECK
+        // (Т.е. сверенным считается товар у которого все привязанные ВСД сверены, суммарные количества в привязанных ВСД проверять на этом этапе не нужно)
+        //карточка 2460
+        taskManager.getReceivingTask()?.taskRepository?.getReviseDocuments()?.setProductVetDocumentsReconciliation()
 
         val checked = taskManager.getReceivingTask()?.getCheckedProductDocuments()
         val unchecked = taskManager.getReceivingTask()?.getUncheckedProductDocuments()

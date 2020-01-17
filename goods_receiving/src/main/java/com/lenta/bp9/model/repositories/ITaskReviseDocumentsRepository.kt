@@ -35,7 +35,7 @@ interface ITaskReviseDocumentsRepository {
     fun changeProductVetDocumentReconciliation(vetDocument: ProductVetDocumentRevise, reconciliationCheck: Boolean)
     fun presenceUncoveredVadAllGoods() : Boolean
     fun presenceUncoveredVadSomeGoods(): Boolean
-    fun quantityGoodsCoveredAmountOfVetDocs()
+    fun setProductVetDocumentsReconciliation()
 
     fun getComplexDocuments(): List<ComplexDocumentRevise>
     fun updateComplexDocuments(complexDocuments: List<ComplexDocumentRevise>)
