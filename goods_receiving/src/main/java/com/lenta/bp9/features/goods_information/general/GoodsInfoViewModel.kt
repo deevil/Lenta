@@ -75,7 +75,9 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
     val isTaskPGE: MutableLiveData<Boolean> by lazy {
         if (taskManager.getReceivingTask()!!.taskHeader.taskType == TaskType.RecalculationCargoUnit) MutableLiveData(true) else MutableLiveData(false)
     }
-    val isEizUnit: MutableLiveData<Boolean> = MutableLiveData(true)
+    val isEizUnit: MutableLiveData<Boolean> = isDiscrepancy.map {
+        it == false
+    }
 
     val count: MutableLiveData<String> = MutableLiveData("0")
     private val countValue: MutableLiveData<Double> = count.map { it?.toDoubleOrNull() ?: 0.0 }
@@ -159,11 +161,14 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
     init {
         viewModelScope.launch {
             if (taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.RecalculationCargoUnit) {
-                suffix.value = productInfo.value?.purchaseOrderUnits?.name
                 if (isDiscrepancy.value!!) {
+                    suffix.value = uom.value?.name
                     count.value = taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.getCountProductNotProcessedOfProductPGE(productInfo.value!!).toStringFormatted()
+                    qualityInfo.value = dataBase.getQualityInfoPGEForDiscrepancy()
+                } else {
+                    suffix.value = productInfo.value?.purchaseOrderUnits?.name
+                    qualityInfo.value = dataBase.getQualityInfoPGE()
                 }
-                qualityInfo.value = dataBase.getQualityInfoPGE()
             } else {
                 suffix.value = uom.value?.name
                 if (isDiscrepancy.value!!) {
@@ -406,6 +411,7 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
         } else {
             productInfo.value?.uom?.name
         }
+        count.value = count.value
     }
 
 }

@@ -69,11 +69,11 @@ class MemoryTaskMercuryDiscrepanciesRepository : ITaskMercuryDiscrepanciesReposi
     }
 
     override fun changeMercuryDiscrepancy(discrepancy: TaskMercuryDiscrepancies): Boolean {
-        deleteMercuryDiscrepancy(discrepancy)
+        deleteMercuryDiscrepancyForVetDoc(discrepancy)
         return addMercuryDiscrepancy(discrepancy)
     }
 
-    override fun deleteMercuryDiscrepancy(discrepancy: TaskMercuryDiscrepancies): Boolean {
+    override fun deleteMercuryDiscrepancyForVetDoc(discrepancy: TaskMercuryDiscrepancies): Boolean {
         var index = -1
         for (i in mercuryDiscrepancies.indices) {
             if (discrepancy.materialNumber == mercuryDiscrepancies[i].materialNumber &&
@@ -89,6 +89,40 @@ class MemoryTaskMercuryDiscrepanciesRepository : ITaskMercuryDiscrepanciesReposi
             return false
         }
         mercuryDiscrepancies.removeAt(index)
+        return true
+    }
+
+    override fun deleteMercuryDiscrepancy(discrepancy: TaskMercuryDiscrepancies): Boolean {
+        val delDiscrepancies = ArrayList<TaskMercuryDiscrepancies>()
+        for (i in mercuryDiscrepancies.indices) {
+            if (discrepancy.materialNumber == mercuryDiscrepancies[i].materialNumber &&
+                    discrepancy.typeDiscrepancies == mercuryDiscrepancies[i].typeDiscrepancies) {
+                delDiscrepancies.add(mercuryDiscrepancies[i])
+            }
+        }
+
+        if (delDiscrepancies.isEmpty()) {
+            return false
+        }
+
+        mercuryDiscrepancies.removeAll(delDiscrepancies)
+        return true
+    }
+
+    override fun deleteMercuryDiscrepancy(materialNumber: String, typeDiscrepancies: String): Boolean {
+        val delDiscrepancies = ArrayList<TaskMercuryDiscrepancies>()
+        for (i in mercuryDiscrepancies.indices) {
+            if (materialNumber == mercuryDiscrepancies[i].materialNumber &&
+                    typeDiscrepancies == mercuryDiscrepancies[i].typeDiscrepancies) {
+                delDiscrepancies.add(mercuryDiscrepancies[i])
+            }
+        }
+
+        if (delDiscrepancies.isEmpty()) {
+            return false
+        }
+
+        mercuryDiscrepancies.removeAll(delDiscrepancies)
         return true
     }
 
