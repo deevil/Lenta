@@ -155,6 +155,10 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
         taskManager.getReceivingTask()?.taskDescription?.isSpecialControlGoods ?: false
     }
 
+    val isRecount by lazy {
+        taskManager.getReceivingTask()?.taskDescription?.isRecount ?: false
+    }
+
     val changeCurrentDateTimePossible by lazy {
         val status = taskManager.getReceivingTask()?.taskDescription?.currentStatus
         status == TaskStatus.Arrived
