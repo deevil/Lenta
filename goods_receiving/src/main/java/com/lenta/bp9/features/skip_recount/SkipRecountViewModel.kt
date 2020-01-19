@@ -33,8 +33,6 @@ class SkipRecountViewModel : CoreViewModel() {
     @Inject
     lateinit var skipRecountNetRequest: SkipRecountNetRequest
 
-    var taskNumber: MutableLiveData<String> = MutableLiveData("")
-
     val customComment: MutableLiveData<String> = MutableLiveData("")
 
     val taskCaption: String by lazy {
@@ -49,7 +47,7 @@ class SkipRecountViewModel : CoreViewModel() {
         viewModelScope.launch {
             screenNavigator.showProgress(context.getString(R.string.skipping_recount))
             val params = SkipRecountParameters(
-                    taskNumber = taskNumber.value!!,
+                    taskNumber = taskManager.getReceivingTask()?.taskHeader?.taskNumber ?: "",
                     deviceIP = context.getDeviceIp(),
                     personalNumber = sessionInfo.personnelNumber ?: "",
                     comment = customComment.value!!
