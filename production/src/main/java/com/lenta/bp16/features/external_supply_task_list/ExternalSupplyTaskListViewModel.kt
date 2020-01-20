@@ -18,6 +18,7 @@ import com.lenta.shared.exception.Failure
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.databinding.PageSelectionListener
+import com.lenta.shared.utilities.extentions.dropZeros
 import com.lenta.shared.utilities.extentions.isSapTrue
 import com.lenta.shared.utilities.extentions.map
 import kotlinx.coroutines.launch
@@ -71,7 +72,7 @@ class ExternalSupplyTaskListViewModel : CoreViewModel(), PageSelectionListener, 
                     text1 = task.taskInfo.text1,
                     text2 = task.taskInfo.text2,
                     taskStatus = task.status,
-                    quantity = task.quantity.toString()
+                    quantity = task.quantity.dropZeros()
             )
         }
     }
