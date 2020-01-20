@@ -35,7 +35,7 @@ class TaskManager @Inject constructor(
                         status = taskInfo.getTaskStatus(),
                         taskInfo = taskInfo,
                         type = taskType,
-                        quantity = taskInfo.quantity.toIntOrNull() ?: 0
+                        quantity = taskInfo.quantity.toDoubleOrNull() ?: 0.0
                 ))
             }
         }

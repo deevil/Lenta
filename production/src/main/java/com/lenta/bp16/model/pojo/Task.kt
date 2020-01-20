@@ -9,7 +9,7 @@ data class Task(
         val number: String,
         var status: TaskStatus,
         val type: TaskType,
-        val quantity: Int,
+        val quantity: Double,
         val taskInfo: TaskInfo,
         var goods: List<Good>? = null
 ) {
