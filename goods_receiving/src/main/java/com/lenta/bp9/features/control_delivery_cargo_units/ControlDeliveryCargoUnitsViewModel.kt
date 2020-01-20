@@ -121,7 +121,7 @@ class ControlDeliveryCargoUnitsViewModel : CoreViewModel(), PageSelectionListene
         screenNavigator.openTaskListScreen()
         screenNavigator.openTaskCardScreen(TaskCardMode.Full)
         taskManager.getReceivingTask()?.taskRepository?.getReviseDocuments()?.getTransportConditions()?.filter {
-            it.conditionViewType == ConditionViewType.Seal //&& it.value.isEmpty()
+            it.conditionViewType == ConditionViewType.Seal && it.value.isEmpty()
         }.let {
             if (it?.size != 0) {
                 screenNavigator.openAlertSealDamageScreen()
