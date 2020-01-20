@@ -107,10 +107,10 @@ class ChangeDateTimeViewModel : CoreViewModel() {
 
         if (mode.value == ChangeDateTimeMode.NextStatus) {
             taskManager.getReceivingTask()?.taskDescription?.nextStatusDate = dateString
-            taskManager.getReceivingTask()?.taskDescription?.nextStatusTime = timeString!!
+            taskManager.getReceivingTask()?.taskDescription?.nextStatusTime = timeString
         } else {
             taskManager.getReceivingTask()?.taskDescription?.currentStatusDate = dateString
-            taskManager.getReceivingTask()?.taskDescription?.currentStatusTime = timeString!!
+            taskManager.getReceivingTask()?.taskDescription?.currentStatusTime = timeString
         }
         screenNavigator.goBack()
     }
