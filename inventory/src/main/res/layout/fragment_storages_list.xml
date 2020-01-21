@@ -30,16 +30,17 @@
         <com.google.android.material.tabs.TabLayout
             android:id="@+id/tab_strip"
             android:layout_width="match_parent"
-            android:layout_height="40dp"
+            android:layout_height="32dp"
             android:background="@color/colorBottomPanelBackground"
             android:elevation="0dp"
-            android:textSize="15sp"
             app:tabIndicatorColor="@color/colorTabIndicator"
-            app:tabIndicatorHeight="4dp"
+            app:tabIndicatorHeight="3dp"
             app:tabMode="scrollable"
             app:tabSelectedTextColor="@color/colorTabIndicator"
             app:tabTextAppearance="@style/TabLayoutStyle"
             app:tabTextColor="@color/colorWhite"
             tools:targetApi="lollipop" />
+
     </androidx.viewpager.widget.ViewPager>
+
 </layout>

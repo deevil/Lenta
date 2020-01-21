@@ -193,7 +193,7 @@
     </style>
 
     <style name="TabLayoutStyle" parent="Base.Widget.Design.TabLayout">
-        <item name="android:textSize">15sp</item>
+        <item name="android:textSize">12sp</item>
         <item name="android:lineSpacingExtra">17sp</item>
         <item name="android:textAllCaps">true</item>
     </style>
@@ -207,10 +207,11 @@
         <item name="tabSelectedTextColor">@color/colorTabIndicator</item>
         <item name="tabTextColor">@color/colorWhite</item>
         <item name="tabTextAppearance">@style/TabTextAppearance</item>
-    </style>-->
+    </style>
+
     <style name="TabTextAppearance">
         <item name="android:textSize">20sp</item>
-    </style>
+    </style>-->
 
     <style name="NumberSectionTxt">
         <item name="android:textSize">16sp</item>
