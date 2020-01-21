@@ -262,7 +262,11 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
             TaskStatus.Checked -> screenNavigator.openStartConditionsReviseLoadingScreen()
             TaskStatus.Unloaded -> {
                 if (taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.ReceptionDistributionCenter) {
-                    screenNavigator.openInputOutgoingFillingsScreen()
+                    screenNavigator.openNoTransportDefectDeclaredDialog(
+                            nextCallbackFunc = {
+                                screenNavigator.openInputOutgoingFillingsScreen()
+                            }
+                    )
                 } else {
                     screenNavigator.openRecountStartLoadingScreen()
                 }

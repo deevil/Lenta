@@ -780,6 +780,16 @@ class ScreenNavigator(
         }
     }
 
+    override fun openNoTransportDefectDeclaredDialog(nextCallbackFunc: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.no_transport_defect_declared),
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(nextCallbackFunc),
+                    pageNumber = "95",
+                    rightButtonDecorationInfo = ButtonDecorationInfo.nextAlternate))
+        }
+    }
+
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 }
 
@@ -875,4 +885,5 @@ interface IScreenNavigator : ICoreNavigator {
     fun openAlertNoIsSpecialGoodsScreen()
     fun openRecountStartPGELoadingScreen()
     fun openTransportMarriageScreen()
+    fun openNoTransportDefectDeclaredDialog(nextCallbackFunc: () -> Unit)
 }

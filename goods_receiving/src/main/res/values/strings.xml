@@ -196,4 +196,5 @@
     <string name="list_cargo_units">Список ГЕ</string>
     <string name="act">Акт</string>
     <string name="transport_marriage">Транспортный брак</string>
+    <string name="no_transport_defect_declared">Транспортный брак не был заявлен, зарегистрировать или вернуться к заявлению брака?</string>
 </resources>
