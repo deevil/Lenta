@@ -16,32 +16,53 @@
 
     </data>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-
-        <include
-            android:id="@+id/layout_titles"
-            layout="@layout/item_title_task_report"
+        <!-- Наименования колонок -->
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:orientation="vertical">
+
+            <LinearLayout style="@style/FirstRowStyle">
+
+                <LinearLayout
+                    style="@style/LinearCellStyle"
+                    android:layout_weight="@integer/number_task_column_1">
+
+                    <TextView
+                        style="@style/FirstRowTextStyle"
+                        android:text="@string/number" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    style="@style/LinearCellStyle"
+                    android:layout_weight="@integer/number_task_column_2">
+
+                    <TextView
+                        style="@style/FirstRowTextStyle"
+                        android:text="@string/goods" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <View style="@style/HorizontalDivider" />
+
+        </LinearLayout>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
+            android:layout_height="wrap_content"
             app:items="@{vm.reports}"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/layout_titles"
             app:rv_config="@{rvConfig}"
-            tools:listitem="@layout/item_tile_task_report"/>
+            tools:listitem="@layout/item_tile_task_report" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    </LinearLayout>
 
 </layout>

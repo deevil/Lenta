@@ -8,6 +8,7 @@
         <variable
             name="vm"
             type="com.lenta.bp14.features.report_result.ItemTaskReport" />
+
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
