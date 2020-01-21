@@ -17,6 +17,7 @@ class TaskProductInfo(materialNumber: String,
                       val origQuantity: String, //Исходное количество позиции поставки
                       val orderQuantity: String, //Кол-во в заказе
                       val quantityCapitalized: String, //Кол-во, которое было оприходовано по этому заказу и этому товару
+                      val purchaseOrderUnits: Uom, //ЕИ заказа на поставку
                       val overdToleranceLimit: String, //Граница допуска для сверхпоставки
                       val underdToleranceLimit: String, //Граница допуска при недопоставке
                       val upLimitCondAmount: String, //Верхняя граница суммы условия (МРЦ)
@@ -34,7 +35,8 @@ class TaskProductInfo(materialNumber: String,
                       val isMarkFl: Boolean,
                       val isVet: Boolean,
                       val numberBoxesControl: String, //кол-во коробок для контроля
-                      val numberStampsControl: String //кол-во марок для контроля
+                      val numberStampsControl: String, //кол-во марок для контроля
+                      val processingUnit: String
                         ) : ProductInfo(materialNumber, description, uom, type, isSet, sectionId, matrixType, materialType) {
 
     fun copy(materialNumber: String = this.materialNumber,
@@ -48,6 +50,7 @@ class TaskProductInfo(materialNumber: String,
              origQuantity: String = this.origQuantity,
              orderQuantity: String = this.orderQuantity,
              quantityCapitalized: String = this.quantityCapitalized,
+             purchaseOrderUnits: Uom = this.purchaseOrderUnits,
              overdToleranceLimit: String = this.overdToleranceLimit,
              underdToleranceLimit: String = this.underdToleranceLimit,
              upLimitCondAmount: String = this.upLimitCondAmount,
@@ -65,7 +68,8 @@ class TaskProductInfo(materialNumber: String,
              isMarkFl: Boolean = this.isMarkFl,
              isVet: Boolean = this.isVet,
              numberBoxesControl: String = this.numberBoxesControl,
-             numberStampsControl: String = this.numberStampsControl) : TaskProductInfo {
+             numberStampsControl: String = this.numberStampsControl,
+             processingUnit: String = this.processingUnit) : TaskProductInfo {
         return TaskProductInfo(
                 materialNumber = materialNumber,
                 description = description,
@@ -78,6 +82,7 @@ class TaskProductInfo(materialNumber: String,
                 origQuantity = origQuantity,
                 orderQuantity = orderQuantity,
                 quantityCapitalized = quantityCapitalized,
+                purchaseOrderUnits = purchaseOrderUnits,
                 overdToleranceLimit = overdToleranceLimit,
                 underdToleranceLimit = underdToleranceLimit,
                 upLimitCondAmount = upLimitCondAmount,
@@ -95,7 +100,8 @@ class TaskProductInfo(materialNumber: String,
                 isMarkFl = isMarkFl,
                 isVet = isVet,
                 numberBoxesControl = numberBoxesControl,
-                numberStampsControl = numberStampsControl
+                numberStampsControl = numberStampsControl,
+                processingUnit = processingUnit
         )
     }
 }

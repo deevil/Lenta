@@ -1,7 +1,9 @@
 package com.lenta.bp9.features.goods_information.non_excise_alco
 
+import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.lenta.bp9.R
 import com.lenta.bp9.features.goods_list.SearchProductDelegate
 import com.lenta.bp9.model.processing.ProcessNonExciseAlcoProductService
 import com.lenta.bp9.model.task.IReceivingTaskManager
@@ -14,6 +16,7 @@ import com.lenta.shared.requests.combined.scan_info.pojo.QualityInfo
 import com.lenta.shared.requests.combined.scan_info.pojo.ReasonRejectionInfo
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.map
+import com.lenta.shared.utilities.extentions.toStringFormatted
 import com.lenta.shared.view.OnPositionClickListener
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -22,22 +25,23 @@ class NonExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
 
     @Inject
     lateinit var screenNavigator: IScreenNavigator
-
     @Inject
     lateinit var taskManager: IReceivingTaskManager
-
     @Inject
     lateinit var processNonExciseAlcoProductService: ProcessNonExciseAlcoProductService
-
     @Inject
     lateinit var dataBase: IDataBaseRepo
-
     @Inject
     lateinit var searchProductDelegate: SearchProductDelegate
+    @Inject
+    lateinit var context: Context
 
     val productInfo: MutableLiveData<TaskProductInfo> = MutableLiveData()
     val batchInfo: MutableLiveData<TaskBatchInfo> = productInfo.map {
         taskManager.getReceivingTask()!!.taskRepository.getBatches().findBatchOfProduct(it!!)
+    }
+    val tvAccept: MutableLiveData<String> by lazy {
+        MutableLiveData(context.getString(R.string.accept, "${productInfo.value?.purchaseOrderUnits?.name}=${productInfo.value?.quantityInvest?.toDouble().toStringFormatted()} ${productInfo.value?.uom?.name}"))
     }
     val planQuantityBatch: MutableLiveData<String> = MutableLiveData()
     val spinQuality: MutableLiveData<List<String>> = MutableLiveData()
@@ -64,24 +68,19 @@ class NonExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
             if (qualityInfo.value?.get(it!!.second)?.code == "1") {
                 (it?.first ?: 0.0) + taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().getCountAcceptOfProduct(productInfo.value!!)
             } else {
-                0.0
+                taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().getCountAcceptOfProduct(productInfo.value!!)
             }
         }
     }
 
     val refusalTotalCount: MutableLiveData<Double> by lazy  {
         countValue.
-                combineLatest(spinReasonRejectionSelectedPosition).
                 combineLatest(spinQualitySelectedPosition).
                 map{
                     if (qualityInfo.value?.get(it?.second ?: 0)?.code != "1") {
-                        (it?.first?.first ?: 0.0) + taskManager.
-                                getReceivingTask()!!.
-                                taskRepository.
-                                getProductsDiscrepancies().
-                                getCountRefusalOfProductOfReasonRejection(productInfo.value!!, reasonRejectionInfo.value?.get(it?.first?.second ?: 0) ?.code)
+                        (it?.first ?: 0.0) + taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().getCountRefusalOfProduct(productInfo.value!!)
                     } else {
-                        0.0
+                        taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().getCountRefusalOfProduct(productInfo.value!!)
                     }
                 }
     }
@@ -120,7 +119,7 @@ class NonExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
             if (qualityInfo.value?.get(spinQualitySelectedPosition.value ?: 0)?.code == "1") {
                 processNonExciseAlcoProductService.add(acceptTotalCount.value!!.toString(), "1")
             } else {
-                processNonExciseAlcoProductService.add(refusalTotalCount.value!!.toString(), reasonRejectionInfo.value!![spinReasonRejectionSelectedPosition.value!!].code)
+                processNonExciseAlcoProductService.add(count.value!!, reasonRejectionInfo.value!![spinReasonRejectionSelectedPosition.value!!].code)
             }
         }
 

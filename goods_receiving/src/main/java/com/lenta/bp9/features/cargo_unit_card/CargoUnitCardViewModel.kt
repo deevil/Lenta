@@ -9,6 +9,7 @@ import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.bp9.repos.IDataBaseRepo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.pojo.QualityInfo
+import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.view.OnPositionClickListener
 import kotlinx.coroutines.launch
@@ -42,6 +43,10 @@ class CargoUnitCardViewModel : CoreViewModel(), OnPositionClickListener {
         } else {
             "Нет"
         }
+    }
+
+    val enabledApplyBtn: MutableLiveData<Boolean> = spinStatusSelectedPosition.combineLatest(spinTypePalletSelectedPosition).map {
+        statusInfo.value?.get(it!!.first)?.code == "2" || spinTypePallet.value?.get(it!!.second) ?: "" != ""
     }
 
     fun getTitle(): String {
@@ -80,9 +85,10 @@ class CargoUnitCardViewModel : CoreViewModel(), OnPositionClickListener {
                 screenNavigator.showProgressLoadingData()
                 spinTypePalletSelectedPosition.value = 0
                 typePalletInfo.value = dataBase.getTypePalletInfo()
-                spinTypePallet.value = typePalletInfo.value?.map {
+                spinTypePallet.value = listOf("").plus(typePalletInfo.value?.map {
                     it.name
-                }
+                } ?: emptyList())
+
                 screenNavigator.hideProgress()
             }
 

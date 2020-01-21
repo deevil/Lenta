@@ -2,6 +2,7 @@ package com.lenta.bp9.requests.network
 
 import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
+import com.lenta.bp9.features.loading.tasks.TaskListLoadingMode
 import com.lenta.bp9.model.task.*
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.analytics.AnalyticsHelper
@@ -24,6 +25,8 @@ class TaskListNetRequest
         private val analyticsHelper: AnalyticsHelper
 ) : UseCase<TaskList, TaskListParams> {
 
+    var taskListLoadingModeString: String = ""
+
     override suspend fun run(params: TaskListParams): Either<Failure, TaskList> {
         val webCallParams = WebCallParams().apply {
             data = gson.toJson(params)
@@ -35,6 +38,7 @@ class TaskListNetRequest
         }
 
         val resName = "ZMP_UTZ_GRZ_02_V001"
+        taskListLoadingModeString = params.type
 
         analyticsHelper.onStartFmpRequest(resourceName = resName, params = webCallParams.data)
         val status = hyperHive.requestAPI.web(resName, webCallParams, TaskContentStatus::class.java).execute()
@@ -77,7 +81,8 @@ class TaskListNetRequest
     fun TaskListRestInfo.taskList(): TaskList {
         val tasks = taskList.map { it.taskInfo() }
         return TaskList(tasks = tasks,
-                taskCount = taskCount.toInt()
+                taskCount = taskCount.toInt(),
+                taskListLoadingMode = TaskListLoadingMode.from(taskListLoadingModeString)
         )
     }
 }

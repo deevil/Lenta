@@ -58,26 +58,43 @@ class LoadingTaskCardViewModel : CoreLoadingViewModel() {
                     taskNumber = taskNumber
             )
             val taskHeader = repoInMemoryHolder.taskList.value?.tasks?.findLast { it.taskNumber == taskNumber }
-            if (taskHeader?.taskType == TaskType.ReceptionDistributionCenter) {
-                if (taskHeader.status == TaskStatus.Traveling) {
-                    taskCardNetRequest(params).either(::handleFailure, ::handleSuccess)
-                } else {
-                    val paramsRDS = TaskContentsReceptionDistrCenterParameters(
-                            mode = mode.TaskCardModeString,
-                            deviceIP = context.getDeviceIp(),
-                            personalNumber = sessionInfo.personnelNumber ?: "",
-                            taskNumber = taskNumber,
-                            taskType = TaskType.ReceptionDistributionCenter.taskTypeString
-                    )
-                    taskContentsReceptionDistrCenterNetRequest(paramsRDS).either(::handleFailure, ::handleSuccessRDS)
+            if (loadFullData) {
+                when (taskHeader?.taskType) {
+                    TaskType.ReceptionDistributionCenter -> {
+                        if (taskHeader.status == TaskStatus.Traveling) {
+                            taskCardNetRequest(params).either(::handleFailure, ::handleSuccess)
+                        } else {
+                            val paramsRDS = TaskContentsReceptionDistrCenterParameters(
+                                    mode = mode.TaskCardModeString,
+                                    deviceIP = context.getDeviceIp(),
+                                    personalNumber = sessionInfo.personnelNumber ?: "",
+                                    taskNumber = taskNumber,
+                                    taskType = TaskType.ReceptionDistributionCenter.taskTypeString
+                            )
+                            taskContentsReceptionDistrCenterNetRequest(paramsRDS).either(::handleFailure, ::handleSuccessRDS)
+                        }
+                    }
+                    TaskType.RecalculationCargoUnit -> {
+                        if (taskHeader.status == TaskStatus.Unloaded) {
+                            taskCardNetRequest(params).either(::handleFailure, ::handleSuccess)
+                        } else {
+                            val params = TaskContentsReceptionDistrCenterParameters(
+                                    mode = mode.TaskCardModeString,
+                                    deviceIP = context.getDeviceIp(),
+                                    personalNumber = sessionInfo.personnelNumber ?: "",
+                                    taskNumber = taskNumber,
+                                    taskType = TaskType.RecalculationCargoUnit.taskTypeString
+                            )
+                            taskContentsReceptionDistrCenterNetRequest(params).either(::handleFailure, ::handleSuccessRDS)
+                        }
+                    }
+                    else -> taskContentsNetRequest(params).either(::handleFailure, ::handleFullDataSuccess)
                 }
+
             } else {
-                if (loadFullData) {
-                    taskContentsNetRequest(params).either(::handleFailure, ::handleFullDataSuccess)
-                } else {
-                    taskCardNetRequest(params).either(::handleFailure, ::handleSuccess)
-                }
+                taskCardNetRequest(params).either(::handleFailure, ::handleSuccess)
             }
+
             progress.value = false
         }
     }
@@ -90,7 +107,7 @@ class LoadingTaskCardViewModel : CoreLoadingViewModel() {
     private fun handleSuccess(result: TaskCardRequestResult) {
         Logg.d { "Task card request result $result" }
         screenNavigator.goBack()
-        val taskHeader = repoInMemoryHolder.taskList.value?.tasks?.findLast { it.taskNumber == taskNumber }
+        val taskHeader = repoInMemoryHolder.taskList.value?.tasks?.findLast { it.taskNumber == taskNumber } ?: repoInMemoryHolder.lastSearchResult.value?.tasks?.findLast { it.taskNumber == taskNumber }
         taskHeader?.let {
             val notifications = result.notifications.map { TaskNotification.from(it) }
             val newTask = taskManager.newReceivingTask(taskHeader, TaskDescription.from(result.taskDescription))
@@ -101,7 +118,7 @@ class LoadingTaskCardViewModel : CoreLoadingViewModel() {
     }
 
     private fun handleFullDataSuccess(result: TaskContentsRequestResult) {
-        Logg.d { "Task card request result $result" }
+        Logg.d { "Task card request result ${result}" }
         //screenNavigator.goBack()
         viewModelScope.launch {
             val taskHeader = repoInMemoryHolder.taskList.value?.tasks?.findLast { it.taskNumber == taskNumber }

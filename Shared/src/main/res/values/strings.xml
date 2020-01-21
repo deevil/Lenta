@@ -56,7 +56,7 @@
     <string name="loading_tab_number">Загрузка данных исполнителя</string>
     <string name="delete">Удалить</string>
     <string name="clean">Очистить</string>
-    <string name="refusal">Отказ</string>
+    <string name="refusal">Отказать</string>
     <string name="fix">Исправить</string>
     <string name="batchs_products">Партии</string>
     <string name="print">Печать</string>
@@ -179,4 +179,7 @@
     <string name="mark">Пометить</string>
     <string name="exclude">Исключить</string>
     <string name="breaking">Взлом</string>
+    <string name="transport_marriage_abbr">Тр брак</string>
+    <string name="entirely">Целиком</string>
+    <string name="cancellation">Отмена</string>
 </resources>

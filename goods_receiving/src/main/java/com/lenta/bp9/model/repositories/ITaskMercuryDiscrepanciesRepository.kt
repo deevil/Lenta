@@ -2,7 +2,6 @@ package com.lenta.bp9.model.repositories
 
 import com.lenta.bp9.model.task.TaskMercuryDiscrepancies
 import com.lenta.bp9.model.task.TaskMercuryInfo
-import com.lenta.bp9.model.task.TaskProductDiscrepancies
 import com.lenta.bp9.model.task.TaskProductInfo
 
 interface ITaskMercuryDiscrepanciesRepository {
@@ -14,7 +13,9 @@ interface ITaskMercuryDiscrepanciesRepository {
     fun addMercuryDiscrepancy(discrepancy: TaskMercuryDiscrepancies): Boolean
     fun updateMercuryInfo(newMercuryInfo: List<TaskMercuryInfo>)
     fun changeMercuryDiscrepancy(discrepancy: TaskMercuryDiscrepancies): Boolean
+    fun deleteMercuryDiscrepancyForVetDoc(discrepancy: TaskMercuryDiscrepancies): Boolean
     fun deleteMercuryDiscrepancy(discrepancy: TaskMercuryDiscrepancies): Boolean
+    fun deleteMercuryDiscrepancy(materialNumber: String, typeDiscrepancies: String): Boolean
     fun deleteMercuryDiscrepanciesForProduct(product: TaskProductInfo): Boolean
     fun getMercuryCountAcceptOfProduct(product: TaskProductInfo): Double
     fun getMercuryCountRefusalOfProduct(product: TaskProductInfo): Double

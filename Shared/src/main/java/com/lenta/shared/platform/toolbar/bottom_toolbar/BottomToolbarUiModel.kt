@@ -198,6 +198,10 @@ data class ButtonDecorationInfo(
             ButtonDecorationInfo(R.drawable.ic_send_white_24dp, R.string.skip)
         }
 
+        val skipAlternate: ButtonDecorationInfo by lazy {
+            ButtonDecorationInfo(R.drawable.ic_arrow_skip_white_24dp, R.string.skip)
+        }
+
         val untie: ButtonDecorationInfo by lazy {
             ButtonDecorationInfo(R.drawable.ic_untie_white_24dp, R.string.untie)
         }
@@ -274,6 +278,10 @@ data class ButtonDecorationInfo(
             ButtonDecorationInfo(R.drawable.ic_arrow_forward_white_24dp, R.string.process)
         }
 
+        val processAlternate: ButtonDecorationInfo by lazy {
+            ButtonDecorationInfo(R.drawable.ic_send_white_24dp, R.string.process)
+        }
+
         val restore: ButtonDecorationInfo by lazy {
             ButtonDecorationInfo(R.drawable.ic_restore, R.string.restore)
         }
@@ -312,6 +320,18 @@ data class ButtonDecorationInfo(
 
         val breaking: ButtonDecorationInfo by lazy {
             ButtonDecorationInfo(R.drawable.ic_seal_24dp, R.string.breaking)
+        }
+
+        val transportMarriage: ButtonDecorationInfo by lazy {
+            ButtonDecorationInfo(R.drawable.ic_transport_marriage_24dp, R.string.transport_marriage_abbr)
+        }
+
+        val entirely: ButtonDecorationInfo by lazy {
+            ButtonDecorationInfo(R.drawable.ic_entirely_24dp, R.string.entirely)
+        }
+
+        val cancellation: ButtonDecorationInfo by lazy {
+            ButtonDecorationInfo(R.drawable.ic_arrow_verify_white_24dp, R.string.cancellation)
         }
 
     }

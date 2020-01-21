@@ -64,6 +64,21 @@ class MemoryTaskProductsDiscrepanciesRepository : ITaskProductsDiscrepanciesRepo
         return true
     }
 
+    override fun deleteProductDiscrepancy(materialNumber: String, typeDiscrepancies: String): Boolean {
+        var index = -1
+        for (i in productsDiscrepancies.indices) {
+            if (materialNumber == productsDiscrepancies[i].materialNumber && typeDiscrepancies == productsDiscrepancies[i].typeDiscrepancies) {
+                index = i
+            }
+        }
+
+        if (index == -1) {
+            return false
+        }
+        productsDiscrepancies.removeAt(index)
+        return true
+    }
+
     override fun deleteProductsDiscrepanciesForProduct(product: TaskProductInfo): Boolean {
         val delDiscrepancies = ArrayList<TaskProductDiscrepancies>()
         for (i in productsDiscrepancies.indices) {
@@ -102,6 +117,30 @@ class MemoryTaskProductsDiscrepanciesRepository : ITaskProductsDiscrepanciesRepo
 
     override fun getCountProductNotProcessedOfProduct(product: TaskProductInfo) : Double {
         return product.origQuantity.toDouble() - getCountAcceptOfProduct(product) - getCountRefusalOfProduct(product)
+    }
+
+    override fun getCountAcceptOfProductPGE(product: TaskProductInfo): Double {
+        var countAccept = 0.0
+        findProductDiscrepanciesOfProduct(product).filter {
+            it.typeDiscrepancies == "1" || it.typeDiscrepancies == "2"
+        }.map {discrepancies ->
+            countAccept += discrepancies.numberDiscrepancies.toDouble()
+        }
+        return countAccept
+    }
+
+    override fun getCountRefusalOfProductPGE(product: TaskProductInfo): Double {
+        var countRefusal = 0.0
+        findProductDiscrepanciesOfProduct(product).filter {
+            it.typeDiscrepancies == "3" || it.typeDiscrepancies == "4" || it.typeDiscrepancies == "5"
+        }.map {discrepancies ->
+            countRefusal += discrepancies.numberDiscrepancies.toDouble()
+        }
+        return countRefusal
+    }
+
+    override fun getCountProductNotProcessedOfProductPGE(product: TaskProductInfo) : Double {
+        return product.orderQuantity.toDouble() - getCountAcceptOfProductPGE(product) - getCountRefusalOfProductPGE(product)
     }
 
     override fun getCountRefusalOfProductOfReasonRejection(product: TaskProductInfo, reasonRejectionCode: String?): Double {

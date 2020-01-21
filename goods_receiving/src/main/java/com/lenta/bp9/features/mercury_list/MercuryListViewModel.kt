@@ -125,12 +125,6 @@ class MercuryListViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     fun onClickNext() {
-        if (!productDoc.value!!.isCheck && listUntied.value?.size == 0 && listTied.value?.filter { !it.isCheck }?.size == 0) {
-            taskManager.getReceivingTask()?.taskRepository?.getReviseDocuments()?.changeProductDocumentStatus(productDoc.value!!.documentID, productDoc.value!!.productNumber)
-        }
-        if (productDoc.value!!.isCheck && listUntied.value?.size != 0) {
-            taskManager.getReceivingTask()?.taskRepository?.getReviseDocuments()?.changeProductDocumentStatus(productDoc.value!!.documentID, productDoc.value!!.productNumber)
-        }
         screenNavigator.goBack()
     }
 

@@ -51,9 +51,10 @@ class LoadingUnlockTaskViewModel : CoreLoadingViewModel() {
     }
 
     private fun handleSuccess(result: UnlockTaskRequestResult) {
-        //когда будут доработаны другие задания (ПГЕ, Отгрузка) прописать здесь для них условия
         when (taskManager.getReceivingTask()?.taskHeader?.taskType) {
             TaskType.DirectSupplier, TaskType.ReceptionDistributionCenter -> screenNavigator.openTaskListLoadingScreen(TaskListLoadingMode.Receiving) //ППП и ПРЦ
+            TaskType.RecalculationCargoUnit -> screenNavigator.openTaskListLoadingScreen(TaskListLoadingMode.PGE) //ПГЕ
+            TaskType.ShipmentPP, TaskType.ShipmentRC -> screenNavigator.openTaskListLoadingScreen(TaskListLoadingMode.Shipment) //Отгрузка ПП или Отгрузка РЦ
             else -> screenNavigator.openTaskListLoadingScreen(TaskListLoadingMode.None)
         }
     }

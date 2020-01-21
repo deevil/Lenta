@@ -17,6 +17,7 @@ import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.scan.OnScanResultListener
 import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.provideViewModel
+import com.lenta.shared.utilities.extentions.toStringFormatted
 import com.lenta.shared.utilities.state.state
 
 class GoodsInfoFragment : CoreFragment<FragmentGoodsInfoBinding, GoodsInfoViewModel>(),
@@ -24,10 +25,11 @@ class GoodsInfoFragment : CoreFragment<FragmentGoodsInfoBinding, GoodsInfoViewMo
         OnScanResultListener {
 
     companion object {
-        fun create(productInfo: TaskProductInfo, isDiscrepancy: Boolean): GoodsInfoFragment {
+        fun create(productInfo: TaskProductInfo, isDiscrepancy: Boolean, initialCount: Double = 0.0): GoodsInfoFragment {
             GoodsInfoFragment().let {
                 it.productInfo = productInfo
                 it.isDiscrepancy = isDiscrepancy
+                it.initialCount = initialCount
                 return it
             }
         }
@@ -35,6 +37,7 @@ class GoodsInfoFragment : CoreFragment<FragmentGoodsInfoBinding, GoodsInfoViewMo
 
     private var isDiscrepancy by state<Boolean?>(null)
     private var productInfo by state<TaskProductInfo?>(null)
+    private var initialCount by state<Double>(0.0)
 
     override fun getLayoutId(): Int = R.layout.fragment_goods_info
 
@@ -45,6 +48,7 @@ class GoodsInfoFragment : CoreFragment<FragmentGoodsInfoBinding, GoodsInfoViewMo
             getAppComponent()?.inject(vm)
             vm.productInfo.value = this.productInfo
             vm.isDiscrepancy.value = this.isDiscrepancy
+            vm.count.value = initialCount.toStringFormatted()
             return vm
         }
     }

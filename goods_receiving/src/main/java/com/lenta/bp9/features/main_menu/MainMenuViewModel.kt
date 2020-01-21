@@ -28,13 +28,12 @@ class MainMenuViewModel : CoreViewModel() {
 
     }
 
-    fun onClickReceiptTask() {
-        screenNavigator.openTaskListLoadingScreen(TaskListLoadingMode.Receiving)
+    fun onClickRecountTask() {
+        screenNavigator.openTaskListLoadingScreen(TaskListLoadingMode.PGE)
     }
 
-    fun onClickRecountTask() {
-        //todo Переход к списку заданий на приемку
-
+    fun onClickReceiptTask() {
+        screenNavigator.openTaskListLoadingScreen(TaskListLoadingMode.Receiving)
     }
 
     fun onClickUser() {

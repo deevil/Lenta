@@ -36,7 +36,7 @@ class TaskContentsReceptionDistrCenterStatus : ObjectRawStatus<TaskContentsRecep
 data class TaskContentsReceptionDistrCenterResult(
         @SerializedName("ES_TASK")
         val taskDescription: TaskDescriptionRestInfo,
-        @SerializedName("ET_TASK_POS") //Таблица состава задания ППП	ZTT_GRZ_TASK_DS_POS_EXCH
+        @SerializedName("ET_TASK_POS") //Таблица состава задания ПГЕ
         val taskComposition: List<TaskComposition>,
         @SerializedName("ET_TASK_DIFF") //Таблица расхождений по товару	ZTT_GRZ_TASK_DIF_EXCH
         val taskProductDiscrepancies: List<TaskProductDiscrepanciesRestData>,

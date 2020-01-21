@@ -6,7 +6,6 @@ import androidx.lifecycle.viewModelScope
 import com.lenta.bp9.features.task_card.TaskCardViewModel
 import com.lenta.bp9.model.task.IReceivingTaskManager
 import com.lenta.bp9.model.task.revise.ProductDocumentType
-import com.lenta.bp9.model.task.revise.ProductVetDocumentRevise
 import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.fmp.resources.dao_ext.getProductInfoByMaterial
@@ -66,6 +65,11 @@ class ProductDocumentsReviseViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     private fun updateDocumentVMs() {
+        //2.2. Устанавливать чек-бокс "Сверено" по веттовару, если в таблице ET_VET_CHK для текущего товара есть записи и для всех записей установлен признак FLG_CHECK
+        // (Т.е. сверенным считается товар у которого все привязанные ВСД сверены, суммарные количества в привязанных ВСД проверять на этом этапе не нужно)
+        //карточка 2460
+        taskManager.getReceivingTask()?.taskRepository?.getReviseDocuments()?.setProductVetDocumentsReconciliation()
+
         val checked = taskManager.getReceivingTask()?.getCheckedProductDocuments()
         val unchecked = taskManager.getReceivingTask()?.getUncheckedProductDocuments()
 
@@ -200,17 +204,17 @@ class ProductDocumentsReviseViewModel : CoreViewModel(), PageSelectionListener {
         }
 
         if (presenceMercury == true) {
-            if (taskManager.getReceivingTask()?.taskRepository?.getReviseDocuments()?.presenceUncoveredVadSomeGoods() == true) {
-                screenNavigator.openDiscrepanciesInconsistencyVetDocsDialog{
-                    screenNavigator.openFinishReviseLoadingScreen()
-                }
-                return
-            }
             if (taskManager.getReceivingTask()?.taskRepository?.getReviseDocuments()?.presenceUncoveredVadAllGoods() == true) {
                 screenNavigator.openDiscrepanciesNoVerifiedVadDialog(
                         {screenNavigator.openMercuryExceptionIntegrationScreen()},
                         {screenNavigator.openFinishReviseLoadingScreen()}
                 )
+                return
+            }
+            if (taskManager.getReceivingTask()?.taskRepository?.getReviseDocuments()?.presenceUncoveredVadSomeGoods() == true) {
+                screenNavigator.openDiscrepanciesInconsistencyVetDocsDialog{
+                    screenNavigator.openFinishReviseLoadingScreen()
+                }
                 return
             }
         }

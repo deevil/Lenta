@@ -244,105 +244,111 @@
             app:layout_constraintTop_toBottomOf="@id/div_hor_5"
             app:layout_constraintEnd_toEndOf="parent" />
 
-        <ImageView
-            android:id="@+id/imageViewIcon1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:layout_marginStart="20dp"
-            android:src="@drawable/ic_promo_task_icon"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/div_hor_6"
-            app:layout_goneMarginStart="20dp"
-            app:visibleOrGone='@{vm.isPromo}'
-            tools:src="@drawable/ic_promo_task_icon" />
+            <ImageView
+                android:id="@+id/imageViewIcon1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="6dp"
+                android:layout_marginTop="24dp"
+                android:src="@drawable/ic_promo_task_icon"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/div_hor_6"
+                app:layout_goneMarginStart="20dp"
+                app:visibleOrGone='@{vm.isPromo}'
+                tools:src="@drawable/ic_promo_task_icon" />
 
-        <ImageView
-            android:id="@+id/imageViewIcon2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:layout_marginStart="20dp"
-            android:src="@drawable/ic_alco_task_icon"
-            app:layout_constraintStart_toEndOf="@id/imageViewIcon1"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintTop_toBottomOf="@id/div_hor_6"
-            app:layout_goneMarginStart="20dp"
-            app:visibleOrGone='@{vm.isAlco}'
-            tools:src="@drawable/ic_alco_task_icon" />
+            <ImageView
+                android:id="@+id/imageViewIcon2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="7dp"
+                android:layout_marginTop="24dp"
+                android:src="@drawable/ic_alco_task_icon"
+                app:layout_constraintStart_toEndOf="@id/imageViewIcon1"
+                app:layout_constraintTop_toBottomOf="@id/div_hor_6"
+                app:layout_goneMarginStart="20dp"
+                app:visibleOrGone='@{vm.isAlco}'
+                tools:src="@drawable/ic_alco_task_icon" />
 
-        <ImageView
-            android:id="@+id/imageViewIcon3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:layout_marginStart="20dp"
-            android:src="@drawable/ic_fruits_task_icon"
-            app:layout_constraintStart_toEndOf="@id/imageViewIcon2"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintTop_toBottomOf="@id/div_hor_6"
-            app:layout_goneMarginStart="20dp"
-            app:visibleOrGone='@{vm.isFruit}'
-            tools:src="@drawable/ic_fruits_task_icon" />
+            <ImageView
+                android:id="@+id/imageViewIcon3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="7dp"
+                android:layout_marginTop="24dp"
+                android:src="@drawable/ic_fruits_task_icon"
+                app:layout_constraintStart_toEndOf="@id/imageViewIcon2"
+                app:layout_constraintTop_toBottomOf="@id/div_hor_6"
+                app:layout_goneMarginStart="20dp"
+                app:visibleOrGone='@{vm.isFruit}'
+                tools:src="@drawable/ic_fruits_task_icon" />
 
-        <ImageView
-            android:id="@+id/imageViewIcon4"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:layout_marginStart="20dp"
-            android:src="@drawable/ic_raw_task_icon"
-            app:layout_constraintStart_toEndOf="@id/imageViewIcon3"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintTop_toBottomOf="@id/div_hor_6"
-            app:layout_goneMarginStart="20dp"
-            app:visibleOrGone='@{vm.isRaw}'
-            tools:src="@drawable/ic_raw_task_icon" />
+            <ImageView
+                android:id="@+id/imageViewIcon4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="7dp"
+                android:layout_marginTop="24dp"
+                android:src="@drawable/ic_raw_task_icon"
+                app:layout_constraintStart_toEndOf="@id/imageViewIcon3"
+                app:layout_constraintTop_toBottomOf="@id/div_hor_6"
+                app:layout_goneMarginStart="20dp"
+                app:visibleOrGone='@{vm.isRaw}'
+                tools:src="@drawable/ic_raw_task_icon" />
 
-        <ImageView
-            android:id="@+id/imageViewIcon5"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:layout_marginStart="20dp"
-            android:src="@drawable/ic_return_task_icon"
-            app:layout_constraintStart_toEndOf="@id/imageViewIcon4"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintTop_toBottomOf="@id/div_hor_6"
-            app:layout_goneMarginStart="20dp"
-            app:visibleOrGone='@{vm.isReturn}'
-            tools:src="@drawable/ic_return_task_icon" />
+            <ImageView
+                android:id="@+id/imageViewIcon5"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="7dp"
+                android:layout_marginTop="24dp"
+                android:src="@drawable/ic_return_task_icon"
+                app:layout_constraintStart_toEndOf="@id/imageViewIcon4"
+                app:layout_constraintTop_toBottomOf="@id/div_hor_6"
+                app:layout_goneMarginStart="20dp"
+                app:visibleOrGone='@{vm.isReturn}'
+                tools:src="@drawable/ic_return_task_icon" />
 
-        <ImageView
-            android:id="@+id/imageViewIcon6"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:layout_marginStart="20dp"
-            android:src="@drawable/ic_non_edi_task_icon"
-            app:layout_constraintStart_toEndOf="@id/imageViewIcon5"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintTop_toBottomOf="@id/div_hor_6"
-            app:layout_goneMarginStart="20dp"
-            app:visibleOrGone='@{vm.isNotEDI}'
-            tools:src="@drawable/ic_non_edi_task_icon" />
+            <ImageView
+                android:id="@+id/imageViewIcon6"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="7dp"
+                android:layout_marginTop="24dp"
+                android:src="@drawable/ic_non_edi_task_icon"
+                app:layout_constraintStart_toEndOf="@id/imageViewIcon5"
+                app:layout_constraintTop_toBottomOf="@id/div_hor_6"
+                app:layout_goneMarginStart="20dp"
+                app:visibleOrGone='@{vm.isNotEDI}'
+                tools:src="@drawable/ic_non_edi_task_icon" />
 
-        <ImageView
-            android:id="@+id/imageViewIcon7"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:layout_marginStart="20dp"
-            android:src="@drawable/ic_special_task_icon"
-            app:layout_constraintStart_toEndOf="@id/imageViewIcon6"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintTop_toBottomOf="@id/div_hor_6"
-            app:layout_goneMarginStart="20dp"
-            app:visibleOrGone='@{vm.isSpecial}'
-            tools:src="@drawable/ic_special_task_icon" />
+            <ImageView
+                android:id="@+id/imageViewIcon7"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="7dp"
+                android:layout_marginTop="24dp"
+                android:src="@drawable/ic_special_task_icon"
+                app:layout_constraintStart_toEndOf="@id/imageViewIcon6"
+                app:layout_constraintTop_toBottomOf="@id/div_hor_6"
+                app:layout_goneMarginStart="20dp"
+                app:visibleOrGone='@{vm.isSpecial}'
+                tools:src="@drawable/ic_special_task_icon" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            <ImageView
+                android:id="@+id/imageViewIcon8"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="7dp"
+                android:layout_marginTop="24dp"
+                android:src="@drawable/ic_conversion_pallet"
+                app:layout_constraintStart_toEndOf="@id/imageViewIcon7"
+                app:layout_constraintTop_toBottomOf="@id/div_hor_6"
+                app:layout_goneMarginStart="20dp"
+                app:visibleOrGone='@{vm.isRecount}'
+                tools:src="@drawable/ic_conversion_pallet" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
     </ScrollView>
 

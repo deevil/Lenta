@@ -88,23 +88,27 @@
             android:gravity="start|center_vertical"
             android:maxLines="1"
             android:text="@{vm.name}"
-            app:layout_constraintBottom_toBottomOf="@+id/tv_counter"
-            app:layout_constraintEnd_toStartOf="@+id/img_arrow"
+            app:layout_constraintEnd_toStartOf="@+id/div_vert2"
             app:layout_constraintStart_toEndOf="@+id/div_vert1"
             app:layout_constraintTop_toTopOf="@+id/tv_counter"
             tools:text="000363 Салака" />
 
-        <ImageView
-            android:id="@+id/img_arrow"
-            android:layout_width="wrap_content"
+        <TextView
+            android:id="@+id/tv_type_discrepancies"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
+            android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp"
-            android:layout_marginBottom="8dp"
-            android:src="@drawable/ic_keyboard_arrow_right_white_16dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/vertical_guidline_2"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:ellipsize="end"
+            android:gravity="start|center_vertical"
+            android:maxLines="1"
+            android:text="@{vm.discrepanciesName}"
+            app:layout_constraintBottom_toBottomOf="@+id/tv_counter"
+            app:layout_constraintEnd_toStartOf="@+id/div_vert2"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toEndOf="@+id/div_vert1"
+            app:layout_constraintTop_toBottomOf="@+id/tv_goods_title"
+            tools:text="Недогруз" />
 
         <View
             android:id="@+id/div_hor_bottom"
@@ -116,35 +120,20 @@
             app:layout_constraintStart_toStartOf="parent" />
 
         <TextView
-            android:id="@+id/tv_accept"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginEnd="8dp"
-            android:ellipsize="end"
-            android:gravity="start|center_vertical"
-            android:maxLines="1"
-            android:text='@{vm.countAcceptWithUom }'
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/div_vert2"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:text="+ 10 шт" />
-
-        <TextView
             android:id="@+id/tv_refusal"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp"
             android:ellipsize="end"
             android:gravity="start|center_vertical"
             android:maxLines="1"
             android:text='@{vm.countRefusalWithUom }'
             android:textColor="@color/color_pressed_red"
+            app:layout_constraintBottom_toBottomOf="@+id/tv_type_discrepancies"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="@+id/tv_accept"
-            app:layout_constraintTop_toBottomOf="@+id/tv_accept"
+            app:layout_constraintStart_toEndOf="@+id/div_vert2"
+            app:layout_constraintTop_toTopOf="@+id/tv_goods_title"
             tools:text="- 10 шт" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

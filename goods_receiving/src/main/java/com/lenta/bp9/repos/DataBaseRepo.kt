@@ -22,7 +22,7 @@ class DataBaseRepo(
             zmpUtz17V001.getAllQuality()?.toQualityInfoList()?.filter {
                 it.id == "005"
             }
-        }
+    }
 
     override suspend fun getQualityInfoForDiscrepancy(): List<QualityInfo>? = withContext(Dispatchers.IO) {
         zmpUtz17V001.getAllQuality()?.toQualityInfoList()?.filter {
@@ -34,7 +34,7 @@ class DataBaseRepo(
             zmpUtz20V001.getAllReasonRejection()?.toReasonRejectionInfoList()?.filter {
                 it.id == "005" && it.qualityCode == quality
             }
-        }
+    }
 
     override suspend fun getAllReasonRejectionInfo(): List<ReasonRejectionInfo>? = withContext(Dispatchers.IO) {
         zmpUtz20V001.getAllReasonRejection()?.toReasonRejectionInfoList()?.filter {
@@ -77,6 +77,18 @@ class DataBaseRepo(
             it.id == "014"
         }
     }
+
+    override suspend fun getQualityInfoPGE(): List<QualityInfo>? = withContext(Dispatchers.IO) {
+        zmpUtz17V001.getAllQuality()?.toQualityInfoList()?.filter {
+            it.id == "013"
+        }
+    }
+
+    override suspend fun getQualityInfoPGEForDiscrepancy(): List<QualityInfo>? = withContext(Dispatchers.IO) {
+        zmpUtz17V001.getAllQuality()?.toQualityInfoList()?.filter {
+            it.id == "013" && (it.code == "3" || it.code == "4" || it.code == "5")
+        }
+    }
 }
 
 interface IDataBaseRepo {
@@ -91,4 +103,6 @@ interface IDataBaseRepo {
     suspend fun getStatusInfoForPRC(): List<QualityInfo>?
     suspend fun getSurplusInfoForPRC(): List<QualityInfo>?
     suspend fun getTypePalletInfo(): List<QualityInfo>?
+    suspend fun getQualityInfoPGE(): List<QualityInfo>?
+    suspend fun getQualityInfoPGEForDiscrepancy(): List<QualityInfo>?
 }
