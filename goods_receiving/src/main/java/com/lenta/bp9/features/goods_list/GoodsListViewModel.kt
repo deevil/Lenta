@@ -56,7 +56,12 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
         !selectedComponentsPositions.isNullOrEmpty()
     }
 
-    val visibilityBatchesButton: MutableLiveData<Boolean> = MutableLiveData()
+    val visibilityBatchesButton: MutableLiveData<Boolean> by lazy {
+        MutableLiveData(taskManager.getReceivingTask()?.taskDescription?.isAlco == true && taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.RecalculationCargoUnit)
+    }
+    val isTaskPGE: MutableLiveData<Boolean> by lazy {
+        MutableLiveData(taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.RecalculationCargoUnit)
+    }
 
     init {
         viewModelScope.launch {
@@ -66,7 +71,6 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
     }
 
     fun onResume() {
-        visibilityBatchesButton.value = taskManager.getReceivingTask()?.taskDescription?.isAlco
         updateListCounted()
         updateListWithoutBarcode()
     }
@@ -277,9 +281,9 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
     }
 
     fun onClickBatches() {
-        isBatches.value = !isBatches.value!!
+        /**isBatches.value = !isBatches.value!!
         updateListCounted()
-        updateListWithoutBarcode()
+        updateListWithoutBarcode()*/
     }
 
     fun onClickSave() {
