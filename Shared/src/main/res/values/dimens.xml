@@ -9,6 +9,7 @@
     <dimen name="spin_width">220dp</dimen>
     <dimen name="margin_double">32dp</dimen>
     <dimen name="text_medium">16sp</dimen>
+    <dimen name="text_button">12sp</dimen>
     <dimen name="text_big">21sp</dimen>
 
     <dimen name="collapse_button_height">24dp</dimen>
@@ -17,6 +18,13 @@
     <integer name="details_title_weight">4</integer>
     <integer name="details_value_weight">5</integer>
 
-    <dimen name="common_row_height">55dp</dimen> // Высота строки в табличных макетах
+    // Нижний тулбар
+    <dimen name="bottom_toolbar_btn_height">63dp</dimen>
+    <dimen name="bottom_toolbar_padding_top">10dp</dimen>
+    <dimen name="bottom_toolbar_padding_bottom">0dp</dimen>
+    <dimen name="bottom_toolbar_text_size">11sp</dimen>
+
+    // Высота строки в табличных макетах
+    <dimen name="common_row_height">55dp</dimen>
 
 </resources>

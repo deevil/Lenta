@@ -13,6 +13,7 @@
         <variable
             name="toolbarButtonsClickListener"
             type="com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener" />
+
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -76,17 +77,15 @@
 
         </FrameLayout>
 
-
         <include
             android:id="@+id/layout_bottom_toolbar"
             layout="@layout/layout_bottom_toolbar"
             android:layout_width="match_parent"
-            android:layout_height="64dp"
+            android:layout_height="wrap_content"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:toolbarButtonsClickListener='@{toolbarButtonsClickListener}'
             app:vm="@{vm.bottomToolbarUiModel}" />
-
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

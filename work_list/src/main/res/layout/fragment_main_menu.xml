@@ -71,7 +71,7 @@
                 android:onClick="@{(view) -> vm.onClickWorkWithTask()}"
                 android:text="@string/work_with_tasks"
                 android:textAllCaps="false"
-                app:icon="@drawable/ic_document_page_48dp"
+                app:icon="@drawable/ic_document_page_32dp"
                 app:iconGravity="end"
                 app:isGone="@{!vm.workWithTaskButtonVisibility}" />
 
