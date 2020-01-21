@@ -224,7 +224,7 @@
                 android:layout_marginEnd="8dp"
                 android:background="?selectableItemBackground"
                 android:onClick="@{(v) -> vm.navigator.openQrCodeInfoScreen()}"
-                android:src="@drawable/ic_scan_qrcode_48dp" />
+                android:src="@drawable/ic_scan_qrcode_32dp" />
 
             <ImageView
                 android:id="@+id/btn_barcode"
@@ -233,7 +233,7 @@
                 android:layout_marginEnd="8dp"
                 android:background="?selectableItemBackground"
                 android:onClick="@{(v) -> vm.navigator.openEanInfoScreen()}"
-                android:src="@drawable/ic_scan_barcode_48dp" />
+                android:src="@drawable/ic_scan_barcode_32dp" />
 
         </LinearLayout>
 

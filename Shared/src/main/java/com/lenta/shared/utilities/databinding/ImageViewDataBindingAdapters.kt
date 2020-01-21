@@ -49,7 +49,7 @@ fun setAlcoIcon(imageView: ImageView, productType: ProductType?) {
 @BindingAdapter("isStrictList")
 fun setStrictListIcon(imageView: ImageView, isStrictList: Boolean?) {
     (when (isStrictList) {
-        true -> R.drawable.ic_strict_list_48dp
+        true -> R.drawable.ic_strict_list_32dp
         false -> R.drawable.ic_not_strict_list_48dp
         else -> 0
     }).let { iconRes ->

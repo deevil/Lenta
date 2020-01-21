@@ -86,22 +86,26 @@
             tools:listitem="@layout/item_shelf" />
 
         <!-- Поле ввода номера полки -->
-        <EditText
-            android:id="@+id/et_shelf_number"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="8dp"
-            android:digits="0123456789"
-            android:drawableEnd="@drawable/ic_add_white_24dp"
-            android:enabled="@{vm.numberFieldEnabled}"
-            android:hint="@string/enter_shelf_number"
-            android:imeOptions="actionGo"
-            android:inputType="number"
-            android:maxLength="12"
-            android:text="@={vm.shelfNumber}"
-            app:onOkInSoftKeyboard="@{vm}"
-            app:requestFocus="@{vm.requestFocusToShelfNumber}"
-            tools:ignore="Autofill" />
+        <LinearLayout style="@style/EnterNumberFieldLayout">
+
+            <EditText
+                android:id="@+id/et_shelf_number"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:digits="0123456789"
+                android:drawableEnd="@drawable/ic_add_white_16dp"
+                android:enabled="@{vm.numberFieldEnabled}"
+                android:hint="@string/enter_shelf_number"
+                android:imeOptions="actionGo"
+                android:inputType="number"
+                android:maxLength="12"
+                android:text="@={vm.shelfNumber}"
+                app:onOkInSoftKeyboard="@{vm}"
+                app:requestFocus="@{vm.requestFocusToShelfNumber}"
+                tools:ignore="Autofill" />
+
+        </LinearLayout>
 
     </LinearLayout>
 

@@ -86,21 +86,25 @@
             tools:listitem="@layout/item_segment" />
 
         <!-- Поле ввода номера сегмента -->
-        <EditText
-            android:id="@+id/et_segment_number"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="8dp"
-            android:digits="1234567890-"
-            android:drawableEnd="@drawable/ic_add_white_24dp"
-            android:hint="@string/enter_segment_number"
-            android:imeOptions="actionGo"
-            android:inputType="number"
-            android:text="@={vm.segmentNumber}"
-            app:maskPattern='@{"[000]-[000]"}'
-            app:onOkInSoftKeyboard="@{vm}"
-            app:requestFocus="@{vm.requestFocusToSegmentNumber}"
-            tools:ignore="Autofill" />
+        <LinearLayout style="@style/EnterNumberFieldLayout">
+
+            <EditText
+                android:id="@+id/et_segment_number"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:digits="1234567890-"
+                android:drawableEnd="@drawable/ic_add_white_16dp"
+                android:hint="@string/enter_segment_number"
+                android:imeOptions="actionGo"
+                android:inputType="number"
+                android:text="@={vm.segmentNumber}"
+                app:maskPattern='@{"[000]-[000]"}'
+                app:onOkInSoftKeyboard="@{vm}"
+                app:requestFocus="@{vm.requestFocusToSegmentNumber}"
+                tools:ignore="Autofill" />
+
+        </LinearLayout>
 
     </LinearLayout>
 

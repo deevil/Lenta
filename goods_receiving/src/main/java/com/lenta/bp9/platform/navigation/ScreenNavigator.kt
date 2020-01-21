@@ -1,7 +1,6 @@
 package com.lenta.bp9.platform.navigation
 
 import android.content.Context
-import android.provider.Settings.Global.getString
 import androidx.core.content.ContextCompat
 import com.lenta.bp9.features.auth.AuthFragment
 import com.lenta.bp9.features.goods_list.GoodsListFragment
@@ -48,7 +47,6 @@ import com.lenta.bp9.model.task.revise.DeliveryProductDocumentRevise
 import com.lenta.bp9.model.task.revise.ProductVetDocumentRevise
 import com.lenta.shared.account.IAuthenticator
 import com.lenta.shared.exception.Failure
-import com.lenta.shared.exception.IFailureInterpreter
 import com.lenta.shared.features.alert.AlertFragment
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
 import com.lenta.shared.platform.navigation.CustomAnimation
@@ -117,7 +115,7 @@ class ScreenNavigator(
 
     override fun openAlertNotPermissions(message: String) {
         openAlertScreen(message = message,
-                iconRes = R.drawable.ic_info_pink,
+                iconRes = R.drawable.ic_info_pink_80dp,
                 textColor = ContextCompat.getColor(context, R.color.color_text_dialogWarning),
                 pageNumber = "96",
                 timeAutoExitInMillis = 3000
@@ -213,7 +211,7 @@ class ScreenNavigator(
 
     override fun openAlertWrongProductType() {
         openAlertScreen(message = context.getString(R.string.wrong_product_type),
-                iconRes = R.drawable.ic_info_pink,
+                iconRes = R.drawable.ic_info_pink_80dp,
                 textColor = ContextCompat.getColor(context, R.color.color_text_dialogWarning),
                 pageNumber = "96",
                 timeAutoExitInMillis = 3000
@@ -324,7 +322,7 @@ class ScreenNavigator(
 
                 val fragment = AlertFragment.create(
                         message = context.getString(R.string.supply_results_error_dialog, numberSupply, userName),
-                        iconRes = R.drawable.ic_info_pink,
+                        iconRes = R.drawable.ic_info_pink_80dp,
                         textColor = ContextCompat.getColor(context, com.lenta.shared.R.color.color_text_dialogWarning),
                         pageNumber = "77",
                         description = context.getString(R.string.supply_results)
@@ -355,7 +353,7 @@ class ScreenNavigator(
 
                 val fragment = AlertFragment.create(
                         message = context.getString(R.string.supply_results_automatic_charge_error),
-                        iconRes = R.drawable.ic_info_pink,
+                        iconRes = R.drawable.ic_info_pink_80dp,
                         textColor = ContextCompat.getColor(context, com.lenta.shared.R.color.color_text_dialogWarning),
                         pageNumber = "75",
                         description = context.getString(R.string.supply_results)
@@ -368,7 +366,7 @@ class ScreenNavigator(
 
     override fun openAlertOverlimit() {
         openAlertScreen(message = context.getString(R.string.alert_overlimit),
-                iconRes = R.drawable.ic_info_pink,
+                iconRes = R.drawable.ic_info_pink_80dp,
                 textColor = ContextCompat.getColor(context, R.color.color_text_dialogWarning),
                 pageNumber = "96",
                 timeAutoExitInMillis = 3000
@@ -468,7 +466,7 @@ class ScreenNavigator(
 
     override fun openAlertCountLargerOverdelivery() {
         openAlertScreen(message = context.getString(R.string.alert_count_larger_overdelivery),
-                iconRes = R.drawable.ic_info_pink,
+                iconRes = R.drawable.ic_info_pink_80dp,
                 textColor = ContextCompat.getColor(context, R.color.color_text_dialogWarning),
                 pageNumber = "96"
         )
@@ -476,7 +474,7 @@ class ScreenNavigator(
 
     override fun openAlertNotCorrectDate() {
         openAlertScreen(message = context.getString(R.string.alert_not_correct_date),
-                iconRes = R.drawable.ic_info_pink,
+                iconRes = R.drawable.ic_info_pink_80dp,
                 textColor = ContextCompat.getColor(context, R.color.color_text_dialogWarning),
                 pageNumber = "96"
         )
@@ -640,7 +638,7 @@ class ScreenNavigator(
             getFragmentStack()?.push(AlertFragment.create(
                     message = context.getString(R.string.some_certificates_have_lost_relevance),
                     codeConfirmForRight = backFragmentResultHelper.setFuncForResult(nextCallbackFunc),
-                    iconRes = R.drawable.ic_info_pink,
+                    iconRes = R.drawable.ic_info_pink_80dp,
                     textColor = ContextCompat.getColor(context, R.color.color_text_dialogWarning),
                     pageNumber = "97",
                     isVisibleLeftButton = false,
@@ -729,7 +727,7 @@ class ScreenNavigator(
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
                     message = context.getString(R.string.alert_new_cargo_unit, cargoUnitNumber),
-                    iconRes = R.drawable.ic_info_pink,
+                    iconRes = R.drawable.ic_info_pink_80dp,
                     textColor = ContextCompat.getColor(context, R.color.color_text_dialogWarning),
                     pageNumber = "97")
             )

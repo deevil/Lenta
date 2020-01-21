@@ -143,9 +143,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
-            android:layout_margin="10dp"
+            android:layout_marginStart="13dp"
+            android:layout_marginBottom="19dp"
             app:isStrictList="@{vm.isStrictList()}"
-            tools:src="@drawable/ic_strict_list_48dp"
+            tools:src="@drawable/ic_strict_list_32dp"
             tools:ignore="ContentDescription" />
 
     </FrameLayout>

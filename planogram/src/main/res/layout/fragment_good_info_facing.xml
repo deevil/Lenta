@@ -156,9 +156,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end|bottom"
-            android:layout_margin="10dp"
-            android:padding="8dp"
-            android:src="@drawable/ic_scan_barcode_48dp"
+            android:layout_marginEnd="13dp"
+            android:layout_marginBottom="19dp"
+            android:src="@drawable/ic_scan_barcode_32dp"
             app:focusable="@{false}"
             tools:ignore="ContentDescription"/>
 

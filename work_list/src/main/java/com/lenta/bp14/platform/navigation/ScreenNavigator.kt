@@ -385,7 +385,7 @@ class ScreenNavigator @Inject constructor(
     override fun showDeviceNotSupportVideoScan() {
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.device_not_support_video_scan),
-                    iconRes = com.lenta.shared.R.drawable.ic_info_pink,
+                    iconRes = com.lenta.shared.R.drawable.ic_info_pink_80dp,
                     pageNumber = "100"))
         }
     }
@@ -445,7 +445,7 @@ class ScreenNavigator @Inject constructor(
 
     override fun openAddMarkToList(nextCallback: () -> Unit, message: String) {
         getFragmentStack()?.push(AlertFragment.create(message = message,
-                iconRes = R.drawable.ic_info_pink,
+                iconRes = R.drawable.ic_info_pink_80dp,
                 textColor = ContextCompat.getColor(context, R.color.color_text_dialogWarning),
                 pageNumber = "15",
                 codeConfirmForRight = backFragmentResultHelper.setFuncForResult(nextCallback),
@@ -458,7 +458,7 @@ class ScreenNavigator @Inject constructor(
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
                     message = context.getString(R.string.incorrect_production_date),
-                    iconRes = R.drawable.ic_info_pink,
+                    iconRes = R.drawable.ic_info_pink_80dp,
                     pageNumber = "15",
                     codeConfirmForLeft = backFragmentResultHelper.setFuncForResult(backCallback),
                     leftButtonDecorationInfo = ButtonDecorationInfo.back
