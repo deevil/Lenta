@@ -540,7 +540,7 @@ class ScreenNavigator(
         }
     }
 
-    override fun openInfoDocsSentPScreenrint() {
+    override fun openInfoDocsSentPrintScreen() {
         openAlertScreen(message = context.getString(R.string.documents_sent_print),
                 iconRes = R.drawable.is_warning_yellow_80dp,
                 pageNumber = "96"
@@ -790,6 +790,17 @@ class ScreenNavigator(
         }
     }
 
+    override fun openDateNotCorrectlyScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.date_not_correctly),
+                    iconRes = R.drawable.is_warning_yellow_80dp,
+                    pageNumber = "96",
+                    timeAutoExitInMillis = 3000)
+            )
+        }
+    }
+
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 }
 
@@ -856,7 +867,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openAlertNotFoundTaskScreen(failure: Failure)
     fun openUnsavedDataDialog(yesCallbackFunc: () -> Unit)
     fun openEditingInvoiceScreen()
-    fun openInfoDocsSentPScreenrint()
+    fun openInfoDocsSentPrintScreen()
     fun openAlertGoodsNotInInvoiceScreen()
     fun openOrderQuantityEexceededDialog(noCallbackFunc: () -> Unit, yesCallbackFunc: () -> Unit)
     fun openMercuryListScreen(productDoc: DeliveryProductDocumentRevise)
@@ -886,4 +897,5 @@ interface IScreenNavigator : ICoreNavigator {
     fun openRecountStartPGELoadingScreen()
     fun openTransportMarriageScreen()
     fun openNoTransportDefectDeclaredDialog(nextCallbackFunc: () -> Unit)
+    fun openDateNotCorrectlyScreen()
 }
