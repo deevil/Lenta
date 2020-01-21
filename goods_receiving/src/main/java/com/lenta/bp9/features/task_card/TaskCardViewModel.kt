@@ -161,7 +161,11 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
 
     val changeCurrentDateTimePossible by lazy {
         val status = taskManager.getReceivingTask()?.taskDescription?.currentStatus
-        status == TaskStatus.Arrived
+        if (taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.ReceptionDistributionCenter && status == TaskStatus.Arrived) {
+            false
+        } else {
+            status == TaskStatus.Arrived
+        }
     }
 
     val changeNextDateTimePossible by lazy {

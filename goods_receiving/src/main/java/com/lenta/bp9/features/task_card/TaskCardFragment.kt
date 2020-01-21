@@ -141,7 +141,7 @@ class TaskCardFragment : CoreFragment<FragmentTaskCardBinding, TaskCardViewModel
         vm.onResume()
     }
 
-    fun prepareNotificationsView(container: ViewGroup): View {
+    private fun prepareNotificationsView(container: ViewGroup): View {
         DataBindingUtil
                 .inflate<LayoutTaskCardNotificationsBinding>(LayoutInflater.from(container.context),
                         R.layout.layout_task_card_notifications,
@@ -173,7 +173,7 @@ class TaskCardFragment : CoreFragment<FragmentTaskCardBinding, TaskCardViewModel
                 }
     }
 
-    fun prepareDeliveryView(container: ViewGroup): View {
+    private fun prepareDeliveryView(container: ViewGroup): View {
         DataBindingUtil
                 .inflate<LayoutTaskCardDeliveryBinding>(LayoutInflater.from(container.context),
                         R.layout.layout_task_card_delivery,
@@ -185,7 +185,7 @@ class TaskCardFragment : CoreFragment<FragmentTaskCardBinding, TaskCardViewModel
                 }
     }
 
-    fun prepareStatusView(container: ViewGroup): View {
+    private fun prepareStatusView(container: ViewGroup): View {
         DataBindingUtil
                 .inflate<LayoutTaskCardStatusBinding>(LayoutInflater.from(container.context),
                         R.layout.layout_task_card_status,
