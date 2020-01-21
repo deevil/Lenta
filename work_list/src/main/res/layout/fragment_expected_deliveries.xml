@@ -27,22 +27,14 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:paddingTop="8dp"
-                android:paddingBottom="8dp">
+            <LinearLayout style="@style/FirstRowStyle">
 
                 <LinearLayout
                     style="@style/LinearCellStyle"
                     android:layout_weight="@integer/number_status_quantity_date_column_1">
 
                     <TextView
-                        style="@style/ColumnTitleStyle"
-                        android:layout_width="wrap_content"
-                        android:layout_marginStart="0dp"
+                        style="@style/FirstRowTextStyle"
                         android:text="@string/number" />
 
                 </LinearLayout>
@@ -52,7 +44,7 @@
                     android:layout_weight="@integer/number_status_quantity_date_column_2">
 
                     <TextView
-                        style="@style/ColumnTitleStyle"
+                        style="@style/FirstRowTextStyle"
                         android:text="@string/status" />
 
                 </LinearLayout>
@@ -62,7 +54,7 @@
                     android:layout_weight="@integer/number_status_quantity_date_column_3">
 
                     <TextView
-                        style="@style/ColumnTitleStyle"
+                        style="@style/FirstRowTextStyle"
                         android:text="@string/quantity" />
 
                 </LinearLayout>
@@ -72,7 +64,7 @@
                     android:layout_weight="@integer/number_status_quantity_date_column_4">
 
                     <TextView
-                        style="@style/ColumnTitleStyle"
+                        style="@style/FirstRowTextStyle"
                         android:text="@string/date" />
 
                 </LinearLayout>

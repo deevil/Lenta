@@ -46,7 +46,6 @@
                 app:tabTextColor="@color/colorWhite"
                 tools:targetApi="lollipop" />
 
-
         </androidx.viewpager.widget.ViewPager>
 
         <LinearLayout
@@ -150,6 +149,5 @@
         </LinearLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-
 
 </layout>

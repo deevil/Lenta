@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
-        tools:context=".features.segment_list.SegmentListFragment">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".features.segment_list.SegmentListFragment">
 
     <data>
 
         <variable
             name="vm"
-            type="com.lenta.bp7.features.segment_list.SegmentListViewModel"/>
+            type="com.lenta.bp7.features.segment_list.SegmentListViewModel" />
 
         <variable
             name="rvConfig"
-            type="com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig"/>
+            type="com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig" />
 
     </data>
 
@@ -27,21 +27,15 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:paddingTop="8dp"
-                android:paddingBottom="8dp">
+            <LinearLayout style="@style/FirstRowStyle">
 
                 <LinearLayout
                     style="@style/LinearCellStyle"
                     android:layout_weight="@integer/size_column_1">
 
                     <TextView
-                        style="@style/ColumnTitleStyle"
-                        android:text="@string/number"/>
+                        style="@style/FirstRowTextStyle"
+                        android:text="@string/number" />
 
                 </LinearLayout>
 
@@ -50,8 +44,8 @@
                     android:layout_weight="@integer/size_column_2">
 
                     <TextView
-                        style="@style/ColumnTitleStyle"
-                        android:text="@string/column_title_segment_number_date"/>
+                        style="@style/FirstRowTextStyle"
+                        android:text="@string/column_title_segment_number_date" />
 
                 </LinearLayout>
 
@@ -60,8 +54,8 @@
                     android:layout_weight="@integer/size_column_3">
 
                     <TextView
-                        style="@style/ColumnTitleStyle"
-                        android:text="@string/column_title_status"/>
+                        style="@style/FirstRowTextStyle"
+                        android:text="@string/column_title_status" />
 
                 </LinearLayout>
 
@@ -70,15 +64,14 @@
                     android:layout_weight="@integer/size_column_4">
 
                     <TextView
-                        style="@style/ColumnTitleStyle"
-                        android:text="@string/column_title_shelves"/>
+                        style="@style/FirstRowTextStyle"
+                        android:text="@string/column_title_shelves" />
 
                 </LinearLayout>
 
             </LinearLayout>
 
-            <View
-                style="@style/HorizontalDivider"/>
+            <View style="@style/HorizontalDivider" />
 
         </LinearLayout>
 
@@ -90,7 +83,7 @@
             android:layout_weight="1"
             app:items="@{vm.segments}"
             app:rv_config="@{rvConfig}"
-            tools:listitem="@layout/item_segment"/>
+            tools:listitem="@layout/item_segment" />
 
         <!-- Поле ввода номера сегмента -->
         <EditText
@@ -107,7 +100,7 @@
             app:maskPattern='@{"[000]-[000]"}'
             app:onOkInSoftKeyboard="@{vm}"
             app:requestFocus="@{vm.requestFocusToSegmentNumber}"
-            tools:ignore="Autofill"/>
+            tools:ignore="Autofill" />
 
     </LinearLayout>
 
