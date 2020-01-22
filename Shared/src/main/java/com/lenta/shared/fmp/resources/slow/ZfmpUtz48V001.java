@@ -10,7 +10,7 @@ import com.mobrun.plugin.models.StatusSelectTable;
 
 public class ZfmpUtz48V001 {
 
-    public static final String NAME_RESOURCE = "ZFMP_UTZ_48_V001";
+    public static final String NAME_RESOURCE = "ZFMP_UTZ_48_V002";
     public static final String NAME_OUT_PARAM_ET_MATNR_LIST = "ET_MATNR_LIST";
     public static final String LIFE_TIME = "1 day, 0:00:00";
 
