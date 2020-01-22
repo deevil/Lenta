@@ -168,11 +168,11 @@ class ControlDeliveryCargoUnitsViewModel : CoreViewModel(), PageSelectionListene
 
     fun onClickItemPosition(position: Int) {
         if (selectedPage.value == 0) {
-            taskManager.getReceivingTask()?.taskRepository?.getCargoUnits()?.findCargoUnits(listNotProcessed.value?.get(position)?.name ?: "")?.let {
+            processCargoUnitsService.findCargoUnit(listNotProcessed.value?.get(position)?.name ?: "")?.let {
                 screenNavigator.openCargoUnitCardScreen(it)
             }
         } else {
-            taskManager.getReceivingTask()?.taskRepository?.getCargoUnits()?.findCargoUnits(listProcessed.value?.get(position)?.name ?: "")?.let {
+            processCargoUnitsService.findCargoUnit(listProcessed.value?.get(position)?.name ?: "")?.let {
                 screenNavigator.openCargoUnitCardScreen(it)
             }
         }

@@ -52,7 +52,7 @@ class LoadingUnlockTaskViewModel : CoreLoadingViewModel() {
 
     private fun handleSuccess(result: UnlockTaskRequestResult) {
         when (taskManager.getReceivingTask()?.taskHeader?.taskType) {
-            TaskType.DirectSupplier, TaskType.ReceptionDistributionCenter -> screenNavigator.openTaskListLoadingScreen(TaskListLoadingMode.Receiving) //ППП и ПРЦ
+            TaskType.DirectSupplier, TaskType.ReceptionDistributionCenter, TaskType.OwnProduction -> screenNavigator.openTaskListLoadingScreen(TaskListLoadingMode.Receiving) // ППП\ПРЦ\ПСП
             TaskType.RecalculationCargoUnit -> screenNavigator.openTaskListLoadingScreen(TaskListLoadingMode.PGE) //ПГЕ
             TaskType.ShipmentPP, TaskType.ShipmentRC -> screenNavigator.openTaskListLoadingScreen(TaskListLoadingMode.Shipment) //Отгрузка ПП или Отгрузка РЦ
             else -> screenNavigator.openTaskListLoadingScreen(TaskListLoadingMode.None)
