@@ -61,7 +61,7 @@
             android:layout_height="wrap_content"
             app:items="@{vm.reports}"
             app:rv_config="@{rvConfig}"
-            tools:listitem="@layout/item_tile_task_report" />
+            tools:listitem="@layout/item_task_report" />
 
     </LinearLayout>
 

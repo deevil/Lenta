@@ -418,14 +418,14 @@ class ScreenNavigator @Inject constructor(
     override fun openPictogrammInfoNova() {
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.picto_nova),
-                    iconRes = com.lenta.shared.R.drawable.ic_new_48dp), CustomAnimation.vertical)
+                    iconRes = com.lenta.shared.R.drawable.ic_new_32dp), CustomAnimation.vertical)
         }
     }
 
     override fun openPictogrammInfoHealthyFood() {
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.healthy_food),
-                    iconRes = com.lenta.shared.R.drawable.ic_natural_48dp), CustomAnimation.vertical)
+                    iconRes = com.lenta.shared.R.drawable.ic_natural_32dp), CustomAnimation.vertical)
         }
     }
 

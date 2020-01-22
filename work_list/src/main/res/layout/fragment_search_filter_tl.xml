@@ -1,15 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
-        tools:context=".features.task_list.search_filter.SearchFilterTlFragment">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".features.task_list.search_filter.SearchFilterTlFragment">
 
     <data>
 
         <variable
             name="vm"
             type="com.lenta.bp14.features.task_list.search_filter.SearchFilterTlViewModel" />
-
 
     </data>
 
@@ -18,10 +17,8 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-
         <!-- Тип задания -->
-        <LinearLayout
-            style="@style/LinearRowStyle">
+        <LinearLayout style="@style/LinearRowStyle">
 
             <LinearLayout
                 style="@style/LinearCellStyle"
@@ -33,8 +30,7 @@
 
             </LinearLayout>
 
-            <View
-                style="@style/VerticalDivider" />
+            <View style="@style/VerticalDivider" />
 
             <LinearLayout
                 style="@style/LinearCellStyle"
@@ -44,20 +40,17 @@
                     android:id="@+id/spin_select_comment"
                     style="@style/CellSpinnerStyle"
                     app:items="@{vm.taskTypeList}"
-                    app:position="@{vm.selectedPosition}"
-                    app:onPositionClickListener="@{vm}" />
+                    app:onPositionClickListener="@{vm}"
+                    app:position="@{vm.selectedPosition}" />
 
             </LinearLayout>
 
         </LinearLayout>
 
-        <View
-            style="@style/HorizontalDivider" />
-
+        <View style="@style/HorizontalDivider" />
 
         <!-- Товар -->
-        <LinearLayout
-            style="@style/LinearRowStyle">
+        <LinearLayout style="@style/LinearRowStyle">
 
             <LinearLayout
                 style="@style/LinearCellStyle"
@@ -69,8 +62,7 @@
 
             </LinearLayout>
 
-            <View
-                style="@style/VerticalDivider" />
+            <View style="@style/VerticalDivider" />
 
             <LinearLayout
                 style="@style/LinearCellStyle"
@@ -85,13 +77,10 @@
 
         </LinearLayout>
 
-        <View
-            style="@style/HorizontalDivider" />
-
+        <View style="@style/HorizontalDivider" />
 
         <!-- Секция -->
-        <LinearLayout
-            style="@style/LinearRowStyle">
+        <LinearLayout style="@style/LinearRowStyle">
 
             <LinearLayout
                 style="@style/LinearCellStyle"
@@ -103,8 +92,7 @@
 
             </LinearLayout>
 
-            <View
-                style="@style/VerticalDivider" />
+            <View style="@style/VerticalDivider" />
 
             <LinearLayout
                 style="@style/LinearCellStyle"
@@ -121,13 +109,10 @@
 
         </LinearLayout>
 
-        <View
-            style="@style/HorizontalDivider" />
-
+        <View style="@style/HorizontalDivider" />
 
         <!-- Группа товаров -->
-        <LinearLayout
-            style="@style/LinearRowStyle">
+        <LinearLayout style="@style/LinearRowStyle">
 
             <LinearLayout
                 style="@style/LinearCellStyle"
@@ -139,8 +124,7 @@
 
             </LinearLayout>
 
-            <View
-                style="@style/VerticalDivider" />
+            <View style="@style/VerticalDivider" />
 
             <LinearLayout
                 style="@style/LinearCellStyle"
@@ -155,13 +139,10 @@
 
         </LinearLayout>
 
-        <View
-            style="@style/HorizontalDivider" />
-
+        <View style="@style/HorizontalDivider" />
 
         <!-- Дата публикации -->
-        <LinearLayout
-            style="@style/LinearRowStyle">
+        <LinearLayout style="@style/LinearRowStyle">
 
             <LinearLayout
                 style="@style/LinearCellStyle"
@@ -173,8 +154,7 @@
 
             </LinearLayout>
 
-            <View
-                style="@style/VerticalDivider" />
+            <View style="@style/VerticalDivider" />
 
             <LinearLayout
                 style="@style/LinearCellStyle"
@@ -192,8 +172,7 @@
 
         </LinearLayout>
 
-        <View
-            style="@style/HorizontalDivider" />
+        <View style="@style/HorizontalDivider" />
 
     </LinearLayout>
 

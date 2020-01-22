@@ -48,7 +48,7 @@
                 android:onClick="@{(view) -> vm.onClickPrint()}"
                 android:text="@string/print_labels"
                 android:textAllCaps="false"
-                app:icon="@drawable/ic_print_price_tag_48dp"
+                app:icon="@drawable/ic_print_price_tag_32dp"
                 app:iconGravity="end" />
 
 
@@ -59,7 +59,7 @@
                 android:onClick="@{(view) -> vm.onClickCreateTask()}"
                 android:text="@string/create_task"
                 android:textAllCaps="false"
-                app:icon="@drawable/ic_create_task_48dp"
+                app:icon="@drawable/ic_create_task_32dp"
                 app:iconGravity="end"
                 app:isGone="@{!vm.createTaskButtonVisibility}" />
 
@@ -82,7 +82,7 @@
                 android:onClick="@{(view) -> vm.onClickCheckList()}"
                 android:text="@string/check_list"
                 android:textAllCaps="false"
-                app:icon="@drawable/ic_check_list_48dp"
+                app:icon="@drawable/ic_check_list_32dp"
                 app:iconGravity="end"
                 app:isGone="@{!vm.checkListButtonVisibility}" />
 

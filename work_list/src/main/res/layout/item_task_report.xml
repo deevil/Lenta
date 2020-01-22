@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
 
         <variable
             name="vm"
-            type="com.lenta.bp14.features.common_ui_model.SimpleProductUi" />
+            type="com.lenta.bp14.features.report_result.ItemTaskReport" />
 
     </data>
 
@@ -24,13 +25,13 @@
 
             <LinearLayout
                 style="@style/LinearCellStyle"
-                android:layout_weight="@integer/number_good_column_1">
+                android:layout_weight="@integer/number_task_column_1">
 
                 <TextView
                     android:id="@+id/tv_item_number"
                     style="@style/CellTextStyle"
                     android:layout_width="wrap_content"
-                    android:text='@{"" + vm.position}'
+                    android:text="@{vm.number}"
                     tools:text="1" />
 
             </LinearLayout>
@@ -39,24 +40,15 @@
 
             <LinearLayout
                 style="@style/LinearCellStyle"
-                android:layout_weight="@integer/number_good_column_2"
-                android:orientation="horizontal">
+                android:layout_weight="@integer/number_task_column_2">
 
                 <TextView
                     android:id="@+id/tv_good_number_name"
                     style="@style/CellTextStyle"
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
                     android:maxLines="2"
-                    android:text="@{vm.name}"
-                    tools:text="000021 Масло" />
-
-                <ImageView
-                    android:id="@+id/iv_open"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:padding="5dp"
-                    android:src="@drawable/ic_keyboard_arrow_right_white_16dp" />
+                    android:text="@{vm.description}"
+                    app:zoom="@{true}"
+                    tools:text="Списание от 04.06 15:33 /2FER /Алкоголь" />
 
             </LinearLayout>
 
