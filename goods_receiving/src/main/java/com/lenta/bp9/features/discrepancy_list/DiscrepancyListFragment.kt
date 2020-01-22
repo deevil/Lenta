@@ -25,10 +25,8 @@ import com.lenta.shared.utilities.state.state
 class DiscrepancyListFragment : CoreFragment<FragmentDiscrepancyListBinding, DiscrepancyListViewModel>(),
         ViewPagerSettings,
         PageSelectionListener,
-        ToolbarButtonsClickListener,
-        OnKeyDownListener {
+        ToolbarButtonsClickListener {
 
-    private var processedRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
     private var notProcessedRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
 
     override fun getLayoutId(): Int = R.layout.fragment_discrepancy_list
@@ -142,19 +140,6 @@ class DiscrepancyListFragment : CoreFragment<FragmentDiscrepancyListBinding, Dis
                                     binding.tvCounter.tag = position
                                     binding.tvCounter.setOnClickListener(onClickSelectionListener)
                                     binding.selectedForDelete = vm.processedSelectionsHelper.isSelected(position)
-                                    processedRecyclerViewKeyHandler?.let {
-                                        binding.root.isSelected = it.isSelected(position)
-                                    }
-                                }
-
-                            },
-                            onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
-                                processedRecyclerViewKeyHandler?.let {
-                                    if (it.isSelected(position)) {
-                                        vm.onClickItemPosition(position)
-                                    } else {
-                                        it.selectPosition(position)
-                                    }
                                 }
 
                             }
@@ -162,12 +147,6 @@ class DiscrepancyListFragment : CoreFragment<FragmentDiscrepancyListBinding, Dis
 
                     layoutBinding.vm = vm
                     layoutBinding.lifecycleOwner = viewLifecycleOwner
-                    processedRecyclerViewKeyHandler = RecyclerViewKeyHandler(
-                            rv = layoutBinding.rv,
-                            items = vm.countProcessed,
-                            lifecycleOwner = layoutBinding.lifecycleOwner!!,
-                            initPosInfo = processedRecyclerViewKeyHandler?.posInfo?.value
-                    )
                     return layoutBinding.root
                 }
     }
@@ -185,20 +164,4 @@ class DiscrepancyListFragment : CoreFragment<FragmentDiscrepancyListBinding, Dis
         vm.onResume()
     }
 
-    override fun onKeyDown(keyCode: KeyCode): Boolean {
-        when (vm.selectedPage.value) {
-            0 -> notProcessedRecyclerViewKeyHandler
-            1 -> processedRecyclerViewKeyHandler
-            else -> null
-        }?.let {
-            if (!it.onKeyDown(keyCode)) {
-                keyCode.digit?.let { digit ->
-                    return true
-                }
-                return false
-            }
-            return true
-        }
-        return false
-    }
 }

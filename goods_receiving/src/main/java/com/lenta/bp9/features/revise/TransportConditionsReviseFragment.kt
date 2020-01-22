@@ -60,7 +60,11 @@ class TransportConditionsReviseFragment : CoreFragment<FragmentTransportConditio
         } else {
             bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.refusal)
         }
-        bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.save)
+        if (vm.isTaskPRCStatusUnloading.value == true) {
+            bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.next)
+        } else {
+            bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.save)
+        }
         connectLiveData(vm.saveEnabled, bottomToolbarUiModel.uiModelButton5.enabled)
     }
 

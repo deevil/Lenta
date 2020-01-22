@@ -53,7 +53,9 @@ class GoodsListFragment : CoreFragment<FragmentGoodsListBinding, GoodsListViewMo
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
-        bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.refusal)
+        if (vm.isTaskPGE.value == false) {
+            bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.refusal)
+        }
         bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.clean)
         bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.batches)
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.save)

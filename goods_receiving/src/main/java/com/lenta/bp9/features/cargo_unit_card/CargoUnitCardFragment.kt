@@ -56,6 +56,7 @@ class CargoUnitCardFragment : CoreFragment<FragmentCargoUnitCardBinding, CargoUn
             connectLiveData(vm.deleteVisibility, bottomToolbarUiModel.uiModelButton3.visibility)
         }
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.apply)
+        connectLiveData(vm.enabledApplyBtn, bottomToolbarUiModel.uiModelButton5.enabled)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

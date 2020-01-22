@@ -72,6 +72,7 @@ class ChangeDateTimeViewModel : CoreViewModel() {
     val years: MutableLiveData<String> = MutableLiveData("")
     val hours: MutableLiveData<String> = MutableLiveData("")
     val minutes: MutableLiveData<String> = MutableLiveData("")
+    val seconds: MutableLiveData<String> = MutableLiveData("")
 
     val enabledApplyButton: MutableLiveData<Boolean> = days.
             combineLatest(months).
@@ -91,12 +92,19 @@ class ChangeDateTimeViewModel : CoreViewModel() {
             years.value = DateTimeUtil.formatDate(milliseconds, Constants.DATE_FORMAT_yy)
             hours.value = DateTimeUtil.formatDate(milliseconds, Constants.TIME_FORMAT_HH)
             minutes.value = DateTimeUtil.formatDate(milliseconds, Constants.TIME_FORMAT_mm)
+            seconds.value = DateTimeUtil.formatDate(milliseconds, Constants.TIME_FORMAT_mmss).substring(3)
         }
     }
 
+    @SuppressLint("SimpleDateFormat")
     fun onClickApply() {
-        val dateString = days.value + "." + months.value + "." + years.value
-        val timeString = hours.value + ":" + minutes.value
+        var dateString = days.value + "." + months.value + "." + years.value
+        var timeString = hours.value + ":" + minutes.value + ":" + seconds.value
+        val formatter = SimpleDateFormat("dd.MM.yy HH:mm:ss")
+        val date = formatter.parse("$dateString $timeString")
+        dateString = DateTimeUtil.formatDate(date, Constants.DATE_FORMAT_yyyy_mm_dd)
+        timeString = DateTimeUtil.formatDate(date, Constants.TIME_FORMAT_hhmmss)
+
         if (mode.value == ChangeDateTimeMode.NextStatus) {
             taskManager.getReceivingTask()?.taskDescription?.nextStatusDate = dateString
             taskManager.getReceivingTask()?.taskDescription?.nextStatusTime = timeString

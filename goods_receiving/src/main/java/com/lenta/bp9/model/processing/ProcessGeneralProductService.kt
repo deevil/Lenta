@@ -3,6 +3,7 @@ package com.lenta.bp9.model.processing
 import com.lenta.bp9.model.task.IReceivingTaskManager
 import com.lenta.bp9.model.task.TaskProductDiscrepancies
 import com.lenta.bp9.model.task.TaskProductInfo
+import com.lenta.bp9.model.task.TaskType
 import com.lenta.bp9.repos.IDataBaseRepo
 import com.lenta.shared.di.AppScope
 import com.lenta.shared.models.core.ProductType
@@ -95,7 +96,16 @@ class ProcessGeneralProductService
                 + (taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.getCountRefusalOfProduct(productInfo) ?: 0.0) + count)
     }
 
+    private fun getCountRefusalOfReasonRejection(reasonRejectionCode: String) : Double {
+        return taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().getCountRefusalOfProductOfReasonRejection(productInfo, reasonRejectionCode)
+    }
+
     fun add(count: String, reasonRejectionCode: String){
+        val countAdd: Double = if (taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.RecalculationCargoUnit) {
+            getCountRefusalOfReasonRejection(reasonRejectionCode) + count.toDouble()
+        } else {
+            if (reasonRejectionCode == "1") count.toDouble() else getCountRefusalOfReasonRejection(reasonRejectionCode) + count.toDouble()
+        }
         val foundDiscrepancy = taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.findProductDiscrepanciesOfProduct(productInfo)?.findLast {
             it.materialNumber == productInfo.materialNumber && it.typeDiscrepancies == reasonRejectionCode
         }
@@ -107,7 +117,7 @@ class ProcessGeneralProductService
                     changeProductDiscrepancy(TaskProductDiscrepancies(
                             materialNumber = productInfo.materialNumber,
                             exidv = "",
-                            numberDiscrepancies = count,
+                            numberDiscrepancies = countAdd.toString(),
                             uom = productInfo.uom,
                             typeDiscrepancies = reasonRejectionCode,
                             isNotEdit = false,
@@ -117,7 +127,7 @@ class ProcessGeneralProductService
             taskManager.getReceivingTask()?.
                     taskRepository?.
                     getProductsDiscrepancies()?.
-                    changeProductDiscrepancy(foundDiscrepancy.copy(numberDiscrepancies = count))
+                    changeProductDiscrepancy(foundDiscrepancy.copy(numberDiscrepancies = countAdd.toString()))
         }
 
         //Кол-во, которое было оприходовано по этому заказу и этому товару

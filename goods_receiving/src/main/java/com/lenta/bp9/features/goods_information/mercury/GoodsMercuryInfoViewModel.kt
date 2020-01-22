@@ -6,11 +6,12 @@ import androidx.lifecycle.viewModelScope
 import com.lenta.bp9.R
 import com.lenta.bp9.features.goods_list.SearchProductDelegate
 import com.lenta.bp9.model.processing.PROCESSING_MERCURY_QUANT_GREAT_IN_INVOICE
-import com.lenta.bp9.model.processing.PROCESSING_MERCURY_QUANT_GREAT_IN_ORDER
+import com.lenta.bp9.model.processing.PROCESSING_MERCURY_QUANT_GREAT_IN_VET_DOC
 import com.lenta.bp9.model.processing.PROCESSING_MERCURY_SAVED
 import com.lenta.bp9.model.processing.ProcessMercuryProductService
 import com.lenta.bp9.model.task.IReceivingTaskManager
 import com.lenta.bp9.model.task.TaskProductInfo
+import com.lenta.bp9.model.task.TaskType
 import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.bp9.repos.IDataBaseRepo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
@@ -39,6 +40,16 @@ class GoodsMercuryInfoViewModel : CoreViewModel(), OnPositionClickListener {
     lateinit var searchProductDelegate: SearchProductDelegate
 
     val productInfo: MutableLiveData<TaskProductInfo> = MutableLiveData()
+    val uom by lazy {
+        if (taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.DirectSupplier) {
+            productInfo.value?.purchaseOrderUnits
+        } else {
+            productInfo.value?.uom
+        }
+    }
+    val tvAccept: MutableLiveData<String> by lazy {
+        MutableLiveData(context.getString(R.string.accept, "${productInfo.value?.purchaseOrderUnits?.name}=${productInfo.value?.quantityInvest?.toDouble().toStringFormatted()} ${productInfo.value?.uom?.name}"))
+    }
     val spinQuality: MutableLiveData<List<String>> = MutableLiveData()
     val spinQualitySelectedPosition: MutableLiveData<Int> = MutableLiveData(0)
     val spinManufacturers by lazy {
@@ -67,7 +78,7 @@ class GoodsMercuryInfoViewModel : CoreViewModel(), OnPositionClickListener {
         }
         "${findMercuryInfoOfProduct?.sumByDouble {mercuryInfo ->
             mercuryInfo.volume
-        }.toStringFormatted()} ${productInfo.value?.uom?.name}"
+        }.toStringFormatted()} ${uom?.name}"
     }
     val tvProductionDate = mercuryVolume.map {
         context.getString(R.string.vet_with_production_date, it)
@@ -90,56 +101,48 @@ class GoodsMercuryInfoViewModel : CoreViewModel(), OnPositionClickListener {
     val acceptTotalCount by lazy  {
         countValue.combineLatest(spinQualitySelectedPosition).map{
             if (qualityInfo.value?.get(it!!.second)?.code == "1") {
-                (it?.first ?: 0.0) +
-                        taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().getCountAcceptOfProduct(productInfo.value!!) +
-                        processMercuryProductService.getNewCountAccept()
+                (it?.first ?: 0.0) + processMercuryProductService.getNewCountAccept()
             } else {
-                0.0
+                processMercuryProductService.getNewCountAccept()
             }
         }
     }
 
     val acceptTotalCountWithUom: MutableLiveData<String> = acceptTotalCount.map {
         if (it != 0.0) {
-            "+ " + it.toStringFormatted() + " " + productInfo.value?.uom?.name
+            "+ " + it.toStringFormatted() + " " + uom?.name
         } else {
-            "0 " + productInfo.value?.uom?.name
+            "0 " + uom?.name
         }
     }
 
     val refusalTotalCount by lazy  {
         countValue.
-                combineLatest(spinReasonRejectionSelectedPosition).
                 combineLatest(spinQualitySelectedPosition).
                 map{
                     if (qualityInfo.value?.get(it?.second ?: 0)?.code != "1") {
-                        (it?.first?.first ?: 0.0) + taskManager.
-                                getReceivingTask()!!.
-                                taskRepository.
-                                getProductsDiscrepancies().
-                                getCountRefusalOfProductOfReasonRejection(productInfo.value!!, reasonRejectionInfo.value?.get(it?.first?.second ?: 0)?.code) +
-                                processMercuryProductService.getNewCountRefusalOfReasonRejection(reasonRejectionInfo.value?.get(it?.first?.second ?: 0)?.code)
+                        (it?.first ?: 0.0) + processMercuryProductService.getNewCountRefusal()
                     } else {
-                        0.0
+                        processMercuryProductService.getNewCountRefusal()
                     }
                 }
     }
 
     val refusalTotalCountWithUom: MutableLiveData<String> = refusalTotalCount.map {
         if (it != 0.0) {
-            "- " + it.toStringFormatted() + " " + productInfo.value?.uom?.name
+            "- " + it.toStringFormatted() + " " + uom?.name
         } else {
-            "0 " + productInfo.value?.uom?.name
+            "0 " + uom?.name
         }
     }
 
     val enabledApplyButton: MutableLiveData<Boolean> = countValue.map {
-                it!! != 0.0
+                it!! != 0.0 && !spinManufacturers.isNullOrEmpty() && !spinProductionDate.value.isNullOrEmpty()
     }
 
     init {
         viewModelScope.launch {
-            suffix.value = productInfo.value?.uom?.name
+            suffix.value = uom?.name
             generalShelfLife.value = productInfo.value?.generalShelfLife
             remainingShelfLife.value = productInfo.value?.remainingShelfLife
             if (isDiscrepancy.value!!) {
@@ -155,7 +158,6 @@ class GoodsMercuryInfoViewModel : CoreViewModel(), OnPositionClickListener {
                 screenNavigator.goBack()
                 screenNavigator.openAlertWrongProductType()
             }
-            //count.value = processMercuryProductService.getCountProductNotProcessed().toStringFormatted()
         }
     }
 
@@ -204,9 +206,9 @@ class GoodsMercuryInfoViewModel : CoreViewModel(), OnPositionClickListener {
         when (processMercuryProductService.checkConditionsOfPreservation(count.value ?: "0", reasonRejectionCode, spinManufacturers!![spinManufacturersSelectedPosition.value!!], spinProductionDate.value!![spinProductionDateSelectedPosition.value!!])) {
             PROCESSING_MERCURY_SAVED -> {
                 if (qualityInfo.value?.get(spinQualitySelectedPosition.value ?: 0)?.code == "1") {
-                    processMercuryProductService.add(acceptTotalCount.value!!.toString(), "1", spinManufacturers!![spinManufacturersSelectedPosition.value!!], spinProductionDate.value!![spinProductionDateSelectedPosition.value!!])
+                    processMercuryProductService.add(acceptTotalCount.value!!.toString(), count.value ?: "0",  "1", spinManufacturers!![spinManufacturersSelectedPosition.value!!], spinProductionDate.value!![spinProductionDateSelectedPosition.value!!])
                 } else {
-                    processMercuryProductService.add(refusalTotalCount.value!!.toString(), reasonRejectionInfo.value!![spinReasonRejectionSelectedPosition.value!!].code, spinManufacturers!![spinManufacturersSelectedPosition.value!!], spinProductionDate.value!![spinProductionDateSelectedPosition.value!!])
+                    processMercuryProductService.add(count.value ?: "0", count.value ?: "0", reasonRejectionInfo.value!![spinReasonRejectionSelectedPosition.value!!].code, spinManufacturers!![spinManufacturersSelectedPosition.value!!], spinProductionDate.value!![spinProductionDateSelectedPosition.value!!])
                 }
                 count.value = "0"
                 if (isClickApply.value!!) {
@@ -214,11 +216,11 @@ class GoodsMercuryInfoViewModel : CoreViewModel(), OnPositionClickListener {
                     screenNavigator.goBack()
                 }
             }
+            PROCESSING_MERCURY_QUANT_GREAT_IN_VET_DOC -> {
+                screenNavigator.openAlertQuantGreatInVetDocScreen()
+            }
             PROCESSING_MERCURY_QUANT_GREAT_IN_INVOICE -> {
                 screenNavigator.openAlertQuantGreatInInvoiceScreen()
-            }
-            PROCESSING_MERCURY_QUANT_GREAT_IN_ORDER -> {
-                screenNavigator.openAlertQuantGreatInOrderScreen()
             }
         }
         count.value = "0"
@@ -234,7 +236,7 @@ class GoodsMercuryInfoViewModel : CoreViewModel(), OnPositionClickListener {
     }
 
     fun onBackPressed() {
-        if ((processMercuryProductService.getNewCountAccept() + processMercuryProductService.getNewCountRefusal()) > 0.0) {
+        if (processMercuryProductService.modifications()) {
             screenNavigator.openUnsavedDataDialog(
                     yesCallbackFunc = {
                         screenNavigator.goBack()

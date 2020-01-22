@@ -8,6 +8,7 @@ import com.lenta.shared.functional.Either
 import com.lenta.shared.interactor.UseCase
 import com.lenta.shared.models.core.Manufacturer
 import com.lenta.shared.requests.FmpRequestsHelper
+import com.lenta.shared.requests.SapResponse
 import javax.inject.Inject
 
 class DirectSupplierStartRecountNetRequest
@@ -50,28 +51,28 @@ data class DirectSupplierStartRecountRestInfo(
         @SerializedName("ET_VET_NOT_ACTUAL") //Список не актуальных ВСД
         val taskMercuryNotActualRestData: List<TaskMercuryNotActualRestData>,
         @SerializedName("EV_RETCODE")
-        val retcode: String,
+        override val retCode: Int,
         @SerializedName("EV_ERROR_TEXT")
-        val errorText: String
-)
+        override val errorText: String
+) : SapResponse
 
 data class TaskComposition(
         @SerializedName("MATNR")
         val materialNumber: String, //Сап код товара
         @SerializedName("ORMNG")
-        val origDeliveryQuantity: String, //Исходное количество позиции поставки
+        val origDeliveryQuantity: String?, //Исходное количество позиции поставки
         @SerializedName("MEINS")
         val uom: String, //базисная единица измерения
         @SerializedName("MENGE")
         val menge: String, //Кол-во в заказе
         @SerializedName("WEMNG")
-        val volumeGoodsReceived: String, //объем поступившего товара
+        val volumeGoodsReceived: String?, //объем поступившего товара
         @SerializedName("BSTME")
         val purchaseOrderUnits: String, //ЕИ заказа на поставку
         @SerializedName("UEBTO")
-        val overDeliveryToleranceLimit: String, //Граница допуска для сверхпоставки
+        val overDeliveryToleranceLimit: String?, //Граница допуска для сверхпоставки
         @SerializedName("UNTTO")
-        val shortDeliveryToleranceLimit: String, //Граница допуска при недопоставке
+        val shortDeliveryToleranceLimit: String?, //Граница допуска при недопоставке
         @SerializedName("GKWRT")
         val upperLimitConditionAmount: String, //Верхняя граница суммы условия (МРЦ)
         @SerializedName("QNTINCL")
@@ -113,5 +114,7 @@ data class TaskComposition(
         @SerializedName("ABTNR")
         val departmentNumber: String, //номер отдела (abtnr)
         @SerializedName("ZMARKTYPE")
-        val markType: String
+        val markType: String,
+        @SerializedName("EXIDV")
+        val processingUnit: String? //Номер ЕО (Единица обработки) (для 28 реста, в 11 и 15 рестах данного поля нет)
 )

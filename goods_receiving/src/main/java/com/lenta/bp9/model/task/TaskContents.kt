@@ -1,9 +1,6 @@
 package com.lenta.bp9.model.task
 
-import com.lenta.bp9.requests.network.DirectSupplierStartRecountRestInfo
-import com.lenta.bp9.requests.network.TaskComposition
-import com.lenta.bp9.requests.network.TaskContentsReceptionDistrCenterResult
-import com.lenta.bp9.requests.network.TaskContentsRequestResult
+import com.lenta.bp9.requests.network.*
 import com.lenta.shared.fmp.resources.dao_ext.getProductInfoByMaterial
 import com.lenta.shared.fmp.resources.dao_ext.getUomInfo
 import com.lenta.shared.fmp.resources.fast.ZmpUtz07V001
@@ -61,10 +58,22 @@ class TaskContents
         )
     }
 
+    fun getTaskContentsPGEInfo(startRecountRestInfo: StartRecountPGERestInfo) : TaskContentsPGEInfo {
+        return TaskContentsPGEInfo(
+                conversionToProductInfo(startRecountRestInfo.taskComposition),
+                conversionToProductDiscrepancies(startRecountRestInfo.taskProductDiscrepancies),
+                startRecountRestInfo.taskBatches.map {
+                    TaskBatchInfo.from(it)
+                },
+                conversionToBatchesDiscrepancies(startRecountRestInfo.taskBatchesDiscrepancies)
+        )
+    }
+
     private fun conversionToProductInfo(taskComposition: List<TaskComposition>) : List<TaskProductInfo> {
         return taskComposition.map {
             val materialInfo = zfmpUtz48V001.getProductInfoByMaterial(it.materialNumber)
             val uomInfo = zmpUtz07V001.getUomInfo(it.uom)
+            val purchaseOrderUnitUomInfo = zmpUtz07V001.getUomInfo(it.purchaseOrderUnits)
             TaskProductInfo(
                     materialNumber = materialInfo?.material ?: "",
                     description = materialInfo?.name ?: "",
@@ -74,11 +83,12 @@ class TaskContents
                     sectionId = materialInfo?.abtnr ?: "",
                     matrixType = getMatrixType(materialInfo?.matrType ?: ""),
                     materialType = materialInfo?.matype ?: "",
-                    origQuantity = it.origDeliveryQuantity,
+                    origQuantity = it.origDeliveryQuantity ?: "0.0",
                     orderQuantity = it.menge,
-                    quantityCapitalized = it.volumeGoodsReceived,
-                    overdToleranceLimit = it.overDeliveryToleranceLimit,
-                    underdToleranceLimit = it.shortDeliveryToleranceLimit,
+                    quantityCapitalized = it.volumeGoodsReceived ?: "0.0",
+                    purchaseOrderUnits = Uom(code = purchaseOrderUnitUomInfo?.uom ?: "", name = purchaseOrderUnitUomInfo?.name ?: ""),
+                    overdToleranceLimit = it.overDeliveryToleranceLimit ?: "0.0",
+                    underdToleranceLimit = it.shortDeliveryToleranceLimit ?: "0.0",
                     upLimitCondAmount = it.upperLimitConditionAmount,
                     quantityInvest = it.quantityInvestments,
                     roundingSurplus = it.roundingSurplus,
@@ -94,7 +104,8 @@ class TaskContents
                     isMarkFl = it.isStampFl == "X",
                     isVet = it.isVet == "X",
                     numberBoxesControl = it.quantityBoxesControl,
-                    numberStampsControl = it.quantityStampsControl
+                    numberStampsControl = it.quantityStampsControl,
+                    processingUnit = it.processingUnit ?: ""
             )
         }
     }
@@ -139,8 +150,8 @@ class TaskContents
                     uom = Uom(code = uomInfo?.uom ?: "", name = uomInfo?.name ?: ""),
                     typeDiscrepancies = it.typeDiscrepancies,
                     numberDiscrepancies = it.numberDiscrepancies.toDouble(),
-                    productionDate = it.productionDates,
-                    manufacturer = it.manufacturers,
+                    productionDate = it.productionDate,
+                    manufacturer = it.manufacturer,
                     productionDateTo = it.productionDateTo
             )
         }
@@ -156,6 +167,13 @@ data class TaskContentsInfo(
 )
 
 data class TaskContentsRDSInfo(
+        val products: List<TaskProductInfo>,
+        val productsDiscrepancies: List<TaskProductDiscrepancies>,
+        val taskBatches: List<TaskBatchInfo>,
+        val taskBatchesDiscrepancies: List<TaskBatchesDiscrepancies>
+)
+
+data class TaskContentsPGEInfo(
         val products: List<TaskProductInfo>,
         val productsDiscrepancies: List<TaskProductDiscrepancies>,
         val taskBatches: List<TaskBatchInfo>,

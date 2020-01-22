@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.lenta.shared.R
 import com.lenta.bp9.features.task_card.TaskCardViewModel
 import com.lenta.bp9.model.task.IReceivingTaskManager
+import com.lenta.bp9.model.task.TaskStatus
 import com.lenta.bp9.model.task.TaskType
 import com.lenta.bp9.model.task.revise.ConditionType
 import com.lenta.bp9.model.task.revise.ConditionViewType
@@ -53,6 +54,10 @@ class TransportConditionsReviseViewModel : CoreViewModel(), PageSelectionListene
     val conditionsToCheck: MutableLiveData<List<TransportConditionVM>> = MutableLiveData()
     val checkedConditions: MutableLiveData<List<TransportConditionVM>> = MutableLiveData()
     val saveEnabled = conditionsToCheck.map { conditions -> conditions?.findLast { it.isObligatory } == null }
+    val isTaskPRCStatusUnloading: MutableLiveData<Boolean> by lazy {
+        MutableLiveData(taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.ReceptionDistributionCenter &&
+                taskManager.getReceivingTask()?.taskDescription?.currentStatus == TaskStatus.Unloading)
+    }
 
     override fun onPageSelected(position: Int) {
         selectedPage.value = position
@@ -67,7 +72,12 @@ class TransportConditionsReviseViewModel : CoreViewModel(), PageSelectionListene
                 nextCallbackFunc = {
                     checkedConditions.value?.map {
                         if (it.conditionViewType == ConditionViewType.Seal) {
-                            taskManager.getReceivingTask()?.taskRepository?.getReviseDocuments()?.changeTransportConditionStatus(it.id)
+                            taskManager.getReceivingTask()?.taskRepository?.getReviseDocuments()?.changeTransportConditionValue(it.id, "")
+                        }
+                    }
+                    conditionsToCheck.value?.map {
+                        if (it.conditionViewType == ConditionViewType.Seal) {
+                            taskManager.getReceivingTask()?.taskRepository?.getReviseDocuments()?.changeTransportConditionValue(it.id, "")
                         }
                     }
                     screenNavigator.openControlDeliveryCargoUnitsScreen()
@@ -76,6 +86,11 @@ class TransportConditionsReviseViewModel : CoreViewModel(), PageSelectionListene
     }
 
     fun onClickNext() {
+        if (isTaskPRCStatusUnloading.value == true) {
+            screenNavigator.openControlDeliveryCargoUnitsScreen()
+            return
+        }
+
         screenNavigator.openFinishConditionsReviseLoadingScreen()
     }
 

@@ -5,16 +5,42 @@ import com.lenta.shared.models.core.Uom
 
 //IT_VET_DIFF Таблица расхождений по вет.товарам
 data class TaskMercuryDiscrepancies(
+        /**номер продукта (ET_VET_DIFF -> MATNR)*/
         val materialNumber: String,
-        val vetDocumentID: String, //ID ветеринарно-сопроводительного документа
-        val volume: Double, //Объём груза
-        val uom: Uom, //Продажная ЕИ
-        val typeDiscrepancies: String, //Тип расхождения (Причина отклонения при ППП)
-        val numberDiscrepancies: Double, //Количество расхождения в ПЕИ (Отклонение от фактически поставленного количества в ПЕИ)
-        val productionDate: String,	//дата производства
-        val manufacturer: String,	//производитель
-        val productionDateTo: String	//Поле типа DATS
-)
+        /**ID ветеринарно-сопроводительного документа (ET_VET_DIFF -> VSDID)*/
+        val vetDocumentID: String,
+        /**Объём груза (ET_VET_DIFF -> VSDVOLUME)*/
+        val volume: Double,
+        /**Продажная ЕИ (ET_VET_DIFF -> VRKME)*/
+        val uom: Uom,
+        /**Тип расхождения (Причина отклонения при ППП) (ET_VET_DIFF -> GRUND)*/
+        val typeDiscrepancies: String,
+        /**Количество расхождения в ПЕИ (Отклонение от фактически поставленного количества в ПЕИ) (ET_VET_DIFF -> LFIMG_DIFF)*/
+        val numberDiscrepancies: Double,
+        /**дата производства (ET_VET_DIFF -> PRODDATE)*/
+        val productionDate: String,
+        /**производитель (ET_VET_DIFF -> PROD_NAME)*/
+        val manufacturer: String,
+        /**Поле типа DATS (ET_VET_DIFF -> PRODDATE_TO)*/
+        val productionDateTo: String
+) {
+
+    companion object {
+        fun from(data: TaskMercuryInfo): TaskMercuryDiscrepancies {
+            return TaskMercuryDiscrepancies(
+                    materialNumber = data.materialNumber,
+                    vetDocumentID = data.vetDocumentID,
+                    volume = data.volume,
+                    uom = data.uom,
+                    typeDiscrepancies = data.typeDiscrepancies,
+                    numberDiscrepancies = data.numberDiscrepancies,
+                    productionDate = data.productionDate,
+                    manufacturer = data.manufacturer,
+                    productionDateTo = data.productionDateTo
+            )
+        }
+    }
+}
 
 data class TaskMercuryDiscrepanciesRestData(
         @SerializedName("MATNR")

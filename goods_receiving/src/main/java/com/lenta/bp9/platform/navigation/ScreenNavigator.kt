@@ -38,7 +38,9 @@ import com.lenta.bp9.features.repres_person_num_entry.RepresPersonNumEntryFragme
 import com.lenta.bp9.features.revise.*
 import com.lenta.bp9.model.task.TaskProductInfo
 import com.lenta.bp9.features.revise.invoice.InvoiceReviseFragment
+import com.lenta.bp9.features.skip_recount.SkipRecountFragment
 import com.lenta.bp9.features.transfer_goods_section.TransferGoodsSectionFragment
+import com.lenta.bp9.features.transport_marriage.TransportMarriageFragment
 import com.lenta.bp9.model.task.revise.ProductDocumentType
 import com.lenta.bp9.model.task.TaskBatchInfo
 import com.lenta.bp9.model.task.TaskCargoUnitInfo
@@ -203,9 +205,9 @@ class ScreenNavigator(
         }
     }
 
-    override fun openGoodsInfoScreen(productInfo: TaskProductInfo, isDiscrepancy: Boolean) {
+    override fun openGoodsInfoScreen(productInfo: TaskProductInfo, isDiscrepancy: Boolean, initialCount: Double) {
         runOrPostpone {
-            getFragmentStack()?.push(GoodsInfoFragment.create(productInfo, isDiscrepancy))
+            getFragmentStack()?.push(GoodsInfoFragment.create(productInfo, isDiscrepancy, initialCount))
         }
     }
 
@@ -625,12 +627,12 @@ class ScreenNavigator(
         }
     }
 
-    override fun openAlertQuantGreatInInvoiceScreen() {
-        openInfoScreen(context.getString(R.string.processing_mercury_quant_great_in_invoice))
+    override fun openAlertQuantGreatInVetDocScreen() {
+        openInfoScreen(context.getString(R.string.processing_mercury_quant_great_in_vet_doc))
     }
 
-    override fun openAlertQuantGreatInOrderScreen() {
-        openInfoScreen(context.getString(R.string.processing_mercury_quant_great_in_order))
+    override fun openAlertQuantGreatInInvoiceScreen() {
+        openInfoScreen(context.getString(R.string.processing_mercury_quant_great_in_invoice))
     }
 
     override fun openAlertCertificatesLostRelevance(nextCallbackFunc: () -> Unit) {
@@ -734,6 +736,48 @@ class ScreenNavigator(
         }
     }
 
+    override fun openSkipRecountScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(SkipRecountFragment())
+        }
+    }
+
+    override fun openAlertHaveIsSpecialGoodsScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.in_task_special_goods),
+                    iconRes = R.drawable.is_warning_yellow_80dp,
+                    description = context.getString(R.string.skip_recount),
+                    pageNumber = "96",
+                    timeAutoExitInMillis = 3000)
+            )
+        }
+    }
+
+    override fun openAlertNoIsSpecialGoodsScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.in_task_no_special_goods),
+                    iconRes = R.drawable.is_warning_yellow_80dp,
+                    description = context.getString(R.string.skip_recount),
+                    pageNumber = "96",
+                    timeAutoExitInMillis = 3000)
+            )
+        }
+    }
+
+    override fun openRecountStartPGELoadingScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(LoadingRecountStartPGEFragment())
+        }
+    }
+
+    override fun openTransportMarriageScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(TransportMarriageFragment())
+        }
+    }
+
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 }
 
@@ -759,7 +803,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openAlertWithoutConfirmation(message: String, callbackFunc: () -> Unit)
     fun openChangeDateTimeScreen(mode: ChangeDateTimeMode)
     fun openTaskReviseScreen()
-    fun openGoodsInfoScreen(productInfo: TaskProductInfo, isDiscrepancy: Boolean)
+    fun openGoodsInfoScreen(productInfo: TaskProductInfo, isDiscrepancy: Boolean, initialCount: Double = 0.0)
     fun openAlertWrongProductType()
     fun openGoodsDetailsScreen(productInfo: TaskProductInfo? = null, batch: TaskBatchInfo? =null)
     fun openInvoiceReviseScreen()
@@ -811,8 +855,8 @@ interface IScreenNavigator : ICoreNavigator {
     fun openAlertVADProductNotMatchedScreen(productName: String)
     fun openDiscrepanciesInconsistencyVetDocsDialog(markCallbackFunc: () -> Unit)
     fun openDiscrepanciesNoVerifiedVadDialog(excludeCallbackFunc: () -> Unit, markCallbackFunc: () -> Unit)
+    fun openAlertQuantGreatInVetDocScreen()
     fun openAlertQuantGreatInInvoiceScreen()
-    fun openAlertQuantGreatInOrderScreen()
     fun openAlertCertificatesLostRelevance(nextCallbackFunc: () -> Unit)
     fun openAlertElectronicVadLostRelevance(browsingCallbackFunc: () -> Unit, countVad: String, countGoods: String)
     fun openUnloadingStartRDSLoadingScreen()
@@ -824,4 +868,9 @@ interface IScreenNavigator : ICoreNavigator {
     fun openNewCargoUnitAnotherTransportationDialog(cargoUnitNumber: String, nextCallbackFunc: () -> Unit)
     fun openNewCargoUnitCurrentTransportationDialog(cargoUnitNumber: String, nextCallbackFunc: () -> Unit)
     fun openAlertNewCargoUnitScreen(cargoUnitNumber: String)
+    fun openSkipRecountScreen()
+    fun openAlertHaveIsSpecialGoodsScreen()
+    fun openAlertNoIsSpecialGoodsScreen()
+    fun openRecountStartPGELoadingScreen()
+    fun openTransportMarriageScreen()
 }

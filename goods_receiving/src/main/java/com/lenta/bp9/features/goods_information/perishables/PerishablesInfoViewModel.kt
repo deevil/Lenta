@@ -1,10 +1,12 @@
 package com.lenta.bp9.features.goods_information.perishables
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.lenta.bp9.R
 import com.lenta.bp9.features.goods_list.SearchProductDelegate
 import com.lenta.bp9.model.processing.ProcessGeneralProductService
 import com.lenta.bp9.model.task.IReceivingTaskManager
@@ -18,6 +20,7 @@ import com.lenta.shared.requests.combined.scan_info.pojo.ReasonRejectionInfo
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.map
+import com.lenta.shared.utilities.extentions.toStringFormatted
 import com.lenta.shared.view.OnPositionClickListener
 import kotlinx.coroutines.launch
 import org.joda.time.DateTime
@@ -34,21 +37,18 @@ class PerishablesInfoViewModel : CoreViewModel(), OnPositionClickListener {
 
     @Inject
     lateinit var screenNavigator: IScreenNavigator
-
     @Inject
     lateinit var taskManager: IReceivingTaskManager
-
     @Inject
     lateinit var processGeneralProductService: ProcessGeneralProductService
-
     @Inject
     lateinit var dataBase: IDataBaseRepo
-
     @Inject
     lateinit var searchProductDelegate: SearchProductDelegate
-
     @Inject
     lateinit var timeMonitor: ITimeMonitor
+    @Inject
+    lateinit var context: Context
 
     val productInfo: MutableLiveData<TaskProductInfo> = MutableLiveData()
     val spinQuality: MutableLiveData<List<String>> = MutableLiveData()
@@ -63,6 +63,9 @@ class PerishablesInfoViewModel : CoreViewModel(), OnPositionClickListener {
     val shelfLifeDate: MutableLiveData<String> = MutableLiveData("")
     val isDefect: MutableLiveData<Boolean> = spinQualitySelectedPosition.map {
         it != 0
+    }
+    val tvAccept: MutableLiveData<String> by lazy {
+        MutableLiveData(context.getString(R.string.accept, "${productInfo.value?.purchaseOrderUnits?.name}=${productInfo.value?.quantityInvest?.toDouble().toStringFormatted()} ${productInfo.value?.uom?.name}"))
     }
 
     private val qualityInfo: MutableLiveData<List<QualityInfo>> = MutableLiveData()
@@ -85,24 +88,19 @@ class PerishablesInfoViewModel : CoreViewModel(), OnPositionClickListener {
             if (qualityInfo.value?.get(it!!.second)?.code == "1") {
                 (it?.first ?: 0.0) + taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().getCountAcceptOfProduct(productInfo.value!!)
             } else {
-                0.0
+                taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().getCountAcceptOfProduct(productInfo.value!!)
             }
         }
     }
 
     val refusalTotalCount: MutableLiveData<Double> by lazy  {
         countValue.
-                combineLatest(spinReasonRejectionSelectedPosition).
                 combineLatest(spinQualitySelectedPosition).
                 map{
                     if (qualityInfo.value?.get(it?.second ?: 0)?.code != "1") {
-                        (it?.first?.first ?: 0.0) + taskManager.
-                                getReceivingTask()!!.
-                                taskRepository.
-                                getProductsDiscrepancies().
-                                getCountRefusalOfProductOfReasonRejection(productInfo.value!!, reasonRejectionInfo.value?.get(it?.first?.second ?: 0) ?.code)
+                        (it?.first ?: 0.0) + taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().getCountRefusalOfProduct(productInfo.value!!)
                     } else {
-                        0.0
+                        taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().getCountRefusalOfProduct(productInfo.value!!)
                     }
                 }
     }
@@ -306,6 +304,8 @@ class PerishablesInfoViewModel : CoreViewModel(), OnPositionClickListener {
                     if (countWithoutParamGrsGrundNeg.value!! > 0.0) {//блок 6.147 (да)
                         //блок 6.145
                         processGeneralProductService.addWithoutUnderload(paramGrsGrundNeg, countWithoutParamGrsGrundNeg.value.toString())
+                        //блок 6.176
+                        clickBtnApply()
                     } else {//блок 6.147 (нет)
                         //блок 6.155
                         processGeneralProductService.delCategoryParamGrsGrundNeg(paramGrsGrundNeg)
@@ -355,7 +355,7 @@ class PerishablesInfoViewModel : CoreViewModel(), OnPositionClickListener {
         if (qualityInfo.value?.get(spinQualitySelectedPosition.value ?: 0)?.code == "1") {
             processGeneralProductService.add(acceptTotalCount.value!!.toString(), "1")
         } else {
-            processGeneralProductService.add(refusalTotalCount.value!!.toString(), reasonRejectionInfo.value!![spinReasonRejectionSelectedPosition.value!!].code)
+            processGeneralProductService.add(count.value!!, reasonRejectionInfo.value!![spinReasonRejectionSelectedPosition.value!!].code)
         }
 
         //блок 6.176

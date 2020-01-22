@@ -4,12 +4,8 @@ import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp9.features.loading.tasks.TaskCardMode
-import com.lenta.bp9.features.mercury_list.MercuryListItem
-import com.lenta.bp9.features.task_list.TaskItemVm
-import com.lenta.bp9.features.task_list.TaskPostponedStatus
 import com.lenta.bp9.model.processing.ProcessCargoUnitsService
 import com.lenta.bp9.model.task.IReceivingTaskManager
-import com.lenta.bp9.model.task.TaskCargoUnitInfo
 import com.lenta.bp9.model.task.TaskCargoUnitInfoRestData
 import com.lenta.bp9.model.task.revise.ConditionViewType
 import com.lenta.bp9.model.task.revise.TransportConditionRestData
@@ -18,14 +14,11 @@ import com.lenta.bp9.requests.network.*
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.platform.viewmodel.CoreViewModel
-import com.lenta.shared.utilities.Logg
-import com.lenta.shared.utilities.databinding.Evenable
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.getDeviceIp
 import com.lenta.shared.utilities.extentions.map
-import com.lenta.shared.utilities.extentions.toStringFormatted
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -128,7 +121,7 @@ class ControlDeliveryCargoUnitsViewModel : CoreViewModel(), PageSelectionListene
         screenNavigator.openTaskListScreen()
         screenNavigator.openTaskCardScreen(TaskCardMode.Full)
         taskManager.getReceivingTask()?.taskRepository?.getReviseDocuments()?.getTransportConditions()?.filter {
-            it.conditionViewType == ConditionViewType.Seal //&& it.value.isEmpty()
+            it.conditionViewType == ConditionViewType.Seal && it.value.isEmpty()
         }.let {
             if (it?.size != 0) {
                 screenNavigator.openAlertSealDamageScreen()
