@@ -34,8 +34,8 @@ class RejectFragment : CoreFragment<FragmentRejectBinding, RejectViewModel>(), T
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
         bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.full)
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.temporary)
-        connectLiveData(vm.buttonsEndbled, bottomToolbarUiModel.uiModelButton4.enabled)
-        connectLiveData(vm.buttonsEndbled, bottomToolbarUiModel.uiModelButton5.enabled)
+        connectLiveData(vm.buttonsEnabled, bottomToolbarUiModel.uiModelButton4.enabled)
+        connectLiveData(vm.buttonsEnabled, bottomToolbarUiModel.uiModelButton5.enabled)
     }
 
     override fun onToolbarButtonClick(view: View) {

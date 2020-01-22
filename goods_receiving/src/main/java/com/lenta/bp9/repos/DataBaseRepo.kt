@@ -93,6 +93,12 @@ class DataBaseRepo(
             it.id == "013" && (it.code == "3" || it.code == "4" || it.code == "5")
         }
     }
+
+    override suspend fun getFailureReasons(): List<QualityInfo>? = withContext(Dispatchers.IO) {
+        zmpUtz17V001.getAllQuality()?.toQualityInfoList()?.filter {
+            it.id == "011"
+        }
+    }
 }
 
 interface IDataBaseRepo {
@@ -110,4 +116,5 @@ interface IDataBaseRepo {
     suspend fun getTypePalletInfo(): List<QualityInfo>?
     suspend fun getQualityInfoPGE(): List<QualityInfo>?
     suspend fun getQualityInfoPGEForDiscrepancy(): List<QualityInfo>?
+    suspend fun getFailureReasons(): List<QualityInfo>?
 }
