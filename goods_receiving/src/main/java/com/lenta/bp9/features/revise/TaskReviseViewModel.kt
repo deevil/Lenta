@@ -44,16 +44,16 @@ class TaskReviseViewModel : CoreViewModel(), PageSelectionListener {
     val docsToCheck: MutableLiveData<List<DeliveryDocumentVM>> = MutableLiveData()
     val checkedDocs: MutableLiveData<List<DeliveryDocumentVM>> = MutableLiveData()
 
-    private val isTaskPRC by lazy {
-        MutableLiveData(taskManager.getReceivingTask()!!.taskHeader.taskType == TaskType.ReceptionDistributionCenter)
+    private val isTaskPRCorPSP by lazy {
+        MutableLiveData(taskManager.getReceivingTask()!!.taskHeader.taskType == TaskType.ReceptionDistributionCenter || taskManager.getReceivingTask()!!.taskHeader.taskType == TaskType.OwnProduction)
     }
 
     val nextEnabled = docsToCheck.map { document ->
-        document?.findLast { it.isObligatory } == null || isTaskPRC.value == true
+        document?.findLast { it.isObligatory } == null || isTaskPRCorPSP.value == true
     }
 
     val refusalVisibility by lazy {
-        MutableLiveData(isTaskPRC.value == false )
+        MutableLiveData(isTaskPRCorPSP.value == false )
     }
 
     override fun onPageSelected(position: Int) {
@@ -139,7 +139,7 @@ class TaskReviseViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     fun onClickSave() {
-        if (isTaskPRC.value == true) {
+        if (isTaskPRCorPSP.value == true) {
             if (docsToCheck.value?.isNotEmpty() == true) {
                 screenNavigator.openRemainsUnconfirmedBindingDocsPRCDialog(
                         nextCallbackFunc = {

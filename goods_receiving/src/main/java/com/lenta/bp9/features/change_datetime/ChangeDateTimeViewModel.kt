@@ -126,7 +126,9 @@ class ChangeDateTimeViewModel : CoreViewModel() {
             minNextStatusDate.add(Calendar.DATE, (permittedNumberDays.value ?: 0) * -1)
             val selectedDateTime = SimpleDateFormat("dd.MM.yy HH:mm:ss").parse(checkDateTime)
             if (taskManager.getReceivingTask()?.taskDescription?.currentStatus == TaskStatus.Traveling &&
-                    (taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.DirectSupplier || taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.ReceptionDistributionCenter)) {
+                    (taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.DirectSupplier ||
+                            taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.ReceptionDistributionCenter ||
+                            taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.OwnProduction)) {
                 selectedDateTime <= timeMonitor.getServerDate() && selectedDateTime >= minNextStatusDate.time
             } else {
                 selectedDateTime <= timeMonitor.getServerDate()

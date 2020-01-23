@@ -61,7 +61,7 @@ class TaskCardFragment : CoreFragment<FragmentTaskCardBinding, TaskCardViewModel
                         bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.skipAlternate)
                     }
                 }
-                TaskType.ReceptionDistributionCenter -> {
+                TaskType.ReceptionDistributionCenter, TaskType.OwnProduction -> {
                     if (vm.currentStatus.value == TaskStatus.Unloaded) {
                         bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.transportMarriage)
                     }
@@ -87,7 +87,7 @@ class TaskCardFragment : CoreFragment<FragmentTaskCardBinding, TaskCardViewModel
                         bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.skipAlternate, enabled = false)
                     }
                 }
-                TaskType.ReceptionDistributionCenter -> {
+                TaskType.ReceptionDistributionCenter, TaskType.OwnProduction -> {
                     if (vm.currentStatus.value == TaskStatus.Unloaded) {
                         bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.transportMarriage, enabled = false)
                     }

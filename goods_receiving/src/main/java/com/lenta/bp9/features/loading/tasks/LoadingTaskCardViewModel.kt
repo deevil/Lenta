@@ -60,7 +60,7 @@ class LoadingTaskCardViewModel : CoreLoadingViewModel() {
             val taskHeader = repoInMemoryHolder.taskList.value?.tasks?.findLast { it.taskNumber == taskNumber }
             if (loadFullData) {
                 when (taskHeader?.taskType) {
-                    TaskType.ReceptionDistributionCenter -> {
+                    TaskType.ReceptionDistributionCenter, TaskType.OwnProduction -> {
                         if (taskHeader.status == TaskStatus.Traveling) {
                             taskCardNetRequest(params).either(::handleFailure, ::handleSuccess)
                         } else {
@@ -69,7 +69,7 @@ class LoadingTaskCardViewModel : CoreLoadingViewModel() {
                                     deviceIP = context.getDeviceIp(),
                                     personalNumber = sessionInfo.personnelNumber ?: "",
                                     taskNumber = taskNumber,
-                                    taskType = TaskType.ReceptionDistributionCenter.taskTypeString
+                                    taskType = if (taskHeader.taskType == TaskType.ReceptionDistributionCenter) TaskType.ReceptionDistributionCenter.taskTypeString else TaskType.OwnProduction.taskTypeString
                             )
                             taskContentsReceptionDistrCenterNetRequest(paramsRDS).either(::handleFailure, ::handleSuccessRDS)
                         }
