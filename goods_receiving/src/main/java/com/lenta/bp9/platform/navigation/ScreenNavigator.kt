@@ -99,9 +99,9 @@ class ScreenNavigator(
         }
     }
 
-    override fun openTaskListLoadingScreen(mode: TaskListLoadingMode, searchParams: TaskListSearchParams?) {
+    override fun openTaskListLoadingScreen(mode: TaskListLoadingMode, searchParams: TaskListSearchParams?, numberEO: String?) {
         runOrPostpone {
-            getFragmentStack()?.push(LoadingTasksFragment.create(searchParams, mode))
+            getFragmentStack()?.push(LoadingTasksFragment.create(searchParams, mode, numberEO))
         }
     }
 
@@ -820,7 +820,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openMainMenuScreen()
     fun openLoginScreen()
     fun openTaskListScreen()
-    fun openTaskListLoadingScreen(mode: TaskListLoadingMode, searchParams: TaskListSearchParams? = null)
+    fun openTaskListLoadingScreen(mode: TaskListLoadingMode, searchParams: TaskListSearchParams? = null, numberEO: String? = null)
     fun openFastDataLoadingScreen()
     fun openSelectionPersonnelNumberScreen()
     fun openAlertNotPermissions(message: String)

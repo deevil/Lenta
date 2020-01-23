@@ -36,6 +36,7 @@ class LoadingTasksViewModel : CoreLoadingViewModel() {
 
     var searchParams: TaskListSearchParams? = null
     var mode: TaskListLoadingMode = TaskListLoadingMode.None
+    var numberEO: String? = null
 
     init {
         viewModelScope.launch {
@@ -61,10 +62,16 @@ class LoadingTasksViewModel : CoreLoadingViewModel() {
         if (searchParams == null) {
             repoInMemoryHolder.taskList.value = taskList
             screenNavigator.openTaskListScreen()
-        } else {
-            repoInMemoryHolder.lastSearchResult.value = taskList
-            screenNavigator.goBack()
+            return
         }
+
+        if (numberEO != null) {
+            repoInMemoryHolder.lastSearchResult.value = taskList
+            return
+        }
+
+        repoInMemoryHolder.lastSearchResult.value = taskList
+        screenNavigator.goBack()
     }
 
     override fun clean() {
