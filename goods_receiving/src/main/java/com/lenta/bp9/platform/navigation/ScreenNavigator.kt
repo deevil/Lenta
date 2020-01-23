@@ -801,6 +801,16 @@ class ScreenNavigator(
         }
     }
 
+    override fun openRemainsUnconfirmedBindingDocsPRCDialog(nextCallbackFunc: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.remains_unconfirmed_binding_docs_prc_dialog),
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(nextCallbackFunc),
+                    pageNumber = "93",
+                    rightButtonDecorationInfo = ButtonDecorationInfo.next))
+        }
+    }
+
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 }
 
@@ -898,4 +908,5 @@ interface IScreenNavigator : ICoreNavigator {
     fun openTransportMarriageScreen()
     fun openNoTransportDefectDeclaredDialog(nextCallbackFunc: () -> Unit)
     fun openDateNotCorrectlyScreen()
+    fun openRemainsUnconfirmedBindingDocsPRCDialog(nextCallbackFunc: () -> Unit)
 }

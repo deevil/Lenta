@@ -52,14 +52,22 @@ data class DeliveryDocumentReviseRestData(
 //TODO: find and add all document types
 enum class DocumentType(val documentTypeString: String) {
     None(""),
-    Simple("0"),
-    Invoice("1");
+    Info("0"), //информация
+    Simple("1"), //простой документ
+    Invoice("2"), //накладная
+    AlcoCertificate("3"), //Алк. справка
+    VetDoc("5"), //ВСД
+    CompositeDoc("6"); //составной документ
 
     companion object {
         fun from(documentTypeString: String): DocumentType {
             return when (documentTypeString) {
-                "0" -> Simple
+                "0" -> Info
+                "1" -> Simple
                 "2" -> Invoice
+                "3" -> AlcoCertificate
+                "5" -> VetDoc
+                "6" -> CompositeDoc
                 else -> None
             }
         }

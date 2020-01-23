@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp9.features.task_card.TaskCardViewModel
 import com.lenta.bp9.model.task.IReceivingTaskManager
+import com.lenta.bp9.model.task.TaskType
 import com.lenta.bp9.model.task.revise.DocumentType
 import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.shared.account.ISessionInfo
@@ -43,7 +44,17 @@ class TaskReviseViewModel : CoreViewModel(), PageSelectionListener {
     val docsToCheck: MutableLiveData<List<DeliveryDocumentVM>> = MutableLiveData()
     val checkedDocs: MutableLiveData<List<DeliveryDocumentVM>> = MutableLiveData()
 
-    val nextEnabled = docsToCheck.map { document -> document?.findLast { it.isObligatory } == null }
+    private val isTaskPRC by lazy {
+        MutableLiveData(taskManager.getReceivingTask()!!.taskHeader.taskType == TaskType.ReceptionDistributionCenter)
+    }
+
+    val nextEnabled = docsToCheck.map { document ->
+        document?.findLast { it.isObligatory } == null || isTaskPRC.value == true
+    }
+
+    val refusalVisibility by lazy {
+        MutableLiveData(isTaskPRC.value == false )
+    }
 
     override fun onPageSelected(position: Int) {
         selectedPage.value = position
@@ -128,6 +139,23 @@ class TaskReviseViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     fun onClickSave() {
+        if (isTaskPRC.value == true) {
+            if (docsToCheck.value?.isNotEmpty() == true) {
+                screenNavigator.openRemainsUnconfirmedBindingDocsPRCDialog(
+                        nextCallbackFunc = {
+                            save()
+                        }
+                )
+            } else {
+                screenNavigator.openFinishReviseLoadingScreen()
+            }
+            return
+        }
+
+        save()
+    }
+
+    private fun save() {
         if (taskManager.getReceivingTask()?.taskRepository?.getReviseDocuments()?.getProductDocuments()?.isNotEmpty() == true) {
             screenNavigator.openProductDocumentsReviseScreen()
         } else {

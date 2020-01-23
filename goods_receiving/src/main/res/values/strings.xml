@@ -27,7 +27,7 @@
     <string name="unlock_confirmation">Задание заблокировано этим же логином на ТСД. Разблокировать и начать обработку?</string>
     <string name="view_confirmation">Задание заблокировано под другим логином на ТСД. Перейти к просмотру этого задания?</string>
     <string name="unsaved_data_confirmation">Несохранённые данные будут утеряны, всё равно продолжить?</string>
-    <string name="process_as_discrepancy_confirmation">Остались неподтвержденными обязательные документы по товарам. Оформить все эти товары как расхождение "Несоответствие документов"?</string>
+    <string name="process_as_discrepancy_confirmation">Остались неподтвержденными обязательные документы по товарам. Оформить все эти товары как расхождение \"Несоответствие документов\"?</string>
     <string name="task_card">Карточка задания</string>
     <string name="status">Статус</string>
     <string name="delivery">Поставка</string>
@@ -198,4 +198,5 @@
     <string name="transport_marriage">Транспортный брак</string>
     <string name="no_transport_defect_declared">Транспортный брак не был заявлен, зарегистрировать или вернуться к заявлению брака?</string>
     <string name="date_not_correctly">Время и дата установлено не корректно</string>
+    <string name="remains_unconfirmed_binding_docs_prc_dialog">Остались неподтвержденными обязательные документы, статус задания ПРЦ будет переключен в \"Запрос документов\"</string>
 </resources>
