@@ -10,6 +10,7 @@ import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.bp9.repos.IDataBaseRepo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.pojo.QualityInfo
+import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.view.OnPositionClickListener
@@ -99,8 +100,8 @@ class CargoUnitCardViewModel : CoreViewModel(), OnPositionClickListener {
     fun onClickApply() {
         processCargoUnitsService.apply(
                 cargoUnitInfo.value!!,
-                spinStatus.value?.get(spinStatusSelectedPosition.value!!) ?: "",
-                spinTypePallet.value?.get(spinTypePalletSelectedPosition.value!!) ?: ""
+                statusInfo.value?.get(spinStatusSelectedPosition.value!!)?.code ?: "",
+                typePalletInfo.value?.get(spinTypePalletSelectedPosition.value!!)?.code ?: ""
         )
         screenNavigator.goBack()
     }

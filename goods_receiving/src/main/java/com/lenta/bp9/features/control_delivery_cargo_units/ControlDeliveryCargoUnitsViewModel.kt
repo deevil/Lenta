@@ -10,10 +10,12 @@ import com.lenta.bp9.model.task.TaskCargoUnitInfoRestData
 import com.lenta.bp9.model.task.revise.ConditionViewType
 import com.lenta.bp9.model.task.revise.TransportConditionRestData
 import com.lenta.bp9.platform.navigation.IScreenNavigator
+import com.lenta.bp9.repos.IDataBaseRepo
 import com.lenta.bp9.requests.network.*
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.platform.viewmodel.CoreViewModel
+import com.lenta.shared.requests.combined.scan_info.pojo.QualityInfo
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.extentions.combineLatest
@@ -38,8 +40,11 @@ class ControlDeliveryCargoUnitsViewModel : CoreViewModel(), PageSelectionListene
     lateinit var context: Context
     @Inject
     lateinit var sessionInfo: ISessionInfo
+    @Inject
+    lateinit var dataBase: IDataBaseRepo
 
     val selectedPage = MutableLiveData(0)
+    private val statusInfo: MutableLiveData<List<QualityInfo>> = MutableLiveData()
     private val listProcessedHolder: MutableLiveData<List<ControlDeliveryCargoUnitItem>> = MutableLiveData()
     private val listNotProcessedHolder: MutableLiveData<List<ControlDeliveryCargoUnitItem>> = MutableLiveData()
     val cargoUnitNumber: MutableLiveData<String> = MutableLiveData("")
@@ -83,6 +88,7 @@ class ControlDeliveryCargoUnitsViewModel : CoreViewModel(), PageSelectionListene
             taskManager.getReceivingTask()?.getCargoUnits()?.let {
                 processCargoUnitsService.newProcessCargoUnitsService(it)
             }
+            statusInfo.value = dataBase.getAllStatusInfoForPRC()
             onResume()
         }
     }
@@ -151,7 +157,9 @@ class ControlDeliveryCargoUnitsViewModel : CoreViewModel(), PageSelectionListene
                     ControlDeliveryCargoUnitItem(
                             number = index + 1,
                             name = taskCargoUnitInfo.cargoUnitNumber,
-                            status = taskCargoUnitInfo.cargoUnitStatus
+                            status = statusInfo.value?.findLast {
+                                it.code == taskCargoUnitInfo.cargoUnitStatus
+                            }?.name ?: ""
                     )
                 }.reversed()
         )

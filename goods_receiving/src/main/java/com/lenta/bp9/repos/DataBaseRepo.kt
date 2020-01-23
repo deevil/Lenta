@@ -64,6 +64,12 @@ class DataBaseRepo(
         }
     }
 
+    override suspend fun getAllStatusInfoForPRC(): List<QualityInfo>? = withContext(Dispatchers.IO) {
+        zmpUtz17V001.getAllQuality()?.toQualityInfoList()?.filter {
+            it.id == "010"
+        }
+    }
+
     override suspend fun getStatusInfoForPRC(): List<QualityInfo>? = withContext(Dispatchers.IO) {
         zmpUtz17V001.getAllQuality()?.toQualityInfoList()?.filter {
             it.id == "010" && it.code != "3"
@@ -111,6 +117,7 @@ interface IDataBaseRepo {
     suspend fun getParamGrsGrundNeg(): String?
     suspend fun getParamPermittedNumberDays(): String?
     suspend fun getExclusionFromIntegration(): List<QualityInfo>?
+    suspend fun getAllStatusInfoForPRC(): List<QualityInfo>?
     suspend fun getStatusInfoForPRC(): List<QualityInfo>?
     suspend fun getSurplusInfoForPRC(): List<QualityInfo>?
     suspend fun getTypePalletInfo(): List<QualityInfo>?
