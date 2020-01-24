@@ -6,6 +6,7 @@ data class Raw(
         val materialOsn: String, // sap-код полуфабриката
         val orderNumber: String,
         val name: String,
-        val planned: Double
+        val planned: Double,
+        val isWasDef: Boolean
 ) {
 }

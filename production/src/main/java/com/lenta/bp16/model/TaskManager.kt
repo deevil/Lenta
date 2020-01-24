@@ -9,6 +9,7 @@ import com.lenta.bp16.platform.extention.getTaskStatus
 import com.lenta.bp16.repository.IGeneralRepository
 import com.lenta.bp16.request.TaskInfoResult
 import com.lenta.bp16.request.TaskListResult
+import com.lenta.shared.utilities.extentions.isSapTrue
 import javax.inject.Inject
 
 class TaskManager @Inject constructor(
@@ -57,7 +58,8 @@ class TaskManager @Inject constructor(
                                     materialOsn = rawInfo.materialOsn,
                                     orderNumber = rawInfo.orderNumber,
                                     name = rawInfo.name,
-                                    planned = rawInfo.planned
+                                    planned = rawInfo.planned,
+                                    isWasDef = rawInfo.isWasDef.isSapTrue()
                             )
                         }.toMutableList(),
                         packs = taskInfoResult.packs.filter { it.material == goodInfo.material }.map { packInfo ->
@@ -65,7 +67,8 @@ class TaskManager @Inject constructor(
                                     material = packInfo.material,
                                     materialOsn = packInfo.materialOsn,
                                     code = packInfo.code,
-                                    quantity = packInfo.quantity
+                                    quantity = packInfo.quantity,
+                                    isDefOut = packInfo.isDefOut.isSapTrue()
                             )
                         }.toMutableList()
                 )
