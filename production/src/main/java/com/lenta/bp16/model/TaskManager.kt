@@ -59,8 +59,7 @@ class TaskManager @Inject constructor(
                                     orderNumber = rawInfo.orderNumber,
                                     name = rawInfo.name,
                                     planned = rawInfo.planned,
-                                    isWasDef = rawInfo.isWasDef.isSapTrue(),
-                                    isWasOut = rawInfo.isWasOut.isSapTrue()
+                                    isWasDef = rawInfo.isWasDef.isSapTrue()
                             )
                         }.toMutableList(),
                         packs = taskInfoResult.packs.filter { it.material == goodInfo.material }.map { packInfo ->

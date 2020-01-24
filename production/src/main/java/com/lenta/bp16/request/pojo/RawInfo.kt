@@ -20,8 +20,5 @@ data class RawInfo(
         val planned: Double,
         /** Признак «На переделе был дефрост» */
         @SerializedName("WAS_DEF")
-        val isWasDef: String,
-        /** Признак «???» */
-        @SerializedName("WAS_OUT")
-        val isWasOut: String
+        val isWasDef: String
 )
