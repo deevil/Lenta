@@ -56,6 +56,10 @@ class TaskReviseViewModel : CoreViewModel(), PageSelectionListener {
         MutableLiveData(isTaskPRCorPSP.value == false )
     }
 
+    val isDocsForVerification by lazy {
+        taskManager.getReceivingTask()?.taskRepository?.getReviseDocuments()?.getProductDocuments()?.isNotEmpty()
+    }
+
     override fun onPageSelected(position: Int) {
         selectedPage.value = position
     }
@@ -139,25 +143,16 @@ class TaskReviseViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     fun onClickSave() {
-        if (isTaskPRCorPSP.value == true) {
-            if (docsToCheck.value?.isNotEmpty() == true) {
+        if (taskManager.getReceivingTask()?.taskRepository?.getReviseDocuments()?.getProductDocuments()?.isNotEmpty() == true) {
+            if (isTaskPRCorPSP.value == true) {
                 screenNavigator.openRemainsUnconfirmedBindingDocsPRCDialog(
                         nextCallbackFunc = {
-                            save()
+                            screenNavigator.openProductDocumentsReviseScreen()
                         }
                 )
             } else {
-                screenNavigator.openFinishReviseLoadingScreen()
+                screenNavigator.openProductDocumentsReviseScreen()
             }
-            return
-        }
-
-        save()
-    }
-
-    private fun save() {
-        if (taskManager.getReceivingTask()?.taskRepository?.getReviseDocuments()?.getProductDocuments()?.isNotEmpty() == true) {
-            screenNavigator.openProductDocumentsReviseScreen()
         } else {
             screenNavigator.openFinishReviseLoadingScreen()
         }

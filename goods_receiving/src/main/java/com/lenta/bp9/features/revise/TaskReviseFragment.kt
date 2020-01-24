@@ -49,9 +49,14 @@ class TaskReviseFragment : CoreFragment<FragmentTaskReviseBinding, TaskReviseVie
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
+        bottomToolbarUiModel.cleanAll()
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
         bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.refusal)
-        bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.save)
+        if (vm.isDocsForVerification == true) {
+            bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.next)
+        } else {
+            bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.save)
+        }
         connectLiveData(vm.refusalVisibility, bottomToolbarUiModel.uiModelButton2.visibility)
         connectLiveData(vm.nextEnabled, bottomToolbarUiModel.uiModelButton5.enabled)
     }
