@@ -3,10 +3,12 @@ package com.lenta.bp9.features.control_delivery_cargo_units
 import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.lenta.bp9.R
 import com.lenta.bp9.features.loading.tasks.TaskCardMode
 import com.lenta.bp9.model.processing.ProcessCargoUnitsService
 import com.lenta.bp9.model.task.IReceivingTaskManager
 import com.lenta.bp9.model.task.TaskCargoUnitInfoRestData
+import com.lenta.bp9.model.task.TaskType
 import com.lenta.bp9.model.task.revise.ConditionViewType
 import com.lenta.bp9.model.task.revise.TransportConditionRestData
 import com.lenta.bp9.platform.navigation.IScreenNavigator
@@ -50,6 +52,9 @@ class ControlDeliveryCargoUnitsViewModel : CoreViewModel(), PageSelectionListene
     val cargoUnitNumber: MutableLiveData<String> = MutableLiveData("")
     val requestFocusToCargoUnit: MutableLiveData<Boolean> = MutableLiveData()
     private val searchCargoUnitNumber: MutableLiveData<String> = MutableLiveData("")
+    val isTaskPSP by lazy {
+        taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.OwnProduction
+    }
 
     val listProcessed by lazy {
         listProcessedHolder.combineLatest(cargoUnitNumber).map { pair ->
@@ -100,6 +105,14 @@ class ControlDeliveryCargoUnitsViewModel : CoreViewModel(), PageSelectionListene
 
     fun getTitle(): String {
         return taskManager.getReceivingTask()?.taskHeader?.caption ?: ""
+    }
+
+    fun getDescription(): String {
+        return if (taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.OwnProduction) {
+            context.getString(R.string.control_delivery_eo)
+        } else {
+            context.getString(R.string.control_delivery_cargo_units)
+        }
     }
 
     fun onClickSave() {

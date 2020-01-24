@@ -47,8 +47,20 @@ class CargoUnitCardViewModel : CoreViewModel(), OnPositionClickListener {
         }
     }
 
+    val storageValue by lazy {
+        cargoUnitInfo.value?.stock ?: ""
+    }
+
+    val isTaskPSP by lazy {
+        taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.OwnProduction
+    }
+
     val enabledApplyBtn: MutableLiveData<Boolean> = spinStatusSelectedPosition.combineLatest(spinTypePalletSelectedPosition).map {
         statusInfo.value?.get(it!!.first)?.code == "2" || spinTypePallet.value?.get(it!!.second) ?: "" != ""
+    }
+
+    val isGoodsForPackaging by lazy {
+        taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.OwnProduction && cargoUnitInfo.value?.isPack == true
     }
 
     fun getTitle(): String {

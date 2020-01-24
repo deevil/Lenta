@@ -215,15 +215,15 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     fun onClickSecondButton() {
-        when (taskType) {
-            TaskType.RecalculationCargoUnit -> screenNavigator.openSkipRecountScreen()
-            TaskType.ReceptionDistributionCenter, TaskType.OwnProduction -> screenNavigator.openTransportMarriageScreen()
-            else -> {
-                when (currentStatus.value) {
-                    TaskStatus.Checked -> screenNavigator.openStartReviseLoadingScreen()
-                    TaskStatus.Recounted -> screenNavigator.openRecountStartLoadingScreen()
+        when (currentStatus.value) {
+            TaskStatus.Unloaded -> {
+                when (taskType) {
+                    TaskType.RecalculationCargoUnit -> screenNavigator.openSkipRecountScreen()
+                    TaskType.ReceptionDistributionCenter, TaskType.OwnProduction -> screenNavigator.openTransportMarriageScreen()
                 }
             }
+            TaskStatus.Checked -> screenNavigator.openStartReviseLoadingScreen()
+            TaskStatus.Recounted -> screenNavigator.openRecountStartLoadingScreen()
         }
     }
 

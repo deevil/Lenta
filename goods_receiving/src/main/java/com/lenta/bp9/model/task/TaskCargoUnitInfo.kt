@@ -17,7 +17,9 @@ data class TaskCargoUnitInfo(
         val isVet: Boolean,
         val isNoGisControl: Boolean,
         val isStamp: Boolean,
-        val quantityPositions: Int
+        val quantityPositions: Int,
+        val isPack: Boolean,
+        val stock: String
 ) {
     companion object {
         fun from(restData: TaskCargoUnitInfoRestData): TaskCargoUnitInfo {
@@ -35,7 +37,9 @@ data class TaskCargoUnitInfo(
                     isVet = restData.isVet.isNotEmpty(),
                     isNoGisControl = restData.isNoGisControl.isNotEmpty(),
                     isStamp = restData.isStamp.isNotEmpty(),
-                    quantityPositions = restData.quantityPositions.toInt()
+                    quantityPositions = restData.quantityPositions.toInt(),
+                    isPack = restData.isPack.isNotEmpty(),
+                    stock = restData.stock
             )
         }
     }
@@ -69,7 +73,11 @@ data class TaskCargoUnitInfoRestData(
         @SerializedName("IS_MARK") //Индикатор: марки
         val isStamp: String,
         @SerializedName("QNT_POS") //Количество позиций (QNT_POS)
-        val quantityPositions: String
+        val quantityPositions: String,
+        @SerializedName("IS_PACK") //товар для упаковки
+        val isPack: String,
+        @SerializedName("LGORT") //Склад
+        val stock: String
 ) {
 
     companion object {
@@ -88,7 +96,9 @@ data class TaskCargoUnitInfoRestData(
                     isVet = if (data.isVet) "X" else "",
                     isNoGisControl = if (data.isNoGisControl) "X" else "",
                     isStamp = if (data.isStamp) "X" else "",
-                    quantityPositions = data.quantityPositions.toString()
+                    quantityPositions = data.quantityPositions.toString(),
+                    isPack = if (data.isPack) "X" else "",
+                    stock = data.stock
             )
         }
     }

@@ -53,25 +53,18 @@ class TaskCardFragment : CoreFragment<FragmentTaskCardBinding, TaskCardViewModel
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
+        bottomToolbarUiModel.cleanAll()
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
         if (vm.mode == TaskCardMode.Full) {
-            when (vm.taskType) {
-                TaskType.RecalculationCargoUnit -> {
-                    if (vm.currentStatus.value == TaskStatus.Unloaded) {
-                        bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.skipAlternate)
+            when (vm.currentStatus.value) {
+                TaskStatus.Unloaded -> {
+                    when (vm.taskType) {
+                        TaskType.RecalculationCargoUnit -> bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.skipAlternate)
+                        TaskType.ReceptionDistributionCenter, TaskType.OwnProduction -> bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.transportMarriage)
                     }
                 }
-                TaskType.ReceptionDistributionCenter, TaskType.OwnProduction -> {
-                    if (vm.currentStatus.value == TaskStatus.Unloaded) {
-                        bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.transportMarriage)
-                    }
-                }
-                else -> {
-                    when (vm.currentStatus.value) {
-                        TaskStatus.Checked -> bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.verify)
-                        TaskStatus.Recounted -> bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.recount)
-                    }
-                }
+                TaskStatus.Checked -> bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.verify)
+                TaskStatus.Recounted -> bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.recount)
             }
 
             bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.docs)
@@ -80,24 +73,17 @@ class TaskCardFragment : CoreFragment<FragmentTaskCardBinding, TaskCardViewModel
             connectLiveData(vm.enabledBtn, bottomToolbarUiModel.uiModelButton2.enabled)
             connectLiveData(vm.enabledBtn, bottomToolbarUiModel.uiModelButton5.enabled)
         }
+
         if (vm.mode == TaskCardMode.ReadOnly) {
-            when (vm.taskType) {
-                TaskType.RecalculationCargoUnit -> {
-                    if (vm.currentStatus.value == TaskStatus.Unloaded) {
-                        bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.skipAlternate, enabled = false)
+            when (vm.currentStatus.value) {
+                TaskStatus.Unloaded -> {
+                    when (vm.taskType) {
+                        TaskType.RecalculationCargoUnit -> bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.skipAlternate, enabled = false)
+                        TaskType.ReceptionDistributionCenter, TaskType.OwnProduction -> bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.transportMarriage, enabled = false)
                     }
                 }
-                TaskType.ReceptionDistributionCenter, TaskType.OwnProduction -> {
-                    if (vm.currentStatus.value == TaskStatus.Unloaded) {
-                        bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.transportMarriage, enabled = false)
-                    }
-                }
-                else -> {
-                    when (vm.currentStatus.value) {
-                        TaskStatus.Checked -> bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.verify, enabled = false)
-                        TaskStatus.Recounted -> bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.recount, enabled = false)
-                    }
-                }
+                TaskStatus.Checked -> bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.verify, enabled = false)
+                TaskStatus.Recounted -> bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.recount, enabled = false)
             }
 
             bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.docs)

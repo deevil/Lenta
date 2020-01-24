@@ -180,7 +180,9 @@
     <string name="seal_damage">Повреждение пломбы</string>
     <string name="dialog_seal_damage">Подтвердите повреждение пломбы. Статус задания будет изменен на \"Взлом\". Для всех ГЕ потребуется пересчёт</string>
     <string name="control_delivery_cargo_units">Контроль доставки ГЕ</string>
+    <string name="control_delivery_eo">Контроль доставки ЕО</string>
     <string name="number_cargo_units">Номер ГЕ</string>
+    <string name="number_eo">Номер ЕО</string>
     <string name="enter_cargo_unit">Введите ГЕ/ЕО</string>
     <string name="recount">Пересчёт</string>
     <string name="type_pallet">Вид поддона</string>
