@@ -6,7 +6,7 @@ data class Pack(
         val materialOsn: String, // sap-код полуфабриката
         val code: String,
         val quantity: Double,
-        val isDefOut: Boolean
+        val isDefOut: Boolean = false
 ) {
 
     fun getShortPackNumber(): String {
