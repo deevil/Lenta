@@ -61,22 +61,23 @@ class PackListViewModel : CoreViewModel() {
     }
 
     fun onClickComplete() {
-
         viewModelScope.launch {
             navigator.showProgressLoadingData()
             defrostingFinishRequest(getParams()).either({ failure ->
                 navigator.openAlertScreen(failure)
             }) {
-                navigator.showDefrostingPhaseIsCompleted {
+                if (raw.value?.isDefrost == true) {
+                    navigator.showDefrostingPhaseIsCompleted {
+                        navigator.goBack()
+                        navigator.goBack()
+                    }
+                } else {
                     navigator.goBack()
                     navigator.goBack()
                 }
             }
             navigator.hideProgress()
-
         }
-
-
     }
 
     private fun getParams(): DefrostingFinishParams {
