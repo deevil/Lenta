@@ -40,7 +40,9 @@ class PackListViewModel : CoreViewModel() {
 
     val packs: MutableLiveData<List<ItemPackListUi>> by lazy {
         good.map { good ->
-            good?.packs?.let { packs ->
+            good?.packs?.filter {
+                if (raw.value?.isWasOut == true) !it.isDefOut else !it.isDefOut || it.isDefOut
+            }?.let { packs ->
                 packs.mapIndexed { index, pack ->
                     ItemPackListUi(
                             position = (packs.size - index).toString(),
@@ -66,7 +68,7 @@ class PackListViewModel : CoreViewModel() {
             defrostingFinishRequest(getParams()).either({ failure ->
                 navigator.openAlertScreen(failure)
             }) {
-                if (raw.value?.isDefrost == true) {
+                if (raw.value?.isWasDef == true) {
                     navigator.showDefrostingPhaseIsCompleted {
                         navigator.goBack()
                         navigator.goBack()

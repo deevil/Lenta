@@ -14,5 +14,8 @@ data class PackInfo(
         val code: String,
         /** Фактически вес ПФ/ГП */
         @SerializedName("FACT_QNT")
-        val quantity: Double
+        val quantity: Double,
+        /** ??? */
+        @SerializedName("DEF_OUT")
+        val isDefOut: String
 )

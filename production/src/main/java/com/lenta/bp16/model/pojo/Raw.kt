@@ -7,6 +7,7 @@ data class Raw(
         val orderNumber: String,
         val name: String,
         val planned: Double,
-        val isDefrost: Boolean
+        val isWasDef: Boolean,
+        val isWasOut: Boolean
 ) {
 }
