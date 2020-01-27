@@ -16,17 +16,30 @@ class LoadingTasksFragment : CoreLoadingFragment() {
 
     private var searchParams: TaskListSearchParams? = null
     private var mode: TaskListLoadingMode = TaskListLoadingMode.None
+    private var numberEO: String? = null
+
+    companion object {
+        fun create(searchParams: TaskListSearchParams?, mode: TaskListLoadingMode, numberEO: String?): LoadingTasksFragment {
+            LoadingTasksFragment().let {
+                it.searchParams = searchParams
+                it.mode = mode
+                it.numberEO = numberEO
+                return it
+            }
+        }
+    }
 
     override fun getPageNumber(): String? {
         return generateScreenNumberFromPostfix("98")
     }
 
     override fun getViewModel(): CoreLoadingViewModel {
-        provideViewModel(LoadingTasksViewModel::class.java).let {
-            getAppComponent()?.inject(it)
-            it.searchParams = searchParams
-            it.mode = mode
-            return it
+        provideViewModel(LoadingTasksViewModel::class.java).let {vm ->
+            getAppComponent()?.inject(vm)
+            vm.searchParams = searchParams
+            vm.mode = mode
+            vm.numberEO = numberEO
+            return vm
         }
     }
 
@@ -49,15 +62,5 @@ class LoadingTasksFragment : CoreLoadingFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         vm.title.value = getString(R.string.tasks_loading)
-    }
-
-    companion object {
-        fun create(searchParams: TaskListSearchParams?, mode: TaskListLoadingMode): LoadingTasksFragment {
-            LoadingTasksFragment().let {
-                it.searchParams = searchParams
-                it.mode = mode
-                return it
-            }
-        }
     }
 }

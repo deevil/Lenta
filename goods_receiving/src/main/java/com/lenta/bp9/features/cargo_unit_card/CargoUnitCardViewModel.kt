@@ -5,10 +5,12 @@ import androidx.lifecycle.viewModelScope
 import com.lenta.bp9.model.processing.ProcessCargoUnitsService
 import com.lenta.bp9.model.task.IReceivingTaskManager
 import com.lenta.bp9.model.task.TaskCargoUnitInfo
+import com.lenta.bp9.model.task.TaskType
 import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.bp9.repos.IDataBaseRepo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.pojo.QualityInfo
+import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.view.OnPositionClickListener
@@ -35,7 +37,7 @@ class CargoUnitCardViewModel : CoreViewModel(), OnPositionClickListener {
     private val statusInfo: MutableLiveData<List<QualityInfo>> = MutableLiveData()
     private val typePalletInfo: MutableLiveData<List<QualityInfo>> = MutableLiveData()
     val deleteVisibility by lazy {
-        MutableLiveData(cargoUnitInfo.value?.cargoUnitStatus == "3")
+        MutableLiveData(cargoUnitInfo.value?.cargoUnitStatus == "3" || taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.ReceptionDistributionCenter || taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.OwnProduction)
     }
     val recountValue by lazy {
         if (cargoUnitInfo.value?.isCount == true) {
@@ -45,8 +47,20 @@ class CargoUnitCardViewModel : CoreViewModel(), OnPositionClickListener {
         }
     }
 
+    val storageValue by lazy {
+        cargoUnitInfo.value?.stock ?: ""
+    }
+
+    val isTaskPSP by lazy {
+        taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.OwnProduction
+    }
+
     val enabledApplyBtn: MutableLiveData<Boolean> = spinStatusSelectedPosition.combineLatest(spinTypePalletSelectedPosition).map {
         statusInfo.value?.get(it!!.first)?.code == "2" || spinTypePallet.value?.get(it!!.second) ?: "" != ""
+    }
+
+    val isGoodsForPackaging by lazy {
+        taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.OwnProduction && cargoUnitInfo.value?.isPack == true
     }
 
     fun getTitle(): String {
@@ -98,13 +112,14 @@ class CargoUnitCardViewModel : CoreViewModel(), OnPositionClickListener {
     fun onClickApply() {
         processCargoUnitsService.apply(
                 cargoUnitInfo.value!!,
-                spinStatus.value?.get(spinStatusSelectedPosition.value!!) ?: "",
-                spinTypePallet.value?.get(spinTypePalletSelectedPosition.value!!) ?: ""
+                statusInfo.value?.get(spinStatusSelectedPosition.value!!)?.code ?: "",
+                typePalletInfo.value?.get(spinTypePalletSelectedPosition.value!!)?.code ?: ""
         )
         screenNavigator.goBack()
     }
 
     fun onClickDelete() {
         processCargoUnitsService.delete(cargoUnitInfo.value!!)
+        screenNavigator.goBack()
     }
 }

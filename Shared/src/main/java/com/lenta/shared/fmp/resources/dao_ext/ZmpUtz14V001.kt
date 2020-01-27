@@ -76,6 +76,10 @@ fun ZmpUtz14V001.getGrsGrundNeg(): String? {
     return getParams("GRS_GRUND_NEG").firstOrNull()
 }
 
+fun ZmpUtz14V001.getGrzArriveBackDD(): String? {
+    return getParams("GRZ_ARRIVE_BACK_DD").firstOrNull()
+}
+
 
 private fun ZmpUtz14V001.getParams(paramName: String): List<String> {
     @Suppress("INACCESSIBLE_TYPE")

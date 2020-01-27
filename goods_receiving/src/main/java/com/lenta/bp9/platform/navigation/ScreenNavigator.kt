@@ -99,9 +99,9 @@ class ScreenNavigator(
         }
     }
 
-    override fun openTaskListLoadingScreen(mode: TaskListLoadingMode, searchParams: TaskListSearchParams?) {
+    override fun openTaskListLoadingScreen(mode: TaskListLoadingMode, searchParams: TaskListSearchParams?, numberEO: String?) {
         runOrPostpone {
-            getFragmentStack()?.push(LoadingTasksFragment.create(searchParams, mode))
+            getFragmentStack()?.push(LoadingTasksFragment.create(searchParams, mode, numberEO))
         }
     }
 
@@ -540,7 +540,7 @@ class ScreenNavigator(
         }
     }
 
-    override fun openInfoDocsSentPScreenrint() {
+    override fun openInfoDocsSentPrintScreen() {
         openAlertScreen(message = context.getString(R.string.documents_sent_print),
                 iconRes = R.drawable.is_warning_yellow_80dp,
                 pageNumber = "96"
@@ -780,6 +780,37 @@ class ScreenNavigator(
         }
     }
 
+    override fun openNoTransportDefectDeclaredDialog(nextCallbackFunc: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.no_transport_defect_declared),
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(nextCallbackFunc),
+                    pageNumber = "95",
+                    rightButtonDecorationInfo = ButtonDecorationInfo.nextAlternate))
+        }
+    }
+
+    override fun openDateNotCorrectlyScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.date_not_correctly),
+                    iconRes = R.drawable.is_warning_yellow_80dp,
+                    pageNumber = "96",
+                    timeAutoExitInMillis = 3000)
+            )
+        }
+    }
+
+    override fun openRemainsUnconfirmedBindingDocsPRCDialog(nextCallbackFunc: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.remains_unconfirmed_binding_docs_prc_dialog),
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(nextCallbackFunc),
+                    pageNumber = "93",
+                    rightButtonDecorationInfo = ButtonDecorationInfo.next))
+        }
+    }
+
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 }
 
@@ -789,7 +820,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openMainMenuScreen()
     fun openLoginScreen()
     fun openTaskListScreen()
-    fun openTaskListLoadingScreen(mode: TaskListLoadingMode, searchParams: TaskListSearchParams? = null)
+    fun openTaskListLoadingScreen(mode: TaskListLoadingMode, searchParams: TaskListSearchParams? = null, numberEO: String? = null)
     fun openFastDataLoadingScreen()
     fun openSelectionPersonnelNumberScreen()
     fun openAlertNotPermissions(message: String)
@@ -846,7 +877,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openAlertNotFoundTaskScreen(failure: Failure)
     fun openUnsavedDataDialog(yesCallbackFunc: () -> Unit)
     fun openEditingInvoiceScreen()
-    fun openInfoDocsSentPScreenrint()
+    fun openInfoDocsSentPrintScreen()
     fun openAlertGoodsNotInInvoiceScreen()
     fun openOrderQuantityEexceededDialog(noCallbackFunc: () -> Unit, yesCallbackFunc: () -> Unit)
     fun openMercuryListScreen(productDoc: DeliveryProductDocumentRevise)
@@ -875,4 +906,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openAlertNoIsSpecialGoodsScreen()
     fun openRecountStartPGELoadingScreen()
     fun openTransportMarriageScreen()
+    fun openNoTransportDefectDeclaredDialog(nextCallbackFunc: () -> Unit)
+    fun openDateNotCorrectlyScreen()
+    fun openRemainsUnconfirmedBindingDocsPRCDialog(nextCallbackFunc: () -> Unit)
 }

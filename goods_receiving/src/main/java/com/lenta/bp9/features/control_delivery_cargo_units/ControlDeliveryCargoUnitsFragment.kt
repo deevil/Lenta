@@ -47,7 +47,7 @@ class ControlDeliveryCargoUnitsFragment : CoreFragment<FragmentControlDeliveryCa
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
         topToolbarUiModel.title.value = vm.getTitle()
-        topToolbarUiModel.description.value = getString(R.string.control_delivery_cargo_units)
+        topToolbarUiModel.description.value = vm.getDescription()
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
@@ -63,6 +63,14 @@ class ControlDeliveryCargoUnitsFragment : CoreFragment<FragmentControlDeliveryCa
     }
 
     override fun getPagerItemView(container: ViewGroup, position: Int): View {
+        return if (vm.isTaskPSP) {
+            getPagerEO(container, position)
+        } else {
+            getPagerGE(container, position)
+        }
+    }
+
+    private fun getPagerGE(container: ViewGroup, position: Int): View {
         if (position == 0) {
             DataBindingUtil
                     .inflate<LayoutControlDeliveryCuBinding>(LayoutInflater.from(container.context),
@@ -151,6 +159,97 @@ class ControlDeliveryCargoUnitsFragment : CoreFragment<FragmentControlDeliveryCa
                     return layoutBinding.root
                 }
     }
+
+    private fun getPagerEO(container: ViewGroup, position: Int): View {
+        if (position == 0) {
+            DataBindingUtil
+                    .inflate<LayoutControlDeliveryEoBinding>(LayoutInflater.from(container.context),
+                            R.layout.layout_control_delivery_eo,
+                            container,
+                            false).let { layoutBinding ->
+
+                        layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
+                                layoutId = R.layout.item_tile_control_delivery_cu,
+                                itemId = BR.vm,
+                                realisation = object : DataBindingAdapter<ItemTileControlDeliveryCuBinding> {
+                                    override fun onCreate(binding: ItemTileControlDeliveryCuBinding) {
+                                    }
+
+                                    override fun onBind(binding: ItemTileControlDeliveryCuBinding, position: Int) {
+                                        notProcessedRecyclerViewKeyHandler?.let {
+                                            binding.root.isSelected = it.isSelected(position)
+                                        }
+                                    }
+
+                                },
+                                onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
+                                    notProcessedRecyclerViewKeyHandler?.let {
+                                        if (it.isSelected(position)) {
+                                            vm.onClickItemPosition(position)
+                                        } else {
+                                            it.selectPosition(position)
+                                        }
+                                    }
+
+                                }
+                        )
+
+                        layoutBinding.vm = vm
+                        layoutBinding.lifecycleOwner = viewLifecycleOwner
+                        notProcessedRecyclerViewKeyHandler = RecyclerViewKeyHandler(
+                                rv = layoutBinding.rv,
+                                items = vm.listNotProcessed,
+                                lifecycleOwner = layoutBinding.lifecycleOwner!!,
+                                initPosInfo = notProcessedRecyclerViewKeyHandler?.posInfo?.value
+                        )
+                        return layoutBinding.root
+                    }
+        }
+
+        DataBindingUtil
+                .inflate<LayoutControlDeliveryEoBinding>(LayoutInflater.from(container.context),
+                        R.layout.layout_control_delivery_eo,
+                        container,
+                        false).let { layoutBinding ->
+
+                    layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
+                            layoutId = R.layout.item_tile_control_delivery_cu,
+                            itemId = BR.vm,
+                            realisation = object : DataBindingAdapter<ItemTileControlDeliveryCuBinding> {
+                                override fun onCreate(binding: ItemTileControlDeliveryCuBinding) {
+                                }
+
+                                override fun onBind(binding: ItemTileControlDeliveryCuBinding, position: Int) {
+                                    processedRecyclerViewKeyHandler?.let {
+                                        binding.root.isSelected = it.isSelected(position)
+                                    }
+                                }
+
+                            },
+                            onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
+                                processedRecyclerViewKeyHandler?.let {
+                                    if (it.isSelected(position)) {
+                                        vm.onClickItemPosition(position)
+                                    } else {
+                                        it.selectPosition(position)
+                                    }
+                                }
+
+                            }
+                    )
+
+                    layoutBinding.vm = vm
+                    layoutBinding.lifecycleOwner = viewLifecycleOwner
+                    processedRecyclerViewKeyHandler = RecyclerViewKeyHandler(
+                            rv = layoutBinding.rv,
+                            items = vm.listProcessed,
+                            lifecycleOwner = layoutBinding.lifecycleOwner!!,
+                            initPosInfo = processedRecyclerViewKeyHandler?.posInfo?.value
+                    )
+                    return layoutBinding.root
+                }
+    }
+
 
     override fun getTextTitle(position: Int): String {
         return when (position) {

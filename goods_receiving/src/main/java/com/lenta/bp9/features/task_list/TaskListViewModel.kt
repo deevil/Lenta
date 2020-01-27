@@ -12,6 +12,7 @@ import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.bp9.repos.IRepoInMemoryHolder
 import com.lenta.bp9.requests.network.TaskListNetRequest
 import com.lenta.bp9.requests.network.TaskListParams
+import com.lenta.bp9.requests.network.TaskListSearchParams
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.platform.viewmodel.CoreViewModel
@@ -135,6 +136,20 @@ class TaskListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     }
 
     override fun onOkInSoftKeyboard(): Boolean {
+        if (filterSearch.value?.length!! >= 18) {
+            selectedPage.value = 1
+            screenNavigator.openTaskListLoadingScreen(TaskListLoadingMode.Receiving,
+                    TaskListSearchParams(taskNumber = filterSearch.value,
+                            supplierNumber = null,
+                            documentNumber = null,
+                            invoiceNumber = null,
+                            transportNumber = null,
+                            numberGE = null,
+                            numberEO = null
+                    ),
+                    numberEO = filterSearch.value
+            )
+        }
         return true
     }
 

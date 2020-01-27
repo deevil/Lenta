@@ -82,7 +82,7 @@ class FormedDocsViewModel : CoreViewModel() {
                 printingDocsNetRequest(params).either(::handleFailure) {
                     docsSelectionsHelper.clearPositions()
                     updateDocs()
-                    screenNavigator.openInfoDocsSentPScreenrint()
+                    screenNavigator.openInfoDocsSentPrintScreen()
                 }
             }
             screenNavigator.hideProgress()

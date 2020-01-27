@@ -54,13 +54,14 @@ class TransportConditionsReviseFragment : CoreFragment<FragmentTransportConditio
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
+        bottomToolbarUiModel.cleanAll()
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
-        if (vm.typeTask == TaskType.ReceptionDistributionCenter) {
+        if (vm.typeTask == TaskType.ReceptionDistributionCenter || vm.typeTask == TaskType.OwnProduction) {
             bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.breaking)
         } else {
             bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.refusal)
         }
-        if (vm.isTaskPRCStatusUnloading.value == true) {
+        if (vm.isTaskPRCorPSPStatusUnloading.value == true) {
             bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.next)
         } else {
             bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.save)
@@ -241,7 +242,7 @@ class TransportConditionsReviseFragment : CoreFragment<FragmentTransportConditio
 
     override fun onToolbarButtonClick(view: View) {
         when (view.id) {
-            R.id.b_2 -> if (vm.typeTask == TaskType.ReceptionDistributionCenter) vm.onClickBreaking() else vm.onClickReject()
+            R.id.b_2 -> if (vm.typeTask == TaskType.ReceptionDistributionCenter || vm.typeTask == TaskType.OwnProduction) vm.onClickBreaking() else vm.onClickReject()
             R.id.b_5 -> vm.onClickNext()
         }
     }

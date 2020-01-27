@@ -3,17 +3,21 @@ package com.lenta.bp9.features.control_delivery_cargo_units
 import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.lenta.bp9.R
 import com.lenta.bp9.features.loading.tasks.TaskCardMode
 import com.lenta.bp9.model.processing.ProcessCargoUnitsService
 import com.lenta.bp9.model.task.IReceivingTaskManager
 import com.lenta.bp9.model.task.TaskCargoUnitInfoRestData
+import com.lenta.bp9.model.task.TaskType
 import com.lenta.bp9.model.task.revise.ConditionViewType
 import com.lenta.bp9.model.task.revise.TransportConditionRestData
 import com.lenta.bp9.platform.navigation.IScreenNavigator
+import com.lenta.bp9.repos.IDataBaseRepo
 import com.lenta.bp9.requests.network.*
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.platform.viewmodel.CoreViewModel
+import com.lenta.shared.requests.combined.scan_info.pojo.QualityInfo
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.extentions.combineLatest
@@ -38,13 +42,19 @@ class ControlDeliveryCargoUnitsViewModel : CoreViewModel(), PageSelectionListene
     lateinit var context: Context
     @Inject
     lateinit var sessionInfo: ISessionInfo
+    @Inject
+    lateinit var dataBase: IDataBaseRepo
 
     val selectedPage = MutableLiveData(0)
+    private val statusInfo: MutableLiveData<List<QualityInfo>> = MutableLiveData()
     private val listProcessedHolder: MutableLiveData<List<ControlDeliveryCargoUnitItem>> = MutableLiveData()
     private val listNotProcessedHolder: MutableLiveData<List<ControlDeliveryCargoUnitItem>> = MutableLiveData()
     val cargoUnitNumber: MutableLiveData<String> = MutableLiveData("")
     val requestFocusToCargoUnit: MutableLiveData<Boolean> = MutableLiveData()
     private val searchCargoUnitNumber: MutableLiveData<String> = MutableLiveData("")
+    val isTaskPSP by lazy {
+        taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.OwnProduction
+    }
 
     val listProcessed by lazy {
         listProcessedHolder.combineLatest(cargoUnitNumber).map { pair ->
@@ -83,6 +93,7 @@ class ControlDeliveryCargoUnitsViewModel : CoreViewModel(), PageSelectionListene
             taskManager.getReceivingTask()?.getCargoUnits()?.let {
                 processCargoUnitsService.newProcessCargoUnitsService(it)
             }
+            statusInfo.value = dataBase.getAllStatusInfoForPRC()
             onResume()
         }
     }
@@ -94,6 +105,14 @@ class ControlDeliveryCargoUnitsViewModel : CoreViewModel(), PageSelectionListene
 
     fun getTitle(): String {
         return taskManager.getReceivingTask()?.taskHeader?.caption ?: ""
+    }
+
+    fun getDescription(): String {
+        return if (taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.OwnProduction) {
+            context.getString(R.string.control_delivery_eo)
+        } else {
+            context.getString(R.string.control_delivery_cargo_units)
+        }
     }
 
     fun onClickSave() {
@@ -151,7 +170,9 @@ class ControlDeliveryCargoUnitsViewModel : CoreViewModel(), PageSelectionListene
                     ControlDeliveryCargoUnitItem(
                             number = index + 1,
                             name = taskCargoUnitInfo.cargoUnitNumber,
-                            status = taskCargoUnitInfo.cargoUnitStatus
+                            status = statusInfo.value?.findLast {
+                                it.code == taskCargoUnitInfo.cargoUnitStatus
+                            }?.name ?: ""
                     )
                 }.reversed()
         )
@@ -168,11 +189,11 @@ class ControlDeliveryCargoUnitsViewModel : CoreViewModel(), PageSelectionListene
 
     fun onClickItemPosition(position: Int) {
         if (selectedPage.value == 0) {
-            taskManager.getReceivingTask()?.taskRepository?.getCargoUnits()?.findCargoUnits(listNotProcessed.value?.get(position)?.name ?: "")?.let {
+            processCargoUnitsService.findCargoUnit(listNotProcessed.value?.get(position)?.name ?: "")?.let {
                 screenNavigator.openCargoUnitCardScreen(it)
             }
         } else {
-            taskManager.getReceivingTask()?.taskRepository?.getCargoUnits()?.findCargoUnits(listProcessed.value?.get(position)?.name ?: "")?.let {
+            processCargoUnitsService.findCargoUnit(listProcessed.value?.get(position)?.name ?: "")?.let {
                 screenNavigator.openCargoUnitCardScreen(it)
             }
         }

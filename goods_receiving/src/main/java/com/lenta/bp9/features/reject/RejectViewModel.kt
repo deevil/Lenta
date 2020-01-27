@@ -7,12 +7,15 @@ import com.lenta.bp9.R
 import com.lenta.bp9.features.loading.tasks.TaskListLoadingMode
 import com.lenta.bp9.model.task.IReceivingTaskManager
 import com.lenta.bp9.platform.navigation.IScreenNavigator
+import com.lenta.bp9.repos.IDataBaseRepo
 import com.lenta.bp9.requests.network.RejectNetRequest
 import com.lenta.bp9.requests.network.RejectRequestParameters
 import com.lenta.bp9.requests.network.RejectRequestResult
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.platform.viewmodel.CoreViewModel
+import com.lenta.shared.requests.combined.scan_info.pojo.QualityInfo
+import com.lenta.shared.requests.combined.scan_info.pojo.ReasonRejectionInfo
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.getDeviceIp
 import com.lenta.shared.utilities.extentions.map
@@ -32,6 +35,8 @@ class RejectViewModel : CoreViewModel(), OnPositionClickListener {
     lateinit var sessionInfo: ISessionInfo
     @Inject
     lateinit var context: Context
+    @Inject
+    lateinit var dataBase: IDataBaseRepo
 
     val selectedPosition: MutableLiveData<Int> = MutableLiveData(0)
 
@@ -39,15 +44,25 @@ class RejectViewModel : CoreViewModel(), OnPositionClickListener {
         taskManager.getReceivingTask()?.taskHeader?.caption ?: ""
     }
 
-    val rejectReasons: List<String> = listOf("Другое", "Причина 1", "Причина 2", "Причина 3")
+    val failureReasons: MutableLiveData<List<String>> = MutableLiveData()
+    private val failureReasonsInfo: MutableLiveData<List<QualityInfo>> = MutableLiveData()
     val customComment: MutableLiveData<String> = MutableLiveData("")
 
     val customReasonEnabled: MutableLiveData<Boolean> = selectedPosition.map { it == 0 }
-    val buttonsEndbled: MutableLiveData<Boolean> = customReasonEnabled.combineLatest(customComment).map {
+    val buttonsEnabled: MutableLiveData<Boolean> = customReasonEnabled.combineLatest(customComment).map {
         !it?.second.isNullOrEmpty() || it?.first == false
     }
 
-    var currentRejectionType: RejectType? = null
+    private var currentRejectionType: RejectType? = null
+
+    init {
+        viewModelScope.launch {
+            failureReasonsInfo.value = dataBase.getFailureReasons()
+            failureReasons.value = failureReasonsInfo.value?.map {
+                it.name
+            }
+        }
+    }
 
     override fun onClickPosition(position: Int) {
         selectedPosition.value = position
@@ -62,17 +77,14 @@ class RejectViewModel : CoreViewModel(), OnPositionClickListener {
     }
 
     private fun getRejectString(): String {
-        selectedPosition.value?.let {
-            if (it == 0) {
-                return customComment.value ?: ""
-            } else {
-                return rejectReasons.get(it)
-            }
+        return if (failureReasonsInfo.value!![selectedPosition.value!!].code == "1") {
+            customComment.value ?: ""
+        } else {
+            failureReasonsInfo.value!![selectedPosition.value!!].name
         }
-        return ""
     }
 
-    fun rejectWithType(type: RejectType) {
+    private fun rejectWithType(type: RejectType) {
         currentRejectionType = type
         val params = RejectRequestParameters(
                 deviceIP = context.getDeviceIp(),
@@ -93,7 +105,7 @@ class RejectViewModel : CoreViewModel(), OnPositionClickListener {
         currentRejectionType = null
     }
 
-    fun goToTaskList() {
+    private fun goToTaskList() {
         screenNavigator.openMainMenuScreen()
         screenNavigator.openTaskListLoadingScreen(TaskListLoadingMode.Receiving)
     }
