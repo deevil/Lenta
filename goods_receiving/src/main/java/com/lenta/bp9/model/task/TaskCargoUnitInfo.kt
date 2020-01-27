@@ -17,7 +17,7 @@ data class TaskCargoUnitInfo(
         val isVet: Boolean,
         val isNoGisControl: Boolean,
         val isStamp: Boolean,
-        val quantityPositions: Int,
+        val quantityPositions: String,
         val isPack: Boolean,
         val stock: String
 ) {
@@ -37,7 +37,7 @@ data class TaskCargoUnitInfo(
                     isVet = restData.isVet.isNotEmpty(),
                     isNoGisControl = restData.isNoGisControl.isNotEmpty(),
                     isStamp = restData.isStamp.isNotEmpty(),
-                    quantityPositions = restData.quantityPositions.toInt(),
+                    quantityPositions = restData.quantityPositions,
                     isPack = restData.isPack.isNotEmpty(),
                     stock = restData.stock
             )
@@ -96,7 +96,7 @@ data class TaskCargoUnitInfoRestData(
                     isVet = if (data.isVet) "X" else "",
                     isNoGisControl = if (data.isNoGisControl) "X" else "",
                     isStamp = if (data.isStamp) "X" else "",
-                    quantityPositions = data.quantityPositions.toString(),
+                    quantityPositions = data.quantityPositions,
                     isPack = if (data.isPack) "X" else "",
                     stock = data.stock
             )

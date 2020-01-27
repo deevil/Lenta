@@ -66,7 +66,7 @@ data class TaskNewCargoUnitInfoRestData(
         @SerializedName("IS_MARK") //Индикатор: марки
         val isStamp: String,
         @SerializedName("QNT_POS") //Количество позиций (QNT_POS)
-        val quantityPositions: String,
+        val quantityPositions: String?,
         @SerializedName("IS_PACK") //товар для упаковки
         val isPack: String,
         @SerializedName("LGORT") //Склад
@@ -88,7 +88,7 @@ data class TaskNewCargoUnitInfoRestData(
                                 isVet = data.isVet.isNotEmpty(),
                                 isNoGisControl = data.isNoGisControl.isNotEmpty(),
                                 isStamp = data.isStamp.isNotEmpty(),
-                                quantityPositions = data.quantityPositions.toInt(),
+                                quantityPositions = data.quantityPositions ?: "",
                                 isPack = data.isPack.isNotEmpty(),
                                 stock = data.stock
                         )

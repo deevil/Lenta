@@ -143,16 +143,21 @@ class TaskReviseViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     fun onClickSave() {
-        if (taskManager.getReceivingTask()?.taskRepository?.getReviseDocuments()?.getProductDocuments()?.isNotEmpty() == true) {
-            if (isTaskPRCorPSP.value == true) {
-                screenNavigator.openRemainsUnconfirmedBindingDocsPRCDialog(
-                        nextCallbackFunc = {
-                            screenNavigator.openProductDocumentsReviseScreen()
-                        }
-                )
-            } else {
-                screenNavigator.openProductDocumentsReviseScreen()
-            }
+        val isObligatoryDocs: Boolean = docsToCheck.value?.findLast {
+            it.isObligatory
+        }?.isObligatory ?: false
+
+        if (isTaskPRCorPSP.value == true && isDocsForVerification == false && isObligatoryDocs) {
+            screenNavigator.openRemainsUnconfirmedBindingDocsPRCDialog(
+                    nextCallbackFunc = {
+                        screenNavigator.openFinishReviseLoadingScreen()
+                    }
+            )
+            return
+        }
+
+        if (isDocsForVerification == true) {
+            screenNavigator.openProductDocumentsReviseScreen()
         } else {
             screenNavigator.openFinishReviseLoadingScreen()
         }

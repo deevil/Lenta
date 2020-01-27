@@ -54,6 +54,7 @@ class TransportConditionsReviseFragment : CoreFragment<FragmentTransportConditio
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
+        bottomToolbarUiModel.cleanAll()
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
         if (vm.typeTask == TaskType.ReceptionDistributionCenter || vm.typeTask == TaskType.OwnProduction) {
             bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.breaking)

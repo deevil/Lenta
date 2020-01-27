@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp9.features.task_card.TaskCardViewModel
 import com.lenta.bp9.model.task.IReceivingTaskManager
+import com.lenta.bp9.model.task.TaskType
 import com.lenta.bp9.model.task.revise.ProductDocumentType
 import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.shared.account.ISessionInfo
@@ -35,6 +36,10 @@ class ProductDocumentsReviseViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     val selectedPage = MutableLiveData(0)
+
+    val typeTask: TaskType by lazy {
+        taskManager.getReceivingTask()?.taskHeader?.taskType ?: TaskType.None
+    }
 
     val taskCaption: String by lazy {
         taskManager.getReceivingTask()?.taskHeader?.caption ?: ""

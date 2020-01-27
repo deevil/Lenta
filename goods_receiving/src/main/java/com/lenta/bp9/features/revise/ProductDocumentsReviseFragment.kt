@@ -16,6 +16,7 @@ import android.widget.CheckBox
 import androidx.databinding.DataBindingUtil
 import com.lenta.bp9.BR
 import com.lenta.bp9.databinding.*
+import com.lenta.bp9.model.task.TaskType
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.utilities.databinding.DataBindingAdapter
@@ -47,8 +48,11 @@ class ProductDocumentsReviseFragment : CoreFragment<FragmentProductDocumentsRevi
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
+        bottomToolbarUiModel.cleanAll()
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
-        bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.refusal)
+        if (vm.typeTask != TaskType.ReceptionDistributionCenter && vm.typeTask != TaskType.OwnProduction) {
+            bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.refusal)
+        }
         bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.sort)
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.save)
         connectLiveData(vm.sortEnabled, bottomToolbarUiModel.uiModelButton4.enabled)
@@ -63,7 +67,7 @@ class ProductDocumentsReviseFragment : CoreFragment<FragmentProductDocumentsRevi
         }
     }
 
-    fun prepareNotificationsView(container: ViewGroup): View {
+    private fun prepareNotificationsView(container: ViewGroup): View {
         DataBindingUtil
                 .inflate<LayoutProductsReviseInformationBinding>(LayoutInflater.from(container.context),
                         R.layout.layout_products_revise_information,
@@ -95,7 +99,7 @@ class ProductDocumentsReviseFragment : CoreFragment<FragmentProductDocumentsRevi
                 }
     }
 
-    fun prepareCheckedView(container: ViewGroup): View {
+    private fun prepareCheckedView(container: ViewGroup): View {
         DataBindingUtil
                 .inflate<LayoutProductsCheckedDocumentsBinding>(LayoutInflater.from(container.context),
                         R.layout.layout_products_checked_documents,
@@ -144,7 +148,7 @@ class ProductDocumentsReviseFragment : CoreFragment<FragmentProductDocumentsRevi
                 }
     }
 
-    fun prepareToCheckView(container: ViewGroup): View {
+    private fun prepareToCheckView(container: ViewGroup): View {
         DataBindingUtil
                 .inflate<LayoutProductsDocumentsBinding>(LayoutInflater.from(container.context),
                         R.layout.layout_products_documents,
