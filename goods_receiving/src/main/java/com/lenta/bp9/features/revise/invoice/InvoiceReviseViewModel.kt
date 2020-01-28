@@ -5,6 +5,7 @@ import android.util.Log
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.lenta.bp9.R
 import com.lenta.bp9.model.task.IReceivingTaskManager
 import com.lenta.bp9.model.task.revise.DocumentType
 import com.lenta.bp9.platform.navigation.IScreenNavigator
@@ -66,6 +67,14 @@ class InvoiceReviseViewModel : CoreViewModel(), PageSelectionListener {
 
     val quantityTotal: String by lazy {
         taskManager.getReceivingTask()?.taskRepository?.getReviseDocuments()?.getInvoiceInfo()?.quantityAll.toStringFormatted()
+    }
+
+    val typeTTN: String by lazy {
+        if (taskManager.getReceivingTask()?.taskRepository?.getReviseDocuments()?.getInvoiceInfo()?.isEDO == false) {
+            context.getString(R.string.type_TTN_paper)
+        } else {
+            context.getString(R.string.type_TTN_electronic)
+        }
     }
 
     val notes: MutableLiveData<List<InvoiceNoteVM>> = MutableLiveData()

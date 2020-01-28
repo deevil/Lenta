@@ -34,7 +34,8 @@
     <string name="notifications">Уведомления</string>
     <string name="notification">Уведомление</string>
     <string name="indicator">Индикатор</string>
-    <string name="numberTN_TTN">Номер ТН/ТТН</string>
+    <string name="numberTN_TTN">Номер ТН\\ТТН</string>
+    <string name="dateTN_TTN">Дата ТН\\ТТН</string>
     <string name="invoice_number">Номер накладной</string>
     <string name="invoice_date">Дата накладной</string>
     <string name="arrival_plan">План поставки</string>
@@ -203,4 +204,7 @@
     <string name="no_transport_defect_declared">Транспортный брак не был заявлен, зарегистрировать или вернуться к заявлению брака?</string>
     <string name="date_not_correctly">Время и дата установлено не корректно</string>
     <string name="remains_unconfirmed_binding_docs_prc_dialog">Остались неподтвержденными обязательные документы, статус задания ПРЦ будет переключен в \"Запрос документов\"</string>
+    <string name="typeTN_TTN">Тип ТН\\ТТН</string>
+    <string name="type_TTN_paper">Бумажная</string>
+    <string name="type_TTN_electronic">Электронная</string>
 </resources>
