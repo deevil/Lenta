@@ -63,22 +63,22 @@ class PackListViewModel : CoreViewModel() {
     }
 
     fun onClickComplete() {
-        viewModelScope.launch {
-            navigator.showProgressLoadingData()
-            defrostingFinishRequest(getParams()).either({ failure ->
-                navigator.openAlertScreen(failure)
-            }) {
-                if (raw.value?.isWasDef == true) {
+        if (raw.value?.isWasDef == true) {
+            viewModelScope.launch {
+                navigator.showProgressLoadingData()
+                defrostingFinishRequest(getParams()).either({ failure ->
+                    navigator.openAlertScreen(failure)
+                }) {
                     navigator.showDefrostingPhaseIsCompleted {
                         navigator.goBack()
                         navigator.goBack()
                     }
-                } else {
-                    navigator.goBack()
-                    navigator.goBack()
                 }
+                navigator.hideProgress()
             }
-            navigator.hideProgress()
+        } else {
+            navigator.goBack()
+            navigator.goBack()
         }
     }
 
