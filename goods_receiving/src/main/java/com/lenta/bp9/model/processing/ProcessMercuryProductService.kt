@@ -110,6 +110,29 @@ class ProcessMercuryProductService
         }
     }
 
+    fun delDiscrepancy(typeDiscrepancies: String) {
+        val delProductDiscrepancies = ArrayList<TaskProductDiscrepancies>()
+        for (i in newProductDiscrepancies.indices) {
+            if (typeDiscrepancies == newProductDiscrepancies[i].typeDiscrepancies) {
+                delProductDiscrepancies.add(newProductDiscrepancies[i])
+            }
+        }
+        if (delProductDiscrepancies.isNotEmpty()) {
+            newProductDiscrepancies.removeAll(delProductDiscrepancies)
+        }
+
+
+        val delVetProductDiscrepancies = ArrayList<TaskMercuryDiscrepancies>()
+        for (i in newVetProductDiscrepancies.indices) {
+            if (typeDiscrepancies == newVetProductDiscrepancies[i].typeDiscrepancies) {
+                delVetProductDiscrepancies.add(newVetProductDiscrepancies[i])
+            }
+        }
+        if (delVetProductDiscrepancies.isNotEmpty()) {
+            newVetProductDiscrepancies.removeAll(delVetProductDiscrepancies)
+        }
+    }
+
     fun save(){
         if (newProductDiscrepancies.isNotEmpty()) {
             newProductDiscrepancies.map {
@@ -239,7 +262,7 @@ class ProcessMercuryProductService
         }
     }
 
-    fun getNewCountRefusalOfReasonRejection(reasonRejectionCode: String) : Double {
+    private fun getNewCountRefusalOfReasonRejection(reasonRejectionCode: String) : Double {
         var countRefusal = 0.0
         newProductDiscrepancies.filter {
             it.typeDiscrepancies == reasonRejectionCode

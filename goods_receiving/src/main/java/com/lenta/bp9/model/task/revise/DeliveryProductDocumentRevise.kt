@@ -92,7 +92,8 @@ data class DeliveryProductDocumentReviseRestData(
 
 enum class ProductDocumentType(val documentTypeString: String) {
     None(""),
-    Simple("0"),
+    Info("0"), //информация
+    Simple("1"),
     AlcoRus("3"),
     AlcoImport("4"),
     Mercury("5");
@@ -100,7 +101,8 @@ enum class ProductDocumentType(val documentTypeString: String) {
     companion object {
         fun from(documentTypeString: String): ProductDocumentType {
             return when (documentTypeString) {
-                "0" -> Simple
+                "0" -> Info
+                "1" -> Simple
                 "3" -> AlcoRus
                 "4" -> AlcoImport
                 "5" -> Mercury

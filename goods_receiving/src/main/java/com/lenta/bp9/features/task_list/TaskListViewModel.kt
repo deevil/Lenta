@@ -48,7 +48,7 @@ class TaskListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
     val tasksToProcess by lazy {
         repoInMemoryHolder.taskList.combineLatest(filterSearch).map { pair ->
-            pair!!.first.tasks.filter { !it.isDelayed && it.matchesFilter(pair.second) }.map {
+            pair!!.first.tasks.filter { !it.isDelayed && !it.isPaused && it.matchesFilter(pair.second) }.map {
                 TaskItemVm(taskPosition = it.position,
                         taskNumber = it.taskNumber,
                         topText = it.topText,
@@ -78,7 +78,7 @@ class TaskListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
     val tasksPostponed by lazy {
         repoInMemoryHolder.taskList.combineLatest(filterSearch).map { pair ->
-            pair!!.first.tasks.filter { it.isDelayed && it.matchesFilter(pair.second) }.map {
+            pair!!.first.tasks.filter { (it.isDelayed || it.isPaused) && it.matchesFilter(pair.second) }.map {
                 TaskItemVm(taskPosition = it.position,
                         taskNumber = it.taskNumber,
                         topText = it.topText,
