@@ -61,6 +61,10 @@ class ProductDocumentsReviseViewModel : CoreViewModel(), PageSelectionListener {
 
     var currentSortMode: SortMode = SortMode.DocumentName
 
+    private val isTaskPRCorPSP by lazy {
+        MutableLiveData(taskManager.getReceivingTask()!!.taskHeader.taskType == TaskType.ReceptionDistributionCenter || taskManager.getReceivingTask()!!.taskHeader.taskType == TaskType.OwnProduction)
+    }
+
     override fun onPageSelected(position: Int) {
         selectedPage.value = position
     }
@@ -194,6 +198,19 @@ class ProductDocumentsReviseViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     fun onClickSave() {
+        val isUncheckedObligatoryDeliveryDocuments = taskManager.getReceivingTask()?.getUncheckedDeliveryDocuments()?.findLast {
+            it.isObligatory
+        }?.isObligatory ?: false
+
+        if (isTaskPRCorPSP.value == true && isUncheckedObligatoryDeliveryDocuments) {
+            screenNavigator.openRemainsUnconfirmedBindingDocsPRCDialog(
+                    nextCallbackFunc = {
+                        saveData()
+                    }
+            )
+            return
+        }
+
         if (docsToCheck.value?.findLast { it.isObligatory } != null) {
             screenNavigator.openConfirmationProcessAsDiscrepancy {
                 saveData()
