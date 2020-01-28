@@ -160,6 +160,10 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
         taskManager.getReceivingTask()?.taskDescription?.isRecount ?: false
     }
 
+    val isVet by lazy {
+        taskManager.getReceivingTask()?.taskDescription?.isVet ?: false
+    }
+
     val changeCurrentDateTimePossible by lazy {
         val status = taskManager.getReceivingTask()?.taskDescription?.currentStatus
         if ((taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.ReceptionDistributionCenter || taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.OwnProduction) &&

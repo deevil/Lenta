@@ -33,6 +33,7 @@ data class TaskDescription(val currentStatus: TaskStatus,   //Код текущ�
                       val isRecount: Boolean,          //Индикатор: Пересчетная ГЕ (IS_COUNT)
                       val isOwnTransport: Boolean,     //Индикатор: Собственный транспорт (IS_OWN)
                       val isEDO: Boolean,               //Индикатор ЭДО
+                      val isVet: Boolean,              //Индикатор Меркурий
                       val quantityOutgoingFillings: Int //Количество исходящих пломб (задания ПРЦ, EV_NUM_SEALS из ZMP_UTZ_GRZ_21_V001 и ZMP_UTZ_GRZ_28_V001)
 ) {
 
@@ -62,6 +63,7 @@ data class TaskDescription(val currentStatus: TaskStatus,   //Код текущ�
                     isRecount = restData.isRecount.isNotEmpty(),
                     isOwnTransport = restData.isOwnTransport.isNotEmpty(),
                     isEDO = restData.isEDO.isNotEmpty(),
+                    isVet = restData.isVet.isNotEmpty(),
                     nextStatusDate = "",
                     nextStatusTime = "",
                     quantityOutgoingFillings = 0
@@ -118,7 +120,9 @@ data class TaskDescriptionRestInfo(
         @SerializedName("IS_OWN")
         val isOwnTransport: String,
         @SerializedName("IS_EDO")
-        val isEDO: String
+        val isEDO: String,
+        @SerializedName("IS_VET")
+        val isVet: String
 ) {
 }
 
