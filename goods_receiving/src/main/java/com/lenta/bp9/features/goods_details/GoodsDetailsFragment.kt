@@ -6,7 +6,7 @@ import com.lenta.bp9.BR
 import com.lenta.bp9.R
 import com.lenta.bp9.databinding.FragmentGoodsDetailsBinding
 import com.lenta.bp9.databinding.ItemTileGoodsDetailsBinding
-import com.lenta.bp9.databinding.ItemTileGoodsDetailsPgeBinding
+import com.lenta.bp9.databinding.ItemTileGoodsDetailsDelBinding
 import com.lenta.bp9.model.task.TaskBatchInfo
 import com.lenta.bp9.model.task.TaskProductInfo
 import com.lenta.bp9.platform.extentions.getAppComponent
@@ -59,15 +59,16 @@ class GoodsDetailsFragment : CoreFragment<FragmentGoodsDetailsBinding, GoodsDeta
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
+        bottomToolbarUiModel.cleanAll()
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
-        if (vm.isPGE.value == true) {
+        if (vm.isTaskPGE.value == true || vm.isVetProduct.value == true) {
             bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.delete)
             connectLiveData(vm.enabledDelBtn, bottomToolbarUiModel.uiModelButton3.enabled)
         }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        if (vm.isPGE.value == true) {
+        if (vm.isTaskPGE.value == true || vm.isVetProduct.value == true) {
             initRvConfigPGE()
         } else {
             initRvConfig()
@@ -98,22 +99,22 @@ class GoodsDetailsFragment : CoreFragment<FragmentGoodsDetailsBinding, GoodsDeta
         binding?.let { layoutBinding ->
             val onClickSelectionListener = View.OnClickListener {
                 (it!!.tag as Int).let { position ->
-                    vm.pgeSelectionsHelper.revert(position = position)
+                    vm.categoriesSelectionsHelper.revert(position = position)
                     layoutBinding.rv.adapter?.notifyItemChanged(position)
                 }
             }
 
             layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
-                    layoutId = R.layout.item_tile_goods_details_pge,
+                    layoutId = R.layout.item_tile_goods_details_del,
                     itemId = BR.vm,
-                    realisation = object : DataBindingAdapter<ItemTileGoodsDetailsPgeBinding> {
-                        override fun onCreate(binding: ItemTileGoodsDetailsPgeBinding) {
+                    realisation = object : DataBindingAdapter<ItemTileGoodsDetailsDelBinding> {
+                        override fun onCreate(binding: ItemTileGoodsDetailsDelBinding) {
                         }
 
-                        override fun onBind(binding: ItemTileGoodsDetailsPgeBinding, position: Int) {
+                        override fun onBind(binding: ItemTileGoodsDetailsDelBinding, position: Int) {
                             binding.tvCounter.tag = position
                             binding.tvCounter.setOnClickListener(onClickSelectionListener)
-                            binding.selectedForDelete = vm.pgeSelectionsHelper.isSelected(position)
+                            binding.selectedForDelete = vm.categoriesSelectionsHelper.isSelected(position)
                         }
 
                     }

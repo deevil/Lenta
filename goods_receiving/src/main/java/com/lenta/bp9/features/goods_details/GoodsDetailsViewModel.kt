@@ -42,12 +42,15 @@ class GoodsDetailsViewModel : CoreViewModel() {
     val batchInfo: MutableLiveData<TaskBatchInfo> = MutableLiveData()
     val goodsDetails: MutableLiveData<List<GoodsDetailsCategoriesItem>> = MutableLiveData()
     private val reasonRejectionInfo: MutableLiveData<List<ReasonRejectionInfo>> = MutableLiveData()
-    val isPGE: MutableLiveData<Boolean> by lazy {
+    val isTaskPGE: MutableLiveData<Boolean> by lazy {
         MutableLiveData(repoInMemoryHolder.taskList.value?.taskListLoadingMode == TaskListLoadingMode.PGE)
     }
-    val pgeSelectionsHelper = SelectionItemsHelper()
-    val enabledDelBtn: MutableLiveData<Boolean> = pgeSelectionsHelper.selectedPositions.map {
-        !pgeSelectionsHelper.selectedPositions.value.isNullOrEmpty()
+    val isVetProduct: MutableLiveData<Boolean> by lazy {
+        MutableLiveData(productInfo.value?.isVet ?: false)
+    }
+    val categoriesSelectionsHelper = SelectionItemsHelper()
+    val enabledDelBtn: MutableLiveData<Boolean> = categoriesSelectionsHelper.selectedPositions.map {
+        !categoriesSelectionsHelper.selectedPositions.value.isNullOrEmpty()
     }
 
     init {
@@ -76,7 +79,7 @@ class GoodsDetailsViewModel : CoreViewModel() {
     }
 
     private fun updateProduct() {
-        if (productInfo.value!!.isVet && !productInfo.value!!.isNotEdit) {
+        if (isVetProduct.value!! && !productInfo.value!!.isNotEdit) {
             goodsDetails.postValue(
                     processMercuryProductService.getGoodsDetails()?.mapIndexed { index, discrepancy ->
                         val isNormDiscrepancies = when (repoInMemoryHolder.taskList.value?.taskListLoadingMode) {
@@ -140,12 +143,16 @@ class GoodsDetailsViewModel : CoreViewModel() {
 
     fun onClickDelete() {
         if (productInfo.value != null && !productInfo.value!!.isNotEdit) {
-            pgeSelectionsHelper.selectedPositions.value?.map { position ->
+            categoriesSelectionsHelper.selectedPositions.value?.map { position ->
                 taskManager
                         .getReceivingTask()
                         ?.taskRepository
                         ?.getProductsDiscrepancies()
                         ?.deleteProductDiscrepancy(goodsDetails.value?.get(position)!!.materialNumber, goodsDetails.value?.get(position)!!.typeDiscrepancies)
+
+                if (isVetProduct.value!!) {
+                    processMercuryProductService.delDiscrepancy(goodsDetails.value?.get(position)!!.typeDiscrepancies)
+                }
             }
             updateProduct()
         }
