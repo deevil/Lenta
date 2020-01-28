@@ -25,7 +25,9 @@ class LoadingFinishReviseFragment : CoreLoadingFragment() {
     }
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
-        topToolbarUiModel.description.value = getString(R.string.checking_to_checked)
+        (vm as? LoadingFinishReviseViewModel)?.let {
+            topToolbarUiModel.description.value = it.taskDescription
+        }
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {

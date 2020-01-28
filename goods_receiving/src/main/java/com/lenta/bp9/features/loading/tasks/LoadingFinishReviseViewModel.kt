@@ -40,6 +40,9 @@ class LoadingFinishReviseViewModel : CoreLoadingViewModel() {
     override val progress: MutableLiveData<Boolean> = MutableLiveData(true)
     override val speedKbInSec: MutableLiveData<Int> = MutableLiveData()
     override val sizeInMb: MutableLiveData<Float> = MutableLiveData()
+    val taskDescription: String by lazy {
+        "\"" + (taskManager.getReceivingTask()?.taskDescription?.currentStatus?.stringValue() ?: "") + "\" -> \"" + taskManager.getReceivingTask()?.taskDescription?.nextStatusText + "\""
+    }
 
     init {
         viewModelScope.launch {
