@@ -45,7 +45,7 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
     val tvDeliveryCaption: String by lazy {
         when (taskManager.getReceivingTask()?.taskHeader?.taskType) {
             TaskType.DirectSupplier -> context.getString(R.string.incoming_delivery)
-            TaskType.ReceptionDistributionCenter, TaskType.RecalculationCargoUnit -> context.getString(R.string.transportation)
+            TaskType.ReceptionDistributionCenter, TaskType.OwnProduction, TaskType.RecalculationCargoUnit -> context.getString(R.string.transportation)
             else -> context.getString(R.string.incoming_delivery)
         }
     }
@@ -54,6 +54,7 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
         when (taskManager.getReceivingTask()?.taskHeader?.taskType) {
             TaskType.DirectSupplier, TaskType.RecalculationCargoUnit -> context.getString(R.string.count_SKU)
             TaskType.ReceptionDistributionCenter -> context.getString(R.string.count_GE)
+            TaskType.OwnProduction -> context.getString(R.string.count_EO)
             else -> context.getString(R.string.count_SKU)
         }
     }
@@ -88,7 +89,7 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
 
     val visibilityBtn by lazy {
         MutableLiveData(taskManager.getReceivingTask()?.taskDescription?.currentStatus.let {
-            it == TaskStatus.Checked || it == TaskStatus.Recounted || (it == TaskStatus.Unloaded && (taskType == TaskType.RecalculationCargoUnit || taskType == TaskType.ReceptionDistributionCenter) )
+            it == TaskStatus.Checked || it == TaskStatus.Recounted || (it == TaskStatus.Unloaded && (taskType == TaskType.RecalculationCargoUnit || taskType == TaskType.ReceptionDistributionCenter || taskType == TaskType.OwnProduction) )
         })
     }
 
@@ -159,9 +160,18 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
         taskManager.getReceivingTask()?.taskDescription?.isRecount ?: false
     }
 
+    val isVet by lazy {
+        taskManager.getReceivingTask()?.taskDescription?.isVet ?: false
+    }
+
     val changeCurrentDateTimePossible by lazy {
         val status = taskManager.getReceivingTask()?.taskDescription?.currentStatus
-        status == TaskStatus.Arrived
+        if ((taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.ReceptionDistributionCenter || taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.OwnProduction) &&
+                status == TaskStatus.Arrived) {
+            false
+        } else {
+            status == TaskStatus.Arrived
+        }
     }
 
     val changeNextDateTimePossible by lazy {
@@ -209,15 +219,15 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     fun onClickSecondButton() {
-        when (taskType) {
-            TaskType.RecalculationCargoUnit -> screenNavigator.openSkipRecountScreen()
-            TaskType.ReceptionDistributionCenter -> screenNavigator.openTransportMarriageScreen()
-            else -> {
-                when (currentStatus.value) {
-                    TaskStatus.Checked -> screenNavigator.openStartReviseLoadingScreen()
-                    TaskStatus.Recounted -> screenNavigator.openRecountStartLoadingScreen()
+        when (currentStatus.value) {
+            TaskStatus.Unloaded -> {
+                when (taskType) {
+                    TaskType.RecalculationCargoUnit -> screenNavigator.openSkipRecountScreen()
+                    TaskType.ReceptionDistributionCenter, TaskType.OwnProduction -> screenNavigator.openTransportMarriageScreen()
                 }
             }
+            TaskStatus.Checked -> screenNavigator.openStartReviseLoadingScreen()
+            TaskStatus.Recounted -> screenNavigator.openRecountStartLoadingScreen()
         }
     }
 
@@ -249,7 +259,7 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
         when (taskManager.getReceivingTask()?.taskDescription?.currentStatus) {
             TaskStatus.Ordered, TaskStatus.Traveling, TaskStatus.TemporaryRejected -> screenNavigator.openRegisterArrivalLoadingScreen()
             TaskStatus.Arrived -> {
-                if (taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.ReceptionDistributionCenter) {
+                if (taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.ReceptionDistributionCenter || taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.OwnProduction) {
                     screenNavigator.openUnloadingStartRDSLoadingScreen()
                 } else {
                     screenNavigator.openStartReviseLoadingScreen()
@@ -257,8 +267,12 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
             }
             TaskStatus.Checked -> screenNavigator.openStartConditionsReviseLoadingScreen()
             TaskStatus.Unloaded -> {
-                if (taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.ReceptionDistributionCenter) {
-                    screenNavigator.openInputOutgoingFillingsScreen()
+                if (taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.ReceptionDistributionCenter || taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.OwnProduction) {
+                    screenNavigator.openNoTransportDefectDeclaredDialog(
+                            nextCallbackFunc = {
+                                screenNavigator.openInputOutgoingFillingsScreen()
+                            }
+                    )
                 } else {
                     screenNavigator.openRecountStartLoadingScreen()
                 }

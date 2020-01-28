@@ -37,8 +37,6 @@ class ChangeDateTimeFragment : CoreFragment<FragmentChangeDateTimeBinding, Chang
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.apply)
-
-        connectLiveData(vm.enabledApplyButton, bottomToolbarUiModel.uiModelButton5.enabled)
     }
 
     override fun onResume() {

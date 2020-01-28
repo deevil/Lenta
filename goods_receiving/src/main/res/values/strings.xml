@@ -27,14 +27,15 @@
     <string name="unlock_confirmation">Задание заблокировано этим же логином на ТСД. Разблокировать и начать обработку?</string>
     <string name="view_confirmation">Задание заблокировано под другим логином на ТСД. Перейти к просмотру этого задания?</string>
     <string name="unsaved_data_confirmation">Несохранённые данные будут утеряны, всё равно продолжить?</string>
-    <string name="process_as_discrepancy_confirmation">Остались неподтвержденными обязательные документы по товарам. Оформить все эти товары как расхождение "Несоответствие документов"?</string>
+    <string name="process_as_discrepancy_confirmation">Остались неподтвержденными обязательные документы по товарам. Оформить все эти товары как расхождение \"Несоответствие документов\"?</string>
     <string name="task_card">Карточка задания</string>
     <string name="status">Статус</string>
     <string name="delivery">Поставка</string>
     <string name="notifications">Уведомления</string>
     <string name="notification">Уведомление</string>
     <string name="indicator">Индикатор</string>
-    <string name="numberTN_TTN">Номер ТН/ТТН</string>
+    <string name="numberTN_TTN">Номер ТН\\ТТН</string>
+    <string name="dateTN_TTN">Дата ТН\\ТТН</string>
     <string name="invoice_number">Номер накладной</string>
     <string name="invoice_date">Дата накладной</string>
     <string name="arrival_plan">План поставки</string>
@@ -42,6 +43,7 @@
     <string name="incoming_delivery">Входящая поставка</string>
     <string name="count_SKU">Количество SKU</string>
     <string name="count_GE">Количество ГЕ</string>
+    <string name="count_EO">Количество ЕО</string>
     <string name="current_status">Текущий статус</string>
     <string name="new_status">Новый статус</string>
     <string name="current_status_datetime">Дата и время\nТекущего статуса</string>
@@ -179,11 +181,14 @@
     <string name="seal_damage">Повреждение пломбы</string>
     <string name="dialog_seal_damage">Подтвердите повреждение пломбы. Статус задания будет изменен на \"Взлом\". Для всех ГЕ потребуется пересчёт</string>
     <string name="control_delivery_cargo_units">Контроль доставки ГЕ</string>
+    <string name="control_delivery_eo">Контроль доставки ЕО</string>
     <string name="number_cargo_units">Номер ГЕ</string>
+    <string name="number_eo">Номер ЕО</string>
     <string name="enter_cargo_unit">Введите ГЕ/ЕО</string>
     <string name="recount">Пересчёт</string>
     <string name="type_pallet">Вид поддона</string>
     <string name="reduction_cargo_unit">ГЕ</string>
+    <string name="reduction_eo">ЕО</string>
     <string name="alert_seal_damage">Завершите пересчёт всех ГЕ из вскрытой транспортировки. Все расхождения будут рассматриваться как транспортный брак. Водитель ТЭК должен подтвердить расхождения.</string>
     <string name="dialog_new_cargo_unit_another_transportation">ГЕ-%1$s предназначена для ТК и в данной транспортировке не числится. Добавить внеплановую ГЕ как излишек?</string>
     <string name="dialog_new_cargo_unit_current_transportation">ГЕ-%1$s предназначена для ТК, находящийся далее по маршруту следования машины. Добавить внеплановую ГЕ как излишек?</string>
@@ -196,4 +201,10 @@
     <string name="list_cargo_units">Список ГЕ</string>
     <string name="act">Акт</string>
     <string name="transport_marriage">Транспортный брак</string>
+    <string name="no_transport_defect_declared">Транспортный брак не был заявлен, зарегистрировать или вернуться к заявлению брака?</string>
+    <string name="date_not_correctly">Время и дата установлено не корректно</string>
+    <string name="remains_unconfirmed_binding_docs_prc_dialog">Остались неподтвержденными обязательные документы, статус задания ПРЦ будет переключен в \"Запрос документов\"</string>
+    <string name="typeTN_TTN">Тип ТН\\ТТН</string>
+    <string name="type_TTN_paper">Бумажная</string>
+    <string name="type_TTN_electronic">Электронная</string>
 </resources>

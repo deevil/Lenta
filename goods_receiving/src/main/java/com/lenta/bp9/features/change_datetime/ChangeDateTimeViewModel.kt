@@ -7,13 +7,16 @@ import androidx.lifecycle.viewModelScope
 import com.lenta.bp9.R
 import com.lenta.bp9.model.task.IReceivingTaskManager
 import com.lenta.bp9.model.task.TaskStatus
+import com.lenta.bp9.model.task.TaskType
 import com.lenta.bp9.platform.navigation.IScreenNavigator
+import com.lenta.bp9.repos.IDataBaseRepo
 import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.platform.time.ITimeMonitor
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.date_time.DateTimeUtil
 import com.lenta.shared.utilities.extentions.combineLatest
+import com.lenta.shared.utilities.extentions.getFormattedDate
 import com.lenta.shared.utilities.extentions.map
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
@@ -30,8 +33,11 @@ class ChangeDateTimeViewModel : CoreViewModel() {
     lateinit var screenNavigator: IScreenNavigator
     @Inject
     lateinit var timeMonitor: ITimeMonitor
+    @Inject
+    lateinit var dataBase: IDataBaseRepo
 
     val mode: MutableLiveData<ChangeDateTimeMode> = MutableLiveData()
+    private val permittedNumberDays: MutableLiveData<Int> = MutableLiveData()
 
     val taskCaption: String by lazy {
         taskManager.getReceivingTask()?.taskHeader?.caption ?: ""
@@ -72,17 +78,7 @@ class ChangeDateTimeViewModel : CoreViewModel() {
     val years: MutableLiveData<String> = MutableLiveData("")
     val hours: MutableLiveData<String> = MutableLiveData("")
     val minutes: MutableLiveData<String> = MutableLiveData("")
-    val seconds: MutableLiveData<String> = MutableLiveData("")
-
-    val enabledApplyButton: MutableLiveData<Boolean> = days.
-            combineLatest(months).
-            combineLatest(years).
-            combineLatest(hours).
-            combineLatest(minutes).map {
-        val dateString = days.value + "." + months.value + "." + years.value
-        val timeString = hours.value + ":" + minutes.value
-        isCorrectDateTime("$dateString $timeString")
-    }
+    private val seconds: MutableLiveData<String> = MutableLiveData("")
 
     fun onResume() {
         viewModelScope.launch {
@@ -93,6 +89,7 @@ class ChangeDateTimeViewModel : CoreViewModel() {
             hours.value = DateTimeUtil.formatDate(milliseconds, Constants.TIME_FORMAT_HH)
             minutes.value = DateTimeUtil.formatDate(milliseconds, Constants.TIME_FORMAT_mm)
             seconds.value = DateTimeUtil.formatDate(milliseconds, Constants.TIME_FORMAT_mmss).substring(3)
+            permittedNumberDays.value = dataBase.getParamPermittedNumberDays()?.toInt()
         }
     }
 
@@ -100,6 +97,12 @@ class ChangeDateTimeViewModel : CoreViewModel() {
     fun onClickApply() {
         var dateString = days.value + "." + months.value + "." + years.value
         var timeString = hours.value + ":" + minutes.value + ":" + seconds.value
+
+        if (!isCorrectDateTime("$dateString $timeString")) {
+            screenNavigator.openDateNotCorrectlyScreen()
+            return
+        }
+
         val formatter = SimpleDateFormat("dd.MM.yy HH:mm:ss")
         val date = formatter.parse("$dateString $timeString")
         dateString = DateTimeUtil.formatDate(date, Constants.DATE_FORMAT_yyyy_mm_dd)
@@ -118,9 +121,18 @@ class ChangeDateTimeViewModel : CoreViewModel() {
     @SuppressLint("SimpleDateFormat")
     private fun isCorrectDateTime(checkDateTime: String?): Boolean {
         return try {
-            val formatter = SimpleDateFormat("dd.MM.yy HH:mm")
-            val date = formatter.parse(checkDateTime)
-            !(checkDateTime != formatter.format(date) || date!! > timeMonitor.getServerDate())
+            val minNextStatusDate = Calendar.getInstance()
+            minNextStatusDate.time = SimpleDateFormat("yyyy-MM-dd").parse(taskManager.getReceivingTask()?.taskDescription?.nextStatusDate)
+            minNextStatusDate.add(Calendar.DATE, (permittedNumberDays.value ?: 0) * -1)
+            val selectedDateTime = SimpleDateFormat("dd.MM.yy HH:mm:ss").parse(checkDateTime)
+            if (taskManager.getReceivingTask()?.taskDescription?.currentStatus == TaskStatus.Traveling &&
+                    (taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.DirectSupplier ||
+                            taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.ReceptionDistributionCenter ||
+                            taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.OwnProduction)) {
+                selectedDateTime <= timeMonitor.getServerDate() && selectedDateTime >= minNextStatusDate.time
+            } else {
+                selectedDateTime <= timeMonitor.getServerDate()
+            }
         } catch (e: Exception) {
             false
         }

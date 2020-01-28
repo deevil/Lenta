@@ -129,7 +129,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="22dp"
             android:layout_marginEnd="8dp"
-            android:text="@string/invoice_number"
+            android:text="@string/numberTN_TTN"
             app:layout_constraintBottom_toTopOf="@id/div_hor_2"
             app:layout_constraintEnd_toStartOf="@+id/guideline"
             app:layout_constraintStart_toStartOf="parent"
@@ -143,7 +143,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="22dp"
             android:layout_marginEnd="8dp"
-            android:text="@string/invoice_date"
+            android:text="@string/dateTN_TTN"
             app:layout_constraintBottom_toTopOf="@id/div_hor_3"
             app:layout_constraintEnd_toStartOf="@+id/guideline"
             app:layout_constraintStart_toStartOf="parent"
@@ -174,6 +174,33 @@
             app:layout_constraintStart_toEndOf="@id/et_months"
             app:layout_constraintTop_toBottomOf="@id/div_hor_2"
             tools:text="." />
+
+        <TextView
+            android:id="@+id/tv_ttn_type"
+            style="@style/TextTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="22dp"
+            android:layout_marginEnd="8dp"
+            android:text="@string/typeTN_TTN"
+            app:layout_constraintBottom_toTopOf="@id/div_hor_4"
+            app:layout_constraintEnd_toStartOf="@+id/guideline"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/div_hor_3" />
+
+        <TextView
+            android:id="@+id/tv_ttn_type_val"
+            style="@style/TextTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="22dp"
+            android:layout_marginEnd="8dp"
+            android:text="@{vm.typeTTN}"
+            app:layout_constraintBottom_toTopOf="@id/div_hor_4"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/div_vert_1"
+            app:layout_constraintTop_toBottomOf="@id/div_hor_3"
+            tools:text="Бумажная" />
 
         <TextView
             android:id="@+id/tv_check_caption"
@@ -218,11 +245,21 @@
             app:layout_constraintTop_toBottomOf="@id/div_hor_2" />
 
         <View
+            android:id="@+id/div_hor_4"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="66dp"
+            android:background="@color/color_divider"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/div_hor_3" />
+
+        <View
             android:id="@+id/div_vert_1"
             android:layout_width="1dp"
             android:layout_height="0dp"
             android:background="@color/color_divider"
-            app:layout_constraintBottom_toTopOf="@id/div_hor_3"
+            app:layout_constraintBottom_toTopOf="@id/div_hor_4"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="@+id/guideline"

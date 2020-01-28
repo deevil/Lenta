@@ -64,7 +64,13 @@ data class TaskNewCargoUnitInfoRestData(
         @SerializedName("IS_GIS_NO") //Индикатор: Без ГИС-контроля
         val isNoGisControl: String,
         @SerializedName("IS_MARK") //Индикатор: марки
-        val isStamp: String
+        val isStamp: String,
+        @SerializedName("QNT_POS") //Количество позиций (QNT_POS)
+        val quantityPositions: String?,
+        @SerializedName("IS_PACK") //товар для упаковки
+        val isPack: String,
+        @SerializedName("LGORT") //Склад
+        val stock: String
 ) {
         companion object {
                 fun inCargoUnitInfo(data: TaskNewCargoUnitInfoRestData, cargoUnitNumber: String): TaskCargoUnitInfo {
@@ -82,7 +88,9 @@ data class TaskNewCargoUnitInfoRestData(
                                 isVet = data.isVet.isNotEmpty(),
                                 isNoGisControl = data.isNoGisControl.isNotEmpty(),
                                 isStamp = data.isStamp.isNotEmpty(),
-                                quantityPositions = 0
+                                quantityPositions = data.quantityPositions ?: "",
+                                isPack = data.isPack.isNotEmpty(),
+                                stock = data.stock
                         )
                 }
         }

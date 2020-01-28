@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp9.features.task_card.TaskCardViewModel
 import com.lenta.bp9.model.task.IReceivingTaskManager
+import com.lenta.bp9.model.task.TaskType
 import com.lenta.bp9.model.task.revise.ProductDocumentType
 import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.shared.account.ISessionInfo
@@ -36,6 +37,10 @@ class ProductDocumentsReviseViewModel : CoreViewModel(), PageSelectionListener {
 
     val selectedPage = MutableLiveData(0)
 
+    val typeTask: TaskType by lazy {
+        taskManager.getReceivingTask()?.taskHeader?.taskType ?: TaskType.None
+    }
+
     val taskCaption: String by lazy {
         taskManager.getReceivingTask()?.taskHeader?.caption ?: ""
     }
@@ -55,6 +60,10 @@ class ProductDocumentsReviseViewModel : CoreViewModel(), PageSelectionListener {
     val checkedDocs: MutableLiveData<List<ProductDocumentVM>> = MutableLiveData()
 
     var currentSortMode: SortMode = SortMode.DocumentName
+
+    private val isTaskPRCorPSP by lazy {
+        MutableLiveData(taskManager.getReceivingTask()!!.taskHeader.taskType == TaskType.ReceptionDistributionCenter || taskManager.getReceivingTask()!!.taskHeader.taskType == TaskType.OwnProduction)
+    }
 
     override fun onPageSelected(position: Int) {
         selectedPage.value = position
@@ -189,6 +198,19 @@ class ProductDocumentsReviseViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     fun onClickSave() {
+        val isUncheckedObligatoryDeliveryDocuments = taskManager.getReceivingTask()?.getUncheckedDeliveryDocuments()?.findLast {
+            it.isObligatory
+        }?.isObligatory ?: false
+
+        if (isTaskPRCorPSP.value == true && isUncheckedObligatoryDeliveryDocuments) {
+            screenNavigator.openRemainsUnconfirmedBindingDocsPRCDialog(
+                    nextCallbackFunc = {
+                        saveData()
+                    }
+            )
+            return
+        }
+
         if (docsToCheck.value?.findLast { it.isObligatory } != null) {
             screenNavigator.openConfirmationProcessAsDiscrepancy {
                 saveData()

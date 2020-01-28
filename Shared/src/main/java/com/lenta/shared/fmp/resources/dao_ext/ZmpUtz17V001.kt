@@ -9,7 +9,9 @@ fun ZmpUtz17V001.getAllQuality(): List<ZmpUtz17V001.ItemLocal_ET_DICT>? {
 }
 
 fun List<ZmpUtz17V001.ItemLocal_ET_DICT>.toQualityInfoList(): List<QualityInfo> {
-    return this.map {
+    return this.sortedBy {
+        it.sorder
+    }.map {
         QualityInfo(
                 id = it.tid,
                 code = it.code,

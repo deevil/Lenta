@@ -54,14 +54,14 @@ class TransportMarriageViewModel : CoreViewModel(), PageSelectionListener,
     init {
         viewModelScope.launch {
             screenNavigator.showProgressLoadingData()
-            taskManager.getReceivingTask()?.let { task ->
+            /**taskManager.getReceivingTask()?.let { task ->
                 val params = DeclareTransportDefectParams(
                         taskNumber = task.taskHeader.taskNumber,
                         deviceIP = context.getDeviceIp(),
                         personnelNumber = sessionInfo.personnelNumber ?: ""
                 )
                 declareTransportDefectNetRequest(params).either(::handleFailure, ::handleSuccess)
-            }
+            }*/
             screenNavigator.hideProgress()
         }
     }

@@ -54,9 +54,9 @@ class TransportConditionsReviseViewModel : CoreViewModel(), PageSelectionListene
     val conditionsToCheck: MutableLiveData<List<TransportConditionVM>> = MutableLiveData()
     val checkedConditions: MutableLiveData<List<TransportConditionVM>> = MutableLiveData()
     val saveEnabled = conditionsToCheck.map { conditions -> conditions?.findLast { it.isObligatory } == null }
-    val isTaskPRCStatusUnloading: MutableLiveData<Boolean> by lazy {
-        MutableLiveData(taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.ReceptionDistributionCenter &&
-                taskManager.getReceivingTask()?.taskDescription?.currentStatus == TaskStatus.Unloading)
+    val isTaskPRCorPSPStatusUnloading: MutableLiveData<Boolean> by lazy {
+        MutableLiveData((taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.ReceptionDistributionCenter || taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.OwnProduction) &&
+                (taskManager.getReceivingTask()?.taskDescription?.currentStatus == TaskStatus.Unloading || taskManager.getReceivingTask()?.taskDescription?.currentStatus == TaskStatus.Arrived)) //добавлен статус Прибыло, т.к. при первом проходе задания вызывается 20 рест, который не возвращает новый статус Разгружено и нет соответствующего потом переход к экрану 09/26
     }
 
     override fun onPageSelected(position: Int) {
@@ -86,7 +86,7 @@ class TransportConditionsReviseViewModel : CoreViewModel(), PageSelectionListene
     }
 
     fun onClickNext() {
-        if (isTaskPRCStatusUnloading.value == true) {
+        if (isTaskPRCorPSPStatusUnloading.value == true) {
             screenNavigator.openControlDeliveryCargoUnitsScreen()
             return
         }

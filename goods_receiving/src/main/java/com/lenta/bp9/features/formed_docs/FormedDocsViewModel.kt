@@ -63,7 +63,7 @@ class FormedDocsViewModel : CoreViewModel() {
                 taskManager.getReceivingTask()?.taskRepository?.getDocumentsPrinting()?.getDocumentsPrinting()?.mapIndexed { index, taskDocumentsPrinting ->
                     FormedDocsItem(
                             number = index + 1,
-                            name = taskDocumentsPrinting.outputTypeDoc,
+                            name = taskDocumentsPrinting.name,
                             supplyNumber = taskDocumentsPrinting.productDocNumber,
                             even = index % 2 == 0
                     )
@@ -82,7 +82,7 @@ class FormedDocsViewModel : CoreViewModel() {
                 printingDocsNetRequest(params).either(::handleFailure) {
                     docsSelectionsHelper.clearPositions()
                     updateDocs()
-                    screenNavigator.openInfoDocsSentPScreenrint()
+                    screenNavigator.openInfoDocsSentPrintScreen()
                 }
             }
             screenNavigator.hideProgress()

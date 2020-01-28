@@ -28,7 +28,7 @@ import com.lenta.shared.utilities.extentions.map
 
 class TaskReviseFragment : CoreFragment<FragmentTaskReviseBinding, TaskReviseViewModel>(), ViewPagerSettings, ToolbarButtonsClickListener, OnBackPresserListener {
 
-    var notificationsRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
+    private var notificationsRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
     var toCheckRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
     var checkedRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
 
@@ -49,9 +49,15 @@ class TaskReviseFragment : CoreFragment<FragmentTaskReviseBinding, TaskReviseVie
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
+        bottomToolbarUiModel.cleanAll()
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
         bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.refusal)
-        bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.save)
+        if (vm.isDocsForVerification == true) {
+            bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.next)
+        } else {
+            bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.save)
+        }
+        connectLiveData(vm.refusalVisibility, bottomToolbarUiModel.uiModelButton2.visibility)
         connectLiveData(vm.nextEnabled, bottomToolbarUiModel.uiModelButton5.enabled)
     }
 
@@ -80,7 +86,7 @@ class TaskReviseFragment : CoreFragment<FragmentTaskReviseBinding, TaskReviseVie
         }
     }
 
-    fun prepareNotificationsView(container: ViewGroup): View {
+    private fun prepareNotificationsView(container: ViewGroup): View {
         DataBindingUtil
                 .inflate<LayoutTaskReviseInformationBinding>(LayoutInflater.from(container.context),
                         R.layout.layout_task_revise_information,
@@ -112,7 +118,7 @@ class TaskReviseFragment : CoreFragment<FragmentTaskReviseBinding, TaskReviseVie
                 }
     }
 
-    fun prepareCheckedView(container: ViewGroup): View {
+    private fun prepareCheckedView(container: ViewGroup): View {
         DataBindingUtil
                 .inflate<LayoutDeliveryCheckedDocumentsBinding>(LayoutInflater.from(container.context),
                         R.layout.layout_delivery_checked_documents,
@@ -161,7 +167,7 @@ class TaskReviseFragment : CoreFragment<FragmentTaskReviseBinding, TaskReviseVie
                 }
     }
 
-    fun prepareToCheckView(container: ViewGroup): View {
+    private fun prepareToCheckView(container: ViewGroup): View {
         DataBindingUtil
                 .inflate<LayoutDeliveryDocumentsBinding>(LayoutInflater.from(container.context),
                         R.layout.layout_delivery_documents,

@@ -46,7 +46,7 @@ class CargoUnitCardFragment : CoreFragment<FragmentCargoUnitCardBinding, CargoUn
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
         topToolbarUiModel.title.value = vm.getTitle()
-        topToolbarUiModel.description.value = "${getString(R.string.reduction_cargo_unit)} ${vm.cargoUnitInfo.value?.cargoUnitNumber}"
+        topToolbarUiModel.description.value = "${if (vm.isTaskPSP) getString(R.string.reduction_eo) else getString(R.string.reduction_cargo_unit)} ${vm.cargoUnitInfo.value?.cargoUnitNumber}"
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {

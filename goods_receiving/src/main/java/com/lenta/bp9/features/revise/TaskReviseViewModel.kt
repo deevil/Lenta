@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp9.features.task_card.TaskCardViewModel
 import com.lenta.bp9.model.task.IReceivingTaskManager
+import com.lenta.bp9.model.task.TaskType
 import com.lenta.bp9.model.task.revise.DocumentType
 import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.shared.account.ISessionInfo
@@ -43,7 +44,21 @@ class TaskReviseViewModel : CoreViewModel(), PageSelectionListener {
     val docsToCheck: MutableLiveData<List<DeliveryDocumentVM>> = MutableLiveData()
     val checkedDocs: MutableLiveData<List<DeliveryDocumentVM>> = MutableLiveData()
 
-    val nextEnabled = docsToCheck.map { document -> document?.findLast { it.isObligatory } == null }
+    private val isTaskPRCorPSP by lazy {
+        MutableLiveData(taskManager.getReceivingTask()!!.taskHeader.taskType == TaskType.ReceptionDistributionCenter || taskManager.getReceivingTask()!!.taskHeader.taskType == TaskType.OwnProduction)
+    }
+
+    val nextEnabled = docsToCheck.map { document ->
+        document?.findLast { it.isObligatory } == null || isTaskPRCorPSP.value == true
+    }
+
+    val refusalVisibility by lazy {
+        MutableLiveData(isTaskPRCorPSP.value == false )
+    }
+
+    val isDocsForVerification by lazy {
+        taskManager.getReceivingTask()?.taskRepository?.getReviseDocuments()?.getProductDocuments()?.isNotEmpty()
+    }
 
     override fun onPageSelected(position: Int) {
         selectedPage.value = position
@@ -128,7 +143,20 @@ class TaskReviseViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     fun onClickSave() {
-        if (taskManager.getReceivingTask()?.taskRepository?.getReviseDocuments()?.getProductDocuments()?.isNotEmpty() == true) {
+        val isObligatoryDocs: Boolean = docsToCheck.value?.findLast {
+            it.isObligatory
+        }?.isObligatory ?: false
+
+        if (isTaskPRCorPSP.value == true && isDocsForVerification == false && isObligatoryDocs) {
+            screenNavigator.openRemainsUnconfirmedBindingDocsPRCDialog(
+                    nextCallbackFunc = {
+                        screenNavigator.openFinishReviseLoadingScreen()
+                    }
+            )
+            return
+        }
+
+        if (isDocsForVerification == true) {
             screenNavigator.openProductDocumentsReviseScreen()
         } else {
             screenNavigator.openFinishReviseLoadingScreen()
