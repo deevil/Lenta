@@ -95,6 +95,11 @@ class TaskListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
         repoInMemoryHolder.taskList.map { repoInMemoryHolder.taskList.value?.taskCount ?: 0 }
     }
 
+    val taskListLoadingMode by lazy {
+        repoInMemoryHolder.taskList.value?.taskListLoadingMode ?: TaskListLoadingMode.None
+    }
+
+
     fun onClickRight() {
         if (selectedPage.value == 1) {
             screenNavigator.openTaskSearchScreen()
@@ -136,9 +141,9 @@ class TaskListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     }
 
     override fun onOkInSoftKeyboard(): Boolean {
-        if (filterSearch.value?.length!! >= 18) {
+        if (filterSearch.value?.length!! >= 18 && taskListLoadingMode == TaskListLoadingMode.Receiving) {
             selectedPage.value = 1
-            screenNavigator.openTaskListLoadingScreen(TaskListLoadingMode.Receiving,
+            screenNavigator.openTaskListLoadingScreen(taskListLoadingMode,
                     TaskListSearchParams(taskNumber = filterSearch.value,
                             supplierNumber = null,
                             documentNumber = null,
