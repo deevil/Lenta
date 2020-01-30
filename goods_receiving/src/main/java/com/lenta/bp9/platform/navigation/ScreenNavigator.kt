@@ -840,6 +840,34 @@ class ScreenNavigator(
         }
     }
 
+    override fun openShipmentAdjustmentConfirmationDialog(submergedGE: String, nextCallbackFunc: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = submergedGE,
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(nextCallbackFunc),
+                    pageNumber = "95",
+                    rightButtonDecorationInfo = ButtonDecorationInfo.nextAlternate))
+        }
+    }
+
+    override fun openShipmentPostingLoadingScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(LoadingShipmentPostingFragment())
+        }
+    }
+
+    override fun openShipmentPostingSuccessfulDialog(nextCallbackFunc: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.remains_unconfirmed_binding_docs_prc_dialog),
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(nextCallbackFunc),
+                    iconRes = R.drawable.ic_done_green_80dp,
+                    pageNumber = "95",
+                    isVisibleLeftButton = false,
+                    rightButtonDecorationInfo = ButtonDecorationInfo.nextAlternate))
+        }
+    }
+
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 }
 
@@ -943,4 +971,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openDriverDataScreen()
     fun openShipmentArrivalLockLoadingScreen(driverDataInfo: TaskDriverDataInfo)
     fun openShipmentFinishLoadingScreen()
+    fun openShipmentAdjustmentConfirmationDialog(submergedGE: String, nextCallbackFunc: () -> Unit)
+    fun openShipmentPostingLoadingScreen()
+    fun openShipmentPostingSuccessfulDialog(nextCallbackFunc: () -> Unit)
 }

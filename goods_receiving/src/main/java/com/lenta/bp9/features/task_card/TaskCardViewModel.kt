@@ -319,7 +319,18 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
                 TaskStatus.Traveling -> screenNavigator.openDriverDataScreen()
                 TaskStatus.Arrived -> return //Прибыло - вызывать ФМ ZMP_UTZ_GRZ_37_V001 и переходить к контролю условий погрузки (см. раздел 5.5.6)
                 TaskStatus.ConditionsTested -> return //Условия проверены - вызывать ФМ ZMP_UTZ_GRZ_39_V001 и реализовать переход к контролю погрузки ГЕ (см. раздел 5.5.7)
-                TaskStatus.Recounted -> return //Пересчитано - вызывать ФМ ZMP_UTZ_GRZ_41_V001 и отображать сообщения (см. раздел 5.5.8)
+                TaskStatus.Recounted -> {
+                    if (taskManager.getReceivingTask()?.taskDescription?.submergedGE?.isNotEmpty() == true) {
+                        screenNavigator.openShipmentAdjustmentConfirmationDialog(
+                                submergedGE = taskManager.getReceivingTask()?.taskDescription?.submergedGE ?: "",
+                                nextCallbackFunc = {
+                                    screenNavigator.openShipmentPostingLoadingScreen()
+                                }
+                        )
+                    } else {
+                        screenNavigator.openShipmentPostingLoadingScreen()
+                    }
+                }
                 TaskStatus.ShipmentAllowedByGis -> return //Разрешено ГИС. Отгрузка
                 TaskStatus.Loaded -> return //Загружено - переходить к вводу пломб. По завершении обработки по кнопке «Далее» на экране ввода пломб вызывать ФМ ZMP_UTZ_GRZ_42_V001
             }
