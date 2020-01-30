@@ -315,8 +315,8 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
         if (taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.ShipmentRC) {
             //todo По функции в зависимости от статуса выполнять:
             when (currentStatus.value) {
-                TaskStatus.ReadyToShipment -> screenNavigator.openTransportationNumberScreen() //Готово к отгрузке - переходить к вводу номера транспортировки (см. раздел 5.5.4)
-                TaskStatus.Traveling -> return //В пути - реализовать переход к вводу данных водителя (см. раздел 5.5.5)
+                TaskStatus.ReadyToShipment -> screenNavigator.openTransportationNumberScreen()
+                TaskStatus.Traveling -> screenNavigator.openDriverDataScreen()
                 TaskStatus.Arrived -> return //Прибыло - вызывать ФМ ZMP_UTZ_GRZ_37_V001 и переходить к контролю условий погрузки (см. раздел 5.5.6)
                 TaskStatus.ConditionsTested -> return //Условия проверены - вызывать ФМ ZMP_UTZ_GRZ_39_V001 и реализовать переход к контролю погрузки ГЕ (см. раздел 5.5.7)
                 TaskStatus.Recounted -> return //Пересчитано - вызывать ФМ ZMP_UTZ_GRZ_41_V001 и отображать сообщения (см. раздел 5.5.8)

@@ -218,4 +218,10 @@
     <string name="delivery_otm">Поставка ОТМ</string>
     <string name="enter_transportation_number">Введите номер транспортировки</string>
     <string name="enter_transportation">Ввод транспортировки</string>
+    <string name="enter_driver_data">Ввод данных водителя</string>
+    <string name="enter_driver_data_and_car">Введите данные водителя и автомобиля</string>
+    <string name="initials_driver">ФИО водителя</string>
+    <string name="passport_data">Паспортные данные</string>
+    <string name="car_make">Марка машины</string>
+    <string name="car_number">Номер автомобиля</string>
 </resources>

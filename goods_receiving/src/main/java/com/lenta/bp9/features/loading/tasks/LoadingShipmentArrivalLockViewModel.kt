@@ -3,9 +3,7 @@ package com.lenta.bp9.features.loading.tasks
 import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.lenta.bp9.model.task.IReceivingTaskManager
-import com.lenta.bp9.model.task.TaskDescription
-import com.lenta.bp9.model.task.TaskNotification
+import com.lenta.bp9.model.task.*
 import com.lenta.bp9.model.task.revise.TransportConditionRestData
 import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.bp9.requests.network.*
@@ -17,7 +15,8 @@ import com.lenta.shared.utilities.extentions.getDeviceIp
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class LoadingShipmentPurposeTransportViewModel : CoreLoadingViewModel() {
+class LoadingShipmentArrivalLockViewModel : CoreLoadingViewModel() {
+
     @Inject
     lateinit var screenNavigator: IScreenNavigator
     @Inject
@@ -27,10 +26,9 @@ class LoadingShipmentPurposeTransportViewModel : CoreLoadingViewModel() {
     @Inject
     lateinit var taskManager: IReceivingTaskManager
     @Inject
-    lateinit var zmpUtzGrz35V001NetRequest: ZmpUtzGrz35V001NetRequest
+    lateinit var zmpUtzGrz36V001NetRequest: ZmpUtzGrz36V001NetRequest
 
-    var mode: String = ""
-    var transportationNumber: String = ""
+    var driverDataInfo: MutableLiveData<TaskDriverDataInfo> = MutableLiveData()
 
     override val title: MutableLiveData<String> = MutableLiveData()
     override val progress: MutableLiveData<Boolean> = MutableLiveData(true)
@@ -45,14 +43,15 @@ class LoadingShipmentPurposeTransportViewModel : CoreLoadingViewModel() {
         viewModelScope.launch {
             progress.value = true
             taskManager.getReceivingTask()?.let { task ->
-                val params = ZmpUtzGrz35V001Params(
+                val params = ZmpUtzGrz36V001Params(
                         deviceIP = context.getDeviceIp(),
                         taskNumber = taskManager.getReceivingTask()?.taskHeader?.taskNumber ?: "",
                         personalNumber = sessionInfo.personnelNumber ?: "",
-                        mode = mode,
-                        shipmentTransportation = transportationNumber
+                        driverData = TaskDriverDataInfoRestData.from(driverDataInfo.value!!),
+                        arrivalDate = taskManager.getReceivingTask()?.taskDescription?.nextStatusDate ?: "",
+                        arrivalTime = taskManager.getReceivingTask()?.taskDescription?.nextStatusTime ?: ""
                 )
-                zmpUtzGrz35V001NetRequest(params).either(::handleFailure, ::handleSuccess)
+                zmpUtzGrz36V001NetRequest(params).either(::handleFailure, ::handleSuccess)
             }
             progress.value = false
         }
@@ -63,7 +62,7 @@ class LoadingShipmentPurposeTransportViewModel : CoreLoadingViewModel() {
         screenNavigator.openAlertScreen(failure)
     }
 
-    private fun handleSuccess(result: ZmpUtzGrz35V001Result) {
+    private fun handleSuccess(result: ZmpUtzGrz36V001Result) {
         screenNavigator.openMainMenuScreen()
         screenNavigator.openTaskListScreen()
         taskManager.updateTaskDescription(TaskDescription.from(result.taskDescription))
