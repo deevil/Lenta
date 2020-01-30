@@ -6,14 +6,11 @@ import androidx.lifecycle.viewModelScope
 import com.lenta.bp9.R
 import com.lenta.bp9.features.change_datetime.ChangeDateTimeMode
 import com.lenta.bp9.features.loading.tasks.TaskCardMode
-import com.lenta.bp9.model.task.IReceivingTaskManager
-import com.lenta.bp9.model.task.NotificationIndicatorType
-import com.lenta.bp9.model.task.TaskStatus
-import com.lenta.bp9.model.task.TaskType
+import com.lenta.bp9.model.task.*
 import com.lenta.bp9.platform.navigation.IScreenNavigator
-import com.lenta.bp9.requests.network.ZmpUtzGrz35V001NetRequest
-import com.lenta.bp9.requests.network.ZmpUtzGrz35V001Params
+import com.lenta.bp9.requests.network.*
 import com.lenta.shared.account.ISessionInfo
+import com.lenta.shared.exception.Failure
 import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.platform.time.ITimeMonitor
 import com.lenta.shared.platform.viewmodel.CoreViewModel
@@ -36,6 +33,8 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
     lateinit var taskManager: IReceivingTaskManager
     @Inject
     lateinit var timeMonitor: ITimeMonitor
+    @Inject
+    lateinit var zmpUtzGrz39V001NetRequest: ZmpUtzGrz39V001NetRequest
 
     val selectedPage = MutableLiveData(0)
 
@@ -313,12 +312,11 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
         }
 
         if (taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.ShipmentRC) {
-            //todo По функции в зависимости от статуса выполнять:
             when (currentStatus.value) {
                 TaskStatus.ReadyToShipment -> screenNavigator.openTransportationNumberScreen()
                 TaskStatus.Traveling -> screenNavigator.openDriverDataScreen()
-                TaskStatus.Arrived -> return //Прибыло - вызывать ФМ ZMP_UTZ_GRZ_37_V001 и переходить к контролю условий погрузки (см. раздел 5.5.6)
-                TaskStatus.ConditionsTested -> return //Условия проверены - вызывать ФМ ZMP_UTZ_GRZ_39_V001 и реализовать переход к контролю погрузки ГЕ (см. раздел 5.5.7)
+                TaskStatus.Arrived -> screenNavigator.openShipmentStartLoadingScreen(taskNumber = taskManager.getReceivingTask()?.taskHeader?.taskNumber ?: "")
+                TaskStatus.ConditionsTested -> shipmentStartRecount()
                 TaskStatus.Recounted -> {
                     if (taskManager.getReceivingTask()?.taskDescription?.submergedGE?.isNotEmpty() == true) {
                         screenNavigator.openShipmentAdjustmentConfirmationDialog(
@@ -331,8 +329,8 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
                         screenNavigator.openShipmentPostingLoadingScreen()
                     }
                 }
-                TaskStatus.ShipmentAllowedByGis -> return //Разрешено ГИС. Отгрузка
-                TaskStatus.Loaded -> return //Загружено - переходить к вводу пломб. По завершении обработки по кнопке «Далее» на экране ввода пломб вызывать ФМ ZMP_UTZ_GRZ_42_V001
+                TaskStatus.ShipmentAllowedByGis -> return //todo Разрешено ГИС. Отгрузка, аналитик не описал условие в документации
+                TaskStatus.Loaded -> screenNavigator.openInputOutgoingFillingsScreen()
             }
             return
         }
@@ -363,6 +361,32 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
             TaskStatus.Booked -> screenNavigator.openTransferGoodsSectionScreen()
             TaskStatus.Completed -> screenNavigator.openFormedDocsScreen()
         }
+    }
+
+    private fun shipmentStartRecount() {
+        viewModelScope.launch {
+            screenNavigator.showProgressLoadingData()
+            val params = ZmpUtzGrz39V001Params(
+                    taskNumber = taskManager.getReceivingTask()?.taskHeader?.taskNumber ?: "",
+                    deviceIP = context.getDeviceIp(),
+                    personalNumber = sessionInfo.personnelNumber ?: "",
+                    recountStartDate = taskManager.getReceivingTask()?.taskDescription?.nextStatusDate ?: "",
+                    recountStartTime = taskManager.getReceivingTask()?.taskDescription?.nextStatusTime ?: ""
+            )
+            zmpUtzGrz39V001NetRequest(params).either(::handleFailure, ::handleSuccess)
+            screenNavigator.hideProgress()
+        }
+    }
+
+    override fun handleFailure(failure: Failure) {
+        screenNavigator.openAlertScreen(failure)
+    }
+
+    private fun handleSuccess(result: ZmpUtzGrz39V001Result) {
+        val cargoUnits = result.cargoUnits.map { TaskCargoUnitInfo.from(it) }
+        taskManager.getReceivingTask()?.taskRepository?.getCargoUnits()?.updateCargoUnits(cargoUnits)
+
+        screenNavigator.openShipmentControlCargoUnitsScreen()
     }
 
     fun onBackPressed() {

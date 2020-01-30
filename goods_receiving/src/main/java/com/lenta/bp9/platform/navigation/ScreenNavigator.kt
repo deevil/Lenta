@@ -39,6 +39,7 @@ import com.lenta.bp9.features.reject.RejectFragment
 import com.lenta.bp9.features.repres_person_num_entry.RepresPersonNumEntryFragment
 import com.lenta.bp9.features.revise.*
 import com.lenta.bp9.features.revise.invoice.InvoiceReviseFragment
+import com.lenta.bp9.features.shipment_control_cargo_units.ShipmentControlCargoUnitsFragment
 import com.lenta.bp9.features.skip_recount.SkipRecountFragment
 import com.lenta.bp9.features.transfer_goods_section.TransferGoodsSectionFragment
 import com.lenta.bp9.features.transport_marriage.TransportMarriageFragment
@@ -868,6 +869,24 @@ class ScreenNavigator(
         }
     }
 
+    override fun openShipmentStartLoadingScreen(taskNumber: String) {
+        runOrPostpone {
+            getFragmentStack()?.push(LoadingShipmentStartFragment.create(taskNumber))
+        }
+    }
+
+    override fun openShipmentFixingDepartureLoadingScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(LoadingShipmentFixingDepartureFragment())
+        }
+    }
+
+    override fun openShipmentControlCargoUnitsScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(ShipmentControlCargoUnitsFragment())
+        }
+    }
+
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 }
 
@@ -974,4 +993,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openShipmentAdjustmentConfirmationDialog(submergedGE: String, nextCallbackFunc: () -> Unit)
     fun openShipmentPostingLoadingScreen()
     fun openShipmentPostingSuccessfulDialog(nextCallbackFunc: () -> Unit)
+    fun openShipmentStartLoadingScreen(taskNumber: String)
+    fun openShipmentFixingDepartureLoadingScreen()
+    fun openShipmentControlCargoUnitsScreen()
 }

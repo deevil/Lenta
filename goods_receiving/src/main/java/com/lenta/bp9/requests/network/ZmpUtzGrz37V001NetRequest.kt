@@ -35,7 +35,7 @@ class ZmpUtzGrz37V001Status : ObjectRawStatus<ZmpUtzGrz37V001Result>()
 
 data class ZmpUtzGrz37V001Result(
         @SerializedName("ET_COND_CHECK")
-        val conditions: List<TransportConditionRestData>,
+        val transportConditions: List<TransportConditionRestData>,
         @SerializedName("ET_COND_NOTIFY")
         val conditionNotifications: List<TaskNotificationRestInfo>,
         @SerializedName("ES_TASK")

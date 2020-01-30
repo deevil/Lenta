@@ -224,4 +224,5 @@
     <string name="passport_data">Паспортные данные</string>
     <string name="car_make">Марка машины</string>
     <string name="car_number">Номер автомобиля</string>
+    <string name="shipment_control_cargo_units">Контроль погрузки ГЕ</string>
 </resources>

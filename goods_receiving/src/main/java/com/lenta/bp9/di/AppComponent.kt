@@ -33,6 +33,7 @@ import com.lenta.bp9.features.revise.invoice.InvoiceReviseViewModel
 import com.lenta.bp9.features.search_task.SearchTaskViewModel
 import com.lenta.bp9.features.select_market.SelectMarketViewModel
 import com.lenta.bp9.features.select_personnel_number.SelectPersonnelNumberViewModel
+import com.lenta.bp9.features.shipment_control_cargo_units.ShipmentControlCargoUnitsViewModel
 import com.lenta.bp9.features.skip_recount.SkipRecountViewModel
 import com.lenta.bp9.features.task_card.TaskCardViewModel
 import com.lenta.bp9.features.transfer_goods_section.TransferGoodsSectionViewModel
@@ -108,4 +109,7 @@ interface AppComponent {
     fun inject(it: LoadingShipmentArrivalLockViewModel)
     fun inject(it: LoadingShipmentFinishViewModel)
     fun inject(it: LoadingShipmentPostingViewModel)
+    fun inject(it: LoadingShipmentStartViewModel)
+    fun inject(it: LoadingShipmentFixingDepartureViewModel)
+    fun inject(it: ShipmentControlCargoUnitsViewModel)
 }
