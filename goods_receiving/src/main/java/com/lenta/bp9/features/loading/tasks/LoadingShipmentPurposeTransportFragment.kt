@@ -11,39 +11,38 @@ import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
 import com.lenta.shared.utilities.extentions.provideViewModel
 
-class LoadingTaskCardFragment : CoreLoadingFragment() {
+class LoadingShipmentPurposeTransportFragment : CoreLoadingFragment() {
 
     companion object {
-        fun create(taskNumber: String, mode: TaskCardMode, loadFullData: Boolean): LoadingTaskCardFragment {
-            LoadingTaskCardFragment().let {
-                it.taskNumber = taskNumber
+        fun create(mode: String, transportationNumber: String): LoadingShipmentPurposeTransportFragment {
+            LoadingShipmentPurposeTransportFragment().let {
                 it.mode = mode
-                it.loadFullData = loadFullData
+                it.transportationNumber = transportationNumber
                 return it
             }
         }
     }
 
-    private var mode: TaskCardMode = TaskCardMode.None
-    private var taskNumber: String = ""
-    private var loadFullData: Boolean = false
+    private var mode: String = ""
+    private var transportationNumber: String = ""
 
     override fun getPageNumber(): String? {
         return generateScreenNumberFromPostfix("98")
     }
 
     override fun getViewModel(): CoreLoadingViewModel {
-        provideViewModel(LoadingTaskCardViewModel::class.java).let {
-            getAppComponent()?.inject(it)
-            it.taskNumber = taskNumber
-            it.mode = mode
-            it.loadFullData = loadFullData
-            return it
+        provideViewModel(LoadingShipmentPurposeTransportViewModel::class.java).let {vm ->
+            getAppComponent()?.inject(vm)
+            vm.mode = mode
+            vm.transportationNumber = transportationNumber
+            return vm
         }
     }
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
-        topToolbarUiModel.description.value = getString(R.string.task_card)
+        (vm as? LoadingShipmentPurposeTransportViewModel)?.let {
+            topToolbarUiModel.description.value = it.taskDescription
+        }
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
@@ -60,6 +59,6 @@ class LoadingTaskCardFragment : CoreLoadingFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        vm.title.value = getString(R.string.task_loading)
+        vm.title.value = getString(R.string.status_change)
     }
 }

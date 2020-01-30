@@ -42,6 +42,7 @@ import com.lenta.bp9.features.revise.invoice.InvoiceReviseFragment
 import com.lenta.bp9.features.skip_recount.SkipRecountFragment
 import com.lenta.bp9.features.transfer_goods_section.TransferGoodsSectionFragment
 import com.lenta.bp9.features.transport_marriage.TransportMarriageFragment
+import com.lenta.bp9.features.transportation_number.TransportationNumberFragment
 import com.lenta.bp9.model.task.revise.ProductDocumentType
 import com.lenta.bp9.model.task.TaskBatchInfo
 import com.lenta.bp9.model.task.TaskCargoUnitInfo
@@ -811,6 +812,18 @@ class ScreenNavigator(
         }
     }
 
+    override fun openShipmentPurposeTransportLoadingScreen(mode: String, transportationNumber: String) {
+        runOrPostpone {
+            getFragmentStack()?.push(LoadingShipmentPurposeTransportFragment.create(mode, transportationNumber))
+        }
+    }
+
+    override fun openTransportationNumberScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(TransportationNumberFragment())
+        }
+    }
+
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 }
 
@@ -909,4 +922,6 @@ interface IScreenNavigator : ICoreNavigator {
     fun openNoTransportDefectDeclaredDialog(nextCallbackFunc: () -> Unit)
     fun openDateNotCorrectlyScreen()
     fun openRemainsUnconfirmedBindingDocsPRCDialog(nextCallbackFunc: () -> Unit)
+    fun openShipmentPurposeTransportLoadingScreen(mode: String, transportationNumber: String)
+    fun openTransportationNumberScreen()
 }

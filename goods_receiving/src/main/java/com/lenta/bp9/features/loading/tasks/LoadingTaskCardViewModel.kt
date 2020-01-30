@@ -246,9 +246,21 @@ class LoadingTaskCardViewModel : CoreLoadingViewModel() {
                 newTask?.taskRepository?.getNotifications()?.updateWithNotifications(notifications, null, null, conditionNotifications)
                 newTask?.taskRepository?.getReviseDocuments()?.updateTransportCondition(transportConditions)
                 newTask?.taskRepository?.getCargoUnits()?.updateCargoUnits(cargoUnits)
-                //newTask?.updateTaskWithContentsRDS(taskContents.getTaskContentsRDSInfo(result))
                 taskManager.setTask(newTask)
-                transferToNextScreen()
+                taskManager.getReceivingTask()?.let { task ->
+                    when (task.taskDescription.currentStatus) {
+                        TaskStatus.ConditionControl -> {
+                            screenNavigator.openTransportConditionsScreen() //экран Контроль условий перевозки
+                        }
+                        TaskStatus.Recounting -> {
+                            //todo экран Контроль погрузки ГЕ
+                            Logg.d { "открыть Экран Контроль погрузки ГЕ" }
+                        }
+                        else -> {
+                            screenNavigator.openTaskCardScreen(TaskCardMode.Full)
+                        }
+                    }
+                }
             }
         }
     }

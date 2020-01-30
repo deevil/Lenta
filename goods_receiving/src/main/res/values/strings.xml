@@ -209,4 +209,13 @@
     <string name="typeTN_TTN">Тип ТН\\ТТН</string>
     <string name="type_TTN_paper">Бумажная</string>
     <string name="type_TTN_electronic">Электронная</string>
+    <string name="shipment">Отгрузка</string>
+    <string name="details">Детали</string>
+    <string name="outbound_delivery">Исходящая поставка</string>
+    <string name="plan_date">Планируемая дата</string>
+    <string name="fact_date">Фактическая дата</string>
+    <string name="number_TN">Номер ТН</string>
+    <string name="delivery_otm">Поставка ОТМ</string>
+    <string name="enter_transportation_number">Введите номер транспортировки</string>
+    <string name="enter_transportation">Ввод транспортировки</string>
 </resources>

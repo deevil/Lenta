@@ -11,12 +11,15 @@ import com.lenta.bp9.model.task.NotificationIndicatorType
 import com.lenta.bp9.model.task.TaskStatus
 import com.lenta.bp9.model.task.TaskType
 import com.lenta.bp9.platform.navigation.IScreenNavigator
+import com.lenta.bp9.requests.network.ZmpUtzGrz35V001NetRequest
+import com.lenta.bp9.requests.network.ZmpUtzGrz35V001Params
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.platform.time.ITimeMonitor
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.date_time.DateTimeUtil
+import com.lenta.shared.utilities.extentions.getDeviceIp
 import com.lenta.shared.utilities.extentions.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -72,9 +75,13 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     val enabledBtn by lazy {
-        notifications.map { notifications ->
-            notifications!!.findLast { it.indicator == NotificationIndicatorType.Red } == null
-        }
+        MutableLiveData(if (taskType == TaskType.ShipmentRC && taskManager.getReceivingTask()?.taskDescription?.currentStatus == TaskStatus.Ordered) {
+            false
+        } else {
+            notifications.value?.findLast {
+                it.indicator == NotificationIndicatorType.Red
+            } == null
+        })
     }
 
     val bookmarkIndicator by lazy {
@@ -89,7 +96,15 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
 
     val visibilityBtn by lazy {
         MutableLiveData(taskManager.getReceivingTask()?.taskDescription?.currentStatus.let {
-            it == TaskStatus.Checked || it == TaskStatus.Recounted || (it == TaskStatus.Unloaded && (taskType == TaskType.RecalculationCargoUnit || taskType == TaskType.ReceptionDistributionCenter || taskType == TaskType.OwnProduction) )
+            it == TaskStatus.Checked || it == TaskStatus.Recounted ||
+                    (it == TaskStatus.Unloaded && (taskType == TaskType.RecalculationCargoUnit || taskType == TaskType.ReceptionDistributionCenter || taskType == TaskType.OwnProduction)) ||
+                    (it == TaskStatus.ReadyToShipment && taskType == TaskType.ShipmentRC )
+        })
+    }
+
+    val visibilityNextBtn by lazy {
+        MutableLiveData(taskManager.getReceivingTask()?.taskDescription?.currentStatus.let {
+            !(taskType == TaskType.ShipmentRC && (it == TaskStatus.ShipmentSentToGis || it == TaskStatus.ShipmentRejectedByGis || it == TaskStatus.Departure)  )
         })
     }
 
@@ -176,12 +191,48 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
 
     val changeNextDateTimePossible by lazy {
         val status = taskManager.getReceivingTask()?.taskDescription?.currentStatus
-        status == TaskStatus.Ordered || status == TaskStatus.Traveling || status == TaskStatus.Arrived ||
-                status == TaskStatus.Checked
+        if (taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.ShipmentRC) {
+            status == TaskStatus.Traveling || status == TaskStatus.Arrived
+        } else {
+            status == TaskStatus.Ordered || status == TaskStatus.Traveling || status == TaskStatus.Arrived || status == TaskStatus.Checked
+        }
     }
 
     val currentStatusDateTime: MutableLiveData<String> = MutableLiveData("")
     val nextStatusDateTime: MutableLiveData<String> = MutableLiveData("")
+
+    val shipmentNumberTN by lazy {
+        taskManager.getReceivingTask()?.taskDescription?.ttnNumber ?: ""
+    }
+    val shipmentNumberTTN by lazy {
+        taskManager.getReceivingTask()?.taskDescription?.deliveryNumber ?: ""
+    }
+    val shipmentPlanDate by lazy {
+        taskManager.getReceivingTask()?.taskDescription?.plannedDeliveryDate ?: ""
+    }
+    val shipmentFactDate by lazy {
+        taskManager.getReceivingTask()?.taskDescription?.actualArrivalDate ?: ""
+    }
+    val shipmentOrder by lazy {
+        taskManager.getReceivingTask()?.taskDescription?.orderNumber ?: ""
+    }
+    val shipmentDelivery by lazy {
+        taskManager.getReceivingTask()?.taskDescription?.deliveryNumber ?: ""
+    }
+    val shipmentDeliveryOTM by lazy {
+        taskManager.getReceivingTask()?.taskDescription?.deliveryNumberOTM ?: ""
+    }
+    val shipmentTransportation by lazy {
+        taskManager.getReceivingTask()?.taskDescription?.transportationNumber ?: ""
+    }
+    val countGE by lazy {
+        taskManager.getReceivingTask()?.taskDescription?.countGE ?: ""
+    }
+
+    val countEO by lazy {
+        taskManager.getReceivingTask()?.taskDescription?.countEO ?: ""
+    }
+
 
     init {
         viewModelScope.launch {
@@ -228,6 +279,11 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
             }
             TaskStatus.Checked -> screenNavigator.openStartReviseLoadingScreen()
             TaskStatus.Recounted -> screenNavigator.openRecountStartLoadingScreen()
+            TaskStatus.ReadyToShipment -> {
+                if (taskType == TaskType.ShipmentRC) {
+                    screenNavigator.openShipmentPurposeTransportLoadingScreen("2", taskManager.getReceivingTask()?.taskDescription?.transportationNumber ?: "")
+                }
+            }
         }
     }
 
@@ -253,6 +309,20 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
                 return
             }
 
+            return
+        }
+
+        if (taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.ShipmentRC) {
+            //todo По функции в зависимости от статуса выполнять:
+            when (currentStatus.value) {
+                TaskStatus.ReadyToShipment -> screenNavigator.openTransportationNumberScreen() //Готово к отгрузке - переходить к вводу номера транспортировки (см. раздел 5.5.4)
+                TaskStatus.Traveling -> return //В пути - реализовать переход к вводу данных водителя (см. раздел 5.5.5)
+                TaskStatus.Arrived -> return //Прибыло - вызывать ФМ ZMP_UTZ_GRZ_37_V001 и переходить к контролю условий погрузки (см. раздел 5.5.6)
+                TaskStatus.ConditionsTested -> return //Условия проверены - вызывать ФМ ZMP_UTZ_GRZ_39_V001 и реализовать переход к контролю погрузки ГЕ (см. раздел 5.5.7)
+                TaskStatus.Recounted -> return //Пересчитано - вызывать ФМ ZMP_UTZ_GRZ_41_V001 и отображать сообщения (см. раздел 5.5.8)
+                TaskStatus.ShipmentAllowedByGis -> return //Разрешено ГИС. Отгрузка
+                TaskStatus.Loaded -> return //Загружено - переходить к вводу пломб. По завершении обработки по кнопке «Далее» на экране ввода пломб вызывать ФМ ZMP_UTZ_GRZ_42_V001
+            }
             return
         }
 

@@ -33,9 +33,9 @@ class TransportConditionsReviseFragment : CoreFragment<FragmentTransportConditio
         ToolbarButtonsClickListener,
         OnBackPresserListener {
 
-    var notificationsRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
-    var toCheckRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
-    var checkedRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
+    private var notificationsRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
+    private var toCheckRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
+    private var checkedRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
 
     override fun getLayoutId(): Int = R.layout.fragment_transport_conditions_revise
 

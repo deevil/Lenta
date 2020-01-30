@@ -28,7 +28,7 @@ data class ZmpUtzGrz35V001Params(
         @SerializedName("IV_MODE") //Режима работы ФМ: «01» - ввод транспортировки «02» - пропуск ввода транспортировки
         val mode: String,
         @SerializedName("IV_TRNUM") //Номер транспортировки
-        val shipmentNumber: String
+        val shipmentTransportation: String
 )
 
 class ZmpUtzGrz35V001Status : ObjectRawStatus<ZmpUtzGrz35V001Result>()
