@@ -834,6 +834,12 @@ class ScreenNavigator(
         }
     }
 
+    override fun openShipmentFinishLoadingScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(LoadingShipmentFinishFragment())
+        }
+    }
+
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 }
 
@@ -936,4 +942,5 @@ interface IScreenNavigator : ICoreNavigator {
     fun openTransportationNumberScreen()
     fun openDriverDataScreen()
     fun openShipmentArrivalLockLoadingScreen(driverDataInfo: TaskDriverDataInfo)
+    fun openShipmentFinishLoadingScreen()
 }

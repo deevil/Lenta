@@ -12,33 +12,21 @@ import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
 import com.lenta.shared.utilities.extentions.provideViewModel
 
-class LoadingShipmentArrivalLockFragment : CoreLoadingFragment() {
-
-    companion object {
-        fun create(driverDataInfo: TaskDriverDataInfo): LoadingShipmentArrivalLockFragment {
-            LoadingShipmentArrivalLockFragment().let {
-                it.driverDataInfo = driverDataInfo
-                return it
-            }
-        }
-    }
-
-    private var driverDataInfo: TaskDriverDataInfo? = null
+class LoadingShipmentFinishFragment : CoreLoadingFragment() {
 
     override fun getPageNumber(): String? {
         return generateScreenNumberFromPostfix("98")
     }
 
     override fun getViewModel(): CoreLoadingViewModel {
-        provideViewModel(LoadingShipmentArrivalLockViewModel::class.java).let {vm ->
+        provideViewModel(LoadingShipmentFinishViewModel::class.java).let {vm ->
             getAppComponent()?.inject(vm)
-            vm.driverDataInfo.value = driverDataInfo
             return vm
         }
     }
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
-        (vm as? LoadingShipmentArrivalLockViewModel)?.let {
+        (vm as? LoadingShipmentFinishViewModel)?.let {
             topToolbarUiModel.description.value = it.taskDescription
         }
     }

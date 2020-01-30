@@ -233,7 +233,6 @@ class LoadingTaskCardViewModel : CoreLoadingViewModel() {
     }
 
     private fun handleSuccessShipmentRC(result: ZmpUtzGrz43V001Result) {
-        Logg.d { "handleSuccessShipmentRC $result" }
         viewModelScope.launch {
             val taskHeader = repoInMemoryHolder.taskList.value?.tasks?.findLast { it.taskNumber == taskNumber }
             taskHeader?.let {

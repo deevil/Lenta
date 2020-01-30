@@ -55,39 +55,45 @@ class TransportConditionsReviseViewModel : CoreViewModel(), PageSelectionListene
     val checkedConditions: MutableLiveData<List<TransportConditionVM>> = MutableLiveData()
     val saveEnabled = conditionsToCheck.map { conditions -> conditions?.findLast { it.isObligatory } == null }
     val isTaskPRCorPSPStatusUnloading: MutableLiveData<Boolean> by lazy {
-        MutableLiveData((taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.ReceptionDistributionCenter || taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.OwnProduction) &&
-                (taskManager.getReceivingTask()?.taskDescription?.currentStatus == TaskStatus.Unloading || taskManager.getReceivingTask()?.taskDescription?.currentStatus == TaskStatus.Arrived)) //добавлен статус Прибыло, т.к. при первом проходе задания вызывается 20 рест, который не возвращает новый статус Разгружено и нет соответствующего потом переход к экрану 09/26
+        val currentStatus = taskManager.getReceivingTask()?.taskDescription?.currentStatus
+        MutableLiveData((typeTask == TaskType.ReceptionDistributionCenter || typeTask == TaskType.OwnProduction) &&
+                (currentStatus == TaskStatus.Unloading || currentStatus == TaskStatus.Arrived)) //добавлен статус Прибыло, т.к. при первом проходе задания вызывается 20 рест, который не возвращает новый статус Разгружено и нет соответствующего потом переход к экрану 09/26
     }
 
     override fun onPageSelected(position: Int) {
         selectedPage.value = position
     }
 
-    fun onClickReject() {
-        screenNavigator.openRejectScreen()
-    }
-
-    fun onClickBreaking() {
-        screenNavigator.openSealDamageDialog(
-                nextCallbackFunc = {
-                    checkedConditions.value?.map {
-                        if (it.conditionViewType == ConditionViewType.Seal) {
-                            taskManager.getReceivingTask()?.taskRepository?.getReviseDocuments()?.changeTransportConditionValue(it.id, "")
+    fun onClickSecondButton() {
+        if (typeTask == TaskType.ReceptionDistributionCenter || typeTask == TaskType.OwnProduction || typeTask == TaskType.ShipmentRC) {
+            screenNavigator.openSealDamageDialog(
+                    nextCallbackFunc = {
+                        checkedConditions.value?.map {
+                            if (it.conditionViewType == ConditionViewType.Seal) {
+                                taskManager.getReceivingTask()?.taskRepository?.getReviseDocuments()?.changeTransportConditionValue(it.id, "")
+                            }
                         }
-                    }
-                    conditionsToCheck.value?.map {
-                        if (it.conditionViewType == ConditionViewType.Seal) {
-                            taskManager.getReceivingTask()?.taskRepository?.getReviseDocuments()?.changeTransportConditionValue(it.id, "")
+                        conditionsToCheck.value?.map {
+                            if (it.conditionViewType == ConditionViewType.Seal) {
+                                taskManager.getReceivingTask()?.taskRepository?.getReviseDocuments()?.changeTransportConditionValue(it.id, "")
+                            }
                         }
+                        screenNavigator.openControlDeliveryCargoUnitsScreen()
                     }
-                    screenNavigator.openControlDeliveryCargoUnitsScreen()
-                }
-        )
+            )
+        } else {
+            screenNavigator.openRejectScreen()
+        }
     }
 
     fun onClickNext() {
         if (isTaskPRCorPSPStatusUnloading.value == true) {
             screenNavigator.openControlDeliveryCargoUnitsScreen()
+            return
+        }
+
+        if (typeTask == TaskType.ShipmentRC) {
+            screenNavigator.openShipmentFinishLoadingScreen()
             return
         }
 

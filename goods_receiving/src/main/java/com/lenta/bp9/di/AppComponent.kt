@@ -106,4 +106,5 @@ interface AppComponent {
     fun inject(it: TransportationNumberViewModel)
     fun inject(it: DriverDataViewModel)
     fun inject(it: LoadingShipmentArrivalLockViewModel)
+    fun inject(it: LoadingShipmentFinishViewModel)
 }

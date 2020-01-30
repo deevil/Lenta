@@ -56,7 +56,7 @@ class TransportConditionsReviseFragment : CoreFragment<FragmentTransportConditio
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
         bottomToolbarUiModel.cleanAll()
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
-        if (vm.typeTask == TaskType.ReceptionDistributionCenter || vm.typeTask == TaskType.OwnProduction) {
+        if (vm.typeTask == TaskType.ReceptionDistributionCenter || vm.typeTask == TaskType.OwnProduction || vm.typeTask == TaskType.ShipmentRC) {
             bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.breaking)
         } else {
             bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.refusal)
@@ -242,7 +242,7 @@ class TransportConditionsReviseFragment : CoreFragment<FragmentTransportConditio
 
     override fun onToolbarButtonClick(view: View) {
         when (view.id) {
-            R.id.b_2 -> if (vm.typeTask == TaskType.ReceptionDistributionCenter || vm.typeTask == TaskType.OwnProduction) vm.onClickBreaking() else vm.onClickReject()
+            R.id.b_2 -> vm.onClickSecondButton()
             R.id.b_5 -> vm.onClickNext()
         }
     }
