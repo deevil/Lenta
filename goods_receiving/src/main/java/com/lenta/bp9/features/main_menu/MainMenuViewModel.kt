@@ -25,7 +25,7 @@ class MainMenuViewModel : CoreViewModel() {
     }
 
     fun onClickShipmentTask() {
-
+        screenNavigator.openTaskListLoadingScreen(TaskListLoadingMode.Shipment)
     }
 
     fun onClickRecountTask() {

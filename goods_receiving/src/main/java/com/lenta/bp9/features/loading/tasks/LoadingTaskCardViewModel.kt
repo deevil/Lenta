@@ -28,6 +28,8 @@ class LoadingTaskCardViewModel : CoreLoadingViewModel() {
     @Inject
     lateinit var taskContentsReceptionDistrCenterNetRequest: TaskContentsReceptionDistrCenterNetRequest
     @Inject
+    lateinit var zmpUtzGrz43V001NetRequest: ZmpUtzGrz43V001NetRequest
+    @Inject
     lateinit var sessionInfo: ISessionInfo
     @Inject
     lateinit var context: Context
@@ -87,6 +89,15 @@ class LoadingTaskCardViewModel : CoreLoadingViewModel() {
                             )
                             taskContentsReceptionDistrCenterNetRequest(params).either(::handleFailure, ::handleSuccessRDS)
                         }
+                    }
+                    TaskType.ShipmentRC -> {
+                        val params = ZmpUtzGrz43V001Params(
+                                mode = mode.TaskCardModeString,
+                                deviceIP = context.getDeviceIp(),
+                                personalNumber = sessionInfo.personnelNumber ?: "",
+                                taskNumber = taskNumber
+                        )
+                        zmpUtzGrz43V001NetRequest(params).either(::handleFailure, ::handleSuccessShipmentRC)
                     }
                     else -> taskContentsNetRequest(params).either(::handleFailure, ::handleFullDataSuccess)
                 }
@@ -217,6 +228,38 @@ class LoadingTaskCardViewModel : CoreLoadingViewModel() {
                 newTask?.taskRepository?.getSections()?.updateSections(sectionInfo, sectionProducts)
                 taskManager.setTask(newTask)
                 transferToNextScreen()
+            }
+        }
+    }
+
+    private fun handleSuccessShipmentRC(result: ZmpUtzGrz43V001Result) {
+        viewModelScope.launch {
+            val taskHeader = repoInMemoryHolder.taskList.value?.tasks?.findLast { it.taskNumber == taskNumber }
+            taskHeader?.let {
+                val notifications = result.notifications.map { TaskNotification.from(it) }
+                val conditionNotifications = result.conditionNotifications.map { TaskNotification.from(it) }
+                val transportConditions = result.transportConditions.map { TransportCondition.from(it) }
+                val cargoUnits = result.cargoUnits.map { TaskCargoUnitInfo.from(it) }
+
+                val newTask = taskManager.newReceivingTask(taskHeader, TaskDescription.from(result.taskDescription))
+                newTask?.taskRepository?.getNotifications()?.updateWithNotifications(notifications, null, null, conditionNotifications)
+                newTask?.taskRepository?.getReviseDocuments()?.updateTransportCondition(transportConditions)
+                newTask?.taskRepository?.getCargoUnits()?.updateCargoUnits(cargoUnits)
+                taskManager.setTask(newTask)
+                taskManager.getReceivingTask()?.let { task ->
+                    when (task.taskDescription.currentStatus) {
+                        TaskStatus.ConditionControl -> {
+                            screenNavigator.openTransportConditionsScreen() //экран Контроль условий перевозки
+                        }
+                        TaskStatus.Recounting -> {
+                            screenNavigator.goBack()
+                            screenNavigator.openControlDeliveryCargoUnitsScreen() //экран Контроль погрузки ГЕ
+                        }
+                        else -> {
+                            screenNavigator.openTaskCardScreen(TaskCardMode.Full)
+                        }
+                    }
+                }
             }
         }
     }

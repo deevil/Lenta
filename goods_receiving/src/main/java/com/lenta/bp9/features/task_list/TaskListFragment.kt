@@ -10,6 +10,7 @@ import androidx.lifecycle.Observer
 import com.lenta.bp9.BR
 import com.lenta.bp9.R
 import com.lenta.bp9.databinding.*
+import com.lenta.bp9.features.loading.tasks.TaskListLoadingMode
 import com.lenta.bp9.platform.extentions.getAppComponent
 import com.lenta.shared.keys.KeyCode
 import com.lenta.shared.keys.OnKeyDownListener
@@ -43,7 +44,12 @@ class TaskListFragment : CoreFragment<FragmentTaskListBinding, TaskListViewModel
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
         topToolbarUiModel.title.value = "${getString(R.string.tk)} - ${vm.tkNumber}"
-        connectLiveData(vm.tasksCount.map { getString(R.string.task_list_count, it) }, topToolbarUiModel.description)
+        when (vm.taskListLoadingMode) {
+            TaskListLoadingMode.Shipment -> connectLiveData(vm.tasksCount.map { getString(R.string.task_shipment_list_count, it) }, topToolbarUiModel.description)
+            TaskListLoadingMode.PGE -> connectLiveData(vm.tasksCount.map { getString(R.string.task_pge_list_count, it) }, topToolbarUiModel.description)
+            TaskListLoadingMode.Receiving -> connectLiveData(vm.tasksCount.map { getString(R.string.task_receiving_list_count, it) }, topToolbarUiModel.description)
+            else -> topToolbarUiModel.description.value = TaskListLoadingMode.None.taskListLoadingModeString
+        }
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {

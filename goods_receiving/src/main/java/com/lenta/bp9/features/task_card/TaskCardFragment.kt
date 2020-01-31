@@ -31,6 +31,15 @@ import com.lenta.shared.utilities.extentions.provideViewModel
 
 class TaskCardFragment : CoreFragment<FragmentTaskCardBinding, TaskCardViewModel>(), ViewPagerSettings, ToolbarButtonsClickListener, OnBackPresserListener {
 
+    companion object {
+        fun create(mode: TaskCardMode): TaskCardFragment {
+            TaskCardFragment().let {
+                it.mode = mode
+                return it
+            }
+        }
+    }
+
     var notificationsRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
 
     private var mode: TaskCardMode = TaskCardMode.None
@@ -65,12 +74,18 @@ class TaskCardFragment : CoreFragment<FragmentTaskCardBinding, TaskCardViewModel
                 }
                 TaskStatus.Checked -> bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.verify)
                 TaskStatus.Recounted -> bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.recount)
+                TaskStatus.ReadyToShipment -> {
+                    if (vm.taskType == TaskType.ShipmentRC) {
+                        bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.skipAlternate)
+                    }
+                }
             }
 
             bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.docs)
             bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.nextAlternate)
             connectLiveData(vm.visibilityBtn, bottomToolbarUiModel.uiModelButton2.visibility)
             connectLiveData(vm.enabledBtn, bottomToolbarUiModel.uiModelButton2.enabled)
+            connectLiveData(vm.visibilityNextBtn, bottomToolbarUiModel.uiModelButton5.visibility)
             connectLiveData(vm.enabledBtn, bottomToolbarUiModel.uiModelButton5.enabled)
         }
 
@@ -84,6 +99,11 @@ class TaskCardFragment : CoreFragment<FragmentTaskCardBinding, TaskCardViewModel
                 }
                 TaskStatus.Checked -> bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.verify, enabled = false)
                 TaskStatus.Recounted -> bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.recount, enabled = false)
+                TaskStatus.ReadyToShipment -> {
+                    if (vm.taskType == TaskType.ShipmentRC) {
+                        bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.skipAlternate, enabled = false)
+                    }
+                }
             }
 
             bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.docs)
@@ -93,11 +113,21 @@ class TaskCardFragment : CoreFragment<FragmentTaskCardBinding, TaskCardViewModel
     }
 
     override fun getPagerItemView(container: ViewGroup, position: Int): View {
-        return when(position) {
-            0 -> prepareStatusView(container)
-            1 -> prepareDeliveryView(container)
-            2 -> prepareNotificationsView(container)
-            else -> View(context)
+        return if (vm.taskType == TaskType.ShipmentRC) {
+            when(position) {
+                0 -> prepareStatusView(container)
+                1 -> prepareShipmentView(container)
+                2 -> prepareDetailsView(container)
+                3 -> prepareNotificationsView(container)
+                else -> View(context)
+            }
+        } else {
+            when(position) {
+                0 -> prepareStatusView(container)
+                1 -> prepareDeliveryView(container)
+                2 -> prepareNotificationsView(container)
+                else -> View(context)
+            }
         }
     }
 
@@ -125,6 +155,54 @@ class TaskCardFragment : CoreFragment<FragmentTaskCardBinding, TaskCardViewModel
             textView.compoundDrawablePadding = 5
         }
         vm.onResume()
+    }
+
+    private fun prepareStatusView(container: ViewGroup): View {
+        DataBindingUtil
+                .inflate<LayoutTaskCardStatusBinding>(LayoutInflater.from(container.context),
+                        R.layout.layout_task_card_status,
+                        container,
+                        false).let { layoutBinding ->
+                    layoutBinding.vm = vm
+                    layoutBinding.lifecycleOwner = viewLifecycleOwner
+                    return layoutBinding.root
+                }
+    }
+
+    private fun prepareDeliveryView(container: ViewGroup): View {
+        DataBindingUtil
+                .inflate<LayoutTaskCardDeliveryBinding>(LayoutInflater.from(container.context),
+                        R.layout.layout_task_card_delivery,
+                        container,
+                        false).let { layoutBinding ->
+                    layoutBinding.vm = vm
+                    layoutBinding.lifecycleOwner = viewLifecycleOwner
+                    return layoutBinding.root
+                }
+    }
+
+    private fun prepareShipmentView(container: ViewGroup): View {
+        DataBindingUtil
+                .inflate<LayoutTaskCardShipmentBinding>(LayoutInflater.from(container.context),
+                        R.layout.layout_task_card_shipment,
+                        container,
+                        false).let { layoutBinding ->
+                    layoutBinding.vm = vm
+                    layoutBinding.lifecycleOwner = viewLifecycleOwner
+                    return layoutBinding.root
+                }
+    }
+
+    private fun prepareDetailsView(container: ViewGroup): View {
+        DataBindingUtil
+                .inflate<LayoutTaskCardDetailsBinding>(LayoutInflater.from(container.context),
+                        R.layout.layout_task_card_details,
+                        container,
+                        false).let { layoutBinding ->
+                    layoutBinding.vm = vm
+                    layoutBinding.lifecycleOwner = viewLifecycleOwner
+                    return layoutBinding.root
+                }
     }
 
     private fun prepareNotificationsView(container: ViewGroup): View {
@@ -159,41 +237,27 @@ class TaskCardFragment : CoreFragment<FragmentTaskCardBinding, TaskCardViewModel
                 }
     }
 
-    private fun prepareDeliveryView(container: ViewGroup): View {
-        DataBindingUtil
-                .inflate<LayoutTaskCardDeliveryBinding>(LayoutInflater.from(container.context),
-                        R.layout.layout_task_card_delivery,
-                        container,
-                        false).let { layoutBinding ->
-                    layoutBinding.vm = vm
-                    layoutBinding.lifecycleOwner = viewLifecycleOwner
-                    return layoutBinding.root
-                }
-    }
-
-    private fun prepareStatusView(container: ViewGroup): View {
-        DataBindingUtil
-                .inflate<LayoutTaskCardStatusBinding>(LayoutInflater.from(container.context),
-                        R.layout.layout_task_card_status,
-                        container,
-                        false).let { layoutBinding ->
-                    layoutBinding.vm = vm
-                    layoutBinding.lifecycleOwner = viewLifecycleOwner
-                    return layoutBinding.root
-                }
-    }
-
     override fun getTextTitle(position: Int): String {
-        return when (position) {
-            0 -> getString(R.string.status)
-            1 -> getString(R.string.delivery)
-            2 -> getString(R.string.notifications)
-            else -> ""
+        return if (vm.taskType == TaskType.ShipmentRC) {
+            when (position) {
+                0 -> getString(R.string.status)
+                1 -> getString(R.string.shipment)
+                2 -> getString(R.string.details)
+                3 -> getString(R.string.notifications)
+                else -> ""
+            }
+        } else {
+            when (position) {
+                0 -> getString(R.string.status)
+                1 -> getString(R.string.delivery)
+                2 -> getString(R.string.notifications)
+                else -> ""
+            }
         }
     }
 
     override fun countTab(): Int {
-        return 3
+        return if (vm.taskType == TaskType.ShipmentRC) 4 else 3
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -206,12 +270,4 @@ class TaskCardFragment : CoreFragment<FragmentTaskCardBinding, TaskCardViewModel
         return false
     }
 
-    companion object {
-        fun create(mode: TaskCardMode): TaskCardFragment {
-            TaskCardFragment().let {
-                it.mode = mode
-                return it
-            }
-        }
-    }
 }

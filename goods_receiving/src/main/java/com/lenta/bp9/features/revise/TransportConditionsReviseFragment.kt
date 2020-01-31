@@ -33,9 +33,9 @@ class TransportConditionsReviseFragment : CoreFragment<FragmentTransportConditio
         ToolbarButtonsClickListener,
         OnBackPresserListener {
 
-    var notificationsRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
-    var toCheckRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
-    var checkedRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
+    private var notificationsRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
+    private var toCheckRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
+    private var checkedRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
 
     override fun getLayoutId(): Int = R.layout.fragment_transport_conditions_revise
 
@@ -56,7 +56,7 @@ class TransportConditionsReviseFragment : CoreFragment<FragmentTransportConditio
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
         bottomToolbarUiModel.cleanAll()
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
-        if (vm.typeTask == TaskType.ReceptionDistributionCenter || vm.typeTask == TaskType.OwnProduction) {
+        if (vm.typeTask == TaskType.ReceptionDistributionCenter || vm.typeTask == TaskType.OwnProduction || vm.typeTask == TaskType.ShipmentRC) {
             bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.breaking)
         } else {
             bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.refusal)
@@ -242,7 +242,7 @@ class TransportConditionsReviseFragment : CoreFragment<FragmentTransportConditio
 
     override fun onToolbarButtonClick(view: View) {
         when (view.id) {
-            R.id.b_2 -> if (vm.typeTask == TaskType.ReceptionDistributionCenter || vm.typeTask == TaskType.OwnProduction) vm.onClickBreaking() else vm.onClickReject()
+            R.id.b_2 -> vm.onClickSecondButton()
             R.id.b_5 -> vm.onClickNext()
         }
     }

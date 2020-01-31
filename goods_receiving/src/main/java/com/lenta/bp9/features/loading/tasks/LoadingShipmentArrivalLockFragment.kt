@@ -3,6 +3,7 @@ package com.lenta.bp9.features.loading.tasks
 import android.os.Bundle
 import android.view.View
 import com.lenta.bp9.R
+import com.lenta.bp9.model.task.TaskDriverDataInfo
 import com.lenta.bp9.platform.extentions.getAppComponent
 import com.lenta.shared.features.loading.CoreLoadingFragment
 import com.lenta.shared.features.loading.CoreLoadingViewModel
@@ -11,39 +12,35 @@ import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
 import com.lenta.shared.utilities.extentions.provideViewModel
 
-class LoadingTaskCardFragment : CoreLoadingFragment() {
+class LoadingShipmentArrivalLockFragment : CoreLoadingFragment() {
 
     companion object {
-        fun create(taskNumber: String, mode: TaskCardMode, loadFullData: Boolean): LoadingTaskCardFragment {
-            LoadingTaskCardFragment().let {
-                it.taskNumber = taskNumber
-                it.mode = mode
-                it.loadFullData = loadFullData
+        fun create(driverDataInfo: TaskDriverDataInfo): LoadingShipmentArrivalLockFragment {
+            LoadingShipmentArrivalLockFragment().let {
+                it.driverDataInfo = driverDataInfo
                 return it
             }
         }
     }
 
-    private var mode: TaskCardMode = TaskCardMode.None
-    private var taskNumber: String = ""
-    private var loadFullData: Boolean = false
+    private var driverDataInfo: TaskDriverDataInfo? = null
 
     override fun getPageNumber(): String? {
         return generateScreenNumberFromPostfix("98")
     }
 
     override fun getViewModel(): CoreLoadingViewModel {
-        provideViewModel(LoadingTaskCardViewModel::class.java).let {
-            getAppComponent()?.inject(it)
-            it.taskNumber = taskNumber
-            it.mode = mode
-            it.loadFullData = loadFullData
-            return it
+        provideViewModel(LoadingShipmentArrivalLockViewModel::class.java).let {vm ->
+            getAppComponent()?.inject(vm)
+            vm.driverDataInfo.value = driverDataInfo
+            return vm
         }
     }
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
-        topToolbarUiModel.description.value = getString(R.string.task_card)
+        (vm as? LoadingShipmentArrivalLockViewModel)?.let {
+            topToolbarUiModel.description.value = it.taskDescription
+        }
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
@@ -60,6 +57,6 @@ class LoadingTaskCardFragment : CoreLoadingFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        vm.title.value = getString(R.string.task_loading)
+        vm.title.value = getString(R.string.status_change)
     }
 }
