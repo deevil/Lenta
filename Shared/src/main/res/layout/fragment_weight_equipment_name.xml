@@ -26,14 +26,15 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="center"
                 android:layout_marginBottom="32dp"
-                android:text="@string/enter_name_weight_equipment"/>
+                android:gravity="center"
+                android:text="@string/enter_name_weight_equipment" />
 
             <EditText
-                android:text="iS20"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content"
+                android:text="@={vm.weightEquipmentNameField}"
+                tools:text="iS20" />
 
         </LinearLayout>
 

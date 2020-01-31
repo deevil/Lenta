@@ -8,6 +8,7 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
+import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
 import com.lenta.shared.utilities.extentions.provideViewModel
 
@@ -21,7 +22,6 @@ class WeightEquipmentNameFragment : CoreFragment<FragmentWeightEquipmentNameBind
     override fun getViewModel(): WeightEquipmentNameViewModel {
         provideViewModel(WeightEquipmentNameViewModel::class.java).let {
             coreComponent.inject(it)
-            //it.setTxtNotFoundPrinter(getString(R.string.printer_not_found))
             return it
         }
     }
@@ -33,6 +33,8 @@ class WeightEquipmentNameFragment : CoreFragment<FragmentWeightEquipmentNameBind
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.apply)
+
+        connectLiveData(vm.applyButtonEnabled, bottomToolbarUiModel.uiModelButton5.enabled)
     }
 
     override fun onToolbarButtonClick(view: View) {
