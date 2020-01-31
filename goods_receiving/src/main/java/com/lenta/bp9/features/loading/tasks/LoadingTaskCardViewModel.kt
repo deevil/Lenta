@@ -252,8 +252,8 @@ class LoadingTaskCardViewModel : CoreLoadingViewModel() {
                             screenNavigator.openTransportConditionsScreen() //экран Контроль условий перевозки
                         }
                         TaskStatus.Recounting -> {
-                            //todo экран Контроль погрузки ГЕ
-                            Logg.d { "открыть Экран Контроль погрузки ГЕ" }
+                            screenNavigator.goBack()
+                            screenNavigator.openControlDeliveryCargoUnitsScreen() //экран Контроль погрузки ГЕ
                         }
                         else -> {
                             screenNavigator.openTaskCardScreen(TaskCardMode.Full)

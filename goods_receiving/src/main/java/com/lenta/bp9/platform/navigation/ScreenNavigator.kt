@@ -1,7 +1,6 @@
 package com.lenta.bp9.platform.navigation
 
 import android.content.Context
-import android.provider.Settings.Global.getString
 import androidx.core.content.ContextCompat
 import com.lenta.bp9.features.auth.AuthFragment
 import com.lenta.bp9.features.goods_list.GoodsListFragment
@@ -39,7 +38,6 @@ import com.lenta.bp9.features.reject.RejectFragment
 import com.lenta.bp9.features.repres_person_num_entry.RepresPersonNumEntryFragment
 import com.lenta.bp9.features.revise.*
 import com.lenta.bp9.features.revise.invoice.InvoiceReviseFragment
-import com.lenta.bp9.features.shipment_control_cargo_units.ShipmentControlCargoUnitsFragment
 import com.lenta.bp9.features.skip_recount.SkipRecountFragment
 import com.lenta.bp9.features.transfer_goods_section.TransferGoodsSectionFragment
 import com.lenta.bp9.features.transport_marriage.TransportMarriageFragment
@@ -881,9 +879,9 @@ class ScreenNavigator(
         }
     }
 
-    override fun openShipmentControlCargoUnitsScreen() {
+    override fun openShipmentEndRecountLoadingScreen() {
         runOrPostpone {
-            getFragmentStack()?.push(ShipmentControlCargoUnitsFragment())
+            getFragmentStack()?.push(LoadingShipmentEndRecountFragment())
         }
     }
 
@@ -995,5 +993,5 @@ interface IScreenNavigator : ICoreNavigator {
     fun openShipmentPostingSuccessfulDialog(nextCallbackFunc: () -> Unit)
     fun openShipmentStartLoadingScreen(taskNumber: String)
     fun openShipmentFixingDepartureLoadingScreen()
-    fun openShipmentControlCargoUnitsScreen()
+    fun openShipmentEndRecountLoadingScreen()
 }

@@ -55,6 +55,10 @@ class CargoUnitCardViewModel : CoreViewModel(), OnPositionClickListener {
         taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.OwnProduction
     }
 
+    val isTaskShipmentRC by lazy {
+        taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.ShipmentRC
+    }
+
     val enabledApplyBtn: MutableLiveData<Boolean> = spinStatusSelectedPosition.combineLatest(spinTypePalletSelectedPosition).map {
         statusInfo.value?.get(it!!.first)?.code == "2" || spinTypePallet.value?.get(it!!.second) ?: "" != ""
     }
@@ -69,11 +73,20 @@ class CargoUnitCardViewModel : CoreViewModel(), OnPositionClickListener {
 
     init {
         viewModelScope.launch {
-            if (isSurplus.value!!) {
-                statusInfo.value = dataBase.getSurplusInfoForPRC()
+            if (isTaskShipmentRC) {
+                statusInfo.value = dataBase.getStatusInfoShipmentRC()
+                typePalletInfo.value = dataBase.getTypePalletShipmentRC()
+                spinTypePallet.value = typePalletInfo.value?.map {
+                    it.name
+                }
             } else {
-                statusInfo.value = dataBase.getStatusInfoForPRC()
+                if (isSurplus.value!!) {
+                    statusInfo.value = dataBase.getSurplusInfoForPRC()
+                } else {
+                    statusInfo.value = dataBase.getStatusInfoForPRC()
+                }
             }
+
             spinStatus.value = statusInfo.value?.map {
                 it.name
             }
@@ -87,7 +100,9 @@ class CargoUnitCardViewModel : CoreViewModel(), OnPositionClickListener {
     fun onClickPositionSpinStatus(position: Int) {
         viewModelScope.launch {
             spinStatusSelectedPosition.value = position
-            updateDataSpinTypePallet(statusInfo.value!![position].code)
+            if (!isTaskShipmentRC) {
+                updateDataSpinTypePallet(statusInfo.value!![position].code)
+            }
         }
     }
 
@@ -105,7 +120,6 @@ class CargoUnitCardViewModel : CoreViewModel(), OnPositionClickListener {
 
                 screenNavigator.hideProgress()
             }
-
         }
     }
 
@@ -118,8 +132,17 @@ class CargoUnitCardViewModel : CoreViewModel(), OnPositionClickListener {
         screenNavigator.goBack()
     }
 
-    fun onClickDelete() {
-        processCargoUnitsService.delete(cargoUnitInfo.value!!)
-        screenNavigator.goBack()
+    fun onClickThirdBtn() {
+        if (isTaskShipmentRC) {
+            processCargoUnitsService.apply(
+                    cargoUnitInfo.value!!,
+                    "5",
+                    ""
+            )
+            screenNavigator.goBack()
+        } else {
+            processCargoUnitsService.delete(cargoUnitInfo.value!!)
+            screenNavigator.goBack()
+        }
     }
 }

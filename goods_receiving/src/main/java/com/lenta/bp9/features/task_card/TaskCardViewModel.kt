@@ -386,7 +386,7 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
         val cargoUnits = result.cargoUnits.map { TaskCargoUnitInfo.from(it) }
         taskManager.getReceivingTask()?.taskRepository?.getCargoUnits()?.updateCargoUnits(cargoUnits)
 
-        screenNavigator.openShipmentControlCargoUnitsScreen()
+        screenNavigator.openControlDeliveryCargoUnitsScreen()
     }
 
     fun onBackPressed() {
