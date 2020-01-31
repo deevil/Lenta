@@ -20,6 +20,7 @@ import com.lenta.shared.features.settings.SettingsViewModel
 import com.lenta.shared.features.support.SupportViewModel
 import com.lenta.shared.features.tech_login.TechLoginViewModel
 import com.lenta.shared.features.test_environment.PinCodeViewModel
+import com.lenta.shared.features.weight_equipment_name.WeightEquipmentNameViewModel
 import com.lenta.shared.only_one_app.LockManager
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
 import com.lenta.shared.platform.battery_state.BatteryStateMonitor
@@ -93,6 +94,7 @@ interface CoreComponent {
     fun inject(it: SelectOperModeViewModel)
     fun inject(it: SettingsViewModel)
     fun inject(it: AuxiliaryMenuViewModel)
+    fun inject(it: WeightEquipmentNameViewModel)
     fun inject(dataBindingHelpHolder: DataBindingExtHolder)
     fun inject(coreLoginFragment: CoreLoginFragment)
     fun inject(fragmentStack: FragmentStack)

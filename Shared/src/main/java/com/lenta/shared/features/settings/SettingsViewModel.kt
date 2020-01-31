@@ -47,8 +47,7 @@ class SettingsViewModel : CoreViewModel(){
     }
 
     fun onClickChangeWeightEquipment() {
-        // todo Экран ввода наименования весов
-
+        screenNavigator.openWeightEquipmentNameScreen()
     }
 
     fun onClickPrinter() {
