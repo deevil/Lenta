@@ -20,10 +20,13 @@ class SettingsViewModel : CoreViewModel(){
     lateinit var sessionInfo: ISessionInfo
 
 
-    var isMainMenu: MutableLiveData<Boolean> = MutableLiveData(true)
+    var isMainMenu = MutableLiveData(true)
 
-    var selectPrinterButtonVisibility: MutableLiveData<Boolean> = MutableLiveData(true)
-    var selectOperModeButtonVisibility: MutableLiveData<Boolean> = MutableLiveData(true)
+    var selectPrinterButtonVisibility = MutableLiveData(true)
+
+    var selectOperModeButtonVisibility = MutableLiveData(true)
+
+    var changeWeightEquipmentButtonVisibility = MutableLiveData(false)
 
     init {
         viewModelScope.launch {
@@ -32,12 +35,20 @@ class SettingsViewModel : CoreViewModel(){
                     selectPrinterButtonVisibility.value = false
                     selectOperModeButtonVisibility.value = false
                 }
+                PackageName.PRO.path -> {
+                    changeWeightEquipmentButtonVisibility.value = true
+                }
             }
         }
     }
 
     fun onClickBack() {
         screenNavigator.goBack()
+    }
+
+    fun onClickChangeWeightEquipment() {
+        // todo Экран ввода наименования весов
+
     }
 
     fun onClickPrinter() {
@@ -51,6 +62,5 @@ class SettingsViewModel : CoreViewModel(){
     fun onClickTechLog() {
         screenNavigator.openTechLoginScreen()
     }
-
 
 }
