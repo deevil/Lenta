@@ -6,6 +6,7 @@ import com.lenta.bp9.features.cargo_unit_card.CargoUnitCardViewModel
 import com.lenta.bp9.features.change_datetime.ChangeDateTimeViewModel
 import com.lenta.bp9.features.control_delivery_cargo_units.ControlDeliveryCargoUnitsViewModel
 import com.lenta.bp9.features.discrepancy_list.DiscrepancyListViewModel
+import com.lenta.bp9.features.driver_data.DriverDataViewModel
 import com.lenta.bp9.features.editing_invoice.EditingInvoiceViewModel
 import com.lenta.bp9.features.formed_docs.FormedDocsViewModel
 import com.lenta.bp9.features.goods_details.GoodsDetailsViewModel
@@ -36,6 +37,7 @@ import com.lenta.bp9.features.skip_recount.SkipRecountViewModel
 import com.lenta.bp9.features.task_card.TaskCardViewModel
 import com.lenta.bp9.features.transfer_goods_section.TransferGoodsSectionViewModel
 import com.lenta.bp9.features.transport_marriage.TransportMarriageViewModel
+import com.lenta.bp9.features.transportation_number.TransportationNumberViewModel
 import com.lenta.bp9.main.MainActivity
 import com.lenta.bp9.main.MainViewModel
 import com.lenta.shared.di.AppScope
@@ -100,4 +102,13 @@ interface AppComponent {
     fun inject(it: SkipRecountViewModel)
     fun inject(it: LoadingRecountStartPGEViewModel)
     fun inject(it: TransportMarriageViewModel)
+    fun inject(it: LoadingShipmentPurposeTransportViewModel)
+    fun inject(it: TransportationNumberViewModel)
+    fun inject(it: DriverDataViewModel)
+    fun inject(it: LoadingShipmentArrivalLockViewModel)
+    fun inject(it: LoadingShipmentFinishViewModel)
+    fun inject(it: LoadingShipmentPostingViewModel)
+    fun inject(it: LoadingShipmentStartViewModel)
+    fun inject(it: LoadingShipmentFixingDepartureViewModel)
+    fun inject(it: LoadingShipmentEndRecountViewModel)
 }

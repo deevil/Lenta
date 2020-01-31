@@ -18,6 +18,7 @@ import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.pojo.QualityInfo
+import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.extentions.combineLatest
@@ -46,14 +47,15 @@ class ControlDeliveryCargoUnitsViewModel : CoreViewModel(), PageSelectionListene
     lateinit var dataBase: IDataBaseRepo
 
     val selectedPage = MutableLiveData(0)
+    val notProcessedSelectionsHelper = SelectionItemsHelper()
     private val statusInfo: MutableLiveData<List<QualityInfo>> = MutableLiveData()
     private val listProcessedHolder: MutableLiveData<List<ControlDeliveryCargoUnitItem>> = MutableLiveData()
     private val listNotProcessedHolder: MutableLiveData<List<ControlDeliveryCargoUnitItem>> = MutableLiveData()
     val cargoUnitNumber: MutableLiveData<String> = MutableLiveData("")
     val requestFocusToCargoUnit: MutableLiveData<Boolean> = MutableLiveData()
     private val searchCargoUnitNumber: MutableLiveData<String> = MutableLiveData("")
-    val isTaskPSP by lazy {
-        taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.OwnProduction
+    val taskType by lazy {
+        taskManager.getReceivingTask()?.taskHeader?.taskType ?: TaskType.None
     }
 
     val listProcessed by lazy {
@@ -84,6 +86,11 @@ class ControlDeliveryCargoUnitsViewModel : CoreViewModel(), PageSelectionListene
         }
     }
 
+    val enabledMissingBtn: MutableLiveData<Boolean> = notProcessedSelectionsHelper.selectedPositions.map {
+        val selectedComponentsPositions = notProcessedSelectionsHelper.selectedPositions.value
+        !selectedComponentsPositions.isNullOrEmpty()
+    }
+
     val saveEnabled = listNotProcessedHolder.map {
         it?.size == 0
     }
@@ -93,7 +100,13 @@ class ControlDeliveryCargoUnitsViewModel : CoreViewModel(), PageSelectionListene
             taskManager.getReceivingTask()?.getCargoUnits()?.let {
                 processCargoUnitsService.newProcessCargoUnitsService(it)
             }
-            statusInfo.value = dataBase.getAllStatusInfoForPRC()
+
+            if (taskType == TaskType.ShipmentRC) {
+                statusInfo.value = dataBase.getStatusInfoShipmentRC()
+            } else {
+                statusInfo.value = dataBase.getAllStatusInfoForPRC()
+            }
+
             onResume()
         }
     }
@@ -108,26 +121,45 @@ class ControlDeliveryCargoUnitsViewModel : CoreViewModel(), PageSelectionListene
     }
 
     fun getDescription(): String {
-        return if (taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.OwnProduction) {
-            context.getString(R.string.control_delivery_eo)
-        } else {
-            context.getString(R.string.control_delivery_cargo_units)
+        return when (taskManager.getReceivingTask()?.taskHeader?.taskType) {
+            TaskType.OwnProduction -> context.getString(R.string.control_delivery_eo)
+            TaskType.ShipmentRC -> context.getString(R.string.shipment_control_cargo_units)
+            else -> context.getString(R.string.control_delivery_cargo_units)
         }
+    }
+
+    fun onClickMissing() {
+        notProcessedSelectionsHelper.selectedPositions.value?.map { position ->
+            processCargoUnitsService.findCargoUnit(listNotProcessed.value?.get(position)!!.name)?.let {
+                processCargoUnitsService.apply(
+                        it,
+                        "5",
+                        ""
+                )
+            }
+        }
+
+        updateNotProcessed()
+        updateProcessed()
     }
 
     fun onClickSave() {
         viewModelScope.launch {
-            screenNavigator.showProgressLoadingData()
-            processCargoUnitsService.save()
-            val params = UnloadingEndReceptionDistrCenterParameters(
-                    taskNumber = taskManager.getReceivingTask()?.taskHeader?.taskNumber ?: "",
-                    deviceIP = context.getDeviceIp(),
-                    personalNumber = sessionInfo.personnelNumber ?: "",
-                    transportConditions = taskManager.getReceivingTask()?.taskRepository?.getReviseDocuments()?.getTransportConditions()?.map { TransportConditionRestData.from(it) } ?: emptyList(),
-                    cargoUnits = taskManager.getReceivingTask()?.getCargoUnits()?.map { TaskCargoUnitInfoRestData.from(it) } ?: emptyList()
-            )
-            unloadingEndReceptionDistrCenter(params).either(::handleFailure, ::handleSuccess)
-            screenNavigator.hideProgress()
+            if (taskType == TaskType.ShipmentRC) {
+                screenNavigator.openShipmentEndRecountLoadingScreen()
+            } else {
+                screenNavigator.showProgressLoadingData()
+                processCargoUnitsService.save()
+                val params = UnloadingEndReceptionDistrCenterParameters(
+                        taskNumber = taskManager.getReceivingTask()?.taskHeader?.taskNumber ?: "",
+                        deviceIP = context.getDeviceIp(),
+                        personalNumber = sessionInfo.personnelNumber ?: "",
+                        transportConditions = taskManager.getReceivingTask()?.taskRepository?.getReviseDocuments()?.getTransportConditions()?.map { TransportConditionRestData.from(it) } ?: emptyList(),
+                        cargoUnits = taskManager.getReceivingTask()?.getCargoUnits()?.map { TaskCargoUnitInfoRestData.from(it) } ?: emptyList()
+                )
+                unloadingEndReceptionDistrCenter(params).either(::handleFailure, ::handleSuccess)
+                screenNavigator.hideProgress()
+            }
         }
     }
 
@@ -160,6 +192,8 @@ class ControlDeliveryCargoUnitsViewModel : CoreViewModel(), PageSelectionListene
                     )
                 }.reversed()
         )
+
+        notProcessedSelectionsHelper.clearPositions()
     }
 
     private fun updateProcessed() {

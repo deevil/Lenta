@@ -1,7 +1,6 @@
 package com.lenta.bp9.platform.navigation
 
 import android.content.Context
-import android.provider.Settings.Global.getString
 import androidx.core.content.ContextCompat
 import com.lenta.bp9.features.auth.AuthFragment
 import com.lenta.bp9.features.goods_list.GoodsListFragment
@@ -19,6 +18,7 @@ import com.lenta.bp9.features.change_datetime.ChangeDateTimeFragment
 import com.lenta.bp9.features.change_datetime.ChangeDateTimeMode
 import com.lenta.bp9.features.control_delivery_cargo_units.ControlDeliveryCargoUnitsFragment
 import com.lenta.bp9.features.discrepancy_list.DiscrepancyListFragment
+import com.lenta.bp9.features.driver_data.DriverDataFragment
 import com.lenta.bp9.features.editing_invoice.EditingInvoiceFragment
 import com.lenta.bp9.features.formed_docs.FormedDocsFragment
 import com.lenta.bp9.features.goods_details.GoodsDetailsFragment
@@ -37,15 +37,13 @@ import com.lenta.bp9.features.reconciliation_mercury.ReconciliationMercuryFragme
 import com.lenta.bp9.features.reject.RejectFragment
 import com.lenta.bp9.features.repres_person_num_entry.RepresPersonNumEntryFragment
 import com.lenta.bp9.features.revise.*
-import com.lenta.bp9.model.task.TaskProductInfo
 import com.lenta.bp9.features.revise.invoice.InvoiceReviseFragment
 import com.lenta.bp9.features.skip_recount.SkipRecountFragment
 import com.lenta.bp9.features.transfer_goods_section.TransferGoodsSectionFragment
 import com.lenta.bp9.features.transport_marriage.TransportMarriageFragment
+import com.lenta.bp9.features.transportation_number.TransportationNumberFragment
+import com.lenta.bp9.model.task.*
 import com.lenta.bp9.model.task.revise.ProductDocumentType
-import com.lenta.bp9.model.task.TaskBatchInfo
-import com.lenta.bp9.model.task.TaskCargoUnitInfo
-import com.lenta.bp9.model.task.TaskSectionInfo
 import com.lenta.bp9.model.task.revise.DeliveryProductDocumentRevise
 import com.lenta.bp9.model.task.revise.ProductVetDocumentRevise
 import com.lenta.shared.account.IAuthenticator
@@ -811,6 +809,82 @@ class ScreenNavigator(
         }
     }
 
+    override fun openShipmentPurposeTransportLoadingScreen(mode: String, transportationNumber: String) {
+        runOrPostpone {
+            getFragmentStack()?.push(LoadingShipmentPurposeTransportFragment.create(mode, transportationNumber))
+        }
+    }
+
+    override fun openTransportationNumberScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(TransportationNumberFragment())
+        }
+    }
+
+    override fun openDriverDataScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(DriverDataFragment())
+        }
+    }
+
+    override fun openShipmentArrivalLockLoadingScreen(driverDataInfo: TaskDriverDataInfo) {
+        runOrPostpone {
+            getFragmentStack()?.push(LoadingShipmentArrivalLockFragment.create(driverDataInfo))
+        }
+    }
+
+    override fun openShipmentFinishLoadingScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(LoadingShipmentFinishFragment())
+        }
+    }
+
+    override fun openShipmentAdjustmentConfirmationDialog(submergedGE: String, nextCallbackFunc: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = submergedGE,
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(nextCallbackFunc),
+                    pageNumber = "95",
+                    rightButtonDecorationInfo = ButtonDecorationInfo.nextAlternate))
+        }
+    }
+
+    override fun openShipmentPostingLoadingScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(LoadingShipmentPostingFragment())
+        }
+    }
+
+    override fun openShipmentPostingSuccessfulDialog(nextCallbackFunc: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.remains_unconfirmed_binding_docs_prc_dialog),
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(nextCallbackFunc),
+                    iconRes = R.drawable.ic_done_green_80dp,
+                    pageNumber = "95",
+                    isVisibleLeftButton = false,
+                    rightButtonDecorationInfo = ButtonDecorationInfo.nextAlternate))
+        }
+    }
+
+    override fun openShipmentStartLoadingScreen(taskNumber: String) {
+        runOrPostpone {
+            getFragmentStack()?.push(LoadingShipmentStartFragment.create(taskNumber))
+        }
+    }
+
+    override fun openShipmentFixingDepartureLoadingScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(LoadingShipmentFixingDepartureFragment())
+        }
+    }
+
+    override fun openShipmentEndRecountLoadingScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(LoadingShipmentEndRecountFragment())
+        }
+    }
+
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 }
 
@@ -909,4 +983,15 @@ interface IScreenNavigator : ICoreNavigator {
     fun openNoTransportDefectDeclaredDialog(nextCallbackFunc: () -> Unit)
     fun openDateNotCorrectlyScreen()
     fun openRemainsUnconfirmedBindingDocsPRCDialog(nextCallbackFunc: () -> Unit)
+    fun openShipmentPurposeTransportLoadingScreen(mode: String, transportationNumber: String)
+    fun openTransportationNumberScreen()
+    fun openDriverDataScreen()
+    fun openShipmentArrivalLockLoadingScreen(driverDataInfo: TaskDriverDataInfo)
+    fun openShipmentFinishLoadingScreen()
+    fun openShipmentAdjustmentConfirmationDialog(submergedGE: String, nextCallbackFunc: () -> Unit)
+    fun openShipmentPostingLoadingScreen()
+    fun openShipmentPostingSuccessfulDialog(nextCallbackFunc: () -> Unit)
+    fun openShipmentStartLoadingScreen(taskNumber: String)
+    fun openShipmentFixingDepartureLoadingScreen()
+    fun openShipmentEndRecountLoadingScreen()
 }
