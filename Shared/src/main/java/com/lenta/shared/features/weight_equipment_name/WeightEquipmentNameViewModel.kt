@@ -4,5 +4,8 @@ import com.lenta.shared.platform.viewmodel.CoreViewModel
 
 class WeightEquipmentNameViewModel : CoreViewModel() {
 
-    // TODO: Implement the ViewModel
+    fun onClickApply() {
+
+    }
+
 }
