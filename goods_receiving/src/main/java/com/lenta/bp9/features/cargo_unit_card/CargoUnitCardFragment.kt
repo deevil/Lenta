@@ -55,6 +55,9 @@ class CargoUnitCardFragment : CoreFragment<FragmentCargoUnitCardBinding, CargoUn
             bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.delete)
             connectLiveData(vm.deleteVisibility, bottomToolbarUiModel.uiModelButton3.visibility)
         }
+        if (vm.isTaskShipmentRC) {
+            bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.missing)
+        }
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.apply)
         connectLiveData(vm.enabledApplyBtn, bottomToolbarUiModel.uiModelButton5.enabled)
     }
@@ -73,7 +76,7 @@ class CargoUnitCardFragment : CoreFragment<FragmentCargoUnitCardBinding, CargoUn
 
     override fun onToolbarButtonClick(view: View) {
         when (view.id) {
-            R.id.b_3 -> vm.onClickDelete()
+            R.id.b_3 -> vm.onClickThirdBtn()
             R.id.b_5 -> vm.onClickApply()
         }
     }

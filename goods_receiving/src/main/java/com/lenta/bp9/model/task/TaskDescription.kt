@@ -34,6 +34,11 @@ data class TaskDescription(val currentStatus: TaskStatus,   //Код текущ�
                       val isOwnTransport: Boolean,     //Индикатор: Собственный транспорт (IS_OWN)
                       val isEDO: Boolean,               //Индикатор ЭДО
                       val isVet: Boolean,              //Индикатор Меркурий
+                      val countGE: String, //Количество ГЕ в задании ОРЦ
+                      val countEO: String, //Количество ЕО в задании ОРЦ
+                      val transportationNumber: String, //Номер транспортировки в задании ОРЦ
+                      val deliveryNumberOTM: String, //Номер поставки OTM в задании ОРЦ
+                      val submergedGE: String, //Погруженные ГЕ в задании ОРЦ
                       val quantityOutgoingFillings: Int //Количество исходящих пломб (задания ПРЦ, EV_NUM_SEALS из ZMP_UTZ_GRZ_21_V001 и ZMP_UTZ_GRZ_28_V001)
 ) {
 
@@ -64,6 +69,11 @@ data class TaskDescription(val currentStatus: TaskStatus,   //Код текущ�
                     isOwnTransport = restData.isOwnTransport.isNotEmpty(),
                     isEDO = restData.isEDO.isNotEmpty(),
                     isVet = restData.isVet.isNotEmpty(),
+                    countGE = restData.countGE,
+                    countEO = restData.countEO,
+                    transportationNumber = restData.transportationNumber,
+                    deliveryNumberOTM = restData.deliveryNumberOTM,
+                    submergedGE = restData.submergedGE,
                     nextStatusDate = "",
                     nextStatusTime = "",
                     quantityOutgoingFillings = 0
@@ -122,7 +132,17 @@ data class TaskDescriptionRestInfo(
         @SerializedName("IS_EDO")
         val isEDO: String,
         @SerializedName("IS_VET")
-        val isVet: String
+        val isVet: String,
+        @SerializedName("QNT_EXIDV_TOP")
+        val countGE: String,
+        @SerializedName("QNT_EXIDV")
+        val countEO: String,
+        @SerializedName("TRNUM")
+        val transportationNumber: String,
+        @SerializedName("DELIV_OTM")
+        val deliveryNumberOTM: String,
+        @SerializedName("LOAD_EXIDV_TOP")
+        val submergedGE: String
 ) {
 }
 

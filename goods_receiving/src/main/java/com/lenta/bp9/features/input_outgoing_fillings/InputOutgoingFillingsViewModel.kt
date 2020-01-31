@@ -4,10 +4,7 @@ import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp9.features.loading.tasks.TaskCardMode
-import com.lenta.bp9.model.task.IReceivingTaskManager
-import com.lenta.bp9.model.task.TaskDescription
-import com.lenta.bp9.model.task.TaskNotification
-import com.lenta.bp9.model.task.TaskStatus
+import com.lenta.bp9.model.task.*
 import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.bp9.requests.network.FixationDepartureReceptionDistrCenterNetRequest
 import com.lenta.bp9.requests.network.FixationDepartureReceptionDistrCenterParameters
@@ -61,15 +58,19 @@ class InputOutgoingFillingsViewModel : CoreViewModel() {
 
     fun onClickSave() {
         viewModelScope.launch {
-            screenNavigator.showProgressLoadingData()
-            val params = FixationDepartureReceptionDistrCenterParameters(
-                    taskNumber = taskManager.getReceivingTask()?.taskHeader?.taskNumber ?: "",
-                    deviceIP = context.getDeviceIp(),
-                    personalNumber = sessionInfo.personnelNumber ?: "",
-                    fillings = listInputOutgoingFillings.map {it.outgoingFillingNumber.value.toString()}
-            )
-            fixationDepartureReceptionDistrCenterNetRequest(params).either(::handleFailure, ::handleSuccess)
-            screenNavigator.hideProgress()
+            if (taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.ShipmentRC) {
+                screenNavigator.openShipmentFixingDepartureLoadingScreen()
+            } else {
+                screenNavigator.showProgressLoadingData()
+                val params = FixationDepartureReceptionDistrCenterParameters(
+                        taskNumber = taskManager.getReceivingTask()?.taskHeader?.taskNumber ?: "",
+                        deviceIP = context.getDeviceIp(),
+                        personalNumber = sessionInfo.personnelNumber ?: "",
+                        fillings = listInputOutgoingFillings.map {it.outgoingFillingNumber.value.toString()}
+                )
+                fixationDepartureReceptionDistrCenterNetRequest(params).either(::handleFailure, ::handleSuccess)
+                screenNavigator.hideProgress()
+            }
         }
     }
 

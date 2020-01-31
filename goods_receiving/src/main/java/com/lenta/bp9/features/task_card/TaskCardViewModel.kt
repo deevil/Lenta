@@ -6,17 +6,17 @@ import androidx.lifecycle.viewModelScope
 import com.lenta.bp9.R
 import com.lenta.bp9.features.change_datetime.ChangeDateTimeMode
 import com.lenta.bp9.features.loading.tasks.TaskCardMode
-import com.lenta.bp9.model.task.IReceivingTaskManager
-import com.lenta.bp9.model.task.NotificationIndicatorType
-import com.lenta.bp9.model.task.TaskStatus
-import com.lenta.bp9.model.task.TaskType
+import com.lenta.bp9.model.task.*
 import com.lenta.bp9.platform.navigation.IScreenNavigator
+import com.lenta.bp9.requests.network.*
 import com.lenta.shared.account.ISessionInfo
+import com.lenta.shared.exception.Failure
 import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.platform.time.ITimeMonitor
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.date_time.DateTimeUtil
+import com.lenta.shared.utilities.extentions.getDeviceIp
 import com.lenta.shared.utilities.extentions.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -33,6 +33,8 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
     lateinit var taskManager: IReceivingTaskManager
     @Inject
     lateinit var timeMonitor: ITimeMonitor
+    @Inject
+    lateinit var zmpUtzGrz39V001NetRequest: ZmpUtzGrz39V001NetRequest
 
     val selectedPage = MutableLiveData(0)
 
@@ -72,9 +74,13 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     val enabledBtn by lazy {
-        notifications.map { notifications ->
-            notifications!!.findLast { it.indicator == NotificationIndicatorType.Red } == null
-        }
+        MutableLiveData(if (taskType == TaskType.ShipmentRC && taskManager.getReceivingTask()?.taskDescription?.currentStatus == TaskStatus.Ordered) {
+            false
+        } else {
+            notifications.value?.findLast {
+                it.indicator == NotificationIndicatorType.Red
+            } == null
+        })
     }
 
     val bookmarkIndicator by lazy {
@@ -89,7 +95,15 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
 
     val visibilityBtn by lazy {
         MutableLiveData(taskManager.getReceivingTask()?.taskDescription?.currentStatus.let {
-            it == TaskStatus.Checked || it == TaskStatus.Recounted || (it == TaskStatus.Unloaded && (taskType == TaskType.RecalculationCargoUnit || taskType == TaskType.ReceptionDistributionCenter || taskType == TaskType.OwnProduction) )
+            it == TaskStatus.Checked || it == TaskStatus.Recounted ||
+                    (it == TaskStatus.Unloaded && (taskType == TaskType.RecalculationCargoUnit || taskType == TaskType.ReceptionDistributionCenter || taskType == TaskType.OwnProduction)) ||
+                    (it == TaskStatus.ReadyToShipment && taskType == TaskType.ShipmentRC )
+        })
+    }
+
+    val visibilityNextBtn by lazy {
+        MutableLiveData(taskManager.getReceivingTask()?.taskDescription?.currentStatus.let {
+            !(taskType == TaskType.ShipmentRC && (it == TaskStatus.ShipmentSentToGis || it == TaskStatus.ShipmentRejectedByGis || it == TaskStatus.Departure)  )
         })
     }
 
@@ -176,12 +190,48 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
 
     val changeNextDateTimePossible by lazy {
         val status = taskManager.getReceivingTask()?.taskDescription?.currentStatus
-        status == TaskStatus.Ordered || status == TaskStatus.Traveling || status == TaskStatus.Arrived ||
-                status == TaskStatus.Checked
+        if (taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.ShipmentRC) {
+            status == TaskStatus.Traveling || status == TaskStatus.Arrived
+        } else {
+            status == TaskStatus.Ordered || status == TaskStatus.Traveling || status == TaskStatus.Arrived || status == TaskStatus.Checked
+        }
     }
 
     val currentStatusDateTime: MutableLiveData<String> = MutableLiveData("")
     val nextStatusDateTime: MutableLiveData<String> = MutableLiveData("")
+
+    val shipmentNumberTN by lazy {
+        taskManager.getReceivingTask()?.taskDescription?.ttnNumber ?: ""
+    }
+    val shipmentNumberTTN by lazy {
+        taskManager.getReceivingTask()?.taskDescription?.deliveryNumber ?: ""
+    }
+    val shipmentPlanDate by lazy {
+        taskManager.getReceivingTask()?.taskDescription?.plannedDeliveryDate ?: ""
+    }
+    val shipmentFactDate by lazy {
+        taskManager.getReceivingTask()?.taskDescription?.actualArrivalDate ?: ""
+    }
+    val shipmentOrder by lazy {
+        taskManager.getReceivingTask()?.taskDescription?.orderNumber ?: ""
+    }
+    val shipmentDelivery by lazy {
+        taskManager.getReceivingTask()?.taskDescription?.deliveryNumber ?: ""
+    }
+    val shipmentDeliveryOTM by lazy {
+        taskManager.getReceivingTask()?.taskDescription?.deliveryNumberOTM ?: ""
+    }
+    val shipmentTransportation by lazy {
+        taskManager.getReceivingTask()?.taskDescription?.transportationNumber ?: ""
+    }
+    val countGE by lazy {
+        taskManager.getReceivingTask()?.taskDescription?.countGE ?: ""
+    }
+
+    val countEO by lazy {
+        taskManager.getReceivingTask()?.taskDescription?.countEO ?: ""
+    }
+
 
     init {
         viewModelScope.launch {
@@ -228,6 +278,11 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
             }
             TaskStatus.Checked -> screenNavigator.openStartReviseLoadingScreen()
             TaskStatus.Recounted -> screenNavigator.openRecountStartLoadingScreen()
+            TaskStatus.ReadyToShipment -> {
+                if (taskType == TaskType.ShipmentRC) {
+                    screenNavigator.openShipmentPurposeTransportLoadingScreen("2", taskManager.getReceivingTask()?.taskDescription?.transportationNumber ?: "")
+                }
+            }
         }
     }
 
@@ -253,6 +308,30 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
                 return
             }
 
+            return
+        }
+
+        if (taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.ShipmentRC) {
+            when (currentStatus.value) {
+                TaskStatus.ReadyToShipment -> screenNavigator.openTransportationNumberScreen()
+                TaskStatus.Traveling -> screenNavigator.openDriverDataScreen()
+                TaskStatus.Arrived -> screenNavigator.openShipmentStartLoadingScreen(taskNumber = taskManager.getReceivingTask()?.taskHeader?.taskNumber ?: "")
+                TaskStatus.ConditionsTested -> shipmentStartRecount()
+                TaskStatus.Recounted -> {
+                    if (taskManager.getReceivingTask()?.taskDescription?.submergedGE?.isNotEmpty() == true) {
+                        screenNavigator.openShipmentAdjustmentConfirmationDialog(
+                                submergedGE = taskManager.getReceivingTask()?.taskDescription?.submergedGE ?: "",
+                                nextCallbackFunc = {
+                                    screenNavigator.openShipmentPostingLoadingScreen()
+                                }
+                        )
+                    } else {
+                        screenNavigator.openShipmentPostingLoadingScreen()
+                    }
+                }
+                TaskStatus.ShipmentAllowedByGis -> return //todo Разрешено ГИС. Отгрузка, аналитик не описал условие в документации
+                TaskStatus.Loaded -> screenNavigator.openInputOutgoingFillingsScreen()
+            }
             return
         }
 
@@ -282,6 +361,32 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
             TaskStatus.Booked -> screenNavigator.openTransferGoodsSectionScreen()
             TaskStatus.Completed -> screenNavigator.openFormedDocsScreen()
         }
+    }
+
+    private fun shipmentStartRecount() {
+        viewModelScope.launch {
+            screenNavigator.showProgressLoadingData()
+            val params = ZmpUtzGrz39V001Params(
+                    taskNumber = taskManager.getReceivingTask()?.taskHeader?.taskNumber ?: "",
+                    deviceIP = context.getDeviceIp(),
+                    personalNumber = sessionInfo.personnelNumber ?: "",
+                    recountStartDate = taskManager.getReceivingTask()?.taskDescription?.nextStatusDate ?: "",
+                    recountStartTime = taskManager.getReceivingTask()?.taskDescription?.nextStatusTime ?: ""
+            )
+            zmpUtzGrz39V001NetRequest(params).either(::handleFailure, ::handleSuccess)
+            screenNavigator.hideProgress()
+        }
+    }
+
+    override fun handleFailure(failure: Failure) {
+        screenNavigator.openAlertScreen(failure)
+    }
+
+    private fun handleSuccess(result: ZmpUtzGrz39V001Result) {
+        val cargoUnits = result.cargoUnits.map { TaskCargoUnitInfo.from(it) }
+        taskManager.getReceivingTask()?.taskRepository?.getCargoUnits()?.updateCargoUnits(cargoUnits)
+
+        screenNavigator.openControlDeliveryCargoUnitsScreen()
     }
 
     fun onBackPressed() {

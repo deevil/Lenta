@@ -3,7 +3,9 @@
     <string name="task">Задание</string>
     <string name="SKUGE">SKU/ГЕ</string>
     <string name="tags">Признаки</string>
-    <string name="task_list_count">Задания на приёмку (%1$d)</string>
+    <string name="task_shipment_list_count">Задания на отгрузку (%1$d)</string>
+    <string name="task_pge_list_count">Задания на пересчет ГЕ (%1$d)</string>
+    <string name="task_receiving_list_count">Задания на приёмку (%1$d)</string>
     <string name="to_process">К обработке</string>
     <string name="search">Поиск</string>
     <string name="postponed">Отложенные</string>
@@ -207,4 +209,20 @@
     <string name="typeTN_TTN">Тип ТН\\ТТН</string>
     <string name="type_TTN_paper">Бумажная</string>
     <string name="type_TTN_electronic">Электронная</string>
+    <string name="shipment">Отгрузка</string>
+    <string name="details">Детали</string>
+    <string name="outbound_delivery">Исходящая поставка</string>
+    <string name="plan_date">Планируемая дата</string>
+    <string name="fact_date">Фактическая дата</string>
+    <string name="number_TN">Номер ТН</string>
+    <string name="delivery_otm">Поставка ОТМ</string>
+    <string name="enter_transportation_number">Введите номер транспортировки</string>
+    <string name="enter_transportation">Ввод транспортировки</string>
+    <string name="enter_driver_data">Ввод данных водителя</string>
+    <string name="enter_driver_data_and_car">Введите данные водителя и автомобиля</string>
+    <string name="initials_driver">ФИО водителя</string>
+    <string name="passport_data">Паспортные данные</string>
+    <string name="car_make">Марка машины</string>
+    <string name="car_number">Номер автомобиля</string>
+    <string name="shipment_control_cargo_units">Контроль погрузки ГЕ</string>
 </resources>
