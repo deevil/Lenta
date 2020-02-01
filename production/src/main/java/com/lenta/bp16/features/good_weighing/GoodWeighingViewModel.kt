@@ -2,6 +2,7 @@ package com.lenta.bp16.features.good_weighing
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.lenta.bp16.data.IScales
 import com.lenta.bp16.model.ITaskManager
 import com.lenta.bp16.model.pojo.Pack
 import com.lenta.bp16.platform.navigation.IScreenNavigator
@@ -26,6 +27,8 @@ class GoodWeighingViewModel : CoreViewModel() {
     lateinit var taskManager: ITaskManager
     @Inject
     lateinit var packCodeNetRequest: PackCodeNetRequest
+    @Inject
+    lateinit var scales: IScales
 
 
     val good by lazy {
@@ -123,8 +126,9 @@ class GoodWeighingViewModel : CoreViewModel() {
     }
 
     fun onClickGetWeight() {
-        // todo Реализовать получения веса с весов
-        weightField.value = "2.5"
+        viewModelScope.launch {
+            weightField.value = scales.getWeight().toString()
+        }
     }
 
     private fun printTag() {

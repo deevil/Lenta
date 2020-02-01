@@ -1,6 +1,7 @@
 package com.lenta.bp16.di
 
 import com.lenta.bp16.ExceptionHandler
+import com.lenta.bp16.data.IScales
 import com.lenta.bp16.features.auth.AuthViewModel
 import com.lenta.bp16.features.external_supply_list.ExternalSupplyListViewModel
 import com.lenta.bp16.features.external_supply_task_list.ExternalSupplyTaskListViewModel
@@ -32,6 +33,7 @@ interface AppComponent : CoreComponent {
     fun getGeneralRepository(): IGeneralRepository
     fun getTaskManager(): ITaskManager
     fun getIResourceManager(): IResourceManager
+    fun getIScales(): IScales
 
     fun inject(mainActivity: MainActivity)
     fun inject(mainViewModel: MainViewModel)
