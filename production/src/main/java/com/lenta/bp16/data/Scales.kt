@@ -11,6 +11,7 @@ import com.lenta.shared.utilities.Logg
 import com.mobrun.plugin.api.HyperHive
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import okhttp3.OkHttpClient
 import javax.inject.Inject
 
 class Scales @Inject constructor(
@@ -21,6 +22,8 @@ class Scales @Inject constructor(
 ) : IScales {
 
     val settings: ZmpUtz14V001 = ZmpUtz14V001(hyperHive) // Настройки
+
+    private val client = OkHttpClient()
 
     override suspend fun getWeight(): Either<Failure, Int> {
 

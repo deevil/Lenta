@@ -1,6 +1,8 @@
 package com.lenta.bp16.di
 
+import com.lenta.bp16.data.IPrinter
 import com.lenta.bp16.data.IScales
+import com.lenta.bp16.data.Printer
 import com.lenta.bp16.data.Scales
 import com.lenta.bp16.model.ITaskManager
 import com.lenta.bp16.model.TaskManager
@@ -45,6 +47,10 @@ class AppModule {
         @Binds
         @AppScope
         fun bindScales(realisation: Scales): IScales
+
+        @Binds
+        @AppScope
+        fun bindPrinter(realisation: Printer): IPrinter
 
     }
 

@@ -2,6 +2,7 @@ package com.lenta.bp16.features.good_weighing
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.lenta.bp16.data.IPrinter
 import com.lenta.bp16.data.IScales
 import com.lenta.bp16.model.ITaskManager
 import com.lenta.bp16.model.pojo.Pack
@@ -29,6 +30,8 @@ class GoodWeighingViewModel : CoreViewModel() {
     lateinit var packCodeNetRequest: PackCodeNetRequest
     @Inject
     lateinit var scales: IScales
+    @Inject
+    lateinit var printer: IPrinter
 
 
     val good by lazy {
@@ -132,8 +135,9 @@ class GoodWeighingViewModel : CoreViewModel() {
     }
 
     private fun printTag() {
-        // todo Реализовать печать штрих-кода тары
-
+        viewModelScope.launch {
+            printer.printTag()
+        }
     }
 
     fun onBackPressed() {
