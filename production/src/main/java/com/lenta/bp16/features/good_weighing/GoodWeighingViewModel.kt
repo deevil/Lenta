@@ -17,7 +17,9 @@ import com.lenta.shared.utilities.extentions.dropZeros
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.sumWith
 import com.mobrun.plugin.api.HyperHive
+import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class GoodWeighingViewModel : CoreViewModel() {
@@ -34,14 +36,7 @@ class GoodWeighingViewModel : CoreViewModel() {
     lateinit var scales: IScales
     @Inject
     lateinit var printer: IPrinter
-    @Inject
-    lateinit var hyperHive: HyperHive
 
-    val settings by lazy {
-        ZmpUtz14V001(hyperHive)
-    }
-
-    lateinit var serverAddress: String
 
     val good by lazy {
         taskManager.currentGood
@@ -86,12 +81,6 @@ class GoodWeighingViewModel : CoreViewModel() {
     }
 
     // -----------------------------
-
-    init {
-        viewModelScope.launch {
-            //settings = ZmpUtz14V001(hyperHive)
-        }
-    }
 
     fun onClickComplete() {
         viewModelScope.launch {
@@ -145,8 +134,10 @@ class GoodWeighingViewModel : CoreViewModel() {
 
     fun onClickGetWeight() {
         viewModelScope.launch {
-            scales.getWeight().either(::handleFailure) { weight ->
-                weightField.postValue(weight)
+            withContext(IO){
+                scales.getWeight().either(::handleFailure) { weight ->
+                    weightField.postValue(weight)
+                }
             }
         }
     }
