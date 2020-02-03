@@ -207,10 +207,20 @@ class GoodWeighingViewModel : CoreViewModel() {
     private fun printTag(printInfo: PrintInnerTagInfo) {
         viewModelScope.launch {
             withContext(IO) {
-                printer.printTag(printInfo)
-                        .either(::handleFailure) {
-                            // todo Что-то делаем после печати?
-                        }
+                appSettings.printerIpAddress.let {ipAddress ->
+                    if (ipAddress == null) {
+                        return@let null
+                    }
+                    printer.printTag(printInfo, ipAddress)
+                            .either(::handleFailure) {
+                                // todo Что-то делаем после печати?
+                            }
+                }
+
+            }.also {
+                if (it == null) {
+                    navigator.showAlertNoIpPrinter()
+                }
             }
         }
     }

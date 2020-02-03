@@ -25,8 +25,7 @@ class Printer @Inject constructor(
         private val analyticsHelper: AnalyticsHelper
 ) : IPrinter {
 
-    override fun printTag(printInnerTagInfo: PrintInnerTagInfo): Either<Failure, Boolean> {
-        val ip = appSettings.printerIpAddress ?: ""
+    override fun printTag(printInnerTagInfo: PrintInnerTagInfo, ip: String): Either<Failure, Boolean> {
 
         val template = readTemplateFromAsset() ?: return Either.Left(Failure.FileReadingError)
 
@@ -172,7 +171,7 @@ class Printer @Inject constructor(
 }
 
 interface IPrinter {
-    fun printTag(printInnerTagInfo: PrintInnerTagInfo): Either<Failure, Boolean>
+    fun printTag(printInnerTagInfo: PrintInnerTagInfo, ip: String): Either<Failure, Boolean>
 }
 
 data class PrintInnerTagInfo(

@@ -3,6 +3,7 @@ package com.lenta.bp9.features.loading.tasks
 import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.lenta.bp9.R
 import com.lenta.bp9.model.task.*
 import com.lenta.bp9.model.task.revise.TransportCondition
 import com.lenta.bp9.model.task.revise.TransportConditionRestData
@@ -77,7 +78,15 @@ class LoadingShipmentStartViewModel : CoreLoadingViewModel() {
                 newTask?.taskRepository?.getNotifications()?.updateWithNotifications(notifications, null, null, conditionNotifications)
                 newTask?.taskRepository?.getReviseDocuments()?.updateTransportCondition(transportConditions)
                 taskManager.setTask(newTask)
-                screenNavigator.openTransportConditionsScreen() //экран Контроль условий перевозки
+
+                /** На карточке задания в статусе "Прибыло" (CUR_STAT=4) , при вызове интерфейса ZMP_UTZ_GRZ_37_V001, проверять наличие записей в таблицах ET_COND_CHECK и ET_COND_NOTIFY*/
+                if (result.conditionNotifications.isEmpty() && result.transportConditions.isEmpty()) {
+                    screenNavigator.openCheckingNotNeededAlert(context.getString(R.string.revise_not_needed)) {
+                        screenNavigator.openTaskCardScreen(TaskCardMode.Full)
+                    }
+                } else {
+                    screenNavigator.openTransportConditionsScreen() //экран Контроль условий перевозки
+                }
             }
         }
     }
