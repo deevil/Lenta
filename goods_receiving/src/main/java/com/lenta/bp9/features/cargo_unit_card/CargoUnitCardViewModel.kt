@@ -75,7 +75,7 @@ class CargoUnitCardViewModel : CoreViewModel(), OnPositionClickListener {
         viewModelScope.launch {
             if (isTaskShipmentRC) {
                 statusInfo.value = dataBase.getStatusInfoShipmentRC()
-                typePalletInfo.value = dataBase.getTypePalletShipmentRC()
+                typePalletInfo.value = dataBase.getTypePalletInfo()
                 spinTypePallet.value = typePalletInfo.value?.map {
                     it.name
                 }

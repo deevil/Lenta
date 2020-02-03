@@ -184,4 +184,5 @@
     <string name="cancellation">Отмена</string>
     <string name="change_weight_equipment">Смена весового оборудования</string>
     <string name="enter_name_weight_equipment">Введите имя весового оборудования для получения веса на этот терминал</string>
+    <string name="enter_printer_address">Введите IP-адрес принтера для печати с этого терминала</string>
 </resources>

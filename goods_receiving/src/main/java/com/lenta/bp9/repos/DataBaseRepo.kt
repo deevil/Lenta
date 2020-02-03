@@ -111,12 +111,6 @@ class DataBaseRepo(
             it.id == "018"
         }
     }
-
-    override suspend fun getTypePalletShipmentRC(): List<QualityInfo>? = withContext(Dispatchers.IO) {
-        zmpUtz17V001.getAllQuality()?.toQualityInfoList()?.filter {
-            it.id == "019"
-        }
-    }
 }
 
 interface IDataBaseRepo {
@@ -137,5 +131,4 @@ interface IDataBaseRepo {
     suspend fun getQualityInfoPGEForDiscrepancy(): List<QualityInfo>?
     suspend fun getFailureReasons(): List<QualityInfo>?
     suspend fun getStatusInfoShipmentRC(): List<QualityInfo>?
-    suspend fun getTypePalletShipmentRC(): List<QualityInfo>?
 }

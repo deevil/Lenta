@@ -194,6 +194,14 @@ class ControlDeliveryCargoUnitsViewModel : CoreViewModel(), PageSelectionListene
         )
 
         notProcessedSelectionsHelper.clearPositions()
+
+        viewModelScope.launch {
+            moveToProcessedPageIfNeeded()
+        }
+    }
+
+    private fun moveToProcessedPageIfNeeded() {
+        selectedPage.value = if (listNotProcessedHolder.value?.size == 0) 1 else 0
     }
 
     private fun updateProcessed() {
