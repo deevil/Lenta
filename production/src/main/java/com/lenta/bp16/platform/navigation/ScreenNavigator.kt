@@ -185,6 +185,15 @@ class ScreenNavigator @Inject constructor(
             ))
         }
     }
+
+    override fun showAlertNoIpPrinter() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    pageNumber = "36",
+                    message = context.getString(R.string.no_ip_printer_alert)
+            ))
+        }
+    }
 }
 
 interface IScreenNavigator : ICoreNavigator {
@@ -208,4 +217,5 @@ interface IScreenNavigator : ICoreNavigator {
     fun showConfirmNoRawItem(taskType: String, confirmCallback: () -> Unit)
     fun showFixingPackagingPhaseSuccessful(nextCallback: () -> Unit)
     fun showNotSavedDataWillBeLost(yesCallback: () -> Unit)
+    fun showAlertNoIpPrinter()
 }
