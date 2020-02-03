@@ -121,6 +121,8 @@ class GoodWeighingViewModel : CoreViewModel() {
                 val today = Calendar.getInstance()
                 today.add(Calendar.DAY_OF_YEAR, packCodeResult.dataLabel.dateExpiration.toIntOrNull() ?: 0)
 
+                val productionTime =
+
                 printTag(PrintInnerTagInfo(
                         quantity = "${total.value!!}  ${Uom.KG.name}",
                         codeCont = packCodeResult.packCode,
@@ -134,7 +136,13 @@ class GoodWeighingViewModel : CoreViewModel() {
                         productTime = SimpleDateFormat(Constants.DATE_FORMAT_dd_mm_yyyy_hh_mm, Locale.getDefault()).format(Date()),
                         nameDone = packCodeResult.dataLabel.materialNameDone,
                         goodsCode = packCodeResult.dataLabel.material,
-                        barcode = packCodeResult.dataLabel.ean // todo Добавить логику формирования правильного штрих-кода
+                        // todo Допилить формирование баркода
+                        barcode = "(01)${packCodeResult.dataLabel.ean}" +
+                                "(310х)${total.value!!}" +
+                                "(8008)${SimpleDateFormat(Constants.DATE_FORMAT_yyyyMMdd, Locale.getDefault()).format(Date())}" +
+                                "(10)${raw.value!!.orderNumber}" +
+                                "(7003)${SimpleDateFormat(Constants.DATE_FORMAT_yyyy_mm_dd_hh_mm, Locale.getDefault()).format(today.time)}" +
+                                "(91)${packCodeResult.packCode}"
                 ))
 
                 total.value = 0.0
