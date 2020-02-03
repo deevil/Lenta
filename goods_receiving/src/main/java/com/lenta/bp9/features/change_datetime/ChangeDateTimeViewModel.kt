@@ -44,31 +44,40 @@ class ChangeDateTimeViewModel : CoreViewModel() {
     }
 
     val screenDescription: String by lazy {
-        val status = taskManager.getReceivingTask()?.taskDescription?.currentStatus
-        if (status == TaskStatus.Checked)
+        val currentStatus = taskManager.getReceivingTask()?.taskDescription?.currentStatus
+        val taskType = taskManager.getReceivingTask()?.taskHeader?.taskType
+        if (currentStatus == TaskStatus.Checked)
             context.getString(R.string.unloading_start)
-        else if (status == TaskStatus.Arrived && mode.value == ChangeDateTimeMode.NextStatus)
+        else if (currentStatus == TaskStatus.Arrived && mode.value == ChangeDateTimeMode.NextStatus && taskType != TaskType.ShipmentRC)
             context.getString(R.string.checking_start)
+        else if (currentStatus == TaskStatus.Arrived && mode.value == ChangeDateTimeMode.NextStatus && taskType == TaskType.ShipmentRC)
+            context.getString(R.string.loading_start)
         else
             context.getString(R.string.register_arrival)
     }
 
     val dateCaption: String by lazy {
-        val status = taskManager.getReceivingTask()?.taskDescription?.currentStatus
-        if (status == TaskStatus.Checked)
+        val currentStatus = taskManager.getReceivingTask()?.taskDescription?.currentStatus
+        val taskType = taskManager.getReceivingTask()?.taskHeader?.taskType
+        if (currentStatus == TaskStatus.Checked)
             context.getString(R.string.unloading_date)
-        else if (status == TaskStatus.Arrived && mode.value == ChangeDateTimeMode.NextStatus)
+        else if (currentStatus == TaskStatus.Arrived && mode.value == ChangeDateTimeMode.NextStatus && taskType != TaskType.ShipmentRC)
             context.getString(R.string.checking_date)
+        else if (currentStatus == TaskStatus.Arrived && mode.value == ChangeDateTimeMode.NextStatus && taskType == TaskType.ShipmentRC)
+            context.getString(R.string.loading_date)
         else
             context.getString(R.string.arrival_date)
     }
 
     val timeCaption: String by lazy {
-        val status = taskManager.getReceivingTask()?.taskDescription?.currentStatus
-        if (status == TaskStatus.Checked)
+        val currentStatus = taskManager.getReceivingTask()?.taskDescription?.currentStatus
+        val taskType = taskManager.getReceivingTask()?.taskHeader?.taskType
+        if (currentStatus == TaskStatus.Checked)
             context.getString(R.string.unloading_time)
-        else if (status == TaskStatus.Arrived && mode.value == ChangeDateTimeMode.NextStatus)
+        else if (currentStatus == TaskStatus.Arrived && mode.value == ChangeDateTimeMode.NextStatus && taskType != TaskType.ShipmentRC)
             context.getString(R.string.checking_time)
+        else if (currentStatus == TaskStatus.Arrived && mode.value == ChangeDateTimeMode.NextStatus && taskType == TaskType.ShipmentRC)
+            context.getString(R.string.loading_time)
         else
             context.getString(R.string.arrival_time)
     }

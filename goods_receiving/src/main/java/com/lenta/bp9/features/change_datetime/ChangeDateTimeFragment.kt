@@ -15,6 +15,14 @@ import com.lenta.shared.utilities.extentions.provideViewModel
 
 class ChangeDateTimeFragment : CoreFragment<FragmentChangeDateTimeBinding, ChangeDateTimeViewModel>(), ToolbarButtonsClickListener {
 
+    companion object {
+        fun create(mode: ChangeDateTimeMode): ChangeDateTimeFragment {
+            val fragment = ChangeDateTimeFragment()
+            fragment.mode = mode
+            return fragment
+        }
+    }
+
     private var mode: ChangeDateTimeMode = ChangeDateTimeMode.None
 
     override fun getLayoutId(): Int = R.layout.fragment_change_date_time
@@ -47,14 +55,6 @@ class ChangeDateTimeFragment : CoreFragment<FragmentChangeDateTimeBinding, Chang
     override fun onToolbarButtonClick(view: View) {
         when (view.id) {
             R.id.b_5 -> vm.onClickApply()
-        }
-    }
-
-    companion object {
-        fun create(mode: ChangeDateTimeMode): ChangeDateTimeFragment {
-            val fragment = ChangeDateTimeFragment()
-            fragment.mode = mode
-            return fragment
         }
     }
 
