@@ -37,10 +37,10 @@ class Scales @Inject constructor(
             return Either.Left(Failure.AuthError)
         }
 
-        // http://10.2.110.140:2020/ConnectService/pox/Send?connectName=iS20&header=I?LV01|RX01|LX02&data=&timeout=5000
         val urlOne = HttpUrl.parse("http://$serverAddress/ConnectService/pox/Send")!!.newBuilder()
                 .addQueryParameter("connectName", deviceName)
-                .addQueryParameter("header", "I?LV01|RX01|LX02")
+                //.addQueryParameter("header", "I?LV01|RX01|LX02")
+                .addEncodedQueryParameter("header", "I?LV01|RX01|LX02")
                 .addQueryParameter("data", "")
                 .addQueryParameter("timeout", "5000")
                 .build()
@@ -64,17 +64,19 @@ class Scales @Inject constructor(
             return Either.Left(Failure.NetworkConnection)
         }
 
-        val requestUrlTwo = "http://$serverAddress/ConnectService/pox/ReceiveMessage?connectName=$deviceName&handle=$handleForRequestTwo&timeout=5000"
-        Logg.d { "--> requestUrlTwo = $requestUrlTwo" }
-
-        val requestTwo = Request.Builder()
-                .url(requestUrlTwo)
+        val urlTwo = HttpUrl.parse("http://$serverAddress/ConnectService/pox/ReceiveMessage")!!.newBuilder()
+                .addQueryParameter("connectName", deviceName)
+                //.addQueryParameter("handle", handleForRequestTwo)
+                .addEncodedQueryParameter("handle", handleForRequestTwo)
+                .addQueryParameter("timeout", "5000")
                 .build()
+
+        Logg.d { "--> urlTwo = $urlTwo" }
 
         var weightInfo = ""
 
         try {
-            client.newCall(requestTwo).execute().apply {
+            client.newCall(Request.Builder().url(urlTwo).build()).execute().apply {
                 Logg.d { "--> Request two response: $this" }
                 weightInfo = this.body()?.string() ?: ""
                 Logg.d { "--> Request two response body: $weightInfo" }
