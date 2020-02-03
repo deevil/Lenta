@@ -8,10 +8,13 @@ import com.lenta.shared.fmp.resources.fast.ZmpUtz14V001
 import com.lenta.shared.functional.Either
 import com.lenta.shared.settings.IAppSettings
 import com.lenta.shared.utilities.Logg
+import com.lenta.shared.utilities.extentions.dropZeros
 import com.mobrun.plugin.api.HyperHive
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
+import okhttp3.Request
+import java.lang.Exception
 import javax.inject.Inject
 
 class Scales @Inject constructor(
@@ -25,8 +28,7 @@ class Scales @Inject constructor(
 
     private val client = OkHttpClient()
 
-    override suspend fun getWeight(): Either<Failure, Int> {
-
+    override suspend fun getWeight(): Either<Failure, String> {
         val serverAddress = getServerAddress()
         val scalesName = appSettings.weightEquipmentName
 
@@ -34,17 +36,69 @@ class Scales @Inject constructor(
             return Either.Left(Failure.AuthError)
         }
 
-        val startRequest = getStartRequest(serverAddress, scalesName)
-        Logg.d { "--> startRequest = $startRequest" }
+        val requestUrlOne = "http://$serverAddress/ConnectService/pox/Send?connectName=$scalesName&header=I?LV01|RX01|LX02&data=&timeout=5000"
+        Logg.d { "--> requestUrlOne = $requestUrlOne" }
 
+        val requestOne = Request.Builder()
+                .url(requestUrlOne)
+                .build()
 
+        var handleForRequestTwo = ""
 
+        try {
+            client.newCall(requestOne).execute().apply {
+                Logg.d { "--> Request one response: $this" }
+                handleForRequestTwo = this.body()?.string() ?: ""
+                Logg.d { "--> Request one response body: $handleForRequestTwo" }
+            }
+        } catch (e: Exception) {
+            Logg.d { "--> Request one error: $e" }
+            return Either.Left(Failure.NetworkConnection)
+        }
 
-        return Either.Right(321)
+        if (handleForRequestTwo.isEmpty()) {
+            return Either.Left(Failure.NetworkConnection)
+        }
+
+        val requestUrlTwo = "http://$serverAddress/ConnectService/pox/ReceiveMessage?connectName=$scalesName&handle=$handleForRequestTwo&timeout=5000"
+        Logg.d { "--> requestUrlTwo = $requestUrlTwo" }
+
+        val requestTwo = Request.Builder()
+                .url(requestUrlTwo)
+                .build()
+
+        var weightInfo = ""
+
+        try {
+            client.newCall(requestTwo).execute().apply {
+                Logg.d { "--> Request two response: $this" }
+                weightInfo = this.body()?.string() ?: ""
+                Logg.d { "--> Request two response body: $weightInfo" }
+            }
+        } catch (e: Exception) {
+            Logg.d { "--> Request two error: $e" }
+            return Either.Left(Failure.NetworkConnection)
+        }
+
+        if (weightInfo.isEmpty()) {
+            return Either.Left(Failure.NetworkConnection)
+        }
+
+        val weightInKg = getWeightFromResponse(weightInfo)
+
+        return Either.Right(weightInKg)
     }
 
-    private fun getStartRequest(serverAddress: String, scalesName: String): String {
-        return "http://$serverAddress/ConnectService/pox/Send?connectName=$scalesName&header=I?LV01|RX01|LX02&data=&timeout=5000"
+    private fun getWeightFromResponse(weightInfo: String): String {
+        // Пример - I!LV01|GT08|00|GW01|1|GW06|8|GT0A|11000000|GD07|kg;-3;516|GD02|kg;-3;0|GD01|kg;-3;516|LX02
+
+        val infoParts = weightInfo.split("|")
+        val targetPartIndex = infoParts.indexOfFirst { it == "GD07" }
+
+        val weightInGrams = infoParts[targetPartIndex + 1].replace("\\D", "").toDoubleOrNull() ?: 0.0
+        val weightInKilograms = weightInGrams / 1000
+
+        return weightInKilograms.dropZeros()
     }
 
     private suspend fun getServerAddress(): String? {
@@ -56,5 +110,5 @@ class Scales @Inject constructor(
 }
 
 interface IScales {
-    suspend fun getWeight() : Either<Failure, Int>
+    suspend fun getWeight() : Either<Failure, String>
 }

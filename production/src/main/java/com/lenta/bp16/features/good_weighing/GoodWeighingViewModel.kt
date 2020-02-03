@@ -130,7 +130,9 @@ class GoodWeighingViewModel : CoreViewModel() {
 
     fun onClickGetWeight() {
         viewModelScope.launch {
-            weightField.value = scales.getWeight().toString()
+            scales.getWeight().either(::handleFailure) { weight ->
+                weightField.postValue(weight)
+            }
         }
     }
 
