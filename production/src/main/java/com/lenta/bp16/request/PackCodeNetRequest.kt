@@ -1,7 +1,7 @@
 package com.lenta.bp16.request
 
 import com.google.gson.annotations.SerializedName
-import com.lenta.bp16.request.pojo.GoodInfo
+import com.lenta.bp16.request.pojo.DataLabel
 import com.lenta.bp16.request.pojo.RetCode
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.fmp.ObjectRawStatus
@@ -57,6 +57,9 @@ data class PackCodeParams(
 class PackCodeStatus : ObjectRawStatus<PackCodeResult>()
 
 data class PackCodeResult(
+        /** Какие-то данные... */
+        @SerializedName("ES_DATA_LABEL")
+        val dataLabel: DataLabel,
         /** Код тары */
         @SerializedName("EV_CODE_CONT")
         val packCode: String,

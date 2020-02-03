@@ -12,13 +12,17 @@ import com.lenta.bp16.request.PackCodeNetRequest
 import com.lenta.bp16.request.PackCodeParams
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
+import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.platform.viewmodel.CoreViewModel
+import com.lenta.shared.settings.IAppSettings
 import com.lenta.shared.utilities.extentions.dropZeros
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.sumWith
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.text.SimpleDateFormat
+import java.util.*
 import javax.inject.Inject
 
 class GoodWeighingViewModel : CoreViewModel() {
@@ -27,6 +31,8 @@ class GoodWeighingViewModel : CoreViewModel() {
     lateinit var navigator: IScreenNavigator
     @Inject
     lateinit var sessionInfo: ISessionInfo
+    @Inject
+    lateinit var appSettings: IAppSettings
     @Inject
     lateinit var taskManager: ITaskManager
     @Inject
@@ -114,17 +120,17 @@ class GoodWeighingViewModel : CoreViewModel() {
                 printTag(PrintInnerTagInfo(
                         quantity = total.value!!.toString(),
                         codeCont = packCodeResult.packCode,
-                        storCond = "",
-                        planAufFinish = "",
-                        aufnr = "",
-                        nameOsn = "",
-                        dateExpir = "",
-                        goodsName = "",
-                        weigher = "",
-                        productTime = "",
-                        nameDone = "",
-                        goodsCode = "",
-                        barcode = ""
+                        storCond = packCodeResult.dataLabel.storCondTime,
+                        planAufFinish = packCodeResult.dataLabel.planAufFinish,
+                        aufnr = raw.value!!.orderNumber,
+                        nameOsn = raw.value!!.name,
+                        dateExpir = packCodeResult.dataLabel.dateExpiration,
+                        goodsName = packCodeResult.dataLabel.materialName,
+                        weigher = appSettings.weightEquipmentName ?: "",
+                        productTime = SimpleDateFormat(Constants.TIME_FORMAT_hhmmss, Locale.getDefault()).format(Date()),
+                        nameDone = packCodeResult.dataLabel.materialNameDone,
+                        goodsCode = packCodeResult.dataLabel.material,
+                        barcode = packCodeResult.dataLabel.ean // todo Добавить логику формирования правильного штрих-кода
                 ))
 
                 total.value = 0.0
