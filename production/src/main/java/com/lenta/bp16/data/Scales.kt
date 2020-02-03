@@ -31,7 +31,6 @@ class Scales @Inject constructor(
 
         if (serverAddress.isNullOrEmpty() || deviceName.isNullOrEmpty()) {
             analyticsHelper.infoScreenMessage("--> Server address or device name is null!")
-            analyticsHelper.infoScreenMessage("--> serverAddress = $serverAddress / deviceName = $deviceName")
             return Either.Left(Failure.NetworkConnection)
         }
 
@@ -43,7 +42,6 @@ class Scales @Inject constructor(
                 .build()
 
         Logg.d { "urlOne = $urlOne" }
-        analyticsHelper.infoScreenMessage("--> urlOne = $urlOne")
 
         var responseOneBody = ""
 
@@ -51,7 +49,6 @@ class Scales @Inject constructor(
             client.newCall(Request.Builder().url(urlOne).build()).execute().apply {
                 responseOneBody = this.body()?.string() ?: ""
                 Logg.d { "Response one body: $responseOneBody" }
-                analyticsHelper.infoScreenMessage("--> Response one body: $responseOneBody")
             }
         } catch (e: Exception) {
             Logg.d { "Request one error: $e" }
@@ -73,7 +70,6 @@ class Scales @Inject constructor(
                 .build()
 
         Logg.d { "urlTwo = $urlTwo" }
-        analyticsHelper.infoScreenMessage("--> urlTwo = $urlTwo")
 
         var responseTwoBody = ""
 
@@ -81,7 +77,6 @@ class Scales @Inject constructor(
             client.newCall(Request.Builder().url(urlTwo).build()).execute().apply {
                 responseTwoBody = this.body()?.string() ?: ""
                 Logg.d { "Response two body: $responseTwoBody" }
-                analyticsHelper.infoScreenMessage("--> Response two body: $responseTwoBody")
             }
         } catch (e: Exception) {
             Logg.d { "Request two error: $e" }
