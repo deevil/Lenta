@@ -4,6 +4,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp16.data.IPrinter
 import com.lenta.bp16.data.IScales
+import com.lenta.bp16.data.PrintInfo
 import com.lenta.bp16.model.ITaskManager
 import com.lenta.bp16.model.pojo.Pack
 import com.lenta.bp16.platform.navigation.IScreenNavigator
@@ -134,7 +135,7 @@ class GoodWeighingViewModel : CoreViewModel() {
 
     fun onClickGetWeight() {
         viewModelScope.launch {
-            withContext(IO){
+            withContext(IO) {
                 scales.getWeight().either(::handleFailure) { weight ->
                     weightField.postValue(weight)
                 }
@@ -144,7 +145,12 @@ class GoodWeighingViewModel : CoreViewModel() {
 
     private fun printTag() {
         viewModelScope.launch {
-            printer.printTag()
+            withContext(IO) {
+                printer.printTag("1111111")
+                        .either(::handleFailure) {
+                            // todo Что-то делаем после печати?
+                        }
+            }
         }
     }
 
