@@ -1,5 +1,6 @@
 package com.lenta.bp16.data
 
+import com.lenta.shared.analytics.AnalyticsHelper
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.fmp.resources.dao_ext.getServerAddress
 import com.lenta.shared.fmp.resources.fast.ZmpUtz14V001
@@ -16,7 +17,8 @@ import javax.inject.Inject
 
 class Scales @Inject constructor(
         hyperHive: HyperHive,
-        private val appSettings: IAppSettings
+        private val appSettings: IAppSettings,
+        private val analyticsHelper: AnalyticsHelper
 ) : IScales {
 
     val settings: ZmpUtz14V001 = ZmpUtz14V001(hyperHive) // Настройки
@@ -28,6 +30,8 @@ class Scales @Inject constructor(
         val deviceName = appSettings.weightEquipmentName
 
         if (serverAddress.isNullOrEmpty() || deviceName.isNullOrEmpty()) {
+            analyticsHelper.infoScreenMessage("--> Server address or device name is null!")
+            analyticsHelper.infoScreenMessage("--> serverAddress = $serverAddress / deviceName = $deviceName")
             return Either.Left(Failure.NetworkConnection)
         }
 
@@ -39,6 +43,7 @@ class Scales @Inject constructor(
                 .build()
 
         Logg.d { "urlOne = $urlOne" }
+        analyticsHelper.infoScreenMessage("--> urlOne = $urlOne")
 
         var responseOneBody = ""
 
@@ -46,15 +51,18 @@ class Scales @Inject constructor(
             client.newCall(Request.Builder().url(urlOne).build()).execute().apply {
                 responseOneBody = this.body()?.string() ?: ""
                 Logg.d { "Response one body: $responseOneBody" }
+                analyticsHelper.infoScreenMessage("--> Response one body: $responseOneBody")
             }
         } catch (e: Exception) {
             Logg.d { "Request one error: $e" }
+            analyticsHelper.infoScreenMessage("--> Request one error: $e")
             return Either.Left(Failure.NetworkConnection)
         }
 
         val handle = getHandleFromResponseOneBody(responseOneBody)
 
         if (handle?.isEmpty() == true) {
+            analyticsHelper.infoScreenMessage("--> Handle is empty!")
             return Either.Left(Failure.NetworkConnection)
         }
 
@@ -65,21 +73,24 @@ class Scales @Inject constructor(
                 .build()
 
         Logg.d { "urlTwo = $urlTwo" }
+        analyticsHelper.infoScreenMessage("--> urlTwo = $urlTwo")
 
         var responseTwoBody = ""
 
         try {
             client.newCall(Request.Builder().url(urlTwo).build()).execute().apply {
                 responseTwoBody = this.body()?.string() ?: ""
-                Logg.d { "Response two: $this" }
                 Logg.d { "Response two body: $responseTwoBody" }
+                analyticsHelper.infoScreenMessage("--> Response two body: $responseTwoBody")
             }
         } catch (e: Exception) {
             Logg.d { "Request two error: $e" }
+            analyticsHelper.infoScreenMessage("--> Request two error: $e")
             return Either.Left(Failure.NetworkConnection)
         }
 
         if (responseTwoBody.isEmpty()) {
+            analyticsHelper.infoScreenMessage("--> Second response is empty!")
             return Either.Left(Failure.NetworkConnection)
         }
 
