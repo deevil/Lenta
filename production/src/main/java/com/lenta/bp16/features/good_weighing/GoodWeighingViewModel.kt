@@ -142,12 +142,12 @@ class GoodWeighingViewModel : CoreViewModel() {
 
     private fun printTag() {
         viewModelScope.launch {
-            withContext(IO) {
+            /*withContext(IO) {
                 printer.printTag("1111111")
                         .either(::handleFailure) {
                             // todo Что-то делаем после печати?
                         }
-            }
+            }*/
         }
     }
 
