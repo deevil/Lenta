@@ -119,9 +119,8 @@ class GoodWeighingViewModel : CoreViewModel() {
                 }
 
                 val today = Calendar.getInstance()
-                today.add(Calendar.DAY_OF_YEAR, packCodeResult.dataLabel.dateExpiration.toIntOrNull() ?: 0)
-
-                val productionTime =
+                today.add(Calendar.DAY_OF_YEAR, packCodeResult.dataLabel.dateExpiration.toIntOrNull()
+                        ?: 0)
 
                 printTag(PrintInnerTagInfo(
                         quantity = "${total.value!!}  ${Uom.KG.name}",
@@ -136,8 +135,7 @@ class GoodWeighingViewModel : CoreViewModel() {
                         productTime = SimpleDateFormat(Constants.DATE_FORMAT_dd_mm_yyyy_hh_mm, Locale.getDefault()).format(Date()),
                         nameDone = packCodeResult.dataLabel.materialNameDone,
                         goodsCode = packCodeResult.dataLabel.material,
-                        // todo Допилить формирование баркода
-                        barcode = "(01)${packCodeResult.dataLabel.ean}" +
+                        barcode = "(01)${getFormattedEan(packCodeResult.dataLabel.ean, total.value!!)}" +
                                 "(310х)${total.value!!}" +
                                 "(8008)${SimpleDateFormat(Constants.DATE_FORMAT_yyyyMMdd, Locale.getDefault()).format(Date())}" +
                                 "(10)${raw.value!!.orderNumber}" +
@@ -151,6 +149,39 @@ class GoodWeighingViewModel : CoreViewModel() {
                 navigator.openPackListScreen()
             }
         }
+    }
+
+    private fun getFormattedEan(ean: String, quantity: Double): String {
+        val firstPart = ean.take(7)
+        var weight = (quantity / 1000).toString()
+
+        while (weight.length < 5) {
+            weight = "0$weight"
+        }
+
+        while (weight.length > 5) {
+            weight = weight.dropLast(1)
+        }
+
+        /*Логика расчета контрольного числа:
+        1. Складываются цифры, находящихся на четных позициях;
+        2. Полученный результат умножается на три;
+        3. Складываются цифры, находящиеся на нечётных позициях;
+        4. Складываются результаты по п.п. 2 и 3;
+        5. Определяется ближайшее наибольшее число к п. 4, кратное десяти;
+        6. Определяется разность между результатами по п.п. 5 и 4;*/
+
+        val nums = weight.toCharArray().map { it.toInt() }
+
+        val sum = ((nums[1] + nums[3]) * 3) + (nums[0] + nums[2] + nums[4])
+        var nearestMultipleOfTen = sum
+        while (nearestMultipleOfTen % 10 != 0) {
+            nearestMultipleOfTen++
+        }
+
+        val controlNumber = nearestMultipleOfTen - sum
+
+        return "$firstPart$weight$controlNumber"
     }
 
     override fun handleFailure(failure: Failure) {
