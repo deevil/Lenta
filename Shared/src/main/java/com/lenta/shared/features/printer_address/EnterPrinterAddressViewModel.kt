@@ -2,9 +2,9 @@ package com.lenta.shared.features.printer_address
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.platform.navigation.ICoreNavigator
 import com.lenta.shared.platform.viewmodel.CoreViewModel
+import com.lenta.shared.settings.IAppSettings
 import com.lenta.shared.utilities.extentions.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -12,7 +12,7 @@ import javax.inject.Inject
 class EnterPrinterAddressViewModel : CoreViewModel() {
 
     @Inject
-    lateinit var sessionInfo: ISessionInfo
+    lateinit var appSettings: IAppSettings
     @Inject
     lateinit var navigator: ICoreNavigator
 
@@ -24,12 +24,12 @@ class EnterPrinterAddressViewModel : CoreViewModel() {
 
     init {
         viewModelScope.launch {
-            printerIpAddressField.value = sessionInfo.printer
+            printerIpAddressField.value = appSettings.weightEquipmentName
         }
     }
 
     fun onClickApply() {
-        sessionInfo.printer = printerIpAddressField.value
+        appSettings.weightEquipmentName = printerIpAddressField.value
         navigator.goBack()
     }
 
