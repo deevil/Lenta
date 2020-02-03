@@ -24,6 +24,7 @@ import com.lenta.shared.features.support.SupportFragment
 import com.lenta.shared.features.tech_login.TechLoginFragment
 import com.lenta.shared.features.test_environment.PinCodeFragment
 import com.lenta.shared.features.test_environment.failure.FailurePinCodeFragment
+import com.lenta.shared.features.weight_equipment_name.WeightEquipmentNameFragment
 import com.lenta.shared.fmp.resources.dao_ext.IconCode
 import com.lenta.shared.interactor.UseCase
 import com.lenta.shared.models.core.MatrixType
@@ -205,6 +206,12 @@ class CoreNavigator @Inject constructor(
     override fun openPrinterChangeScreen() {
         runOrPostpone {
             getFragmentStack()?.push(PrinterChangeFragment())
+        }
+    }
+
+    override fun openWeightEquipmentNameScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(WeightEquipmentNameFragment())
         }
     }
 
@@ -456,6 +463,7 @@ interface ICoreNavigator {
     fun openPinCodeForTestEnvironment()
     fun openSelectOperModeScreen()
     fun openPrinterChangeScreen()
+    fun openWeightEquipmentNameScreen()
     fun openSettingsScreen()
     fun openAuxiliaryMenuScreen()
     fun openFailurePinCodeScreen(message: String)

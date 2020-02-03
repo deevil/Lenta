@@ -2,6 +2,8 @@ package com.lenta.bp16.features.good_weighing
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.lenta.bp16.data.IPrinter
+import com.lenta.bp16.data.IScales
 import com.lenta.bp16.model.ITaskManager
 import com.lenta.bp16.model.pojo.Pack
 import com.lenta.bp16.platform.navigation.IScreenNavigator
@@ -13,7 +15,9 @@ import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.extentions.dropZeros
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.sumWith
+import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class GoodWeighingViewModel : CoreViewModel() {
@@ -26,6 +30,10 @@ class GoodWeighingViewModel : CoreViewModel() {
     lateinit var taskManager: ITaskManager
     @Inject
     lateinit var packCodeNetRequest: PackCodeNetRequest
+    @Inject
+    lateinit var scales: IScales
+    @Inject
+    lateinit var printer: IPrinter
 
 
     val good by lazy {
@@ -123,13 +131,24 @@ class GoodWeighingViewModel : CoreViewModel() {
     }
 
     fun onClickGetWeight() {
-        // todo Реализовать получения веса с весов
-        weightField.value = "2.5"
+        viewModelScope.launch {
+            withContext(IO) {
+                scales.getWeight().either(::handleFailure) { weight ->
+                    weightField.postValue(weight)
+                }
+            }
+        }
     }
 
     private fun printTag() {
-        // todo Реализовать печать штрих-кода тары
-
+        viewModelScope.launch {
+            /*withContext(IO) {
+                printer.printTag("1111111")
+                        .either(::handleFailure) {
+                            // todo Что-то делаем после печати?
+                        }
+            }*/
+        }
     }
 
     fun onBackPressed() {

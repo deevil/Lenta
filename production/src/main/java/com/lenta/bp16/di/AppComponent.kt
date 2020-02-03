@@ -1,19 +1,21 @@
 package com.lenta.bp16.di
 
 import com.lenta.bp16.ExceptionHandler
+import com.lenta.bp16.data.IPrinter
+import com.lenta.bp16.data.IScales
 import com.lenta.bp16.features.auth.AuthViewModel
 import com.lenta.bp16.features.external_supply_list.ExternalSupplyListViewModel
 import com.lenta.bp16.features.external_supply_task_list.ExternalSupplyTaskListViewModel
 import com.lenta.bp16.features.good_packaging.GoodPackagingViewModel
 import com.lenta.bp16.features.good_weighing.GoodWeighingViewModel
-import com.lenta.bp16.features.processing_unit_list.ProcessingUnitListViewModel
 import com.lenta.bp16.features.loading.fast.FastLoadingViewModel
 import com.lenta.bp16.features.main_menu.MainMenuViewModel
 import com.lenta.bp16.features.pack_good_list.PackGoodListViewModel
 import com.lenta.bp16.features.pack_list.PackListViewModel
+import com.lenta.bp16.features.processing_unit_list.ProcessingUnitListViewModel
+import com.lenta.bp16.features.processing_unit_task_list.ProcessingUnitTaskListViewModel
 import com.lenta.bp16.features.raw_list.RawListViewModel
 import com.lenta.bp16.features.select_market.SelectMarketViewModel
-import com.lenta.bp16.features.processing_unit_task_list.ProcessingUnitTaskListViewModel
 import com.lenta.bp16.main.MainActivity
 import com.lenta.bp16.main.MainViewModel
 import com.lenta.bp16.model.ITaskManager
@@ -32,6 +34,8 @@ interface AppComponent : CoreComponent {
     fun getGeneralRepository(): IGeneralRepository
     fun getTaskManager(): ITaskManager
     fun getIResourceManager(): IResourceManager
+    fun getIScales(): IScales
+    fun getIPrinter(): IPrinter
 
     fun inject(mainActivity: MainActivity)
     fun inject(mainViewModel: MainViewModel)
