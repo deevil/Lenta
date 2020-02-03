@@ -11,10 +11,12 @@ import com.lenta.bp16.request.PackCodeNetRequest
 import com.lenta.bp16.request.PackCodeParams
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
+import com.lenta.shared.fmp.resources.fast.ZmpUtz14V001
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.extentions.dropZeros
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.sumWith
+import com.mobrun.plugin.api.HyperHive
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -32,7 +34,14 @@ class GoodWeighingViewModel : CoreViewModel() {
     lateinit var scales: IScales
     @Inject
     lateinit var printer: IPrinter
+    @Inject
+    lateinit var hyperHive: HyperHive
 
+    val settings by lazy {
+        ZmpUtz14V001(hyperHive)
+    }
+
+    lateinit var serverAddress: String
 
     val good by lazy {
         taskManager.currentGood
@@ -77,6 +86,12 @@ class GoodWeighingViewModel : CoreViewModel() {
     }
 
     // -----------------------------
+
+    init {
+        viewModelScope.launch {
+            //settings = ZmpUtz14V001(hyperHive)
+        }
+    }
 
     fun onClickComplete() {
         viewModelScope.launch {
