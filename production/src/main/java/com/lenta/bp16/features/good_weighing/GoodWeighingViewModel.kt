@@ -12,6 +12,7 @@ import com.lenta.bp16.request.PackCodeNetRequest
 import com.lenta.bp16.request.PackCodeParams
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
+import com.lenta.shared.models.core.Uom
 import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.settings.IAppSettings
@@ -117,14 +118,17 @@ class GoodWeighingViewModel : CoreViewModel() {
                     good.value = it
                 }
 
+                val today = Calendar.getInstance()
+                today.add(Calendar.DAY_OF_YEAR, packCodeResult.dataLabel.dateExpiration.toIntOrNull() ?: 0)
+
                 printTag(PrintInnerTagInfo(
-                        quantity = total.value!!.toString(),
+                        quantity = "${total.value!!}  ${Uom.KG.name}",
                         codeCont = packCodeResult.packCode,
                         storCond = packCodeResult.dataLabel.storCondTime,
                         planAufFinish = packCodeResult.dataLabel.planAufFinish,
                         aufnr = raw.value!!.orderNumber,
                         nameOsn = raw.value!!.name,
-                        dateExpir = packCodeResult.dataLabel.dateExpiration,
+                        dateExpir = SimpleDateFormat(Constants.DATE_FORMAT_dd_mm_yyyy_hh_mm, Locale.getDefault()).format(today.time),
                         goodsName = packCodeResult.dataLabel.materialName,
                         weigher = appSettings.weightEquipmentName ?: "",
                         productTime = SimpleDateFormat(Constants.DATE_FORMAT_dd_mm_yyyy_hh_mm, Locale.getDefault()).format(Date()),
