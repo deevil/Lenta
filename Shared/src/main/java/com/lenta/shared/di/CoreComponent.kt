@@ -14,6 +14,7 @@ import com.lenta.shared.features.auxiliary_menu.AuxiliaryMenuViewModel
 import com.lenta.shared.features.fmp_settings.FmpSettingsViewModel
 import com.lenta.shared.features.login.CoreLoginFragment
 import com.lenta.shared.features.message.MessageViewModel
+import com.lenta.shared.features.printer_address.EnterPrinterAddressViewModel
 import com.lenta.shared.features.printer_change.PrinterChangeViewModel
 import com.lenta.shared.features.select_oper_mode.SelectOperModeViewModel
 import com.lenta.shared.features.settings.SettingsViewModel
@@ -95,6 +96,7 @@ interface CoreComponent {
     fun inject(it: SettingsViewModel)
     fun inject(it: AuxiliaryMenuViewModel)
     fun inject(it: WeightEquipmentNameViewModel)
+    fun inject(it: EnterPrinterAddressViewModel)
     fun inject(dataBindingHelpHolder: DataBindingExtHolder)
     fun inject(coreLoginFragment: CoreLoginFragment)
     fun inject(fragmentStack: FragmentStack)
