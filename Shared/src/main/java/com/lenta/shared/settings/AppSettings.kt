@@ -78,6 +78,11 @@ class AppSettings(
             printerNumberLiveData.value = value
         }
 
+    override var weightEquipmentName: String?
+        get() = sharedPrefferences.getString("weightEquipmentName", null)
+        set(value) {
+            sharedPrefferences.edit().putString("weightEquipmentName", value).commit()
+        }
 
     override var lastLogin: String?
         get() = sharedPrefferences.getString("lastLogin", null)
@@ -150,9 +155,7 @@ class AppSettings(
         }
     }
 
-
 }
-
 
 interface IAppSettings {
     var isTest: Boolean
@@ -170,19 +173,20 @@ interface IAppSettings {
     var printerNumber: String?
     val printerNumberLiveData: MutableLiveData<String?>
 
+    var weightEquipmentName: String?
+
     var techLogin: String
     var techPassword: String
 
     var lastTK: String?
     var lastPersonnelNumber: String?
     var lastPersonnelFullName: String?
+
     fun getCurrentServerAddress(): String
     fun getCurrentEnvironment(): String
     fun getCurrentProject(): String
     fun cleanFmpSettings()
     fun isConnectionSettingsWasChangedByUser(): Boolean
-
-
 }
 
 data class DefaultConnectionSettings(
