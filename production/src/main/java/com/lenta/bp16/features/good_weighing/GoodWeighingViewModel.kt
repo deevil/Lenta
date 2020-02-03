@@ -4,6 +4,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp16.data.IPrinter
 import com.lenta.bp16.data.IScales
+import com.lenta.bp16.data.PrintInnerTagInfo
 import com.lenta.bp16.model.ITaskManager
 import com.lenta.bp16.model.pojo.Pack
 import com.lenta.bp16.platform.navigation.IScreenNavigator
@@ -110,7 +111,21 @@ class GoodWeighingViewModel : CoreViewModel() {
                     good.value = it
                 }
 
-                printTag()
+                printTag(PrintInnerTagInfo(
+                        quantity = total.value!!.toString(),
+                        codeCont = packCodeResult.packCode,
+                        storCond = "",
+                        planAufFinish = "",
+                        aufnr = "",
+                        nameOsn = "",
+                        dateExpir = "",
+                        goodsName = "",
+                        weigher = "",
+                        productTime = "",
+                        nameDone = "",
+                        goodsCode = "",
+                        barcode = ""
+                ))
 
                 total.value = 0.0
                 weightField.value = "0"
@@ -140,13 +155,13 @@ class GoodWeighingViewModel : CoreViewModel() {
         }
     }
 
-    private fun printTag() {
+    private fun printTag(printInfo: PrintInnerTagInfo) {
         viewModelScope.launch {
             withContext(IO) {
-                /*printer.printTag("1111111")
+                printer.printTag(printInfo)
                         .either(::handleFailure) {
                             // todo Что-то делаем после печати?
-                        }*/
+                        }
             }
         }
     }

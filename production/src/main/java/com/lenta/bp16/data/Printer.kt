@@ -6,16 +6,18 @@ import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.analytics.AnalyticsHelper
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.functional.Either
+import com.lenta.shared.settings.IAppSettings
 import javax.inject.Inject
 
 class Printer @Inject constructor(
         private val sessionInfo: ISessionInfo,
+        private val appSettings: IAppSettings,
         private val gson: Gson,
         private val analyticsHelper: AnalyticsHelper
 ) : IPrinter {
 
-    override fun printTag(printInnerTagInfo: PrintInnerTagInfo, ip: String): Either<Failure, Boolean> {
-
+    override fun printTag(printInnerTagInfo: PrintInnerTagInfo): Either<Failure, Boolean> {
+        val ip = appSettings.printerIpAddress
 
         return Either.Right(false)
     }
@@ -23,7 +25,7 @@ class Printer @Inject constructor(
 }
 
 interface IPrinter {
-    fun printTag(printInnerTagInfo: PrintInnerTagInfo, ip: String): Either<Failure, Boolean>
+    fun printTag(printInnerTagInfo: PrintInnerTagInfo): Either<Failure, Boolean>
 }
 
 data class PrintInnerTagInfo(
