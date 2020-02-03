@@ -24,12 +24,12 @@ class EnterPrinterAddressViewModel : CoreViewModel() {
 
     init {
         viewModelScope.launch {
-            printerIpAddressField.value = appSettings.weightEquipmentName
+            printerIpAddressField.value = appSettings.printerIpAddress
         }
     }
 
     fun onClickApply() {
-        appSettings.weightEquipmentName = printerIpAddressField.value
+        appSettings.printerIpAddress = printerIpAddressField.value
         navigator.goBack()
     }
 
