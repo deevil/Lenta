@@ -12,6 +12,7 @@ import com.lenta.bp9.requests.network.FixationDepartureReceptionDistrCenterResul
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.platform.viewmodel.CoreViewModel
+import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.databinding.Evenable
 import com.lenta.shared.utilities.extentions.getDeviceIp
 import kotlinx.coroutines.launch
@@ -34,25 +35,32 @@ class InputOutgoingFillingsViewModel : CoreViewModel() {
         "\"" + (taskManager.getReceivingTask()?.taskDescription?.currentStatus?.stringValue() ?: "") + "\" -> \"" + TaskStatus.Departure.stringValue() + "\""
     }
 
-    val listInputOutgoingFillings: ArrayList<InputOutgoingFillingsItem> = ArrayList()
+    val listInputOutgoingFillings: MutableLiveData<List<InputOutgoingFillingsItem>> = MutableLiveData()
+
+
 
     fun getTitle(): String {
         return taskManager.getReceivingTask()?.taskHeader?.caption ?: ""
     }
 
-    fun onResume() {
-        updateListInputOutgoingFillings()
-    }
+    init {
+        viewModelScope.launch {
+            val quantityOutgoingFillings = if (taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.ShipmentRC) {
+                3
+            } else {
+                taskManager.getReceivingTask()?.taskDescription?.quantityOutgoingFillings ?: 0
+            }
+            val listOutgoingFillings: ArrayList<InputOutgoingFillingsItem> = ArrayList()
+            for (i in 1..quantityOutgoingFillings) {
+                listOutgoingFillings.add(
+                        InputOutgoingFillingsItem(
+                                number = i,
+                                outgoingFillingNumber = MutableLiveData("")
+                        )
+                )
+            }
+            listInputOutgoingFillings.value = listOutgoingFillings
 
-    private fun updateListInputOutgoingFillings() {
-        val quantityOutgoingFillings = taskManager.getReceivingTask()?.taskDescription?.quantityOutgoingFillings ?: 0
-        for (i in 0..quantityOutgoingFillings) {
-            listInputOutgoingFillings.add(
-                    InputOutgoingFillingsItem(
-                            number = i+1,
-                            outgoingFillingNumber = MutableLiveData("")
-                    )
-            )
         }
     }
 
@@ -66,7 +74,7 @@ class InputOutgoingFillingsViewModel : CoreViewModel() {
                         taskNumber = taskManager.getReceivingTask()?.taskHeader?.taskNumber ?: "",
                         deviceIP = context.getDeviceIp(),
                         personalNumber = sessionInfo.personnelNumber ?: "",
-                        fillings = listInputOutgoingFillings.map {it.outgoingFillingNumber.value.toString()}
+                        fillings = listInputOutgoingFillings.value?.map { it.outgoingFillingNumber.toString() } ?: emptyList()
                 )
                 fixationDepartureReceptionDistrCenterNetRequest(params).either(::handleFailure, ::handleSuccess)
                 screenNavigator.hideProgress()

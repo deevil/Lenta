@@ -858,7 +858,7 @@ class ScreenNavigator(
     override fun openShipmentPostingSuccessfulDialog(nextCallbackFunc: () -> Unit) {
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
-                    message = context.getString(R.string.remains_unconfirmed_binding_docs_prc_dialog),
+                    message = context.getString(R.string.shipment_posting_successful_dialog),
                     codeConfirmForRight = backFragmentResultHelper.setFuncForResult(nextCallbackFunc),
                     iconRes = R.drawable.ic_done_green_80dp,
                     pageNumber = "95",

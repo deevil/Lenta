@@ -229,4 +229,5 @@
     <string name="loading_date">Дата загрузки</string>
     <string name="loading_time">Время загрузки</string>
     <string name="revise_not_needed">Контроль условий не требуется</string>
+    <string name="shipment_posting_successful_dialog">Проводка отгрузки выполнена успешно. Распечатайте первичные документы, подпишите и передайте экспедитору.</string>
 </resources>
