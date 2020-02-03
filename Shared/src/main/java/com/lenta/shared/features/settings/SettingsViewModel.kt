@@ -51,7 +51,10 @@ class SettingsViewModel : CoreViewModel(){
     }
 
     fun onClickPrinter() {
-        screenNavigator.openPrinterChangeScreen()
+        when (sessionInfo.packageName) {
+            PackageName.PRO.path -> screenNavigator.openEnterPrinterAddressScreen()
+            else -> screenNavigator.openPrinterChangeScreen()
+        }
     }
 
     fun onClickWork() {

@@ -84,6 +84,12 @@ class AppSettings(
             sharedPrefferences.edit().putString("weightEquipmentName", value).commit()
         }
 
+    override var printerIpAddress: String?
+        get() = sharedPrefferences.getString("printerIpAddress", null)
+        set(value) {
+            sharedPrefferences.edit().putString("printerIpAddress", value).commit()
+        }
+
     override var lastLogin: String?
         get() = sharedPrefferences.getString("lastLogin", null)
         set(value) {
@@ -174,6 +180,7 @@ interface IAppSettings {
     val printerNumberLiveData: MutableLiveData<String?>
 
     var weightEquipmentName: String?
+    var printerIpAddress: String?
 
     var techLogin: String
     var techPassword: String

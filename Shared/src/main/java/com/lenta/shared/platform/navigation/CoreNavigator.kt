@@ -15,6 +15,7 @@ import com.lenta.shared.features.auxiliary_menu.AuxiliaryMenuFragment
 import com.lenta.shared.features.exit.ExitWithConfirmationFragment
 import com.lenta.shared.features.fmp_settings.FmpSettingsFragment
 import com.lenta.shared.features.matrix_info.MatrixInfoFragment
+import com.lenta.shared.features.printer_address.EnterPrinterAddressFragment
 import com.lenta.shared.features.printer_change.PrinterChangeFragment
 import com.lenta.shared.features.section_info.SectionInfoFragment
 import com.lenta.shared.features.select_oper_mode.SelectOperModeFragment
@@ -206,6 +207,12 @@ class CoreNavigator @Inject constructor(
     override fun openPrinterChangeScreen() {
         runOrPostpone {
             getFragmentStack()?.push(PrinterChangeFragment())
+        }
+    }
+
+    override fun openEnterPrinterAddressScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(EnterPrinterAddressFragment())
         }
     }
 
@@ -463,6 +470,7 @@ interface ICoreNavigator {
     fun openPinCodeForTestEnvironment()
     fun openSelectOperModeScreen()
     fun openPrinterChangeScreen()
+    fun openEnterPrinterAddressScreen()
     fun openWeightEquipmentNameScreen()
     fun openSettingsScreen()
     fun openAuxiliaryMenuScreen()
