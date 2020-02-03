@@ -14,7 +14,7 @@ class Printer @Inject constructor(
         private val analyticsHelper: AnalyticsHelper
 ) : IPrinter {
 
-    override fun printTag(ean: String): Either<Failure, Boolean> {
+    override fun printTag(printInnerTagInfo: PrintInnerTagInfo, ip: String): Either<Failure, Boolean> {
 
 
         return Either.Right(false)
@@ -23,5 +23,21 @@ class Printer @Inject constructor(
 }
 
 interface IPrinter {
-    fun printTag(ean: String): Either<Failure, Boolean>
+    fun printTag(printInnerTagInfo: PrintInnerTagInfo, ip: String): Either<Failure, Boolean>
 }
+
+data class PrintInnerTagInfo(
+        val quantity: String,
+        val codeCont: String,
+        val storCond: String,
+        val planAufFinish: String,
+        val aufnr: String,
+        val nameOsn: String,
+        val dateExpir: String,
+        val goodsName: String,
+        val weigher: String,
+        val productTime: String,
+        val nameDone: String,
+        val goodsCode: String,
+        val barcode: String
+)
