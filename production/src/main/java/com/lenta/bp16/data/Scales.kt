@@ -28,7 +28,7 @@ class Scales @Inject constructor(
         val deviceName = appSettings.weightEquipmentName
 
         if (serverAddress.isNullOrEmpty() || deviceName.isNullOrEmpty()) {
-            return Either.Left(Failure.AuthError)
+            return Either.Left(Failure.NetworkConnection)
         }
 
         val urlOne = HttpUrl.parse("http://$serverAddress/ConnectService/pox/Send")!!.newBuilder()

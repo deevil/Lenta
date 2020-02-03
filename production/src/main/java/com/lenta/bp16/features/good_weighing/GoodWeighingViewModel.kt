@@ -125,7 +125,7 @@ class GoodWeighingViewModel : CoreViewModel() {
                 printTag(PrintInnerTagInfo(
                         quantity = "${total.value!!}  ${Uom.KG.name}",
                         codeCont = packCodeResult.packCode,
-                        storCond = packCodeResult.dataLabel.storCondTime,
+                        storCond = "${packCodeResult.dataLabel.storCondTime} ч",
                         planAufFinish = packCodeResult.dataLabel.planAufFinish,
                         aufnr = raw.value!!.orderNumber,
                         nameOsn = raw.value!!.name,

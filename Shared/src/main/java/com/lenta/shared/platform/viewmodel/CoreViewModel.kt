@@ -15,7 +15,7 @@ abstract class CoreViewModel : ViewModel() {
 
     open fun handleFailure(failure: Failure) {
         Logg.e { "handleFailure: $failure" }
-        this.failure.value = failure
+        this.failure.postValue(failure)
     }
 
     open fun handleFragmentResult(code: Int?) : Boolean {
