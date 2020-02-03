@@ -12,6 +12,7 @@ import com.lenta.shared.utilities.extentions.dropZeros
 import com.mobrun.plugin.api.HyperHive
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import java.lang.Exception
@@ -30,23 +31,26 @@ class Scales @Inject constructor(
 
     override suspend fun getWeight(): Either<Failure, String> {
         val serverAddress = getServerAddress()
-        val scalesName = appSettings.weightEquipmentName
+        val deviceName = appSettings.weightEquipmentName
 
-        if (serverAddress.isNullOrEmpty() || scalesName.isNullOrEmpty()) {
+        if (serverAddress.isNullOrEmpty() || deviceName.isNullOrEmpty()) {
             return Either.Left(Failure.AuthError)
         }
 
-        val requestUrlOne = "http://$serverAddress/ConnectService/pox/Send?connectName=$scalesName&header=I?LV01|RX01|LX02&data=&timeout=5000"
-        Logg.d { "--> requestUrlOne = $requestUrlOne" }
-
-        val requestOne = Request.Builder()
-                .url(requestUrlOne)
+        // http://10.2.110.140:2020/ConnectService/pox/Send?connectName=iS20&header=I?LV01|RX01|LX02&data=&timeout=5000
+        val urlOne = HttpUrl.parse("http://$serverAddress/ConnectService/pox/Send")!!.newBuilder()
+                .addQueryParameter("connectName", deviceName)
+                .addQueryParameter("header", "I?LV01|RX01|LX02")
+                .addQueryParameter("data", "")
+                .addQueryParameter("timeout", "5000")
                 .build()
+
+        Logg.d { "--> requestUrlOne = $urlOne" }
 
         var handleForRequestTwo = ""
 
         try {
-            client.newCall(requestOne).execute().apply {
+            client.newCall(Request.Builder().url(urlOne).build()).execute().apply {
                 Logg.d { "--> Request one response: $this" }
                 handleForRequestTwo = this.body()?.string() ?: ""
                 Logg.d { "--> Request one response body: $handleForRequestTwo" }
@@ -60,7 +64,7 @@ class Scales @Inject constructor(
             return Either.Left(Failure.NetworkConnection)
         }
 
-        val requestUrlTwo = "http://$serverAddress/ConnectService/pox/ReceiveMessage?connectName=$scalesName&handle=$handleForRequestTwo&timeout=5000"
+        val requestUrlTwo = "http://$serverAddress/ConnectService/pox/ReceiveMessage?connectName=$deviceName&handle=$handleForRequestTwo&timeout=5000"
         Logg.d { "--> requestUrlTwo = $requestUrlTwo" }
 
         val requestTwo = Request.Builder()
