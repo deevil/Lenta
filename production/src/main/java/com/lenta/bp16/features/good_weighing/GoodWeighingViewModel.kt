@@ -127,7 +127,7 @@ class GoodWeighingViewModel : CoreViewModel() {
                         dateExpir = packCodeResult.dataLabel.dateExpiration,
                         goodsName = packCodeResult.dataLabel.materialName,
                         weigher = appSettings.weightEquipmentName ?: "",
-                        productTime = SimpleDateFormat(Constants.TIME_FORMAT_hhmmss, Locale.getDefault()).format(Date()),
+                        productTime = SimpleDateFormat(Constants.DATE_FORMAT_dd_mm_yyyy_hh_mm, Locale.getDefault()).format(Date()),
                         nameDone = packCodeResult.dataLabel.materialNameDone,
                         goodsCode = packCodeResult.dataLabel.material,
                         barcode = packCodeResult.dataLabel.ean // todo Добавить логику формирования правильного штрих-кода

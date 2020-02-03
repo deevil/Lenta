@@ -57,7 +57,7 @@ data class PackCodeParams(
 class PackCodeStatus : ObjectRawStatus<PackCodeResult>()
 
 data class PackCodeResult(
-        /** Какие-то данные... */
+        /** Структура данных для этикетки */
         @SerializedName("ES_DATA_LABEL")
         val dataLabel: DataLabel,
         /** Код тары */

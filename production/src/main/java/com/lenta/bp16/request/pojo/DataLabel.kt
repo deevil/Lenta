@@ -3,29 +3,28 @@ package com.lenta.bp16.request.pojo
 import com.google.gson.annotations.SerializedName
 
 data class DataLabel(
-        /** Какие */
+        /** SAP код сырья (из позиции новой тары) */
         @SerializedName("MATNR")
         val material: String,
-        /** Какие */
+        /** Наименование товара сырья */
         @SerializedName("NAME_MATNR")
         val materialName: String,
-        /** Неизвестно... */
+        /** Наименование готового продукта */
         @SerializedName("NAME_MATNR_DONE")
         val materialNameDone: String,
-        /** Неизвестно... */
+        /** Условия хранения + срок годности в часах */
         @SerializedName("STOR_COND_TIME")
         val storCondTime: String,
         /** Срок годности */
         @SerializedName("DATE_EXPIR")
         val dateExpiration: String,
-        /** Неизвестно... */
+        /** Плановое время окончания этапа (из технологического заказа в часах) */
         @SerializedName("PLAN_AUF_FINISH")
         val planAufFinish: String,
         /** Неизвестно... */
         @SerializedName("PLAN_AUF_UNIT")
         val planAufUnit: String,
-        /** Штрих-код */
+        /** Штрих код товара (из MEAN) */
         @SerializedName("EAN")
         val ean: String
-
 )
