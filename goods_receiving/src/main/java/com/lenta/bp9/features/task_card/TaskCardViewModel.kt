@@ -314,7 +314,22 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
         if (taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.ShipmentRC) {
             when (currentStatus.value) {
                 TaskStatus.ReadyToShipment -> screenNavigator.openTransportationNumberScreen()
-                TaskStatus.Traveling -> screenNavigator.openDriverDataScreen()
+                TaskStatus.Traveling -> {
+                    if (taskManager.getReceivingTask()?.taskDescription?.isAlco == true) {
+                        screenNavigator.openDriverDataScreen()
+                    } else {
+                        screenNavigator.openShipmentArrivalLockLoadingScreen(
+                                TaskDriverDataInfo(
+                                        initials = "",
+                                        passportData = "",
+                                        carMake = "",
+                                        carNumber = "",
+                                        additionalCarNumber = "",
+                                        transportCompanyCode = ""
+                                )
+                        )
+                    }
+                }
                 TaskStatus.Arrived -> screenNavigator.openShipmentStartLoadingScreen(taskNumber = taskManager.getReceivingTask()?.taskHeader?.taskNumber ?: "")
                 TaskStatus.ConditionsTested -> shipmentStartRecount()
                 TaskStatus.Recounted -> {
