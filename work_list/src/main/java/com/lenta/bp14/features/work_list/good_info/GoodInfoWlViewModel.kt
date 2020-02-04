@@ -468,11 +468,6 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
                 && enteredDate.value!!.after(Date())
     }
 
-    fun onBackPressed() {
-        task.removeCurrentGood()
-        navigator.goBack()
-    }
-
 }
 
 
