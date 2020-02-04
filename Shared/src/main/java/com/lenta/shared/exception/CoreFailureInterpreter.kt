@@ -11,6 +11,8 @@ class CoreFailureInterpreter
         return when (failure) {
             Failure.ServerError -> FailureDescription(message = context.getString(R.string.error_server))
 
+            Failure.WeighingError -> FailureDescription(message = context.getString(R.string.error_connect_weight_equipment))
+
             Failure.AuthError -> FailureDescription(message = context.getString(R.string.error_auth),
                     iconRes = R.drawable.is_warning_red_80dp,
                     textColor = ContextCompat.getColor(context, R.color.color_text_dialogWarning))
