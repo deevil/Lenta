@@ -125,7 +125,7 @@ class GoodWeighingViewModel : CoreViewModel() {
                 printTag(PrintInnerTagInfo(
                         quantity = "${total.value!!}  ${Uom.KG.name}",
                         codeCont = packCodeResult.packCode,
-                        storCond = packCodeResult.dataLabel.storCondTime,
+                        storCond = "${packCodeResult.dataLabel.storCondTime} ч",
                         planAufFinish = packCodeResult.dataLabel.planAufFinish,
                         aufnr = raw.value!!.orderNumber,
                         nameOsn = raw.value!!.name,
@@ -197,7 +197,10 @@ class GoodWeighingViewModel : CoreViewModel() {
     fun onClickGetWeight() {
         viewModelScope.launch {
             withContext(IO) {
-                scales.getWeight().either(::handleFailure) { weight ->
+                navigator.showProgressLoadingData()
+                scales.getWeight().also {
+                    navigator.hideProgress()
+                }.either(::handleFailure) { weight ->
                     weightField.postValue(weight)
                 }
             }
