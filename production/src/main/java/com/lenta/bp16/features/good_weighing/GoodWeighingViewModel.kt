@@ -197,7 +197,10 @@ class GoodWeighingViewModel : CoreViewModel() {
     fun onClickGetWeight() {
         viewModelScope.launch {
             withContext(IO) {
-                scales.getWeight().either(::handleFailure) { weight ->
+                navigator.showProgressLoadingData()
+                scales.getWeight().also {
+                    navigator.hideProgress()
+                }.either(::handleFailure) { weight ->
                     weightField.postValue(weight)
                 }
             }

@@ -26,9 +26,9 @@ class MainViewModel : CoreMainViewModel() {
     override fun showSimpleProgress(title: String) {
         progressJob = viewModelScope.launch {
             loadingViewModel.let {
-                it.progress.value = true
-                it.title.value = title
-                it.elapsedTime.value = null
+                it.progress.postValue(true)
+                it.title.postValue(title)
+                it.elapsedTime.postValue(null)
                 startProgressTimer(
                         coroutineScope = this,
                         remainingTime = it.remainingTime,
@@ -36,13 +36,13 @@ class MainViewModel : CoreMainViewModel() {
                 )
             }
         }
-        bottomToolbarUiModel.visibility.value = false
+        bottomToolbarUiModel.visibility.postValue(false)
     }
 
     override fun hideProgress() {
         loadingViewModel.clean()
         progressJob?.cancel()
-        bottomToolbarUiModel.visibility.value = true
+        bottomToolbarUiModel.visibility.postValue(true)
     }
 
     fun onExitClick() {
