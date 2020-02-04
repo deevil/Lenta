@@ -84,6 +84,13 @@ fun ZmpUtz14V001.getGrzArriveBackDD(): String? {
     return getParams("GRZ_ARRIVE_BACK_DD").firstOrNull()
 }
 
+fun ZmpUtz14V001.getPcpContTimeMm(): String? {
+    return getParams("PCP_CONT_TIME_MM").firstOrNull()
+}
+
+fun ZmpUtz14V001.getPcpExpirTimeMm(): String? {
+    return getParams("PCP_EXPIR_TIME_MM").firstOrNull()
+}
 
 private fun ZmpUtz14V001.getParams(paramName: String): List<String> {
     @Suppress("INACCESSIBLE_TYPE")

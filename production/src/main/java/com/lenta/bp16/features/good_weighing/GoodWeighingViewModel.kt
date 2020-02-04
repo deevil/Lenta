@@ -129,12 +129,12 @@ class GoodWeighingViewModel : CoreViewModel() {
                         planAufFinish = packCodeResult.dataLabel.planAufFinish,
                         aufnr = raw.value!!.orderNumber,
                         nameOsn = raw.value!!.name,
-                        dateExpir = SimpleDateFormat(Constants.DATE_FORMAT_dd_mm_yyyy_hh_mm, Locale.getDefault()).format(today.time),
+                        dateExpir = packCodeResult.dataLabel.dateExpiration,
                         goodsName = packCodeResult.dataLabel.materialName,
                         weigher = appSettings.weightEquipmentName ?: "",
                         productTime = SimpleDateFormat(Constants.DATE_FORMAT_dd_mm_yyyy_hh_mm, Locale.getDefault()).format(Date()),
                         nameDone = packCodeResult.dataLabel.materialNameDone,
-                        goodsCode = packCodeResult.dataLabel.material,
+                        goodsCode = packCodeResult.dataLabel.material.takeLast(6),
                         barcode = "(01)${getFormattedEan(packCodeResult.dataLabel.ean, total.value!!)}" +
                                 "(310х)${total.value!!}" +
                                 "(8008)${SimpleDateFormat(Constants.DATE_FORMAT_yyyyMMdd, Locale.getDefault()).format(Date())}" +
