@@ -345,7 +345,7 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
                     }
                 }
                 TaskStatus.ShipmentAllowedByGis -> return //todo Разрешено ГИС. Отгрузка, аналитик не описал условие в документации
-                TaskStatus.Loaded -> screenNavigator.openShipmentFixingDepartureLoadingScreen() //todo временно отключили вызов экрана пломб, сразу вызываем 42 рест. screenNavigator.openInputOutgoingFillingsScreen()
+                TaskStatus.Loaded -> screenNavigator.openInputOutgoingFillingsScreen()
             }
             return
         }

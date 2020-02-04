@@ -66,19 +66,15 @@ class InputOutgoingFillingsViewModel : CoreViewModel() {
 
     fun onClickSave() {
         viewModelScope.launch {
-            if (taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.ShipmentRC) {
-                screenNavigator.openShipmentFixingDepartureLoadingScreen()
-            } else {
-                screenNavigator.showProgressLoadingData()
-                val params = FixationDepartureReceptionDistrCenterParameters(
-                        taskNumber = taskManager.getReceivingTask()?.taskHeader?.taskNumber ?: "",
-                        deviceIP = context.getDeviceIp(),
-                        personalNumber = sessionInfo.personnelNumber ?: "",
-                        fillings = listInputOutgoingFillings.value?.map { it.outgoingFillingNumber.toString() } ?: emptyList()
-                )
-                fixationDepartureReceptionDistrCenterNetRequest(params).either(::handleFailure, ::handleSuccess)
-                screenNavigator.hideProgress()
-            }
+            screenNavigator.showProgressLoadingData()
+            val params = FixationDepartureReceptionDistrCenterParameters(
+                    taskNumber = taskManager.getReceivingTask()?.taskHeader?.taskNumber ?: "",
+                    deviceIP = context.getDeviceIp(),
+                    personalNumber = sessionInfo.personnelNumber ?: "",
+                    fillings = listInputOutgoingFillings.value?.map { it.outgoingFillingNumber.toString() } ?: emptyList()
+            )
+            fixationDepartureReceptionDistrCenterNetRequest(params).either(::handleFailure, ::handleSuccess)
+            screenNavigator.hideProgress()
         }
     }
 
