@@ -1,5 +1,6 @@
 package com.lenta.bp16.data
 
+import com.lenta.shared.analytics.AnalyticsHelper
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.fmp.resources.dao_ext.getServerAddress
 import com.lenta.shared.fmp.resources.fast.ZmpUtz14V001
@@ -16,7 +17,8 @@ import javax.inject.Inject
 
 class Scales @Inject constructor(
         hyperHive: HyperHive,
-        private val appSettings: IAppSettings
+        private val appSettings: IAppSettings,
+        private val analyticsHelper: AnalyticsHelper
 ) : IScales {
 
     val settings: ZmpUtz14V001 = ZmpUtz14V001(hyperHive) // Настройки
@@ -28,7 +30,8 @@ class Scales @Inject constructor(
         val deviceName = appSettings.weightEquipmentName
 
         if (serverAddress.isNullOrEmpty() || deviceName.isNullOrEmpty()) {
-            return Either.Left(Failure.AuthError)
+            analyticsHelper.infoScreenMessage("--> Server address or device name is null!")
+            return Either.Left(Failure.WeighingError)
         }
 
         val urlOne = HttpUrl.parse("http://$serverAddress/ConnectService/pox/Send")!!.newBuilder()
@@ -49,12 +52,14 @@ class Scales @Inject constructor(
             }
         } catch (e: Exception) {
             Logg.d { "Request one error: $e" }
+            analyticsHelper.infoScreenMessage("--> Request one error: $e")
             return Either.Left(Failure.NetworkConnection)
         }
 
         val handle = getHandleFromResponseOneBody(responseOneBody)
 
         if (handle?.isEmpty() == true) {
+            analyticsHelper.infoScreenMessage("--> Handle is empty!")
             return Either.Left(Failure.NetworkConnection)
         }
 
@@ -71,15 +76,16 @@ class Scales @Inject constructor(
         try {
             client.newCall(Request.Builder().url(urlTwo).build()).execute().apply {
                 responseTwoBody = this.body()?.string() ?: ""
-                Logg.d { "Response two: $this" }
                 Logg.d { "Response two body: $responseTwoBody" }
             }
         } catch (e: Exception) {
             Logg.d { "Request two error: $e" }
+            analyticsHelper.infoScreenMessage("--> Request two error: $e")
             return Either.Left(Failure.NetworkConnection)
         }
 
         if (responseTwoBody.isEmpty()) {
+            analyticsHelper.infoScreenMessage("--> Second response is empty!")
             return Either.Left(Failure.NetworkConnection)
         }
 
@@ -99,8 +105,17 @@ class Scales @Inject constructor(
     private fun getWeightFromResponse(responseBody: String): String {
         // <Response>I!LV01|GT08|00|GW01|1|GW06|8|GT0A|11000000|GD07|kg;-3;516|GD02|kg;-3;0|GD01|kg;-3;516|LX02</Response>
         val response = responseBody.split("<Response>")[1].split("</Response>")[0]
-        val weightInGrams = response.split("GD07|")[1].split("|")[0].replace("\\D".toRegex(), "").toDoubleOrNull() ?: 0.0
-        val weightInKilograms = (weightInGrams / 1000).dropZeros()
+        val weightInfo = response.split("GD07|")[1].split("|")[0].split(";") // kg;-3;516
+        var weight = weightInfo[2]
+        val decimalPlaces = weightInfo[1].takeLast(1).toIntOrNull() ?: 0
+
+        while (weight.length < decimalPlaces + 1) {
+            weight = "0$weight"
+        }
+
+        weight = StringBuilder(weight).insert(weight.length - decimalPlaces, ".").toString()
+
+        val weightInKilograms = (weight.toDoubleOrNull() ?: 0.0).dropZeros()
         Logg.d { "weightInKilograms = $weightInKilograms" }
 
         return weightInKilograms
