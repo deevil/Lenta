@@ -22,6 +22,7 @@
     <string name="error_server">Ошибка сервера</string>
     <string name="error_network">Ошибка подключения</string>
     <string name="error_auth">Неправильно введен пользователь или пароль SAP</string>
+    <string name="error_connect_weight_equipment">Не найдено наименование или IP-адрес весового оборудования</string>
     <string name="error_unknown">Неизвестная ошибка</string>
     <string name="to_next">Далее</string>
     <string name="address">Адрес</string>

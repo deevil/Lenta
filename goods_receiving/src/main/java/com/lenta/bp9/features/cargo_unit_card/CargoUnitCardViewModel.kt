@@ -30,7 +30,7 @@ class CargoUnitCardViewModel : CoreViewModel(), OnPositionClickListener {
 
     val cargoUnitInfo: MutableLiveData<TaskCargoUnitInfo> = MutableLiveData()
     val spinStatus: MutableLiveData<List<String>> = MutableLiveData()
-    val spinStatusSelectedPosition: MutableLiveData<Int> = MutableLiveData(0)
+    val spinStatusSelectedPosition: MutableLiveData<Int> = MutableLiveData()
     val spinTypePallet: MutableLiveData<List<String>> = MutableLiveData()
     val spinTypePalletSelectedPosition: MutableLiveData<Int> = MutableLiveData(0)
     val isSurplus: MutableLiveData<Boolean> = MutableLiveData()
@@ -73,12 +73,9 @@ class CargoUnitCardViewModel : CoreViewModel(), OnPositionClickListener {
 
     init {
         viewModelScope.launch {
+            typePalletInfo.value = dataBase.getTypePalletInfo()
             if (isTaskShipmentRC) {
                 statusInfo.value = dataBase.getStatusInfoShipmentRC()
-                typePalletInfo.value = dataBase.getTypePalletInfo()
-                spinTypePallet.value = typePalletInfo.value?.map {
-                    it.name
-                }
             } else {
                 if (isSurplus.value!!) {
                     statusInfo.value = dataBase.getSurplusInfoForPRC()
@@ -90,6 +87,25 @@ class CargoUnitCardViewModel : CoreViewModel(), OnPositionClickListener {
             spinStatus.value = statusInfo.value?.map {
                 it.name
             }
+
+            val status = statusInfo.value?.findLast {
+                it.code == cargoUnitInfo.value?.cargoUnitStatus
+            }?.name ?: ""
+            if (status.isNotEmpty()) {
+                spinStatusSelectedPosition.value = spinStatus.value?.indexOf(status)
+                val pallet = typePalletInfo.value?.findLast {
+                    it.code == cargoUnitInfo.value?.palletType
+                }?.name ?: ""
+                if (pallet.isNotEmpty()) {
+                    spinTypePallet.value = listOf("").plus(typePalletInfo.value?.map {
+                        it.name
+                    } ?: emptyList())
+                    spinTypePalletSelectedPosition.value = spinTypePallet.value?.indexOf(pallet)
+                }
+            } else {
+                spinStatusSelectedPosition.value = 0
+            }
+
         }
     }
 
@@ -98,36 +114,27 @@ class CargoUnitCardViewModel : CoreViewModel(), OnPositionClickListener {
     }
 
     fun onClickPositionSpinStatus(position: Int) {
-        viewModelScope.launch {
-            spinStatusSelectedPosition.value = position
-            if (!isTaskShipmentRC) {
-                updateDataSpinTypePallet(statusInfo.value!![position].code)
-            }
-        }
+        spinStatusSelectedPosition.value = position
+        updateDataSpinTypePallet(statusInfo.value!![position].code)
     }
 
-    private suspend fun updateDataSpinTypePallet(selectedStatus: String) {
-        viewModelScope.launch {
-            if (selectedStatus == "2") {
-                spinTypePallet.value = null
-            } else {
-                screenNavigator.showProgressLoadingData()
-                spinTypePalletSelectedPosition.value = 0
-                typePalletInfo.value = dataBase.getTypePalletInfo()
-                spinTypePallet.value = listOf("").plus(typePalletInfo.value?.map {
-                    it.name
-                } ?: emptyList())
-
-                screenNavigator.hideProgress()
-            }
+    private fun updateDataSpinTypePallet(selectedStatus: String) {
+        if (!isTaskShipmentRC && selectedStatus == "2") {
+            spinTypePallet.value = null
+            spinTypePalletSelectedPosition.value = 0
+        } else {
+            spinTypePallet.value = listOf("").plus(typePalletInfo.value?.map {
+                it.name
+            } ?: emptyList())
         }
     }
 
     fun onClickApply() {
+        val typePalletSave = if (spinTypePalletSelectedPosition.value == 0) "" else typePalletInfo.value?.get(spinTypePalletSelectedPosition.value!! -1)?.code
         processCargoUnitsService.apply(
                 cargoUnitInfo.value!!,
                 statusInfo.value?.get(spinStatusSelectedPosition.value!!)?.code ?: "",
-                typePalletInfo.value?.get(spinTypePalletSelectedPosition.value!!)?.code ?: ""
+                typePalletSave ?: ""
         )
         screenNavigator.goBack()
     }

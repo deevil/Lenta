@@ -98,7 +98,7 @@ class TaskManager @Inject constructor(
                 good.isProcessed = true
             }
 
-            currentTask.value = task
+            onTaskChanged()
         }
     }
 
@@ -117,6 +117,10 @@ class TaskManager @Inject constructor(
             TaskType.EXTERNAL_SUPPLY -> 3
         }
     }
+
+    override fun onTaskChanged() {
+        currentTask.value = currentTask.value
+    }
 }
 
 interface ITaskManager {
@@ -133,4 +137,5 @@ interface ITaskManager {
     fun getBlockType(): Int
     fun completeCurrentTask()
     fun completeCurrentGood()
+    fun onTaskChanged()
 }
