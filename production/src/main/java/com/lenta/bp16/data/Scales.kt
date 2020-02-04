@@ -105,8 +105,17 @@ class Scales @Inject constructor(
     private fun getWeightFromResponse(responseBody: String): String {
         // <Response>I!LV01|GT08|00|GW01|1|GW06|8|GT0A|11000000|GD07|kg;-3;516|GD02|kg;-3;0|GD01|kg;-3;516|LX02</Response>
         val response = responseBody.split("<Response>")[1].split("</Response>")[0]
-        val weightInGrams = response.split("GD07|")[1].split("|")[0].replace("\\D".toRegex(), "").toDoubleOrNull() ?: 0.0
-        val weightInKilograms = (weightInGrams / 1000).dropZeros()
+        val weightInfo = response.split("GD07|")[1].split("|")[0].split(";") // kg;-3;516
+        var weight = weightInfo[2]
+        val decimalPlaces = weightInfo[1].takeLast(1).toIntOrNull() ?: 0
+
+        while (weight.length < decimalPlaces + 1) {
+            weight = "0$weight"
+        }
+
+        weight = StringBuilder(weight).insert(weight.length - decimalPlaces, ".").toString()
+
+        val weightInKilograms = (weight.toDoubleOrNull() ?: 0.0).dropZeros()
         Logg.d { "weightInKilograms = $weightInKilograms" }
 
         return weightInKilograms
