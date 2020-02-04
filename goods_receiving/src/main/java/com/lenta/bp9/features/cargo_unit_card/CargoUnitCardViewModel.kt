@@ -71,7 +71,6 @@ class CargoUnitCardViewModel : CoreViewModel(), OnPositionClickListener {
         return taskManager.getReceivingTask()?.taskHeader?.caption ?: ""
     }
 
-    val status: MutableLiveData<String> = MutableLiveData()
     init {
         viewModelScope.launch {
             typePalletInfo.value = dataBase.getTypePalletInfo()
@@ -89,11 +88,11 @@ class CargoUnitCardViewModel : CoreViewModel(), OnPositionClickListener {
                 it.name
             }
 
-            status.value = statusInfo.value?.findLast {
+            val status = statusInfo.value?.findLast {
                 it.code == cargoUnitInfo.value?.cargoUnitStatus
             }?.name ?: ""
-            if (status.value?.isNotEmpty() == true) {
-                spinStatusSelectedPosition.value = spinStatus.value?.indexOf(status.value ?: "")
+            if (status.isNotEmpty()) {
+                spinStatusSelectedPosition.value = spinStatus.value?.indexOf(status)
                 val pallet = typePalletInfo.value?.findLast {
                     it.code == cargoUnitInfo.value?.palletType
                 }?.name ?: ""
