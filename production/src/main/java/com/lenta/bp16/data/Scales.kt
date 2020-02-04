@@ -31,7 +31,7 @@ class Scales @Inject constructor(
 
         if (serverAddress.isNullOrEmpty() || deviceName.isNullOrEmpty()) {
             analyticsHelper.infoScreenMessage("--> Server address or device name is null!")
-            return Either.Left(Failure.NetworkConnection)
+            return Either.Left(Failure.WeighingError)
         }
 
         val urlOne = HttpUrl.parse("http://$serverAddress/ConnectService/pox/Send")!!.newBuilder()
