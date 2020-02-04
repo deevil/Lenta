@@ -171,4 +171,8 @@ class ProcessingUnitTaskListFragment : CoreFragment<FragmentProcessingUnitTaskLi
         vm.onScanResult(data)
     }
 
+    override fun onResume() {
+        super.onResume()
+        vm.loadTaskList()
+    }
 }
