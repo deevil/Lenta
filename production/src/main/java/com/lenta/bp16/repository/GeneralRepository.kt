@@ -1,7 +1,6 @@
 package com.lenta.bp16.repository
 
-import com.lenta.shared.fmp.resources.dao_ext.getAllowedProAppVersion
-import com.lenta.shared.fmp.resources.dao_ext.getUnitName
+import com.lenta.shared.fmp.resources.dao_ext.*
 import com.lenta.shared.fmp.resources.fast.ZmpUtz07V001
 import com.lenta.shared.fmp.resources.fast.ZmpUtz14V001
 import com.lenta.shared.models.core.Uom
@@ -32,11 +31,37 @@ class GeneralRepository @Inject constructor(
         }
     }
 
+    override suspend fun getServerAddress(): String? {
+        return withContext(Dispatchers.IO) {
+            return@withContext settings.getServerAddress()
+        }
+    }
+
+    override suspend fun getPcpContTimeMm(timeUnit: String): Int {
+        return withContext(Dispatchers.IO) {
+            val timeFromBase = settings.getPcpContTimeMm()?.toIntOrNull() ?: 0
+            return@withContext when(timeUnit.toLowerCase(Locale.getDefault())){
+                "ч" -> timeFromBase * 60
+                else -> timeFromBase
+            }
+        }
+    }
+
+    override suspend fun getPcpExpirTimeMm(): Int {
+        return withContext(Dispatchers.IO) {
+            return@withContext settings.getPcpExpirTimeMm()?.toIntOrNull() ?: 0
+        }
+    }
+
 }
 
 interface IGeneralRepository {
 
     suspend fun getAllowedAppVersion(): String?
     suspend fun getUnitsByCode(code: String): Uom
+
+    suspend fun getServerAddress(): String?
+    suspend fun getPcpContTimeMm(timeUnit: String): Int
+    suspend fun getPcpExpirTimeMm(): Int
 
 }

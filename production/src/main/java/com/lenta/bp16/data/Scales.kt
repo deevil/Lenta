@@ -1,6 +1,6 @@
 package com.lenta.bp16.data
 
-import com.lenta.bp16.repo.IDatabaseRepository
+import com.lenta.bp16.repository.IGeneralRepository
 import com.lenta.shared.analytics.AnalyticsHelper
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.functional.Either
@@ -17,13 +17,13 @@ class Scales @Inject constructor(
         hyperHive: HyperHive,
         private val appSettings: IAppSettings,
         private val analyticsHelper: AnalyticsHelper,
-        private val database: IDatabaseRepository
+        private val repository: IGeneralRepository
 ) : IScales {
 
     private val client = OkHttpClient()
 
     override suspend fun getWeight(): Either<Failure, String> {
-        val serverAddress = database.getServerAddress()
+        val serverAddress = repository.getServerAddress()
         val deviceName = appSettings.weightEquipmentName
 
         if (serverAddress.isNullOrEmpty() || deviceName.isNullOrEmpty()) {

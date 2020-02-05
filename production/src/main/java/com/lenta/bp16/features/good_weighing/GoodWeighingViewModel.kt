@@ -8,7 +8,7 @@ import com.lenta.bp16.data.PrintInnerTagInfo
 import com.lenta.bp16.model.ITaskManager
 import com.lenta.bp16.model.pojo.Pack
 import com.lenta.bp16.platform.navigation.IScreenNavigator
-import com.lenta.bp16.repo.IDatabaseRepository
+import com.lenta.bp16.repository.IGeneralRepository
 import com.lenta.bp16.request.PackCodeNetRequest
 import com.lenta.bp16.request.PackCodeParams
 import com.lenta.shared.account.ISessionInfo
@@ -44,7 +44,8 @@ class GoodWeighingViewModel : CoreViewModel() {
     @Inject
     lateinit var printer: IPrinter
     @Inject
-    lateinit var database: IDatabaseRepository
+    lateinit var repository: IGeneralRepository
+
 
     val good by lazy {
         taskManager.currentGood
@@ -122,10 +123,10 @@ class GoodWeighingViewModel : CoreViewModel() {
 
                 viewModelScope.launch {
                     val productTime = Calendar.getInstance()
-                    productTime.add(Calendar.MINUTE, database.getPcpExpirTimeMm())
+                    productTime.add(Calendar.MINUTE, repository.getPcpExpirTimeMm())
 
                     val planAufFinish = Calendar.getInstance()
-                    productTime.add(Calendar.MINUTE, database.getPcpContTimeMm(packCodeResult.dataLabel.planAufFinish))
+                    productTime.add(Calendar.MINUTE, repository.getPcpContTimeMm(packCodeResult.dataLabel.planAufFinish))
 
                     printTag(PrintInnerTagInfo(
                             quantity = "${total.value!!}  ${Uom.KG.name}",

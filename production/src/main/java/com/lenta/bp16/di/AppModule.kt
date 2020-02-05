@@ -10,8 +10,6 @@ import com.lenta.bp16.platform.navigation.IScreenNavigator
 import com.lenta.bp16.platform.navigation.ScreenNavigator
 import com.lenta.bp16.platform.resource.IResourceManager
 import com.lenta.bp16.platform.resource.ResourceManager
-import com.lenta.bp16.repo.DatabaseRepository
-import com.lenta.bp16.repo.IDatabaseRepository
 import com.lenta.bp16.repository.GeneralRepository
 import com.lenta.bp16.repository.IGeneralRepository
 import com.lenta.bp16.repository.IRepoInMemoryHolder
@@ -53,10 +51,6 @@ class AppModule {
         @Binds
         @AppScope
         fun bindPrinter(realisation: Printer): IPrinter
-
-        @Binds
-        @AppScope
-        fun bindDatabaseRepository(realisation: DatabaseRepository): IDatabaseRepository
 
     }
 
