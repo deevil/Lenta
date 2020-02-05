@@ -140,7 +140,8 @@ class ChangeDateTimeViewModel : CoreViewModel() {
                             taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.OwnProduction)) {
                 selectedDateTime <= timeMonitor.getServerDate() && selectedDateTime >= minNextStatusDate.time
             } else {
-                selectedDateTime <= timeMonitor.getServerDate()
+                val currentStatusDateTime = SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse("${taskManager.getReceivingTask()?.taskDescription?.currentStatusDate} ${taskManager.getReceivingTask()?.taskDescription?.currentStatusTime}")
+                selectedDateTime <= timeMonitor.getServerDate() && selectedDateTime >= currentStatusDateTime
             }
         } catch (e: Exception) {
             false
