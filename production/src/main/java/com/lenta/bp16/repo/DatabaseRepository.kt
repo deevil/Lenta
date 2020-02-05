@@ -12,6 +12,7 @@ import com.lenta.shared.fmp.resources.slow.ZmpUtz25V001
 import com.mobrun.plugin.api.HyperHive
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import java.util.*
 
 class DatabaseRepository(
         hyperHive: HyperHive,
@@ -34,9 +35,13 @@ class DatabaseRepository(
         }
     }
 
-    override suspend fun getPcpContTimeMm(): Int {
+    override suspend fun getPcpContTimeMm(timeUnit: String): Int {
         return withContext(Dispatchers.IO) {
-            return@withContext settings.getPcpContTimeMm()?.toIntOrNull() ?: 0
+            val timeFromBase = settings.getPcpContTimeMm()?.toIntOrNull() ?: 0
+            return@withContext when(timeUnit.toLowerCase(Locale.getDefault())){
+                "ч" -> timeFromBase * 60
+                else -> timeFromBase
+            }
         }
     }
 
@@ -51,6 +56,6 @@ class DatabaseRepository(
 interface IDatabaseRepository {
     suspend fun getAllowedAppVersion(): String?
     suspend fun getServerAddress(): String?
-    suspend fun getPcpContTimeMm(): Int
+    suspend fun getPcpContTimeMm(timeUnit: String): Int
     suspend fun getPcpExpirTimeMm(): Int
 }

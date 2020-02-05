@@ -122,13 +122,16 @@ class GoodWeighingViewModel : CoreViewModel() {
 
                 viewModelScope.launch {
                     val productTime = Calendar.getInstance()
-                    productTime.add(Calendar.MINUTE, database.getPcpContTimeMm())
+                    productTime.add(Calendar.MINUTE, database.getPcpExpirTimeMm())
+
+                    val planAufFinish = Calendar.getInstance()
+                    productTime.add(Calendar.MINUTE, database.getPcpContTimeMm(packCodeResult.dataLabel.planAufFinish))
 
                     printTag(PrintInnerTagInfo(
                             quantity = "${total.value!!}  ${Uom.KG.name}",
                             codeCont = packCodeResult.packCode,
                             storCond = "${packCodeResult.dataLabel.storCondTime} ч",
-                            planAufFinish = packCodeResult.dataLabel.planAufFinish,
+                            planAufFinish = SimpleDateFormat(Constants.DATE_FORMAT_dd_mm_yyyy_hh_mm, Locale.getDefault()).format(planAufFinish.time),
                             aufnr = raw.value!!.orderNumber,
                             nameOsn = raw.value!!.name,
                             dateExpir = packCodeResult.dataLabel.dateExpiration,
@@ -139,7 +142,7 @@ class GoodWeighingViewModel : CoreViewModel() {
                             goodsCode = packCodeResult.dataLabel.material.takeLast(6),
                             barcode = "(01)${getFormattedEan(packCodeResult.dataLabel.ean, total.value!!)}" +
                                     "(310х)${total.value!!}" +
-                                    "(8008)${SimpleDateFormat(Constants.DATE_FORMAT_yyyyMMdd, Locale.getDefault()).format(Date())}" +
+                                    "(8008)${SimpleDateFormat(Constants.DATE_FORMAT_yyyyMMdd, Locale.getDefault()).format(productTime.time)}" +
                                     "(10)${raw.value!!.orderNumber}" +
                                     "(7003)${packCodeResult.dataLabel.dateExpiration}" +
                                     "(91)${packCodeResult.packCode}"
