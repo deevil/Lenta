@@ -16,8 +16,7 @@ class BottomToolbarUiModel {
 
     fun cleanAll(visible: Boolean = true) {
         buttonsUiModels.forEach { it.clean() }
-        visibility.value = visible
-
+        visibility.postValue(visible)
     }
 }
 

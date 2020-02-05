@@ -43,6 +43,7 @@ class PackListViewModel : CoreViewModel() {
             Logg.d { "--> Признак isWasDef текущего сырья: ${raw.value?.isWasDef}" }
             Logg.d { "--> Список всех упаковок: ${good?.packs?.size} / ${good?.packs}" }
             good?.packs?.filter {
+                //it.material == raw.value?.material && it.materialOsn == raw.value?.materialOsn // todo Когда поправят matnr в тестовых данных, раскомментить (это правильный вариант)
                 it.materialOsn == raw.value?.materialOsn
             }?.filter {
                 if (raw.value?.isWasDef == true) !it.isDefOut else !it.isDefOut || it.isDefOut
