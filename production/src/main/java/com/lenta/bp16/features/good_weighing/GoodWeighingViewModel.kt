@@ -129,7 +129,7 @@ class GoodWeighingViewModel : CoreViewModel() {
                     productTime.add(Calendar.MINUTE, repository.getPcpContTimeMm(packCodeResult.dataLabel.planAufFinish))
 
                     printTag(PrintInnerTagInfo(
-                            quantity = "${total.value!!}  ${Uom.KG.name}",
+                            quantity = "${total.value!!}  ${good.value?.units?.name}",
                             codeCont = packCodeResult.packCode,
                             storCond = "${packCodeResult.dataLabel.storCondTime} ч",
                             planAufFinish = SimpleDateFormat(Constants.DATE_FORMAT_dd_mm_yyyy_hh_mm, Locale.getDefault()).format(planAufFinish.time),
