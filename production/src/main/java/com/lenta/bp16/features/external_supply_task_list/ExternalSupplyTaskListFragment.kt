@@ -166,4 +166,9 @@ class ExternalSupplyTaskListFragment : CoreFragment<FragmentExternalSupplyTaskLi
         binding?.viewPagerSettings = this
     }
 
+    override fun onResume() {
+        super.onResume()
+        vm.loadTaskList()
+    }
+
 }

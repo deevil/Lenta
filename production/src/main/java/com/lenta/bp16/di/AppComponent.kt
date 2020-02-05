@@ -33,9 +33,9 @@ interface AppComponent : CoreComponent {
     fun getScreenNavigator(): IScreenNavigator
     fun getGeneralRepository(): IGeneralRepository
     fun getTaskManager(): ITaskManager
-    fun getIResourceManager(): IResourceManager
-    fun getIScales(): IScales
-    fun getIPrinter(): IPrinter
+    fun getResourceManager(): IResourceManager
+    fun getScales(): IScales
+    fun getPrinter(): IPrinter
 
     fun inject(mainActivity: MainActivity)
     fun inject(mainViewModel: MainViewModel)
