@@ -40,14 +40,11 @@ class PackListViewModel : CoreViewModel() {
 
     val packs: MutableLiveData<List<ItemPackListUi>> by lazy {
         good.map { good ->
-            Logg.d { "--> Признак isWasDef текущего сырья: ${raw.value?.isWasDef}" }
-            Logg.d { "--> Список всех упаковок: ${good?.packs?.size} / ${good?.packs}" }
             good?.packs?.filter {
                 it.materialOsn == raw.value?.materialOsn
             }?.filter {
                 if (raw.value?.isWasDef == true) !it.isDefOut else !it.isDefOut || it.isDefOut
             }?.let { packs ->
-                Logg.d { "--> Список отфильтрованных упаковок: ${packs.size} / $packs" }
                 packs.mapIndexed { index, pack ->
                     ItemPackListUi(
                             position = (packs.size - index).toString(),
