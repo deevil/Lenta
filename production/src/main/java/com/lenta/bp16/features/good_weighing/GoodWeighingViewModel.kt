@@ -8,6 +8,7 @@ import com.lenta.bp16.data.PrintInnerTagInfo
 import com.lenta.bp16.model.ITaskManager
 import com.lenta.bp16.model.pojo.Pack
 import com.lenta.bp16.platform.navigation.IScreenNavigator
+import com.lenta.bp16.repo.IDatabaseRepository
 import com.lenta.bp16.request.PackCodeNetRequest
 import com.lenta.bp16.request.PackCodeParams
 import com.lenta.shared.account.ISessionInfo
@@ -42,7 +43,8 @@ class GoodWeighingViewModel : CoreViewModel() {
     lateinit var scales: IScales
     @Inject
     lateinit var printer: IPrinter
-
+    @Inject
+    lateinit var database: IDatabaseRepository
 
     val good by lazy {
         taskManager.currentGood
@@ -118,35 +120,36 @@ class GoodWeighingViewModel : CoreViewModel() {
                     good.value = it
                 }
 
-                val today = Calendar.getInstance()
-                today.add(Calendar.DAY_OF_YEAR, packCodeResult.dataLabel.dateExpiration.toIntOrNull()
-                        ?: 0)
+                viewModelScope.launch {
+                    val productTime = Calendar.getInstance()
+                    productTime.add(Calendar.MINUTE, database.getPcpContTimeMm())
 
-                printTag(PrintInnerTagInfo(
-                        quantity = "${total.value!!}  ${Uom.KG.name}",
-                        codeCont = packCodeResult.packCode,
-                        storCond = "${packCodeResult.dataLabel.storCondTime} ч",
-                        planAufFinish = packCodeResult.dataLabel.planAufFinish,
-                        aufnr = raw.value!!.orderNumber,
-                        nameOsn = raw.value!!.name,
-                        dateExpir = packCodeResult.dataLabel.dateExpiration,
-                        goodsName = packCodeResult.dataLabel.materialName,
-                        weigher = appSettings.weightEquipmentName ?: "",
-                        productTime = SimpleDateFormat(Constants.DATE_FORMAT_dd_mm_yyyy_hh_mm, Locale.getDefault()).format(Date()),
-                        nameDone = packCodeResult.dataLabel.materialNameDone,
-                        goodsCode = packCodeResult.dataLabel.material.takeLast(6),
-                        barcode = "(01)${getFormattedEan(packCodeResult.dataLabel.ean, total.value!!)}" +
-                                "(310х)${total.value!!}" +
-                                "(8008)${SimpleDateFormat(Constants.DATE_FORMAT_yyyyMMdd, Locale.getDefault()).format(Date())}" +
-                                "(10)${raw.value!!.orderNumber}" +
-                                "(7003)${SimpleDateFormat(Constants.DATE_FORMAT_yyyy_mm_dd_hh_mm, Locale.getDefault()).format(today.time)}" +
-                                "(91)${packCodeResult.packCode}"
-                ))
+                    printTag(PrintInnerTagInfo(
+                            quantity = "${total.value!!}  ${Uom.KG.name}",
+                            codeCont = packCodeResult.packCode,
+                            storCond = "${packCodeResult.dataLabel.storCondTime} ч",
+                            planAufFinish = packCodeResult.dataLabel.planAufFinish,
+                            aufnr = raw.value!!.orderNumber,
+                            nameOsn = raw.value!!.name,
+                            dateExpir = packCodeResult.dataLabel.dateExpiration,
+                            goodsName = packCodeResult.dataLabel.materialName,
+                            weigher = appSettings.weightEquipmentName ?: "",
+                            productTime = SimpleDateFormat(Constants.DATE_FORMAT_dd_mm_yyyy_hh_mm, Locale.getDefault()).format(productTime.time),
+                            nameDone = packCodeResult.dataLabel.materialNameDone,
+                            goodsCode = packCodeResult.dataLabel.material.takeLast(6),
+                            barcode = "(01)${getFormattedEan(packCodeResult.dataLabel.ean, total.value!!)}" +
+                                    "(310х)${total.value!!}" +
+                                    "(8008)${SimpleDateFormat(Constants.DATE_FORMAT_yyyyMMdd, Locale.getDefault()).format(Date())}" +
+                                    "(10)${raw.value!!.orderNumber}" +
+                                    "(7003)${packCodeResult.dataLabel.dateExpiration}" +
+                                    "(91)${packCodeResult.packCode}"
+                    ))
 
-                total.value = 0.0
-                weightField.value = "0"
+                    total.value = 0.0
+                    weightField.value = "0"
 
-                navigator.openPackListScreen()
+                    navigator.openPackListScreen()
+                }
             }
         }
     }
@@ -210,7 +213,7 @@ class GoodWeighingViewModel : CoreViewModel() {
     private fun printTag(printInfo: PrintInnerTagInfo) {
         viewModelScope.launch {
             withContext(IO) {
-                appSettings.printerIpAddress.let {ipAddress ->
+                appSettings.printerIpAddress.let { ipAddress ->
                     if (ipAddress == null) {
                         return@let null
                     }

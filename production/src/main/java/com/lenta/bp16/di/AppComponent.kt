@@ -21,6 +21,7 @@ import com.lenta.bp16.main.MainViewModel
 import com.lenta.bp16.model.ITaskManager
 import com.lenta.bp16.platform.navigation.IScreenNavigator
 import com.lenta.bp16.platform.resource.IResourceManager
+import com.lenta.bp16.repo.IDatabaseRepository
 import com.lenta.bp16.repository.IGeneralRepository
 import com.lenta.shared.di.AppScope
 import com.lenta.shared.di.CoreComponent
@@ -33,9 +34,10 @@ interface AppComponent : CoreComponent {
     fun getScreenNavigator(): IScreenNavigator
     fun getGeneralRepository(): IGeneralRepository
     fun getTaskManager(): ITaskManager
-    fun getIResourceManager(): IResourceManager
-    fun getIScales(): IScales
-    fun getIPrinter(): IPrinter
+    fun getResourceManager(): IResourceManager
+    fun getScales(): IScales
+    fun getPrinter(): IPrinter
+    fun getDatabaseRepository(): IDatabaseRepository
 
     fun inject(mainActivity: MainActivity)
     fun inject(mainViewModel: MainViewModel)

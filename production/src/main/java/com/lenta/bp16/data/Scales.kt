@@ -1,32 +1,29 @@
 package com.lenta.bp16.data
 
+import com.lenta.bp16.repo.IDatabaseRepository
 import com.lenta.shared.analytics.AnalyticsHelper
 import com.lenta.shared.exception.Failure
-import com.lenta.shared.fmp.resources.dao_ext.getServerAddress
-import com.lenta.shared.fmp.resources.fast.ZmpUtz14V001
 import com.lenta.shared.functional.Either
 import com.lenta.shared.settings.IAppSettings
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.dropZeros
 import com.mobrun.plugin.api.HyperHive
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
-import okhttp3.*
-import java.lang.Exception
+import okhttp3.HttpUrl
+import okhttp3.OkHttpClient
+import okhttp3.Request
 import javax.inject.Inject
 
 class Scales @Inject constructor(
         hyperHive: HyperHive,
         private val appSettings: IAppSettings,
-        private val analyticsHelper: AnalyticsHelper
+        private val analyticsHelper: AnalyticsHelper,
+        private val database: IDatabaseRepository
 ) : IScales {
-
-    val settings: ZmpUtz14V001 = ZmpUtz14V001(hyperHive) // Настройки
 
     private val client = OkHttpClient()
 
     override suspend fun getWeight(): Either<Failure, String> {
-        val serverAddress = getServerAddress()
+        val serverAddress = database.getServerAddress()
         val deviceName = appSettings.weightEquipmentName
 
         if (serverAddress.isNullOrEmpty() || deviceName.isNullOrEmpty()) {
@@ -119,12 +116,6 @@ class Scales @Inject constructor(
         Logg.d { "weightInKilograms = $weightInKilograms" }
 
         return weightInKilograms
-    }
-
-    private suspend fun getServerAddress(): String? {
-        return withContext(Dispatchers.IO) {
-            return@withContext settings.getServerAddress()
-        }
     }
 
 }

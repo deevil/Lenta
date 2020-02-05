@@ -3,6 +3,7 @@ package com.lenta.bp16.repo
 import com.lenta.shared.fmp.resources.dao_ext.getAllowedPleAppVersion
 import com.lenta.shared.fmp.resources.dao_ext.getPcpContTimeMm
 import com.lenta.shared.fmp.resources.dao_ext.getPcpExpirTimeMm
+import com.lenta.shared.fmp.resources.dao_ext.getServerAddress
 import com.lenta.shared.fmp.resources.fast.ZmpUtz07V001
 import com.lenta.shared.fmp.resources.fast.ZmpUtz14V001
 import com.lenta.shared.fmp.resources.fast.ZmpUtz23V001
@@ -27,15 +28,21 @@ class DatabaseRepository(
         }
     }
 
-    override suspend fun getPcpContTimeMm(): String? {
+    override suspend fun getServerAddress(): String? {
         return withContext(Dispatchers.IO) {
-            return@withContext settings.getPcpContTimeMm()
+            return@withContext settings.getServerAddress()
         }
     }
 
-    override suspend fun getPcpExpirTimeMm(): String? {
+    override suspend fun getPcpContTimeMm(): Int {
         return withContext(Dispatchers.IO) {
-            return@withContext settings.getPcpExpirTimeMm()
+            return@withContext settings.getPcpContTimeMm()?.toIntOrNull() ?: 0
+        }
+    }
+
+    override suspend fun getPcpExpirTimeMm(): Int {
+        return withContext(Dispatchers.IO) {
+            return@withContext settings.getPcpExpirTimeMm()?.toIntOrNull() ?: 0
         }
     }
 
@@ -43,6 +50,7 @@ class DatabaseRepository(
 
 interface IDatabaseRepository {
     suspend fun getAllowedAppVersion(): String?
-    suspend fun getPcpContTimeMm(): String?
-    suspend fun getPcpExpirTimeMm(): String?
+    suspend fun getServerAddress(): String?
+    suspend fun getPcpContTimeMm(): Int
+    suspend fun getPcpExpirTimeMm(): Int
 }
