@@ -32,6 +32,7 @@ class RawListViewModel : CoreViewModel() {
         good.map { good ->
             good?.raws?.mapIndexed { index, raw ->
                 val quantity = good.packs.filter {
+                    // it.material == raw.material && it.materialOsn == raw.materialOsn // todo Когда поправят matnr в тестовых данных, раскомментить (это правильный вариант)
                     it.materialOsn == raw.materialOsn
                 }.map { it.quantity }.sum()
 
