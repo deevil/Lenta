@@ -70,6 +70,7 @@ class PackListViewModel : CoreViewModel() {
                     navigator.openAlertScreen(failure)
                 }) {
                     navigator.showDefrostingPhaseIsCompleted {
+                        taskManager.onTaskChanged()
                         navigator.goBack()
                         navigator.goBack()
                     }

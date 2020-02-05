@@ -58,11 +58,7 @@ class LoadingShipmentPostingViewModel : CoreLoadingViewModel() {
     }
 
     private fun handleSuccess(result: ZmpUtzGrz41V001Result) {
-        screenNavigator.openShipmentPostingSuccessfulDialog(
-                nextCallbackFunc = {
-                    screenNavigator.openUnlockTaskLoadingScreen()
-                }
-        )
+        screenNavigator.openTaskCardScreen(TaskCardMode.Full)
     }
 
     override fun clean() {
