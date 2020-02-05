@@ -99,7 +99,7 @@ class ProcessingUnitTaskListViewModel : CoreViewModel(), PageSelectionListener, 
         selectedPage.value = position
     }
 
-    private fun loadTaskList() {
+    fun loadTaskList() {
         viewModelScope.launch {
             navigator.showProgressLoadingData()
 

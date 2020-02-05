@@ -54,6 +54,7 @@ class ControlDeliveryCargoUnitsViewModel : CoreViewModel(), PageSelectionListene
     val cargoUnitNumber: MutableLiveData<String> = MutableLiveData("")
     val requestFocusToCargoUnit: MutableLiveData<Boolean> = MutableLiveData()
     private val searchCargoUnitNumber: MutableLiveData<String> = MutableLiveData("")
+    private val statusCodeSurplus: MutableLiveData<String> = MutableLiveData("")
     val taskType by lazy {
         taskManager.getReceivingTask()?.taskHeader?.taskType ?: TaskType.None
     }
@@ -106,6 +107,8 @@ class ControlDeliveryCargoUnitsViewModel : CoreViewModel(), PageSelectionListene
             } else {
                 statusInfo.value = dataBase.getAllStatusInfoForPRC()
             }
+
+            statusCodeSurplus.value = dataBase.getSurplusInfoForPRC()?.first()?.code
 
             onResume()
         }
@@ -232,11 +235,11 @@ class ControlDeliveryCargoUnitsViewModel : CoreViewModel(), PageSelectionListene
     fun onClickItemPosition(position: Int) {
         if (selectedPage.value == 0) {
             processCargoUnitsService.findCargoUnit(listNotProcessed.value?.get(position)?.name ?: "")?.let {
-                screenNavigator.openCargoUnitCardScreen(it)
+                screenNavigator.openCargoUnitCardScreen(it, it.cargoUnitStatus == statusCodeSurplus.value)
             }
         } else {
             processCargoUnitsService.findCargoUnit(listProcessed.value?.get(position)?.name ?: "")?.let {
-                screenNavigator.openCargoUnitCardScreen(it)
+                screenNavigator.openCargoUnitCardScreen(it, it.cargoUnitStatus == statusCodeSurplus.value)
             }
         }
     }
@@ -263,7 +266,7 @@ class ControlDeliveryCargoUnitsViewModel : CoreViewModel(), PageSelectionListene
                 gettingDataNewCargoUnit(params).either(::handleFailure, ::handleSuccessNewCargoUnit)
                 screenNavigator.hideProgress()
             } else {
-                screenNavigator.openCargoUnitCardScreen(findCargoUnit)
+                screenNavigator.openCargoUnitCardScreen(findCargoUnit, findCargoUnit.cargoUnitStatus == statusCodeSurplus.value)
             }
         }
     }

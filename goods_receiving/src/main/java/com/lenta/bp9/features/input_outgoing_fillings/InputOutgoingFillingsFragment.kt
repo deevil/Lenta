@@ -40,11 +40,6 @@ class InputOutgoingFillingsFragment : CoreFragment<FragmentInputOutgoingFillings
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.save)
     }
 
-    override fun onResume() {
-        super.onResume()
-        vm.onResume()
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         initRvConfig()
     }
