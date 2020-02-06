@@ -23,7 +23,7 @@ class SelectOperModeFragment : CoreFragment<FragmentSelectOperModeBinding, Selec
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
-        bottomToolbarUiModel.cleanAll(false)
+        bottomToolbarUiModel.hide()
     }
 
     override fun onToolbarButtonClick(view: View) {

@@ -36,6 +36,6 @@ class MainMenuFragment : CoreFragment<com.lenta.inventory.databinding.FragmentMa
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
-        bottomToolbarUiModel.cleanAll(false)
+        bottomToolbarUiModel.hide()
     }
 }

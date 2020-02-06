@@ -32,6 +32,6 @@ class FailurePinCodeFragment : CoreMessageFragment() {
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
-        bottomToolbarUiModel.cleanAll(false)
+        bottomToolbarUiModel.hide()
     }
 }

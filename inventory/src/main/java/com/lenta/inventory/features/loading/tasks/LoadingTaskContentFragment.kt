@@ -38,7 +38,7 @@ class LoadingTaskContentFragment : CoreLoadingFragment() {
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
-        bottomToolbarUiModel.cleanAll(false)
+        bottomToolbarUiModel.hide()
     }
 
     override fun onBackPressed(): Boolean {

@@ -42,13 +42,13 @@ class MainViewModel : CoreMainViewModel() {
                 )
             }
         }
-        bottomToolbarUiModel.visibility.value = false
+        bottomToolbarUiModel.hide()
     }
 
     override fun hideProgress() {
         loadingViewModel.clean()
         progressJob?.cancel()
-        bottomToolbarUiModel.visibility.value = true
+        bottomToolbarUiModel.show()
     }
 
     fun onExitClick() {
