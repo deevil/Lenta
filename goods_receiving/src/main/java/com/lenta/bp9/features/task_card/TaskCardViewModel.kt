@@ -180,6 +180,16 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
         taskManager.getReceivingTask()?.taskDescription?.isVet ?: false
     }
 
+    //trello https://trello.com/c/XKpOCvZo
+    val isEdo by lazy {
+        taskManager.getReceivingTask()?.taskDescription?.isEDO == true
+    }
+    val isEdoTaskStatusOrdered by lazy {
+        taskManager.getReceivingTask()?.taskDescription?.isEDO == true &&
+                taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.DirectSupplier &&
+                taskManager.getReceivingTask()?.taskDescription?.currentStatus == TaskStatus.Ordered
+    }
+
     val changeCurrentDateTimePossible by lazy {
         val status = taskManager.getReceivingTask()?.taskDescription?.currentStatus
         if ((taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.ReceptionDistributionCenter || taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.OwnProduction) &&
@@ -353,7 +363,17 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
         }
 
         when (taskManager.getReceivingTask()?.taskDescription?.currentStatus) {
-            TaskStatus.Ordered, TaskStatus.Traveling, TaskStatus.TemporaryRejected -> screenNavigator.openRegisterArrivalLoadingScreen()
+            TaskStatus.Ordered, TaskStatus.Traveling, TaskStatus.TemporaryRejected -> {
+                if (isEdo && taskManager.getReceivingTask()?.taskDescription?.currentStatus == TaskStatus.Ordered && taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.DirectSupplier) {
+                    //trello https://trello.com/c/XKpOCvZo
+                    screenNavigator.openEdoDialog(
+                            missing = {screenNavigator.openRegisterArrivalLoadingScreen(isInStockPaperTTN = false, isEdo = true, status = TaskStatus.Ordered)},
+                            inStock = {screenNavigator.openRegisterArrivalLoadingScreen(isInStockPaperTTN = true, isEdo = true, status = TaskStatus.Ordered)}
+                    )
+                } else {
+                    screenNavigator.openRegisterArrivalLoadingScreen()
+                }
+            }
             TaskStatus.Arrived -> {
                 if (taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.ReceptionDistributionCenter || taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.OwnProduction) {
                     screenNavigator.openUnloadingStartRDSLoadingScreen()

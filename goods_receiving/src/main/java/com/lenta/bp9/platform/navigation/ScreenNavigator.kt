@@ -387,9 +387,9 @@ class ScreenNavigator(
         }
     }
 
-    override fun openRegisterArrivalLoadingScreen() {
+    override fun openRegisterArrivalLoadingScreen(isInStockPaperTTN: Boolean, isEdo: Boolean, status: TaskStatus) {
         runOrPostpone {
-            getFragmentStack()?.push(LoadingRegisterArrivalFragment())
+            getFragmentStack()?.push(LoadingRegisterArrivalFragment.create(isInStockPaperTTN, isEdo, status))
         }
     }
 
@@ -885,6 +885,30 @@ class ScreenNavigator(
         }
     }
 
+    override fun openEdoDialog(missing: () -> Unit, inStock: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.edo_dialog),
+                    codeConfirmForButton3 = backFragmentResultHelper.setFuncForResult(missing),
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(inStock),
+                    iconRes = R.drawable.ic_question_80dp,
+                    pageNumber = "81",
+                    buttonDecorationInfo3 = ButtonDecorationInfo.missing,
+                    rightButtonDecorationInfo = ButtonDecorationInfo.inStock))
+        }
+    }
+
+    override fun openAlertMissingVPForProviderScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.alert_missing_vp_for_provider),
+                    iconRes = R.drawable.is_warning_yellow_80dp,
+                    pageNumber = "96",
+                    timeAutoExitInMillis = 3000)
+            )
+        }
+    }
+
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 }
 
@@ -930,7 +954,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openAlertOverlimit()
     fun openExciseAlcoInfoScreen(productInfo: TaskProductInfo)
     fun openFinishReviseLoadingScreen()
-    fun openRegisterArrivalLoadingScreen()
+    fun openRegisterArrivalLoadingScreen(isInStockPaperTTN: Boolean = false, isEdo: Boolean = false, status: TaskStatus = TaskStatus.Other)
     fun openStartReviseLoadingScreen()
     fun openUnlockTaskLoadingScreen()
     fun openTransportConditionsScreen()
@@ -994,4 +1018,6 @@ interface IScreenNavigator : ICoreNavigator {
     fun openShipmentStartLoadingScreen(taskNumber: String)
     fun openShipmentFixingDepartureLoadingScreen()
     fun openShipmentEndRecountLoadingScreen()
+    fun openEdoDialog(missing: () -> Unit, inStock: () -> Unit)
+    fun openAlertMissingVPForProviderScreen()
 }

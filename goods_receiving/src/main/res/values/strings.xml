@@ -230,4 +230,7 @@
     <string name="loading_time">Время загрузки</string>
     <string name="revise_not_needed">Контроль условий не требуется</string>
     <string name="shipment_posting_successful_dialog">Проводка отгрузки выполнена успешно. Распечатайте первичные документы, подпишите и передайте экспедитору.</string>
+    <string name="edo_dialog">Поставщик является участником электронного документооборота, но электронная накладная еще в SAP ERP не получена. Имеется ли у поставщика бумажная накладная?</string>
+    <string name="alert_missing_vp_for_provider">Отсутствует ВП для поставщика. Статус изменен на \"Временно отказано\". Ожидается получение электронной накладной</string>
+    <string name="view_delivery_invoice">Просмотр поставки по накладной</string>
 </resources>
