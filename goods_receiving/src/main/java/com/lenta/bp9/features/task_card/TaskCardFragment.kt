@@ -40,7 +40,7 @@ class TaskCardFragment : CoreFragment<FragmentTaskCardBinding, TaskCardViewModel
         }
     }
 
-    var notificationsRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
+    private var notificationsRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
 
     private var mode: TaskCardMode = TaskCardMode.None
 

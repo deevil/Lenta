@@ -22,6 +22,7 @@
             android:id="@+id/div_hor1"
             android:layout_width="match_parent"
             android:layout_height="1dp"
+            android:layout_marginTop="12dp"
             android:background="@color/color_divider"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -70,7 +71,7 @@
             app:items="@{vm.spinStatus}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@+id/guideline"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/div_hor1"
             app:position="@{vm.spinStatusSelectedPosition}" />
 
         <View

@@ -6,9 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.lenta.bp9.R
 import com.lenta.bp9.features.loading.tasks.TaskCardMode
 import com.lenta.bp9.model.processing.ProcessCargoUnitsService
-import com.lenta.bp9.model.task.IReceivingTaskManager
-import com.lenta.bp9.model.task.TaskCargoUnitInfoRestData
-import com.lenta.bp9.model.task.TaskType
+import com.lenta.bp9.model.task.*
 import com.lenta.bp9.model.task.revise.ConditionViewType
 import com.lenta.bp9.model.task.revise.TransportConditionRestData
 import com.lenta.bp9.platform.navigation.IScreenNavigator
@@ -171,11 +169,14 @@ class ControlDeliveryCargoUnitsViewModel : CoreViewModel(), PageSelectionListene
     }
 
     private fun handleSuccess(result: UnloadingEndReceptionDistrCenterResult) {
-        screenNavigator.openMainMenuScreen()
-        screenNavigator.openTaskListScreen()
+        val notifications = result.notifications.map { TaskNotification.from(it) }
+        taskManager.getReceivingTask()?.taskRepository?.getNotifications()?.updateWithNotifications(general = notifications, document = null, product = null, condition = null)
+        taskManager.updateTaskDescription(TaskDescription.from(result.taskDescription).copy(quantityOutgoingFillings = result.quantityOutgoingFillings.trim().toInt()))
+
         screenNavigator.openTaskCardScreen(TaskCardMode.Full)
+
         taskManager.getReceivingTask()?.taskRepository?.getReviseDocuments()?.getTransportConditions()?.filter {
-            it.conditionViewType == ConditionViewType.Seal && it.value.isEmpty()
+            it.conditionViewType == ConditionViewType.Seal && !it.isCheck
         }.let {
             if (it?.size != 0) {
                 screenNavigator.openAlertSealDamageScreen()
