@@ -3,9 +3,7 @@ package com.lenta.inventory.features.loading.store_place_lock
 import android.os.Bundle
 import android.view.View
 import com.lenta.inventory.R
-import com.lenta.inventory.features.task_list.TaskItemVm
 import com.lenta.inventory.models.StorePlaceLockMode
-import com.lenta.inventory.models.task.TaskStorePlaceInfo
 import com.lenta.inventory.platform.extentions.getAppComponent
 import com.lenta.shared.features.loading.CoreLoadingFragment
 import com.lenta.shared.features.loading.CoreLoadingViewModel
@@ -38,7 +36,7 @@ class LoadingStorePlaceLockFragment: CoreLoadingFragment() {
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
-        bottomToolbarUiModel.visibility.value = false
+        bottomToolbarUiModel.cleanAll(false)
     }
 
     override fun onBackPressed(): Boolean {

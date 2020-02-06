@@ -47,7 +47,7 @@ abstract class CoreMessageFragment : CoreFragment<LayoutMessageBinding, MessageV
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
         if (timeAutoExitInMillis != null) {
-            bottomToolbarUiModel.visibility.value = false
+            bottomToolbarUiModel.cleanAll(false)
             return
         }
 

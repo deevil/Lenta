@@ -30,7 +30,7 @@ class FastDataLoadingFragment : CoreLoadingFragment() {
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
-        bottomToolbarUiModel.visibility.value = false
+        bottomToolbarUiModel.cleanAll(false)
     }
 
     override fun onBackPressed(): Boolean {
