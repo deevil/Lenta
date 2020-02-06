@@ -13,7 +13,7 @@ class BottomToolbarUiModel {
     val uiModelButton3: ButtonUiModel = ButtonUiModel()
     val uiModelButton4: ButtonUiModel = ButtonUiModel()
     val uiModelButton5: ButtonUiModel = ButtonUiModel()
-    private val buttonsUiModels = listOf(uiModelButton1, uiModelButton2, uiModelButton3, uiModelButton4, uiModelButton5)
+    val buttonsUiModels = listOf(uiModelButton1, uiModelButton2, uiModelButton3, uiModelButton4, uiModelButton5)
 
     fun show() {
         _visibility.postValue(true)
