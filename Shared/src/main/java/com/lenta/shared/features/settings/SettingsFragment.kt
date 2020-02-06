@@ -40,7 +40,7 @@ class SettingsFragment : CoreFragment<com.lenta.shared.databinding.FragmentSetti
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
-        bottomToolbarUiModel.cleanAll(false)
+        bottomToolbarUiModel.hide()
     }
 
     override fun getPageNumber(): String = generateScreenNumber()

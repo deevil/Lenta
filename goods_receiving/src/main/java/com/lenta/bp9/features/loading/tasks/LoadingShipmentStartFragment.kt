@@ -3,7 +3,6 @@ package com.lenta.bp9.features.loading.tasks
 import android.os.Bundle
 import android.view.View
 import com.lenta.bp9.R
-import com.lenta.bp9.model.task.TaskDriverDataInfo
 import com.lenta.bp9.platform.extentions.getAppComponent
 import com.lenta.shared.features.loading.CoreLoadingFragment
 import com.lenta.shared.features.loading.CoreLoadingViewModel
@@ -44,7 +43,7 @@ class LoadingShipmentStartFragment : CoreLoadingFragment() {
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
-        bottomToolbarUiModel.visibility.value = false
+        bottomToolbarUiModel.hide()
     }
 
     override fun onBackPressed(): Boolean {

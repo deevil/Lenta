@@ -46,7 +46,7 @@ class LoadingShipmentPurposeTransportFragment : CoreLoadingFragment() {
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
-        bottomToolbarUiModel.visibility.value = false
+        bottomToolbarUiModel.hide()
     }
 
     override fun onBackPressed(): Boolean {

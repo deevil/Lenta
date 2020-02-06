@@ -2,11 +2,12 @@ package com.lenta.shared.platform.toolbar.bottom_toolbar
 
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.lenta.shared.R
 
 class BottomToolbarUiModel {
-    val visibility: MutableLiveData<Boolean> = MutableLiveData()
+    private val _visibility: MutableLiveData<Boolean> = MutableLiveData()
     val uiModelButton1: ButtonUiModel = ButtonUiModel()
     val uiModelButton2: ButtonUiModel = ButtonUiModel()
     val uiModelButton3: ButtonUiModel = ButtonUiModel()
@@ -14,10 +15,23 @@ class BottomToolbarUiModel {
     val uiModelButton5: ButtonUiModel = ButtonUiModel()
     val buttonsUiModels = listOf(uiModelButton1, uiModelButton2, uiModelButton3, uiModelButton4, uiModelButton5)
 
-    fun cleanAll(visible: Boolean = true) {
-        buttonsUiModels.forEach { it.clean() }
-        visibility.postValue(visible)
+    fun show() {
+        _visibility.postValue(true)
     }
+
+    fun hide() {
+        _visibility.postValue(false)
+    }
+
+    fun cleanAll() {
+        buttonsUiModels.forEach { it.clean() }
+        show()
+    }
+
+    fun getVisibility(): LiveData<Boolean> {
+        return _visibility
+    }
+
 }
 
 data class ButtonUiModel(

@@ -34,7 +34,7 @@ class SelectCheckTypeFragment : CoreFragment<FragmentSelectCheckTypeBinding, Sel
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
-        bottomToolbarUiModel.visibility.value = false
+        bottomToolbarUiModel.hide()
     }
 
     override fun onToolbarButtonClick(view: View) {

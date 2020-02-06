@@ -3,11 +3,9 @@ package com.lenta.bp9.features.loading.fast
 import android.os.Bundle
 import android.view.View
 import com.lenta.bp9.R
-import com.lenta.bp9.databinding.FragmentFastDataLoadingBinding
 import com.lenta.bp9.platform.extentions.getAppComponent
 import com.lenta.shared.features.loading.CoreLoadingFragment
 import com.lenta.shared.features.loading.CoreLoadingViewModel
-import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.top_toolbar.ImageButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
@@ -35,7 +33,7 @@ class FastDataLoadingFragment : CoreLoadingFragment() {
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
-        bottomToolbarUiModel.visibility.value = false
+        bottomToolbarUiModel.hide()
     }
 
     override fun onBackPressed(): Boolean {

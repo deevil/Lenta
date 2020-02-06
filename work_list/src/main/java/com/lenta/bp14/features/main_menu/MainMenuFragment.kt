@@ -39,7 +39,7 @@ class MainMenuFragment : CoreFragment<FragmentMainMenuBinding, MainMenuViewModel
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
-        bottomToolbarUiModel.visibility.value = false
+        bottomToolbarUiModel.hide()
     }
 
     override fun onToolbarButtonClick(view: View) {
