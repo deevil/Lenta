@@ -113,7 +113,7 @@ class TaskCardFragment : CoreFragment<FragmentTaskCardBinding, TaskCardViewModel
     }
 
     override fun getPagerItemView(container: ViewGroup, position: Int): View {
-        return if (vm.taskType == TaskType.ShipmentRC) {
+        return if (vm.taskType == TaskType.ShipmentPP || vm.taskType == TaskType.ShipmentRC) {
             when(position) {
                 0 -> prepareStatusView(container)
                 1 -> prepareShipmentView(container)
