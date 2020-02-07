@@ -6,7 +6,6 @@ import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.bp9.requests.network.FastResourcesMultiRequest
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
-import com.lenta.shared.exception.IFailureInterpreter
 import com.lenta.shared.features.loading.CoreLoadingViewModel
 import com.lenta.shared.platform.time.ITimeMonitor
 import com.lenta.shared.requests.network.ServerTime
@@ -21,8 +20,6 @@ class FastDataLoadingViewModel : CoreLoadingViewModel() {
     lateinit var fastResourcesNetRequest: FastResourcesMultiRequest
     @Inject
     lateinit var screenNavigator: IScreenNavigator
-    @Inject
-    lateinit var failureInterpreter: IFailureInterpreter
     @Inject
     lateinit var serverTimeRequest: ServerTimeRequest
     @Inject
@@ -54,7 +51,9 @@ class FastDataLoadingViewModel : CoreLoadingViewModel() {
     }
 
     override fun handleFailure(failure: Failure) {
-        screenNavigator.openAlertScreen(failureInterpreter.getFailureDescription(failure).message)
+        screenNavigator.openSelectMarketScreen()
+        screenNavigator.closeAllScreen()
+        screenNavigator.openAlertScreen(failure)
     }
 
     private fun handleSuccess(@Suppress("UNUSED_PARAMETER") b: Boolean) {
