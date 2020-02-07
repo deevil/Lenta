@@ -132,11 +132,14 @@
                             android:layout_width="0dp"
                             android:layout_weight="1"
                             android:digits="0123456789"
+                            android:imeOptions="actionNext"
                             android:inputType="number"
                             android:maxLength="2"
                             android:nextFocusForward="@id/month_field"
                             android:text="@={vm.day}"
                             app:maxValue="@{31}"
+                            app:onOkInSoftKeyboard="@{vm}"
+                            app:requestFocus="@{vm.requestFocusDay}"
                             tools:text="31" />
 
                         <TextView
@@ -153,11 +156,14 @@
                             android:layout_width="0dp"
                             android:layout_weight="1"
                             android:digits="0123456789"
+                            android:imeOptions="actionNext"
                             android:inputType="number"
                             android:maxLength="2"
                             android:nextFocusForward="@id/year_field"
                             android:text="@={vm.month}"
                             app:maxValue="@{12}"
+                            app:onOkInSoftKeyboard="@{vm}"
+                            app:requestFocus="@{vm.requestFocusMonth}"
                             tools:text="07" />
 
                         <TextView
@@ -174,9 +180,11 @@
                             android:layout_width="0dp"
                             android:layout_weight="1"
                             android:digits="0123456789"
+                            android:imeOptions="actionDone"
                             android:inputType="number"
                             android:maxLength="2"
                             android:text="@={vm.year}"
+                            app:requestFocus="@{vm.requestFocusYear}"
                             tools:text="19" />
 
                     </LinearLayout>

@@ -1,16 +1,18 @@
 package com.lenta.bp14.features.work_list.good_info
 
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
 import androidx.databinding.DataBindingUtil
 import com.lenta.bp14.BR
 import com.lenta.bp14.R
 import com.lenta.bp14.databinding.*
 import com.lenta.bp14.di.WorkListComponent
 import com.lenta.shared.di.CoreInjectHelper
-import com.lenta.shared.platform.activity.OnBackPresserListener
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
@@ -71,6 +73,8 @@ class GoodInfoWlFragment : CoreFragment<FragmentGoodInfoWlBinding, GoodInfoWlVie
 
                 layoutBinding.vm = vm
                 layoutBinding.lifecycleOwner = viewLifecycleOwner
+
+                dateFocus(layoutBinding)
 
                 return layoutBinding.root
             }
@@ -141,6 +145,37 @@ class GoodInfoWlFragment : CoreFragment<FragmentGoodInfoWlBinding, GoodInfoWlVie
 
     override fun onScanResult(data: String) {
         vm.onScanResult(data)
+    }
+
+    private fun dateFocus(binding: LayoutWlGoodInfoCommonBinding?) {
+        binding?.apply {
+            dayField.addTextChangedListener(EnterCodeTextWatcher(null, monthField))
+            monthField.addTextChangedListener(EnterCodeTextWatcher(dayField, yearField))
+            yearField.addTextChangedListener(EnterCodeTextWatcher(monthField, null))
+        }
+    }
+
+}
+
+class EnterCodeTextWatcher(
+        private var previous: EditText?,
+        private var next: EditText?
+) : TextWatcher {
+
+    override fun afterTextChanged(s: Editable?) {
+        val entered = s.toString()
+
+        if (entered.isEmpty()) {
+            previous?.requestFocus()
+        } else if (entered.length == 2) {
+            next?.requestFocus()
+        }
+    }
+
+    override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+    }
+
+    override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
     }
 
 }

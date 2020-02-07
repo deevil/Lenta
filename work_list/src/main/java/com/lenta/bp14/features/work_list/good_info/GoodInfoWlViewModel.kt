@@ -21,6 +21,7 @@ import com.lenta.shared.models.core.MatrixType
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.analyseCode
 import com.lenta.shared.utilities.Logg
+import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.dropZeros
@@ -32,7 +33,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
 
-class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
+class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyboardListener {
 
     @Inject
     lateinit var navigator: IScreenNavigator
@@ -71,6 +72,10 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
 
     val quantity = MutableLiveData<String>("")
 
+    val requestFocusDay = MutableLiveData<Boolean>(false)
+    val requestFocusMonth = MutableLiveData<Boolean>(false)
+    val requestFocusYear = MutableLiveData<Boolean>(false)
+
     private val totalQuantityValue: MutableLiveData<Double> by lazy {
         good.combineLatest(quantity).map {
             it?.first?.getTotalQuantity().sumWith(it?.second?.toDoubleOrNull() ?: 0.0)
@@ -98,6 +103,8 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
         val month = it?.first?.second?.toIntOrNull()
         val year = it?.second?.toIntOrNull()
 
+        //passFocus(day, month, year)
+
         var parseDate: Date? = null
         if (day != null && month != null && year != null) {
             try {
@@ -109,6 +116,32 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
 
         parseDate
     }
+
+    /*private fun passFocus(day: Int?, month: Int?, year: Int?) {
+        val dayFilled = day.toString().length == 2
+        val monthFilled = month.toString().length == 2
+        val yearFilled = year.toString().length == 2
+
+        clearDateFocus()
+
+        if (dayFilled && monthFilled && !yearFilled) {
+            requestFocusYear.value = true
+        }
+
+        if (dayFilled && !monthFilled && !yearFilled) {
+            requestFocusMonth.value = true
+        }
+
+        if (!dayFilled && !monthFilled && !yearFilled) {
+            requestFocusDay.value = true
+        }
+    }*/
+
+    /*private fun clearDateFocus() {
+        requestFocusDay.value = false
+        requestFocusMonth.value = false
+        requestFocusYear.value = false
+    }*/
 
     val shelfLifeTypeList: MutableLiveData<List<String>> by lazy {
         good.map { good ->
@@ -466,6 +499,21 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
     private fun isIncorrectEnteredDate(): Boolean {
         return enteredDate.value != null && shelfLifeTypePosition.value == ShelfLifeType.PRODUCTION.position
                 && enteredDate.value!!.after(Date())
+    }
+
+    override fun onOkInSoftKeyboard(): Boolean {
+        // todo Доделать логику
+
+        if (requestFocusMonth.value == false && requestFocusYear.value == false) {
+            requestFocusDay.value = false
+            requestFocusYear.value = false
+
+            requestFocusMonth.value = true
+        } else {
+            requestFocusYear.value = true
+        }
+
+        return true
     }
 
 }
