@@ -2,17 +2,8 @@ package com.lenta.bp9.platform.navigation
 
 import android.content.Context
 import androidx.core.content.ContextCompat
-import com.lenta.bp9.features.auth.AuthFragment
-import com.lenta.bp9.features.goods_list.GoodsListFragment
-import com.lenta.bp9.features.task_list.TaskListFragment
-import com.lenta.bp9.requests.network.TaskListSearchParams
-import com.lenta.bp9.features.loading.fast.FastDataLoadingFragment
-import com.lenta.bp9.features.main_menu.MainMenuFragment
-import com.lenta.bp9.features.search_task.SearchTaskFragment
-import com.lenta.bp9.features.select_market.SelectMarketFragment
-import com.lenta.bp9.features.select_personnel_number.SelectPersonnelNumberFragment
-import com.lenta.bp9.features.task_card.TaskCardFragment
 import com.lenta.bp9.R
+import com.lenta.bp9.features.auth.AuthFragment
 import com.lenta.bp9.features.cargo_unit_card.CargoUnitCardFragment
 import com.lenta.bp9.features.change_datetime.ChangeDateTimeFragment
 import com.lenta.bp9.features.change_datetime.ChangeDateTimeMode
@@ -27,9 +18,12 @@ import com.lenta.bp9.features.goods_information.general.GoodsInfoFragment
 import com.lenta.bp9.features.goods_information.mercury.GoodsMercuryInfoFragment
 import com.lenta.bp9.features.goods_information.non_excise_alco.NonExciseAlcoInfoFragment
 import com.lenta.bp9.features.goods_information.perishables.PerishablesInfoFragment
+import com.lenta.bp9.features.goods_list.GoodsListFragment
 import com.lenta.bp9.features.input_outgoing_fillings.InputOutgoingFillingsFragment
 import com.lenta.bp9.features.list_goods_transfer.ListGoodsTransferFragment
+import com.lenta.bp9.features.loading.fast.FastDataLoadingFragment
 import com.lenta.bp9.features.loading.tasks.*
+import com.lenta.bp9.features.main_menu.MainMenuFragment
 import com.lenta.bp9.features.mercury_exception_integration.MercuryExceptionIntegrationFragment
 import com.lenta.bp9.features.mercury_list.MercuryListFragment
 import com.lenta.bp9.features.mercury_list_irrelevant.MercuryListIrrelevantFragment
@@ -38,17 +32,21 @@ import com.lenta.bp9.features.reject.RejectFragment
 import com.lenta.bp9.features.repres_person_num_entry.RepresPersonNumEntryFragment
 import com.lenta.bp9.features.revise.*
 import com.lenta.bp9.features.revise.invoice.InvoiceReviseFragment
+import com.lenta.bp9.features.search_task.SearchTaskFragment
+import com.lenta.bp9.features.select_market.SelectMarketFragment
+import com.lenta.bp9.features.select_personnel_number.SelectPersonnelNumberFragment
 import com.lenta.bp9.features.skip_recount.SkipRecountFragment
+import com.lenta.bp9.features.task_card.TaskCardFragment
+import com.lenta.bp9.features.task_list.TaskListFragment
 import com.lenta.bp9.features.transfer_goods_section.TransferGoodsSectionFragment
 import com.lenta.bp9.features.transport_marriage.TransportMarriageFragment
 import com.lenta.bp9.features.transportation_number.TransportationNumberFragment
 import com.lenta.bp9.model.task.*
-import com.lenta.bp9.model.task.revise.ProductDocumentType
 import com.lenta.bp9.model.task.revise.DeliveryProductDocumentRevise
+import com.lenta.bp9.model.task.revise.ProductDocumentType
 import com.lenta.bp9.model.task.revise.ProductVetDocumentRevise
+import com.lenta.bp9.requests.network.TaskListSearchParams
 import com.lenta.shared.account.IAuthenticator
-import com.lenta.shared.exception.Failure
-import com.lenta.shared.exception.IFailureInterpreter
 import com.lenta.shared.features.alert.AlertFragment
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
 import com.lenta.shared.platform.navigation.CustomAnimation
@@ -63,7 +61,7 @@ class ScreenNavigator(
         private val foregroundActivityProvider: ForegroundActivityProvider,
         private val authenticator: IAuthenticator,
         private val progressUseCaseInformator: IProgressUseCaseInformator
-        ) : IScreenNavigator, ICoreNavigator by coreNavigator {
+) : IScreenNavigator, ICoreNavigator by coreNavigator {
 
     override fun openFirstScreen() {
         if (authenticator.isAuthorized()) {
@@ -513,13 +511,6 @@ class ScreenNavigator(
         }
     }
 
-    override fun openAlertNotFoundTaskScreen(failure: Failure) {
-        runOrPostpone {
-            getFragmentStack()?.pop()
-            openAlertScreen(failure)
-        }
-    }
-
     override fun openUnsavedDataDialog(yesCallbackFunc: () -> Unit) {
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
@@ -912,7 +903,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openTaskReviseScreen()
     fun openGoodsInfoScreen(productInfo: TaskProductInfo, isDiscrepancy: Boolean, initialCount: Double = 0.0)
     fun openAlertWrongProductType()
-    fun openGoodsDetailsScreen(productInfo: TaskProductInfo? = null, batch: TaskBatchInfo? =null)
+    fun openGoodsDetailsScreen(productInfo: TaskProductInfo? = null, batch: TaskBatchInfo? = null)
     fun openInvoiceReviseScreen()
     fun openRejectScreen()
     fun openProductDocumentsReviseScreen()
@@ -948,7 +939,6 @@ interface IScreenNavigator : ICoreNavigator {
     fun openRecountStartLoadingScreen()
     fun openSubmittedLoadingScreen()
     fun openTransmittedLoadingScreen()
-    fun openAlertNotFoundTaskScreen(failure: Failure)
     fun openUnsavedDataDialog(yesCallbackFunc: () -> Unit)
     fun openEditingInvoiceScreen()
     fun openInfoDocsSentPrintScreen()
