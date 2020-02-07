@@ -69,6 +69,7 @@ class GoodPackagingViewModel : CoreViewModel() {
                 packGoodNetRequest(
                         PackGoodParams(
                                 marketNumber = sessionInfo.market ?: "Not found!",
+                                taskType = taskManager.getTaskTypeCode(),
                                 deviceIp = deviceIp.value ?: "Not found!",
                                 material = good.value!!.material,
                                 orderNumber = raw.value!!.orderNumber,

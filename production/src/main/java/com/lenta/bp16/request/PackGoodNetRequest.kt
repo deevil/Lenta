@@ -33,6 +33,9 @@ data class PackGoodParams(
         /** Код предприятия */
         @SerializedName("IV_WERKS")
         val marketNumber: String,
+        /** Тип родительской связи для создания тары: 1 - ЕО, 2 - ВП */
+        @SerializedName("IV_MODE")
+        val taskType: Int,
         /** Номер объекта */
         @SerializedName("IV_OBJ_CODE")
         val taskNumber: String,
