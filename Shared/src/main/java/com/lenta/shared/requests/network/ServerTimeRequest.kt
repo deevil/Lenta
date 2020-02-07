@@ -9,21 +9,20 @@ import com.lenta.shared.requests.FmpRequestsHelper
 import com.lenta.shared.requests.SapResponse
 import javax.inject.Inject
 
-
 class ServerTimeRequest
 @Inject constructor(private val fmpRequestsHelper: FmpRequestsHelper) : UseCase<ServerTime, ServerTimeRequestParam> {
+
     override suspend fun run(params: ServerTimeRequestParam): Either<Failure, ServerTime> {
         return fmpRequestsHelper.restRequest("ZMP_UTZ_87_V001", params, ServerTimeRequestStatus::class.java)
     }
-}
 
+}
 
 data class ServerTimeRequestParam(
         @SerializedName("IV_WERKS")
         val tkNumber: String)
 
 class ServerTimeRequestStatus : ObjectRawStatus<ServerTime>()
-
 
 data class ServerTime(
         @SerializedName("EV_DATE")
