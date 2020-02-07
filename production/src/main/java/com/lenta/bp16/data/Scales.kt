@@ -14,7 +14,6 @@ import okhttp3.Request
 import javax.inject.Inject
 
 class Scales @Inject constructor(
-        hyperHive: HyperHive,
         private val appSettings: IAppSettings,
         private val analyticsHelper: AnalyticsHelper,
         private val repository: IGeneralRepository

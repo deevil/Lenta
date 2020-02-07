@@ -33,7 +33,7 @@ class AuxiliaryMenuFragment : CoreFragment<com.lenta.shared.databinding.Fragment
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
-        bottomToolbarUiModel.cleanAll(false)
+        bottomToolbarUiModel.hide()
     }
 
     override fun getPageNumber(): String = generateScreenNumber()

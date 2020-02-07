@@ -18,22 +18,6 @@ class RegisterArrivalNetRequest
     }
 }
 
-class RegisterArrivalRequestStatus : ObjectRawStatus<RegisterArrivalRequestResult>()
-
-
-data class RegisterArrivalRequestResult(
-        @SerializedName("ES_TASK")
-        val taskDescription: TaskDescriptionRestInfo,
-        @SerializedName("ET_NOTIFY")
-        val notifications: List<TaskNotificationRestInfo>,
-        @SerializedName("EV_VBELN_EXIST")
-        val shipmentExists: String,
-        @SerializedName("EV_RETCODE")
-        override val retCode: Int,
-        @SerializedName("EV_ERROR_TEXT")
-        override val errorText: String
-) : SapResponse
-
 data class RegisterArrivalRequestParameters(
         @SerializedName("IV_IP")
         val deviceIP: String,
@@ -51,3 +35,19 @@ data class RegisterArrivalRequestParameters(
         val isSelfRegistration: String
 
 )
+
+class RegisterArrivalRequestStatus : ObjectRawStatus<RegisterArrivalRequestResult>()
+
+
+data class RegisterArrivalRequestResult(
+        @SerializedName("ES_TASK")
+        val taskDescription: TaskDescriptionRestInfo,
+        @SerializedName("ET_NOTIFY")
+        val notifications: List<TaskNotificationRestInfo>,
+        @SerializedName("EV_VBELN_EXIST")
+        val shipmentExists: String,
+        @SerializedName("EV_RETCODE")
+        override val retCode: Int,
+        @SerializedName("EV_ERROR_TEXT")
+        override val errorText: String
+) : SapResponse

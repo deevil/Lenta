@@ -35,6 +35,8 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
     lateinit var timeMonitor: ITimeMonitor
     @Inject
     lateinit var zmpUtzGrz39V001NetRequest: ZmpUtzGrz39V001NetRequest
+    @Inject
+    lateinit var fixationDepartureReceptionDistrCenterNetRequest: FixationDepartureReceptionDistrCenterNetRequest
 
     val selectedPage = MutableLiveData(0)
 
@@ -176,6 +178,16 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
 
     val isVet by lazy {
         taskManager.getReceivingTask()?.taskDescription?.isVet ?: false
+    }
+
+    //trello https://trello.com/c/XKpOCvZo
+    val isEdo by lazy {
+        taskManager.getReceivingTask()?.taskDescription?.isEDO == true
+    }
+    val isEdoTaskStatusOrdered by lazy {
+        taskManager.getReceivingTask()?.taskDescription?.isEDO == true &&
+                taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.DirectSupplier &&
+                taskManager.getReceivingTask()?.taskDescription?.currentStatus == TaskStatus.Ordered
     }
 
     val changeCurrentDateTimePossible by lazy {
@@ -351,7 +363,17 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
         }
 
         when (taskManager.getReceivingTask()?.taskDescription?.currentStatus) {
-            TaskStatus.Ordered, TaskStatus.Traveling, TaskStatus.TemporaryRejected -> screenNavigator.openRegisterArrivalLoadingScreen()
+            TaskStatus.Ordered, TaskStatus.Traveling, TaskStatus.TemporaryRejected -> {
+                if (isEdo && taskManager.getReceivingTask()?.taskDescription?.currentStatus == TaskStatus.Ordered && taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.DirectSupplier) {
+                    //trello https://trello.com/c/XKpOCvZo
+                    screenNavigator.openEdoDialog(
+                            missing = {screenNavigator.openRegisterArrivalLoadingScreen(isInStockPaperTTN = false, isEdo = true, status = TaskStatus.Ordered)},
+                            inStock = {screenNavigator.openRegisterArrivalLoadingScreen(isInStockPaperTTN = true, isEdo = true, status = TaskStatus.Ordered)}
+                    )
+                } else {
+                    screenNavigator.openRegisterArrivalLoadingScreen()
+                }
+            }
             TaskStatus.Arrived -> {
                 if (taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.ReceptionDistributionCenter || taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.OwnProduction) {
                     screenNavigator.openUnloadingStartRDSLoadingScreen()
@@ -364,7 +386,11 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
                 if (taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.ReceptionDistributionCenter || taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.OwnProduction) {
                     screenNavigator.openNoTransportDefectDeclaredDialog(
                             nextCallbackFunc = {
-                                screenNavigator.openInputOutgoingFillingsScreen()
+                                if (taskManager.getReceivingTask()?.taskDescription?.quantityOutgoingFillings == 0) {
+                                    fixationDeparture()
+                                } else {
+                                    screenNavigator.openInputOutgoingFillingsScreen()
+                                }
                             }
                     )
                 } else {
@@ -378,6 +404,10 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
         }
     }
 
+    override fun handleFailure(failure: Failure) {
+        screenNavigator.openAlertScreen(failure)
+    }
+
     private fun shipmentStartRecount() {
         viewModelScope.launch {
             screenNavigator.showProgressLoadingData()
@@ -388,20 +418,39 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
                     recountStartDate = taskManager.getReceivingTask()?.taskDescription?.nextStatusDate ?: "",
                     recountStartTime = taskManager.getReceivingTask()?.taskDescription?.nextStatusTime ?: ""
             )
-            zmpUtzGrz39V001NetRequest(params).either(::handleFailure, ::handleSuccess)
+            zmpUtzGrz39V001NetRequest(params).either(::handleFailure, ::handleSuccessShipmentStartRecount)
             screenNavigator.hideProgress()
         }
     }
 
-    override fun handleFailure(failure: Failure) {
-        screenNavigator.openAlertScreen(failure)
-    }
-
-    private fun handleSuccess(result: ZmpUtzGrz39V001Result) {
+    private fun handleSuccessShipmentStartRecount(result: ZmpUtzGrz39V001Result) {
         val cargoUnits = result.cargoUnits.map { TaskCargoUnitInfo.from(it) }
         taskManager.getReceivingTask()?.taskRepository?.getCargoUnits()?.updateCargoUnits(cargoUnits)
 
         screenNavigator.openControlDeliveryCargoUnitsScreen()
+    }
+
+    private fun fixationDeparture() {
+        viewModelScope.launch {
+            screenNavigator.showProgressLoadingData()
+            val params = FixationDepartureReceptionDistrCenterParameters(
+                    taskNumber = taskManager.getReceivingTask()?.taskHeader?.taskNumber ?: "",
+                    deviceIP = context.getDeviceIp(),
+                    personalNumber = sessionInfo.personnelNumber ?: "",
+                    fillings = emptyList()
+            )
+            fixationDepartureReceptionDistrCenterNetRequest(params).either(::handleFailure, ::handleSuccessFixationDeparture)
+            screenNavigator.hideProgress()
+        }
+    }
+
+    private fun handleSuccessFixationDeparture(result: FixationDepartureReceptionDistrCenterResult) {
+        val notifications = result.notifications.map { TaskNotification.from(it) }
+        taskManager.getReceivingTask()?.taskRepository?.getNotifications()?.updateWithNotifications(general = notifications, document = null, product = null, condition = null)
+
+        taskManager.updateTaskDescription(TaskDescription.from(result.taskDescription))
+
+        screenNavigator.openTaskCardScreen(TaskCardMode.Full)
     }
 
     fun onBackPressed() {

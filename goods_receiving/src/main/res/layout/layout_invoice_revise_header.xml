@@ -23,7 +23,7 @@
             android:layout_marginEnd="32dp"
             android:layout_marginBottom="16dp"
             android:checked="@={vm.headerCheck}"
-            android:enabled="@{!vm.isNumInvEmty}"
+            android:enabled="@{vm.isEInvoice ? false : !vm.isNumInvEmty }"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/div_hor_3"
