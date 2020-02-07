@@ -140,6 +140,7 @@
                             android:digits="0123456789"
                             android:inputType="number"
                             android:maxLength="2"
+                            app:maxValue='@{"31"}'
                             android:text="@={vm.day}"
                             tools:text="31" />
 

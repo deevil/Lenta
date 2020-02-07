@@ -1,7 +1,9 @@
 package com.lenta.shared.utilities.databinding
 
 import android.content.Context
+import android.text.Editable
 import android.text.InputFilter
+import android.text.TextWatcher
 import android.text.method.DigitsKeyListener
 import android.view.KeyEvent
 import android.view.inputmethod.InputMethodManager
@@ -10,6 +12,7 @@ import android.widget.TextView
 import androidx.databinding.BindingAdapter
 import com.lenta.shared.models.core.Uom
 import com.lenta.shared.models.core.isOnlyInt
+import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.enable
 import com.redmadrobot.inputmask.MaskedTextChangedListener
 
@@ -83,6 +86,34 @@ fun setMaskPattern(editText: EditText, mask: String) {
     val listener = MaskedTextChangedListener(mask, editText)
     editText.addTextChangedListener(listener)
     editText.onFocusChangeListener = listener
+}
+
+@BindingAdapter("maxValue")
+fun setMaxValue(editText: EditText, value: String) {
+    val maxValue = value.toIntOrNull() ?: 0
+    var enteredValue = editText.text.toString()
+    Logg.d { "--> entered value: $enteredValue / max value: $maxValue" }
+    if (enteredValue.toIntOrNull() ?: 0 > maxValue) {
+        enteredValue = enteredValue.dropLast(1)
+        editText.setText(enteredValue)
+    }
+
+    editText.addTextChangedListener(object : TextWatcher {
+        override fun afterTextChanged(s: Editable?) {
+            Logg.d { "--> afterTextChanged: $s" }
+        }
+
+        override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+
+        }
+
+        override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+
+        }
+
+    })
+
+
 }
 
 interface OnOkInSoftKeyboardListener {
