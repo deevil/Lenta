@@ -1,9 +1,11 @@
 package com.lenta.bp9.features.editing_invoice
 
+import android.content.Context
 import androidx.lifecycle.LiveData
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.lenta.bp9.R
 import com.lenta.bp9.model.task.IReceivingTaskManager
 import com.lenta.bp9.model.task.revise.CommentToVP
 import com.lenta.bp9.model.task.revise.CommentToVPRestData
@@ -39,6 +41,8 @@ class EditingInvoiceViewModel : CoreViewModel(), PageSelectionListener, OnOkInSo
     lateinit var hyperHive: HyperHive
     @Inject
     lateinit var repoInMemoryHolder: IRepoInMemoryHolder
+    @Inject
+    lateinit var context: Context
 
     val selectedPage = MutableLiveData(0)
     val totalSelectionsHelper = SelectionItemsHelper()
@@ -208,6 +212,10 @@ class EditingInvoiceViewModel : CoreViewModel(), PageSelectionListener, OnOkInSo
 
     fun getTitle(): String {
         return taskManager.getReceivingTask()?.taskHeader?.caption ?: ""
+    }
+
+    fun getDescription(): String {
+        return if (editingAvailable) context.getString(R.string.delivery_note_correction) else context.getString(R.string.view_delivery_invoice)
     }
 
     fun onClickRefusal() {

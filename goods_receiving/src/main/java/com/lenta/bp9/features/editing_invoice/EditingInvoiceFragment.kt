@@ -49,7 +49,7 @@ class EditingInvoiceFragment : CoreFragment<FragmentEditingInvoiceBinding, Editi
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
         topToolbarUiModel.title.value = vm.getTitle()
-        topToolbarUiModel.description.value = getString(R.string.delivery_note_correction)
+        topToolbarUiModel.description.value = vm.getDescription()
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {

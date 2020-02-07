@@ -36,6 +36,10 @@ class LoadingRegisterArrivalViewModel : CoreLoadingViewModel() {
     override val speedKbInSec: MutableLiveData<Int> = MutableLiveData()
     override val sizeInMb: MutableLiveData<Float> = MutableLiveData()
 
+    val isInStockPaperTTN: MutableLiveData<Boolean> = MutableLiveData(false)
+    val isEdo: MutableLiveData<Boolean> = MutableLiveData(false)
+    val status: MutableLiveData<TaskStatus> = MutableLiveData(TaskStatus.Other)
+
     val taskDescription: String by lazy {
         "\"" + (taskManager.getReceivingTask()?.taskDescription?.currentStatus?.stringValue() ?: "") + "\" -> \"" + TaskStatus.Arrived.stringValue() + "\""
     }
@@ -49,7 +53,7 @@ class LoadingRegisterArrivalViewModel : CoreLoadingViewModel() {
                     taskNumber = taskManager.getReceivingTask()?.taskHeader?.taskNumber ?: "",
                     dateArrival = taskManager.getReceivingTask()?.taskDescription?.nextStatusDate ?: "",
                     timeArrival = taskManager.getReceivingTask()?.taskDescription?.nextStatusTime ?: "",
-                    hasPaperTTN = "",
+                    hasPaperTTN = if (isInStockPaperTTN.value == true) "X" else "",
                     isSelfRegistration = ""
             )
             regissterArrivalRequest(params).either(::handleFailure, ::handleSuccess)
@@ -64,15 +68,16 @@ class LoadingRegisterArrivalViewModel : CoreLoadingViewModel() {
 
     private fun handleSuccess(result: RegisterArrivalRequestResult) {
         Logg.d { "Register arrival request result $result" }
-        screenNavigator.goBack()
-        screenNavigator.goBack()
-        taskManager.getReceivingTask()?.taskHeader?.let {
-            val notifications = result.notifications.map { TaskNotification.from(it) }
-            val shipmentExists = result.shipmentExists.isNotEmpty()
-            val newTask = taskManager.newReceivingTask(it, TaskDescription.from(result.taskDescription))
-            newTask?.taskRepository?.getNotifications()?.updateWithNotifications(notifications, null, null, null)
-            taskManager.setTask(newTask)
-            screenNavigator.openTaskCardScreen(TaskCardMode.Full)
+        val notifications = result.notifications.map { TaskNotification.from(it) }
+        taskManager.getReceivingTask()?.taskRepository?.getNotifications()?.updateWithNotifications(general = notifications, document = null, product = null, condition = null)
+
+        taskManager.updateTaskDescription(TaskDescription.from(result.taskDescription))
+
+        screenNavigator.openTaskCardScreen(TaskCardMode.Full)
+
+        //trello https://trello.com/c/XKpOCvZo
+        if (isInStockPaperTTN.value == false && isEdo.value == true && status.value == TaskStatus.Ordered) {
+            screenNavigator.openAlertMissingVPForProviderScreen()
         }
     }
 
