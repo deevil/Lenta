@@ -127,12 +127,14 @@
                         android:orientation="horizontal">
 
                         <EditText
+                            android:id="@+id/day_field"
                             style="@style/CellEditTextStyle"
                             android:layout_width="0dp"
                             android:layout_weight="1"
                             android:digits="0123456789"
                             android:inputType="number"
                             android:maxLength="2"
+                            android:nextFocusForward="@id/month_field"
                             android:text="@={vm.day}"
                             app:maxValue="@{31}"
                             tools:text="31" />
@@ -146,12 +148,14 @@
                             android:text="." />
 
                         <EditText
+                            android:id="@+id/month_field"
                             style="@style/CellEditTextStyle"
                             android:layout_width="0dp"
                             android:layout_weight="1"
                             android:digits="0123456789"
                             android:inputType="number"
                             android:maxLength="2"
+                            android:nextFocusForward="@id/year_field"
                             android:text="@={vm.month}"
                             app:maxValue="@{12}"
                             tools:text="07" />
@@ -165,6 +169,7 @@
                             android:text="." />
 
                         <EditText
+                            android:id="@+id/year_field"
                             style="@style/CellEditTextStyle"
                             android:layout_width="0dp"
                             android:layout_weight="1"
