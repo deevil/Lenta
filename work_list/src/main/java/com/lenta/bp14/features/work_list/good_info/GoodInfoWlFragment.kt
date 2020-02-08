@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.Observer
 import com.lenta.bp14.BR
 import com.lenta.bp14.R
 import com.lenta.bp14.databinding.*
@@ -19,6 +20,7 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.scan.OnScanResultListener
+import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig
 import com.lenta.shared.utilities.databinding.ViewPagerSettings
 import com.lenta.shared.utilities.extentions.connectLiveData
@@ -74,7 +76,10 @@ class GoodInfoWlFragment : CoreFragment<FragmentGoodInfoWlBinding, GoodInfoWlVie
                 layoutBinding.vm = vm
                 layoutBinding.lifecycleOwner = viewLifecycleOwner
 
-                dateFocus(layoutBinding)
+                vm.dateFields = listOf(layoutBinding.dayField, layoutBinding.monthField, layoutBinding.yearField)
+
+                initDateTextWatcher(layoutBinding)
+                initDateFocusListener()
 
                 return layoutBinding.root
             }
@@ -147,24 +152,43 @@ class GoodInfoWlFragment : CoreFragment<FragmentGoodInfoWlBinding, GoodInfoWlVie
         vm.onScanResult(data)
     }
 
-    private fun dateFocus(binding: LayoutWlGoodInfoCommonBinding?) {
+    private fun initDateTextWatcher(binding: LayoutWlGoodInfoCommonBinding?) {
         binding?.apply {
-            dayField.addTextChangedListener(EnterCodeTextWatcher(null, monthField))
-            monthField.addTextChangedListener(EnterCodeTextWatcher(dayField, yearField))
-            yearField.addTextChangedListener(EnterCodeTextWatcher(monthField, null))
+            dayField.addTextChangedListener(EnterDateTextWatcher(null, monthField))
+            monthField.addTextChangedListener(EnterDateTextWatcher(dayField, yearField))
+            yearField.addTextChangedListener(EnterDateTextWatcher(monthField, null))
+        }
+    }
+
+    private fun initDateFocusListener() {
+        viewLifecycleOwner.apply {
+            vm.dayFocus.observe(this, Observer {
+                Logg.d { "--> Day focus changed: $it" }
+            })
+
+            vm.monthFocus.observe(this, Observer {
+                Logg.d { "--> Month focus changed: $it" }
+            })
+
+            vm.yearFocus.observe(this, Observer {
+                Logg.d { "--> Year focus changed: $it" }
+            })
+
+            vm.lastFocus.observe(this, Observer {
+                Logg.d { "--> Last focus changed: $it" }
+            })
         }
     }
 
 }
 
-class EnterCodeTextWatcher(
+class EnterDateTextWatcher(
         private var previous: EditText?,
         private var next: EditText?
 ) : TextWatcher {
 
     override fun afterTextChanged(s: Editable?) {
         val entered = s.toString()
-
         if (entered.isEmpty()) {
             previous?.requestFocus()
         } else if (entered.length == 2) {

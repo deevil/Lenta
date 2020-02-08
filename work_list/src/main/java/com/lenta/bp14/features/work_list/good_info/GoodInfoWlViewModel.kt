@@ -1,5 +1,6 @@
 package com.lenta.bp14.features.work_list.good_info
 
+import android.widget.EditText
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp14.models.check_price.IPriceInfoParser
@@ -72,10 +73,6 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKe
 
     val quantity = MutableLiveData<String>("")
 
-    val requestFocusDay = MutableLiveData<Boolean>(false)
-    val requestFocusMonth = MutableLiveData<Boolean>(false)
-    val requestFocusYear = MutableLiveData<Boolean>(false)
-
     private val totalQuantityValue: MutableLiveData<Double> by lazy {
         good.combineLatest(quantity).map {
             it?.first?.getTotalQuantity().sumWith(it?.second?.toDoubleOrNull() ?: 0.0)
@@ -98,12 +95,30 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKe
     val month = MutableLiveData<String>("")
     val year = MutableLiveData<String>("")
 
+    var dateFields: List<EditText> = emptyList()
+
+    val dayFocus = MutableLiveData<Boolean>(false)
+    val monthFocus = MutableLiveData<Boolean>(false)
+    val yearFocus = MutableLiveData<Boolean>(false)
+
+    var focus = DateFocus.NO_FOCUS
+
+    val lastFocus = dayFocus.combineLatest(monthFocus).combineLatest(yearFocus).map {
+        val day = it?.first?.first
+        val month = it?.first?.second
+        val year = it?.second
+
+        when {
+            day == true -> focus = DateFocus.DAY
+            month == true -> focus = DateFocus.MONTH
+            year == true -> focus = DateFocus.YEAR
+        }
+    }
+
     private val enteredDate: MutableLiveData<Date> = day.combineLatest(month).combineLatest(year).map {
         val day = it?.first?.first?.toIntOrNull()
         val month = it?.first?.second?.toIntOrNull()
         val year = it?.second?.toIntOrNull()
-
-        //passFocus(day, month, year)
 
         var parseDate: Date? = null
         if (day != null && month != null && year != null) {
@@ -116,32 +131,6 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKe
 
         parseDate
     }
-
-    /*private fun passFocus(day: Int?, month: Int?, year: Int?) {
-        val dayFilled = day.toString().length == 2
-        val monthFilled = month.toString().length == 2
-        val yearFilled = year.toString().length == 2
-
-        clearDateFocus()
-
-        if (dayFilled && monthFilled && !yearFilled) {
-            requestFocusYear.value = true
-        }
-
-        if (dayFilled && !monthFilled && !yearFilled) {
-            requestFocusMonth.value = true
-        }
-
-        if (!dayFilled && !monthFilled && !yearFilled) {
-            requestFocusDay.value = true
-        }
-    }*/
-
-    /*private fun clearDateFocus() {
-        requestFocusDay.value = false
-        requestFocusMonth.value = false
-        requestFocusYear.value = false
-    }*/
 
     val shelfLifeTypeList: MutableLiveData<List<String>> by lazy {
         good.map { good ->
@@ -502,15 +491,20 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKe
     }
 
     override fun onOkInSoftKeyboard(): Boolean {
-        // todo Доделать логику
+        Logg.d { "--> Enter pressed" }
 
-        if (requestFocusMonth.value == false && requestFocusYear.value == false) {
-            requestFocusDay.value = false
-            requestFocusYear.value = false
+        val day = dateFields[0]
+        val month = dateFields[1]
+        val year = dateFields[2]
 
-            requestFocusMonth.value = true
-        } else {
-            requestFocusYear.value = true
+        Logg.d { "--> Last focus: $focus" }
+
+        if (focus == DateFocus.DAY) {
+            Logg.d { "--> Day is focused" }
+            month.requestFocus()
+        } else if (focus == DateFocus.MONTH) {
+            Logg.d { "--> Month is focused" }
+            year.requestFocus()
         }
 
         return true
@@ -557,3 +551,10 @@ data class ItemStockUi(
         val storage: String,
         val quantity: String
 )
+
+enum class DateFocus {
+    NO_FOCUS,
+    DAY,
+    MONTH,
+    YEAR
+}

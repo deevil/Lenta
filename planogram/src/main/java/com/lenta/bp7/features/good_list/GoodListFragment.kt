@@ -2,7 +2,6 @@ package com.lenta.bp7.features.good_list
 
 import android.os.Bundle
 import android.view.View
-import android.view.inputmethod.EditorInfo
 import android.widget.AdapterView
 import androidx.lifecycle.Observer
 import com.lenta.bp7.BR
@@ -124,4 +123,5 @@ class GoodListFragment : CoreFragment<FragmentGoodListBinding, GoodListViewModel
     override fun onScanResult(data: String) {
         vm.onScanResult(data)
     }
+
 }

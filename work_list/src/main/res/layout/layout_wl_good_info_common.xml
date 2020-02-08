@@ -137,9 +137,9 @@
                             android:maxLength="2"
                             android:nextFocusForward="@id/month_field"
                             android:text="@={vm.day}"
+                            app:connectFocusWith="@{vm.dayFocus}"
                             app:maxValue="@{31}"
                             app:onOkInSoftKeyboard="@{vm}"
-                            app:requestFocus="@{vm.requestFocusDay}"
                             tools:text="31" />
 
                         <TextView
@@ -161,9 +161,9 @@
                             android:maxLength="2"
                             android:nextFocusForward="@id/year_field"
                             android:text="@={vm.month}"
+                            app:connectFocusWith="@{vm.monthFocus}"
                             app:maxValue="@{12}"
                             app:onOkInSoftKeyboard="@{vm}"
-                            app:requestFocus="@{vm.requestFocusMonth}"
                             tools:text="07" />
 
                         <TextView
@@ -184,7 +184,7 @@
                             android:inputType="number"
                             android:maxLength="2"
                             android:text="@={vm.year}"
-                            app:requestFocus="@{vm.requestFocusYear}"
+                            app:connectFocusWith="@{vm.yearFocus}"
                             tools:text="19" />
 
                     </LinearLayout>

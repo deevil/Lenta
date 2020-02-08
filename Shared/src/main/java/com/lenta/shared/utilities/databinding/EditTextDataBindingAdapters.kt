@@ -10,12 +10,12 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.TextView
 import androidx.databinding.BindingAdapter
+import androidx.lifecycle.MutableLiveData
 import com.lenta.shared.models.core.Uom
 import com.lenta.shared.models.core.isOnlyInt
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.enable
 import com.redmadrobot.inputmask.MaskedTextChangedListener
-
 
 @BindingAdapter(value = ["onOkInSoftKeyboard"])
 fun setOnOkInSoftKeyboardListener(editText: EditText, onOkInSoftKeyboardListener: OnOkInSoftKeyboardListener?) {
@@ -32,7 +32,6 @@ fun setOnOkInSoftKeyboardListener(editText: EditText, onOkInSoftKeyboardListener
         }
         onOkInSoftKeyboardListener.onOkInSoftKeyboard()
     }
-
 }
 
 @BindingAdapter(value = ["textAllCaps"])
@@ -42,7 +41,6 @@ fun setTextAllCaps(editText: EditText, textAllCaps: Boolean?) {
     } else {
         editText.filters = editText.filters.filter { it != InputFilter.AllCaps() }.toTypedArray()
     }
-
 }
 
 @BindingAdapter(value = ["digitsForUom"])
@@ -50,7 +48,6 @@ fun setDigitsForUom(editText: EditText, uom: Uom?) {
     uom?.let {
         editText.keyListener = DigitsKeyListener.getInstance(if (uom.isOnlyInt()) "0123456789-" else "0123456789.-")
     }
-
 }
 
 @BindingAdapter("requestFocus", "cursorToLastPos")
@@ -61,7 +58,11 @@ fun requestFocus(editText: EditText, @Suppress("UNUSED_PARAMETER") requestFocus:
             editText.setSelection(editText.text.length)
         }
     }
+}
 
+@BindingAdapter("connectFocusWith")
+fun connectFocusWith(editText: EditText, focusState: MutableLiveData<Boolean>) {
+    editText.setOnFocusChangeListener { _, hasFocus -> focusState.value = hasFocus }
 }
 
 @BindingAdapter("selectText")
@@ -70,7 +71,6 @@ fun selectText(editText: EditText, isSelect: Boolean?) {
         editText.requestFocus()
         editText.setSelection(0, editText.text.length)
     }
-
 }
 
 @BindingAdapter(value = ["disabled"])
@@ -78,7 +78,6 @@ fun setDisabled(editText: EditText, disabled: Boolean?) {
     if (disabled == null) {
         editText.enable(disabled == false)
     }
-
 }
 
 @BindingAdapter("maskPattern")
@@ -97,6 +96,7 @@ fun setMaxValue(editText: EditText, value: Int) {
             if (enteredValue.toIntOrNull() ?: 0 > value) {
                 enteredValue = enteredValue.dropLast(1)
                 editText.setText(enteredValue)
+                editText.requestFocus()
                 editText.setSelection(enteredValue.length)
             }
         }
@@ -112,5 +112,3 @@ fun setMaxValue(editText: EditText, value: Int) {
 interface OnOkInSoftKeyboardListener {
     fun onOkInSoftKeyboard(): Boolean
 }
-
-
