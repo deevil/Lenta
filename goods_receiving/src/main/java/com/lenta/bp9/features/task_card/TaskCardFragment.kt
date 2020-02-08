@@ -72,7 +72,13 @@ class TaskCardFragment : CoreFragment<FragmentTaskCardBinding, TaskCardViewModel
                         TaskType.ReceptionDistributionCenter, TaskType.OwnProduction -> bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.transportMarriage)
                     }
                 }
-                TaskStatus.Checked -> bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.verify)
+                TaskStatus.Checked -> {
+                    if (vm.taskType == TaskType.ShipmentPP) {
+                        bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.skipAlternate)
+                    } else {
+                        bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.verify)
+                    }
+                }
                 TaskStatus.Recounted -> bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.recount)
                 TaskStatus.ReadyToShipment -> {
                     if (vm.taskType == TaskType.ShipmentRC) {
@@ -100,7 +106,7 @@ class TaskCardFragment : CoreFragment<FragmentTaskCardBinding, TaskCardViewModel
                 TaskStatus.Checked -> bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.verify, enabled = false)
                 TaskStatus.Recounted -> bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.recount, enabled = false)
                 TaskStatus.ReadyToShipment -> {
-                    if (vm.taskType == TaskType.ShipmentRC) {
+                    if (vm.taskType == TaskType.ShipmentPP || vm.taskType == TaskType.ShipmentRC) {
                         bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.skipAlternate, enabled = false)
                     }
                 }
@@ -238,7 +244,7 @@ class TaskCardFragment : CoreFragment<FragmentTaskCardBinding, TaskCardViewModel
     }
 
     override fun getTextTitle(position: Int): String {
-        return if (vm.taskType == TaskType.ShipmentRC) {
+        return if (vm.taskType == TaskType.ShipmentPP || vm.taskType == TaskType.ShipmentRC) {
             when (position) {
                 0 -> getString(R.string.status)
                 1 -> getString(R.string.shipment)
@@ -257,7 +263,7 @@ class TaskCardFragment : CoreFragment<FragmentTaskCardBinding, TaskCardViewModel
     }
 
     override fun countTab(): Int {
-        return if (vm.taskType == TaskType.ShipmentRC) 4 else 3
+        return if (vm.taskType == TaskType.ShipmentPP || vm.taskType == TaskType.ShipmentRC) 4 else 3
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

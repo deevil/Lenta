@@ -34,6 +34,8 @@ data class TaskDescription(val currentStatus: TaskStatus,   //Код текущ�
                       val isOwnTransport: Boolean,     //Индикатор: Собственный транспорт (IS_OWN)
                       val isEDO: Boolean,               //Индикатор ЭДО
                       val isVet: Boolean,              //Индикатор Меркурий
+                      val isBksDiff: Boolean,          //наличие расхождения количества по товарам
+                      val isSkipCountMan: Boolean,     //Доступен ручной пропуск пересчета
                       val countGE: String, //Количество ГЕ в задании ОРЦ
                       val countEO: String, //Количество ЕО в задании ОРЦ
                       val transportationNumber: String, //Номер транспортировки в задании ОРЦ
@@ -69,6 +71,8 @@ data class TaskDescription(val currentStatus: TaskStatus,   //Код текущ�
                     isOwnTransport = restData.isOwnTransport.isNotEmpty(),
                     isEDO = restData.isEDO.isNotEmpty(),
                     isVet = restData.isVet.isNotEmpty(),
+                    isBksDiff = restData.isBksDiff.isNotEmpty(),
+                    isSkipCountMan = restData.isSkipCountMan.isNotEmpty(),
                     countGE = restData.countGE,
                     countEO = restData.countEO,
                     transportationNumber = restData.transportationNumber,
@@ -142,7 +146,12 @@ data class TaskDescriptionRestInfo(
         @SerializedName("DELIV_OTM")
         val deliveryNumberOTM: String,
         @SerializedName("LOAD_EXIDV_TOP")
-        val submergedGE: String
+        val submergedGE: String,
+        @SerializedName("IS_BKS_DIFF")
+        val isBksDiff: String,
+        @SerializedName("IS_SKIP_COUNT_MAN")
+        val isSkipCountMan: String
+
 ) {
 }
 
