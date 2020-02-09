@@ -78,8 +78,6 @@ class GoodInfoWlFragment : CoreFragment<FragmentGoodInfoWlBinding, GoodInfoWlVie
 
                 vm.dateFields = listOf(layoutBinding.dayField, layoutBinding.monthField, layoutBinding.yearField)
 
-                initDateTextWatcher(layoutBinding)
-
                 return layoutBinding.root
             }
         }
@@ -149,36 +147,6 @@ class GoodInfoWlFragment : CoreFragment<FragmentGoodInfoWlBinding, GoodInfoWlVie
 
     override fun onScanResult(data: String) {
         vm.onScanResult(data)
-    }
-
-    private fun initDateTextWatcher(binding: LayoutWlGoodInfoCommonBinding?) {
-        binding?.apply {
-            dayField.addTextChangedListener(EnterDateTextWatcher(null, monthField))
-            //monthField.addTextChangedListener(EnterDateTextWatcher(dayField, yearField))
-            yearField.addTextChangedListener(EnterDateTextWatcher(monthField, null))
-        }
-    }
-
-}
-
-class EnterDateTextWatcher(
-        private var previous: EditText?,
-        private var next: EditText?
-) : TextWatcher {
-
-    override fun afterTextChanged(s: Editable?) {
-        val entered = s.toString()
-        if (entered.isEmpty()) {
-            previous?.requestFocus()
-        } else if (entered.length == 2) {
-            next?.requestFocus()
-        }
-    }
-
-    override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-    }
-
-    override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
     }
 
 }

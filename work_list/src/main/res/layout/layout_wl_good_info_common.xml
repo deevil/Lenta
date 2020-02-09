@@ -140,6 +140,7 @@
                             app:maxValue="@{31}"
                             app:onOkInSoftKeyboard="@{vm}"
                             app:saveFocusTo="@{vm.lastFocusField}"
+                            app:nextField="@{monthField}"
                             tools:text="31" />
 
                         <TextView
@@ -187,6 +188,7 @@
                             android:maxLength="2"
                             android:text="@={vm.year}"
                             app:saveFocusTo="@{vm.lastFocusField}"
+                            app:previousField="@{monthField}"
                             tools:text="19" />
 
                     </LinearLayout>
