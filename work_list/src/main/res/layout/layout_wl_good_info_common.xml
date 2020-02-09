@@ -137,10 +137,11 @@
                             android:maxLength="2"
                             android:nextFocusForward="@id/month_field"
                             android:text="@={vm.day}"
+                            app:lengthToNext="@{2}"
                             app:maxValue="@{31}"
+                            app:nextField="@{monthField}"
                             app:onOkInSoftKeyboard="@{vm}"
                             app:saveFocusTo="@{vm.lastFocusField}"
-                            app:nextField="@{monthField}"
                             tools:text="31" />
 
                         <TextView
@@ -162,11 +163,12 @@
                             android:maxLength="2"
                             android:nextFocusForward="@id/year_field"
                             android:text="@={vm.month}"
+                            app:lengthToNext="@{2}"
                             app:maxValue="@{12}"
-                            app:onOkInSoftKeyboard="@{vm}"
-                            app:saveFocusTo="@{vm.lastFocusField}"
-                            app:previousField="@{dayField}"
                             app:nextField="@{yearField}"
+                            app:onOkInSoftKeyboard="@{vm}"
+                            app:previousField="@{dayField}"
+                            app:saveFocusTo="@{vm.lastFocusField}"
                             tools:text="07" />
 
                         <TextView
@@ -187,8 +189,9 @@
                             android:inputType="number"
                             android:maxLength="2"
                             android:text="@={vm.year}"
-                            app:saveFocusTo="@{vm.lastFocusField}"
+                            app:maxValue="@{99}"
                             app:previousField="@{monthField}"
+                            app:saveFocusTo="@{vm.lastFocusField}"
                             tools:text="19" />
 
                     </LinearLayout>

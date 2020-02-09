@@ -87,43 +87,29 @@ fun setMaskPattern(editText: EditText, mask: String) {
     editText.onFocusChangeListener = listener
 }
 
-@BindingAdapter("maxValue")
-fun setMaxValue(editText: EditText, value: Int) {
-    editText.addTextChangedListener(object : TextWatcher {
-        override fun afterTextChanged(s: Editable?) {
-            Logg.d { "--> entered value: $s (max value: $value)" }
-            var enteredValue = s.toString()
-            if (enteredValue.toIntOrNull() ?: 0 > value) {
-                enteredValue = enteredValue.dropLast(1)
-                editText.setText(enteredValue)
-                editText.requestFocus()
-                editText.setSelection(enteredValue.length)
-            }
-        }
-
-        override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-        }
-
-        override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-        }
-    })
-}
-
 @BindingAdapter("saveFocusTo")
 fun saveFocusTo(editText: EditText, lastFocusField: MutableLiveData<EditText?>) {
     editText.setOnFocusChangeListener { _, hasFocus -> if (hasFocus) lastFocusField.value = editText }
 }
 
-@BindingAdapter(value = ["previousField", "nextField"], requireAll = false)
-fun focusChanger(editText: EditText, previousField: EditText? = null, nextField: EditText? = null) {
+@BindingAdapter(value = ["maxValue", "lengthToPrevious", "lengthToNext", "previousField", "nextField"], requireAll = false)
+fun dateFocusChanger(editText: EditText, maxValue: Int, lengthToPrevious: Int = 0, lengthToNext: Int = 2, previousField: EditText? = null, nextField: EditText? = null) {
     editText.addTextChangedListener(object : TextWatcher {
         override fun afterTextChanged(s: Editable?) {
-            Logg.d { "--> Focus changer is active!" }
-            val entered = s.toString()
-            if (entered.isEmpty()) {
-                previousField?.requestFocus()
-            } else if (entered.length == 2) {
-                nextField?.requestFocus()
+            var entered = s.toString()
+            Logg.d { "--> Entered length: ${entered.length}" }
+            Logg.d { "--> Limit values: $maxValue, $lengthToPrevious, $lengthToNext" }
+
+            if (entered.toIntOrNull() ?: 0 > maxValue) {
+                entered = entered.dropLast(1)
+                editText.setText(entered)
+                editText.setSelection(entered.length)
+            } else {
+                if (entered.length == lengthToPrevious) {
+                    previousField?.requestFocus()
+                } else if (entered.length == lengthToNext) {
+                    nextField?.requestFocus()
+                }
             }
         }
 
