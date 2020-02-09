@@ -109,6 +109,11 @@ fun setMaxValue(editText: EditText, value: Int) {
     })
 }
 
+@BindingAdapter("saveFocusTo")
+fun saveFocusTo(editText: EditText, lastFocusField: MutableLiveData<EditText?>) {
+    editText.setOnFocusChangeListener { _, hasFocus -> if (hasFocus) lastFocusField.value = editText }
+}
+
 interface OnOkInSoftKeyboardListener {
     fun onOkInSoftKeyboard(): Boolean
 }

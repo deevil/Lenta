@@ -79,7 +79,6 @@ class GoodInfoWlFragment : CoreFragment<FragmentGoodInfoWlBinding, GoodInfoWlVie
                 vm.dateFields = listOf(layoutBinding.dayField, layoutBinding.monthField, layoutBinding.yearField)
 
                 initDateTextWatcher(layoutBinding)
-                initDateFocusListener()
 
                 return layoutBinding.root
             }
@@ -157,26 +156,6 @@ class GoodInfoWlFragment : CoreFragment<FragmentGoodInfoWlBinding, GoodInfoWlVie
             dayField.addTextChangedListener(EnterDateTextWatcher(null, monthField))
             monthField.addTextChangedListener(EnterDateTextWatcher(dayField, yearField))
             yearField.addTextChangedListener(EnterDateTextWatcher(monthField, null))
-        }
-    }
-
-    private fun initDateFocusListener() {
-        viewLifecycleOwner.apply {
-            vm.dayFocus.observe(this, Observer {
-                Logg.d { "--> Day focus changed: $it" }
-            })
-
-            vm.monthFocus.observe(this, Observer {
-                Logg.d { "--> Month focus changed: $it" }
-            })
-
-            vm.yearFocus.observe(this, Observer {
-                Logg.d { "--> Year focus changed: $it" }
-            })
-
-            vm.lastFocus.observe(this, Observer {
-                Logg.d { "--> Last focus changed: $it" }
-            })
         }
     }
 
