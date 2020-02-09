@@ -114,6 +114,27 @@ fun saveFocusTo(editText: EditText, lastFocusField: MutableLiveData<EditText?>) 
     editText.setOnFocusChangeListener { _, hasFocus -> if (hasFocus) lastFocusField.value = editText }
 }
 
+@BindingAdapter(value = ["previousField", "nextField"], requireAll = false)
+fun focusChanger(editText: EditText, previousField: EditText? = null, nextField: EditText? = null) {
+    editText.addTextChangedListener(object : TextWatcher {
+        override fun afterTextChanged(s: Editable?) {
+            Logg.d { "--> Focus changer is active!" }
+            val entered = s.toString()
+            if (entered.isEmpty()) {
+                previousField?.requestFocus()
+            } else if (entered.length == 2) {
+                nextField?.requestFocus()
+            }
+        }
+
+        override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+        }
+
+        override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+        }
+    })
+}
+
 interface OnOkInSoftKeyboardListener {
     fun onOkInSoftKeyboard(): Boolean
 }

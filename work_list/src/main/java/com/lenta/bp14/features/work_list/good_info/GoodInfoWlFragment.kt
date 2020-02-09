@@ -154,7 +154,7 @@ class GoodInfoWlFragment : CoreFragment<FragmentGoodInfoWlBinding, GoodInfoWlVie
     private fun initDateTextWatcher(binding: LayoutWlGoodInfoCommonBinding?) {
         binding?.apply {
             dayField.addTextChangedListener(EnterDateTextWatcher(null, monthField))
-            monthField.addTextChangedListener(EnterDateTextWatcher(dayField, yearField))
+            //monthField.addTextChangedListener(EnterDateTextWatcher(dayField, yearField))
             yearField.addTextChangedListener(EnterDateTextWatcher(monthField, null))
         }
     }

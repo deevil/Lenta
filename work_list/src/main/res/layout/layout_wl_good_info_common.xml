@@ -164,6 +164,8 @@
                             app:maxValue="@{12}"
                             app:onOkInSoftKeyboard="@{vm}"
                             app:saveFocusTo="@{vm.lastFocusField}"
+                            app:previousField="@{dayField}"
+                            app:nextField="@{yearField}"
                             tools:text="07" />
 
                         <TextView
