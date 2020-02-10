@@ -104,6 +104,7 @@ class Printer @Inject constructor(
             put("NAMEDONE", printInnerTagInfo.nameDone)
             put("GOODSCODE", printInnerTagInfo.goodsCode)
             put("BARCODE", printInnerTagInfo.barcode)
+            put("TEXTBARCODE", printInnerTagInfo.barcodeText)
 
 
             /*put("GOODSNAME",
