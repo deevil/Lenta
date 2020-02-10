@@ -26,7 +26,7 @@ import com.lenta.shared.utilities.extentions.generateScreenNumber
 
 class InvoiceReviseFragment : CoreFragment<FragmentInvoiceReviseBinding, InvoiceReviseViewModel>(), ViewPagerSettings, ToolbarButtonsClickListener, OnBackPresserListener {
 
-    var notesRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
+    private var notesRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
 
     override fun getLayoutId(): Int = R.layout.fragment_invoice_revise
 

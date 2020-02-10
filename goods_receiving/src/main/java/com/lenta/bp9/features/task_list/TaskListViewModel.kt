@@ -102,7 +102,7 @@ class TaskListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
     fun onClickRight() {
         if (selectedPage.value == 1) {
-            screenNavigator.openTaskSearchScreen()
+            screenNavigator.openTaskSearchScreen(taskListLoadingMode)
         } else {
             viewModelScope.launch {
                 screenNavigator.showProgress(taskListNetRequest)
@@ -170,7 +170,7 @@ class TaskListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
             else -> null
         }
         task?.let {
-            val loadFullData = it.status != TaskStatus.Traveling && it.status != TaskStatus.Ordered
+            val loadFullData = it.status != TaskStatus.Traveling && it.status != TaskStatus.Ordered && it.status != TaskStatus.ReadyToShipment //ReadyToShipment этот статус добавлен для ОРЦ, п.п. 5.5.2 из ТП
             when (it.lockStatus) {
                 TaskLockStatus.LockedByMe -> {
                     screenNavigator.openConfirmationUnlock {

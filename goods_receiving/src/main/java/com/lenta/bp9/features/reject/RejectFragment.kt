@@ -28,7 +28,8 @@ class RejectFragment : CoreFragment<FragmentRejectBinding, RejectViewModel>(), T
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
         topToolbarUiModel.title.value = vm.taskCaption
-        topToolbarUiModel.description.value = getString(R.string.reject_recieving)    }
+        topToolbarUiModel.description.value = vm.getDescription()
+    }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)

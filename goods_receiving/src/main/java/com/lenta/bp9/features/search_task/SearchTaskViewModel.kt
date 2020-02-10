@@ -1,7 +1,11 @@
 package com.lenta.bp9.features.search_task
 
+import android.content.Context
 import androidx.lifecycle.MutableLiveData
+import com.lenta.bp9.R
 import com.lenta.bp9.features.loading.tasks.TaskListLoadingMode
+import com.lenta.bp9.model.task.IReceivingTaskManager
+import com.lenta.bp9.model.task.TaskType
 import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.bp9.repos.IRepoInMemoryHolder
 import com.lenta.bp9.requests.network.TaskListSearchParams
@@ -20,6 +24,10 @@ class SearchTaskViewModel: CoreViewModel(), OnOkInSoftKeyboardListener {
     lateinit var screenNavigator: IScreenNavigator
     @Inject
     lateinit var sessionInfo: ISessionInfo
+    @Inject
+    lateinit var context: Context
+    @Inject
+    lateinit var taskManager: IReceivingTaskManager
 
     var taskNumber: MutableLiveData<String> = MutableLiveData("")
     var supplier: MutableLiveData<String> = MutableLiveData("")
@@ -44,8 +52,18 @@ class SearchTaskViewModel: CoreViewModel(), OnOkInSoftKeyboardListener {
         sessionInfo.market ?: ""
     }
 
+    var loadingMode: TaskListLoadingMode = TaskListLoadingMode.None
+
+    fun getDescription() : String {
+        return when (loadingMode) {
+            TaskListLoadingMode.Shipment -> context.getString(R.string.shipment_task)
+            TaskListLoadingMode.PGE -> context.getString(R.string.recount_task)
+            else -> context.getString(R.string.receipt_task)
+        }
+    }
+
     fun onClickFind() {
-        screenNavigator.openTaskListLoadingScreen(TaskListLoadingMode.Receiving,
+        screenNavigator.openTaskListLoadingScreen(loadingMode,
                 TaskListSearchParams(taskNumber = if (taskNumber.value.isNullOrEmpty()) null else taskNumber.value,
                         supplierNumber = if (supplier.value.isNullOrEmpty()) null else supplier.value,
                         documentNumber = if (order.value.isNullOrEmpty()) null else order.value,

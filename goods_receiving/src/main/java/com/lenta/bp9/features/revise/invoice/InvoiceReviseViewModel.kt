@@ -37,7 +37,7 @@ class InvoiceReviseViewModel : CoreViewModel(), PageSelectionListener {
         taskManager.getReceivingTask()?.taskHeader?.caption ?: ""
     }
 
-    val initialTTNNumber: String by lazy {
+    private val initialTTNNumber: String by lazy {
         taskManager.getReceivingTask()?.taskRepository?.getReviseDocuments()?.getInvoiceInfo()?.numberTTN ?: ""
     }
 
@@ -53,7 +53,7 @@ class InvoiceReviseViewModel : CoreViewModel(), PageSelectionListener {
         taskManager.getReceivingTask()?.taskRepository?.getReviseDocuments()?.getInvoiceInfo()?.supplierAddress ?: ""
     }
 
-    val initialTTNDate: String by lazy {
+    private val initialTTNDate: String by lazy {
         taskManager.getReceivingTask()?.taskRepository?.getReviseDocuments()?.getInvoiceInfo()?.dateTTN ?: ""
     }
 
