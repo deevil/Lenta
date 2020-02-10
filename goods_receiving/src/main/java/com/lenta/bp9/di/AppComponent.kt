@@ -29,6 +29,7 @@ import com.lenta.bp9.features.reconciliation_mercury.ReconciliationMercuryViewMo
 import com.lenta.bp9.features.reject.RejectViewModel
 import com.lenta.bp9.features.repres_person_num_entry.RepresPersonNumEntryViewModel
 import com.lenta.bp9.features.revise.*
+import com.lenta.bp9.features.revise.composite_doc.CompositeDocReviseViewModel
 import com.lenta.bp9.features.revise.invoice.InvoiceReviseViewModel
 import com.lenta.bp9.features.search_task.SearchTaskViewModel
 import com.lenta.bp9.features.select_market.SelectMarketViewModel
@@ -111,4 +112,5 @@ interface AppComponent {
     fun inject(it: LoadingShipmentStartViewModel)
     fun inject(it: LoadingShipmentFixingDepartureViewModel)
     fun inject(it: LoadingShipmentEndRecountViewModel)
+    fun inject(it: CompositeDocReviseViewModel)
 }

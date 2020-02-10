@@ -31,6 +31,7 @@ import com.lenta.bp9.features.reconciliation_mercury.ReconciliationMercuryFragme
 import com.lenta.bp9.features.reject.RejectFragment
 import com.lenta.bp9.features.repres_person_num_entry.RepresPersonNumEntryFragment
 import com.lenta.bp9.features.revise.*
+import com.lenta.bp9.features.revise.composite_doc.CompositeDocReviseFragment
 import com.lenta.bp9.features.revise.invoice.InvoiceReviseFragment
 import com.lenta.bp9.features.search_task.SearchTaskFragment
 import com.lenta.bp9.features.select_market.SelectMarketFragment
@@ -42,6 +43,7 @@ import com.lenta.bp9.features.transfer_goods_section.TransferGoodsSectionFragmen
 import com.lenta.bp9.features.transport_marriage.TransportMarriageFragment
 import com.lenta.bp9.features.transportation_number.TransportationNumberFragment
 import com.lenta.bp9.model.task.*
+import com.lenta.bp9.model.task.revise.DeliveryDocumentRevise
 import com.lenta.bp9.model.task.revise.DeliveryProductDocumentRevise
 import com.lenta.bp9.model.task.revise.ProductDocumentType
 import com.lenta.bp9.model.task.revise.ProductVetDocumentRevise
@@ -123,9 +125,9 @@ class ScreenNavigator(
         )
     }
 
-    override fun openTaskSearchScreen() {
+    override fun openTaskSearchScreen(loadingMode: TaskListLoadingMode) {
         runOrPostpone {
-            getFragmentStack()?.push(SearchTaskFragment())
+            getFragmentStack()?.push(SearchTaskFragment.create(loadingMode))
         }
     }
 
@@ -901,6 +903,22 @@ class ScreenNavigator(
         }
     }
 
+    override fun openShipmentConfirmDiscrepanciesDialog(nextCallbackFunc: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.shipment_confirm_discrepancies_dialog),
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(nextCallbackFunc),
+                    pageNumber = "95",
+                    rightButtonDecorationInfo = ButtonDecorationInfo.nextAlternate))
+        }
+    }
+
+    override fun openCompositeDocReviseScreen(document: DeliveryDocumentRevise) {
+        runOrPostpone {
+            getFragmentStack()?.push(CompositeDocReviseFragment.create(document))
+        }
+    }
+
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 }
 
@@ -914,7 +932,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openFastDataLoadingScreen()
     fun openSelectionPersonnelNumberScreen()
     fun openAlertNotPermissions(message: String)
-    fun openTaskSearchScreen()
+    fun openTaskSearchScreen(loadingMode: TaskListLoadingMode)
     fun openGoodsListScreen()
     fun openTaskCardScreen(mode: TaskCardMode)
     fun openTaskCardLoadingScreen(mode: TaskCardMode, taskNumber: String, loadFullData: Boolean)
@@ -1011,4 +1029,6 @@ interface IScreenNavigator : ICoreNavigator {
     fun openShipmentEndRecountLoadingScreen()
     fun openEdoDialog(missing: () -> Unit, inStock: () -> Unit)
     fun openAlertMissingVPForProviderScreen()
+    fun openShipmentConfirmDiscrepanciesDialog(nextCallbackFunc: () -> Unit)
+    fun openCompositeDocReviseScreen(document: DeliveryDocumentRevise)
 }

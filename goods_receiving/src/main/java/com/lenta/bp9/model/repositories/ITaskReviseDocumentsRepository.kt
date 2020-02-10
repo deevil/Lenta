@@ -39,6 +39,7 @@ interface ITaskReviseDocumentsRepository {
 
     fun getComplexDocuments(): List<ComplexDocumentRevise>
     fun updateComplexDocuments(complexDocuments: List<ComplexDocumentRevise>)
+    fun setVerifiedCompositeDocument(documentID: String)
 
     fun getMercuryNotActual(): List<TaskMercuryNotActual>
     fun updateMercuryNotActual(newMercuryNotActual: List<TaskMercuryNotActual>)

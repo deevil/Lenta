@@ -76,7 +76,9 @@ class TaskReviseViewModel : CoreViewModel(), PageSelectionListener {
                         type = document.documentType,
                         isObligatory = document.isObligatory,
                         isCheck = true,
+                        isCheckNotEnabled = document.documentType == DocumentType.Invoice || document.documentType == DocumentType.CompositeDoc,
                         isInvoice = document.documentType == DocumentType.Invoice,
+                        isCompositeDoc = document.documentType == DocumentType.CompositeDoc,
                         id = document.documentID,
                         isEDO = taskManager.getReceivingTask()?.taskDescription?.isEDO!!)
             }
@@ -89,7 +91,9 @@ class TaskReviseViewModel : CoreViewModel(), PageSelectionListener {
                         type = document.documentType,
                         isObligatory = document.isObligatory,
                         isCheck = false,
+                        isCheckNotEnabled = document.documentType == DocumentType.Invoice || document.documentType == DocumentType.CompositeDoc,
                         isInvoice = document.documentType == DocumentType.Invoice,
+                        isCompositeDoc = document.documentType == DocumentType.CompositeDoc,
                         id = document.documentID,
                         isEDO = taskManager.getReceivingTask()?.taskDescription?.isEDO!!)
             }
@@ -131,6 +135,13 @@ class TaskReviseViewModel : CoreViewModel(), PageSelectionListener {
     private fun onClickOnDocument(document: DeliveryDocumentVM) {
         if (document.isInvoice) {
             screenNavigator.openInvoiceReviseScreen()
+        }
+        if (document.isCompositeDoc) {
+            taskManager.getReceivingTask()?.taskRepository?.getReviseDocuments()?.getDeliveryDocuments()?.findLast {
+                it.documentID == document.id
+            }?.let {
+                screenNavigator.openCompositeDocReviseScreen(it)
+            }
         }
     }
 
@@ -174,7 +185,9 @@ data class DeliveryDocumentVM(
         val type: DocumentType,
         val isObligatory: Boolean,
         val isCheck: Boolean,
+        val isCheckNotEnabled: Boolean,
         val isInvoice: Boolean,
+        val isCompositeDoc: Boolean,
         val id: String,
         val isEDO: Boolean
 )

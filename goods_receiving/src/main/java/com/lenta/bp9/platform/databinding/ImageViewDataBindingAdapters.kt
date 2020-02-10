@@ -114,6 +114,7 @@ fun DocumentType.getIconRes(): Int? {
     return when (this) {
         DocumentType.Simple -> R.drawable.ic_simple_delivery_doc
         DocumentType.Invoice -> R.drawable.ic_invoice
+        DocumentType.CompositeDoc -> R.drawable.ic_composite_doc
         else -> null
     }
 }

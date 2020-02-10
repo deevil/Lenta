@@ -2,8 +2,11 @@ package com.lenta.bp9.features.loading.tasks
 
 enum class TaskListLoadingMode(val taskListLoadingModeString: String) {
     None(""),
+    /** Приемка*/
     Receiving("1"), //Приемка
+    /** ПГЕ*/
     PGE("2"), //ПГЕ
+    /** Отгрузка*/
     Shipment("3"); //Отгрузка
 
     companion object {

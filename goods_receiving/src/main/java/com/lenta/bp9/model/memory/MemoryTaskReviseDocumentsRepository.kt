@@ -172,6 +172,15 @@ class MemoryTaskReviseDocumentsRepository : ITaskReviseDocumentsRepository {
         complexDocuments.addAll(newComplexDocuments)
     }
 
+    override fun setVerifiedCompositeDocument(documentID: String) {
+        deliveryDocuments.findLast { it.documentID == documentID }?.let { it.isCheck = true }
+        complexDocuments.filter {
+            it.documentID == documentID
+        }.map {
+            it.isCheck = true
+        }
+    }
+
     override fun getMercuryNotActual(): List<TaskMercuryNotActual> {
         return mercuryNotActual
     }
@@ -249,6 +258,7 @@ class MemoryTaskReviseDocumentsRepository : ITaskReviseDocumentsRepository {
         transportConditions.clear()
         productVetDocuments.clear()
         mercuryNotActual.clear()
+        complexDocuments.clear()
         invoiceInfo = null
     }
 }

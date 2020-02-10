@@ -233,4 +233,9 @@
     <string name="edo_dialog">Поставщик является участником электронного документооборота, но электронная накладная еще в SAP ERP не получена. Имеется ли у поставщика бумажная накладная?</string>
     <string name="alert_missing_vp_for_provider">Отсутствует ВП для поставщика. Статус изменен на \"Временно отказано\". Ожидается получение электронной накладной</string>
     <string name="view_delivery_invoice">Просмотр поставки по накладной</string>
+    <string name="shipment_confirm_discrepancies_dialog">Для товара с расхождением будет изменена ИП, подтвердите расхождения</string>
+    <string name="return_invoice">Накладная на возврат</string>
+    <string name="composite_doc_revise">Сверка составного документа</string>
+    <string name="reject_shipment">Отказ в отгрузке</string>
+    <string name="reject_pge">Отказ в пересчете ГЕ</string>
 </resources>

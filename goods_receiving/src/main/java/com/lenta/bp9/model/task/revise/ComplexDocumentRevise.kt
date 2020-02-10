@@ -7,7 +7,7 @@ data class ComplexDocumentRevise(
         val documentID: String, // ID Документа
         val conditionID: String, // ID Условия составного документа
         val conditionName: String, // Название условия составного документа
-        val isCheck: Boolean // ??? - Общий флаг
+        var isCheck: Boolean // ??? - Общий флаг
 ) {
 
     companion object {
