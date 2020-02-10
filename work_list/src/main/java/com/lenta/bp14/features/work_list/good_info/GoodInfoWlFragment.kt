@@ -1,14 +1,10 @@
 package com.lenta.bp14.features.work_list.good_info
 
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.EditText
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.Observer
 import com.lenta.bp14.BR
 import com.lenta.bp14.R
 import com.lenta.bp14.databinding.*
@@ -20,7 +16,6 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.scan.OnScanResultListener
-import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig
 import com.lenta.shared.utilities.databinding.ViewPagerSettings
 import com.lenta.shared.utilities.extentions.connectLiveData
