@@ -128,6 +128,12 @@ class GoodWeighingViewModel : CoreViewModel() {
                     val planAufFinish = Calendar.getInstance()
                     productTime.add(Calendar.MINUTE, repository.getPcpContTimeMm(packCodeResult.dataLabel.planAufFinish))
 
+                    val dateExpir = packCodeResult.dataLabel.dateExpiration.toIntOrNull()?.let { days ->
+                        val dateExpiration = Calendar.getInstance()
+                        dateExpiration.add(Calendar.DAY_OF_YEAR, days)
+                        dateExpiration
+                    }
+
                     printTag(PrintInnerTagInfo(
                             quantity = "${total.value!!}  ${good.value?.units?.name}",
                             codeCont = packCodeResult.packCode,
@@ -135,7 +141,7 @@ class GoodWeighingViewModel : CoreViewModel() {
                             planAufFinish = SimpleDateFormat(Constants.DATE_FORMAT_dd_mm_yyyy_hh_mm, Locale.getDefault()).format(planAufFinish.time),
                             aufnr = raw.value!!.orderNumber,
                             nameOsn = raw.value!!.name,
-                            dateExpir = packCodeResult.dataLabel.dateExpiration,
+                            dateExpir = dateExpir?.let { SimpleDateFormat(Constants.DATE_FORMAT_dd_mm_yyyy_hh_mm, Locale.getDefault()).format(it.time) } ?: "",
                             goodsName = packCodeResult.dataLabel.materialName,
                             weigher = appSettings.weightEquipmentName ?: "",
                             productTime = SimpleDateFormat(Constants.DATE_FORMAT_dd_mm_yyyy_hh_mm, Locale.getDefault()).format(productTime.time),
@@ -145,7 +151,7 @@ class GoodWeighingViewModel : CoreViewModel() {
                                     "(310х)${total.value!!}" +
                                     "(8008)${SimpleDateFormat(Constants.DATE_FORMAT_yyyyMMdd, Locale.getDefault()).format(productTime.time)}" +
                                     "(10)${raw.value!!.orderNumber}" +
-                                    "(7003)${packCodeResult.dataLabel.dateExpiration}" +
+                                    "(7003)${dateExpir?.let { SimpleDateFormat(Constants.DATE_FORMAT_yyyy_mm_dd_hh_mm, Locale.getDefault()).format(it.time) }}" +
                                     "(91)${packCodeResult.packCode}"
                     ))
 
