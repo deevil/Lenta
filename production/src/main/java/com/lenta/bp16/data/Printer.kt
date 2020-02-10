@@ -226,5 +226,9 @@ data class PrintInnerTagInfo(
         /**
          * barcode
          */
-        val barcode: String
+        val barcode: String,
+        /**
+         * barcode для отображения в текстовом виде
+         */
+        val barcodeText: String
 )
