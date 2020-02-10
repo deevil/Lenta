@@ -1,5 +1,6 @@
 package com.lenta.bp14.features.work_list.good_info
 
+import android.widget.EditText
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp14.models.check_price.IPriceInfoParser
@@ -21,6 +22,7 @@ import com.lenta.shared.models.core.MatrixType
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.analyseCode
 import com.lenta.shared.utilities.Logg
+import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.dropZeros
@@ -32,7 +34,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
 
-class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
+class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyboardListener {
 
     @Inject
     lateinit var navigator: IScreenNavigator
@@ -92,6 +94,9 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
     val day = MutableLiveData<String>("")
     val month = MutableLiveData<String>("")
     val year = MutableLiveData<String>("")
+
+    var dateFields: List<EditText> = emptyList()
+    val lastFocusField = MutableLiveData<EditText?>(null)
 
     private val enteredDate: MutableLiveData<Date> = day.combineLatest(month).combineLatest(year).map {
         val day = it?.first?.first?.toIntOrNull()
@@ -466,6 +471,24 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener {
     private fun isIncorrectEnteredDate(): Boolean {
         return enteredDate.value != null && shelfLifeTypePosition.value == ShelfLifeType.PRODUCTION.position
                 && enteredDate.value!!.after(Date())
+    }
+
+    override fun onOkInSoftKeyboard(): Boolean {
+        Logg.d { "--> Last focus: ${lastFocusField.value}" }
+
+        val day = dateFields[0]
+        val month = dateFields[1]
+        val year = dateFields[2]
+
+        if (lastFocusField.value == day) {
+            month.requestFocus()
+            return true
+        } else if (lastFocusField.value == month) {
+            year.requestFocus()
+            return true
+        }
+
+        return false
     }
 
 }
