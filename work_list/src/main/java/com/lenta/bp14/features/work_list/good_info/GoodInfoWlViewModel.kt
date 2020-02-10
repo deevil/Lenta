@@ -474,13 +474,11 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKe
     }
 
     override fun onOkInSoftKeyboard(): Boolean {
-        Logg.d { "--> Enter pressed" }
+        Logg.d { "--> Last focus: ${lastFocusField.value?.id}" }
 
         val day = dateFields[0]
         val month = dateFields[1]
         val year = dateFields[2]
-
-        Logg.d { "--> Last focus: ${lastFocusField.value}" }
 
         if (lastFocusField.value == day) {
             month.requestFocus()

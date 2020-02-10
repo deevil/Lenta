@@ -93,12 +93,13 @@ fun saveFocusTo(editText: EditText, lastFocusField: MutableLiveData<EditText?>) 
 }
 
 @BindingAdapter(value = ["maxValue", "lengthToPrevious", "lengthToNext", "previousField", "nextField"], requireAll = false)
-fun dateFocusChanger(editText: EditText, maxValue: Int, lengthToPrevious: Int = 0, lengthToNext: Int = 2, previousField: EditText? = null, nextField: EditText? = null) {
+fun dateFocusChanger(editText: EditText, maxValue: Int, lengthToPrevious: Int? = 0, lengthToNext: Int? = 2, previousField: EditText? = null, nextField: EditText? = null) {
     editText.addTextChangedListener(object : TextWatcher {
         override fun afterTextChanged(s: Editable?) {
             var entered = s.toString()
-            Logg.d { "--> Entered length: ${entered.length}" }
+
             Logg.d { "--> Limit values: $maxValue, $lengthToPrevious, $lengthToNext" }
+            Logg.d { "--> Entered length: ${entered.length}" }
 
             if (entered.toIntOrNull() ?: 0 > maxValue) {
                 entered = entered.dropLast(1)
