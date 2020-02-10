@@ -268,12 +268,95 @@
             android:id="@+id/imageViewIcon1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
+            android:layout_marginStart="6dp"
+            android:layout_marginBottom="24dp"
+            android:src='@{vm.isRecount ? @drawable/ic_conversion_pallet : @drawable/ic_not_conversion_pallet}'
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_goneMarginStart="0dp"
+            tools:src="@drawable/ic_conversion_pallet" />
+
+        <ImageView
+            android:id="@+id/imageViewIcon2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="24dp"
+            android:src="@drawable/ic_promo_task_icon"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@id/imageViewIcon1"
+            app:layout_goneMarginStart="0dp"
+            app:visibleOrGone='@{vm.isPromo}'
+            tools:src="@drawable/ic_promo_task_icon" />
+
+        <ImageView
+            android:id="@+id/imageViewIcon3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="24dp"
+            android:src="@drawable/ic_alco_task_icon"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@id/imageViewIcon2"
+            app:layout_goneMarginStart="0dp"
+            app:visibleOrGone='@{vm.isAlco}'
+            tools:src="@drawable/ic_alco_task_icon" />
+
+        <ImageView
+            android:id="@+id/imageViewIcon4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="24dp"
+            android:src="@drawable/ic_fruits_task_icon"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/imageViewIcon3"
+            app:layout_goneMarginStart="0dp"
+            app:visibleOrGone='@{vm.isFruit}'
+            tools:src="@drawable/ic_fruits_task_icon" />
+
+        <ImageView
+            android:id="@+id/imageViewIcon5"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="24dp"
+            android:src="@drawable/ic_raw_task_icon"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/imageViewIcon4"
+            app:layout_goneMarginStart="0dp"
+            app:visibleOrGone='@{vm.isRaw}'
+            tools:src="@drawable/ic_raw_task_icon" />
+
+        <ImageView
+            android:id="@+id/imageViewIcon6"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="24dp"
+            android:src="@drawable/ic_special_task_icon"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/imageViewIcon5"
+            app:layout_goneMarginStart="0dp"
+            app:visibleOrGone='@{vm.isSpecial}'
+            tools:src="@drawable/ic_special_task_icon" />
+
+        <ImageView
+            android:id="@+id/imageViewIcon7"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="24dp"
+            android:src="@drawable/ic_mercury"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/imageViewIcon6"
+            app:layout_goneMarginStart="0dp"
+            app:visibleOrGone='@{vm.isVet}'
+            tools:src="@drawable/ic_mercury" />
+
+        <ImageView
+            android:id="@+id/imageViewIcon8"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_marginBottom="24dp"
             android:src="@drawable/ic_pack_24dp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_goneMarginStart="20dp"
+            app:layout_constraintStart_toEndOf="@+id/imageViewIcon7"
+            app:layout_goneMarginStart="0dp"
             app:visibleOrGone='@{vm.isGoodsForPackaging}'
             tools:src="@drawable/ic_pack_24dp" />
 
