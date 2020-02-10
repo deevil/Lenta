@@ -3,6 +3,7 @@ package com.lenta.bp9.features.search_task
 import android.view.View
 import com.lenta.bp9.R
 import com.lenta.bp9.databinding.FragmentSearchTaskBinding
+import com.lenta.bp9.features.loading.tasks.TaskListLoadingMode
 import com.lenta.bp9.platform.extentions.getAppComponent
 import com.lenta.shared.keys.KeyCode
 import com.lenta.shared.keys.OnKeyDownListener
@@ -17,19 +18,31 @@ import com.lenta.shared.utilities.extentions.provideViewModel
 class SearchTaskFragment: CoreFragment<FragmentSearchTaskBinding, SearchTaskViewModel>(), ToolbarButtonsClickListener,
         OnKeyDownListener {
 
+    companion object {
+        fun create(loadingMode: TaskListLoadingMode): SearchTaskFragment {
+            SearchTaskFragment().let {
+                it.loadingMode = loadingMode
+                return it
+            }
+        }
+    }
+
+    private var loadingMode: TaskListLoadingMode = TaskListLoadingMode.None
+
     override fun getLayoutId(): Int = R.layout.fragment_search_task
 
     override fun getPageNumber(): String = "09/34"
 
     override fun getViewModel(): SearchTaskViewModel {
-        provideViewModel(SearchTaskViewModel::class.java).let {
-            getAppComponent()?.inject(it)
-            return it
+        provideViewModel(SearchTaskViewModel::class.java).let {vm ->
+            getAppComponent()?.inject(vm)
+            vm.loadingMode = this.loadingMode
+            return vm
         }
     }
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
-        topToolbarUiModel.description.value = getString(R.string.receipt_task)
+        topToolbarUiModel.description.value = vm.getDescription()
         topToolbarUiModel.title.value = "${getString(R.string.tk)} - ${vm.tkNumber}"
     }
 

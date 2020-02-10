@@ -37,6 +37,8 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
     lateinit var zmpUtzGrz39V001NetRequest: ZmpUtzGrz39V001NetRequest
     @Inject
     lateinit var fixationDepartureReceptionDistrCenterNetRequest: FixationDepartureReceptionDistrCenterNetRequest
+    @Inject
+    lateinit var skipRecountNetRequest: SkipRecountNetRequest
 
     val selectedPage = MutableLiveData(0)
 
@@ -48,8 +50,8 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
 
     val tvDeliveryCaption: String by lazy {
         when (taskManager.getReceivingTask()?.taskHeader?.taskType) {
-            TaskType.DirectSupplier -> context.getString(R.string.incoming_delivery)
-            TaskType.ReceptionDistributionCenter, TaskType.OwnProduction, TaskType.RecalculationCargoUnit -> context.getString(R.string.transportation)
+            TaskType.DirectSupplier, TaskType.OwnProduction -> context.getString(R.string.incoming_delivery)
+            TaskType.ReceptionDistributionCenter, TaskType.RecalculationCargoUnit -> context.getString(R.string.transportation)
             else -> context.getString(R.string.incoming_delivery)
         }
     }
@@ -95,11 +97,19 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
         }
     }
 
+    private val isShipmentPPSkipRecount by lazy {
+        taskManager.getReceivingTask()?.taskDescription?.currentStatus == TaskStatus.Checked &&
+                taskType == TaskType.ShipmentPP &&
+                taskManager.getReceivingTask()?.taskDescription?.isSkipCountMan == true
+    }
+
     val visibilityBtn by lazy {
         MutableLiveData(taskManager.getReceivingTask()?.taskDescription?.currentStatus.let {
-            it == TaskStatus.Checked || it == TaskStatus.Recounted ||
+            it == TaskStatus.Recounted ||
+                    (it == TaskStatus.Checked && taskType != TaskType.ShipmentPP) ||
                     (it == TaskStatus.Unloaded && (taskType == TaskType.RecalculationCargoUnit || taskType == TaskType.ReceptionDistributionCenter || taskType == TaskType.OwnProduction)) ||
-                    (it == TaskStatus.ReadyToShipment && taskType == TaskType.ShipmentRC )
+                    (it == TaskStatus.ReadyToShipment && taskType == TaskType.ShipmentRC) ||
+                    isShipmentPPSkipRecount
         })
     }
 
@@ -184,10 +194,10 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
     val isEdo by lazy {
         taskManager.getReceivingTask()?.taskDescription?.isEDO == true
     }
-    val isEdoTaskStatusOrdered by lazy {
-        taskManager.getReceivingTask()?.taskDescription?.isEDO == true &&
-                taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.DirectSupplier &&
-                taskManager.getReceivingTask()?.taskDescription?.currentStatus == TaskStatus.Ordered
+
+    //для ОПП, п.5.5.3 из ТП
+    val isBksDiff by lazy {
+        taskManager.getReceivingTask()?.taskDescription?.isBksDiff == true
     }
 
     val changeCurrentDateTimePossible by lazy {
@@ -288,7 +298,13 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
                     TaskType.ReceptionDistributionCenter, TaskType.OwnProduction -> screenNavigator.openTransportMarriageScreen()
                 }
             }
-            TaskStatus.Checked -> screenNavigator.openStartReviseLoadingScreen()
+            TaskStatus.Checked -> {
+                if (isShipmentPPSkipRecount) {
+                    shipmentSkipRecount()
+                } else {
+                    screenNavigator.openStartReviseLoadingScreen()
+                }
+            }
             TaskStatus.Recounted -> screenNavigator.openRecountStartLoadingScreen()
             TaskStatus.ReadyToShipment -> {
                 if (taskType == TaskType.ShipmentRC) {
@@ -358,6 +374,26 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
                 }
                 TaskStatus.ShipmentAllowedByGis -> return //todo Разрешено ГИС. Отгрузка, аналитик не описал условие в документации
                 TaskStatus.Loaded -> screenNavigator.openInputOutgoingFillingsScreen()
+            }
+            return
+        }
+
+        //ТП для ОПП. 5.5.3	Разработка карточки задания на отгрузку в МП GRZ
+        if (taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.ShipmentPP) {
+            when (currentStatus.value) {
+                TaskStatus.ReadyToShipment -> screenNavigator.openStartReviseLoadingScreen()
+                TaskStatus.Checked -> screenNavigator.openRecountStartLoadingScreen()
+                TaskStatus.Recounted -> {
+                    if (isBksDiff) {
+                        screenNavigator.openShipmentConfirmDiscrepanciesDialog(
+                                nextCallbackFunc = {
+                                    screenNavigator.openTransmittedLoadingScreen()
+                                }
+                        )
+                    } else {
+                        screenNavigator.openTransmittedLoadingScreen()
+                    }
+                }
             }
             return
         }
@@ -450,6 +486,30 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
 
         taskManager.updateTaskDescription(TaskDescription.from(result.taskDescription))
 
+        screenNavigator.openTaskCardScreen(TaskCardMode.Full)
+    }
+
+    private fun shipmentSkipRecount() {
+        viewModelScope.launch {
+            screenNavigator.showProgress(context.getString(R.string.skipping_recount))
+            val params = SkipRecountParameters(
+                    taskNumber = taskManager.getReceivingTask()?.taskHeader?.taskNumber ?: "",
+                    deviceIP = context.getDeviceIp(),
+                    personalNumber = sessionInfo.personnelNumber ?: "",
+                    comment = ""
+            )
+            skipRecountNetRequest(params).either(::handleFailure, ::handleSuccessSkipRecount)
+            screenNavigator.hideProgress()
+        }
+    }
+
+    private fun handleSuccessSkipRecount(result: SkipRecountResult) {
+        val notifications = result.notifications.map { TaskNotification.from(it) }
+        val sectionInfo = result.sectionsInfo.map { TaskSectionInfo.from(it) }
+        val sectionProducts = result.sectionProducts.map { TaskSectionProducts.from(it) }
+        taskManager.updateTaskDescription(TaskDescription.from(result.taskDescription))
+        taskManager.getReceivingTask()?.taskRepository?.getNotifications()?.updateWithNotifications(notifications, null, null, null)
+        taskManager.getReceivingTask()?.taskRepository?.getSections()?.updateSections(sectionInfo, sectionProducts)
         screenNavigator.openTaskCardScreen(TaskCardMode.Full)
     }
 

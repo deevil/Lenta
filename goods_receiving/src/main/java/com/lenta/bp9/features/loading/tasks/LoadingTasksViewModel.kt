@@ -53,7 +53,9 @@ class LoadingTasksViewModel : CoreLoadingViewModel() {
     }
 
     override fun handleFailure(failure: Failure) {
-        screenNavigator.openTaskSearchScreen()
+        screenNavigator.goBack()
+        screenNavigator.goBack()
+        screenNavigator.openTaskSearchScreen(mode)
         screenNavigator.openAlertScreen(failure)
     }
 

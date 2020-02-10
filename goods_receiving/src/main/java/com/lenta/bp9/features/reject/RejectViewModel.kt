@@ -8,6 +8,7 @@ import com.lenta.bp9.features.loading.tasks.TaskListLoadingMode
 import com.lenta.bp9.model.task.IReceivingTaskManager
 import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.bp9.repos.IDataBaseRepo
+import com.lenta.bp9.repos.IRepoInMemoryHolder
 import com.lenta.bp9.requests.network.RejectNetRequest
 import com.lenta.bp9.requests.network.RejectRequestParameters
 import com.lenta.bp9.requests.network.RejectRequestResult
@@ -37,6 +38,8 @@ class RejectViewModel : CoreViewModel(), OnPositionClickListener {
     lateinit var context: Context
     @Inject
     lateinit var dataBase: IDataBaseRepo
+    @Inject
+    lateinit var repoInMemoryHolder: IRepoInMemoryHolder
 
     val selectedPosition: MutableLiveData<Int> = MutableLiveData(0)
 
@@ -54,6 +57,14 @@ class RejectViewModel : CoreViewModel(), OnPositionClickListener {
     }
 
     private var currentRejectionType: RejectType? = null
+
+    fun getDescription() : String {
+        return when (repoInMemoryHolder.taskList.value?.taskListLoadingMode) {
+            TaskListLoadingMode.Shipment -> context.getString(R.string.reject_shipment)
+            TaskListLoadingMode.PGE -> context.getString(R.string.reject_pge)
+            else -> context.getString(R.string.reject_recieving)
+        }
+    }
 
     init {
         viewModelScope.launch {
