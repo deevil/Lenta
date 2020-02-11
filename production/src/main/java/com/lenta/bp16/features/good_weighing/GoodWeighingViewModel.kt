@@ -134,6 +134,15 @@ class GoodWeighingViewModel : CoreViewModel() {
                         dateExpiration
                     }
 
+                    val barCodeText = "(01)${getFormattedEan(packCodeResult.dataLabel.ean, total.value!!)}" +
+                            "(3103)${total.value!!}" +
+                            "(8008)${SimpleDateFormat(Constants.DATE_FORMAT_yyyyMMdd, Locale.getDefault()).format(productTime.time)}" +
+                            "(10)${raw.value!!.orderNumber}" +
+                            "(7003)${dateExpir?.let { SimpleDateFormat(Constants.DATE_FORMAT_yyyy_mm_dd_hh_mm, Locale.getDefault()).format(it.time) }}" +
+                            "(91)${packCodeResult.packCode}"
+
+                    val barcode = barCodeText.replace("(", "").replace(")", "")
+
                     printTag(PrintInnerTagInfo(
                             quantity = "${total.value!!}  ${good.value?.units?.name}",
                             codeCont = packCodeResult.packCode,
@@ -141,18 +150,15 @@ class GoodWeighingViewModel : CoreViewModel() {
                             planAufFinish = SimpleDateFormat(Constants.DATE_FORMAT_dd_mm_yyyy_hh_mm, Locale.getDefault()).format(planAufFinish.time),
                             aufnr = raw.value!!.orderNumber,
                             nameOsn = raw.value!!.name,
-                            dateExpir = dateExpir?.let { SimpleDateFormat(Constants.DATE_FORMAT_dd_mm_yyyy_hh_mm, Locale.getDefault()).format(it.time) } ?: "",
+                            dateExpir = dateExpir?.let { SimpleDateFormat(Constants.DATE_FORMAT_dd_mm_yyyy_hh_mm, Locale.getDefault()).format(it.time) }
+                                    ?: "",
                             goodsName = packCodeResult.dataLabel.materialName,
                             weigher = appSettings.weightEquipmentName ?: "",
                             productTime = SimpleDateFormat(Constants.DATE_FORMAT_dd_mm_yyyy_hh_mm, Locale.getDefault()).format(productTime.time),
                             nameDone = packCodeResult.dataLabel.materialNameDone,
                             goodsCode = packCodeResult.dataLabel.material.takeLast(6),
-                            barcode = "(01)${getFormattedEan(packCodeResult.dataLabel.ean, total.value!!)}" +
-                                    "(310х)${total.value!!}" +
-                                    "(8008)${SimpleDateFormat(Constants.DATE_FORMAT_yyyyMMdd, Locale.getDefault()).format(productTime.time)}" +
-                                    "(10)${raw.value!!.orderNumber}" +
-                                    "(7003)${dateExpir?.let { SimpleDateFormat(Constants.DATE_FORMAT_yyyy_mm_dd_hh_mm, Locale.getDefault()).format(it.time) }}" +
-                                    "(91)${packCodeResult.packCode}"
+                            barcode = barcode,
+                            barcodeText = barCodeText
                     ))
 
                     total.value = 0.0

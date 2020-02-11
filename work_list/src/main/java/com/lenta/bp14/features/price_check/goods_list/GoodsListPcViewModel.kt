@@ -44,6 +44,7 @@ class GoodsListPcViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     @Inject
     lateinit var printTask: IPrintTask
 
+
     private val tagTypes by lazy {
         mutableListOf<PriceTagType>()
     }
@@ -88,7 +89,6 @@ class GoodsListPcViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
                 )
             }
         }
-
     }
 
     private val funcUiAdapter = { list: List<CheckPriceResult>? ->
@@ -157,9 +157,7 @@ class GoodsListPcViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     }
 
     override fun onOkInSoftKeyboard(): Boolean {
-
         checkCode(numberField.value)
-
         return true
     }
 
@@ -205,26 +203,15 @@ class GoodsListPcViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
                     navigator.openGoodInfoPcScreen()
                 } else if (it is CheckPriceResult) {
                     if (it.isPriceValid() != true) {
-                        navigator.showPrintPriceOffer(
-                                goodName = "${it.matNr?.takeLast(6)} ${it.name}",
-                                noCallback = {
-
-                                },
-                                yesCallback = {
-                                    printTask.matNrForPrint = it.matNr
-                                    navigator.openPrintSettingsScreen()
-                                }
-                        )
-
+                        task.processingMatNumber = it.matNr
+                        navigator.openGoodInfoPcScreen()
                     }
                 }
-
             }
-            navigator.hideProgress()
 
+            navigator.hideProgress()
         }
     }
-
 
     fun onClickSave() {
         if (task.isHaveDiscrepancies()) {
@@ -236,8 +223,6 @@ class GoodsListPcViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
         } else {
             showConfirmationForSentReportScreen()
         }
-
-
     }
 
     private fun showConfirmationForSentReportScreen() {
@@ -255,11 +240,10 @@ class GoodsListPcViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
                     generalTaskManager.clearCurrentTask(sentReportResult = it)
                     navigator.openReportResultScreen()
                 }
-                navigator.hideProgress()
 
+                navigator.hideProgress()
             }
         }
-
     }
 
     fun onClickDelete() {
@@ -280,9 +264,9 @@ class GoodsListPcViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
                                 ?: emptySet()
                 )
             }
+
             selectionHelper.clearPositions()
         }
-
     }
 
     fun onClickPrint() {
@@ -309,8 +293,6 @@ class GoodsListPcViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
                     }
                 }
             }
-
-
         }
     }
 
@@ -414,5 +396,3 @@ data class CheckPriceResultUi(
         val isPriceValid: Boolean?,
         val isPrinted: Boolean?
 )
-
-
