@@ -4,13 +4,13 @@ import android.content.Context
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.lenta.bp9.features.loading.tasks.TaskCardMode
 import com.lenta.bp9.model.task.IReceivingTaskManager
 import com.lenta.bp9.model.task.TaskCargoUnitInfo
+import com.lenta.bp9.model.task.TaskDescription
+import com.lenta.bp9.model.task.TaskNotification
 import com.lenta.bp9.platform.navigation.IScreenNavigator
-import com.lenta.bp9.requests.network.DeclareTransportDefectNetRequest
-import com.lenta.bp9.requests.network.DeclareTransportDefectParams
-import com.lenta.bp9.requests.network.DeclareTransportDefectRestInfo
-import com.lenta.bp9.requests.network.DirectSupplierStartRecountParams
+import com.lenta.bp9.requests.network.*
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.utilities.SelectionItemsHelper
@@ -35,6 +35,8 @@ class TransportMarriageViewModel : CoreViewModel(), PageSelectionListener,
     lateinit var sessionInfo: ISessionInfo
     @Inject
     lateinit var declareTransportDefectNetRequest: DeclareTransportDefectNetRequest
+    @Inject
+    lateinit var zmpUtzGrz25V001NetRequest: ZmpUtzGrz25V001NetRequest
 
     val selectedPage = MutableLiveData(0)
     val listCargoUnits: MutableLiveData<List<ListCargoUnitsItem>> = MutableLiveData()
@@ -54,19 +56,19 @@ class TransportMarriageViewModel : CoreViewModel(), PageSelectionListener,
     init {
         viewModelScope.launch {
             screenNavigator.showProgressLoadingData()
-            /**taskManager.getReceivingTask()?.let { task ->
+            taskManager.getReceivingTask()?.let { task ->
                 val params = DeclareTransportDefectParams(
                         taskNumber = task.taskHeader.taskNumber,
                         deviceIP = context.getDeviceIp(),
-                        personnelNumber = sessionInfo.personnelNumber ?: ""
+                        personalNumber = sessionInfo.personnelNumber ?: ""
                 )
-                declareTransportDefectNetRequest(params).either(::handleFailure, ::handleSuccess)
-            }*/
+                declareTransportDefectNetRequest(params).either(::handleFailure, ::handleSuccessDeclareTransportDefect)
+            }
             screenNavigator.hideProgress()
         }
     }
 
-    private fun handleSuccess(result: DeclareTransportDefectRestInfo) {
+    private fun handleSuccessDeclareTransportDefect(result: DeclareTransportDefectRestInfo) {
         taskManager.getReceivingTask()?.taskRepository?.getCargoUnits()?.updateCargoUnits(result.cargoUnits.map { TaskCargoUnitInfo.from(it) })
         updateData()
     }
@@ -77,7 +79,7 @@ class TransportMarriageViewModel : CoreViewModel(), PageSelectionListener,
                     ListCargoUnitsItem(
                             number = index + 1,
                             cargoUnitNumber = taskCargoUnitInfo.cargoUnitNumber,
-                            quantityPositions = taskCargoUnitInfo.quantityPositions.toString(),
+                            quantityPositions = taskCargoUnitInfo.quantityPositions,
                             even = index % 2 == 0
                     )
                 }?.reversed()
@@ -85,7 +87,32 @@ class TransportMarriageViewModel : CoreViewModel(), PageSelectionListener,
     }
 
     fun onClickCancellation() {
+        viewModelScope.launch {
+            screenNavigator.showProgressLoadingData()
+            taskManager.getReceivingTask()?.let { task ->
+                val params = ZmpUtzGrz25V001Params(
+                        taskNumber = task.taskHeader.taskNumber,
+                        deviceIP = context.getDeviceIp(),
+                        personalNumber = sessionInfo.personnelNumber ?: "",
+                        transportMarriage = emptyList(),
+                        processedBoxInfo = emptyList(),
+                        processedExciseStamp = emptyList(),
+                        isSave = "",
+                        printerName = ""
+                )
+                zmpUtzGrz25V001NetRequest(params).either(::handleFailure, ::handleSuccessCancellation)
+            }
+            screenNavigator.hideProgress()
+        }
+    }
 
+    private fun handleSuccessCancellation(result: ZmpUtzGrz25V001Result) {
+        screenNavigator.openMainMenuScreen()
+        screenNavigator.openTaskListScreen()
+        taskManager.updateTaskDescription(TaskDescription.from(result.taskDescription))
+        val notifications = result.notifications.map { TaskNotification.from(it) }
+        taskManager.getReceivingTask()?.taskRepository?.getNotifications()?.updateWithNotifications(general = notifications, document = null, product = null, condition = null)
+        screenNavigator.openTaskCardScreen(TaskCardMode.Full)
     }
 
     fun onClickProcess() {

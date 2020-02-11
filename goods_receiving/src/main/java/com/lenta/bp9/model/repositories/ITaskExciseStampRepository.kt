@@ -6,7 +6,7 @@ import com.lenta.bp9.model.task.TaskProductInfo
 interface ITaskExciseStampRepository {
     fun getExciseStamps(): List<TaskExciseStamp>
     fun findExciseStampsOfProduct(product: TaskProductInfo): List<TaskExciseStamp>
-    fun findExciseStampsOfProduct(materialNumber: String, isSet: Boolean): List<TaskExciseStamp>
+    fun findExciseStampsOfProduct(materialNumber: String): List<TaskExciseStamp>
     fun addExciseStamp(exciseStamp: TaskExciseStamp): Boolean
     fun addExciseStamps(exciseStamps: List<TaskExciseStamp>): Boolean
     fun deleteExciseStamp(exciseStamp: TaskExciseStamp): Boolean
