@@ -14,12 +14,14 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class GoodInfoPcViewModel : CoreViewModel() {
+
     @Inject
     lateinit var navigator: IScreenNavigator
     @Inject
     lateinit var task: ICheckPriceTask
     @Inject
     lateinit var printTask: IPrintTask
+
 
     private val priceInfo by lazy {
         task.getProcessingActualPrice()
@@ -59,7 +61,6 @@ class GoodInfoPcViewModel : CoreViewModel() {
 
     fun onClickValid() {
         setNewCheckStatusAndGoBack(true)
-
     }
 
     fun onScanResult(data: String) {
@@ -109,27 +110,14 @@ class GoodInfoPcViewModel : CoreViewModel() {
                     navigator.openGoodInfoPcScreen()
                 } else if (it is CheckPriceResult) {
                     if (it.isPriceValid() != true) {
-                        navigator.showPrintPriceOffer(
-                                goodName = "${it.matNr?.takeLast(6)} ${it.name}",
-                                noCallback = {
-                                    onClickValid()
-                                    task.processingMatNumber = it.matNr
-                                    navigator.openGoodInfoPcScreen()
-                                },
-                                yesCallback = {
-                                    onClickValid()
-                                    printTask.matNrForPrint = it.matNr
-                                    navigator.openPrintSettingsScreen()
-                                }
-                        )
-
+                        onClickValid()
+                        task.processingMatNumber = it.matNr
+                        navigator.openGoodInfoPcScreen()
                     }
-
                 }
-
             }
-            navigator.hideProgress()
 
+            navigator.hideProgress()
         }
     }
 
@@ -150,10 +138,10 @@ class GoodInfoPcViewModel : CoreViewModel() {
         } else {
             navigator.goBack()
         }
-
     }
 
 }
+
 
 data class ActualPriceInfoUi(
         val price1: Double?,
