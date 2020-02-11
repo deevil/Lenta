@@ -63,6 +63,34 @@ class CargoUnitCardViewModel : CoreViewModel(), OnPositionClickListener {
         statusInfo.value?.get(it!!.first)?.code == "2" || spinTypePallet.value?.get(it!!.second) ?: "" != ""
     }
 
+    val isRecount by lazy {
+        taskManager.getReceivingTask()?.taskDescription?.isRecount ?: false
+    }
+
+    val isPromo by lazy {
+        taskManager.getReceivingTask()?.taskDescription?.isPromo ?: false
+    }
+
+    val isAlco by lazy {
+        taskManager.getReceivingTask()?.taskDescription?.isAlco ?: false
+    }
+
+    val isFruit by lazy {
+        taskManager.getReceivingTask()?.taskDescription?.isUFF ?: false
+    }
+
+    val isRaw by lazy {
+        taskManager.getReceivingTask()?.taskDescription?.isRawMaterials ?: false
+    }
+
+    val isSpecial by lazy {
+        taskManager.getReceivingTask()?.taskDescription?.isSpecialControlGoods ?: false
+    }
+
+    val isVet by lazy {
+        taskManager.getReceivingTask()?.taskDescription?.isVet ?: false
+    }
+
     val isGoodsForPackaging by lazy {
         taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.OwnProduction && cargoUnitInfo.value?.isPack == true
     }

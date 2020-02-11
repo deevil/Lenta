@@ -7,23 +7,23 @@ import com.lenta.bp14.models.check_list.CheckListTaskDescription
 import com.lenta.bp14.models.check_list.CheckListTaskManager
 import com.lenta.bp14.models.check_price.CheckPriceTaskDescription
 import com.lenta.bp14.models.check_price.CheckPriceTaskManager
-import com.lenta.bp14.models.general.*
+import com.lenta.bp14.models.general.AppTaskTypes
+import com.lenta.bp14.models.general.IGeneralRepo
+import com.lenta.bp14.models.general.ITaskTypeInfo
+import com.lenta.bp14.models.general.ITasksSearchHelper
 import com.lenta.bp14.models.not_exposed.NotExposedTaskDescription
 import com.lenta.bp14.models.not_exposed.NotExposedTaskManager
 import com.lenta.bp14.models.work_list.WorkListTaskDescription
 import com.lenta.bp14.models.work_list.WorkListTaskManager
 import com.lenta.bp14.platform.navigation.IScreenNavigator
 import com.lenta.bp14.requests.check_price.CheckPriceTaskInfoParams
-import com.lenta.bp14.requests.check_price.CheckPriceTaskInfoResult
 import com.lenta.bp14.requests.check_price.ICheckPriceTaskInfoNetRequest
 import com.lenta.bp14.requests.not_exposed_product.NotExposedTaskInfoNetRequest
 import com.lenta.bp14.requests.not_exposed_product.NotExposedTaskInfoParams
-import com.lenta.bp14.requests.not_exposed_product.NotExposedTaskInfoResult
 import com.lenta.bp14.requests.pojo.TaskInfoParams
 import com.lenta.bp14.requests.tasks.UnlockTaskNetRequest
 import com.lenta.bp14.requests.tasks.UnlockTaskParams
 import com.lenta.bp14.requests.work_list.IWorkListTaskInfoNetRequest
-import com.lenta.bp14.requests.work_list.WorkListTaskInfoResult
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.functional.Either
@@ -78,7 +78,11 @@ class JobCardViewModel : CoreViewModel() {
     val selectedTaskTypePosition: MutableLiveData<Int> = MutableLiveData(0)
     private val selectedTaskTypeInfo: MutableLiveData<ITaskTypeInfo> = selectedTaskTypePosition.map { getSelectedTypeTask() }
     val enabledChangeTaskType: MutableLiveData<Boolean> = processedTask.map { it == null && taskFromTaskList == null }
-    val isEnabledChangeTaskName: MutableLiveData<Boolean> = processedTask.map { taskFromTaskList == null || processedTask.value?.isFreeMode() == true }
+
+    val isEnabledChangeTaskName: MutableLiveData<Boolean> = processedTask.map {
+        it?.getDescription() == null && (taskFromTaskList == null || it?.isFreeMode() == true)
+    }
+
     val isStrictList = MutableLiveData(false)
 
     val taskName by lazy {
