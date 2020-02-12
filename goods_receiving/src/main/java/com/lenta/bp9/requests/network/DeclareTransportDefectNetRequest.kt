@@ -24,7 +24,7 @@ data class DeclareTransportDefectParams(
         @SerializedName("IV_IP")
         val deviceIP: String, //Ip адрес ТСД
         @SerializedName("IV_PERNR")
-        val personnelNumber: String //Табельный номер
+        val personalNumber: String //Табельный номер
 )
 
 class DeclareTransportDefectStatus : ObjectRawStatus<DeclareTransportDefectRestInfo>()

@@ -169,6 +169,8 @@ class ControlDeliveryCargoUnitsViewModel : CoreViewModel(), PageSelectionListene
     }
 
     private fun handleSuccess(result: UnloadingEndReceptionDistrCenterResult) {
+        screenNavigator.openMainMenuScreen()
+        screenNavigator.openTaskListScreen()
         val notifications = result.notifications.map { TaskNotification.from(it) }
         taskManager.getReceivingTask()?.taskRepository?.getNotifications()?.updateWithNotifications(general = notifications, document = null, product = null, condition = null)
         taskManager.updateTaskDescription(TaskDescription.from(result.taskDescription).copy(quantityOutgoingFillings = result.quantityOutgoingFillings.trim().toInt()))
