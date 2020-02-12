@@ -116,7 +116,32 @@ class TransportMarriageViewModel : CoreViewModel(), PageSelectionListener,
     }
 
     fun onClickProcess() {
+        viewModelScope.launch {
+            screenNavigator.showProgressLoadingData()
+            taskManager.getReceivingTask()?.let { task ->
+                val params = ZmpUtzGrz25V001Params(
+                        taskNumber = task.taskHeader.taskNumber,
+                        deviceIP = context.getDeviceIp(),
+                        personalNumber = sessionInfo.personnelNumber ?: "",
+                        transportMarriage = emptyList(),
+                        processedBoxInfo = emptyList(), //it_box_diff - пусто (заполнять только для марочного алкоголя, при наличии отсканированных марок) https://trello.com/c/ndvDINaT
+                        processedExciseStamp = emptyList(), //it_mark_diff - пусто(заполнять только для марочного алкоголя, при наличии отсканированных марок) https://trello.com/c/ndvDINaT
+                        isSave = "X",
+                        printerName = ""
+                )
+                zmpUtzGrz25V001NetRequest(params).either(::handleFailure, ::handleSuccessProcess)
+            }
+            screenNavigator.hideProgress()
+        }
+    }
 
+    private fun handleSuccessProcess(result: ZmpUtzGrz25V001Result) {
+        screenNavigator.openMainMenuScreen()
+        screenNavigator.openTaskListScreen()
+        taskManager.updateTaskDescription(TaskDescription.from(result.taskDescription))
+        val notifications = result.notifications.map { TaskNotification.from(it) }
+        taskManager.getReceivingTask()?.taskRepository?.getNotifications()?.updateWithNotifications(general = notifications, document = null, product = null, condition = null)
+        screenNavigator.openTaskCardScreen(TaskCardMode.Full)
     }
 
     fun onClickItemPosition(position: Int) {
@@ -178,7 +203,6 @@ data class ListCargoUnitsItem(
         val even: Boolean
 ) : Evenable {
     override fun isEven() = even
-
 }
 
 data class ListAct(
@@ -188,5 +212,4 @@ data class ListAct(
         val even: Boolean
 ) : Evenable {
     override fun isEven() = even
-
 }
