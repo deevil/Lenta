@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName
 //ET_TASK_PARTS Таблица партий задания
 data class TaskBatchInfo(
         val materialNumber: String,
-        val exidv: String, //Номер ЕО
+        val processingUnitNumber: String, //Номер ЕО
         val batchNumber: String, //Номер партии
         val alcocode: String, //Номер товара в ЕГАИС (АлкоКод)
         val egais: String, //ЕГАИС Код организации
@@ -17,7 +17,7 @@ data class TaskBatchInfo(
         fun from(restData: TaskBatchInfoRestData): TaskBatchInfo {
             return TaskBatchInfo(
                     materialNumber = restData.materialNumber,
-                    exidv = restData.exidv,
+                    processingUnitNumber = restData.processingUnitNumber,
                     batchNumber = restData.batchNumber,
                     alcocode = restData.alcocode,
                     egais = restData.egais,
@@ -40,7 +40,7 @@ data class TaskBatchInfoRestData(
         @SerializedName("MATNR")
         val materialNumber: String,
         @SerializedName("EXIDV")
-        val exidv: String,
+        val processingUnitNumber: String,
         @SerializedName("ZCHARG")
         val batchNumber: String,
         @SerializedName("ZALCOCOD")
@@ -59,7 +59,7 @@ data class TaskBatchInfoRestData(
         fun from(data: TaskBatchInfo): TaskBatchInfoRestData {
             return TaskBatchInfoRestData(
                     materialNumber = data.materialNumber,
-                    exidv = data.exidv,
+                    processingUnitNumber = data.processingUnitNumber,
                     batchNumber = data.batchNumber,
                     alcocode = data.alcocode,
                     egais = data.egais,

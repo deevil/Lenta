@@ -13,13 +13,13 @@ class MemoryTaskExciseStampRepository : ITaskExciseStampRepository {
     }
 
     override fun findExciseStampsOfProduct(product: TaskProductInfo): List<TaskExciseStamp> {
-        return findExciseStampsOfProduct(product.materialNumber, product.isSet)
+        return findExciseStampsOfProduct(product.materialNumber)
     }
 
-    override fun findExciseStampsOfProduct(materialNumber: String, isSet: Boolean): List<TaskExciseStamp> {
+    override fun findExciseStampsOfProduct(materialNumber: String): List<TaskExciseStamp> {
         return stamps.filter {stamp ->
-            (stamp.materialNumber == materialNumber) ||
-                    (isSet && stamp.setMaterialNumber == materialNumber)}
+            stamp.materialNumber == materialNumber
+        }
     }
 
     override fun addExciseStamp(exciseStamp: TaskExciseStamp): Boolean {
@@ -70,8 +70,7 @@ class MemoryTaskExciseStampRepository : ITaskExciseStampRepository {
 
     override fun deleteExciseStampsForProduct(product: TaskProductInfo): Boolean {
         stamps.map { it }.filter {stamp ->
-            if ((stamp.materialNumber == product.materialNumber) ||
-                    (product.isSet && stamp.setMaterialNumber == product.materialNumber)) {
+            if (stamp.materialNumber == product.materialNumber) {
                 stamps.remove(stamp)
                 return@filter true
             }

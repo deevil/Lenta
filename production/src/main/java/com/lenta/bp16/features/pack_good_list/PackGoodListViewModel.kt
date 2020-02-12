@@ -43,6 +43,7 @@ class PackGoodListViewModel : CoreViewModel() {
         val material = packGoods.value!![position].material
         task.value?.goods?.find { it.material == material }?.let { good ->
             taskManager.currentGood.value = good
+            taskManager.currentRaw.value = good.raws.find { it.material == good.material }
             navigator.openGoodPackagingScreen()
         }
     }
