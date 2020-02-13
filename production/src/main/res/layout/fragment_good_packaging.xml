@@ -131,7 +131,7 @@
 
                 <TextView
                     style="@style/CellTextStyle"
-                    android:text="@string/raw_name" />
+                    android:text="@string/first_raw" />
 
             </LinearLayout>
 
