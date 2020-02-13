@@ -2,7 +2,6 @@ package com.lenta.bp16.model
 
 enum class TaskStatus {
     COMMON,
-    PACKING,
     STARTED,
     SELF_LOCK,
     LOCK
