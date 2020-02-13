@@ -42,6 +42,11 @@ class PackGoodListViewModel : CoreViewModel() {
     fun onClickItemPosition(position: Int) {
         val material = packGoods.value!![position].material
         task.value?.goods?.find { it.material == material }?.let { good ->
+            if (good.raws.size > 1) {
+                navigator.showMoreThanOneOrderForThisProduct()
+                return
+            }
+
             taskManager.currentGood.value = good
             taskManager.currentRaw.value = good.raws.find { it.material == good.material }
             navigator.openGoodPackagingScreen()
