@@ -37,7 +37,7 @@ data class PackGoodParams(
         @SerializedName("IV_MODE")
         val taskType: Int,
         /** Номер объекта */
-        @SerializedName("IV_OBJ_CODE")
+        @SerializedName("IV_PARENT")
         val taskNumber: String,
         /** IP адрес ТСД */
         @SerializedName("IV_IP")

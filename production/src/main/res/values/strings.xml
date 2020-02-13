@@ -18,6 +18,7 @@
     <string name="confirm_no_raw_items">Подтвердите отсутствие необработанных товаров в %1$s</string>
     <string name="fixing_beginning_of_packaging_phase_was_successful">Этап дефростирования завершен.\nФиксация начала этапа упаковки прошла успешно.</string>
     <string name="not_saved_data_will_be_lost">Несохраненные данные будут утеряны, все равно продолжить?</string>
+    <string name="more_than_one_order_for_this_product">По данному товару активно более одного заказа на упаковку</string>
 
     // Заголовки списков
     <string name="sku">SKU</string>
@@ -40,7 +41,7 @@
     <string name="fact">Факт</string>
     <string name="total">Итого</string>
     <string name="planed_quantity">План на передел</string>
-    <string name="raw_name">Первый передел</string>
+    <string name="next_raw">Следующий передел</string>
     <string name="no_ip_printer_alert">IP адрес принтера не указан</string>
 
 </resources>
