@@ -31,7 +31,8 @@ class TaskManager @Inject constructor(
         taskListResult.tasks.forEach { taskInfo ->
             val processedTask = taskList.find { it.taskInfo.number == taskInfo.number }
             if (processedTask == null) {
-                taskList.add(Task(
+                val position = if (taskInfo.isPack.isSapTrue()) 0 else taskList.size
+                taskList.add(position, Task(
                         number = taskInfo.number,
                         status = taskInfo.getTaskStatus(),
                         taskInfo = taskInfo,
