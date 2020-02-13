@@ -72,7 +72,8 @@ class ProcessingUnitTaskListViewModel : CoreViewModel(), PageSelectionListener, 
                     text1 = task.taskInfo.text1,
                     text2 = task.taskInfo.text2,
                     taskStatus = task.status,
-                    quantity = task.quantity.dropZeros()
+                    quantity = task.quantity.dropZeros(),
+                    isPack = task.isPack
             )
         }
     }
@@ -211,5 +212,6 @@ data class ItemProcessingUnitTaskUi(
         val text1: String,
         val text2: String,
         val taskStatus: TaskStatus,
-        val quantity: String
+        val quantity: String,
+        val isPack: Boolean
 )
