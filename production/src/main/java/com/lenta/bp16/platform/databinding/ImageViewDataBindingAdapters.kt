@@ -11,7 +11,7 @@ import com.lenta.shared.utilities.extentions.setVisible
 fun setTaskStatusIcon(imageView: ImageView, taskStatus: TaskStatus) {
     imageView.apply {
         if (taskStatus == TaskStatus.COMMON) {
-            setInvisible()
+            setVisible(false)
         } else {
             setImageResource(when (taskStatus) {
                 TaskStatus.LOCK -> R.drawable.ic_processed_status_dark_24dp
