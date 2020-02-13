@@ -41,7 +41,7 @@
     <string name="fact">Факт</string>
     <string name="total">Итого</string>
     <string name="planed_quantity">План на передел</string>
-    <string name="raw_name">Первый передел</string>
+    <string name="next_raw">Следующий передел</string>
     <string name="no_ip_printer_alert">IP адрес принтера не указан</string>
 
 </resources>
