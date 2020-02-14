@@ -428,7 +428,7 @@ class CoreNavigator @Inject constructor(
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
                     message = context.getString(R.string.task_block_user_with_tsd_ip, userName, deviceIp),
-                    iconRes = R.drawable.ic_info_pink,
+                    iconRes = R.drawable.ic_info_pink_80dp,
                     pageNumber = "94",
                     leftButtonDecorationInfo = ButtonDecorationInfo.back
             )
