@@ -424,6 +424,18 @@ class CoreNavigator @Inject constructor(
         }
     }
 
+    override fun showAlertBlockedTaskAnotherUser(userName: String, deviceIp: String) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.task_block_user_with_tsd_ip, userName, deviceIp),
+                    iconRes = R.drawable.ic_info_pink,
+                    pageNumber = "94",
+                    leftButtonDecorationInfo = ButtonDecorationInfo.back
+            )
+            )
+        }
+    }
+
     override fun showAlertBlockedTaskByMe(userName: String, yesCallback: () -> Unit) {
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
@@ -495,6 +507,7 @@ interface ICoreNavigator {
     fun openChangedDefaultSettingsAlert(noCallback: () -> Unit, yesCallback: () -> Unit)
     fun showProgressConnection()
     fun showAlertBlockedTaskAnotherUser(userName: String)
+    fun showAlertBlockedTaskAnotherUser(userName: String, deviceIp: String)
     fun showAlertBlockedTaskByMe(userName: String, yesCallback: () -> Unit)
     fun openGS128InfoScreen()
 }

@@ -72,7 +72,8 @@ class ExternalSupplyTaskListViewModel : CoreViewModel(), PageSelectionListener, 
                     text1 = task.taskInfo.text1,
                     text2 = task.taskInfo.text2,
                     taskStatus = task.status,
-                    quantity = task.quantity.dropZeros()
+                    quantity = task.quantity.dropZeros(),
+                    isPack = task.isPack
             )
         }
     }
@@ -159,32 +160,35 @@ class ExternalSupplyTaskListViewModel : CoreViewModel(), PageSelectionListener, 
             taskManager.currentTask.value = task
             numberField.value = ""
 
-            if (task.isProcessed) {
-                openTaskByType(task)
-            } else {
-                viewModelScope.launch {
-                    navigator.showProgressLoadingData()
-                    taskInfoNetRequest(
-                            TaskInfoParams(
-                                    marketNumber = sessionInfo.market ?: "Not found!",
-                                    deviceIp = deviceIp.value ?: "Not found!",
-                                    taskNumber = taskNumber,
-                                    blockingType = taskManager.getBlockType()
-                            )
-                    ).also {
-                        navigator.hideProgress()
-                    }.either(::handleFailure) { taskInfoResult ->
-                        viewModelScope.launch {
-                            taskManager.addTaskInfoToCurrentTask(taskInfoResult)
+            task.taskInfo.apply {
+                when (blockType) {
+                    "2" -> navigator.showAlertBlockedTaskAnotherUser(lockUser, lockIp)
+                    "1" -> navigator.showAlertBlockedTaskByMe(lockUser) { openTask(task) }
+                    else -> openTask(task)
+                }
+            }
+        }
+    }
 
-                            task.taskInfo.apply {
-                                when (blockType) {
-                                    "2" -> navigator.showAlertBlockedTaskAnotherUser(lockUser)
-                                    "1" -> navigator.showAlertBlockedTaskByMe(lockUser) { openTaskByType(task) }
-                                    else -> openTaskByType(task)
-                                }
-                            }
-                        }
+    private fun openTask(task: Task) {
+        if (task.isProcessed) {
+            openTaskByType(task)
+        } else {
+            viewModelScope.launch {
+                navigator.showProgressLoadingData()
+                taskInfoNetRequest(
+                        TaskInfoParams(
+                                marketNumber = sessionInfo.market ?: "Not found!",
+                                deviceIp = deviceIp.value ?: "Not found!",
+                                taskNumber = task.number,
+                                blockingType = taskManager.getBlockType()
+                        )
+                ).also {
+                    navigator.hideProgress()
+                }.either(::handleFailure) { taskInfoResult ->
+                    viewModelScope.launch {
+                        taskManager.addTaskInfoToCurrentTask(taskInfoResult)
+                        openTaskByType(task)
                     }
                 }
             }
@@ -207,5 +211,6 @@ data class ItemExternalSupplyTaskUi(
         val text1: String,
         val text2: String,
         val taskStatus: TaskStatus,
-        val quantity: String
+        val quantity: String,
+        val isPack: Boolean
 )

@@ -31,9 +31,11 @@ class TaskManager @Inject constructor(
         taskListResult.tasks.forEach { taskInfo ->
             val processedTask = taskList.find { it.taskInfo.number == taskInfo.number }
             if (processedTask == null) {
-                taskList.add(Task(
+                val position = if (taskInfo.isPack.isSapTrue()) 0 else taskList.size
+                taskList.add(position, Task(
                         number = taskInfo.number,
                         status = taskInfo.getTaskStatus(),
+                        isPack = taskInfo.isPack.isSapTrue(),
                         taskInfo = taskInfo,
                         type = taskType,
                         quantity = taskInfo.quantity.toDoubleOrNull() ?: 0.0
@@ -82,10 +84,7 @@ class TaskManager @Inject constructor(
         tasks.value?.let {
             it.find { task -> task.number == currentTask.value?.number }?.let { currentTask ->
                 currentTask.isProcessed = true
-
-                if (currentTask.status != TaskStatus.PACKING) {
-                    currentTask.status = TaskStatus.COMMON
-                }
+                currentTask.status = TaskStatus.COMMON
             }
 
             tasks.value = it

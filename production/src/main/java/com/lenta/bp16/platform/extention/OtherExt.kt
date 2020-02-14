@@ -13,7 +13,6 @@ fun TaskInfo.getTaskStatus(): TaskStatus {
         else -> {
             when {
                 this.isPlay.isSapTrue() -> TaskStatus.STARTED
-                this.isPack.isSapTrue() -> TaskStatus.PACKING
                 else -> TaskStatus.COMMON
             }
         }

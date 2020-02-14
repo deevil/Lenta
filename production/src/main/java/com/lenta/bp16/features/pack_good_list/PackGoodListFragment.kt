@@ -8,6 +8,7 @@ import com.lenta.bp16.R
 import com.lenta.bp16.databinding.FragmentPackGoodListBinding
 import com.lenta.bp16.databinding.ItemPackGoodListBinding
 import com.lenta.bp16.platform.extention.getAppComponent
+import com.lenta.shared.platform.activity.OnBackPresserListener
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
@@ -19,7 +20,8 @@ import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
 import com.lenta.shared.utilities.extentions.provideViewModel
 
-class PackGoodListFragment : CoreFragment<FragmentPackGoodListBinding, PackGoodListViewModel>() {
+class PackGoodListFragment : CoreFragment<FragmentPackGoodListBinding, PackGoodListViewModel>(),
+        OnBackPresserListener {
 
     private var recyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
 
@@ -84,6 +86,11 @@ class PackGoodListFragment : CoreFragment<FragmentPackGoodListBinding, PackGoodL
                     initPosInfo = recyclerViewKeyHandler?.posInfo?.value
             )
         }
+    }
+
+    override fun onBackPressed(): Boolean {
+        vm.onBackPressed()
+        return false
     }
 
 }

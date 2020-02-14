@@ -8,6 +8,7 @@ data class Task(
         var isProcessed: Boolean = false,
         val number: String,
         var status: TaskStatus,
+        val isPack: Boolean,
         val type: TaskType,
         val quantity: Double,
         val taskInfo: TaskInfo,

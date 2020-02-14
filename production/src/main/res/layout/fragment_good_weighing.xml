@@ -131,7 +131,7 @@
 
                 <TextView
                     style="@style/CellTextStyle"
-                    android:text="@string/raw_name" />
+                    android:text="@string/next_raw" />
 
             </LinearLayout>
 
@@ -145,7 +145,7 @@
                 <TextView
                     style="@style/CellTextStyle"
                     android:maxLines="2"
-                    android:text="@{vm.good.name}"
+                    android:text="@{vm.raw.name}"
                     app:zoom="@{true}"
                     tools:text="Форель филе" />
 
