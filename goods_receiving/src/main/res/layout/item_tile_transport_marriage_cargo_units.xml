@@ -7,7 +7,7 @@
 
         <variable
             name="vm"
-            type="com.lenta.bp9.features.transport_marriage.ListCargoUnitsItem" />
+            type="com.lenta.bp9.features.transport_marriage.CargoUnitsItem" />
 
     </data>
 

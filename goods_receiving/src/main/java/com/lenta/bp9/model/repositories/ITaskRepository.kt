@@ -12,4 +12,5 @@ interface ITaskRepository {
     fun getSections():ITaskSectionRepository
     fun getDocumentsPrinting():ITaskDocumentsPrintingRepository
     fun getCargoUnits():ITaskCargoUnitsRepository
+    fun getTransportMarriage():ITaskTransportMarriageRepository
 }
