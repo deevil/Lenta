@@ -62,25 +62,25 @@ class GoodPackagingViewModel : CoreViewModel() {
     // -----------------------------
 
     fun onClickComplete() {
-        navigator.showFixingPackagingPhaseSuccessful {
-            viewModelScope.launch {
-                navigator.showProgressLoadingData()
+        viewModelScope.launch {
+            navigator.showProgressLoadingData()
 
-                packGoodNetRequest(
-                        PackGoodParams(
-                                marketNumber = sessionInfo.market ?: "Not found!",
-                                taskType = taskManager.getTaskTypeCode(),
-                                deviceIp = deviceIp.value ?: "Not found!",
-                                material = good.value!!.material,
-                                orderNumber = raw.value!!.orderNumber,
-                                quantity = entered.value!!,
-                                taskNumber = taskManager.currentTask.value!!.taskInfo.number
-                        )
-                ).also {
-                    navigator.hideProgress()
-                }.either(::handleFailure) {
-                    taskManager.completeCurrentTask()
+            packGoodNetRequest(
+                    PackGoodParams(
+                            marketNumber = sessionInfo.market ?: "Not found!",
+                            taskType = taskManager.getTaskTypeCode(),
+                            deviceIp = deviceIp.value ?: "Not found!",
+                            material = good.value!!.material,
+                            orderNumber = raw.value!!.orderNumber,
+                            quantity = entered.value!!,
+                            taskNumber = taskManager.currentTask.value!!.taskInfo.number
+                    )
+            ).also {
+                navigator.hideProgress()
+            }.either(::handleFailure) {
+                taskManager.completeCurrentTask()
 
+                navigator.showFixingPackagingPhaseSuccessful {
                     navigator.closeAllScreen()
                     navigator.openProcessingUnitTaskListScreen()
                 }
