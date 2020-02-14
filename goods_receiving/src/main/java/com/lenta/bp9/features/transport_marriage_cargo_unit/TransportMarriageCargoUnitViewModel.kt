@@ -199,7 +199,6 @@ class TransportMarriageCargoUnitViewModel : CoreViewModel(), OnOkInSoftKeyboardL
     }
 
     override fun handleFailure(failure: Failure) {
-        screenNavigator.goBack()
         screenNavigator.openAlertScreen(failure)
     }
 

@@ -197,6 +197,23 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
+        <TextView
+            android:id="@+id/tv_section"
+            style="@style/NumberSectionTxt"
+            android:layout_width="36sp"
+            android:layout_height="36sp"
+            android:layout_marginStart="8dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?selectableItemBackground"
+            android:gravity="center"
+            android:onClick="@{(v) -> vm.screenNavigator.openSectionInfoScreen(vm.transportMarriageInfo.sectionId)}"
+            android:text='@{"" + vm.transportMarriageInfo.sectionId}'
+            app:layout_constraintBottom_toBottomOf="@+id/b_scan"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/b_scan"
+            tools:text="02" />
+
         <ImageButton
             android:id="@+id/b_scan"
             android:layout_width="wrap_content"
