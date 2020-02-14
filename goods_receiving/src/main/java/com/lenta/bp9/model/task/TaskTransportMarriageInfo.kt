@@ -1,8 +1,10 @@
 package com.lenta.bp9.model.task
 
 import com.google.gson.annotations.SerializedName
+import com.lenta.shared.fmp.resources.dao_ext.getProductInfoByMaterial
 import com.lenta.shared.fmp.resources.dao_ext.getUomInfo
 import com.lenta.shared.fmp.resources.fast.ZmpUtz07V001
+import com.lenta.shared.fmp.resources.slow.ZfmpUtz48V001
 import com.lenta.shared.models.core.Uom
 import com.mobrun.plugin.api.HyperHive
 import kotlinx.coroutines.Dispatchers
@@ -12,29 +14,45 @@ data class TaskTransportMarriageInfo(
         val cargoUnitNumber: String,
         val processingUnitNumber: String,
         val materialNumber: String,
+        val materialName: String,
         val batchNumber: String,
-        var quantity: Double,
-        var uom: Uom )
+        val quantity: Double,
+        val quantityInvestments: Double,
+        val uom: Uom )
 {
 
     companion object {
-        suspend fun from(hyperHive: HyperHive, restData: TaskTransportMarriageInfoRestData): TaskTransportMarriageInfo {
+        suspend fun from(hyperHive: HyperHive, restData: TaskProcessingUnitInfoRestData, cargoUnitNumber: String, batchNumber: String): TaskTransportMarriageInfo {
             return withContext(Dispatchers.IO) {
+                val zfmpUtz48V001: ZfmpUtz48V001 by lazy {
+                    ZfmpUtz48V001(hyperHive)
+                }
+                val materialInfo = zfmpUtz48V001.getProductInfoByMaterial(restData.materialNumber)
+
                 val zmpUtz07V001: ZmpUtz07V001 by lazy {
                     ZmpUtz07V001(hyperHive)
                 }
                 val uomInfo = zmpUtz07V001.getUomInfo(restData.uom)
                 return@withContext TaskTransportMarriageInfo(
-                        cargoUnitNumber = restData.cargoUnitNumber,
+                        cargoUnitNumber = cargoUnitNumber,
                         processingUnitNumber = restData.processingUnitNumber,
-                        materialNumber = restData.materialNumber,
-                        batchNumber = restData.batchNumber,
-                        quantity = restData.quantity.toDouble() ?: 0.0,
+                        materialNumber = materialInfo?.material ?: "",
+                        materialName = materialInfo?.name ?: "",
+                        batchNumber = batchNumber,
+                        quantity = restData.menge.toDouble() ?: 0.0,
+                        quantityInvestments = restData.menge.toDouble() ?: 0.0,
                         uom = Uom(code = uomInfo?.uom ?: "", name = uomInfo?.name ?: "")
                 )
             }
 
         }
+    }
+
+    fun getMaterialLastSix(): String {
+        return if (materialNumber.length > 6)
+            materialNumber.substring(materialNumber.length - 6)
+        else
+            materialNumber
     }
 }
 

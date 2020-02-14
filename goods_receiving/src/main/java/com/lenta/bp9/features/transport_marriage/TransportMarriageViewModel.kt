@@ -5,10 +5,7 @@ import com.lenta.shared.platform.viewmodel.CoreViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp9.features.loading.tasks.TaskCardMode
-import com.lenta.bp9.model.task.IReceivingTaskManager
-import com.lenta.bp9.model.task.TaskCargoUnitInfo
-import com.lenta.bp9.model.task.TaskDescription
-import com.lenta.bp9.model.task.TaskNotification
+import com.lenta.bp9.model.task.*
 import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.bp9.requests.network.*
 import com.lenta.shared.account.ISessionInfo
@@ -17,8 +14,10 @@ import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.Evenable
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.databinding.PageSelectionListener
+import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.getDeviceIp
 import com.lenta.shared.utilities.extentions.map
+import com.lenta.shared.utilities.extentions.toStringFormatted
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -39,10 +38,25 @@ class TransportMarriageViewModel : CoreViewModel(), PageSelectionListener,
     lateinit var zmpUtzGrz25V001NetRequest: ZmpUtzGrz25V001NetRequest
 
     val selectedPage = MutableLiveData(0)
-    val listCargoUnits: MutableLiveData<List<ListCargoUnitsItem>> = MutableLiveData()
-    val listAct: MutableLiveData<List<ListAct>> = MutableLiveData()
+
+    val cargoUnits: MutableLiveData<List<CargoUnitsItem>> = MutableLiveData()
+
+    val filterSearchCargoUnitNumber: MutableLiveData<String> = MutableLiveData("")
+    val listCargoUnits by lazy {
+        cargoUnits.combineLatest(filterSearchCargoUnitNumber).map {pair ->
+            pair!!.first.filter { it.matchesFilter(pair.second) }.map{ taskCargoUnitInfo ->
+                CargoUnitsItem(
+                        number = taskCargoUnitInfo.number,
+                        cargoUnitNumber = taskCargoUnitInfo.cargoUnitNumber,
+                        quantityPositions = taskCargoUnitInfo.quantityPositions
+                )
+            }.reversed()
+        }
+    }
+
+    val listAct: MutableLiveData<List<ActItem>> = MutableLiveData()
     val actSelectionsHelper = SelectionItemsHelper()
-    val cargoUnitNumber: MutableLiveData<String> = MutableLiveData("")
+
     val requestFocusToCargoUnit: MutableLiveData<Boolean> = MutableLiveData()
 
     val deleteButtonEnabled: MutableLiveData<Boolean> = actSelectionsHelper.selectedPositions.map {
@@ -51,6 +65,10 @@ class TransportMarriageViewModel : CoreViewModel(), PageSelectionListener,
 
     fun getTitle(): String {
         return taskManager.getReceivingTask()?.taskHeader?.caption ?: ""
+    }
+
+    fun onResume() {
+        updateListAct()
     }
 
     init {
@@ -70,20 +88,35 @@ class TransportMarriageViewModel : CoreViewModel(), PageSelectionListener,
 
     private fun handleSuccessDeclareTransportDefect(result: DeclareTransportDefectRestInfo) {
         taskManager.getReceivingTask()?.taskRepository?.getCargoUnits()?.updateCargoUnits(result.cargoUnits.map { TaskCargoUnitInfo.from(it) })
-        updateData()
+        updateCargoUnits()
     }
 
-    private fun updateData() {
-        listCargoUnits.postValue(
+    private fun updateCargoUnits() {
+        cargoUnits.postValue(
                 taskManager.getReceivingTask()?.taskRepository?.getCargoUnits()?.getCargoUnits()?.mapIndexed { index, taskCargoUnitInfo ->
-                    ListCargoUnitsItem(
+                    CargoUnitsItem(
                             number = index + 1,
                             cargoUnitNumber = taskCargoUnitInfo.cargoUnitNumber,
-                            quantityPositions = taskCargoUnitInfo.quantityPositions,
+                            quantityPositions = taskCargoUnitInfo.quantityPositions
+                    )
+                }?.reversed()
+        )
+    }
+
+    private fun updateListAct() {
+        listAct.postValue(
+                taskManager.getReceivingTask()?.taskRepository?.getTransportMarriage()?.getTransportMarriage()?.mapIndexed { index, transportMarriage ->
+                    ActItem(
+                            number = index + 1,
+                            name = "${transportMarriage.getMaterialLastSix()} ${transportMarriage.materialName}",
+                            processingUnitName = "ЕО-${transportMarriage.processingUnitNumber}",
+                            quantityWithUom = "- ${transportMarriage.quantity.toStringFormatted()} ${transportMarriage.uom.name}",
+                            transportMarriage = transportMarriage,
                             even = index % 2 == 0
                     )
                 }?.reversed()
         )
+        actSelectionsHelper.clearPositions()
     }
 
     fun onClickCancellation() {
@@ -102,6 +135,7 @@ class TransportMarriageViewModel : CoreViewModel(), PageSelectionListener,
                 )
                 zmpUtzGrz25V001NetRequest(params).either(::handleFailure, ::handleSuccessCancellation)
             }
+            taskManager.getReceivingTask()?.taskRepository?.getTransportMarriage()?.clear()
             screenNavigator.hideProgress()
         }
     }
@@ -115,6 +149,19 @@ class TransportMarriageViewModel : CoreViewModel(), PageSelectionListener,
         screenNavigator.openTaskCardScreen(TaskCardMode.Full)
     }
 
+    fun onClickDelete() {
+        actSelectionsHelper.selectedPositions.value?.map { position ->
+            listAct.value?.get(position)?.transportMarriage?.let {
+                taskManager.
+                        getReceivingTask()?.
+                        taskRepository?.
+                        getTransportMarriage()?.
+                        deleteTransportMarriage(it)
+            }
+        }
+        updateListAct()
+    }
+
     fun onClickProcess() {
         viewModelScope.launch {
             screenNavigator.showProgressLoadingData()
@@ -123,11 +170,11 @@ class TransportMarriageViewModel : CoreViewModel(), PageSelectionListener,
                         taskNumber = task.taskHeader.taskNumber,
                         deviceIP = context.getDeviceIp(),
                         personalNumber = sessionInfo.personnelNumber ?: "",
-                        transportMarriage = emptyList(),
+                        transportMarriage = task.taskRepository.getTransportMarriage().getTransportMarriage().map { TaskTransportMarriageInfoRestData.from(it) },
                         processedBoxInfo = emptyList(), //it_box_diff - пусто (заполнять только для марочного алкоголя, при наличии отсканированных марок) https://trello.com/c/ndvDINaT
                         processedExciseStamp = emptyList(), //it_mark_diff - пусто(заполнять только для марочного алкоголя, при наличии отсканированных марок) https://trello.com/c/ndvDINaT
                         isSave = "X",
-                        printerName = ""
+                        printerName = sessionInfo.printer ?: ""
                 )
                 zmpUtzGrz25V001NetRequest(params).either(::handleFailure, ::handleSuccessProcess)
             }
@@ -145,12 +192,13 @@ class TransportMarriageViewModel : CoreViewModel(), PageSelectionListener,
     }
 
     fun onClickItemPosition(position: Int) {
-        /**val matnr: String? = if (selectedPage.value == 0) {
-            listCounted.value?.get(position)?.productInfo?.materialNumber
+        if (selectedPage.value == 0) {
+            screenNavigator.openTransportMarriageCargoUnitScreen(listCargoUnits.value?.get(position)?.cargoUnitNumber ?: "")
         } else {
-            listWithoutBarcode.value?.get(position)?.productInfo?.materialNumber
+            listAct.value?.get(position)?.transportMarriage?.let {
+                screenNavigator.openTransportMarriageGoodsInfoScreen(it)
+            }
         }
-        searchProductDelegate.searchCode(code = matnr ?: "", fromScan = false)*/
     }
 
     override fun onPageSelected(position: Int) {
@@ -158,35 +206,32 @@ class TransportMarriageViewModel : CoreViewModel(), PageSelectionListener,
     }
 
     override fun onOkInSoftKeyboard(): Boolean {
-        searchCargoUnit(cargoUnitNumber.value ?: "")
+        searchCargoUnit(filterSearchCargoUnitNumber.value ?: "")
         return true
     }
 
     fun onScanResult(data: String) {
-        searchCargoUnit(data)
+        if (selectedPage.value == 0) {
+            searchCargoUnit(data)
+        }
     }
 
     private fun searchCargoUnit(data: String) {
-        /**viewModelScope.launch {
-            searchCargoUnitNumber.value = data
-            val findCargoUnit = processCargoUnitsService.findCargoUnit(data)
+        if (data.length != 18) {
+            screenNavigator.openAlertInvalidBarcodeFormatScreen()
+        } else {
+            val findCargoUnit = taskManager.getReceivingTask()?.taskRepository?.getCargoUnits()?.findCargoUnits(data)
             if (findCargoUnit == null) {
-                screenNavigator.showProgressLoadingData()
-                val params = GettingDataNewCargoUnitParameters(
-                        taskNumber = taskManager.getReceivingTask()?.taskHeader?.taskNumber ?: "",
-                        cargoUnitNumber = data
-                )
-                gettingDataNewCargoUnit(params).either(::handleFailure, ::handleSuccessNewCargoUnit)
-                screenNavigator.hideProgress()
+                screenNavigator.openAlertCargoUnitNotFoundScreen()
             } else {
-                screenNavigator.openCargoUnitCardScreen(findCargoUnit)
+                screenNavigator.openTransportMarriageCargoUnitScreen(findCargoUnit.cargoUnitNumber)
             }
-        }*/
+        }
     }
 
     fun onDigitPressed(digit: Int) {
         requestFocusToCargoUnit.value = true
-        cargoUnitNumber.value = cargoUnitNumber.value ?: "" + digit
+        filterSearchCargoUnitNumber.value = filterSearchCargoUnitNumber.value ?: "" + digit
     }
 
     override fun handleFailure(failure: Failure) {
@@ -196,19 +241,22 @@ class TransportMarriageViewModel : CoreViewModel(), PageSelectionListener,
 
 }
 
-data class ListCargoUnitsItem(
+data class CargoUnitsItem(
         val number: Int,
         val cargoUnitNumber: String,
-        val quantityPositions: String,
-        val even: Boolean
-) : Evenable {
-    override fun isEven() = even
+        val quantityPositions: String
+)  {
+    fun matchesFilter(filter: String): Boolean {
+        return cargoUnitNumber.contains(filter, true)
+    }
 }
 
-data class ListAct(
+data class ActItem(
         val number: Int,
         val name: String,
+        val processingUnitName: String,
         val quantityWithUom: String,
+        val transportMarriage: TaskTransportMarriageInfo,
         val even: Boolean
 ) : Evenable {
     override fun isEven() = even

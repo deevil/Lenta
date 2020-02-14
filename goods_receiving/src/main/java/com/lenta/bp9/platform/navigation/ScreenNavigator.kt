@@ -41,6 +41,8 @@ import com.lenta.bp9.features.task_card.TaskCardFragment
 import com.lenta.bp9.features.task_list.TaskListFragment
 import com.lenta.bp9.features.transfer_goods_section.TransferGoodsSectionFragment
 import com.lenta.bp9.features.transport_marriage.TransportMarriageFragment
+import com.lenta.bp9.features.transport_marriage.goods_info.TransportMarriageGoodsInfoFragment
+import com.lenta.bp9.features.transport_marriage_cargo_unit.TransportMarriageCargoUnitFragment
 import com.lenta.bp9.features.transportation_number.TransportationNumberFragment
 import com.lenta.bp9.model.task.*
 import com.lenta.bp9.model.task.revise.DeliveryDocumentRevise
@@ -918,6 +920,40 @@ class ScreenNavigator(
         }
     }
 
+    override fun openTransportMarriageCargoUnitScreen(cargoUnitNumber: String) {
+        runOrPostpone {
+            getFragmentStack()?.push(TransportMarriageCargoUnitFragment.create(cargoUnitNumber))
+        }
+    }
+
+    override fun openAlertCargoUnitNotFoundScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.cargo_unit_not_found),
+                    iconRes = R.drawable.ic_info_pink,
+                    textColor = ContextCompat.getColor(context, R.color.color_text_dialogWarning),
+                    pageNumber = "97")
+            )
+        }
+    }
+
+    override fun openAlertInvalidBarcodeFormatScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.invalid_barcode_format),
+                    iconRes = R.drawable.is_warning_yellow_80dp,
+                    pageNumber = "96",
+                    timeAutoExitInMillis = 3000)
+            )
+        }
+    }
+
+    override fun openTransportMarriageGoodsInfoScreen(transportMarriageInfo: TaskTransportMarriageInfo) {
+        runOrPostpone {
+            getFragmentStack()?.push(TransportMarriageGoodsInfoFragment.create(transportMarriageInfo))
+        }
+    }
+
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 }
 
@@ -1030,4 +1066,8 @@ interface IScreenNavigator : ICoreNavigator {
     fun openAlertMissingVPForProviderScreen()
     fun openShipmentConfirmDiscrepanciesDialog(nextCallbackFunc: () -> Unit)
     fun openCompositeDocReviseScreen(document: DeliveryDocumentRevise)
+    fun openTransportMarriageCargoUnitScreen(cargoUnitNumber: String)
+    fun openAlertCargoUnitNotFoundScreen()
+    fun openAlertInvalidBarcodeFormatScreen()
+    fun openTransportMarriageGoodsInfoScreen(transportMarriageInfo: TaskTransportMarriageInfo)
 }

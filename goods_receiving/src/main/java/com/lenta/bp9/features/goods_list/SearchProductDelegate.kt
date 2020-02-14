@@ -150,7 +150,7 @@ class SearchProductDelegate @Inject constructor(
             }
             ProductType.NonExciseAlcohol -> screenNavigator.openNonExciseAlcoInfoScreen(taskProductInfo)
             else -> {
-                screenNavigator.openAlertGoodsNotInOrderScreen() //todo сообщение об неизвестном типе товара?
+                screenNavigator.openAlertGoodsNotInOrderScreen() //todo сообщение о неизвестном типе товара?
             }
         }
     }
