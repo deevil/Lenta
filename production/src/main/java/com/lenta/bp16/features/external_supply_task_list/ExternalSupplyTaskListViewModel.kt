@@ -160,32 +160,35 @@ class ExternalSupplyTaskListViewModel : CoreViewModel(), PageSelectionListener, 
             taskManager.currentTask.value = task
             numberField.value = ""
 
-            if (task.isProcessed) {
-                openTaskByType(task)
-            } else {
-                viewModelScope.launch {
-                    navigator.showProgressLoadingData()
-                    taskInfoNetRequest(
-                            TaskInfoParams(
-                                    marketNumber = sessionInfo.market ?: "Not found!",
-                                    deviceIp = deviceIp.value ?: "Not found!",
-                                    taskNumber = taskNumber,
-                                    blockingType = taskManager.getBlockType()
-                            )
-                    ).also {
-                        navigator.hideProgress()
-                    }.either(::handleFailure) { taskInfoResult ->
-                        viewModelScope.launch {
-                            taskManager.addTaskInfoToCurrentTask(taskInfoResult)
+            task.taskInfo.apply {
+                when (blockType) {
+                    "2" -> navigator.showAlertBlockedTaskAnotherUser(lockUser, lockIp)
+                    "1" -> navigator.showAlertBlockedTaskByMe(lockUser) { openTask(task) }
+                    else -> openTask(task)
+                }
+            }
+        }
+    }
 
-                            task.taskInfo.apply {
-                                when (blockType) {
-                                    "2" -> navigator.showAlertBlockedTaskAnotherUser(lockUser)
-                                    "1" -> navigator.showAlertBlockedTaskByMe(lockUser) { openTaskByType(task) }
-                                    else -> openTaskByType(task)
-                                }
-                            }
-                        }
+    private fun openTask(task: Task) {
+        if (task.isProcessed) {
+            openTaskByType(task)
+        } else {
+            viewModelScope.launch {
+                navigator.showProgressLoadingData()
+                taskInfoNetRequest(
+                        TaskInfoParams(
+                                marketNumber = sessionInfo.market ?: "Not found!",
+                                deviceIp = deviceIp.value ?: "Not found!",
+                                taskNumber = task.number,
+                                blockingType = taskManager.getBlockType()
+                        )
+                ).also {
+                    navigator.hideProgress()
+                }.either(::handleFailure) { taskInfoResult ->
+                    viewModelScope.launch {
+                        taskManager.addTaskInfoToCurrentTask(taskInfoResult)
+                        openTaskByType(task)
                     }
                 }
             }

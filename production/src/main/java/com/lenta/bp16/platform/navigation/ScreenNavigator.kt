@@ -166,7 +166,7 @@ class ScreenNavigator @Inject constructor(
             getFragmentStack()?.push(AlertFragment.create(
                     pageNumber = "35",
                     message = context.getString(R.string.fixing_beginning_of_packaging_phase_was_successful),
-                    iconRes = R.drawable.is_warning_red_80dp,
+                    iconRes = R.drawable.is_warning_yellow_80dp,
                     isVisibleLeftButton = false,
                     codeConfirmForRight = backFragmentResultHelper.setFuncForResult(nextCallback),
                     rightButtonDecorationInfo = ButtonDecorationInfo.next
