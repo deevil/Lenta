@@ -125,7 +125,7 @@ class TransportMarriageGoodsInfoViewModel : CoreViewModel(), OnPositionClickList
     }
 
     fun onClickDetails() {
-        //screenNavigator.openGoodsDetailsScreen(productInfo.value!!)
+        screenNavigator.openTransportMarriageGoodsDetailsScreen(cargoUnitNumber ?: "", transportMarriageInfo.value?.materialNumber ?: "", transportMarriageInfo.value?.materialName ?: "")
     }
 
     fun onClickAdd() {
