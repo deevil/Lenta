@@ -26,8 +26,8 @@ class GoodWeighingViewModelTest {
 
     @Test
     fun `Getting a weight barcode`() {
-        assertEquals(goodWeighingViewModel.getFormattedEan("2425308000000", 1.268), "2425308012681")
-        assertEquals(goodWeighingViewModel.getFormattedEan("1234567000000", 12.3), "1234567123004")
+        assertEquals(goodWeighingViewModel.getFormattedEan("2425308000000", 1.268), "02425308012681")
+        assertEquals(goodWeighingViewModel.getFormattedEan("1234567000000", 12.3), "01234567123004")
     }
 
 }
