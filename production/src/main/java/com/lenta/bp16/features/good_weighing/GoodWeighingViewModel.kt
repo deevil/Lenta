@@ -13,7 +13,6 @@ import com.lenta.bp16.request.PackCodeNetRequest
 import com.lenta.bp16.request.PackCodeParams
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
-import com.lenta.shared.models.core.Uom
 import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.settings.IAppSettings
@@ -126,7 +125,8 @@ class GoodWeighingViewModel : CoreViewModel() {
                     productTime.add(Calendar.MINUTE, repository.getPcpExpirTimeMm())
 
                     val planAufFinish = Calendar.getInstance()
-                    productTime.add(Calendar.MINUTE, repository.getPcpContTimeMm(packCodeResult.dataLabel.planAufFinish))
+                    planAufFinish.add(Calendar.MINUTE, getTimeInMinutes(packCodeResult.dataLabel.planAufFinish, packCodeResult.dataLabel.planAufUnit))
+                    planAufFinish.add(Calendar.MINUTE, repository.getPcpContTimeMm())
 
                     val dateExpir = packCodeResult.dataLabel.dateExpiration.toIntOrNull()?.let { days ->
                         val dateExpiration = Calendar.getInstance()
@@ -135,10 +135,10 @@ class GoodWeighingViewModel : CoreViewModel() {
                     }
 
                     val barCodeText = "(01)${getFormattedEan(packCodeResult.dataLabel.ean, total.value!!)}" +
-                            "(3103)${total.value!!}" +
-                            "(8008)${SimpleDateFormat(Constants.DATE_FORMAT_yyyyMMdd, Locale.getDefault()).format(productTime.time)}" +
+                            "(3103)${getFormattedWeight(weightField.value!!)}" +
+                            "(8008)${SimpleDateFormat(Constants.DATE_FORMAT_yyMMddhhmm, Locale.getDefault()).format(productTime.time)}" +
                             "(10)${raw.value!!.orderNumber}" +
-                            "(7003)${dateExpir?.let { SimpleDateFormat(Constants.DATE_FORMAT_yyyy_mm_dd_hh_mm, Locale.getDefault()).format(it.time) }}" +
+                            "(7003)${dateExpir?.let { SimpleDateFormat(Constants.DATE_FORMAT_yyMMddhhmm, Locale.getDefault()).format(it.time) }}" +
                             "(91)${packCodeResult.packCode}"
 
                     val barcode = barCodeText.replace("(", "").replace(")", "")
@@ -170,17 +170,46 @@ class GoodWeighingViewModel : CoreViewModel() {
         }
     }
 
-    private fun getFormattedEan(ean: String, quantity: Double): String {
-        val firstPart = ean.take(7)
-        var weight = (quantity / 1000).toString()
+    private fun getTimeInMinutes(sourceTime: String, units: String): Int {
+        return when(units.toLowerCase(Locale.getDefault())) {
+            "m" -> (sourceTime.toDoubleOrNull() ?: 0.0).toInt()
+            "h" -> (sourceTime.toDoubleOrNull() ?: 0.0 * 60).toInt()
+            else -> 0
+        }
+    }
+
+    fun getFormattedWeight(weight: String): String {
+        if (weight.isEmpty()) {
+            return "000000"
+        }
+
+        val dividedWeight = weight.split(".")
+
+        var kilogram = dividedWeight[0]
+        while (kilogram.length < 3) {
+            kilogram = "0$kilogram"
+        }
+
+        var gram = if (dividedWeight.size == 1) "0" else dividedWeight[1]
+        while (gram.length < 3) {
+            gram = "${gram}0"
+        }
+
+        return "$kilogram$gram"
+    }
+
+    fun getFormattedEan(sourceEan: String, quantity: Double): String {
+        val ean = sourceEan.take(7)
+        var weight = (quantity * 1000).toInt().toString()
 
         while (weight.length < 5) {
             weight = "0$weight"
         }
-
         while (weight.length > 5) {
             weight = weight.dropLast(1)
         }
+
+        val eanWithWeight = "$ean$weight"
 
         /*Логика расчета контрольного числа:
         1. Складываются цифры, находящихся на четных позициях;
@@ -190,17 +219,24 @@ class GoodWeighingViewModel : CoreViewModel() {
         5. Определяется ближайшее наибольшее число к п. 4, кратное десяти;
         6. Определяется разность между результатами по п.п. 5 и 4;*/
 
-        val nums = weight.toCharArray().map { it.toInt() }
+        val nums = eanWithWeight.toCharArray().map { it.toString().toInt() }
 
-        val sum = ((nums[1] + nums[3]) * 3) + (nums[0] + nums[2] + nums[4])
+        var evenSum = 0
+        var oddSum = 0
+
+        for ((index, num) in nums.withIndex()) {
+            if ((index + 1) % 2 == 0) evenSum += num else oddSum += num
+        }
+
+        val sum = (evenSum * 3) + oddSum
         var nearestMultipleOfTen = sum
         while (nearestMultipleOfTen % 10 != 0) {
-            nearestMultipleOfTen++
+            nearestMultipleOfTen += 1
         }
 
         val controlNumber = nearestMultipleOfTen - sum
 
-        return "$firstPart$weight$controlNumber"
+        return "0$eanWithWeight$controlNumber"
     }
 
     override fun handleFailure(failure: Failure) {
