@@ -236,7 +236,7 @@ class GoodWeighingViewModel : CoreViewModel() {
 
         val controlNumber = nearestMultipleOfTen - sum
 
-        return "$eanWithWeight$controlNumber"
+        return "0$eanWithWeight$controlNumber"
     }
 
     override fun handleFailure(failure: Failure) {
