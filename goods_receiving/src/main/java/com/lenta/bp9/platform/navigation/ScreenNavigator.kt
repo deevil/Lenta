@@ -43,7 +43,7 @@ import com.lenta.bp9.features.transfer_goods_section.TransferGoodsSectionFragmen
 import com.lenta.bp9.features.transport_marriage.TransportMarriageFragment
 import com.lenta.bp9.features.transport_marriage.goods_details.TransportMarriageGoodsDetailsFragment
 import com.lenta.bp9.features.transport_marriage.goods_info.TransportMarriageGoodsInfoFragment
-import com.lenta.bp9.features.transport_marriage_cargo_unit.TransportMarriageCargoUnitFragment
+import com.lenta.bp9.features.transport_marriage.cargo_unit.TransportMarriageCargoUnitFragment
 import com.lenta.bp9.features.transportation_number.TransportationNumberFragment
 import com.lenta.bp9.model.task.*
 import com.lenta.bp9.model.task.revise.DeliveryDocumentRevise

@@ -1,8 +1,7 @@
-package com.lenta.bp9.features.transport_marriage_cargo_unit
+package com.lenta.bp9.features.transport_marriage.cargo_unit
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.lenta.bp9.features.goods_list.SearchProductDelegate
 import com.lenta.bp9.features.transport_marriage.ActItem
 import com.lenta.bp9.model.task.IReceivingTaskManager
 import com.lenta.bp9.model.task.TaskTransportMarriageInfo
@@ -12,7 +11,6 @@ import com.lenta.bp9.requests.network.ZmpUtzGrz26V001Params
 import com.lenta.bp9.requests.network.ZmpUtzGrz26V001Result
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.platform.viewmodel.CoreViewModel
-import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.extentions.map
