@@ -37,13 +37,9 @@ class GeneralRepository @Inject constructor(
         }
     }
 
-    override suspend fun getPcpContTimeMm(timeUnit: String): Int {
+    override suspend fun getPcpContTimeMm(): Int {
         return withContext(Dispatchers.IO) {
-            val timeFromBase = settings.getPcpContTimeMm()?.toIntOrNull() ?: 0
-            return@withContext when(timeUnit.toLowerCase(Locale.getDefault())){
-                "ч" -> timeFromBase * 60
-                else -> timeFromBase
-            }
+            return@withContext settings.getPcpContTimeMm()?.toIntOrNull() ?: 0
         }
     }
 
@@ -61,7 +57,7 @@ interface IGeneralRepository {
     suspend fun getUnitsByCode(code: String): Uom
 
     suspend fun getServerAddress(): String?
-    suspend fun getPcpContTimeMm(timeUnit: String): Int
+    suspend fun getPcpContTimeMm(): Int
     suspend fun getPcpExpirTimeMm(): Int
 
 }

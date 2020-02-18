@@ -125,7 +125,8 @@ class GoodWeighingViewModel : CoreViewModel() {
                     productTime.add(Calendar.MINUTE, repository.getPcpExpirTimeMm())
 
                     val planAufFinish = Calendar.getInstance()
-                    productTime.add(Calendar.MINUTE, repository.getPcpContTimeMm(packCodeResult.dataLabel.planAufFinish))
+                    planAufFinish.add(Calendar.MINUTE, getTimeInMinutes(packCodeResult.dataLabel.planAufFinish, packCodeResult.dataLabel.planAufUnit))
+                    planAufFinish.add(Calendar.MINUTE, repository.getPcpContTimeMm())
 
                     val dateExpir = packCodeResult.dataLabel.dateExpiration.toIntOrNull()?.let { days ->
                         val dateExpiration = Calendar.getInstance()
@@ -166,6 +167,14 @@ class GoodWeighingViewModel : CoreViewModel() {
                     navigator.openPackListScreen()
                 }
             }
+        }
+    }
+
+    private fun getTimeInMinutes(sourceTime: String, units: String): Int {
+        return when(units.toLowerCase(Locale.getDefault())) {
+            "m" -> (sourceTime.toDoubleOrNull() ?: 0.0).toInt()
+            "h" -> (sourceTime.toDoubleOrNull() ?: 0.0 * 60).toInt()
+            else -> 0
         }
     }
 
