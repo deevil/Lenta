@@ -81,16 +81,25 @@ class TransportMarriageCargoUnitViewModel : CoreViewModel(), OnOkInSoftKeyboardL
         actSelectionsHelper.clearPositions()
     }
 
-    private fun searchProduct(materialNumber: String) {
+    private fun searchProduct(materialNumber: String, processingUnitNumber: String?) {
         viewModelScope.launch {
             screenNavigator.showProgressLoadingData()
-            taskManager.getReceivingTask()?.let { task ->
-                val params = ZmpUtzGrz26V001Params(
-                        taskNumber = task.taskHeader.taskNumber,
-                        cargoUnitNumber = cargoUnitNumber.value ?: "",
-                        materialNumber = materialNumber
-                )
-                zmpUtzGrz26V001NetRequest(params).either(::handleFailure, ::handleSuccessSearchProduct)
+            val foundTransportMarriageInfo = taskManager.getReceivingTask()?.taskRepository?.getTransportMarriage()?.findTransportMarriage(cargoUnitNumber.value ?: "", materialNumber)
+            if (foundTransportMarriageInfo != null) {
+                foundTransportMarriageInfo.findLast {
+                    it.processingUnitNumber == processingUnitNumber
+                }?.let {
+                    screenNavigator.openTransportMarriageGoodsInfoScreen(it)
+                }
+            } else {
+                taskManager.getReceivingTask()?.let { task ->
+                    val params = ZmpUtzGrz26V001Params(
+                            taskNumber = task.taskHeader.taskNumber,
+                            cargoUnitNumber = cargoUnitNumber.value ?: "",
+                            materialNumber = materialNumber
+                    )
+                    zmpUtzGrz26V001NetRequest(params).either(::handleFailure, ::handleSuccessSearchProduct)
+                }
             }
             screenNavigator.hideProgress()
         }
@@ -104,24 +113,28 @@ class TransportMarriageCargoUnitViewModel : CoreViewModel(), OnOkInSoftKeyboardL
                 }?.batchNumber
                 val foundTransportMarriageInfo = TaskTransportMarriageInfo.from(hyperHive, processingUnitInfo, cargoUnitNumber.value ?: "", batchNumber ?: "")
                 taskManager.getReceivingTask()?.taskRepository?.getTransportMarriage()?.addTransportMarriage(foundTransportMarriageInfo)
-                screenNavigator.openTransportMarriageGoodsInfoScreen(foundTransportMarriageInfo)
             }
+            taskManager.getReceivingTask()?.taskRepository?.getTransportMarriage()?.findTransportMarriage(cargoUnitNumber = cargoUnitNumber.value ?: "", materialNumber = result.processingUnits[0].materialNumber)?.
+                    map {
+                        screenNavigator.openTransportMarriageGoodsInfoScreen(it)
+                        return@map
+                    }
         }
     }
 
     fun onClickItemPosition(position: Int) {
-        listAct.value?.get(position)?.transportMarriage?.materialNumber?.let {
-            searchProduct(materialNumber = it)
+        listAct.value?.get(position)?.transportMarriage?.let {
+            searchProduct(materialNumber = it.materialNumber, processingUnitNumber = it.processingUnitNumber)
         }
     }
 
     fun onScanResult(data: String) {
-        searchProduct(materialNumber = data)
+        searchProduct(materialNumber = data, processingUnitNumber = null)
     }
 
     override fun onOkInSoftKeyboard(): Boolean {
         eanCode.value?.let {
-            searchProduct(materialNumber = it)
+            searchProduct(materialNumber = it, processingUnitNumber = null)
         }
         return true
     }

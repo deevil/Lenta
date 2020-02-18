@@ -12,6 +12,7 @@ import com.lenta.bp9.requests.network.ZmpUtzGrz26V001NetRequest
 import com.lenta.bp9.requests.network.ZmpUtzGrz26V001Params
 import com.lenta.bp9.requests.network.ZmpUtzGrz26V001Result
 import com.lenta.shared.exception.Failure
+import com.lenta.shared.models.core.Uom
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.combineLatest
@@ -35,62 +36,90 @@ class TransportMarriageGoodsInfoViewModel : CoreViewModel(), OnPositionClickList
     @Inject
     lateinit var hyperHive: HyperHive
 
-    val transportMarriageInfo: MutableLiveData<TaskTransportMarriageInfo> = MutableLiveData()
+    val transportMarriageInfoCurrent: MutableLiveData<TaskTransportMarriageInfo> = MutableLiveData()
     val cargoUnitNumber by lazy {
-        transportMarriageInfo.value?.cargoUnitNumber
+        transportMarriageInfoCurrent.value?.cargoUnitNumber
     }
     private val processingUnitSelected by lazy {
-        transportMarriageInfo.value?.processingUnitNumber
+        transportMarriageInfoCurrent.value?.processingUnitNumber
     }
-    private val transportMarriageProduct:MutableLiveData<List<TaskTransportMarriageInfo>> = MutableLiveData()
+    private val transportMarriageOfProduct: MutableLiveData<List<TaskTransportMarriageInfo>> = MutableLiveData()
     val spinQuality: MutableLiveData<List<String>> = MutableLiveData()
     val spinQualitySelectedPosition: MutableLiveData<Int> = MutableLiveData(0)
     val spinProcessingUnit: MutableLiveData<List<String>> = MutableLiveData()
     val spinProcessingUnitSelectedPosition: MutableLiveData<Int> = MutableLiveData(0)
-    private val processingUnitProduct: MutableLiveData<List<String>> = MutableLiveData()
     val suffix: MutableLiveData<String> = MutableLiveData()
     val count: MutableLiveData<String> = MutableLiveData("0")
-    private val countValue: MutableLiveData<Double> = count.map { it?.toDoubleOrNull() ?: 0.0 }
-    val acceptTotalCountWithUom by lazy {
-        "0 ${transportMarriageInfo.value?.uom?.name}"
+    private val countValue: MutableLiveData<Double> = count.map {
+        val countAdd = (it?.toDoubleOrNull() ?: 0.0) + (transportMarriageInfoCurrent.value?.quantity ?: 0.0)
+        if (countAdd < 0.0) {
+            0.0
+        } else {
+            countAdd
+        }
     }
+    val acceptTotalCountWithUom by lazy {
+        "0 ${transportMarriageInfoCurrent.value?.uom?.name}"
+    }
+
     val refusalTotalCountWithUom: MutableLiveData<String> = countValue.map {
         if (it != 0.0) {
-            "- " + it.toStringFormatted() + " " + transportMarriageInfo.value?.uom?.name
+            "- " + it.toStringFormatted() + " " + transportMarriageInfoCurrent.value?.uom?.name
         } else {
-            "0 " + transportMarriageInfo.value?.uom?.name
+            "0 " + transportMarriageInfoCurrent.value?.uom?.name
         }
     }
     val enabledApplyButton: MutableLiveData<Boolean> = countValue.map {
-        it!! != 0.0
+        it!! > 0.0 && it != (transportMarriageInfoCurrent.value?.quantity ?: 0.0)
     }
 
     fun getTitle() : String {
-        return "${transportMarriageInfo.value!!.getMaterialLastSix()} ${transportMarriageInfo.value!!.materialName}"
+        return "${transportMarriageInfoCurrent.value?.getMaterialLastSix()} ${transportMarriageInfoCurrent.value?.materialName}"
     }
 
     init {
         viewModelScope.launch {
             screenNavigator.showProgressLoadingData()
-            suffix.value = transportMarriageInfo.value?.uom?.name
+            suffix.value = transportMarriageInfoCurrent.value?.uom?.name
             spinQuality.value = dataBase.getQualityInfoTransportMarriage()?.map {
                 it.name
             }
 
-            searchProduct(transportMarriageInfo.value?.materialNumber ?: "")
+            searchProduct(transportMarriageInfoCurrent.value?.materialNumber ?: "")
         }
     }
 
     private fun searchProduct(materialNumber: String) {
         viewModelScope.launch {
             screenNavigator.showProgressLoadingData()
-            taskManager.getReceivingTask()?.let { task ->
-                val params = ZmpUtzGrz26V001Params(
-                        taskNumber = task.taskHeader.taskNumber,
-                        cargoUnitNumber = cargoUnitNumber ?: "",
-                        materialNumber = materialNumber
+            val foundTransportMarriageInfo = taskManager.getReceivingTask()?.taskRepository?.getTransportMarriage()?.findTransportMarriage(cargoUnitNumber ?: "", materialNumber)
+            if (foundTransportMarriageInfo != null) {
+                transportMarriageOfProduct.value = foundTransportMarriageInfo
+                spinProcessingUnit.postValue(
+                        transportMarriageOfProduct.value?.map {
+                            "ЕО-${it.processingUnitNumber}"
+                        }
                 )
-                zmpUtzGrz26V001NetRequest(params).either(::handleFailure, ::handleSuccess)
+                if (processingUnitSelected != null) {
+                    transportMarriageOfProduct.value?.mapIndexed { index, taskTransportMarriageInfo ->
+                        if (taskTransportMarriageInfo.processingUnitNumber == processingUnitSelected) {
+                            spinProcessingUnitSelectedPosition.value = index
+                            return@mapIndexed
+                        }
+                    }
+                }
+                transportMarriageOfProduct.value?.get(spinProcessingUnitSelectedPosition.value!!)?.let {
+                    transportMarriageInfoCurrent.value = it
+                }
+            } else {
+                taskManager.getReceivingTask()?.let { task ->
+                    val params = ZmpUtzGrz26V001Params(
+                            taskNumber = task.taskHeader.taskNumber,
+                            cargoUnitNumber = cargoUnitNumber ?: "",
+                            materialNumber = materialNumber
+                    )
+                    zmpUtzGrz26V001NetRequest(params).either(::handleFailure, ::handleSuccess)
+                }
             }
             screenNavigator.hideProgress()
         }
@@ -98,50 +127,75 @@ class TransportMarriageGoodsInfoViewModel : CoreViewModel(), OnPositionClickList
 
     private fun handleSuccess(result: ZmpUtzGrz26V001Result) {
         viewModelScope.launch {
-            processingUnitProduct.value = result.processingUnits.map {
-                it.processingUnitNumber
-            }
-
-            spinProcessingUnit.postValue(
-                    processingUnitProduct.value?.map {
-                        "ЕО-$it"
-                    }
-            )
-            if (processingUnitSelected != null) {
-                processingUnitProduct.value?.mapIndexed { index, s ->
-                    if (s == processingUnitSelected) {
-                        spinProcessingUnitSelectedPosition.value = index
-                        return@mapIndexed
-                    }
-                }
-            }
-            transportMarriageProduct.value = result.processingUnits.map {
+            transportMarriageOfProduct.value = result.processingUnits.map {
                 val batchNumber = result.taskBatches.findLast {batchesInfo ->
                     batchesInfo.materialNumber == it.materialNumber && batchesInfo.processingUnitNumber == it.processingUnitNumber
                 }?.batchNumber
                 TaskTransportMarriageInfo.from(hyperHive, it, cargoUnitNumber ?: "", batchNumber ?: "")
             }
+            spinProcessingUnit.postValue(
+                    transportMarriageOfProduct.value?.map {
+                        "ЕО-${it.processingUnitNumber}"
+                    }
+            )
+            if (processingUnitSelected != null) {
+                transportMarriageOfProduct.value?.mapIndexed { index, taskTransportMarriageInfo ->
+                    if (taskTransportMarriageInfo.processingUnitNumber == processingUnitSelected) {
+                        spinProcessingUnitSelectedPosition.value = index
+                        return@mapIndexed
+                    }
+                }
+            }
+            transportMarriageOfProduct.value?.get(spinProcessingUnitSelectedPosition.value!!)?.let {
+                transportMarriageInfoCurrent.value = it
+            }
         }
     }
 
     fun onClickDetails() {
-        screenNavigator.openTransportMarriageGoodsDetailsScreen(cargoUnitNumber ?: "", transportMarriageInfo.value?.materialNumber ?: "", transportMarriageInfo.value?.materialName ?: "")
+        transportMarriageOfProduct.value?.get(spinProcessingUnitSelectedPosition.value!!)?.let {
+            screenNavigator.openTransportMarriageGoodsDetailsScreen(
+                    cargoUnitNumber = it.cargoUnitNumber,
+                    materialNumber = it.materialNumber,
+                    materialName = it.materialName
+            )
+        }
     }
 
     fun onClickAdd() {
-        //processGeneralProductService.add(count.value!!, reasonRejectionInfo.value!![spinReasonRejectionSelectedPosition.value!!].code)
+        transportMarriageInfoCurrent.value?.let {
+            if ((countValue.value ?: 0.0) > it.quantityInvestments) {
+                screenNavigator.openAlertAmountEnteredGreaterPUScreen()
+            } else {
+                taskManager.getReceivingTask()?.
+                        taskRepository?.
+                        getTransportMarriage()?.
+                        changeTransportMarriage(it.copy(quantity = countValue.value!!))
+                transportMarriageInfoCurrent.value = it.copy(quantity = countValue.value!!)
+                searchProduct(transportMarriageInfoCurrent.value?.materialNumber ?: "") //чтобы обновились локальные данные для transportMarriageOfProduct
+            }
+        }
+        count.value = "0"
     }
 
     fun onClickApply() {
-
+        onClickAdd()
+        screenNavigator.goBack()
     }
 
     override fun onClickPosition(position: Int) {
         spinProcessingUnitSelectedPosition.value = position
+        transportMarriageOfProduct.value?.get(spinProcessingUnitSelectedPosition.value!!)?.let {
+            transportMarriageInfoCurrent.value = it
+        }
     }
 
     fun onScanResult(data: String) {
-        searchProduct(materialNumber = data)
+        searchProduct(data)
+        transportMarriageInfoCurrent.value?.let {
+            screenNavigator.goBack()
+            screenNavigator.openTransportMarriageGoodsInfoScreen(transportMarriageInfo = it)
+        }
     }
 
     override fun handleFailure(failure: Failure) {

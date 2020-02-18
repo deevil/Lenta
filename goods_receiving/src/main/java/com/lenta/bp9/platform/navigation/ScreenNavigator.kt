@@ -961,6 +961,17 @@ class ScreenNavigator(
         }
     }
 
+    override fun openAlertAmountEnteredGreaterPUScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.amount_entered_greater_pu),
+                    iconRes = R.drawable.ic_info_pink,
+                    textColor = ContextCompat.getColor(context, R.color.color_text_dialogWarning),
+                    pageNumber = "97")
+            )
+        }
+    }
+
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 }
 
@@ -1078,4 +1089,5 @@ interface IScreenNavigator : ICoreNavigator {
     fun openAlertInvalidBarcodeFormatScreen()
     fun openTransportMarriageGoodsInfoScreen(transportMarriageInfo: TaskTransportMarriageInfo)
     fun openTransportMarriageGoodsDetailsScreen(cargoUnitNumber: String, materialNumber: String, materialName: String)
+    fun openAlertAmountEnteredGreaterPUScreen()
 }
