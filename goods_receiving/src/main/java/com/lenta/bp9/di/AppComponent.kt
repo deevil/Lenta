@@ -38,6 +38,8 @@ import com.lenta.bp9.features.skip_recount.SkipRecountViewModel
 import com.lenta.bp9.features.task_card.TaskCardViewModel
 import com.lenta.bp9.features.transfer_goods_section.TransferGoodsSectionViewModel
 import com.lenta.bp9.features.transport_marriage.TransportMarriageViewModel
+import com.lenta.bp9.features.transport_marriage.goods_info.TransportMarriageGoodsInfoViewModel
+import com.lenta.bp9.features.transport_marriage_cargo_unit.TransportMarriageCargoUnitViewModel
 import com.lenta.bp9.features.transportation_number.TransportationNumberViewModel
 import com.lenta.bp9.main.MainActivity
 import com.lenta.bp9.main.MainViewModel
@@ -113,4 +115,6 @@ interface AppComponent {
     fun inject(it: LoadingShipmentFixingDepartureViewModel)
     fun inject(it: LoadingShipmentEndRecountViewModel)
     fun inject(it: CompositeDocReviseViewModel)
+    fun inject(it: TransportMarriageCargoUnitViewModel)
+    fun inject(it: TransportMarriageGoodsInfoViewModel)
 }

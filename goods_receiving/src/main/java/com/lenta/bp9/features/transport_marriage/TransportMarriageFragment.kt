@@ -184,6 +184,7 @@ class TransportMarriageFragment : CoreFragment<FragmentTransportMarriageBinding,
     override fun onToolbarButtonClick(view: View) {
         when (view.id) {
             R.id.b_1 -> vm.onClickCancellation()
+            R.id.b_3 -> vm.onClickDelete()
             R.id.b_5 -> vm.onClickProcess()
         }
     }
@@ -203,6 +204,11 @@ class TransportMarriageFragment : CoreFragment<FragmentTransportMarriageBinding,
             return true
         }
         return false
+    }
+
+    override fun onResume() {
+        super.onResume()
+        vm.onResume()
     }
 
 }

@@ -238,4 +238,8 @@
     <string name="composite_doc_revise">Сверка составного документа</string>
     <string name="reject_shipment">Отказ в отгрузке</string>
     <string name="reject_pge">Отказ в пересчете ГЕ</string>
+    <string name="transport_marriage_cargo_unit_head">Тр.брак по ГЕ</string>
+    <string name="cargo_unit_not_found">ГЕ не найдена</string>
+    <string name="invalid_barcode_format">Неверный формат ШК</string>
+    <string name="accept_txt">Принять</string>
 </resources>

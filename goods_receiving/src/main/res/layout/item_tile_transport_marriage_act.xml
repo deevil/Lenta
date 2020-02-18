@@ -7,7 +7,7 @@
 
         <variable
             name="vm"
-            type="com.lenta.bp9.features.transport_marriage.ListAct" />
+            type="com.lenta.bp9.features.transport_marriage.ActItem" />
 
         <variable
             name="selectedForDelete"
@@ -88,23 +88,36 @@
             android:gravity="start|center_vertical"
             android:maxLines="1"
             android:text="@{vm.name}"
-            app:layout_constraintBottom_toBottomOf="@+id/tv_counter"
             app:layout_constraintEnd_toStartOf="@+id/img_arrow"
             app:layout_constraintStart_toEndOf="@+id/div_vert1"
             app:layout_constraintTop_toTopOf="@+id/tv_counter"
             tools:text="000363 Салака" />
 
+        <TextView
+            android:id="@+id/tv_processing_unit"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:ellipsize="end"
+            android:gravity="start|center_vertical"
+            android:maxLines="1"
+            android:text="@{vm.processingUnitName}"
+            app:layout_constraintBottom_toBottomOf="@+id/tv_counter"
+            app:layout_constraintEnd_toStartOf="@+id/img_arrow"
+            app:layout_constraintStart_toEndOf="@+id/div_vert1"
+            app:layout_constraintTop_toBottomOf="@+id/tv_goods_title"
+            tools:text="ЕО-012345678912345678" />
+
         <ImageView
             android:id="@+id/img_arrow"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
-            android:layout_marginBottom="8dp"
             android:src="@drawable/ic_keyboard_arrow_right_white_16dp"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintBottom_toBottomOf="@+id/tv_processing_unit"
             app:layout_constraintEnd_toStartOf="@+id/vertical_guidline_2"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="@+id/tv_goods_title" />
 
         <View
             android:id="@+id/div_hor_bottom"
@@ -125,7 +138,8 @@
             android:gravity="start|center_vertical"
             android:maxLines="1"
             android:text='@{vm.quantityWithUom }'
-            app:layout_constraintBottom_toBottomOf="@+id/tv_goods_title"
+            android:textColor="@color/color_pressed_red"
+            app:layout_constraintBottom_toBottomOf="@+id/tv_processing_unit"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/div_vert2"
             app:layout_constraintTop_toTopOf="@+id/tv_goods_title"
