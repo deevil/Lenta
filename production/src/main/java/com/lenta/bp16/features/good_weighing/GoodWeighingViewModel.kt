@@ -200,6 +200,8 @@ class GoodWeighingViewModel : CoreViewModel() {
             weight = weight.dropLast(1)
         }
 
+        val eanWithWeight = "$ean$weight"
+
         /*Логика расчета контрольного числа:
         1. Складываются цифры, находящихся на четных позициях;
         2. Полученный результат умножается на три;
@@ -208,8 +210,16 @@ class GoodWeighingViewModel : CoreViewModel() {
         5. Определяется ближайшее наибольшее число к п. 4, кратное десяти;
         6. Определяется разность между результатами по п.п. 5 и 4;*/
 
-        val nums = weight.toCharArray().map { it.toString().toInt() }
-        val sum = ((nums[1] + nums[3]) * 3) + (nums[0] + nums[2] + nums[4])
+        val nums = eanWithWeight.toCharArray().map { it.toString().toInt() }
+
+        var evenSum = 0
+        var oddSum = 0
+
+        for ((index, num) in nums.withIndex()) {
+            if ((index + 1) % 2 == 0) evenSum += num else oddSum += num
+        }
+
+        val sum = (evenSum * 3) + oddSum
         var nearestMultipleOfTen = sum
         while (nearestMultipleOfTen % 10 != 0) {
             nearestMultipleOfTen += 1
@@ -217,7 +227,7 @@ class GoodWeighingViewModel : CoreViewModel() {
 
         val controlNumber = nearestMultipleOfTen - sum
 
-        return "$ean$weight$controlNumber"
+        return "$eanWithWeight$controlNumber"
     }
 
     override fun handleFailure(failure: Failure) {
