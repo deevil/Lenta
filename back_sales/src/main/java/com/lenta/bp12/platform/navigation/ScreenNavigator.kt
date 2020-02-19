@@ -84,12 +84,12 @@ class ScreenNavigator @Inject constructor(
         }
     }
 
-    override fun showUnsavedDataWillBeLost(yesCallback: () -> Unit) {
+    override fun showUnsavedDataWillBeLost(proceedCallback: () -> Unit) {
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
                     message = context.getString(R.string.unsaved_data_will_be_lost),
                     iconRes = R.drawable.ic_question_80dp,
-                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(yesCallback),
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(proceedCallback),
                     pageNumber = "92",
                     leftButtonDecorationInfo = ButtonDecorationInfo.back,
                     rightButtonDecorationInfo = ButtonDecorationInfo.proceed
