@@ -41,8 +41,9 @@ import com.lenta.bp9.features.task_card.TaskCardFragment
 import com.lenta.bp9.features.task_list.TaskListFragment
 import com.lenta.bp9.features.transfer_goods_section.TransferGoodsSectionFragment
 import com.lenta.bp9.features.transport_marriage.TransportMarriageFragment
+import com.lenta.bp9.features.transport_marriage.goods_details.TransportMarriageGoodsDetailsFragment
 import com.lenta.bp9.features.transport_marriage.goods_info.TransportMarriageGoodsInfoFragment
-import com.lenta.bp9.features.transport_marriage_cargo_unit.TransportMarriageCargoUnitFragment
+import com.lenta.bp9.features.transport_marriage.cargo_unit.TransportMarriageCargoUnitFragment
 import com.lenta.bp9.features.transportation_number.TransportationNumberFragment
 import com.lenta.bp9.model.task.*
 import com.lenta.bp9.model.task.revise.DeliveryDocumentRevise
@@ -954,6 +955,23 @@ class ScreenNavigator(
         }
     }
 
+    override fun openTransportMarriageGoodsDetailsScreen(cargoUnitNumber: String, materialNumber: String, materialName: String) {
+        runOrPostpone {
+            getFragmentStack()?.push(TransportMarriageGoodsDetailsFragment.create(cargoUnitNumber, materialNumber, materialName))
+        }
+    }
+
+    override fun openAlertAmountEnteredGreaterPUScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.amount_entered_greater_pu),
+                    iconRes = R.drawable.ic_info_pink,
+                    textColor = ContextCompat.getColor(context, R.color.color_text_dialogWarning),
+                    pageNumber = "97")
+            )
+        }
+    }
+
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 }
 
@@ -1070,4 +1088,6 @@ interface IScreenNavigator : ICoreNavigator {
     fun openAlertCargoUnitNotFoundScreen()
     fun openAlertInvalidBarcodeFormatScreen()
     fun openTransportMarriageGoodsInfoScreen(transportMarriageInfo: TaskTransportMarriageInfo)
+    fun openTransportMarriageGoodsDetailsScreen(cargoUnitNumber: String, materialNumber: String, materialName: String)
+    fun openAlertAmountEnteredGreaterPUScreen()
 }
