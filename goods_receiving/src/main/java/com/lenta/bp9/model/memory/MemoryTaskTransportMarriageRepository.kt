@@ -12,8 +12,12 @@ class MemoryTaskTransportMarriageRepository : ITaskTransportMarriageRepository {
         return transportMarriageInfo
     }
 
-    override fun findTransportMarriage(transportMarriage: TaskTransportMarriageInfo): TaskTransportMarriageInfo? {
-        return return transportMarriageInfo.firstOrNull { it == transportMarriage}
+    override fun findTransportMarriage(transportMarriage: TaskTransportMarriageInfo): List<TaskTransportMarriageInfo>? {
+        return findTransportMarriage(transportMarriage.cargoUnitNumber, transportMarriage.materialNumber)
+    }
+
+    override fun findTransportMarriage(cargoUnitNumber: String, materialNumber: String): List<TaskTransportMarriageInfo>? {
+        return transportMarriageInfo.filter { it.cargoUnitNumber == cargoUnitNumber && it.materialNumber == materialNumber}
     }
 
     override fun addTransportMarriage(transportMarriage: TaskTransportMarriageInfo): Boolean {
@@ -21,8 +25,7 @@ class MemoryTaskTransportMarriageRepository : ITaskTransportMarriageRepository {
         for (i in transportMarriageInfo.indices) {
             if (transportMarriage.cargoUnitNumber == transportMarriageInfo[i].cargoUnitNumber &&
                     transportMarriage.processingUnitNumber == transportMarriageInfo[i].processingUnitNumber &&
-                    transportMarriage.materialNumber == transportMarriageInfo[i].materialNumber &&
-                    transportMarriage.batchNumber == transportMarriageInfo[i].batchNumber) {
+                    transportMarriage.materialNumber == transportMarriageInfo[i].materialNumber) {
                 index = i
             }
         }
@@ -57,8 +60,7 @@ class MemoryTaskTransportMarriageRepository : ITaskTransportMarriageRepository {
         for (i in transportMarriageInfo.indices) {
             if (transportMarriage.cargoUnitNumber == transportMarriageInfo[i].cargoUnitNumber &&
                     transportMarriage.processingUnitNumber == transportMarriageInfo[i].processingUnitNumber &&
-                    transportMarriage.materialNumber == transportMarriageInfo[i].materialNumber &&
-                    transportMarriage.batchNumber == transportMarriageInfo[i].batchNumber) {
+                    transportMarriage.materialNumber == transportMarriageInfo[i].materialNumber) {
                 index = i
             }
         }

@@ -18,7 +18,8 @@ data class TaskTransportMarriageInfo(
         val batchNumber: String,
         val quantity: Double,
         val quantityInvestments: Double,
-        val uom: Uom )
+        val uom: Uom,
+        val sectionId: String)
 {
 
     companion object {
@@ -41,7 +42,8 @@ data class TaskTransportMarriageInfo(
                         batchNumber = batchNumber,
                         quantity = restData.menge.toDouble() ?: 0.0,
                         quantityInvestments = restData.menge.toDouble() ?: 0.0,
-                        uom = Uom(code = uomInfo?.uom ?: "", name = uomInfo?.name ?: "")
+                        uom = Uom(code = uomInfo?.uom ?: "", name = uomInfo?.name ?: ""),
+                        sectionId = materialInfo?.abtnr ?: ""
                 )
             }
 

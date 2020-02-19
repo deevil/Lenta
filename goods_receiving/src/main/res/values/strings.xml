@@ -242,4 +242,5 @@
     <string name="cargo_unit_not_found">ГЕ не найдена</string>
     <string name="invalid_barcode_format">Неверный формат ШК</string>
     <string name="accept_txt">Принять</string>
+    <string name="amount_entered_greater_pu">Введенное кол-во больше чем ЕО</string>
 </resources>
