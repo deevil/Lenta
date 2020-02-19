@@ -41,8 +41,9 @@ import com.lenta.bp9.features.task_card.TaskCardFragment
 import com.lenta.bp9.features.task_list.TaskListFragment
 import com.lenta.bp9.features.transfer_goods_section.TransferGoodsSectionFragment
 import com.lenta.bp9.features.transport_marriage.TransportMarriageFragment
+import com.lenta.bp9.features.transport_marriage.goods_details.TransportMarriageGoodsDetailsFragment
 import com.lenta.bp9.features.transport_marriage.goods_info.TransportMarriageGoodsInfoFragment
-import com.lenta.bp9.features.transport_marriage_cargo_unit.TransportMarriageCargoUnitFragment
+import com.lenta.bp9.features.transport_marriage.cargo_unit.TransportMarriageCargoUnitFragment
 import com.lenta.bp9.features.transportation_number.TransportationNumberFragment
 import com.lenta.bp9.model.task.*
 import com.lenta.bp9.model.task.revise.DeliveryDocumentRevise
@@ -51,6 +52,7 @@ import com.lenta.bp9.model.task.revise.ProductDocumentType
 import com.lenta.bp9.model.task.revise.ProductVetDocumentRevise
 import com.lenta.bp9.requests.network.TaskListSearchParams
 import com.lenta.shared.account.IAuthenticator
+import com.lenta.shared.exception.Failure
 import com.lenta.shared.features.alert.AlertFragment
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
 import com.lenta.shared.platform.navigation.CustomAnimation
@@ -119,7 +121,7 @@ class ScreenNavigator(
 
     override fun openAlertNotPermissions(message: String) {
         openAlertScreen(message = message,
-                iconRes = R.drawable.ic_info_pink,
+                iconRes = R.drawable.ic_info_pink_80dp,
                 textColor = ContextCompat.getColor(context, R.color.color_text_dialogWarning),
                 pageNumber = "96",
                 timeAutoExitInMillis = 3000
@@ -215,7 +217,7 @@ class ScreenNavigator(
 
     override fun openAlertWrongProductType() {
         openAlertScreen(message = context.getString(R.string.wrong_product_type),
-                iconRes = R.drawable.ic_info_pink,
+                iconRes = R.drawable.ic_info_pink_80dp,
                 textColor = ContextCompat.getColor(context, R.color.color_text_dialogWarning),
                 pageNumber = "96",
                 timeAutoExitInMillis = 3000
@@ -326,7 +328,7 @@ class ScreenNavigator(
 
                 val fragment = AlertFragment.create(
                         message = context.getString(R.string.supply_results_error_dialog, numberSupply, userName),
-                        iconRes = R.drawable.ic_info_pink,
+                        iconRes = R.drawable.ic_info_pink_80dp,
                         textColor = ContextCompat.getColor(context, com.lenta.shared.R.color.color_text_dialogWarning),
                         pageNumber = "77",
                         description = context.getString(R.string.supply_results)
@@ -357,7 +359,7 @@ class ScreenNavigator(
 
                 val fragment = AlertFragment.create(
                         message = context.getString(R.string.supply_results_automatic_charge_error),
-                        iconRes = R.drawable.ic_info_pink,
+                        iconRes = R.drawable.ic_info_pink_80dp,
                         textColor = ContextCompat.getColor(context, com.lenta.shared.R.color.color_text_dialogWarning),
                         pageNumber = "75",
                         description = context.getString(R.string.supply_results)
@@ -370,7 +372,7 @@ class ScreenNavigator(
 
     override fun openAlertOverlimit() {
         openAlertScreen(message = context.getString(R.string.alert_overlimit),
-                iconRes = R.drawable.ic_info_pink,
+                iconRes = R.drawable.ic_info_pink_80dp,
                 textColor = ContextCompat.getColor(context, R.color.color_text_dialogWarning),
                 pageNumber = "96",
                 timeAutoExitInMillis = 3000
@@ -470,7 +472,7 @@ class ScreenNavigator(
 
     override fun openAlertCountLargerOverdelivery() {
         openAlertScreen(message = context.getString(R.string.alert_count_larger_overdelivery),
-                iconRes = R.drawable.ic_info_pink,
+                iconRes = R.drawable.ic_info_pink_80dp,
                 textColor = ContextCompat.getColor(context, R.color.color_text_dialogWarning),
                 pageNumber = "96"
         )
@@ -478,7 +480,7 @@ class ScreenNavigator(
 
     override fun openAlertNotCorrectDate() {
         openAlertScreen(message = context.getString(R.string.alert_not_correct_date),
-                iconRes = R.drawable.ic_info_pink,
+                iconRes = R.drawable.ic_info_pink_80dp,
                 textColor = ContextCompat.getColor(context, R.color.color_text_dialogWarning),
                 pageNumber = "96"
         )
@@ -635,7 +637,7 @@ class ScreenNavigator(
             getFragmentStack()?.push(AlertFragment.create(
                     message = context.getString(R.string.some_certificates_have_lost_relevance),
                     codeConfirmForRight = backFragmentResultHelper.setFuncForResult(nextCallbackFunc),
-                    iconRes = R.drawable.ic_info_pink,
+                    iconRes = R.drawable.ic_info_pink_80dp,
                     textColor = ContextCompat.getColor(context, R.color.color_text_dialogWarning),
                     pageNumber = "97",
                     isVisibleLeftButton = false,
@@ -724,7 +726,7 @@ class ScreenNavigator(
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
                     message = context.getString(R.string.alert_new_cargo_unit, cargoUnitNumber),
-                    iconRes = R.drawable.ic_info_pink,
+                    iconRes = R.drawable.ic_info_pink_80dp,
                     textColor = ContextCompat.getColor(context, R.color.color_text_dialogWarning),
                     pageNumber = "97")
             )
@@ -954,6 +956,23 @@ class ScreenNavigator(
         }
     }
 
+    override fun openTransportMarriageGoodsDetailsScreen(cargoUnitNumber: String, materialNumber: String, materialName: String) {
+        runOrPostpone {
+            getFragmentStack()?.push(TransportMarriageGoodsDetailsFragment.create(cargoUnitNumber, materialNumber, materialName))
+        }
+    }
+
+    override fun openAlertAmountEnteredGreaterPUScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.amount_entered_greater_pu),
+                    iconRes = R.drawable.ic_info_pink,
+                    textColor = ContextCompat.getColor(context, R.color.color_text_dialogWarning),
+                    pageNumber = "97")
+            )
+        }
+    }
+
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 }
 
@@ -1070,4 +1089,6 @@ interface IScreenNavigator : ICoreNavigator {
     fun openAlertCargoUnitNotFoundScreen()
     fun openAlertInvalidBarcodeFormatScreen()
     fun openTransportMarriageGoodsInfoScreen(transportMarriageInfo: TaskTransportMarriageInfo)
+    fun openTransportMarriageGoodsDetailsScreen(cargoUnitNumber: String, materialNumber: String, materialName: String)
+    fun openAlertAmountEnteredGreaterPUScreen()
 }

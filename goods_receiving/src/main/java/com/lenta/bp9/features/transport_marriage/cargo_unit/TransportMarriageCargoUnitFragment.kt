@@ -1,4 +1,4 @@
-package com.lenta.bp9.features.transport_marriage_cargo_unit
+package com.lenta.bp9.features.transport_marriage.cargo_unit
 
 import android.os.Bundle
 import android.view.View

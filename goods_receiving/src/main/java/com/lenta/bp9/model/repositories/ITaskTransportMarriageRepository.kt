@@ -4,7 +4,8 @@ import com.lenta.bp9.model.task.TaskTransportMarriageInfo
 
 interface ITaskTransportMarriageRepository {
     fun getTransportMarriage(): List<TaskTransportMarriageInfo>
-    fun findTransportMarriage(transportMarriage: TaskTransportMarriageInfo): TaskTransportMarriageInfo?
+    fun findTransportMarriage(transportMarriage: TaskTransportMarriageInfo): List<TaskTransportMarriageInfo>?
+    fun findTransportMarriage(cargoUnitNumber: String, materialNumber: String): List<TaskTransportMarriageInfo>?
     fun addTransportMarriage(transportMarriage: TaskTransportMarriageInfo): Boolean
     fun updateTransportMarriage(newTransportMarriage: List<TaskTransportMarriageInfo>)
     fun changeTransportMarriage(transportMarriage: TaskTransportMarriageInfo): Boolean

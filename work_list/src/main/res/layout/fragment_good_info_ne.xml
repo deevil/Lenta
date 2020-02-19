@@ -16,18 +16,17 @@
 
     </data>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
+        <!-- Табы -->
         <androidx.viewpager.widget.ViewPager
             android:id="@+id/view_pager"
             android:layout_width="wrap_content"
             android:layout_height="0dp"
-            app:layout_constraintBottom_toTopOf="@+id/ll_labels"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
+            android:layout_weight="1"
             app:pageSelectionListener="@{vm}"
             app:tabPosition="@{vm.selectedPage}"
             app:viewPagerSettings="@{viewPagerSettings}">
@@ -35,122 +34,106 @@
             <com.google.android.material.tabs.TabLayout
                 android:id="@+id/tab_strip"
                 android:layout_width="match_parent"
-                android:layout_height="40dp"
+                android:layout_height="32dp"
                 android:background="@color/colorBottomPanelBackground"
                 android:elevation="0dp"
-                android:textSize="15sp"
                 app:tabIndicatorColor="@color/colorTabIndicator"
-                app:tabIndicatorHeight="4dp"
+                app:tabIndicatorHeight="3dp"
                 app:tabMode="scrollable"
                 app:tabSelectedTextColor="@color/colorTabIndicator"
                 app:tabTextAppearance="@style/TabLayoutStyle"
                 app:tabTextColor="@color/colorWhite"
                 tools:targetApi="lollipop" />
 
-
         </androidx.viewpager.widget.ViewPager>
 
+        <!-- Блок с кнопками -->
         <LinearLayout
-            android:id="@+id/ll_labels"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
+            android:gravity="center_vertical"
             android:orientation="horizontal"
-            android:visibility="@{vm.productParamsUi != null}"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            tools:ignore="ContentDescription">
+            android:visibility="@{vm.productParamsUi != null}">
 
-            <TextView
-                android:id="@+id/tv_matrix"
-                android:layout_width="36sp"
-                android:layout_height="36sp"
-                android:layout_gravity="center"
-                android:layout_marginStart="4dp"
-                android:layout_marginEnd="4dp"
-                android:clickable="true"
-                android:focusable="true"
-                android:fontFamily="@font/tahoma_bold"
-                android:foreground="?selectableItemBackground"
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
                 android:gravity="center"
-                android:textSize="18sp"
-                app:matrixType="@{vm.productParamsUi.matrixType}"
-                tools:background="@drawable/bg_white_circle"
-                tools:text="A" />
+                android:orientation="horizontal">
 
-            <TextView
-                android:id="@+id/tv_section"
-                style="@style/NumberSectionTxt"
-                android:layout_width="36sp"
-                android:layout_height="36sp"
-                android:layout_gravity="center"
-                android:layout_marginEnd="4dp"
-                android:clickable="true"
-                android:focusable="true"
-                android:foreground="?selectableItemBackground"
+                <TextView
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:background="@drawable/bg_white_circle"
+                    android:gravity="center"
+                    android:textSize="12sp"
+                    app:matrixType="@{vm.productParamsUi.matrixType}"
+                    tools:text="A" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
                 android:gravity="center"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/tv_matrix"
-                app:section='@{vm.productParamsUi.sectionId}'
-                tools:text="02" />
+                android:orientation="horizontal">
 
-            <ImageButton
-                android:id="@+id/b_excise_alco"
-                android:layout_width="wrap_content"
+                <TextView
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:background="@drawable/bg_white_circle"
+                    android:gravity="center"
+                    android:textSize="12sp"
+                    app:section="@{vm.productParamsUi.sectionId}"
+                    tools:text="02" />
+
+            </LinearLayout>
+
+            <ImageView
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:background="?selectableItemBackground"
+                android:layout_weight="1"
                 app:goodTypeIcon="@{vm.productParamsUi.type}"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/tv_section"
-                tools:src="@drawable/ic_excise_white_48dp" />
+                tools:src="@drawable/ic_excise_white_32dp" />
 
-
-            <ImageButton
-                android:id="@+id/btn_4"
+            <ImageView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:background="?selectableItemBackground"
                 android:onClick="@{(v) -> vm.navigator.openPictogrammInfoNova()}"
-                android:src="@drawable/ic_new_48dp"
-                app:invisible="@{!vm.productParamsUi.new}" />
+                app:invisible="@{!vm.productParamsUi.new}"
+                tools:src="@drawable/ic_new_32dp" />
 
-            <ImageButton
-                android:id="@+id/btn_5"
+            <ImageView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:background="?selectableItemBackground"
                 android:onClick="@{(v) -> vm.navigator.openPictogrammInfoHealthyFood()}"
-                android:src="@drawable/ic_natural_48dp"
-                app:invisible="@{!vm.productParamsUi.healthyFood}" />
+                app:invisible="@{!vm.productParamsUi.healthyFood}"
+                tools:src="@drawable/ic_natural_32dp" />
 
-            <ImageButton
-                android:id="@+id/btn_6"
+            <ImageView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="4dp"
                 android:layout_weight="1"
                 android:background="?selectableItemBackground"
                 android:onClick="@{(v) -> vm.navigator.openESInfoScreen()}"
-                android:src="@drawable/ic_scan_qrcode_48dp"
+                android:src="@drawable/ic_scan_barcode_es_32dp"
                 android:visibility="invisible" />
 
-            <ImageButton
-                android:id="@+id/btn_7"
+            <ImageView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="4dp"
                 android:layout_weight="1"
                 android:background="?selectableItemBackground"
                 android:onClick="@{(v) -> vm.navigator.openEanInfoScreen()}"
-                android:src="@drawable/ic_scan_barcode_48dp" />
+                android:src="@drawable/ic_scan_barcode_32dp" />
 
         </LinearLayout>
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
+    </LinearLayout>
 
 </layout>

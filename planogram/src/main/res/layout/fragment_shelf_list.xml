@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
-        tools:context=".features.shelf_list.ShelfListFragment">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".features.shelf_list.ShelfListFragment">
 
     <data>
 
         <variable
             name="vm"
-            type="com.lenta.bp7.features.shelf_list.ShelfListViewModel"/>
+            type="com.lenta.bp7.features.shelf_list.ShelfListViewModel" />
 
         <variable
             name="rvConfig"
-            type="com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig"/>
+            type="com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig" />
 
     </data>
 
@@ -27,21 +27,15 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:paddingTop="8dp"
-                android:paddingBottom="8dp">
+            <LinearLayout style="@style/FirstRowStyle">
 
                 <LinearLayout
                     style="@style/LinearCellStyle"
                     android:layout_weight="@integer/size_column_1">
 
                     <TextView
-                        style="@style/ColumnTitleStyle"
-                        android:text="@string/column_title_item_number"/>
+                        style="@style/FirstRowTextStyle"
+                        android:text="@string/column_title_item_number" />
 
                 </LinearLayout>
 
@@ -50,8 +44,8 @@
                     android:layout_weight="@integer/size_column_2">
 
                     <TextView
-                        style="@style/ColumnTitleStyle"
-                        android:text="@string/column_title_number_shelf_time"/>
+                        style="@style/FirstRowTextStyle"
+                        android:text="@string/column_title_number_shelf_time" />
 
                 </LinearLayout>
 
@@ -60,8 +54,8 @@
                     android:layout_weight="@integer/size_column_3">
 
                     <TextView
-                        style="@style/ColumnTitleStyle"
-                        android:text="@string/column_title_status"/>
+                        style="@style/FirstRowTextStyle"
+                        android:text="@string/column_title_status" />
 
                 </LinearLayout>
 
@@ -70,15 +64,14 @@
                     android:layout_weight="@integer/size_column_4">
 
                     <TextView
-                        style="@style/ColumnTitleStyle"
-                        android:text="@string/column_title_goods"/>
+                        style="@style/FirstRowTextStyle"
+                        android:text="@string/column_title_goods" />
 
                 </LinearLayout>
 
             </LinearLayout>
 
-            <View
-                style="@style/HorizontalDivider"/>
+            <View style="@style/HorizontalDivider" />
 
         </LinearLayout>
 
@@ -90,25 +83,29 @@
             android:layout_weight="1"
             app:items="@{vm.shelves}"
             app:rv_config="@{rvConfig}"
-            tools:listitem="@layout/item_shelf"/>
+            tools:listitem="@layout/item_shelf" />
 
         <!-- Поле ввода номера полки -->
-        <EditText
-            android:id="@+id/et_shelf_number"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="8dp"
-            android:digits="0123456789"
-            android:drawableEnd="@drawable/ic_add_white_24dp"
-            android:enabled="@{vm.numberFieldEnabled}"
-            android:hint="@string/enter_shelf_number"
-            android:imeOptions="actionGo"
-            android:inputType="number"
-            android:maxLength="12"
-            android:text="@={vm.shelfNumber}"
-            app:onOkInSoftKeyboard="@{vm}"
-            app:requestFocus="@{vm.requestFocusToShelfNumber}"
-            tools:ignore="Autofill"/>
+        <LinearLayout style="@style/EnterNumberFieldLayout">
+
+            <EditText
+                android:id="@+id/et_shelf_number"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:digits="0123456789"
+                android:drawableEnd="@drawable/ic_add_white_16dp"
+                android:enabled="@{vm.numberFieldEnabled}"
+                android:hint="@string/enter_shelf_number"
+                android:imeOptions="actionGo"
+                android:inputType="number"
+                android:maxLength="12"
+                android:text="@={vm.shelfNumber}"
+                app:onOkInSoftKeyboard="@{vm}"
+                app:requestFocus="@{vm.requestFocusToShelfNumber}"
+                tools:ignore="Autofill" />
+
+        </LinearLayout>
 
     </LinearLayout>
 

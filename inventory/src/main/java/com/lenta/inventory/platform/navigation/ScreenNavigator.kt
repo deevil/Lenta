@@ -26,7 +26,6 @@ import com.lenta.inventory.features.taken_to_work.TakenToWorkFragment
 import com.lenta.inventory.features.task_list.TaskListFragment
 import com.lenta.inventory.models.RecountType
 import com.lenta.inventory.models.StorePlaceLockMode
-import com.lenta.inventory.models.task.StorePlaceProcessing
 import com.lenta.inventory.models.task.TaskProductInfo
 import com.lenta.inventory.progress.IInventoryProgressUseCaseInformator
 import com.lenta.inventory.requests.network.TasksItem
@@ -196,7 +195,7 @@ class ScreenNavigator(
     override fun openAlertDoubleScanStamp() {
         openAlertScreen(
                 message = context.getString(R.string.alert_double_scan_stamp),
-                iconRes = R.drawable.ic_info_pink,
+                iconRes = R.drawable.ic_info_pink_80dp,
                 textColor = ContextCompat.getColor(context, com.lenta.shared.R.color.color_text_dialogWarning),
                 pageNumber = "98"
         )
@@ -351,7 +350,7 @@ class ScreenNavigator(
             getFragmentStack()?.push(
                     AlertFragment.create(
                             message = message,
-                            iconRes = R.drawable.ic_info_pink,
+                            iconRes = R.drawable.ic_info_pink_80dp,
                             textColor = ContextCompat.getColor(context, com.lenta.shared.R.color.color_text_dialogWarning),
                             pageNumber = "98",
                             isVisibleLeftButton = false,
@@ -364,7 +363,7 @@ class ScreenNavigator(
 
     override fun openAlertInfoScreen(message: String) {
         openAlertScreen(message = message,
-                iconRes = R.drawable.ic_info_pink,
+                iconRes = R.drawable.ic_info_pink_80dp,
                 textColor = ContextCompat.getColor(context, R.color.color_text_dialogWarning),
                 pageNumber = "98"
         )
@@ -385,7 +384,7 @@ class ScreenNavigator(
     override fun openAlertDoubleScanBox() {
         openAlertScreen(
                 message = context.getString(R.string.alert_double_scan_box),
-                iconRes = R.drawable.ic_info_pink,
+                iconRes = R.drawable.ic_info_pink_80dp,
                 textColor = ContextCompat.getColor(context, com.lenta.shared.R.color.color_text_dialogWarning),
                 pageNumber = "98"
         )

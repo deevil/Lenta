@@ -46,7 +46,6 @@
                     android:id="@+id/tv_good_number_name"
                     style="@style/CellTextStyle"
                     android:layout_width="0dp"
-                    android:layout_marginStart="8dp"
                     android:layout_weight="1"
                     android:maxLines="2"
                     android:text="@{vm.name}"
@@ -57,7 +56,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:padding="5dp"
-                    android:src="@drawable/ic_keyboard_arrow_right_white_24dp" />
+                    android:src="@drawable/ic_keyboard_arrow_right_white_16dp" />
 
             </LinearLayout>
 

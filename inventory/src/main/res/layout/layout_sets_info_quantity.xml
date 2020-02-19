@@ -268,7 +268,7 @@
             android:background="?selectableItemBackground"
             android:onClick="@{(v) -> vm.screenNavigator.openEanInfoScreen()}"
             android:padding="8dp"
-            android:src="@drawable/ic_scan_barcode_48dp"
+            android:src="@drawable/ic_scan_barcode_32dp"
             app:layout_constraintBottom_toBottomOf="@+id/tv_matrix"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@+id/tv_matrix" />

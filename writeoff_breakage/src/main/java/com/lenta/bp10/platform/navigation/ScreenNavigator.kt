@@ -231,7 +231,7 @@ class ScreenNavigator(
     override fun openAlertDoubleScanStamp() {
         openAlertScreen(
                 message = context.getString(R.string.alert_double_scan_stamp),
-                iconRes = R.drawable.ic_info_pink,
+                iconRes = R.drawable.ic_info_pink_80dp,
                 textColor = ContextCompat.getColor(context, com.lenta.shared.R.color.color_text_dialogWarning),
                 pageNumber = "97"
         )
@@ -266,7 +266,7 @@ class ScreenNavigator(
     override fun openFailDetectComponentForStampScreen() {
         openAlertScreen(
                 message = context.getString(R.string.fail_detect_product_for_stamp),
-                iconRes = R.drawable.ic_info_pink,
+                iconRes = R.drawable.ic_info_pink_80dp,
                 textColor = ContextCompat.getColor(context, com.lenta.shared.R.color.color_text_dialogWarning),
                 pageNumber = "97"
         )

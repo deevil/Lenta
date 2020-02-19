@@ -1,11 +1,9 @@
 <resources>
+
     <!-- Пропорции колонок для списков -->
     <integer name="size_column_1">12</integer>
     <integer name="size_column_2">40</integer>
     <integer name="size_column_3">15</integer>
     <integer name="size_column_4">15</integer>
-
-    <dimen name="list_title_height">25dp</dimen>
-    <dimen name="list_row_height">64dp</dimen>
 
 </resources>

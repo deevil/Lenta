@@ -37,7 +37,7 @@ class TransportMarriageGoodsInfoFragment : CoreFragment<FragmentTransportMarriag
     override fun getViewModel(): TransportMarriageGoodsInfoViewModel {
         provideViewModel(TransportMarriageGoodsInfoViewModel::class.java).let {vm ->
             getAppComponent()?.inject(vm)
-            vm.transportMarriageInfo.value = this.transportMarriageInfo
+            vm.transportMarriageInfoCurrent.value = this.transportMarriageInfo
             return vm
         }
     }

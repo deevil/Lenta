@@ -27,22 +27,15 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:paddingTop="8dp"
-                android:paddingBottom="8dp">
+            <LinearLayout style="@style/FirstRowStyle">
 
                 <LinearLayout
                     style="@style/LinearCellStyle"
                     android:layout_weight="@integer/sku_arrived_remain_column_1">
 
                     <TextView
-                        style="@style/ColumnTitleStyle"
+                        style="@style/FirstRowTextStyle"
                         android:layout_width="wrap_content"
-                        android:layout_marginStart="0dp"
                         android:text="@string/number" />
 
                 </LinearLayout>
@@ -52,7 +45,7 @@
                     android:layout_weight="@integer/sku_arrived_remain_column_2">
 
                     <TextView
-                        style="@style/ColumnTitleStyle"
+                        style="@style/FirstRowTextStyle"
                         android:text="@string/sku" />
 
                 </LinearLayout>
@@ -62,7 +55,7 @@
                     android:layout_weight="@integer/sku_arrived_remain_column_3">
 
                     <TextView
-                        style="@style/ColumnTitleStyle"
+                        style="@style/FirstRowTextStyle"
                         android:text="@string/arrived" />
 
                 </LinearLayout>

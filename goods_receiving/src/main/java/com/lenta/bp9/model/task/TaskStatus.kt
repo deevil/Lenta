@@ -33,7 +33,7 @@ enum class TaskStatus(val taskStatusString: String) {
     /** Отклонено ГИС*/
     RejectedByGIS("16"), //Отклонено ГИС
     /** Выбраковка*/
-    Breakage("17"), //Выбраковка
+    Breakage("17"), //Выбраковка (Заявление брака ТР)
     /** Заявление брака РЦ*/
     BreakageDeclaringRC("18"), //Заявление брака РЦ
     /** Убытие*/
