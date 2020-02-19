@@ -199,6 +199,10 @@ data class ButtonDecorationInfo(
             ButtonDecorationInfo(R.drawable.ic_close_white_24dp, R.string.cancel)
         }
 
+        val cancelBack: ButtonDecorationInfo by lazy {
+            ButtonDecorationInfo(R.drawable.ic_arrow_back_white_24dp, R.string.cancel)
+        }
+
         val framed: ButtonDecorationInfo by lazy {
             ButtonDecorationInfo(R.drawable.ic_framed_yes_24dp, R.string.framed)
         }
@@ -352,7 +356,7 @@ data class ButtonDecorationInfo(
         }
 
         val proceed: ButtonDecorationInfo by lazy {
-            ButtonDecorationInfo(R.drawable.ic_done_white_24dp, R.string.inStock)
+            ButtonDecorationInfo(R.drawable.ic_done_white_24dp, R.string.proceed)
         }
 
     }

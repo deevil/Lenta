@@ -4,7 +4,7 @@
     // Информационные сообщения
     <string name="unsent_data_found_on_device">На устройстве обнаружены непереданные данные. Перейти к данным?</string>
     <string name="twelve_characters_entered">Введено 12 знаков. Какой код вы ввели?</string>
-    <string name="unsaved_data_will_be_lost">Несохраненные данные будут утерены. Продолжить?</string>
+    <string name="unsaved_data_will_be_lost">Несохраненные данные будут утеряны. Продолжить?</string>
     <string name="make_task_counted_and_close">Перевести задание в статус \"Посчитано\" и закрыть его для редактирования?</string>
     <string name="task_unsent_data_will_be_deleted">По заданию \"%1$s\" будут удалены все непереданные данные</string>
     <string name="scanned_mark_belongs_to_product">Отсканированная марка принадлежит товару %1$s</string>
@@ -12,6 +12,11 @@
     <string name="raw_goods_remained_in_task">В задании остались необработанные товары. Сохранить в статусе "Опубликовано" и оставить доступным для продолжения пересчета?</string>
     <string name="box_was_last_scanned">Последней была отсканирована коробка. Будут удалены все добавленные марки этой коробки.</string>
     <string name="do_you_really_want_set_zero_quantity">Вы действительно хотите установить 0 в поле количество для (%1$d) товаров из списка?</string>
+    <string name="product_does_not_match_task_settings">Товар не соответствует настройкам задания. Ошибка в ГИС-контроле.</string>
+    <string name="scanned_mark_is_not_on_balance_in_current_store">Отсканированная марка не числится на остатках текущего ТК. Отложите марку и проведите расследование. Записать марку в проблемные?</string>
+    <string name="scanned_box_is_not_whole">Отсканированный короб не является целым. Добавление марок по номеру короба невозможно. Необходимо отсканировать каждую АМ.</string>
+    <string name="marks_in_box_are_not_on_balance_in_current_store">В коробке присутствуют марки, которые не числятся на остатках текущего ТК. Добавление марок по номеру короба невозможно. Необходимо отсканировать каждую АМ.</string>
+
 
 
 </resources>

@@ -177,11 +177,52 @@ class ScreenNavigator @Inject constructor(
                     iconRes = R.drawable.ic_question_80dp,
                     codeConfirmForRight = backFragmentResultHelper.setFuncForResult(yesCallback),
                     rightButtonDecorationInfo = ButtonDecorationInfo.yes
-            )
-            )
+            ))
         }
     }
 
+    override fun showProductDoesNotMatchTaskSettings() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    pageNumber = "73",
+                    message = context.getString(R.string.product_does_not_match_task_settings),
+                    iconRes = R.drawable.is_warning_red_80dp
+            ))
+        }
+    }
+
+    override fun openScannedMarkIsNotOnBalanceInCurrentStore(proceedCallback: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    pageNumber = "84",
+                    message = context.getString(R.string.scanned_mark_is_not_on_balance_in_current_store),
+                    iconRes = R.drawable.is_warning_red_80dp,
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(proceedCallback),
+                    leftButtonDecorationInfo = ButtonDecorationInfo.cancelBack,
+                    rightButtonDecorationInfo = ButtonDecorationInfo.proceed
+            ))
+        }
+    }
+
+    override fun showScannedBoxIsNotWhole() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    pageNumber = "89",
+                    message = context.getString(R.string.scanned_box_is_not_whole),
+                    iconRes = R.drawable.is_warning_red_80dp
+            ))
+        }
+    }
+
+    override fun showMarksInBoxAreNotOnBalanceInCurrentStore() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    pageNumber = "91",
+                    message = context.getString(R.string.marks_in_box_are_not_on_balance_in_current_store),
+                    iconRes = R.drawable.is_warning_red_80dp
+            ))
+        }
+    }
 
 
 
@@ -204,4 +245,8 @@ interface IScreenNavigator : ICoreNavigator {
     fun showRawGoodsRemainedInTask(yesCallback: () -> Unit)
     fun showBoxWasLastScanned(afterShowCallback: () -> Unit)
     fun showDoYouReallyWantSetZeroQuantity(yesCallback: () -> Unit, counted: Int)
+    fun showProductDoesNotMatchTaskSettings()
+    fun openScannedMarkIsNotOnBalanceInCurrentStore(proceedCallback: () -> Unit)
+    fun showScannedBoxIsNotWhole()
+    fun showMarksInBoxAreNotOnBalanceInCurrentStore()
 }
