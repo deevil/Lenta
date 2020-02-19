@@ -5,5 +5,13 @@
     <string name="unsent_data_found_on_device">На устройстве обнаружены непереданные данные. Перейти к данным?</string>
     <string name="twelve_characters_entered">Введено 12 знаков. Какой код вы ввели?</string>
     <string name="unsaved_data_will_be_lost">Несохраненные данные будут утерены. Продолжить?</string>
+    <string name="make_task_counted_and_close">Перевести задание в статус \"Посчитано\" и закрыть его для редактирования?</string>
+    <string name="task_unsent_data_will_be_deleted">По заданию \"%1$s\" будут удалены все непереданные данные</string>
+    <string name="scanned_mark_belongs_to_product">Отсканированная марка принадлежит товару %1$s</string>
+    <string name="for_excise_good_need_scan_first_mark">Для акцизного алкогольного товара необходимо отсканировать первую акцизную марку. По ней будет определена категория \"Марочно\", с помарочным сканированием или \"Партионно\", с ручным вводом количеств.</string>
+    <string name="raw_goods_remained_in_task">В задании остались необработанные товары. Сохранить в статусе "Опубликовано" и оставить доступным для продолжения пересчета?</string>
+    <string name="box_was_last_scanned">Последней была отсканирована коробка. Будут удалены все добавленные марки этой коробки.</string>
+    <string name="do_you_really_want_set_zero_quantity">Вы действительно хотите установить 0 в поле количество для (%1$d) товаров из списка?</string>
+
 
 </resources>
