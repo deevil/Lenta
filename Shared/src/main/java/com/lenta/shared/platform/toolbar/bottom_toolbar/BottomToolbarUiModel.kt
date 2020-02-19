@@ -67,6 +67,10 @@ data class ButtonDecorationInfo(
 ) {
     companion object {
 
+        val empty: ButtonDecorationInfo by lazy {
+            ButtonDecorationInfo(0, 0)
+        }
+
         val filter: ButtonDecorationInfo by lazy {
             ButtonDecorationInfo(R.drawable.ic_search, R.string.filter)
         }
@@ -201,10 +205,6 @@ data class ButtonDecorationInfo(
 
         val not_framed: ButtonDecorationInfo by lazy {
             ButtonDecorationInfo(R.drawable.ic_framed_no_24dp, R.string.not_framed)
-        }
-
-        val empty: ButtonDecorationInfo by lazy {
-            ButtonDecorationInfo(0, 0)
         }
 
         val skip: ButtonDecorationInfo by lazy {
@@ -348,6 +348,10 @@ data class ButtonDecorationInfo(
         }
 
         val inStock: ButtonDecorationInfo by lazy {
+            ButtonDecorationInfo(R.drawable.ic_done_white_24dp, R.string.inStock)
+        }
+
+        val proceed: ButtonDecorationInfo by lazy {
             ButtonDecorationInfo(R.drawable.ic_done_white_24dp, R.string.inStock)
         }
 
