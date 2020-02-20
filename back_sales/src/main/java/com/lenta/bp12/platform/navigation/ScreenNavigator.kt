@@ -224,7 +224,25 @@ class ScreenNavigator @Inject constructor(
         }
     }
 
+    override fun showFinishProcessingBox() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    pageNumber = "115",
+                    message = context.getString(R.string.finish_processing_box),
+                    iconRes = R.drawable.is_warning_red_80dp
+            ))
+        }
+    }
 
+    override fun showFinishProcessingCurrentBox() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    pageNumber = "117",
+                    message = context.getString(R.string.finish_processing_current_box),
+                    iconRes = R.drawable.is_warning_red_80dp
+            ))
+        }
+    }
 
 }
 
@@ -249,4 +267,6 @@ interface IScreenNavigator : ICoreNavigator {
     fun openScannedMarkIsNotOnBalanceInCurrentStore(proceedCallback: () -> Unit)
     fun showScannedBoxIsNotWhole()
     fun showMarksInBoxAreNotOnBalanceInCurrentStore()
+    fun showFinishProcessingBox()
+    fun showFinishProcessingCurrentBox()
 }
