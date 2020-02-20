@@ -22,7 +22,7 @@ class FastResourcesMultiRequest @Inject constructor(val hyperHive: HyperHive) : 
     override fun getMapOfRequests(): Map<String, RequestBuilder<out CustomParameter, out ScalarParameter<Any>>> {
         return mapOf(
                 // Быстрые
-                ZmpUtz14V001.NAME_RESOURCE to ZmpUtz14V001(hyperHive).newRequest(), // ZMP_UTZ_14_V001 Настройки
+                ZmpUtz14V001.NAME_RESOURCE to ZmpUtz14V001(hyperHive).newRequest()/*, // ZMP_UTZ_14_V001 Настройки
                 ZmpUtz17V001.NAME_RESOURCE to ZmpUtz17V001(hyperHive).newRequest(), // ZMP_UTZ_17_V001 Список значений словаря данных УТЗ ТСД
                 ZmpUtz26V001.NAME_RESOURCE to ZmpUtz26V001(hyperHive).newRequest(), // ZMP_UTZ_26_V001 Справочник принтеров
                 ZmpUtz38V001.NAME_RESOURCE to ZmpUtz38V001(hyperHive).newRequest(), // ZMP_UTZ_38_V001 Справочник пиктограмм
@@ -37,7 +37,7 @@ class FastResourcesMultiRequest @Inject constructor(val hyperHive: HyperHive) : 
                 ZmpUtz22V001.NAME_RESOURCE to ZmpUtz22V001(hyperHive).newRequest(), // ZMP_UTZ_22_V001 Справочник алкогольных товаров
                 ZmpUtz25V001.NAME_RESOURCE to ZmpUtz25V001(hyperHive).newRequest(), // ZMP_UTZ_25_V001 Справочник штрих-кодов единиц измерения товаров
                 ZmpUtz30V001.NAME_RESOURCE to ZmpUtz30V001(hyperHive).newRequest(), // ZMP_UTZ_30_V001 Справочник товаров
-                ZmpUtz43V001.NAME_RESOURCE to ZmpUtz43V001(hyperHive).newRequest() // ZMP_UTZ_43_V001 Справочник наименования производителей
+                ZmpUtz43V001.NAME_RESOURCE to ZmpUtz43V001(hyperHive).newRequest() // ZMP_UTZ_43_V001 Справочник наименования производителей*/
         )
     }
 

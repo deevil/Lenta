@@ -18,6 +18,8 @@
     <string name="marks_in_box_are_not_on_balance_in_current_store">В коробке присутствуют марки, которые не числятся на остатках текущего ТК. Добавление марок по номеру короба невозможно. Необходимо отсканировать каждую АМ.</string>
     <string name="finish_processing_box">Отсканированный товар партионный, завершите обработку коробки с марочным алкоголем, после чего повторите сканирование марки.</string>
     <string name="finish_processing_current_box">Завершите обработку текущей коробки с марочным алкоголем, после чего повторите сканирование номера коробки.</string>
+    <string name="create_task">Создать задание</string>
+    <string name="work_with_tasks">Работа с заданиями</string>
 
 
 </resources>

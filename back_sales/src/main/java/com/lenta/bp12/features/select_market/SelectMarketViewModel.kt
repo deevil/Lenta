@@ -36,8 +36,6 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
     lateinit var serverTimeRequest: ServerTimeRequest
     @Inject
     lateinit var printerManager: PrinterManager
-    @Inject
-    lateinit var gson: Gson
 
 
     private val markets: MutableLiveData<List<MarketUi>> = MutableLiveData()
@@ -53,6 +51,8 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
             markets.value?.getOrNull(position)?.address
         }
     }
+
+    // -----------------------------
 
     init {
         viewModelScope.launch {
@@ -80,6 +80,8 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
         }
     }
 
+    // -----------------------------
+
     fun onClickNext() {
         viewModelScope.launch {
             markets.value?.getOrNull(selectedPosition.value ?: -1)?.number?.let { tkNumber ->
@@ -104,7 +106,7 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
         navigator.hideProgress()
         timeMonitor.setServerTime(time = serverTime.time, date = serverTime.date)
 
-        navigator.openMainMenuScreen()
+        navigator.openEnterEmployeeNumberScreen()
     }
 
     override fun onClickPosition(position: Int) {

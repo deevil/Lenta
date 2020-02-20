@@ -3,6 +3,7 @@ package com.lenta.bp12.platform.navigation
 import android.content.Context
 import com.lenta.bp12.R
 import com.lenta.bp12.features.auth.AuthFragment
+import com.lenta.bp12.features.enter_employee_number.EnterEmployeeNumberFragment
 import com.lenta.bp12.features.loading.fast.FastDataLoadingFragment
 import com.lenta.bp12.features.main_menu.MainMenuFragment
 import com.lenta.bp12.features.select_market.SelectMarketFragment
@@ -50,6 +51,12 @@ class ScreenNavigator @Inject constructor(
     override fun openSelectMarketScreen() {
         runOrPostpone {
             getFragmentStack()?.push(SelectMarketFragment())
+        }
+    }
+
+    override fun openEnterEmployeeNumberScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(EnterEmployeeNumberFragment())
         }
     }
 
@@ -251,6 +258,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openLoginScreen()
     fun openFastDataLoadingScreen()
     fun openSelectMarketScreen()
+    fun openEnterEmployeeNumberScreen()
     fun openMainMenuScreen()
 
     fun showUnsentDataFoundOnDevice(deleteCallback: () -> Unit, goOverCallback: () -> Unit)

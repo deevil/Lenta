@@ -7,6 +7,7 @@ import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.platform.resource.IResourceManager
 import com.lenta.bp12.repository.IGeneralRepository
 import com.lenta.bp12.features.auth.AuthViewModel
+import com.lenta.bp12.features.enter_employee_number.EnterEmployeeNumberViewModel
 import com.lenta.bp12.features.loading.fast.FastLoadingViewModel
 import com.lenta.bp12.features.main_menu.MainMenuViewModel
 import com.lenta.bp12.features.select_market.SelectMarketViewModel
@@ -27,8 +28,9 @@ interface AppComponent : CoreComponent {
 
     fun inject(it: ExceptionHandler)
     fun inject(it: AuthViewModel)
-    fun inject(it: FastLoadingViewModel)
-    fun inject(it: MainMenuViewModel)
     fun inject(it: SelectMarketViewModel)
+    fun inject(it: FastLoadingViewModel)
+    fun inject(it: EnterEmployeeNumberViewModel)
+    fun inject(it: MainMenuViewModel)
 
 }
