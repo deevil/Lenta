@@ -19,7 +19,7 @@ class GeneralRepository @Inject constructor(
 
     override suspend fun getAllowedAppVersion(): String? {
         return withContext(Dispatchers.IO) {
-            return@withContext settings.getAllowedProAppVersion()
+            return@withContext settings.getAllowedBksAppVersion()
         }
     }
 
