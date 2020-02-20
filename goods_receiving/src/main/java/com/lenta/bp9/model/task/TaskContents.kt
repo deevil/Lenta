@@ -105,7 +105,8 @@ class TaskContents
                     isVet = it.isVet == "X",
                     numberBoxesControl = it.quantityBoxesControl,
                     numberStampsControl = it.quantityStampsControl,
-                    processingUnit = it.processingUnit ?: ""
+                    processingUnit = it.processingUnit ?: "",
+                    isGoodsAddedAsSurplus = false
             )
         }
     }

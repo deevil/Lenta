@@ -3,14 +3,19 @@ package com.lenta.bp9.features.goods_list
 import android.content.Context
 import com.lenta.bp9.model.task.IReceivingTaskManager
 import com.lenta.bp9.model.task.TaskProductInfo
+import com.lenta.bp9.model.task.TaskType
 import com.lenta.bp9.platform.navigation.IScreenNavigator
+import com.lenta.bp9.platform.requestCodeAddGoodsSurplus
 import com.lenta.bp9.platform.requestCodeTypeBarCode
 import com.lenta.bp9.platform.requestCodeTypeSap
+import com.lenta.bp9.requests.network.ZmpUtzGrz31V001NetRequest
+import com.lenta.bp9.requests.network.ZmpUtzGrz31V001Params
+import com.lenta.bp9.requests.network.ZmpUtzGrz31V001Result
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
-import com.lenta.shared.fmp.resources.fast.ZmpUtz14V001
-import com.lenta.shared.models.core.GisControl
-import com.lenta.shared.models.core.ProductType
+import com.lenta.shared.fmp.resources.dao_ext.getUomInfo
+import com.lenta.shared.fmp.resources.fast.ZmpUtz07V001
+import com.lenta.shared.models.core.*
 import com.lenta.shared.requests.combined.scan_info.ScanInfoRequest
 import com.lenta.shared.requests.combined.scan_info.ScanInfoRequestParams
 import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
@@ -26,7 +31,8 @@ class SearchProductDelegate @Inject constructor(
         private val scanInfoRequest: ScanInfoRequest,
         private val taskManager: IReceivingTaskManager,
         private val sessionInfo: ISessionInfo,
-        private val context: Context
+        private val context: Context,
+        private val zmpUtzGrz31V001NetRequest: ZmpUtzGrz31V001NetRequest
 ) {
 
     private var scanInfoResult: ScanInfoResult? = null
@@ -41,6 +47,10 @@ class SearchProductDelegate @Inject constructor(
 
     private var codeWith12Digits: String? = null
 
+    private val zmpUtz07V001: ZmpUtz07V001 by lazy {
+        ZmpUtz07V001(hyperHive)
+    }
+
     fun copy(): SearchProductDelegate {
         val searchProductDelegate = SearchProductDelegate(
                 hyperHive,
@@ -48,7 +58,8 @@ class SearchProductDelegate @Inject constructor(
                 scanInfoRequest,
                 taskManager,
                 sessionInfo,
-                context
+                context,
+                zmpUtzGrz31V001NetRequest
         )
         searchProductDelegate.init(viewModelScope, scanResultHandler)
         return searchProductDelegate
@@ -105,9 +116,71 @@ class SearchProductDelegate @Inject constructor(
                 codeWith12Digits = null
                 true
             }
+            requestCodeAddGoodsSurplus -> {
+                addGoodsSurplus()
+                true
+            }
             else -> false
         }
 
+    }
+
+    private fun addGoodsSurplus() {
+        viewModelScope().launch {
+            screenNavigator.showProgress(scanInfoRequest)
+            taskManager.getReceivingTask()?.let { task ->
+                val params = ZmpUtzGrz31V001Params(
+                        taskNumber = task.taskHeader.taskNumber,
+                        materialNumber = scanInfoResult?.productInfo?.materialNumber ?: "",
+                        boxNumber = "",
+                        stampCode = ""
+                )
+                zmpUtzGrz31V001NetRequest(params).either(::handleFailure, ::handleSuccessAddGoodsSurplus)
+            }
+            screenNavigator.hideProgress()
+
+        }
+    }
+
+    private fun handleSuccessAddGoodsSurplus(result: ZmpUtzGrz31V001Result) {
+        Logg.d { "AddGoodsSurplus ${result}" }
+        val purchaseOrderUnits = zmpUtz07V001.getUomInfo(result.productSurplusDataPGE.purchaseOrderUnits)
+        val goodsSurplus = TaskProductInfo(
+                materialNumber = result.productSurplusDataPGE.materialNumber,
+                description = result.productSurplusDataPGE.materialName,
+                uom = scanInfoResult?.productInfo?.uom ?: Uom(code = "", name = ""),
+                type = getProductType(isAlco = result.productSurplusDataPGE.isAlco == "X", isExcise = result.productSurplusDataPGE.isExc == "X"),
+                isSet = scanInfoResult?.productInfo?.isSet ?: false,
+                sectionId = scanInfoResult?.productInfo?.sectionId ?: "",
+                matrixType = scanInfoResult?.productInfo?.matrixType ?: MatrixType.Unknown,
+                materialType = scanInfoResult?.productInfo?.materialType ?: "",
+                origQuantity = "0.0",
+                orderQuantity = "0.0",
+                quantityCapitalized = "0.0",
+                purchaseOrderUnits = Uom(code = purchaseOrderUnits?.uom ?: "", name = purchaseOrderUnits?.name ?: ""),
+                overdToleranceLimit = "0.0",
+                underdToleranceLimit = "0.0",
+                upLimitCondAmount = "",
+                quantityInvest = result.productSurplusDataPGE.quantityInvestments,
+                roundingSurplus = "",
+                roundingShortages = "",
+                isNoEAN = false,
+                isWithoutRecount = false,
+                isUFF = false,
+                isNotEdit = false,
+                generalShelfLife = "",
+                remainingShelfLife = "",
+                isRus = result.productSurplusDataPGE.isRus == "X",
+                isBoxFl = false,
+                isMarkFl = false,
+                isVet = result.productSurplusDataPGE.isVet == "X",
+                numberBoxesControl = "",
+                numberStampsControl = "",
+                processingUnit = "",
+                isGoodsAddedAsSurplus = true
+        )
+        taskManager.getReceivingTask()!!.taskRepository.getProducts().addProduct(goodsSurplus)
+        openProductScreen(taskProductInfo = goodsSurplus)
     }
 
     private fun searchProduct() {
@@ -115,7 +188,11 @@ class SearchProductDelegate @Inject constructor(
         scanInfoResult?.let { infoResult ->
             val taskProductInfo = taskManager.getReceivingTask()!!.taskRepository.getProducts().findProduct(infoResult.productInfo.materialNumber)
             if (taskProductInfo == null) {
-                screenNavigator.openAlertGoodsNotInOrderScreen()
+                if (taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.RecalculationCargoUnit) {
+                    screenNavigator.openAddGoodsSurplusDialog(requestCodeAddGoodsSurplus) //эта проверка только для ПГЕ, карточки трелло https://trello.com/c/8P4mPlGN и https://trello.com/c/im9rJqrU
+                } else {
+                    screenNavigator.openAlertGoodsNotInOrderScreen()
+                }
                 return
             }
             scanResultHandler?.let { handle ->
@@ -138,7 +215,7 @@ class SearchProductDelegate @Inject constructor(
                 if (taskProductInfo.isVet) {
                     screenNavigator.openGoodsMercuryInfoScreen(taskProductInfo, isDiscrepancy)
                 } else {
-                    screenNavigator.openGoodsInfoScreen(taskProductInfo, isDiscrepancy, initialCount)
+                    screenNavigator.openGoodsInfoScreen(productInfo = taskProductInfo, isDiscrepancy = isDiscrepancy, initialCount = initialCount)
                 }
             }
             ProductType.ExciseAlcohol -> {

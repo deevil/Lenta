@@ -71,7 +71,11 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
 
     private val qualityInfo: MutableLiveData<List<QualityInfo>> = MutableLiveData()
     private val reasonRejectionInfo: MutableLiveData<List<ReasonRejectionInfo>> = MutableLiveData()
+    val enteredProcessingUnitNumber: MutableLiveData<String> = MutableLiveData()
 
+    val isGoodsAddedAsSurplus: MutableLiveData<Boolean> by lazy {
+        MutableLiveData(productInfo.value?.isGoodsAddedAsSurplus == true )
+    }
     val isTaskPGE: MutableLiveData<Boolean> by lazy {
         if (taskManager.getReceivingTask()!!.taskHeader.taskType == TaskType.RecalculationCargoUnit) MutableLiveData(true) else MutableLiveData(false)
     }
@@ -154,20 +158,32 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
         }
     }
 
-    val enabledApplyButton: MutableLiveData<Boolean> = countValue.map {
-        it!! != 0.0
+    val enabledApplyButton: MutableLiveData<Boolean> = countValue.combineLatest(enteredProcessingUnitNumber).map {
+        if (isTaskPGE.value!! && isGoodsAddedAsSurplus.value!!) {
+            it?.first != 0.0 && it?.second?.length == 18
+        } else {
+            it?.first != 0.0
+        }
     }
 
     init {
         viewModelScope.launch {
             if (taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.RecalculationCargoUnit) {
-                if (isDiscrepancy.value!!) {
-                    suffix.value = uom.value?.name
-                    count.value = taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.getCountProductNotProcessedOfProductPGE(productInfo.value!!).toStringFormatted()
-                    qualityInfo.value = dataBase.getQualityInfoPGEForDiscrepancy()
-                } else {
-                    suffix.value = productInfo.value?.purchaseOrderUnits?.name
-                    qualityInfo.value = dataBase.getQualityInfoPGE()
+                when {
+                    isGoodsAddedAsSurplus.value == true -> {
+                        enteredProcessingUnitNumber.value = productInfo.value?.processingUnit ?: ""
+                        suffix.value = productInfo.value?.purchaseOrderUnits?.name
+                        qualityInfo.value = dataBase.getSurplusInfoForPGE()
+                    }
+                    isDiscrepancy.value!! -> {
+                        suffix.value = uom.value?.name
+                        count.value = taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.getCountProductNotProcessedOfProductPGE(productInfo.value!!).toStringFormatted()
+                        qualityInfo.value = dataBase.getQualityInfoPGEForDiscrepancy()
+                    }
+                    else -> {
+                        suffix.value = productInfo.value?.purchaseOrderUnits?.name
+                        qualityInfo.value = dataBase.getQualityInfoPGE()
+                    }
                 }
             } else {
                 suffix.value = uom.value?.name
@@ -237,6 +253,9 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
             var addNewCount = count.value!!.toDouble()
             if (isEizUnit.value!!) {
                 addNewCount *= productInfo.value?.quantityInvest?.toDouble() ?: 1.0
+            }
+            if (isGoodsAddedAsSurplus.value == true) {
+                processGeneralProductService.setProcessingUnitNumber(enteredProcessingUnitNumber.value!!)
             }
             processGeneralProductService.add(addNewCount.toString(), qualityInfo.value!![spinQualitySelectedPosition.value!!].code)
             clickBtnApply()

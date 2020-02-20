@@ -36,7 +36,8 @@ class TaskProductInfo(materialNumber: String,
                       val isVet: Boolean,
                       val numberBoxesControl: String, //кол-во коробок для контроля
                       val numberStampsControl: String, //кол-во марок для контроля
-                      val processingUnit: String
+                      val processingUnit: String,
+                      val isGoodsAddedAsSurplus: Boolean //товар был добавлен в задание ПГЕ как излишек, трелло https://trello.com/c/im9rJqrU
                         ) : ProductInfo(materialNumber, description, uom, type, isSet, sectionId, matrixType, materialType) {
 
     fun copy(materialNumber: String = this.materialNumber,
@@ -69,7 +70,8 @@ class TaskProductInfo(materialNumber: String,
              isVet: Boolean = this.isVet,
              numberBoxesControl: String = this.numberBoxesControl,
              numberStampsControl: String = this.numberStampsControl,
-             processingUnit: String = this.processingUnit) : TaskProductInfo {
+             processingUnit: String = this.processingUnit,
+             isGoodsAddedAsSurplus: Boolean = this.isGoodsAddedAsSurplus) : TaskProductInfo {
         return TaskProductInfo(
                 materialNumber = materialNumber,
                 description = description,
@@ -101,7 +103,8 @@ class TaskProductInfo(materialNumber: String,
                 isVet = isVet,
                 numberBoxesControl = numberBoxesControl,
                 numberStampsControl = numberStampsControl,
-                processingUnit = processingUnit
+                processingUnit = processingUnit,
+                isGoodsAddedAsSurplus = isGoodsAddedAsSurplus
         )
     }
 }

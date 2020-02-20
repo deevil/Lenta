@@ -243,4 +243,6 @@
     <string name="invalid_barcode_format">Неверный формат ШК</string>
     <string name="accept_txt">Принять</string>
     <string name="amount_entered_greater_pu">Введенное кол-во больше чем ЕО</string>
+    <string name="no_product_in_cargo_unit_dialog">Данного товара нет в ГЕ, вы хотите добавить такой товар как излишек?</string>
+    <string name="enter_processing_unit_number">Введите номер ЕО</string>
 </resources>

@@ -118,6 +118,7 @@ class GoodsDetailsViewModel : CoreViewModel() {
                     }?.reversed()
             )
         }
+        categoriesSelectionsHelper.clearPositions()
     }
 
     private fun updateBatch() {
@@ -139,6 +140,7 @@ class GoodsDetailsViewModel : CoreViewModel() {
                     )
                 }?.reversed()
         )
+        categoriesSelectionsHelper.clearPositions()
     }
 
     fun onClickDelete() {
