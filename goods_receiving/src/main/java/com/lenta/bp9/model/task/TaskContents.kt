@@ -54,7 +54,8 @@ class TaskContents
                 startRecountRestInfo.taskBatches.map {
                     TaskBatchInfo.from(it)
                 },
-                conversionToBatchesDiscrepancies(startRecountRestInfo.taskBatchesDiscrepancies)
+                conversionToBatchesDiscrepancies(startRecountRestInfo.taskBatchesDiscrepancies),
+                conversionToMercuryInfo(startRecountRestInfo.taskMercuryInfoRestData)
         )
     }
 
@@ -65,7 +66,8 @@ class TaskContents
                 startRecountRestInfo.taskBatches.map {
                     TaskBatchInfo.from(it)
                 },
-                conversionToBatchesDiscrepancies(startRecountRestInfo.taskBatchesDiscrepancies)
+                conversionToBatchesDiscrepancies(startRecountRestInfo.taskBatchesDiscrepancies),
+                conversionToMercuryInfo(startRecountRestInfo.taskMercuryInfoRestData)
         )
     }
 
@@ -171,12 +173,14 @@ data class TaskContentsRDSInfo(
         val products: List<TaskProductInfo>,
         val productsDiscrepancies: List<TaskProductDiscrepancies>,
         val taskBatches: List<TaskBatchInfo>,
-        val taskBatchesDiscrepancies: List<TaskBatchesDiscrepancies>
+        val taskBatchesDiscrepancies: List<TaskBatchesDiscrepancies>,
+        val taskMercuryInfo: List<TaskMercuryInfo>
 )
 
 data class TaskContentsPGEInfo(
         val products: List<TaskProductInfo>,
         val productsDiscrepancies: List<TaskProductDiscrepancies>,
         val taskBatches: List<TaskBatchInfo>,
-        val taskBatchesDiscrepancies: List<TaskBatchesDiscrepancies>
+        val taskBatchesDiscrepancies: List<TaskBatchesDiscrepancies>,
+        val taskMercuryInfo: List<TaskMercuryInfo>
 )
