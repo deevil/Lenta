@@ -6,7 +6,6 @@ import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.repository.IRepoInMemoryHolder
 import com.lenta.bp12.request.PermissionsRequestParams
 import com.lenta.bp12.request.UserPermissionsNetRequest
-import com.lenta.shared.utilities.runIfDebug
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.features.login.CoreAuthViewModel
@@ -19,6 +18,7 @@ import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.getBaseAuth
+import com.lenta.shared.utilities.runIfDebug
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
