@@ -83,7 +83,7 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
         viewModelScope.launch {
             screenNavigator.showProgressLoadingData()
             if (taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.RecalculationCargoUnit) {
-                qualityInfo.value = dataBase.getQualityInfoPGEForDiscrepancy()
+                qualityInfo.value = dataBase.getQualityInfoPGE()
             } else {
                 qualityInfo.value = dataBase.getAllReasonRejectionInfo()?.map {
                     QualityInfo(
@@ -129,6 +129,7 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
                                             countRefusalWithUom = "",
                                             quantityNotProcessedWithUom = "? $quantityNotProcessedProduct ${uom.name}",
                                             discrepanciesName = "",
+                                            isNormDiscrepancies = false,
                                             productInfo = productInfo,
                                             productDiscrepancies = null,
                                             batchInfo = null,
@@ -164,11 +165,7 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
                 countProcessed.postValue(
                         task.taskRepository.getProductsDiscrepancies().getProductsDiscrepancies()
                                 .filter {
-                                    if (task.taskHeader.taskType == TaskType.RecalculationCargoUnit) {
-                                        it.typeDiscrepancies != "1" && it.typeDiscrepancies != "2"
-                                    } else {
-                                        it.typeDiscrepancies != "1"
-                                    }
+                                    it.typeDiscrepancies != "1"
                                 }
                                 .mapIndexed { index, productDiscrepancies ->
                                     val productInfo = task.taskRepository.getProducts().findProduct(productDiscrepancies.materialNumber)
@@ -180,12 +177,17 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
                                     val discrepanciesName = qualityInfo.value?.findLast {
                                         it.code == productDiscrepancies.typeDiscrepancies
                                     }?.name
+                                    val isNormDiscrepancies = when (repoInMemoryHolder.taskList.value?.taskListLoadingMode) {
+                                        TaskListLoadingMode.PGE -> productDiscrepancies.typeDiscrepancies == "1" || productDiscrepancies.typeDiscrepancies == "2"
+                                        else -> productDiscrepancies.typeDiscrepancies == "1"
+                                    }
                                     GoodsDiscrepancyItem(
                                             number = index + 1,
                                             name = "${productInfo?.getMaterialLastSix()} ${productInfo?.description}",
-                                            countRefusalWithUom = "- ${productDiscrepancies.numberDiscrepancies.toDouble().toStringFormatted()} ${uom?.name}",
+                                            countRefusalWithUom = "${productDiscrepancies.numberDiscrepancies.toDouble().toStringFormatted()} ${uom?.name}",
                                             quantityNotProcessedWithUom = "",
                                             discrepanciesName = discrepanciesName ?: "",
+                                            isNormDiscrepancies = isNormDiscrepancies,
                                             productInfo = productInfo,
                                             productDiscrepancies = productDiscrepancies,
                                             batchInfo = null,
