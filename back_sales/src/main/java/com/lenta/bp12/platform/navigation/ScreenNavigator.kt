@@ -3,6 +3,7 @@ package com.lenta.bp12.platform.navigation
 import android.content.Context
 import com.lenta.bp12.R
 import com.lenta.bp12.features.auth.AuthFragment
+import com.lenta.bp12.features.basket_good_list.BasketGoodListFragment
 import com.lenta.bp12.features.enter_employee_number.EnterEmployeeNumberFragment
 import com.lenta.bp12.features.loading.fast.FastDataLoadingFragment
 import com.lenta.bp12.features.main_menu.MainMenuFragment
@@ -72,6 +73,12 @@ class ScreenNavigator @Inject constructor(
     override fun openTaskCompositionScreen() {
         runOrPostpone {
             getFragmentStack()?.push(TaskCompositionFragment())
+        }
+    }
+
+    override fun openBasketGoodListScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(BasketGoodListFragment())
         }
     }
 
@@ -271,6 +278,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openMainMenuScreen()
 
     fun openTaskCompositionScreen()
+    fun openBasketGoodListScreen()
 
     fun showUnsentDataFoundOnDevice(deleteCallback: () -> Unit, goOverCallback: () -> Unit)
     fun showTwelveCharactersEntered(sapCallback: () -> Unit, barCallback: () -> Unit)
