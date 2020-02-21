@@ -37,7 +37,8 @@ class TaskProductInfo(materialNumber: String,
                       val numberBoxesControl: String, //кол-во коробок для контроля
                       val numberStampsControl: String, //кол-во марок для контроля
                       val processingUnit: String,
-                      val isGoodsAddedAsSurplus: Boolean //товар был добавлен в задание ПГЕ как излишек, трелло https://trello.com/c/im9rJqrU
+                      val isGoodsAddedAsSurplus: Boolean, //товар был добавлен в задание ПГЕ как излишек, трелло https://trello.com/c/im9rJqrU
+                      val mhdhbDays: Int //значение из 48 справочника для определения срока годности
                         ) : ProductInfo(materialNumber, description, uom, type, isSet, sectionId, matrixType, materialType) {
 
     fun copy(materialNumber: String = this.materialNumber,
@@ -71,7 +72,8 @@ class TaskProductInfo(materialNumber: String,
              numberBoxesControl: String = this.numberBoxesControl,
              numberStampsControl: String = this.numberStampsControl,
              processingUnit: String = this.processingUnit,
-             isGoodsAddedAsSurplus: Boolean = this.isGoodsAddedAsSurplus) : TaskProductInfo {
+             isGoodsAddedAsSurplus: Boolean = this.isGoodsAddedAsSurplus,
+             mhdhbDays: Int = this.mhdhbDays) : TaskProductInfo {
         return TaskProductInfo(
                 materialNumber = materialNumber,
                 description = description,
@@ -104,7 +106,8 @@ class TaskProductInfo(materialNumber: String,
                 numberBoxesControl = numberBoxesControl,
                 numberStampsControl = numberStampsControl,
                 processingUnit = processingUnit,
-                isGoodsAddedAsSurplus = isGoodsAddedAsSurplus
+                isGoodsAddedAsSurplus = isGoodsAddedAsSurplus,
+                mhdhbDays = mhdhbDays
         )
     }
 }

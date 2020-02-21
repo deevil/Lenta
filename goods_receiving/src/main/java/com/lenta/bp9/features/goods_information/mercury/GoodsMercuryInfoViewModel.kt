@@ -99,9 +99,7 @@ class GoodsMercuryInfoViewModel : CoreViewModel(), OnPositionClickListener {
     val isEizUnit: MutableLiveData<Boolean> = isDiscrepancy.map {
         it == false
     }
-    val visibleShelfLife by lazy {
-        productInfo.value?.generalShelfLife?.toDouble()!! > 0.0 && productInfo.value?.remainingShelfLife?.toDouble()!! > 0.0
-    }
+    val visibleShelfLife: MutableLiveData<Boolean> = MutableLiveData()
 
     private val qualityInfo: MutableLiveData<List<QualityInfo>> = MutableLiveData()
     private val reasonRejectionInfo: MutableLiveData<List<ReasonRejectionInfo>> = MutableLiveData()
@@ -217,6 +215,12 @@ class GoodsMercuryInfoViewModel : CoreViewModel(), OnPositionClickListener {
 
             generalShelfLife.value = productInfo.value?.generalShelfLife
             remainingShelfLife.value = productInfo.value?.remainingShelfLife
+
+            val paramGrzUffMhdhb = dataBase.getParamGrzUffMhdhb()?.toInt() ?: 60
+            visibleShelfLife.value = (productInfo.value?.generalShelfLife?.toInt() ?: 0) > 0 ||
+                    (productInfo.value?.remainingShelfLife?.toInt() ?: 0) > 0 ||
+                    ((productInfo.value?.mhdhbDays ?: 0) > 0 && (productInfo.value?.mhdhbDays ?: 0) < paramGrzUffMhdhb )
+
             spinQuality.value = qualityInfo.value?.map {
                 it.name
             }

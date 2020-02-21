@@ -13,8 +13,10 @@ import com.lenta.bp9.requests.network.ZmpUtzGrz31V001Params
 import com.lenta.bp9.requests.network.ZmpUtzGrz31V001Result
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
+import com.lenta.shared.fmp.resources.dao_ext.getProductInfoByMaterial
 import com.lenta.shared.fmp.resources.dao_ext.getUomInfo
 import com.lenta.shared.fmp.resources.fast.ZmpUtz07V001
+import com.lenta.shared.fmp.resources.slow.ZfmpUtz48V001
 import com.lenta.shared.models.core.*
 import com.lenta.shared.requests.combined.scan_info.ScanInfoRequest
 import com.lenta.shared.requests.combined.scan_info.ScanInfoRequestParams
@@ -49,6 +51,10 @@ class SearchProductDelegate @Inject constructor(
 
     private val zmpUtz07V001: ZmpUtz07V001 by lazy {
         ZmpUtz07V001(hyperHive)
+    }
+
+    private val zfmpUtz48V001: ZfmpUtz48V001 by lazy {
+        ZfmpUtz48V001(hyperHive)
     }
 
     fun copy(): SearchProductDelegate {
@@ -145,6 +151,7 @@ class SearchProductDelegate @Inject constructor(
     private fun handleSuccessAddGoodsSurplus(result: ZmpUtzGrz31V001Result) {
         Logg.d { "AddGoodsSurplus ${result}" }
         val purchaseOrderUnits = zmpUtz07V001.getUomInfo(result.productSurplusDataPGE.purchaseOrderUnits)
+        val materialInfo = zfmpUtz48V001.getProductInfoByMaterial(result.productSurplusDataPGE.materialNumber)
         val goodsSurplus = TaskProductInfo(
                 materialNumber = result.productSurplusDataPGE.materialNumber,
                 description = result.productSurplusDataPGE.materialName,
@@ -177,7 +184,8 @@ class SearchProductDelegate @Inject constructor(
                 numberBoxesControl = "",
                 numberStampsControl = "",
                 processingUnit = "",
-                isGoodsAddedAsSurplus = true
+                isGoodsAddedAsSurplus = true,
+                mhdhbDays = materialInfo?.mhdhbDays ?: 0
         )
         taskManager.getReceivingTask()!!.taskRepository.getProducts().addProduct(goodsSurplus)
         openProductScreen(taskProductInfo = goodsSurplus)
