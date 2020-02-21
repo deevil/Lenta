@@ -188,10 +188,9 @@ class GoodsMercuryInfoViewModel : CoreViewModel(), OnPositionClickListener {
             if (taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.RecalculationCargoUnit) {
                 when {
                     isGoodsAddedAsSurplus.value == true -> {
-                        //todo будет доработанно позже, когда аналитик допишет постановку задачи
-                        /**enteredProcessingUnitNumber.value = productInfo.value?.processingUnit ?: ""
+                        /**enteredProcessingUnitNumber.value = productInfo.value?.processingUnit ?: ""*/
                         suffix.value = productInfo.value?.purchaseOrderUnits?.name
-                        qualityInfo.value = dataBase.getSurplusInfoForPGE()*/
+                        qualityInfo.value = dataBase.getSurplusInfoForPGE()
                     }
                     isDiscrepancy.value!! -> {
                         suffix.value = uom.value?.name

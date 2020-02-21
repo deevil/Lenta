@@ -150,7 +150,6 @@ class SearchProductDelegate @Inject constructor(
 
     private fun handleSuccessAddGoodsSurplus(result: ZmpUtzGrz31V001Result) {
         Logg.d { "AddGoodsSurplus ${result}" }
-        val purchaseOrderUnits = zmpUtz07V001.getUomInfo(result.productSurplusDataPGE.purchaseOrderUnits)
         val materialInfo = zfmpUtz48V001.getProductInfoByMaterial(result.productSurplusDataPGE.materialNumber)
         val goodsSurplus = TaskProductInfo(
                 materialNumber = result.productSurplusDataPGE.materialNumber,
@@ -164,25 +163,25 @@ class SearchProductDelegate @Inject constructor(
                 origQuantity = "0.0",
                 orderQuantity = "0.0",
                 quantityCapitalized = "0.0",
-                purchaseOrderUnits = Uom(code = purchaseOrderUnits?.uom ?: "", name = purchaseOrderUnits?.name ?: ""),
+                purchaseOrderUnits = Uom(code = "", name = ""),
                 overdToleranceLimit = "0.0",
                 underdToleranceLimit = "0.0",
-                upLimitCondAmount = "",
+                upLimitCondAmount = "0.0",
                 quantityInvest = result.productSurplusDataPGE.quantityInvestments,
-                roundingSurplus = "",
-                roundingShortages = "",
+                roundingSurplus = "0.0",
+                roundingShortages = "0.0",
                 isNoEAN = false,
                 isWithoutRecount = false,
                 isUFF = false,
                 isNotEdit = false,
-                generalShelfLife = "",
-                remainingShelfLife = "",
+                generalShelfLife = "0",
+                remainingShelfLife = "0",
                 isRus = result.productSurplusDataPGE.isRus == "X",
                 isBoxFl = false,
                 isMarkFl = false,
                 isVet = result.productSurplusDataPGE.isVet == "X",
-                numberBoxesControl = "",
-                numberStampsControl = "",
+                numberBoxesControl = "0",
+                numberStampsControl = "0",
                 processingUnit = "",
                 isGoodsAddedAsSurplus = true,
                 mhdhbDays = materialInfo?.mhdhbDays ?: 0

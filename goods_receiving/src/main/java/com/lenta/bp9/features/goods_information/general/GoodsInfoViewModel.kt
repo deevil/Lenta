@@ -46,9 +46,6 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
             MutableLiveData(productInfo.value?.uom)
         }
     }
-    val tvAccept: MutableLiveData<String> by lazy {
-        MutableLiveData(context.getString(R.string.accept, "${productInfo.value?.purchaseOrderUnits?.name}=${productInfo.value?.quantityInvest?.toDouble().toStringFormatted()} ${productInfo.value?.uom?.name}"))
-    }
     val spinQuality: MutableLiveData<List<String>> = MutableLiveData()
     val spinQualitySelectedPosition: MutableLiveData<Int> = MutableLiveData(0)
     val spinReasonRejection: MutableLiveData<List<String>> = MutableLiveData()
@@ -79,8 +76,16 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
     val isTaskPGE: MutableLiveData<Boolean> by lazy {
         if (taskManager.getReceivingTask()!!.taskHeader.taskType == TaskType.RecalculationCargoUnit) MutableLiveData(true) else MutableLiveData(false)
     }
-    val isEizUnit: MutableLiveData<Boolean> = isDiscrepancy.map {
-        it == false
+    val isEizUnit: MutableLiveData<Boolean> by lazy {
+        MutableLiveData(isDiscrepancy.value == false && isGoodsAddedAsSurplus.value == false)
+    }
+    val tvAccept: MutableLiveData<String> by lazy {
+        if (isTaskPGE.value == true && isGoodsAddedAsSurplus.value == true) {
+            MutableLiveData(context.getString(R.string.accept_txt))
+        } else {
+            MutableLiveData(context.getString(R.string.accept, "${productInfo.value?.purchaseOrderUnits?.name}=${productInfo.value?.quantityInvest?.toDouble().toStringFormatted()} ${productInfo.value?.uom?.name}"))
+        }
+
     }
 
     val count: MutableLiveData<String> = MutableLiveData("0")
@@ -172,7 +177,7 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
                 when {
                     isGoodsAddedAsSurplus.value == true -> {
                         enteredProcessingUnitNumber.value = productInfo.value?.processingUnit ?: ""
-                        suffix.value = productInfo.value?.purchaseOrderUnits?.name
+                        suffix.value = uom.value?.name
                         qualityInfo.value = dataBase.getSurplusInfoForPGE()
                     }
                     isDiscrepancy.value!! -> {
