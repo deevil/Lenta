@@ -46,7 +46,7 @@
 
                     <TextView
                         style="@style/FirstRowTextStyle"
-                        android:text="@string/good" />
+                        android:text="@string/basket" />
 
                 </LinearLayout>
 
@@ -56,7 +56,7 @@
 
                     <TextView
                         style="@style/FirstRowTextStyle"
-                        android:text="@string/quantity" />
+                        android:text="@string/of_goods" />
 
                 </LinearLayout>
 
@@ -66,7 +66,7 @@
 
         </LinearLayout>
 
-        <!-- Список товаров -->
+        <!-- Список категорий -->
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv"
             android:layout_width="match_parent"
@@ -75,38 +75,7 @@
             android:layout_weight="1"
             app:items="@{vm.processing}"
             app:rv_config="@{rvConfig}"
-            tools:listitem="@layout/item_good_quantity" />
-
-        <!-- Ввод номера товара -->
-        <LinearLayout style="@style/EnterNumberFieldLayout">
-
-            <EditText
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_margin="8dp"
-                android:layout_weight="1"
-                android:digits="0123456789"
-                android:drawableEnd="@drawable/ic_search_white_16dp"
-                android:ellipsize="end"
-                android:hint="@string/enter_sap_or_barcode"
-                android:imeOptions="actionGo"
-                android:inputType="number"
-                android:maxLength="20"
-                android:maxLines="1"
-                android:text="@={vm.numberField}"
-                app:onOkInSoftKeyboard="@{vm}"
-                app:requestFocus="@{vm.requestFocusToNumberField}"
-                tools:ignore="Autofill" />
-
-            <ImageButton
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
-                android:background="?selectableItemBackground"
-                android:onClick="@{(v) -> vm.screenNavigator.openEanInfoScreen()}"
-                android:src="@drawable/ic_scan_barcode_32dp" />
-
-        </LinearLayout>
+            tools:listitem="@layout/item_good_details_category" />
 
     </LinearLayout>
 

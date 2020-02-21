@@ -7,7 +7,7 @@
 
         <variable
             name="item"
-            type="com.lenta.bp12.features.task_composition.ItemGoodUi" />
+            type="com.lenta.bp12.features.good_details.ItemCategoryUi" />
 
         <variable
             name="selectedForDelete"
@@ -50,27 +50,10 @@
                 android:layout_weight="@integer/task_composition_column_2"
                 android:orientation="horizontal">
 
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
-
-                    <TextView
-                        style="@style/CellTextStyle"
-                        android:layout_width="wrap_content"
-                        android:layout_marginEnd="0dp"
-                        android:text="@{item.name}"
-                        tools:text="000021 Масло" />
-
-                </LinearLayout>
-
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:padding="5dp"
-                    android:src="@drawable/ic_keyboard_arrow_right_white_16dp"
-                    tools:ignore="ContentDescription" />
+                <TextView
+                    style="@style/CellTextStyle"
+                    android:text="@{item.name}"
+                    tools:text="Партионно" />
 
             </LinearLayout>
 
@@ -84,7 +67,7 @@
                     style="@style/CellTextStyle"
                     android:gravity="center"
                     android:text="@{item.quantity}"
-                    tools:text="5 шт" />
+                    tools:text="3 шт" />
 
             </LinearLayout>
 

@@ -6,3 +6,9 @@ class BasketGoodListViewModel : CoreViewModel() {
 
     // TODO: Implement the ViewModel
 }
+
+data class ItemGoodUi(
+        val position: String,
+        val name: String,
+        val quantity: String
+)
