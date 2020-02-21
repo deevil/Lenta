@@ -49,10 +49,6 @@ class SearchProductDelegate @Inject constructor(
 
     private var codeWith12Digits: String? = null
 
-    private val zmpUtz07V001: ZmpUtz07V001 by lazy {
-        ZmpUtz07V001(hyperHive)
-    }
-
     private val zfmpUtz48V001: ZfmpUtz48V001 by lazy {
         ZfmpUtz48V001(hyperHive)
     }
