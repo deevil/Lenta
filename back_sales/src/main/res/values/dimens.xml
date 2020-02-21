@@ -1,35 +1,8 @@
 <resources>
 
-    <!-- Список заданий - № / ЕО / Признак / SKU -->
-    <integer name="pu_type_column_1">10</integer>
-    <integer name="pu_type_column_2">50</integer>
-    <integer name="pu_type_column_3">20</integer>
-    <integer name="pu_type_column_4">20</integer>
-
-    <!-- Список товаров - № / SKU / Прибыло / Остаток -->
-    <integer name="sku_arrived_remain_column_1">10</integer>
-    <integer name="sku_arrived_remain_column_2">50</integer>
-    <integer name="sku_arrived_remain_column_3">20</integer>
-    <integer name="sku_arrived_remain_column_4">20</integer>
-
-    <!-- Список товаров - № / SKU / Прибыло -->
-    <integer name="sku_arrived_column_1">10</integer>
-    <integer name="sku_arrived_column_2">60</integer>
-    <integer name="sku_arrived_column_3">30</integer>
-
-    <!-- Список сырья - № / Вид ПФ / Обработано -->
-    <integer name="type_sf_processed_column_1">10</integer>
-    <integer name="type_sf_processed_column_2">55</integer>
-    <integer name="type_sf_processed_column_3">35</integer>
-
-    <!-- Список тар - № / Номер тары / Общий вес -->
-    <integer name="pack_number_total_weight_column_1">10</integer>
-    <integer name="pack_number_total_weight_column_2">60</integer>
-    <integer name="pack_number_total_weight_column_3">30</integer>
-
-    <!-- Список товаров на упаковку - № / SKU / План кол-во -->
-    <integer name="sku_plan_quantity_column_1">10</integer>
-    <integer name="sku_plan_quantity_column_2">60</integer>
-    <integer name="sku_plan_quantity_column_3">30</integer>
+    // Состав задания - № / Товар, Корзина / Количество
+    <integer name="task_composition_column_1">15</integer>
+    <integer name="task_composition_column_2">60</integer>
+    <integer name="task_composition_column_3">25</integer>
 
 </resources>

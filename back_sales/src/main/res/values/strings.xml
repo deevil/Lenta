@@ -18,8 +18,22 @@
     <string name="marks_in_box_are_not_on_balance_in_current_store">В коробке присутствуют марки, которые не числятся на остатках текущего ТК. Добавление марок по номеру короба невозможно. Необходимо отсканировать каждую АМ.</string>
     <string name="finish_processing_box">Отсканированный товар партионный, завершите обработку коробки с марочным алкоголем, после чего повторите сканирование марки.</string>
     <string name="finish_processing_current_box">Завершите обработку текущей коробки с марочным алкоголем, после чего повторите сканирование номера коробки.</string>
+
+    // Наименование кнопок
     <string name="create_task">Создать задание</string>
     <string name="work_with_tasks">Работа с заданиями</string>
+
+    // Наименования колонок
+    <string name="good">Товар</string>
+    <string name="quantity">Количество</string>
+    <string name="of_goods">Товаров</string>
+    <string name="basket">Корзина</string>
+
+    // Подсказки
+    <string name="enter_sap_or_barcode">Введите SAP-код или штрихкод</string>
+
+
+    // Разное
 
 
 </resources>

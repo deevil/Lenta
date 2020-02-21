@@ -11,6 +11,7 @@ import com.lenta.bp12.features.enter_employee_number.EnterEmployeeNumberViewMode
 import com.lenta.bp12.features.loading.fast.FastLoadingViewModel
 import com.lenta.bp12.features.main_menu.MainMenuViewModel
 import com.lenta.bp12.features.select_market.SelectMarketViewModel
+import com.lenta.bp12.features.task_composition.TaskCompositionViewModel
 import com.lenta.shared.di.AppScope
 import com.lenta.shared.di.CoreComponent
 import dagger.Component
@@ -32,5 +33,7 @@ interface AppComponent : CoreComponent {
     fun inject(it: FastLoadingViewModel)
     fun inject(it: EnterEmployeeNumberViewModel)
     fun inject(it: MainMenuViewModel)
+
+    fun inject(it: TaskCompositionViewModel)
 
 }

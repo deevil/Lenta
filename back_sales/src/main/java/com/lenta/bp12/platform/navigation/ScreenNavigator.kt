@@ -7,6 +7,7 @@ import com.lenta.bp12.features.enter_employee_number.EnterEmployeeNumberFragment
 import com.lenta.bp12.features.loading.fast.FastDataLoadingFragment
 import com.lenta.bp12.features.main_menu.MainMenuFragment
 import com.lenta.bp12.features.select_market.SelectMarketFragment
+import com.lenta.bp12.features.task_composition.TaskCompositionFragment
 import com.lenta.shared.account.IAuthenticator
 import com.lenta.shared.features.alert.AlertFragment
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
@@ -35,7 +36,7 @@ class ScreenNavigator @Inject constructor(
     }
 
 
-    // Основные экраны
+    // Базовые экраны
     override fun openLoginScreen() {
         runOrPostpone {
             getFragmentStack()?.push(AuthFragment())
@@ -63,6 +64,14 @@ class ScreenNavigator @Inject constructor(
     override fun openMainMenuScreen() {
         runOrPostpone {
             getFragmentStack()?.push(MainMenuFragment())
+        }
+    }
+
+
+    // Основные экраны
+    override fun openTaskCompositionScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(TaskCompositionFragment())
         }
     }
 
@@ -260,6 +269,8 @@ interface IScreenNavigator : ICoreNavigator {
     fun openSelectMarketScreen()
     fun openEnterEmployeeNumberScreen()
     fun openMainMenuScreen()
+
+    fun openTaskCompositionScreen()
 
     fun showUnsentDataFoundOnDevice(deleteCallback: () -> Unit, goOverCallback: () -> Unit)
     fun showTwelveCharactersEntered(sapCallback: () -> Unit, barCallback: () -> Unit)
