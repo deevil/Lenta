@@ -5,8 +5,10 @@ import com.lenta.bp12.R
 import com.lenta.bp12.features.auth.AuthFragment
 import com.lenta.bp12.features.basket_good_list.BasketGoodListFragment
 import com.lenta.bp12.features.enter_employee_number.EnterEmployeeNumberFragment
+import com.lenta.bp12.features.good_details.GoodDetailsFragment
 import com.lenta.bp12.features.loading.fast.FastDataLoadingFragment
 import com.lenta.bp12.features.main_menu.MainMenuFragment
+import com.lenta.bp12.features.save_data.SaveDataFragment
 import com.lenta.bp12.features.select_market.SelectMarketFragment
 import com.lenta.bp12.features.task_composition.TaskCompositionFragment
 import com.lenta.shared.account.IAuthenticator
@@ -79,6 +81,18 @@ class ScreenNavigator @Inject constructor(
     override fun openBasketGoodListScreen() {
         runOrPostpone {
             getFragmentStack()?.push(BasketGoodListFragment())
+        }
+    }
+
+    override fun openGoodDetailsScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(GoodDetailsFragment())
+        }
+    }
+
+    override fun openSaveDataScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(SaveDataFragment())
         }
     }
 
@@ -279,6 +293,8 @@ interface IScreenNavigator : ICoreNavigator {
 
     fun openTaskCompositionScreen()
     fun openBasketGoodListScreen()
+    fun openGoodDetailsScreen()
+    fun openSaveDataScreen()
 
     fun showUnsentDataFoundOnDevice(deleteCallback: () -> Unit, goOverCallback: () -> Unit)
     fun showTwelveCharactersEntered(sapCallback: () -> Unit, barCallback: () -> Unit)

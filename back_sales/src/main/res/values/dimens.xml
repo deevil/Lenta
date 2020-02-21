@@ -1,8 +1,12 @@
 <resources>
 
-    // Состав задания - № / Товар, Корзина / Количество
-    <integer name="task_composition_column_1">15</integer>
-    <integer name="task_composition_column_2">60</integer>
-    <integer name="task_composition_column_3">25</integer>
+    // Состав задания - № / Наименование / Количество
+    <integer name="name_quantity_column_1">15</integer>
+    <integer name="name_quantity_column_2">60</integer>
+    <integer name="name_quantity_column_3">25</integer>
+
+    // Состав задания - № / Наименование
+    <integer name="name_column_1">15</integer>
+    <integer name="name_column_2">75</integer>
 
 </resources>

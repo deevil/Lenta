@@ -2,17 +2,13 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context="com.lenta.bp14.features.work_list.goods_list.GoodsListWlFragment">
+    tools:context=".features.save_data.SaveDataFragment">
 
     <data>
 
         <variable
             name="vm"
-            type="com.lenta.bp12.features.task_composition.TaskCompositionViewModel" />
-
-        <variable
-            name="rvConfig"
-            type="com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig" />
+            type="com.lenta.bp12.features.save_data.SaveDataViewModel" />
 
     </data>
 
@@ -31,7 +27,7 @@
 
                 <LinearLayout
                     style="@style/LinearCellStyle"
-                    android:layout_weight="@integer/name_quantity_column_1">
+                    android:layout_weight="@integer/name_column_1">
 
                     <TextView
                         style="@style/FirstRowTextStyle"
@@ -42,21 +38,11 @@
 
                 <LinearLayout
                     style="@style/LinearCellStyle"
-                    android:layout_weight="@integer/name_quantity_column_2">
+                    android:layout_weight="@integer/name_column_2">
 
                     <TextView
                         style="@style/FirstRowTextStyle"
-                        android:text="@string/basket" />
-
-                </LinearLayout>
-
-                <LinearLayout
-                    style="@style/LinearCellStyle"
-                    android:layout_weight="@integer/name_quantity_column_3">
-
-                    <TextView
-                        style="@style/FirstRowTextStyle"
-                        android:text="@string/of_goods" />
+                        android:text="@string/task" />
 
                 </LinearLayout>
 
@@ -66,7 +52,7 @@
 
         </LinearLayout>
 
-        <!-- Список корзин -->
+        <!-- Список товаров -->
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv"
             android:layout_width="match_parent"
@@ -75,7 +61,7 @@
             android:layout_weight="1"
             app:items="@{vm.processing}"
             app:rv_config="@{rvConfig}"
-            tools:listitem="@layout/item_good_details_basket" />
+            tools:listitem="@layout/item_save_data_task" />
 
     </LinearLayout>
 
