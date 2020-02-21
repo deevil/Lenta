@@ -29,9 +29,11 @@
     <string name="of_goods">Товаров</string>
     <string name="basket">Корзина</string>
     <string name="task">Задание</string>
+    <string name="tags">Признаки</string>
 
     // Подсказки
     <string name="enter_sap_or_barcode">Введите SAP-код или штрихкод</string>
+    <string name="enter_task_or_supplier_number">Введите номер задания или поставщика</string>
 
 
     // Разное

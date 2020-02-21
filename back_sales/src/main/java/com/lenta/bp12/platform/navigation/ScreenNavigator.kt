@@ -11,6 +11,7 @@ import com.lenta.bp12.features.main_menu.MainMenuFragment
 import com.lenta.bp12.features.save_data.SaveDataFragment
 import com.lenta.bp12.features.select_market.SelectMarketFragment
 import com.lenta.bp12.features.task_composition.TaskCompositionFragment
+import com.lenta.bp12.features.task_list.TaskListFragment
 import com.lenta.shared.account.IAuthenticator
 import com.lenta.shared.features.alert.AlertFragment
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
@@ -93,6 +94,12 @@ class ScreenNavigator @Inject constructor(
     override fun openSaveDataScreen() {
         runOrPostpone {
             getFragmentStack()?.push(SaveDataFragment())
+        }
+    }
+
+    override fun openTaskListScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(TaskListFragment())
         }
     }
 
@@ -295,6 +302,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openBasketGoodListScreen()
     fun openGoodDetailsScreen()
     fun openSaveDataScreen()
+    fun openTaskListScreen()
 
     fun showUnsentDataFoundOnDevice(deleteCallback: () -> Unit, goOverCallback: () -> Unit)
     fun showTwelveCharactersEntered(sapCallback: () -> Unit, barCallback: () -> Unit)

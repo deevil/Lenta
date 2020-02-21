@@ -6,7 +6,13 @@
     <integer name="name_quantity_column_3">25</integer>
 
     // Состав задания - № / Наименование
-    <integer name="name_column_1">15</integer>
-    <integer name="name_column_2">75</integer>
+    <integer name="name_column_1">10</integer>
+    <integer name="name_column_2">80</integer>
+
+    // Состав задания - № / Задания / Признаки / Товаров
+    <integer name="task_tag_quantity_column_1">10</integer>
+    <integer name="task_tag_quantity_column_2">50</integer>
+    <integer name="task_tag_quantity_column_3">20</integer>
+    <integer name="task_tag_quantity_column_4">20</integer>
 
 </resources>

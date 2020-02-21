@@ -15,6 +15,7 @@ import com.lenta.bp12.features.main_menu.MainMenuViewModel
 import com.lenta.bp12.features.save_data.SaveDataViewModel
 import com.lenta.bp12.features.select_market.SelectMarketViewModel
 import com.lenta.bp12.features.task_composition.TaskCompositionViewModel
+import com.lenta.bp12.features.task_list.TaskListViewModel
 import com.lenta.shared.di.AppScope
 import com.lenta.shared.di.CoreComponent
 import dagger.Component
@@ -41,5 +42,6 @@ interface AppComponent : CoreComponent {
     fun inject(it: BasketGoodListViewModel)
     fun inject(it: GoodDetailsViewModel)
     fun inject(it: SaveDataViewModel)
+    fun inject(it: TaskListViewModel)
 
 }
