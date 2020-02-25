@@ -167,7 +167,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="1dp"
-            android:visibility="@{vm.isDefect || vm.isTaskPGE}"
+            android:visibility="@{vm.isDefect || (vm.isTaskPGE &amp;&amp; !vm.isGoodsAddedAsSurplus)}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/div_vert">
@@ -195,6 +195,49 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:onPositionClickListener="@{vm}"
                 app:position="@{vm.spinReasonRejectionSelectedPosition}" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/ConstraintSurplus"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="1dp"
+            android:visibility="@{vm.isTaskPGE &amp;&amp; vm.isGoodsAddedAsSurplus}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/ConstraintDefect">
+
+            <View
+                android:id="@+id/div_hor5"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="8dp"
+                android:background="@color/color_divider"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/et_processing_unit_number" />
+
+            <EditText
+                android:id="@+id/et_processing_unit_number"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                android:digits="1234567890"
+                android:hint="@string/enter_processing_unit_number"
+                android:imeOptions="actionDone"
+                android:inputType="numberDecimal"
+                android:maxLength="18"
+                android:maxLines="1"
+                android:text="@={vm.enteredProcessingUnitNumber}"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:ignore="Autofill" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -235,7 +278,7 @@
             android:layout_marginEnd="8dp"
             android:src="@{vm.isEizUnit ? @drawable/ic_eiz_24dp : @drawable/ic_bei_24dp}"
             android:onClick="@{(v) -> vm.onClickUnitChange()}"
-            app:visibleOrGone='@{vm.isTaskPGE()}'
+            app:visibleOrGone='@{vm.isTaskPGE &amp;&amp; !vm.isGoodsAddedAsSurplus}'
             app:layout_constraintBottom_toBottomOf="@+id/et_inventory"
             app:layout_constraintEnd_toEndOf="@+id/et_inventory"
             app:layout_constraintTop_toTopOf="@+id/et_inventory"

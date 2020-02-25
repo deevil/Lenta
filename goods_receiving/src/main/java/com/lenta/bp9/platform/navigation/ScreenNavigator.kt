@@ -973,6 +973,19 @@ class ScreenNavigator(
         }
     }
 
+    override fun openAddGoodsSurplusDialog(codeConfirmationAddGoodsSurplus: Int) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.no_product_in_cargo_unit_dialog),
+                    iconRes = 0,
+                    codeConfirmForRight = codeConfirmationAddGoodsSurplus,
+                    pageNumber = "94",
+                    leftButtonDecorationInfo = ButtonDecorationInfo.no,
+                    rightButtonDecorationInfo = ButtonDecorationInfo.yes)
+            )
+        }
+    }
+
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 }
 
@@ -1091,4 +1104,5 @@ interface IScreenNavigator : ICoreNavigator {
     fun openTransportMarriageGoodsInfoScreen(transportMarriageInfo: TaskTransportMarriageInfo)
     fun openTransportMarriageGoodsDetailsScreen(cargoUnitNumber: String, materialNumber: String, materialName: String)
     fun openAlertAmountEnteredGreaterPUScreen()
+    fun openAddGoodsSurplusDialog(codeConfirmationAddGoodsSurplus: Int)
 }

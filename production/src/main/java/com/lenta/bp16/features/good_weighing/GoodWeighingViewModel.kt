@@ -139,7 +139,7 @@ class GoodWeighingViewModel : CoreViewModel() {
                             "(8008)${SimpleDateFormat(Constants.DATE_FORMAT_yyMMddhhmm, Locale.getDefault()).format(productTime.time)}" +
                             "(10)${raw.value!!.orderNumber}" +
                             "(7003)${dateExpir?.let { SimpleDateFormat(Constants.DATE_FORMAT_yyMMddhhmm, Locale.getDefault()).format(it.time) }}" +
-                            "(91)${packCodeResult.packCode}"
+                            "(91)0${packCodeResult.packCode}"
 
                     val barcode = barCodeText.replace("(", "").replace(")", "")
 
