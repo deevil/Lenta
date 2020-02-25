@@ -6,6 +6,7 @@ enum class TaskStatus {
 }
 
 enum class BlockType {
+    UNLOCK,
     SELF_LOCK,
     LOCK
 }

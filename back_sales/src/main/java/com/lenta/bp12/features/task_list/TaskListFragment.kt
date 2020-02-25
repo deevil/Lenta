@@ -9,15 +9,32 @@ import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
 import com.lenta.shared.utilities.extentions.provideViewModel
 import android.os.Bundle
+import android.view.LayoutInflater
 import com.lenta.shared.utilities.databinding.ViewPagerSettings
 import android.view.ViewGroup
 import android.view.View
+import android.widget.AdapterView
+import androidx.databinding.DataBindingUtil
+import com.lenta.bp12.BR
+import com.lenta.bp12.databinding.ItemTaskListTaskBinding
+import com.lenta.bp12.databinding.LayoutTaskListProcessingBinding
+import com.lenta.bp12.databinding.LayoutTaskListSearchBinding
+import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
+import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
+import com.lenta.shared.utilities.databinding.DataBindingAdapter
+import com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig
+import com.lenta.shared.utilities.databinding.RecyclerViewKeyHandler
+import com.lenta.shared.utilities.extentions.connectLiveData
 
-class TaskListFragment : CoreFragment<FragmentTaskListBinding, TaskListViewModel>(), ViewPagerSettings {
+class TaskListFragment : CoreFragment<FragmentTaskListBinding, TaskListViewModel>(),
+        ToolbarButtonsClickListener, ViewPagerSettings {
+
+    private var processingRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
+    private var searchRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
 
     override fun getLayoutId(): Int = R.layout.fragment_task_list
 
-    override fun getPageNumber(): String? = generateScreenNumberFromPostfix("Specify screen number!")
+    override fun getPageNumber(): String? = generateScreenNumberFromPostfix("25")
 
     override fun getViewModel(): TaskListViewModel {
         provideViewModel(TaskListViewModel::class.java).let {
@@ -27,41 +44,121 @@ class TaskListFragment : CoreFragment<FragmentTaskListBinding, TaskListViewModel
     }
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        topToolbarUiModel.description.value = getString(R.string.app_name)
 
-        //topToolbarUiModel.title.value = context?.getAppInfo()
-        //topToolbarUiModel.description.value = getString(R.string.app_name)
-
-        //topToolbarUiModel.uiModelButton1.show(ImageButtonDecorationInfo.settings)
-        //topToolbarUiModel.uiModelButton2.show(ImageButtonDecorationInfo.exitFromApp)
-
-        //connectLiveData(vm.title, topToolbarUiModel.title)
+        connectLiveData(vm.title, topToolbarUiModel.title)
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-
-        //bottomToolbarUiModel.hide()
-
-        //bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
-        //bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.complete)
-
-        //connectLiveData(vm.completeEnabled, getBottomToolBarUIModel()!!.uiModelButton5.enabled)
+        bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.menu)
+        bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.update)
     }
 
-    /*override fun onToolbarButtonClick(view: View) {
+    override fun onToolbarButtonClick(view: View) {
         when (view.id) {
-            R.id.b_topbar_1 -> vm.onClickAuxiliaryMenu()
-            R.id.b_5 -> vm.onClickComplete()
+            R.id.b_1 -> vm.onClickMenu()
+            R.id.b_5 -> vm.onClickUpdate()
         }
-    }*/
+    }
 
     override fun getPagerItemView(container: ViewGroup, position: Int): View {
-        return View(context)
+        return when (position) {
+            0 -> initTaskListProcessing(container)
+            1 -> initTaskListSearch(container)
+            else -> View(context)
+        }
+    }
+
+    private fun initTaskListProcessing(container: ViewGroup): View {
+        DataBindingUtil.inflate<LayoutTaskListProcessingBinding>(LayoutInflater.from(container.context),
+                R.layout.layout_task_list_processing,
+                container,
+                false).let { layoutBinding ->
+
+            layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
+                    layoutId = R.layout.item_task_list_task,
+                    itemId = BR.item,
+                    realisation = object : DataBindingAdapter<ItemTaskListTaskBinding> {
+                        override fun onCreate(binding: ItemTaskListTaskBinding) {
+                        }
+
+                        override fun onBind(binding: ItemTaskListTaskBinding, position: Int) {
+                            processingRecyclerViewKeyHandler?.let {
+                                binding.root.isSelected = it.isSelected(position)
+                            }
+                        }
+                    },
+                    onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
+                        processingRecyclerViewKeyHandler?.let {
+                            if (it.isSelected(position)) {
+                                vm.onClickItemPosition(position)
+                            } else {
+                                it.selectPosition(position)
+                            }
+                        }
+                    })
+
+            layoutBinding.vm = vm
+            layoutBinding.lifecycleOwner = viewLifecycleOwner
+            processingRecyclerViewKeyHandler = RecyclerViewKeyHandler(
+                    rv = layoutBinding.rv,
+                    items = vm.processingTasks,
+                    lifecycleOwner = layoutBinding.lifecycleOwner!!,
+                    initPosInfo = processingRecyclerViewKeyHandler?.posInfo?.value
+            )
+
+            return layoutBinding.root
+        }
+    }
+
+    private fun initTaskListSearch(container: ViewGroup): View {
+        DataBindingUtil.inflate<LayoutTaskListSearchBinding>(LayoutInflater.from(container.context),
+                R.layout.layout_task_list_search,
+                container,
+                false).let { layoutBinding ->
+
+            layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
+                    layoutId = R.layout.item_task_list_task,
+                    itemId = BR.item,
+                    realisation = object : DataBindingAdapter<ItemTaskListTaskBinding> {
+                        override fun onCreate(binding: ItemTaskListTaskBinding) {
+                        }
+
+                        override fun onBind(binding: ItemTaskListTaskBinding, position: Int) {
+                            searchRecyclerViewKeyHandler?.let {
+                                binding.root.isSelected = it.isSelected(position)
+                            }
+                        }
+                    },
+                    onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
+                        searchRecyclerViewKeyHandler?.let {
+                            if (it.isSelected(position)) {
+                                vm.onClickItemPosition(position)
+                            } else {
+                                it.selectPosition(position)
+                            }
+                        }
+                    })
+
+            layoutBinding.vm = vm
+            layoutBinding.lifecycleOwner = viewLifecycleOwner
+            searchRecyclerViewKeyHandler = RecyclerViewKeyHandler(
+                    rv = layoutBinding.rv,
+                    items = vm.searchTasks,
+                    lifecycleOwner = layoutBinding.lifecycleOwner!!,
+                    initPosInfo = searchRecyclerViewKeyHandler?.posInfo?.value
+            )
+
+            return layoutBinding.root
+        }
     }
 
     override fun getTextTitle(position: Int): String {
-        return "Title: $position"
+        return when (position) {
+            0 -> getString(R.string.processing)
+            1 -> getString(R.string.search)
+            else -> throw IllegalArgumentException("Wrong pager position!")
+        }
     }
 
     override fun countTab(): Int {
@@ -72,11 +169,5 @@ class TaskListFragment : CoreFragment<FragmentTaskListBinding, TaskListViewModel
         super.onViewCreated(view, savedInstanceState)
         binding?.viewPagerSettings = this
     }
-
-
-    /*override fun onBackPressed(): Boolean {
-        vm.onBackPressed()
-        return false
-    }*/
 
 }

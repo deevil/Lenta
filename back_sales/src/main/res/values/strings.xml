@@ -10,6 +10,8 @@
     <string name="goods">Товары</string>
     <string name="baskets">Корзины</string>
     <string name="categories">Категории</string>
+    <string name="processing">К обработке</string>
+    <string name="search">Поиск</string>
 
     // Информационные сообщения
     <string name="unsent_data_found_on_device">На устройстве обнаружены непереданные данные. Перейти к данным?</string>
