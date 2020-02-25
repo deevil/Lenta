@@ -1,15 +1,24 @@
 package com.lenta.bp12.features.save_data
 
+import android.os.Bundle
+import android.view.View
+import com.lenta.bp12.BR
 import com.lenta.bp12.R
 import com.lenta.bp12.databinding.FragmentSaveDataBinding
+import com.lenta.bp12.databinding.ItemSaveDataTaskBinding
 import com.lenta.bp12.platform.extention.getAppComponent
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
+import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
+import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
+import com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig
+import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
 import com.lenta.shared.utilities.extentions.provideViewModel
 
-class SaveDataFragment : CoreFragment<FragmentSaveDataBinding, SaveDataViewModel>() {
+class SaveDataFragment : CoreFragment<FragmentSaveDataBinding, SaveDataViewModel>(),
+        ToolbarButtonsClickListener {
 
     override fun getLayoutId(): Int = R.layout.fragment_save_data
 
@@ -23,39 +32,30 @@ class SaveDataFragment : CoreFragment<FragmentSaveDataBinding, SaveDataViewModel
     }
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        topToolbarUiModel.description.value = getString(R.string.saving_data)
 
-        //topToolbarUiModel.title.value = context?.getAppInfo()
-        //topToolbarUiModel.description.value = getString(R.string.app_name)
-
-        //topToolbarUiModel.uiModelButton1.show(ImageButtonDecorationInfo.settings)
-        //topToolbarUiModel.uiModelButton2.show(ImageButtonDecorationInfo.exitFromApp)
-
-        //connectLiveData(vm.title, topToolbarUiModel.title)
+        connectLiveData(vm.title, topToolbarUiModel.title)
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-
-        //bottomToolbarUiModel.hide()
-
-        //bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
-        //bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.complete)
-
-        //connectLiveData(vm.completeEnabled, getBottomToolBarUIModel()!!.uiModelButton5.enabled)
+        bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.next)
     }
 
-    /*override fun onToolbarButtonClick(view: View) {
+    override fun onToolbarButtonClick(view: View) {
         when (view.id) {
-            R.id.b_topbar_1 -> vm.onClickAuxiliaryMenu()
-            R.id.b_5 -> vm.onClickComplete()
+            R.id.b_5 -> vm.onClickNext()
         }
-    }*/
+    }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        initSaveData()
+    }
 
-    /*override fun onBackPressed(): Boolean {
-        vm.onBackPressed()
-        return false
-    }*/
+    private fun initSaveData() {
+        binding?.rvConfig = DataBindingRecyclerViewConfig<ItemSaveDataTaskBinding>(
+                layoutId = R.layout.item_save_data_task,
+                itemId = BR.vm
+        )
+    }
 
 }

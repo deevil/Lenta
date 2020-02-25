@@ -44,7 +44,7 @@ class TaskListFragment : CoreFragment<FragmentTaskListBinding, TaskListViewModel
     }
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
-        topToolbarUiModel.description.value = getString(R.string.app_name)
+        topToolbarUiModel.description.value = getString(R.string.task_list)
 
         connectLiveData(vm.title, topToolbarUiModel.title)
     }
