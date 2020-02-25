@@ -10,6 +10,10 @@
             name="vm"
             type="com.lenta.bp12.features.basket_good_list.BasketGoodListViewModel" />
 
+        <variable
+            name="rvConfig"
+            type="com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig" />
+
     </data>
 
     <LinearLayout

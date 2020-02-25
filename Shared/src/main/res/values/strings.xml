@@ -189,5 +189,6 @@
     <string name="enter_printer_address">Введите IP-адрес принтера для печати с этого терминала</string>
     <string name="inStock">В наличии</string>
     <string name="proceed">Продолжить</string>
+    <string name="properties">Свойства</string>
 
 </resources>

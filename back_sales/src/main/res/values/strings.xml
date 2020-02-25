@@ -1,8 +1,11 @@
 <resources>
     <string name="app_name">Возвраты</string>
 
-    // Заголовки экранов и вкладок
+    // Заголовки экранов
     <string name="task_composition">Состав задания</string>
+    <string name="basket_good_list">Список товаров корзины</string>
+
+    // Наименование вкладок
     <string name="goods">Товары</string>
     <string name="baskets">Корзины</string>
 

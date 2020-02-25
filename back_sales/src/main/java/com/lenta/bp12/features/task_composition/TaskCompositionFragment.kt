@@ -47,8 +47,8 @@ class TaskCompositionFragment : CoreFragment<FragmentTaskCompositionBinding, Tas
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
-        bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.delete)
-        bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.save)
+        bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.delete, enabled = false)
+        bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.save, enabled = false)
 
         connectLiveData(vm.deleteEnabled, getBottomToolBarUIModel()!!.uiModelButton3.enabled)
         connectLiveData(vm.saveEnabled, getBottomToolBarUIModel()!!.uiModelButton5.enabled)
@@ -63,13 +63,13 @@ class TaskCompositionFragment : CoreFragment<FragmentTaskCompositionBinding, Tas
 
     override fun getPagerItemView(container: ViewGroup, position: Int): View {
         return when (position) {
-            0 -> getTaskCompositionGoodsView(container)
-            1 -> getTaskCompositionBasketsView(container)
+            0 -> initTaskCompositionGoods(container)
+            1 -> initTaskCompositionBaskets(container)
             else -> View(context)
         }
     }
 
-    private fun getTaskCompositionGoodsView(container: ViewGroup): View {
+    private fun initTaskCompositionGoods(container: ViewGroup): View {
         DataBindingUtil.inflate<LayoutTaskCompositionGoodsBinding>(LayoutInflater.from(container.context),
                 R.layout.layout_task_composition_goods,
                 container,
@@ -106,7 +106,7 @@ class TaskCompositionFragment : CoreFragment<FragmentTaskCompositionBinding, Tas
         }
     }
 
-    private fun getTaskCompositionBasketsView(container: ViewGroup): View {
+    private fun initTaskCompositionBaskets(container: ViewGroup): View {
         DataBindingUtil.inflate<LayoutTaskCompositionBasketsBinding>(LayoutInflater.from(container.context),
                 R.layout.layout_task_composition_baskets,
                 container,
