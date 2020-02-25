@@ -53,7 +53,7 @@
 
                 <TextView
                     style="@style/CellTextStyle"
-                    android:text="@{item.name}"
+                    android:text="@{item.type}"
                     tools:text="Партионно" />
 
             </LinearLayout>

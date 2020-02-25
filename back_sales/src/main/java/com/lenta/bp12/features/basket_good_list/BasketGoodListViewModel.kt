@@ -21,8 +21,8 @@ class BasketGoodListViewModel : CoreViewModel() {
         MutableLiveData(List(3) {
             ItemGoodUi(
                     position = "${it + 1}",
-                    name = "Test good ${it + 1}",
-                    quantity = (3..15).random().toString()
+                    name = "Test name ${it + 1}",
+                    quantity = (1..15).random().toString()
             )
         })
     }

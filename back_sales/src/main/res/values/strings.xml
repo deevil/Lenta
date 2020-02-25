@@ -4,10 +4,12 @@
     // Заголовки экранов
     <string name="task_composition">Состав задания</string>
     <string name="basket_good_list">Список товаров корзины</string>
+    <string name="good_details">Детали по товару</string>
 
     // Наименование вкладок
     <string name="goods">Товары</string>
     <string name="baskets">Корзины</string>
+    <string name="categories">Категории</string>
 
     // Информационные сообщения
     <string name="unsent_data_found_on_device">На устройстве обнаружены непереданные данные. Перейти к данным?</string>

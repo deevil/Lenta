@@ -1,8 +1,9 @@
 package com.lenta.bp12.features.task_composition
 
-import com.lenta.shared.platform.viewmodel.CoreViewModel
 import androidx.lifecycle.MutableLiveData
+import com.lenta.bp12.features.basket_good_list.ItemGoodUi
 import com.lenta.bp12.platform.navigation.IScreenNavigator
+import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.PageSelectionListener
 import javax.inject.Inject
@@ -23,6 +24,27 @@ class TaskCompositionViewModel : CoreViewModel(), PageSelectionListener {
     val deleteEnabled = MutableLiveData(false)
 
     val saveEnabled = MutableLiveData(false)
+
+    val goods by lazy {
+        MutableLiveData(List(3) {
+            ItemGoodUi(
+                    position = "${it + 1}",
+                    name = "Test name ${it + 1}",
+                    quantity = (1..15).random().toString()
+            )
+        })
+    }
+
+    val baskets by lazy {
+        MutableLiveData(List(3) {
+            ItemBasketUi(
+                    position = "${it + 1}",
+                    name = "Test name ${it + 1}",
+                    description = "Test description ${it + 1}",
+                    quantity = (1..15).random().toString()
+            )
+        })
+    }
 
     // -----------------------------
 

@@ -113,6 +113,13 @@ class TaskCompositionFragment : CoreFragment<FragmentTaskCompositionBinding, Tas
 
             layoutBinding.vm = vm
             layoutBinding.lifecycleOwner = viewLifecycleOwner
+            goodRecyclerViewKeyHandler = RecyclerViewKeyHandler(
+                    rv = layoutBinding.rv,
+                    items = vm.goods,
+                    lifecycleOwner = layoutBinding.lifecycleOwner!!,
+                    initPosInfo = goodRecyclerViewKeyHandler?.posInfo?.value
+            )
+
             return layoutBinding.root
         }
     }
@@ -160,6 +167,13 @@ class TaskCompositionFragment : CoreFragment<FragmentTaskCompositionBinding, Tas
 
             layoutBinding.vm = vm
             layoutBinding.lifecycleOwner = viewLifecycleOwner
+            basketRecyclerViewKeyHandler = RecyclerViewKeyHandler(
+                    rv = layoutBinding.rv,
+                    items = vm.baskets,
+                    lifecycleOwner = layoutBinding.lifecycleOwner!!,
+                    initPosInfo = basketRecyclerViewKeyHandler?.posInfo?.value
+            )
+
             return layoutBinding.root
         }
     }
