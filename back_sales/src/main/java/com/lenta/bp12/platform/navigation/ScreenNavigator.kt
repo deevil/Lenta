@@ -108,7 +108,7 @@ class ScreenNavigator @Inject constructor(
     override fun showUnsentDataFoundOnDevice(deleteCallback: () -> Unit, goOverCallback: () -> Unit) {
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
-                    pageNumber = "89",
+                    pageNumber = "5",
                     message = context.getString(R.string.unsent_data_found_on_device),
                     iconRes = R.drawable.ic_question_80dp,
                     codeConfirmForButton3 = backFragmentResultHelper.setFuncForResult(deleteCallback),
@@ -122,7 +122,7 @@ class ScreenNavigator @Inject constructor(
     override fun showTwelveCharactersEntered(sapCallback: () -> Unit, barCallback: () -> Unit) {
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
-                    pageNumber = "90",
+                    pageNumber = "68",
                     message = context.getString(R.string.twelve_characters_entered),
                     codeConfirmForLeft = backFragmentResultHelper.setFuncForResult(sapCallback),
                     codeConfirmForRight = backFragmentResultHelper.setFuncForResult(barCallback),
@@ -147,7 +147,7 @@ class ScreenNavigator @Inject constructor(
     override fun showMakeTaskCountedAndClose(yesCallback: () -> Unit) {
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
-                    pageNumber = "94",
+                    pageNumber = "19",
                     message = context.getString(R.string.make_task_counted_and_close),
                     iconRes = R.drawable.ic_question_80dp,
                     codeConfirmForRight = backFragmentResultHelper.setFuncForResult(yesCallback),
@@ -159,7 +159,7 @@ class ScreenNavigator @Inject constructor(
     override fun showTaskUnsentDataWillBeDeleted(taskName: String, applyCallback: () -> Unit) {
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
-                    pageNumber = "95",
+                    pageNumber = "75.1",
                     message = context.getString(R.string.task_unsent_data_will_be_deleted, taskName),
                     iconRes = R.drawable.ic_delete_red_80dp,
                     codeConfirmForRight = backFragmentResultHelper.setFuncForResult(applyCallback),
@@ -171,7 +171,7 @@ class ScreenNavigator @Inject constructor(
     override fun showScannedMarkBelongsToProduct(productName: String) {
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
-                    pageNumber = "98",
+                    pageNumber = "85",
                     message = context.getString(R.string.scanned_mark_belongs_to_product, productName),
                     iconRes = R.drawable.is_warning_red_80dp
             ))
@@ -181,7 +181,7 @@ class ScreenNavigator @Inject constructor(
     override fun showForExciseGoodNeedScanFirstMark() {
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
-                    pageNumber = "96",
+                    pageNumber = "93",
                     message = context.getString(R.string.for_excise_good_need_scan_first_mark),
                     iconRes = R.drawable.ic_info_green_80dp,
                     timeAutoExitInMillis = 2000
@@ -204,7 +204,7 @@ class ScreenNavigator @Inject constructor(
     override fun showBoxWasLastScanned(afterShowCallback: () -> Unit) {
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
-                    pageNumber = "96",
+                    pageNumber = "59",
                     message = context.getString(R.string.box_was_last_scanned),
                     iconRes = R.drawable.is_warning_red_80dp,
                     codeConfirmForExit = backFragmentResultHelper.setFuncForResult(afterShowCallback),
