@@ -1,6 +1,11 @@
 <resources>
     <string name="app_name">Возвраты</string>
 
+    // Заголовки экранов и вкладок
+    <string name="task_composition">Состав задания</string>
+    <string name="goods">Товары</string>
+    <string name="baskets">Корзины</string>
+
     // Информационные сообщения
     <string name="unsent_data_found_on_device">На устройстве обнаружены непереданные данные. Перейти к данным?</string>
     <string name="twelve_characters_entered">Введено 12 знаков. Какой код вы ввели?</string>
