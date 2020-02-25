@@ -10,6 +10,7 @@ import android.view.LayoutInflater
 import com.lenta.shared.utilities.databinding.ViewPagerSettings
 import android.view.ViewGroup
 import android.view.View
+import android.widget.AdapterView
 import androidx.databinding.DataBindingUtil
 import com.lenta.bp12.databinding.*
 import com.lenta.bp12.platform.extention.getAppComponent
@@ -30,7 +31,7 @@ class TaskCompositionFragment : CoreFragment<FragmentTaskCompositionBinding, Tas
 
     override fun getLayoutId(): Int = R.layout.fragment_task_composition
 
-    override fun getPageNumber(): String? = generateScreenNumberFromPostfix("11")
+    override fun getPageNumber(): String? = generateScreenNumberFromPostfix("17")
 
     override fun getViewModel(): TaskCompositionViewModel {
         provideViewModel(TaskCompositionViewModel::class.java).let {
@@ -97,6 +98,16 @@ class TaskCompositionFragment : CoreFragment<FragmentTaskCompositionBinding, Tas
                                 binding.root.isSelected = it.isSelected(position)
                             }
                         }
+                    },
+                    onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
+                        goodRecyclerViewKeyHandler?.let {
+                            if (it.isSelected(position)) {
+                                vm.onClickItemPosition(position)
+                            } else {
+                                it.selectPosition(position)
+                            }
+                        }
+
                     }
             )
 
@@ -134,6 +145,16 @@ class TaskCompositionFragment : CoreFragment<FragmentTaskCompositionBinding, Tas
                                 binding.root.isSelected = it.isSelected(position)
                             }
                         }
+                    },
+                    onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
+                        basketRecyclerViewKeyHandler?.let {
+                            if (it.isSelected(position)) {
+                                vm.onClickItemPosition(position)
+                            } else {
+                                it.selectPosition(position)
+                            }
+                        }
+
                     }
             )
 

@@ -38,6 +38,10 @@ class TaskCompositionViewModel : CoreViewModel(), PageSelectionListener {
 
     }
 
+    fun onClickItemPosition(position: Int) {
+
+    }
+
 }
 
 
