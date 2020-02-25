@@ -128,8 +128,8 @@
             android:ellipsize="end"
             android:gravity="start|center_vertical"
             android:maxLines="1"
-            android:text='@{vm.countRefusalWithUom }'
-            android:textColor="@color/color_pressed_red"
+            android:text='@{vm.isNormDiscrepancies == true ? "+ " + vm.countRefusalWithUom : "- " + vm.countRefusalWithUom }'
+            android:textColor='@{vm.isNormDiscrepancies == true ? @color/colorAccent : @color/color_pressed_red}'
             app:layout_constraintBottom_toBottomOf="@+id/tv_type_discrepancies"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/div_vert2"

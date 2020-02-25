@@ -29,6 +29,11 @@ class ProcessGeneralProductService
         else null
     }
 
+    fun setProcessingUnitNumber(processingUnitNumber: String) {
+        productInfo = productInfo.copy(processingUnit = processingUnitNumber)
+        taskManager.getReceivingTask()?.taskRepository?.getProducts()?.changeProduct(productInfo)
+    }
+
     fun countEqualOrigQuantity (count: Double) : Boolean {
         return productInfo.origQuantity.toDouble() == ((taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.getCountAcceptOfProduct(productInfo) ?: 0.0)
                 + (taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.getCountRefusalOfProduct(productInfo) ?: 0.0) + count)

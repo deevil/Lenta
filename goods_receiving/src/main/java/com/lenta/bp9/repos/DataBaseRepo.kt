@@ -58,6 +58,10 @@ class DataBaseRepo(
         zmpUtz14V001.getGrzArriveBackDD()
     }
 
+    override suspend fun getParamGrzUffMhdhb(): String? = withContext(Dispatchers.IO) {
+        zmpUtz14V001.getGrzUffMhdhb()
+    }
+
     override suspend fun getExclusionFromIntegration(): List<QualityInfo>? = withContext(Dispatchers.IO) {
         zmpUtz17V001.getAllQuality()?.toQualityInfoList()?.filter {
             it.id == "016"
@@ -91,6 +95,12 @@ class DataBaseRepo(
     override suspend fun getQualityInfoPGE(): List<QualityInfo>? = withContext(Dispatchers.IO) {
         zmpUtz17V001.getAllQuality()?.toQualityInfoList()?.filter {
             it.id == "013"
+        }
+    }
+
+    override suspend fun getSurplusInfoForPGE(): List<QualityInfo>? = withContext(Dispatchers.IO) {
+        zmpUtz17V001.getAllQuality()?.toQualityInfoList()?.filter {
+            it.id == "013" && it.code == "2"
         }
     }
 
@@ -128,12 +138,14 @@ interface IDataBaseRepo {
     suspend fun getParamGrsGrundPos(): String?
     suspend fun getParamGrsGrundNeg(): String?
     suspend fun getParamPermittedNumberDays(): String?
+    suspend fun getParamGrzUffMhdhb(): String?
     suspend fun getExclusionFromIntegration(): List<QualityInfo>?
     suspend fun getAllStatusInfoForPRC(): List<QualityInfo>?
     suspend fun getStatusInfoForPRC(): List<QualityInfo>?
     suspend fun getSurplusInfoForPRC(): List<QualityInfo>?
     suspend fun getTypePalletInfo(): List<QualityInfo>?
     suspend fun getQualityInfoPGE(): List<QualityInfo>?
+    suspend fun getSurplusInfoForPGE(): List<QualityInfo>?
     suspend fun getQualityInfoPGEForDiscrepancy(): List<QualityInfo>?
     suspend fun getFailureReasons(): List<QualityInfo>?
     suspend fun getStatusInfoShipmentRC(): List<QualityInfo>?

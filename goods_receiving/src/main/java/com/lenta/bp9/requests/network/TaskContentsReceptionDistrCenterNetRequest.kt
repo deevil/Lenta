@@ -7,6 +7,7 @@ import com.lenta.shared.exception.Failure
 import com.lenta.shared.fmp.ObjectRawStatus
 import com.lenta.shared.functional.Either
 import com.lenta.shared.interactor.UseCase
+import com.lenta.shared.models.core.Manufacturer
 import com.lenta.shared.requests.FmpRequestsHelper
 import com.lenta.shared.requests.SapResponse
 import javax.inject.Inject
@@ -76,6 +77,14 @@ data class TaskContentsReceptionDistrCenterResult(
         val sectionProducts: List<TaskSectionProductsRestData>,
         @SerializedName("EV_NUM_SEALS")
         val quantityOutgoingFillings: String,
+        @SerializedName("ET_PROD_TEXT")
+        val manufacturers: List<Manufacturer>, //Таблица ЕГАИС производителей
+        @SerializedName("ET_TASK_BOX") //Список коробок задания для передачи в МП
+        val taskBoxes: List<TaskBoxInfoRestData>,
+        @SerializedName("ET_TASK_MARK") //Список марок задания для передачи в МП
+        val taskExciseStamps: List<TaskExciseStampRestData>,
+        @SerializedName("ET_VET_DIFF") //Таблица расхождений по вет.товарам
+        val taskMercuryInfoRestData: List<TaskMercuryInfoRestData>,
         @SerializedName("EV_RETCODE")
         override val retCode: Int,
         @SerializedName("EV_ERROR_TEXT")
