@@ -8,6 +8,10 @@ class TaskCompositionViewModel : CoreViewModel(), PageSelectionListener {
 
     val selectedPage = MutableLiveData(0)
 
+    val deleteEnabled = MutableLiveData(false)
+
+    val saveEnabled = MutableLiveData(false)
+
     override fun onPageSelected(position: Int) {
         selectedPage.value = position
     }

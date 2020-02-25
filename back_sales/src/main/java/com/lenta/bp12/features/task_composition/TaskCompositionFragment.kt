@@ -11,14 +11,15 @@ import com.lenta.shared.utilities.databinding.ViewPagerSettings
 import android.view.ViewGroup
 import android.view.View
 import com.lenta.bp12.platform.extention.getAppComponent
+import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
+import com.lenta.shared.utilities.extentions.connectLiveData
+import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
 
 class TaskCompositionFragment : CoreFragment<FragmentTaskCompositionBinding, TaskCompositionViewModel>(), ViewPagerSettings {
 
     override fun getLayoutId(): Int = R.layout.fragment_task_composition
 
-    override fun getPageNumber(): String {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    override fun getPageNumber(): String? = generateScreenNumberFromPostfix("11")
 
     override fun getViewModel(): TaskCompositionViewModel {
         provideViewModel(TaskCompositionViewModel::class.java).let {
@@ -32,7 +33,12 @@ class TaskCompositionFragment : CoreFragment<FragmentTaskCompositionBinding, Tas
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
+        bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.delete)
+        bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.save)
+
+        connectLiveData(vm.deleteEnabled, getBottomToolBarUIModel()!!.uiModelButton3.enabled)
+        connectLiveData(vm.saveEnabled, getBottomToolBarUIModel()!!.uiModelButton5.enabled)
     }
 
     override fun getPagerItemView(container: ViewGroup, position: Int): View {
