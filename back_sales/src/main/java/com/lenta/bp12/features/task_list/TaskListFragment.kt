@@ -102,7 +102,7 @@ class TaskListFragment : CoreFragment<FragmentTaskListBinding, TaskListViewModel
             layoutBinding.lifecycleOwner = viewLifecycleOwner
             processingRecyclerViewKeyHandler = RecyclerViewKeyHandler(
                     rv = layoutBinding.rv,
-                    items = vm.processingTasks,
+                    items = vm.processing,
                     lifecycleOwner = layoutBinding.lifecycleOwner!!,
                     initPosInfo = processingRecyclerViewKeyHandler?.posInfo?.value
             )
@@ -144,7 +144,7 @@ class TaskListFragment : CoreFragment<FragmentTaskListBinding, TaskListViewModel
             layoutBinding.lifecycleOwner = viewLifecycleOwner
             searchRecyclerViewKeyHandler = RecyclerViewKeyHandler(
                     rv = layoutBinding.rv,
-                    items = vm.searchTasks,
+                    items = vm.search,
                     lifecycleOwner = layoutBinding.lifecycleOwner!!,
                     initPosInfo = searchRecyclerViewKeyHandler?.posInfo?.value
             )

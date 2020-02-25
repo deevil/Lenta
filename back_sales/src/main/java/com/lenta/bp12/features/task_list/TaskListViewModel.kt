@@ -23,7 +23,7 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener {
 
     val selectedPage = MutableLiveData(0)
 
-    val processingTasks by lazy {
+    val processing by lazy {
         MutableLiveData(List(3) {
             ItemTaskUi(
                     position = "${it + 1}",
@@ -36,7 +36,7 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener {
         })
     }
 
-    val searchTasks by lazy {
+    val search by lazy {
         MutableLiveData(List(3) {
             ItemTaskUi(
                     position = "${it + 1}",
