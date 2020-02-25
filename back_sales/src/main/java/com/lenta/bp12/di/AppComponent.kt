@@ -10,6 +10,7 @@ import com.lenta.bp12.features.auth.AuthViewModel
 import com.lenta.bp12.features.basket_good_list.BasketGoodListViewModel
 import com.lenta.bp12.features.enter_employee_number.EnterEmployeeNumberViewModel
 import com.lenta.bp12.features.good_details.GoodDetailsViewModel
+import com.lenta.bp12.features.good_list.GoodListViewModel
 import com.lenta.bp12.features.loading.fast.FastLoadingViewModel
 import com.lenta.bp12.features.main_menu.MainMenuViewModel
 import com.lenta.bp12.features.save_data.SaveDataViewModel
@@ -43,5 +44,6 @@ interface AppComponent : CoreComponent {
     fun inject(it: GoodDetailsViewModel)
     fun inject(it: SaveDataViewModel)
     fun inject(it: TaskListViewModel)
+    fun inject(it: GoodListViewModel)
 
 }

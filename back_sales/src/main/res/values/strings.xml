@@ -7,6 +7,7 @@
     <string name="good_details">Детали по товару</string>
     <string name="task_list">Список заданий</string>
     <string name="saving_data">Сохранение данных</string>
+    <string name="good_list">Список товаров</string>
 
     // Наименование вкладок
     <string name="goods">Товары</string>
@@ -14,6 +15,8 @@
     <string name="categories">Категории</string>
     <string name="processing">К обработке</string>
     <string name="search">Поиск</string>
+    <string name="not_processed">Не обработанные</string>
+    <string name="processed">Обработанные</string>
 
     // Информационные сообщения
     <string name="unsent_data_found_on_device">На устройстве обнаружены непереданные данные. Перейти к данным?</string>
