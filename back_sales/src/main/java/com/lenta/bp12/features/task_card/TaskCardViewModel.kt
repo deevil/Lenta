@@ -88,7 +88,6 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
 
     }
 
-
 }
 
 data class TaskCardUi(
