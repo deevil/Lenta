@@ -19,7 +19,9 @@ class TaskCompositionViewModel : CoreViewModel(), PageSelectionListener {
 
     val selectedPage = MutableLiveData(0)
 
-    val title = MutableLiveData("ВПП // Возврат от 10.12.2018 15:20")
+    val title by lazy {
+        "ВПП // Возврат от 10.12.2018 15:20"
+    }
 
     val deleteEnabled = MutableLiveData(false)
 

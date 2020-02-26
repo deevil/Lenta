@@ -32,9 +32,8 @@ class SaveDataFragment : CoreFragment<FragmentSaveDataBinding, SaveDataViewModel
     }
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
+        topToolbarUiModel.title.value = vm.title
         topToolbarUiModel.description.value = getString(R.string.saving_data)
-
-        connectLiveData(vm.title, topToolbarUiModel.title)
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {

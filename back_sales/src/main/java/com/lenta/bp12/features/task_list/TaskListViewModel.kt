@@ -18,7 +18,7 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener {
 
 
     val title by lazy {
-        MutableLiveData("TK - ${sessionInfo.market}")
+       "TK - ${sessionInfo.market}"
     }
 
     val selectedPage = MutableLiveData(0)

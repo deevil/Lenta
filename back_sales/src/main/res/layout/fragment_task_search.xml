@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".features.task_search.TaskSearchFragment">
+
+    <data>
+
+        <variable
+            name="vm"
+            type="com.lenta.bp12.features.task_search.TaskSearchViewModel" />
+
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- Поставщик -->
+        <LinearLayout style="@style/LinearRowStyle">
+
+            <LinearLayout
+                style="@style/LinearCellStyle"
+                android:layout_weight="1">
+
+                <TextView
+                    style="@style/CellTextStyle"
+                    android:text="@string/provider" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                style="@style/LinearCellStyle"
+                android:layout_weight="2">
+
+                <EditText
+                    style="@style/CellEditTextStyle"
+                    android:digits="0123456789"
+                    android:inputType="number"
+                    android:text="@={vm.provider}"
+                    tools:text="314785" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <!-- Товар -->
+        <LinearLayout style="@style/LinearRowStyle">
+
+            <LinearLayout
+                style="@style/LinearCellStyle"
+                android:layout_weight="1">
+
+                <TextView
+                    style="@style/CellTextStyle"
+                    android:text="@string/good" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                style="@style/LinearCellStyle"
+                android:layout_weight="2">
+
+                <EditText
+                    style="@style/CellEditTextStyle"
+                    android:digits="0123456789"
+                    android:inputType="number"
+                    android:text="@={vm.good}" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <!-- Марка -->
+        <LinearLayout style="@style/LinearRowStyle">
+
+            <LinearLayout
+                style="@style/LinearCellStyle"
+                android:layout_weight="1">
+
+                <TextView
+                    style="@style/CellTextStyle"
+                    android:text="@string/mark" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                style="@style/LinearCellStyle"
+                android:layout_weight="2">
+
+                <EditText
+                    style="@style/CellEditTextStyle"
+                    android:digits="0123456789"
+                    android:inputType="number"
+                    android:text="@={vm.mark}" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <!-- Секция -->
+        <LinearLayout style="@style/LinearRowStyle">
+
+            <LinearLayout
+                style="@style/LinearCellStyle"
+                android:layout_weight="1">
+
+                <TextView
+                    style="@style/CellTextStyle"
+                    android:text="@string/section" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                style="@style/LinearCellStyle"
+                android:layout_weight="2">
+
+                <EditText
+                    style="@style/CellEditTextStyle"
+                    android:digits="0123456789"
+                    android:inputType="number"
+                    android:text="@={vm.section}" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</layout>

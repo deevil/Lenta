@@ -41,9 +41,8 @@ class TaskCompositionFragment : CoreFragment<FragmentTaskCompositionBinding, Tas
     }
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
+        topToolbarUiModel.title.value = vm.title
         topToolbarUiModel.description.value = getString(R.string.task_composition)
-
-        connectLiveData(vm.title, topToolbarUiModel.title)
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {

@@ -24,7 +24,7 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener {
     val selectedPage = MutableLiveData(0)
 
     val title by lazy {
-        MutableLiveData("ВПП-328 // Возврат от 16.05.08 16:48")
+        "ВПП-328 // Возврат от 16.05.08 16:48"
     }
 
     val deleteEnabled = MutableLiveData(false)

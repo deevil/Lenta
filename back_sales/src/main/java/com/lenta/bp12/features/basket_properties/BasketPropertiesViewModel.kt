@@ -11,7 +11,9 @@ class BasketPropertiesViewModel : CoreViewModel() {
     lateinit var navigator: IScreenNavigator
 
 
-    val title = MutableLiveData("Корзина 02: C-02/1HAW/O/ПП-256985")
+    val title by lazy {
+        "Корзина 02: C-02/1HAW/O/ПП-256985"
+    }
 
     val properties by lazy {
         MutableLiveData(BasketPropertiesUi(

@@ -15,7 +15,7 @@ class SaveDataViewModel : CoreViewModel() {
 
 
     val title by lazy {
-        MutableLiveData("TK - ${sessionInfo.market}")
+        "TK - ${sessionInfo.market}"
     }
 
     val tasks by lazy {

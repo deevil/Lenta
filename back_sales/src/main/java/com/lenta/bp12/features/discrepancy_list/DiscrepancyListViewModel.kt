@@ -14,7 +14,9 @@ class DiscrepancyListViewModel : CoreViewModel() {
 
     val selectionsHelper = SelectionItemsHelper()
 
-    val title = MutableLiveData("ВПП-328 // Возврат от 10.12.2018 15:20")
+    val title by lazy {
+        "ВПП-328 // Возврат от 10.12.2018 15:20"
+    }
 
     val deleteEnabled = MutableLiveData(false)
 

@@ -17,7 +17,9 @@ class GoodDetailsViewModel : CoreViewModel(), PageSelectionListener {
     val basketSelectionsHelper = SelectionItemsHelper()
     val categorySelectionsHelper = SelectionItemsHelper()
 
-    val title = MutableLiveData("000015 Левый носок")
+    val title by lazy {
+        "000015 Левый носок"
+    }
 
     val deleteEnabled = MutableLiveData(false)
 

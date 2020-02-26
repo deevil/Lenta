@@ -25,9 +25,8 @@ class BasketPropertiesFragment : CoreFragment<FragmentBasketPropertiesBinding, B
     }
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
+        topToolbarUiModel.title.value = vm.title
         topToolbarUiModel.description.value = getString(R.string.basket_properties)
-
-        connectLiveData(vm.title, topToolbarUiModel.title)
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {

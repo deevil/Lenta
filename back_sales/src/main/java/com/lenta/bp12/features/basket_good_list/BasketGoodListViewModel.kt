@@ -13,7 +13,9 @@ class BasketGoodListViewModel : CoreViewModel() {
 
     val selectionsHelper = SelectionItemsHelper()
 
-    val title = MutableLiveData("Корзина 02: C-02/1HAW/O/ПП-325985")
+    val title by lazy {
+        "Корзина 02: C-02/1HAW/O/ПП-325985"
+    }
 
     val deleteEnabled = MutableLiveData(false)
 
