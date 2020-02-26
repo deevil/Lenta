@@ -65,7 +65,7 @@
             android:layout_weight="1"
             app:items="@{vm.tasks}"
             app:rv_config="@{rvConfig}"
-            tools:listitem="@layout/item_save_data_task" />
+            tools:listitem="@layout/item_save_data" />
 
     </LinearLayout>
 

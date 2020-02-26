@@ -5,7 +5,7 @@ import android.view.View
 import com.lenta.bp12.BR
 import com.lenta.bp12.R
 import com.lenta.bp12.databinding.FragmentSaveDataBinding
-import com.lenta.bp12.databinding.ItemSaveDataTaskBinding
+import com.lenta.bp12.databinding.ItemSaveDataBinding
 import com.lenta.bp12.platform.extention.getAppComponent
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
@@ -52,8 +52,8 @@ class SaveDataFragment : CoreFragment<FragmentSaveDataBinding, SaveDataViewModel
     }
 
     private fun initSaveData() {
-        binding?.rvConfig = DataBindingRecyclerViewConfig<ItemSaveDataTaskBinding>(
-                layoutId = R.layout.item_save_data_task,
+        binding?.rvConfig = DataBindingRecyclerViewConfig<ItemSaveDataBinding>(
+                layoutId = R.layout.item_save_data,
                 itemId = BR.vm
         )
     }
