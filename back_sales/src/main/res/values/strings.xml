@@ -11,6 +11,7 @@
     <string name="discrepancies_detected">Обнаруженные расхождения</string>
     <string name="basket_properties">Свойства корзины</string>
     <string name="filter_for_search">Фильтр для поиска</string>
+    <string name="task_card">Карточка задания</string>
 
     // Наименование вкладок
     <string name="goods">Товары</string>
@@ -20,6 +21,8 @@
     <string name="search">Поиск</string>
     <string name="not_processed">Не обработанные</string>
     <string name="processed">Обработанные</string>
+    <string name="task_type">Тип задания</string>
+    <string name="comment">Комментарий</string>
 
     // Наименования колонок
     <string name="good">Товар</string>
@@ -61,5 +64,8 @@
     <string name="good_type">Вид товара</string>
     <string name="section">Секция</string>
     <string name="mark">Марка</string>
+    <string name="from">Откуда</string>
+    <string name="storage">Склад</string>
+    <string name="description">Описание</string>
 
 </resources>

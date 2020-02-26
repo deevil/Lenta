@@ -17,6 +17,7 @@ import com.lenta.bp12.features.loading.fast.FastLoadingViewModel
 import com.lenta.bp12.features.main_menu.MainMenuViewModel
 import com.lenta.bp12.features.save_data.SaveDataViewModel
 import com.lenta.bp12.features.select_market.SelectMarketViewModel
+import com.lenta.bp12.features.task_card.TaskCardViewModel
 import com.lenta.bp12.features.task_composition.TaskCompositionViewModel
 import com.lenta.bp12.features.task_list.TaskListViewModel
 import com.lenta.bp12.features.task_search.TaskSearchViewModel
@@ -51,5 +52,6 @@ interface AppComponent : CoreComponent {
     fun inject(it: DiscrepancyListViewModel)
     fun inject(it: BasketPropertiesViewModel)
     fun inject(it: TaskSearchViewModel)
+    fun inject(it: TaskCardViewModel)
 
 }
