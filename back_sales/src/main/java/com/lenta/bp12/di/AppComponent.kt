@@ -8,6 +8,7 @@ import com.lenta.bp12.platform.resource.IResourceManager
 import com.lenta.bp12.repository.IGeneralRepository
 import com.lenta.bp12.features.auth.AuthViewModel
 import com.lenta.bp12.features.basket_good_list.BasketGoodListViewModel
+import com.lenta.bp12.features.basket_properties.BasketPropertiesViewModel
 import com.lenta.bp12.features.discrepancy_list.DiscrepancyListViewModel
 import com.lenta.bp12.features.enter_employee_number.EnterEmployeeNumberViewModel
 import com.lenta.bp12.features.good_details.GoodDetailsViewModel
@@ -47,5 +48,6 @@ interface AppComponent : CoreComponent {
     fun inject(it: TaskListViewModel)
     fun inject(it: GoodListViewModel)
     fun inject(it: DiscrepancyListViewModel)
+    fun inject(it: BasketPropertiesViewModel)
 
 }

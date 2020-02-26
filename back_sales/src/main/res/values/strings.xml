@@ -9,6 +9,7 @@
     <string name="saving_data">Сохранение данных</string>
     <string name="good_list">Список товаров</string>
     <string name="discrepancies_detected">Обнаруженные расхождения</string>
+    <string name="basket_properties">Свойства корзины</string>
 
     // Наименование вкладок
     <string name="goods">Товары</string>
@@ -18,6 +19,14 @@
     <string name="search">Поиск</string>
     <string name="not_processed">Не обработанные</string>
     <string name="processed">Обработанные</string>
+
+    // Наименования колонок
+    <string name="good">Товар</string>
+    <string name="quantity">Количество</string>
+    <string name="of_goods">Товаров</string>
+    <string name="basket">Корзина</string>
+    <string name="task">Задание</string>
+    <string name="tags">Признаки</string>
 
     // Информационные сообщения
     <string name="unsent_data_found_on_device">На устройстве обнаружены непереданные данные. Перейти к данным?</string>
@@ -41,20 +50,14 @@
     <string name="create_task">Создать задание</string>
     <string name="work_with_tasks">Работа с заданиями</string>
 
-    // Наименования колонок
-    <string name="good">Товар</string>
-    <string name="quantity">Количество</string>
-    <string name="of_goods">Товаров</string>
-    <string name="basket">Корзина</string>
-    <string name="task">Задание</string>
-    <string name="tags">Признаки</string>
-
     // Подсказки
     <string name="enter_sap_or_barcode">Введите SAP-код или штрихкод</string>
     <string name="enter_task_or_supplier_number">Введите номер задания или поставщика</string>
 
-
     // Разное
-
+    <string name="provider">Поставщик</string>
+    <string name="gis_control">ГИС-контроль</string>
+    <string name="good_type">Вид товара</string>
+    <string name="section">Секция</string>
 
 </resources>
