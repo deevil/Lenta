@@ -1,12 +1,15 @@
 package ${escapeKotlinIdentifiers(packageName)}
 
 <#if applicationPackage??>
+import android.view.View
 import ${applicationPackage}.R
 import ${applicationPackage}.databinding.${underscoreToCamelCase(layoutName)}Binding
 import ${applicationPackage}.platform.extentions.getAppComponent
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
+import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
+import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
 import com.lenta.shared.utilities.extentions.provideViewModel
 </#if>
@@ -34,12 +37,11 @@ class ${className} : CoreFragment<${underscoreToCamelCase(layoutName)}Binding, $
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
 
         //topToolbarUiModel.title.value = context?.getAppInfo()
-        //topToolbarUiModel.description.value = getString(R.string.app_name)
+        //topToolbarUiModel.title.value = vm.title
+        //topToolbarUiModel.description.value = getString(R.string.description)
 
         //topToolbarUiModel.uiModelButton1.show(ImageButtonDecorationInfo.settings)
         //topToolbarUiModel.uiModelButton2.show(ImageButtonDecorationInfo.exitFromApp)
-
-        //connectLiveData(vm.title, topToolbarUiModel.title)
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {

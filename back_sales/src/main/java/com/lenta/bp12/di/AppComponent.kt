@@ -12,6 +12,7 @@ import com.lenta.bp12.features.basket_properties.BasketPropertiesViewModel
 import com.lenta.bp12.features.discrepancy_list.DiscrepancyListViewModel
 import com.lenta.bp12.features.enter_employee_number.EnterEmployeeNumberViewModel
 import com.lenta.bp12.features.good_details.GoodDetailsViewModel
+import com.lenta.bp12.features.good_info.GoodInfoViewModel
 import com.lenta.bp12.features.good_list.GoodListViewModel
 import com.lenta.bp12.features.loading.fast.FastLoadingViewModel
 import com.lenta.bp12.features.main_menu.MainMenuViewModel
@@ -53,5 +54,6 @@ interface AppComponent : CoreComponent {
     fun inject(it: BasketPropertiesViewModel)
     fun inject(it: TaskSearchViewModel)
     fun inject(it: TaskCardViewModel)
+    fun inject(it: GoodInfoViewModel)
 
 }

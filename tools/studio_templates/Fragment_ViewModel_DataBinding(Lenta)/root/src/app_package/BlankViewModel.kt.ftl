@@ -1,7 +1,9 @@
 package ${escapeKotlinIdentifiers(packageName)}
 
+import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.account.ISessionInfo
+import javax.inject.Inject
 <#if numberOfTabs != "0">
 import androidx.lifecycle.MutableLiveData
 import com.lenta.shared.utilities.databinding.PageSelectionListener
@@ -15,6 +17,10 @@ class ${viewModelName} : CoreViewModel()<#if numberOfTabs != "0">, PageSelection
     lateinit var sessionInfo: ISessionInfo
 
 
+    val title by lazy {
+        "ТК - ${sessionInfo.market}"
+    }
+
     <#if numberOfTabs != "0">
     val selectedPage = MutableLiveData(0)
 
@@ -24,4 +30,5 @@ class ${viewModelName} : CoreViewModel()<#if numberOfTabs != "0">, PageSelection
     </#if>
 
     // TODO: Implement the ViewModel
+
 }

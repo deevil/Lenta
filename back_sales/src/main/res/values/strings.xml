@@ -12,6 +12,7 @@
     <string name="basket_properties">Свойства корзины</string>
     <string name="filter_for_search">Фильтр для поиска</string>
     <string name="task_card">Карточка задания</string>
+    <string name="good_info">Информация о товаре</string>
 
     // Наименование вкладок
     <string name="goods">Товары</string>
