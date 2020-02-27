@@ -68,5 +68,7 @@
     <string name="from">Откуда</string>
     <string name="storage">Склад</string>
     <string name="description">Описание</string>
+    <string name="consignment">Партия</string>
+    <string name="with_bottling_date">с датой розлива</string>
 
 </resources>

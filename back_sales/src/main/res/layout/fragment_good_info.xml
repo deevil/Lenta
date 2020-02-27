@@ -12,12 +12,279 @@
 
     </data>
 
-
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
+            <!-- Количество -->
+            <LinearLayout style="@style/LinearRowStyle">
+
+                <LinearLayout
+                    style="@style/LinearCellStyle"
+                    android:layout_weight="1">
+
+                    <com.lenta.shared.view.ClickableSpinner
+                        android:id="@+id/spin_quantity_type"
+                        style="@style/CellSpinnerStyle"
+                        android:layout_height="match_parent"
+                        android:enabled="@{vm.quantityTypeEnabled}"
+                        app:items="@{vm.quantityTypeList}"
+                        app:onPositionClickListener="@{vm.onSelectQuantityType}"
+                        app:position="@{vm.quantityTypePosition}"
+                        tools:entries="@array/test_list" />
+
+                </LinearLayout>
+
+                <View style="@style/VerticalDivider" />
+
+                <LinearLayout
+                    style="@style/LinearCellStyle"
+                    android:layout_weight="1">
+
+                    <com.lenta.shared.view.EditTextWithSuffix
+                        style="@style/CellEditTextStyle"
+                        android:drawableEnd="@drawable/ic_bei_12dp"
+                        android:enabled="@{vm.quantityEnabled}"
+                        android:text="@={vm.quantity}"
+                        app:digitsForUom="@{vm.ui.units}"
+                        app:quantityType="@{vm.ui.quantityType}"
+                        app:suffix="@{vm.ui.unitsName}"
+                        tools:text="1 шт" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <View style="@style/HorizontalDivider" />
+
+            <!-- Итого -->
+            <LinearLayout style="@style/LinearRowStyle">
+
+                <LinearLayout
+                    style="@style/LinearCellStyle"
+                    android:layout_weight="1">
+
+                    <TextView
+                        style="@style/CellTextStyle"
+                        android:text="@{vm.ui.quantityText1}"
+                        android:textColor="@color/color_text_title_header"
+                        tools:text="Итого*" />
+
+                    <TextView
+                        style="@style/CellTextStyle"
+                        android:text="@{vm.ui.quantityText2}"
+                        android:textColor="@color/color_text_title_header"
+                        tools:text="*По корзине" />
+
+                </LinearLayout>
+
+                <View style="@style/VerticalDivider" />
+
+                <LinearLayout
+                    style="@style/LinearCellStyle"
+                    android:layout_weight="1">
+
+                    <TextView
+                        style="@style/CellTextStyle"
+                        android:text="@{vm.ui.totalQuantity}"
+                        tools:text="1 шт" />
+
+                    <TextView
+                        style="@style/CellTextStyle"
+                        android:text="@{vm.ui.basketQuantity}"
+                        tools:text="1 шт" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <View style="@style/HorizontalDivider" />
+
+            <!-- Производитель -->
+            <LinearLayout style="@style/LinearRowStyle">
+
+                <LinearLayout
+                    style="@style/LinearCellStyle"
+                    android:layout_weight="1"
+                    android:orientation="horizontal">
+
+                    <com.lenta.shared.view.ClickableSpinner
+                        android:id="@+id/spin_provider"
+                        style="@style/CellSpinnerStyle"
+                        android:layout_height="match_parent"
+                        android:enabled="@{vm.providerEnabled}"
+                        app:items="@{vm.providerList}"
+                        app:onPositionClickListener="@{vm.onSelectProvider}"
+                        app:position="@{vm.providerPosition}"
+                        tools:entries="@array/test_list" />
+
+                </LinearLayout>
+
+                <ImageButton
+                    android:id="@+id/btn_increase_quantity"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_marginEnd="8dp"
+                    android:background="@drawable/bg_border_rectangle"
+                    android:foreground="?selectableItemBackground"
+                    android:onClick="@{(v) -> vm.addProvider()}"
+                    android:src="@drawable/ic_add_white_24dp" />
+
+            </LinearLayout>
+
+            <View style="@style/HorizontalDivider" />
+
+            <!-- Импортер -->
+            <LinearLayout style="@style/LinearRowStyle">
+
+                <LinearLayout
+                    style="@style/LinearCellStyle"
+                    android:layout_weight="1">
+
+                    <com.lenta.shared.view.ClickableSpinner
+                        android:id="@+id/spin_importer"
+                        style="@style/CellSpinnerStyle"
+                        android:layout_height="match_parent"
+                        android:enabled="@{vm.importerEnabled}"
+                        app:items="@{vm.importerList}"
+                        app:onPositionClickListener="@{vm.onSelectImporter}"
+                        app:position="@{vm.importerPosition}"
+                        tools:entries="@array/test_list" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <View style="@style/HorizontalDivider" />
+
+            <!-- Дата партии -->
+            <LinearLayout style="@style/LinearRowStyle">
+
+                <LinearLayout
+                    style="@style/LinearCellStyle"
+                    android:layout_weight="1">
+
+                    <TextView
+                        style="@style/CellTextStyle"
+                        android:text="@string/consignment"
+                        android:textColor="@color/color_text_title_header" />
+
+                    <TextView
+                        style="@style/CellTextStyle"
+                        android:text="@string/with_bottling_date"
+                        android:textColor="@color/color_text_title_header" />
+
+                </LinearLayout>
+
+                <View style="@style/VerticalDivider" />
+
+                <LinearLayout
+                    style="@style/LinearCellStyle"
+                    android:layout_weight="1">
+
+                    <EditText
+                        style="@style/CellEditTextStyle"
+                        android:enabled="@{vm.dateEnabled}"
+                        android:text="@={vm.date}"
+                        tools:text="25.12.2016" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <View style="@style/HorizontalDivider" />
+
+        </LinearLayout>
+
+        <!-- Иконки -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="3dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:background="@drawable/bg_white_circle"
+                    android:gravity="center"
+                    android:textSize="12sp"
+                    app:matrixType="@{vm.ui.matrixType}"
+                    tools:text="A" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:background="@drawable/bg_white_circle"
+                    android:gravity="center"
+                    android:textSize="12sp"
+                    app:section="@{vm.ui.section}"
+                    tools:text="02" />
+
+            </LinearLayout>
+
+            <ImageView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                app:goodTypeIcon="@{vm.ui.goodType}"
+                tools:src="@drawable/ic_alcohol_32dp" />
+
+            <ImageView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:src="@drawable/ic_basket_info_32dp"
+                app:invisible="@{!vm.ui.basket}" />
+
+            <ImageView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:src="@drawable/ic_scan_box_32dp"
+                app:invisible="@{!vm.ui.boxScan}" />
+
+            <ImageView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="?selectableItemBackground"
+                android:src="@drawable/ic_scan_barcode_es_32dp"
+                app:invisible="@{!vm.ui.qrScan}" />
+
+            <ImageView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="?selectableItemBackground"
+                android:src="@drawable/ic_scan_barcode_32dp" />
+
+        </LinearLayout>
+
+    </FrameLayout>
 
 </layout>

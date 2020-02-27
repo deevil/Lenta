@@ -60,21 +60,21 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
-                app:isStrictList="@{vm.taskInfo.strict}"
+                app:isStrictList="@{vm.ui.strict}"
                 tools:src="@drawable/ic_strict_list_32dp" />
 
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
-                android:visibility="@{vm.taskInfo.alcohol}"
+                android:visibility="@{vm.ui.alcohol}"
                 tools:src="@drawable/ic_alcohol_32dp" />
 
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
-                android:visibility="@{vm.taskInfo.common}"
+                android:visibility="@{vm.ui.common}"
                 tools:src="@drawable/ic_kandy_32dp" />
 
         </LinearLayout>

@@ -90,11 +90,13 @@
 
                 <TextView
                     style="@style/CellTextStyle"
-                    android:text="@string/storage" />
+                    android:text="@string/storage"
+                    android:textColor="@color/color_text_title_header" />
 
                 <TextView
                     style="@style/CellTextStyle"
-                    android:text="@string/from" />
+                    android:text="@string/from"
+                    android:textColor="@color/color_text_title_header" />
 
             </LinearLayout>
 
@@ -129,7 +131,8 @@
 
                 <TextView
                     style="@style/CellTextStyle"
-                    android:text="@{vm.taskInfo.provider}"
+                    android:text="@{vm.ui.provider}"
+                    android:textColor="@color/color_text_title_header"
                     tools:text="568932 ООО Микоян" />
 
             </LinearLayout>

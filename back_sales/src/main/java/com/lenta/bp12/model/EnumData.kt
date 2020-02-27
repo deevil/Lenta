@@ -10,3 +10,15 @@ enum class BlockType {
     SELF_LOCK,
     LOCK
 }
+
+enum class QuantityType {
+    QUANTITY,
+    CONSIGNMENT,
+    MARK
+}
+
+enum class GoodType {
+    COMMON,
+    ALCOHOL,
+    MARK
+}

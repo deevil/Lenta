@@ -28,7 +28,7 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
 
     val taskName = MutableLiveData("")
 
-    val taskInfo by lazy {
+    val ui by lazy {
         TaskCardUi(
                 provider = "568932 ООО Микоян",
                 description = "Возврат прямому поставщику",
