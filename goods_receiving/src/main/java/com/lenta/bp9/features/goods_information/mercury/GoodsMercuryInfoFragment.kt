@@ -93,6 +93,8 @@ class GoodsMercuryInfoFragment : CoreFragment<FragmentGoodsMercuryInfoBinding, G
             override fun onNothingSelected(adapterView: AdapterView<*>) {
             }
         }
+
+        DateInputMask(binding?.etProductionDate!!).listen()
     }
 
     override fun onToolbarButtonClick(view: View) {

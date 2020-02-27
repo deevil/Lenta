@@ -245,4 +245,8 @@
     <string name="amount_entered_greater_pu">Введенное кол-во больше чем ЕО</string>
     <string name="no_product_in_cargo_unit_dialog">Данного товара нет в ГЕ, вы хотите добавить такой товар как излишек?</string>
     <string name="enter_processing_unit_number">Введите номер ЕО</string>
+    <string name="vet_with_production_date_txt">По ВСД с датой производства</string>
+    <string name="exceeded_planned_quantity_in_processing_unit_dialog">Превышено плановое количество в ЕО. Принять количество и пометить как излишек?</string>
+    <string name="exceeded_planned_quantity_batch_in_processing_unit_dialog">Превышено плановое количество в ЕО. Принять количество и пометить как излишек? (Требуется ввод партионных признаков)</string>
+    <string name="alert_both_surplus_and_underload">Не допускается одновременно указывать Излишек и Недогруз</string>
 </resources>

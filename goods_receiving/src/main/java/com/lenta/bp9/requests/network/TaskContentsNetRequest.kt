@@ -7,6 +7,7 @@ import com.lenta.shared.exception.Failure
 import com.lenta.shared.fmp.ObjectRawStatus
 import com.lenta.shared.functional.Either
 import com.lenta.shared.interactor.UseCase
+import com.lenta.shared.models.core.Manufacturer
 import com.lenta.shared.requests.FmpRequestsHelper
 import com.lenta.shared.requests.SapResponse
 import javax.inject.Inject
@@ -70,6 +71,8 @@ data class TaskContentsRequestResult(
         val sectionsInfo: List<TaskSectionRestData>,
         @SerializedName("ET_MATNR_ABTNR")
         val sectionProducts: List<TaskSectionProductsRestData>,
+        @SerializedName("ET_PROD_TEXT")//Таблица ЕГАИС производителей
+        val manufacturers: List<Manufacturer>,
         @SerializedName("EV_RETCODE")
         override val retCode: Int,
         @SerializedName("EV_ERROR_TEXT")

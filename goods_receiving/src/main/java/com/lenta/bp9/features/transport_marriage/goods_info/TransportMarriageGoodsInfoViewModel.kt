@@ -8,6 +8,7 @@ import com.lenta.bp9.model.task.TaskTransportMarriageInfo
 import com.lenta.bp9.model.task.TaskTransportMarriageInfoRestData
 import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.bp9.repos.IDataBaseRepo
+import com.lenta.bp9.repos.IRepoInMemoryHolder
 import com.lenta.bp9.requests.network.ZmpUtzGrz26V001NetRequest
 import com.lenta.bp9.requests.network.ZmpUtzGrz26V001Params
 import com.lenta.bp9.requests.network.ZmpUtzGrz26V001Result
@@ -35,6 +36,8 @@ class TransportMarriageGoodsInfoViewModel : CoreViewModel(), OnPositionClickList
     lateinit var zmpUtzGrz26V001NetRequest: ZmpUtzGrz26V001NetRequest
     @Inject
     lateinit var hyperHive: HyperHive
+    @Inject
+    lateinit var repoInMemoryHolder: IRepoInMemoryHolder
 
     val transportMarriageInfoCurrent: MutableLiveData<TaskTransportMarriageInfo> = MutableLiveData()
     val cargoUnitNumber by lazy {
@@ -127,6 +130,7 @@ class TransportMarriageGoodsInfoViewModel : CoreViewModel(), OnPositionClickList
 
     private fun handleSuccess(result: ZmpUtzGrz26V001Result) {
         viewModelScope.launch {
+            repoInMemoryHolder.manufacturers.value = result.manufacturers
             transportMarriageOfProduct.value = result.processingUnits.map {
                 val batchNumber = result.taskBatches.findLast {batchesInfo ->
                     batchesInfo.materialNumber == it.materialNumber && batchesInfo.processingUnitNumber == it.processingUnitNumber

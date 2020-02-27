@@ -7,6 +7,7 @@ import com.lenta.bp9.model.task.IReceivingTaskManager
 import com.lenta.bp9.model.task.TaskContents
 import com.lenta.bp9.model.task.TaskDescription
 import com.lenta.bp9.platform.navigation.IScreenNavigator
+import com.lenta.bp9.repos.IRepoInMemoryHolder
 import com.lenta.bp9.requests.network.StartRecountPGENetRequest
 import com.lenta.bp9.requests.network.StartRecountPGEParams
 import com.lenta.bp9.requests.network.StartRecountPGERestInfo
@@ -31,6 +32,8 @@ class LoadingRecountStartPGEViewModel : CoreLoadingViewModel() {
     lateinit var taskManager: IReceivingTaskManager
     @Inject
     lateinit var taskContents: TaskContents
+    @Inject
+    lateinit var repoInMemoryHolder: IRepoInMemoryHolder
 
 
     override val title: MutableLiveData<String> = MutableLiveData()
@@ -67,6 +70,7 @@ class LoadingRecountStartPGEViewModel : CoreLoadingViewModel() {
 
     private fun handleSuccess(result: StartRecountPGERestInfo) {
         viewModelScope.launch {
+            repoInMemoryHolder.manufacturers.value = result.manufacturers
             taskManager.updateTaskDescription(TaskDescription.from(result.taskDescription))
             taskManager.getReceivingTask()?.updateTaskWithContentsPGE(taskContents.getTaskContentsPGEInfo(result))
             screenNavigator.openGoodsListScreen()

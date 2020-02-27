@@ -6,6 +6,7 @@ import com.lenta.bp9.features.transport_marriage.ActItem
 import com.lenta.bp9.model.task.IReceivingTaskManager
 import com.lenta.bp9.model.task.TaskTransportMarriageInfo
 import com.lenta.bp9.platform.navigation.IScreenNavigator
+import com.lenta.bp9.repos.IRepoInMemoryHolder
 import com.lenta.bp9.requests.network.ZmpUtzGrz26V001NetRequest
 import com.lenta.bp9.requests.network.ZmpUtzGrz26V001Params
 import com.lenta.bp9.requests.network.ZmpUtzGrz26V001Result
@@ -29,6 +30,8 @@ class TransportMarriageCargoUnitViewModel : CoreViewModel(), OnOkInSoftKeyboardL
     lateinit var zmpUtzGrz26V001NetRequest: ZmpUtzGrz26V001NetRequest
     @Inject
     lateinit var hyperHive: HyperHive
+    @Inject
+    lateinit var repoInMemoryHolder: IRepoInMemoryHolder
 
     val actSelectionsHelper = SelectionItemsHelper()
     val cargoUnitNumber: MutableLiveData<String> = MutableLiveData("")
@@ -105,6 +108,7 @@ class TransportMarriageCargoUnitViewModel : CoreViewModel(), OnOkInSoftKeyboardL
 
     private fun handleSuccessSearchProduct(result: ZmpUtzGrz26V001Result) {
         viewModelScope.launch {
+            repoInMemoryHolder.manufacturers.value = result.manufacturers
             result.processingUnits.map {processingUnitInfo ->
                 val batchNumber = result.taskBatches.findLast {batchesInfo ->
                     batchesInfo.materialNumber == processingUnitInfo.materialNumber && batchesInfo.processingUnitNumber == processingUnitInfo.processingUnitNumber
@@ -182,6 +186,7 @@ class TransportMarriageCargoUnitViewModel : CoreViewModel(), OnOkInSoftKeyboardL
 
     private fun handleSuccessEntirely(result: ZmpUtzGrz26V001Result) {
         viewModelScope.launch {
+            repoInMemoryHolder.manufacturers.value = result.manufacturers
             result.processingUnits.map {processingUnitInfo ->
                 val batchNumber = result.taskBatches.findLast {batchesInfo ->
                     batchesInfo.materialNumber == processingUnitInfo.materialNumber && batchesInfo.processingUnitNumber == processingUnitInfo.processingUnitNumber

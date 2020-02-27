@@ -48,6 +48,8 @@ data class StartRecountPGERestInfo(
         val taskBatchesDiscrepancies: List<TaskBatchesDiscrepanciesRestData>,
         @SerializedName("ET_VET_DIFF") //Таблица расхождений по вет.товарам
         val taskMercuryInfoRestData: List<TaskMercuryInfoRestData>,
+        @SerializedName("ET_PROD_TEXT")//Таблица ЕГАИС производителей
+        val manufacturers: List<Manufacturer>,
         @SerializedName("EV_RETCODE")
         override val retCode: Int,
         @SerializedName("EV_ERROR_TEXT")
