@@ -79,6 +79,7 @@
                         style="@style/CellTextStyle"
                         android:text="@{vm.ui.quantityText2}"
                         android:textColor="@color/color_text_title_header"
+                        android:visibility="@{vm.ui.basket}"
                         tools:text="*По корзине" />
 
                 </LinearLayout>
@@ -97,6 +98,7 @@
                     <TextView
                         style="@style/CellTextStyle"
                         android:text="@{vm.ui.basketQuantity}"
+                        android:visibility="@{vm.ui.basket}"
                         tools:text="1 шт" />
 
                 </LinearLayout>
@@ -139,65 +141,74 @@
 
             <View style="@style/HorizontalDivider" />
 
-            <!-- Импортер -->
-            <LinearLayout style="@style/LinearRowStyle">
+            <!-- Алкогольная часть -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="@{vm.ui.fullMode}">
 
-                <LinearLayout
-                    style="@style/LinearCellStyle"
-                    android:layout_weight="1">
+                <!-- Импортер -->
+                <LinearLayout style="@style/LinearRowStyle">
 
-                    <com.lenta.shared.view.ClickableSpinner
-                        android:id="@+id/spin_importer"
-                        style="@style/CellSpinnerStyle"
-                        android:layout_height="match_parent"
-                        android:enabled="@{vm.importerEnabled}"
-                        app:items="@{vm.importerList}"
-                        app:onPositionClickListener="@{vm.onSelectImporter}"
-                        app:position="@{vm.importerPosition}"
-                        tools:entries="@array/test_list" />
+                    <LinearLayout
+                        style="@style/LinearCellStyle"
+                        android:layout_weight="1">
+
+                        <com.lenta.shared.view.ClickableSpinner
+                            android:id="@+id/spin_importer"
+                            style="@style/CellSpinnerStyle"
+                            android:layout_height="match_parent"
+                            android:enabled="@{vm.importerEnabled}"
+                            app:items="@{vm.importerList}"
+                            app:onPositionClickListener="@{vm.onSelectImporter}"
+                            app:position="@{vm.importerPosition}"
+                            tools:entries="@array/test_list" />
+
+                    </LinearLayout>
 
                 </LinearLayout>
+
+                <View style="@style/HorizontalDivider" />
+
+                <!-- Дата партии -->
+                <LinearLayout style="@style/LinearRowStyle">
+
+                    <LinearLayout
+                        style="@style/LinearCellStyle"
+                        android:layout_weight="1">
+
+                        <TextView
+                            style="@style/CellTextStyle"
+                            android:text="@string/consignment"
+                            android:textColor="@color/color_text_title_header" />
+
+                        <TextView
+                            style="@style/CellTextStyle"
+                            android:text="@string/with_bottling_date"
+                            android:textColor="@color/color_text_title_header" />
+
+                    </LinearLayout>
+
+                    <View style="@style/VerticalDivider" />
+
+                    <LinearLayout
+                        style="@style/LinearCellStyle"
+                        android:layout_weight="1">
+
+                        <EditText
+                            style="@style/CellEditTextStyle"
+                            android:enabled="@{vm.dateEnabled}"
+                            android:text="@={vm.date}"
+                            tools:text="25.12.2016" />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <View style="@style/HorizontalDivider" />
 
             </LinearLayout>
-
-            <View style="@style/HorizontalDivider" />
-
-            <!-- Дата партии -->
-            <LinearLayout style="@style/LinearRowStyle">
-
-                <LinearLayout
-                    style="@style/LinearCellStyle"
-                    android:layout_weight="1">
-
-                    <TextView
-                        style="@style/CellTextStyle"
-                        android:text="@string/consignment"
-                        android:textColor="@color/color_text_title_header" />
-
-                    <TextView
-                        style="@style/CellTextStyle"
-                        android:text="@string/with_bottling_date"
-                        android:textColor="@color/color_text_title_header" />
-
-                </LinearLayout>
-
-                <View style="@style/VerticalDivider" />
-
-                <LinearLayout
-                    style="@style/LinearCellStyle"
-                    android:layout_weight="1">
-
-                    <EditText
-                        style="@style/CellEditTextStyle"
-                        android:enabled="@{vm.dateEnabled}"
-                        android:text="@={vm.date}"
-                        tools:text="25.12.2016" />
-
-                </LinearLayout>
-
-            </LinearLayout>
-
-            <View style="@style/HorizontalDivider" />
 
         </LinearLayout>
 
