@@ -16,28 +16,69 @@
 
     </data>
 
-    <androidx.viewpager.widget.ViewPager
-        android:id="@+id/view_pager"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:pageSelectionListener="@{vm}"
-        app:tabPosition="@{vm.selectedPage}"
-        app:viewPagerSettings="@{viewPagerSettings}">
+        android:orientation="vertical">
 
-        <com.google.android.material.tabs.TabLayout
-            android:id="@+id/tab_strip"
+        <!-- Табы -->
+        <androidx.viewpager.widget.ViewPager
+            android:id="@+id/view_pager"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            app:pageSelectionListener="@{vm}"
+            app:tabPosition="@{vm.selectedPage}"
+            app:viewPagerSettings="@{viewPagerSettings}">
+
+            <com.google.android.material.tabs.TabLayout
+                android:id="@+id/tab_strip"
+                android:layout_width="match_parent"
+                android:layout_height="32dp"
+                android:background="@color/colorBottomPanelBackground"
+                android:elevation="0dp"
+                app:tabIndicatorColor="@color/colorTabIndicator"
+                app:tabIndicatorHeight="3dp"
+                app:tabMode="scrollable"
+                app:tabSelectedTextColor="@color/colorTabIndicator"
+                app:tabTextAppearance="@style/TabLayoutStyle"
+                app:tabTextColor="@color/colorWhite"
+                tools:targetApi="lollipop" />
+
+        </androidx.viewpager.widget.ViewPager>
+
+        <!-- Иконки -->
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="32dp"
-            android:background="@color/colorBottomPanelBackground"
-            android:elevation="0dp"
-            app:tabIndicatorColor="@color/colorTabIndicator"
-            app:tabIndicatorHeight="3dp"
-            app:tabMode="scrollable"
-            app:tabSelectedTextColor="@color/colorTabIndicator"
-            app:tabTextAppearance="@style/TabLayoutStyle"
-            app:tabTextColor="@color/colorWhite"
-            tools:targetApi="lollipop" />
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="3dp"
+            android:layout_marginTop="8dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
 
-    </androidx.viewpager.widget.ViewPager>
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                app:isStrictList="@{vm.taskInfo.strict}"
+                tools:src="@drawable/ic_strict_list_32dp" />
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:visibility="@{vm.taskInfo.alcohol}"
+                tools:src="@drawable/ic_alcohol_32dp" />
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:visibility="@{vm.taskInfo.common}"
+                tools:src="@drawable/ic_kandy_32dp" />
+
+        </LinearLayout>
+
+    </LinearLayout>
 
 </layout>

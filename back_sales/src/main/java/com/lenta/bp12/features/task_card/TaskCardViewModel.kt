@@ -32,7 +32,10 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
         TaskCardUi(
                 provider = "568932 ООО Микоян",
                 description = "Возврат прямому поставщику",
-                comment = "Комплектование необходимо выполнить до 16:00!!!"
+                comment = "Комплектование необходимо выполнить до 16:00!!!",
+                isStrict = true,
+                isAlcohol = false,
+                isCommon = true
         )
     }
 
@@ -93,5 +96,8 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
 data class TaskCardUi(
         val provider: String,
         val description: String,
-        val comment: String
+        val comment: String,
+        val isStrict: Boolean,
+        val isAlcohol: Boolean,
+        val isCommon: Boolean
 )

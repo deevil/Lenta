@@ -37,20 +37,15 @@ fun setAlcoIcon(imageView: ImageView, productType: ProductType?) {
             } else {
                 imageView.setOnClickListener(null)
             }
-
         }
-
     }
-
-
 }
-
 
 @BindingAdapter("isStrictList")
 fun setStrictListIcon(imageView: ImageView, isStrictList: Boolean?) {
     (when (isStrictList) {
         true -> R.drawable.ic_strict_list_32dp
-        false -> R.drawable.ic_not_strict_list_48dp
+        false -> R.drawable.ic_not_strict_list_32dp
         else -> 0
     }).let { iconRes ->
         imageView.setImageResource(iconRes)
@@ -69,12 +64,8 @@ fun setStrictListIcon(imageView: ImageView, isStrictList: Boolean?) {
             } else {
                 imageView.setOnClickListener(null)
             }
-
         }
-
     }
-
-
 }
 
 @BindingAdapter("focusable")
@@ -83,4 +74,3 @@ fun setAlcoIcon(imageView: ImageView, focusable: Boolean?) {
         imageView.focusable = if (focusable == true) FOCUSABLE_AUTO else NOT_FOCUSABLE
     }
 }
-
