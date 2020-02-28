@@ -4,14 +4,20 @@ import android.content.Context
 import com.lenta.bp12.R
 import com.lenta.bp12.features.auth.AuthFragment
 import com.lenta.bp12.features.basket_good_list.BasketGoodListFragment
+import com.lenta.bp12.features.basket_properties.BasketPropertiesFragment
+import com.lenta.bp12.features.discrepancy_list.DiscrepancyListFragment
 import com.lenta.bp12.features.enter_employee_number.EnterEmployeeNumberFragment
 import com.lenta.bp12.features.good_details.GoodDetailsFragment
+import com.lenta.bp12.features.good_info.GoodInfoFragment
+import com.lenta.bp12.features.good_list.GoodListFragment
 import com.lenta.bp12.features.loading.fast.FastDataLoadingFragment
 import com.lenta.bp12.features.main_menu.MainMenuFragment
 import com.lenta.bp12.features.save_data.SaveDataFragment
 import com.lenta.bp12.features.select_market.SelectMarketFragment
+import com.lenta.bp12.features.task_card.TaskCardFragment
 import com.lenta.bp12.features.task_composition.TaskCompositionFragment
 import com.lenta.bp12.features.task_list.TaskListFragment
+import com.lenta.bp12.features.task_search.TaskSearchFragment
 import com.lenta.shared.account.IAuthenticator
 import com.lenta.shared.features.alert.AlertFragment
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
@@ -100,6 +106,42 @@ class ScreenNavigator @Inject constructor(
     override fun openTaskListScreen() {
         runOrPostpone {
             getFragmentStack()?.push(TaskListFragment())
+        }
+    }
+
+    override fun openBasketPropertiesScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(BasketPropertiesFragment())
+        }
+    }
+
+    override fun openDiscrepancyListScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(DiscrepancyListFragment())
+        }
+    }
+
+    override fun openGoodInfoScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(GoodInfoFragment())
+        }
+    }
+
+    override fun openGoodListScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(GoodListFragment())
+        }
+    }
+
+    override fun openTaskCardScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(TaskCardFragment())
+        }
+    }
+
+    override fun openTaskSearchScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(TaskSearchFragment())
         }
     }
 
@@ -303,6 +345,12 @@ interface IScreenNavigator : ICoreNavigator {
     fun openGoodDetailsScreen()
     fun openSaveDataScreen()
     fun openTaskListScreen()
+    fun openBasketPropertiesScreen()
+    fun openDiscrepancyListScreen()
+    fun openGoodInfoScreen()
+    fun openGoodListScreen()
+    fun openTaskCardScreen()
+    fun openTaskSearchScreen()
 
     fun showUnsentDataFoundOnDevice(deleteCallback: () -> Unit, goOverCallback: () -> Unit)
     fun showTwelveCharactersEntered(sapCallback: () -> Unit, barCallback: () -> Unit)
