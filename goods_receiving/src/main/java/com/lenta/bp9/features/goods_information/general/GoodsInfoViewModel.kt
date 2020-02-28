@@ -1,5 +1,6 @@
 package com.lenta.bp9.features.goods_information.general
 
+import android.annotation.SuppressLint
 import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
@@ -12,6 +13,8 @@ import com.lenta.bp9.model.task.TaskType
 import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.bp9.repos.IDataBaseRepo
 import com.lenta.shared.models.core.Uom
+import com.lenta.shared.platform.time.ITimeMonitor
+import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo.Companion.add
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.pojo.QualityInfo
 import com.lenta.shared.requests.combined.scan_info.pojo.ReasonRejectionInfo
@@ -21,6 +24,10 @@ import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.toStringFormatted
 import com.lenta.shared.view.OnPositionClickListener
 import kotlinx.coroutines.launch
+import org.joda.time.DateTime
+import org.joda.time.Days
+import java.text.SimpleDateFormat
+import java.util.*
 import javax.inject.Inject
 
 class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
@@ -37,6 +44,8 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
     lateinit var searchProductDelegate: SearchProductDelegate
     @Inject
     lateinit var context: Context
+    @Inject
+    lateinit var timeMonitor: ITimeMonitor
 
     val productInfo: MutableLiveData<TaskProductInfo> = MutableLiveData()
     val uom: MutableLiveData<Uom?> by lazy {
@@ -50,6 +59,8 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
     val spinQualitySelectedPosition: MutableLiveData<Int> = MutableLiveData(0)
     val spinReasonRejection: MutableLiveData<List<String>> = MutableLiveData()
     val spinReasonRejectionSelectedPosition: MutableLiveData<Int> = MutableLiveData(0)
+    val spinShelfLife: MutableLiveData<List<String>> = MutableLiveData()
+    val spinShelfLifeSelectedPosition: MutableLiveData<Int> = MutableLiveData(0)
     val suffix: MutableLiveData<String> = MutableLiveData()
     private val roundingQuantity: MutableLiveData<Double> = MutableLiveData()
     private val countWithoutParamGrsGrundNeg: MutableLiveData<Double> = MutableLiveData()
@@ -59,16 +70,26 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
     val isDefect: MutableLiveData<Boolean> = spinQualitySelectedPosition.combineLatest(isDiscrepancy).map {
         if (taskManager.getReceivingTask()!!.taskHeader.taskType != TaskType.RecalculationCargoUnit) {
             if (!it!!.second) {
-                it.first != 0
+                qualityInfo.value?.get(it.first)?.code != "1"
             } else true
         } else {
-           false
+            if (!it!!.second) {
+                qualityInfo.value?.get(it.first)?.code != "1" && qualityInfo.value?.get(it.first)?.code != "2"
+            } else true
         }
     }
 
     private val qualityInfo: MutableLiveData<List<QualityInfo>> = MutableLiveData()
     private val reasonRejectionInfo: MutableLiveData<List<ReasonRejectionInfo>> = MutableLiveData()
     val enteredProcessingUnitNumber: MutableLiveData<String> = MutableLiveData()
+    val generalShelfLife: MutableLiveData<String> = MutableLiveData()
+    val remainingShelfLife: MutableLiveData<String> = MutableLiveData()
+    val shelfLifeDate: MutableLiveData<String> = MutableLiveData("")
+    val isPerishable: MutableLiveData<Boolean> = MutableLiveData(false)
+    @SuppressLint("SimpleDateFormat")
+    private val formatter = SimpleDateFormat("dd.MM.yyyy")
+    private val expirationDate: MutableLiveData<Calendar> = MutableLiveData()
+    private val currentDate: MutableLiveData<Date> = MutableLiveData()
 
     val isGoodsAddedAsSurplus: MutableLiveData<Boolean> by lazy {
         MutableLiveData(productInfo.value?.isGoodsAddedAsSurplus == true )
@@ -195,7 +216,8 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
                 if (isDiscrepancy.value!!) {
                     count.value = taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.getCountProductNotProcessedOfProduct(productInfo.value!!).toStringFormatted()
                     qualityInfo.value = dataBase.getQualityInfoForDiscrepancy()
-                    spinQualitySelectedPosition.value = 2
+
+                    spinQualitySelectedPosition.value = qualityInfo.value!!.indexOfLast {it.code == "4"}
                 } else {
                     qualityInfo.value = dataBase.getQualityInfo()
                 }
@@ -204,6 +226,20 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
             spinQuality.value = qualityInfo.value?.map {
                 it.name
             }
+
+            /** определяем, что товар скоропорт https://trello.com/c/8sOTWtB7 */
+            val paramGrzUffMhdhb = dataBase.getParamGrzUffMhdhb()?.toInt() ?: 60
+            isPerishable.value = (productInfo.value?.generalShelfLife?.toInt() ?: 0) > 0 ||
+                    (productInfo.value?.remainingShelfLife?.toInt() ?: 0) > 0 ||
+                    ((productInfo.value?.mhdhbDays ?: 0) > 0 && (productInfo.value?.mhdhbDays ?: 0) < paramGrzUffMhdhb )
+            if (isPerishable.value == true) {
+                spinShelfLife.value = dataBase.getTermControlInfo()
+                currentDate.value = timeMonitor.getServerDate()
+                expirationDate.value = Calendar.getInstance()
+                generalShelfLife.value = productInfo.value?.generalShelfLife
+                remainingShelfLife.value = productInfo.value?.remainingShelfLife
+            }
+
             if (processGeneralProductService.newProcessGeneralProductService(productInfo.value!!) == null) {
                 screenNavigator.goBack()
                 screenNavigator.openAlertWrongProductType()
@@ -213,11 +249,6 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
 
     fun onClickDetails() {
         screenNavigator.openGoodsDetailsScreen(productInfo.value!!)
-    }
-
-    fun onClickApply() {
-        isClickApply.value = true
-        onClickAdd()
     }
 
     fun onScanResult(data: String) {
@@ -233,6 +264,10 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
             spinQualitySelectedPosition.value = position
             updateDataSpinReasonRejection(qualityInfo.value!![position].code)
         }
+    }
+
+    fun onClickPositionSpinShelfLife(position: Int){
+        spinShelfLifeSelectedPosition.value = position
     }
 
     private suspend fun updateDataSpinReasonRejection(selectedQuality: String) {
@@ -253,13 +288,38 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
         }
     }
 
+    fun onClickUnitChange() {
+        isEizUnit.value = !isEizUnit.value!!
+        suffix.value = if (isEizUnit.value!!) {
+            productInfo.value?.purchaseOrderUnits?.name
+        } else {
+            productInfo.value?.uom?.name
+        }
+        count.value = count.value
+    }
+
+    private fun isCorrectDate(checkDate: String?): Boolean {
+        return try {
+            val date = formatter.parse(checkDate)
+            !(checkDate != formatter.format(date) || date!! > currentDate.value)
+        } catch (e: Exception) {
+            false
+        }
+    }
+
+    fun onClickApply() {
+        isClickApply.value = true
+        onClickAdd()
+    }
+
     fun onClickAdd() {
+        //ПГЕ
         if (isTaskPGE.value == true) {
             var addNewCount = count.value!!.toDouble()
             if (isEizUnit.value!!) {
                 addNewCount *= productInfo.value?.quantityInvest?.toDouble() ?: 1.0
             }
-            if (isGoodsAddedAsSurplus.value == true) {
+            if (isGoodsAddedAsSurplus.value == true) { //GRZ. ПГЕ. Добавление товара, который не числится в задании https://trello.com/c/im9rJqrU
                 processGeneralProductService.setProcessingUnitNumber(enteredProcessingUnitNumber.value!!)
             }
             processGeneralProductService.add(addNewCount.toString(), qualityInfo.value!![spinQualitySelectedPosition.value!!].code)
@@ -267,7 +327,17 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
             return
         }
 
-        //ППП
+        //ППП-скоропорт. в блок-схеме лист 6 "Карточка товара ППП" блок - 6.3
+        if (isPerishable.value == true) {
+            addPerishable()
+            return
+        }
+
+        //ППП-обычный товар. в блок-схеме лист 6 "Карточка товара ППП" блок - 6.8
+        addOrdinaryGoods()
+    }
+
+    private fun addOrdinaryGoods() {
         //блок 6.16
         if (processGeneralProductService.countEqualOrigQuantity(countValue.value!!)) {//блок 6.16 (да)
             //блок 6.172
@@ -309,6 +379,69 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
                 }
             }
         }
+    }
+
+    //ППП-скоропорт. в блок-схеме лист 6 "Карточка товара ППП" блок - 6.3
+    private fun addPerishable() {
+        //блок 6.101
+        if (qualityInfo.value?.get(spinQualitySelectedPosition.value ?: 0)?.code != "1") {
+            addOrdinaryGoods()
+            return
+        }
+
+        if (!isCorrectDate(shelfLifeDate.value)) {
+            screenNavigator.openAlertNotCorrectDate()
+            return
+        }
+
+        //блок 6.131
+        if (spinShelfLifeSelectedPosition.value == 1) {
+            //блок 6.146
+            expirationDate.value!!.time = formatter.parse(shelfLifeDate.value)
+            return
+        } else {
+            //блок 6.144
+            expirationDate.value!!.time = formatter.parse(shelfLifeDate.value)
+            expirationDate.value!!.add(Calendar.DATE, productInfo.value!!.generalShelfLife.toInt())
+        }
+
+        //блок 6.152
+        if (expirationDate.value!!.time <= currentDate.value) {
+            //блок 6.158
+            screenNavigator.openExpiredDialog(
+                    //блок 6.169
+                    noCallbackFunc = {
+                        //блок 6.172
+                    },
+                    //блок 6.170
+                    yesCallbackFunc = {
+                        //блок 6.174
+                        spinQualitySelectedPosition.value = qualityInfo.value!!.indexOfLast {it.code == "7"}
+                    }
+            )
+            return
+        }
+
+        //блоки 6.157 и 6.182
+        if ( Days.daysBetween(DateTime(currentDate.value), DateTime(expirationDate.value!!.time)).days > productInfo.value!!.remainingShelfLife.toLong() ) {
+            //блок 6.192
+            addOrdinaryGoods()
+            return
+        }
+
+        //блок 6.184
+        screenNavigator.openExpiredDialog(
+                //блок 6.189
+                noCallbackFunc = {
+                    //блок 6.191
+                    spinQualitySelectedPosition.value = qualityInfo.value!!.indexOfLast {it.code == "7"}
+                },
+                //блок 6.188
+                yesCallbackFunc = {
+                    //блок 6.192
+                    addOrdinaryGoods()
+                }
+        )
     }
 
     //блок 6.58
@@ -426,16 +559,6 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
             }
 
         }
-    }
-
-    fun onClickUnitChange() {
-        isEizUnit.value = !isEizUnit.value!!
-        suffix.value = if (isEizUnit.value!!) {
-            productInfo.value?.purchaseOrderUnits?.name
-        } else {
-            productInfo.value?.uom?.name
-        }
-        count.value = count.value
     }
 
 }

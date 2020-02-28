@@ -16,6 +16,7 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.scan.OnScanResultListener
+import com.lenta.shared.utilities.DateInputMask
 import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.provideViewModel
 import com.lenta.shared.utilities.extentions.toStringFormatted
@@ -63,7 +64,18 @@ class GoodsInfoFragment : CoreFragment<FragmentGoodsInfoBinding, GoodsInfoViewMo
 
                 override fun onNothingSelected(adapterView: AdapterView<*>) {
                 }
+        }
+
+        binding?.spinnerShelfLife?.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(adapterView: AdapterView<*>, view: View?, position: Int, l: Long) {
+                vm.onClickPositionSpinShelfLife(position)
             }
+
+            override fun onNothingSelected(adapterView: AdapterView<*>) {
+            }
+        }
+
+        DateInputMask(binding?.etShelfLife!!).listen()
     }
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {

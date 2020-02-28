@@ -17,7 +17,6 @@ import com.lenta.bp9.features.goods_information.excise_alco.ExciseAlcoInfoFragme
 import com.lenta.bp9.features.goods_information.general.GoodsInfoFragment
 import com.lenta.bp9.features.goods_information.mercury.GoodsMercuryInfoFragment
 import com.lenta.bp9.features.goods_information.non_excise_alco.NonExciseAlcoInfoFragment
-import com.lenta.bp9.features.goods_information.perishables.PerishablesInfoFragment
 import com.lenta.bp9.features.goods_list.GoodsListFragment
 import com.lenta.bp9.features.input_outgoing_fillings.InputOutgoingFillingsFragment
 import com.lenta.bp9.features.list_goods_transfer.ListGoodsTransferFragment
@@ -41,9 +40,9 @@ import com.lenta.bp9.features.task_card.TaskCardFragment
 import com.lenta.bp9.features.task_list.TaskListFragment
 import com.lenta.bp9.features.transfer_goods_section.TransferGoodsSectionFragment
 import com.lenta.bp9.features.transport_marriage.TransportMarriageFragment
+import com.lenta.bp9.features.transport_marriage.cargo_unit.TransportMarriageCargoUnitFragment
 import com.lenta.bp9.features.transport_marriage.goods_details.TransportMarriageGoodsDetailsFragment
 import com.lenta.bp9.features.transport_marriage.goods_info.TransportMarriageGoodsInfoFragment
-import com.lenta.bp9.features.transport_marriage.cargo_unit.TransportMarriageCargoUnitFragment
 import com.lenta.bp9.features.transportation_number.TransportationNumberFragment
 import com.lenta.bp9.model.task.*
 import com.lenta.bp9.model.task.revise.DeliveryDocumentRevise
@@ -405,12 +404,6 @@ class ScreenNavigator(
     override fun openUnlockTaskLoadingScreen() {
         runOrPostpone {
             getFragmentStack()?.push(LoadingUnlockTaskFragment())
-        }
-    }
-
-    override fun openPerishablesInfoScreen(productInfo: TaskProductInfo) {
-        runOrPostpone {
-            getFragmentStack()?.push(PerishablesInfoFragment.create(productInfo))
         }
     }
 
@@ -1067,7 +1060,6 @@ interface IScreenNavigator : ICoreNavigator {
     fun openTransportConditionsScreen()
     fun openFinishConditionsReviseLoadingScreen()
     fun openStartConditionsReviseLoadingScreen()
-    fun openPerishablesInfoScreen(productInfo: TaskProductInfo)
     fun openRoundingIssueDialog(noCallbackFunc: () -> Unit, yesCallbackFunc: () -> Unit)
     fun openTransferGoodsSectionScreen()
     fun openListGoodsTransferScreen(sectionInfo: TaskSectionInfo)
