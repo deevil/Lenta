@@ -3,6 +3,7 @@ package com.lenta.bp12.features.discrepancy_list
 import android.os.Bundle
 import android.view.View
 import android.widget.AdapterView
+import com.lenta.bp12.BR
 import com.lenta.bp12.R
 import com.lenta.bp12.databinding.FragmentDiscrepancyListBinding
 import com.lenta.bp12.databinding.ItemDiscrepancyListBinding
@@ -74,7 +75,7 @@ class DiscrepancyListFragment : CoreFragment<FragmentDiscrepancyListBinding, Dis
 
             layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
                     layoutId = R.layout.item_discrepancy_list,
-                    itemId = com.lenta.bp14.BR.vm,
+                    itemId = BR.vm,
                     realisation = object : DataBindingAdapter<ItemDiscrepancyListBinding> {
                         override fun onCreate(binding: ItemDiscrepancyListBinding) {
                         }

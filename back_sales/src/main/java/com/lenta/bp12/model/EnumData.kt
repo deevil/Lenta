@@ -20,5 +20,5 @@ enum class QuantityType {
 enum class GoodType {
     COMMON,
     ALCOHOL,
-    MARK
+    EXCISE
 }

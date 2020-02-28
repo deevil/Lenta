@@ -71,4 +71,8 @@
     <string name="consignment">Партия</string>
     <string name="with_bottling_date">с датой розлива</string>
 
+    <string name="common_product">Обычный товар</string>
+    <string name="alcohol">Алкоголь</string>
+    <string name="excise_alcohol">Акцизный алкоголь</string>
+
 </resources>
