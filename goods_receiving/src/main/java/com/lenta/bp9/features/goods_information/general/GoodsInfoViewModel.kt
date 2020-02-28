@@ -326,7 +326,7 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
                 processGeneralProductService.setProcessingUnitNumber(enteredProcessingUnitNumber.value!!)
                 processGeneralProductService.add(addNewCount.toString(), qualityInfo.value!![spinQualitySelectedPosition.value!!].code)
                 clickBtnApply()
-            } else { //Пересчёт обычного товара (шт.) https://trello.com/c/OMjrZPhg
+            } else { //todo реализовано по карточке https://trello.com/c/OMjrZPhg, а необходимо реализовать как в карточке https://trello.com/c/8sOTWtB7 (т.к. первую карточку писал стажер, а вторую Маша Стоян, с ее слов)
                 if (processGeneralProductService.countLessEqualOrderQuantityPGE(addNewCount)) {
                     processGeneralProductService.add(addNewCount.toString(), qualityInfo.value!![spinQualitySelectedPosition.value!!].code)
                     clickBtnApply()
