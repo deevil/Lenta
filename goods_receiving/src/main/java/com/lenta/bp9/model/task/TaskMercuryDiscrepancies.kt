@@ -3,7 +3,7 @@ package com.lenta.bp9.model.task
 import com.google.gson.annotations.SerializedName
 import com.lenta.shared.models.core.Uom
 
-//IT_VET_DIFF Таблица расхождений по вет.товарам
+//IT_VET_DIFF Таблица расхождений по вет.товарам (это информация введенная пользователем по веттоварам и ВСД и отправляемая на сервер для сохранения)
 data class TaskMercuryDiscrepancies(
         /**номер продукта (ET_VET_DIFF -> MATNR)*/
         val materialNumber: String,

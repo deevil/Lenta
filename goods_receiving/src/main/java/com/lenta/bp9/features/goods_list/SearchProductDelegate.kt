@@ -8,6 +8,7 @@ import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.bp9.platform.requestCodeAddGoodsSurplus
 import com.lenta.bp9.platform.requestCodeTypeBarCode
 import com.lenta.bp9.platform.requestCodeTypeSap
+import com.lenta.bp9.repos.IRepoInMemoryHolder
 import com.lenta.bp9.requests.network.ZmpUtzGrz31V001NetRequest
 import com.lenta.bp9.requests.network.ZmpUtzGrz31V001Params
 import com.lenta.bp9.requests.network.ZmpUtzGrz31V001Result
@@ -34,7 +35,8 @@ class SearchProductDelegate @Inject constructor(
         private val taskManager: IReceivingTaskManager,
         private val sessionInfo: ISessionInfo,
         private val context: Context,
-        private val zmpUtzGrz31V001NetRequest: ZmpUtzGrz31V001NetRequest
+        private val zmpUtzGrz31V001NetRequest: ZmpUtzGrz31V001NetRequest,
+        private val repoInMemoryHolder: IRepoInMemoryHolder
 ) {
 
     private var scanInfoResult: ScanInfoResult? = null
@@ -61,7 +63,8 @@ class SearchProductDelegate @Inject constructor(
                 taskManager,
                 sessionInfo,
                 context,
-                zmpUtzGrz31V001NetRequest
+                zmpUtzGrz31V001NetRequest,
+                repoInMemoryHolder
         )
         searchProductDelegate.init(viewModelScope, scanResultHandler)
         return searchProductDelegate
@@ -146,6 +149,7 @@ class SearchProductDelegate @Inject constructor(
 
     private fun handleSuccessAddGoodsSurplus(result: ZmpUtzGrz31V001Result) {
         Logg.d { "AddGoodsSurplus ${result}" }
+        repoInMemoryHolder.manufacturers.value = result.manufacturers
         val materialInfo = zfmpUtz48V001.getProductInfoByMaterial(result.productSurplusDataPGE.materialNumber)
         val goodsSurplus = TaskProductInfo(
                 materialNumber = result.productSurplusDataPGE.materialNumber,
@@ -216,7 +220,12 @@ class SearchProductDelegate @Inject constructor(
         when (taskProductInfo.type) {
             ProductType.General -> {
                 if (taskProductInfo.isVet) {
-                    screenNavigator.openGoodsMercuryInfoScreen(taskProductInfo, isDiscrepancy)
+                    //todo для ПГЕ Меркурия, товар, который добавляется как излишек и отсутствует в поставке, должна быть доработана логика со стороны аналитиков, пока не обрабатывается (карточка трелло https://trello.com/c/eo1nRdKC)
+                    if (taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.RecalculationCargoUnit && taskProductInfo.isGoodsAddedAsSurplus) {
+                        screenNavigator.openNotImplementedScreenAlert("Карточка товара (ПГЕ для Меркурия)")
+                    } else {
+                        screenNavigator.openGoodsMercuryInfoScreen(taskProductInfo, isDiscrepancy) //эта ветка для остальных заданий и товаров
+                    }
                 } else {
                     screenNavigator.openGoodsInfoScreen(productInfo = taskProductInfo, isDiscrepancy = isDiscrepancy, initialCount = initialCount)
                 }
