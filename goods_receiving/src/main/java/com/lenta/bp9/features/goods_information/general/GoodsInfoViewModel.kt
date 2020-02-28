@@ -196,7 +196,7 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
         viewModelScope.launch {
             if (taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.RecalculationCargoUnit) {
                 when {
-                    isGoodsAddedAsSurplus.value == true -> {
+                    isGoodsAddedAsSurplus.value == true -> { //товар, который не числится в задании https://trello.com/c/im9rJqrU
                         enteredProcessingUnitNumber.value = productInfo.value?.processingUnit ?: ""
                         suffix.value = uom.value?.name
                         qualityInfo.value = dataBase.getSurplusInfoForPGE()
@@ -206,7 +206,7 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
                         count.value = taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.getCountProductNotProcessedOfProductPGE(productInfo.value!!).toStringFormatted()
                         qualityInfo.value = dataBase.getQualityInfoPGEForDiscrepancy()
                     }
-                    else -> {
+                    else -> {// обычный товар https://trello.com/c/OMjrZPhg
                         suffix.value = productInfo.value?.purchaseOrderUnits?.name
                         qualityInfo.value = dataBase.getQualityInfoPGE()
                     }
@@ -321,9 +321,16 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
             }
             if (isGoodsAddedAsSurplus.value == true) { //GRZ. ПГЕ. Добавление товара, который не числится в задании https://trello.com/c/im9rJqrU
                 processGeneralProductService.setProcessingUnitNumber(enteredProcessingUnitNumber.value!!)
+                processGeneralProductService.add(addNewCount.toString(), qualityInfo.value!![spinQualitySelectedPosition.value!!].code)
+                clickBtnApply()
+            } else { //Пересчёт обычного товара (шт.) https://trello.com/c/OMjrZPhg
+                if (processGeneralProductService.countLessEqualOrderQuantityPGE(addNewCount)) {
+                    processGeneralProductService.add(addNewCount.toString(), qualityInfo.value!![spinQualitySelectedPosition.value!!].code)
+                    clickBtnApply()
+                } else {
+                    screenNavigator.openAlertQuantGreatInInvoiceScreen()
+                }
             }
-            processGeneralProductService.add(addNewCount.toString(), qualityInfo.value!![spinQualitySelectedPosition.value!!].code)
-            clickBtnApply()
             return
         }
 
@@ -519,13 +526,11 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
         clickBtnApply()
     }
 
-    //блок 6.176
+    //ППП блок 6.176
     private fun clickBtnApply() {
-        if (isClickApply.value!!) {//блок 6.176 (да)
-            //блок 6.181
+        if (isClickApply.value!!) {
             screenNavigator.goBack()
-        } else {//блок 6.176 (нет)
-            //блок 6.180
+        } else {
             count.value = "0"
         }
     }
