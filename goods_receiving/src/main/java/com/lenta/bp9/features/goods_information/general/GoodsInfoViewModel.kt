@@ -216,7 +216,6 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
                 if (isDiscrepancy.value!!) {
                     count.value = taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.getCountProductNotProcessedOfProduct(productInfo.value!!).toStringFormatted()
                     qualityInfo.value = dataBase.getQualityInfoForDiscrepancy()
-
                     spinQualitySelectedPosition.value = qualityInfo.value!!.indexOfLast {it.code == "4"}
                 } else {
                     qualityInfo.value = dataBase.getQualityInfo()
@@ -277,10 +276,14 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
                 spinReasonRejection.value = listOf("ЕО - " + productInfo.value!!.processingUnit)
             } else {
                 screenNavigator.showProgressLoadingData()
-                spinReasonRejectionSelectedPosition.value = 0
                 reasonRejectionInfo.value = dataBase.getReasonRejectionInfoOfQuality(selectedQuality)
                 spinReasonRejection.value = reasonRejectionInfo.value?.map {
                     it.name
+                }
+                if (isDiscrepancy.value!!) {
+                    spinReasonRejectionSelectedPosition.value = reasonRejectionInfo.value!!.indexOfLast {it.code == "43"}
+                } else {
+                    spinReasonRejectionSelectedPosition.value = 0
                 }
                 count.value = count.value
                 screenNavigator.hideProgress()
