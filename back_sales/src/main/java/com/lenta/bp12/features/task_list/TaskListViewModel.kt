@@ -6,10 +6,11 @@ import com.lenta.bp12.model.TaskStatus
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
+import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.databinding.PageSelectionListener
 import javax.inject.Inject
 
-class TaskListViewModel : CoreViewModel(), PageSelectionListener {
+class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyboardListener {
 
     @Inject
     lateinit var navigator: IScreenNavigator
@@ -22,6 +23,12 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     val selectedPage = MutableLiveData(0)
+
+    val numberField: MutableLiveData<String> = MutableLiveData("")
+
+    val requestFocusToNumberField by lazy {
+        MutableLiveData(true)
+    }
 
     val processing by lazy {
         MutableLiveData(List(3) {
@@ -65,6 +72,10 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener {
 
     fun onClickItemPosition(position: Int) {
 
+    }
+
+    override fun onOkInSoftKeyboard(): Boolean {
+        return true
     }
 
 }

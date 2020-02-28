@@ -4,9 +4,10 @@ import androidx.lifecycle.MutableLiveData
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.SelectionItemsHelper
+import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import javax.inject.Inject
 
-class BasketGoodListViewModel : CoreViewModel() {
+class BasketGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
     @Inject
     lateinit var navigator: IScreenNavigator
@@ -18,6 +19,12 @@ class BasketGoodListViewModel : CoreViewModel() {
     }
 
     val deleteEnabled = MutableLiveData(false)
+
+    val numberField: MutableLiveData<String> = MutableLiveData("")
+
+    val requestFocusToNumberField by lazy {
+        MutableLiveData(true)
+    }
 
     val goods by lazy {
         MutableLiveData(List(3) {
@@ -45,6 +52,10 @@ class BasketGoodListViewModel : CoreViewModel() {
 
     fun onClickItemPosition(position: Int) {
 
+    }
+
+    override fun onOkInSoftKeyboard(): Boolean {
+        return true
     }
 
 }

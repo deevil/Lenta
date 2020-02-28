@@ -103,7 +103,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
                 android:background="?selectableItemBackground"
-                android:onClick="@{(v) -> vm.screenNavigator.openEanInfoScreen()}"
+                android:onClick="@{(v) -> vm.navigator.openEanInfoScreen()}"
                 android:src="@drawable/ic_scan_barcode_32dp" />
 
         </LinearLayout>

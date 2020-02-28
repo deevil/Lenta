@@ -7,10 +7,11 @@ import com.lenta.bp12.features.task_composition.ItemBasketUi
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.utilities.SelectionItemsHelper
+import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.databinding.PageSelectionListener
 import javax.inject.Inject
 
-class GoodListViewModel : CoreViewModel(), PageSelectionListener {
+class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyboardListener {
 
     @Inject
     lateinit var navigator: IScreenNavigator
@@ -30,6 +31,12 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener {
     val deleteEnabled = MutableLiveData(false)
 
     val saveEnabled = MutableLiveData(false)
+
+    val numberField: MutableLiveData<String> = MutableLiveData("")
+
+    val requestFocusToNumberField by lazy {
+        MutableLiveData(true)
+    }
 
     val notProcessed by lazy {
         MutableLiveData(List(3) {
@@ -68,6 +75,10 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener {
 
     fun onClickItemPosition(position: Int) {
 
+    }
+
+    override fun onOkInSoftKeyboard(): Boolean {
+        return true
     }
 
 }

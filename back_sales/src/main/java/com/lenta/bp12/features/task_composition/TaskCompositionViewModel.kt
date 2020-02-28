@@ -5,10 +5,11 @@ import com.lenta.bp12.features.basket_good_list.ItemGoodUi
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.SelectionItemsHelper
+import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.databinding.PageSelectionListener
 import javax.inject.Inject
 
-class TaskCompositionViewModel : CoreViewModel(), PageSelectionListener {
+class TaskCompositionViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyboardListener {
 
     @Inject
     lateinit var navigator: IScreenNavigator
@@ -26,6 +27,12 @@ class TaskCompositionViewModel : CoreViewModel(), PageSelectionListener {
     val deleteEnabled = MutableLiveData(false)
 
     val saveEnabled = MutableLiveData(false)
+
+    val numberField: MutableLiveData<String> = MutableLiveData("")
+
+    val requestFocusToNumberField by lazy {
+        MutableLiveData(true)
+    }
 
     val goods by lazy {
         MutableLiveData(List(3) {
@@ -64,6 +71,10 @@ class TaskCompositionViewModel : CoreViewModel(), PageSelectionListener {
 
     fun onClickItemPosition(position: Int) {
 
+    }
+
+    override fun onOkInSoftKeyboard(): Boolean {
+        return true
     }
 
 }

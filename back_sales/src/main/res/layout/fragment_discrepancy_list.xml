@@ -63,7 +63,7 @@
             android:layout_height="0dp"
             android:layout_marginBottom="8dp"
             android:layout_weight="1"
-            app:items="@{vm.tasks}"
+            app:items="@{vm.goods}"
             app:rv_config="@{rvConfig}"
             tools:listitem="@layout/item_discrepancy_list" />
 
