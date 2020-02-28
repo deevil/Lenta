@@ -198,8 +198,11 @@
 
                         <EditText
                             style="@style/CellEditTextStyle"
+                            android:digits="1234567890."
+                            android:inputType="number"
                             android:enabled="@{vm.dateEnabled}"
                             android:text="@={vm.date}"
+                            app:maskPattern='@{"[00]{.}[00]{.}[0000]"}'
                             tools:text="25.12.2016" />
 
                     </LinearLayout>
