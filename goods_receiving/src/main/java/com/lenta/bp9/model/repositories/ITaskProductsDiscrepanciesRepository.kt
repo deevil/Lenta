@@ -18,6 +18,6 @@ interface ITaskProductsDiscrepanciesRepository {
     fun getCountAcceptOfProductPGE(product: TaskProductInfo): Double
     fun getCountRefusalOfProductPGE(product: TaskProductInfo): Double
     fun getCountProductNotProcessedOfProductPGE(product: TaskProductInfo): Double
-    fun getCountRefusalOfProductOfReasonRejection(product: TaskProductInfo, reasonRejectionCode: String?): Double
+    fun getCountOfDiscrepanciesOfProduct(product: TaskProductInfo, typeDiscrepancies: String?): Double
     fun clear()
 }

@@ -462,7 +462,7 @@ class ScreenNavigator(
         }
     }
 
-    override fun openAlertCountLargerOverdelivery() {
+    override fun openAlertCountMoreOverdelivery() {
         openAlertScreen(message = context.getString(R.string.alert_count_larger_overdelivery),
                 iconRes = R.drawable.ic_info_pink,
                 textColor = ContextCompat.getColor(context, R.color.color_text_dialogWarning),
@@ -1009,6 +1009,18 @@ class ScreenNavigator(
         }
     }
 
+    override fun openAlertCountMoreCargoUnitDialog(yesCallbackFunc: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.alert_count_larger_cargo_unit),
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(yesCallbackFunc),
+                    iconRes = R.drawable.ic_question_80dp,
+                    pageNumber = "97",
+                    leftButtonDecorationInfo = ButtonDecorationInfo.no,
+                    rightButtonDecorationInfo = ButtonDecorationInfo.yes))
+        }
+    }
+
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 }
 
@@ -1065,7 +1077,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openListGoodsTransferScreen(sectionInfo: TaskSectionInfo)
     fun openRepresPersonNumEntryScreen(sectionInfo: TaskSectionInfo)
     fun openFormedDocsScreen()
-    fun openAlertCountLargerOverdelivery()
+    fun openAlertCountMoreOverdelivery()
     fun openAlertNotCorrectDate()
     fun openExpiredDialog(noCallbackFunc: () -> Unit, yesCallbackFunc: () -> Unit)
     fun openRecountStartLoadingScreen()
@@ -1130,4 +1142,5 @@ interface IScreenNavigator : ICoreNavigator {
     fun openExceededPlannedQuantityInProcessingUnitDialog(nextCallbackFunc: () -> Unit)
     fun openExceededPlannedQuantityBatchInProcessingUnitDialog(nextCallbackFunc: () -> Unit)
     fun openAlertBothSurplusAndUnderloadScreen()
+    fun openAlertCountMoreCargoUnitDialog(yesCallbackFunc: () -> Unit)
 }

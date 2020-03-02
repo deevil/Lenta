@@ -249,4 +249,5 @@
     <string name="exceeded_planned_quantity_in_processing_unit_dialog">Превышено плановое количество в ЕО. Принять количество и пометить как излишек?</string>
     <string name="exceeded_planned_quantity_batch_in_processing_unit_dialog">Превышено плановое количество в ЕО. Принять количество и пометить как излишек? (Требуется ввод партионных признаков)</string>
     <string name="alert_both_surplus_and_underload">Не допускается одновременно указывать Излишек и Недогруз</string>
+    <string name="alert_count_larger_cargo_unit">Введенное кол-во больше чем в ГЕ. Принять такое кол-во и пометить как \"больше чем в ТН\"?</string>
 </resources>
