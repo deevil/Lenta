@@ -2,6 +2,7 @@ package com.lenta.bp12.platform.navigation
 
 import android.content.Context
 import com.lenta.bp12.R
+import com.lenta.bp12.features.add_supplier.AddSupplierFragment
 import com.lenta.bp12.features.auth.AuthFragment
 import com.lenta.bp12.features.basket_good_list.BasketGoodListFragment
 import com.lenta.bp12.features.basket_properties.BasketPropertiesFragment
@@ -142,6 +143,12 @@ class ScreenNavigator @Inject constructor(
     override fun openTaskSearchScreen() {
         runOrPostpone {
             getFragmentStack()?.push(TaskSearchFragment())
+        }
+    }
+
+    override fun openAddSupplierScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(AddSupplierFragment())
         }
     }
 
@@ -368,4 +375,5 @@ interface IScreenNavigator : ICoreNavigator {
     fun showMarksInBoxAreNotOnBalanceInCurrentStore()
     fun showFinishProcessingBox()
     fun showFinishProcessingCurrentBox()
+    fun openAddSupplierScreen()
 }

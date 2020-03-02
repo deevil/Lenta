@@ -13,6 +13,7 @@
     <string name="filter_for_search">Фильтр для поиска</string>
     <string name="task_card">Карточка задания</string>
     <string name="good_info">Информация о товаре</string>
+    <string name="add_supplier">Добавление поставщика</string>
 
     // Наименование вкладок
     <string name="goods">Товары</string>
@@ -70,9 +71,10 @@
     <string name="description">Описание</string>
     <string name="consignment">Партия</string>
     <string name="with_bottling_date">с датой розлива</string>
-
     <string name="common_product">Обычный товар</string>
     <string name="alcohol">Алкоголь</string>
     <string name="excise_alcohol">Акцизный алкоголь</string>
+    <string name="specify_supplier_sap">Укажите SAP-код поставщика</string>
+    <string name="supplier_name">Наименование поставщика:</string>
 
 </resources>
