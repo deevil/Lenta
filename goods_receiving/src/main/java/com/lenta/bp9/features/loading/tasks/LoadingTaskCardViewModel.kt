@@ -132,6 +132,7 @@ class LoadingTaskCardViewModel : CoreLoadingViewModel() {
         Logg.d { "Task card request result ${result}" }
         //screenNavigator.goBack()
         viewModelScope.launch {
+            repoInMemoryHolder.manufacturers.value = result.manufacturers
             val taskHeader = repoInMemoryHolder.taskList.value?.tasks?.findLast { it.taskNumber == taskNumber }
             taskHeader?.let {
                 val notifications = result.notifications.map { TaskNotification.from(it) }
@@ -183,6 +184,7 @@ class LoadingTaskCardViewModel : CoreLoadingViewModel() {
         Logg.d { "handleSuccessRDS $result" }
         //screenNavigator.goBack()
         viewModelScope.launch {
+            repoInMemoryHolder.manufacturers.value = result.manufacturers
             val taskHeader = repoInMemoryHolder.taskList.value?.tasks?.findLast { it.taskNumber == taskNumber }
             taskHeader?.let {
                 val notifications = result.notifications.map { TaskNotification.from(it) }

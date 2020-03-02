@@ -1,28 +1,31 @@
 package com.lenta.bp9.features.goods_information.mercury
 
+import android.annotation.SuppressLint
 import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp9.R
 import com.lenta.bp9.features.goods_list.SearchProductDelegate
-import com.lenta.bp9.model.processing.PROCESSING_MERCURY_QUANT_GREAT_IN_INVOICE
-import com.lenta.bp9.model.processing.PROCESSING_MERCURY_QUANT_GREAT_IN_VET_DOC
-import com.lenta.bp9.model.processing.PROCESSING_MERCURY_SAVED
-import com.lenta.bp9.model.processing.ProcessMercuryProductService
+import com.lenta.bp9.model.processing.*
 import com.lenta.bp9.model.task.IReceivingTaskManager
 import com.lenta.bp9.model.task.TaskProductInfo
 import com.lenta.bp9.model.task.TaskType
 import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.bp9.repos.IDataBaseRepo
+import com.lenta.bp9.repos.IRepoInMemoryHolder
 import com.lenta.shared.models.core.Uom
+import com.lenta.shared.platform.time.ITimeMonitor
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.pojo.QualityInfo
 import com.lenta.shared.requests.combined.scan_info.pojo.ReasonRejectionInfo
+import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.toStringFormatted
 import com.lenta.shared.view.OnPositionClickListener
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.*
 import javax.inject.Inject
 
 class GoodsMercuryInfoViewModel : CoreViewModel(), OnPositionClickListener {
@@ -39,6 +42,10 @@ class GoodsMercuryInfoViewModel : CoreViewModel(), OnPositionClickListener {
     lateinit var processMercuryProductService: ProcessMercuryProductService
     @Inject
     lateinit var searchProductDelegate: SearchProductDelegate
+    @Inject
+    lateinit var repoInMemoryHolder: IRepoInMemoryHolder
+    @Inject
+    lateinit var timeMonitor: ITimeMonitor
 
     val productInfo: MutableLiveData<TaskProductInfo> = MutableLiveData()
     val uom: MutableLiveData<Uom?> by lazy {
@@ -48,14 +55,37 @@ class GoodsMercuryInfoViewModel : CoreViewModel(), OnPositionClickListener {
             MutableLiveData(productInfo.value?.uom)
         }
     }
-    val tvAccept: MutableLiveData<String> by lazy {
-        MutableLiveData(context.getString(R.string.accept, "${productInfo.value?.purchaseOrderUnits?.name}=${productInfo.value?.quantityInvest?.toDouble().toStringFormatted()} ${productInfo.value?.uom?.name}"))
+    val isGoodsAddedAsSurplus: MutableLiveData<Boolean> by lazy {
+        MutableLiveData(productInfo.value?.isGoodsAddedAsSurplus == true )
     }
+    val isTaskPGE: MutableLiveData<Boolean> by lazy {
+        if (taskManager.getReceivingTask()!!.taskHeader.taskType == TaskType.RecalculationCargoUnit) MutableLiveData(true) else MutableLiveData(false)
+    }
+    val isVisibilityProductionDate: MutableLiveData<Boolean> by lazy {
+        if (isTaskPGE.value == true && isGoodsAddedAsSurplus.value == true) MutableLiveData(true) else MutableLiveData(false)
+    }
+    val tvAccept: MutableLiveData<String> by lazy {
+        if (isTaskPGE.value == true && isGoodsAddedAsSurplus.value == true) {
+            MutableLiveData(context.getString(R.string.accept_txt))
+        } else {
+            MutableLiveData(context.getString(R.string.accept, "${productInfo.value?.purchaseOrderUnits?.name}=${productInfo.value?.quantityInvest?.toDouble().toStringFormatted()} ${productInfo.value?.uom?.name}"))
+        }
+    }
+    val productionDate: MutableLiveData<String> = MutableLiveData("")
+    @SuppressLint("SimpleDateFormat")
+    private val formatter = SimpleDateFormat("dd.MM.yyyy")
+    private val currentDate: MutableLiveData<Date> = MutableLiveData()
 
     val spinQuality: MutableLiveData<List<String>> = MutableLiveData()
     val spinQualitySelectedPosition: MutableLiveData<Int> = MutableLiveData(0)
     val spinManufacturers by lazy {
-        taskManager.getReceivingTask()?.taskRepository?.getMercuryDiscrepancies()?.getManufacturesOfProduct(productInfo.value!!)
+        if (isTaskPGE.value == true && isGoodsAddedAsSurplus.value == true) {
+            repoInMemoryHolder.manufacturers.value?.map {
+                it.name
+            }
+        } else {
+            taskManager.getReceivingTask()?.taskRepository?.getMercuryDiscrepancies()?.getManufacturesOfProduct(productInfo.value!!)
+        }
     }
     val spinManufacturersSelectedPosition: MutableLiveData<Int> = MutableLiveData(0)
     val spinProductionDate = spinManufacturersSelectedPosition.map {position ->
@@ -83,21 +113,19 @@ class GoodsMercuryInfoViewModel : CoreViewModel(), OnPositionClickListener {
         }.toStringFormatted()} ${uom.value?.name}"
     }
     val tvProductionDate = mercuryVolume.map {
-        context.getString(R.string.vet_with_production_date, it)
+        if (isTaskPGE.value == true && isGoodsAddedAsSurplus.value == true) {
+            context.getString(R.string.vet_with_production_date_txt)
+        } else {
+            context.getString(R.string.vet_with_production_date, it)
+        }
     }
     private val isClickApply: MutableLiveData<Boolean> = MutableLiveData(false)
     val isDiscrepancy: MutableLiveData<Boolean> = MutableLiveData(false)
     val isDefect: MutableLiveData<Boolean> = spinQualitySelectedPosition.map {
         it != 0
     }
-    val isGoodsAddedAsSurplus: MutableLiveData<Boolean> by lazy {
-        MutableLiveData(productInfo.value?.isGoodsAddedAsSurplus == true )
-    }
-    val isTaskPGE: MutableLiveData<Boolean> by lazy {
-        if (taskManager.getReceivingTask()!!.taskHeader.taskType == TaskType.RecalculationCargoUnit) MutableLiveData(true) else MutableLiveData(false)
-    }
-    val isEizUnit: MutableLiveData<Boolean> = isDiscrepancy.map {
-        it == false
+    val isEizUnit: MutableLiveData<Boolean> by lazy {
+        MutableLiveData(isDiscrepancy.value == false && isGoodsAddedAsSurplus.value == false)
     }
     val visibleShelfLife: MutableLiveData<Boolean> = MutableLiveData()
 
@@ -185,11 +213,11 @@ class GoodsMercuryInfoViewModel : CoreViewModel(), OnPositionClickListener {
 
     init {
         viewModelScope.launch {
+            currentDate.value = timeMonitor.getServerDate()
             if (taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.RecalculationCargoUnit) {
                 when {
                     isGoodsAddedAsSurplus.value == true -> {
-                        /**enteredProcessingUnitNumber.value = productInfo.value?.processingUnit ?: ""*/
-                        suffix.value = productInfo.value?.purchaseOrderUnits?.name
+                        suffix.value = uom.value?.name
                         qualityInfo.value = dataBase.getSurplusInfoForPGE()
                     }
                     isDiscrepancy.value!! -> {
@@ -273,6 +301,7 @@ class GoodsMercuryInfoViewModel : CoreViewModel(), OnPositionClickListener {
     }
 
     fun onClickAdd() {
+        //меркурий для ПГЕ
         if (isTaskPGE.value == true) {
             addProductDiscrepanciesPGE()
             return
@@ -307,28 +336,64 @@ class GoodsMercuryInfoViewModel : CoreViewModel(), OnPositionClickListener {
         count.value = "0"
     }
 
+    @SuppressLint("SimpleDateFormat")
     private fun addProductDiscrepanciesPGE() {
+        //todo товар, который добавляется как излишек и отсутствует в поставке, должна быть доработана логика со стороны аналитиков (сказал Дима С.), пока не обрабатывается (карточка трелло https://trello.com/c/eo1nRdKC) (ТП (меркурий по ПГЕ) -> 3.2.2.16 Обработка расхождений при пересчете ГЕ (Меркурий) -> 2.1.Излишек по товару)
+        if (isGoodsAddedAsSurplus.value == true) {
+            if (!isCorrectDate(productionDate.value)) {
+                screenNavigator.openAlertNotCorrectDate()
+                return
+            } else {
+                val productionDateSave = SimpleDateFormat("yyyy-MM-dd").format(formatter.parse(productionDate.value))
+                return //не обрабатываем, просто выходим из ф-ции
+            }
+        }
+
+
+        //обработка ПГЕ Меркурия для товаров, которые есть в поставке
         var addNewCount = count.value!!.toDouble()
         if (isEizUnit.value!!) {
             addNewCount *= productInfo.value?.quantityInvest?.toDouble() ?: 1.0
         }
-        when (processMercuryProductService.checkConditionsOfPreservationPGE(count.value ?: "0", spinManufacturers!![spinManufacturersSelectedPosition.value!!], spinProductionDate.value!![spinProductionDateSelectedPosition.value!!])) {
+        when (processMercuryProductService.checkConditionsOfPreservationPGE(addNewCount, qualityInfo.value!![spinQualitySelectedPosition.value!!].code, spinManufacturers!![spinManufacturersSelectedPosition.value!!], spinProductionDate.value!![spinProductionDateSelectedPosition.value!!])) {
             PROCESSING_MERCURY_SAVED -> {
-                processMercuryProductService.add(addNewCount.toString(), count.value ?: "0", qualityInfo.value!![spinQualitySelectedPosition.value!!].code, spinManufacturers!![spinManufacturersSelectedPosition.value!!], spinProductionDate.value!![spinProductionDateSelectedPosition.value!!])
+                processMercuryProductService.add(addNewCount.toString(), addNewCount.toString(), qualityInfo.value!![spinQualitySelectedPosition.value!!].code, spinManufacturers!![spinManufacturersSelectedPosition.value!!], spinProductionDate.value!![spinProductionDateSelectedPosition.value!!])
                 count.value = "0"
                 if (isClickApply.value!!) {
                     processMercuryProductService.save()
                     screenNavigator.goBack()
                 }
             }
-            PROCESSING_MERCURY_QUANT_GREAT_IN_VET_DOC -> {
+            PROCESSING_MERCURY_QUANT_GREAT_IN_VET_DOC -> { //превышено в ВСД
                 screenNavigator.openAlertQuantGreatInVetDocScreen()
             }
-            PROCESSING_MERCURY_QUANT_GREAT_IN_INVOICE -> {
+            PROCESSING_MERCURY_QUANT_GREAT_IN_INVOICE -> { //превышено в поставке
                 screenNavigator.openAlertQuantGreatInInvoiceScreen()
             }
+            PROCESSING_MERCURY_UNDERLOAD_AND_SURPLUS_IN_ONE_DELIVERY -> { //противоположные категории недогруз и излишек в рамках одной поставки
+                screenNavigator.openAlertBothSurplusAndUnderloadScreen()
+            }
+            PROCESSING_MERCURY_SURPLUS_PGE_ENOUGH_QUANTITY -> { //2.2.	Излишек по количеству (хватило кол-ва по текущей партии)
+                screenNavigator.openExceededPlannedQuantityInProcessingUnitDialog(
+                        nextCallbackFunc = {
+                            processMercuryProductService.addSurplusPGEEnoughQuantity(addNewCount, spinManufacturers!![spinManufacturersSelectedPosition.value!!], spinProductionDate.value!![spinProductionDateSelectedPosition.value!!])
+                            count.value = "0"
+                            if (isClickApply.value!!) {
+                                processMercuryProductService.save()
+                                screenNavigator.goBack()
+                            }
+                        }
+                )
+            }
+            PROCESSING_MERCURY_SURPLUS_PGE_NOT_HAVE_ENOUGH_QUANTITY -> { //2.3.	Излишек по количеству (не достаточно количеств по текущей партии)
+                screenNavigator.openExceededPlannedQuantityBatchInProcessingUnitDialog(
+                        nextCallbackFunc = {
+                            //todo здесь затрагиваются партии, уточнить у аналитика, возможна реализациия, наверное, только после реализации алкоголя, карточка трелло https://trello.com/c/eo1nRdKC (ТП (меркурий по ПГЕ) -> 3.2.2.16 Обработка расхождений при пересчете ГЕ (Меркурий) -> 2.3.	Излишек по количеству (не достаточно количеств по текущей партии))
+                            screenNavigator.goBack()
+                        }
+                )
+            }
         }
-        count.value = "0"
     }
 
     fun onClickApply() {
@@ -360,5 +425,14 @@ class GoodsMercuryInfoViewModel : CoreViewModel(), OnPositionClickListener {
             productInfo.value?.uom?.name
         }
         count.value = count.value
+    }
+
+    private fun isCorrectDate(checkDate: String?): Boolean {
+        return try {
+            val date = formatter.parse(checkDate)
+            !(checkDate != formatter.format(date) || date!! > currentDate.value)
+        } catch (e: Exception) {
+            false
+        }
     }
 }

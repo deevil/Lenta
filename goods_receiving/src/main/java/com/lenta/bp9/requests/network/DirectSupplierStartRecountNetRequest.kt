@@ -50,6 +50,8 @@ data class DirectSupplierStartRecountRestInfo(
         val taskMercuryInfoRestData: List<TaskMercuryInfoRestData>,
         @SerializedName("ET_VET_NOT_ACTUAL") //Список не актуальных ВСД
         val taskMercuryNotActualRestData: List<TaskMercuryNotActualRestData>,
+        @SerializedName("ET_PROD_TEXT")//Таблица ЕГАИС производителей
+        val manufacturers: List<Manufacturer>,
         @SerializedName("EV_RETCODE")
         override val retCode: Int,
         @SerializedName("EV_ERROR_TEXT")

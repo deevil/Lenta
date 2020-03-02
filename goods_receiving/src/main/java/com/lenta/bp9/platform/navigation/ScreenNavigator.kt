@@ -986,6 +986,37 @@ class ScreenNavigator(
         }
     }
 
+    override fun openExceededPlannedQuantityInProcessingUnitDialog(nextCallbackFunc: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.exceeded_planned_quantity_in_processing_unit_dialog),
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(nextCallbackFunc),
+                    pageNumber = "95",
+                    rightButtonDecorationInfo = ButtonDecorationInfo.nextAlternate))
+        }
+    }
+
+    override fun openExceededPlannedQuantityBatchInProcessingUnitDialog(nextCallbackFunc: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.exceeded_planned_quantity_batch_in_processing_unit_dialog),
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(nextCallbackFunc),
+                    pageNumber = "95",
+                    rightButtonDecorationInfo = ButtonDecorationInfo.nextAlternate))
+        }
+    }
+
+    override fun openAlertBothSurplusAndUnderloadScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.alert_both_surplus_and_underload),
+                    iconRes = R.drawable.ic_info_pink,
+                    textColor = ContextCompat.getColor(context, R.color.color_text_dialogWarning),
+                    pageNumber = "97")
+            )
+        }
+    }
+
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 }
 
@@ -1105,4 +1136,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openTransportMarriageGoodsDetailsScreen(cargoUnitNumber: String, materialNumber: String, materialName: String)
     fun openAlertAmountEnteredGreaterPUScreen()
     fun openAddGoodsSurplusDialog(codeConfirmationAddGoodsSurplus: Int)
+    fun openExceededPlannedQuantityInProcessingUnitDialog(nextCallbackFunc: () -> Unit)
+    fun openExceededPlannedQuantityBatchInProcessingUnitDialog(nextCallbackFunc: () -> Unit)
+    fun openAlertBothSurplusAndUnderloadScreen()
 }

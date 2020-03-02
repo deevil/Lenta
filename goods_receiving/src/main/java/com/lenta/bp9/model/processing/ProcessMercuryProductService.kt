@@ -10,6 +10,9 @@ import javax.inject.Inject
 const val PROCESSING_MERCURY_SAVED = 1
 const val PROCESSING_MERCURY_QUANT_GREAT_IN_VET_DOC = 2
 const val PROCESSING_MERCURY_QUANT_GREAT_IN_INVOICE = 3
+const val PROCESSING_MERCURY_SURPLUS_PGE_ENOUGH_QUANTITY = 4
+const val PROCESSING_MERCURY_SURPLUS_PGE_NOT_HAVE_ENOUGH_QUANTITY = 5
+const val PROCESSING_MERCURY_UNDERLOAD_AND_SURPLUS_IN_ONE_DELIVERY = 6
 
 @AppScope
 class ProcessMercuryProductService
@@ -109,6 +112,17 @@ class ProcessMercuryProductService
         changeNewProductDiscrepancy(foundDiscrepancy)
         foundVetDiscrepancy?.map {
             changeNewVetProductDiscrepancy(it)
+        }
+    }
+
+    fun addSurplusPGEEnoughQuantity(count: Double, manufacturer: String, productionDate: String) {
+        val countNorm = productInfo.orderQuantity.toDouble() - (getQuantityAllCategoryExceptNonOrderOfProductPGE(count) - count)
+        val countSurplus = count - countNorm
+        if (countNorm > 0.0) {
+            add(countNorm.toString(), countNorm.toString(), "1", manufacturer, productionDate)
+        }
+        if (countSurplus > 0.0) {
+            add(countSurplus.toString(), countSurplus.toString(), "2", manufacturer, productionDate)
         }
     }
 
@@ -244,7 +258,7 @@ class ProcessMercuryProductService
         } ) + count
     }
 
-    fun checkConditionsOfPreservationPGE(count: String, manufacturer: String, productionDate: String) : Int {
+    fun checkConditionsOfPreservationPGE(count: Double, reasonRejectionCode: String, manufacturer: String, productionDate: String) : Int {
 
         val vetDocumentIDVolume = taskManager.getReceivingTask()?.taskRepository?.getMercuryDiscrepancies()?.findMercuryInfoOfProduct(productInfo)?.filter {
             it.manufacturer == manufacturer &&
@@ -253,11 +267,27 @@ class ProcessMercuryProductService
             it.volume
         } ?: 0.0
 
-        if ( getQuantityAllCategoryExceptNonOrderOfVetDocPGE(count.toDouble(), manufacturer, productionDate) > vetDocumentIDVolume ) {
+        if ( (reasonRejectionCode == "2" && newProductDiscrepancies.any { it.typeDiscrepancies == "3" }) || (reasonRejectionCode == "3" && newProductDiscrepancies.any { it.typeDiscrepancies == "2"}) ) {
+            return PROCESSING_MERCURY_UNDERLOAD_AND_SURPLUS_IN_ONE_DELIVERY
+        }
+
+        if (reasonRejectionCode == "2" &&
+                getQuantityAllCategoryExceptNonOrderOfProductPGE(count) > productInfo.orderQuantity.toDouble() &&
+                getQuantityAllCategoryExceptNonOrderOfVetDocPGE(count, manufacturer, productionDate) <= vetDocumentIDVolume) {
+            return PROCESSING_MERCURY_SURPLUS_PGE_ENOUGH_QUANTITY
+        }
+
+        if (reasonRejectionCode == "2" &&
+                getQuantityAllCategoryExceptNonOrderOfProductPGE(count) > productInfo.orderQuantity.toDouble() &&
+                getQuantityAllCategoryExceptNonOrderOfVetDocPGE(count, manufacturer, productionDate) > vetDocumentIDVolume) {
+            return PROCESSING_MERCURY_SURPLUS_PGE_NOT_HAVE_ENOUGH_QUANTITY
+        }
+
+        if ( getQuantityAllCategoryExceptNonOrderOfVetDocPGE(count, manufacturer, productionDate) > vetDocumentIDVolume ) {
             return PROCESSING_MERCURY_QUANT_GREAT_IN_VET_DOC
         }
 
-        return if (getQuantityAllCategoryExceptNonOrderOfProductPGE(count.toDouble()) <= productInfo.orderQuantity.toDouble()) {
+        return if (getQuantityAllCategoryExceptNonOrderOfProductPGE(count) <= productInfo.orderQuantity.toDouble()) {
             PROCESSING_MERCURY_SAVED
         } else {
             PROCESSING_MERCURY_QUANT_GREAT_IN_INVOICE

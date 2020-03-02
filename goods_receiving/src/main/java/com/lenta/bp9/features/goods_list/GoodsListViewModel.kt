@@ -288,7 +288,20 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
 
     fun onClickSave() {
         viewModelScope.launch {
-            if (taskManager.getReceivingTask()!!.taskRepository.getProducts().getProducts().size > (listCounted.value?.size ?: 0)) {
+            val countProductNotProcessed = taskManager.getReceivingTask()?.let { task ->
+                task.getProcessedProducts()
+                        .map {productInfo ->
+                            if (task.taskHeader.taskType == TaskType.RecalculationCargoUnit) {
+                                task.taskRepository.getProductsDiscrepancies().getCountProductNotProcessedOfProductPGE(productInfo)
+                            } else {
+                                task.taskRepository.getProductsDiscrepancies().getCountProductNotProcessedOfProduct(productInfo)
+                            }
+                        }
+            }?.sumByDouble {
+                it
+            } ?: 0.0
+
+            if (countProductNotProcessed > 0.0) {
                 screenNavigator.openDiscrepancyListScreen()
             } else {
                 screenNavigator.showProgressLoadingData()
