@@ -3,6 +3,7 @@ package com.lenta.bp9.features.select_personnel_number
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp9.platform.navigation.IScreenNavigator
+import com.lenta.bp9.repos.IDataBaseRepo
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.features.select_personnel_number.SelectPersonnelNumberDelegate
@@ -24,6 +25,8 @@ class SelectPersonnelNumberViewModel : CoreViewModel(), OnOkInSoftKeyboardListen
     lateinit var appSettings: IAppSettings
     @Inject
     lateinit var selectPersonnelNumberDelegate: SelectPersonnelNumberDelegate
+    @Inject
+    lateinit var dataBase: IDataBaseRepo
 
     val editTextFocus = MutableLiveData<Boolean>()
     private val nextButtonFocus = MutableLiveData<Boolean>()
@@ -35,26 +38,22 @@ class SelectPersonnelNumberViewModel : CoreViewModel(), OnOkInSoftKeyboardListen
 
     init {
         viewModelScope.launch {
-            selectPersonnelNumberDelegate.isAppGoodsReceiving.value = true
-            selectPersonnelNumberDelegate.personnelNumber = personnelNumber
-            selectPersonnelNumberDelegate.fullName = fullName
-            selectPersonnelNumberDelegate.employeesPosition = employeesPosition
-            selectPersonnelNumberDelegate.editTextFocus = editTextFocus
-            selectPersonnelNumberDelegate.nextButtonFocus = nextButtonFocus
-            selectPersonnelNumberDelegate.init(
-                    viewModelScope = this@SelectPersonnelNumberViewModel::viewModelScope,
-                    onNextScreenOpen = {
-                        //TODO need implement restore task
-                        screenNavigator.openMainMenuScreen()
-                        /*persistWriteOffTask.getSavedWriteOffTask().let {
-                            if (it == null || it.taskDescription.tkNumber != sessionInfo.market) {
-                                screenNavigator.openMainMenuScreen()
-                            } else {
-                                screenNavigator.openDetectionSavedDataScreen()
-                            }
-                        }*/
-                    }
-            )
+            if (dataBase.getParamGrzWerksOwnpr()?.findLast {it == sessionInfo.market}?.isNotEmpty() == true) { //https://trello.com/c/KccNFbXR
+                screenNavigator.openMainMenuScreen()
+            } else {
+                selectPersonnelNumberDelegate.isAppGoodsReceiving.value = true
+                selectPersonnelNumberDelegate.personnelNumber = personnelNumber
+                selectPersonnelNumberDelegate.fullName = fullName
+                selectPersonnelNumberDelegate.employeesPosition = employeesPosition
+                selectPersonnelNumberDelegate.editTextFocus = editTextFocus
+                selectPersonnelNumberDelegate.nextButtonFocus = nextButtonFocus
+                selectPersonnelNumberDelegate.init(
+                        viewModelScope = this@SelectPersonnelNumberViewModel::viewModelScope,
+                        onNextScreenOpen = {
+                            screenNavigator.openMainMenuScreen()
+                        }
+                )
+            }
         }
     }
 
