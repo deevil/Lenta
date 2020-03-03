@@ -139,10 +139,21 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
     }
 
     val acceptTotalCountWithUom: MutableLiveData<String> = acceptTotalCount.map {
-        if (it != 0.0) {
-            "+ " + it.toStringFormatted() + " " + uom.value?.name
+        val countAccept = if (isTaskPGE.value!!) {
+            taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().getCountAcceptOfProductPGE(productInfo.value!!)
         } else {
-            "0 " + uom.value?.name
+            taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().getCountAcceptOfProduct(productInfo.value!!)
+        }
+        when {
+            (it ?: 0.0) > 0.0 -> {
+                "+ ${it.toStringFormatted()} ${uom.value?.name}"
+            }
+            it == 0.0 -> {
+                "0 ${uom.value?.name}"
+            }
+            else -> {
+                "${if (countAccept > 0.0) "+ " + countAccept.toStringFormatted() else countAccept.toStringFormatted()} ${uom.value?.name}"
+            }
         }
     }
 
@@ -171,18 +182,33 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
     }
 
     val refusalTotalCountWithUom: MutableLiveData<String> = refusalTotalCount.map {
-        if (it != 0.0) {
-            "- " + it.toStringFormatted() + " " + uom.value?.name
+        val countRefusal = if (isTaskPGE.value!!) {
+            taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().getCountRefusalOfProductPGE(productInfo.value!!)
         } else {
-            "0 " + uom.value?.name
+            taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().getCountRefusalOfProduct(productInfo.value!!)
+        }
+        if ((it ?: 0.0) > 0.0) {
+            "- ${it.toStringFormatted()} ${uom.value?.name}"
+        } else {
+            "${if (countRefusal > 0.0) "- " + countRefusal.toStringFormatted() else countRefusal.toStringFormatted()} ${uom.value?.name}"
         }
     }
 
     val enabledApplyButton: MutableLiveData<Boolean> = countValue.combineLatest(enteredProcessingUnitNumber).map {
-        if (isTaskPGE.value!! && isGoodsAddedAsSurplus.value!!) {
-            it?.first != 0.0 && it?.second?.length == 18
+        val countAccept = if (isTaskPGE.value!!) {
+            taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().getCountAcceptOfProductPGE(productInfo.value!!)
         } else {
-            it?.first != 0.0
+            taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().getCountAcceptOfProduct(productInfo.value!!)
+        }
+
+        if (isTaskPGE.value!! && isGoodsAddedAsSurplus.value!!) {
+            (countAccept + (it?.first ?: 0.0)) >= 0.0 && it?.first != 0.0 && it?.second?.length == 18
+        } else {
+            if (qualityInfo.value?.get(spinQualitySelectedPosition.value!!)?.code == "1" || (isTaskPGE.value == true && qualityInfo.value?.get(spinQualitySelectedPosition.value!!)?.code == "2")) {
+                (countAccept + (it?.first ?: 0.0)) >= 0.0 && it?.first != 0.0
+            } else {
+                (it?.first ?: 0.0) > 0.0
+            }
         }
     }
 
