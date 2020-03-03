@@ -164,10 +164,15 @@ class GoodsMercuryInfoViewModel : CoreViewModel(), OnPositionClickListener {
     }
 
     val acceptTotalCountWithUom: MutableLiveData<String> = acceptTotalCount.map {
-        if (it != 0.0) {
-            "+ " + it.toStringFormatted() + " " + uom.value?.name
+        val countAccept = if (isTaskPGE.value!!) {
+            processMercuryProductService.getNewCountAcceptPGE()
         } else {
-            "0 " + uom.value?.name
+            processMercuryProductService.getNewCountAccept()
+        }
+        if ((it ?: 0.0) > 0.0) {
+            "+ ${it.toStringFormatted()} ${uom.value?.name}"
+        } else {
+            "${if (countAccept > 0.0) "+ " + countAccept.toStringFormatted() else countAccept.toStringFormatted()} ${uom.value?.name}"
         }
     }
 
@@ -200,10 +205,15 @@ class GoodsMercuryInfoViewModel : CoreViewModel(), OnPositionClickListener {
     }
 
     val refusalTotalCountWithUom: MutableLiveData<String> = refusalTotalCount.map {
-        if (it != 0.0) {
-            "- " + it.toStringFormatted() + " " + uom.value?.name
+        val countRefusal = if (isTaskPGE.value!!) {
+            processMercuryProductService.getNewCountRefusalPGE()
         } else {
-            "0 " + uom.value?.name
+            processMercuryProductService.getNewCountRefusal()
+        }
+        if ((it ?: 0.0) > 0.0) {
+            "- ${it.toStringFormatted()} ${uom.value?.name}"
+        } else {
+            "${if (countRefusal > 0.0) "- " + countRefusal.toStringFormatted() else countRefusal.toStringFormatted()} ${uom.value?.name}"
         }
     }
 
