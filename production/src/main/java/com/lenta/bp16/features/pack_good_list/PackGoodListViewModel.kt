@@ -37,7 +37,7 @@ class PackGoodListViewModel : CoreViewModel() {
                         position = (index + 1).toString(),
                         material = good.material,
                         name = good.name,
-                        planWeight = "${good.planned.dropZeros()} ${good.units.name}",
+                        arrived = "${good.arrived.dropZeros()} ${good.units.name}",
                         arrowVisibility = !task.isProcessed
                 )
             }
@@ -83,6 +83,6 @@ data class ItemPackGoodListUi(
         val position: String,
         val material: String,
         val name: String,
-        val planWeight: String,
+        val arrived: String,
         val arrowVisibility: Boolean
 )

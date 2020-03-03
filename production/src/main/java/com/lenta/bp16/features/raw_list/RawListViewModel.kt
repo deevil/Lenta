@@ -31,15 +31,15 @@ class RawListViewModel : CoreViewModel() {
     val raws: MutableLiveData<List<ItemRawListUi>> by lazy {
         good.map { good ->
             good?.raws?.mapIndexed { index, raw ->
-                val quantity = good.packs.filter {
-                    it.materialOsn == raw.materialOsn
+                val packed = good.packs.filter {
+                    it.orderNumber == raw.orderNumber
                 }.map { it.quantity }.sum()
 
                 ItemRawListUi(
                         position = (index + 1).toString(),
                         materialOsn = raw.materialOsn,
                         name = raw.name,
-                        processed = "${quantity.dropZeros()} ${good.units.name} из ${raw.planned.dropZeros()} ${good.units.name}",
+                        processingStatus = "${packed.dropZeros()} ${good.units.name} из ${raw.planned.dropZeros()} ${good.units.name}",
                         arrowVisibility = !good.isProcessed
                 )
             }
@@ -83,6 +83,6 @@ data class ItemRawListUi(
         val position: String,
         val materialOsn: String,
         val name: String,
-        val processed: String,
+        val processingStatus: String,
         val arrowVisibility: Boolean
 )
