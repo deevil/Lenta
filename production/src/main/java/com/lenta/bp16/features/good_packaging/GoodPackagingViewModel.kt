@@ -52,7 +52,7 @@ class GoodPackagingViewModel : CoreViewModel() {
     }
 
     val planned by lazy {
-        "${raw.value?.planned} ${good.value?.units?.name}"
+        "${raw.value?.planned.dropZeros()} ${good.value?.units?.name}"
     }
 
     val completeEnabled = entered.map {
