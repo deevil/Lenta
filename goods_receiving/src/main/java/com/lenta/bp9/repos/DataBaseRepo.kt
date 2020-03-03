@@ -42,8 +42,10 @@ class DataBaseRepo(
         }
     }
 
-    override suspend fun getTermControlInfo(): List<String>? = withContext(Dispatchers.IO) {
-        zmpUtz17V001.getItemsByTidSorted("007")?.toDescriptionsList()
+    override suspend fun getTermControlInfo(): List<QualityInfo>? = withContext(Dispatchers.IO) {
+        zmpUtz17V001.getAllQuality()?.toQualityInfoList()?.filter {
+            it.id == "007"
+        }
     }
 
     override suspend fun getParamGrsGrundPos(): String? = withContext(Dispatchers.IO) {
@@ -60,6 +62,14 @@ class DataBaseRepo(
 
     override suspend fun getParamGrzUffMhdhb(): String? = withContext(Dispatchers.IO) {
         zmpUtz14V001.getGrzUffMhdhb()
+    }
+
+    override suspend fun getParamGrwOlGrundcat(): String? = withContext(Dispatchers.IO) {
+        zmpUtz14V001.getGrwOlGrundcat()
+    }
+
+    override suspend fun getParamGrwUlGrundcat(): String? = withContext(Dispatchers.IO) {
+        zmpUtz14V001.getGrwUlGrundcat()
     }
 
     override suspend fun getExclusionFromIntegration(): List<QualityInfo>? = withContext(Dispatchers.IO) {
@@ -134,11 +144,13 @@ interface IDataBaseRepo {
     suspend fun getQualityInfoForDiscrepancy(): List<QualityInfo>?
     suspend fun getReasonRejectionInfoOfQuality(quality: String): List<ReasonRejectionInfo>?
     suspend fun getAllReasonRejectionInfo(): List<ReasonRejectionInfo>?
-    suspend fun getTermControlInfo(): List<String>?
+    suspend fun getTermControlInfo(): List<QualityInfo>?
     suspend fun getParamGrsGrundPos(): String?
     suspend fun getParamGrsGrundNeg(): String?
     suspend fun getParamPermittedNumberDays(): String?
     suspend fun getParamGrzUffMhdhb(): String?
+    suspend fun getParamGrwOlGrundcat(): String?
+    suspend fun getParamGrwUlGrundcat(): String?
     suspend fun getExclusionFromIntegration(): List<QualityInfo>?
     suspend fun getAllStatusInfoForPRC(): List<QualityInfo>?
     suspend fun getStatusInfoForPRC(): List<QualityInfo>?

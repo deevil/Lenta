@@ -315,7 +315,7 @@
             android:id="@+id/ConstraintShelfLife"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:visibility="@{vm.visibleShelfLife}"
+            android:visibility="@{vm.isPerishable}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/ConstraintDefect">
