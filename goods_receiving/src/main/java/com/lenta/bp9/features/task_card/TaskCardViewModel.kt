@@ -402,11 +402,10 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
             TaskStatus.Ordered, TaskStatus.Traveling, TaskStatus.TemporaryRejected -> {
                 if (isEdo &&
                         taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.DirectSupplier &&
-                        (taskManager.getReceivingTask()?.taskDescription?.currentStatus == TaskStatus.Ordered || taskManager.getReceivingTask()?.taskDescription?.currentStatus == TaskStatus.TemporaryRejected) ) {
-                    //trello https://trello.com/c/XKpOCvZo
+                        (taskManager.getReceivingTask()?.taskDescription?.currentStatus == TaskStatus.Ordered || taskManager.getReceivingTask()?.taskDescription?.currentStatus == TaskStatus.TemporaryRejected) ) { //trello https://trello.com/c/XKpOCvZo
                     screenNavigator.openEdoDialog(
-                            missing = {screenNavigator.openRegisterArrivalLoadingScreen(isInStockPaperTTN = false, isEdo = true, status = TaskStatus.Ordered)},
-                            inStock = {screenNavigator.openRegisterArrivalLoadingScreen(isInStockPaperTTN = true, isEdo = true, status = TaskStatus.Ordered)}
+                            missing = {screenNavigator.openRegisterArrivalLoadingScreen(isInStockPaperTTN = false, isEdo = true, status = taskManager.getReceivingTask()?.taskDescription?.currentStatus ?: TaskStatus.Other)},
+                            inStock = {screenNavigator.openRegisterArrivalLoadingScreen(isInStockPaperTTN = true, isEdo = true, status = taskManager.getReceivingTask()?.taskDescription?.currentStatus ?: TaskStatus.Other)}
                     )
                 } else {
                     screenNavigator.openRegisterArrivalLoadingScreen()
