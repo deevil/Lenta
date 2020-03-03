@@ -3,14 +3,23 @@ package com.lenta.bp9.features.goods_list
 import android.content.Context
 import com.lenta.bp9.model.task.IReceivingTaskManager
 import com.lenta.bp9.model.task.TaskProductInfo
+import com.lenta.bp9.model.task.TaskType
 import com.lenta.bp9.platform.navigation.IScreenNavigator
+import com.lenta.bp9.platform.requestCodeAddGoodsSurplus
 import com.lenta.bp9.platform.requestCodeTypeBarCode
 import com.lenta.bp9.platform.requestCodeTypeSap
+import com.lenta.bp9.repos.IDataBaseRepo
+import com.lenta.bp9.repos.IRepoInMemoryHolder
+import com.lenta.bp9.requests.network.ZmpUtzGrz31V001NetRequest
+import com.lenta.bp9.requests.network.ZmpUtzGrz31V001Params
+import com.lenta.bp9.requests.network.ZmpUtzGrz31V001Result
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
-import com.lenta.shared.fmp.resources.fast.ZmpUtz14V001
-import com.lenta.shared.models.core.GisControl
-import com.lenta.shared.models.core.ProductType
+import com.lenta.shared.fmp.resources.dao_ext.getProductInfoByMaterial
+import com.lenta.shared.fmp.resources.dao_ext.getUomInfo
+import com.lenta.shared.fmp.resources.fast.ZmpUtz07V001
+import com.lenta.shared.fmp.resources.slow.ZfmpUtz48V001
+import com.lenta.shared.models.core.*
 import com.lenta.shared.requests.combined.scan_info.ScanInfoRequest
 import com.lenta.shared.requests.combined.scan_info.ScanInfoRequestParams
 import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
@@ -26,7 +35,9 @@ class SearchProductDelegate @Inject constructor(
         private val scanInfoRequest: ScanInfoRequest,
         private val taskManager: IReceivingTaskManager,
         private val sessionInfo: ISessionInfo,
-        private val context: Context
+        private val context: Context,
+        private val zmpUtzGrz31V001NetRequest: ZmpUtzGrz31V001NetRequest,
+        private val repoInMemoryHolder: IRepoInMemoryHolder
 ) {
 
     private var scanInfoResult: ScanInfoResult? = null
@@ -41,6 +52,10 @@ class SearchProductDelegate @Inject constructor(
 
     private var codeWith12Digits: String? = null
 
+    private val zfmpUtz48V001: ZfmpUtz48V001 by lazy {
+        ZfmpUtz48V001(hyperHive)
+    }
+
     fun copy(): SearchProductDelegate {
         val searchProductDelegate = SearchProductDelegate(
                 hyperHive,
@@ -48,7 +63,9 @@ class SearchProductDelegate @Inject constructor(
                 scanInfoRequest,
                 taskManager,
                 sessionInfo,
-                context
+                context,
+                zmpUtzGrz31V001NetRequest,
+                repoInMemoryHolder
         )
         searchProductDelegate.init(viewModelScope, scanResultHandler)
         return searchProductDelegate
@@ -105,9 +122,73 @@ class SearchProductDelegate @Inject constructor(
                 codeWith12Digits = null
                 true
             }
+            requestCodeAddGoodsSurplus -> {
+                addGoodsSurplus()
+                true
+            }
             else -> false
         }
 
+    }
+
+    private fun addGoodsSurplus() {
+        viewModelScope().launch {
+            screenNavigator.showProgress(scanInfoRequest)
+            taskManager.getReceivingTask()?.let { task ->
+                val params = ZmpUtzGrz31V001Params(
+                        taskNumber = task.taskHeader.taskNumber,
+                        materialNumber = scanInfoResult?.productInfo?.materialNumber ?: "",
+                        boxNumber = "",
+                        stampCode = ""
+                )
+                zmpUtzGrz31V001NetRequest(params).either(::handleFailure, ::handleSuccessAddGoodsSurplus)
+            }
+            screenNavigator.hideProgress()
+
+        }
+    }
+
+    private fun handleSuccessAddGoodsSurplus(result: ZmpUtzGrz31V001Result) {
+        Logg.d { "AddGoodsSurplus ${result}" }
+        repoInMemoryHolder.manufacturers.value = result.manufacturers
+        val materialInfo = zfmpUtz48V001.getProductInfoByMaterial(result.productSurplusDataPGE.materialNumber)
+        val goodsSurplus = TaskProductInfo(
+                materialNumber = result.productSurplusDataPGE.materialNumber,
+                description = result.productSurplusDataPGE.materialName,
+                uom = scanInfoResult?.productInfo?.uom ?: Uom(code = "", name = ""),
+                type = getProductType(isAlco = result.productSurplusDataPGE.isAlco == "X", isExcise = result.productSurplusDataPGE.isExc == "X"),
+                isSet = scanInfoResult?.productInfo?.isSet ?: false,
+                sectionId = scanInfoResult?.productInfo?.sectionId ?: "",
+                matrixType = scanInfoResult?.productInfo?.matrixType ?: MatrixType.Unknown,
+                materialType = scanInfoResult?.productInfo?.materialType ?: "",
+                origQuantity = "0.0",
+                orderQuantity = "0.0",
+                quantityCapitalized = "0.0",
+                purchaseOrderUnits = Uom(code = "", name = ""),
+                overdToleranceLimit = "0.0",
+                underdToleranceLimit = "0.0",
+                upLimitCondAmount = "0.0",
+                quantityInvest = result.productSurplusDataPGE.quantityInvestments,
+                roundingSurplus = "0.0",
+                roundingShortages = "0.0",
+                isNoEAN = false,
+                isWithoutRecount = false,
+                isUFF = false,
+                isNotEdit = false,
+                generalShelfLife = "0",
+                remainingShelfLife = "0",
+                isRus = result.productSurplusDataPGE.isRus == "X",
+                isBoxFl = false,
+                isMarkFl = false,
+                isVet = result.productSurplusDataPGE.isVet == "X",
+                numberBoxesControl = "0",
+                numberStampsControl = "0",
+                processingUnit = "",
+                isGoodsAddedAsSurplus = true,
+                mhdhbDays = materialInfo?.mhdhbDays ?: 0
+        )
+        taskManager.getReceivingTask()!!.taskRepository.getProducts().addProduct(goodsSurplus)
+        openProductScreen(taskProductInfo = goodsSurplus)
     }
 
     private fun searchProduct() {
@@ -115,7 +196,11 @@ class SearchProductDelegate @Inject constructor(
         scanInfoResult?.let { infoResult ->
             val taskProductInfo = taskManager.getReceivingTask()!!.taskRepository.getProducts().findProduct(infoResult.productInfo.materialNumber)
             if (taskProductInfo == null) {
-                screenNavigator.openAlertGoodsNotInOrderScreen()
+                if (taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.RecalculationCargoUnit) {
+                    screenNavigator.openAddGoodsSurplusDialog(requestCodeAddGoodsSurplus) //эта проверка только для ПГЕ, карточки трелло https://trello.com/c/8P4mPlGN и https://trello.com/c/im9rJqrU
+                } else {
+                    screenNavigator.openAlertGoodsNotInOrderScreen()
+                }
                 return
             }
             scanResultHandler?.let { handle ->
@@ -128,30 +213,37 @@ class SearchProductDelegate @Inject constructor(
     }
 
     private fun openProductScreen(taskProductInfo: TaskProductInfo, initialCount: Double = 0.0) {
-        if (taskProductInfo.isNotEdit) {
-            screenNavigator.openGoodsDetailsScreen(taskProductInfo)
-            return
-        }
-
-        when (taskProductInfo.type) {
-            ProductType.General -> {
-                if (taskProductInfo.isVet) {
-                    screenNavigator.openGoodsMercuryInfoScreen(taskProductInfo, isDiscrepancy)
-                } else {
-                    screenNavigator.openGoodsInfoScreen(taskProductInfo, isDiscrepancy, initialCount)
+        viewModelScope().launch {
+            if (taskProductInfo.isNotEdit) {
+                screenNavigator.openGoodsDetailsScreen(taskProductInfo)
+            } else {
+                when (taskProductInfo.type) {
+                    ProductType.General -> {
+                        if (taskProductInfo.isVet) {
+                            //todo для ПГЕ Меркурия, товар, который добавляется как излишек и отсутствует в поставке, должна быть доработана логика со стороны аналитиков, пока не обрабатывается, а появляется сообщение (карточка трелло https://trello.com/c/eo1nRdKC)
+                            if (taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.RecalculationCargoUnit && taskProductInfo.isGoodsAddedAsSurplus) {
+                                screenNavigator.openNotImplementedScreenAlert("Карточка товара (ПГЕ для Меркурия)") //когда будет доработана ветка по пге по излишку, удалить это сообщение
+                            } else {
+                                screenNavigator.openGoodsMercuryInfoScreen(taskProductInfo, isDiscrepancy) //эта ветка для остальных заданий и товаров
+                            }
+                        } else {
+                            screenNavigator.openGoodsInfoScreen(productInfo = taskProductInfo, isDiscrepancy = isDiscrepancy, initialCount = initialCount)
+                        }
+                    }
+                    ProductType.ExciseAlcohol -> {
+                        if (taskProductInfo.isSet) {
+                            screenNavigator.openNotImplementedScreenAlert("Информация о наборе")
+                            //screenNavigator.openSetsInfoScreen(taskProductInfo)
+                        } else
+                            screenNavigator.openExciseAlcoInfoScreen(taskProductInfo)
+                    }
+                    ProductType.NonExciseAlcohol -> screenNavigator.openNonExciseAlcoInfoScreen(taskProductInfo)
+                    else -> {
+                        screenNavigator.openAlertGoodsNotInOrderScreen() //todo сообщение о неизвестном типе товара?
+                    }
                 }
             }
-            ProductType.ExciseAlcohol -> {
-                if (taskProductInfo.isSet) {
-                    screenNavigator.openNotImplementedScreenAlert("Информация о наборе")
-                    //screenNavigator.openSetsInfoScreen(taskProductInfo)
-                } else
-                    screenNavigator.openExciseAlcoInfoScreen(taskProductInfo)
-            }
-            ProductType.NonExciseAlcohol -> screenNavigator.openNonExciseAlcoInfoScreen(taskProductInfo)
-            else -> {
-                screenNavigator.openAlertGoodsNotInOrderScreen() //todo сообщение о неизвестном типе товара?
-            }
         }
+
     }
 }

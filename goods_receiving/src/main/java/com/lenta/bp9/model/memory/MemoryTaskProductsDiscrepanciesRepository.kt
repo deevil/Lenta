@@ -143,16 +143,16 @@ class MemoryTaskProductsDiscrepanciesRepository : ITaskProductsDiscrepanciesRepo
         return product.orderQuantity.toDouble() - getCountAcceptOfProductPGE(product) - getCountRefusalOfProductPGE(product)
     }
 
-    override fun getCountRefusalOfProductOfReasonRejection(product: TaskProductInfo, reasonRejectionCode: String?): Double {
-        var countRefusal = 0.0
-        reasonRejectionCode?.let {
+    override fun getCountOfDiscrepanciesOfProduct(product: TaskProductInfo, typeDiscrepancies: String?): Double {
+        var countDiscrepancies = 0.0
+        typeDiscrepancies?.let {
             findProductDiscrepanciesOfProduct(product).filter {
-                it.typeDiscrepancies == reasonRejectionCode
+                it.typeDiscrepancies == typeDiscrepancies
             }.map {discrepancies ->
-                countRefusal += discrepancies.numberDiscrepancies.toDouble()
+                countDiscrepancies += discrepancies.numberDiscrepancies.toDouble()
             }
         }
-        return countRefusal
+        return countDiscrepancies
     }
 
 

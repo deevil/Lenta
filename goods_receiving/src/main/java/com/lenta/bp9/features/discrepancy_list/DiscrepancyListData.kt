@@ -11,6 +11,7 @@ data class GoodsDiscrepancyItem(
         val countRefusalWithUom: String,
         val quantityNotProcessedWithUom: String,
         val discrepanciesName: String,
+        val isNormDiscrepancies: Boolean,
         val productInfo: TaskProductInfo?,
         val productDiscrepancies: TaskProductDiscrepancies?,
         val batchInfo: TaskBatchInfo?,

@@ -7,6 +7,7 @@ import com.lenta.bp16.platform.navigation.IScreenNavigator
 import com.lenta.bp16.request.UnblockTaskNetRequest
 import com.lenta.bp16.request.UnblockTaskParams
 import com.lenta.shared.platform.viewmodel.CoreViewModel
+import com.lenta.shared.utilities.extentions.dropZeros
 import com.lenta.shared.utilities.extentions.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -36,7 +37,7 @@ class PackGoodListViewModel : CoreViewModel() {
                         position = (index + 1).toString(),
                         material = good.material,
                         name = good.name,
-                        planWeight = "${good.planned} ${good.units.name}",
+                        arrived = "${good.arrived.dropZeros()} ${good.units.name}",
                         arrowVisibility = !task.isProcessed
                 )
             }
@@ -46,6 +47,10 @@ class PackGoodListViewModel : CoreViewModel() {
     // -----------------------------
 
     fun onClickItemPosition(position: Int) {
+        if (task.value?.isProcessed == true) {
+            return
+        }
+
         val material = packGoods.value!![position].material
         task.value?.goods?.find { it.material == material }?.let { good ->
             if (good.raws.size > 1) {
@@ -78,6 +83,6 @@ data class ItemPackGoodListUi(
         val position: String,
         val material: String,
         val name: String,
-        val planWeight: String,
+        val arrived: String,
         val arrowVisibility: Boolean
 )

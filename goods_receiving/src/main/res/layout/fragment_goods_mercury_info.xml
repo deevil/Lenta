@@ -229,7 +229,7 @@
                 android:background="@color/color_divider"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/spinner_production_date" />
+                app:layout_constraintTop_toBottomOf="@+id/tv_production_date" />
 
             <com.lenta.shared.view.ClickableSpinner
                 android:id="@+id/spinner_production_date"
@@ -238,8 +238,27 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
                 android:layout_marginEnd="8dp"
+                android:visibility='@{!vm.isVisibilityProductionDate}'
                 app:items="@{vm.spinProductionDate}"
                 app:position="@{vm.spinProductionDateSelectedPosition}"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/div_vert2"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <EditText
+                android:id="@+id/et_production_date"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginBottom="8dp"
+                android:ems="10"
+                android:hint="@string/format_date"
+                android:text="@={vm.productionDate}"
+                android:inputType="date"
+                android:visibility='@{vm.isVisibilityProductionDate}'
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/div_vert2"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -261,7 +280,7 @@
             android:id="@+id/ConstraintDefect"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:visibility="@{vm.isDefect}"
+            android:visibility="@{vm.isDefect || (vm.isTaskPGE &amp;&amp; !vm.isGoodsAddedAsSurplus)}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/ConstraintBottlingDate">
@@ -296,7 +315,7 @@
             android:id="@+id/ConstraintShelfLife"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:visibility="@{vm.visibleShelfLife}"
+            android:visibility="@{vm.isPerishable}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/ConstraintDefect">
@@ -434,6 +453,19 @@
             app:layout_constraintBottom_toBottomOf="@+id/tv_section"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@+id/tv_section" />
+
+            <ImageView
+                android:id="@+id/imageView6"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:src="@{vm.isEizUnit ? @drawable/ic_eiz_24dp : @drawable/ic_bei_24dp}"
+                android:onClick="@{(v) -> vm.onClickUnitChange()}"
+                app:visibleOrGone='@{vm.isTaskPGE &amp;&amp; !vm.isGoodsAddedAsSurplus}'
+                app:layout_constraintBottom_toBottomOf="@+id/et_inventory"
+                app:layout_constraintEnd_toEndOf="@+id/et_inventory"
+                app:layout_constraintTop_toTopOf="@+id/et_inventory"
+                tools:src="@drawable/ic_eiz_24dp"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

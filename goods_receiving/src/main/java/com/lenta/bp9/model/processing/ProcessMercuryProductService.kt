@@ -1,9 +1,6 @@
 package com.lenta.bp9.model.processing
 
-import com.lenta.bp9.model.task.IReceivingTaskManager
-import com.lenta.bp9.model.task.TaskMercuryDiscrepancies
-import com.lenta.bp9.model.task.TaskProductDiscrepancies
-import com.lenta.bp9.model.task.TaskProductInfo
+import com.lenta.bp9.model.task.*
 import com.lenta.bp9.model.task.revise.ProductVetDocumentRevise
 import com.lenta.bp9.repos.IRepoInMemoryHolder
 import com.lenta.shared.di.AppScope
@@ -13,6 +10,9 @@ import javax.inject.Inject
 const val PROCESSING_MERCURY_SAVED = 1
 const val PROCESSING_MERCURY_QUANT_GREAT_IN_VET_DOC = 2
 const val PROCESSING_MERCURY_QUANT_GREAT_IN_INVOICE = 3
+const val PROCESSING_MERCURY_SURPLUS_PGE_ENOUGH_QUANTITY = 4
+const val PROCESSING_MERCURY_SURPLUS_PGE_NOT_HAVE_ENOUGH_QUANTITY = 5
+const val PROCESSING_MERCURY_UNDERLOAD_AND_SURPLUS_IN_ONE_DELIVERY = 6
 
 @AppScope
 class ProcessMercuryProductService
@@ -47,7 +47,12 @@ class ProcessMercuryProductService
 
     fun add(countForProduct: String, countForVetDoc: String, reasonRejectionCode: String, manufacturer: String, productionDate: String){
         isModifications = true
-        val countAddForProduct = if (reasonRejectionCode == "1") countForProduct.toDouble() else getNewCountRefusalOfReasonRejection(reasonRejectionCode) + countForProduct.toDouble()
+        val countAddForProduct = if (taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.RecalculationCargoUnit) {
+            countForProduct.toDouble()
+        } else { //для ППП
+            if (reasonRejectionCode == "1") countForProduct.toDouble() else getNewCountRefusalOfReasonRejection(reasonRejectionCode) + countForProduct.toDouble()
+        }
+
         var foundDiscrepancy = newProductDiscrepancies.findLast {
             it.typeDiscrepancies == reasonRejectionCode
         }
@@ -107,6 +112,17 @@ class ProcessMercuryProductService
         changeNewProductDiscrepancy(foundDiscrepancy)
         foundVetDiscrepancy?.map {
             changeNewVetProductDiscrepancy(it)
+        }
+    }
+
+    fun addSurplusPGEEnoughQuantity(count: Double, manufacturer: String, productionDate: String) {
+        val countNorm = productInfo.orderQuantity.toDouble() - (getQuantityAllCategoryExceptNonOrderOfProductPGE(count) - count)
+        val countSurplus = count - countNorm
+        if (countNorm > 0.0) {
+            add(countNorm.toString(), countNorm.toString(), "1", manufacturer, productionDate)
+        }
+        if (countSurplus > 0.0) {
+            add(countSurplus.toString(), countSurplus.toString(), "2", manufacturer, productionDate)
         }
     }
 
@@ -242,6 +258,56 @@ class ProcessMercuryProductService
         } ) + count
     }
 
+    fun checkConditionsOfPreservationPGE(count: Double, reasonRejectionCode: String, manufacturer: String, productionDate: String) : Int {
+
+        val vetDocumentIDVolume = taskManager.getReceivingTask()?.taskRepository?.getMercuryDiscrepancies()?.findMercuryInfoOfProduct(productInfo)?.filter {
+            it.manufacturer == manufacturer &&
+                    it.productionDate == productionDate
+        }?.sumByDouble {
+            it.volume
+        } ?: 0.0
+
+        if ( (reasonRejectionCode == "2" && newProductDiscrepancies.any { it.typeDiscrepancies == "3" }) || (reasonRejectionCode == "3" && newProductDiscrepancies.any { it.typeDiscrepancies == "2"}) ) {
+            return PROCESSING_MERCURY_UNDERLOAD_AND_SURPLUS_IN_ONE_DELIVERY
+        }
+
+        if (reasonRejectionCode == "2" &&
+                getQuantityAllCategoryExceptNonOrderOfProductPGE(count) > productInfo.orderQuantity.toDouble() &&
+                getQuantityAllCategoryExceptNonOrderOfVetDocPGE(count, manufacturer, productionDate) <= vetDocumentIDVolume) {
+            return PROCESSING_MERCURY_SURPLUS_PGE_ENOUGH_QUANTITY
+        }
+
+        if (reasonRejectionCode == "2" &&
+                getQuantityAllCategoryExceptNonOrderOfProductPGE(count) > productInfo.orderQuantity.toDouble() &&
+                getQuantityAllCategoryExceptNonOrderOfVetDocPGE(count, manufacturer, productionDate) > vetDocumentIDVolume) {
+            return PROCESSING_MERCURY_SURPLUS_PGE_NOT_HAVE_ENOUGH_QUANTITY
+        }
+
+        if ( getQuantityAllCategoryExceptNonOrderOfVetDocPGE(count, manufacturer, productionDate) > vetDocumentIDVolume ) {
+            return PROCESSING_MERCURY_QUANT_GREAT_IN_VET_DOC
+        }
+
+        return if (getQuantityAllCategoryExceptNonOrderOfProductPGE(count) <= productInfo.orderQuantity.toDouble()) {
+            PROCESSING_MERCURY_SAVED
+        } else {
+            PROCESSING_MERCURY_QUANT_GREAT_IN_INVOICE
+        }
+    }
+
+    private fun getQuantityAllCategoryExceptNonOrderOfVetDocPGE(count: Double, manufacturer: String, productionDate: String) : Double {
+        return (newVetProductDiscrepancies.filter {newMercuryDiscrepancies ->
+            newMercuryDiscrepancies.manufacturer == manufacturer && newMercuryDiscrepancies.productionDate == productionDate
+        }.sumByDouble {
+            it.numberDiscrepancies
+        }) + count
+    }
+
+    private fun getQuantityAllCategoryExceptNonOrderOfProductPGE(count: Double) : Double {
+        return (newProductDiscrepancies.sumByDouble {
+            it.numberDiscrepancies.toDouble()
+        } ) + count
+    }
+
     fun getGoodsDetails() : List<TaskProductDiscrepancies>? {
         return newProductDiscrepancies
     }
@@ -254,9 +320,25 @@ class ProcessMercuryProductService
         }
     }
 
+    fun getNewCountAcceptPGE() : Double {
+        return newProductDiscrepancies.filter {
+            it.typeDiscrepancies == "1" || it.typeDiscrepancies == "2"
+        }.sumByDouble {
+            it.numberDiscrepancies.toDouble()
+        }
+    }
+
     fun getNewCountRefusal() : Double {
         return newProductDiscrepancies.filter {
             it.typeDiscrepancies != "1"
+        }.sumByDouble {
+            it.numberDiscrepancies.toDouble()
+        }
+    }
+
+    fun getNewCountRefusalPGE() : Double {
+        return newProductDiscrepancies.filter {
+            it.typeDiscrepancies == "3" || it.typeDiscrepancies == "4" || it.typeDiscrepancies == "5"
         }.sumByDouble {
             it.numberDiscrepancies.toDouble()
         }

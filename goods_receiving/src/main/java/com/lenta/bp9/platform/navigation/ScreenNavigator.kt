@@ -17,7 +17,6 @@ import com.lenta.bp9.features.goods_information.excise_alco.ExciseAlcoInfoFragme
 import com.lenta.bp9.features.goods_information.general.GoodsInfoFragment
 import com.lenta.bp9.features.goods_information.mercury.GoodsMercuryInfoFragment
 import com.lenta.bp9.features.goods_information.non_excise_alco.NonExciseAlcoInfoFragment
-import com.lenta.bp9.features.goods_information.perishables.PerishablesInfoFragment
 import com.lenta.bp9.features.goods_list.GoodsListFragment
 import com.lenta.bp9.features.input_outgoing_fillings.InputOutgoingFillingsFragment
 import com.lenta.bp9.features.list_goods_transfer.ListGoodsTransferFragment
@@ -41,9 +40,9 @@ import com.lenta.bp9.features.task_card.TaskCardFragment
 import com.lenta.bp9.features.task_list.TaskListFragment
 import com.lenta.bp9.features.transfer_goods_section.TransferGoodsSectionFragment
 import com.lenta.bp9.features.transport_marriage.TransportMarriageFragment
+import com.lenta.bp9.features.transport_marriage.cargo_unit.TransportMarriageCargoUnitFragment
 import com.lenta.bp9.features.transport_marriage.goods_details.TransportMarriageGoodsDetailsFragment
 import com.lenta.bp9.features.transport_marriage.goods_info.TransportMarriageGoodsInfoFragment
-import com.lenta.bp9.features.transport_marriage.cargo_unit.TransportMarriageCargoUnitFragment
 import com.lenta.bp9.features.transportation_number.TransportationNumberFragment
 import com.lenta.bp9.model.task.*
 import com.lenta.bp9.model.task.revise.DeliveryDocumentRevise
@@ -409,12 +408,6 @@ class ScreenNavigator(
         }
     }
 
-    override fun openPerishablesInfoScreen(productInfo: TaskProductInfo) {
-        runOrPostpone {
-            getFragmentStack()?.push(PerishablesInfoFragment.create(productInfo))
-        }
-    }
-
     override fun openRoundingIssueDialog(noCallbackFunc: () -> Unit, yesCallbackFunc: () -> Unit) {
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
@@ -470,7 +463,7 @@ class ScreenNavigator(
         }
     }
 
-    override fun openAlertCountLargerOverdelivery() {
+    override fun openAlertCountMoreOverdelivery() {
         openAlertScreen(message = context.getString(R.string.alert_count_larger_overdelivery),
                 iconRes = R.drawable.ic_info_pink_80dp,
                 textColor = ContextCompat.getColor(context, R.color.color_text_dialogWarning),
@@ -486,11 +479,10 @@ class ScreenNavigator(
         )
     }
 
-    override fun openExpiredDialog(noCallbackFunc: () -> Unit, yesCallbackFunc: () -> Unit) {
+    override fun openShelfLifeExpiredDialog(yesCallbackFunc: () -> Unit) {
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
                     message = context.getString(R.string.the_shelf_life_has_expired),
-                    codeConfirmForLeft = backFragmentResultHelper.setFuncForResult(noCallbackFunc),
                     codeConfirmForRight = backFragmentResultHelper.setFuncForResult(yesCallbackFunc),
                     iconRes = R.drawable.ic_question_80dp,
                     pageNumber = "97",
@@ -973,6 +965,75 @@ class ScreenNavigator(
         }
     }
 
+    override fun openAddGoodsSurplusDialog(codeConfirmationAddGoodsSurplus: Int) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.no_product_in_cargo_unit_dialog),
+                    iconRes = 0,
+                    codeConfirmForRight = codeConfirmationAddGoodsSurplus,
+                    pageNumber = "94",
+                    leftButtonDecorationInfo = ButtonDecorationInfo.no,
+                    rightButtonDecorationInfo = ButtonDecorationInfo.yes)
+            )
+        }
+    }
+
+    override fun openExceededPlannedQuantityInProcessingUnitDialog(nextCallbackFunc: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.exceeded_planned_quantity_in_processing_unit_dialog),
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(nextCallbackFunc),
+                    pageNumber = "95",
+                    rightButtonDecorationInfo = ButtonDecorationInfo.nextAlternate))
+        }
+    }
+
+    override fun openExceededPlannedQuantityBatchInProcessingUnitDialog(nextCallbackFunc: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.exceeded_planned_quantity_batch_in_processing_unit_dialog),
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(nextCallbackFunc),
+                    pageNumber = "95",
+                    rightButtonDecorationInfo = ButtonDecorationInfo.nextAlternate))
+        }
+    }
+
+    override fun openAlertBothSurplusAndUnderloadScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.alert_both_surplus_and_underload),
+                    iconRes = R.drawable.ic_info_pink,
+                    textColor = ContextCompat.getColor(context, R.color.color_text_dialogWarning),
+                    pageNumber = "97")
+            )
+        }
+    }
+
+    override fun openAlertCountMoreCargoUnitDialog(yesCallbackFunc: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.alert_count_larger_cargo_unit),
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(yesCallbackFunc),
+                    iconRes = R.drawable.ic_question_80dp,
+                    pageNumber = "97",
+                    leftButtonDecorationInfo = ButtonDecorationInfo.no,
+                    rightButtonDecorationInfo = ButtonDecorationInfo.yes))
+        }
+    }
+
+    override fun openShelfLifeExpiresDialog(noCallbackFunc: () -> Unit, yesCallbackFunc: () -> Unit, expiresThrough: String, shelfLife: String) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.the_shelf_life_expires, expiresThrough, shelfLife),
+                    codeConfirmForLeft = backFragmentResultHelper.setFuncForResult(noCallbackFunc),
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(yesCallbackFunc),
+                    iconRes = R.drawable.ic_question_80dp,
+                    pageNumber = "97",
+                    leftButtonDecorationInfo = ButtonDecorationInfo.no,
+                    rightButtonDecorationInfo = ButtonDecorationInfo.yes))
+        }
+    }
+
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 }
 
@@ -1024,15 +1085,14 @@ interface IScreenNavigator : ICoreNavigator {
     fun openTransportConditionsScreen()
     fun openFinishConditionsReviseLoadingScreen()
     fun openStartConditionsReviseLoadingScreen()
-    fun openPerishablesInfoScreen(productInfo: TaskProductInfo)
     fun openRoundingIssueDialog(noCallbackFunc: () -> Unit, yesCallbackFunc: () -> Unit)
     fun openTransferGoodsSectionScreen()
     fun openListGoodsTransferScreen(sectionInfo: TaskSectionInfo)
     fun openRepresPersonNumEntryScreen(sectionInfo: TaskSectionInfo)
     fun openFormedDocsScreen()
-    fun openAlertCountLargerOverdelivery()
+    fun openAlertCountMoreOverdelivery()
     fun openAlertNotCorrectDate()
-    fun openExpiredDialog(noCallbackFunc: () -> Unit, yesCallbackFunc: () -> Unit)
+    fun openShelfLifeExpiredDialog(yesCallbackFunc: () -> Unit)
     fun openRecountStartLoadingScreen()
     fun openSubmittedLoadingScreen()
     fun openTransmittedLoadingScreen()
@@ -1091,4 +1151,10 @@ interface IScreenNavigator : ICoreNavigator {
     fun openTransportMarriageGoodsInfoScreen(transportMarriageInfo: TaskTransportMarriageInfo)
     fun openTransportMarriageGoodsDetailsScreen(cargoUnitNumber: String, materialNumber: String, materialName: String)
     fun openAlertAmountEnteredGreaterPUScreen()
+    fun openAddGoodsSurplusDialog(codeConfirmationAddGoodsSurplus: Int)
+    fun openExceededPlannedQuantityInProcessingUnitDialog(nextCallbackFunc: () -> Unit)
+    fun openExceededPlannedQuantityBatchInProcessingUnitDialog(nextCallbackFunc: () -> Unit)
+    fun openAlertBothSurplusAndUnderloadScreen()
+    fun openAlertCountMoreCargoUnitDialog(yesCallbackFunc: () -> Unit)
+    fun openShelfLifeExpiresDialog(noCallbackFunc: () -> Unit, yesCallbackFunc: () -> Unit, expiresThrough: String, shelfLife: String)
 }

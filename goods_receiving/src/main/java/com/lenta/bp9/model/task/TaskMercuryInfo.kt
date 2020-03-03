@@ -3,7 +3,7 @@ package com.lenta.bp9.model.task
 import com.google.gson.annotations.SerializedName
 import com.lenta.shared.models.core.Uom
 
-//ET_VET_DIFF Таблица расхождений по вет.товарам
+//ET_VET_DIFF Таблица расхождений по вет.товарам (получаемая инфа с сервера для обработки)
 data class TaskMercuryInfo(
         /**номер продукта (ET_VET_DIFF -> MATNR)*/
         val materialNumber: String,
