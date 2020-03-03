@@ -400,7 +400,9 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
 
         when (taskManager.getReceivingTask()?.taskDescription?.currentStatus) {
             TaskStatus.Ordered, TaskStatus.Traveling, TaskStatus.TemporaryRejected -> {
-                if (isEdo && taskManager.getReceivingTask()?.taskDescription?.currentStatus == TaskStatus.Ordered && taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.DirectSupplier) {
+                if (isEdo &&
+                        taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.DirectSupplier &&
+                        (taskManager.getReceivingTask()?.taskDescription?.currentStatus == TaskStatus.Ordered || taskManager.getReceivingTask()?.taskDescription?.currentStatus == TaskStatus.TemporaryRejected) ) {
                     //trello https://trello.com/c/XKpOCvZo
                     screenNavigator.openEdoDialog(
                             missing = {screenNavigator.openRegisterArrivalLoadingScreen(isInStockPaperTTN = false, isEdo = true, status = TaskStatus.Ordered)},
