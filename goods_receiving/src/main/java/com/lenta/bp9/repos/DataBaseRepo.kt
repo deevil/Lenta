@@ -72,6 +72,10 @@ class DataBaseRepo(
         zmpUtz14V001.getGrwUlGrundcat()
     }
 
+    override suspend fun getParamGrzWerksOwnpr(): List<String>? = withContext(Dispatchers.IO) {
+        zmpUtz14V001.getGrzWerksOwnpr()
+    }
+
     override suspend fun getExclusionFromIntegration(): List<QualityInfo>? = withContext(Dispatchers.IO) {
         zmpUtz17V001.getAllQuality()?.toQualityInfoList()?.filter {
             it.id == "016"
@@ -151,6 +155,7 @@ interface IDataBaseRepo {
     suspend fun getParamGrzUffMhdhb(): String?
     suspend fun getParamGrwOlGrundcat(): String?
     suspend fun getParamGrwUlGrundcat(): String?
+    suspend fun getParamGrzWerksOwnpr(): List<String>?
     suspend fun getExclusionFromIntegration(): List<QualityInfo>?
     suspend fun getAllStatusInfoForPRC(): List<QualityInfo>?
     suspend fun getStatusInfoForPRC(): List<QualityInfo>?
