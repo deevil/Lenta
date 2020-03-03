@@ -46,6 +46,10 @@ class PackGoodListViewModel : CoreViewModel() {
     // -----------------------------
 
     fun onClickItemPosition(position: Int) {
+        if (task.value?.isProcessed == true) {
+            return
+        }
+
         val material = packGoods.value!![position].material
         task.value?.goods?.find { it.material == material }?.let { good ->
             if (good.raws.size > 1) {
