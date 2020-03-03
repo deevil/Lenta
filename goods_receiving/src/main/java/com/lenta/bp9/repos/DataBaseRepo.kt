@@ -42,8 +42,10 @@ class DataBaseRepo(
         }
     }
 
-    override suspend fun getTermControlInfo(): List<String>? = withContext(Dispatchers.IO) {
-        zmpUtz17V001.getItemsByTidSorted("007")?.toDescriptionsList()
+    override suspend fun getTermControlInfo(): List<QualityInfo>? = withContext(Dispatchers.IO) {
+        zmpUtz17V001.getAllQuality()?.toQualityInfoList()?.filter {
+            it.id == "007"
+        }
     }
 
     override suspend fun getParamGrsGrundPos(): String? = withContext(Dispatchers.IO) {
@@ -142,7 +144,7 @@ interface IDataBaseRepo {
     suspend fun getQualityInfoForDiscrepancy(): List<QualityInfo>?
     suspend fun getReasonRejectionInfoOfQuality(quality: String): List<ReasonRejectionInfo>?
     suspend fun getAllReasonRejectionInfo(): List<ReasonRejectionInfo>?
-    suspend fun getTermControlInfo(): List<String>?
+    suspend fun getTermControlInfo(): List<QualityInfo>?
     suspend fun getParamGrsGrundPos(): String?
     suspend fun getParamGrsGrundNeg(): String?
     suspend fun getParamPermittedNumberDays(): String?

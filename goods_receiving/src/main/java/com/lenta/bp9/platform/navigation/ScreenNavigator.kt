@@ -478,11 +478,10 @@ class ScreenNavigator(
         )
     }
 
-    override fun openExpiredDialog(noCallbackFunc: () -> Unit, yesCallbackFunc: () -> Unit) {
+    override fun openShelfLifeExpiredDialog(yesCallbackFunc: () -> Unit) {
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
                     message = context.getString(R.string.the_shelf_life_has_expired),
-                    codeConfirmForLeft = backFragmentResultHelper.setFuncForResult(noCallbackFunc),
                     codeConfirmForRight = backFragmentResultHelper.setFuncForResult(yesCallbackFunc),
                     iconRes = R.drawable.ic_question_80dp,
                     pageNumber = "97",
@@ -1021,6 +1020,19 @@ class ScreenNavigator(
         }
     }
 
+    override fun openShelfLifeExpiresDialog(noCallbackFunc: () -> Unit, yesCallbackFunc: () -> Unit, expiresThrough: String, shelfLife: String) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.the_shelf_life_expires, expiresThrough, shelfLife),
+                    codeConfirmForLeft = backFragmentResultHelper.setFuncForResult(noCallbackFunc),
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(yesCallbackFunc),
+                    iconRes = R.drawable.ic_question_80dp,
+                    pageNumber = "97",
+                    leftButtonDecorationInfo = ButtonDecorationInfo.no,
+                    rightButtonDecorationInfo = ButtonDecorationInfo.yes))
+        }
+    }
+
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 }
 
@@ -1079,7 +1091,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openFormedDocsScreen()
     fun openAlertCountMoreOverdelivery()
     fun openAlertNotCorrectDate()
-    fun openExpiredDialog(noCallbackFunc: () -> Unit, yesCallbackFunc: () -> Unit)
+    fun openShelfLifeExpiredDialog(yesCallbackFunc: () -> Unit)
     fun openRecountStartLoadingScreen()
     fun openSubmittedLoadingScreen()
     fun openTransmittedLoadingScreen()
@@ -1143,4 +1155,5 @@ interface IScreenNavigator : ICoreNavigator {
     fun openExceededPlannedQuantityBatchInProcessingUnitDialog(nextCallbackFunc: () -> Unit)
     fun openAlertBothSurplusAndUnderloadScreen()
     fun openAlertCountMoreCargoUnitDialog(yesCallbackFunc: () -> Unit)
+    fun openShelfLifeExpiresDialog(noCallbackFunc: () -> Unit, yesCallbackFunc: () -> Unit, expiresThrough: String, shelfLife: String)
 }

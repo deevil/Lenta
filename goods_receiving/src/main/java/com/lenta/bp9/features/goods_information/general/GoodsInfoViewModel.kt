@@ -55,6 +55,9 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
             MutableLiveData(productInfo.value?.uom)
         }
     }
+    private val qualityInfo: MutableLiveData<List<QualityInfo>> = MutableLiveData()
+    private val reasonRejectionInfo: MutableLiveData<List<ReasonRejectionInfo>> = MutableLiveData()
+    private val shelfLifeInfo: MutableLiveData<List<QualityInfo>> = MutableLiveData()
     val spinQuality: MutableLiveData<List<String>> = MutableLiveData()
     val spinQualitySelectedPosition: MutableLiveData<Int> = MutableLiveData(0)
     val spinReasonRejection: MutableLiveData<List<String>> = MutableLiveData()
@@ -77,8 +80,6 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
         }
     }
 
-    private val qualityInfo: MutableLiveData<List<QualityInfo>> = MutableLiveData()
-    private val reasonRejectionInfo: MutableLiveData<List<ReasonRejectionInfo>> = MutableLiveData()
     val enteredProcessingUnitNumber: MutableLiveData<String> = MutableLiveData("")
     val generalShelfLife: MutableLiveData<String> = MutableLiveData()
     val remainingShelfLife: MutableLiveData<String> = MutableLiveData()
@@ -227,7 +228,10 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
                     (productInfo.value?.remainingShelfLife?.toInt() ?: 0) > 0 ||
                     ((productInfo.value?.mhdhbDays ?: 0) > 0 && (productInfo.value?.mhdhbDays ?: 0) < paramGrzUffMhdhb )
             if (isPerishable.value == true) {
-                spinShelfLife.value = dataBase.getTermControlInfo()
+                shelfLifeInfo.value = dataBase.getTermControlInfo()
+                spinShelfLife.value = shelfLifeInfo.value?.map {
+                    it.name
+                }
                 currentDate.value = timeMonitor.getServerDate()
                 expirationDate.value = Calendar.getInstance()
                 generalShelfLife.value = productInfo.value?.generalShelfLife
@@ -407,10 +411,9 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
         }
 
         //блок 6.131
-        if (spinShelfLifeSelectedPosition.value == 1) {
+        if (spinShelfLifeSelectedPosition.value == shelfLifeInfo.value!!.indexOfLast {it.code == "001"}) {
             //блок 6.146
             expirationDate.value!!.time = formatter.parse(shelfLifeDate.value)
-            return
         } else {
             //блок 6.144
             expirationDate.value!!.time = formatter.parse(shelfLifeDate.value)
@@ -420,11 +423,7 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
         //блок 6.152
         if (expirationDate.value!!.time <= currentDate.value) {
             //блок 6.158
-            screenNavigator.openExpiredDialog(
-                    //блок 6.169
-                    noCallbackFunc = {
-                        //блок 6.172
-                    },
+            screenNavigator.openShelfLifeExpiredDialog(
                     //блок 6.170
                     yesCallbackFunc = {
                         //блок 6.174
@@ -442,7 +441,7 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
         }
 
         //блок 6.184
-        screenNavigator.openExpiredDialog(
+        screenNavigator.openShelfLifeExpiresDialog(
                 //блок 6.189
                 noCallbackFunc = {
                     //блок 6.191
@@ -452,7 +451,9 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
                 yesCallbackFunc = {
                     //блок 6.192
                     addOrdinaryGoods()
-                }
+                },
+                expiresThrough = remainingShelfLife.value ?: "",
+                shelfLife = generalShelfLife.value ?: ""
         )
     }
 
@@ -621,7 +622,64 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
 
     //ПГЕ-скоропорт. в блок-схеме лист 7 "Карточка товара ППП" блок - 7.2
     private fun addPerishablePGE() {
+        //блок 7.103
+        if (qualityInfo.value?.get(spinQualitySelectedPosition.value ?: 0)?.code != "1") {
+            addOrdinaryGoodsPGE()
+            return
+        }
 
+        if (!isCorrectDate(shelfLifeDate.value)) {
+            screenNavigator.openAlertNotCorrectDate()
+            return
+        }
+
+        //блок 7.134
+        if (spinShelfLifeSelectedPosition.value == shelfLifeInfo.value!!.indexOfLast {it.code == "001"}) {
+            //блок 7.154
+            expirationDate.value!!.time = formatter.parse(shelfLifeDate.value)
+        } else {
+            //блок 7.153
+            expirationDate.value!!.time = formatter.parse(shelfLifeDate.value)
+            expirationDate.value!!.add(Calendar.DATE, productInfo.value!!.generalShelfLife.toInt())
+        }
+
+        //блок 7.160
+        if (expirationDate.value!!.time <= currentDate.value) {
+            //блок 7.168
+            screenNavigator.openShelfLifeExpiredDialog(
+                    //блок 7.180
+                    yesCallbackFunc = {
+                        //блок 7.183
+                        spinQualitySelectedPosition.value = qualityInfo.value!!.indexOfLast {it.code == "5"} //устанавливаем брак складской, Маша Стоян
+                        //spinShelfLifeSelectedPosition.value = shelfLifeInfo.value!!.indexOfLast {it.code == "001"} закомиченно, т.к. данное поле активно только при категориях Норма и Излишек
+                    }
+            )
+            return
+        }
+
+        //блоки 7.167 и 7.190
+        if ( Days.daysBetween(DateTime(currentDate.value), DateTime(expirationDate.value!!.time)).days > productInfo.value!!.remainingShelfLife.toLong() ) {
+            //блок 7.203
+            addOrdinaryGoodsPGE()
+            return
+        }
+
+        //блок 7.194
+        screenNavigator.openShelfLifeExpiresDialog(
+                //блок 7.200
+                noCallbackFunc = {
+                    //блок 7.201
+                    spinQualitySelectedPosition.value = qualityInfo.value!!.indexOfLast {it.code == "5"} //устанавливаем брак складской, Маша Стоян
+                    //spinShelfLifeSelectedPosition.value = shelfLifeInfo.value!!.indexOfLast {it.code == "001"} закомиченно, т.к. данное поле активно только при категориях Норма и Излишек
+                },
+                //блок 7.199
+                yesCallbackFunc = {
+                    //блок 7.203
+                    addOrdinaryGoodsPGE()
+                },
+                expiresThrough = remainingShelfLife.value ?: "",
+                shelfLife = generalShelfLife.value ?: ""
+        )
     }
 
     //ПГЕ блоки 7.177 и 7.185
