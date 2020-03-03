@@ -233,16 +233,17 @@ class GoodsMercuryInfoViewModel : CoreViewModel(), OnPositionClickListener {
             } else {
                 suffix.value = uom.value?.name
                 if (isDiscrepancy.value!!) {
-                    qualityInfo.value = dataBase.getQualityInfoForDiscrepancy()
-                    spinQualitySelectedPosition.value = 2
+                    qualityInfo.value = dataBase.getQualityMercuryInfoForDiscrepancy()
+                    spinQualitySelectedPosition.value = qualityInfo.value!!.indexOfLast {it.code == "7"}
                 } else {
-                    qualityInfo.value = dataBase.getQualityInfo()
+                    qualityInfo.value = dataBase.getQualityMercuryInfo()
                 }
             }
 
             generalShelfLife.value = productInfo.value?.generalShelfLife
             remainingShelfLife.value = productInfo.value?.remainingShelfLife
 
+            /** определяем, что товар скоропорт, это общий для всех алгоритм https://trello.com/c/8sOTWtB7 */
             val paramGrzUffMhdhb = dataBase.getParamGrzUffMhdhb()?.toInt() ?: 60
             isPerishable.value = (productInfo.value?.generalShelfLife?.toInt() ?: 0) > 0 ||
                     (productInfo.value?.remainingShelfLife?.toInt() ?: 0) > 0 ||
@@ -285,10 +286,14 @@ class GoodsMercuryInfoViewModel : CoreViewModel(), OnPositionClickListener {
                 spinReasonRejection.value = listOf("ЕО - " + productInfo.value!!.processingUnit)
             } else {
                 screenNavigator.showProgressLoadingData()
-                spinReasonRejectionSelectedPosition.value = 0
                 reasonRejectionInfo.value = dataBase.getReasonRejectionInfoOfQuality(selectedQuality)
                 spinReasonRejection.value = reasonRejectionInfo.value?.map {
                     it.name
+                }
+                if (isDiscrepancy.value!!) {
+                    spinReasonRejectionSelectedPosition.value = reasonRejectionInfo.value!!.indexOfLast {it.code == "44"}
+                } else {
+                    spinReasonRejectionSelectedPosition.value = 0
                 }
                 count.value = count.value
                 screenNavigator.hideProgress()
