@@ -42,7 +42,7 @@ class ExternalSupplyListViewModel : CoreViewModel() {
                         position = (index + 1).toString(),
                         material = good.material,
                         name = "${good.material.takeLast(6)} ${good.name}",
-                        arrived = "${good.planned.dropZeros()} ${good.units.name}"
+                        arrived = "${good.arrived.dropZeros()} ${good.units.name}"
                 )
             }
         }
@@ -50,9 +50,7 @@ class ExternalSupplyListViewModel : CoreViewModel() {
 
     val completeEnabled by lazy {
         task.map { task ->
-            task?.isProcessed == false && task.goods?.map {
-                it.getFactRawQuantity()
-            }?.any { it > 0.0 } ?: false
+            task?.isProcessed == false && task.goods?.any { it.packs.isNotEmpty() } ?: false
         }
     }
 

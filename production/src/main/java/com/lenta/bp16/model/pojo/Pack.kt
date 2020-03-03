@@ -5,6 +5,7 @@ data class Pack(
         val material: String, // sap-код товара
         val materialOsn: String, // sap-код полуфабриката
         val code: String,
+        val orderNumber: String,
         val quantity: Double,
         val isDefOut: Boolean = false
 ) {

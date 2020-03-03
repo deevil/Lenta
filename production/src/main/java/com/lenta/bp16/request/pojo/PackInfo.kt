@@ -9,6 +9,9 @@ data class PackInfo(
         /** SAP – код товара */
         @SerializedName("MATNR_OSN")
         val materialOsn: String,
+        /** Номер технологического заказа */
+        @SerializedName("AUFNR")
+        val orderNumber: String,
         /** Код тары */
         @SerializedName("CODE_CONT")
         val code: String,

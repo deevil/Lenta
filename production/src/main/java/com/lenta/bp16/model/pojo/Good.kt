@@ -7,15 +7,13 @@ data class Good(
         val material: String,
         val name: String,
         val units: Uom,
-        var planned: Double,
+        var arrived: Double,
         var raws: MutableList<Raw> = mutableListOf(),
         var packs: MutableList<Pack> = mutableListOf()
 ) {
 
-    fun getFactRawQuantity(): Double {
-        return raws.map { raw ->
-            packs.filter { it.materialOsn == raw.materialOsn }.map { it.quantity }.sum()
-        }.sum()
+    fun getPackedQuantity(): Double {
+        return packs.map { it.quantity }.sum()
     }
 
     fun getNameWithMaterial(delimiter: String = " "): String {

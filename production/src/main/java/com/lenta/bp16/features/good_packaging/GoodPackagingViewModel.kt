@@ -52,7 +52,7 @@ class GoodPackagingViewModel : CoreViewModel() {
     }
 
     val planned by lazy {
-        "${raw.value?.planned} ${good.value?.units?.name}"
+        "${raw.value?.planned.dropZeros()} ${good.value?.units?.name}"
     }
 
     val completeEnabled = entered.map {
@@ -81,8 +81,8 @@ class GoodPackagingViewModel : CoreViewModel() {
                 taskManager.completeCurrentTask()
 
                 navigator.showFixingPackagingPhaseSuccessful {
-                    navigator.closeAllScreen()
-                    navigator.openProcessingUnitTaskListScreen()
+                    navigator.goBack()
+                    navigator.goBack()
                 }
             }
         }

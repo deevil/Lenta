@@ -113,6 +113,7 @@ class GoodWeighingViewModel : CoreViewModel() {
                                     material = it.material,
                                     materialOsn = raw.value!!.materialOsn,
                                     code = packCodeResult.packCode,
+                                    orderNumber = raw.value!!.orderNumber,
                                     quantity = total.value!!
                             )
                     )
