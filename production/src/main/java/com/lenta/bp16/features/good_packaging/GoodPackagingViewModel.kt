@@ -81,8 +81,8 @@ class GoodPackagingViewModel : CoreViewModel() {
                 taskManager.completeCurrentTask()
 
                 navigator.showFixingPackagingPhaseSuccessful {
-                    navigator.closeAllScreen()
-                    navigator.openProcessingUnitTaskListScreen()
+                    navigator.goBack()
+                    navigator.goBack()
                 }
             }
         }
