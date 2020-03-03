@@ -24,14 +24,14 @@ class ProcessNonExciseAlcoProductService
         else null
     }
 
-    private fun getCountRefusalOfReasonRejection(reasonRejectionCode: String) : Double {
-        return taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().getCountRefusalOfProductOfReasonRejection(productInfo, reasonRejectionCode)
+    private fun getCountOfDiscrepancies(typeDiscrepancies: String) : Double {
+        return taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().getCountOfDiscrepanciesOfProduct(productInfo, typeDiscrepancies)
     }
 
-    fun add(count: String, reasonRejectionCode: String){
-        val countAdd = if (reasonRejectionCode == "1") count.toDouble() else getCountRefusalOfReasonRejection(reasonRejectionCode) + count.toDouble()
+    fun add(count: String, typeDiscrepancies: String){
+        val countAdd = if (typeDiscrepancies == "1") count.toDouble() else getCountOfDiscrepancies(typeDiscrepancies) + count.toDouble()
         val foundDiscrepancy = taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.findProductDiscrepanciesOfProduct(productInfo)?.findLast {
-            it.materialNumber == productInfo.materialNumber && it.typeDiscrepancies == reasonRejectionCode
+            it.materialNumber == productInfo.materialNumber && it.typeDiscrepancies == typeDiscrepancies
         }
 
         if (foundDiscrepancy == null) {
@@ -43,7 +43,7 @@ class ProcessNonExciseAlcoProductService
                             exidv = "",
                             numberDiscrepancies = countAdd.toString(),
                             uom = productInfo.uom,
-                            typeDiscrepancies = reasonRejectionCode,
+                            typeDiscrepancies = typeDiscrepancies,
                             isNotEdit = false,
                             isNew = false
                     ))
@@ -59,12 +59,12 @@ class ProcessNonExciseAlcoProductService
                 getProducts()?.
                 changeProduct(productInfo.copy(isNoEAN = false))
 
-        addBatch(countAdd.toString(), reasonRejectionCode)
+        addBatch(countAdd.toString(), typeDiscrepancies)
     }
 
-    private fun addBatch(count: String, reasonRejectionCode: String){
+    private fun addBatch(count: String, typeDiscrepancies: String){
         val foundBatchDiscrepancy = taskManager.getReceivingTask()?.taskRepository?.getBatchesDiscrepancies()?.findBatchDiscrepanciesOfBatch(batchInfo)?.findLast {
-            it.materialNumber == batchInfo.materialNumber /**&& it.batchNumber == batchInfo.batchNumber*/ && it.typeDiscrepancies == reasonRejectionCode
+            it.materialNumber == batchInfo.materialNumber /**&& it.batchNumber == batchInfo.batchNumber*/ && it.typeDiscrepancies == typeDiscrepancies
         }
 
         /**if (foundBatchDiscrepancy == null) {
@@ -76,7 +76,7 @@ class ProcessNonExciseAlcoProductService
                             batchNumber = batchInfo.batchNumber,
                             numberDiscrepancies = count,
                             uom = batchInfo.uom,
-                            typeDiscrepancies = reasonRejectionCode,
+                            typeDiscrepancies = typeDiscrepancies,
                             isNotEdit = false,
                             exciseStampCode = "",
                             fullDM = ""

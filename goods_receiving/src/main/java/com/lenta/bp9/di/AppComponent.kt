@@ -14,7 +14,6 @@ import com.lenta.bp9.features.goods_information.excise_alco.ExciseAlcoInfoViewMo
 import com.lenta.bp9.features.goods_information.general.GoodsInfoViewModel
 import com.lenta.bp9.features.goods_information.mercury.GoodsMercuryInfoViewModel
 import com.lenta.bp9.features.goods_information.non_excise_alco.NonExciseAlcoInfoViewModel
-import com.lenta.bp9.features.goods_information.perishables.PerishablesInfoViewModel
 import com.lenta.bp9.features.goods_list.GoodsListViewModel
 import com.lenta.bp9.features.input_outgoing_fillings.InputOutgoingFillingsViewModel
 import com.lenta.bp9.features.list_goods_transfer.ListGoodsTransferViewModel
@@ -82,7 +81,6 @@ interface AppComponent {
     fun inject(it: LoadingFinishReviseViewModel)
     fun inject(it: LoadingStartReviseViewModel)
     fun inject(it: LoadingUnlockTaskViewModel)
-    fun inject(it: PerishablesInfoViewModel)
     fun inject(it: TransferGoodsSectionViewModel)
     fun inject(it: TransportConditionsReviseViewModel)
     fun inject(it: LoadingFinishConditionsReviseViewModel)

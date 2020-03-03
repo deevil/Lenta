@@ -100,6 +100,18 @@ fun ZmpUtz14V001.getGrzUffMhdhb(): String? {
     return getParams("GRZ_UFF_MHDHB").firstOrNull()
 }
 
+fun ZmpUtz14V001.getGrwOlGrundcat(): String? {
+    return getParams("GRW_OL_GRUNDCAT").firstOrNull()
+}
+
+fun ZmpUtz14V001.getGrwUlGrundcat(): String? {
+    return getParams("GRW_UL_GRUNDCAT").firstOrNull()
+}
+
+fun ZmpUtz14V001.getGrzWerksOwnpr(): List<String>? {
+    return getParams("GRZ_WERKS_OWNPR")
+}
+
 private fun ZmpUtz14V001.getParams(paramName: String): List<String> {
     @Suppress("INACCESSIBLE_TYPE")
     return localHelper_ET_PARAMS.getWhere("PARAMNAME = \"$paramName\"").map { it.paramvalue }

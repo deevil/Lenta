@@ -24,6 +24,7 @@ class MainMenuViewModel : CoreViewModel() {
     fun onClickExternalSupply() {
         taskManager.taskType = TaskType.EXTERNAL_SUPPLY
         navigator.openExternalSupplyTaskListScreen()
+
         //TODO удалить после окончательной реализации печати
         /*viewModelScope.launch {
             withContext(IO) {
@@ -71,6 +72,5 @@ class MainMenuViewModel : CoreViewModel() {
         taskManager.taskType = TaskType.PROCESSING_UNIT
         navigator.openProcessingUnitTaskListScreen()
     }
-
 
 }
