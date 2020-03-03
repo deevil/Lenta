@@ -7,6 +7,7 @@ import com.lenta.bp16.platform.navigation.IScreenNavigator
 import com.lenta.bp16.request.UnblockTaskNetRequest
 import com.lenta.bp16.request.UnblockTaskParams
 import com.lenta.shared.platform.viewmodel.CoreViewModel
+import com.lenta.shared.utilities.extentions.dropZeros
 import com.lenta.shared.utilities.extentions.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -36,7 +37,7 @@ class PackGoodListViewModel : CoreViewModel() {
                         position = (index + 1).toString(),
                         material = good.material,
                         name = good.name,
-                        planWeight = "${good.planned} ${good.units.name}",
+                        planWeight = "${good.planned.dropZeros()} ${good.units.name}",
                         arrowVisibility = !task.isProcessed
                 )
             }
