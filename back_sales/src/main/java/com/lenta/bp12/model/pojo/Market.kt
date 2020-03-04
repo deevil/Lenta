@@ -1,4 +1,4 @@
-package com.lenta.bp12.pojo
+package com.lenta.bp12.model.pojo
 
 import com.google.gson.annotations.SerializedName
 

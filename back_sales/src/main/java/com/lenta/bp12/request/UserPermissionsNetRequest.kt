@@ -1,7 +1,7 @@
 package com.lenta.bp12.request
 
 import com.google.gson.annotations.SerializedName
-import com.lenta.bp12.pojo.*
+import com.lenta.bp12.model.pojo.*
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.fmp.ObjectRawStatus
 import com.lenta.shared.functional.Either
