@@ -1,6 +1,5 @@
-package com.lenta.bp12.fmp.resource.slow;
+package com.lenta.shared.fmp.resources.fast;
 
-import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import com.mobrun.plugin.api.HyperHive;
 import com.mobrun.plugin.api.helper.LocalTableResourceHelper;
@@ -9,43 +8,53 @@ import com.mobrun.plugin.api.request_assistant.RequestBuilder;
 import com.mobrun.plugin.api.request_assistant.ScalarParameter;
 import com.mobrun.plugin.models.StatusSelectTable;
 
-public class ZmpUtz43V001 {
+public class ZmpUtz41V001 {
 
-    public static final String NAME_RESOURCE = "ZMP_UTZ_43_V001";
-    public static final String NAME_OUT_PARAM_ET_ZPROD = "ET_ZPROD";
+    public static final String NAME_RESOURCE = "ZMP_UTZ_41_V001";
+    public static final String NAME_OUT_PARAM_ET_ALLOW_MATNR = "ET_ALLOW_MATNR";
     public static final String LIFE_TIME = "1 day, 0:00:00";
 
     private final HyperHive hyperHive;
 
-    public final LocalTableResourceHelper<ItemLocal_ET_ZPROD, Status_ET_ZPROD> localHelper_ET_ZPROD;
+    public final LocalTableResourceHelper<ItemLocal_ET_ALLOW_MATNR, Status_ET_ALLOW_MATNR> localHelper_ET_ALLOW_MATNR;
 
 
-    public ZmpUtz43V001(HyperHive hyperHive) {
+    public ZmpUtz41V001(HyperHive hyperHive) {
 
         this.hyperHive = hyperHive;
 
-        localHelper_ET_ZPROD = 
-                 new LocalTableResourceHelper<ItemLocal_ET_ZPROD, Status_ET_ZPROD>(NAME_RESOURCE, 
-                         NAME_OUT_PARAM_ET_ZPROD, 
+        localHelper_ET_ALLOW_MATNR = 
+                 new LocalTableResourceHelper<ItemLocal_ET_ALLOW_MATNR, Status_ET_ALLOW_MATNR>(NAME_RESOURCE, 
+                         NAME_OUT_PARAM_ET_ALLOW_MATNR, 
                          hyperHive,
-                         Status_ET_ZPROD.class);
+                         Status_ET_ALLOW_MATNR.class);
 
     }
 
     public RequestBuilder<Params, LimitedScalarParameter> newRequest() { return new RequestBuilder<Params, LimitedScalarParameter>(hyperHive, NAME_RESOURCE, true);}
 
-    static final class Status_ET_ZPROD extends StatusSelectTable<ItemLocal_ET_ZPROD> {}
+    static final class Status_ET_ALLOW_MATNR extends StatusSelectTable<ItemLocal_ET_ALLOW_MATNR> {}
 
-    public static class ItemLocal_ET_ZPROD {
+    public static class ItemLocal_ET_ALLOW_MATNR {
         //  type: TEXT, source: {'name': 'SAP', 'type': 'C'}
-        @Expose
-        @SerializedName("ZPROD")
-        public String zprod;
+        @SerializedName("TASK_TYPE")
+        public String taskType;
 
         //  type: TEXT, source: {'name': 'SAP', 'type': 'C'}
-        @Expose
-        @SerializedName("PROD_NAME")
-        public String prodName;
+        @SerializedName("TASK_CNTRL")
+        public String taskCntrl;
+
+        //  type: TEXT, source: {'name': 'SAP', 'type': 'C'}
+        @SerializedName("MTART")
+        public String mtart;
+
+        //  type: TEXT, source: {'name': 'SAP', 'type': 'C'}
+        @SerializedName("EKGRP")
+        public String ekgrp;
+
+        //  type: TEXT, source: {'name': 'SAP', 'type': 'C'}
+        @SerializedName("MATKL")
+        public String matkl;
 
 
     }

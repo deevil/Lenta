@@ -1,4 +1,4 @@
-package com.lenta.bp12.fmp.resource.fast;
+package com.lenta.shared.fmp.resources.slow;
 
 import com.google.gson.annotations.SerializedName;
 import com.mobrun.plugin.api.HyperHive;
@@ -8,53 +8,53 @@ import com.mobrun.plugin.api.request_assistant.RequestBuilder;
 import com.mobrun.plugin.api.request_assistant.ScalarParameter;
 import com.mobrun.plugin.models.StatusSelectTable;
 
-public class ZmpUtz41V001 {
+public class ZmpUtz09V001 {
 
-    public static final String NAME_RESOURCE = "ZMP_UTZ_41_V001";
-    public static final String NAME_OUT_PARAM_ET_ALLOW_MATNR = "ET_ALLOW_MATNR";
+    public static final String NAME_RESOURCE = "ZMP_UTZ_09_V001";
+    public static final String NAME_OUT_PARAM_ET_VENDORS = "ET_VENDORS";
     public static final String LIFE_TIME = "1 day, 0:00:00";
 
     private final HyperHive hyperHive;
 
-    public final LocalTableResourceHelper<ItemLocal_ET_ALLOW_MATNR, Status_ET_ALLOW_MATNR> localHelper_ET_ALLOW_MATNR;
+    public final LocalTableResourceHelper<ItemLocal_ET_VENDORS, Status_ET_VENDORS> localHelper_ET_VENDORS;
 
 
-    public ZmpUtz41V001(HyperHive hyperHive) {
+    public ZmpUtz09V001(HyperHive hyperHive) {
 
         this.hyperHive = hyperHive;
 
-        localHelper_ET_ALLOW_MATNR = 
-                 new LocalTableResourceHelper<ItemLocal_ET_ALLOW_MATNR, Status_ET_ALLOW_MATNR>(NAME_RESOURCE, 
-                         NAME_OUT_PARAM_ET_ALLOW_MATNR, 
+        localHelper_ET_VENDORS = 
+                 new LocalTableResourceHelper<ItemLocal_ET_VENDORS, Status_ET_VENDORS>(NAME_RESOURCE, 
+                         NAME_OUT_PARAM_ET_VENDORS, 
                          hyperHive,
-                         Status_ET_ALLOW_MATNR.class);
+                         Status_ET_VENDORS.class);
 
     }
 
     public RequestBuilder<Params, LimitedScalarParameter> newRequest() { return new RequestBuilder<Params, LimitedScalarParameter>(hyperHive, NAME_RESOURCE, true);}
 
-    static final class Status_ET_ALLOW_MATNR extends StatusSelectTable<ItemLocal_ET_ALLOW_MATNR> {}
+    static final class Status_ET_VENDORS extends StatusSelectTable<ItemLocal_ET_VENDORS> {}
 
-    public static class ItemLocal_ET_ALLOW_MATNR {
+    public static class ItemLocal_ET_VENDORS {
         //  type: TEXT, source: {'name': 'SAP', 'type': 'C'}
-        @SerializedName("TASK_TYPE")
-        public String taskType;
-
-        //  type: TEXT, source: {'name': 'SAP', 'type': 'C'}
-        @SerializedName("TASK_CNTRL")
-        public String taskCntrl;
+        @SerializedName("VENDOR")
+        public String vendor;
 
         //  type: TEXT, source: {'name': 'SAP', 'type': 'C'}
-        @SerializedName("MTART")
-        public String mtart;
+        @SerializedName("VENDORNAME")
+        public String vendorname;
 
         //  type: TEXT, source: {'name': 'SAP', 'type': 'C'}
-        @SerializedName("EKGRP")
-        public String ekgrp;
+        @SerializedName("SPERR")
+        public String sperr;
 
         //  type: TEXT, source: {'name': 'SAP', 'type': 'C'}
-        @SerializedName("MATKL")
-        public String matkl;
+        @SerializedName("SPERM")
+        public String sperm;
+
+        //  type: TEXT, source: {'name': 'SAP', 'type': 'C'}
+        @SerializedName("LOEVM")
+        public String loevm;
 
 
     }

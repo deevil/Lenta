@@ -1,13 +1,8 @@
 package com.lenta.bp12.repository
 
-import com.lenta.bp12.fmp.resource.fast.*
-import com.lenta.bp12.fmp.resource.slow.ZmpUtz09V001
-import com.lenta.bp12.fmp.resource.slow.ZmpUtz22V001
-import com.lenta.bp12.fmp.resource.slow.ZmpUtz30V001
-import com.lenta.bp12.fmp.resource.slow.ZmpUtz43V001
 import com.lenta.shared.fmp.resources.dao_ext.*
 import com.lenta.shared.fmp.resources.fast.*
-import com.lenta.shared.fmp.resources.slow.ZmpUtz25V001
+import com.lenta.shared.fmp.resources.slow.*
 import com.lenta.shared.models.core.Uom
 import com.mobrun.plugin.api.HyperHive
 import kotlinx.coroutines.Dispatchers
@@ -50,11 +45,25 @@ class DatabaseRepository @Inject constructor(
         }
     }
 
+    override suspend fun getTaskTypeList(): List<TaskType> {
+        return withContext(Dispatchers.IO) {
+            return@withContext taskTypes.getTaskTypeList()
+        }
+    }
+
+    override suspend fun getStorageList(taskType: String): List<String> {
+        return withContext(Dispatchers.IO) {
+            return@withContext storages.getStorageList(taskType)
+        }
+    }
+
 }
 
 interface IDatabaseRepository {
 
     suspend fun getAllowedAppVersion(): String?
     suspend fun getUnitsByCode(code: String): Uom
+    suspend fun getTaskTypeList(): List<TaskType>
+    suspend fun getStorageList(taskType: String): List<String>
 
 }
