@@ -4,8 +4,8 @@ import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.platform.navigation.ScreenNavigator
 import com.lenta.bp12.platform.resource.IResourceManager
 import com.lenta.bp12.platform.resource.ResourceManager
-import com.lenta.bp12.repository.GeneralRepository
-import com.lenta.bp12.repository.IGeneralRepository
+import com.lenta.bp12.repository.DatabaseRepository
+import com.lenta.bp12.repository.IDatabaseRepository
 import com.lenta.bp12.repository.IRepoInMemoryHolder
 import com.lenta.bp12.repository.RepoInMemoryHolder
 
@@ -29,7 +29,7 @@ class AppModule {
 
         @Binds
         @AppScope
-        fun bindGeneralRepository(realisation: GeneralRepository): IGeneralRepository
+        fun bindGeneralRepository(realisation: DatabaseRepository): IDatabaseRepository
 
         @Binds
         @AppScope

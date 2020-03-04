@@ -6,7 +6,7 @@ import com.lenta.bp12.main.MainActivity
 import com.lenta.bp12.main.MainViewModel
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.platform.resource.IResourceManager
-import com.lenta.bp12.repository.IGeneralRepository
+import com.lenta.bp12.repository.IDatabaseRepository
 import com.lenta.bp12.features.auth.AuthViewModel
 import com.lenta.bp12.features.basket_good_list.BasketGoodListViewModel
 import com.lenta.bp12.features.basket_properties.BasketPropertiesViewModel
@@ -32,7 +32,7 @@ import dagger.Component
 interface AppComponent : CoreComponent {
 
     fun getScreenNavigator(): IScreenNavigator
-    fun getGeneralRepository(): IGeneralRepository
+    fun getGeneralRepository(): IDatabaseRepository
     fun getResourceManager(): IResourceManager
 
     fun inject(mainActivity: MainActivity)

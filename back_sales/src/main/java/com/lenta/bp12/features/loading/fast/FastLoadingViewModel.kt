@@ -3,7 +3,7 @@ package com.lenta.bp12.features.loading.fast
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp12.platform.navigation.IScreenNavigator
-import com.lenta.bp12.repository.IGeneralRepository
+import com.lenta.bp12.repository.IDatabaseRepository
 import com.lenta.bp12.request.FastResourcesMultiRequest
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.exception.IFailureInterpreter
@@ -24,7 +24,7 @@ class FastLoadingViewModel : CoreLoadingViewModel() {
     @Inject
     lateinit var appUpdateChecker: AppUpdateChecker
     @Inject
-    lateinit var repository: IGeneralRepository
+    lateinit var repository: IDatabaseRepository
     @Inject
     lateinit var auth: Auth
 
