@@ -12,6 +12,7 @@ import com.lenta.bp9.model.task.TaskProductInfo
 import com.lenta.bp9.model.task.TaskType
 import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.bp9.repos.IDataBaseRepo
+import com.lenta.bp9.repos.IRepoInMemoryHolder
 import com.lenta.shared.models.core.Uom
 import com.lenta.shared.platform.time.ITimeMonitor
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo.Companion.add
@@ -194,6 +195,10 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
         }
     }
 
+    private val isNotRecountBreakingCargoUnit: MutableLiveData<Boolean> by lazy { //https://trello.com/c/PRTAVnUP
+        MutableLiveData(isTaskPGE.value == true && taskManager.getReceivingTask()!!.taskHeader.isCracked && !taskManager.getReceivingTask()!!.taskDescription.isRecount)
+    }
+
     val enabledApplyButton: MutableLiveData<Boolean> = countValue.combineLatest(enteredProcessingUnitNumber).map {
         val countAccept = if (isTaskPGE.value!!) {
             taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().getCountAcceptOfProductPGE(productInfo.value!!)
@@ -226,11 +231,19 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
                     isDiscrepancy.value!! -> {
                         suffix.value = uom.value?.name
                         count.value = taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.getCountProductNotProcessedOfProductPGE(productInfo.value!!).toStringFormatted()
-                        qualityInfo.value = dataBase.getQualityInfoPGEForDiscrepancy()
+                        if (isNotRecountBreakingCargoUnit.value == true) {
+                            qualityInfo.value = dataBase.getQualityInfoPGENotRecountBreaking()
+                        } else {
+                            qualityInfo.value = dataBase.getQualityInfoPGEForDiscrepancy()
+                        }
                     }
                     else -> {// обычный товар https://trello.com/c/OMjrZPhg
                         suffix.value = productInfo.value?.purchaseOrderUnits?.name
-                        qualityInfo.value = dataBase.getQualityInfoPGE()
+                        if (isNotRecountBreakingCargoUnit.value == true) {
+                            qualityInfo.value = dataBase.getQualityInfoPGENotRecountBreaking()
+                        } else {
+                            qualityInfo.value = dataBase.getQualityInfoPGE()
+                        }
                     }
                 }
             } else {

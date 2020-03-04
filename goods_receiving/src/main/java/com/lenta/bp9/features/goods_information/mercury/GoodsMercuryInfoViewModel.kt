@@ -217,6 +217,10 @@ class GoodsMercuryInfoViewModel : CoreViewModel(), OnPositionClickListener {
         }
     }
 
+    private val isNotRecountBreakingCargoUnit: MutableLiveData<Boolean> by lazy { //https://trello.com/c/PRTAVnUP
+        MutableLiveData(isTaskPGE.value == true && taskManager.getReceivingTask()!!.taskHeader.isCracked && !taskManager.getReceivingTask()!!.taskDescription.isRecount)
+    }
+
     val enabledApplyButton: MutableLiveData<Boolean> = countValue.map {
         (it ?: 0.0) > 0.0 && !spinManufacturers.isNullOrEmpty() && !spinProductionDate.value.isNullOrEmpty()
     }
@@ -233,11 +237,19 @@ class GoodsMercuryInfoViewModel : CoreViewModel(), OnPositionClickListener {
                     isDiscrepancy.value!! -> {
                         suffix.value = uom.value?.name
                         count.value = taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.getCountProductNotProcessedOfProductPGE(productInfo.value!!).toStringFormatted()
-                        qualityInfo.value = dataBase.getQualityInfoPGEForDiscrepancy()
+                        if (isNotRecountBreakingCargoUnit.value == true) {
+                            qualityInfo.value = dataBase.getQualityInfoPGENotRecountBreaking()
+                        } else {
+                            qualityInfo.value = dataBase.getQualityInfoPGEForDiscrepancy()
+                        }
                     }
                     else -> {
                         suffix.value = productInfo.value?.purchaseOrderUnits?.name
-                        qualityInfo.value = dataBase.getQualityInfoPGE()
+                        if (isNotRecountBreakingCargoUnit.value == true) {
+                            qualityInfo.value = dataBase.getQualityInfoPGENotRecountBreaking()
+                        } else {
+                            qualityInfo.value = dataBase.getQualityInfoPGE()
+                        }
                     }
                 }
             } else {

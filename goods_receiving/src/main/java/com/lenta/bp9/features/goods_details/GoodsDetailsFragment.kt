@@ -61,20 +61,26 @@ class GoodsDetailsFragment : CoreFragment<FragmentGoodsDetailsBinding, GoodsDeta
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
         bottomToolbarUiModel.cleanAll()
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
-        if (vm.isTaskPGE.value == true || vm.isVetProduct.value == true) {
+        /**это для view с/без удаления, ранее использовалась, но решили сделать для всех товаров с возможностью удаления количеств по расхождениям
+          if (vm.isVetProduct.value == true) {
             bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.delete)
             connectLiveData(vm.enabledDelBtn, bottomToolbarUiModel.uiModelButton3.enabled)
-        }
+        }*/
+        bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.delete)
+        connectLiveData(vm.enabledDelBtn, bottomToolbarUiModel.uiModelButton3.enabled)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        if (vm.isTaskPGE.value == true || vm.isVetProduct.value == true) {
-            initRvConfigPGE()
+        /**это для view с/без удаления, ранее использовалась, но решили сделать для всех товаров с возможностью удаления количеств по расхождениям
+          if (vm.isVetProduct.value == true) {
+            initRvConfigWithDel()
         } else {
             initRvConfig()
-        }
+        }*/
+        initRvConfigWithDel()
     }
 
+    //это view без удаления, ранее использовалась, но решили сделать для всех товаров с возможностью удаления количеств по расхождениям
     private fun initRvConfig() {
         binding?.let { layoutBinding ->
             layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
@@ -95,7 +101,7 @@ class GoodsDetailsFragment : CoreFragment<FragmentGoodsDetailsBinding, GoodsDeta
         }
     }
 
-    private fun initRvConfigPGE() {
+    private fun initRvConfigWithDel() {
         binding?.let { layoutBinding ->
             val onClickSelectionListener = View.OnClickListener {
                 (it!!.tag as Int).let { position ->
