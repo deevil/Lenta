@@ -10,7 +10,6 @@ import com.lenta.bp16.request.UnblockTaskNetRequest
 import com.lenta.bp16.request.UnblockTaskParams
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.platform.viewmodel.CoreViewModel
-import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.dropZeros
 import com.lenta.shared.utilities.extentions.map
 import kotlinx.coroutines.launch
@@ -43,8 +42,8 @@ class ProcessingUnitListViewModel : CoreViewModel() {
                         position = (index + 1).toString(),
                         material = good.material,
                         name = "${good.material.takeLast(6)} ${good.name}",
-                        arrived = "${good.planned.dropZeros()} ${good.units.name}",
-                        remain = "${(good.planned - good.getFactRawQuantity()).dropZeros()} ${good.units.name}"
+                        arrived = "${good.arrived.dropZeros()} ${good.units.name}",
+                        remain = "${(good.arrived - good.getPackedQuantity()).dropZeros()} ${good.units.name}"
                 )
             }
         }
@@ -52,9 +51,7 @@ class ProcessingUnitListViewModel : CoreViewModel() {
 
     val completeEnabled by lazy {
         task.map { task ->
-            task?.isProcessed == false && task.goods?.map {
-                it.getFactRawQuantity()
-            }?.any { it > 0.0 } ?: false
+            task?.isProcessed == false && task.goods?.any { it.packs.isNotEmpty() } ?: false
         }
     }
 
