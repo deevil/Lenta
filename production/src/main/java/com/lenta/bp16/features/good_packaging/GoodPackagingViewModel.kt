@@ -4,6 +4,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp16.model.ITaskManager
 import com.lenta.bp16.platform.navigation.IScreenNavigator
+import com.lenta.bp16.request.EndProcessingNetRequest
+import com.lenta.bp16.request.EndProcessingParams
 import com.lenta.bp16.request.PackGoodNetRequest
 import com.lenta.bp16.request.PackGoodParams
 import com.lenta.shared.account.ISessionInfo
@@ -25,6 +27,8 @@ class GoodPackagingViewModel : CoreViewModel() {
     lateinit var taskManager: ITaskManager
     @Inject
     lateinit var packGoodNetRequest: PackGoodNetRequest
+    @Inject
+    lateinit var endProcessingNetRequest: EndProcessingNetRequest
 
 
     val good by lazy {
@@ -78,11 +82,24 @@ class GoodPackagingViewModel : CoreViewModel() {
             ).also {
                 navigator.hideProgress()
             }.either(::handleFailure) {
-                taskManager.completeCurrentTask()
-
                 navigator.showFixingPackagingPhaseSuccessful {
-                    navigator.goBack()
-                    navigator.goBack()
+                    viewModelScope.launch {
+                        navigator.showProgressLoadingData()
+
+                        endProcessingNetRequest(
+                                EndProcessingParams(
+                                        taskNumber = taskManager.currentTask.value!!.number,
+                                        taskType = taskManager.getTaskTypeCode()
+                                )
+                        ).also {
+                            navigator.hideProgress()
+                        }.either(::handleCompletingError) {
+                            taskManager.completeCurrentTask()
+
+                            navigator.goBack()
+                            navigator.goBack()
+                        }
+                    }
                 }
             }
         }
@@ -91,6 +108,13 @@ class GoodPackagingViewModel : CoreViewModel() {
     override fun handleFailure(failure: Failure) {
         super.handleFailure(failure)
         navigator.openAlertScreen(failure)
+    }
+
+    private fun handleCompletingError(failure: Failure) {
+        navigator.showErrorCompletingObjectProcessing {
+            navigator.goBack()
+            navigator.goBack()
+        }
     }
 
 }
