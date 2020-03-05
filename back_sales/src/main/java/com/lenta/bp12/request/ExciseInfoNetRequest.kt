@@ -16,6 +16,7 @@ class ExciseInfoNetRequest @Inject constructor(
     override suspend fun run(params: ExciseInfoParams): Either<Failure, ExciseInfoResult> {
         return fmpRequestsHelper.restRequest("ZMP_UTZ_100_V001", params, ExciseInfoStatus::class.java)
     }
+
 }
 
 data class ExciseInfoParams(

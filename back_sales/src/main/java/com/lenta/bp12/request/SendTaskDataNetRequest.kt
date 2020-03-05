@@ -20,6 +20,7 @@ class SendTaskDataNetRequest @Inject constructor(
     override suspend fun run(params: SendTaskDataParams): Either<Failure, SendTaskDataResult> {
         return fmpRequestsHelper.restRequest("ZMP_UTZ_BKS_04_V001", params, SendTaskDataStatus::class.java)
     }
+
 }
 
 data class SendTaskDataParams(

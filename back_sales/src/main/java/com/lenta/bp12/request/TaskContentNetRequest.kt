@@ -17,6 +17,7 @@ class TaskContentNetRequest @Inject constructor(
     override suspend fun run(params: TaskContentParams): Either<Failure, TaskContentResult> {
         return fmpRequestsHelper.restRequest("ZMP_UTZ_BKS_03_V001", params, TaskContentStatus::class.java)
     }
+
 }
 
 data class TaskContentParams(

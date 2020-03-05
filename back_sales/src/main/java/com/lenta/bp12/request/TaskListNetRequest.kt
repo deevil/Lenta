@@ -18,6 +18,7 @@ class TaskListNetRequest @Inject constructor(
     override suspend fun run(params: TaskListParams): Either<Failure, TaskListResult> {
         return fmpRequestsHelper.restRequest("ZMP_UTZ_BKS_02_V001", params, TaskListStatus::class.java)
     }
+
 }
 
 data class TaskListParams(
