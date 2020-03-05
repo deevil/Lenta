@@ -2,8 +2,7 @@ package com.lenta.bp12.model.pojo
 
 import com.google.gson.annotations.SerializedName
 
-
-data class TaskInfo(
+data class TaskItem(
         /** Номер задания */
         @SerializedName("TASK_NUM")
         var number: String,

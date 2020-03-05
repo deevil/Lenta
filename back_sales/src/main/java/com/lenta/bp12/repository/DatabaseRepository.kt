@@ -57,6 +57,11 @@ class DatabaseRepository @Inject constructor(
         }
     }
 
+    override suspend fun getReturnReasonList(taskType: String): List<ReturnReason> {
+        return withContext(Dispatchers.IO) {
+            return@withContext returnReasons.getReturnReasonList(taskType)
+        }
+    }
 }
 
 interface IDatabaseRepository {
@@ -65,5 +70,6 @@ interface IDatabaseRepository {
     suspend fun getUnitsByCode(code: String): Uom
     suspend fun getTaskTypeList(): List<TaskType>
     suspend fun getStorageList(taskType: String): List<String>
+    suspend fun getReturnReasonList(taskType: String): List<ReturnReason>
 
 }
