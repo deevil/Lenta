@@ -15,6 +15,9 @@ data class ShipmentItem(
         /** Фактическое количество */
         @SerializedName("FACT_QNT")
         var quantity: String,
+        /** Единица измерения заказа на поставку */
+        @SerializedName("BSTME")
+        var units: String,
         /** Номер партии */
         @SerializedName("ZCHARG")
         var shipmentNumber: String,
