@@ -30,6 +30,7 @@ data class TaskDescription(val currentStatus: TaskStatus,   //Код текущ�
                       val isSupplierReturnAvailability: Boolean, //Индикатор: Наличие возврата поставщика (IS_RET)
                       val isNotEDI: Boolean,           //Индикатор: EDI исключение (IS_NOT_EDI)
                       val isPromo: Boolean,            //Индикатор: Промо (IS_ADV)
+                      val cargoUnitNumber: String,     //Номер ГЕ
                       val isRecount: Boolean,          //Индикатор: Пересчетная ГЕ (IS_COUNT)
                       val isOwnTransport: Boolean,     //Индикатор: Собственный транспорт (IS_OWN)
                       val isEDO: Boolean,               //Индикатор ЭДО
@@ -67,6 +68,7 @@ data class TaskDescription(val currentStatus: TaskStatus,   //Код текущ�
                     isSupplierReturnAvailability = restData.isSupplierReturnAvailability.isNotEmpty(),
                     isNotEDI = restData.isNotEDI.isNotEmpty(),
                     isPromo = restData.isPromo.isNotEmpty(),
+                    cargoUnitNumber = restData.cargoUnitNumber,
                     isRecount = restData.isRecount.isNotEmpty(),
                     isOwnTransport = restData.isOwnTransport.isNotEmpty(),
                     isEDO = restData.isEDO.isNotEmpty(),
@@ -129,6 +131,8 @@ data class TaskDescriptionRestInfo(
         val isNotEDI: String,
         @SerializedName("IS_ADV")
         val isPromo: String,
+        @SerializedName("EXIDV_TOP")
+        val cargoUnitNumber: String,
         @SerializedName("IS_COUNT")
         val isRecount: String,
         @SerializedName("IS_OWN")
