@@ -8,8 +8,8 @@ fun ZmpUtz39V001.getTaskTypeList(): List<TaskType> {
         TaskType(
                 type = it.taskType,
                 description = it.annotation,
-                abtnr = it.divAbtnr,
-                ekgrp = it.divEkgrp
+                section = it.divAbtnr,
+                purchaseGroup = it.divEkgrp
         )
     }
 }
@@ -17,6 +17,6 @@ fun ZmpUtz39V001.getTaskTypeList(): List<TaskType> {
 data class TaskType(
         val type: String,
         val description: String,
-        val abtnr: String,
-        val ekgrp: String
+        val section: String,
+        val purchaseGroup: String
 )

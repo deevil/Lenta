@@ -32,7 +32,7 @@ data class TaskItem(
         var isNotFinish: String,
         /** Гис-контроль задания */
         @SerializedName("TASK_CNTRL")
-        var gisControlType: String,
+        var gisControl: String,
         /** Текстовый комментарий */
         @SerializedName("COMMENT")
         var comment: String,

@@ -1,5 +1,7 @@
 package com.lenta.bp12.repository
 
+import com.lenta.bp12.model.pojo.Good
+import com.lenta.bp12.model.pojo.GoodInfo
 import com.lenta.shared.fmp.resources.dao_ext.*
 import com.lenta.shared.fmp.resources.fast.*
 import com.lenta.shared.fmp.resources.slow.*
@@ -14,9 +16,11 @@ class DatabaseRepository @Inject constructor(
         private val hyperHive: HyperHive
 ) : IDatabaseRepository {
 
+    private val products: ZfmpUtz48V001 by lazy { ZfmpUtz48V001(hyperHive) } // Информация о товаре
+    private val eanInfo: ZmpUtz25V001 by lazy { ZmpUtz25V001(hyperHive) } // Информация о штрих-коде
+    private val dictionary: ZmpUtz17V001 by lazy { ZmpUtz17V001(hyperHive) } // Справочник с наборами данных
     private val settings: ZmpUtz14V001 by lazy { ZmpUtz14V001(hyperHive) } // Настройки
     private val units: ZmpUtz07V001 by lazy { ZmpUtz07V001(hyperHive) } // Единицы измерения
-    private val valueLists: ZmpUtz17V001 by lazy { ZmpUtz17V001(hyperHive) } // Списки значений
     private val printers: ZmpUtz26V001 by lazy { ZmpUtz26V001(hyperHive) } // Принтеры
     private val iconDescriptions: ZmpUtz38V001 by lazy { ZmpUtz38V001(hyperHive) } // Описание иконок
     private val taskTypes: ZmpUtz39V001 by lazy { ZmpUtz39V001(hyperHive) } // Типы заданий
@@ -26,7 +30,6 @@ class DatabaseRepository @Inject constructor(
     private val returnReasons: ZmpUtz44V001 by lazy { ZmpUtz44V001(hyperHive) } // Причины возврата
     private val suppliers: ZmpUtz09V001 by lazy { ZmpUtz09V001(hyperHive) } // Поставщики
     private val alcohol: ZmpUtz22V001 by lazy { ZmpUtz22V001(hyperHive) } // Алкогольные товары
-    private val defaultUnits: ZmpUtz25V001 by lazy { ZmpUtz25V001(hyperHive) } // Единицы измерения по умолчанию
     private val goods: ZmpUtz30V001 by lazy { ZmpUtz30V001(hyperHive) } // Товары
     private val producers: ZmpUtz43V001 by lazy { ZmpUtz43V001(hyperHive) } // Производители
 
@@ -62,6 +65,27 @@ class DatabaseRepository @Inject constructor(
             return@withContext returnReasons.getReturnReasonList(taskType)
         }
     }
+
+    override suspend fun getGoodInfo(ean: String?, material: String?): GoodInfo? {
+        return withContext(Dispatchers.IO) {
+            // todo Логика получения товара из справочника
+
+            return@withContext null
+        }
+    }
+
+    override suspend fun isGoodAllowed(gisControl: String, taskType: String, goodGroup: String?, purchaseGroup: String?): Boolean {
+        return withContext(Dispatchers.IO) {
+            return@withContext allowed.isGoodAllowed(gisControl, taskType, goodGroup, purchaseGroup)
+        }
+    }
+
+    override suspend fun isGoodForbidden(gisControl: String, taskType: String, goodGroup: String?, purchaseGroup: String?): Boolean {
+        return withContext(Dispatchers.IO) {
+            return@withContext forbidden.isGoodForbidden(gisControl, taskType, goodGroup, purchaseGroup)
+        }
+    }
+
 }
 
 interface IDatabaseRepository {
@@ -71,5 +95,8 @@ interface IDatabaseRepository {
     suspend fun getTaskTypeList(): List<TaskType>
     suspend fun getStorageList(taskType: String): List<String>
     suspend fun getReturnReasonList(taskType: String): List<ReturnReason>
+    suspend fun getGoodInfo(ean: String?, material: String?): GoodInfo?
+    suspend fun isGoodAllowed(gisControl: String, taskType: String, goodGroup: String?, purchaseGroup: String?): Boolean
+    suspend fun isGoodForbidden(gisControl: String, taskType: String, goodGroup: String?, purchaseGroup: String?): Boolean
 
 }

@@ -32,7 +32,7 @@ data class AdditionalInfoItem(
         var goodGroup: String,
         /** Группа закупок */
         @SerializedName("EKGRP")
-        var purchasingGroup: String,
+        var purchaseGroup: String,
         /** Единица измерения заказа */
         @SerializedName("BSTME")
         var orderUnitsCode: String
