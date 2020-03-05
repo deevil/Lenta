@@ -41,7 +41,7 @@ class GoodPackagingViewModel : CoreViewModel() {
 
     val deviceIp = MutableLiveData("")
 
-    val weightField = MutableLiveData("")
+    val weightField = MutableLiveData("0")
 
     private val entered = weightField.map {
         it?.toDoubleOrNull() ?: 0.0
