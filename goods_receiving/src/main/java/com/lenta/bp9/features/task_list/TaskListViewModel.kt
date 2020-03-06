@@ -141,16 +141,16 @@ class TaskListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     }
 
     override fun onOkInSoftKeyboard(): Boolean {
-        if (filterSearch.value?.length!! >= 18 && taskListLoadingMode == TaskListLoadingMode.Receiving) {
+        if (filterSearch.value?.length!! >= 18 && taskListLoadingMode == TaskListLoadingMode.Receiving) { //https://trello.com/c/zM0vlI9H
             selectedPage.value = 1
             screenNavigator.openTaskListLoadingScreen(taskListLoadingMode,
-                    TaskListSearchParams(taskNumber = filterSearch.value,
+                    TaskListSearchParams(taskNumber = null,
                             supplierNumber = null,
                             documentNumber = null,
                             invoiceNumber = null,
                             transportNumber = null,
                             numberGE = null,
-                            numberEO = null
+                            numberEO = filterSearch.value
                     ),
                     numberEO = filterSearch.value
             )

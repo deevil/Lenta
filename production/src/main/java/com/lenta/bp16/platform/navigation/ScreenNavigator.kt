@@ -184,6 +184,17 @@ class ScreenNavigator @Inject constructor(
         }
     }
 
+    override fun showErrorCompletingObjectProcessing(backCallback: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    pageNumber = "31.5",
+                    message = context.getString(R.string.error_completing_object_processing),
+                    codeConfirmForLeft = backFragmentResultHelper.setFuncForResult(backCallback),
+                    iconRes = R.drawable.is_warning_red_80dp
+            ))
+        }
+    }
+
     override fun showNotSavedDataWillBeLost(yesCallback: () -> Unit) {
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
@@ -229,4 +240,5 @@ interface IScreenNavigator : ICoreNavigator {
     fun showMoreThanOneOrderForThisProduct()
     fun showNotSavedDataWillBeLost(yesCallback: () -> Unit)
     fun showAlertNoIpPrinter()
+    fun showErrorCompletingObjectProcessing(backCallback: () -> Unit)
 }

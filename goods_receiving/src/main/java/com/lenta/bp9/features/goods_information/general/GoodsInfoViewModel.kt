@@ -12,6 +12,7 @@ import com.lenta.bp9.model.task.TaskProductInfo
 import com.lenta.bp9.model.task.TaskType
 import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.bp9.repos.IDataBaseRepo
+import com.lenta.bp9.repos.IRepoInMemoryHolder
 import com.lenta.shared.models.core.Uom
 import com.lenta.shared.platform.time.ITimeMonitor
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo.Companion.add
@@ -139,10 +140,21 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
     }
 
     val acceptTotalCountWithUom: MutableLiveData<String> = acceptTotalCount.map {
-        if (it != 0.0) {
-            "+ " + it.toStringFormatted() + " " + uom.value?.name
+        val countAccept = if (isTaskPGE.value!!) {
+            taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().getCountAcceptOfProductPGE(productInfo.value!!)
         } else {
-            "0 " + uom.value?.name
+            taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().getCountAcceptOfProduct(productInfo.value!!)
+        }
+        when {
+            (it ?: 0.0) > 0.0 -> {
+                "+ ${it.toStringFormatted()} ${uom.value?.name}"
+            }
+            it == 0.0 -> {
+                "0 ${uom.value?.name}"
+            }
+            else -> {
+                "${if (countAccept > 0.0) "+ " + countAccept.toStringFormatted() else countAccept.toStringFormatted()} ${uom.value?.name}"
+            }
         }
     }
 
@@ -171,18 +183,37 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
     }
 
     val refusalTotalCountWithUom: MutableLiveData<String> = refusalTotalCount.map {
-        if (it != 0.0) {
-            "- " + it.toStringFormatted() + " " + uom.value?.name
+        val countRefusal = if (isTaskPGE.value!!) {
+            taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().getCountRefusalOfProductPGE(productInfo.value!!)
         } else {
-            "0 " + uom.value?.name
+            taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().getCountRefusalOfProduct(productInfo.value!!)
+        }
+        if ((it ?: 0.0) > 0.0) {
+            "- ${it.toStringFormatted()} ${uom.value?.name}"
+        } else {
+            "${if (countRefusal > 0.0) "- " + countRefusal.toStringFormatted() else countRefusal.toStringFormatted()} ${uom.value?.name}"
         }
     }
 
+    private val isNotRecountBreakingCargoUnit: MutableLiveData<Boolean> by lazy { //https://trello.com/c/PRTAVnUP
+        MutableLiveData(isTaskPGE.value == true && taskManager.getReceivingTask()!!.taskHeader.isCracked && !taskManager.getReceivingTask()!!.taskDescription.isRecount)
+    }
+
     val enabledApplyButton: MutableLiveData<Boolean> = countValue.combineLatest(enteredProcessingUnitNumber).map {
-        if (isTaskPGE.value!! && isGoodsAddedAsSurplus.value!!) {
-            it?.first != 0.0 && it?.second?.length == 18
+        val countAccept = if (isTaskPGE.value!!) {
+            taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().getCountAcceptOfProductPGE(productInfo.value!!)
         } else {
-            it?.first != 0.0
+            taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().getCountAcceptOfProduct(productInfo.value!!)
+        }
+
+        if (isTaskPGE.value!! && isGoodsAddedAsSurplus.value!!) {
+            (countAccept + (it?.first ?: 0.0)) >= 0.0 && it?.first != 0.0 && it?.second?.length == 18
+        } else {
+            if (qualityInfo.value?.get(spinQualitySelectedPosition.value!!)?.code == "1" || (isTaskPGE.value == true && qualityInfo.value?.get(spinQualitySelectedPosition.value!!)?.code == "2")) {
+                (countAccept + (it?.first ?: 0.0)) >= 0.0 && it?.first != 0.0
+            } else {
+                (it?.first ?: 0.0) > 0.0
+            }
         }
     }
 
@@ -200,11 +231,19 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
                     isDiscrepancy.value!! -> {
                         suffix.value = uom.value?.name
                         count.value = taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.getCountProductNotProcessedOfProductPGE(productInfo.value!!).toStringFormatted()
-                        qualityInfo.value = dataBase.getQualityInfoPGEForDiscrepancy()
+                        if (isNotRecountBreakingCargoUnit.value == true) {
+                            qualityInfo.value = dataBase.getQualityInfoPGENotRecountBreaking()
+                        } else {
+                            qualityInfo.value = dataBase.getQualityInfoPGEForDiscrepancy()
+                        }
                     }
                     else -> {// обычный товар https://trello.com/c/OMjrZPhg
                         suffix.value = productInfo.value?.purchaseOrderUnits?.name
-                        qualityInfo.value = dataBase.getQualityInfoPGE()
+                        if (isNotRecountBreakingCargoUnit.value == true) {
+                            qualityInfo.value = dataBase.getQualityInfoPGENotRecountBreaking()
+                        } else {
+                            qualityInfo.value = dataBase.getQualityInfoPGE()
+                        }
                     }
                 }
             } else {
