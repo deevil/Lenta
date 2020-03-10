@@ -27,7 +27,7 @@ class PackGoodListViewModel : CoreViewModel() {
     lateinit var endProcessingNetRequest: EndProcessingNetRequest
 
 
-    private val task by lazy {
+    val task by lazy {
         taskManager.currentTask
     }
 
@@ -37,7 +37,7 @@ class PackGoodListViewModel : CoreViewModel() {
 
     val completeEnabled by lazy {
         task.map { task ->
-            task?.isProcessed == false && task.isPackSent && task.goods?.any { it.packs.isNotEmpty() } == false
+            task?.isProcessed == false && task.goods?.any { it.packs.isNotEmpty() } == true || task?.isProcessed == false && task.isPackSent
         }
     }
 
@@ -49,7 +49,7 @@ class PackGoodListViewModel : CoreViewModel() {
                         material = good.material,
                         name = good.name,
                         arrived = "${good.arrived.dropZeros()} ${good.units.name}",
-                        arrowVisibility = !completeEnabled.value!!
+                        arrowVisibility = !task.isProcessed && task.goods?.any { it.packs.isNotEmpty() } == false && !task.isPackSent
                 )
             }
         }
@@ -58,7 +58,7 @@ class PackGoodListViewModel : CoreViewModel() {
     // -----------------------------
 
     fun onClickItemPosition(position: Int) {
-        if (completeEnabled.value == true) {
+        if (task.value?.isProcessed == true || completeEnabled.value == true) {
             return
         }
 
