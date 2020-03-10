@@ -1,11 +1,16 @@
 package com.lenta.bp12.features.task_card
 
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import com.lenta.bp12.platform.navigation.IScreenNavigator
+import com.lenta.bp12.repository.IDatabaseRepository
 import com.lenta.shared.account.ISessionInfo
+import com.lenta.shared.fmp.resources.dao_ext.TaskType
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.databinding.PageSelectionListener
+import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.view.OnPositionClickListener
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
@@ -14,6 +19,8 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
     lateinit var navigator: IScreenNavigator
     @Inject
     lateinit var sessionInfo: ISessionInfo
+    @Inject
+    lateinit var database: IDatabaseRepository
 
 
     val title by lazy {
@@ -63,10 +70,12 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
         }
     }
 
+    private val taskTypes = MutableLiveData<List<TaskType>>(emptyList())
+
     val taskTypeList: MutableLiveData<List<String>> by lazy {
-        MutableLiveData(List(3) {
-            "Task type ${it + 1}"
-        })
+        taskTypes.map { list ->
+            list?.map { it.description }
+        }
     }
 
     val reasonForReturnList: MutableLiveData<List<String>> by lazy {
@@ -79,6 +88,14 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
         MutableLiveData(List(3) {
             "Storage ${it + 1}"
         })
+    }
+
+    // -----------------------------
+
+    init {
+        viewModelScope.launch {
+            taskTypes.value = database.getTaskTypeList()
+        }
     }
 
     // -----------------------------
