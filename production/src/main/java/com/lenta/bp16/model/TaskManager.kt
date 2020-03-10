@@ -84,13 +84,13 @@ class TaskManager @Inject constructor(
     }
 
     override fun completeCurrentTask() {
-        tasks.value?.let {
-            it.find { task -> task.number == currentTask.value?.number }?.let { currentTask ->
+        tasks.value?.let { list ->
+            list.find { task -> task.number == currentTask.value?.number }?.let { currentTask ->
                 currentTask.isProcessed = true
                 currentTask.status = TaskStatus.COMMON
             }
 
-            tasks.value = it
+            tasks.value = list
         }
     }
 
@@ -100,7 +100,14 @@ class TaskManager @Inject constructor(
                 good.isProcessed = true
             }
 
-            onTaskChanged()
+            currentTask.value = task
+        }
+    }
+
+    override fun setDataSentForPackTask() {
+        currentTask.value?.let { task ->
+            task.isPackSent = true
+            currentTask.value = task
         }
     }
 
@@ -140,4 +147,5 @@ interface ITaskManager {
     fun completeCurrentTask()
     fun completeCurrentGood()
     fun onTaskChanged()
+    fun setDataSentForPackTask()
 }

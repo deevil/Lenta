@@ -27,8 +27,6 @@ class GoodPackagingViewModel : CoreViewModel() {
     lateinit var taskManager: ITaskManager
     @Inject
     lateinit var packGoodNetRequest: PackGoodNetRequest
-    @Inject
-    lateinit var endProcessingNetRequest: EndProcessingNetRequest
 
 
     val good by lazy {
@@ -83,23 +81,8 @@ class GoodPackagingViewModel : CoreViewModel() {
                 navigator.hideProgress()
             }.either(::handleFailure) {
                 navigator.showFixingPackagingPhaseSuccessful {
-                    viewModelScope.launch {
-                        navigator.showProgressLoadingData()
-
-                        endProcessingNetRequest(
-                                EndProcessingParams(
-                                        taskNumber = taskManager.currentTask.value!!.number,
-                                        taskType = taskManager.getTaskTypeCode()
-                                )
-                        ).also {
-                            navigator.hideProgress()
-                        }.either(::handleCompletingError) {
-                            taskManager.completeCurrentTask()
-
-                            navigator.goBack()
-                            navigator.goBack()
-                        }
-                    }
+                    taskManager.setDataSentForPackTask()
+                    navigator.goBack()
                 }
             }
         }
@@ -108,13 +91,6 @@ class GoodPackagingViewModel : CoreViewModel() {
     override fun handleFailure(failure: Failure) {
         super.handleFailure(failure)
         navigator.openAlertScreen(failure)
-    }
-
-    private fun handleCompletingError(failure: Failure) {
-        navigator.showErrorCompletingObjectProcessing {
-            navigator.goBack()
-            navigator.goBack()
-        }
     }
 
 }
