@@ -1,4 +1,4 @@
-package com.lenta.bp12.features.task_card
+package com.lenta.bp12.features.task_card_create
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -6,9 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import com.lenta.bp12.R
-import com.lenta.bp12.databinding.FragmentTaskCardBinding
-import com.lenta.bp12.databinding.LayoutTaskCardCommentBinding
-import com.lenta.bp12.databinding.LayoutTaskCardTypeBinding
+import com.lenta.bp12.databinding.*
 import com.lenta.bp12.platform.extention.getAppComponent
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
@@ -20,15 +18,15 @@ import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
 import com.lenta.shared.utilities.extentions.provideViewModel
 
-class TaskCardFragment : CoreFragment<FragmentTaskCardBinding, TaskCardViewModel>(),
+class TaskCardCreateFragment : CoreFragment<FragmentTaskCardCreateBinding, TaskCardCreateViewModel>(),
         ToolbarButtonsClickListener, ViewPagerSettings {
 
-    override fun getLayoutId(): Int = R.layout.fragment_task_card
+    override fun getLayoutId(): Int = R.layout.fragment_task_card_create
 
     override fun getPageNumber(): String? = generateScreenNumberFromPostfix("8")
 
-    override fun getViewModel(): TaskCardViewModel {
-        provideViewModel(TaskCardViewModel::class.java).let {
+    override fun getViewModel(): TaskCardCreateViewModel {
+        provideViewModel(TaskCardCreateViewModel::class.java).let {
             getAppComponent()?.inject(it)
             return it
         }
@@ -61,8 +59,8 @@ class TaskCardFragment : CoreFragment<FragmentTaskCardBinding, TaskCardViewModel
     }
 
     private fun initTaskCardType(container: ViewGroup): View {
-        DataBindingUtil.inflate<LayoutTaskCardTypeBinding>(LayoutInflater.from(container.context),
-                R.layout.layout_task_card_type,
+        DataBindingUtil.inflate<LayoutTaskCardCreateTypeBinding>(LayoutInflater.from(container.context),
+                R.layout.layout_task_card_create_type,
                 container,
                 false).let { layoutBinding ->
 
@@ -74,8 +72,8 @@ class TaskCardFragment : CoreFragment<FragmentTaskCardBinding, TaskCardViewModel
     }
 
     private fun initTaskCardComment(container: ViewGroup): View {
-        DataBindingUtil.inflate<LayoutTaskCardCommentBinding>(LayoutInflater.from(container.context),
-                R.layout.layout_task_card_comment,
+        DataBindingUtil.inflate<LayoutTaskCardCreateCommentBinding>(LayoutInflater.from(container.context),
+                R.layout.layout_task_card_create_comment,
                 container,
                 false).let { layoutBinding ->
 

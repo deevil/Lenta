@@ -1,4 +1,4 @@
-package com.lenta.bp12.features.task_card
+package com.lenta.bp12.features.task_card_create
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
@@ -6,19 +6,24 @@ import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.repository.IDatabaseRepository
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.fmp.resources.dao_ext.TaskType
+import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.view.OnPositionClickListener
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.*
 import javax.inject.Inject
 
-class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
+class TaskCardCreateViewModel : CoreViewModel(), PageSelectionListener {
 
     @Inject
     lateinit var navigator: IScreenNavigator
+
     @Inject
     lateinit var sessionInfo: ISessionInfo
+
     @Inject
     lateinit var database: IDatabaseRepository
 
@@ -31,9 +36,9 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
 
     val selectedPage = MutableLiveData(0)
 
-    val cardEditable = MutableLiveData(false)
+    val cardEditable = MutableLiveData(true)
 
-    val taskName = MutableLiveData("")
+    val taskName = MutableLiveData("Возврат от ${SimpleDateFormat(Constants.DATE_FORMAT_dd_mm_yyyy_hh_mm, Locale.getDefault()).format(Date())}")
 
     val ui by lazy {
         TaskCardUi(

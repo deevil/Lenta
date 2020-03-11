@@ -2,13 +2,13 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".features.task_card.TaskCardFragment">
+    tools:context=".features.task_card_create.TaskCardCreateFragment">
 
     <data>
 
         <variable
             name="vm"
-            type="com.lenta.bp12.features.task_card.TaskCardViewModel" />
+            type="com.lenta.bp12.features.task_card_create.TaskCardCreateViewModel" />
 
     </data>
 
@@ -50,7 +50,8 @@
                 <EditText
                     style="@style/CellEditTextStyle"
                     android:enabled="@{vm.cardEditable}"
-                    android:text="@={vm.taskName}" />
+                    android:text="@={vm.taskName}"
+                    tools:text="Возврат от 05.08.2020 15:16" />
 
             </LinearLayout>
 

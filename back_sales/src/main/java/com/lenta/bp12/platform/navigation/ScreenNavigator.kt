@@ -15,7 +15,7 @@ import com.lenta.bp12.features.loading.fast.FastDataLoadingFragment
 import com.lenta.bp12.features.main_menu.MainMenuFragment
 import com.lenta.bp12.features.save_data.SaveDataFragment
 import com.lenta.bp12.features.select_market.SelectMarketFragment
-import com.lenta.bp12.features.task_card.TaskCardFragment
+import com.lenta.bp12.features.task_card_create.TaskCardCreateFragment
 import com.lenta.bp12.features.task_composition.TaskCompositionFragment
 import com.lenta.bp12.features.task_list.TaskListFragment
 import com.lenta.bp12.features.task_search.TaskSearchFragment
@@ -136,7 +136,7 @@ class ScreenNavigator @Inject constructor(
 
     override fun openTaskCardScreen() {
         runOrPostpone {
-            getFragmentStack()?.push(TaskCardFragment())
+            getFragmentStack()?.push(TaskCardCreateFragment())
         }
     }
 
