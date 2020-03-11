@@ -6,3 +6,8 @@ fun ZmpUtz41V001.isGoodAllowed(gisControl: String, taskType: String, goodGroup: 
     @Suppress("INACCESSIBLE_TYPE")
     return localHelper_ET_ALLOW_MATNR.getWhere("TASK_CNTRL = \"$gisControl\" AND TASK_TYPE = \"$taskType\" AND MTART = \"$goodGroup\" AND EKGRP = \"$purchaseGroup\" LIMIT 1").isNotEmpty()
 }
+
+fun ZmpUtz41V001.getTaskAttributeList(taskType: String): Set<String> {
+    @Suppress("INACCESSIBLE_TYPE")
+    return localHelper_ET_ALLOW_MATNR.getWhere("TASK_TYPE = \"$taskType\"").map { it.taskCntrl }.toSet()
+}

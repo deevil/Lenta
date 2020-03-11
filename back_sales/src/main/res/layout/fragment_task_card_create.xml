@@ -47,6 +47,37 @@
 
         </androidx.viewpager.widget.ViewPager>
 
+        <!-- Иконки -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="3dp"
+            android:layout_marginTop="8dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:src="@drawable/ic_not_strict_list_32dp" />
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:visibility="@{vm.ui.alcohol}"
+                android:src="@drawable/ic_alcohol_32dp" />
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:visibility="@{vm.ui.common}"
+                android:src="@drawable/ic_kandy_32dp" />
+
+        </LinearLayout>
+
     </LinearLayout>
 
 </layout>

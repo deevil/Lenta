@@ -10,6 +10,7 @@ import com.lenta.shared.fmp.resources.dao_ext.ReturnReason
 import com.lenta.shared.fmp.resources.dao_ext.TaskType
 import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.platform.viewmodel.CoreViewModel
+import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.map
@@ -84,9 +85,9 @@ class TaskCardCreateViewModel : CoreViewModel(), PageSelectionListener {
         list?.map { it.description }
     }
 
-    val taskDescription = taskTypePosition.map { positions ->
+    val taskDescription = taskTypePosition.map { position ->
         if (types.value?.isNotEmpty() == true) {
-            types.value!![positions!!].description
+            types.value!![position!!].description
         } else ""
     }
 
@@ -98,6 +99,16 @@ class TaskCardCreateViewModel : CoreViewModel(), PageSelectionListener {
         if (taskTypeList.value?.isNotEmpty() == true && storageList.value?.isNotEmpty() == true && returnReasonList.value?.isNotEmpty() == true) {
             taskTypeList.value?.get(taskType)?.isNotEmpty() == true && storageList.value?.get(storage)?.isNotEmpty() == true && returnReasonList.value?.get(returnReason)?.isNotEmpty() == true
         } else false
+    }
+
+    private val taskAttributes = MutableLiveData<Set<String>>(emptySet())
+
+    val ui = taskAttributes.map { attributes ->
+        Logg.d { "attributes = $attributes" }
+        TaskCardCreateUi(
+                isAlcohol = attributes?.contains("A") == true,
+                isCommon = attributes?.contains("N") == true
+        )
     }
 
     // -----------------------------
@@ -119,6 +130,7 @@ class TaskCardCreateViewModel : CoreViewModel(), PageSelectionListener {
         viewModelScope.launch {
             storageList.value = database.getStorageList(types.value!![taskTypePosition.value!!].type)
             reasons.value = database.getReturnReasonList(types.value!![taskTypePosition.value!!].type)
+            taskAttributes.value = database.getTaskAttributes(types.value!![taskTypePosition.value!!].type)
         }
     }
 
@@ -129,3 +141,8 @@ class TaskCardCreateViewModel : CoreViewModel(), PageSelectionListener {
     }
 
 }
+
+data class TaskCardCreateUi(
+        val isAlcohol: Boolean,
+        val isCommon: Boolean
+)

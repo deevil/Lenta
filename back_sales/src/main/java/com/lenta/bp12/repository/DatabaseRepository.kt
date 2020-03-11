@@ -88,6 +88,16 @@ class DatabaseRepository @Inject constructor(
         }
     }
 
+    override suspend fun getTaskAttributes(taskType: String): Set<String> {
+        return withContext(Dispatchers.IO) {
+            if (taskType.isEmpty()) {
+                return@withContext emptySet<String>()
+            }
+
+            return@withContext allowed.getTaskAttributeList(taskType)
+        }
+    }
+
     override suspend fun getGoodInfo(ean: String?, material: String?): GoodInfo? {
         return withContext(Dispatchers.IO) {
             // todo Логика получения товара из справочника
@@ -107,7 +117,6 @@ class DatabaseRepository @Inject constructor(
             return@withContext forbidden.isGoodForbidden(gisControl, taskType, goodGroup, purchaseGroup)
         }
     }
-
 }
 
 interface IDatabaseRepository {
@@ -120,5 +129,6 @@ interface IDatabaseRepository {
     suspend fun getGoodInfo(ean: String?, material: String?): GoodInfo?
     suspend fun isGoodAllowed(gisControl: String, taskType: String, goodGroup: String?, purchaseGroup: String?): Boolean
     suspend fun isGoodForbidden(gisControl: String, taskType: String, goodGroup: String?, purchaseGroup: String?): Boolean
+    suspend fun getTaskAttributes(taskType: String): Set<String>
 
 }
