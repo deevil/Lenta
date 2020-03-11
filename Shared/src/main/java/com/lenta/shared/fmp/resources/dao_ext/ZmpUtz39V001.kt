@@ -15,8 +15,8 @@ fun ZmpUtz39V001.getTaskTypeList(): List<TaskType> {
 }
 
 data class TaskType(
-        val type: String,
-        val description: String,
-        val section: String,
-        val purchaseGroup: String
+        val type: String = "",
+        val description: String = "",
+        val section: String = "",
+        val purchaseGroup: String = ""
 )

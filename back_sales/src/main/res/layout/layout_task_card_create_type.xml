@@ -28,7 +28,6 @@
                     android:id="@+id/spin_task_type"
                     style="@style/CellSpinnerStyle"
                     android:layout_height="match_parent"
-                    android:enabled="@{vm.cardEditable}"
                     app:items="@{vm.taskTypeList}"
                     app:onPositionClickListener="@{vm.onSelectTaskType}"
                     app:position="@{vm.taskTypePosition}"
@@ -49,7 +48,6 @@
 
                 <EditText
                     style="@style/CellEditTextStyle"
-                    android:enabled="@{vm.cardEditable}"
                     android:text="@={vm.taskName}"
                     tools:text="Возврат от 05.08.2020 15:16" />
 
@@ -59,22 +57,17 @@
 
         <View style="@style/HorizontalDivider" />
 
-        <!-- Причина для возврата -->
+        <!-- Все поставщики -->
         <LinearLayout style="@style/LinearRowStyle">
 
             <LinearLayout
                 style="@style/LinearCellStyle"
                 android:layout_weight="1">
 
-                <com.lenta.shared.view.ClickableSpinner
-                    android:id="@+id/spin_reason_for_return"
-                    style="@style/CellSpinnerStyle"
-                    android:layout_height="match_parent"
-                    android:enabled="@{vm.cardEditable}"
-                    app:items="@{vm.reasonForReturnList}"
-                    app:onPositionClickListener="@{vm.onSelectReasonForReturn}"
-                    app:position="@{vm.reasonForReturnPosition}"
-                    tools:entries="@array/test_list" />
+                <TextView
+                    style="@style/CellTextStyle"
+                    android:text="@string/all_suppliers"
+                    android:textColor="@color/color_text_title_header" />
 
             </LinearLayout>
 
@@ -111,7 +104,6 @@
                     android:id="@+id/spin_storage"
                     style="@style/CellSpinnerStyle"
                     android:layout_height="match_parent"
-                    android:enabled="@{vm.cardEditable}"
                     app:items="@{vm.storageList}"
                     app:onPositionClickListener="@{vm.onSelectStorage}"
                     app:position="@{vm.storagePosition}"
@@ -130,11 +122,14 @@
                 style="@style/LinearCellStyle"
                 android:layout_weight="1">
 
-                <TextView
-                    style="@style/CellTextStyle"
-                    android:text="@{vm.ui.provider}"
-                    android:textColor="@color/color_text_title_header"
-                    tools:text="568932 ООО Микоян" />
+                <com.lenta.shared.view.ClickableSpinner
+                    android:id="@+id/spin_reason_for_return"
+                    style="@style/CellSpinnerStyle"
+                    android:layout_height="match_parent"
+                    app:items="@{vm.returnReasonList}"
+                    app:onPositionClickListener="@{vm.onSelectReturnReason}"
+                    app:position="@{vm.returnReasonPosition}"
+                    tools:entries="@array/test_list" />
 
             </LinearLayout>
 

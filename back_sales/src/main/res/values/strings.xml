@@ -76,5 +76,6 @@
     <string name="excise_alcohol">Акцизный алкоголь</string>
     <string name="specify_supplier_sap">Укажите SAP-код поставщика</string>
     <string name="supplier_name">Наименование поставщика:</string>
+    <string name="all_suppliers">Все поставщики</string>
 
 </resources>

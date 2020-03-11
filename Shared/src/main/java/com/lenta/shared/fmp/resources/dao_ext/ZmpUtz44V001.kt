@@ -13,6 +13,6 @@ fun ZmpUtz44V001.getReturnReasonList(taskType: String): List<ReturnReason> {
 }
 
 data class ReturnReason(
-        val code: String,
-        val description: String
+        val code: String = "",
+        val description: String = ""
 )

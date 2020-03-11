@@ -1,6 +1,5 @@
 package com.lenta.bp12.repository
 
-import com.lenta.bp12.model.pojo.Good
 import com.lenta.bp12.model.pojo.GoodInfo
 import com.lenta.shared.fmp.resources.dao_ext.*
 import com.lenta.shared.fmp.resources.fast.*
@@ -50,19 +49,42 @@ class DatabaseRepository @Inject constructor(
 
     override suspend fun getTaskTypeList(): List<TaskType> {
         return withContext(Dispatchers.IO) {
-            return@withContext taskTypes.getTaskTypeList()
+            val taskTypeList = taskTypes.getTaskTypeList().toMutableList()
+            if (taskTypeList.size > 1) {
+                taskTypeList.add(0, TaskType())
+            }
+
+            return@withContext taskTypeList
         }
     }
 
     override suspend fun getStorageList(taskType: String): List<String> {
         return withContext(Dispatchers.IO) {
-            return@withContext storages.getStorageList(taskType)
+            if (taskType.isEmpty()) {
+                return@withContext emptyList<String>()
+            }
+
+            val storageList = storages.getStorageList(taskType).toMutableList()
+            if (storageList.size > 1) {
+                storageList.add(0, "")
+            }
+
+            return@withContext storageList
         }
     }
 
     override suspend fun getReturnReasonList(taskType: String): List<ReturnReason> {
         return withContext(Dispatchers.IO) {
-            return@withContext returnReasons.getReturnReasonList(taskType)
+            if (taskType.isEmpty()) {
+                return@withContext emptyList<ReturnReason>()
+            }
+
+            val returnReasonList = returnReasons.getReturnReasonList(taskType).toMutableList()
+            if (returnReasonList.size > 1) {
+                returnReasonList.add(0, ReturnReason())
+            }
+
+            return@withContext returnReasonList
         }
     }
 

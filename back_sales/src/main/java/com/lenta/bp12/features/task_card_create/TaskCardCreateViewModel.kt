@@ -5,10 +5,12 @@ import androidx.lifecycle.viewModelScope
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.repository.IDatabaseRepository
 import com.lenta.shared.account.ISessionInfo
+import com.lenta.shared.fmp.resources.dao_ext.ReturnReason
 import com.lenta.shared.fmp.resources.dao_ext.TaskType
 import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.databinding.PageSelectionListener
+import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.view.OnPositionClickListener
 import kotlinx.coroutines.launch
@@ -32,74 +34,75 @@ class TaskCardCreateViewModel : CoreViewModel(), PageSelectionListener {
         "ТК - ${sessionInfo.market}"
     }
 
-    val nextEnabled = MutableLiveData(false)
-
     val selectedPage = MutableLiveData(0)
-
-    val cardEditable = MutableLiveData(true)
 
     val taskName = MutableLiveData("Возврат от ${SimpleDateFormat(Constants.DATE_FORMAT_dd_mm_yyyy_hh_mm, Locale.getDefault()).format(Date())}")
 
     val ui by lazy {
         TaskCardUi(
-                provider = "568932 ООО Микоян",
                 description = "Возврат прямому поставщику",
-                comment = "Комплектование необходимо выполнить до 16:00!!!",
-                isStrict = true,
-                isAlcohol = false,
-                isCommon = true
+                comment = "Комплектование необходимо выполнить до 16:00!!!"
         )
     }
 
     val taskTypePosition = MutableLiveData(0)
 
-    val reasonForReturnPosition = MutableLiveData(0)
-
     val storagePosition = MutableLiveData(0)
+
+    val returnReasonPosition = MutableLiveData(0)
 
     val onSelectTaskType = object : OnPositionClickListener {
         override fun onClickPosition(position: Int) {
             taskTypePosition.value = position
-        }
-    }
+            storagePosition.value = 0
+            returnReasonPosition.value = 0
 
-    val onSelectReasonForReturn = object : OnPositionClickListener {
-        override fun onClickPosition(position: Int) {
-            taskTypePosition.value = position
+            updateLists()
         }
     }
 
     val onSelectStorage = object : OnPositionClickListener {
         override fun onClickPosition(position: Int) {
-            taskTypePosition.value = position
+            storagePosition.value = position
         }
     }
 
-    private val taskTypes = MutableLiveData<List<TaskType>>(emptyList())
-
-    val taskTypeList: MutableLiveData<List<String>> by lazy {
-        taskTypes.map { list ->
-            list?.map { it.description }
+    val onSelectReturnReason = object : OnPositionClickListener {
+        override fun onClickPosition(position: Int) {
+            returnReasonPosition.value = position
         }
     }
 
-    val reasonForReturnList: MutableLiveData<List<String>> by lazy {
-        MutableLiveData(List(3) {
-            "Reason for return ${it + 1}"
-        })
+    private val types = MutableLiveData<List<TaskType>>(emptyList())
+
+    private val reasons = MutableLiveData<List<ReturnReason>>(emptyList())
+
+    val taskTypeList = types.map { list ->
+        list?.map { it.description }
     }
 
-    val storageList: MutableLiveData<List<String>> by lazy {
-        MutableLiveData(List(3) {
-            "Storage ${it + 1}"
-        })
+    val storageList = MutableLiveData<List<String>>(emptyList())
+
+    val returnReasonList = reasons.map { list ->
+        list?.map { it.description }
+    }
+
+    val nextEnabled = taskTypePosition.combineLatest(storagePosition).combineLatest(returnReasonPosition).map { positions ->
+        val taskType = positions!!.first.first
+        val storage = positions.first.second
+        val returnReason = positions.second
+
+        if (taskTypeList.value?.isNotEmpty() == true && storageList.value?.isNotEmpty() == true && returnReasonList.value?.isNotEmpty() == true) {
+            taskTypeList.value?.get(taskType)?.isNotEmpty() == true && storageList.value?.get(storage)?.isNotEmpty() == true && returnReasonList.value?.get(returnReason)?.isNotEmpty() == true
+        } else false
     }
 
     // -----------------------------
 
     init {
         viewModelScope.launch {
-            taskTypes.value = database.getTaskTypeList()
+            types.value = database.getTaskTypeList()
+            updateLists()
         }
     }
 
@@ -109,6 +112,13 @@ class TaskCardCreateViewModel : CoreViewModel(), PageSelectionListener {
         selectedPage.value = position
     }
 
+    private fun updateLists() {
+        viewModelScope.launch {
+            storageList.value = database.getStorageList(types.value!![taskTypePosition.value!!].type)
+            reasons.value = database.getReturnReasonList(types.value!![taskTypePosition.value!!].type)
+        }
+    }
+
     fun onClickNext() {
 
     }
@@ -116,10 +126,6 @@ class TaskCardCreateViewModel : CoreViewModel(), PageSelectionListener {
 }
 
 data class TaskCardUi(
-        val provider: String,
         val description: String,
-        val comment: String,
-        val isStrict: Boolean,
-        val isAlcohol: Boolean,
-        val isCommon: Boolean
+        val comment: String
 )
