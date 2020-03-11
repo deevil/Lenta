@@ -1,5 +1,7 @@
 package com.lenta.bp12.di
 
+import com.lenta.bp12.model.ITaskManager
+import com.lenta.bp12.model.TaskManager
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.platform.navigation.ScreenNavigator
 import com.lenta.bp12.platform.resource.IResourceManager
@@ -34,6 +36,10 @@ class AppModule {
         @Binds
         @AppScope
         fun bindResourceManager(realisation: ResourceManager): IResourceManager
+
+        @Binds
+        @AppScope
+        fun bindTaskManager(realisation: TaskManager): ITaskManager
 
     }
 
