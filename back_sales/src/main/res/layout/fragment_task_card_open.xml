@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".features.task_card_open.TaskCardOpenFragment">
+
+    <data>
+
+        <variable
+            name="vm"
+            type="com.lenta.bp12.features.task_card_open.TaskCardOpenViewModel" />
+
+        <variable
+            name="viewPagerSettings"
+            type="com.lenta.shared.utilities.databinding.ViewPagerSettings" />
+
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- Табы -->
+        <androidx.viewpager.widget.ViewPager
+            android:id="@+id/view_pager"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            app:pageSelectionListener="@{vm}"
+            app:tabPosition="@{vm.selectedPage}"
+            app:viewPagerSettings="@{viewPagerSettings}">
+
+            <com.google.android.material.tabs.TabLayout
+                android:id="@+id/tab_strip"
+                android:layout_width="match_parent"
+                android:layout_height="32dp"
+                android:background="@color/colorBottomPanelBackground"
+                android:elevation="0dp"
+                app:tabIndicatorColor="@color/colorTabIndicator"
+                app:tabIndicatorHeight="3dp"
+                app:tabMode="scrollable"
+                app:tabSelectedTextColor="@color/colorTabIndicator"
+                app:tabTextAppearance="@style/TabLayoutStyle"
+                app:tabTextColor="@color/colorWhite"
+                tools:targetApi="lollipop" />
+
+        </androidx.viewpager.widget.ViewPager>
+
+        <!-- Иконки -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="3dp"
+            android:layout_marginTop="8dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                app:isStrictList="@{vm.ui.strict}"
+                tools:src="@drawable/ic_strict_list_32dp" />
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:visibility="@{vm.ui.alcohol}"
+                tools:src="@drawable/ic_alcohol_32dp" />
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:visibility="@{vm.ui.common}"
+                tools:src="@drawable/ic_kandy_32dp" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</layout>

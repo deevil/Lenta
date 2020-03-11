@@ -16,6 +16,7 @@ import com.lenta.bp12.features.main_menu.MainMenuFragment
 import com.lenta.bp12.features.save_data.SaveDataFragment
 import com.lenta.bp12.features.select_market.SelectMarketFragment
 import com.lenta.bp12.features.task_card_create.TaskCardCreateFragment
+import com.lenta.bp12.features.task_card_open.TaskCardOpenFragment
 import com.lenta.bp12.features.task_composition.TaskCompositionFragment
 import com.lenta.bp12.features.task_list.TaskListFragment
 import com.lenta.bp12.features.task_search.TaskSearchFragment
@@ -134,9 +135,15 @@ class ScreenNavigator @Inject constructor(
         }
     }
 
-    override fun openTaskCardScreen() {
+    override fun openTaskCardCreateScreen() {
         runOrPostpone {
             getFragmentStack()?.push(TaskCardCreateFragment())
+        }
+    }
+
+    override fun openTaskCardOpenScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(TaskCardOpenFragment())
         }
     }
 
@@ -356,7 +363,8 @@ interface IScreenNavigator : ICoreNavigator {
     fun openDiscrepancyListScreen()
     fun openGoodInfoScreen()
     fun openGoodListScreen()
-    fun openTaskCardScreen()
+    fun openTaskCardCreateScreen()
+    fun openTaskCardOpenScreen()
     fun openTaskSearchScreen()
 
     fun showUnsentDataFoundOnDevice(deleteCallback: () -> Unit, goOverCallback: () -> Unit)

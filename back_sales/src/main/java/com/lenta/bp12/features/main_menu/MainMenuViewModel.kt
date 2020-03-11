@@ -28,7 +28,7 @@ class MainMenuViewModel : CoreViewModel() {
     }
 
     fun createTask() {
-        navigator.openTaskCardScreen()
+        navigator.openTaskCardCreateScreen()
     }
 
     fun workWithTask() {
