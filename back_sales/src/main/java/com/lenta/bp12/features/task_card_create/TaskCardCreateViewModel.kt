@@ -38,13 +38,6 @@ class TaskCardCreateViewModel : CoreViewModel(), PageSelectionListener {
 
     val taskName = MutableLiveData("Возврат от ${SimpleDateFormat(Constants.DATE_FORMAT_dd_mm_yyyy_hh_mm, Locale.getDefault()).format(Date())}")
 
-    val ui by lazy {
-        TaskCardUi(
-                description = "Возврат прямому поставщику",
-                comment = "Комплектование необходимо выполнить до 16:00!!!"
-        )
-    }
-
     val taskTypePosition = MutableLiveData(0)
 
     val storagePosition = MutableLiveData(0)
@@ -87,6 +80,12 @@ class TaskCardCreateViewModel : CoreViewModel(), PageSelectionListener {
         list?.map { it.description }
     }
 
+    val taskDescription = taskTypePosition.map { positions ->
+        if (types.value?.isNotEmpty() == true) {
+            types.value!![positions!!].description
+        } else ""
+    }
+
     val nextEnabled = taskTypePosition.combineLatest(storagePosition).combineLatest(returnReasonPosition).map { positions ->
         val taskType = positions!!.first.first
         val storage = positions.first.second
@@ -124,8 +123,3 @@ class TaskCardCreateViewModel : CoreViewModel(), PageSelectionListener {
     }
 
 }
-
-data class TaskCardUi(
-        val description: String,
-        val comment: String
-)
