@@ -2,6 +2,7 @@ package com.lenta.bp12.features.task_card_open
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.lenta.bp12.model.IOpenTaskManager
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.repository.IDatabaseRepository
 import com.lenta.shared.account.ISessionInfo
@@ -20,6 +21,9 @@ class TaskCardOpenViewModel : CoreViewModel(), PageSelectionListener {
 
     @Inject
     lateinit var database: IDatabaseRepository
+
+    @Inject
+    lateinit var openTaskManager: IOpenTaskManager
 
 
     val title by lazy {
@@ -60,7 +64,7 @@ class TaskCardOpenViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     fun onClickNext() {
-
+        navigator.openGoodListScreen()
     }
 
 }

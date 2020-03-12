@@ -2,7 +2,7 @@ package com.lenta.bp12.features.task_card_create
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.lenta.bp12.model.TaskManager
+import com.lenta.bp12.model.ICreateTaskManager
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.repository.IDatabaseRepository
 import com.lenta.shared.account.ISessionInfo
@@ -32,7 +32,7 @@ class TaskCardCreateViewModel : CoreViewModel(), PageSelectionListener {
     lateinit var database: IDatabaseRepository
 
     @Inject
-    lateinit var taskManager: TaskManager
+    lateinit var creteTaskManager: ICreateTaskManager
 
 
     val title by lazy {
@@ -135,7 +135,7 @@ class TaskCardCreateViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     fun onClickNext() {
-        taskManager.createTask()
+        creteTaskManager.createTask()
 
         navigator.openTaskCompositionScreen()
     }
