@@ -4,8 +4,11 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp16.model.ITaskManager
 import com.lenta.bp16.platform.navigation.IScreenNavigator
+import com.lenta.bp16.request.EndProcessingNetRequest
+import com.lenta.bp16.request.EndProcessingParams
 import com.lenta.bp16.request.UnblockTaskNetRequest
 import com.lenta.bp16.request.UnblockTaskParams
+import com.lenta.shared.exception.Failure
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.extentions.dropZeros
 import com.lenta.shared.utilities.extentions.map
@@ -20,6 +23,8 @@ class PackGoodListViewModel : CoreViewModel() {
     lateinit var taskManager: ITaskManager
     @Inject
     lateinit var unblockTaskNetRequest: UnblockTaskNetRequest
+    @Inject
+    lateinit var endProcessingNetRequest: EndProcessingNetRequest
 
 
     val task by lazy {
@@ -30,6 +35,12 @@ class PackGoodListViewModel : CoreViewModel() {
         task.map { it?.taskInfo?.text3 }
     }
 
+    val completeEnabled by lazy {
+        task.map { task ->
+            task?.isProcessed == false && task.goods?.any { it.packs.isNotEmpty() } == true || task?.isProcessed == false && task.isPackSent
+        }
+    }
+
     val packGoods: MutableLiveData<List<ItemPackGoodListUi>> by lazy {
         task.map { task ->
             task?.goods?.mapIndexed { index, good ->
@@ -38,7 +49,7 @@ class PackGoodListViewModel : CoreViewModel() {
                         material = good.material,
                         name = good.name,
                         arrived = "${good.arrived.dropZeros()} ${good.units.name}",
-                        arrowVisibility = !task.isProcessed
+                        arrowVisibility = !task.isProcessed && task.goods?.any { it.packs.isNotEmpty() } == false && !task.isPackSent
                 )
             }
         }
@@ -47,7 +58,7 @@ class PackGoodListViewModel : CoreViewModel() {
     // -----------------------------
 
     fun onClickItemPosition(position: Int) {
-        if (task.value?.isProcessed == true) {
+        if (task.value?.isProcessed == true || completeEnabled.value == true) {
             return
         }
 
@@ -62,6 +73,32 @@ class PackGoodListViewModel : CoreViewModel() {
             taskManager.currentRaw.value = good.raws.find { it.material == good.material }
             navigator.openGoodPackagingScreen()
         }
+    }
+
+    fun onClickComplete() {
+        navigator.showConfirmNoSuchItemLeft(taskManager.taskType.abbreviation) {
+            viewModelScope.launch {
+                navigator.showProgressLoadingData()
+
+                endProcessingNetRequest(
+                        EndProcessingParams(
+                                taskNumber = taskManager.currentTask.value!!.number,
+                                taskType = taskManager.getTaskTypeCode()
+                        )
+                ).also {
+                    navigator.hideProgress()
+                }.either(::handleFailure) {
+                    taskManager.completeCurrentTask()
+
+                    navigator.goBack()
+                }
+            }
+        }
+    }
+
+    override fun handleFailure(failure: Failure) {
+        super.handleFailure(failure)
+        navigator.openAlertScreen(failure)
     }
 
     fun onBackPressed() {

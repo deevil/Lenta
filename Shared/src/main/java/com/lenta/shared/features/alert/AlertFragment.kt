@@ -3,6 +3,7 @@ package com.lenta.shared.features.alert
 
 import com.lenta.shared.features.message.CoreMessageFragment
 import com.lenta.shared.features.message.MessageViewModel
+import com.lenta.shared.features.message.SoundType
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.utilities.extentions.provideViewModel
@@ -13,6 +14,7 @@ class AlertFragment : CoreMessageFragment() {
         provideViewModel(MessageViewModel::class.java).let { vm ->
             coreComponent.inject(vm)
             vm.message = message
+            vm.soundType = soundType
             vm.iconRes = iconRes
             vm.codeConfirmForExit = codeConfirmForExit
             vm.codeConfirmForRight = codeConfirmForRight
@@ -34,6 +36,7 @@ class AlertFragment : CoreMessageFragment() {
     companion object {
         fun create(
                 message: String,
+                soundType: SoundType? = null,
                 title: String? = null,
                 description: String? = null,
                 iconRes: Int = 0,
@@ -55,6 +58,7 @@ class AlertFragment : CoreMessageFragment() {
         ): AlertFragment {
             return AlertFragment().apply {
                 this.message = message
+                this.soundType = soundType
                 this.title = title
                 this.description = description
                 this.iconRes = iconRes

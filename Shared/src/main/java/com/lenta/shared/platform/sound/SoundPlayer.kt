@@ -1,9 +1,9 @@
-package com.lenta.bp14.platform.sound
+package com.lenta.shared.platform.sound
 
 import android.content.Context
 import android.media.AudioManager
 import android.media.MediaPlayer
-import com.lenta.bp14.R
+import com.lenta.shared.R
 import javax.inject.Inject
 
 interface ISoundPlayer {
@@ -48,6 +48,13 @@ class SoundPlayer @Inject constructor(private val context: Context) : ISoundPlay
     }
 
     private fun play(rawId: Int) {
+        var manualInit = false
+
+        if (mediaPlayers.isEmpty()) {
+            start()
+            manualInit = true
+        }
+
         mediaPlayers[rawId]?.let {
             val am = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
 
@@ -63,6 +70,9 @@ class SoundPlayer @Inject constructor(private val context: Context) : ISoundPlay
                         AudioManager.STREAM_MUSIC,
                         userVolume,
                         0)
+                if (manualInit) {
+                    stop()
+                }
             }
 
             it.start()

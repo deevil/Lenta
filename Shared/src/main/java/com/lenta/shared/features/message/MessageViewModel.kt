@@ -6,7 +6,9 @@ import com.lenta.shared.analytics.AnalyticsHelper
 import com.lenta.shared.features.message.usecase.DelayGoBack
 import com.lenta.shared.features.message.usecase.GoBackParams
 import com.lenta.shared.platform.navigation.ICoreNavigator
+import com.lenta.shared.platform.sound.ISoundPlayer
 import com.lenta.shared.platform.viewmodel.CoreViewModel
+import com.lenta.shared.utilities.Logg
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -18,6 +20,8 @@ open class MessageViewModel : CoreViewModel() {
     lateinit var coreNavigator: ICoreNavigator
     @Inject
     lateinit var analyticsHelper: AnalyticsHelper
+    @Inject
+    lateinit var soundPlayer: ISoundPlayer
 
 
     lateinit var message: String
@@ -32,9 +36,16 @@ open class MessageViewModel : CoreViewModel() {
     var codeConfirmForLeft: Int? = null
     var textColor: Int? = null
     var timeAutoExitInMillis: Int? = null
+    var soundType: SoundType? = null
 
     init {
         viewModelScope.launch {
+
+            Logg.d { "alert soundType: $soundType" }
+            when (soundType) {
+                SoundType.ERROR -> soundPlayer.playError()
+            }
+
             timeAutoExitInMillis?.let { delayInMillis ->
                 if (codeConfirmForRight == null) {
                     goBackWithDelay(params = GoBackParams(
@@ -87,4 +98,6 @@ open class MessageViewModel : CoreViewModel() {
 
 }
 
-
+enum class SoundType {
+    ERROR
+}

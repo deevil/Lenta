@@ -4,6 +4,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp16.model.ITaskManager
 import com.lenta.bp16.platform.navigation.IScreenNavigator
+import com.lenta.bp16.request.EndProcessingNetRequest
+import com.lenta.bp16.request.EndProcessingParams
 import com.lenta.bp16.request.PackGoodNetRequest
 import com.lenta.bp16.request.PackGoodParams
 import com.lenta.shared.account.ISessionInfo
@@ -41,7 +43,7 @@ class GoodPackagingViewModel : CoreViewModel() {
 
     val deviceIp = MutableLiveData("")
 
-    val weightField = MutableLiveData("")
+    val weightField = MutableLiveData("0")
 
     private val entered = weightField.map {
         it?.toDoubleOrNull() ?: 0.0
@@ -78,10 +80,8 @@ class GoodPackagingViewModel : CoreViewModel() {
             ).also {
                 navigator.hideProgress()
             }.either(::handleFailure) {
-                taskManager.completeCurrentTask()
-
                 navigator.showFixingPackagingPhaseSuccessful {
-                    navigator.goBack()
+                    taskManager.setDataSentForPackTask()
                     navigator.goBack()
                 }
             }

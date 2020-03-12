@@ -43,8 +43,8 @@ class ProcessingUnitListViewModel : CoreViewModel() {
                         position = (index + 1).toString(),
                         material = good.material,
                         name = "${good.material.takeLast(6)} ${good.name}",
-                        arrived = "${good.planned.dropZeros()} ${good.units.name}",
-                        remain = "${(good.planned - good.getFactRawQuantity()).dropZeros()} ${good.units.name}"
+                        arrived = "${good.arrived.dropZeros()} ${good.units.name}",
+                        remain = "${(good.arrived - good.getPackedQuantity()).dropZeros()} ${good.units.name}"
                 )
             }
         }
@@ -53,7 +53,7 @@ class ProcessingUnitListViewModel : CoreViewModel() {
     val completeEnabled by lazy {
         task.map { task ->
             task?.isProcessed == false && task.goods?.map {
-                it.getFactRawQuantity()
+                it.getPackedQuantity()
             }?.any { it > 0.0 } ?: false
         }
     }
