@@ -164,10 +164,15 @@ class GoodsMercuryInfoViewModel : CoreViewModel(), OnPositionClickListener {
     }
 
     val acceptTotalCountWithUom: MutableLiveData<String> = acceptTotalCount.map {
-        if (it != 0.0) {
-            "+ " + it.toStringFormatted() + " " + uom.value?.name
+        val countAccept = if (isTaskPGE.value!!) {
+            processMercuryProductService.getNewCountAcceptPGE()
         } else {
-            "0 " + uom.value?.name
+            processMercuryProductService.getNewCountAccept()
+        }
+        if ((it ?: 0.0) > 0.0) {
+            "+ ${it.toStringFormatted()} ${uom.value?.name}"
+        } else {
+            "${if (countAccept > 0.0) "+ " + countAccept.toStringFormatted() else countAccept.toStringFormatted()} ${uom.value?.name}"
         }
     }
 
@@ -200,15 +205,24 @@ class GoodsMercuryInfoViewModel : CoreViewModel(), OnPositionClickListener {
     }
 
     val refusalTotalCountWithUom: MutableLiveData<String> = refusalTotalCount.map {
-        if (it != 0.0) {
-            "- " + it.toStringFormatted() + " " + uom.value?.name
+        val countRefusal = if (isTaskPGE.value!!) {
+            processMercuryProductService.getNewCountRefusalPGE()
         } else {
-            "0 " + uom.value?.name
+            processMercuryProductService.getNewCountRefusal()
+        }
+        if ((it ?: 0.0) > 0.0) {
+            "- ${it.toStringFormatted()} ${uom.value?.name}"
+        } else {
+            "${if (countRefusal > 0.0) "- " + countRefusal.toStringFormatted() else countRefusal.toStringFormatted()} ${uom.value?.name}"
         }
     }
 
+    private val isNotRecountBreakingCargoUnit: MutableLiveData<Boolean> by lazy { //https://trello.com/c/PRTAVnUP
+        MutableLiveData(isTaskPGE.value == true && taskManager.getReceivingTask()!!.taskHeader.isCracked && !taskManager.getReceivingTask()!!.taskDescription.isRecount)
+    }
+
     val enabledApplyButton: MutableLiveData<Boolean> = countValue.map {
-                it!! != 0.0 && !spinManufacturers.isNullOrEmpty() && !spinProductionDate.value.isNullOrEmpty()
+        (it ?: 0.0) > 0.0 && !spinManufacturers.isNullOrEmpty() && !spinProductionDate.value.isNullOrEmpty()
     }
 
     init {
@@ -223,26 +237,35 @@ class GoodsMercuryInfoViewModel : CoreViewModel(), OnPositionClickListener {
                     isDiscrepancy.value!! -> {
                         suffix.value = uom.value?.name
                         count.value = taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.getCountProductNotProcessedOfProductPGE(productInfo.value!!).toStringFormatted()
-                        qualityInfo.value = dataBase.getQualityInfoPGEForDiscrepancy()
+                        if (isNotRecountBreakingCargoUnit.value == true) {
+                            qualityInfo.value = dataBase.getQualityInfoPGENotRecountBreaking()
+                        } else {
+                            qualityInfo.value = dataBase.getQualityInfoPGEForDiscrepancy()
+                        }
                     }
                     else -> {
                         suffix.value = productInfo.value?.purchaseOrderUnits?.name
-                        qualityInfo.value = dataBase.getQualityInfoPGE()
+                        if (isNotRecountBreakingCargoUnit.value == true) {
+                            qualityInfo.value = dataBase.getQualityInfoPGENotRecountBreaking()
+                        } else {
+                            qualityInfo.value = dataBase.getQualityInfoPGE()
+                        }
                     }
                 }
             } else {
                 suffix.value = uom.value?.name
                 if (isDiscrepancy.value!!) {
-                    qualityInfo.value = dataBase.getQualityInfoForDiscrepancy()
-                    spinQualitySelectedPosition.value = 2
+                    qualityInfo.value = dataBase.getQualityMercuryInfoForDiscrepancy()
+                    spinQualitySelectedPosition.value = qualityInfo.value!!.indexOfLast {it.code == "7"}
                 } else {
-                    qualityInfo.value = dataBase.getQualityInfo()
+                    qualityInfo.value = dataBase.getQualityMercuryInfo()
                 }
             }
 
             generalShelfLife.value = productInfo.value?.generalShelfLife
             remainingShelfLife.value = productInfo.value?.remainingShelfLife
 
+            /** определяем, что товар скоропорт, это общий для всех алгоритм https://trello.com/c/8sOTWtB7 */
             val paramGrzUffMhdhb = dataBase.getParamGrzUffMhdhb()?.toInt() ?: 60
             isPerishable.value = (productInfo.value?.generalShelfLife?.toInt() ?: 0) > 0 ||
                     (productInfo.value?.remainingShelfLife?.toInt() ?: 0) > 0 ||
@@ -285,10 +308,14 @@ class GoodsMercuryInfoViewModel : CoreViewModel(), OnPositionClickListener {
                 spinReasonRejection.value = listOf("ЕО - " + productInfo.value!!.processingUnit)
             } else {
                 screenNavigator.showProgressLoadingData()
-                spinReasonRejectionSelectedPosition.value = 0
                 reasonRejectionInfo.value = dataBase.getReasonRejectionInfoOfQuality(selectedQuality)
                 spinReasonRejection.value = reasonRejectionInfo.value?.map {
                     it.name
+                }
+                if (isDiscrepancy.value!!) {
+                    spinReasonRejectionSelectedPosition.value = reasonRejectionInfo.value!!.indexOfLast {it.code == "44"}
+                } else {
+                    spinReasonRejectionSelectedPosition.value = 0
                 }
                 count.value = count.value
                 screenNavigator.hideProgress()

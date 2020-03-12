@@ -172,24 +172,28 @@ class ProcessGeneralProductService
             it.materialNumber == productInfo.materialNumber && it.typeDiscrepancies == typeDiscrepancies
         }
 
-        if (foundDiscrepancy == null) {
-            taskManager.getReceivingTask()?.
-                    taskRepository?.
-                    getProductsDiscrepancies()?.
-                    changeProductDiscrepancy(TaskProductDiscrepancies(
-                            materialNumber = productInfo.materialNumber,
-                            exidv = "",
-                            numberDiscrepancies = countAdd.toString(),
-                            uom = productInfo.uom,
-                            typeDiscrepancies = typeDiscrepancies,
-                            isNotEdit = false,
-                            isNew = false
-                    ))
+        if (countAdd == 0.0) {
+            taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.deleteProductDiscrepancy(productInfo.materialNumber, typeDiscrepancies)
         } else {
-            taskManager.getReceivingTask()?.
-                    taskRepository?.
-                    getProductsDiscrepancies()?.
-                    changeProductDiscrepancy(foundDiscrepancy.copy(numberDiscrepancies = countAdd.toString()))
+            if (foundDiscrepancy == null) {
+                taskManager.getReceivingTask()?.
+                        taskRepository?.
+                        getProductsDiscrepancies()?.
+                        changeProductDiscrepancy(TaskProductDiscrepancies(
+                                materialNumber = productInfo.materialNumber,
+                                exidv = "",
+                                numberDiscrepancies = countAdd.toString(),
+                                uom = productInfo.uom,
+                                typeDiscrepancies = typeDiscrepancies,
+                                isNotEdit = false,
+                                isNew = false
+                        ))
+            } else {
+                taskManager.getReceivingTask()?.
+                        taskRepository?.
+                        getProductsDiscrepancies()?.
+                        changeProductDiscrepancy(foundDiscrepancy.copy(numberDiscrepancies = countAdd.toString()))
+            }
         }
 
         //Кол-во, которое было оприходовано по этому заказу и этому товару
