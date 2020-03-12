@@ -37,6 +37,8 @@ import com.lenta.shared.platform.navigation.pictogram.IIconDescriptionHelper
 import com.lenta.shared.platform.navigation.pictogram.IconDescriptionHelper
 import com.lenta.shared.platform.resources.ISharedStringResourceManager
 import com.lenta.shared.platform.resources.SharedStringResourceManager
+import com.lenta.shared.platform.sound.ISoundPlayer
+import com.lenta.shared.platform.sound.SoundPlayer
 import com.lenta.shared.platform.time.ITimeMonitor
 import com.lenta.shared.platform.time.TimeMonitor
 import com.lenta.shared.print.IPriceTagGenerator
@@ -85,6 +87,10 @@ class CoreModule(val application: Application, val defaultConnectionSettings: De
         @Binds
         @Singleton
         fun bindIPriceTagGenerator(realisation: PriceTagGenerator): IPriceTagGenerator
+
+        @Binds
+        @Singleton
+        fun bindSoundPlayer(realisation: SoundPlayer): ISoundPlayer
 
     }
 

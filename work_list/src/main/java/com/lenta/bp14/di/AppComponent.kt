@@ -22,7 +22,6 @@ import com.lenta.bp14.models.print.IPrintTask
 import com.lenta.bp14.platform.IVibrateHelper
 import com.lenta.bp14.platform.navigation.IScreenNavigator
 import com.lenta.bp14.platform.resource.IResourceManager
-import com.lenta.bp14.platform.sound.ISoundPlayer
 import com.lenta.bp14.requests.tasks.IUnlockTaskNetRequest
 import com.lenta.shared.di.AppScope
 import com.lenta.shared.di.CoreComponent
@@ -35,7 +34,6 @@ interface AppComponent : CoreComponent {
     fun getIScreenNavigator(): IScreenNavigator
     fun getIGeneralTaskManager(): IGeneralTaskManager
     fun getIPriceInfoParser(): IPriceInfoParser
-    fun getISoundPlayer(): ISoundPlayer
     fun getIVibrateHelper(): IVibrateHelper
     fun getIGeneralRepo(): IGeneralRepo
     fun getIPrintTask(): IPrintTask

@@ -7,7 +7,7 @@ import com.lenta.bp14.models.check_list.GoodRequestResult
 import com.lenta.bp14.models.check_list.ICheckListTask
 import com.lenta.bp14.models.getTaskName
 import com.lenta.bp14.platform.IVibrateHelper
-import com.lenta.bp14.platform.sound.ISoundPlayer
+import com.lenta.shared.platform.sound.ISoundPlayer
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.Logg
 import kotlinx.coroutines.launch

@@ -20,8 +20,6 @@ import com.lenta.bp14.platform.navigation.IScreenNavigator
 import com.lenta.bp14.platform.navigation.ScreenNavigator
 import com.lenta.bp14.platform.resource.IResourceManager
 import com.lenta.bp14.platform.resource.ResourceManager
-import com.lenta.bp14.platform.sound.ISoundPlayer
-import com.lenta.bp14.platform.sound.SoundPlayer
 import com.lenta.bp14.repos.IRepoInMemoryHolder
 import com.lenta.bp14.repos.RepoInMemoryHolder
 import com.lenta.bp14.requests.check_price.CheckPriceTaskInfoNetRequest
@@ -53,10 +51,6 @@ class AppModule {
         @Binds
         @AppScope
         fun bindGeneralRepo(realisation: GeneralRepo): IGeneralRepo
-
-        @Binds
-        @AppScope
-        fun bindSoundPlayer(realisation: SoundPlayer): ISoundPlayer
 
         @Binds
         @AppScope
