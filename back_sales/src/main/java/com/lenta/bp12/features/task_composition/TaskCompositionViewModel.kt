@@ -1,7 +1,6 @@
 package com.lenta.bp12.features.task_composition
 
 import androidx.lifecycle.MutableLiveData
-import com.lenta.bp12.features.basket_good_list.ItemGoodUi
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.SelectionItemsHelper

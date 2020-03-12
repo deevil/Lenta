@@ -3,6 +3,7 @@ package com.lenta.bp12.features.task_card_create
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp12.model.ICreateTaskManager
+import com.lenta.bp12.model.pojo.CreateTask
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.repository.IDatabaseRepository
 import com.lenta.shared.account.ISessionInfo
@@ -10,7 +11,6 @@ import com.lenta.shared.fmp.resources.dao_ext.ReturnReason
 import com.lenta.shared.fmp.resources.dao_ext.TaskType
 import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.platform.viewmodel.CoreViewModel
-import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.map
@@ -32,7 +32,7 @@ class TaskCardCreateViewModel : CoreViewModel(), PageSelectionListener {
     lateinit var database: IDatabaseRepository
 
     @Inject
-    lateinit var creteTaskManager: ICreateTaskManager
+    lateinit var manager: ICreateTaskManager
 
 
     val title by lazy {
@@ -103,12 +103,12 @@ class TaskCardCreateViewModel : CoreViewModel(), PageSelectionListener {
 
     private val taskAttributes = MutableLiveData<Set<String>>(emptySet())
 
-    val ui = taskAttributes.map { attributes ->
-        Logg.d { "attributes = $attributes" }
-        TaskCardCreateUi(
-                isAlcohol = attributes?.contains("A") == true,
-                isCommon = attributes?.contains("N") == true
-        )
+    val isAlcohol = taskAttributes.map { attributes ->
+        attributes?.contains("A") == true
+    }
+
+    val isCommon = taskAttributes.map { attributes ->
+        attributes?.contains("N") == true
     }
 
     // -----------------------------
@@ -135,14 +135,16 @@ class TaskCardCreateViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     fun onClickNext() {
-        creteTaskManager.createTask()
+        manager.updateTask(CreateTask(
+                name = taskName.value!!,
+                type = types.value!![taskTypePosition.value!!],
+                storage = storageList.value!![storagePosition.value!!],
+                reason = reasons.value!![returnReasonPosition.value!!],
+                isAlcohol = isAlcohol.value!!,
+                isCommon = isCommon.value!!
+        ))
 
         navigator.openTaskCompositionScreen()
     }
 
 }
-
-data class TaskCardCreateUi(
-        val isAlcohol: Boolean,
-        val isCommon: Boolean
-)
