@@ -39,6 +39,8 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
     lateinit var fixationDepartureReceptionDistrCenterNetRequest: FixationDepartureReceptionDistrCenterNetRequest
     @Inject
     lateinit var skipRecountNetRequest: SkipRecountNetRequest
+    @Inject
+    lateinit var zmpUtzGrz41V001NetRequest: ZmpUtzGrz41V001NetRequest
 
     val selectedPage = MutableLiveData(0)
 
@@ -115,7 +117,7 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
 
     val visibilityNextBtn by lazy {
         MutableLiveData(taskManager.getReceivingTask()?.taskDescription?.currentStatus.let {
-            !(taskType == TaskType.ShipmentRC && (it == TaskStatus.ShipmentSentToGis || it == TaskStatus.ShipmentRejectedByGis || it == TaskStatus.Departure)  )
+            !(taskType == TaskType.ShipmentRC && (it == TaskStatus.ShipmentSentToGis || it == TaskStatus.ShipmentRejectedByGis || it == TaskStatus.Departure || it == TaskStatus.Completed)  )
         })
     }
 
@@ -372,7 +374,7 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
                         screenNavigator.openShipmentPostingLoadingScreen()
                     }
                 }
-                TaskStatus.ShipmentAllowedByGis -> return //todo Разрешено ГИС. Отгрузка, аналитик не описал условие в документации
+                TaskStatus.ShipmentAllowedByGis -> shipmentAllowedByGis() // https://trello.com/c/FnABffRE
                 TaskStatus.Loaded -> screenNavigator.openInputOutgoingFillingsScreen()
             }
             return
@@ -512,6 +514,32 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
         taskManager.getReceivingTask()?.taskRepository?.getNotifications()?.updateWithNotifications(notifications, null, null, null)
         taskManager.getReceivingTask()?.taskRepository?.getSections()?.updateSections(sectionInfo, sectionProducts)
         screenNavigator.openTaskCardScreen(TaskCardMode.Full)
+    }
+
+    private fun shipmentAllowedByGis() {
+        viewModelScope.launch {
+            screenNavigator.showProgressLoadingData()
+            val params = ZmpUtzGrz41V001Params(
+                    deviceIP = context.getDeviceIp(),
+                    taskNumber = taskManager.getReceivingTask()?.taskHeader?.taskNumber ?: "",
+                    personalNumber = sessionInfo.personnelNumber ?: ""
+            )
+            zmpUtzGrz41V001NetRequest(params).either(::handleFailure, ::handleSuccessShipmentAllowedByGis)
+            screenNavigator.hideProgress()
+        }
+    }
+
+    private fun handleSuccessShipmentAllowedByGis(result: ZmpUtzGrz41V001Result) {
+        val notifications = result.notifications.map { TaskNotification.from(it) }
+        taskManager.getReceivingTask()?.taskRepository?.getNotifications()?.updateWithNotifications(general = notifications, document = null, product = null, condition = null)
+
+        taskManager.updateTaskDescription(TaskDescription.from(result.taskDescription))
+
+        screenNavigator.openShipmentPostingSuccessfulDialog(
+                nextCallbackFunc = {
+                    screenNavigator.openTaskCardScreen(TaskCardMode.Full)
+                }
+        )
     }
 
     fun onBackPressed() {
