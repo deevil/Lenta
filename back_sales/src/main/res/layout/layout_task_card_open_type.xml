@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".features.task_card_open.TaskCardOpenFragment">
 
@@ -24,15 +23,12 @@
                 style="@style/LinearCellStyle"
                 android:layout_weight="1">
 
-                <com.lenta.shared.view.ClickableSpinner
-                    android:id="@+id/spin_task_type"
-                    style="@style/CellSpinnerStyle"
-                    android:layout_height="match_parent"
+                <EditText
+                    style="@style/CellEditTextStyle"
                     android:enabled="false"
-                    app:items="@{vm.taskTypeList}"
-                    app:onPositionClickListener="@{vm.onSelectTaskType}"
-                    app:position="@{vm.taskTypePosition}"
-                    tools:entries="@array/test_list" />
+                    android:text="@{vm.ui.type}"
+                    android:drawableEnd="@drawable/spinner_arrow_down_disabled"
+                    tools:text="Возврат брака прямому поставщику" />
 
             </LinearLayout>
 
@@ -50,7 +46,7 @@
                 <EditText
                     style="@style/CellEditTextStyle"
                     android:enabled="false"
-                    android:text="@={vm.taskName}"
+                    android:text="@{vm.ui.name}"
                     tools:text="Возврат от 05.08.2020 15:16" />
 
             </LinearLayout>
@@ -66,15 +62,11 @@
                 style="@style/LinearCellStyle"
                 android:layout_weight="1">
 
-                <com.lenta.shared.view.ClickableSpinner
-                    android:id="@+id/spin_reason_for_return"
-                    style="@style/CellSpinnerStyle"
-                    android:layout_height="match_parent"
-                    android:enabled="false"
-                    app:items="@{vm.reasonForReturnList}"
-                    app:onPositionClickListener="@{vm.onSelectReasonForReturn}"
-                    app:position="@{vm.reasonForReturnPosition}"
-                    tools:entries="@array/test_list" />
+                <TextView
+                    style="@style/CellTextStyle"
+                    android:text="@{vm.ui.supplier}"
+                    android:textColor="@color/color_text_title_header"
+                    tools:text="568932 ООО Микоян" />
 
             </LinearLayout>
 
@@ -107,15 +99,12 @@
                 style="@style/LinearCellStyle"
                 android:layout_weight="1">
 
-                <com.lenta.shared.view.ClickableSpinner
-                    android:id="@+id/spin_storage"
-                    style="@style/CellSpinnerStyle"
-                    android:layout_height="match_parent"
+                <EditText
+                    style="@style/CellEditTextStyle"
                     android:enabled="false"
-                    app:items="@{vm.storageList}"
-                    app:onPositionClickListener="@{vm.onSelectStorage}"
-                    app:position="@{vm.storagePosition}"
-                    tools:entries="@array/test_list" />
+                    android:text="@{vm.ui.storage}"
+                    android:drawableEnd="@drawable/spinner_arrow_down_disabled"
+                    tools:text="0010" />
 
             </LinearLayout>
 
@@ -130,11 +119,12 @@
                 style="@style/LinearCellStyle"
                 android:layout_weight="1">
 
-                <TextView
-                    style="@style/CellTextStyle"
-                    android:text="@{vm.ui.provider}"
-                    android:textColor="@color/color_text_title_header"
-                    tools:text="568932 ООО Микоян" />
+                <EditText
+                    style="@style/CellEditTextStyle"
+                    android:enabled="false"
+                    android:text="@{vm.ui.reason}"
+                    android:drawableEnd="@drawable/spinner_arrow_down_disabled"
+                    tools:text="Нарушение товарного вида" />
 
             </LinearLayout>
 
