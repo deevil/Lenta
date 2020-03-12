@@ -34,6 +34,7 @@ abstract class CoreMessageFragment : CoreFragment<LayoutMessageBinding, MessageV
     protected var buttonDecorationInfo4: ButtonDecorationInfo? by state(null)
     protected var rightButtonDecorationInfo by state(ButtonDecorationInfo.apply)
     protected var timeAutoExitInMillis by state<Int?>(null)
+    protected var soundType by state<SoundType?>(null)
 
 
     override fun getLayoutId(): Int = R.layout.layout_message
