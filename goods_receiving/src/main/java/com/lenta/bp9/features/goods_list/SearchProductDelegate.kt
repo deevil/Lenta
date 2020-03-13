@@ -220,12 +220,7 @@ class SearchProductDelegate @Inject constructor(
                 when (taskProductInfo.type) {
                     ProductType.General -> {
                         if (taskProductInfo.isVet) {
-                            //todo для ПГЕ Меркурия, товар, который добавляется как излишек и отсутствует в поставке, должна быть доработана логика со стороны аналитиков, пока не обрабатывается, а появляется сообщение (карточка трелло https://trello.com/c/eo1nRdKC)
-                            if (taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.RecalculationCargoUnit && taskProductInfo.isGoodsAddedAsSurplus) {
-                                screenNavigator.openNotImplementedScreenAlert("Карточка товара (ПГЕ для Меркурия)") //когда будет доработана ветка по пге по излишку, удалить это сообщение
-                            } else {
-                                screenNavigator.openGoodsMercuryInfoScreen(taskProductInfo, isDiscrepancy) //эта ветка для остальных заданий и товаров
-                            }
+                            screenNavigator.openGoodsMercuryInfoScreen(taskProductInfo, isDiscrepancy)
                         } else {
                             screenNavigator.openGoodsInfoScreen(productInfo = taskProductInfo, isDiscrepancy = isDiscrepancy, initialCount = initialCount)
                         }

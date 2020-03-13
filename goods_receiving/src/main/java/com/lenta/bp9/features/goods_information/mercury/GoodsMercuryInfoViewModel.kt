@@ -144,12 +144,8 @@ class GoodsMercuryInfoViewModel : CoreViewModel(), OnPositionClickListener {
             }
 
             if (isTaskPGE.value!!) {
-                var addNewCount = it?.first ?: 0.0
-                if (isEizUnit.value!!) {
-                    addNewCount *= productInfo.value?.quantityInvest?.toDouble() ?: 1.0
-                }
                 if (qualityInfo.value?.get(it!!.second)?.code == "1" || qualityInfo.value?.get(it!!.second)?.code == "2") {
-                    addNewCount + countAccept
+                    convertEizToBei() + countAccept
                 } else {
                     countAccept
                 }
@@ -185,12 +181,8 @@ class GoodsMercuryInfoViewModel : CoreViewModel(), OnPositionClickListener {
             }
 
             if (isTaskPGE.value!!) {
-                var addNewCount = it?.first ?: 0.0
-                if (isEizUnit.value!!) {
-                    addNewCount *= productInfo.value?.quantityInvest?.toDouble() ?: 1.0
-                }
                 if (qualityInfo.value?.get(it!!.second)?.code == "3" || qualityInfo.value?.get(it!!.second)?.code == "4" || qualityInfo.value?.get(it!!.second)?.code == "5") {
-                    addNewCount + countRefusal
+                    convertEizToBei() + countRefusal
                 } else {
                     countRefusal
                 }
@@ -222,7 +214,11 @@ class GoodsMercuryInfoViewModel : CoreViewModel(), OnPositionClickListener {
     }
 
     val enabledApplyButton: MutableLiveData<Boolean> = countValue.map {
-        (it ?: 0.0) > 0.0 && !spinManufacturers.isNullOrEmpty() && !spinProductionDate.value.isNullOrEmpty()
+        if (isGoodsAddedAsSurplus.value == true) { //карточка трелло https://trello.com/c/eo1nRdKC) (ТП (меркурий по ПГЕ) -> 3.2.2.16 Обработка расхождений при пересчете ГЕ (Меркурий) -> 2.1.Излишек по товару
+            (it ?: 0.0) > 0.0 && !spinManufacturers.isNullOrEmpty()
+        } else {
+            (it ?: 0.0) > 0.0 && !spinManufacturers.isNullOrEmpty() && !spinProductionDate.value.isNullOrEmpty()
+        }
     }
 
     init {
@@ -343,9 +339,9 @@ class GoodsMercuryInfoViewModel : CoreViewModel(), OnPositionClickListener {
         when (processMercuryProductService.checkConditionsOfPreservation(count.value ?: "0", reasonRejectionCode, spinManufacturers!![spinManufacturersSelectedPosition.value!!], spinProductionDate.value!![spinProductionDateSelectedPosition.value!!])) {
             PROCESSING_MERCURY_SAVED -> {
                 if (qualityInfo.value?.get(spinQualitySelectedPosition.value ?: 0)?.code == "1") {
-                    processMercuryProductService.add(acceptTotalCount.value!!.toString(), count.value ?: "0",  "1", spinManufacturers!![spinManufacturersSelectedPosition.value!!], spinProductionDate.value!![spinProductionDateSelectedPosition.value!!])
+                    processMercuryProductService.add(count.value ?: "0","1", spinManufacturers!![spinManufacturersSelectedPosition.value!!], spinProductionDate.value!![spinProductionDateSelectedPosition.value!!])
                 } else {
-                    processMercuryProductService.add(count.value ?: "0", count.value ?: "0", reasonRejectionInfo.value!![spinReasonRejectionSelectedPosition.value!!].code, spinManufacturers!![spinManufacturersSelectedPosition.value!!], spinProductionDate.value!![spinProductionDateSelectedPosition.value!!])
+                    processMercuryProductService.add(count.value ?: "0", reasonRejectionInfo.value!![spinReasonRejectionSelectedPosition.value!!].code, spinManufacturers!![spinManufacturersSelectedPosition.value!!], spinProductionDate.value!![spinProductionDateSelectedPosition.value!!])
                 }
                 count.value = "0"
                 if (isClickApply.value!!) {
@@ -365,26 +361,28 @@ class GoodsMercuryInfoViewModel : CoreViewModel(), OnPositionClickListener {
 
     @SuppressLint("SimpleDateFormat")
     private fun addProductDiscrepanciesPGE() {
-        //todo товар, который добавляется как излишек и отсутствует в поставке, должна быть доработана логика со стороны аналитиков (сказал Дима С.), пока не обрабатывается (карточка трелло https://trello.com/c/eo1nRdKC) (ТП (меркурий по ПГЕ) -> 3.2.2.16 Обработка расхождений при пересчете ГЕ (Меркурий) -> 2.1.Излишек по товару)
+        // обработка ПГЕ Меркурия для товаров, которые добавляются как излишек и отсутствуют в поставке (карточка трелло https://trello.com/c/eo1nRdKC) (ТП (меркурий по ПГЕ) -> 3.2.2.16 Обработка расхождений при пересчете ГЕ (Меркурий) -> 2.1.Излишек по товару)
+        // добавляем все кол-во введенное пользователем как и для обычного товара (GoodsInfoViewModel - onClickAdd)
         if (isGoodsAddedAsSurplus.value == true) {
             if (!isCorrectDate(productionDate.value)) {
                 screenNavigator.openAlertNotCorrectDate()
                 return
             } else {
                 val productionDateSave = SimpleDateFormat("yyyy-MM-dd").format(formatter.parse(productionDate.value))
-                return //не обрабатываем, просто выходим из ф-ции
+                processMercuryProductService.add(convertEizToBei().toString(), qualityInfo.value!![spinQualitySelectedPosition.value!!].code, spinManufacturers!![spinManufacturersSelectedPosition.value!!], productionDateSave)
+                count.value = "0"
+                if (isClickApply.value!!) {
+                    processMercuryProductService.save()
+                    screenNavigator.goBack()
+                }
+                return
             }
         }
 
-
-        //обработка ПГЕ Меркурия для товаров, которые есть в поставке
-        var addNewCount = count.value!!.toDouble()
-        if (isEizUnit.value!!) {
-            addNewCount *= productInfo.value?.quantityInvest?.toDouble() ?: 1.0
-        }
-        when (processMercuryProductService.checkConditionsOfPreservationPGE(addNewCount, qualityInfo.value!![spinQualitySelectedPosition.value!!].code, spinManufacturers!![spinManufacturersSelectedPosition.value!!], spinProductionDate.value!![spinProductionDateSelectedPosition.value!!])) {
+        //обработка ПГЕ Меркурия для товаров, которые есть в поставке (карточка трелло https://trello.com/c/eo1nRdKC) (ТП (меркурий по ПГЕ) -> 3.2.2.16 Обработка расхождений при пересчете ГЕ (Меркурий) )
+        when (processMercuryProductService.checkConditionsOfPreservationPGE(convertEizToBei(), qualityInfo.value!![spinQualitySelectedPosition.value!!].code, spinManufacturers!![spinManufacturersSelectedPosition.value!!], spinProductionDate.value!![spinProductionDateSelectedPosition.value!!])) {
             PROCESSING_MERCURY_SAVED -> {
-                processMercuryProductService.add(addNewCount.toString(), addNewCount.toString(), qualityInfo.value!![spinQualitySelectedPosition.value!!].code, spinManufacturers!![spinManufacturersSelectedPosition.value!!], spinProductionDate.value!![spinProductionDateSelectedPosition.value!!])
+                processMercuryProductService.add(convertEizToBei().toString(), qualityInfo.value!![spinQualitySelectedPosition.value!!].code, spinManufacturers!![spinManufacturersSelectedPosition.value!!], spinProductionDate.value!![spinProductionDateSelectedPosition.value!!])
                 count.value = "0"
                 if (isClickApply.value!!) {
                     processMercuryProductService.save()
@@ -400,10 +398,10 @@ class GoodsMercuryInfoViewModel : CoreViewModel(), OnPositionClickListener {
             PROCESSING_MERCURY_UNDERLOAD_AND_SURPLUS_IN_ONE_DELIVERY -> { //противоположные категории недогруз и излишек в рамках одной поставки
                 screenNavigator.openAlertBothSurplusAndUnderloadScreen()
             }
-            PROCESSING_MERCURY_SURPLUS_PGE_ENOUGH_QUANTITY -> { //2.2.	Излишек по количеству (хватило кол-ва по текущей партии)
-                screenNavigator.openExceededPlannedQuantityInProcessingUnitDialog(
+            PROCESSING_MERCURY_SURPLUS_IN_QUANTITY -> { //2.2.	Излишек по количеству
+                screenNavigator.openExceededPlannedQuantityBatchInProcessingUnitDialog(
                         nextCallbackFunc = {
-                            processMercuryProductService.addSurplusPGEEnoughQuantity(addNewCount, spinManufacturers!![spinManufacturersSelectedPosition.value!!], spinProductionDate.value!![spinProductionDateSelectedPosition.value!!])
+                            processMercuryProductService.addSurplusInQuantityPGE(convertEizToBei(), spinManufacturers!![spinManufacturersSelectedPosition.value!!], spinProductionDate.value!![spinProductionDateSelectedPosition.value!!])
                             count.value = "0"
                             if (isClickApply.value!!) {
                                 processMercuryProductService.save()
@@ -412,13 +410,21 @@ class GoodsMercuryInfoViewModel : CoreViewModel(), OnPositionClickListener {
                         }
                 )
             }
-            PROCESSING_MERCURY_SURPLUS_PGE_NOT_HAVE_ENOUGH_QUANTITY -> { //2.3.	Излишек по количеству (не достаточно количеств по текущей партии)
-                screenNavigator.openExceededPlannedQuantityBatchInProcessingUnitDialog(
-                        nextCallbackFunc = {
-                            //todo здесь затрагиваются партии, уточнить у аналитика, возможна реализациия, наверное, только после реализации алкоголя, карточка трелло https://trello.com/c/eo1nRdKC (ТП (меркурий по ПГЕ) -> 3.2.2.16 Обработка расхождений при пересчете ГЕ (Меркурий) -> 2.3.	Излишек по количеству (не достаточно количеств по текущей партии))
-                            screenNavigator.goBack()
-                        }
-                )
+            PROCESSING_MERCURY_NORM_AND_UNDERLOAD_EXCEEDED_INVOICE -> {//4.Особые случаи, 4.2.1.1 кол-во по поставке превышено
+                processMercuryProductService.addNormAndUnderloadExceededInvoicePGE(convertEizToBei(), spinManufacturers!![spinManufacturersSelectedPosition.value!!], spinProductionDate.value!![spinProductionDateSelectedPosition.value!!])
+                count.value = "0"
+                if (isClickApply.value!!) {
+                    processMercuryProductService.save()
+                    screenNavigator.goBack()
+                }
+            }
+            PROCESSING_MERCURY_NORM_AND_UNDERLOAD_EXCEEDED_VET_DOC -> { //4.Особые случаи, 4.2.1.2 кол-во превышает кол-во по ВСД
+                processMercuryProductService.addNormAndUnderloadExceededVetDocPGE(convertEizToBei(), spinManufacturers!![spinManufacturersSelectedPosition.value!!], spinProductionDate.value!![spinProductionDateSelectedPosition.value!!])
+                count.value = "0"
+                if (isClickApply.value!!) {
+                    processMercuryProductService.save()
+                    screenNavigator.goBack()
+                }
             }
         }
     }
@@ -461,5 +467,13 @@ class GoodsMercuryInfoViewModel : CoreViewModel(), OnPositionClickListener {
         } catch (e: Exception) {
             false
         }
+    }
+
+    private fun convertEizToBei() : Double {
+        var addNewCount = countValue.value!!.toDouble()
+        if (isEizUnit.value!!) {
+            addNewCount *= productInfo.value?.quantityInvest?.toDouble() ?: 1.0
+        }
+        return addNewCount
     }
 }
