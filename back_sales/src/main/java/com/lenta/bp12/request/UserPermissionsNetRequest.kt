@@ -8,34 +8,33 @@ import com.lenta.shared.functional.Either
 import com.lenta.shared.functional.rightToLeft
 import com.lenta.shared.interactor.UseCase
 import com.lenta.shared.requests.FmpRequestsHelper
+import com.lenta.shared.requests.SapResponse
 import javax.inject.Inject
 
 class UserPermissionsNetRequest
 @Inject constructor(private val fmpRequestsHelper: FmpRequestsHelper) : UseCase<PermissionsRequestResult, PermissionsRequestParams> {
-    override suspend fun run(params: PermissionsRequestParams): Either<Failure, PermissionsRequestResult> {
-        return fmpRequestsHelper.restRequest(
-                "ZMP_UTZ_PRO_01_V001",
-                params,
-                PermissionsRequestStatus::class.java)
-                .rightToLeft { sentResult ->
-                    sentResult.retCodes.firstOrNull { it.retCode == 1 }?.let {
-                        Failure.SapError(it.errorText)
-                    }
-                }
-    }
-}
 
+    override suspend fun run(params: PermissionsRequestParams): Either<Failure, PermissionsRequestResult> {
+        return fmpRequestsHelper.restRequest("ZMP_UTZ_BKS_01_V001", params, PermissionsRequestStatus::class.java)
+    }
+
+}
 
 data class PermissionsRequestParams(
         @SerializedName("IV_UNAME")
         val userName: String
 )
 
+class PermissionsRequestStatus : ObjectRawStatus<PermissionsRequestResult>()
+
 data class PermissionsRequestResult(
+        /** Список адресов ТК */
         @SerializedName("ET_WERKS")
         val markets: List<Market>,
-        @SerializedName("ET_RETCODE")
-        val retCodes: List<RetCode>
-)
-
-class PermissionsRequestStatus : ObjectRawStatus<PermissionsRequestResult>()
+        /** Код возврата */
+        @SerializedName("EV_RETCODE")
+        override val retCode: Int,
+        /** Текст ошибки */
+        @SerializedName("EV_ERROR_TEXT")
+        override val errorText: String
+) : SapResponse

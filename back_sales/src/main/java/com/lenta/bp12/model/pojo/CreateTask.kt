@@ -9,5 +9,6 @@ data class CreateTask(
         val storage: String,
         val reason: ReturnReason,
         val isAlcohol: Boolean,
-        val isCommon: Boolean
+        val isCommon: Boolean,
+        val goods: MutableList<Good> = mutableListOf()
 )
