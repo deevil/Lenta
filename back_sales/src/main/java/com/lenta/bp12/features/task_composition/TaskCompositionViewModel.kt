@@ -162,7 +162,9 @@ class TaskCompositionViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
                     tkNumber = sessionInfo.market ?: "Not found!",
                     ean = "",
                     material = material,
-                    bpCode = "BKS"
+                    bpCode = "BKS",
+                    taskType = task.value!!.type.type,
+                    mode = ""
             )).also {
                 navigator.hideProgress()
             }.either(::handleFailure) { goodInfo ->

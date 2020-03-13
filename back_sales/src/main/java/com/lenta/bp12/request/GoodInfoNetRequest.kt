@@ -30,7 +30,13 @@ data class GoodInfoParams(
         val material: String,
         /** Код бизнес процесса */
         @SerializedName("IV_CODEBP")
-        val bpCode: String
+        val bpCode: String,
+        /** Код бизнес процесса */
+        @SerializedName("IV_TYPE_TASK")
+        val taskType: String,
+        /** ??? */
+        @SerializedName("IV_MODE")
+        val mode: String
 )
 
 class GoodInfoStatus : ObjectRawStatus<GoodInfoResult>()
