@@ -163,8 +163,7 @@ class TaskCompositionViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
                     ean = "",
                     material = material,
                     bpCode = "BKS",
-                    taskType = task.value!!.type.type,
-                    mode = ""
+                    taskType = task.value!!.type.type
             )).also {
                 navigator.hideProgress()
             }.either(::handleFailure) { goodInfo ->

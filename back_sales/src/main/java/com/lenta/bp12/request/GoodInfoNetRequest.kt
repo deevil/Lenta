@@ -1,6 +1,7 @@
 package com.lenta.bp12.request
 
 import com.google.gson.annotations.SerializedName
+import com.lenta.bp12.model.pojo.*
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.fmp.ObjectRawStatus
 import com.lenta.shared.functional.Either
@@ -34,30 +35,29 @@ data class GoodInfoParams(
         /** Код бизнес процесса */
         @SerializedName("IV_TYPE_TASK")
         val taskType: String,
-        /** ??? */
-        @SerializedName("IV_MODE")
-        val mode: String
+        /** Индикатор из одной позиции */
+        @SerializedName("IV_MODE") // Для BKS не используется
+        val mode: String = ""
 )
 
 class GoodInfoStatus : ObjectRawStatus<GoodInfoResult>()
 
-// todo Структура данных пока не ясна, поправить при первом получении
 data class GoodInfoResult(
         /** Справочник ШК */
         @SerializedName("ES_EAN")
-        val eans: String,
+        val eanInfo: EanInfo,
         /** Справочник товаров */
         @SerializedName("ES_MATERIAL")
-        val materials: String,
+        val materialInfo: MaterialInfo,
         /** Таблица наборов */
         @SerializedName("ET_SET")
-        val sets: String,
+        val sets: List<SetItem>,
         /** Таблица поставщиков */
         @SerializedName("ET_LIFNR")
-        val suppliers: String,
+        val suppliers: List<SupplierItem>,
         /** Таблица производителей */
         @SerializedName("ET_PROD")
-        val producers: String,
+        val producers: List<ProducerItem>,
         /** Код возврата */
         @SerializedName("EV_RETCODE")
         override val retCode: Int,
